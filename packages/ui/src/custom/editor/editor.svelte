@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { HTMLContent, Content, Editor } from '@tiptap/core';
+  import type { HTMLContent, Editor } from '@tiptap/core';
   import type { Transaction } from '@tiptap/pm/state';
   import type { UnsplashPhoto } from './types';
   import type { Snippet } from 'svelte';
@@ -7,7 +7,6 @@
   import { slide } from 'svelte/transition';
   import { cn } from '$src/tools';
   import * as Sheet from '../../base/sheet';
-  import ExpandedEditor from './editor.svelte';
 
   interface Props {
     // Content of the editor
@@ -67,7 +66,7 @@
     expandedDescription = ''
   }: Props = $props();
 
-  let editor = $state<Editor>();
+  const editors = $state<{ inline?: Editor; expanded?: Editor }>({});
 
   // Browser detection
   const browser = typeof window !== 'undefined';
@@ -119,21 +118,23 @@
   let isEditorReady = $state(false);
   // Handle editor ready
   $effect(() => {
-    if (editor && !isEditorReady) {
+    if (editors.inline && !isEditorReady) {
       isEditorReady = true;
-      onEditorReady?.(editor);
+      onEditorReady?.(editors.inline);
     }
   });
 
   $effect(() => {
-    if (!editor || editor.isDestroyed) return;
-
     const nextContent = normalizeEditorContent(content);
-    const currentContent = normalizeEditorContent(editor.getHTML());
 
-    if (currentContent === nextContent) return;
+    for (const editor of [editors.inline, editors.expanded]) {
+      if (!editor || editor.isDestroyed) continue;
 
-    editor.commands.setContent(nextContent, { emitUpdate: false });
+      const currentContent = normalizeEditorContent(editor.getHTML());
+      if (currentContent === nextContent) continue;
+
+      editor.commands.setContent(nextContent, { emitUpdate: false });
+    }
   });
 
   function onUpdate(props: { editor: Editor; transaction: Transaction }) {
@@ -144,24 +145,33 @@
     }
   }
 
-  function handleExpandedContentChange(newContent: HTMLContent) {
-    content = newContent;
-    onContentChange?.(newContent);
+  function handleExpandedChange(isOpen: boolean) {
+    const expandedEditor = editors.expanded;
+
+    if (!isOpen && expandedEditor && !expandedEditor.isDestroyed) {
+      expandedEditor.view.dom.blur();
+    }
+
+    expanded = isOpen;
   }
 </script>
 
-{#if browser}
+{#snippet editorSurface(surface: 'inline' | 'expanded', wrapperClass: string, contentClass: string)}
+  {@const editor = editors[surface]}
   <div
     class={cn(
       'ui:relative ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
-      className
+      wrapperClass
     )}
   >
     {#if editor && !editor.isDestroyed}
       {#if showToolBar}
         <div transition:slide>
           <EdraToolBar
-            class="ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:overflow-x-auto ui:border-b ui:border-dashed ui:p-0.5"
+            class={cn(
+              'ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:border-b ui:border-dashed ui:p-0.5',
+              toolbarPreset === 'email' ? 'ui:flex-wrap ui:overflow-x-hidden' : 'ui:flex-nowrap ui:overflow-x-auto'
+            )}
             {editor}
             preset={toolbarPreset}
             trailingContent={toolbarTrailing}
@@ -176,21 +186,27 @@
         <EdraDragHandleExtended {editor} />
       {/if}
     {/if}
-    <EdraEditor
-      class={cn('ui:relative ui:h-full ui:overflow-auto ui:p-4', editorClass)}
-      bind:editor
-      {editable}
-      emailSafe={toolbarPreset === 'email'}
-      {content}
-      {onUpdate}
-      {placeholder}
-      {onImageUpload}
-      {onSearchUnsplash}
-    />
+    <div class="ui:flex ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:flex-col">
+      <EdraEditor
+        class={cn('ui:relative ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:overflow-auto ui:p-4', contentClass)}
+        bind:editor={editors[surface]}
+        {editable}
+        emailSafe={toolbarPreset === 'email'}
+        {content}
+        {onUpdate}
+        {placeholder}
+        {onImageUpload}
+        {onSearchUnsplash}
+      />
+    </div>
   </div>
+{/snippet}
+
+{#if browser}
+  {@render editorSurface('inline', className, editorClass)}
 
   {#if expandable}
-    <Sheet.Root bind:open={expanded}>
+    <Sheet.Root open={expanded} onOpenChange={handleExpandedChange}>
       <Sheet.Content side="right" class="ui:w-full ui:gap-0 ui:sm:max-w-3xl">
         <Sheet.Header class="ui:pr-12">
           <Sheet.Title>{expandedTitle}</Sheet.Title>
@@ -200,18 +216,7 @@
         </Sheet.Header>
         <div class="ui:flex ui:min-h-0 ui:flex-1 ui:flex-col ui:px-4 ui:pb-4">
           {#if expanded}
-            <ExpandedEditor
-              {content}
-              {editable}
-              {toolbarPreset}
-              {toolbarTrailing}
-              {placeholder}
-              {onImageUpload}
-              {onSearchUnsplash}
-              class="ui:min-h-0 ui:flex-1"
-              editorClass="ui:min-h-0 ui:flex-1"
-              onContentChange={handleExpandedContentChange}
-            />
+            {@render editorSurface('expanded', 'ui:min-h-0 ui:flex-1', 'ui:min-h-0 ui:flex-1')}
           {/if}
         </div>
       </Sheet.Content>

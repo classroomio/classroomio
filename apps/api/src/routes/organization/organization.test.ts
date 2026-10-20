@@ -5,8 +5,11 @@ import { ROLE } from '@cio/utils/constants';
 
 const serviceMocks = vi.hoisted(() => ({
   getOrgAudience: vi.fn(),
-  getOrgTeam: vi.fn()
+  getOrgTeam: vi.fn(),
+  updateTeamMemberRole: vi.fn()
 }));
+
+const inviteMocks = vi.hoisted(() => ({ inviteTeamMembers: vi.fn() }));
 
 const audienceMocks = vi.hoisted(() => ({
   assignAudienceToCourses: vi.fn(),
@@ -40,7 +43,7 @@ vi.mock('@api/services/organization/audience', () => audienceMocks);
 vi.mock('@api/services/organization/audience-export', () => audienceExportMocks);
 vi.mock('@api/services/organization/automation-usage', () => ({}));
 vi.mock('@api/services/organization/auto-join', () => ({}));
-vi.mock('@api/services/organization/invite', () => ({}));
+vi.mock('@api/services/organization/invite', () => inviteMocks);
 vi.mock('@api/services/exercise', () => ({}));
 vi.mock('@api/routes/organization/assets', () => ({ assetsRouter: new Hono() }));
 vi.mock('@api/routes/organization/ai-tutor', () => ({ organizationAiTutorRouter: new Hono() }));
@@ -88,6 +91,13 @@ describe('organization roster authorization', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     serviceMocks.getOrgTeam.mockResolvedValue([]);
+    serviceMocks.updateTeamMemberRole.mockResolvedValue({
+      id: 15,
+      email: 'tutor@example.com',
+      verified: true,
+      roleId: ROLE.TUTOR,
+      profileId: 'profile-2'
+    });
     serviceMocks.getOrgAudience.mockResolvedValue({ items: [], pagination: {}, query: {} });
     audienceExportMocks.getAudienceExportRows.mockResolvedValue([]);
     audienceMocks.assignAudienceToCourses.mockResolvedValue({ enrolled: 1 });
@@ -128,5 +138,99 @@ describe('organization roster authorization', () => {
     const response = await rosterRequest(path, ROLE.ADMIN, { method: 'POST', body });
 
     expect(response.status).toBe(adminStatus);
+  });
+
+  it('rejects tutors from changing a team member role', async () => {
+    const response = await rosterRequest('/team/15', ROLE.TUTOR, {
+      method: 'PATCH',
+      body: JSON.stringify({ roleId: ROLE.ADMIN })
+    });
+
+    expect(response.status).toBe(403);
+    expect(serviceMocks.updateTeamMemberRole).not.toHaveBeenCalled();
+  });
+
+  it('lets an admin change a team member role', async () => {
+    const response = await rosterRequest('/team/15', ROLE.ADMIN, {
+      method: 'PATCH',
+      body: JSON.stringify({ roleId: ROLE.TUTOR })
+    });
+
+    expect(response.status).toBe(200);
+    expect(serviceMocks.updateTeamMemberRole).toHaveBeenCalledWith(orgId, 15, ROLE.TUTOR, 'profile-1');
+  });
+
+  it('rejects a student role for a team member', async () => {
+    const response = await rosterRequest('/team/15', ROLE.ADMIN, {
+      method: 'PATCH',
+      body: JSON.stringify({ roleId: ROLE.STUDENT })
+    });
+
+    expect(response.status).toBe(400);
+    expect(serviceMocks.updateTeamMemberRole).not.toHaveBeenCalled();
+  });
+});
+
+describe('student team invite confirmation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    inviteMocks.inviteTeamMembers.mockResolvedValue({
+      requiresConfirmation: false,
+      studentEmails: ['student@example.com'],
+      existingTeamMembers: [],
+      queuedCount: 1,
+      failedEmails: []
+    });
+  });
+
+  it.each([ROLE.STUDENT, ROLE.TUTOR])('prevents role %s from confirming promotions', async (roleId) => {
+    const body = JSON.stringify({
+      emails: ['student@example.com'],
+      roleId: ROLE.ADMIN,
+      confirmedStudentEmails: ['student@example.com']
+    });
+    const response = await rosterRequest('/team/invite', roleId, { method: 'POST', body });
+
+    expect(response.status).toBe(403);
+    expect(inviteMocks.inviteTeamMembers).not.toHaveBeenCalled();
+  });
+
+  it('returns confirmation without claiming an invitation was created', async () => {
+    inviteMocks.inviteTeamMembers.mockResolvedValue({
+      requiresConfirmation: true,
+      studentEmails: ['student@example.com'],
+      existingTeamMembers: [],
+      queuedCount: 0,
+      failedEmails: []
+    });
+    const body = JSON.stringify({ emails: ['student@example.com'], roleId: ROLE.ADMIN });
+    const response = await rosterRequest('/team/invite', ROLE.ADMIN, { method: 'POST', body });
+
+    expect(response.status).toBe(200);
+    expect(inviteMocks.inviteTeamMembers).toHaveBeenCalledWith(
+      orgId,
+      ['student@example.com'],
+      ROLE.ADMIN,
+      'profile-1',
+      []
+    );
+  });
+
+  it('passes the confirmed student addresses to the service', async () => {
+    const body = JSON.stringify({
+      emails: ['student@example.com'],
+      roleId: ROLE.ADMIN,
+      confirmedStudentEmails: ['student@example.com']
+    });
+    const response = await rosterRequest('/team/invite', ROLE.ADMIN, { method: 'POST', body });
+
+    expect(response.status).toBe(201);
+    expect(inviteMocks.inviteTeamMembers).toHaveBeenCalledWith(
+      orgId,
+      ['student@example.com'],
+      ROLE.ADMIN,
+      'profile-1',
+      ['student@example.com']
+    );
   });
 });

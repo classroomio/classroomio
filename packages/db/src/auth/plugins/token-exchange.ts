@@ -12,6 +12,7 @@ const setSessionCookie = _setSessionCookie as (
 import type { User } from 'better-auth';
 import { db } from '@db/drizzle';
 import { exchangeToken, TokenExchangeError } from '../token-exchange';
+import { trackLoginHook } from '../hooks/track-login';
 import { ZTokenExchangeQuery } from '@cio/utils/validation/organization';
 
 const SESSION_EXPIRES_IN_SEC = 60 * 60 * 24 * 7; // 7 days
@@ -97,6 +98,8 @@ export function tokenExchange(): BetterAuthPlugin {
         if (!sessionRow) {
           return c.json({ error: 'Failed to create session' }, { status: 500 });
         }
+
+        await trackLoginHook(sessionRow);
 
         const session = {
           id: sessionRow.id,

@@ -26,13 +26,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import {
-  ACTOR_OWN_DATA_NOTE,
-  COHORT_MEMBER_RULE,
-  COHORT_TEAM_RULE,
-  PAGINATION_NOTE,
-  cohortForbiddenResponses
-} from './docs';
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, cohortForbiddenResponses } from './docs';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
 const GoalResponse = itemResponse(ZPublicApiCohortGoalResponse);
@@ -42,7 +36,7 @@ export const v1CohortGoalsRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the active goals in a cohort, with per-status learner counts. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
+      description: `List the active goals in a cohort, with learner counts per status; ${COHORT_MEMBER_RULE}.`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goals returned successfully', paginatedResponse(ZPublicApiCohortGoalListItemResponse)),
@@ -71,7 +65,7 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create a cohort goal. Required fields depend on type (complete_all, n_of_m, score, pass_rate, readiness) and deadlineKind (absolute, relative_to_join, recurring, none); see the schema for per-combination requirements. Every courseId must already be linked to the cohort. ${COHORT_TEAM_RULE}`,
+      description: `Create a cohort goal; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Goals'],
       responses: {
         201: jsonResponse('Goal created successfully', GoalResponse),
@@ -100,7 +94,7 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/evaluate-all',
     describeRoute({
-      description: `Re-evaluate every active goal in the cohort now, instead of waiting for the scheduled run. data.evaluated is the number of learner assignments evaluated. ${COHORT_TEAM_RULE}`,
+      description: `Re-evaluate every active goal in a cohort now, without waiting for the scheduled run; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goals evaluated', EvaluateResponse),
@@ -127,7 +121,7 @@ export const v1CohortGoalsRouter = new Hono()
   .get(
     '/:goalId',
     describeRoute({
-      description: `Get a cohort goal. ${COHORT_MEMBER_RULE}`,
+      description: `Get a cohort goal; ${COHORT_MEMBER_RULE}.`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal returned successfully', GoalResponse),
@@ -154,7 +148,7 @@ export const v1CohortGoalsRouter = new Hono()
   .put(
     '/:goalId',
     describeRoute({
-      description: `Update a cohort goal. Send only the fields to change; omitted fields keep their current values, and the resulting goal must still satisfy the create rules. ${COHORT_TEAM_RULE}`,
+      description: `Update the fields you send on a cohort goal; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal updated successfully', GoalResponse),
@@ -183,10 +177,13 @@ export const v1CohortGoalsRouter = new Hono()
   .delete(
     '/:goalId',
     describeRoute({
-      description: `Permanently delete a cohort goal and its learner progress. Use the archive action to keep history. ${COHORT_TEAM_RULE}`,
+      description: `Permanently delete a cohort goal and its learner progress; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Goals'],
       responses: {
-        200: jsonResponse('Goal deleted successfully', GoalResponse),
+        200: jsonResponse(
+          'Goal and its learner progress deleted; archive the goal instead to keep its history',
+          GoalResponse
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
@@ -210,7 +207,7 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/:goalId/archive',
     describeRoute({
-      description: `Archive a cohort goal. It stops being evaluated and drops out of the goal list, but its history is kept. ${COHORT_TEAM_RULE}`,
+      description: `Archive a cohort goal so it stops being evaluated and leaves the goal list while its history is kept; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal archived successfully', GoalResponse),
@@ -237,7 +234,7 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/:goalId/evaluate',
     describeRoute({
-      description: `Re-evaluate one goal's learner statuses now, instead of waiting for the scheduled run. data.evaluated is the number of learner assignments evaluated. Archived goals are not evaluated, so their history is kept; evaluating one returns 409. ${COHORT_TEAM_RULE}`,
+      description: `Re-evaluate one goal's learner statuses now, without waiting for the scheduled run; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal evaluated', EvaluateResponse),
@@ -245,7 +242,7 @@ export const v1CohortGoalsRouter = new Hono()
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
         404: { description: 'Cohort or goal not found' },
-        409: { description: 'The goal is archived' }
+        409: { description: 'The goal is archived; archived goals are not evaluated, so their history is kept' }
       }
     }),
     validator('param', ZPublicApiCohortGoalParam),
@@ -267,10 +264,13 @@ export const v1OrgCohortGoalsRouter = new Hono()
   .get(
     '/my/goals',
     describeRoute({
-      description: `List the automation actor's own goal assignments across their cohorts (active goals only), with status and progress. ${ACTOR_OWN_DATA_NOTE} ${PAGINATION_NOTE}`,
+      description: "List the key creator's own goal assignments across their cohorts, with status and progress.",
       tags: ['Cohort Goals'],
       responses: {
-        200: jsonResponse('Goal assignments returned successfully', paginatedResponse(ZPublicApiMyCohortGoalResponse)),
+        200: jsonResponse(
+          "The key creator's assignments for active goals, limited to cohorts in the key's organization",
+          paginatedResponse(ZPublicApiMyCohortGoalResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.scope
@@ -293,7 +293,8 @@ export const v1OrgCohortGoalsRouter = new Hono()
   .get(
     '/goals/overview',
     describeRoute({
-      description: `Organization-wide goal roll-up: one entry per active goal across all cohorts, with learner counts per status. ${PAGINATION_NOTE} The automation actor (the key creator) must be an organization admin or tutor, or this fails with 403.`,
+      description:
+        'List one entry per active goal across every cohort, with learner counts per status; the key creator must be an org admin or tutor.',
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse(

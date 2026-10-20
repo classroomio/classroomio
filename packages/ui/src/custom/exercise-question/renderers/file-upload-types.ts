@@ -1,110 +1,14 @@
+export {
+  FILE_UPLOAD_SUPPORTED_TYPES,
+  formatAcceptedFileTypes,
+  getFileUploadAcceptAttribute,
+  isFileTypeAllowed,
+  normalizeAcceptedFileTypes
+} from '@cio/utils/file-upload';
+
 export const FILE_UPLOAD_DEFAULT_MAX_SIZE_MB = 2;
 /** @deprecated Use FILE_UPLOAD_DEFAULT_MAX_SIZE_MB */
 export const FILE_UPLOAD_MAX_SIZE_MB = FILE_UPLOAD_DEFAULT_MAX_SIZE_MB;
-
-export const FILE_UPLOAD_SUPPORTED_TYPES = [
-  { value: 'application/pdf', label: 'PDF (.pdf)', aliases: ['pdf', '.pdf'] },
-  {
-    value: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    label: 'DOCX (.docx)',
-    aliases: ['docx', '.docx']
-  },
-  { value: 'application/msword', label: 'DOC (.doc)', aliases: ['doc', '.doc'] },
-  { value: 'image/jpeg', label: 'JPEG (.jpg, .jpeg)', aliases: ['jpg', '.jpg', 'jpeg', '.jpeg', 'image/jpg'] },
-  { value: 'image/png', label: 'PNG (.png)', aliases: ['png', '.png'] },
-  { value: 'image/webp', label: 'WEBP (.webp)', aliases: ['webp', '.webp'] },
-  { value: 'image/gif', label: 'GIF (.gif)', aliases: ['gif', '.gif'] },
-  { value: 'video/mp4', label: 'MP4 (.mp4)', aliases: ['mp4', '.mp4'] },
-  { value: 'video/quicktime', label: 'MOV (.mov)', aliases: ['mov', '.mov'] },
-  { value: 'video/x-msvideo', label: 'AVI (.avi)', aliases: ['avi', '.avi'] },
-  { value: 'video/x-matroska', label: 'MKV (.mkv)', aliases: ['mkv', '.mkv'] }
-] as const;
-
-type SupportedType = (typeof FILE_UPLOAD_SUPPORTED_TYPES)[number];
-const SUPPORTED_TYPE_BY_VALUE = new Map<string, SupportedType>(
-  FILE_UPLOAD_SUPPORTED_TYPES.map((entry) => [entry.value, entry])
-);
-
-function normalizeToken(value: string): string {
-  return value.trim().toLowerCase();
-}
-
-function toCanonicalAcceptedType(value: string): string | null {
-  const normalizedValue = normalizeToken(value);
-  if (!normalizedValue) return null;
-
-  if (SUPPORTED_TYPE_BY_VALUE.has(normalizedValue)) {
-    return normalizedValue;
-  }
-
-  for (const fileType of FILE_UPLOAD_SUPPORTED_TYPES) {
-    if (fileType.aliases.some((alias) => normalizeToken(alias) === normalizedValue)) {
-      return fileType.value;
-    }
-  }
-
-  return null;
-}
-
-export function normalizeAcceptedFileTypes(value: unknown): string[] {
-  const rawValues = Array.isArray(value) ? value : typeof value === 'string' ? value.split(',') : [];
-  const seen = new Set<string>();
-  const normalized: string[] = [];
-
-  for (const rawValue of rawValues) {
-    if (typeof rawValue !== 'string') continue;
-
-    const canonicalValue = toCanonicalAcceptedType(rawValue);
-    if (!canonicalValue || seen.has(canonicalValue)) continue;
-
-    seen.add(canonicalValue);
-    normalized.push(canonicalValue);
-  }
-
-  return normalized;
-}
-
-export function formatAcceptedFileTypes(values: string[]): string {
-  return values
-    .map((value) => SUPPORTED_TYPE_BY_VALUE.get(value)?.label ?? value)
-    .filter(Boolean)
-    .join(', ');
-}
-
-function getFileExtension(filename: string): string | null {
-  const extensionSeparatorIndex = filename.lastIndexOf('.');
-  if (extensionSeparatorIndex < 0) return null;
-  return normalizeToken(filename.slice(extensionSeparatorIndex));
-}
-
-export function isFileTypeAllowed(file: File, acceptedTypes: string[]): boolean {
-  if (acceptedTypes.length === 0) return true;
-
-  const fileMimeType = normalizeToken(file.type);
-  const fileExtension = getFileExtension(file.name);
-  const fileExtensionWithoutDot = fileExtension ? fileExtension.slice(1) : null;
-
-  for (const acceptedType of acceptedTypes) {
-    const supportedType = SUPPORTED_TYPE_BY_VALUE.get(acceptedType);
-    if (!supportedType) continue;
-
-    if (fileMimeType === supportedType.value) return true;
-
-    if (fileMimeType === 'image/jpg' && supportedType.value === 'image/jpeg') return true;
-
-    if (
-      fileExtension &&
-      supportedType.aliases.some((alias) => {
-        const normalizedAlias = normalizeToken(alias);
-        return normalizedAlias === fileExtension || normalizedAlias === fileExtensionWithoutDot;
-      })
-    ) {
-      return true;
-    }
-  }
-
-  return false;
-}
 
 const BYTES_PER_MB = 1024 * 1024;
 
@@ -120,6 +24,49 @@ export function resolveExerciseFileUploadMaxSizeMb(
     typeof questionMaxSizeMb === 'number' && questionMaxSizeMb > 0 ? questionMaxSizeMb : effectivePlatformMax;
 
   return Math.min(requestedMax, effectivePlatformMax);
+}
+
+export function formatFileSize(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '0 Bytes';
+
+  const units = ['Bytes', 'KB', 'MB', 'GB'];
+  const unitIndex = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  const size = bytes / 1024 ** unitIndex;
+  return `${parseFloat(size.toFixed(2))} ${units[unitIndex]}`;
+}
+
+function fileExtensionLabel(fileName: string | undefined): string | null {
+  const extensionSeparatorIndex = fileName?.lastIndexOf('.') ?? -1;
+  if (!fileName || extensionSeparatorIndex < 0) return null;
+
+  return fileName.slice(extensionSeparatorIndex + 1).toUpperCase() || null;
+}
+
+/**
+ * A short type label for an uploaded file. Falls back to the file name's extension when the MIME type is
+ * missing or not one of the known families, so notebooks read "IPYNB" instead of a raw MIME subtype.
+ */
+export function fileTypeLabel(mimeType: string | undefined, fileName?: string): string {
+  const mime = mimeType ?? '';
+  if (mime.includes('pdf')) return 'PDF';
+  if (mime.includes('wordprocessingml') || mime.includes('docx')) return 'DOCX';
+  if (mime.includes('msword') || mime.includes('doc')) return 'DOC';
+  if (mime.includes('image')) return 'IMAGE';
+  if (mime.includes('video')) return 'VIDEO';
+  if (mime.includes('csv')) return 'CSV';
+  if (mime.includes('ipynb')) return 'IPYNB';
+
+  const subtype = mime.split('/')[1]?.toUpperCase();
+  return fileExtensionLabel(fileName) || subtype || 'FILE';
+}
+
+export function formatUploadedFileSubtitle(
+  mimeType: string | undefined,
+  size: number | undefined,
+  fileName?: string
+): string {
+  const parts = [fileTypeLabel(mimeType, fileName), size != null ? formatFileSize(size) : null].filter(Boolean);
+  return parts.join(' · ') || '–';
 }
 
 export function isFileSizeAllowed(

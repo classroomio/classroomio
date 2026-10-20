@@ -451,11 +451,19 @@ refresh_stale_compose_file() {
   fi
 }
 
+# Reported in the anonymous usage ping; kept if the user already set it.
+ensure_deployment_method() {
+  if [[ -z "$(get_env_value CIO_DEPLOYMENT_METHOD)" ]]; then
+    upsert_env_value CIO_DEPLOYMENT_METHOD "docker"
+  fi
+}
+
 prepare_env_and_secrets() {
   refresh_stale_compose_file
   ensure_secure_auth_tokens
   ensure_secure_betterauth_secret
   ensure_storage_env
+  ensure_deployment_method
 }
 
 # ──────────────────────────────────────────────

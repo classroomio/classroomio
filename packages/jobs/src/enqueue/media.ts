@@ -186,3 +186,20 @@ export async function enqueueTranscriptionOnly(input: {
     jobIds: collectFlowJobIds(tree)
   };
 }
+
+/**
+ * Queue a server-side HLS encode. The job id is derived from the asset so a
+ * duplicate enqueue is dropped rather than encoding the same source twice.
+ */
+export async function enqueueHlsEncode(input: {
+  assetId: string;
+  storageKey: string;
+  actorContext: TActorContext;
+}): Promise<string> {
+  const job = await getQueue(QUEUE_NAMES.mediaHls).add(JOB_NAMES.mediaHls.hlsEncode, input, {
+    ...QUEUE_DEFAULTS[QUEUE_NAMES.mediaHls],
+    jobId: `hls-encode-${input.assetId}`
+  });
+
+  return job.id ?? '';
+}

@@ -447,6 +447,7 @@
     },
     "discard": "Discard",
     "save_changes": "Save changes",
+    "cancel": "Cancel",
     "refresh": "Refresh",
     "scroll_to_top": "Scroll to top",
     "delete": "Delete",
@@ -848,7 +849,16 @@
       "actions_menu": "Token auth actions"
     },
     "teams": {
-      "page_subtitle": "Invite teammates and control who helps run this organization."
+      "permission": {
+        "title": "You don’t have permission to view this page",
+        "description": "Only organization administrators can view and manage the team. Contact an administrator if you need access."
+      },
+      "page_subtitle": "Invite teammates and control who helps run this organization.",
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Invite this student to the team?} other {Invite these students to the team?}}",
+        "confirm_description": "{count, plural, =1 {This person is already a student in this organization: {emails}. Send them an invitation to become {role}? Their role will change only after they accept.} other {These people are already students in this organization: {emails}. Send them an invitation to become {role}? Their roles will change only after they accept.}}",
+        "existing": "Already on the team: {members}. Use the role control in Team members to change their role."
+      }
     },
     "auth": {
       "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org.",
@@ -1672,7 +1682,16 @@
       "monthly": "Monthly",
       "annually": "Annually",
       "popular": "Popular",
-      "per_org": "Per Organization"
+      "per_org": "Per Organization",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter rate · {days, plural, one {# day left} other {# days left}}",
+        "eyebrow_closing": "Early Adopter rate · Last {days} days",
+        "eyebrow_today": "Early Adopter rate · Ends today",
+        "title": "Priced low on purpose. Not for long.",
+        "title_closing": "Priced low on purpose. Closing soon.",
+        "body": "We keep ClassroomIO affordable because we build it with our customers, not for them. Lock in today’s rate before {date}. After that, the Early Adopter plan closes and new pricing applies.",
+        "link": "Read why we do it"
+      }
     }
   },
   "widgets": {
@@ -1908,6 +1927,20 @@
       "all": "All",
       "unpublished": "Unpublished",
       "course_type": "Course Type"
+    },
+    "filters": {
+      "filter": "Filter",
+      "popover_title": "Filters",
+      "clear_all": "Clear all",
+      "search_placeholder": "Search by name",
+      "status": "Status",
+      "layout_type": "Layout type",
+      "selection_mode": "Selection mode",
+      "no_results_title": "No widgets match your filters",
+      "no_results_description": "Try a different search term or clear your filters to see everything again.",
+      "no_results_page_title": "Nothing on this page",
+      "no_results_page_description": "These filters match fewer widgets than this page starts at.",
+      "back_to_first_page": "Back to first page"
     }
   },
   "setup": {
@@ -2564,7 +2597,7 @@
           "join": "Join session",
           "live_indicator": "This lesson is a live session",
           "heading": "Live session",
-          "intro": "Set the join link and scheduled time for this live class. Students get reminders 24 hours and 1 hour before.",
+          "intro": "Set the join link and scheduled time for this live class. Students get email reminders before each session. Choose when in Course settings.",
           "link_label": "Join link (Zoom, Meet, etc.)",
           "datetime_label": "Date and time",
           "timezone_label": "Timezone",
@@ -2593,7 +2626,15 @@
           "add_apple": "Apple Calendar (.ics)",
           "starts_in": "Starts in",
           "session_ended": "Session ended",
-          "link_copied": "Link copied"
+          "link_copied": "Link copied",
+          "duration_label": "Expected session length (minutes)",
+          "duration_helper": "Used to show when the session is live and when it has ended.",
+          "recording_url_label": "Recording link",
+          "recording_url_helper": "Shown to students after the session ends.",
+          "recording_url_invalid": "Enter a link that starts with http:// or https://",
+          "recording_url_needs_session": "Add a meeting link and start time before adding a recording",
+          "past_sessions_heading": "Past sessions",
+          "watch_recording": "Watch recording"
         },
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
         "student_share_your_knowledge": "No lessons have been added to this course yet. Please check back later.",
@@ -2909,6 +2950,14 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Previous video transcript",
                 "next_video": "Next video transcript"
+              },
+              "hls_status": {
+                "encoding": "Encoding",
+                "ready": "Ready",
+                "failed": "Failed",
+                "skipped": "Not encoded",
+                "failed_hint": "Encoding failed. The video still plays, at its original quality.",
+                "skipped_hint": "Adaptive encoding is off, so this plays at its original quality."
               }
             },
             "document": {
@@ -3189,7 +3238,9 @@
                 "responses": "Responses",
                 "attempts": "Attempts",
                 "no_responses": "No responses yet",
-                "other": "Other"
+                "other": "Other",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "individual": {
                 "heading": "Individual",
@@ -3410,6 +3461,10 @@
                 "preview": {
                   "accepted_types_label": "Accepted types",
                   "max_size_label": "Max size (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "video_recording": {
@@ -3591,7 +3646,8 @@
           },
           "by_author": "by {name}",
           "empty": "No versions yet"
-        }
+        },
+        "no_section": "No section"
       },
       "attendance": {
         "title": "Attendance",
@@ -3604,6 +3660,10 @@
       },
       "submissions": {
         "title": "Submitted Exercises",
+        "access": {
+          "denied_title": "You can't grade submissions for this course",
+          "denied_description": "Ask an admin to add you as a course tutor, or as a mentor on a cohort that includes this course."
+        },
         "submission_status": {
           "submitted": "Submitted",
           "in_progress": "In Progress",
@@ -3638,6 +3698,22 @@
           "delete_prompt": "Delete",
           "delete_error": "Failed to delete submission",
           "delete_success": "Successfully deleted submission"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "marks": {
@@ -3883,6 +3959,13 @@
           "invite_sent": "Invite Sent",
           "you": "You",
           "remove": "Remove",
+          "change_role": {
+            "label": "Role for {email}",
+            "title": "Change role",
+            "description": "Change {email} from {currentRole} to {nextRole}?",
+            "cancel": "Cancel",
+            "approve": "Approve"
+          },
           "link_invite": {
             "heading": "Link Invite",
             "description": "Anyone with this link can join your organization.",
@@ -4068,7 +4151,8 @@
               "description": {
                 "min_char": "'Description is too short, min of 5 characters"
               }
-            }
+            },
+            "validation_error": "One or more reviews are invalid. Open each review and fix its name, avatar, rating and description before saving."
           },
           "certificate_form": {
             "upload_template": "Certificate template"
@@ -4323,7 +4407,66 @@
         },
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
-        "save": "Save Changes"
+        "save": "Save Changes",
+        "live_session_reminders": {
+          "legend": "Session email reminders",
+          "description": "Choose when enrolled students get an email with the join link before each live session.",
+          "empty": "No reminders. Students won't get emails before live sessions.",
+          "add": "Add reminder",
+          "presets_label": "Quick add:",
+          "remove": "Remove reminder",
+          "unit_label": "Unit",
+          "units": {
+            "days": "Days",
+            "hours": "Hours",
+            "minutes": "Minutes"
+          },
+          "duration": {
+            "days": "{count, plural, one {# day} other {# days}}",
+            "hours": "{count, plural, one {# hour} other {# hours}}",
+            "minutes": "{count, plural, one {# minute} other {# minutes}}"
+          },
+          "preview": "{duration} before each session",
+          "offset_before": "{duration} before",
+          "max_count": "You can add up to {count} reminders.",
+          "validation": {
+            "amount": "Enter a whole number of 1 or more.",
+            "min": "Reminders must be at least 15 minutes before the session.",
+            "max": "Reminders can be at most 7 days before the session.",
+            "duplicate": "You already have a reminder at this time.",
+            "fix_errors": "Fix the session reminder errors before saving."
+          },
+          "log": {
+            "title": "Delivery log",
+            "description": "Reminder emails for sessions in the last 30 days and upcoming sessions.",
+            "view": "View logs",
+            "empty": "No reminders yet. They appear here as sessions get close.",
+            "load_error": "Could not load the reminder delivery log.",
+            "columns": {
+              "session": "Session",
+              "student": "Student",
+              "reminder": "Reminder",
+              "status": "Status",
+              "detail": "Detail"
+            }
+          },
+          "statuses": {
+            "pending": "Pending",
+            "queued": "Queued",
+            "sent": "Sent",
+            "failed": "Failed",
+            "skipped": "Skipped"
+          },
+          "skip_reasons": {
+            "preferences": "The student turned off session reminder emails.",
+            "no_email": "The student has no email address.",
+            "lesson_past": "The session had already started.",
+            "offset_removed": "This reminder was removed from the course settings.",
+            "lesson_rescheduled": "The session time or join link changed.",
+            "window_passed": "The reminder time had already passed when it was scheduled.",
+            "unenrolled": "The student is no longer enrolled."
+          }
+        }
       }
     },
     "not_permitted": {
@@ -4386,6 +4529,8 @@
     "status_expired": "Expired",
     "status_revoked": "Revoked",
     "date_joined": "Date Joined",
+    "certificate_earned": "{count} certificate earned",
+    "certificates_earned": "{count} certificates earned",
     "upgrade": "Upgrade your plan to invite more students",
     "select_all": "Select all",
     "selected_count": "{count} selected",
@@ -4530,6 +4675,9 @@
       "not_started": "Not started",
       "in_progress": "In progress",
       "completed": "Completed",
+      "certificate": "Certificate",
+      "certificate_earned": "Earned",
+      "certificate_not_earned": "Not earned",
       "exclude_recent_joiners": "Exclude recent joiners",
       "exclude_recent_joiners_hint": "Leaves out students who joined too recently to be judged inactive.",
       "clear": "Clear filters",
@@ -4745,6 +4893,7 @@
     "required": "Upgrade Required",
     "enterprise_required": "This feature requires an Enterprise plan.",
     "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API.",
+    "webhooks_required": "Upgrade to Early Adopter or Enterprise to use webhooks.",
     "unlock_field": "Upgrade to unlock this setting"
   },
   "automation": {
@@ -4758,7 +4907,132 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhooks",
+      "new_badge": "New"
+    },
+    "webhooks": {
+      "page_subtitle": "Send real-time ClassroomIO events to Slack, your CRM, or your own backend.",
+      "description": "ClassroomIO sends a signed HTTP POST to your URL whenever a selected event happens. Failed deliveries are retried automatically.",
+      "permissions_description": "Only organization admins can create, edit, or delete webhooks.",
+      "create": "New webhook",
+      "empty_title": "No webhooks yet",
+      "empty_description": "Create a webhook to push invites, enrollments, completions, and submissions to your other tools.",
+      "reveal_title": "Your new signing secret",
+      "reveal_description": "Copy this signing secret now. It won't be shown again, and you'll need it to verify requests.",
+      "reveal_docs": "How to verify requests",
+      "delete_confirm": "Delete the webhook \"{name}\"? Its delivery history will be removed too.",
+      "regenerate_confirm": "Regenerate the signing secret? The current secret stops working immediately.",
+      "events_all": "All events",
+      "events_count_one": "{count} event",
+      "events_count_other": "{count} events",
+      "no_deliveries": "No deliveries yet",
+      "retrying_hint": "Retrying failed deliveries",
+      "table": {
+        "name": "Destination",
+        "events": "Events",
+        "health": "Status",
+        "active": "Active",
+        "error_rate": "Error rate (24h)",
+        "error_rate_detail": "{failed} of {total} failed",
+        "no_recent_deliveries": "No deliveries in 24h"
+      },
+      "health": {
+        "healthy": "Healthy",
+        "retrying": "Retrying",
+        "degraded": "Failing",
+        "disabled": "Auto-disabled"
+      },
+      "actions": {
+        "label": "Webhook actions",
+        "edit": "Edit",
+        "test": "Send test event",
+        "deliveries": "View deliveries",
+        "regenerate_secret": "Regenerate secret",
+        "delete": "Delete"
+      },
+      "form": {
+        "create_title": "New webhook",
+        "edit_title": "Edit webhook",
+        "description": "Choose where ClassroomIO sends events and which events to send.",
+        "sections": {
+          "endpoint": "Endpoint",
+          "events": "Events"
+        },
+        "name": "Name",
+        "name_placeholder": "CRM sync",
+        "payload_url": "Payload URL",
+        "payload_url_help": "Must be a public HTTPS URL that returns a 2xx response within 10 seconds.",
+        "secret": "Signing secret",
+        "secret_placeholder": "Leave blank to generate one",
+        "secret_help": "Used to sign every request so you can verify it came from ClassroomIO.",
+        "secret_edit_placeholder": "Leave blank to keep the current secret",
+        "secret_edit_help": "Enter a new value to replace the secret. The current one is never shown.",
+        "verify_ssl": "Verify SSL certificate",
+        "verify_ssl_help": "Keep this on unless you are testing against a self-signed certificate.",
+        "active": "Active",
+        "events_help": "Pick the events that should trigger this webhook.",
+        "mode_all": "Send me everything",
+        "mode_selected": "Let me select individual events",
+        "cancel": "Cancel",
+        "save": "Save webhook",
+        "select_all": "Select all",
+        "events_selected": "{selected} of {total} selected"
+      },
+      "event_groups": {
+        "organization": "Organization",
+        "course": "Courses",
+        "learning": "Learning progress"
+      },
+      "events": {
+        "organization_invite_created": "A team invite is sent",
+        "organization_invite_accepted": "A team invite is accepted",
+        "organization_invite_revoked": "A team invite is revoked or replaced",
+        "course_invite_created": "A student invite is created",
+        "course_invite_accepted": "A student accepts an invite and enrolls",
+        "course_invite_revoked": "A student invite is revoked",
+        "course_member_added": "A member is added to a course",
+        "course_member_removed": "A member is removed from a course",
+        "course_completed": "A student completes a course",
+        "course_certificate_issued": "A certificate is earned",
+        "course_submission_created": "An exercise submission is created",
+        "course_submission_status_changed": "A submission status changes, such as when it is graded",
+        "lesson_completion_updated": "A lesson is marked complete or reset",
+        "exercise_completion_updated": "An exercise is completed or reset"
+      },
+      "deliveries": {
+        "title": "Deliveries",
+        "description": "Events from the last 30 days",
+        "back": "Back to deliveries",
+        "filter_all": "All statuses",
+        "empty": "No deliveries match this filter.",
+        "load_error": "Could not load deliveries. Please try again.",
+        "redeliver": "Redeliver",
+        "test_badge": "Test",
+        "status": {
+          "PENDING": "Retrying",
+          "SUCCESS": "Success",
+          "FAILED": "Failed",
+          "GAVE_UP": "Failed"
+        },
+        "columns": {
+          "event": "Event",
+          "event_id": "Event ID",
+          "status": "Status",
+          "attempt": "Attempt",
+          "http": "HTTP status",
+          "duration": "Response time",
+          "time": "Sent",
+          "next_attempt": "Next retry"
+        },
+        "detail": {
+          "error": "Error",
+          "request_headers": "Request headers",
+          "payload": "Payload",
+          "response_body": "Response",
+          "no_response": "No response was received."
+        }
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -4786,7 +5060,14 @@
       "table_last_used": "Last used",
       "scopes_label": "Scopes:",
       "revoke_confirm": "Revoke this automation key?",
-      "rotate_confirm": "Rotate this automation key?"
+      "rotate_confirm": "Rotate this automation key?",
+      "reveal": {
+        "description": "Copy this key now. It won't be shown again.",
+        "copy": "Copy",
+        "copied": "Copied",
+        "how_to_use": "How to use this key",
+        "close": "Close"
+      }
     },
     "mcp": {
       "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
@@ -4803,7 +5084,7 @@
         "title": "MCP keys",
         "description": "These keys authenticate the current organization when an MCP client calls ClassroomIO through `@classroomio/mcp`.",
         "generate": "Generate MCP key",
-        "secret_once": "This secret is shown once. Copy it into your MCP client now.",
+        "reveal_title": "Your new MCP key",
         "modal": {
           "title": "Create MCP key",
           "description": "Choose a name for this MCP key before it is generated.",
@@ -4829,7 +5110,7 @@
         "title": "API keys",
         "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
         "generate": "Generate API key",
-        "secret_once": "This secret is shown once. Copy it and store it securely.",
+        "reveal_title": "Your new API key",
         "empty_title": "No API keys yet",
         "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
         "modal": {
@@ -4907,6 +5188,17 @@
     "success_delete": "Deleted successfully",
     "error_update": "Failed to update",
     "social_auth_not_enabled": "This auth provider isn't enabled.",
+    "webhooks": {
+      "created": "Webhook created. Copy the signing secret now because it is only shown once.",
+      "updated": "Webhook updated.",
+      "enabled": "Webhook enabled.",
+      "disabled": "Webhook disabled.",
+      "deleted": "Webhook deleted.",
+      "secret_regenerated": "Signing secret regenerated. Copy it now because it is only shown once.",
+      "test_success": "Test event delivered successfully.",
+      "test_failed": "The test event failed. Open the delivery log to see why.",
+      "redelivered": "Event queued for redelivery."
+    },
     "automation": {
       "created": "Automation key created. Save it now because the full secret is only shown once.",
       "rotated": "Automation key rotated. Save the new secret now because it will not be shown again.",
@@ -5097,7 +5389,10 @@
       "user_exists": "User Already Exists",
       "invite_fail": "Failed to send invite, please try again",
       "remove_fail": "Failed to remove user, please try again",
-      "remove_success": "Member removed successfully"
+      "remove_success": "Member removed successfully",
+      "role_updated": "Role updated",
+      "role_update_failed": "Failed to update role",
+      "last_admin": "This organization needs at least one admin"
     },
     "link_invite": {
       "generated": "Link invite generated",
@@ -5290,6 +5585,14 @@
     "progress": "Progress"
   },
   "validations": {
+    "webhook": {
+      "payload_url": {
+        "protocol": "Payload URL must start with http:// or https://"
+      },
+      "event_types": {
+        "required": "Select at least one event"
+      }
+    },
     "user_profile": {
       "email": "Invalid email address",
       "username": "Username cannot be empty",
@@ -6109,5 +6412,30 @@
       "description": "A complete course with lessons, exercises and settings. Copy it, then make it yours.",
       "browse": "Browse all templates"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Payment received. One step left.",
+      "body": "Create your account, or log in, and we connect your Early Adopter plan to your academy automatically.",
+      "sign_up": "Create my account",
+      "log_in": "Log in",
+      "continue": "Continue to my academy"
+    },
+    "success": {
+      "title": "Your Early Adopter plan is active",
+      "body": "Your rate is locked in and every Early Adopter feature is now unlocked for your academy.",
+      "continue": "Start building"
+    },
+    "errors": {
+      "invalid": "This link is not valid. Check the email we sent you, or contact support.",
+      "expired": "This link has expired. Contact support and we will help you connect your plan.",
+      "unavailable": "This plan link has already been used or is no longer active. Contact support if this is a mistake.",
+      "conflict": "This academy already has a paid plan, so we could not connect this one. Contact support and we will help."
+    }
+  },
+  "whats_new": {
+    "new_badge": "New",
+    "read_full": "Read the full changelog",
+    "close": "Close"
   }
 }

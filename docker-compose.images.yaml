@@ -155,6 +155,7 @@ services:
       # Auth secrets — required. ./classroomio.sh generates them into .env; if you run
       # compose directly, set strong values yourself — the stack refuses to start otherwise.
       PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:?set a strong PRIVATE_SERVER_KEY in .env}
+      WEBHOOK_ALLOW_PRIVATE_NETWORKS: ${WEBHOOK_ALLOW_PRIVATE_NETWORKS:-false}
       DASHBOARD_ORIGIN: ${DASHBOARD_ORIGIN:-}
       LICENSE_KEY: ${LICENSE_KEY:-}
       UNSPLASH_API_KEY: ${UNSPLASH_API_KEY:-}
@@ -215,6 +216,9 @@ services:
     environment:
       NODE_ENV: production
       REDIS_URL: redis://redis:6379
+      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:?set a strong PRIVATE_SERVER_KEY in .env}
+      PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
+      WEBHOOK_ALLOW_PRIVATE_NETWORKS: ${WEBHOOK_ALLOW_PRIVATE_NETWORKS:-false}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
       # Object storage (workers stream object bytes). Mirrors the api service.
       OBJECT_STORAGE_ENDPOINT: ${OBJECT_STORAGE_ENDPOINT:-}
@@ -236,6 +240,10 @@ services:
       SMTP_SENDER: ${SMTP_SENDER:-}
       # Transcription + OpenAI-backed agent runs.
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
+      CIO_DEPLOYMENT_METHOD: ${CIO_DEPLOYMENT_METHOD:-}
+      CIO_TELEMETRY_DISABLED: ${CIO_TELEMETRY_DISABLED:-}
+      LICENSE_KEY: ${LICENSE_KEY:-}
     restart: unless-stopped
 
 volumes:

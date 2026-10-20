@@ -1,0 +1,79 @@
+import * as z from 'zod';
+import { describe, expect, it } from 'vitest';
+
+import {
+  ZPublicApiAssignAudienceCourses,
+  ZPublicApiAudienceMemberParam,
+  ZPublicApiAudienceQuery,
+  ZPublicApiCreateAudience,
+  ZPublicApiTeamMemberParam,
+  ZPublicApiTeamMemberResponse,
+  ZPublicApiTeamQuery,
+  ZPublicApiUpdateAudience,
+  ZPublicApiUpdateTeamMember
+} from '../src/validation/public-api';
+
+// The public API is versioned; a change to any of these shapes is a contract change and must be deliberate.
+const requestSchemas = {
+  ZPublicApiTeamQuery,
+  ZPublicApiTeamMemberParam,
+  ZPublicApiUpdateTeamMember,
+  ZPublicApiAudienceQuery,
+  ZPublicApiAudienceMemberParam,
+  ZPublicApiCreateAudience,
+  ZPublicApiAssignAudienceCourses,
+  ZPublicApiUpdateAudience
+};
+
+describe('public API team and audience update contract', () => {
+  it.each(Object.entries(requestSchemas))('%s keeps its published shape', (name, schema) => {
+    expect(z.toJSONSchema(schema, { io: 'input', unrepresentable: 'any' })).toMatchSnapshot(name);
+  });
+
+  it('ZPublicApiTeamMemberResponse keeps its published shape', () => {
+    expect(z.toJSONSchema(ZPublicApiTeamMemberResponse, { io: 'output', unrepresentable: 'any' })).toMatchSnapshot();
+  });
+
+  it('only lets a team member be made an admin or a tutor', () => {
+    expect(ZPublicApiUpdateTeamMember.safeParse({ roleId: 1 }).success).toBe(true);
+    expect(ZPublicApiUpdateTeamMember.safeParse({ roleId: 2 }).success).toBe(true);
+    expect(ZPublicApiUpdateTeamMember.safeParse({ roleId: 3 }).success).toBe(false);
+    expect(ZPublicApiUpdateTeamMember.safeParse({ roleId: 0 }).success).toBe(false);
+  });
+
+  it('rejects an update with nothing to change', () => {
+    expect(ZPublicApiUpdateTeamMember.safeParse({}).success).toBe(false);
+    expect(ZPublicApiUpdateAudience.safeParse({}).success).toBe(false);
+    expect(ZPublicApiUpdateAudience.safeParse({ sendEmail: false }).success).toBe(false);
+  });
+
+  it('keeps the name rules', () => {
+    expect(ZPublicApiUpdateAudience.safeParse({ name: 'Al' }).success).toBe(false);
+    expect(ZPublicApiUpdateAudience.safeParse({ name: '   Al   ' }).success).toBe(false);
+    expect(ZPublicApiUpdateAudience.safeParse({ name: 'x'.repeat(121) }).success).toBe(false);
+    expect(ZPublicApiUpdateTeamMember.parse({ name: '  Ada Lovelace  ' })).toEqual({ name: 'Ada Lovelace' });
+  });
+
+  it('still accepts the email-only body the endpoint took before', () => {
+    expect(ZPublicApiUpdateAudience.parse({ email: 'a@example.com' })).toEqual({
+      email: 'a@example.com',
+      sendEmail: true
+    });
+  });
+
+  it('rejects email and name together, since they apply to different kinds of member', () => {
+    expect(ZPublicApiUpdateAudience.safeParse({ email: 'a@example.com', name: 'Ada Lovelace' }).success).toBe(false);
+  });
+
+  it('leaves no way to change the fields that belong to the person', () => {
+    const parsed = ZPublicApiUpdateTeamMember.parse({
+      name: 'Ada Lovelace',
+      email: 'new@example.com',
+      password: 'secret',
+      username: 'ada',
+      avatarUrl: 'https://example.com/a.png'
+    });
+
+    expect(parsed).toEqual({ name: 'Ada Lovelace' });
+  });
+});

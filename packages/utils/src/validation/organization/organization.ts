@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { EMAIL_LOCALES, STUDENT_EMAIL_IDS } from '../../email';
 
-import { blockedSubdomain } from '@cio/utils/constants';
+import { ROLE, blockedSubdomain } from '@cio/utils/constants';
 import { ZCourseType } from '../course/course-type';
 import { containsDisallowedHrefs } from '../shared';
 
@@ -107,6 +107,23 @@ export const ZCancelOrgPlan = z.object({
 
 export type TCancelOrgPlan = z.infer<typeof ZCancelOrgPlan>;
 
+export const ZEarlyAdopterSubscriptionEvent = z.object({
+  event: z.enum(['activated', 'updated', 'revoked']),
+  subscriptionId: z.string().min(1),
+  customerId: z.string().min(1).nullish(),
+  customerEmail: z.email(),
+  checkoutId: z.string().min(1).nullish(),
+  payload: z.record(z.string(), z.unknown())
+});
+
+export type TEarlyAdopterSubscriptionEvent = z.infer<typeof ZEarlyAdopterSubscriptionEvent>;
+
+export const ZClaimEarlyAdopterPlan = z.object({
+  token: z.string().trim().min(20).max(200)
+});
+
+export type TClaimEarlyAdopterPlan = z.infer<typeof ZClaimEarlyAdopterPlan>;
+
 export const ZCreateOrganization = z.object({
   name: z
     .string()
@@ -206,7 +223,8 @@ export const ZTestStudentEmailTemplate = z.object({
 
 export const ZInviteTeamMembers = z.object({
   emails: z.array(z.string().email()).min(1).max(50),
-  roleId: z.number().int().positive()
+  roleId: z.number().int().positive(),
+  confirmedStudentEmails: z.array(z.string().email()).max(50).default([])
 });
 
 export type TInviteTeamMembers = z.infer<typeof ZInviteTeamMembers>;
@@ -217,13 +235,24 @@ export const ZRemoveTeamMember = z.object({
 
 export type TRemoveTeamMember = z.infer<typeof ZRemoveTeamMember>;
 
+export const ZUpdateTeamMemberRole = z.object({
+  roleId: z.union([z.literal(ROLE.ADMIN), z.literal(ROLE.TUTOR)])
+});
+
+export type TUpdateTeamMemberRole = z.infer<typeof ZUpdateTeamMemberRole>;
+
 export const ZCreateLinkInvite = z.object({
   roleId: z.number().int().positive()
 });
 
 export type TCreateLinkInvite = z.infer<typeof ZCreateLinkInvite>;
 
+export const ZGetLinkInvite = z.object({
+  roleId: z.coerce.number().int().positive()
+});
+
 export const ZToggleLinkInvite = z.object({
+  roleId: z.number().int().positive(),
   isRevoked: z.boolean()
 });
 

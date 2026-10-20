@@ -14,6 +14,7 @@ import {
   getCourse,
   updateCourse as updateCourseService
 } from '@cio/core/services/course/course';
+import { buildCourseOutline } from '@cio/core/services/course/utils';
 import {
   createCourseImportDraftService,
   getCourseImportStructureService,
@@ -32,7 +33,10 @@ export async function listCoursesService(orgId: string, query: TPublicApiCourses
 export async function getCourseService(orgId: string, params: TPublicApiCourseParam) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
 
-  return getCourse(params.courseId);
+  const course = await getCourse(params.courseId);
+  const outline = buildCourseOutline(course.content);
+
+  return { ...course, content: { ...course.content, outline } };
 }
 
 export async function listCourseStudentsService(

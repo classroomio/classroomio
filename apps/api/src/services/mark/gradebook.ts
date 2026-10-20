@@ -1,9 +1,11 @@
+import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { getMarksByCourseId, type Mark } from '@cio/db/queries/mark';
 import { getCourseMember, getCourseMembers, type CourseMemberWithProfile } from '@cio/db/queries/course/people';
 import { getCourseWithRelations } from '@cio/db/queries/course';
-import { buildCourseContent, type CourseContentItem } from '@api/services/course/utils';
+import { buildCourseContent, type CourseContentItem } from '@cio/core/services/course/utils';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { resolveSubmissionGradingState } from '@api/services/submission';
 import { resolveMarksViewerScope } from './mark';
 
 export type GradebookExercise = {
@@ -14,10 +16,13 @@ export type GradebookExercise = {
 
 export type GradebookStudentMarks = Record<string, Record<string, string>>;
 
+export type GradebookGradedPoints = Record<string, Record<string, number>>;
+
 export type GradebookResponse = {
   students: CourseMemberWithProfile[];
   exercises: GradebookExercise[];
   studentMarksByExerciseId: GradebookStudentMarks;
+  gradedPointsByExerciseId: GradebookGradedPoints;
 };
 
 function buildStudentMarksByExerciseId(marks: Mark[]): GradebookStudentMarks {
@@ -27,6 +32,20 @@ function buildStudentMarksByExerciseId(marks: Mark[]): GradebookStudentMarks {
     if (!groupmemberId || !exerciseId) continue;
     if (!result[groupmemberId]) result[groupmemberId] = {};
     result[groupmemberId][exerciseId] = totalPointsGotten?.toString() ?? '0';
+  }
+  return result;
+}
+
+/** Returns each student's best graded points per exercise; an exercise with no graded submission has no entry. */
+function buildGradedPointsByExerciseId(marks: Mark[]): GradebookGradedPoints {
+  const result: GradebookGradedPoints = {};
+  for (const mark of marks) {
+    const { groupmemberId, exerciseId, totalPointsGotten, statusId } = mark;
+    if (!groupmemberId || !exerciseId || totalPointsGotten === null) continue;
+    if (resolveSubmissionGradingState({ statusId }) !== 'completed') continue;
+
+    const studentPoints = (result[groupmemberId] ??= {});
+    studentPoints[exerciseId] = Math.max(studentPoints[exerciseId] ?? totalPointsGotten, totalPointsGotten);
   }
   return result;
 }
@@ -68,10 +87,10 @@ function buildExercises(marks: Mark[], contentItems: CourseContentItem[]): Grade
   });
 }
 
-function scopeStudentMarksToMember(
-  studentMarksByExerciseId: GradebookStudentMarks,
+function scopeStudentMarksToMember<T>(
+  studentMarksByExerciseId: Record<string, T>,
   groupMemberId: string | null
-): GradebookStudentMarks {
+): Record<string, T> {
   if (!groupMemberId) {
     return {};
   }
@@ -113,7 +132,7 @@ function flattenCourseContentItems(course: Awaited<ReturnType<typeof getCourseWi
 
   const isGrouping = course.metadata?.isContentGroupingEnabled ?? true;
   const content = buildCourseContent(course.contentItems, isGrouping);
-  return content.grouped ? (content.sections ?? []).flatMap((section) => section.items ?? []) : (content.items ?? []);
+  return flattenNavigableItems(content);
 }
 
 /**
@@ -143,10 +162,15 @@ export async function getGradebook(courseId: string, profileId: string): Promise
       ? allStudentMarksByExerciseId
       : scopeStudentMarksToMember(allStudentMarksByExerciseId, groupMemberId);
 
+    const allGradedPointsByExerciseId = buildGradedPointsByExerciseId(marks);
+
     return {
       students,
       exercises,
-      studentMarksByExerciseId
+      studentMarksByExerciseId,
+      gradedPointsByExerciseId: canViewAllMarks
+        ? allGradedPointsByExerciseId
+        : scopeStudentMarksToMember(allGradedPointsByExerciseId, groupMemberId)
     };
   } catch (error) {
     console.error('getGradebook error:', error);

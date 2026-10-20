@@ -5,6 +5,7 @@ exports[`public API course member request contract > ZPublicApiAddCourseMember k
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "email": {
+      "description": "Must belong to someone already in your organization; it is linked to that person's profile. To onboard someone new, use the invites endpoints.",
       "format": "email",
       "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
       "type": "string",
@@ -14,6 +15,7 @@ exports[`public API course member request contract > ZPublicApiAddCourseMember k
       "type": "string",
     },
     "profileId": {
+      "description": "Must belong to someone already in your organization.",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
@@ -49,12 +51,14 @@ exports[`public API course member request contract > ZPublicApiCourseInvitesQuer
   "properties": {
     "limit": {
       "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
     },
     "page": {
       "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
@@ -87,12 +91,14 @@ exports[`public API course member request contract > ZPublicApiCourseMembersQuer
   "properties": {
     "limit": {
       "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
     },
     "page": {
       "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
@@ -173,6 +179,7 @@ exports[`public API course member request contract > ZPublicApiCreateCourseInvit
     },
     "sendEmail": {
       "default": false,
+      "description": "Email the recipients; false mints invite tokens without emailing anyone. Default: false.",
       "type": "boolean",
     },
   },

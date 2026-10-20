@@ -446,6 +446,7 @@
     },
     "discard": "Discard",
     "save_changes": "Değişiklikleri kaydet",
+    "cancel": "İptal",
     "refresh": "Yenile",
     "scroll_to_top": "Şuraya kaydır: top",
     "delete": "Delete",
@@ -763,7 +764,16 @@
       "actions_menu": "Token kimlik doğrulama eylemleri"
     },
     "teams": {
-      "page_subtitle": "Ekip arkadaşlarınızı davet edin ve bu organizasyonun yönetilmesine kimin yardımcı olacağını kontrol edin."
+      "page_subtitle": "Ekip arkadaşlarınızı davet edin ve bu organizasyonun yönetilmesine kimin yardımcı olacağını kontrol edin.",
+      "permission": {
+        "title": "Bu sayfayı görüntüleme izniniz yok",
+        "description": "Yalnızca kuruluş yöneticileri ekibi görüntüleyebilir ve yönetebilir. Erişime ihtiyacınız varsa bir yöneticiyle iletişime geçin."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Bu öğrenci ekibe davet edilsin mi?} other {Bu öğrenciler ekibe davet edilsin mi?}}",
+        "confirm_description": "{count, plural, =1 {Bu kişi zaten bu kuruluşta öğrenci: {emails}. Onu {role} rolüyle davet etmek istiyor musunuz? Rolü yalnızca daveti kabul ettiğinde değişir.} other {Bu kişiler zaten bu kuruluşta öğrenci: {emails}. Onları {role} rolüyle davet etmek istiyor musunuz? Rolleri yalnızca daveti kabul ettiklerinde değişir.}}",
+        "existing": "Bu kişiler zaten ekipte: {members}. Rollerini değiştirmek için Ekip üyeleri bölümündeki rol seçiciyi kullanın."
+      }
     },
     "auth": {
       "page_subtitle": "Bu kuruluş için kaydolma, oturum açma, SSO ve jeton tabanlı erişimi kontrol edin.",
@@ -1682,7 +1692,16 @@
       "monthly": "Aylık",
       "annually": "Yıllık",
       "popular": "Popüler",
-      "per_org": "Kuruluş Başına"
+      "per_org": "Kuruluş Başına",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter fiyatı · {days, plural, one {# gün kaldı} other {# gün kaldı}}",
+        "eyebrow_closing": "Early Adopter fiyatı · Son {days} gün",
+        "eyebrow_today": "Early Adopter fiyatı · Bugün bitiyor",
+        "title": "Bilerek düşük fiyat. Uzun sürmeyecek.",
+        "title_closing": "Bilerek düşük fiyat. Yakında kapanıyor.",
+        "body": "ClassroomIO’yu uygun fiyatlı tutuyoruz çünkü onu yalnızca müşterilerimiz için değil, müşterilerimizle birlikte geliştiriyoruz. Bugünkü fiyatı {date} tarihinden önce sabitleyin. Ardından Early Adopter planı kapanır ve yeni fiyatlar geçerli olur.",
+        "link": "Bunu neden yaptığımızı okuyun"
+      }
     }
   },
   "widgets": {
@@ -2574,7 +2593,7 @@
           "join": "Oturuma katılın",
           "live_indicator": "Bu ders canlı bir oturumdur",
           "heading": "Lcanlı oturum",
-          "intro": "Bu canlı ders için katılma bağlantısını ve planlanan zamanı ayarlayın. Öğrenciler 24 saat ve 1 saat önce hatırlatıcı alır.",
+          "intro": "Bu canlı ders için katılma bağlantısını ve planlanan zamanı ayarlayın. Öğrenciler her oturumdan önce e-posta hatırlatıcısı alır. Ne zaman gönderileceğini kurs ayarlarından seçin.",
           "link_label": "Katılım bağlantısı (Yakınlaştırma, Toplantı vb.)",
           "datetime_label": "Tarih ve saat",
           "timezone_label": "Timezone",
@@ -2603,7 +2622,15 @@
           "add_apple": "Apple Takvim (.ics)",
           "starts_in": "Başlangıç tarihi",
           "session_ended": "Oturum sona erdi",
-          "link_copied": "Bağlantı kopyalandı"
+          "link_copied": "Bağlantı kopyalandı",
+          "duration_label": "Beklenen oturum süresi (dakika)",
+          "duration_helper": "Oturumun ne zaman canlı olduğunu ve ne zaman sona erdiğini göstermek için kullanılır.",
+          "recording_url_label": "Kayıt bağlantısı",
+          "recording_url_helper": "Oturum sona erdikten sonra öğrencilere gösterilir.",
+          "recording_url_invalid": "http:// veya https:// ile başlayan bir bağlantı girin",
+          "recording_url_needs_session": "Kayıt eklemeden önce bir toplantı bağlantısı ve başlangıç saati ekleyin",
+          "past_sessions_heading": "Geçmiş oturumlar",
+          "watch_recording": "Kaydı izle"
         },
         "share_your_knowledge": "İlgi çekici dersler oluşturarak bilginizi dünyayla paylaşın. Ekle düğmesine tıklayarak başlayın.",
         "student_share_your_knowledge": "Bu kursa henüz ders eklenmedi. Lütfen daha sonra tekrar kontrol edin.",
@@ -2917,6 +2944,14 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Önceki video transkript",
                 "next_video": "Sonraki video transkript"
+              },
+              "hls_status": {
+                "encoding": "Kodlama",
+                "ready": "Hazır",
+                "failed": "Başarısız",
+                "skipped": "Kodlanmadı",
+                "failed_hint": "Kodlama başarısız oldu. Video yine de orijinal kalitesinde oynatılıyor.",
+                "skipped_hint": "Uyarlanabilir kodlama kapalı, bu nedenle orijinal kalitesinde oynatılıyor."
               }
             },
             "document": {
@@ -3197,7 +3232,9 @@
                 "responses": "Yanıtlar",
                 "attempts": "Girişimler",
                 "no_responses": "Henüz yanıt yok",
-                "other": "Diğer"
+                "other": "Diğer",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "individual": {
                 "heading": "Bireysel",
@@ -3418,6 +3455,10 @@
                 "preview": {
                   "accepted_types_label": "Kabul edilen türler",
                   "max_size_label": "Maksimum boyut (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "video_recording": {
@@ -3601,7 +3642,8 @@
           "empty": "Henüz sürüm yok"
         },
         "expand_content": "İçeriği genişlet",
-        "collapse_content": "İçeriği daralt"
+        "collapse_content": "İçeriği daralt",
+        "no_section": "Bölüm yok"
       },
       "attendance": {
         "title": "Attendance",
@@ -3614,6 +3656,10 @@
       },
       "submissions": {
         "title": "Gönderilen Egzersizler",
+        "access": {
+          "denied_title": "Bu kursun gönderimlerini notlayamazsın",
+          "denied_description": "Bir yöneticiden seni kurs eğitmeni veya bu kursu içeren bir kohortun mentoru olarak eklemesini iste."
+        },
         "submission_status": {
           "submitted": "Gönderildi",
           "in_progress": "Devam Ediyor",
@@ -3648,6 +3694,22 @@
           "delete_prompt": "Delete",
           "delete_error": "Gönderim silinemedi",
           "delete_success": "Gönderim başarıyla silindi"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "marks": {
@@ -3903,6 +3965,13 @@
             "toggle_label": "Bağlantı daveti etkin",
             "disabled_notice": "Bu bağlantı devre dışı bırakıldı. Yeni üyelerin bağlantı yoluyla katılmasına izin vermek için etkinleştirin.",
             "select_role": "Bir rol seçin"
+          },
+          "change_role": {
+            "label": "{email} için rol",
+            "title": "Rolü değiştir",
+            "description": "{email} rolü {currentRole} iken {nextRole} olsun mu?",
+            "cancel": "İptal",
+            "approve": "Onayla"
           }
         },
         "filter": {
@@ -4078,7 +4147,8 @@
               "description": {
                 "min_char": "'Açıklama çok kısa, en az 5 karakter"
               }
-            }
+            },
+            "validation_error": "Bir veya daha fazla yorum geçersiz. Kaydetmeden önce her yorumu açın ve adını, avatarını, puanını ve açıklamasını düzeltin."
           },
           "certificate_form": {
             "upload_template": "Sertifika şablon"
@@ -4333,7 +4403,66 @@
         },
         "delete": "Kursu Sil",
         "delete_text": "Bu kursu silin, bu işlem geri alınamaz",
-        "save": "Değişiklikleri Kaydet"
+        "save": "Değişiklikleri Kaydet",
+        "live_session_reminders": {
+          "legend": "Oturum e-posta hatırlatıcıları",
+          "description": "Kayıtlı öğrencilerin her canlı oturumdan önce katılma bağlantısını içeren e-postayı ne zaman alacağını seçin.",
+          "empty": "Hatırlatıcı yok. Öğrenciler canlı oturumlardan önce e-posta almayacak.",
+          "add": "Hatırlatıcı ekle",
+          "presets_label": "Hızlı ekle:",
+          "remove": "Hatırlatıcıyı kaldır",
+          "unit_label": "Birim",
+          "units": {
+            "days": "Gün",
+            "hours": "Saat",
+            "minutes": "Dakika"
+          },
+          "duration": {
+            "days": "{count, plural, one {# gün} other {# gün}}",
+            "hours": "{count, plural, one {# saat} other {# saat}}",
+            "minutes": "{count, plural, one {# dakika} other {# dakika}}"
+          },
+          "preview": "Her oturumdan {duration} önce",
+          "offset_before": "{duration} önce",
+          "max_count": "En fazla {count} hatırlatıcı ekleyebilirsiniz.",
+          "validation": {
+            "amount": "1 veya daha büyük bir tam sayı girin.",
+            "min": "Hatırlatıcılar oturumdan en az 15 dakika önce olmalıdır.",
+            "max": "Hatırlatıcılar oturumdan en fazla 7 gün önce olabilir.",
+            "duplicate": "Bu zamanda zaten bir hatırlatıcınız var.",
+            "fix_errors": "Kaydetmeden önce oturum hatırlatıcısı hatalarını düzeltin."
+          },
+          "log": {
+            "title": "Gönderim günlüğü",
+            "description": "Son 30 gündeki ve yaklaşan oturumlar için hatırlatma e-postaları.",
+            "view": "Kayıtları görüntüle",
+            "empty": "Henüz hatırlatıcı yok. Oturumlar yaklaştıkça burada görünürler.",
+            "load_error": "Hatırlatıcı gönderim günlüğü yüklenemedi.",
+            "columns": {
+              "session": "Oturum",
+              "student": "Öğrenci",
+              "reminder": "Hatırlatıcı",
+              "status": "Durum",
+              "detail": "Ayrıntı"
+            }
+          },
+          "statuses": {
+            "pending": "Beklemede",
+            "queued": "Sırada",
+            "sent": "Gönderildi",
+            "failed": "Başarısız",
+            "skipped": "Atlandı"
+          },
+          "skip_reasons": {
+            "preferences": "Öğrenci oturum hatırlatma e-postalarını kapattı.",
+            "no_email": "Öğrencinin e-posta adresi yok.",
+            "lesson_past": "Oturum zaten başlamıştı.",
+            "offset_removed": "Bu hatırlatıcı kurs ayarlarından kaldırıldı.",
+            "lesson_rescheduled": "Oturum saati veya katılma bağlantısı değişti.",
+            "window_passed": "Planlandığında hatırlatma zamanı zaten geçmişti.",
+            "unenrolled": "Öğrenci artık kayıtlı değil."
+          }
+        }
       }
     },
     "not_permitted": {
@@ -4545,7 +4674,10 @@
       "clear": "Filtreleri temizle",
       "empty_title": "Bu filtrelerle eşleşen öğrenci yok",
       "empty_description": "Tarih aralığını genişletmeyi veya bir filtreyi temizlemeyi deneyin.",
-      "invite_status": "Davet durumu"
+      "invite_status": "Davet durumu",
+      "certificate": "Sertifika",
+      "certificate_earned": "Kazanıldı",
+      "certificate_not_earned": "Kazanılmadı"
     },
     "bulk": {
       "actions": "Eylemler",
@@ -4598,7 +4730,9 @@
       "queued_running": "{count} öğrencilerine uygulanıyor. Çalışmaya devam edebilirsiniz; bittiğinde size haber vereceğiz.",
       "queued_failed": "Bu toplu işlem tamamlanmadı. Başka hiçbir şey uygulanmadı.",
       "queued_lost": "Bu koşunun izini kaybettik. Mevcut durumu görmek için yeniden yükleyin."
-    }
+    },
+    "certificate_earned": "{count} sertifika kazanıldı",
+    "certificates_earned": "{count} sertifika kazanıldı"
   },
   "analytics": {
     "title": "Analytics",
@@ -4755,7 +4889,8 @@
     "required": "Yükseltme Gerekli",
     "enterprise_required": "Bu özellik bir Kurumsal plan gerektirir.",
     "public_api_required": "Erişim için Erken Benimseyen veya Kurumsal sürümüne yükseltin genel API.",
-    "unlock_field": "Bu ayarın kilidini açmak için yükseltme"
+    "unlock_field": "Bu ayarın kilidini açmak için yükseltme",
+    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin."
   },
   "automation": {
     "title": "Automation",
@@ -4768,7 +4903,9 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhook'lar",
+      "new_badge": "Yeni"
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -4796,7 +4933,14 @@
       "table_last_used": "LSon kullanılan",
       "scopes_label": "Kapsamlar:",
       "revoke_confirm": "Bu otomasyon anahtarı iptal edilsin mi?",
-      "rotate_confirm": "Bu otomasyon anahtarı döndürülsün mü?"
+      "rotate_confirm": "Bu otomasyon anahtarı döndürülsün mü?",
+      "reveal": {
+        "description": "Bu anahtarı şimdi kopyalayın. Bir daha gösterilmeyecek.",
+        "copy": "Kopyala",
+        "copied": "Kopyalandı",
+        "how_to_use": "Bu anahtar nasıl kullanılır",
+        "close": "Kapat"
+      }
     },
     "mcp": {
       "page_subtitle": "Döndürebileceğiniz kuruluş kapsamlı anahtarlarla AI araçlarını ClassroomIO'ya bağlayın istediğiniz zaman.",
@@ -4813,7 +4957,6 @@
         "title": "MCP anahtarları",
         "description": "Bu anahtarlar, bir MCP istemcisi `@classroomio/mcp` aracılığıyla ClassroomIO'yu aradığında mevcut organizasyonun kimliğini doğrular.",
         "generate": "MCP anahtarını oluştur",
-        "secret_once": "Bu sır bir kez gösterilir. Şimdi MCP istemcinize kopyalayın.",
         "modal": {
           "title": "MCP anahtarı oluştur",
           "description": "Oluşturulmadan önce bu MCP anahtarı için bir ad seçin.",
@@ -4821,7 +4964,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "İptal",
           "save": "Anahtar oluştur"
-        }
+        },
+        "reveal_title": "Yeni MCP anahtarınız"
       },
       "setup": {
         "title": "İstemci kurulumu",
@@ -4839,7 +4983,6 @@
         "title": "API anahtarları",
         "description": "Bu anahtarlar, ClassroomIO genel API'si çağrılırken mevcut kuruluşun kimliğini doğrular.",
         "generate": "API anahtarı oluştur",
-        "secret_once": "Bu sır bir kez gösterilir. Kopyalayın ve güvenli bir şekilde saklayın.",
         "empty_title": "Henüz API anahtarı yok",
         "empty_description": "ClassroomIO genel API'sini kullanmak için ilk kuruluş kapsamlı API anahtarını oluşturun.",
         "modal": {
@@ -4849,7 +4992,8 @@
           "name_placeholder": "API entegrasyonum",
           "cancel": "İptal",
           "save": "Anahtar oluştur"
-        }
+        },
+        "reveal_title": "Yeni API anahtarınız"
       },
       "setup": {
         "title": "Hızlı başlangıç",
@@ -4859,6 +5003,129 @@
     },
     "zapier": {
       "page_subtitle": "ClassroomIO'yu Zapier aracılığıyla binlerce uygulamayla otomatikleştirin. Çok yakında."
+    },
+    "webhooks": {
+      "page_subtitle": "ClassroomIO olaylarını gerçek zamanlı olarak Slack'e, CRM'inize veya kendi arka ucunuza gönderin.",
+      "description": "Seçili bir olay gerçekleştiğinde ClassroomIO, URL'nize imzalı bir HTTP POST isteği gönderir. Başarısız teslimatlar otomatik olarak yeniden denenir.",
+      "permissions_description": "Webhook'ları yalnızca kuruluş yöneticileri oluşturabilir, düzenleyebilir veya silebilir.",
+      "create": "Yeni webhook",
+      "empty_title": "Henüz webhook yok",
+      "empty_description": "Davetleri, kayıtları, tamamlamaları ve gönderimleri diğer araçlarınıza iletmek için bir webhook oluşturun.",
+      "reveal_title": "Yeni imza sırrınız",
+      "reveal_description": "Bu imza sırrını şimdi kopyalayın. Bir daha gösterilmeyecek ve istekleri doğrulamak için buna ihtiyacınız olacak.",
+      "reveal_docs": "İstekler nasıl doğrulanır",
+      "delete_confirm": "\"{name}\" webhook'u silinsin mi? Teslimat geçmişi de kaldırılacak.",
+      "regenerate_confirm": "İmza sırrı yeniden oluşturulsun mu? Mevcut sır hemen çalışmayı durdurur.",
+      "events_all": "Tüm olaylar",
+      "events_count_one": "{count} olay",
+      "events_count_other": "{count} olay",
+      "no_deliveries": "Henüz teslimat yok",
+      "retrying_hint": "Başarısız teslimatlar yeniden deneniyor",
+      "table": {
+        "name": "Hedef",
+        "events": "Olaylar",
+        "health": "Durum",
+        "active": "Etkin",
+        "error_rate": "Hata oranı (24 sa)",
+        "error_rate_detail": "{total} içinden {failed} başarısız",
+        "no_recent_deliveries": "24 saatte teslimat yok"
+      },
+      "health": {
+        "healthy": "Sağlıklı",
+        "retrying": "Yeniden deneniyor",
+        "degraded": "Hata veriyor",
+        "disabled": "Otomatik devre dışı"
+      },
+      "actions": {
+        "label": "Webhook eylemleri",
+        "edit": "Düzenle",
+        "test": "Test olayı gönder",
+        "deliveries": "Teslimatları görüntüle",
+        "regenerate_secret": "Sırrı yeniden oluştur",
+        "delete": "Sil"
+      },
+      "form": {
+        "create_title": "Yeni webhook",
+        "edit_title": "Webhook'u düzenle",
+        "description": "ClassroomIO'nun olayları nereye göndereceğini ve hangi olayları göndereceğini seçin.",
+        "sections": {
+          "endpoint": "Uç nokta",
+          "events": "Olaylar"
+        },
+        "name": "Ad",
+        "name_placeholder": "CRM senkronizasyonu",
+        "payload_url": "Payload URL'si",
+        "payload_url_help": "10 saniye içinde 2xx yanıtı döndüren herkese açık bir HTTPS URL'si olmalıdır.",
+        "secret": "İmza sırrı",
+        "secret_placeholder": "Oluşturmak için boş bırakın",
+        "secret_help": "Her isteği imzalamak için kullanılır; böylece isteğin ClassroomIO'dan geldiğini doğrulayabilirsiniz.",
+        "secret_edit_placeholder": "Mevcut sırrı korumak için boş bırakın",
+        "secret_edit_help": "Sırrı değiştirmek için yeni bir değer girin. Mevcut sır asla gösterilmez.",
+        "verify_ssl": "SSL sertifikasını doğrula",
+        "verify_ssl_help": "Kendinden imzalı bir sertifikayla test etmiyorsanız bunu açık tutun.",
+        "active": "Etkin",
+        "events_help": "Bu webhook'u tetikleyecek olayları seçin.",
+        "mode_all": "Her şeyi gönder",
+        "mode_selected": "Olayları ben seçeyim",
+        "cancel": "İptal",
+        "save": "Webhook'u kaydet",
+        "select_all": "Tümünü seç",
+        "events_selected": "{total} içinden {selected} seçildi"
+      },
+      "event_groups": {
+        "organization": "Kuruluş",
+        "course": "Kurslar",
+        "learning": "Öğrenme ilerlemesi"
+      },
+      "events": {
+        "organization_invite_created": "Bir ekip daveti gönderildiğinde",
+        "organization_invite_accepted": "Bir ekip daveti kabul edildiğinde",
+        "organization_invite_revoked": "Bir ekip daveti iptal edildiğinde veya değiştirildiğinde",
+        "course_invite_created": "Bir öğrenci daveti oluşturulduğunda",
+        "course_invite_accepted": "Bir öğrenci daveti kabul edip kaydolduğunda",
+        "course_invite_revoked": "Bir öğrenci daveti iptal edildiğinde",
+        "course_member_added": "Bir kursa üye eklendiğinde",
+        "course_member_removed": "Bir kurstan üye çıkarıldığında",
+        "course_completed": "Bir öğrenci kursu tamamladığında",
+        "course_certificate_issued": "Bir sertifika kazanıldığında",
+        "course_submission_created": "Bir alıştırma gönderimi oluşturulduğunda",
+        "course_submission_status_changed": "Bir gönderimin durumu değiştiğinde, örneğin notlandırıldığında",
+        "lesson_completion_updated": "Bir ders tamamlandı olarak işaretlendiğinde veya sıfırlandığında",
+        "exercise_completion_updated": "Bir alıştırma tamamlandığında veya sıfırlandığında"
+      },
+      "deliveries": {
+        "title": "Teslimatlar",
+        "description": "Son 30 günün olayları",
+        "back": "Teslimatlara geri dön",
+        "filter_all": "Tüm durumlar",
+        "empty": "Bu filtreyle eşleşen teslimat yok.",
+        "load_error": "Teslimatlar yüklenemedi. Lütfen tekrar deneyin.",
+        "redeliver": "Yeniden teslim et",
+        "test_badge": "Test",
+        "status": {
+          "PENDING": "Yeniden deneniyor",
+          "SUCCESS": "Başarılı",
+          "FAILED": "Başarısız",
+          "GAVE_UP": "Başarısız"
+        },
+        "columns": {
+          "event": "Olay",
+          "event_id": "Olay ID'si",
+          "status": "Durum",
+          "attempt": "Deneme",
+          "http": "HTTP durumu",
+          "duration": "Yanıt süresi",
+          "time": "Gönderildi",
+          "next_attempt": "Sonraki deneme"
+        },
+        "detail": {
+          "error": "Hata",
+          "request_headers": "İstek başlıkları",
+          "payload": "Payload",
+          "response_body": "Yanıt",
+          "no_response": "Yanıt alınamadı."
+        }
+      }
     }
   },
   "lms_navigation": {
@@ -5107,7 +5374,10 @@
       "user_exists": "Kullanıcı Zaten Var",
       "invite_fail": "Davet gönderilemedi, lütfen tekrar deneyin",
       "remove_fail": "Kullanıcı kaldırılamadı, lütfen tekrar deneyin",
-      "remove_success": "Üye başarıyla kaldırıldı"
+      "remove_success": "Üye başarıyla kaldırıldı",
+      "role_updated": "Rol güncellendi",
+      "role_update_failed": "Rol güncellenemedi",
+      "last_admin": "Bu kuruluşta en az bir yönetici olmalıdır"
     },
     "link_invite": {
       "generated": "Bağlantı daveti oluşturuldu",
@@ -5242,6 +5512,17 @@
           "cohort_newsfeed_comment_not_found": "Bu yorum bulunamadı. bulundu."
         }
       }
+    },
+    "webhooks": {
+      "created": "Webhook oluşturuldu. İmza sırrını şimdi kopyalayın, çünkü yalnızca bir kez gösterilir.",
+      "updated": "Webhook güncellendi.",
+      "enabled": "Webhook etkinleştirildi.",
+      "disabled": "Webhook devre dışı bırakıldı.",
+      "deleted": "Webhook silindi.",
+      "secret_regenerated": "İmza sırrı yeniden oluşturuldu. Şimdi kopyalayın, çünkü yalnızca bir kez gösterilir.",
+      "test_success": "Test olayı başarıyla teslim edildi.",
+      "test_failed": "Test olayı başarısız oldu. Nedenini görmek için teslimat günlüğünü açın.",
+      "redelivered": "Olay yeniden teslim için sıraya alındı."
     }
   },
   "specialization": {
@@ -5423,6 +5704,14 @@
       "custom": "{message}",
       "required_field": "Bu alan zorunludur",
       "invalid_field": "Geçersiz değer"
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "Payload URL'si http:// veya https:// ile başlamalıdır"
+      },
+      "event_types": {
+        "required": "En az bir olay seçin"
+      }
     }
   },
   "ai_assistant": {
@@ -6119,5 +6408,30 @@
       "description": "Dersler, alıştırmalar ve ayarlarla eksiksiz bir kurs. Kopyalayın ve kendinize ait yapın.",
       "browse": "Tüm şablonlara göz atın"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Ödeme alındı. Bir adım kaldı.",
+      "body": "Hesabınızı oluşturun veya giriş yapın, Early Adopter planınızı akademinize otomatik olarak bağlayalım.",
+      "sign_up": "Hesabımı oluştur",
+      "log_in": "Giriş yap",
+      "continue": "Akademime devam et"
+    },
+    "success": {
+      "title": "Early Adopter planınız etkin",
+      "body": "Fiyatınız sabitlendi ve tüm Early Adopter özellikleri artık akademiniz için açık.",
+      "continue": "Oluşturmaya başla"
+    },
+    "errors": {
+      "invalid": "Bu bağlantı geçerli değil. Size gönderdiğimiz e-postayı kontrol edin veya destekle iletişime geçin.",
+      "expired": "Bu bağlantının süresi doldu. Destekle iletişime geçin, planınızı bağlamanıza yardım edelim.",
+      "unavailable": "Bu plan bağlantısı daha önce kullanıldı veya artık etkin değil. Bir hata olduğunu düşünüyorsanız destekle iletişime geçin.",
+      "conflict": "Bu akademinin zaten ücretli bir planı var, bu yüzden bunu bağlayamadık. Destekle iletişime geçin, yardımcı olalım."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Yeni",
+    "read_full": "Tüm değişiklik günlüğünü oku",
+    "close": "Kapat"
   }
 }

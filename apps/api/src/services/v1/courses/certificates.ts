@@ -123,6 +123,7 @@ export async function downloadPublicApiCourseCertificateService(
 ) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCourseTeamMemberOrOrgAdmin(params.courseId, actorId);
+  await assertCertificatesEnabled(orgId);
   await getActiveCourse(params.courseId);
 
   const member = await getCourseMember(params.courseId, params.memberId);

@@ -21,8 +21,11 @@ import {
   getLessonCommentsPaginated,
   getLessonCompletionService,
   getLessonHistoryService,
+  getLessonVideoHlsStatusesService,
   getLessonWatchProgressService,
+  hideLessonRecordingsFromLearners,
   listLessons,
+  releaseLessonRecordingsForViewer,
   updateLessonCommentService,
   updateLessonService,
   updateLessonWatchProgressService,
@@ -53,7 +56,8 @@ export const lessonRouter = new Hono()
 
       await assertEnrolledStudentCourseAccess({ courseId, profileId: user.id });
 
-      const lessons = await listLessons(courseId, sectionId);
+      const storedLessons = await listLessons(courseId, sectionId);
+      const lessons = await hideLessonRecordingsFromLearners(courseId, user.id, storedLessons);
 
       return c.json({ success: true, data: lessons }, 200);
     } catch (error) {
@@ -73,22 +77,41 @@ export const lessonRouter = new Hono()
         type: ContentType.Lesson
       });
 
-      const [lesson, watchProgress] = await Promise.all([
+      const [storedLesson, watchProgress] = await Promise.all([
         getLesson(lessonId),
         getLessonWatchProgressService(lessonId, user.id)
       ]);
+      const [lesson] = await releaseLessonRecordingsForViewer(courseId, user.id, [storedLesson]);
 
       return c.json({ success: true, data: { ...lesson, watchProgress } }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to fetch lesson');
     }
   })
+  .get(
+    '/:lessonId/video-status',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZLessonGetParam),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const statuses = await getLessonVideoHlsStatusesService(lessonId);
+
+        return c.json({ success: true, data: { statuses } }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch lesson video status');
+      }
+    }
+  )
   .post('/', authMiddleware, courseMemberMiddleware, zValidator('json', ZLessonCreate), async (c) => {
     try {
+      const user = c.get('user')!;
       const courseId = c.req.param('courseId')!;
       const data = c.req.valid('json');
 
-      const lesson = await createLesson(courseId, { ...data, courseId });
+      const createdLesson = await createLesson(courseId, { ...data, courseId });
+      const [lesson] = await hideLessonRecordingsFromLearners(courseId, user.id, [createdLesson]);
 
       return c.json({ success: true, data: lesson }, 201);
     } catch (error) {
@@ -103,10 +126,13 @@ export const lessonRouter = new Hono()
     zValidator('json', ZLessonUpdate),
     async (c) => {
       try {
+        const user = c.get('user')!;
+        const courseId = c.req.param('courseId')!;
         const { lessonId } = c.req.valid('param');
         const data = c.req.valid('json');
 
-        const lesson = await updateLessonService(lessonId, data);
+        const updatedLesson = await updateLessonService(lessonId, data);
+        const [lesson] = await hideLessonRecordingsFromLearners(courseId, user.id, [updatedLesson]);
 
         return c.json({ success: true, data: lesson }, 200);
       } catch (error) {

@@ -157,43 +157,62 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
     questionCountByExercise.set(question.exerciseId, (questionCountByExercise.get(question.exerciseId) ?? 0) + 1);
   }
 
-  const outline = sections
-    .slice()
-    .sort((left, right) => left.order - right.order)
-    .map((section) => ({
-      id: section.id,
-      title: section.title,
-      lessons: lessons
-        .filter((lesson) => lesson.sectionId === section.id)
-        .sort((left, right) => left.order - right.order)
-        .map((lesson) => ({ id: lesson.id, title: lesson.title })),
-      exercises: exercises
-        .filter((exercise) => exercise.sectionId === section.id)
-        .sort((left, right) => left.order - right.order)
-        .map((exercise) => ({
-          id: exercise.id,
-          title: exercise.title,
-          questionCount: questionCountByExercise.get(exercise.id) ?? 0
-        }))
-    }));
+  const toPreviewLesson = (lesson: (typeof lessons)[number]) => ({ id: lesson.id, title: lesson.title });
+  const toPreviewExercise = (exercise: (typeof exercises)[number]) => ({
+    id: exercise.id,
+    title: exercise.title,
+    questionCount: questionCountByExercise.get(exercise.id) ?? 0
+  });
+  const byOrder = <T extends { order: number }>(items: T[]) =>
+    items.slice().sort((left, right) => left.order - right.order);
 
-  const unsectionedLessons = lessons.filter((lesson) => !lesson.sectionId);
-  const unsectionedExercises = exercises.filter((exercise) => !exercise.sectionId);
-  if (unsectionedLessons.length > 0 || unsectionedExercises.length > 0) {
-    outline.push({
-      id: '',
-      title: null,
-      lessons: unsectionedLessons
-        .sort((left, right) => left.order - right.order)
-        .map((lesson) => ({ id: lesson.id, title: lesson.title })),
-      exercises: unsectionedExercises
-        .sort((left, right) => left.order - right.order)
-        .map((exercise) => ({
-          id: exercise.id,
-          title: exercise.title,
-          questionCount: questionCountByExercise.get(exercise.id) ?? 0
-        }))
-    });
+  type PreviewBlock = {
+    id: string;
+    title: string | null;
+    lessons: ReturnType<typeof toPreviewLesson>[];
+    exercises: ReturnType<typeof toPreviewExercise>[];
+  };
+  type PreviewRootEntry =
+    | { kind: 'section'; rank: 0; order: number; section: (typeof sections)[number] }
+    | { kind: 'lesson'; rank: 1; order: number; lesson: (typeof lessons)[number] }
+    | { kind: 'exercise'; rank: 2; order: number; exercise: (typeof exercises)[number] };
+
+  const rootEntries: PreviewRootEntry[] = [
+    ...sections.map((section) => ({ kind: 'section' as const, rank: 0 as const, order: section.order, section })),
+    ...lessons
+      .filter((lesson) => !lesson.sectionId)
+      .map((lesson) => ({ kind: 'lesson' as const, rank: 1 as const, order: lesson.order, lesson })),
+    ...exercises
+      .filter((exercise) => !exercise.sectionId)
+      .map((exercise) => ({ kind: 'exercise' as const, rank: 2 as const, order: exercise.order, exercise }))
+  ].sort((left, right) => left.order - right.order || left.rank - right.rank);
+
+  const outline: PreviewBlock[] = [];
+  let standaloneBlock: PreviewBlock | null = null;
+  for (const entry of rootEntries) {
+    if (entry.kind === 'section') {
+      const sectionId = entry.section.id;
+      const sectionLessons = byOrder(lessons.filter((lesson) => lesson.sectionId === sectionId)).map(toPreviewLesson);
+      const sectionExercises = byOrder(exercises.filter((exercise) => exercise.sectionId === sectionId)).map(
+        toPreviewExercise
+      );
+      standaloneBlock = null;
+      outline.push({ id: sectionId, title: entry.section.title, lessons: sectionLessons, exercises: sectionExercises });
+      continue;
+    }
+
+    const lessonAfterExercise = entry.kind === 'lesson' && (standaloneBlock?.exercises.length ?? 0) > 0;
+    if (!standaloneBlock || lessonAfterExercise) {
+      const firstItemId = entry.kind === 'lesson' ? entry.lesson.id : entry.exercise.id;
+      standaloneBlock = { id: `standalone-${firstItemId}`, title: null, lessons: [], exercises: [] };
+      outline.push(standaloneBlock);
+    }
+
+    if (entry.kind === 'lesson') {
+      standaloneBlock.lessons.push(toPreviewLesson(entry.lesson));
+    } else {
+      standaloneBlock.exercises.push(toPreviewExercise(entry.exercise));
+    }
   }
 
   return {

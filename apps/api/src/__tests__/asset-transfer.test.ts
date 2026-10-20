@@ -111,6 +111,7 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
         await tx.insert(schema.lesson).values({
           courseId: template.id,
           title: 'Read this',
+          slug: 'read-this',
           order: 1,
           documents: [{ type: 'pdf', name: 'Guide', link: sourceKey, key: sourceKey, assetId: document.id }]
         });

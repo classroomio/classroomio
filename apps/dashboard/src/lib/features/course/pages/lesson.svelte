@@ -64,6 +64,8 @@
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
   import LiveSessionCard from '$features/course/components/lesson/live-session-card.svelte';
+  import { liveSessionClock } from '$features/course/utils/live-session-phase';
+  import { getLiveSessionPhase, type LiveSessionPhase } from '@cio/utils/functions/live-session';
 
   interface Props {
     courseId: string;
@@ -136,6 +138,21 @@
   const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const isLiveSessionLesson = $derived(Boolean(lessonApi.lesson?.callUrl && lessonApi.lesson?.lessonAt));
+  const lessonSessionPhase = $derived(
+    lessonApi.lesson?.id === lessonId ? getLiveSessionPhase(lessonApi.lesson, $liveSessionClock) : null
+  );
+  let observedSessionPhase: { lessonId: string; phase: LiveSessionPhase | null } | null = null;
+
+  $effect(() => {
+    const phase = lessonSessionPhase;
+    const previous = observedSessionPhase;
+    observedSessionPhase = { lessonId, phase };
+    const sessionJustEnded =
+      phase === 'ended' && previous?.lessonId === lessonId && previous.phase !== null && previous.phase !== 'ended';
+    if (!sessionJustEnded || !$isStudentExperience) return;
+
+    void lessonApi.get(courseId, lessonId);
+  });
 
   function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
     const params = new SvelteURLSearchParams($page.url.searchParams);
@@ -534,6 +551,8 @@
             callUrl={lessonApi.lesson?.callUrl ?? ''}
             lessonAt={lessonApi.lesson?.lessonAt ?? ''}
             timezone={courseApi.course?.metadata?.sessionTimezone}
+            durationMinutes={lessonApi.lesson?.sessionDurationMinutes}
+            recordingUrl={lessonApi.lesson?.recordingUrl}
           />
         </div>
       {/if}

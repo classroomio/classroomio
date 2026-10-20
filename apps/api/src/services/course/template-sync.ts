@@ -21,7 +21,7 @@ import {
   getOptionsByQuestionIds,
   getQuestionsByExerciseIds,
   listTemplateSettingSync,
-  shiftCourseSectionOrders,
+  shiftCourseRootOrders,
   shiftExerciseOrders,
   shiftLessonOrders,
   stampCopiedTemplateUnits,
@@ -105,6 +105,78 @@ function bumpOrders<T extends { order: number }>(items: T[], fromOrder: number) 
   for (const item of items) {
     if (item.order >= fromOrder) item.order += 1;
   }
+}
+
+async function claimSectionLessonOrder(
+  templateLessons: TLesson[],
+  courseGraph: SyncGraph,
+  lesson: TLesson,
+  parentId: string,
+  courseId: string,
+  client: DbOrTxClient
+) {
+  const templateSiblings = templateLessons.filter((sibling) => sibling.sectionId === lesson.sectionId);
+  const placed = courseGraph.lessons.filter((sibling) => sibling.sectionId === parentId);
+  const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(placed), placed);
+  await shiftLessonOrders(courseId, parentId, order, client);
+  bumpOrders(placed, order);
+
+  return order;
+}
+
+async function claimNestedExerciseOrder(
+  templateExercises: TExercise[],
+  courseGraph: SyncGraph,
+  exercise: TExercise,
+  parent: { sectionId: string | null; lessonId: string | null },
+  courseId: string,
+  client: DbOrTxClient
+) {
+  const templateSiblings = templateExercises.filter((sibling) =>
+    exercise.sectionId
+      ? sibling.sectionId === exercise.sectionId
+      : sibling.lessonId === exercise.lessonId && !sibling.sectionId
+  );
+  const placed = courseGraph.exercises.filter((sibling) =>
+    parent.sectionId
+      ? sibling.sectionId === parent.sectionId
+      : sibling.lessonId === parent.lessonId && !sibling.sectionId
+  );
+  const order = insertionOrder(templateSiblings, exercise.id, sourceOrders(placed), placed);
+  await shiftExerciseOrders(
+    courseId,
+    { sectionId: parent.sectionId, lessonId: parent.sectionId ? null : parent.lessonId },
+    order,
+    client
+  );
+  bumpOrders(placed, order);
+
+  return order;
+}
+
+function rootEntries(graph: SyncGraph): { id: string; sourceId: string | null; order: number }[] {
+  const rootLessons = graph.lessons.filter((lesson) => !lesson.sectionId);
+  const rootExercises = graph.exercises.filter((exercise) => !exercise.sectionId && !exercise.lessonId);
+
+  return [...graph.sections, ...rootLessons, ...rootExercises];
+}
+
+/**
+ * Picks the course order for a new top-level template entry and shifts every later top-level entry down one.
+ */
+async function claimRootOrder(
+  templateGraph: SyncGraph,
+  courseGraph: SyncGraph,
+  templateEntryId: string,
+  courseId: string,
+  client: DbOrTxClient
+) {
+  const placed = rootEntries(courseGraph);
+  const order = insertionOrder(rootEntries(templateGraph), templateEntryId, sourceOrders(placed), placed);
+  await shiftCourseRootOrders(courseId, order, client);
+  bumpOrders(placed, order);
+
+  return order;
 }
 
 async function loadGraph(courseId: string, client: DbOrTxClient): Promise<SyncGraph> {
@@ -483,14 +555,7 @@ export async function pullCourseTemplateUpdates(
           continue;
         }
 
-        const order = insertionOrder(
-          templateSections,
-          section.id,
-          sourceOrders(courseGraph.sections),
-          courseGraph.sections
-        );
-        await shiftCourseSectionOrders(course.id, order, tx);
-        bumpOrders(courseGraph.sections, order);
+        const order = await claimRootOrder(templateGraph, courseGraph, section.id, course.id, tx);
         const createdSections = await createCourseSections(
           [{ title: section.title, order, courseId: course.id, sourceId: section.id, sourceSyncedAt: syncedAt }],
           tx
@@ -521,6 +586,8 @@ export async function pullCourseTemplateUpdates(
               lessonAt: remapped.lessonAt,
               teacherId: crossOrg ? null : remapped.teacherId,
               callUrl: crossOrg ? null : remapped.callUrl,
+              sessionDurationMinutes: remapped.sessionDurationMinutes,
+              recordingUrl: crossOrg ? null : remapped.recordingUrl,
               isUnlocked: remapped.isUnlocked,
               completionPolicy: remapped.completionPolicy,
               videoWatchThreshold: remapped.videoWatchThreshold,
@@ -557,11 +624,9 @@ export async function pullCourseTemplateUpdates(
           throw new AppError('Template changes are out of date', ErrorCodes.CONFLICT, 409);
         }
 
-        const templateSiblings = templateLessons.filter((sibling) => sibling.sectionId === lesson.sectionId);
-        const placed = courseGraph.lessons.filter((sibling) => (sibling.sectionId ?? null) === parentId);
-        const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(placed), placed);
-        await shiftLessonOrders(course.id, parentId, order, tx);
-        bumpOrders(placed, order);
+        const order = parentId
+          ? await claimSectionLessonOrder(templateLessons, courseGraph, lesson, parentId, course.id, tx)
+          : await claimRootOrder(templateGraph, courseGraph, lesson.id, course.id, tx);
         const createdLessons = await createLessons(
           [
             {
@@ -576,6 +641,8 @@ export async function pullCourseTemplateUpdates(
               teacherId: crossOrg ? null : remapped.teacherId,
               isComplete: false,
               callUrl: crossOrg ? null : remapped.callUrl,
+              sessionDurationMinutes: remapped.sessionDurationMinutes,
+              recordingUrl: crossOrg ? null : remapped.recordingUrl,
               order,
               isUnlocked: remapped.isUnlocked,
               completionPolicy: remapped.completionPolicy,
@@ -647,26 +714,17 @@ export async function pullCourseTemplateUpdates(
           throw new AppError('Template changes are out of date', ErrorCodes.CONFLICT, 409);
         }
 
-        const templateSiblings = templateExercises.filter((sibling) =>
-          exercise.sectionId
-            ? sibling.sectionId === exercise.sectionId
-            : sibling.lessonId === exercise.lessonId && !sibling.sectionId
-        );
-        const placed = courseGraph.exercises.filter((sibling) =>
-          parentSectionId
-            ? sibling.sectionId === parentSectionId
-            : parentLessonId
-              ? sibling.lessonId === parentLessonId && !sibling.sectionId
-              : !sibling.sectionId && !sibling.lessonId
-        );
-        const order = insertionOrder(templateSiblings, exercise.id, sourceOrders(placed), placed);
-        await shiftExerciseOrders(
-          course.id,
-          { sectionId: parentSectionId, lessonId: parentSectionId ? null : parentLessonId },
-          order,
-          tx
-        );
-        bumpOrders(placed, order);
+        const order =
+          parentSectionId || parentLessonId
+            ? await claimNestedExerciseOrder(
+                templateExercises,
+                courseGraph,
+                exercise,
+                { sectionId: parentSectionId, lessonId: parentLessonId },
+                course.id,
+                tx
+              )
+            : await claimRootOrder(templateGraph, courseGraph, exercise.id, course.id, tx);
         const createdExercises = await createExercises(
           [
             {

@@ -86,6 +86,11 @@
                             {:else}
                               <span>{item.title}</span>
                             {/if}
+                            {#if item.isNew}
+                              <Sidebar.MenuBadge class="ui:text-primary ui:bg-primary/10">
+                                {$t('automation.tabs.new_badge')}
+                              </Sidebar.MenuBadge>
+                            {/if}
                           </span>
                         {:else}
                           <a href={item.url} {...props} data-testid={item.testId}>
@@ -96,7 +101,11 @@
                             {:else}
                               <span>{item.title}</span>
                             {/if}
-                            {#if item.upgrade}
+                            {#if item.isNew}
+                              <Sidebar.MenuBadge class="ui:text-primary ui:bg-primary/10">
+                                {$t('automation.tabs.new_badge')}
+                              </Sidebar.MenuBadge>
+                            {:else if item.upgrade}
                               <PremiumIcon {isHovered} size={16} class="ui:text-primary ml-auto" />
                             {:else if item.count}
                               <Sidebar.MenuBadge>{formatCompactCount(item.count)}</Sidebar.MenuBadge>

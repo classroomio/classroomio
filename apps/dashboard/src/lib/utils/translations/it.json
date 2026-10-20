@@ -447,6 +447,7 @@
     },
     "discard": "Scartare",
     "save_changes": "Salva modifiche",
+    "cancel": "Annulla",
     "refresh": "Aggiorna",
     "scroll_to_top": "Scorri verso l'alto",
     "delete": "Eliminare",
@@ -848,7 +849,16 @@
       "actions_menu": "Azioni di autenticazione del token"
     },
     "teams": {
-      "page_subtitle": "Invita i compagni di squadra e controlla chi aiuta a gestire questa organizzazione."
+      "page_subtitle": "Invita i compagni di squadra e controlla chi aiuta a gestire questa organizzazione.",
+      "permission": {
+        "title": "Non hai il permesso di visualizzare questa pagina",
+        "description": "Solo gli amministratori dell’organizzazione possono visualizzare e gestire il team. Contatta un amministratore se hai bisogno di accedere."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Invitare questo studente nel team?} other {Invitare questi studenti nel team?}}",
+        "confirm_description": "{count, plural, =1 {Questa persona è già uno studente di questa organizzazione: {emails}. Vuoi inviarle un invito per diventare {role}? Il suo ruolo cambierà solo dopo aver accettato l’invito.} other {Queste persone sono già studenti di questa organizzazione: {emails}. Vuoi invitarle come {role}? I loro ruoli cambieranno solo dopo aver accettato l’invito.}}",
+        "existing": "Queste persone fanno già parte del team: {members}. Usa il selettore del ruolo in Membri del team per modificare il loro ruolo."
+      }
     },
     "auth": {
       "page_subtitle": "Controlla la registrazione, l'accesso, l'SSO e l'accesso basato su token per questa organizzazione.",
@@ -1042,7 +1052,7 @@
       },
       "preview_tabs": {
         "label": "Pagina di anteprima",
-        "home": "Casa",
+        "home": "Home",
         "course": "Corso"
       },
       "editor": {
@@ -1622,7 +1632,7 @@
   },
   "org_navigation": {
     "platform": "Piattaforma",
-    "home": "Casa",
+    "home": "Home",
     "content": "Contenuto",
     "people": "Persone",
     "back_to_app": "Torna all'app",
@@ -1672,7 +1682,16 @@
       "monthly": "Mensile",
       "annually": "Annualmente",
       "popular": "Popolare",
-      "per_org": "Per organizzazione"
+      "per_org": "Per organizzazione",
+      "priced_low": {
+        "eyebrow_open": "Tariffa Early Adopter · {days, plural, one {# giorno rimasto} other {# giorni rimasti}}",
+        "eyebrow_closing": "Tariffa Early Adopter · Ultimi {days} giorni",
+        "eyebrow_today": "Tariffa Early Adopter · Termina oggi",
+        "title": "Prezzo basso di proposito. Non per molto.",
+        "title_closing": "Prezzo basso di proposito. Sta per finire.",
+        "body": "Manteniamo ClassroomIO accessibile perché lo costruiamo insieme ai nostri clienti, non solo per loro. Blocca la tariffa di oggi prima del {date}. Dopo quella data il piano Early Adopter chiude e si applicano i nuovi prezzi.",
+        "link": "Scopri perché lo facciamo"
+      }
     }
   },
   "widgets": {
@@ -1960,7 +1979,7 @@
   "navigation": {
     "goto": "Vai a",
     "courses": "Corsi",
-    "home": "Casa",
+    "home": "Home",
     "classroomio_home": "Home ClassroomIO",
     "dashboard": "Pannello di controllo",
     "discussion": "Discussione",
@@ -2134,7 +2153,7 @@
     "compliance_score_empty": "Nessun corso sulla conformità ancora assegnato",
     "compliance_met": "{completed} Di {total} incontrato",
     "required_courses_completed": "{completed} Di {total} corsi obbligatori completati",
-    "streak": "Strisciante",
+    "streak": "Serie",
     "days_active": "giorni attivi",
     "no_courses": "Nessun corso in corso ancora",
     "start_course": "Una volta iniziato un corso, i tuoi progressi si rifletteranno qui",
@@ -2564,7 +2583,7 @@
           "join": "Partecipa alla sessione",
           "live_indicator": "Questa lezione è una sessione dal vivo",
           "heading": "Sessione dal vivo",
-          "intro": "Imposta il link di partecipazione e l'orario programmato per questa lezione dal vivo. Gli studenti ricevono promemoria 24 ore e 1 ora prima.",
+          "intro": "Imposta il link di partecipazione e l'orario programmato per questa lezione dal vivo. Gli studenti ricevono promemoria via e-mail prima di ogni sessione. Scegli quando nelle impostazioni del corso.",
           "link_label": "Collegamento di partecipazione (Zoom, Meet, ecc.)",
           "datetime_label": "Data e ora",
           "timezone_label": "Fuso orario",
@@ -2593,7 +2612,15 @@
           "add_apple": "Calendario Apple (.ics)",
           "starts_in": "Inizia tra",
           "session_ended": "La sessione è terminata",
-          "link_copied": "Collegamento copiato"
+          "link_copied": "Collegamento copiato",
+          "duration_label": "Durata prevista della sessione (minuti)",
+          "duration_helper": "Serve a mostrare quando la sessione è in diretta e quando è terminata.",
+          "recording_url_label": "Link della registrazione",
+          "recording_url_helper": "Mostrato agli studenti al termine della sessione.",
+          "recording_url_invalid": "Inserisci un link che inizi con http:// o https://",
+          "recording_url_needs_session": "Aggiungi un link alla riunione e un orario di inizio prima di aggiungere una registrazione",
+          "past_sessions_heading": "Sessioni passate",
+          "watch_recording": "Guarda la registrazione"
         },
         "share_your_knowledge": "Condividi le tue conoscenze con il mondo creando lezioni coinvolgenti. Inizia facendo clic sul pulsante Aggiungi.",
         "student_share_your_knowledge": "Nessuna lezione è stata ancora aggiunta a questo corso. Ricontrolla più tardi.",
@@ -2909,6 +2936,14 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Trascrizione del video precedente",
                 "next_video": "Prossima trascrizione del video"
+              },
+              "hls_status": {
+                "encoding": "Codifica",
+                "ready": "Pronto",
+                "failed": "Errore",
+                "skipped": "Non codificato",
+                "failed_hint": "Codifica non riuscita. Il video viene comunque riprodotto alla sua qualità originale.",
+                "skipped_hint": "La codifica adattiva è disattivata, quindi il video viene riprodotto alla sua qualità originale."
               }
             },
             "document": {
@@ -3189,7 +3224,9 @@
                 "responses": "Risposte",
                 "attempts": "Tentativi",
                 "no_responses": "Nessuna risposta ancora",
-                "other": "Altro"
+                "other": "Altro",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "individual": {
                 "heading": "Individuale",
@@ -3410,6 +3447,10 @@
                 "preview": {
                   "accepted_types_label": "Tipi accettati",
                   "max_size_label": "Dimensione massima (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "video_recording": {
@@ -3591,7 +3632,8 @@
           },
           "by_author": "di {name}",
           "empty": "Nessuna versione ancora"
-        }
+        },
+        "no_section": "Nessuna sezione"
       },
       "attendance": {
         "title": "Partecipazione",
@@ -3604,6 +3646,10 @@
       },
       "submissions": {
         "title": "Esercizi inviati",
+        "access": {
+          "denied_title": "Non puoi valutare le consegne di questo corso",
+          "denied_description": "Chiedi a un amministratore di aggiungerti come tutor del corso o come mentor di una coorte che include questo corso."
+        },
         "submission_status": {
           "submitted": "Inviato",
           "in_progress": "In corso",
@@ -3638,6 +3684,22 @@
           "delete_prompt": "Eliminare",
           "delete_error": "Impossibile eliminare l'invio",
           "delete_success": "Invio eliminato con successo"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "marks": {
@@ -3893,6 +3955,13 @@
             "toggle_label": "Invito al collegamento attivo",
             "disabled_notice": "Questo collegamento è disabilitato. Abilitalo per consentire ai nuovi membri di iscriversi tramite collegamento.",
             "select_role": "Seleziona un ruolo"
+          },
+          "change_role": {
+            "label": "Ruolo di {email}",
+            "title": "Cambia ruolo",
+            "description": "Cambiare {email} da {currentRole} a {nextRole}?",
+            "cancel": "Annulla",
+            "approve": "Approva"
           }
         },
         "filter": {
@@ -4068,7 +4137,8 @@
               "description": {
                 "min_char": "'La descrizione è troppo breve, minimo 5 caratteri"
               }
-            }
+            },
+            "validation_error": "Una o più recensioni non sono valide. Apri ogni recensione e correggi nome, avatar, valutazione e descrizione prima di salvare."
           },
           "certificate_form": {
             "upload_template": "Modello di certificato"
@@ -4323,7 +4393,66 @@
         },
         "delete": "Elimina corso",
         "delete_text": "Elimina questo corso, questa azione non può essere annullata",
-        "save": "Salva modifiche"
+        "save": "Salva modifiche",
+        "live_session_reminders": {
+          "legend": "Promemoria via e-mail delle sessioni",
+          "description": "Scegli quando gli studenti iscritti ricevono un'e-mail con il link di partecipazione prima di ogni sessione dal vivo.",
+          "empty": "Nessun promemoria. Gli studenti non riceveranno e-mail prima delle sessioni dal vivo.",
+          "add": "Aggiungi promemoria",
+          "presets_label": "Aggiunta rapida:",
+          "remove": "Rimuovi promemoria",
+          "unit_label": "Unità",
+          "units": {
+            "days": "Giorni",
+            "hours": "Ore",
+            "minutes": "Minuti"
+          },
+          "duration": {
+            "days": "{count, plural, one {# giorno} other {# giorni}}",
+            "hours": "{count, plural, one {# ora} other {# ore}}",
+            "minutes": "{count, plural, one {# minuto} other {# minuti}}"
+          },
+          "preview": "{duration} prima di ogni sessione",
+          "offset_before": "{duration} prima",
+          "max_count": "Puoi aggiungere fino a {count} promemoria.",
+          "validation": {
+            "amount": "Inserisci un numero intero pari o superiore a 1.",
+            "min": "I promemoria devono essere almeno 15 minuti prima della sessione.",
+            "max": "I promemoria possono essere al massimo 7 giorni prima della sessione.",
+            "duplicate": "Hai già un promemoria a quest'ora.",
+            "fix_errors": "Correggi gli errori dei promemoria delle sessioni prima di salvare."
+          },
+          "log": {
+            "title": "Registro di invio",
+            "description": "E-mail di promemoria per le sessioni degli ultimi 30 giorni e per le sessioni in programma.",
+            "view": "Visualizza log",
+            "empty": "Ancora nessun promemoria. Compariranno qui man mano che le sessioni si avvicinano.",
+            "load_error": "Impossibile caricare il registro di invio dei promemoria.",
+            "columns": {
+              "session": "Sessione",
+              "student": "Studente",
+              "reminder": "Promemoria",
+              "status": "Stato",
+              "detail": "Dettaglio"
+            }
+          },
+          "statuses": {
+            "pending": "In attesa",
+            "queued": "In coda",
+            "sent": "Inviato",
+            "failed": "Non riuscito",
+            "skipped": "Saltato"
+          },
+          "skip_reasons": {
+            "preferences": "Lo studente ha disattivato le e-mail di promemoria delle sessioni.",
+            "no_email": "Lo studente non ha un indirizzo e-mail.",
+            "lesson_past": "La sessione era già iniziata.",
+            "offset_removed": "Questo promemoria è stato rimosso dalle impostazioni del corso.",
+            "lesson_rescheduled": "L'orario della sessione o il link di partecipazione è cambiato.",
+            "window_passed": "L'orario del promemoria era già passato al momento della programmazione.",
+            "unenrolled": "Lo studente non è più iscritto."
+          }
+        }
       }
     },
     "not_permitted": {
@@ -4535,7 +4664,10 @@
       "clear": "Cancella filtri",
       "empty_title": "Nessuno studente corrisponde a questi filtri",
       "empty_description": "Prova ad ampliare l'intervallo di date o a cancellare un filtro.",
-      "invite_status": "Stato dell'invito"
+      "invite_status": "Stato dell'invito",
+      "certificate": "Certificato",
+      "certificate_earned": "Ottenuto",
+      "certificate_not_earned": "Non ottenuto"
     },
     "bulk": {
       "actions": "Azioni",
@@ -4588,7 +4720,9 @@
       "queued_running": "Candidatura a {count} studenti. Puoi continuare a lavorare: ti diremo quando finirà.",
       "queued_failed": "Questa azione collettiva non è terminata. Non è stato applicato altro.",
       "queued_lost": "Abbiamo perso traccia di questa corsa. Ricarica per vedere lo stato attuale."
-    }
+    },
+    "certificate_earned": "{count} certificato ottenuto",
+    "certificates_earned": "{count} certificati ottenuti"
   },
   "analytics": {
     "title": "Analitica",
@@ -4745,7 +4879,8 @@
     "required": "Aggiornamento richiesto",
     "enterprise_required": "Questa funzionalità richiede un piano Enterprise.",
     "public_api_required": "Esegui l'upgrade a Early Adopter o Enterprise per accedere all'API pubblica.",
-    "unlock_field": "Esegui l'upgrade per sbloccare questa impostazione"
+    "unlock_field": "Esegui l'upgrade per sbloccare questa impostazione",
+    "webhooks_required": "Passa a Early Adopter o Enterprise per usare i webhook."
   },
   "automation": {
     "title": "Automazione",
@@ -4758,7 +4893,9 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhook",
+      "new_badge": "Nuovo"
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -4786,7 +4923,14 @@
       "table_last_used": "Ultimo usato",
       "scopes_label": "Ambiti:",
       "revoke_confirm": "Revocare questa chiave di automazione?",
-      "rotate_confirm": "Ruotare questa chiave di automazione?"
+      "rotate_confirm": "Ruotare questa chiave di automazione?",
+      "reveal": {
+        "description": "Copia subito questa chiave. Non verrà più mostrata.",
+        "copy": "Copia",
+        "copied": "Copiato",
+        "how_to_use": "Come utilizzare questa chiave",
+        "close": "Chiudi"
+      }
     },
     "mcp": {
       "page_subtitle": "Collega gli strumenti AI a ClassroomIO con chiavi con ambito organizzazione che puoi ruotare in qualsiasi momento.",
@@ -4803,7 +4947,6 @@
         "title": "Chiavi MCP",
         "description": "Queste chiavi autenticano l'organizzazione corrente quando un client MCP chiama ClassroomIO tramite `@classroomio/mcp`.",
         "generate": "Genera la chiave MCP",
-        "secret_once": "Questo segreto viene mostrato una volta. Copialo ora nel tuo client MCP.",
         "modal": {
           "title": "Crea chiave MCP",
           "description": "Scegli un nome per questa chiave MCP prima che venga generata.",
@@ -4811,7 +4954,8 @@
           "name_placeholder": "ClassroomIOOpenCode",
           "cancel": "Annulla",
           "save": "Crea chiave"
-        }
+        },
+        "reveal_title": "La tua nuova chiave MCP"
       },
       "setup": {
         "title": "Configurazione del cliente",
@@ -4829,7 +4973,6 @@
         "title": "Chiavi API",
         "description": "Queste chiavi autenticano l'organizzazione corrente quando si chiama l'API pubblica ClassroomIO.",
         "generate": "Genera chiave API",
-        "secret_once": "Questo segreto viene mostrato una volta. Copialo e conservalo in modo sicuro.",
         "empty_title": "Nessuna chiave API ancora",
         "empty_description": "Crea la prima chiave API con ambito organizzazione per utilizzare l'API pubblica ClassroomIO.",
         "modal": {
@@ -4839,7 +4982,8 @@
           "name_placeholder": "La mia integrazione API",
           "cancel": "Annulla",
           "save": "Crea chiave"
-        }
+        },
+        "reveal_title": "La tua nuova chiave API"
       },
       "setup": {
         "title": "Avvio rapido",
@@ -4849,6 +4993,129 @@
     },
     "zapier": {
       "page_subtitle": "Automatizza ClassroomIO con migliaia di app tramite Zapier. Prossimamente."
+    },
+    "webhooks": {
+      "page_subtitle": "Invia in tempo reale gli eventi di ClassroomIO a Slack, al tuo CRM o al tuo backend.",
+      "description": "ClassroomIO invia una richiesta HTTP POST firmata al tuo URL ogni volta che si verifica un evento selezionato. Le consegne non riuscite vengono ritentate automaticamente.",
+      "permissions_description": "Solo gli amministratori dell'organizzazione possono creare, modificare o eliminare i webhook.",
+      "create": "Nuovo webhook",
+      "empty_title": "Nessun webhook ancora",
+      "empty_description": "Crea un webhook per inviare inviti, iscrizioni, completamenti e consegne ai tuoi altri strumenti.",
+      "reveal_title": "Il tuo nuovo segreto di firma",
+      "reveal_description": "Copia questo segreto di firma ora. Non verrà mostrato di nuovo e ti servirà per verificare le richieste.",
+      "reveal_docs": "Come verificare le richieste",
+      "delete_confirm": "Eliminare il webhook \"{name}\"? Verrà rimossa anche la sua cronologia delle consegne.",
+      "regenerate_confirm": "Rigenerare il segreto di firma? Il segreto attuale smetterà di funzionare immediatamente.",
+      "events_all": "Tutti gli eventi",
+      "events_count_one": "{count} evento",
+      "events_count_other": "{count} eventi",
+      "no_deliveries": "Nessuna consegna ancora",
+      "retrying_hint": "Nuovo tentativo delle consegne non riuscite",
+      "table": {
+        "name": "Destinazione",
+        "events": "Eventi",
+        "health": "Stato",
+        "active": "Attivo",
+        "error_rate": "Tasso di errore (24 h)",
+        "error_rate_detail": "{failed} su {total} non riusciti",
+        "no_recent_deliveries": "Nessuna consegna nelle ultime 24 h"
+      },
+      "health": {
+        "healthy": "Funzionante",
+        "retrying": "Nuovo tentativo",
+        "degraded": "In errore",
+        "disabled": "Disattivato automaticamente"
+      },
+      "actions": {
+        "label": "Azioni del webhook",
+        "edit": "Modifica",
+        "test": "Invia evento di prova",
+        "deliveries": "Visualizza consegne",
+        "regenerate_secret": "Rigenera segreto",
+        "delete": "Elimina"
+      },
+      "form": {
+        "create_title": "Nuovo webhook",
+        "edit_title": "Modifica webhook",
+        "description": "Scegli dove ClassroomIO invia gli eventi e quali eventi inviare.",
+        "sections": {
+          "endpoint": "Endpoint",
+          "events": "Eventi"
+        },
+        "name": "Nome",
+        "name_placeholder": "Sincronizzazione CRM",
+        "payload_url": "URL del payload",
+        "payload_url_help": "Deve essere un URL HTTPS pubblico che restituisce una risposta 2xx entro 10 secondi.",
+        "secret": "Segreto di firma",
+        "secret_placeholder": "Lascia vuoto per generarne uno",
+        "secret_help": "Usato per firmare ogni richiesta, così puoi verificare che provenga da ClassroomIO.",
+        "secret_edit_placeholder": "Lascia vuoto per mantenere il segreto attuale",
+        "secret_edit_help": "Inserisci un nuovo valore per sostituire il segreto. Quello attuale non viene mai mostrato.",
+        "verify_ssl": "Verifica il certificato SSL",
+        "verify_ssl_help": "Lascia attivo, a meno che tu non stia testando con un certificato autofirmato.",
+        "active": "Attivo",
+        "events_help": "Scegli gli eventi che devono attivare questo webhook.",
+        "mode_all": "Inviami tutto",
+        "mode_selected": "Seleziono io i singoli eventi",
+        "cancel": "Annulla",
+        "save": "Salva webhook",
+        "select_all": "Seleziona tutto",
+        "events_selected": "{selected} di {total} selezionati"
+      },
+      "event_groups": {
+        "organization": "Organizzazione",
+        "course": "Corsi",
+        "learning": "Progressi di apprendimento"
+      },
+      "events": {
+        "organization_invite_created": "Viene inviato un invito al team",
+        "organization_invite_accepted": "Viene accettato un invito al team",
+        "organization_invite_revoked": "Un invito al team viene revocato o sostituito",
+        "course_invite_created": "Viene creato un invito per uno studente",
+        "course_invite_accepted": "Uno studente accetta un invito e si iscrive",
+        "course_invite_revoked": "Un invito per uno studente viene revocato",
+        "course_member_added": "Un membro viene aggiunto a un corso",
+        "course_member_removed": "Un membro viene rimosso da un corso",
+        "course_completed": "Uno studente completa un corso",
+        "course_certificate_issued": "Viene ottenuto un certificato",
+        "course_submission_created": "Viene creata la consegna di un esercizio",
+        "course_submission_status_changed": "Lo stato di una consegna cambia, ad esempio quando viene valutata",
+        "lesson_completion_updated": "Una lezione viene segnata come completata o reimpostata",
+        "exercise_completion_updated": "Un esercizio viene completato o reimpostato"
+      },
+      "deliveries": {
+        "title": "Consegne",
+        "description": "Eventi degli ultimi 30 giorni",
+        "back": "Torna alle consegne",
+        "filter_all": "Tutti gli stati",
+        "empty": "Nessuna consegna corrisponde a questo filtro.",
+        "load_error": "Impossibile caricare le consegne. Riprova.",
+        "redeliver": "Reinvia",
+        "test_badge": "Prova",
+        "status": {
+          "PENDING": "Nuovo tentativo",
+          "SUCCESS": "Riuscita",
+          "FAILED": "Non riuscita",
+          "GAVE_UP": "Non riuscita"
+        },
+        "columns": {
+          "event": "Evento",
+          "event_id": "ID evento",
+          "status": "Stato",
+          "attempt": "Tentativo",
+          "http": "Stato HTTP",
+          "duration": "Tempo di risposta",
+          "time": "Inviato",
+          "next_attempt": "Prossimo tentativo"
+        },
+        "detail": {
+          "error": "Errore",
+          "request_headers": "Intestazioni della richiesta",
+          "payload": "Payload",
+          "response_body": "Risposta",
+          "no_response": "Non è stata ricevuta alcuna risposta."
+        }
+      }
     }
   },
   "lms_navigation": {
@@ -4863,7 +5130,7 @@
     "cohorts": "Coorti"
   },
   "lms": {
-    "view_landing_page": "Casa"
+    "view_landing_page": "Home"
   },
   "my_learning": {
     "heading": "Il mio apprendimento",
@@ -5097,7 +5364,10 @@
       "user_exists": "L'utente esiste già",
       "invite_fail": "Impossibile inviare l'invito, riprova",
       "remove_fail": "Impossibile rimuovere l'utente, riprova",
-      "remove_success": "Membro rimosso con successo"
+      "remove_success": "Membro rimosso con successo",
+      "role_updated": "Ruolo aggiornato",
+      "role_update_failed": "Impossibile aggiornare il ruolo",
+      "last_admin": "Questa organizzazione deve avere almeno un amministratore"
     },
     "link_invite": {
       "generated": "Invito al collegamento generato",
@@ -5232,6 +5502,17 @@
           "cohort_newsfeed_comment_not_found": "Impossibile trovare il commento."
         }
       }
+    },
+    "webhooks": {
+      "created": "Webhook creato. Copia ora il segreto di firma perché viene mostrato una sola volta.",
+      "updated": "Webhook aggiornato.",
+      "enabled": "Webhook attivato.",
+      "disabled": "Webhook disattivato.",
+      "deleted": "Webhook eliminato.",
+      "secret_regenerated": "Segreto di firma rigenerato. Copialo ora perché viene mostrato una sola volta.",
+      "test_success": "Evento di prova consegnato con successo.",
+      "test_failed": "L'evento di prova non è riuscito. Apri il registro delle consegne per vedere il motivo.",
+      "redelivered": "Evento messo in coda per il reinvio."
     }
   },
   "specialization": {
@@ -5413,6 +5694,14 @@
       "custom": "{message}",
       "required_field": "Questo campo è obbligatorio",
       "invalid_field": "Valore non valido"
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "L'URL del payload deve iniziare con http:// o https://"
+      },
+      "event_types": {
+        "required": "Seleziona almeno un evento"
+      }
     }
   },
   "ai_assistant": {
@@ -6109,5 +6398,30 @@
       "description": "Un corso completo con lezioni, esercizi e impostazioni. Copialo e poi fallo tuo.",
       "browse": "Sfoglia tutti i modelli"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Pagamento ricevuto. Manca un passaggio.",
+      "body": "Crea il tuo account o accedi e collegheremo automaticamente il tuo piano Early Adopter alla tua accademia.",
+      "sign_up": "Crea il mio account",
+      "log_in": "Accedi",
+      "continue": "Continua verso la mia accademia"
+    },
+    "success": {
+      "title": "Il tuo piano Early Adopter è attivo",
+      "body": "La tua tariffa è bloccata e tutte le funzionalità Early Adopter sono ora sbloccate per la tua accademia.",
+      "continue": "Inizia a creare"
+    },
+    "errors": {
+      "invalid": "Questo link non è valido. Controlla l’e-mail che ti abbiamo inviato o contatta l’assistenza.",
+      "expired": "Questo link è scaduto. Contatta l’assistenza e ti aiuteremo a collegare il tuo piano.",
+      "unavailable": "Questo link del piano è già stato usato o non è più attivo. Contatta l’assistenza se si tratta di un errore.",
+      "conflict": "Questa accademia ha già un piano a pagamento, quindi non siamo riusciti a collegare questo. Contatta l’assistenza e ti aiuteremo."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Nuovo",
+    "read_full": "Leggi il changelog completo",
+    "close": "Chiudi"
   }
 }

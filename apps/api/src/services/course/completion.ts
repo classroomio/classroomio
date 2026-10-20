@@ -16,9 +16,11 @@ import {
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
 import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
+import { getCourseOrganizationId } from '@cio/db/queries/tag';
+import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
-import { orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
+import { assertCertificatesEnabled, orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
 
 export type CertificationBlocker = {
   code:
@@ -239,6 +241,10 @@ export async function evaluateCourseCertification(
 
         await invalidateOrgStats(courseRow.orgId);
 
+        const completionEventData = { profileId, memberId: progress.groupMemberId, completedAt: earnedAt };
+        await emitWebhookEvent(courseRow.orgId, 'course.completed', { courseId, ...completionEventData });
+        await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', { courseId, ...completionEventData });
+
         scheduleCertificationCompletionWork({
           courseId,
           profileId,
@@ -271,6 +277,7 @@ export async function evaluateCourseCertification(
 
 /**
  * Server-side guard for PDF certificate download (must match dashboard eligibility).
+ * Throws 403 UPGRADE_REQUIRED when the org plan does not include certificates.
  */
 export async function assertCertificateDownloadAllowed(courseId: string, profileId: string): Promise<void> {
   const evaluation = await evaluateCourseCertification(courseId, profileId);
@@ -280,6 +287,13 @@ export async function assertCertificateDownloadAllowed(courseId: string, profile
   if (!courseRow?.certificate?.isDownloadable) {
     throw new AppError('Certificate download is not enabled for this course', ErrorCodes.VALIDATION_ERROR, 403);
   }
+
+  const orgId = await getCourseOrganizationId(courseId);
+  if (!orgId) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  await assertCertificatesEnabled(orgId);
 
   const hasEarnedPreviously = evaluation.certificateEarnedAt != null;
   const canDownload = hasEarnedPreviously || evaluation.eligibleForCertificate;

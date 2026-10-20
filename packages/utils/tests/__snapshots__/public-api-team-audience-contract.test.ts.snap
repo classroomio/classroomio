@@ -1,0 +1,346 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API team and audience update contract > ZPublicApiAssignAudienceCourses keeps its published shape > ZPublicApiAssignAudienceCourses 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "cohortIds": {
+      "items": {
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "courseIds": {
+      "items": {
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "profileIds": {
+      "items": {
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+        "type": "string",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+    "sendEmail": {
+      "default": true,
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "profileIds",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiAudienceMemberParam keeps its published shape > ZPublicApiAudienceMemberParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "memberId": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer",
+    },
+  },
+  "required": [
+    "memberId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiAudienceQuery keeps its published shape > ZPublicApiAudienceQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "completion": {
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed",
+      ],
+      "type": "string",
+    },
+    "enrollment": {
+      "enum": [
+        "enrolled",
+        "not_enrolled",
+      ],
+      "type": "string",
+    },
+    "excludeRecentJoiners": {
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "enum": [
+            "true",
+            "false",
+          ],
+          "type": "string",
+        },
+      ],
+      "default": true,
+    },
+    "inviteStatus": {
+      "enum": [
+        "active",
+        "pending",
+        "expired",
+        "revoked",
+      ],
+      "type": "string",
+    },
+    "lastActiveBefore": {
+      "enum": [
+        "7d",
+        "30d",
+        "90d",
+        "180d",
+        "never",
+      ],
+      "type": "string",
+    },
+    "lastLoginBefore": {
+      "enum": [
+        "7d",
+        "30d",
+        "90d",
+        "180d",
+        "never",
+      ],
+      "type": "string",
+    },
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "search": {
+      "type": "string",
+    },
+    "sortBy": {
+      "default": "createdAt",
+      "enum": [
+        "createdAt",
+        "name",
+        "email",
+        "lastLoginAt",
+        "lastActiveAt",
+      ],
+      "type": "string",
+    },
+    "sortOrder": {
+      "default": "desc",
+      "enum": [
+        "asc",
+        "desc",
+      ],
+      "type": "string",
+    },
+    "status": {
+      "default": "ACTIVE",
+      "enum": [
+        "ACTIVE",
+        "DEACTIVATED",
+        "ARCHIVED",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiCreateAudience keeps its published shape > ZPublicApiCreateAudience 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseIds": {
+      "items": {
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "email": {
+      "format": "email",
+      "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+      "type": "string",
+    },
+    "sendEmail": {
+      "default": true,
+      "description": "Email the invite. Default: true; false adds them without an email.",
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "email",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiTeamMemberParam keeps its published shape > ZPublicApiTeamMemberParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "memberId": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer",
+    },
+  },
+  "required": [
+    "memberId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiTeamMemberResponse keeps its published shape 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "email": {
+      "type": "string",
+    },
+    "id": {
+      "type": "number",
+    },
+    "name": {
+      "description": "Empty until the invited person creates an account",
+      "type": "string",
+    },
+    "profileId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "null until the invited person creates an account",
+    },
+    "roleId": {
+      "description": "1 = admin, 2 = tutor",
+      "type": "number",
+    },
+    "verified": {
+      "description": "false while the invite is still pending",
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "id",
+    "profileId",
+    "name",
+    "email",
+    "roleId",
+    "verified",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiTeamQuery keeps its published shape > ZPublicApiTeamQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiUpdateAudience keeps its published shape > ZPublicApiUpdateAudience 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Send email for a pending member or name for a joined member. A joined member's own email, password, username and avatar cannot be changed here; to change an admin's or tutor's role, use PUT /team/{memberId}.",
+  "properties": {
+    "email": {
+      "description": "Pending members only: corrects the invited email and re-sends the invite unless sendEmail is false",
+      "format": "email",
+      "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+      "type": "string",
+    },
+    "name": {
+      "description": "Joined members only: sets the full name on their profile. The profile is shared, so the name shows in every organization the person belongs to.",
+      "maxLength": 120,
+      "minLength": 3,
+      "type": "string",
+    },
+    "sendEmail": {
+      "default": true,
+      "description": "Whether to email the new invite when email changes",
+      "type": "boolean",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiUpdateTeamMember keeps its published shape > ZPublicApiUpdateTeamMember 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Send only the fields to change. Email, password, username and avatar belong to the person and cannot be changed here.",
+  "properties": {
+    "name": {
+      "description": "Joined members only: sets the full name on their profile. The profile is shared, so the name shows in every organization the person belongs to.",
+      "maxLength": 120,
+      "minLength": 3,
+      "type": "string",
+    },
+    "roleId": {
+      "anyOf": [
+        {
+          "const": 1,
+          "type": "number",
+        },
+        {
+          "const": 2,
+          "type": "number",
+        },
+      ],
+      "description": "1 = admin, 2 = tutor. You cannot change your own role, and the organization must keep at least one admin. A pending member's invite is updated to match.",
+    },
+  },
+  "type": "object",
+}
+`;

@@ -1,10 +1,11 @@
+import { UNGROUPED_SECTION_KEY } from './course-content';
 import { ContentType } from '../constants/content';
 
 export type ProgressionLockReason = 'teacher_locked' | 'progression_blocked';
 
 type NavigableCourseContent<T extends { order?: number | null }> = {
   grouped: boolean;
-  sections: Array<{ items: T[] }>;
+  sections: Array<{ id?: string; order?: number | null; items: T[] }>;
   items: T[];
 };
 
@@ -13,18 +14,17 @@ type NavigableCourseContent<T extends { order?: number | null }> = {
  */
 export function flattenNavigableItems<T extends { order?: number | null }>(content: NavigableCourseContent<T>): T[] {
   if (content.grouped) {
-    const flattenedListItems: T[] = [];
+    const rootEntries = content.sections.flatMap((section, sectionIndex) => {
+      const sortedItems = [...section.items].sort((left, right) => (left.order ?? 0) - (right.order ?? 0));
+      if (section.id === UNGROUPED_SECTION_KEY) {
+        return sortedItems.map((item) => ({ order: item.order ?? 0, items: [item] }));
+      }
 
-    for (const section of content.sections) {
-      const sortedSectionItems = section.items
-        .map((item, index) => ({ item, sortOrder: item.order ?? index }))
-        .sort((left, right) => left.sortOrder - right.sortOrder)
-        .map(({ item }) => item);
-
-      flattenedListItems.push(...sortedSectionItems);
-    }
-
-    return flattenedListItems;
+      return [{ order: section.order ?? sectionIndex + 1, items: sortedItems }];
+    });
+    rootEntries.push(...content.items.map((item) => ({ order: item.order ?? 0, items: [item] })));
+    rootEntries.sort((left, right) => left.order - right.order);
+    return rootEntries.flatMap((entry) => entry.items);
   }
 
   return [...content.items].sort((left, right) => (left.order ?? 0) - (right.order ?? 0));

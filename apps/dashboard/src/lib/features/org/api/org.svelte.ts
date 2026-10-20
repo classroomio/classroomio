@@ -31,6 +31,7 @@ import type {
   ToggleLinkInviteRequest,
   UndoBulkAudienceActionRequest,
   UpdateOrganizationRequest,
+  UpdateTeamMemberRoleRequest,
   TOrgUpdateForm
 } from '../utils/types';
 import type { EmailLocale, StudentEmailId } from '@cio/utils/email';
@@ -43,14 +44,15 @@ import type {
   TCourseReorder,
   TBulkAudienceAction,
   TImportAudienceMembers,
-  TUpdateOrganization
+  TUpdateOrganization,
+  TUpdateTeamMemberRole
 } from '@cio/utils/validation/organization';
 import { ZBulkAudienceAction, ZCreateOrganization, ZUpdateOrganization } from '@cio/utils/validation/organization';
 import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 
 import type { AccountOrg } from '$features/app/types';
 import type { GetTeamRequest } from '../utils/types';
-import { ROLE } from '@cio/utils/constants';
+import { ROLE, ErrorCodes } from '@cio/utils/constants';
 import { ROLE_LABEL } from '$lib/utils/constants/roles';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
@@ -622,15 +624,15 @@ class OrgApi extends BaseApiWithErrors {
    * @param emails Array of email addresses
    * @param roleId Role ID (ADMIN or TUTOR)
    */
-  async inviteTeamMembers(emails: string[], roleId: number) {
+  async inviteTeamMembers(emails: string[], roleId: number, confirmedStudentEmails: string[] = []) {
     return this.execute<InviteTeamRequest>({
       requestFn: () =>
         classroomio.organization.team.invite.$post({
-          json: { emails, roleId }
+          json: { emails, roleId, confirmedStudentEmails }
         }),
       logContext: 'inviting team members',
-      onSuccess: () => {
-        this.getOrgTeam();
+      onSuccess: (response) => {
+        if (response.data.queuedCount > 0) void this.getOrgTeam();
       },
       onError: (result) => {
         if (typeof result === 'string') {
@@ -640,6 +642,35 @@ class OrgApi extends BaseApiWithErrors {
         if ('error' in result && 'field' in result) {
           this.errors[result.field as string] = result.error;
         }
+      }
+    });
+  }
+
+  /**
+   * Changes another team member's organization role.
+   *
+   * @param memberId Member ID to update
+   * @param roleId Admin or tutor role id
+   */
+  async updateTeamMemberRole(memberId: number, roleId: TUpdateTeamMemberRole['roleId']) {
+    return this.execute<UpdateTeamMemberRoleRequest>({
+      requestFn: () =>
+        classroomio.organization.team[':memberId'].$patch({
+          param: { memberId: memberId.toString() },
+          json: { roleId }
+        }),
+      logContext: 'updating team member role',
+      onSuccess: async () => {
+        snackbar.success('snackbar.team_members.role_updated');
+        await this.getOrgTeam();
+      },
+      onError: (result) => {
+        if (typeof result !== 'string' && result.code === ErrorCodes.ORG_TEAM_LAST_ADMIN) {
+          snackbar.error('snackbar.team_members.last_admin');
+          return;
+        }
+
+        snackbar.error('snackbar.team_members.role_update_failed');
       }
     });
   }
@@ -907,9 +938,9 @@ class OrgApi extends BaseApiWithErrors {
 
   linkInvite = $state<OrgLinkInvite>(null);
 
-  async getLinkInvite() {
+  async getLinkInvite(roleId: number) {
     return this.execute<GetLinkInviteRequest>({
-      requestFn: () => classroomio.organization['link-invite'].$get(),
+      requestFn: () => classroomio.organization['link-invite'].$get({ query: { roleId: roleId.toString() } }),
       logContext: 'fetching link invite',
       onSuccess: (response) => {
         this.linkInvite = response.data;
@@ -932,9 +963,9 @@ class OrgApi extends BaseApiWithErrors {
     });
   }
 
-  async toggleLinkInvite(isRevoked: boolean) {
+  async toggleLinkInvite(roleId: number, isRevoked: boolean) {
     return this.execute<ToggleLinkInviteRequest>({
-      requestFn: () => classroomio.organization['link-invite'].$patch({ json: { isRevoked } }),
+      requestFn: () => classroomio.organization['link-invite'].$patch({ json: { roleId, isRevoked } }),
       logContext: 'toggling link invite',
       onSuccess: (response) => {
         this.linkInvite = response.data;

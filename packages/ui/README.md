@@ -194,6 +194,24 @@ Full-screen image viewer for screenshots and other detailed images. `ZoomableIma
 <ImageLightbox images={[{ src, alt }]} {labels} bind:open />
 ```
 
+### Board frame (`src/custom/board-frame/`)
+
+`BoardFrame` wraps one image in the ClassroomIO browser board used for help screenshots: browser chrome with three dots and a URL pill, the paper-colored board, a shelf and two feet. It mirrors the geometry in `apps/help/scripts/frame-screenshot.mjs`, so a framed image looks the same whether it is composited at build time or loaded at runtime. Pass `src`, `alt`, and optionally `url` (the text in the address pill, truncated with an ellipsis). The frame scales with its container width, and the image keeps its aspect ratio uncropped. See `Molecules/BoardFrame` in Storybook.
+
+```svelte
+<BoardFrame src={coverUrl} alt={title} url="feedback.classroomio.com/updates" />
+```
+
+### Changelog cover (`src/custom/changelog-cover/`)
+
+`ChangelogCover` is the fallback image for a changelog entry that has no cover. It draws a 1600×838 SVG in the brand style (sand background, the blue ClassroomIO mark and wordmark, a heavy Geist title with tight tracking, Geist Mono labels and a hairline) from `title`, with optional `label` (top right, default "Changelog") and `footer` (bottom left, for example a date). SVG text cannot wrap, so `layoutChangelogTitle` from `@cio/utils/functions/changelog-cover` wraps the title and steps the font size down for long ones, cutting a very long title with an ellipsis. The SVG fills its container (`preserveAspectRatio="xMidYMin slice"`, so a wide crop keeps the top row and trims from the bottom), so give the parent the aspect ratio. It inherits the page's Geist when loaded and falls back to system fonts otherwise. See `Molecules/ChangelogCover` in Storybook.
+
+```svelte
+<div class="aspect-video w-full overflow-hidden rounded-md border">
+  <ChangelogCover {title} footer="Oct 5, 2026" />
+</div>
+```
+
 ### Question type picker (`src/custom/question-type-picker/`)
 
 Marketing / demo widget: left-hand list of question types and a live **take**-mode preview using `ExerciseQuestion.QuestionRenderer`. Copy is English-only (no dashboard i18n). Also consumed by the **`@cio/embeds`** app as a CDN bundle (`apps/embeds`).
@@ -248,7 +266,7 @@ Presentational parts for an arbitrarily deep comment thread. All copy is passed 
 
 ### Live session card (`src/custom/live-session-card/`)
 
-Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.
+Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. When ended, a "Watch recording" button opens `recordingUrl` if one is set. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.
 
 ### Action popover (`src/custom/action-popover/`)
 
@@ -364,22 +382,22 @@ Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `B
 
 `BlockLoader`: four blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block under it.
 
-| Prop      | Type                | Default     | Description                                                                |
-| --------- | ------------------- | ----------- | -------------------------------------------------------------------------- |
-| `title`   | `string`            | `undefined` | Heading under the stack; also the accessible name when `label` is not set  |
-| `caption` | `string`            | `undefined` | Supporting line under the title                                            |
-| `label`   | `string`            | `undefined` | Accessible name when there is no `title`                                   |
-| `blocks`  | `BlockLoaderBlock[]`| 4 blocks    | `{ kind, title, tone: 'muted' \| 'tint' \| 'primary' \| 'dark', width }`   |
-| `blockText` | `boolean`         | `true`      | Show the kind and title inside each block; `false` gives plain blocks    |
-| `class`   | `string`            | `undefined` | Placement                                                                  |
+| Prop        | Type                 | Default     | Description                                                               |
+| ----------- | -------------------- | ----------- | ------------------------------------------------------------------------- |
+| `title`     | `string`             | `undefined` | Heading under the stack; also the accessible name when `label` is not set |
+| `caption`   | `string`             | `undefined` | Supporting line under the title                                           |
+| `label`     | `string`             | `undefined` | Accessible name when there is no `title`                                  |
+| `blocks`    | `BlockLoaderBlock[]` | 4 blocks    | `{ kind, title, tone: 'muted' \| 'tint' \| 'primary' \| 'dark', width }`  |
+| `blockText` | `boolean`            | `true`      | Show the kind and title inside each block; `false` gives plain blocks     |
+| `class`     | `string`             | `undefined` | Placement                                                                 |
 
 `CompactLoader`: three wordless blocks, so it works in any language.
 
-| Prop    | Type           | Default     | Description        |
-| ------- | -------------- | ----------- | ------------------ |
+| Prop    | Type           | Default     | Description         |
+| ------- | -------------- | ----------- | ------------------- |
 | `size`  | `'sm' \| 'md'` | `'md'`      | `sm` is 60% of `md` |
-| `label` | `string`       | `undefined` | Accessible name    |
-| `class` | `string`       | `undefined` | Placement          |
+| `label` | `string`       | `undefined` | Accessible name     |
+| `class` | `string`       | `undefined` | Placement           |
 
 The default block labels in `BlockLoader` ("LESSON", "Getting started", ...) are illustrative English copy; pass `blocks` with translated text where that matters. Pass `title`, `caption` and `label` from the host (`$t(...)` in the dashboard).
 
@@ -392,15 +410,15 @@ The default block labels in `BlockLoader` ("LESSON", "Getting started", ...) are
 
 Number input that emits live only for valid in-range values and never rewrites text while typing. Use it for every numeric field instead of `Number(value)`.
 
-| User does | Text shown | Value emitted |
-| --------- | ---------- | ------------- |
-| types a valid in-range number | as typed | that number, on the keystroke |
-| types an intermediate (`-`, `1.`, `1e`) | as typed | nothing |
-| types out of range (`150` in 0–100) | as typed | nothing until blur |
-| blurs or presses Enter | normalized (`100`; `3` for `2.5` integer) | the normalized value, if it changed |
-| clears an optional field | empty | `null`, on the keystroke |
-| clears a required field, then blurs | the value it had when focused is restored | that value, if it changed |
-| value changes from outside | re-seeded | — |
+| User does                               | Text shown                                | Value emitted                       |
+| --------------------------------------- | ----------------------------------------- | ----------------------------------- |
+| types a valid in-range number           | as typed                                  | that number, on the keystroke       |
+| types an intermediate (`-`, `1.`, `1e`) | as typed                                  | nothing                             |
+| types out of range (`150` in 0–100)     | as typed                                  | nothing until blur                  |
+| blurs or presses Enter                  | normalized (`100`; `3` for `2.5` integer) | the normalized value, if it changed |
+| clears an optional field                | empty                                     | `null`, on the keystroke            |
+| clears a required field, then blurs     | the value it had when focused is restored | that value, if it changed           |
+| value changes from outside              | re-seeded                                 | —                                   |
 
 Pass `onCommit` for follow-up work that must run only on blur or Enter with the normalized value (for example re-clamping a dependent field). It fires after the value settles, even when the value itself did not change.
 
@@ -412,6 +430,18 @@ Pass `onCommit` for follow-up work that must run only on blur or Enter with the 
 </script>
 
 <NumberField label="Points" integer min={1} bind:value={points} />
+```
+
+### Copy input (`src/custom/copy-input/`)
+
+Read-only `InputGroup` that shows a value with an inline Copy button. Focusing the input selects the value; the button switches to the copied label for two seconds. Use it to reveal a one-time secret, an invite link, or any value the user should copy rather than edit. The host passes translated labels.
+
+```svelte
+<script lang="ts">
+  import { CopyInput } from '@cio/ui/custom/copy-input';
+</script>
+
+<CopyInput value={secret} copyLabel={$t('automation.keys.reveal.copy')} copiedLabel={$t('automation.keys.reveal.copied')} />
 ```
 
 ### Hooks (`src/hooks/`)
@@ -692,3 +722,9 @@ When adding a new component to this package, follow these steps:
 - `jsrepo.json` - jsrepo configuration for component installation
 - `svelte.config.js` - Svelte configuration
 - `tsconfig.json` - TypeScript configuration
+
+### Public course mixed outline
+
+`PublicCourseSidebarSection.standalone` renders its items directly, without a section heading or collapse control. Group consecutive root lessons and exercises into one standalone entry, interleaved with section entries in course order. Standalone rows show the item type icon in the badge instead of a number, since numbers count position within a section. Standalone entries stay visible when `collapsibleSections` is enabled.
+
+`NumberBadge` renders its `children` snippet in place of `number`, for a badge that shows an icon.

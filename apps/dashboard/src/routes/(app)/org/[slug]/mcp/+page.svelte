@@ -1,6 +1,7 @@
 <script lang="ts">
   import { McpAutomationPage } from '$features/automation/pages';
   import { automationApi } from '$features/automation/api/automation.svelte';
+  import { MCP_DOCS_URL } from '$features/automation/utils/automation-utils';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
   import { Button } from '@cio/ui/base/button';
@@ -27,7 +28,7 @@
       <Page.Subtitle>{$t('automation.mcp.page_subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
     <Page.Action>
-      <Button variant="outline" href="https://classroomio.com/docs/mcp" target="_blank" rel="noopener noreferrer">
+      <Button variant="outline" href={MCP_DOCS_URL} target="_blank" rel="noopener noreferrer">
         <ArrowUpRightIcon size={16} />
         {$t('automation.mcp.view_docs')}
       </Button>

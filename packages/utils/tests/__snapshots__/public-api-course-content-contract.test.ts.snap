@@ -1,0 +1,612 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API course content request contract > ZPublicApiCourseLessonCommentParam keeps its published shape > ZPublicApiCourseLessonCommentParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "commentId": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer",
+    },
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "lessonId",
+    "commentId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonCommentsQuery keeps its published shape > ZPublicApiCourseLessonCommentsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "cursor": {
+      "description": "data.nextCursor from the previous page; omit for the newest comments",
+      "maxLength": 100,
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?(Z|[+-]\\d{2}(:?\\d{2})?)\\|\\d+$",
+      "type": "string",
+    },
+    "limit": {
+      "default": 10,
+      "description": "Comments per page, 1-50. Default: 10.",
+      "maximum": 50,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonHistoryQuery keeps its published shape > ZPublicApiCourseLessonHistoryQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "cursor": {
+      "description": "data.nextCursor from the previous page; omit for the newest versions",
+      "maxLength": 100,
+      "minLength": 1,
+      "type": "string",
+    },
+    "limit": {
+      "default": 10,
+      "description": "Versions per page, 1-50. Default: 10.",
+      "maximum": 50,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "locale": {
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+      ],
+      "type": "string",
+    },
+  },
+  "required": [
+    "locale",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonParam keeps its published shape > ZPublicApiCourseLessonParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "lessonId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonTranslationParam keeps its published shape > ZPublicApiCourseLessonTranslationParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "locale": {
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+      ],
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "lessonId",
+    "locale",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonTranslationsQuery keeps its published shape > ZPublicApiCourseLessonTranslationsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "locale": {
+      "description": "Only this language; the list is empty when it has no content",
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonsQuery keeps its published shape > ZPublicApiCourseLessonsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "sectionId": {
+      "description": "Only lessons in this section",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseSectionParam keeps its published shape > ZPublicApiCourseSectionParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "sectionId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "sectionId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseSectionsQuery keeps its published shape > ZPublicApiCourseSectionsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCreateCourseLessonComment keeps its published shape > ZPublicApiCreateCourseLessonComment 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "comment": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "comment",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCreateCourseSection keeps its published shape > ZPublicApiCreateCourseSection 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "moveUngrouped": {
+      "description": "Send true without order to add the section at the end and move every lesson and exercise that has no section into it; returns 400 when there is no such content",
+      "type": "boolean",
+    },
+    "order": {
+      "description": "Top-level position, starting at 1. Sections share these positions with lessons and exercises outside any section; the entry at that position and every later one move down one.",
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "title",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiDeleteCourseContent keeps its published shape > ZPublicApiDeleteCourseContent 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "items": {
+      "description": "An id may appear once per type",
+      "items": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "type": {
+            "enum": [
+              "LESSON",
+              "EXERCISE",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+        ],
+        "type": "object",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+  },
+  "required": [
+    "items",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiReorderCourseContent keeps its published shape > ZPublicApiReorderCourseContent 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "items": {
+      "description": "Sets each item's order and, with sectionId, moves it to another section (null for no section). Orders must be 1, 2, 3, … within each group; an id may appear once per type.",
+      "items": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "order": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "type": "integer",
+          },
+          "sectionId": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "type": {
+            "enum": [
+              "LESSON",
+              "EXERCISE",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+        ],
+        "type": "object",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+    "sections": {
+      "description": "Sets the order of these sections, numbered 1, 2, 3, …",
+      "items": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "order": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "type": "integer",
+          },
+        },
+        "required": [
+          "id",
+          "order",
+        ],
+        "type": "object",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiSetCourseLessonTranslation keeps its published shape > ZPublicApiSetCourseLessonTranslation 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "content": {
+      "type": "string",
+    },
+    "versionIntent": {
+      "description": "manual saves a named version (versionLabel); auto, the default, may merge into the current editing session",
+      "enum": [
+        "auto",
+        "manual",
+      ],
+      "type": "string",
+    },
+    "versionLabel": {
+      "description": "Name of a manual version",
+      "maxLength": 120,
+      "type": "string",
+    },
+  },
+  "required": [
+    "content",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiUpdateCourseContentLock keeps its published shape > ZPublicApiUpdateCourseContentLock 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "items": {
+      "description": "An id may appear once per type",
+      "items": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "isUnlocked": {
+            "type": "boolean",
+          },
+          "type": {
+            "enum": [
+              "LESSON",
+              "EXERCISE",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+          "isUnlocked",
+        ],
+        "type": "object",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+  },
+  "required": [
+    "items",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiUpdateCourseLessonComment keeps its published shape > ZPublicApiUpdateCourseLessonComment 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "comment": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "comment",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiUpdateCourseSection keeps its published shape > ZPublicApiUpdateCourseSection 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Send only the fields to change. To reorder several sections at once, use PUT /courses/{courseId}/content/reorder.",
+  "properties": {
+    "order": {
+      "description": "Top-level position, starting at 1. Sections share these positions with lessons and exercises outside any section; the entry at that position and every later one move down one.",
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content response contract > ZPublicApiCourseContentDeleteResponse keeps its published shape > ZPublicApiCourseContentDeleteResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "deletedLessonCompletions": {
+      "description": "Lesson completions deleted with them",
+      "type": "number",
+    },
+    "deletedSubmissions": {
+      "description": "Exercise submissions deleted with them",
+      "type": "number",
+    },
+    "items": {
+      "description": "The lessons and exercises deleted",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "type": {
+            "enum": [
+              "LESSON",
+              "EXERCISE",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "items",
+    "deletedSubmissions",
+    "deletedLessonCompletions",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content response contract > ZPublicApiCourseContentLockResponse keeps its published shape > ZPublicApiCourseContentLockResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "description": "Each item as stored after the change",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "isUnlocked": {
+            "type": "boolean",
+          },
+          "type": {
+            "enum": [
+              "LESSON",
+              "EXERCISE",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+          "isUnlocked",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "items",
+  ],
+  "type": "object",
+}
+`;

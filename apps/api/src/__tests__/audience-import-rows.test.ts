@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('@cio/core/services/webhook/emit', () => ({
+  emitWebhookEvent: vi.fn().mockResolvedValue(undefined)
+}));
+
 vi.mock('@cio/db/queries/organization', () => ({
   createOrganizationInvite: vi.fn(),
   createOrganizationInviteAudits: vi.fn().mockResolvedValue(undefined),

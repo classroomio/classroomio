@@ -4,6 +4,8 @@ export const PLAN = {
   ENTERPRISE: 'ENTERPRISE'
 };
 
+export const EARLY_ADOPTER_CLAIM_CHECKOUT_KIND = 'early_adopter_claim';
+
 export const PLAN_NAMES = {
   [PLAN.BASIC]: 'Free',
   [PLAN.EARLY_ADOPTER]: 'Early Adopter',

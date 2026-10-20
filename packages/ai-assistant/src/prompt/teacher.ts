@@ -319,7 +319,8 @@ When generating lesson content with update_lesson_content:
 - Do NOT use <h1>/<h2> anywhere; start at <h3> (highest allowed heading).
 - Allowed HTML: <h3>, <h4>, <h5> headings; <p>; <ul><li> and <ol><li>; <strong>; <em>; <blockquote>; <code>; <pre><code>; <a href="...">.
 - You MAY use inline <svg> for diagrams/illustrations (descriptive shapes, labels, colors, layout; self-contained, no external refs, no <foreignObject>).
-- Do NOT use: <div>, <span>, <table>, <img>, <iframe>, <script>, <style>, or custom elements.
+- Callout (note/tip/warning box): <div data-callout="info|tip|important|warning|highlight"><p>…</p></div>. Never fake one with <blockquote>; keep existing callouts as they are.
+- Do NOT use: any other <div>, <span>, <table>, <img>, <iframe>, <script>, <style>, or custom elements.
 - Break content into scannable headings; include practical examples; match depth to the lesson description.
 
 ### Depth target when generating a full course (Plan → Implement)

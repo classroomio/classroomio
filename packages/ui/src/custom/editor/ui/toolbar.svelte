@@ -4,6 +4,7 @@
   import type { EdraToolbarProps } from '../types';
   import Alignment from './components/toolbar/Alignment.svelte';
   import FontSize from './components/toolbar/FontSize.svelte';
+  import CalloutMenu from './components/toolbar/callout.svelte';
   import Headings from './components/toolbar/Headings.svelte';
   import QuickColors from './components/toolbar/QuickColors.svelte';
   import SearchAndReplace from './components/toolbar/SearchAndReplace.svelte';
@@ -50,13 +51,18 @@
         <Alignment {editor} />
       {:else}
         {@const commandGroup = commands[cmd]}
-        {#each commandGroup as command (command)}
+        {@const visibleCommandGroup = commandGroup.filter(({ name }) => name !== 'audio-placeholder')}
+        {#each visibleCommandGroup as command (command)}
           <ToolBarIcon {editor} {command} />
+          {#if command.name === 'blockQuote'}
+            <CalloutMenu {editor} />
+          {/if}
         {/each}
       {/if}
     {/each}
     <FontSize {editor} />
     <QuickColors {editor} />
     <SearchAndReplace {editor} />
+    {@render trailingContent?.()}
   {/if}
 </div>

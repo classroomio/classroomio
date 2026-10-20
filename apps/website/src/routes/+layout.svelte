@@ -2,6 +2,7 @@
   import { dev } from '$app/environment';
   import { page } from '$app/state';
   import { Footer, Navigation, NotFound } from '$lib/components';
+  import { initPosthog } from '$lib/utils/posthog/browser';
   import { initUserJot } from '$lib/utils/userjot';
   import extend from 'just-extend';
   import { onMount } from 'svelte';
@@ -17,6 +18,7 @@
       return;
     }
 
+    initPosthog();
     initUserJot();
   });
 

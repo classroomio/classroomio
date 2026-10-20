@@ -3,11 +3,7 @@ import {
   ZAutomationDraftTagAssignment,
   ZAutomationDraftTagParam
 } from '@cio/utils/validation/tag';
-import {
-  ZCourseContentReorder,
-  ZCourseContentReorderBase,
-  ZCourseLandingPageUpdate
-} from '@cio/utils/validation/course';
+import { ZCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import {
   ZCourseImportCourseParam,
   ZCourseImportDraftCreate,
@@ -18,17 +14,9 @@ import {
   ZCourseImportDraftPublishToCourseBase,
   ZCourseImportDraftUpdate
 } from '@cio/utils/validation/course-import';
-import {
-  ZExerciseCreate,
-  ZExerciseFromTemplate,
-  ZExerciseGetParam,
-  ZExerciseListQuery,
-  ZExerciseUpdate
-} from '@cio/utils/validation/exercise';
 
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { formatEnabledQuestionTypesGuide } from '@cio/question-types';
 import { ZGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 
@@ -40,34 +28,7 @@ export const ZTagCourseDraftToolInput = ZAutomationDraftTagAssignment.extend({
   draftId: ZAutomationDraftTagParam.shape.draftId
 });
 
-export const ZListCourseExercisesToolInput = ZExerciseListQuery.extend({
-  courseId: ZCourseImportCourseParam.shape.courseId
-});
-
-export const ZGetCourseExerciseToolInput = ZExerciseGetParam.extend({
-  courseId: ZCourseImportCourseParam.shape.courseId
-});
-
-export const ZCreateCourseExerciseToolInput = ZExerciseCreate.omit({
-  courseId: true
-}).extend({
-  courseId: ZCourseImportCourseParam.shape.courseId
-});
-
-export const ZCreateCourseExerciseFromTemplateToolInput = ZExerciseFromTemplate.extend({
-  courseId: ZCourseImportCourseParam.shape.courseId
-});
-
-export const ZUpdateCourseExerciseToolInput = ZExerciseUpdate.extend({
-  courseId: ZCourseImportCourseParam.shape.courseId,
-  exerciseId: ZExerciseGetParam.shape.exerciseId
-});
-
 export const ZUpdateCourseLandingPageToolInput = ZCourseLandingPageUpdate.extend({
-  courseId: ZCourseImportCourseParam.shape.courseId
-});
-
-export const ZReorderCourseContentToolInput = ZCourseContentReorderBase.extend({
   courseId: ZCourseImportCourseParam.shape.courseId
 });
 
@@ -92,27 +53,19 @@ const getCourseStructureShape = ZCourseImportCourseParam.shape as unknown as Zod
 const getCourseDraftShape = ZCourseImportDraftGetParam.shape as unknown as ZodRawShapeCompat;
 const updateCourseDraftShape = ZUpdateCourseDraftToolInput.shape as unknown as ZodRawShapeCompat;
 const tagCourseDraftShape = ZTagCourseDraftToolInput.shape as unknown as ZodRawShapeCompat;
-const listCourseExercisesShape = ZListCourseExercisesToolInput.shape as unknown as ZodRawShapeCompat;
-const getCourseExerciseShape = ZGetCourseExerciseToolInput.shape as unknown as ZodRawShapeCompat;
-const createCourseExerciseShape = ZCreateCourseExerciseToolInput.shape as unknown as ZodRawShapeCompat;
-const createCourseExerciseFromTemplateShape =
-  ZCreateCourseExerciseFromTemplateToolInput.shape as unknown as ZodRawShapeCompat;
-const updateCourseExerciseShape = ZUpdateCourseExerciseToolInput.shape as unknown as ZodRawShapeCompat;
 const updateCourseLandingPageShape = ZUpdateCourseLandingPageToolInput.shape as unknown as ZodRawShapeCompat;
-const reorderCourseContentShape = ZReorderCourseContentToolInput.shape as unknown as ZodRawShapeCompat;
 const publishCourseDraftShape = ZPublishCourseDraftToolInput.shape as unknown as ZodRawShapeCompat;
 const publishCourseDraftToExistingCourseShape =
   ZPublishCourseDraftToExistingCourseToolInput.shape as unknown as ZodRawShapeCompat;
 const tagCoursesShape = ZAutomationCourseTagAssignment.shape as unknown as ZodRawShapeCompat;
 
-const SUPPORTED_QUESTION_TYPES_GUIDE = formatEnabledQuestionTypesGuide();
-const LESSON_HTML_GUIDE =
-  'For draft lesson HTML, put only the lesson body in lessonLanguages[].content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content. To attach a video to a lesson, set lessons[].videos[] with a { type, link } entry (type is one of youtube, vimeo, or generic for a hosted URL); uploading a local video file is not yet available through this tool.';
+const DRAFT_VIDEO_HINT =
+  'A local video file can only be attached after publish, with upload_video and then create_lesson or update_lesson.';
 
 export function registerCourseDraftTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_org_courses',
-    'List all courses in the authenticated organization. Use this when the user refers to a course by name and you need to discover the available course IDs first.',
+    "List the organization's courses. Use it to find a course id when the user names a course.",
     listOrganizationCoursesShape,
     async (args) => {
       const query = ZGetOrganizationCoursesQuery.parse(args);
@@ -123,7 +76,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'get_course_structure',
-    'Read the current live course structure. Use this before creating a fresh draft for post-publish edits.',
+    "Get a live course's current structure. Read it before creating a fresh draft for post-publish edits.",
     getCourseStructureShape,
     async (args) => {
       const { courseId } = ZCourseImportCourseParam.parse(args);
@@ -134,7 +87,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'update_course_landing_page',
-    'Update landing-page-facing course fields on a live course, including headline copy, overview, requirements, goals, pricing, reviews, instructor information, and the course image. Use imageUrl to set an explicit cover image, or set generateImage/imageQuery to fetch a random Unsplash-based image.',
+    "Update a live course's landing page fields. Use imageUrl to set an explicit cover image, or generateImage/imageQuery to fetch a random Unsplash-based image.",
     updateCourseLandingPageShape,
     async (args) => {
       const { courseId, ...payload } = ZUpdateCourseLandingPageToolInput.parse(args);
@@ -144,20 +97,8 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
   );
 
   server.tool(
-    'reorder_course_content',
-    'Batch reorder live course sections and lesson or exercise content without creating a draft. Use this for section ordering or moving/reordering lessons and exercises between sections. For items, pass type as LESSON or EXERCISE and use sectionId to move between sections or null for ungrouped content.',
-    reorderCourseContentShape,
-    async (args) => {
-      const { courseId, ...rawPayload } = ZReorderCourseContentToolInput.parse(args);
-      const payload = ZCourseContentReorder.parse(rawPayload);
-      const result = await apiClient.reorderCourseContent(courseId, payload);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
     'create_course_draft',
-    `Create a new unpublished course draft from structured course JSON. Use this before the first publish. ${LESSON_HTML_GUIDE}`,
+    `Create an unpublished course draft from structured course JSON, before the first publish. ${DRAFT_VIDEO_HINT}`,
     createCourseDraftShape,
     async (args) => {
       const payload = ZCourseImportDraftCreate.parse(args);
@@ -168,7 +109,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'create_course_draft_from_course',
-    'Create a fresh draft from an existing live course. Use this after a course has already been published and the user wants more changes.',
+    'Create a fresh draft from a live course, to make more changes after it was published.',
     createCourseDraftFromCourseShape,
     async (args) => {
       const payload = ZCourseImportDraftCreateFromCourse.parse(args);
@@ -179,7 +120,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'get_course_draft',
-    'Fetch an existing draft. Draft responses include status and publishedCourseId so you can decide whether to keep editing the draft or seed a fresh one from the live course.',
+    'Get a draft with its status and publishedCourseId. Use them to decide whether to keep editing it or start a fresh draft from the live course.',
     getCourseDraftShape,
     async (args) => {
       const { draftId } = ZCourseImportDraftGetParam.parse(args);
@@ -189,63 +130,8 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
   );
 
   server.tool(
-    'list_course_exercises',
-    'List exercises for a live course, optionally filtered by lessonId or sectionId.',
-    listCourseExercisesShape,
-    async (args) => {
-      const { courseId, ...query } = ZListCourseExercisesToolInput.parse(args);
-      const result = await apiClient.listCourseExercises(courseId, query);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'get_course_exercise',
-    'Fetch a single exercise from a live course, including its questions and options.',
-    getCourseExerciseShape,
-    async (args) => {
-      const { courseId, exerciseId } = ZGetCourseExerciseToolInput.parse(args);
-      const result = await apiClient.getCourseExercise(courseId, exerciseId);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'create_course_exercise',
-    `Create a new exercise directly on a live course. Use this for adding exercises after a course has already been published. ${SUPPORTED_QUESTION_TYPES_GUIDE}`,
-    createCourseExerciseShape,
-    async (args) => {
-      const { courseId, ...payload } = ZCreateCourseExerciseToolInput.parse(args);
-      const result = await apiClient.createCourseExercise(courseId, payload);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'create_course_exercise_from_template',
-    'Create a new exercise on a live course from an existing template.',
-    createCourseExerciseFromTemplateShape,
-    async (args) => {
-      const { courseId, ...payload } = ZCreateCourseExerciseFromTemplateToolInput.parse(args);
-      const result = await apiClient.createCourseExerciseFromTemplate(courseId, payload);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'update_course_exercise',
-    `Update an existing exercise on a live course, including questions and options. ${SUPPORTED_QUESTION_TYPES_GUIDE}`,
-    updateCourseExerciseShape,
-    async (args) => {
-      const { courseId, exerciseId, ...payload } = ZUpdateCourseExerciseToolInput.parse(args);
-      const result = await apiClient.updateCourseExercise(courseId, exerciseId, payload);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
     'update_course_draft',
-    `Update an unpublished draft. If the draft is already published, do not keep editing it blindly; create a fresh draft from the live course first. ${LESSON_HTML_GUIDE}`,
+    `Update an unpublished draft; once it is published, create a fresh draft from the live course instead. ${DRAFT_VIDEO_HINT}`,
     updateCourseDraftShape,
     async (args) => {
       const { draftId, ...payload } = ZUpdateCourseDraftToolInput.parse(args);
@@ -256,7 +142,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'tag_course_draft',
-    'Attach human-readable tags to a draft before publish. The tags are stored on the draft and applied during publish.',
+    'Attach tags to a draft; they are applied when it is published.',
     tagCourseDraftShape,
     async (args) => {
       const { draftId, ...payload } = ZTagCourseDraftToolInput.parse(args);
@@ -267,7 +153,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'publish_course_draft',
-    'Publish an unpublished draft as a new live course. The result includes courseId and courseUrl. After publish, future major edits should usually start from a fresh draft created from the live course.',
+    'Publish an unpublished draft as a new live course, returning its courseId and courseUrl. Start later major edits from a fresh draft of the live course.',
     publishCourseDraftShape,
     async (args) => {
       const { draftId, ...payload } = ZPublishCourseDraftToolInput.parse(args);
@@ -278,7 +164,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'publish_course_draft_to_existing_course',
-    'Apply a fresh draft back onto an existing live course. Use this after reading the live course and creating a new draft from it.',
+    'Apply a draft back onto an existing live course. Create that draft from the live course first.',
     publishCourseDraftToExistingCourseShape,
     async (args) => {
       const { draftId, ...payload } = ZPublishCourseDraftToExistingCourseToolInput.parse(args);
@@ -289,7 +175,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'tag_courses',
-    'Assign tags directly to one or more live courses by name. Default mode is merge, so existing tags are preserved unless replace is requested.',
+    'Assign tags to one or more live courses by name. Existing tags are kept unless mode is replace.',
     tagCoursesShape,
     async (args) => {
       const payload = ZAutomationCourseTagAssignment.parse(args);

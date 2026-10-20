@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getCourseOutline } from '@cio/utils/functions/course-content';
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
   import LockIcon from '@lucide/svelte/icons/lock';
@@ -15,10 +16,11 @@
   } from '$features/course/utils/content-navigation';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
-  import { RadioIcon } from '@cio/ui/custom/moving-icons';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { SvelteSet } from 'svelte/reactivity';
+  import { getSessionIndicatorPhase, liveSessionClock } from '$features/course/utils/live-session-phase';
+  import LiveSessionIndicator from '$features/course/components/lesson/live-session-indicator.svelte';
 
   interface Props {
     path: string;
@@ -82,28 +84,20 @@
   }
 </script>
 
-{#snippet liveSessionDot()}
-  <span
-    class="shrink-0"
-    title={$t('course.navItem.lessons.session.live_indicator')}
-    aria-label={$t('course.navItem.lessons.session.live_indicator')}
-  >
-    <RadioIcon size={14} color="#ef4444" />
-  </span>
-{/snippet}
-
 {#snippet contentItemIndicators(
   contentItem: (typeof contentData.items)[number],
   isContentLocked: boolean,
   isLockedForStudent: boolean
 )}
+  {@const sessionPhase =
+    contentItem.type === ContentType.Lesson ? getSessionIndicatorPhase(contentItem, $liveSessionClock) : null}
   {#if contentItem.isComplete}
     <span class="shrink-0">
       <CircleCheckIcon size={16} filled />
     </span>
   {/if}
-  {#if contentItem.type === ContentType.Lesson && contentItem.callUrl}
-    {@render liveSessionDot()}
+  {#if sessionPhase === 'live'}
+    <LiveSessionIndicator phase={sessionPhase} />
   {:else if isContentLocked || isLockedForStudent}
     <span
       class="shrink-0"
@@ -112,6 +106,8 @@
     >
       <LockIcon size={12} />
     </span>
+  {:else if sessionPhase}
+    <LiveSessionIndicator phase={sessionPhase} />
   {/if}
 {/snippet}
 
@@ -166,39 +162,46 @@
 
 <nav class="flex flex-col gap-1 {className}" aria-label={$t('course.navItems.nav_content')}>
   {#if contentData.grouped}
-    {#each contentData.sections as section (section.id)}
-      {@const sectionProgress = getContentItemsProgress(section.items)}
-      {@const sectionOpen = isSectionOpen(section.id)}
-      <Collapsible.Root
-        open={sectionOpen}
-        onOpenChange={(open) => handleSectionOpenChange(section.id, open)}
-        class="group/section"
-      >
-        <Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium">
-          <CourseContentIcon type={ContentType.Section} size={12} />
-          <span class="min-w-0 flex-1 truncate">{section.title}</span>
-          <div class="ml-auto flex items-center gap-1">
-            {#if sectionProgress.total > 0}
-              <span
-                class="shrink-0 text-[11px] font-medium tabular-nums {sectionProgress.completed ===
-                sectionProgress.total
-                  ? 'ui:text-green-600'
-                  : 'ui:text-muted-foreground'}"
-              >
-                {formatSectionCompletionLabel(sectionProgress.completed, sectionProgress.total)}
-              </span>
-            {/if}
-            <ChevronRightIcon
-              class="text-muted-foreground size-3.5 shrink-0 transition-transform duration-200 group-data-[state=open]/section:rotate-90"
-            />
-          </div>
-        </Collapsible.Trigger>
-        <Collapsible.Content class="ml-2 flex flex-col gap-0.5 border-l pl-2">
-          {#each section.items as contentItem (contentItem.id)}
-            {@render contentItemRow(contentItem)}
-          {/each}
-        </Collapsible.Content>
-      </Collapsible.Root>
+    {#each getCourseOutline(contentData) as entry (entry.id)}
+      {#if entry.kind === 'item'}
+        {@render contentItemRow(entry.item)}
+      {:else}
+        {@const section = entry.section}
+        {@const sectionProgress = getContentItemsProgress(section.items)}
+        {@const sectionOpen = isSectionOpen(section.id)}
+        <Collapsible.Root
+          open={sectionOpen}
+          onOpenChange={(open) => handleSectionOpenChange(section.id, open)}
+          class="group/section"
+        >
+          <Collapsible.Trigger
+            class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium"
+          >
+            <CourseContentIcon type={ContentType.Section} size={12} />
+            <span class="min-w-0 flex-1 truncate">{section.title}</span>
+            <div class="ml-auto flex items-center gap-1">
+              {#if sectionProgress.total > 0}
+                <span
+                  class="shrink-0 text-[11px] font-medium tabular-nums {sectionProgress.completed ===
+                  sectionProgress.total
+                    ? 'ui:text-green-600'
+                    : 'ui:text-muted-foreground'}"
+                >
+                  {formatSectionCompletionLabel(sectionProgress.completed, sectionProgress.total)}
+                </span>
+              {/if}
+              <ChevronRightIcon
+                class="text-muted-foreground size-3.5 shrink-0 transition-transform duration-200 group-data-[state=open]/section:rotate-90"
+              />
+            </div>
+          </Collapsible.Trigger>
+          <Collapsible.Content class="ml-2 flex flex-col gap-0.5 border-l pl-2">
+            {#each section.items as contentItem (contentItem.id)}
+              {@render contentItemRow(contentItem)}
+            {/each}
+          </Collapsible.Content>
+        </Collapsible.Root>
+      {/if}
     {/each}
   {:else}
     {#each contentData.items as contentItem (contentItem.id)}

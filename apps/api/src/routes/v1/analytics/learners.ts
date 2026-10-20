@@ -10,10 +10,13 @@ import { describeRoute, validator } from 'hono-openapi';
 export const v1LearnerAnalyticsRouter = new Hono().get(
   '/:profileId',
   describeRoute({
-    description: `A learner's progress and grades across every course they're enrolled in within this organization, with per-exercise results. profileId is the id the compliance and course student lists return. ${LIST_CACHE_NOTE} ${ORG_TEAM_RULE}`,
+    description: `Get a learner's progress and grades across their courses in the organization, with per-exercise results; ${ORG_TEAM_RULE}.`,
     tags: [TAG],
     responses: {
-      200: jsonResponse('Learner analytics returned successfully', itemResponse(ZPublicApiLearnerAnalyticsResponse)),
+      200: jsonResponse(
+        `Learner analytics returned; ${LIST_CACHE_NOTE}`,
+        itemResponse(ZPublicApiLearnerAnalyticsResponse)
+      ),
       400: errorResponses.badRequest,
       401: errorResponses.unauthorized,
       403: analyticsForbiddenResponses.orgTeam,

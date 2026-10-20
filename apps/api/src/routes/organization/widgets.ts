@@ -3,7 +3,13 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
-import { ZCreateWidget, ZRollbackWidget, ZUpdateWidget, ZWidgetIdParams } from '@cio/utils/validation/widget';
+import {
+  ZCreateWidget,
+  ZListWidgetsQuery,
+  ZRollbackWidget,
+  ZUpdateWidget,
+  ZWidgetIdParams
+} from '@cio/utils/validation/widget';
 import {
   archiveOrganizationWidget,
   createOrganizationWidget,
@@ -19,20 +25,22 @@ import {
 import { zValidator } from '@hono/zod-validator';
 
 export const widgetsRouter = new Hono()
-  .get('/', authMiddleware, orgTeamMemberMiddleware, async (c) => {
+  .get('/', authMiddleware, orgTeamMemberMiddleware, zValidator('query', ZListWidgetsQuery), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
-      const widgets = await listOrganizationWidgets(orgId);
-      return c.json({ success: true, data: widgets });
+      const query = c.req.valid('query');
+      const widgets = await listOrganizationWidgets(orgId, query);
+      return c.json({ success: true, data: widgets.items, pagination: widgets.pagination });
     } catch (error) {
       return handleError(c, error, 'Failed to fetch widgets');
     }
   })
-  .get('/archived', authMiddleware, orgTeamMemberMiddleware, async (c) => {
+  .get('/archived', authMiddleware, orgTeamMemberMiddleware, zValidator('query', ZListWidgetsQuery), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
-      const widgets = await listArchivedOrganizationWidgets(orgId);
-      return c.json({ success: true, data: widgets });
+      const query = c.req.valid('query');
+      const widgets = await listArchivedOrganizationWidgets(orgId, query);
+      return c.json({ success: true, data: widgets.items, pagination: widgets.pagination });
     } catch (error) {
       return handleError(c, error, 'Failed to fetch archived widgets');
     }

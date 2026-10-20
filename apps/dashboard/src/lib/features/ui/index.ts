@@ -9,6 +9,7 @@ export { default as CourseLandingPage } from './course-landing-page/course-landi
 export { default as ComingSoon } from './coming-soon.svelte';
 export { default as Confetti } from './confetti/confetti.svelte';
 export { default as DeleteModal } from './delete-modal.svelte';
+export { default as EarlyAdopterCallout } from './early-adopter-callout.svelte';
 export { default as HeroProfileCard } from './analytics/hero-profile-card.svelte';
 export { default as HTMLRender } from './html-render.svelte';
 export { default as Image } from './image.svelte';
