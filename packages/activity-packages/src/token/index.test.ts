@@ -157,4 +157,27 @@ describe('content tokens', () => {
       expect((error as PackageError).code).toBe('expired_token');
     }
   });
+
+  it('rejects foreign token types for content tokens', async () => {
+    const launchToken = await mintLaunchToken(
+      {
+        org: 'o1',
+        act: 'a1',
+        sub: 'p1',
+        unit: 'u1',
+        fmt: 'scorm12',
+        mode: 'normal',
+        anc: []
+      },
+      SECRET,
+      NOW
+    );
+
+    try {
+      await verifyContentToken(launchToken, SECRET, { org: 'o1', prefix: 'p' }, NOW);
+      expect.unreachable();
+    } catch (error) {
+      expect((error as PackageError).code).toBe('invalid_token');
+    }
+  });
 });

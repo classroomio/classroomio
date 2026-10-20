@@ -273,7 +273,7 @@ describe('mergeCmi and normalizeCommitCmi', () => {
   });
 
   it('measures the size limit in bytes, not characters', () => {
-    const multibyte = 'é'.repeat(70 * 1024);
+    const multibyte = 'é'.repeat(300 * 1024);
 
     try {
       normalizeCommitCmi({ seq: 1, cmi: { suspend_data: multibyte } });
@@ -282,9 +282,51 @@ describe('mergeCmi and normalizeCommitCmi', () => {
       expect((error as PackageError).code).toBe('invalid_commit');
     }
 
+    const over128Kb = normalizeCommitCmi({ seq: 1, cmi: { suspend_data: 'x'.repeat(150 * 1024) } });
+    expect(over128Kb.seq).toBe(1);
+
     const ascii = normalizeCommitCmi({ seq: 1, cmi: { suspend_data: 'x'.repeat(1000) } });
 
     expect(ascii.seq).toBe(1);
+  });
+
+  it('merges a commit that carries only changed fields', () => {
+    const stored = {
+      core: { lesson_status: 'incomplete', lesson_location: 'p1' },
+      suspend_data: 'long state',
+      interactions: { '0': { id: 'q1', result: 'correct' } }
+    };
+
+    expect(mergeCmi(stored, { core: { lesson_location: 'p2' }, interactions: { '1': { id: 'q2' } } })).toEqual({
+      core: { lesson_status: 'incomplete', lesson_location: 'p2' },
+      suspend_data: 'long state',
+      interactions: { '0': { id: 'q1', result: 'correct' }, '1': { id: 'q2' } }
+    });
+  });
+
+  it('keeps stored collection entries when a commit sends one entry by dotted key', () => {
+    const stored = { interactions: { '0': { id: 'q1' }, '1': { id: 'q2' } } };
+    const commit = normalizeCommitCmi({ seq: 2, cmi: { 'interactions.2.id': 'q3' } });
+
+    expect(mergeCmi(stored, commit.cmi)).toEqual({
+      interactions: { '0': { id: 'q1' }, '1': { id: 'q2' }, '2': { id: 'q3' } }
+    });
+    expect(mergeCmi({ list: ['a', 'b'] }, { list: { '1': 'c' } })).toEqual({ list: ['a', 'c'] });
+    expect(mergeCmi({ list: ['a', 'b'] }, { list: { other: 'c' } })).toEqual({ list: { other: 'c' } });
+  });
+
+  it('rejects a non-numeric segment once a container is an array', () => {
+    for (const cmi of [
+      { 'interactions.0.id': 'q1', 'interactions.foo.id': 'q2' },
+      { 'interactions.0.id': 'q1', 'interactions.foo': 'q2' }
+    ]) {
+      try {
+        normalizeCommitCmi({ seq: 1, cmi });
+        expect.unreachable();
+      } catch (error) {
+        expect((error as PackageError).code).toBe('invalid_commit');
+      }
+    }
   });
 });
 

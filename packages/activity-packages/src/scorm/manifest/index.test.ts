@@ -370,6 +370,27 @@ describe('scormLaunchUrl', () => {
   });
 });
 
+describe('launch href encoding', () => {
+  it('percent-encodes each path segment exactly once and keeps query and hash suffixes', () => {
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="T" version="1"
+  xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3">
+  <metadata><schema>ADL SCORM</schema><schemaversion>1.2</schemaversion></metadata>
+  <organizations default="ORG-1"><organization identifier="ORG-1"><title>Encoded</title>
+    <item identifier="ITEM-1" identifierref="RES-1"><title>SCO</title></item>
+  </organization></organizations>
+  <resources><resource identifier="RES-1" type="webcontent" adlcp:scormType="sco" href="module%201/100%25.html?lang=en#page2">
+    <file href="module 1/100%.html"/>
+  </resource></resources>
+</manifest>`;
+
+    const parsed = parseScormManifest(xml, ['module 1/100%.html']);
+
+    expect(parsed.units[0].href).toBe('module%201/100%25.html?lang=en#page2');
+  });
+});
+
 describe('parseScormManifest entities', () => {
   it('decodes XML entities in package and unit titles', () => {
     const parsed = parseScormManifest(readSource('scorm-timer-test'), ['index.html']);

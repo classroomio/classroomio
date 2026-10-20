@@ -645,12 +645,13 @@
         scormSetValue('cmi.core.score.min', 0);
         scormSetValue('cmi.core.score.max', 100);
         scormSetValue('cmi.core.session_time', finalTime);
-        scormSetValue('cmi.core.lesson_status', passed ? 'passed' : 'failed');
         if (apiVersion === '2004') {
           scormSetValue('cmi.success_status', passed ? 'passed' : 'failed');
           scormSetValue('cmi.completion_status', 'completed');
+        } else {
+          scormSetValue('cmi.core.lesson_status', passed ? 'passed' : 'failed');
         }
-        scormSetValue('cmi.core.exit', 'normal');
+        scormSetValue('cmi.core.exit', apiVersion === '2004' ? 'normal' : '');
 
         scormCommit();
         scormFinish();

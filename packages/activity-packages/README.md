@@ -1,6 +1,6 @@
 # Activity packages
 
-Pure helpers for packaged course content: SCORM manifest parsing, ZIP checks, run-time rules and activity tokens. Contract: `prd/scorm-support/README.md`.
+Pure helpers for packaged course content: SCORM manifest parsing, ZIP checks, run-time rules and activity tokens.
 
 ## Layout
 

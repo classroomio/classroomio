@@ -161,6 +161,16 @@ function attrTrue(node: unknown, name: string): boolean {
   return textOf(raw).toLowerCase() === 'true';
 }
 
+function attrFalse(node: unknown, name: string): boolean {
+  const raw = readAttr(node, name);
+
+  if (typeof raw === 'boolean') {
+    return !raw;
+  }
+
+  return textOf(raw).toLowerCase() === 'false';
+}
+
 function detectFormat(manifest: Record<string, unknown>): ScormPackageFormat {
   const metadata = (manifest['metadata'] ?? {}) as Record<string, unknown>;
   const schemaVersion = textOf(metadata['schemaversion']).trim();
@@ -220,6 +230,13 @@ function splitHrefSuffix(href: string): { path: string; suffix: string } {
   }
 
   return { path: href.slice(0, index), suffix: href.slice(index) };
+}
+
+function encodeHrefPath(path: string): string {
+  return path
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
 }
 
 function normalizeHrefPath(rawPath: string): string | null {
@@ -296,6 +313,10 @@ function readPassingScoreScaled(item: unknown): number | null {
 
 function readCompletionThreshold(item: unknown): number | null {
   for (const threshold of findDescendants(item, 'completionthreshold')) {
+    if (attrFalse(threshold, 'completedbymeasure')) {
+      return null;
+    }
+
     const parsed = parseScoreNumber(textOf(threshold));
     if (parsed !== null && parsed >= 0 && parsed <= 1) {
       return parsed;
@@ -307,6 +328,10 @@ function readCompletionThreshold(item: unknown): number | null {
     }
   }
 
+  if (attrFalse(item, 'completedbymeasure')) {
+    return null;
+  }
+
   const itemAttr = parseScoreNumber(textOf(readAttr(item, 'minprogressmeasure')));
   if (itemAttr !== null && itemAttr >= 0 && itemAttr <= 1) {
     return itemAttr;
@@ -316,10 +341,21 @@ function readCompletionThreshold(item: unknown): number | null {
 }
 
 function readFormatDetails(item: unknown, format: ScormPackageFormat): ScormUnitFormatDetails {
-  const maxTimeAllowed =
+  let maxTimeAllowed =
     findDescendants(item, 'maxtimeallowed')
       .map((node) => textOf(node))
       .find((text) => text !== '') ?? null;
+
+  if (!maxTimeAllowed) {
+    for (const limitCond of findDescendants(item, 'limitconditions')) {
+      const duration = textOf(readAttr(limitCond, 'attemptabsolutedurationlimit')).trim();
+      if (duration) {
+        maxTimeAllowed = duration;
+        break;
+      }
+    }
+  }
+
   const timeLimitAction =
     findDescendants(item, 'timelimitaction')
       .map((node) => textOf(node))
@@ -412,7 +448,7 @@ function collectUnits(
         title,
         position: collector.units.length,
         unitType,
-        href: `${fallback}${suffix}`,
+        href: `${encodeHrefPath(fallback)}${suffix}`,
         parameters,
         masteryScoreRaw: readMasteryScoreRaw(resource, item),
         passingScoreScaled: readPassingScoreScaled(item),
@@ -443,7 +479,12 @@ export function scormLaunchUrl(href: string, parameters: string | null): string 
     return href.includes('#') ? href : `${href}${trimmed}`;
   }
 
-  return href.includes('?') ? `${href}&${trimmed}` : `${href}?${trimmed}`;
+  const hashIndex = href.indexOf('#');
+  const base = hashIndex === -1 ? href : href.slice(0, hashIndex);
+  const hash = hashIndex === -1 ? '' : href.slice(hashIndex);
+
+  const updatedBase = base.includes('?') ? `${base}&${trimmed}` : `${base}?${trimmed}`;
+  return `${updatedBase}${hash}`;
 }
 
 /**

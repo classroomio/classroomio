@@ -45,8 +45,6 @@
         logEl.textContent += msg + '\n';
       }
       function vendorUrl() {
-        var override = new URLSearchParams(location.search).get('vendor');
-        if (override) return override;
         return 'http://127.0.0.1:3003/vendor-page.html';
       }
       if (api) {

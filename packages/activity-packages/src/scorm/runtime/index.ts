@@ -28,7 +28,7 @@ export interface ScormCommit {
   beacon?: boolean;
 }
 
-export const MAX_COMMIT_JSON_BYTES = 131072;
+export const MAX_COMMIT_JSON_BYTES = 524288;
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -61,6 +61,12 @@ function setPath(target: Record<string, unknown>, path: string, value: unknown):
 
   for (const segment of segments) {
     if (isUnsafeSegment(segment)) throw new PackageError('invalid_commit', { reason: 'unsafe_key' });
+    if (/^\d+$/.test(segment)) {
+      const pos = Number(segment);
+      if (!Number.isSafeInteger(pos) || pos < 0 || pos > 1000) {
+        throw new PackageError('invalid_commit', { reason: 'index_out_of_bounds' });
+      }
+    }
   }
 
   let current: Record<string, unknown> | unknown[] = target;
@@ -70,6 +76,10 @@ function setPath(target: Record<string, unknown>, path: string, value: unknown):
     const nextIsIndex = /^\d+$/.test(segments[index + 1]);
 
     if (Array.isArray(current)) {
+      if (!/^\d+$/.test(segment)) {
+        throw new PackageError('invalid_commit', { reason: 'array_index_required' });
+      }
+
       const position = Number(segment);
       if (!isPlainObject(current[position]) && !Array.isArray(current[position])) {
         current[position] = nextIsIndex ? [] : {};
@@ -86,6 +96,10 @@ function setPath(target: Record<string, unknown>, path: string, value: unknown):
   const last = segments[segments.length - 1];
 
   if (Array.isArray(current)) {
+    if (!/^\d+$/.test(last)) {
+      throw new PackageError('invalid_commit', { reason: 'array_index_required' });
+    }
+
     current[Number(last)] = value;
   } else {
     current[last] = value;
@@ -241,27 +255,55 @@ export function summarizeInteractions(cmi: ScormCmi): ScormInteractionSummary[] 
   return [];
 }
 
+function isIndexKey(key: string): boolean {
+  return /^\d+$/.test(key);
+}
+
+function mergeIntoArray(stored: unknown[], entries: Array<[number, unknown]>): unknown[] {
+  const merged = [...stored];
+
+  for (const [index, value] of entries) {
+    if (value === undefined) continue;
+
+    merged[index] = index < merged.length ? mergeValues(merged[index], value) : value;
+  }
+
+  return merged;
+}
+
+function mergeIntoObject(stored: ScormCmi, entries: Array<[string, unknown]>): ScormCmi {
+  const merged: ScormCmi = { ...stored };
+
+  for (const [key, value] of entries) {
+    if (isUnsafeSegment(key) || value === undefined) continue;
+
+    merged[key] = key in merged ? mergeValues(merged[key], value) : value;
+  }
+
+  return merged;
+}
+
 function mergeValues(stored: unknown, incoming: unknown): unknown {
   if (Array.isArray(incoming) && Array.isArray(stored)) {
-    const merged = [...stored];
+    return mergeIntoArray(stored, Array.from(incoming.entries()));
+  }
 
-    for (let index = 0; index < incoming.length; index += 1) {
-      merged[index] = index < merged.length ? mergeValues(merged[index], incoming[index]) : incoming[index];
-    }
+  if (Array.isArray(incoming) && isPlainObject(stored)) {
+    return mergeIntoObject(
+      stored,
+      Array.from(incoming.entries(), ([index, value]): [string, unknown] => [String(index), value])
+    );
+  }
 
-    return merged;
+  if (isPlainObject(incoming) && Array.isArray(stored) && Object.keys(incoming).every(isIndexKey)) {
+    return mergeIntoArray(
+      stored,
+      Object.entries(incoming).map(([key, value]): [number, unknown] => [Number(key), value])
+    );
   }
 
   if (isPlainObject(incoming) && isPlainObject(stored)) {
-    const merged: ScormCmi = { ...stored };
-
-    for (const [key, value] of Object.entries(incoming)) {
-      if (isUnsafeSegment(key)) continue;
-
-      merged[key] = key in merged ? mergeValues(merged[key], value) : value;
-    }
-
-    return merged;
+    return mergeIntoObject(stored, Object.entries(incoming));
   }
 
   return incoming;
@@ -269,10 +311,17 @@ function mergeValues(stored: unknown, incoming: unknown): unknown {
 
 /**
  * Merges one numbered commit over the stored CMI. Only present fields are
- * overwritten; suspend data and everything else stored whole is kept.
+ * overwritten, so a commit may carry just the fields that changed. A
+ * collection keeps its stored shape whether a commit sends it as an array or
+ * as an object keyed by index.
  */
 export function mergeCmi(stored: ScormCmi, commit: ScormCmi): ScormCmi {
   return mergeValues(stored, commit) as ScormCmi;
+}
+
+/** A commit is stale when its sequence does not advance past the stored one. */
+export function isStaleCommit(seq: number, storedSeq: number | null | undefined): boolean {
+  return storedSeq !== null && storedSeq !== undefined && seq <= storedSeq;
 }
 
 /**
@@ -564,7 +613,7 @@ const SCORM2004_DURATION_PATTERN =
  * `HH:MM:SS[.SS]` and SCORM 2004 ISO-8601 durations. Returns null when the
  * value is missing or malformed.
  */
-export function parseScormSessionTime(raw: unknown, format: ScormPackageFormat): number | null {
+export function parseScormSessionTime(raw: unknown, format: ScormPackageFormat | 'scorm2004'): number | null {
   if (typeof raw !== 'string') {
     return null;
   }
@@ -612,6 +661,32 @@ export function parseScormSessionTime(raw: unknown, format: ScormPackageFormat):
     Number(match[6] ?? 0);
 
   return Number.isFinite(total) && total >= 0 ? Math.floor(total) : null;
+}
+
+/**
+ * Formats a duration in seconds into a SCORM-compatible timespan:
+ * - SCORM 1.2: `HHHH:MM:SS` (e.g. `0001:15:30`)
+ * - SCORM 2004: ISO 8601 duration `PT[H]H[M]M[S]S` (e.g. `PT1H15M30S`, or `PT0S`)
+ */
+export function formatScormTime(seconds: number, format: ScormPackageFormat | 'scorm2004'): string {
+  const safeSeconds = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(safeSeconds / 3600);
+  const minutes = Math.floor((safeSeconds % 3600) / 60);
+  const remainingSeconds = safeSeconds % 60;
+
+  if (format === 'scorm12') {
+    return `${String(hours).padStart(4, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+  }
+
+  if (safeSeconds === 0) {
+    return 'PT0S';
+  }
+
+  let duration = 'PT';
+  if (hours > 0) duration += `${hours}H`;
+  if (minutes > 0) duration += `${minutes}M`;
+  if (remainingSeconds > 0 || (hours === 0 && minutes === 0)) duration += `${remainingSeconds}S`;
+  return duration;
 }
 
 export const MAX_SCORM_TRY_SECONDS = 8 * 3600;

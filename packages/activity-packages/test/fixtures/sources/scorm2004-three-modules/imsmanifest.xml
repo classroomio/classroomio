@@ -20,11 +20,13 @@
       </item>
       <item identifier="ITEM-3" identifierref="RES-3">
         <title>Final quiz</title>
-        <imsss:objectives>
-          <imsss:primaryObjective satisfiedByMeasure="true" objectiveID="PRIMARY-QUIZ">
-            <imsss:minNormalizedMeasure>0.8</imsss:minNormalizedMeasure>
-          </imsss:primaryObjective>
-        </imsss:objectives>
+        <imsss:sequencing>
+          <imsss:objectives>
+            <imsss:primaryObjective satisfiedByMeasure="true" objectiveID="PRIMARY-QUIZ">
+              <imsss:minNormalizedMeasure>0.8</imsss:minNormalizedMeasure>
+            </imsss:primaryObjective>
+          </imsss:objectives>
+        </imsss:sequencing>
       </item>
     </organization>
   </organizations>

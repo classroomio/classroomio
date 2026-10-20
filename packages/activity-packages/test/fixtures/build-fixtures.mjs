@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -36,6 +36,7 @@ export function buildFixtures() {
       throw new Error(`missing imsmanifest.xml: ${source}`);
     }
 
+    rmSync(out, { force: true });
     execFileSync('zip', ['-qrX', out, '.'], { cwd: source });
     built.push(out);
   }

@@ -21,10 +21,10 @@
             </imsss:primaryObjective>
           </imsss:objectives>
           <imsss:deliveryControls completionSetByContent="false" objectiveSetByContent="false" />
+          <imsss:limitConditions attemptAbsoluteDurationLimit="PT2M0S" />
         </imsss:sequencing>
         <adlcp:dataFromLMS>timer_duration=120</adlcp:dataFromLMS>
         <adlcp:timeLimitAction>exit,message</adlcp:timeLimitAction>
-        <adlcp:maxTimeAllowed>PT2M0S</adlcp:maxTimeAllowed>
       </item>
     </organization>
   </organizations>

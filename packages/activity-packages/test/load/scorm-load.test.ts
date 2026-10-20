@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   applyLmsRules,
   isScormRuleMet,
+  isStaleCommit,
   mergeCmi,
   moduleOutcomeFromCmi,
   normalizeCommitCmi
@@ -67,7 +68,7 @@ describe('scorm load: simulated commit burst', () => {
     let saved = 0;
 
     for (const seq of [1, 1, 2, 2, 3]) {
-      if (seq > commitSeq) {
+      if (!isStaleCommit(seq, commitSeq)) {
         commitSeq = seq;
         saved += 1;
       }
@@ -106,10 +107,22 @@ describe('scorm load: 500 MB package budget', () => {
     expect(zipByteLimit(500) * 3).toBe(1572864000);
   });
 
-  it('rejects a package over the limit before extraction starts', () => {
-    const zipBytes = zipByteLimit(500) + 1;
+  it('rejects entries whose total size exceeds three times the package limit', () => {
+    const maxTotalBytes = zipByteLimit(500) * 3;
+    const entry = {
+      name: 'content.bin',
+      size: maxTotalBytes + 1,
+      compressedSize: maxTotalBytes + 1,
+      isDirectory: false
+    };
 
-    expect(zipBytes).toBeGreaterThan(zipByteLimit(500));
+    expect(() =>
+      checkZipEntries([entry], {
+        maxEntries: SCORM_ZIP_LIMITS.maxEntries,
+        maxTotalBytes,
+        maxRatio: SCORM_ZIP_LIMITS.maxRatio
+      })
+    ).toThrowError(expect.objectContaining({ code: 'total_too_large' }));
   });
 
   it('rejects a zip bomb at a 100:1 ratio without reading its contents', () => {

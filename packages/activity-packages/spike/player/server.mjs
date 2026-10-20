@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { createReadStream, createWriteStream, existsSync } from 'node:fs';
+import { createReadStream, createWriteStream, existsSync, statSync } from 'node:fs';
 import { extname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
@@ -72,20 +72,24 @@ const fixture = ${JSON.stringify(fixture.launch)};
 const logEl = document.getElementById('log');
 const frame = document.getElementById('sco');
 let seq = 0;
+let api = null;
 function log(msg) { logEl.textContent += msg + '\\n'; }
-const api = new ${is12 ? 'Scorm12API' : 'Scorm2004API'}({
-  autocommit: true,
-  autocommitSeconds: 30,
-  lmsCommitUrl: '/stub/commit',
-  sendFullCommit: false,
-  includeCommitSequence: true,
-  selfReportSessionTime: false,
-  logLevel: 2
-});
-api.loadFromJSON({});
-if (${JSON.stringify(is12)}) { window.API = api; } else { window.API_1484_11 = api; }
-api.on(${JSON.stringify(is12 ? 'LMSCommit' : 'Commit')}, () => log('commit event, seq=' + seq));
+function createApi() {
+  api = new ${is12 ? 'Scorm12API' : 'Scorm2004API'}({
+    autocommit: true,
+    autocommitSeconds: 30,
+    lmsCommitUrl: '/stub/commit',
+    sendFullCommit: false,
+    includeCommitSequence: true,
+    selfReportSessionTime: false,
+    logLevel: 2
+  });
+  api.loadFromJSON({});
+  if (${JSON.stringify(is12)}) { window.API = api; } else { window.API_1484_11 = api; }
+  api.on(${JSON.stringify(is12 ? 'LMSCommit' : 'Commit')}, () => log('commit event, seq=' + ++seq));
+}
 function launch(path) {
+  createApi();
   frame.src = '/files/${fixtureName}/' + path;
   log('launched ' + path);
 }
@@ -97,10 +101,18 @@ document.querySelectorAll('[data-module]').forEach((btn) => {
   };
 });
 window.addEventListener('pagehide', () => {
+  const payload = JSON.stringify({ seq: ++seq, beacon: true, cmi: api.cmi });
+  if (payload.length > 60000) {
+    console.warn('spike: final beacon exceeds the 64 KiB quota; the last autocommit is the final save');
+    return;
+  }
   try {
-    const payload = JSON.stringify({ seq: ++seq, beacon: true, cmi: api.cmi });
-    navigator.sendBeacon('/stub/commit', payload);
-  } catch (e) { /* page is going away; nothing to report to */ }
+    if (!navigator.sendBeacon('/stub/commit', payload)) {
+      console.warn('spike: final beacon was not queued; the last autocommit is the final save');
+    }
+  } catch (e) {
+    console.warn('spike: final beacon failed', e);
+  }
 });
 launch(fixture);
 log('player ready, API exposed as ${is12 ? 'window.API' : 'window.API_1484_11'}');
@@ -146,14 +158,24 @@ function contentServer() {
     if (url.pathname.startsWith('/files/')) {
       const relative = normalize(url.pathname.slice('/files/'.length)).split(sep).join('/');
       const filePath = join(fixturesDir, relative);
+      const insideFixtures = filePath === fixturesDir || filePath.startsWith(fixturesDir + sep);
 
-      if (!filePath.startsWith(fixturesDir) || !existsSync(filePath)) {
+      if (!insideFixtures || !existsSync(filePath) || !statSync(filePath).isFile()) {
         send(res, 404, 'not found', 'text/plain; charset=utf-8');
         return;
       }
 
       res.writeHead(200, { 'content-type': contentTypes[extname(filePath)] ?? 'application/octet-stream' });
-      createReadStream(filePath).pipe(res);
+      const stream = createReadStream(filePath);
+      stream.on('error', (error) => {
+        console.error('spike: read failed', error.message);
+        if (!res.headersSent) {
+          send(res, 500, 'read failed', 'text/plain; charset=utf-8');
+          return;
+        }
+        res.destroy(error);
+      });
+      stream.pipe(res);
       return;
     }
 

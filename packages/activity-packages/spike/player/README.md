@@ -14,4 +14,4 @@ node spike/player/server.mjs
 
 The player serves the already-extracted sources in `test/fixtures/sources/` as `/files/<fixture>/…`, which is what an extracted package looks like. Commits append to the gitignored `.spike-commits.jsonl` and the stub answers `{ "result": true, "errorCode": 0 }`, the shape scorm-again expects.
 
-The three-module fixture renders a module menu that commits and terminates the outgoing module before swapping the iframe, which is the ordering question 8 asks about. The streamed launcher takes `?vendor=` to point at another vendor URL; it defaults to the local vendor origin.
+The three-module fixture renders a module menu that commits and terminates the outgoing module before swapping the iframe and creating a fresh API instance for the next SCO, which is the ordering question 8 asks about. The streamed launcher points at the fixed local vendor origin.

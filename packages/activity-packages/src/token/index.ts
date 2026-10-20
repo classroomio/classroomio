@@ -20,6 +20,7 @@ export interface ContentTokenClaims {
   p: string;
   anc: string[];
   wk: number;
+  typ?: string;
 }
 
 export const LAUNCH_TOKEN_TTL_SECONDS = 12 * 60 * 60;
@@ -211,7 +212,8 @@ export async function mintContentToken(
     org: input.org,
     p: input.prefix,
     anc: [...input.anc].sort(),
-    wk: isoWeekIndex(new Date(nowMs))
+    wk: isoWeekIndex(new Date(nowMs)),
+    typ: 'content'
   };
 
   return signToken(claims as unknown as Record<string, unknown>, secret);
@@ -236,6 +238,10 @@ export async function verifyContentToken(
 
   if (claims.org !== expected.org || claims.p !== expected.prefix) {
     throw new PackageError('invalid_token', { reason: 'wrong_scope' });
+  }
+
+  if (claims.typ !== undefined && claims.typ !== 'content') {
+    throw new PackageError('invalid_token', { reason: 'wrong_type' });
   }
 
   const age = isoWeekIndex(new Date(nowMs)) - claims.wk;

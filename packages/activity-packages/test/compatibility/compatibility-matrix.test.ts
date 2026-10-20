@@ -34,6 +34,8 @@ function hasUnzip(): boolean {
   }
 }
 
+const unzipIt = hasUnzip() ? it : it.skip;
+
 function zipEntries(zipPath: string): string[] {
   const output = execFileSync('unzip', ['-Z1', zipPath], { encoding: 'utf8' });
 
@@ -86,7 +88,7 @@ describe('compatibility matrix: hand-written fixtures', () => {
     expect(parsed.units.map((unit) => unit.position)).toEqual([0, 1, 2]);
     expect(parsed.units[2].passingScoreScaled).toBe(0.8);
     expect(parsed.units[0].passingScoreScaled).toBeNull();
-    expect(parsed.warnings).not.toContain('has_sequencing');
+    expect(parsed.warnings).toContain('has_sequencing');
   });
 
   it('reads the 1.2 mastery score that settles the automatic rule', () => {
@@ -289,7 +291,7 @@ describe('compatibility matrix: Rustici golf examples', () => {
     }
   });
 
-  it.each([
+  unzipIt.each([
     ['RuntimeMinimumCalls_SCORM12.zip', 18],
     ['RuntimeMinimumCalls_SCORM20043rdEdition.zip', 18]
   ])('parses %s with %i launchable modules', (zipName, expectedScoCount) => {
@@ -327,9 +329,7 @@ describe('compatibility matrix: Rustici golf examples', () => {
     expect(scormLaunchUrl(quiz!.href, quiz!.parameters)).toBe('shared/assessmenttemplate.html?questions=Playing');
   });
 
-  it('flags sequencing samples while keeping them launchable', () => {
-    if (!hasUnzip()) return;
-
+  unzipIt('flags sequencing samples while keeping them launchable', () => {
     const sequencing = golfZips.filter((name) => name.startsWith('Sequencing'));
     expect(sequencing.length).toBeGreaterThanOrEqual(5);
 
@@ -344,9 +344,7 @@ describe('compatibility matrix: Rustici golf examples', () => {
     }
   });
 
-  it('rejects asset-only golf packs with the nothing-to-track error', () => {
-    if (!hasUnzip()) return;
-
+  unzipIt('rejects asset-only golf packs with the nothing-to-track error', () => {
     for (const zipName of [
       'ContentPackagingOneFilePerSCO_SCORM12.zip',
       'ContentPackagingOneFilePerSCO_SCORM20043rdEdition.zip'

@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"/><title>SCORM 2004 timer 2min</title>
 <style>body{font-family:sans-serif;margin:1.5rem;line-height:1.5}#timer{font-size:2.5rem;font-weight:800;font-family:monospace}#log{white-space:pre-wrap;border:1px solid #999;padding:.5rem;min-height:6rem}button{margin:.2rem}</style></head>
-<body><h1>SCORM 2004 timer 2min</h1><p>2004 counterpart to scorm-timer-test: PT2M0S, timeLimitAction exit,message, success/completion split.</p><div id="timer">--:--</div><div><button id="b-init">Init</button><button id="b-start">Start 60s timer</button><button id="b-10s">10s fast test</button><button id="b-submit">Submit pass</button><button id="b-fail">Submit fail</button></div><div id="log"></div>
+<body><h1>SCORM 2004 timer 2min</h1><p>2004 counterpart to scorm-timer-test: PT2M0S, timeLimitAction exit,message, success/completion split.</p><div id="timer">--:--</div><div><button id="b-init">Init</button><button id="b-start">Start 120s timer</button><button id="b-10s">10s fast test</button><button id="b-submit">Submit pass</button><button id="b-fail">Submit fail</button></div><div id="log"></div>
 <script>
 function findApi(w){var n=0;while(w&&n<10){if(w.API_1484_11)return w.API_1484_11;if(w.API&&w.API.LMSInitialize)return w.API;if(w.parent===w)return null;w=w.parent;n++}return null}
 var api=null,logEl=document.getElementById('log'),remain=120,tid=null,start=Date.now(),is2004=false;
