@@ -608,7 +608,7 @@ export async function getProfileByGroupMemberId(groupMemberId: string): Promise<
 }
 
 /**
- * Sets when the learner first met certification threshold for this course membership.
+ * Sets when the learner first met the certification requirements for this course membership.
  */
 export async function setMemberCertificateEarned(memberId: string, earnedAt: string): Promise<TGroupmember | null> {
   try {

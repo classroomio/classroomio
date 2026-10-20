@@ -75,7 +75,7 @@ export const v1CourseCertificateRouter = new Hono()
         ),
         400: {
           description:
-            'Invalid path or body (including a deadline that is not an ISO 8601 datetime with a timezone), an empty body, a requiredExerciseId from another course, or a published compliance course left without a deadline'
+            'Invalid path or body (including a deadline that is not an ISO 8601 datetime with a timezone), an empty body, or a published compliance course left without a deadline'
         },
         401: errorResponses.unauthorized,
         403: courseForbiddenResponses.teamWrite,

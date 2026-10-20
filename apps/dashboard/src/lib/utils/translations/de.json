@@ -1106,6 +1106,9 @@
           "animation_none": "Keine"
         },
         "course_type_learn_more": "Erfahren Sie mehr",
+        "completion_rules_card_title": "Abschlussregeln",
+        "completion_rules_card_desc": "Legen Sie fest, wann Teilnehmende diesen Kurs abschließen und das Zertifikat erhalten. Compliance-Kurse verwenden die Frist außerdem als Fälligkeitsdatum für alle Teilnehmenden.",
+        "back_to_certificate_settings": "Zurück zu den Zertifikatseinstellungen",
         "welcome_email": {
           "title": "Willkommens-E-Mail",
           "description": "Passen Sie die E-Mail an, die Studierende nach der Anmeldung erhalten. Fügen Sie eine persönliche Notiz, Anweisungen oder einen Link zur Live-Sitzung hinzu.",
@@ -1123,7 +1126,7 @@
         "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
         "go_to_certificate_settings": "Gehen Sie zu Zertifikatseinstellungen",
         "completion_deadline_label": "Frist für den Abschluss des Kurses",
-        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen.",
+        "completion_deadline_helper": "Schüler müssen den Kurs vor diesem Datum und dieser Uhrzeit (Ortszeit) abschließen. Leer lassen, wenn es keine Frist geben soll.",
         "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
         "generate_link": "Neuen Link generieren",
         "open_link": "Link in neuem Tab öffnen",
@@ -3081,7 +3084,6 @@
         "later": "Schließen",
         "checking": "Berechtigung prüfen…",
         "not_eligible_title": "Fast da",
-        "retake_exercise": "Wiederholen Sie die Übung",
         "subtitle_no_certificate": "Herzlichen Glückwunsch – Sie haben diesen Kurs abgeschlossen."
       }
     },
@@ -3091,24 +3093,18 @@
     "certification": {
       "rules_heading": "Regeln",
       "deadline_label": "Zertifizierungsfrist",
-      "deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen.",
-      "threshold_label": "Mindestabschluss (%)",
-      "threshold_helper": "Kombinierter Unterrichts- und Übungsfortschritt, der zum Erwerb des Zertifikats erforderlich ist (0–100). Der Standardwert ist 100 %.",
-      "final_exercise_label": "Abschlussübung (optional)",
-      "final_exercise_none": "keine",
-      "final_exercise_helper": "Wenn festgelegt, müssen die Schüler zusätzlich zu der oben genannten Abschlussquote mindestens die Mindestpunktzahl für diese Übung erreichen (bester Versuch zählt).",
-      "min_exercise_score_label": "Mindestpunktzahl bei der Abschlussübung (%)",
-      "min_exercise_score_helper": "Die Punktzahl ist ein Prozentsatz der bei dieser Übung möglichen Gesamtpunktzahl (0–100).",
+      "deadline_helper": "Schüler müssen den Kurs vor diesem Datum und dieser Uhrzeit (Ortszeit) abschließen. Leer lassen, wenn es keine Frist geben soll.",
+      "completion_rules_heading": "Abschlussregeln",
+      "completion_rules_description": "Diese Regeln legen fest, wer dieses Zertifikat erhält. Sie werden im Tab „Einstellungen“ des Kurses festgelegt.",
+      "completion_rules_deadline": "Abschluss bis {date}",
+      "completion_rules_no_deadline": "Keine Frist",
+      "completion_rules_edit": "Abschlussregeln bearbeiten",
+      "completion_rules_upgrade": "Upgraden Sie, um Abschlussregeln zu bearbeiten",
       "blocker_progress": "Ihr Kursfortschritt beträgt {current}%; {required}% ist erforderlich.",
       "blocker_deadline": "Die Zertifizierungsfrist ist abgelaufen.",
       "blocker_no_content": "Für diesen Kurs sind keine Lektionen oder Übungen erforderlich.",
-      "blocker_final_not_submitted": "Reichen Sie die erforderliche Übung „{exerciseTitle}“ ein, um sich für das Zertifikat zu qualifizieren.",
-      "blocker_final_pending": "Ihr Versuch bei „{exerciseTitle}“ wird noch bewertet.",
-      "blocker_final_score": "Ihre beste Punktzahl bei „{exerciseTitle}“ beträgt {bestPercent} %; {requiredPercent}% ist erforderlich.",
-      "blocker_final_misconfigured": "Für die Zertifizierungsübung „{exerciseTitle}“ sind keine Punkte konfiguriert; Bitten Sie Ihren Lehrer, das Problem zu beheben.",
       "email_message_label": "E-Mail-Nachricht",
       "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!",
-      "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet.",
       "deadline_required": "Für Compliance-Kurse ist eine Abschlussfrist erforderlich, bevor sie veröffentlicht werden können.",
       "deadline_invalid": "Die Abschlussfrist des Kurses ist ungültig.",
       "deadline_required_enroll": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können."
@@ -6308,8 +6304,6 @@
       "settings": "Einstellungen",
       "certificate": "Zertifikat aktiviert",
       "deadline": "Frist {date}",
-      "threshold": "Schließen Sie {percent}% des Kurses ab",
-      "final_exercise": "Bestehen Sie „{title}“ mit {percent} %",
       "sequential": "Die Lektionen werden der Reihe nach freigeschaltet",
       "grading": "Ein Tutor bewertet die eingereichten Arbeiten",
       "comments_off": "Lektionskommentare sind deaktiviert",
@@ -6402,8 +6396,6 @@
         "bannerImage": "Titelbild",
         "welcomeEmail": "Willkommens-E-Mail",
         "completionDeadline": "Fertigstellungstermin",
-        "completionThreshold": "Abschlussschwelle",
-        "finalExercise": "Abschlussübung",
         "lessonTabsOrder": "Registerkarten für Lektionen",
         "contentGrouping": "Inhaltsgruppierung",
         "progression": "Fortschritt",
@@ -6432,8 +6424,7 @@
       "value": {
         "free": "Frei",
         "sequential": "Sequenziell",
-        "no_price": "Kostenlos",
-        "pass_mark": "Mindestpunktzahl {score} bestehen"
+        "no_price": "Kostenlos"
       },
       "template_label": "Vorlage",
       "yours_label": "Deins"

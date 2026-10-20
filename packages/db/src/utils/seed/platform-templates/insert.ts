@@ -6,8 +6,7 @@ import {
   createTemplateHighlights,
   getCourseBySeedKey,
   isCourseSlugTaken,
-  retireSeededTemplates,
-  updateCourse
+  retireSeededTemplates
 } from '@db/queries/course';
 import {
   createExerciseSections,
@@ -191,7 +190,10 @@ async function insertExercise(
         courseId,
         sectionId,
         order,
-        slug
+        slug,
+        completionPolicy: exercise.completionPolicy,
+        passThreshold: exercise.passThreshold,
+        allowMultipleAttempts: exercise.allowMultipleAttempts
       }
     ],
     dbClient
@@ -294,7 +296,6 @@ async function insertLaunchTemplate(orgId: string, fixture: LaunchTemplateFixtur
     dbClient
   );
 
-  let finalExerciseId: string | null = null;
   const itemSlugs = new Set<string>();
 
   for (const [sectionIndex, section] of fixture.sections.entries()) {
@@ -366,7 +367,7 @@ async function insertLaunchTemplate(orgId: string, fixture: LaunchTemplateFixtur
 
     for (const [exerciseIndex, exercise] of section.exercises.entries()) {
       const exerciseSlug = claimSlug(exercise.title, itemSlugs);
-      const exerciseId = await insertExercise(
+      await insertExercise(
         course.id,
         courseSectionId,
         exercise,
@@ -374,21 +375,7 @@ async function insertLaunchTemplate(orgId: string, fixture: LaunchTemplateFixtur
         exerciseSlug,
         dbClient
       );
-      if (exercise.final && exerciseId) finalExerciseId = exerciseId;
     }
-  }
-
-  if (finalExerciseId) {
-    await updateCourse(
-      course.id,
-      {
-        certificate: {
-          ...(fixture.certificate ?? {}),
-          requiredExerciseId: finalExerciseId
-        } as TNewCourse['certificate']
-      },
-      dbClient
-    );
   }
 
   await createTemplateHighlights(

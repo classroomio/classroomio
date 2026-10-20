@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
@@ -296,8 +297,7 @@ export const ZComplianceSettings = z.object({
   reminderDaysBefore: z.array(z.number().int().min(1).max(365)).max(10).optional().default([30, 7, 1]),
   isMandatory: z.boolean().optional().default(true),
   framework: z.enum(['HIPAA', 'OSHA', 'SOX', 'GDPR', 'PCI_DSS', 'FERPA', 'ISO', 'CUSTOM']).nullable().optional(),
-  maxRetakeAttempts: z.number().int().min(1).nullable().optional(),
-  passingScore: z.number().int().min(0).max(100).optional().default(80)
+  maxRetakeAttempts: z.number().int().min(1).nullable().optional()
 });
 export type TComplianceSettings = z.infer<typeof ZComplianceSettings>;
 
@@ -417,7 +417,7 @@ const ZCourseMetadataFields = z.object({
   liveSessionReminderOffsetsMinutes: ZLiveSessionReminderOffsets.optional(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
   isContentGroupingEnabled: z.boolean().optional(),
-  progressionMode: z.enum(['free', 'sequential']).optional(),
+  progressionMode: z.enum(COURSE_PROGRESSION_MODES).optional(),
   commentsEnabled: z.boolean().optional()
 });
 
@@ -445,9 +445,6 @@ export const ZCertificationSettings = z.object({
   design: ZCertificateDesign.optional(),
   /** ISO 8601 datetime string or null to clear */
   deadline: z.union([z.string().min(1), z.null()]).optional(),
-  threshold: z.number().int().min(0).max(100).optional(),
-  requiredExerciseId: z.union([z.string().uuid(), z.null()]).optional(),
-  exerciseMinScorePercent: z.number().int().min(0).max(100).nullable().optional(),
   emailMessage: z.string().max(5000).nullable().optional()
 });
 export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;

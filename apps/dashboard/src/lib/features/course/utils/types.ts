@@ -641,8 +641,6 @@ export type PreviewCourseTemplateSuccess = Extract<InferResponseType<PreviewCour
 export type CourseTemplatePreviewSettings = {
   certificate: boolean;
   deadline: string | null;
-  threshold: number | null;
-  finalExercise: { title: string; score: number } | null;
   sequential: boolean;
   grading: boolean;
   commentsOff: boolean;

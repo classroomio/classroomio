@@ -1106,6 +1106,9 @@
           "animation_none": "không có"
         },
         "course_type_learn_more": "Tìm hiểu thêm",
+        "completion_rules_card_title": "Quy tắc hoàn thành",
+        "completion_rules_card_desc": "Quyết định khi nào học viên hoàn thành khóa học này và nhận chứng chỉ. Các khóa học tuân thủ cũng dùng thời hạn này làm hạn chót của từng học viên.",
+        "back_to_certificate_settings": "Quay lại cài đặt chứng chỉ",
         "welcome_email": {
           "title": "Email chào mừng",
           "description": "Tùy chỉnh email sinh viên nhận được sau khi đăng ký. Thêm ghi chú cá nhân, hướng dẫn hoặc liên kết phiên trực tiếp.",
@@ -1123,7 +1126,7 @@
         "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
         "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ",
         "completion_deadline_label": "Thời hạn hoàn thành khóa học",
-        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
+        "completion_deadline_helper": "Học viên phải hoàn thành khóa học trước ngày và giờ này (giờ địa phương). Để trống nếu không có hạn chót.",
         "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
         "generate_link": "Tạo liên kết mới",
         "open_link": "Mở liên kết trong tab mới",
@@ -3081,7 +3084,6 @@
         "later": "Đóng",
         "checking": "Đang kiểm tra tính đủ điều kiện…",
         "not_eligible_title": "Gần như ở đó",
-        "retake_exercise": "Làm lại bài tập",
         "subtitle_no_certificate": "Xin chúc mừng - bạn đã hoàn thành khóa học này."
       }
     },
@@ -3091,24 +3093,18 @@
     "certification": {
       "rules_heading": "Quy tắc",
       "deadline_label": "Thời hạn chứng nhận",
-      "deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
-      "threshold_label": "Hoàn thành tối thiểu (%)",
-      "threshold_helper": "Cần có tiến độ kết hợp của bài học và bài tập để đạt được chứng chỉ (0–100). Mặc định là 100%.",
-      "final_exercise_label": "Bài tập cuối cùng (tùy chọn)",
-      "final_exercise_none": "không có",
-      "final_exercise_helper": "Khi được đặt ra, học sinh phải đạt ít nhất số điểm tối thiểu trong bài tập này (tính số lần thử tốt nhất) bên cạnh tỷ lệ hoàn thành ở trên.",
-      "min_exercise_score_label": "Điểm tối thiểu trong bài tập cuối cùng (%)",
-      "min_exercise_score_helper": "Điểm là tỷ lệ phần trăm của tổng số điểm có thể đạt được trong bài tập đó (0–100).",
+      "deadline_helper": "Học viên phải hoàn thành khóa học trước ngày và giờ này (giờ địa phương). Để trống nếu không có hạn chót.",
+      "completion_rules_heading": "Quy tắc hoàn thành",
+      "completion_rules_description": "Các quy tắc này quyết định ai nhận được chứng chỉ này. Chúng được thiết lập trong tab Cài đặt của khóa học.",
+      "completion_rules_deadline": "Hoàn thành chậm nhất vào {date}",
+      "completion_rules_no_deadline": "Không có thời hạn",
+      "completion_rules_edit": "Chỉnh sửa quy tắc hoàn thành",
+      "completion_rules_upgrade": "Nâng cấp để chỉnh sửa quy tắc hoàn thành",
       "blocker_progress": "Tiến độ khóa học của bạn là {current}%; {required}% là bắt buộc.",
       "blocker_deadline": "Thời hạn chứng nhận đã qua.",
       "blocker_no_content": "Khóa học này không có bài học hoặc bài tập nào để hoàn thành.",
-      "blocker_final_not_submitted": "Gửi bài tập bắt buộc \"{exerciseTitle}\" để đủ điều kiện nhận chứng chỉ.",
-      "blocker_final_pending": "Nỗ lực của bạn về \"{exerciseTitle}\" vẫn đang được chấm điểm.",
-      "blocker_final_score": "Điểm cao nhất của bạn trong \"{exerciseTitle}\" là {bestPercent}%; {requiredPercent}% là bắt buộc.",
-      "blocker_final_misconfigured": "Bài tập chứng nhận \"{exerciseTitle}\" không có cấu hình điểm nào; nhờ người hướng dẫn khắc phục.",
       "email_message_label": "Tin nhắn email",
       "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!",
-      "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn.",
       "deadline_required": "Các khóa học tuân thủ yêu cầu thời hạn hoàn thành trước khi có thể xuất bản.",
       "deadline_invalid": "Thời hạn hoàn thành khóa học không hợp lệ.",
       "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký."
@@ -6308,8 +6304,6 @@
       "settings": "Cài đặt",
       "certificate": "Đã bật chứng chỉ",
       "deadline": "Hạn chót {date}",
-      "threshold": "Hoàn thành {percent}% khóa học",
-      "final_exercise": "Vượt qua “{title}” ở mức {percent}%",
       "sequential": "Bài học mở khóa theo thứ tự",
       "grading": "Gia sư chấm bài nộp",
       "comments_off": "Tính năng bình luận bài học đã tắt",
@@ -6402,8 +6396,6 @@
         "bannerImage": "Ảnh bìa",
         "welcomeEmail": "Email chào mừng",
         "completionDeadline": "Thời hạn hoàn thành",
-        "completionThreshold": "Ngưỡng hoàn thành",
-        "finalExercise": "Bài tập cuối cùng",
         "lessonTabsOrder": "Tab bài học",
         "contentGrouping": "Nhóm nội dung",
         "progression": "Tiến triển",
@@ -6432,8 +6424,7 @@
       "value": {
         "free": "Tự do",
         "sequential": "Tuần tự",
-        "no_price": "Miễn phí",
-        "pass_mark": "Đạt điểm {score}"
+        "no_price": "Miễn phí"
       },
       "template_label": "Mẫu",
       "yours_label": "Của bạn"

@@ -890,7 +890,7 @@ export async function createSubmissionService(
           console.error('Failed to send exercise submission update email:', emailError);
         });
 
-        await syncComplianceProgressFromSubmission(courseId, submittedBy);
+        await syncComplianceProgressFromSubmission(courseId, submittedBy, exerciseId);
         await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
         await emitSubmissionCreatedWebhookEvent(submission, {
           statusId: projectLegacyStatusId(gradingState),
@@ -912,7 +912,7 @@ export async function createSubmissionService(
       console.error('Failed to send exercise submission update email:', emailError);
     });
 
-    await syncComplianceProgressFromSubmission(courseId, submittedBy);
+    await syncComplianceProgressFromSubmission(courseId, submittedBy, exerciseId);
     await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
     await emitSubmissionCreatedWebhookEvent(submission);
     await emitExerciseCompletionIfReached(submission, wasCompleteBefore);
@@ -987,7 +987,7 @@ export async function updateSubmissionService(
     }
 
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
-      await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+      await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
     }
 
     if (statusChanged || gradingStateChanged) {
@@ -1105,7 +1105,7 @@ export async function updateSubmissionGradesBatch(
     }
 
     if (updated.courseId && updated.submittedBy) {
-      await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+      await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
     }
 
     if (statusChanged || currentGradingState !== targetGradingState) {
