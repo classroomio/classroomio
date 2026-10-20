@@ -25,6 +25,11 @@ function buildApp(scopes: string[]) {
     .get('/courses/:courseId/analytics', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics/students', (c) => c.json({ success: true }))
     .get('/courses/:courseId/students', (c) => c.json({ success: true }))
+    .put('/courses/:courseId/members/:memberId/lessons/:lessonId/completion', (c) => c.json({ success: true }))
+    .post('/courses/:courseId/members/:memberId/exercises/:exerciseId/submissions', (c) =>
+      c.json({ success: true }, 201)
+    )
+    .put('/courses/:courseId/members/:memberId', (c) => c.json({ success: true }))
     .get('/courses/:courseId', (c) => c.json({ success: true }))
     .post('/assets', (c) => c.json({ success: true }, 201))
     .get('/assets', (c) => c.json({ success: true }))
@@ -84,6 +89,36 @@ describe('publicApiScopesMiddleware', () => {
 
     expect((await app.request('/public-api/v1/courses/c1', { method: 'PUT' })).status).toBe(200);
     expect((await app.request('/public-api/v1/cohorts/c1/invite', { method: 'POST' })).status).toBe(201);
+    expect(
+      (await app.request('/public-api/v1/courses/c1/members/m1/lessons/l1/completion', { method: 'PUT' })).status
+    ).toBe(200);
+  });
+
+  const LESSON_COMPLETION = '/public-api/v1/courses/c1/members/m1/lessons/l1/completion';
+  const EXERCISE_SUBMISSIONS = '/public-api/v1/courses/c1/members/m1/exercises/e1/submissions';
+
+  it('lets course:student:write reach only the student routes', async () => {
+    const app = buildApp(['course:student:write']);
+
+    expect((await app.request(LESSON_COMPLETION, { method: 'PUT' })).status).toBe(200);
+    expect((await app.request(EXERCISE_SUBMISSIONS, { method: 'POST' })).status).toBe(201);
+    expect((await app.request('/public-api/v1/courses/c1/members/m1', { method: 'PUT' })).status).toBe(403);
+  });
+
+  it.each([['course:member:write'], ['course:submission:write']])(
+    'keeps a %s key out of the student routes',
+    async (scope) => {
+      const app = buildApp([scope]);
+
+      expect((await app.request(LESSON_COMPLETION, { method: 'PUT' })).status).toBe(403);
+      expect((await app.request(EXERCISE_SUBMISSIONS, { method: 'POST' })).status).toBe(403);
+    }
+  );
+
+  it('still lets course:member:write update a member', async () => {
+    const app = buildApp(['course:member:write']);
+
+    expect((await app.request('/public-api/v1/courses/c1/members/m1', { method: 'PUT' })).status).toBe(200);
   });
 
   it('lets a media:write key create an asset upload', async () => {

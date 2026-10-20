@@ -147,9 +147,11 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
           "type": "null",
         },
       ],
+      "description": "null when nothing is stored.",
     },
     "design": {
       "additionalProperties": false,
+      "description": "The default design when nothing is stored.",
       "properties": {
         "accentColor": {
           "pattern": "^#[0-9a-fA-F]{6}$",
@@ -257,39 +259,16 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
           "type": "null",
         },
       ],
-    },
-    "exerciseMinScorePercent": {
-      "anyOf": [
-        {
-          "type": "number",
-        },
-        {
-          "type": "null",
-        },
-      ],
+      "description": "null when nothing is stored.",
     },
     "isDownloadable": {
       "default": false,
+      "description": "Controls learner downloads only; the download endpoint works either way.",
       "type": "boolean",
     },
-    "requiredExerciseId": {
-      "anyOf": [
-        {
-          "format": "uuid",
-          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-          "type": "string",
-        },
-        {
-          "type": "null",
-        },
-      ],
-    },
     "theme": {
+      "description": "Falls back to design.templateId when nothing is stored.",
       "type": "string",
-    },
-    "threshold": {
-      "default": 100,
-      "type": "number",
     },
   },
   "required": [
@@ -297,9 +276,6 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
     "theme",
     "design",
     "deadline",
-    "threshold",
-    "requiredExerciseId",
-    "exerciseMinScorePercent",
     "emailMessage",
   ],
   "type": "object",
@@ -523,37 +499,12 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
                 },
               ],
             },
-            "exerciseMinScorePercent": {
-              "anyOf": [
-                {
-                  "type": "number",
-                },
-                {
-                  "type": "null",
-                },
-              ],
-            },
             "isDownloadable": {
               "type": "boolean",
-            },
-            "requiredExerciseId": {
-              "anyOf": [
-                {
-                  "format": "uuid",
-                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-                  "type": "string",
-                },
-                {
-                  "type": "null",
-                },
-              ],
             },
             "theme": {
               "description": "Deprecated; use design.templateId",
               "type": "string",
-            },
-            "threshold": {
-              "type": "number",
             },
           },
           "type": "object",
@@ -603,9 +554,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
                   "type": "null",
                 },
               ],
-            },
-            "passingScore": {
-              "type": "number",
             },
             "reminderDaysBefore": {
               "items": {
@@ -828,6 +776,58 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
               "dueBy",
             ],
             "type": "object",
+          },
+          "type": "array",
+        },
+        "outline": {
+          "description": "Top-level reading order: sections and lessons or exercises outside any section, in course order. Items inside a section follow sections[].items.",
+          "items": {
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                  },
+                  "kind": {
+                    "const": "section",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "kind",
+                  "id",
+                ],
+                "type": "object",
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                    "type": "string",
+                  },
+                  "kind": {
+                    "const": "item",
+                    "type": "string",
+                  },
+                  "type": {
+                    "enum": [
+                      "LESSON",
+                      "EXERCISE",
+                    ],
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "kind",
+                  "id",
+                  "type",
+                ],
+                "type": "object",
+              },
+            ],
           },
           "type": "array",
         },
@@ -1064,6 +1064,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
         "grouped",
         "sections",
         "items",
+        "outline",
       ],
       "type": "object",
     },
@@ -1874,37 +1875,12 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
                 },
               ],
             },
-            "exerciseMinScorePercent": {
-              "anyOf": [
-                {
-                  "type": "number",
-                },
-                {
-                  "type": "null",
-                },
-              ],
-            },
             "isDownloadable": {
               "type": "boolean",
-            },
-            "requiredExerciseId": {
-              "anyOf": [
-                {
-                  "format": "uuid",
-                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-                  "type": "string",
-                },
-                {
-                  "type": "null",
-                },
-              ],
             },
             "theme": {
               "description": "Deprecated; use design.templateId",
               "type": "string",
-            },
-            "threshold": {
-              "type": "number",
             },
           },
           "type": "object",
@@ -1954,9 +1930,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
                   "type": "null",
                 },
               ],
-            },
-            "passingScore": {
-              "type": "number",
             },
             "reminderDaysBefore": {
               "items": {
@@ -2561,37 +2534,12 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
                 },
               ],
             },
-            "exerciseMinScorePercent": {
-              "anyOf": [
-                {
-                  "type": "number",
-                },
-                {
-                  "type": "null",
-                },
-              ],
-            },
             "isDownloadable": {
               "type": "boolean",
-            },
-            "requiredExerciseId": {
-              "anyOf": [
-                {
-                  "format": "uuid",
-                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-                  "type": "string",
-                },
-                {
-                  "type": "null",
-                },
-              ],
             },
             "theme": {
               "description": "Deprecated; use design.templateId",
               "type": "string",
-            },
-            "threshold": {
-              "type": "number",
             },
           },
           "type": "object",
@@ -2641,9 +2589,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
                   "type": "null",
                 },
               ],
-            },
-            "passingScore": {
-              "type": "number",
             },
             "reminderDaysBefore": {
               "items": {
@@ -3131,12 +3076,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                     },
                   ],
                 },
-                "passingScore": {
-                  "default": 80,
-                  "maximum": 100,
-                  "minimum": 0,
-                  "type": "integer",
-                },
                 "reminderDaysBefore": {
                   "default": [
                     30,
@@ -3162,7 +3101,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "gracePeriodDays",
                 "reminderDaysBefore",
                 "isMandatory",
-                "passingScore",
               ],
               "type": "object",
             },
@@ -3474,6 +3412,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "string",
               },
               "order": {
+                "description": "Position within its section or lesson, 1-based. An exercise with neither takes its place in the top-level sequence it shares with sections and top-level lessons.",
                 "maximum": 9007199254740991,
                 "minimum": 1,
                 "type": "integer",
@@ -3678,6 +3617,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "boolean",
               },
               "order": {
+                "description": "Position within the section, 1-based. A lesson without a section takes its place in the top-level sequence it shares with sections and top-level exercises.",
                 "maximum": 9007199254740991,
                 "minimum": 1,
                 "type": "integer",
@@ -3686,6 +3626,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "boolean",
               },
               "sectionExternalId": {
+                "description": "Section the lesson belongs to. Omit it for a lesson that sits at the top level of the course.",
                 "minLength": 1,
                 "type": "string",
               },
@@ -3694,6 +3635,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "string",
               },
               "videos": {
+                "description": "Lesson videos as { type, link }, where type is youtube, vimeo, generic, upload or google_drive. Add new videos as youtube, vimeo or generic with a hosted URL, and keep any upload or google_drive entries already in the draft unchanged.",
                 "items": {
                   "additionalProperties": false,
                   "properties": {
@@ -3769,7 +3711,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             },
             "required": [
               "externalId",
-              "sectionExternalId",
               "title",
               "order",
             ],
@@ -3779,6 +3720,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
           "type": "array",
         },
         "sections": {
+          "default": [],
           "items": {
             "additionalProperties": false,
             "properties": {
@@ -3787,6 +3729,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "string",
               },
               "order": {
+                "description": "Top-level position. Sections, lessons without a section, and exercises with neither a section nor a lesson share one contiguous 1-based sequence.",
                 "maximum": 9007199254740991,
                 "minimum": 1,
                 "type": "integer",
@@ -3803,7 +3746,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             ],
             "type": "object",
           },
-          "minItems": 1,
           "type": "array",
         },
         "sourceReferences": {
@@ -3942,9 +3884,11 @@ exports[`public API audience and course response contract > ZPublicApiCreateAudi
             "type": "string",
           },
           "status": {
+            "description": "ready: added to the organization and invited. already_member: a student who has joined; enrolled in courseIds directly. invite_resent: invited earlier but not joined; earlier invites are revoked and a new one is created. invalid_email, missing_email: skipped. duplicate_in_file: the address appears earlier in the request; skipped. is_staff: an admin or tutor of the organization; skipped. over_seat_limit: no student seats left on the plan; skipped",
             "enum": [
               "ready",
               "already_member",
+              "invite_resent",
               "invalid_email",
               "duplicate_in_file",
               "is_staff",
@@ -4122,37 +4066,12 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
                     },
                   ],
                 },
-                "exerciseMinScorePercent": {
-                  "anyOf": [
-                    {
-                      "type": "number",
-                    },
-                    {
-                      "type": "null",
-                    },
-                  ],
-                },
                 "isDownloadable": {
                   "type": "boolean",
-                },
-                "requiredExerciseId": {
-                  "anyOf": [
-                    {
-                      "format": "uuid",
-                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-                      "type": "string",
-                    },
-                    {
-                      "type": "null",
-                    },
-                  ],
                 },
                 "theme": {
                   "description": "Deprecated; use design.templateId",
                   "type": "string",
-                },
-                "threshold": {
-                  "type": "number",
                 },
               },
               "type": "object",
@@ -4202,9 +4121,6 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
                       "type": "null",
                     },
                   ],
-                },
-                "passingScore": {
-                  "type": "number",
                 },
                 "reminderDaysBefore": {
                   "items": {

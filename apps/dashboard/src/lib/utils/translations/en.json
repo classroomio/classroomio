@@ -447,6 +447,7 @@
     },
     "discard": "Discard",
     "save_changes": "Save changes",
+    "cancel": "Cancel",
     "refresh": "Refresh",
     "scroll_to_top": "Scroll to top",
     "delete": "Delete",
@@ -854,8 +855,8 @@
       },
       "page_subtitle": "Invite teammates and control who helps run this organization.",
       "invite": {
-        "confirm_title": "Invite Students to the team?",
-        "confirm_description": "These people are already Students in this organization: {emails}. Send them an invitation to become {role}? Their role will change only after they accept.",
+        "confirm_title": "{count, plural, =1 {Invite this student to the team?} other {Invite these students to the team?}}",
+        "confirm_description": "{count, plural, =1 {This person is already a student in this organization: {emails}. Send them an invitation to become {role}? Their role will change only after they accept.} other {These people are already students in this organization: {emails}. Send them an invitation to become {role}? Their roles will change only after they accept.}}",
         "existing": "Already on the team: {members}. Use the role control in Team members to change their role."
       }
     },
@@ -1926,6 +1927,20 @@
       "all": "All",
       "unpublished": "Unpublished",
       "course_type": "Course Type"
+    },
+    "filters": {
+      "filter": "Filter",
+      "popover_title": "Filters",
+      "clear_all": "Clear all",
+      "search_placeholder": "Search by name",
+      "status": "Status",
+      "layout_type": "Layout type",
+      "selection_mode": "Selection mode",
+      "no_results_title": "No widgets match your filters",
+      "no_results_description": "Try a different search term or clear your filters to see everything again.",
+      "no_results_page_title": "Nothing on this page",
+      "no_results_page_description": "These filters match fewer widgets than this page starts at.",
+      "back_to_first_page": "Back to first page"
     }
   },
   "setup": {
@@ -2404,25 +2419,19 @@
     "certification": {
       "rules_heading": "Rules",
       "deadline_label": "Certification deadline",
-      "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
+      "deadline_helper": "Students must complete the course before this datetime (local time). Leave empty for no deadline.",
       "deadline_required": "Compliance courses require a completion deadline before they can be published.",
       "deadline_required_enroll": "Compliance courses require a certificate deadline before students can be enrolled.",
       "deadline_invalid": "The course completion deadline is invalid.",
-      "threshold_label": "Minimum completion (%)",
-      "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
-      "final_exercise_label": "Final exercise (optional)",
-      "final_exercise_none": "none",
-      "final_exercise_helper": "When set, students must reach at least the minimum score on this exercise (best attempt counts) in addition to the completion percentage above.",
-      "final_exercise_multiple_attempts_note": "Students will be allowed unlimited attempts on the selected exercise.",
-      "min_exercise_score_label": "Minimum score on final exercise (%)",
-      "min_exercise_score_helper": "Score is a percentage of the total points possible on that exercise (0–100).",
+      "completion_rules_heading": "Completion rules",
+      "completion_rules_description": "These rules decide who earns this certificate. They are set on the course Settings tab.",
+      "completion_rules_deadline": "Complete by {date}",
+      "completion_rules_no_deadline": "No deadline",
+      "completion_rules_edit": "Edit completion rules",
+      "completion_rules_upgrade": "Upgrade to edit completion rules",
       "blocker_progress": "Your course progress is {current}%; {required}% is required.",
       "blocker_deadline": "The certification deadline has passed.",
       "blocker_no_content": "This course has no lessons or exercises to complete.",
-      "blocker_final_not_submitted": "Submit the required exercise \"{exerciseTitle}\" to qualify for the certificate.",
-      "blocker_final_pending": "Your attempt on \"{exerciseTitle}\" is still being graded.",
-      "blocker_final_score": "Your best score on \"{exerciseTitle}\" is {bestPercent}%; {requiredPercent}% is required.",
-      "blocker_final_misconfigured": "The certification exercise \"{exerciseTitle}\" has no points configured; ask your instructor to fix it.",
       "email_message_label": "Email Message",
       "email_message_placeholder": "e.g. We are proud of your progress — keep learning!"
     },
@@ -2434,8 +2443,7 @@
         "view_certificate": "View certificate",
         "later": "Close",
         "checking": "Checking eligibility…",
-        "not_eligible_title": "Almost there",
-        "retake_exercise": "Retake exercise"
+        "not_eligible_title": "Almost there"
       }
     },
     "header": {
@@ -3631,7 +3639,8 @@
           },
           "by_author": "by {name}",
           "empty": "No versions yet"
-        }
+        },
+        "no_section": "No section"
       },
       "attendance": {
         "title": "Attendance",
@@ -4302,7 +4311,7 @@
         "certificate_deadline_required_description": "Compliance courses require a certificate deadline before students can be enrolled. Please set a deadline in the course settings before publishing.",
         "go_to_completion_deadline": "Go to Completion Deadline",
         "completion_deadline_label": "Course Completion Deadline",
-        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
+        "completion_deadline_helper": "Students must complete the course before this datetime (local time). Leave empty for no deadline.",
         "locked_content": {
           "title": "{count} course item(s) are locked",
           "description": "Enrolled students won't be able to take locked lessons or exercises until you unlock them.",
@@ -4312,6 +4321,9 @@
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
         "course_type_learn_more": "Learn more",
+        "completion_rules_card_title": "Completion rules",
+        "completion_rules_card_desc": "Decide when students complete this course and earn its certificate. Compliance courses also use the deadline as each student's due date.",
+        "back_to_certificate_settings": "Back to certificate settings",
         "live_class": "Live class",
         "self_paced": "Self paced",
         "compliance": "Compliance",
@@ -4598,6 +4610,7 @@
       "status": {
         "ready": "Ready",
         "already_member": "Already in audience",
+        "invite_resent": "Invite resent",
         "invalid_email": "Invalid email",
         "duplicate_in_file": "Duplicate in file",
         "is_staff": "Staff, not a student",
@@ -4877,6 +4890,7 @@
     "required": "Upgrade Required",
     "enterprise_required": "This feature requires an Enterprise plan.",
     "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API.",
+    "webhooks_required": "Upgrade to Early Adopter or Enterprise to use webhooks.",
     "unlock_field": "Upgrade to unlock this setting"
   },
   "automation": {
@@ -4890,7 +4904,132 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhooks",
+      "new_badge": "New"
+    },
+    "webhooks": {
+      "page_subtitle": "Send real-time ClassroomIO events to Slack, your CRM, or your own backend.",
+      "description": "ClassroomIO sends a signed HTTP POST to your URL whenever a selected event happens. Failed deliveries are retried automatically.",
+      "permissions_description": "Only organization admins can create, edit, or delete webhooks.",
+      "create": "New webhook",
+      "empty_title": "No webhooks yet",
+      "empty_description": "Create a webhook to push invites, enrollments, completions, and submissions to your other tools.",
+      "reveal_title": "Your new signing secret",
+      "reveal_description": "Copy this signing secret now. It won't be shown again, and you'll need it to verify requests.",
+      "reveal_docs": "How to verify requests",
+      "delete_confirm": "Delete the webhook \"{name}\"? Its delivery history will be removed too.",
+      "regenerate_confirm": "Regenerate the signing secret? The current secret stops working immediately.",
+      "events_all": "All events",
+      "events_count_one": "{count} event",
+      "events_count_other": "{count} events",
+      "no_deliveries": "No deliveries yet",
+      "retrying_hint": "Retrying failed deliveries",
+      "table": {
+        "name": "Destination",
+        "events": "Events",
+        "health": "Status",
+        "active": "Active",
+        "error_rate": "Error rate (24h)",
+        "error_rate_detail": "{failed} of {total} failed",
+        "no_recent_deliveries": "No deliveries in 24h"
+      },
+      "health": {
+        "healthy": "Healthy",
+        "retrying": "Retrying",
+        "degraded": "Failing",
+        "disabled": "Auto-disabled"
+      },
+      "actions": {
+        "label": "Webhook actions",
+        "edit": "Edit",
+        "test": "Send test event",
+        "deliveries": "View deliveries",
+        "regenerate_secret": "Regenerate secret",
+        "delete": "Delete"
+      },
+      "form": {
+        "create_title": "New webhook",
+        "edit_title": "Edit webhook",
+        "description": "Choose where ClassroomIO sends events and which events to send.",
+        "sections": {
+          "endpoint": "Endpoint",
+          "events": "Events"
+        },
+        "name": "Name",
+        "name_placeholder": "CRM sync",
+        "payload_url": "Payload URL",
+        "payload_url_help": "Must be a public HTTPS URL that returns a 2xx response within 10 seconds.",
+        "secret": "Signing secret",
+        "secret_placeholder": "Leave blank to generate one",
+        "secret_help": "Used to sign every request so you can verify it came from ClassroomIO.",
+        "secret_edit_placeholder": "Leave blank to keep the current secret",
+        "secret_edit_help": "Enter a new value to replace the secret. The current one is never shown.",
+        "verify_ssl": "Verify SSL certificate",
+        "verify_ssl_help": "Keep this on unless you are testing against a self-signed certificate.",
+        "active": "Active",
+        "events_help": "Pick the events that should trigger this webhook.",
+        "mode_all": "Send me everything",
+        "mode_selected": "Let me select individual events",
+        "cancel": "Cancel",
+        "save": "Save webhook",
+        "select_all": "Select all",
+        "events_selected": "{selected} of {total} selected"
+      },
+      "event_groups": {
+        "organization": "Organization",
+        "course": "Courses",
+        "learning": "Learning progress"
+      },
+      "events": {
+        "organization_invite_created": "A team invite is sent",
+        "organization_invite_accepted": "A team invite is accepted",
+        "organization_invite_revoked": "A team invite is revoked or replaced",
+        "course_invite_created": "A student invite is created",
+        "course_invite_accepted": "A student accepts an invite and enrolls",
+        "course_invite_revoked": "A student invite is revoked",
+        "course_member_added": "A member is added to a course",
+        "course_member_removed": "A member is removed from a course",
+        "course_completed": "A student completes a course",
+        "course_certificate_issued": "A certificate is earned",
+        "course_submission_created": "An exercise submission is created",
+        "course_submission_status_changed": "A submission status changes, such as when it is graded",
+        "lesson_completion_updated": "A lesson is marked complete or reset",
+        "exercise_completion_updated": "An exercise is completed or reset"
+      },
+      "deliveries": {
+        "title": "Deliveries",
+        "description": "Events from the last 30 days",
+        "back": "Back to deliveries",
+        "filter_all": "All statuses",
+        "empty": "No deliveries match this filter.",
+        "load_error": "Could not load deliveries. Please try again.",
+        "redeliver": "Redeliver",
+        "test_badge": "Test",
+        "status": {
+          "PENDING": "Retrying",
+          "SUCCESS": "Success",
+          "FAILED": "Failed",
+          "GAVE_UP": "Failed"
+        },
+        "columns": {
+          "event": "Event",
+          "event_id": "Event ID",
+          "status": "Status",
+          "attempt": "Attempt",
+          "http": "HTTP status",
+          "duration": "Response time",
+          "time": "Sent",
+          "next_attempt": "Next retry"
+        },
+        "detail": {
+          "error": "Error",
+          "request_headers": "Request headers",
+          "payload": "Payload",
+          "response_body": "Response",
+          "no_response": "No response was received."
+        }
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -4918,7 +5057,14 @@
       "table_last_used": "Last used",
       "scopes_label": "Scopes:",
       "revoke_confirm": "Revoke this automation key?",
-      "rotate_confirm": "Rotate this automation key?"
+      "rotate_confirm": "Rotate this automation key?",
+      "reveal": {
+        "description": "Copy this key now. It won't be shown again.",
+        "copy": "Copy",
+        "copied": "Copied",
+        "how_to_use": "How to use this key",
+        "close": "Close"
+      }
     },
     "mcp": {
       "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
@@ -4935,7 +5081,7 @@
         "title": "MCP keys",
         "description": "These keys authenticate the current organization when an MCP client calls ClassroomIO through `@classroomio/mcp`.",
         "generate": "Generate MCP key",
-        "secret_once": "This secret is shown once. Copy it into your MCP client now.",
+        "reveal_title": "Your new MCP key",
         "modal": {
           "title": "Create MCP key",
           "description": "Choose a name for this MCP key before it is generated.",
@@ -4961,7 +5107,7 @@
         "title": "API keys",
         "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
         "generate": "Generate API key",
-        "secret_once": "This secret is shown once. Copy it and store it securely.",
+        "reveal_title": "Your new API key",
         "empty_title": "No API keys yet",
         "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
         "modal": {
@@ -5039,6 +5185,17 @@
     "success_delete": "Deleted successfully",
     "error_update": "Failed to update",
     "social_auth_not_enabled": "This auth provider isn't enabled.",
+    "webhooks": {
+      "created": "Webhook created. Copy the signing secret now because it is only shown once.",
+      "updated": "Webhook updated.",
+      "enabled": "Webhook enabled.",
+      "disabled": "Webhook disabled.",
+      "deleted": "Webhook deleted.",
+      "secret_regenerated": "Signing secret regenerated. Copy it now because it is only shown once.",
+      "test_success": "Test event delivered successfully.",
+      "test_failed": "The test event failed. Open the delivery log to see why.",
+      "redelivered": "Event queued for redelivery."
+    },
     "automation": {
       "created": "Automation key created. Save it now because the full secret is only shown once.",
       "rotated": "Automation key rotated. Save the new secret now because it will not be shown again.",
@@ -5425,6 +5582,14 @@
     "progress": "Progress"
   },
   "validations": {
+    "webhook": {
+      "payload_url": {
+        "protocol": "Payload URL must start with http:// or https://"
+      },
+      "event_types": {
+        "required": "Select at least one event"
+      }
+    },
     "user_profile": {
       "email": "Invalid email address",
       "username": "Username cannot be empty",
@@ -6107,8 +6272,6 @@
       "settings": "Settings",
       "certificate": "Certificate enabled",
       "deadline": "Deadline {date}",
-      "threshold": "Complete {percent}% of the course",
-      "final_exercise": "Pass “{title}” at {percent}%",
       "sequential": "Lessons unlock in order",
       "grading": "A tutor grades submissions",
       "comments_off": "Lesson comments are off",
@@ -6203,8 +6366,6 @@
         "bannerImage": "Cover image",
         "welcomeEmail": "Welcome email",
         "completionDeadline": "Completion deadline",
-        "completionThreshold": "Completion threshold",
-        "finalExercise": "Final exercise",
         "lessonTabsOrder": "Lesson tabs",
         "contentGrouping": "Content grouping",
         "progression": "Progression",
@@ -6233,8 +6394,7 @@
       "value": {
         "free": "Free",
         "sequential": "Sequential",
-        "no_price": "Free",
-        "pass_mark": "Pass mark {score}"
+        "no_price": "Free"
       },
       "template_label": "Template",
       "yours_label": "Yours"

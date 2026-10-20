@@ -736,25 +736,12 @@ export async function getCourseProgress(
   }
 }
 
-/** Course + org fields needed for certification email and threshold rules */
+/** Course + org fields needed for certification email and completion rules */
 export type TCourseCertificationRow = {
-  type: string | null;
-  compliance: {
-    retakeIntervalMonths: number;
-    gracePeriodDays?: number;
-    reminderDaysBefore?: number[];
-    isMandatory?: boolean;
-    framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
-    maxRetakeAttempts?: number | null;
-    passingScore?: number;
-  } | null;
   certificate: {
     isDownloadable?: boolean;
     theme?: string;
     deadline?: string | null;
-    threshold?: number;
-    requiredExerciseId?: string | null;
-    exerciseMinScorePercent?: number | null;
     emailMessage?: string | null;
   } | null;
   title: string;
@@ -771,8 +758,6 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   try {
     const [row] = await db
       .select({
-        type: schema.course.type,
-        compliance: schema.course.compliance,
         certificate: schema.course.certificate,
         title: schema.course.title,
         orgId: schema.organization.id,
@@ -1636,13 +1621,16 @@ export async function getOrgCourseGroups(orgId: string, courseIds: string[]) {
   }
 }
 
+/** Locks the course row until the transaction ends. Returns its id and metadata, or null when it does not exist. */
 export async function lockCourseForUpdate(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    await dbClient
-      .select({ id: schema.course.id })
+    const [course] = await dbClient
+      .select({ id: schema.course.id, metadata: schema.course.metadata })
       .from(schema.course)
       .where(eq(schema.course.id, courseId))
       .for('update');
+
+    return course ?? null;
   } catch (error) {
     console.error('lockCourseForUpdate error:', error);
     throw new Error(`Failed to lock course: ${error instanceof Error ? error.message : 'Unknown error'}`);

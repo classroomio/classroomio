@@ -9,7 +9,7 @@
   import ContentSectionList from '$features/course/components/lesson/content-section-list.svelte';
   import PastSessionsSection from '$features/course/components/lesson/past-sessions-section.svelte';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
-  import { courseApi } from '$features/course/api';
+  import { contentApi, courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { profile } from '$lib/utils/store/user';
@@ -17,6 +17,17 @@
   import { getCourseContent } from '$features/course/utils/content';
   import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
   import { ContentType } from '@cio/utils/constants/content';
+  import { flip } from 'svelte/animate';
+  import { tick } from 'svelte';
+  import { dndzone, TRIGGERS, type DndEvent, type DndEventInfo } from 'svelte-dnd-action';
+  import {
+    buildSidebarOutline,
+    outlineReorderPayload,
+    outlineToCourseContent,
+    toOutlineEntry,
+    updateSidebarOutlineZone
+  } from '$features/course/utils/sidebar-outline';
+  import type { ContentDndItem, SidebarOutlineEntry } from '$features/course/utils/types';
 
   interface Props {
     courseId: string;
@@ -40,6 +51,57 @@
   const isLiveCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
   const lessonsTotal = $derived(contentItems.filter((item) => item.type === ContentType.Lesson).length);
   const exercisesTotal = $derived(contentItems.filter((item) => item.type === ContentType.Exercise).length);
+
+  const ROOT_FLIP_MS = 200;
+  const OUTLINE_DND_TYPE = 'lessons-page-outline';
+  let draggedOutline = $state<SidebarOutlineEntry[] | null>(null);
+  let isDraggingSection = $state(false);
+  let isSavingOutline = $state(false);
+  let finalizeVersion = 0;
+  const outline = $derived(draggedOutline ?? buildSidebarOutline(contentData));
+
+  function handleZoneConsider(sectionId: string | null, entries: SidebarOutlineEntry[], info: DndEventInfo) {
+    if (info.trigger === TRIGGERS.DRAG_STARTED) {
+      isDraggingSection = outline.some((entry) => entry.id === info.id && entry.kind === 'section');
+    }
+    draggedOutline = updateSidebarOutlineZone(outline, sectionId, entries);
+  }
+
+  async function handleZoneFinalize(sectionId: string | null, entries: SidebarOutlineEntry[], info: DndEventInfo) {
+    draggedOutline = updateSidebarOutlineZone(outline, sectionId, entries);
+    if (info.trigger === TRIGGERS.DROPPED_INTO_ANOTHER) return;
+
+    const version = ++finalizeVersion;
+    await tick();
+    if (version !== finalizeVersion) return;
+
+    const course = courseApi.course;
+    const finalOutline = draggedOutline ?? outline;
+    isDraggingSection = false;
+    if (!course?.content) {
+      draggedOutline = null;
+      return;
+    }
+
+    const previousContent = course.content;
+    const payload = outlineReorderPayload(finalOutline);
+    course.content = outlineToCourseContent(finalOutline, true);
+    draggedOutline = null;
+    isSavingOutline = true;
+    const isSaved = await contentApi.reorder(course.id, payload);
+    isSavingOutline = false;
+    if (isSaved || courseApi.course?.id !== course.id) return;
+
+    courseApi.course.content = previousContent;
+  }
+
+  function handleRootConsider(event: CustomEvent<DndEvent<SidebarOutlineEntry | ContentDndItem>>) {
+    handleZoneConsider(null, event.detail.items.map(toOutlineEntry), event.detail.info);
+  }
+
+  function handleRootFinalize(event: CustomEvent<DndEvent<SidebarOutlineEntry | ContentDndItem>>) {
+    void handleZoneFinalize(null, event.detail.items.map(toOutlineEntry), event.detail.info);
+  }
 
   let isFetching: boolean = $state(false);
   let hasHandledNext = $state(false);
@@ -127,7 +189,35 @@
   {/if}
 
   {#if contentData.grouped}
-    <ContentSectionList {reorder} />
+    <div
+      class="py-3"
+      use:dndzone={{
+        items: outline,
+        type: OUTLINE_DND_TYPE,
+        flipDurationMs: ROOT_FLIP_MS,
+        dragDisabled: !reorder || isSavingOutline,
+        dropTargetStyle: { border: '2px #1d4ed8 solid', 'border-style': 'dashed' }
+      }}
+      onconsider={handleRootConsider}
+      onfinalize={handleRootFinalize}
+    >
+      {#each outline as entry (entry.id)}
+        <div class={reorder ? 'cursor-grab active:cursor-grabbing' : ''} animate:flip={{ duration: ROOT_FLIP_MS }}>
+          {#if entry.kind === 'section'}
+            <ContentSectionList
+              {reorder}
+              sectionId={entry.section.id}
+              dndType={OUTLINE_DND_TYPE}
+              dropFromOthersDisabled={isDraggingSection || isSavingOutline}
+              onZoneConsider={handleZoneConsider}
+              onZoneFinalize={handleZoneFinalize}
+            />
+          {:else}
+            <ContentList {reorder} standaloneItem={entry.item} />
+          {/if}
+        </div>
+      {/each}
+    </div>
   {:else}
     <ContentList {reorder} />
   {/if}

@@ -13,19 +13,19 @@ everything else still works, so leave `LICENSE_KEY` unset until you need one of 
 |---------|--------------|
 | **SSO** | Single Sign-On with OIDC (Okta, Azure AD, and more). See [Enterprise SSO setup](https://classroomio.com/help/integrations/enterprise-sso-setup). |
 | **Token auth** | Issue signed tokens to log users in from your own app. Setup: [Token Auth](/developers/token-auth). |
-| **No-tracking** | Disables product analytics in the dashboard (PostHog, Umami) and third-party embeds. Without this feature, self-hosted mode already disables error reporting and the feedback widget, but not product analytics. |
+| **No-tracking** | Disables product analytics in the dashboard (PostHog, Umami), third-party embeds, and the [anonymous usage ping](/self-hosted/101#self-hosted-vs-cloud). Without this feature, self-hosted mode already disables error reporting and the feedback widget, but not product analytics. |
 
 Without a valid license, the SSO and token-auth APIs return `403 FEATURE_REQUIRES_LICENSE` and
 their settings are hidden in the dashboard UI.
 
 ## Setting `LICENSE_KEY`
 
-`LICENSE_KEY` is read by the **api** service. Set it wherever that service takes its environment:
+`LICENSE_KEY` is read by the **api** service, and by the **jobs** service to honour no-tracking. Set it wherever those services take their environment:
 
 | Deployment | Where to set it |
 |------------|-----------------|
 | Docker | repository root `.env` |
-| Railway | the `cio-api` service environment |
+| Railway | the `cio-api` and `cio-jobs` service environments |
 | Coolify / Dokploy | the resource's environment variables |
 | Local development | `apps/api/.env` |
 
@@ -34,7 +34,7 @@ LICENSE_KEY=<your enterprise license key>
 ```
 
 Restart the stack with `./classroomio.sh restart` after setting it (this recreates the
-`api` container so it picks up the new value — `docker compose restart api` on its own
+`api` and `jobs` containers so they pick up the new value — `docker compose restart api` on its own
 does **not**, since it doesn't recreate the container).
 
 ## How validation works

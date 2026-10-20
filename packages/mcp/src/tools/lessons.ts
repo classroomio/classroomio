@@ -17,10 +17,13 @@ const ZLessonVideo = z.union([
 const VIDEOS_DESCRIPTION =
   'Videos for this lesson. Use { "type": "upload", "assetId": "..." } for a file uploaded with upload_video, or { "type": "youtube" | "vimeo" | "generic", "link": "..." } for an external URL.';
 
+const ORDER_DESCRIPTION =
+  'Position within the section, starting at 1. Without a section, the position among the course top-level sections, lessons and exercises; the entry at that position and every later one move down one.';
+
 export const ZCreateLessonToolInput = z.object({
   courseId: z.string().min(1),
   title: z.string().min(1).max(255),
-  order: z.number().int().min(1).describe('Position within the section, starting at 1.'),
+  order: z.number().int().min(1).describe(ORDER_DESCRIPTION),
   sectionId: z.string().uuid().optional(),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
@@ -31,7 +34,7 @@ export const ZUpdateLessonToolInput = z.object({
   courseId: z.string().min(1),
   lessonId: z.string().uuid(),
   title: z.string().min(1).max(255).optional(),
-  order: z.number().int().min(1).optional(),
+  order: z.number().int().min(1).optional().describe(ORDER_DESCRIPTION),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
   videos: z
@@ -47,7 +50,7 @@ const updateLessonShape = ZUpdateLessonToolInput.shape as unknown as ZodRawShape
 export function registerLessonTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'create_lesson',
-    'Create a lesson in a course, optionally with videos. Attaching an uploaded video here is what starts its thumbnail, transcript and adaptive-bitrate encoding.',
+    'Create a lesson in a course, optionally with videos. Attaching an uploaded video here is what starts its thumbnail and adaptive-bitrate encoding, plus a transcript when the server has it configured.',
     createLessonShape,
     async (args) => {
       const { courseId, ...payload } = ZCreateLessonToolInput.parse(args);
@@ -59,7 +62,7 @@ export function registerLessonTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'update_lesson',
-    "Update a lesson. Omitted fields are left unchanged; supplying videos replaces the lesson's videos entirely.",
+    "Update a lesson, leaving omitted fields unchanged. Supplying videos replaces the lesson's videos entirely.",
     updateLessonShape,
     async (args) => {
       const { courseId, lessonId, ...payload } = ZUpdateLessonToolInput.parse(args);

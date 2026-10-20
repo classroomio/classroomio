@@ -20,6 +20,7 @@ export const AUDIENCE_IMPORT_ACCEPT = '.csv,text/csv';
 export const AudienceImportRowStatus = z.enum([
   'ready',
   'already_member',
+  'invite_resent',
   'invalid_email',
   'duplicate_in_file',
   'is_staff',
@@ -89,8 +90,13 @@ const HEADER_ALIASES: Record<string, 'email' | 'name' | 'courses'> = {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/** RFC 5321 limit; also keeps EMAIL_PATTERN off very long strings. */
+const MAX_EMAIL_LENGTH = 254;
+
 export function isImportableEmail(value: string): boolean {
-  return EMAIL_PATTERN.test(value.trim().toLowerCase());
+  const email = value.trim().toLowerCase();
+
+  return email.length <= MAX_EMAIL_LENGTH && EMAIL_PATTERN.test(email);
 }
 
 /** The template offered for download, so the expected shape is unambiguous. */

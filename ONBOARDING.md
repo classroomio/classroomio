@@ -93,7 +93,7 @@ then complete the type-specific checklist below.
 - [ ] Navigate to **Certificate** from the course sidebar.
 - [ ] Open the **Settings** tab within the Certificate page.
 - [ ] Configure:
-  - [ ] Minimum completion / passing score.
+  - [ ] Passing score on the exercise.
   - [ ] Due date.
   - [ ] Grace period.
   - [ ] Retake interval and maximum attempts.

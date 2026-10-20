@@ -32,7 +32,7 @@ import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
-import { PAGINATION_NOTE } from './docs';
+import { ANY_KEY_RULE, mcpRateLimitResponse } from './docs';
 
 const CoursesListEnvelope = z.object({ query: ZPublicApiCoursesQuery });
 
@@ -43,7 +43,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: 'List courses for the authenticated organization',
+      description: `List the organization's courses; ${ANY_KEY_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
@@ -78,7 +78,7 @@ export const v1CourseRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: 'Create a course for the authenticated organization',
+      description: `Create a course in the organization; ${ANY_KEY_RULE}.`,
       tags: ['Courses'],
       responses: {
         201: jsonResponse('Course created successfully', itemResponse(ZPublicApiCreateCourseResponse)),
@@ -110,8 +110,8 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId/students',
     describeRoute({
-      description: `List enrolled students for a course. ${PAGINATION_NOTE}`,
-      tags: ['Courses'],
+      description: `List the students enrolled in a course; ${ANY_KEY_RULE}.`,
+      tags: ['Course Members'],
       responses: {
         200: CourseStudentsResponse,
         401: { description: 'Unauthorized' },
@@ -149,8 +149,8 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId/export',
     describeRoute({
-      description: 'Export a course structure snapshot',
-      tags: ['Courses'],
+      description: `Export a snapshot of a course's structure; ${ANY_KEY_RULE}.`,
+      tags: ['Course Structure'],
       responses: {
         200: jsonResponse('Course export returned successfully', itemResponse(ZPublicApiCourseStructureResponse)),
         401: { description: 'Unauthorized' },
@@ -180,8 +180,8 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId/structure',
     describeRoute({
-      description: 'Get a course structure snapshot',
-      tags: ['Courses'],
+      description: `Get a snapshot of a course's structure; ${ANY_KEY_RULE}.`,
+      tags: ['Course Structure'],
       responses: {
         200: jsonResponse('Course structure returned successfully', itemResponse(ZPublicApiCourseStructureResponse)),
         401: { description: 'Unauthorized' },
@@ -211,8 +211,8 @@ export const v1CourseRouter = new Hono()
   .put(
     '/:courseId/structure',
     describeRoute({
-      description: 'Synchronize a course structure using the draft payload shape',
-      tags: ['Courses'],
+      description: `Synchronize a course's structure using the draft payload shape; ${ANY_KEY_RULE}.`,
+      tags: ['Course Structure'],
       responses: {
         200: jsonResponse(
           'Course structure updated successfully',
@@ -249,7 +249,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId',
     describeRoute({
-      description: 'Get a single course by id',
+      description: `Get a course; ${ANY_KEY_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse('Course returned successfully', itemResponse(ZPublicApiCourseDetailResponse)),
@@ -280,8 +280,7 @@ export const v1CourseRouter = new Hono()
   .put(
     '/:courseId',
     describeRoute({
-      description:
-        "Update a course by id. tagIds replaces the course's tags, and the key creator must be an org admin to send it. Keys with course:tag:write but not public_api:* (MCP keys) may only send tagIds.",
+      description: `Update a course; ${ANY_KEY_RULE}, and a key with only course:tag:write may send tagIds alone.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
@@ -294,7 +293,8 @@ export const v1CourseRouter = new Hono()
           description:
             'The key lacks public_api:*, or it only holds course:tag:write and the body has fields other than tagIds, or tagIds was sent and the key creator is not an org admin'
         },
-        404: { description: 'Course not found' }
+        404: { description: 'Course not found' },
+        429: mcpRateLimitResponse
       }
     }),
     validator('param', ZPublicApiCourseParam),
@@ -333,7 +333,7 @@ export const v1CourseRouter = new Hono()
   .delete(
     '/:courseId',
     describeRoute({
-      description: 'Delete a course by id',
+      description: `Delete a course; ${ANY_KEY_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse('Course deleted successfully', itemResponse(ZPublicApiCourseResponse)),

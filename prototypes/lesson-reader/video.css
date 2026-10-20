@@ -1,0 +1,1164 @@
+/*
+ * video.css — video-lesson.html: simulated lesson player, notebook markers on the
+ * scrub bar, the moment tray under the player, transcript panel with selection,
+ * provider variants (upload / YouTube / Google Drive) and the teacher heat strip.
+ */
+
+.vl-col {
+  width: 100%;
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+body.theatre .cs-side,
+body.theatre .cs-head {
+  display: none;
+}
+
+body.theatre .vl-col {
+  max-width: 1180px;
+}
+
+body.theatre .vl-notes,
+body.theatre .vl-actions {
+  max-width: 768px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---------------------------------------------------------------- player */
+
+.vp {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b0d12;
+  color: #f4f5f7;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  user-select: none;
+}
+
+.vp-screen {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  cursor: pointer;
+  background:
+    radial-gradient(120% 90% at 85% 0%, oklch(0.32 0.08 264 / 0.55), transparent 60%),
+    linear-gradient(180deg, #11141b, #0b0d12);
+}
+
+.vp-slide {
+  position: absolute;
+  inset: 0 0 64px;
+  display: grid;
+  place-items: start center;
+  align-content: start;
+  padding: 6% 7% 0;
+  animation: vp-fade 0.35s ease;
+}
+
+@keyframes vp-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.vp-provider {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 0.1);
+  font-size: 11.5px;
+  color: rgb(255 255 255 / 0.8);
+  backdrop-filter: blur(6px);
+}
+
+.vp-big-play {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 32px);
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: transform 0.15s var(--ease-out);
+}
+
+.vp-big-play:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.vp.playing .vp-big-play {
+  display: none;
+}
+
+.vp-cc {
+  position: absolute;
+  left: 50%;
+  bottom: 78px;
+  max-width: 82%;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgb(0 0 0 / 0.72);
+  font-size: clamp(12px, 1.6vw, 15px);
+  line-height: 1.4;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+/* slides */
+
+.sl-title {
+  text-align: center;
+}
+
+.sl-kicker {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.55);
+}
+
+.sl-title h3 {
+  margin: 10px 0 8px;
+  font-size: clamp(22px, 4vw, 38px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.sl-title p {
+  margin: 0;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 13px;
+  color: oklch(0.78 0.11 264);
+}
+
+.vp-slide h4 {
+  margin: 0 0 14px;
+  font-size: clamp(15px, 2.2vw, 22px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.sl-code,
+.sl-vs,
+.sl-recap,
+.sl-sac {
+  width: 100%;
+  max-width: 560px;
+}
+
+.vp-slide pre {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.06);
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: clamp(10.5px, 1.45vw, 13.5px);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.vp-slide pre s {
+  text-decoration: none;
+  color: oklch(0.82 0.12 150);
+}
+
+.vp-slide pre em {
+  font-style: normal;
+  color: oklch(0.8 0.13 264);
+}
+
+.vp-slide table {
+  border-collapse: collapse;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: clamp(10px, 1.3vw, 12.5px);
+}
+
+.vp-slide th,
+.vp-slide td {
+  padding: 4px 14px 4px 0;
+  text-align: left;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.vp-slide th {
+  color: rgb(255 255 255 / 0.5);
+  font-weight: 500;
+}
+
+.vp-slide td.mute {
+  color: rgb(255 255 255 / 0.4);
+}
+
+.sl-sac-row,
+.sl-vs-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sl-vs-row {
+  margin-bottom: 12px;
+}
+
+.sl-box {
+  flex: 1;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  font-size: clamp(11px, 1.4vw, 13px);
+}
+
+.sl-box b {
+  font-weight: 600;
+  color: oklch(0.8 0.13 264);
+}
+
+.sl-box span {
+  color: rgb(255 255 255 / 0.65);
+}
+
+.sl-box code {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 11px;
+  color: rgb(255 255 255 / 0.5);
+}
+
+.sl-arrow {
+  color: rgb(255 255 255 / 0.4);
+}
+
+.sl-recap ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+  font-size: clamp(12px, 1.6vw, 15px);
+}
+
+.sl-recap code {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  color: oklch(0.8 0.13 264);
+}
+
+/* controls */
+
+.vp-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18px 12px 8px;
+  background: linear-gradient(180deg, transparent, rgb(0 0 0 / 0.7) 45%);
+  cursor: default;
+}
+
+.vp-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.vp-btn {
+  display: inline-grid;
+  place-items: center;
+  height: 32px;
+  min-width: 32px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.vp-btn:hover,
+.vp-btn[aria-pressed='true'] {
+  background: rgb(255 255 255 / 0.14);
+}
+
+.vp-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.vp-btn.labeled {
+  display: inline-flex;
+  gap: 6px;
+  padding: 0 9px;
+}
+
+.vp-btn.ask {
+  color: oklch(0.83 0.11 264);
+}
+
+.vp-time {
+  margin: 0 8px;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 12px;
+  color: rgb(255 255 255 / 0.85);
+  white-space: nowrap;
+}
+
+.vp-sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 6px;
+  background: rgb(255 255 255 / 0.2);
+}
+
+.vp-grow {
+  flex: 1;
+}
+
+.vp-moment-btns {
+  display: inline-flex;
+  gap: 2px;
+}
+
+/* scrub bar with notebook markers */
+
+.vp-track {
+  position: relative;
+  height: 18px;
+  cursor: pointer;
+}
+
+.vp-track .rail,
+.vp-track .watched,
+.vp-track .fill {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  height: 4px;
+  border-radius: 999px;
+  transition: height 0.12s;
+}
+
+.vp-track .rail {
+  right: 0;
+  background: rgb(255 255 255 / 0.22);
+}
+
+.vp-track .watched {
+  background: rgb(255 255 255 / 0.38);
+}
+
+.vp-track .fill {
+  background: var(--primary);
+}
+
+.vp-track:hover .rail,
+.vp-track:hover .watched,
+.vp-track:hover .fill {
+  top: 7px;
+  height: 6px;
+}
+
+.vp-track .knob {
+  position: absolute;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+}
+
+.vp-mark {
+  position: absolute;
+  top: -9px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  padding: 0;
+  border: 2px solid #0b0d12;
+  border-radius: 999px;
+  background: var(--mk, #fff);
+  cursor: pointer;
+  transition: transform 0.12s var(--ease-out);
+}
+
+.vp-mark:hover,
+.vp-mark.on {
+  transform: scale(1.3);
+}
+
+.vp-mark.new {
+  animation: mk-pop 0.45s var(--ease-out);
+}
+
+@keyframes mk-pop {
+  0% {
+    transform: scale(0.2);
+  }
+  60% {
+    transform: scale(1.6);
+  }
+}
+
+.vp-mark.range {
+  border-radius: 4px;
+  margin-left: 0;
+  height: 10px;
+  top: -7px;
+}
+
+.vp-hover {
+  position: absolute;
+  bottom: 26px;
+  width: 240px;
+  margin-left: -120px;
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: rgb(18 20 26 / 0.96);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgb(255 255 255 / 0.85);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.vp-hover.compact {
+  width: auto;
+  margin-left: 0;
+  padding: 3px 7px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.vp-hover.compact .tm {
+  margin: 0;
+  justify-content: center;
+}
+
+.vp-hover .tm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 11.5px;
+  color: #fff;
+}
+
+.vp-hover .tm .k {
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  color: var(--mk, oklch(0.83 0.11 264));
+}
+
+.vp-hover .tx {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vp-hover .tx.note::before {
+  content: '“';
+}
+
+.vp-hover .tx.note::after {
+  content: '”';
+}
+
+.vp-hover .blocked {
+  margin-top: 4px;
+  color: oklch(0.8 0.12 60);
+}
+
+/* provider strip under an embed we can't draw on */
+
+.vp-strip {
+  margin-top: 8px;
+  padding: 8px 10px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.vp-strip .vp-track {
+  margin-top: 10px;
+}
+
+.vp-strip .vp-track .rail {
+  background: var(--muted);
+}
+
+.vp-strip .vp-track .watched {
+  background: color-mix(in oklab, var(--foreground) 14%, var(--muted));
+}
+
+.vp-strip .vp-mark {
+  border-color: var(--card);
+}
+
+.vp-strip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.vp-strip-row .t {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+}
+
+.vp-strip-row .grow {
+  flex: 1;
+}
+
+.vp-strip .note {
+  margin: 0 0 8px;
+  display: flex;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+}
+
+.vp-strip .note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* lesson material actions (Transcript | Summarize) */
+
+.vl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin: 10px 0 0;
+  padding: 4px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.vl-actions .btn {
+  height: 30px;
+  padding: 0 8px;
+}
+
+.vl-actions .bar {
+  color: var(--muted-foreground);
+  opacity: 0.6;
+}
+
+.vl-actions .grow {
+  flex: 1;
+}
+
+.vl-watch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+}
+
+/* moment tray: composer + answers under the player */
+
+.vm-tray:empty {
+  display: none;
+}
+
+.vm-tray {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.vm-composer {
+  padding: 12px;
+  border: 1px solid color-mix(in oklab, var(--pen) 30%, var(--border));
+  border-radius: 10px;
+  background: var(--card);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pen) 8%, transparent);
+  animation: rd-card-in 0.2s var(--ease-out);
+}
+
+.vm-composer-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.vm-composer-head .grow {
+  flex: 1;
+}
+
+.vm-context {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-left: 2px solid color-mix(in oklab, var(--pen) 40%, transparent);
+  border-radius: 0 6px 6px 0;
+  background: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.vm-context b {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 11.5px;
+  color: var(--foreground);
+}
+
+.vm-composer textarea,
+.vm-composer input[type='text'] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--input);
+  border-radius: 8px;
+  background: var(--background);
+  color: inherit;
+  font: inherit;
+  font-size: 13.5px;
+  resize: vertical;
+}
+
+.vm-composer textarea:focus,
+.vm-composer input:focus {
+  outline: 2px solid color-mix(in oklab, var(--pen) 40%, transparent);
+  outline-offset: 0;
+}
+
+.vm-composer .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.vm-composer .row .grow {
+  flex: 1;
+}
+
+[data-v-watch-btn] .cs-ring .lbl {
+  display: none;
+}
+
+.vm-colors {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.vm-colors button {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.vm-colors button[aria-pressed='true'] {
+  border-color: var(--foreground);
+}
+
+.vm-time-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+}
+
+.vm-time-input input {
+  width: 64px !important;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+}
+
+.vm-card {
+  position: relative;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--pen);
+  border-radius: 10px;
+  background: var(--card);
+  font-size: 13px;
+  line-height: 1.5;
+  animation: rd-card-in 0.22s var(--ease-out);
+}
+
+.vm-card .rd-card-quote {
+  -webkit-line-clamp: 3;
+}
+
+/* time chip used in cards, notebook and transcript */
+
+.vt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 6px 0 4px;
+  border: 0;
+  border-radius: 5px;
+  background: color-mix(in oklab, var(--pen) 10%, transparent);
+  color: var(--pen);
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.vt-chip:hover {
+  background: color-mix(in oklab, var(--pen) 18%, transparent);
+}
+
+.vt-chip svg {
+  width: 11px;
+  height: 11px;
+}
+
+.vt-chip.static {
+  background: var(--muted);
+  color: var(--muted-foreground);
+  cursor: default;
+}
+
+/* lesson notes under the video */
+
+.vl-notes {
+  margin-top: 28px;
+}
+
+.vl-notes h2 {
+  margin-top: 0;
+}
+
+.vt-texthl {
+  background: color-mix(in oklab, var(--hl-yellow) 100%, transparent);
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* transcript panel */
+
+.tr-head-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tr-head-nav .grow {
+  flex: 1;
+}
+
+.tr-follow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tr-follow[aria-pressed='true'] {
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--border));
+  color: var(--primary);
+}
+
+.tr-hint {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--pen) 7%, transparent);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+}
+
+.tr-hint svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--pen);
+}
+
+.tr-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px 12px 24px;
+}
+
+.tr-seg {
+  position: relative;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 2px;
+  margin-bottom: 2px;
+  padding: 6px 8px 6px 6px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.tr-seg:hover {
+  background: color-mix(in oklab, var(--muted) 80%, transparent);
+}
+
+.tr-seg.active {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+.tr-seg.active .tx {
+  font-weight: 500;
+}
+
+.tr-seg.unwatched .tx {
+  color: var(--muted-foreground);
+}
+
+.tr-seg .ts {
+  padding-top: 1px;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  user-select: none;
+}
+
+.tr-seg .tx {
+  user-select: text;
+  cursor: text;
+}
+
+.tr-hl {
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.tr-pins {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+  grid-column: 2;
+}
+
+.tr-pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  height: 22px;
+  padding: 0 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--background);
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.tr-pin span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tr-pin .dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--mk);
+}
+
+.tr-unavail {
+  margin: 24px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+/* panel switch in the side panel header */
+
+.sp-switch {
+  padding: 0 16px 10px;
+}
+
+/* notebook items for moments */
+
+.nb-item .nb-meta .vt-chip {
+  margin-left: 2px;
+}
+
+.nb-moment-line {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.nb-moment-line::before {
+  content: '“';
+}
+
+.nb-moment-line::after {
+  content: '”';
+}
+
+.kind.bm {
+  color: var(--foreground);
+}
+
+/* teacher heat strip */
+
+.vi-strip {
+  margin-top: 12px;
+  padding: 12px 12px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.vi-strip-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.vi-strip-head b {
+  font-weight: 600;
+}
+
+.vi-strip-head .s {
+  color: var(--muted-foreground);
+  font-size: 12.5px;
+}
+
+.vi-bars {
+  position: relative;
+  margin-top: 24px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 56px;
+  cursor: pointer;
+}
+
+.vi-bars span {
+  flex: 1;
+  min-height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: color-mix(in oklab, var(--pen) var(--a), var(--muted));
+}
+
+.vi-bars .peak {
+  position: absolute;
+  top: -4px;
+  width: 0;
+  height: 62px;
+  border-left: 1px dashed color-mix(in oklab, var(--pen) 60%, transparent);
+}
+
+.vi-bars .peak b {
+  position: absolute;
+  top: -16px;
+  left: 4px;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--pen);
+  white-space: nowrap;
+}
+
+.vi-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  color: var(--muted-foreground);
+}
+
+.vi-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.vi-moments {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.vi-moment {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.vi-moment .head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.vi-moment .stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted-foreground);
+}
+
+.vi-moment .q {
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
+.vi-moment .q::before {
+  content: 'Top question  ';
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+.vi-moment .sg {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.vi-moment .acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.vi-moment > .vt-chip {
+  margin-top: 1px;
+}
+
+/* mobile */
+
+.vp-mobile-acts {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .vp {
+    margin: 0 -18px;
+    border-radius: 0;
+  }
+
+  .vp-controls .vp-moment-btns,
+  .vp-controls .vp-desk {
+    display: none;
+  }
+
+  .vp-slide {
+    inset: 0 0 52px;
+    padding: 3% 5%;
+  }
+
+  .vp-slide h4 {
+    margin-bottom: 8px;
+  }
+
+  .vp-slide pre {
+    padding: 8px 10px;
+    margin-bottom: 6px;
+  }
+
+  .vp-slide table,
+  .vp-slide .sl-vs-row {
+    display: none;
+  }
+
+  .vp-cc {
+    bottom: 60px;
+    font-size: 11.5px;
+  }
+
+  .vp-big-play {
+    top: calc(50% - 24px);
+  }
+
+  .vp-mobile-acts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .vp-mobile-acts .btn {
+    flex-direction: column;
+    height: 54px;
+    gap: 3px;
+    font-size: 11.5px;
+  }
+
+  .vl-actions .vl-watch {
+    width: 100%;
+  }
+
+  .vi-moment {
+    grid-template-columns: 1fr;
+  }
+}

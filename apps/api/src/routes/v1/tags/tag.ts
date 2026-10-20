@@ -14,8 +14,9 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, jsonResponse } from '@api/utils/openapi/responses';
-import { PAGINATION_NOTE } from '../courses/docs';
-import { TAG_READ_RULE, TAG_WRITE_RULE, TagGroupsResponse, TagResponse, tagForbiddenResponses } from './docs';
+import { mcpRateLimitResponse } from '../courses/docs';
+import { ORG_ADMIN_RULE } from '../team/docs';
+import { ORG_MEMBER_RULE, TagGroupsResponse, TagResponse, tagForbiddenResponses } from './docs';
 
 const TAG = 'Tags';
 
@@ -23,14 +24,18 @@ export const v1TagRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the organization's tag groups, each with its tags. With courseId, only the tags on that course are returned. ${PAGINATION_NOTE} ${TAG_READ_RULE}`,
+      description: `List the organization's tag groups with their tags; ${ORG_MEMBER_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Tag groups returned successfully', TagGroupsResponse),
+        200: jsonResponse(
+          "Tag groups with their tags and course counts; with courseId, only the groups holding that course's tags",
+          TagGroupsResponse
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.read,
-        404: { description: 'courseId is not a course in this organization' }
+        404: { description: 'courseId is not a course in this organization' },
+        429: mcpRateLimitResponse
       }
     }),
     validator('query', ZPublicApiTagsQuery),
@@ -50,7 +55,7 @@ export const v1TagRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create a tag in a tag group. Its slug is what the course list's tags filter matches. ${TAG_WRITE_RULE}`,
+      description: `Create a tag in a tag group; ${ORG_ADMIN_RULE}.`,
       tags: [TAG],
       responses: {
         201: jsonResponse('Tag created', TagResponse),
@@ -58,7 +63,8 @@ export const v1TagRouter = new Hono()
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.write,
         404: { description: 'Tag group not found' },
-        409: { description: 'A tag with the same name (slug) already exists' }
+        409: { description: 'A tag with the same name (slug) already exists' },
+        429: mcpRateLimitResponse
       }
     }),
     validator('json', ZPublicApiCreateTag),
@@ -78,14 +84,15 @@ export const v1TagRouter = new Hono()
   .put(
     '/:tagId',
     describeRoute({
-      description: `Update a tag's name, description, colour or group. Renaming changes its slug. ${TAG_WRITE_RULE}`,
+      description: `Update a tag's name, description, colour or group; ${ORG_ADMIN_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Tag updated', TagResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.write,
-        404: { description: 'Tag or target tag group not found' }
+        404: { description: 'Tag or target tag group not found' },
+        429: mcpRateLimitResponse
       }
     }),
     validator('param', ZPublicApiTagParam),

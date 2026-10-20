@@ -141,6 +141,7 @@ export type TOrganizationPlan = typeof schema.organizationPlan.$inferSelect;
 export type TNewOrganizationPlan = typeof schema.organizationPlan.$inferInsert;
 export type TEarlyAdopterClaim = typeof schema.earlyAdopterClaim.$inferSelect;
 export type TNewEarlyAdopterClaim = typeof schema.earlyAdopterClaim.$inferInsert;
+export type TInstance = typeof schema.instance.$inferSelect;
 
 export type TLessonLanguage = typeof schema.lessonLanguage.$inferSelect;
 export type TNewLessonLanguage = typeof schema.lessonLanguage.$inferInsert;
@@ -269,3 +270,10 @@ export type TContentReport = typeof schema.contentReport.$inferSelect;
 export type TNewContentReport = typeof schema.contentReport.$inferInsert;
 export type TLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferSelect;
 export type TNewLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferInsert;
+
+export type TWebhookEndpoint = typeof schema.webhookEndpoint.$inferSelect;
+export type TNewWebhookEndpoint = typeof schema.webhookEndpoint.$inferInsert;
+export type TWebhookEvent = typeof schema.webhookEvent.$inferSelect;
+export type TNewWebhookEvent = typeof schema.webhookEvent.$inferInsert;
+export type TWebhookDelivery = typeof schema.webhookDelivery.$inferSelect;
+export type TNewWebhookDelivery = typeof schema.webhookDelivery.$inferInsert;

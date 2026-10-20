@@ -8,6 +8,8 @@ import { ZLessonVideoItem } from '../lesson/lesson';
 const ZSupportedLocale = z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it']);
 const LESSON_BODY_HTML_DESCRIPTION =
   'Lesson body HTML only. Do not include the lesson title. Do not use h1 or h2 anywhere in lessonLanguages[].content. Start headings at h3 because that is the highest heading level allowed in lesson content.';
+const TOP_LEVEL_ORDER_DESCRIPTION =
+  'Top-level position. Sections, lessons without a section, and exercises with neither a section nor a lesson share one contiguous 1-based sequence.';
 
 export const ZCourseImportWarning = z.object({
   code: z.string().min(1),
@@ -42,18 +44,33 @@ export type TCourseImportDraftCourse = z.infer<typeof ZCourseImportDraftCourse>;
 export const ZCourseImportDraftSection = z.object({
   externalId: z.string().min(1),
   title: z.string().min(1),
-  order: z.number().int().min(1)
+  order: z.number().int().min(1).describe(TOP_LEVEL_ORDER_DESCRIPTION)
 });
 export type TCourseImportDraftSection = z.infer<typeof ZCourseImportDraftSection>;
 
 export const ZCourseImportDraftLesson = z.object({
   externalId: z.string().min(1),
-  sectionExternalId: z.string().min(1),
+  sectionExternalId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('Section the lesson belongs to. Omit it for a lesson that sits at the top level of the course.'),
   title: z.string().min(1),
-  order: z.number().int().min(1),
+  order: z
+    .number()
+    .int()
+    .min(1)
+    .describe(
+      'Position within the section, 1-based. A lesson without a section takes its place in the top-level sequence it shares with sections and top-level exercises.'
+    ),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
-  videos: z.array(ZLessonVideoItem).optional()
+  videos: z
+    .array(ZLessonVideoItem)
+    .optional()
+    .describe(
+      'Lesson videos as { type, link }, where type is youtube, vimeo, generic, upload or google_drive. Add new videos as youtube, vimeo or generic with a hosted URL, and keep any upload or google_drive entries already in the draft unchanged.'
+    )
 });
 export type TCourseImportDraftLesson = z.infer<typeof ZCourseImportDraftLesson>;
 
@@ -87,17 +104,77 @@ export const ZCourseImportDraftExercise = z.object({
   sectionExternalId: z.string().min(1).optional(),
   title: z.string().min(1),
   description: z.string().optional(),
-  order: z.number().int().min(1),
+  order: z
+    .number()
+    .int()
+    .min(1)
+    .describe(
+      'Position within its section or lesson, 1-based. An exercise with neither takes its place in the top-level sequence it shares with sections and top-level lessons.'
+    ),
   dueBy: z.string().optional(),
   questions: z.array(ZCourseImportDraftExerciseQuestion).optional()
 });
 export type TCourseImportDraftExercise = z.infer<typeof ZCourseImportDraftExercise>;
 
+export type TCourseImportDraftRootEntry = {
+  kind: 'section' | 'lesson' | 'exercise';
+  externalId: string;
+  order: number;
+};
+
+type DraftOutline = {
+  sections: TCourseImportDraftSection[];
+  lessons: TCourseImportDraftLesson[];
+  exercises?: TCourseImportDraftExercise[];
+};
+
+function isContiguousSequence(orders: number[]) {
+  return [...orders].sort((left, right) => left - right).every((order, index) => order === index + 1);
+}
+
+function draftRootEntries(draft: DraftOutline) {
+  const sections = draft.sections.map((section) => ({
+    kind: 'section' as const,
+    externalId: section.externalId,
+    order: section.order
+  }));
+  const lessons = draft.lessons
+    .filter((lesson) => !lesson.sectionExternalId)
+    .map((lesson) => ({ kind: 'lesson' as const, externalId: lesson.externalId, order: lesson.order }));
+  const exercises = (draft.exercises ?? [])
+    .filter((exercise) => !exercise.sectionExternalId && !exercise.lessonExternalId)
+    .map((exercise) => ({ kind: 'exercise' as const, externalId: exercise.externalId, order: exercise.order }));
+
+  return { sections, lessons, exercises };
+}
+
+/**
+ * Top-level entries of a draft with their course order, or null when the orders are not a valid sequence.
+ * Drafts that number sections and top-level exercises separately (and have no top-level lessons) place the exercises after the sections.
+ */
+export function getDraftRootEntries(draft: DraftOutline): TCourseImportDraftRootEntry[] | null {
+  const { sections, lessons, exercises } = draftRootEntries(draft);
+  const combined = [...sections, ...lessons, ...exercises];
+  if (isContiguousSequence(combined.map((entry) => entry.order))) {
+    return combined.sort((left, right) => left.order - right.order);
+  }
+
+  const isSeparatelyNumbered =
+    lessons.length === 0 &&
+    isContiguousSequence(sections.map((entry) => entry.order)) &&
+    isContiguousSequence(exercises.map((entry) => entry.order));
+  if (!isSeparatelyNumbered) return null;
+
+  const placedExercises = exercises.map((entry) => ({ ...entry, order: sections.length + entry.order }));
+
+  return [...sections, ...placedExercises].sort((left, right) => left.order - right.order);
+}
+
 export const ZCourseImportDraftPayload = z
   .object({
     course: ZCourseImportDraftCourse,
     tags: z.array(z.string().trim().min(1).max(80)).max(100).default([]),
-    sections: z.array(ZCourseImportDraftSection).min(1),
+    sections: z.array(ZCourseImportDraftSection).default([]),
     lessons: z.array(ZCourseImportDraftLesson).min(1),
     lessonLanguages: z.array(ZCourseImportDraftLessonLanguage).min(1),
     exercises: z.array(ZCourseImportDraftExercise).optional(),
@@ -130,12 +207,12 @@ export const ZCourseImportDraftPayload = z
       sectionIds.add(section.externalId);
     });
 
-    const sectionOrders = value.sections.map((section) => section.order).sort((a, b) => a - b);
-    if (sectionOrders.length > 0 && sectionOrders.some((order, i) => order !== i + 1)) {
+    if (!getDraftRootEntries(value)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['sections'],
-        message: 'Section orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
+        message:
+          'Top-level orders (sections, lessons without a section, and exercises with neither) must be a contiguous 1-based sequence (1, 2, 3, ...)'
       });
     }
 
@@ -150,7 +227,7 @@ export const ZCourseImportDraftPayload = z
       }
       lessonIds.add(lesson.externalId);
 
-      if (!sectionIds.has(lesson.sectionExternalId)) {
+      if (lesson.sectionExternalId && !sectionIds.has(lesson.sectionExternalId)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['lessons', index, 'sectionExternalId'],
@@ -161,6 +238,8 @@ export const ZCourseImportDraftPayload = z
 
     const lessonsBySection = new Map<string, number[]>();
     for (const lesson of value.lessons) {
+      if (!lesson.sectionExternalId) continue;
+
       const orders = lessonsBySection.get(lesson.sectionExternalId) ?? [];
       orders.push(lesson.order);
       lessonsBySection.set(lesson.sectionExternalId, orders);
@@ -218,6 +297,8 @@ export const ZCourseImportDraftPayload = z
       const lessonsByExternalId = new Map(value.lessons.map((l) => [l.externalId, l]));
       const exercisesByGroup = new Map<string, number[]>();
       for (const exercise of value.exercises) {
+        if (!exercise.sectionExternalId && !exercise.lessonExternalId) continue;
+
         let groupKey = exercise.sectionExternalId ?? '';
         if (exercise.lessonExternalId) {
           const parentLesson = lessonsByExternalId.get(exercise.lessonExternalId);

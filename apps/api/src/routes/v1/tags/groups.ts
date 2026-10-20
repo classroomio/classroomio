@@ -9,7 +9,9 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, jsonResponse } from '@api/utils/openapi/responses';
-import { TAG_WRITE_RULE, TagGroupResponse, tagForbiddenResponses } from './docs';
+import { mcpRateLimitResponse } from '../courses/docs';
+import { ORG_ADMIN_RULE } from '../team/docs';
+import { TagGroupResponse, tagForbiddenResponses } from './docs';
 
 const TAG = 'Tags';
 
@@ -17,14 +19,15 @@ export const v1TagGroupsRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create a tag group. ${TAG_WRITE_RULE}`,
+      description: `Create a tag group; ${ORG_ADMIN_RULE}.`,
       tags: [TAG],
       responses: {
         201: jsonResponse('Tag group created', TagGroupResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.write,
-        409: { description: 'A tag group with the same name (slug) already exists' }
+        409: { description: 'A tag group with the same name (slug) already exists' },
+        429: mcpRateLimitResponse
       }
     }),
     validator('json', ZPublicApiCreateTagGroup),
@@ -44,14 +47,15 @@ export const v1TagGroupsRouter = new Hono()
   .put(
     '/:groupId',
     describeRoute({
-      description: `Update a tag group's name, description or order. Renaming changes its slug. ${TAG_WRITE_RULE}`,
+      description: `Update a tag group's name, description or order; ${ORG_ADMIN_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Tag group updated', TagGroupResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.write,
-        404: { description: 'Tag group not found' }
+        404: { description: 'Tag group not found' },
+        429: mcpRateLimitResponse
       }
     }),
     validator('param', ZPublicApiTagGroupParam),

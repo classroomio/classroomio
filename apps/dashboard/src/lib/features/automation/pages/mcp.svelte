@@ -5,8 +5,10 @@
     getCodexSnippet,
     getCursorSnippet,
     getOpenCodeSnippet,
-    getMaskedAutomationSecret
+    getMaskedAutomationSecret,
+    MCP_DOCS_URL
   } from '$features/automation/utils/automation-utils';
+  import KeySecretDialog from '$features/automation/components/key-secret-dialog.svelte';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import * as Alert from '@cio/ui/base/alert';
@@ -33,6 +35,7 @@
   let generatedSecret = $state<string | null>(null);
   let generatedSecretKeyId = $state<string | null>(null);
   let isCreateKeyModalOpen = $state(false);
+  let isSecretDialogOpen = $state(false);
   let keyLabel = $state('');
 
   const canCreateKey = $derived(keyLabel.trim().length > 0 && !automationApi.isLoading);
@@ -52,10 +55,11 @@
     if (!result) return;
 
     generatedSecret = automationApi.generatedSecret;
-    generatedSecretKeyId = result.key.id;
+    generatedSecretKeyId = result.data.key.id;
     automationApi.clearGeneratedSecret();
     isCreateKeyModalOpen = false;
     resetCreateKeyModal();
+    isSecretDialogOpen = true;
   }
 
   async function onRevokeKey(keyId: string) {
@@ -72,7 +76,7 @@
     if (!confirm(t.get('automation.keys.rotate_confirm'))) return;
 
     const result = await automationApi.rotateKey(keyId);
-    if (!result || result.key.revokedAt) return;
+    if (!result || result.data.key.revokedAt) return;
 
     const key = automationApi.keys.find((entry) => entry.id === keyId);
     if (!key || key.revokedAt) return;
@@ -80,6 +84,7 @@
     generatedSecret = automationApi.generatedSecret;
     generatedSecretKeyId = keyId;
     automationApi.clearGeneratedSecret();
+    isSecretDialogOpen = true;
   }
   const mcpKeys = $derived(automationApi.keys.filter((key) => key.type === 'mcp'));
   const usageCards = $derived.by(() => {
@@ -146,17 +151,6 @@
       {/if}
     </div>
     <p class="ui:text-muted-foreground text-sm">{$t('automation.mcp.keys.description')}</p>
-
-    {#if generatedSecret}
-      <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
-        <p class="text-sm font-medium text-amber-800">{$t('automation.mcp.keys.secret_once')}</p>
-        <div class="mt-3">
-          <Code.Root code={generatedSecret} lang="bash" hideLines={true} class="text-xs break-all">
-            <Code.CopyButton />
-          </Code.Root>
-        </div>
-      </div>
-    {/if}
 
     {#if $isOrgAdmin}
       {#if mcpKeys.length > 0}
@@ -318,3 +312,10 @@
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
+
+<KeySecretDialog
+  bind:open={isSecretDialogOpen}
+  title={$t('automation.mcp.keys.reveal_title')}
+  secret={generatedSecret}
+  docsHref={MCP_DOCS_URL}
+/>

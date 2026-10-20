@@ -224,6 +224,7 @@
   };
 
   const pendingInviteEmails = $derived(pendingInvite?.studentEmails.join(', ') ?? '');
+  const pendingInviteCount = $derived(pendingInvite?.studentEmails.length ?? 0);
   const pendingInviteRoleLabel = $derived($t(roleLabel(pendingInvite?.roleId ?? ROLE.TUTOR)));
 
   let listedOrgId = '';
@@ -387,10 +388,13 @@
   <Dialog.Root open={pendingInvite !== null} onOpenChange={handleInviteDialogOpenChange}>
     <Dialog.Content class="w-full max-w-md">
       <Dialog.Header>
-        <Dialog.Title>{$t('settings.teams.invite.confirm_title')}</Dialog.Title>
+        <Dialog.Title>
+          {$t('settings.teams.invite.confirm_title', { count: pendingInviteCount })}
+        </Dialog.Title>
         <Dialog.Description class="max-h-[55vh] overflow-y-auto break-words">
           {#if pendingInvite}
             {$t('settings.teams.invite.confirm_description', {
+              count: pendingInviteCount,
               emails: pendingInviteEmails,
               role: pendingInviteRoleLabel
             })}

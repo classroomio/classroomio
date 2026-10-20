@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import { COURSE_TYPE_VALUES } from '../../constants/course-type';
+import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { ZCourseImportDraftPayload } from '../course-import/course-import';
 import { ZPublicApiCourseTagResponse } from './tag-responses';
 
@@ -56,7 +57,7 @@ const ZCourseMetadata = z
     liveSessionReminderOffsetsMinutes: z.array(z.number()).optional(),
     sectionDisplay: z.record(z.string(), z.boolean()).optional(),
     isContentGroupingEnabled: z.boolean().optional(),
-    progressionMode: z.enum(['free', 'sequential']).optional(),
+    progressionMode: z.enum(COURSE_PROGRESSION_MODES).optional(),
     commentsEnabled: z.boolean().optional(),
     aiTutor: z.record(z.string(), z.unknown()).optional().describe('Per-course AI tutor overrides')
   })
@@ -84,9 +85,6 @@ const ZCourseCertificate = z
       })
       .optional(),
     deadline: z.string().nullable().optional(),
-    threshold: z.number().optional(),
-    requiredExerciseId: z.string().uuid().nullable().optional(),
-    exerciseMinScorePercent: z.number().nullable().optional(),
     emailMessage: z.string().nullable().optional()
   })
   .catchall(z.unknown());
@@ -98,8 +96,7 @@ const ZCourseCompliance = z
     reminderDaysBefore: z.array(z.number()).optional(),
     isMandatory: z.boolean().optional(),
     framework: z.enum(['HIPAA', 'OSHA', 'SOX', 'GDPR', 'PCI_DSS', 'FERPA', 'ISO', 'CUSTOM']).nullable().optional(),
-    maxRetakeAttempts: z.number().nullable().optional(),
-    passingScore: z.number().optional()
+    maxRetakeAttempts: z.number().nullable().optional()
   })
   .catchall(z.unknown());
 
@@ -227,7 +224,17 @@ export const ZPublicApiCourseDetailResponse = ZPublicApiCourseResponse.extend({
         items: z.array(ZCourseContentItem)
       })
     ),
-    items: z.array(ZCourseContentItem).describe('Filled only when grouped is false')
+    items: z.array(ZCourseContentItem).describe('Filled only when grouped is false'),
+    outline: z
+      .array(
+        z.discriminatedUnion('kind', [
+          z.object({ kind: z.literal('section'), id: z.string() }),
+          z.object({ kind: z.literal('item'), id: z.string().uuid(), type: z.enum(['LESSON', 'EXERCISE']) })
+        ])
+      )
+      .describe(
+        'Top-level reading order: sections and lessons or exercises outside any section, in course order. Items inside a section follow sections[].items.'
+      )
   }),
   studentLimitReached: z.boolean(),
   org: z

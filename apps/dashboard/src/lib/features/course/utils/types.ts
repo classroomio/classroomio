@@ -641,8 +641,6 @@ export type PreviewCourseTemplateSuccess = Extract<InferResponseType<PreviewCour
 export type CourseTemplatePreviewSettings = {
   certificate: boolean;
   deadline: string | null;
-  threshold: number | null;
-  finalExercise: { title: string; score: number } | null;
   sequential: boolean;
   grading: boolean;
   commentsOff: boolean;
@@ -692,3 +690,17 @@ export type LiveSessionReminderRow = {
 };
 
 export type LiveSessionReminderRowError = 'amount' | 'min' | 'max' | 'duplicate';
+
+export type ReorderCourseContentRequest = (typeof classroomio.course)[':courseId']['content']['reorder']['$put'];
+export type SidebarOutlineEntry =
+  | { id: string; kind: 'item'; order: number; item: CourseContentItem }
+  | {
+      id: string;
+      kind: 'section';
+      order: number;
+      section: Omit<CourseContentSection, 'items'>;
+      items: SidebarOutlineEntry[];
+    };
+/** A lesson or exercise as a contents-page drag zone holds it: `id` is the drag key, `contentId` the item id. */
+export type ContentDndItem = CourseContentItem & { contentId: string };
+export type SidebarDeleteTarget = { kind: 'section'; sectionId: string } | { kind: 'item'; item: CourseContentItem };

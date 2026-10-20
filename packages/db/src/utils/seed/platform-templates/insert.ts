@@ -6,8 +6,7 @@ import {
   createTemplateHighlights,
   getCourseBySeedKey,
   isCourseSlugTaken,
-  retireSeededTemplates,
-  updateCourse
+  retireSeededTemplates
 } from '@db/queries/course';
 import {
   createExerciseSections,
@@ -21,6 +20,7 @@ import { createLessonLanguages, createLessons } from '@db/queries/lesson';
 import { getOrganizationById } from '@db/queries/organization';
 import type { TNewCourse } from '@db/types';
 import { QUESTION_TYPE } from '@cio/utils/validation/constants';
+import { claimSlug } from '@cio/utils/validation/shared';
 
 import type {
   LaunchExercise,
@@ -179,6 +179,7 @@ async function insertExercise(
   sectionId: string,
   exercise: LaunchExercise,
   order: number,
+  slug: string,
   dbClient: DbOrTxClient
 ) {
   const [created] = await createExercises(
@@ -188,7 +189,11 @@ async function insertExercise(
         description: exercise.description,
         courseId,
         sectionId,
-        order
+        order,
+        slug,
+        completionPolicy: exercise.completionPolicy,
+        passThreshold: exercise.passThreshold,
+        allowMultipleAttempts: exercise.allowMultipleAttempts
       }
     ],
     dbClient
@@ -291,7 +296,7 @@ async function insertLaunchTemplate(orgId: string, fixture: LaunchTemplateFixtur
     dbClient
   );
 
-  let finalExerciseId: string | null = null;
+  const itemSlugs = new Set<string>();
 
   for (const [sectionIndex, section] of fixture.sections.entries()) {
     const courseSectionId = sections[sectionIndex]?.id;
@@ -304,11 +309,13 @@ async function insertLaunchTemplate(orgId: string, fixture: LaunchTemplateFixtur
         videosByLesson.push(videos);
       }
 
+      const lessonSlugs = section.lessons.map((lesson) => claimSlug(lesson.title, itemSlugs));
       const lessons = await createLessons(
         section.lessons.map((lesson, index) => ({
           courseId: course.id,
           sectionId: courseSectionId,
           title: lesson.title,
+          slug: lessonSlugs[index],
           order: index + 1,
           isUnlocked: true,
           public: fixture.type === 'PUBLIC',
@@ -359,28 +366,16 @@ async function insertLaunchTemplate(orgId: string, fixture: LaunchTemplateFixtur
     }
 
     for (const [exerciseIndex, exercise] of section.exercises.entries()) {
-      const exerciseId = await insertExercise(
+      const exerciseSlug = claimSlug(exercise.title, itemSlugs);
+      await insertExercise(
         course.id,
         courseSectionId,
         exercise,
         section.lessons.length + exerciseIndex + 1,
+        exerciseSlug,
         dbClient
       );
-      if (exercise.final && exerciseId) finalExerciseId = exerciseId;
     }
-  }
-
-  if (finalExerciseId) {
-    await updateCourse(
-      course.id,
-      {
-        certificate: {
-          ...(fixture.certificate ?? {}),
-          requiredExerciseId: finalExerciseId
-        } as TNewCourse['certificate']
-      },
-      dbClient
-    );
   }
 
   await createTemplateHighlights(

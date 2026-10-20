@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
@@ -201,15 +202,6 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
     sectionIds.add(section.id);
   });
 
-  const sectionOrders = data.sections?.map((section) => section.order).sort((a, b) => a - b);
-  if (sectionOrders && sectionOrders.some((order, index) => order !== index + 1)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['sections'],
-      message: 'Section orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
-    });
-  }
-
   const itemKeys = new Set<string>();
   const itemsBySection = new Map<string, { orders: number[]; total: number; withOrder: number }>();
   data.items?.forEach((item, index) => {
@@ -221,14 +213,16 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
       });
     }
 
-    const sectionId = item.sectionId ?? '__unsectioned__';
-    const entry = itemsBySection.get(sectionId) ?? { orders: [], total: 0, withOrder: 0 };
-    entry.total += 1;
-    if (item.order !== undefined) {
-      entry.orders.push(item.order);
-      entry.withOrder += 1;
+    if (item.sectionId !== undefined) {
+      const sectionId = item.sectionId ?? '__unsectioned__';
+      const entry = itemsBySection.get(sectionId) ?? { orders: [], total: 0, withOrder: 0 };
+      entry.total += 1;
+      if (item.order !== undefined) {
+        entry.orders.push(item.order);
+        entry.withOrder += 1;
+      }
+      itemsBySection.set(sectionId, entry);
     }
-    itemsBySection.set(sectionId, entry);
 
     const itemKey = `${item.type}:${item.id}`;
     if (itemKeys.has(itemKey)) {
@@ -242,17 +236,21 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
     itemKeys.add(itemKey);
   });
 
-  for (const [, entry] of itemsBySection) {
-    if (entry.withOrder > 0 && entry.withOrder === entry.total) {
-      const sorted = [...entry.orders].sort((a, b) => a - b);
-      if (sorted.some((order, index) => order !== index + 1)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['items'],
-          message: 'Item orders within each section must be a contiguous 1-based sequence (1, 2, 3, ...)'
-        });
-      }
+  const rootOrders = [...(data.sections?.map((section) => section.order) ?? [])];
+  for (const [sectionId, entry] of itemsBySection) {
+    if (entry.withOrder !== entry.total) continue;
+
+    if (sectionId === '__unsectioned__') {
+      rootOrders.push(...entry.orders);
+      continue;
     }
+
+    if (new Set(entry.orders).size !== entry.orders.length) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['items'], message: 'Sibling orders must be unique' });
+    }
+  }
+  if (new Set(rootOrders).size !== rootOrders.length) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['items'], message: 'Top-level orders must be unique' });
   }
 });
 export type TCourseContentReorder = z.infer<typeof ZCourseContentReorder>;
@@ -299,8 +297,7 @@ export const ZComplianceSettings = z.object({
   reminderDaysBefore: z.array(z.number().int().min(1).max(365)).max(10).optional().default([30, 7, 1]),
   isMandatory: z.boolean().optional().default(true),
   framework: z.enum(['HIPAA', 'OSHA', 'SOX', 'GDPR', 'PCI_DSS', 'FERPA', 'ISO', 'CUSTOM']).nullable().optional(),
-  maxRetakeAttempts: z.number().int().min(1).nullable().optional(),
-  passingScore: z.number().int().min(0).max(100).optional().default(80)
+  maxRetakeAttempts: z.number().int().min(1).nullable().optional()
 });
 export type TComplianceSettings = z.infer<typeof ZComplianceSettings>;
 
@@ -420,7 +417,7 @@ const ZCourseMetadataFields = z.object({
   liveSessionReminderOffsetsMinutes: ZLiveSessionReminderOffsets.optional(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
   isContentGroupingEnabled: z.boolean().optional(),
-  progressionMode: z.enum(['free', 'sequential']).optional(),
+  progressionMode: z.enum(COURSE_PROGRESSION_MODES).optional(),
   commentsEnabled: z.boolean().optional()
 });
 
@@ -448,9 +445,6 @@ export const ZCertificationSettings = z.object({
   design: ZCertificateDesign.optional(),
   /** ISO 8601 datetime string or null to clear */
   deadline: z.union([z.string().min(1), z.null()]).optional(),
-  threshold: z.number().int().min(0).max(100).optional(),
-  requiredExerciseId: z.union([z.string().uuid(), z.null()]).optional(),
-  exerciseMinScorePercent: z.number().int().min(0).max(100).nullable().optional(),
   emailMessage: z.string().max(5000).nullable().optional()
 });
 export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;

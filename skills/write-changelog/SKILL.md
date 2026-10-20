@@ -39,11 +39,15 @@ For each candidate item, record:
 
 Do not infer details from a title alone. If a detail cannot be verified, leave it out or mark it for human review. Never invent metrics, dates, customer quotes, availability, or behavior.
 
-Pick the week's biggest feature deliberately and lead with it everywhere: title, subject, intro and first section. Re-check this whenever new PRs are added to the scope.
+Once you have the full list of shipped, customer-facing items, stop and ask the person which ones are the highlights. Show every candidate as a short, plain name with one line on what it does, and let them pick one or more (for example, with a multi-select question). Do not draft until they answer: they know which work matters most to customers. Lead with the highlights they picked everywhere: title, subject, intro and first sections. Re-check the pick whenever new PRs are added to the scope.
+
+Name each headline feature so a customer understands it at a glance ("Webhooks", "Flexible course outline"), and use the same name in the title, the email and the article heading. Do not name a section after the mechanic ("Drag to reorder course content") when the customer benefit is broader.
 
 Group features that serve the same customer goal into one highlight, named after that goal in a few words (for example, the language setting and the student email editor both serve "Academy language", so they share one section with the email editor as a `###` subsection).
 
-Keep the highlights to the features customers will notice. Smaller improvements, such as a clearer error message or extra filters and sorting on a list, go in `## Fixes and improvements` as a single bullet each, not as their own sections or email bullets.
+Keep the highlights to the features customers will notice. Smaller improvements, such as a clearer error message or extra filters and sorting on a list, go in `## Fixes and improvements` as a single bullet each, not as their own sections or email bullets. A convenience change to an existing flow, such as a new dialog or a Copy button, is also a fixes bullet, even when it has its own PR.
+
+Judge importance by customer impact, not by PR size or tool count. Developer-facing work (public API endpoints, MCP tools) gets at most a short article section and one plain line in the email. Never make it the email's only item after the headline features.
 
 Order the article roughly by customer impact:
 
@@ -91,19 +95,30 @@ Hi {{{contact.fullname|there}}},
 
 Here are the updates we shipped last week.
 
-The big one is [biggest feature]. [One or two sentences on what customers can do now.]
+[One line introducing the headline features.]
 
-[IMAGE: biggest-feature.png | what it shows]
+**[Headline feature name]**
 
-[One short paragraph on how to use it.]
+[One sentence on what customers can do now.] A few things you can set up:
 
-This week:
+- [A concrete use case, in the customer's words.]
+- [Another use case.]
+- [Another use case.]
 
-**[Feature]:** [What you can do now and the problem it solves.]
-[IMAGE: feature.png | what it shows]
+[IMAGE: headline-feature.png | what it shows]
 
-**[Feature]:** [What you can do now and the problem it solves.]
-[IMAGE: feature.png | what it shows]
+[One short paragraph on where to find it and any plan requirement.]
+
+**[Second headline feature name, if there is one]**
+
+[Same shape: what is easier now, then concrete things the customer can do.]
+
+[IMAGE: second-feature.png | what it shows]
+
+**Also this week**
+
+- [A smaller change, in one plain sentence about what the customer can now do.]
+- [Another smaller change.]
 
 **[Optional heads up]:** [A change that needs customer action, such as an API change.]
 
@@ -116,8 +131,9 @@ We made a video showing you all these features at a glance. Grab a cup of your f
 
 Rules for the email:
 
-- Include only the strongest customer-facing items. Usually use three to five items.
-- Each item can carry the same image as its article section.
+- Sell each headline feature through use cases, not mechanics. For an integration, list concrete things customers can automate with it, each backed by a real event or capability ("Add a student to your CRM as soon as they enroll"), not how it works (signatures, retries). For an editing feature, show how much easier editing is now and name the actions (drag to reorder, edit or delete from the sidebar).
+- `Also this week` is a short list of plain sentences, each saying what the customer can now do. Never a run-on summary or a bolded label with a clause list. Leave out anything the reader would have to decode.
+- Only the headline features carry images in the email.
 - Keep `{{{contact.fullname|there}}}` exactly as written. Resend fills it in.
 - If there is no meaningful release, say so plainly rather than padding the email.
 
@@ -129,7 +145,7 @@ Use this template:
 
 Number each article. The title always ends with ` - ClassroomIO Changelog #NNNN`, where `NNNN` is a four-digit issue number. Look at the latest file in `company/changelogs/` for the highest existing number and increment it by one. Never reuse a number.
 
-Start the title with the week's biggest feature as a short, plain action ("Set your academy language"). Group the rest by area in casual words instead of listing every feature, then end with "and more". Example: "Set your academy language, bunch of exercise improvements and more". Write it the way you would say it to a customer. Do not write marketing slogans ("Your academy now speaks your students' language"), long benefit sentences, or a flat list of feature names. The email subject uses the same wording as the title, without the changelog number.
+After the highlights are picked, give the person four title proposals and let them pick one or write their own. Do not draft the email or article under a title they have not chosen. Title the article after the headline features, plainly: "Introducing Webhooks and a flexible course outline". Use the customer-facing names from the feature sections. Do not use an action list that ends in "and more" ("Send events to your apps with webhooks, reorder course content by dragging and more"), marketing slogans, or long benefit sentences. The email subject uses the same wording as the title, without the changelog number.
 
 ```markdown
 # [Biggest feature as a short action], [rest grouped by area] and more - ClassroomIO Changelog #NNNN
@@ -154,8 +170,8 @@ Start the title with the week's biggest feature as a short, plain action ("Set y
 
 ## Fixes and improvements
 
-- [Concrete fix and its customer impact.]
-- [Concrete improvement and its customer impact.]
+- **[Short fix name].** [Concrete fix and its customer impact.] ([#1234](https://github.com/classroomio/classroomio/pull/1234))
+- **[Short improvement name].** [Concrete improvement and its customer impact.] ([#1235](https://github.com/classroomio/classroomio/pull/1235), [#1236](https://github.com/classroomio/classroomio/pull/1236))
 
 ## [Optional next step]
 
@@ -170,7 +186,7 @@ Article rules:
 - Give each substantial feature its own heading. Combine small related fixes only when the relationship is real.
 - Describe the before-state, the change, and the after-state. The reader should understand why the update matters without seeing the implementation.
 - Omit empty sections, including `## Fixes and improvements` when there are no relevant fixes.
-- Keep internal PR numbers, author handles, and engineering-only details out of the article.
+- End every `## Fixes and improvements` bullet with links to its PRs, as in the template. Keep PR numbers out of the feature sections and the email, and keep author handles and engineering-only details out of the article.
 - Use links only when they help the customer take action or learn more.
 
 ## 6. Prepare the media
@@ -266,7 +282,9 @@ Before returning the two deliverables, check:
 - [ ] Empty sections and filler have been removed.
 - [ ] The terms organization, academy, and student are used consistently.
 - [ ] The copy sounds natural when read aloud and contains no em or en dashes.
-- [ ] The article title and email subject start with the week's biggest feature, as a short plain action, with the rest grouped by area.
+- [ ] The person picked the highlights from the shipped list and chose the title from four proposals (or wrote their own), and the sections use the same feature names as the title.
+- [ ] The email sells each headline feature through concrete use cases, and `Also this week` is plain one-line items, with developer-facing work kept to one line.
+- [ ] Every fixes bullet ends with its PR links, and convenience changes such as a new dialog sit there, not in their own section.
 - [ ] The article title ends with ` - ClassroomIO Changelog #NNNN`, using the next unused number.
 - [ ] Any missing video, image, link, or verification detail is clearly marked for the person publishing it.
 - [ ] The demo walkthrough covers every article section and the fixes, in article order, with a login, URL and exact labels for each step.

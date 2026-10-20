@@ -1,7 +1,8 @@
 import { sql } from 'drizzle-orm';
 
 import { ContentType } from '@cio/utils/constants';
-import { db, sql as drizzleSql, type DbOrTxClient } from '@db/drizzle';
+import * as schema from '@db/schema';
+import { count, db, inArray, sql as drizzleSql, type DbOrTxClient } from '@db/drizzle';
 import { isExerciseCompletedSql } from './progression';
 
 export type CourseContentItemRow = {
@@ -165,5 +166,34 @@ export async function getCourseContentItems(
     throw new Error(
       `Failed to get course content items for course "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/** Counts the student work (exercise submissions and lesson completions) attached to the given lessons and exercises. */
+export async function countContentStudentWork(
+  lessonIds: string[],
+  exerciseIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<{ submissions: number; lessonCompletions: number }> {
+  try {
+    const [submissionRow] =
+      exerciseIds.length > 0
+        ? await dbClient
+            .select({ total: count() })
+            .from(schema.submission)
+            .where(inArray(schema.submission.exerciseId, exerciseIds))
+        : [{ total: 0 }];
+    const [completionRow] =
+      lessonIds.length > 0
+        ? await dbClient
+            .select({ total: count() })
+            .from(schema.lessonCompletion)
+            .where(inArray(schema.lessonCompletion.lessonId, lessonIds))
+        : [{ total: 0 }];
+
+    return { submissions: submissionRow?.total ?? 0, lessonCompletions: completionRow?.total ?? 0 };
+  } catch (error) {
+    console.error('countContentStudentWork error:', error);
+    throw new Error(`Failed to count student work: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

@@ -19,7 +19,7 @@ const READ_ONLY: ToolAnnotations = { readOnlyHint: true, destructiveHint: false 
 const CREATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, idempotentHint: false };
 const WRITE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, idempotentHint: true };
 
-const ADMIN_RULE = 'The API key creator must be an org admin, otherwise the call fails with 403.';
+const ADMIN_RULE = 'the API key creator must be an org admin';
 
 export const ZListTagsToolInput = ZPublicApiTagsQuery;
 export const ZCreateTagToolInput = ZPublicApiCreateTag;
@@ -42,7 +42,7 @@ const setCourseTagsShape = ZSetCourseTagsToolInput.shape as unknown as ZodRawSha
 export function registerTagTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_tags',
-    "List the organization's tag groups, each with its tags (id, name, slug, colour, course count). Pass courseId to get only that course's tags. A tag's slug is what list_org_courses filters on. Paginated: page (default 1) and limit (default 20, max 100); the result includes pagination. The API key creator must be a member of the organization.",
+    "List the organization's tag groups with their tags; the API key creator must be an org member. A tag's slug is what list_org_courses filters on.",
     listTagsShape,
     READ_ONLY,
     async (args) => {
@@ -53,7 +53,7 @@ export function registerTagTools(server: McpServer, apiClient: ClassroomIoApiCli
 
   server.tool(
     'create_tag',
-    `Create a tag in an existing tag group (get groupId from list_tags, or make one with create_tag_group). color must be one of the dashboard palette values. Fails with 409 if a tag with the same name already exists. To create tags and put them on courses in one step, use tag_courses. ${ADMIN_RULE}`,
+    `Create a tag in a tag group; ${ADMIN_RULE}. To create tags and put them on courses in one step, use tag_courses.`,
     createTagShape,
     CREATE,
     async (args) => {
@@ -64,7 +64,7 @@ export function registerTagTools(server: McpServer, apiClient: ClassroomIoApiCli
 
   server.tool(
     'update_tag',
-    `Rename a tag, change its description or colour, or move it to another group. Only the fields you send change. Renaming changes its slug, so course filters on the old slug stop matching. ${ADMIN_RULE}`,
+    `Update a tag's name, description, colour or group; ${ADMIN_RULE}.`,
     updateTagShape,
     WRITE,
     async (args) => {
@@ -74,20 +74,14 @@ export function registerTagTools(server: McpServer, apiClient: ClassroomIoApiCli
     }
   );
 
-  server.tool(
-    'create_tag_group',
-    `Create a tag group to hold tags. Fails with 409 if a group with the same name already exists. ${ADMIN_RULE}`,
-    createTagGroupShape,
-    CREATE,
-    async (args) => {
-      const result = await apiClient.createTagGroup(ZCreateTagGroupToolInput.parse(args));
-      return jsonContent(result);
-    }
-  );
+  server.tool('create_tag_group', `Create a tag group; ${ADMIN_RULE}.`, createTagGroupShape, CREATE, async (args) => {
+    const result = await apiClient.createTagGroup(ZCreateTagGroupToolInput.parse(args));
+    return jsonContent(result);
+  });
 
   server.tool(
     'update_tag_group',
-    `Rename a tag group, or change its description or display order. Only the fields you send change. ${ADMIN_RULE}`,
+    `Update a tag group's name, description or order; ${ADMIN_RULE}.`,
     updateTagGroupShape,
     WRITE,
     async (args) => {
@@ -99,7 +93,7 @@ export function registerTagTools(server: McpServer, apiClient: ClassroomIoApiCli
 
   server.tool(
     'set_course_tags',
-    `Replace a course's tags with exactly these tag ids (from list_tags). Tags left out are removed from the course, and [] removes them all. Returns the course's tags after the change. To add tags by name while keeping the existing ones, use tag_courses. ${ADMIN_RULE}`,
+    `Replace a course's tags with these tag ids from list_tags; ${ADMIN_RULE}. To add tags by name and keep the existing ones, use tag_courses.`,
     setCourseTagsShape,
     { ...WRITE, destructiveHint: true },
     async (args) => {

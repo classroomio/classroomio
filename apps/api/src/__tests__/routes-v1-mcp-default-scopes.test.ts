@@ -37,6 +37,22 @@ vi.mock('@api/services/v1/courses/certificates', () => ({
   getPublicApiCourseCertificateService: vi.fn().mockResolvedValue({})
 }));
 
+vi.mock('@api/services/v1/courses/exercises', () => ({
+  listCourseExercisesService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
+vi.mock('@api/services/v1/courses/submissions', () => ({
+  listCourseSubmissionsService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
+vi.mock('@api/services/v1/audience', () => ({
+  listAudienceService: vi.fn().mockResolvedValue({ items: [], pagination: {}, query: {} })
+}));
+
+vi.mock('@api/services/v1/team', () => ({
+  listTeamService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
 vi.mock('@api/services/v1/courses/members', () => ({
   listCourseMembersService: vi.fn().mockResolvedValue({ items: [], page: 1, limit: 20, total: 0, totalPages: 0 })
 }));
@@ -58,6 +74,10 @@ vi.mock('@api/services/v1/courses/course', () => ({
   listCourseStudentsService: vi.fn(),
   updatePublicApiCourseService: vi.fn().mockResolvedValue({ course: { tags: [] }, conversionOffenders: null }),
   updatePublicApiCourseStructureService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/courses/sections', () => ({
+  listPublicApiCourseSectionsService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
 }));
 
 import { v1Router } from '@api/routes/v1';
@@ -84,7 +104,14 @@ const MCP_DEFAULT_SCOPES = [
   'course:certificate:read',
   'course:certificate:write',
   'analytics:read',
-  'media:write'
+  'media:write',
+  'course:submission:read',
+  'course:submission:write',
+  'course:student:write',
+  'audience:read',
+  'audience:write',
+  'team:read',
+  'team:write'
 ];
 
 const app = new Hono().route('/public-api/v1', v1Router);
@@ -96,7 +123,7 @@ const request = (path: string, method = 'GET', body?: unknown) =>
     body: body === undefined ? undefined : JSON.stringify(body)
   });
 
-describe('default MCP key across the cohort, course member, and certificate APIs', () => {
+describe('default MCP key across the cohort, course member, certificate, exercise, submission, audience, team, and tag APIs', () => {
   beforeEach(() => {
     mocks.complete.mockReset().mockResolvedValue(undefined);
     mocks.authenticate.mockResolvedValue({
@@ -111,7 +138,12 @@ describe('default MCP key across the cohort, course member, and certificate APIs
   it.each([
     ['/cohorts', 'list_org_cohorts'],
     [`/courses/${COURSE_ID}/members`, 'list_course_members'],
-    [`/courses/${COURSE_ID}/certificate`, 'get_course_certificate']
+    [`/courses/${COURSE_ID}/certificate`, 'get_course_certificate'],
+    [`/courses/${COURSE_ID}/sections`, 'list_course_sections'],
+    [`/courses/${COURSE_ID}/exercises`, 'list_course_exercises'],
+    [`/courses/${COURSE_ID}/submissions`, 'list_course_submissions'],
+    ['/audience', 'list_audience_members'],
+    ['/team', 'list_team_members']
   ])('reaches %s and meters it as %s', async (path, toolName) => {
     const response = await request(path);
 
@@ -119,7 +151,7 @@ describe('default MCP key across the cohort, course member, and certificate APIs
     expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, 0);
   });
 
-  it.each(['/courses', `/courses/${COURSE_ID}`, '/audience'])('is kept out of %s', async (path) => {
+  it.each(['/courses', `/courses/${COURSE_ID}`])('is kept out of %s', async (path) => {
     const response = await request(path);
 
     expect(response.status).toBe(403);

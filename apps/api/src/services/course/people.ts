@@ -16,6 +16,7 @@ import type { TGroupmember } from '@cio/db/types';
 import type { PaginatedCourseMember, PaginatedCourseMembersOptions } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { emitCourseMemberWebhookEvent, emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
@@ -99,6 +100,7 @@ export async function addMember(
     }
 
     const addedMember = await addCourseMember(courseId, data);
+    await emitCourseMemberWebhookEvent('course.member.added', courseId, addedMember);
 
     if (data.roleId === ROLE.STUDENT) {
       const statsOrgId = await getOrgIdByCourseId(courseId);
@@ -260,6 +262,7 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       for (const member of members) {
         const addedMember = await addCourseMember(courseId, member);
         addedMembers.push(addedMember);
+        await emitCourseMemberWebhookEvent('course.member.added', courseId, addedMember);
 
         if (member.roleId === ROLE.STUDENT) {
           addedStudentMember = true;
@@ -404,6 +407,8 @@ export async function deleteMember(courseId: string, memberId: string) {
       await invalidateOrgStats(statsOrgId);
     }
 
+    await emitCourseMemberWebhookEvent('course.member.removed', courseId, deleted);
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) {
@@ -431,7 +436,7 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
       throw new AppError('Only student progress can be reset', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    const summary = await resetStudentCourseProgress({
+    const { summary, resetLessonIds, resetExerciseIds } = await resetStudentCourseProgress({
       courseId,
       groupMemberId: memberId,
       profileId: member.profileId
@@ -446,6 +451,23 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
 
     const statsOrgId = await getOrgIdByCourseId(courseId);
     await invalidateOrgStats(statsOrgId);
+
+    const profileId = member.profileId;
+    const lessonResetEvents = profileId
+      ? resetLessonIds.map((lessonId) =>
+          emitCourseWebhookEvent(courseId, 'lesson.completion.updated', { lessonId, profileId, isComplete: false })
+        )
+      : [];
+    const exerciseResetEvents = resetExerciseIds.map((exerciseId) =>
+      emitCourseWebhookEvent(courseId, 'exercise.completion.updated', {
+        exerciseId,
+        memberId,
+        profileId,
+        isComplete: false
+      })
+    );
+
+    await Promise.all([...lessonResetEvents, ...exerciseResetEvents]);
 
     return summary;
   } catch (error) {

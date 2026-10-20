@@ -45,7 +45,7 @@ export const v1CourseInvitesRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List invites for a course, of any status (active, revoked, expired, or used up). ${COURSE_TEAM_RULE}`,
+      description: `List a course's invites of any status (active, revoked, expired or used up); ${COURSE_TEAM_RULE}.`,
       tags: ['Course Invites'],
       responses: {
         200: jsonResponse(
@@ -90,7 +90,7 @@ export const v1CourseInvitesRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Invite one or more people to a course by email or CSV. Unlike POST /members, this can onboard someone who is not yet an organization member. Set sendEmail to false to mint invite tokens without emailing recipients. Limited to 60 invite requests per hour per key creator per course, shared with the dashboard. ${COURSE_TEAM_RULE}`,
+      description: `Invite one or more people to a course by email or CSV, including people not yet in your organization; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Invites'],
       responses: {
         201: jsonResponse('Course invite created successfully', itemResponse(ZPublicApiCreateCourseInviteResponse)),
@@ -98,7 +98,10 @@ export const v1CourseInvitesRouter = new Hono()
         401: errorResponses.unauthorized,
         403: forbiddenResponse,
         404: { description: 'Course not found' },
-        429: { description: 'Too many invite creation attempts, or (MCP keys) the MCP rate limit was hit' }
+        429: {
+          description:
+            'More than 60 invite requests in an hour for this key creator and course (a limit shared with the dashboard), or (MCP keys) the MCP rate limit was hit'
+        }
       }
     }),
     validator('param', ZPublicApiCourseInviteParam),
@@ -128,7 +131,7 @@ export const v1CourseInvitesRouter = new Hono()
   .post(
     '/:inviteId/revoke',
     describeRoute({
-      description: `Revoke a pending course invite. The invite link stops working and this cannot be undone. ${COURSE_TEAM_RULE}`,
+      description: `Revoke a pending course invite so its link stops working, which cannot be undone; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Invites'],
       responses: {
         200: jsonResponse('Course invite revoked successfully', itemResponse(ZPublicApiRevokeCourseInviteResponse)),

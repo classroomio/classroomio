@@ -23,7 +23,7 @@
       return;
     }
 
-    saveTemplateModal.set(saveTemplateModalInitialState);
+    saveTemplateModal.set({ ...saveTemplateModalInitialState });
   }
 
   function setMode(value: string) {

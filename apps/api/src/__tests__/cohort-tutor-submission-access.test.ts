@@ -141,11 +141,11 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
     await db.insert(schema.cohortCourse).values({ cohortId, courseId: linkedCourseId });
     const [linkedExercise] = await db
       .insert(schema.exercise)
-      .values({ title: 'Linked quiz', order: 1, courseId: linkedCourseId })
+      .values({ title: 'Linked quiz', slug: 'linked-quiz', order: 1, courseId: linkedCourseId })
       .returning();
     const [addedExercise] = await db
       .insert(schema.exercise)
-      .values({ title: 'Added quiz', order: 1, courseId: addedCourseId })
+      .values({ title: 'Added quiz', slug: 'added-quiz', order: 1, courseId: addedCourseId })
       .returning();
     exerciseId = linkedExercise.id;
 

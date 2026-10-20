@@ -1,5 +1,5 @@
-import type { Review } from '$features/course/utils/types';
-import { isEmptyReview, normalizeReview, resolveCourseNavHref, validateReview } from './utils';
+import type { Course, Review } from '$features/course/utils/types';
+import { getCourseSections, isEmptyReview, normalizeReview, resolveCourseNavHref, validateReview } from './utils';
 
 function makeReview(overrides: Partial<Review> = {}): Review {
   return {
@@ -149,5 +149,37 @@ describe('validateReview', () => {
   it('treats a missing review as valid', () => {
     expect(validateReview(undefined)).toEqual({});
     expect(validateReview(null)).toEqual({});
+  });
+});
+
+describe('getCourseSections', () => {
+  it('makes each standalone item its own module in outline order and lists exercises in sections', () => {
+    const lesson = (id: string, order: number) => ({ id, type: 'LESSON', title: id, order });
+    const exercise = (id: string, order: number) => ({ id, type: 'EXERCISE', title: id, order });
+    const course = {
+      title: 'Pandas',
+      content: {
+        grouped: true,
+        items: [],
+        sections: [
+          { id: 'fundamentals', title: 'Fundamentals', order: 2, items: [lesson('cleaning', 1), exercise('drill', 2)] },
+          { id: 'ungrouped', title: 'Ungrouped', order: 4, items: [exercise('quiz', 1), lesson('wrap', 3)] }
+        ]
+      }
+    } as unknown as Course;
+
+    const sections = getCourseSections(course);
+
+    expect(sections.map((section) => [section.id, section.standalone ?? null])).toEqual([
+      ['standalone-quiz', 'exercise'],
+      ['fundamentals', null],
+      ['standalone-wrap', 'lesson']
+    ]);
+    expect(sections[0].title).toBe('quiz');
+    expect(sections[1].items.map((item) => [item.id, item.kind])).toEqual([
+      ['cleaning', 'lesson'],
+      ['drill', 'exercise']
+    ]);
+    expect(sections.some((section) => section.title === 'Ungrouped')).toBe(false);
   });
 });

@@ -18,6 +18,7 @@ import {
   getLessonVideoProgress,
   getLessonVideoProgressForLesson,
   getLessonsByCourseId,
+  getPaginatedLessonsByCourseId,
   updateLesson,
   updateLessonComment,
   upsertLessonCompletion,
@@ -31,6 +32,8 @@ import { db } from '@cio/db/drizzle';
 import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
+import { claimItemOrder } from '../course/root-order';
+import { emitCourseWebhookEvent } from '../webhook/emit';
 
 /**
  * Creates a new lesson
@@ -53,7 +56,10 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
       isUnlocked: data.isUnlocked ?? true
     };
 
-    const [lesson] = await createLessons([lessonData]);
+    const [lesson] = await db.transaction(async (tx) => {
+      const order = await claimItemOrder(courseId, { sectionId: data.sectionId }, data.order, null, tx);
+      return createLessons([{ ...lessonData, order }], tx);
+    });
     if (!lesson) {
       throw new AppError('Failed to create lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
@@ -120,7 +126,8 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
   try {
     const payload: TLessonUpdate = { ...data };
     const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
-    const existing = payload.slug !== undefined || touchesSession ? await getLessonById(lessonId) : null;
+    const needsExisting = payload.slug !== undefined || payload.order !== undefined || touchesSession;
+    const existing = needsExisting ? await getLessonById(lessonId) : null;
 
     if (payload.slug !== undefined) {
       if (!existing) {
@@ -138,7 +145,14 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
       });
     }
 
-    const updated = await updateLesson(lessonId, payload);
+    const sectionId = payload.sectionId === undefined ? existing?.sectionId : payload.sectionId;
+    const orderCourseId = payload.order !== undefined ? existing?.courseId : null;
+    const updated = orderCourseId
+      ? await db.transaction(async (tx) => {
+          payload.order = await claimItemOrder(orderCourseId, { sectionId }, payload.order, lessonId, tx);
+          return updateLesson(lessonId, payload, tx);
+        })
+      : await updateLesson(lessonId, payload);
     if (!updated) {
       throw new AppError('Failed to update lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
@@ -223,6 +237,27 @@ export async function listLessons(courseId: string, sectionId?: string): Promise
     }
 
     return lessons;
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to list lessons',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+/**
+ * Lists one page of a course's lessons, in course order
+ * @param courseId Course ID
+ * @param options Section filter and page options
+ * @returns Lessons on the page and the total count
+ */
+export async function listLessonsPaginated(
+  courseId: string,
+  options: { sectionId?: string; page: number; limit: number }
+): Promise<{ items: TLesson[]; total: number }> {
+  try {
+    return await getPaginatedLessonsByCourseId(courseId, options);
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list lessons',
@@ -445,7 +480,11 @@ export async function upsertLessonCompletionService(lessonId: string, profileId:
       isComplete
     };
 
-    return await upsertLessonCompletion(completionData);
+    const completion = await upsertLessonCompletion(completionData);
+
+    await emitCourseWebhookEvent(lesson.courseId, 'lesson.completion.updated', { lessonId, profileId, isComplete });
+
+    return completion;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -658,6 +697,11 @@ export async function updateLessonWatchProgressService(
 
     if (didJustComplete) {
       await upsertLessonCompletion({
+        lessonId,
+        profileId,
+        isComplete: true
+      });
+      await emitCourseWebhookEvent(lesson.courseId, 'lesson.completion.updated', {
         lessonId,
         profileId,
         isComplete: true

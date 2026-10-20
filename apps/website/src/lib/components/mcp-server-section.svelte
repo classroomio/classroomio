@@ -41,7 +41,7 @@
     'publish_course_draft_to_existing_course',
     'update_course_landing_page',
     'create_course_exercise',
-    'create_course_exercise_from_template',
+    'grade_course_submission',
     'update_course_exercise',
     'reorder_course_content',
     'tag_courses',

@@ -34,6 +34,7 @@ exports[`public tag contract > ZPublicApiCreateTag 1`] = `
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "color": {
+      "description": "One of the dashboard tag palette colours",
       "enum": [
         "#EF4444",
         "#F97316",
@@ -53,11 +54,13 @@ exports[`public tag contract > ZPublicApiCreateTag 1`] = `
       "type": "string",
     },
     "groupId": {
+      "description": "Tag group id from GET /tags",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
     },
     "name": {
+      "description": "Tag name, unique in the organization. Its slug, made from the name, is what the course list's tags filter matches.",
       "maxLength": 80,
       "minLength": 1,
       "type": "string",
@@ -81,11 +84,13 @@ exports[`public tag contract > ZPublicApiCreateTagGroup 1`] = `
       "type": "string",
     },
     "name": {
+      "description": "Tag group name, unique in the organization",
       "maxLength": 80,
       "minLength": 1,
       "type": "string",
     },
     "order": {
+      "description": "Position in GET /tags, lowest first; ties sort by name",
       "maximum": 9007199254740991,
       "minimum": 0,
       "type": "integer",
@@ -379,12 +384,14 @@ exports[`public tag contract > ZPublicApiTagsQuery 1`] = `
     },
     "limit": {
       "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
     },
     "page": {
       "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
@@ -526,37 +533,12 @@ exports[`public tag contract > ZPublicApiUpdateCourseResponse 1`] = `
                 },
               ],
             },
-            "exerciseMinScorePercent": {
-              "anyOf": [
-                {
-                  "type": "number",
-                },
-                {
-                  "type": "null",
-                },
-              ],
-            },
             "isDownloadable": {
               "type": "boolean",
-            },
-            "requiredExerciseId": {
-              "anyOf": [
-                {
-                  "format": "uuid",
-                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-                  "type": "string",
-                },
-                {
-                  "type": "null",
-                },
-              ],
             },
             "theme": {
               "description": "Deprecated; use design.templateId",
               "type": "string",
-            },
-            "threshold": {
-              "type": "number",
             },
           },
           "type": "object",
@@ -606,9 +588,6 @@ exports[`public tag contract > ZPublicApiUpdateCourseResponse 1`] = `
                   "type": "null",
                 },
               ],
-            },
-            "passingScore": {
-              "type": "number",
             },
             "reminderDaysBefore": {
               "items": {
@@ -1063,8 +1042,10 @@ exports[`public tag contract > ZPublicApiUpdateCourseResponse 1`] = `
 exports[`public tag contract > ZPublicApiUpdateTag 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Only the fields you send change; renaming changes the slug, so course filters on the old slug stop matching",
   "properties": {
     "color": {
+      "description": "One of the dashboard tag palette colours",
       "enum": [
         "#EF4444",
         "#F97316",
@@ -1084,11 +1065,13 @@ exports[`public tag contract > ZPublicApiUpdateTag 1`] = `
       "type": "string",
     },
     "groupId": {
+      "description": "Tag group id from GET /tags",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
     },
     "name": {
+      "description": "Tag name, unique in the organization. Its slug, made from the name, is what the course list's tags filter matches.",
       "maxLength": 80,
       "minLength": 1,
       "type": "string",
@@ -1101,17 +1084,20 @@ exports[`public tag contract > ZPublicApiUpdateTag 1`] = `
 exports[`public tag contract > ZPublicApiUpdateTagGroup 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Only the fields you send change; renaming changes the slug",
   "properties": {
     "description": {
       "maxLength": 240,
       "type": "string",
     },
     "name": {
+      "description": "Tag group name, unique in the organization",
       "maxLength": 80,
       "minLength": 1,
       "type": "string",
     },
     "order": {
+      "description": "Position in GET /tags, lowest first; ties sort by name",
       "maximum": 9007199254740991,
       "minimum": 0,
       "type": "integer",

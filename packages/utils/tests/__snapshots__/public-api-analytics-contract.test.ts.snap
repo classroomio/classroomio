@@ -6,11 +6,11 @@ exports[`public API analytics request contract > ZPublicApiCourseAnalyticsQuery 
   "properties": {
     "days": {
       "default": 30,
-      "description": "Window in days, counted back from today (UTC): 7, 30, 90 or 365. Default: 30.",
+      "description": "Window in days, counted back from today (UTC): 7, 30, 90 or 365. Default: 30. Applies to every time-windowed section.",
       "type": "number",
     },
     "include": {
-      "description": "Comma-separated sections to return: summary, funnel. Default: summary.",
+      "description": "Comma-separated sections to return: summary, funnel. Default: summary. summary: totals (tutors, students, lessons, exercises) and per-student averages for progress, exercise completion and grade. funnel: course page view → enrollment → completion for this course over days.",
       "items": {
         "enum": [
           "summary",
@@ -32,12 +32,14 @@ exports[`public API analytics request contract > ZPublicApiCourseAnalyticsStuden
   "properties": {
     "limit": {
       "default": 20,
+      "description": "Items per page, 1-50. Default: 20.",
       "maximum": 50,
       "minimum": 1,
       "type": "integer",
     },
     "page": {
       "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
@@ -52,6 +54,7 @@ exports[`public API analytics request contract > ZPublicApiLearnerAnalyticsParam
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "profileId": {
+      "description": "The profileId returned by the compliance and course student lists.",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
@@ -70,11 +73,11 @@ exports[`public API analytics request contract > ZPublicApiOrgAnalyticsQuery kee
   "properties": {
     "days": {
       "default": 30,
-      "description": "Window in days, counted back from today (UTC): 7, 30, 90 or 365. Default: 30.",
+      "description": "Window in days, counted back from today (UTC): 7, 30, 90 or 365. Default: 30. Applies to every time-windowed section.",
       "type": "number",
     },
     "include": {
-      "description": "Comma-separated sections to return: overview, traffic, countries, funnel, courseTypes, topCourses, loginActivity, compliance. Default: overview.",
+      "description": "Comma-separated sections to return: overview, traffic, countries, funnel, courseTypes, topCourses, loginActivity, compliance. Default: overview. overview: totals (courses, students, certificates), top courses by students, and recent certificates. traffic: landing and course page views, unique visitors, enrollments and completions, with a per-day series. countries: views and enrollments by visitor country. funnel: landing view → course page view → enrollment → completion; for one course, use GET /courses/{courseId}/analytics?include=funnel. courseTypes: views, enrollments and completions by course type. topCourses: the most viewed course pages. loginActivity: student logins by day of week (org admin only). compliance: compliance status counts, overall and per course (org admin only); list the learners with GET /analytics/compliance/learners.",
       "items": {
         "enum": [
           "overview",

@@ -5,10 +5,15 @@ import { ErrorCodes } from '@api/utils/errors';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 
 const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
+const COURSE_STUDENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/members\/[^/]+\/(?:lessons|exercises)(?:\/|$)/;
 const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|invites)(?:\/|$)/;
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
+const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content)(?:\/|$)/;
+const COURSE_EXERCISE_PATH = /^(?:\/public-api\/v1)?\/(?:courses\/[^/]+\/exercises|exercise-templates)(?:\/|$)/;
+const COURSE_SUBMISSION_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:submissions|marks)(?:\/|$)/;
+const AUDIENCE_PATH = /^(?:\/public-api\/v1)?\/audience(?:\/|$)/;
+const TEAM_PATH = /^(?:\/public-api\/v1)?\/team(?:\/|$)/;
 const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
-const COURSE_LESSON_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/lessons(?:\/|$)/;
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
 const TAG_PATH = /^(?:\/public-api\/v1)?\/tags(?:\/|$)/;
 const COURSE_ITEM_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/?$/;
@@ -20,8 +25,20 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return isRead ? 'cohort:read' : 'cohort:write';
   }
 
+  if (AUDIENCE_PATH.test(path)) {
+    return isRead ? 'audience:read' : 'audience:write';
+  }
+
+  if (TEAM_PATH.test(path)) {
+    return isRead ? 'team:read' : 'team:write';
+  }
+
   if (ANALYTICS_PATH.test(path) && isRead) {
     return 'analytics:read';
+  }
+
+  if (COURSE_STUDENT_PATH.test(path)) {
+    return 'course:student:write';
   }
 
   if (COURSE_MEMBER_PATH.test(path)) {
@@ -32,7 +49,7 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return method === 'GET' || method === 'HEAD' ? 'course:certificate:read' : 'course:certificate:write';
   }
 
-  if (COURSE_LESSON_PATH.test(path)) {
+  if (COURSE_CONTENT_PATH.test(path)) {
     return method === 'GET' || method === 'HEAD' ? 'course:read' : 'course:write';
   }
 
@@ -40,6 +57,14 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
   // falls through to null and is refused rather than opened by a write scope.
   if (MEDIA_PATH.test(path)) {
     return method === 'GET' || method === 'HEAD' ? null : 'media:write';
+  }
+
+  if (COURSE_EXERCISE_PATH.test(path)) {
+    return method === 'GET' || method === 'HEAD' ? 'course:exercise:read' : 'course:exercise:write';
+  }
+
+  if (COURSE_SUBMISSION_PATH.test(path)) {
+    return method === 'GET' || method === 'HEAD' ? 'course:submission:read' : 'course:submission:write';
   }
 
   if (TAG_PATH.test(path)) {

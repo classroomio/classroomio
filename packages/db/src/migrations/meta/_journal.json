@@ -246,6 +246,34 @@
       "when": 1791971013728,
       "tag": "0034_restore_missing_unique_constraints",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1792160611625,
+      "tag": "0035_public_api_scopes_and_instance",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1792266230279,
+      "tag": "0036_mixed_course_outline",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1792391198034,
+      "tag": "0037_webhooks",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1792497761466,
+      "tag": "0038_remove_final_exercise_and_completion_threshold",
+      "breakpoints": true
     }
   ]
 }

@@ -54,8 +54,7 @@ export class CourseCloneApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         this.errors = {};
 
-        copyCourseModal.set(copyCourseModalInitialState);
-        copyCourseModal.update((modal) => ({ ...modal, open: false }));
+        copyCourseModal.set({ ...copyCourseModalInitialState, open: false });
 
         orgNavCountsApi.adjustCount('courses', 1);
 

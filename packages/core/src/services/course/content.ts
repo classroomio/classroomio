@@ -3,14 +3,24 @@ import { ContentType } from '@cio/utils/constants';
 import type { DbOrTxClient } from '@cio/db/drizzle';
 import { db } from '@cio/db/drizzle';
 import { applyCourseContentBulkUpdates, applyCourseSectionOrderUpdates } from '@cio/db/queries/course/content-batch';
-import { deleteCourseSection, getCourseSectionById, getCourseSectionsByCourseId } from '@cio/db/queries/course';
+import {
+  deleteCourseSection,
+  getCourseById,
+  getCourseSectionById,
+  getCourseSectionsByCourseId
+} from '@cio/db/queries/course';
 import { OperationalQueryError } from '@cio/db/queries/query-errors';
-import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
+import {
+  countContentStudentWork,
+  getCourseContentItems,
+  type CourseContentItemRow
+} from '@cio/db/queries/course/content';
 import { deleteLesson } from '@cio/db/queries/lesson';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { deleteExercise } from '@cio/db/queries/exercise/exercise';
 import { ZCourseContentReorder } from '@cio/utils/validation/course';
 import type { TCourseContentDelete, TCourseContentReorder, TCourseContentUpdate } from '@cio/utils/validation/course';
+import { DEFAULT_CONTENT_GROUPING } from './utils';
 
 type CourseContentReorderResult = {
   courseId: string;
@@ -44,7 +54,7 @@ function normalizeDeleteItems<TItem extends { id: string; type: string }>(items:
   return [...exercises, ...lessons];
 }
 
-async function getCourseContentMap(courseId: string) {
+async function assertCourseContentItems(courseId: string, items: TCourseContentUpdate['items']) {
   const contentItems = await getCourseContentItems(courseId);
   const contentMap = new Map<string, CourseContentItemRow>();
 
@@ -54,13 +64,17 @@ async function getCourseContentMap(courseId: string) {
     }
   });
 
-  return contentMap;
-}
-
-async function assertCourseContentItems(courseId: string, items: TCourseContentUpdate['items']) {
-  const contentMap = await getCourseContentMap(courseId);
-
+  const destinationSections = await getCourseSectionsByCourseId(courseId);
+  const destinationSectionIds = new Set(destinationSections.map((section) => section.id));
   items.forEach((item) => {
+    if (item.sectionId && !destinationSectionIds.has(item.sectionId)) {
+      throw new AppError(
+        'Destination section does not belong to this course',
+        ErrorCodes.COURSE_SECTION_NOT_FOUND,
+        404
+      );
+    }
+
     const key = buildContentKey({ id: item.id, type: item.type });
 
     if (!contentMap.has(key)) {
@@ -75,6 +89,8 @@ async function assertCourseContentItems(courseId: string, items: TCourseContentU
       throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
     }
   });
+
+  return contentItems;
 }
 
 async function assertCourseSections(courseId: string, sections: NonNullable<TCourseContentReorder['sections']>) {
@@ -96,6 +112,47 @@ function mapContentBatchError(error: unknown): AppError | null {
   return null;
 }
 
+/**
+ * Throws when two top-level outline entries would share an order. Sections only count when content grouping is on.
+ */
+function assertEffectiveRootOrders(
+  contentItems: CourseContentItemRow[],
+  payload: TCourseContentReorder,
+  isContentGroupingEnabled: boolean
+) {
+  const sectionUpdates = new Map(payload.sections?.map((section) => [section.id, section.order]) ?? []);
+  const itemUpdates = new Map(payload.items?.map((item) => [buildContentKey(item), item]) ?? []);
+  const rootOrders: number[] = [];
+
+  contentItems.forEach((contentItem) => {
+    if (contentItem.type === ContentType.Section) {
+      if (!isContentGroupingEnabled) return;
+
+      const effectiveOrder = sectionUpdates.get(contentItem.id) ?? contentItem.order;
+      if (effectiveOrder !== null) {
+        rootOrders.push(effectiveOrder);
+      }
+
+      return;
+    }
+
+    const itemUpdate = itemUpdates.get(buildContentKey(contentItem));
+    const effectiveSectionId = itemUpdate?.sectionId === undefined ? contentItem.sectionId : itemUpdate.sectionId;
+    if (isContentGroupingEnabled && effectiveSectionId !== null) {
+      return;
+    }
+
+    const effectiveOrder = itemUpdate?.order ?? contentItem.order;
+    if (effectiveOrder !== null) {
+      rootOrders.push(effectiveOrder);
+    }
+  });
+
+  if (new Set(rootOrders).size !== rootOrders.length) {
+    throw new AppError('Top-level orders must be unique', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+}
+
 async function transactionWithContentBatch<TResult>(runner: (tx: DbOrTxClient) => Promise<TResult>): Promise<TResult> {
   try {
     return await db.transaction(async (tx) => runner(tx));
@@ -114,11 +171,22 @@ async function transactionWithContentBatch<TResult>(runner: (tx: DbOrTxClient) =
   }
 }
 
-export async function updateCourseContent(courseId: string, items: TCourseContentUpdate['items']) {
+/** Applies lock/order/section changes atomically and returns each item as stored afterwards. */
+export async function updateCourseContent(
+  courseId: string,
+  items: TCourseContentUpdate['items']
+): Promise<{ items: CourseContentItemRow[] }> {
   try {
     await assertCourseContentItems(courseId, items);
 
-    await transactionWithContentBatch(async (tx) => applyCourseContentBulkUpdates(tx, items));
+    const storedItems = await transactionWithContentBatch(async (tx) => {
+      await applyCourseContentBulkUpdates(tx, items);
+
+      return getCourseContentItems(courseId, undefined, tx);
+    });
+    const requestedKeys = new Set(items.map(buildContentKey));
+
+    return { items: storedItems.filter((item) => requestedKeys.has(buildContentKey(item))) };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -147,9 +215,10 @@ export async function reorderCourseContent(
       await assertCourseSections(courseId, payload.sections);
     }
 
-    if (payload.items?.length) {
-      await assertCourseContentItems(courseId, payload.items);
-    }
+    const contentItems = await assertCourseContentItems(courseId, payload.items ?? []);
+    const [course] = await getCourseById(courseId);
+    const isContentGroupingEnabled = course?.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;
+    assertEffectiveRootOrders(contentItems, payload, isContentGroupingEnabled);
 
     return await transactionWithContentBatch(async (tx) => {
       const updatedSections = payload.sections?.length ? await applyCourseSectionOrderUpdates(tx, payload.sections) : 0;
@@ -181,62 +250,56 @@ export async function reorderCourseContent(
   }
 }
 
-export async function deleteCourseContent(courseId: string, payload: TCourseContentDelete) {
+export type CourseContentDeleteResult = {
+  items: Array<{ id: string; type: ContentType }>;
+  deletedSubmissions: number;
+  deletedLessonCompletions: number;
+};
+
+/**
+ * Deletes a section's content (and the section) or the given lessons and exercises in one transaction, and returns what
+ * was deleted. Without `force`, throws 409 when any of it holds exercise submissions or lesson completions.
+ */
+export async function deleteCourseContent(
+  courseId: string,
+  payload: TCourseContentDelete,
+  options: { force: boolean } = { force: true }
+): Promise<CourseContentDeleteResult> {
   try {
-    if (payload.sectionId) {
-      const sectionId = payload.sectionId;
+    const sectionId = payload.sectionId;
+    if (sectionId) {
       const section = await getCourseSectionById(sectionId);
       if (!section || section.courseId !== courseId) {
         throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
       }
-
-      const contentItems = await getCourseContentItems(courseId);
-      const itemsToDelete = normalizeDeleteItems(
-        contentItems.filter(
-          (item) =>
-            (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === sectionId
-        )
-      );
-
-      console.log('Items to delete:', itemsToDelete);
-      await db.transaction(async (tx) => {
-        for (const item of itemsToDelete) {
-          if (item.type === ContentType.Lesson) {
-            const deleted = await deleteLesson(item.id, tx);
-            if (!deleted) {
-              throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
-            }
-
-            await deleteAssetUsagesByTarget('lesson', item.id, tx);
-            continue;
-          }
-
-          const deleted = await deleteExercise(item.id, tx);
-          if (!deleted) {
-            console.log('delete exercise failed for id:', item.id);
-            throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
-          }
-        }
-
-        const deletedSection = await deleteCourseSection(sectionId, tx);
-        if (!deletedSection) {
-          throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
-        }
-      });
-
-      return;
-    }
-
-    if (!payload.items) {
+    } else if (!payload.items) {
       throw new AppError('Content items are required', ErrorCodes.VALIDATION_ERROR, 400);
+    } else {
+      await assertCourseContentItems(courseId, payload.items);
     }
 
-    const items = payload.items;
-    await assertCourseContentItems(courseId, items);
-    const normalizedItems = normalizeDeleteItems(items);
+    const itemsToDelete = sectionId
+      ? normalizeDeleteItems(
+          (await getCourseContentItems(courseId)).filter(
+            (item) =>
+              (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === sectionId
+          )
+        )
+      : normalizeDeleteItems(payload.items ?? []);
+    const lessonIds = itemsToDelete.filter((item) => item.type === ContentType.Lesson).map((item) => item.id);
+    const exerciseIds = itemsToDelete.filter((item) => item.type === ContentType.Exercise).map((item) => item.id);
 
-    await db.transaction(async (tx) => {
-      for (const item of normalizedItems) {
+    const studentWork = await db.transaction(async (tx) => {
+      const work = await countContentStudentWork(lessonIds, exerciseIds, tx);
+      if (!options.force && work.submissions + work.lessonCompletions > 0) {
+        throw new AppError(
+          `Students have work here (${work.submissions} submissions, ${work.lessonCompletions} lesson completions). Pass force=true to delete it with their work`,
+          ErrorCodes.CONFLICT,
+          409
+        );
+      }
+
+      for (const item of itemsToDelete) {
         if (item.type === ContentType.Lesson) {
           const deleted = await deleteLesson(item.id, tx);
           if (!deleted) {
@@ -252,7 +315,22 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
           throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
         }
       }
+
+      if (sectionId) {
+        const deletedSection = await deleteCourseSection(sectionId, tx);
+        if (!deletedSection) {
+          throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+        }
+      }
+
+      return work;
     });
+
+    return {
+      items: itemsToDelete.map((item) => ({ id: item.id, type: item.type as ContentType })),
+      deletedSubmissions: studentWork.submissions,
+      deletedLessonCompletions: studentWork.lessonCompletions
+    };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
