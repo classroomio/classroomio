@@ -132,12 +132,17 @@ function sendBeacon(url: string, body: string): CommitResult {
   return delivered ? { result: true, errorCode: 0 } : { result: false, errorCode: COMMIT_FAILED };
 }
 
-function sendAsynchronously(url: string, body: string, hooks: RuntimeHttpHooks, onAcknowledged?: () => void): void {
+async function sendAsynchronously(
+  url: string,
+  buildBody: () => string,
+  hooks: RuntimeHttpHooks,
+  onAcknowledged?: () => void
+): Promise<void> {
   if (typeof fetch === 'function') {
-    void fetch(url, {
+    await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body
+      body: buildBody()
     })
       .then(async (response) => {
         const text = await response.text();
@@ -145,17 +150,28 @@ function sendAsynchronously(url: string, body: string, hooks: RuntimeHttpHooks, 
         if (isSuccess(result)) onAcknowledged?.();
       })
       .catch(() => {});
+
     return;
   }
 
-  const request = new XMLHttpRequest();
-  request.open('POST', url, true);
-  request.setRequestHeader('Content-Type', 'application/json');
-  request.onload = () => {
-    const result = readCommitResponse(request.status, request.responseText, hooks);
-    if (isSuccess(result)) onAcknowledged?.();
-  };
-  request.send(body);
+  await new Promise<void>((resolve) => {
+    const request = new XMLHttpRequest();
+
+    request.open('POST', url, true);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.onload = () => {
+      const result = readCommitResponse(request.status, request.responseText, hooks);
+      if (isSuccess(result)) onAcknowledged?.();
+      resolve();
+    };
+    request.onerror = () => resolve();
+
+    try {
+      request.send(buildBody());
+    } catch {
+      resolve();
+    }
+  });
 }
 
 function sendSynchronously(url: string, body: string, hooks: RuntimeHttpHooks): CommitResult | null {
@@ -181,6 +197,20 @@ function sendSynchronously(url: string, body: string, hooks: RuntimeHttpHooks): 
 export function createRuntimeHttpService(hooks: RuntimeHttpHooks = {}): RuntimeHttpService {
   const unloading = hooks.isPageUnloading ?? isPageUnloading;
   let acknowledged: unknown = hooks.initialCmi !== undefined ? cloneCmi(hooks.initialCmi) : undefined;
+  let acknowledgedSequence = -1;
+  let saveQueue: Promise<void> = Promise.resolve();
+
+  const acknowledge = (cmi: unknown, sequence: unknown): void => {
+    const numericSequence = typeof sequence === 'number' ? sequence : Number(sequence);
+
+    if (Number.isFinite(numericSequence)) {
+      if (numericSequence < acknowledgedSequence) return;
+
+      acknowledgedSequence = numericSequence;
+    }
+
+    acknowledged = cloneCmi(cmi);
+  };
 
   return {
     processHttpRequest(url: string, params: CommitParams, immediate: boolean): CommitResult {
@@ -196,9 +226,22 @@ export function createRuntimeHttpService(hooks: RuntimeHttpHooks = {}): RuntimeH
       const isExit = immediate || fields['terminate'] === true;
 
       if (!isExit) {
-        sendAsynchronously(url, body, hooks, () => {
-          acknowledged = cloneCmi(fullCmi);
-        });
+        const commitSequence = fields['commitSequence'];
+        const pending: Record<string, unknown> = { ...fields, cmi: cloneCmi(fullCmi) };
+
+        saveQueue = saveQueue
+          .then(() =>
+            sendAsynchronously(
+              url,
+              () => {
+                const pendingChanges = diffCmi(pending.cmi, acknowledged) ?? {};
+                return JSON.stringify({ ...pending, cmi: pendingChanges });
+              },
+              hooks,
+              () => acknowledge(pending.cmi, commitSequence)
+            )
+          )
+          .catch(() => {});
 
         return { result: true, errorCode: 0 };
       }
@@ -214,7 +257,7 @@ export function createRuntimeHttpService(hooks: RuntimeHttpHooks = {}): RuntimeH
         return sendBeacon(url, body);
       }
 
-      if (isSuccess(result)) acknowledged = cloneCmi(fullCmi);
+      if (isSuccess(result)) acknowledge(fullCmi, fields['commitSequence']);
 
       return result;
     },
