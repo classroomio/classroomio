@@ -345,13 +345,11 @@
 
         const freshCount = getFreshInProgressCount ? await getFreshInProgressCount() : startingInProgressCount;
         const hadInitialChoice = startingInProgressCount > 0;
-        const newLearnersStarted = hadInitialChoice ? freshCount > startingInProgressCount : freshCount > 0;
-        const deltaCount = hadInitialChoice ? freshCount - startingInProgressCount : freshCount;
-
-        const restart =
-          newLearnersStarted && deltaCount > 0
-            ? (await askPromoteChoice(deltaCount)) === 'restart'
-            : replaceChoice === 'restart';
+        const restart = hadInitialChoice
+          ? replaceChoice === 'restart'
+          : freshCount > 0
+            ? (await askPromoteChoice(freshCount)) === 'restart'
+            : false;
         throwIfAborted(signal);
         await packageApi.makeCurrent(assetId, next.version.id, restart, activityId);
         if (!packageApi.success) throw new Error('Failed to promote package version');
