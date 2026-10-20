@@ -3053,7 +3053,18 @@
             "remove_package": "Supprimer le paquet",
             "launchable_count": "{count, plural, one {# élément lançable} other {# éléments lançables}}",
             "drop_hint": "Jusqu'à {size}. Gardez cette page ouverte jusqu'à ce que le package soit joint.",
-            "prerequisites_warning": "Ce paquet conditionne l'installation des modules à des prérequis. Ces prérequis sont appliqués selon un ordre séquentiel ; les règles de prérequis plus précises sont ignorées."
+            "prerequisites_warning": "Ce paquet conditionne l'installation des modules à des prérequis. Ces prérequis sont appliqués selon un ordre séquentiel ; les règles de prérequis plus précises sont ignorées.",
+            "modal_title": "Ajouter un forfait",
+            "library_search": "Bibliothèque de recherche",
+            "library_search_action": "Recherche",
+            "library_loading": "Chargement des colis…",
+            "library_empty": "Aucun paquet trouvé dans la bibliothèque",
+            "library_attach": "Attacher",
+            "library_attached_success": "Colis installé avec succès.",
+            "tabs": {
+              "upload": "Télécharger",
+              "library": "Bibliothèque"
+            }
           },
           "gating": {
             "title": "La création de contenu SCORM est suspendue.",
@@ -3185,7 +3196,7 @@
           },
           "header_unlocked": "Déverrouillé",
           "menu_delete": "Supprimer l'activité",
-          "delete_confirm_body_with_count": "{count, plural, one {# learner is} other {# learners are}} are not not in this item. Sa suppression efface leur progression.",
+          "delete_confirm_body_with_count": "{count, plural, one {# apprenant a} other {# apprenants ont}} commencé cet élément. Sa suppression effacera leur progression.",
           "single_activity_empty_title": "Aucun paquetage ajouté pour le moment.",
           "single_activity_empty_description": "Téléversez un paquetage SCORM pour le rendre accessible aux apprenants de ce cours.",
           "single_activity_empty_student_desc": "Ce cours ne contient aucun contenu pour le moment.",

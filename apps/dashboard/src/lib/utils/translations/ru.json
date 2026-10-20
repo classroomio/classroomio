@@ -548,8 +548,8 @@
       "settings_failed": "Не удалось сохранить настройки пакета",
       "settings_saved": "Настройки пакета сохранены",
       "upload_failed": "Не удалось загрузить пакет",
-      "courses_created": "Draft SCORM courses created",
-      "courses_create_failed": "Could not create courses from packages"
+      "courses_created": "Созданы черновики курсов SCORM",
+      "courses_create_failed": "Не удалось создать курсы из пакетов"
     }
   },
   "explore": {
@@ -3032,7 +3032,18 @@
             "remove_package": "Удалить пакет",
             "launchable_count": "{count, plural, one {# объект для запуска} other {# объектов для запуска}}",
             "drop_hint": "До {size}. Держите эту страницу открытой до тех пор, пока посылка не будет прикреплена.",
-            "prerequisites_warning": "Данный пакет ограничивает доступ к модулям только выполнением предварительных условий. Эти условия соблюдаются в порядке следования модулей; более тонкие правила предварительных условий игнорируются."
+            "prerequisites_warning": "Данный пакет ограничивает доступ к модулям только выполнением предварительных условий. Эти условия соблюдаются в порядке следования модулей; более тонкие правила предварительных условий игнорируются.",
+            "modal_title": "Добавить пакет",
+            "library_search": "Поиск в библиотеке",
+            "library_search_action": "Поиск",
+            "library_loading": "Загрузка посылок…",
+            "library_empty": "В библиотеке не найдено ни одного пакета.",
+            "library_attach": "Прикреплять",
+            "library_attached_success": "Пакет успешно прикреплен.",
+            "tabs": {
+              "upload": "Загрузить",
+              "library": "Библиотека"
+            }
           },
           "player": {
             "autosave_hint": "Прогресс сохраняется автоматически.",
@@ -3957,17 +3968,17 @@
         "exercise": "Упражнение",
         "question": "Вопрос",
         "unknown": "Неизвестно",
-        "activity": "SCORM package"
+        "activity": "Пакет SCORM"
       },
       "go_to_lesson": "Перейти на урок",
       "slot_type": {
         "lesson_video": "Видео урока",
         "lesson_document": "Документ урока",
         "unknown": "Приложение",
-        "activity_package": "SCORM package"
+        "activity_package": "Пакет SCORM"
       },
       "refresh": "Обновить использование",
-      "go_to_package": "Go to package"
+      "go_to_package": "Перейти к пакету"
     },
     "form": {
       "file_name": "Имя файла",
@@ -3999,7 +4010,7 @@
       "download": "Скачать",
       "manage_thumbnails": "Управление миниатюрами",
       "delete": "Удалить",
-      "create_course_from_package": "Create course from package"
+      "create_course_from_package": "Создать курс из пакета"
     },
     "table": {
       "title": "Название",
@@ -4028,7 +4039,7 @@
       "image": "Изображение",
       "audio": "Аудио",
       "other": "Другое",
-      "scorm": "SCORM package"
+      "scorm": "Пакет SCORM"
     },
     "filters": {
       "search_placeholder": "Поиск активов",
@@ -4044,7 +4055,7 @@
         "image": "Изображение",
         "audio": "Аудио",
         "other": "Другое",
-        "scorm": "SCORM package"
+        "scorm": "Пакет SCORM"
       },
       "refresh": "Обновить"
     },
@@ -4053,7 +4064,7 @@
       "internal_bytes": "Внутреннее хранилище",
       "external_assets": "Внешние активы",
       "bytes_by_kind": "Хранилище по типу актива",
-      "scorm_bytes": "SCORM packages"
+      "scorm_bytes": "Пакеты SCORM"
     },
     "common": {
       "not_available": "Н/Д"

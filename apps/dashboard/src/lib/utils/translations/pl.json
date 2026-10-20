@@ -747,7 +747,7 @@
       "kpi_team_tutors": "{count, plural, one {# korepetytor w zespole kursu} other {# korepetytorów w zespole kursu}}",
       "kpi_lessons_exercises": "{count, plural, one {# ćwiczenie} other {# ćwiczeń}} przypisane do lekcji",
       "kpi_progress_grade": "{grade}% średniej oceny z ćwiczeń wśród zapisanych uczniów",
-      "kpi_packages": "{count, plural, one {# pakiet} few {# pakiety} many {# pakietów}}",
+      "kpi_packages": "{count, plural, one {# pakiet} few {# pakiety} many {# pakietów} other {# pakietu}}",
       "kpi_activity_completion": "{rate}% ukończenia pakietów przez zapisanych uczestników"
     },
     "exercises_completed": "Ćwiczenia ukończone",
@@ -3053,7 +3053,18 @@
             "remove_package": "Usuń pakiet",
             "launchable_count": "{count, plural, one {# element możliwy do uruchomienia} other {# elementów możliwych do uruchomienia}}",
             "drop_hint": "Do {size}. Pozostaw tę stronę otwartą do czasu dołączenia paczki.",
-            "prerequisites_warning": "Ten pakiet blokuje moduły za wymaganiami wstępnymi. Są one egzekwowane w kolejności sekwencyjnej modułów; bardziej szczegółowe reguły wymagań wstępnych są ignorowane."
+            "prerequisites_warning": "Ten pakiet blokuje moduły za wymaganiami wstępnymi. Są one egzekwowane w kolejności sekwencyjnej modułów; bardziej szczegółowe reguły wymagań wstępnych są ignorowane.",
+            "modal_title": "Dodaj pakiet",
+            "library_search": "Wyszukaj w bibliotece",
+            "library_search_action": "Szukaj",
+            "library_loading": "Ładowanie pakietów…",
+            "library_empty": "Nie znaleziono pakietów w bibliotece",
+            "library_attach": "Przytwierdzać",
+            "library_attached_success": "Pakiet został pomyślnie dołączony.",
+            "tabs": {
+              "upload": "Wgrywać",
+              "library": "Biblioteka"
+            }
           },
           "gating": {
             "title": "Tworzenie pakietów SCORM zostało wstrzymane.",
@@ -3570,7 +3581,7 @@
       "lessons_count": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}}",
       "exercises_count": "{count, plural, one {# ćwiczenie} few {# ćwiczenia} many {# ćwiczeń} other {# ćwiczeń}}",
       "activities_count": "{count, plural, one {# pakiet} few {# pakiety} many {# pakietów} other {# pakietu}}",
-      "scorm_modules": "SCORM · {count, plural, one {# moduł} few {# moduły} many {# modułów}}",
+      "scorm_modules": "SCORM · {count, plural, one {# moduł} few {# moduły} many {# modułów} other {# modułu}}",
       "scorm": "SCORM",
       "scorm_course": "Kurs SCORM"
     },

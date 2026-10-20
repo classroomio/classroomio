@@ -506,7 +506,7 @@
     </div>
   {:else}
     {#if safeInstructions}
-      <div class="ui:text-muted-foreground text-sm">{@html safeInstructions}</div>
+      <div class="ui:text-muted-foreground text-sm whitespace-pre-line">{@html safeInstructions}</div>
     {/if}
 
     {#if launch.mode === 'preview'}
@@ -596,7 +596,9 @@
           <Skeleton class="block w-full" style="height: {isImmersive ? '100%' : frameHeight}" />
         {/if}
         {#if bootFailed}
-          <div class="flex flex-col items-center gap-3 p-8 text-center">
+          <div
+            class="ui:bg-background absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 p-8 text-center"
+          >
             <p class="text-sm font-medium">{$t('course.navItem.lessons.activities.player.load_failed_title')}</p>
             <p class="ui:text-muted-foreground text-sm">
               {$t('course.navItem.lessons.activities.player.load_failed_body')}
@@ -607,7 +609,9 @@
           </div>
         {/if}
         {#if didNotConnect}
-          <div class="flex flex-col items-center gap-3 p-8 text-center">
+          <div
+            class="ui:bg-background absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 p-8 text-center"
+          >
             <p class="text-sm font-medium">{$t('course.navItem.lessons.activities.player.no_connection_title')}</p>
             <p class="ui:text-muted-foreground text-sm">
               {$t('course.navItem.lessons.activities.player.no_connection_body')}
@@ -616,6 +620,16 @@
               {$t('course.navItem.lessons.activities.player.reload')}
             </Button>
           </div>
+        {/if}
+        {#if isImmersive && (!contentReady || bootFailed || didNotConnect)}
+          <button
+            type="button"
+            class="ui:bg-background/90 ui:hover:bg-background ui:border-border absolute top-3 right-3 z-20 flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium shadow-sm"
+            onclick={exitImmersive}
+            aria-label={$t('course.navItem.lessons.activities.player.exit_fullscreen')}
+          >
+            {$t('course.navItem.lessons.activities.player.exit_fullscreen')}
+          </button>
         {/if}
       </div>
     </div>

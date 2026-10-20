@@ -26,7 +26,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
-  import { onDestroy, untrack } from 'svelte';
+  import { onDestroy, onMount, untrack } from 'svelte';
   import { SvelteSet } from 'svelte/reactivity';
 
   interface Props {
@@ -105,6 +105,12 @@
     onApply: (nextSearch) => {
       search = nextSearch;
       void refreshAssets(1);
+    }
+  });
+
+  onMount(() => {
+    if (mediaApi.assets.length > 0) {
+      void loadScormMeta(assetsRequestId, mediaApi.assets);
     }
   });
 

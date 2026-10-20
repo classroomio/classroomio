@@ -3039,7 +3039,7 @@
             "stat_pass_mark": "Beståelseskrav",
             "none": "Ingen",
             "modules": "Moduler",
-            "warnings_summary": "{count, plural, one {# thing to know about this package} other {# things to know about this package}}",
+            "warnings_summary": "{count, plural, one {# ting du bør vide om denne pakke} other {# ting du bør vide om denne pakke}}",
             "module_order_sequential": "Tags i pakkeorden",
             "module_order_free": "Åbn i vilkårlig rækkefølge",
             "table_num": "#",
@@ -3053,7 +3053,18 @@
             "remove_package": "Fjern pakke",
             "launchable_count": "{count, plural, one {# element, der kan startes} other {# elementer, der kan startes}}",
             "drop_hint": "Op til {size}. Hold denne side åben, indtil pakken er vedhæftet.",
-            "prerequisites_warning": "Denne pakke kontrollerer moduler bag forudsætninger. De håndhæves i sekventiel modulrækkefølge; finere forudsætningsregler ignoreres."
+            "prerequisites_warning": "Denne pakke kontrollerer moduler bag forudsætninger. De håndhæves i sekventiel modulrækkefølge; finere forudsætningsregler ignoreres.",
+            "modal_title": "Tilføj pakke",
+            "library_search": "Søg i biblioteket",
+            "library_search_action": "Søge",
+            "library_loading": "Indlæser pakker…",
+            "library_empty": "Ingen pakker fundet i biblioteket",
+            "library_attach": "Vedhæft",
+            "library_attached_success": "Pakken er vedhæftet.",
+            "tabs": {
+              "upload": "Upload",
+              "library": "Bibliotek"
+            }
           },
           "gating": {
             "title": "SCORM-redigering er sat på pause.",

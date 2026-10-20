@@ -52,11 +52,19 @@
 
     isCreating = true;
     try {
-      const created = await packageApi.createCourses({
-        assetIds: packages.map((entry) => entry.assetId),
-        courseType,
-        titles
-      });
+      const assetIds = packages.map((entry) => entry.assetId);
+      const titlesToCreate: Record<string, string> = {};
+
+      for (const entry of packages) {
+        const title = (titles[entry.assetId] ?? '').trim();
+        if (title) titlesToCreate[entry.assetId] = title;
+      }
+
+      const fields =
+        Object.keys(titlesToCreate).length > 0
+          ? { assetIds, courseType, titles: titlesToCreate }
+          : { assetIds, courseType };
+      const created = await packageApi.createCourses(fields);
 
       if (created) {
         handleOpenChange(false);
@@ -97,23 +105,22 @@
           testId={`course-from-package-title-${entry.assetId}`}
         />
       {/each}
+      <Dialog.Footer>
+        <Button variant="outline" size="sm" disabled={isCreating} onclick={() => handleOpenChange(false)}>
+          {$t('media_manager.scorm.cancel')}
+        </Button>
+        <Button
+          size="sm"
+          disabled={isCreating || packages.length === 0}
+          loading={isCreating}
+          onclick={handleCreate}
+          testId="courses-from-packages-submit"
+        >
+          {packages.length === 1
+            ? $t('media_manager.scorm.create_course_confirm_single')
+            : $t('media_manager.scorm.create_course_confirm_many', { count: packages.length })}
+        </Button>
+      </Dialog.Footer>
     </div>
-
-    <Dialog.Footer>
-      <Button variant="outline" size="sm" disabled={isCreating} onclick={() => handleOpenChange(false)}>
-        {$t('media_manager.scorm.cancel')}
-      </Button>
-      <Button
-        size="sm"
-        disabled={isCreating || packages.length === 0}
-        loading={isCreating}
-        onclick={handleCreate}
-        testId="courses-from-packages-submit"
-      >
-        {packages.length === 1
-          ? $t('media_manager.scorm.create_course_confirm_single')
-          : $t('media_manager.scorm.create_course_confirm_many', { count: packages.length })}
-      </Button>
-    </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>

@@ -39,10 +39,12 @@
   let {
     courseId,
     activityId,
+    refreshKey = 0,
     onSelectLearner = () => {}
   }: {
     courseId: string;
     activityId: string;
+    refreshKey?: number;
     onSelectLearner?: (profileId: string) => void;
   } = $props();
 
@@ -75,13 +77,12 @@
     const cards = [
       { labelKey: `${T}.summary.enrolled`, value: String(enrolled) },
       { labelKey: `${T}.summary.in_progress`, value: `${inProgress}${share(inProgress)}` },
-      { labelKey: `${T}.summary.completed`, value: `${summary.completed}${share(summary.completed)}` }
+      { labelKey: `${T}.summary.completed`, value: `${summary.completed}${share(summary.completed)}` },
+      { labelKey: `${T}.summary.not_started`, value: `${notStarted}${share(notStarted)}` }
     ];
 
     if (graded) {
       cards.push({ labelKey: `${T}.summary.average_score`, value: formatScorePercent(summary.averageScore) });
-    } else {
-      cards.push({ labelKey: `${T}.summary.not_started`, value: `${notStarted}${share(notStarted)}` });
     }
 
     return cards;
@@ -91,7 +92,7 @@
     const organizationId = $currentOrg.id;
     if (!organizationId || !courseId || !activityId) return;
 
-    const key = [courseId, activityId, sort, direction, page, organizationId].join('|');
+    const key = [courseId, activityId, sort, direction, page, refreshKey, organizationId].join('|');
     if (key === loadedKey) return;
 
     loadedKey = key;
@@ -178,7 +179,7 @@
       {/each}
     </div>
   {:else}
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
       {#each summaryCards as card (card.labelKey)}
         <Card.Root class="ui:py-3">
           <Card.Content class="flex flex-col gap-1">

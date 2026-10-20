@@ -50,11 +50,14 @@ export function isCourseContentLockedForStudent(
 }
 
 export function getContentAskAiBarWidthClass(options: {
-  lessonId: string | undefined;
-  isLessonEditMode: boolean;
+  lessonId?: string | undefined;
+  activityId?: string | undefined;
+  isLessonEditMode?: boolean;
+  isEditMode?: boolean;
 }): string {
-  if (options.lessonId) {
-    return options.isLessonEditMode ? 'mx-auto w-full lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl';
+  const isEdit = options.isEditMode ?? options.isLessonEditMode ?? false;
+  if (options.lessonId || options.activityId) {
+    return isEdit ? 'mx-auto w-full lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl';
   }
 
   return 'mx-auto w-full md:max-w-3xl';

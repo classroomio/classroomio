@@ -36,6 +36,7 @@
     inProgressCount?: number;
     currentFingerprint?: PackageFingerprint | null;
     getFreshInProgressCount?: () => Promise<number>;
+    isBusy?: boolean;
     onAttached?: (assetId: string) => void;
     onReplaced?: () => void;
     onSwapRequest?: () => void;
@@ -50,6 +51,7 @@
     inProgressCount = 0,
     currentFingerprint = null,
     getFreshInProgressCount,
+    isBusy = $bindable(false),
     onAttached,
     onReplaced,
     onSwapRequest,
@@ -84,7 +86,9 @@
   const maxSize = uploadLimits.scormBytes;
 
   $effect(() => {
-    hasUnsavedChanges = phase === 'uploading' || phase === 'processing';
+    const active = phase === 'uploading' || phase === 'processing';
+    hasUnsavedChanges = active;
+    isBusy = active;
   });
 
   function stopPoller() {
@@ -108,6 +112,7 @@
     peeking = false;
     acknowledgedFor = null;
     promoteOpen = false;
+    promoteResolver?.('keep');
     promoteResolver = null;
   }
 
@@ -116,7 +121,15 @@
     errorKey = null;
     peek = null;
     acknowledgedFor = null;
-    if (next && (mode === 'upgrade' || mode === 'swap') && currentFingerprint) void readPeek(next);
+    if (next && (mode === 'upgrade' || mode === 'swap') && currentFingerprint) {
+      void readPeek(next).catch((error) => {
+        console.error('Package identity check failed:', error);
+      });
+    }
+  }
+
+  function throwIfAborted(signal: AbortSignal) {
+    if (signal.aborted) throw new DOMException('Upload canceled', 'AbortError');
   }
 
   async function readPeek(target: File) {
@@ -184,7 +197,18 @@
     }
 
     if ((mode === 'upgrade' || mode === 'swap') && currentFingerprint) {
-      const check = peek && peek.file === selected ? peek : await readPeek(selected);
+      let check = peek && peek.file === selected ? peek : null;
+
+      if (!check) {
+        try {
+          check = await readPeek(selected);
+        } catch (error) {
+          console.error('Package identity check failed:', error);
+          snackbar.error($t('course.navItem.lessons.activities.package.errors.generic'));
+          return;
+        }
+      }
+
       if (check.verdict === 'same_file') {
         finishUnchanged();
         return;
@@ -202,16 +226,17 @@
     phase = 'uploading';
     progress = 0;
     errorKey = null;
-    abortController = new AbortController();
+    const currentController = new AbortController();
+    abortController = currentController;
 
     try {
       if (mode === 'upgrade') {
-        await uploadNewVersion(selected, abortController.signal);
+        await uploadNewVersion(selected, currentController.signal);
       } else {
-        await uploadNewAsset(selected, abortController.signal);
+        await uploadNewAsset(selected, currentController.signal);
       }
     } catch (error) {
-      if (abortController?.signal.aborted) return;
+      if (currentController.signal.aborted) return;
 
       console.error('Package upload error:', error);
       phase = 'failed';
@@ -255,15 +280,20 @@
 
   async function uploadNewAsset(selected: File, signal: AbortSignal) {
     const created = await packageApi.create({ fileName: selected.name, fileSize: selected.size });
+    throwIfAborted(signal);
     if (!created) throw new Error('Failed to create package');
 
     await putZip(created.uploadUrl, selected, signal);
+    throwIfAborted(signal);
     const jobId = await packageApi.process(created.asset.id, created.version.id);
+    throwIfAborted(signal);
     if (!jobId) throw new Error('Failed to process package');
 
     await pollUntilDone(
       jobId,
       async () => {
+        if (signal.aborted) return;
+
         const details = await packageApi.get(created.asset.id);
         const current = details?.currentVersion;
         if (current?.status === 'ready') {
@@ -277,8 +307,9 @@
         throw new Error('Package is not ready');
       },
       async () => {
-        await resolveFailedVersionError(created.asset.id);
-      }
+        if (!signal.aborted) await resolveFailedVersionError(created.asset.id);
+      },
+      signal
     );
   }
 
@@ -287,7 +318,8 @@
 
     const startingInProgressCount = inProgressCount;
     const contentSha256 = peek?.file === selected ? (peek.contentSha256 ?? undefined) : undefined;
-    const next = await packageApi.createVersion(assetId, { contentSha256 });
+    const next = await packageApi.createVersion(assetId, { fileSize: selected.size, contentSha256 });
+    throwIfAborted(signal);
     if (!next) throw new Error('Failed to create package version');
 
     if (!next.uploadUrl) {
@@ -296,12 +328,16 @@
     }
 
     await putZip(next.uploadUrl, selected, signal);
+    throwIfAborted(signal);
     const jobId = await packageApi.process(assetId, next.version.id);
+    throwIfAborted(signal);
     if (!jobId) throw new Error('Failed to process package');
 
     await pollUntilDone(
       jobId,
       async (result) => {
+        if (signal.aborted) return;
+
         if (result?.unchanged) {
           finishUnchanged();
           return;
@@ -316,20 +352,23 @@
           newLearnersStarted && deltaCount > 0
             ? (await askPromoteChoice(deltaCount)) === 'restart'
             : replaceChoice === 'restart';
-        await packageApi.makeCurrent(assetId, next.version.id, restart);
+        throwIfAborted(signal);
+        await packageApi.makeCurrent(assetId, next.version.id, restart, activityId);
         if (!packageApi.success) throw new Error('Failed to promote package version');
         onReplaced?.();
       },
       async () => {
-        await resolveFailedVersionError(assetId);
-      }
+        if (!signal.aborted) await resolveFailedVersionError(assetId);
+      },
+      signal
     );
   }
 
   async function pollUntilDone(
     jobId: string,
     onCompleted: (result: PackageJobResult | null) => Promise<void>,
-    onFailed: () => Promise<void> = async () => {}
+    onFailed: () => Promise<void> = async () => {},
+    signal?: AbortSignal
   ) {
     phase = 'processing';
 
@@ -349,9 +388,17 @@
 
           if (job.status === 'completed') {
             stopPoller();
+            if (signal?.aborted) {
+              resolve();
+              return;
+            }
             void onCompleted(job.result ?? null)
               .then(() => resolve())
               .catch((error) => {
+                if (signal?.aborted) {
+                  resolve();
+                  return;
+                }
                 console.error('Package finalize error:', error);
                 phase = 'failed';
                 errorKey = 'course.navItem.lessons.activities.package.errors.generic';
@@ -361,6 +408,10 @@
 
           if (job.status === 'failed' || job.status === 'canceled') {
             stopPoller();
+            if (signal?.aborted) {
+              resolve();
+              return;
+            }
             void onFailed()
               .catch(() => {})
               .then(() => {

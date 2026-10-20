@@ -457,6 +457,7 @@
           {item}
           bind:title={item.title}
           isLocked={itemLocked}
+          linkDisabled={reorder}
           href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
           {errors}
@@ -529,7 +530,6 @@
             disabled={actionDisabled}
             {lockLabel}
             showLock={false}
-            showEdit={item.type !== ContentType.Activity}
             onEdit={() => {
               contentEditingStore.set(item.contentId);
               prevTitle = item.title;

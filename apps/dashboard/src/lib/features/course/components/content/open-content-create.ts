@@ -2,6 +2,8 @@ import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 import { courseApi } from '$features/course/api';
 import { isSingleActivityCourse } from '$features/course/utils/course-format';
+import { getOrderedNavigableContent } from '$features/course/utils/content';
+import { ContentType } from '@cio/utils/constants/content';
 import { contentCreateStoreUtils, contentEditingStore } from './store';
 
 export function openAddContentModal(courseId: string, sectionId = '') {
@@ -9,7 +11,10 @@ export function openAddContentModal(courseId: string, sectionId = '') {
   contentEditingStore.set(undefined);
   contentCreateStoreUtils.close();
 
-  if (isSingleActivityCourse(courseApi.course)) {
+  const courseItems = getOrderedNavigableContent(courseApi.course);
+  const courseHasActivity = courseItems.some((item) => item.type === ContentType.Activity);
+
+  if (isSingleActivityCourse(courseApi.course) && !courseHasActivity) {
     contentCreateStoreUtils.openActivity();
     return;
   }

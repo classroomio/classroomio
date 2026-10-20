@@ -803,6 +803,7 @@
           <Select.Root
             type="single"
             value={$settings.type}
+            disabled={isSingleActivity}
             onValueChange={(value) => {
               if (!value) return;
               $settings.type = value as TCourseType;
@@ -826,11 +827,9 @@
                   <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
                     {$t('course.navItem.settings.live_class')}
                   </Select.Item>
-                {/if}
-                <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
-                  {$t('course.navItem.settings.compliance')}
-                </Select.Item>
-                {#if !isSingleActivity}
+                  <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
+                    {$t('course.navItem.settings.compliance')}
+                  </Select.Item>
                   <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
                     {$t('course.navItem.settings.public')}
                   </Select.Item>
