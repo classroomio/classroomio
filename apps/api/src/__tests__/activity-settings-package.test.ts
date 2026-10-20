@@ -48,6 +48,14 @@ vi.mock('@cio/core/services/activity/providers', () => ({
   detachScormPackage: vi.fn().mockResolvedValue(undefined)
 }));
 
+vi.mock('@api/services/activity/activity-completion', () => ({
+  runActivityCompletionSideEffects: vi.fn().mockResolvedValue(undefined)
+}));
+
+vi.mock('@cio/core/services/activity/providers/scorm/results', () => ({
+  getComplianceSnapshot: vi.fn().mockResolvedValue({ minutes: 15, score: 90, attempts: 1 })
+}));
+
 import {
   createActivity,
   deleteActivityService,
@@ -59,6 +67,8 @@ import {
 } from '@cio/core/services/activity/activity';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { attachScormPackage, detachScormPackage } from '@cio/core/services/activity/providers';
+import { runActivityCompletionSideEffects } from '@api/services/activity/activity-completion';
+import { runSettingsCompletionSideEffects } from '@api/services/activity/activity-settings';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
 import { assertActivityKindAllowed } from '@api/services/activity/plan';
 import { activityRouter } from '@api/routes/course/activity';
@@ -70,7 +80,7 @@ function buildApp() {
 const HEADERS = { 'content-type': 'application/json' };
 const ACTIVITY = { id: 'act-1', courseId: 'course-1', kind: 'scorm', title: 'Package' };
 
-describe('course activity routes (PR 7)', () => {
+describe('course activity routes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getOrgIdByCourseId).mockResolvedValue('org-1');
@@ -141,7 +151,7 @@ describe('course activity routes (PR 7)', () => {
 
   it('PUT settings saves kind settings behind the license check', async () => {
     const app = buildApp();
-    vi.mocked(updateActivitySettings).mockResolvedValue(undefined);
+    vi.mocked(updateActivitySettings).mockResolvedValue({ newlyCompletedProfileIds: [] });
 
     const response = await app.request('/course/course-1/activity/act-1/settings', {
       method: 'PUT',
@@ -156,6 +166,35 @@ describe('course activity routes (PR 7)', () => {
       'act-1',
       expect.objectContaining({ completionRule: 'passed' })
     );
+  });
+
+  it('PUT settings runs certificate and compliance side effects for learners the new rule completed', async () => {
+    const app = buildApp();
+    vi.mocked(updateActivitySettings).mockResolvedValue({ newlyCompletedProfileIds: ['profile-1', 'profile-2'] });
+
+    const response = await app.request('/course/course-1/activity/act-1/settings', {
+      method: 'PUT',
+      headers: HEADERS,
+      body: JSON.stringify({ completionRule: 'passed', allowRetakes: true })
+    });
+
+    expect(response.status).toBe(200);
+    await vi.waitFor(() => expect(runActivityCompletionSideEffects).toHaveBeenCalledTimes(2));
+    expect(runActivityCompletionSideEffects).toHaveBeenCalledWith('act-1', 'profile-1', 15);
+    expect(runActivityCompletionSideEffects).toHaveBeenCalledWith('act-1', 'profile-2', 15);
+  });
+
+  it('settings side effects keep going when one learner fails', async () => {
+    vi.mocked(runActivityCompletionSideEffects)
+      .mockRejectedValueOnce(new Error('certification failed'))
+      .mockResolvedValue(undefined);
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await runSettingsCompletionSideEffects('act-1', ['profile-1', 'profile-2', 'profile-3']);
+
+    expect(runActivityCompletionSideEffects).toHaveBeenCalledTimes(3);
+    expect(consoleError).toHaveBeenCalledTimes(1);
+    consoleError.mockRestore();
   });
 
   it('PUT settings returns 403 on an unlicensed server', async () => {
