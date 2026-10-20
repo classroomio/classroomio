@@ -267,21 +267,25 @@
     if (!instructionsDirty || savingInstructions) return;
 
     savingInstructions = true;
+    const submitted = instructions;
+    let saved = false;
     try {
-      await activityApi.update(courseId, activityId, { instructions });
-      if (activityApi.success) {
+      await activityApi.update(courseId, activityId, { instructions: submitted });
+      saved = activityApi.success;
+      if (saved && instructions === submitted) {
         instructions = (activityApi.activity?.instructions as string | null) ?? '';
       }
     } finally {
       savingInstructions = false;
     }
+    if (saved && instructionsDirty) triggerAutoSave();
   }
 
   async function saveAll() {
     const promises: Promise<unknown>[] = [];
     if (titleDirty && !savingTitle) promises.push(saveTitle());
     if (instructionsDirty && !savingInstructions) promises.push(saveInstructions());
-    if (settingsDirty) promises.push(settingsPanel?.save());
+    if (settingsDirty && settingsPanel) promises.push(settingsPanel.save());
     if (promises.length > 0) {
       await Promise.all(promises);
     }
@@ -375,7 +379,12 @@
     const currentActivity = activityApi.activity;
     if (currentActivity?.id === activityId) {
       const freshTitle = currentActivity.title ?? '';
-      const isUnnamed = !title.trim() || title.trim().toLowerCase() === 'scorm package';
+      const normalizedTitle = title.trim().toLowerCase();
+      const localizedDefault = t
+        .get('course.navItem.lessons.add_content_options.activity_scorm_default_title')
+        .trim()
+        .toLowerCase();
+      const isUnnamed = !normalizedTitle || normalizedTitle === 'scorm package' || normalizedTitle === localizedDefault;
       if (isUnnamed && freshTitle) {
         title = freshTitle;
         courseApi.updateContentItem(activityId, ContentType.Activity, { title: freshTitle });

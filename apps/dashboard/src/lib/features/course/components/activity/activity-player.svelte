@@ -99,6 +99,16 @@
     return availableLaunch.units.length > 0 && availableLaunch.units.every((unit) => unit.completed);
   });
 
+  const activityComplete = $derived.by(() => {
+    const item = getOrderedNavigableContent(courseApi.course).find(
+      (entry) => entry.type === ContentType.Activity && entry.id === activityId
+    );
+
+    return item?.isComplete ?? false;
+  });
+
+  const packageComplete = $derived(availableLaunch?.mode === 'preview' ? modulesComplete : activityComplete);
+
   const currentUnit = $derived(
     (availableLaunch?.units ?? []).find((unit) => unit.identifier === currentUnitIdentifier) ?? null
   );
@@ -106,7 +116,7 @@
   const nextIncomplete = $derived(nextIncompleteModule());
 
   const showModuleDonePanel = $derived(
-    showMenu && !modulesComplete && Boolean(currentUnit?.completed) && terminated && Boolean(nextIncomplete)
+    showMenu && !packageComplete && Boolean(currentUnit?.completed) && terminated && Boolean(nextIncomplete)
   );
 
   const nextCourseItem = $derived.by(() => {
@@ -670,7 +680,7 @@
           </Button>
         </div>
       </Alert.Root>
-    {:else if modulesComplete}
+    {:else if packageComplete}
       <Alert.Root>
         <Alert.Title>{$t('course.navItem.lessons.activities.player.complete_title')}</Alert.Title>
         <Alert.Description>{$t('course.navItem.lessons.activities.player.complete_body')}</Alert.Description>
