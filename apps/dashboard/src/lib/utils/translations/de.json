@@ -2538,7 +2538,8 @@
                 "vimeo_privacy_error_unlisted_hint": "Der Link zu einem nicht gelisteten Video hat möglicherweise keinen Datenschutzschlüssel (Hash).",
                 "vimeo_privacy_error_domain_prefix": "Domainbeschränkungen auf Vimeo (stellen Sie sicher, dass",
                 "vimeo_privacy_error_domain_suffix": "in den Videoeinstellungen erlaubt ist).",
-                "vimeo_privacy_error_other_hint": "Weitere Vimeo-Datenschutzeinstellungen"
+                "vimeo_privacy_error_other_hint": "Weitere Vimeo-Datenschutzeinstellungen",
+                "asset_registration_failed": "Das hochgeladene Video konnte nicht registriert werden und wurde daher nicht angehängt. Bitte versuchen Sie es erneut."
               },
               "empty_title": "Noch keine Videos",
               "empty_description": "Fügen Sie Videos von YouTube hinzu, laden Sie sie hoch oder laden Sie sie aus Ihrer Medienbibliothek herunter",

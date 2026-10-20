@@ -1943,6 +1943,20 @@
       "all": "Tüm",
       "unpublished": "Yayınlanmamış",
       "course_type": "Ders Türü"
+    },
+    "filters": {
+      "filter": "Filtrele",
+      "popover_title": "Filtreler",
+      "clear_all": "Tümünü temizle",
+      "search_placeholder": "İsimle ara",
+      "status": "Durum",
+      "layout_type": "Yerleşim türü",
+      "selection_mode": "Seçim modu",
+      "no_results_title": "Filtrelerinize uyan hiçbir widget bulunamadı.",
+      "no_results_description": "Farklı bir arama terimi deneyin veya filtrelerinizi temizleyerek her şeyi tekrar görüntüleyin.",
+      "no_results_page_title": "Bu sayfada hiçbir şey yok.",
+      "no_results_page_description": "Bu filtreler, bu sayfanın başlangıcındaki değerlerden daha az sayıda widget ile eşleşiyor.",
+      "back_to_first_page": "İlk sayfaya geri dön"
     }
   },
   "setup": {
@@ -2903,7 +2917,8 @@
                   "completed": "İşleme tamamlandı",
                   "failed": "İşleme başarısız oldu",
                   "canceled": "İşleme iptal edildi"
-                }
+                },
+                "asset_registration_failed": "Video yüklendi ancak kayıt edilemediği için eklenemedi. Lütfen tekrar deneyin."
               },
               "generate_transcript": "Transkripsiyon oluştur",
               "transcript_in_progress": "Transkript alınıyor…",

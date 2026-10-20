@@ -264,6 +264,10 @@
       });
       const assetId = asset?.id;
 
+      if (!assetId) {
+        throw new Error(t.get(`${ADD_VIDEO}.asset_registration_failed`));
+      }
+
       if (_lessonId) {
         lessonApi.updateLessonState(
           'videos',

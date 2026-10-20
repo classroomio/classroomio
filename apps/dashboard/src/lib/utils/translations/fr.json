@@ -2538,7 +2538,8 @@
                 "vimeo_privacy_error_unlisted_hint": "Le lien de la vidéo non répertoriée ne contient peut-être pas sa clé de confidentialité (hash).",
                 "vimeo_privacy_error_domain_prefix": "Restrictions de domaine sur Vimeo (assurez-vous que",
                 "vimeo_privacy_error_domain_suffix": "est autorisé dans les paramètres de la vidéo).",
-                "vimeo_privacy_error_other_hint": "Autres paramètres de confidentialité de Vimeo"
+                "vimeo_privacy_error_other_hint": "Autres paramètres de confidentialité de Vimeo",
+                "asset_registration_failed": "La vidéo a été téléchargée mais n'a pas pu être enregistrée, elle n'a donc pas été jointe. Veuillez réessayer."
               },
               "empty_title": "Aucune vidéo pour l'instant",
               "empty_description": "Ajoutez des vidéos de YouTube, téléchargez-les ou de votre bibliothèque multimédia",

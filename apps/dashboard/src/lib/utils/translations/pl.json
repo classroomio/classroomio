@@ -2538,7 +2538,8 @@
                 "vimeo_privacy_error_unlisted_hint": "Link do filmu nieudostępnionego publicznie może nie mieć klucza prywatności (hasha).",
                 "vimeo_privacy_error_domain_prefix": "Ograniczenia domeny w Vimeo (upewnij się, że",
                 "vimeo_privacy_error_domain_suffix": "jest dozwolone w ustawieniach wideo).",
-                "vimeo_privacy_error_other_hint": "Inne ustawienia prywatności Vimeo"
+                "vimeo_privacy_error_other_hint": "Inne ustawienia prywatności Vimeo",
+                "asset_registration_failed": "Film został przesłany, ale nie udało się go zarejestrować, więc nie został dołączony. Spróbuj ponownie."
               },
               "empty_title": "Nie ma jeszcze filmów",
               "empty_description": "Dodaj filmy z YouTube, prześlij lub ze swojej biblioteki multimediów",

@@ -2909,7 +2909,8 @@
                   "completed": "Processing complete",
                   "failed": "Processing failed",
                   "canceled": "Processing canceled"
-                }
+                },
+                "asset_registration_failed": "The video uploaded but could not be registered, so it was not attached. Please try again."
               },
               "generate_transcript": "Generate transcription",
               "transcript_in_progress": "Fetching transcript…",

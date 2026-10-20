@@ -2538,7 +2538,8 @@
                 "vimeo_privacy_error_unlisted_hint": "Возможно, у ссылки на видео, не включенное в список, отсутствует ключ конфиденциальности (хеш)",
                 "vimeo_privacy_error_domain_prefix": "Ограничения домена на Vimeo (убедитесь, что",
                 "vimeo_privacy_error_domain_suffix": "разрешено в настройках видео)",
-                "vimeo_privacy_error_other_hint": "Другие настройки конфиденциальности Vimeo"
+                "vimeo_privacy_error_other_hint": "Другие настройки конфиденциальности Vimeo",
+                "asset_registration_failed": "Видео загружено, но его не удалось зарегистрировать, поэтому оно не было прикреплено. Попробуйте ещё раз."
               },
               "empty_title": "Видео пока нет",
               "empty_description": "Добавляйте видео с YouTube, загружайте их или из своей медиатеки.",

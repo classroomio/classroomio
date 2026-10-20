@@ -2538,7 +2538,8 @@
                 "vimeo_privacy_error_unlisted_hint": "Es posible que el enlace del video no listado no tenga su clave de privacidad (hash).",
                 "vimeo_privacy_error_domain_prefix": "Restricciones de dominio en Vimeo (asegúrese de que",
                 "vimeo_privacy_error_domain_suffix": "esté permitido en la configuración de video).",
-                "vimeo_privacy_error_other_hint": "Otras configuraciones de privacidad de Vimeo"
+                "vimeo_privacy_error_other_hint": "Otras configuraciones de privacidad de Vimeo",
+                "asset_registration_failed": "El vídeo se subió, pero no se pudo registrar, por lo que no se adjuntó. Inténtalo de nuevo."
               },
               "empty_title": "Aún no hay vídeos",
               "empty_description": "Agregue videos de YouTube, cárguelos o de su biblioteca multimedia",
