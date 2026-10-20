@@ -103,7 +103,6 @@ CREATE TABLE "learning_path_member_course" (
 );
 --> statement-breakpoint
 ALTER TABLE "invite_link" DROP CONSTRAINT "invite_link_resource_target_check";--> statement-breakpoint
-ALTER TABLE "groupmember" ADD COLUMN "completed_at" timestamp with time zone;--> statement-breakpoint
 ALTER TABLE "apps_poll" DROP CONSTRAINT "apps_poll_authorId_fkey";
 --> statement-breakpoint
 ALTER TABLE "apps_poll_submission" DROP CONSTRAINT "apps_poll_submission_selected_by_id_fkey";
@@ -148,7 +147,7 @@ CREATE INDEX "idx_course_enrollment_grant_cohort_id_course_id" ON "course_enroll
 CREATE INDEX "idx_course_enrollment_grant_learning_path_id_course_id" ON "course_enrollment_grant" USING btree ("learning_path_id","course_id");--> statement-breakpoint
 CREATE INDEX "idx_course_enrollment_grant_profile_id" ON "course_enrollment_grant" USING btree ("profile_id");--> statement-breakpoint
 CREATE INDEX "idx_course_enrollment_grant_lp_profile_revoked" ON "course_enrollment_grant" USING btree ("learning_path_id","profile_id") WHERE "course_enrollment_grant"."revoked_at" IS NULL;--> statement-breakpoint
-ALTER TABLE "learning_path" ADD CONSTRAINT "learning_path_slug_key" UNIQUE("slug");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_learning_path_org_slug_active" ON "learning_path" USING btree ("organization_id","slug") WHERE "learning_path"."status" != 'DELETED';--> statement-breakpoint
 CREATE INDEX "idx_learning_path_organization_id" ON "learning_path" USING btree ("organization_id");--> statement-breakpoint
 CREATE INDEX "idx_learning_path_organization_id_is_published" ON "learning_path" USING btree ("organization_id","is_published");--> statement-breakpoint
 CREATE INDEX "idx_learning_path_certificate_issue_profile_id" ON "learning_path_certificate_issue" USING btree ("profile_id");--> statement-breakpoint

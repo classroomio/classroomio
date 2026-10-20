@@ -28,6 +28,22 @@ export function buildDraftLearningPathDetail(
   const rating = averageRating(reviews);
   const certificateDownloadable = (path.certificate as { isDownloadable?: boolean } | null)?.isDownloadable === true;
   const showCertificate = draft.showCertificate !== false;
+  const hasCertificate = certificateDownloadable && showCertificate;
+  const outcomes = goalsToOutcomes(draft.goals);
+  const skills = draft.skills ?? [];
+  const series = path.courses.map(toSeriesCourse);
+  const instructors = toInstructors(draft.instructors, path.courses);
+  const certificate = hasCertificate ? {} : null;
+  const faq = toFaqItems(draft.faqs, draft.showFaqs);
+  const metadata =
+    draft.showDiscount || draft.discount != null
+      ? { discount: draft.discount, showDiscount: draft.showDiscount }
+      : undefined;
+  const pricing = {
+    cost,
+    currency,
+    ctaHref: `/learning-paths/${slug}/enroll`
+  };
 
   return {
     id: path.id,
@@ -38,27 +54,20 @@ export function buildDraftLearningPathDetail(
     cost,
     currency,
     courseCount: path.courses.length,
-    hasCertificate: certificateDownloadable && showCertificate,
+    hasCertificate,
     totalStudents: path.totalStudents ?? 0,
     rating,
     reviewsCount: reviews.length > 0 ? reviews.length : undefined,
-    outcomes: goalsToOutcomes(draft.goals),
-    skills: draft.skills ?? [],
-    series: path.courses.map(toSeriesCourse),
-    instructors: toInstructors(draft.instructors, path.courses),
-    certificate: certificateDownloadable && showCertificate ? {} : null,
+    outcomes,
+    skills,
+    series,
+    instructors,
+    certificate,
     reviews,
-    faq: toFaqItems(draft.faqs, draft.showFaqs),
+    faq,
     paymentEnabled: draft.paymentEnabled,
-    metadata:
-      draft.showDiscount || draft.discount != null
-        ? { discount: draft.discount, showDiscount: draft.showDiscount }
-        : undefined,
-    pricing: {
-      cost,
-      currency,
-      ctaHref: `/learning-paths/${slug}/enroll`
-    }
+    metadata,
+    pricing
   };
 }
 

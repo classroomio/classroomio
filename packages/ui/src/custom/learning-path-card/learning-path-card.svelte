@@ -98,7 +98,7 @@
 
   const done = $derived(certificateEarned || (coursesCompleted === courseCount && courseCount > 0));
 
-  const offersCertificate = $derived(surface === 'certificate' || (surface === 'lms' && done));
+  const offersCertificate = $derived(surface === 'certificate' || (surface === 'lms' && done && certificateEarned));
   const showCertificateBadge = $derived(offersCertificate && certificateEarned);
   const showProgress = $derived(surface === 'lms');
   const showEarnedAt = $derived(surface === 'certificate' && !!certificateEarnedAt);
@@ -119,9 +119,11 @@
           ? labels.viewCertificate
           : surface === 'explore' || surface === 'landing'
             ? labels.viewPath
-            : coursesCompleted === 0
-              ? labels.startLearning
-              : labels.continueLearning)
+            : done
+              ? labels.viewPath
+              : coursesCompleted === 0
+                ? labels.startLearning
+                : labels.continueLearning)
   );
 
   const showCtaArrow = $derived(surface !== 'lms');

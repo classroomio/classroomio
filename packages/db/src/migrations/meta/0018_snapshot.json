@@ -6376,12 +6376,6 @@
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
-        },
-        "completed_at": {
-          "name": "completed_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {},
@@ -6913,6 +6907,28 @@
         }
       },
       "indexes": {
+        "idx_learning_path_org_slug_active": {
+          "name": "idx_learning_path_org_slug_active",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"learning_path\".\"status\" != 'DELETED'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "idx_learning_path_organization_id": {
           "name": "idx_learning_path_organization_id",
           "columns": [
@@ -6976,11 +6992,6 @@
           "name": "learning_path_public_id_unique",
           "nullsNotDistinct": false,
           "columns": ["public_id"]
-        },
-        "learning_path_slug_key": {
-          "name": "learning_path_slug_key",
-          "nullsNotDistinct": false,
-          "columns": ["slug"]
         }
       },
       "policies": {},

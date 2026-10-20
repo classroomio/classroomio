@@ -129,6 +129,7 @@
     totalHours={0}
     sequentialUnlock={path.sequentialUnlock}
     certificateEnabled={journey.certificateEnabled}
+    certificateAvailable={journey.certificateAvailable}
     {progressPercent}
     {coursesCompleted}
     nextCourseTitle={currentCourse?.title}

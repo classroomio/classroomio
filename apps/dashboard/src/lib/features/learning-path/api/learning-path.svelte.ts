@@ -411,7 +411,7 @@ class LearnerPathStore extends BaseApiWithErrors {
   // Full published catalog for the Explore page (page splits enrolled vs new)
   catalogPaths = $state<PublicLearningPathItem[]>([]);
 
-  // Certificates the caller can download, for completed-path cards
+  // Completed paths in the certificates feed, including ones without a downloadable certificate
   pathCertificates = $state<EarnedPathCertificate[]>([]);
 
   // Public detail (with courses) for the explore preview modal
@@ -521,7 +521,7 @@ class LearnerPathStore extends BaseApiWithErrors {
   }
 
   hasPathCertificate(pathId: string): boolean {
-    return this.pathCertificates.some((certificate) => certificate.id === pathId);
+    return this.pathCertificates.some((certificate) => certificate.id === pathId && certificate.certificateAvailable);
   }
 
   async listCertificates(): Promise<void> {

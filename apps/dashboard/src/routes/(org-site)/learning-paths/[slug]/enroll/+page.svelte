@@ -56,6 +56,7 @@
   );
 
   let membershipChecked = $state(false);
+  let membershipCheckComplete = $state(false);
   const enrolledJourney = $derived(
     learnerPathStore.selectedJourney && learnerPathStore.selectedJourney.path.id === data.path?.id
       ? learnerPathStore.selectedJourney
@@ -138,9 +139,32 @@
     }
   }
 
-  async function handleSubmit() {
-    if (enrolledJourney) {
+  async function handleContinue() {
+    try {
       await goto(resolve(`/lms/paths/${data.path.publicId}`, {}));
+    } catch (error) {
+      console.error('[path enroll] failed to continue to path:', error);
+      snackbar.error('public_learning_paths.navigation_failed');
+    }
+  }
+
+  async function checkMembership(pathId: string) {
+    try {
+      await learnerPathStore.ensureSelectedPath(pathId);
+    } catch (error) {
+      console.error('[path enroll] membership check failed:', error);
+    } finally {
+      membershipCheckComplete = true;
+    }
+  }
+
+  async function handleSubmit() {
+    if (enrolledPendingVerification) {
+      return;
+    }
+
+    if (enrolledJourney) {
+      await handleContinue();
       return;
     }
 
@@ -174,6 +198,7 @@
       !sessionReady ||
       !isLoggedIn ||
       !canJoinPath ||
+      !membershipCheckComplete ||
       enrolledJourney ||
       enrollmentInFlight ||
       loading ||
@@ -195,7 +220,8 @@
     if (!appInitApi.isInitializedAndReady) return;
 
     membershipChecked = true;
-    void learnerPathStore.ensureSelectedPath(data.path.id);
+    membershipCheckComplete = false;
+    void checkMembership(data.path.id);
   });
 
   $effect(() => {
@@ -224,11 +250,7 @@
   <div class="mt-0 w-full">
     <h3 class="mt-0 mb-4 text-center text-lg font-medium dark:text-white">{data.path?.name}</h3>
     <p class="text-center text-sm font-light dark:text-white">{data.path?.description}</p>
-    {#if enrolledJourney}
-      <p class="ui:text-primary mt-3 text-center text-sm font-medium">
-        {$t('course.navItem.landing_page.enroll_page.enrolled_success')}
-      </p>
-    {:else if enrolledPendingVerification}
+    {#if enrolledPendingVerification}
       <p class="ui:text-primary mt-3 text-center text-sm font-medium">
         {$t('course.navItem.landing_page.enroll_page.enrolled_success')}
       </p>
@@ -240,6 +262,10 @@
           {$t('verify_email_modal.resend')}
         </Button>
       </div>
+    {:else if enrolledJourney}
+      <p class="ui:text-primary mt-3 text-center text-sm font-medium">
+        {$t('course.navItem.landing_page.enroll_page.enrolled_success')}
+      </p>
     {:else if data.requiresPaymentOrInvite}
       <p class="ui:text-muted-foreground mt-3 text-center text-sm">
         {$t('course.navItem.landing_page.enroll_page.requires_payment_or_invite')}
@@ -260,11 +286,7 @@
   {#if !enrolledPendingVerification}
     <div class="my-4 flex w-full items-center justify-center">
       {#if enrolledJourney}
-        <Button
-          type="button"
-          onclick={() => goto(resolve(`/lms/paths/${data.path.publicId}`, {}))}
-          disabled={joinButtonLoading}
-        >
+        <Button type="button" onclick={handleContinue} disabled={joinButtonLoading}>
           {$t('learningPath.hero.continue_learning')}
         </Button>
       {:else}
