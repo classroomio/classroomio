@@ -398,7 +398,7 @@ export async function updateMember(courseId: string, memberId: string, data: Par
  */
 export async function deleteMember(courseId: string, memberId: string) {
   try {
-    const deleted = await deleteCourseMember(courseId, memberId);
+    const deleted = await deleteCourseMember(courseId, memberId, { resetActivityLearnerState });
     if (!deleted) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }

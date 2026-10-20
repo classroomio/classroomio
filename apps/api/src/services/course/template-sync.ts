@@ -242,7 +242,6 @@ async function claimRootOrder(
   const placed = rootEntries(courseGraph);
   const order = insertionOrder(rootEntries(templateGraph), templateEntryId, sourceOrders(placed), placed);
   await shiftCourseRootOrders(courseId, order, client);
-  await shiftActivityOrders(courseId, null, order, client);
   bumpOrders(placed, order);
 
   return order;
