@@ -1299,7 +1299,7 @@ describe.skipIf(!hasDatabase)('scorm settings recompute completions', () => {
       });
       expect((await completionOf())?.isComplete).toBe(false);
 
-      await updateActivitySettings(ids.courseId, ids.activityId, {
+      const reopened = await updateActivitySettings(ids.courseId, ids.activityId, {
         completionRule: 'auto',
         minScorePercent: null,
         allowRetakes: false,
@@ -1307,7 +1307,123 @@ describe.skipIf(!hasDatabase)('scorm settings recompute completions', () => {
         completionModules: 'all'
       });
       expect((await completionOf())?.isComplete).toBe(true);
+      expect(reopened.newlyCompletedProfileIds).toEqual([ids.profileId]);
     } finally {
+      await cleanupResultsFixture(ids);
+    }
+  });
+
+  it('leaves earlier compliance cycles alone and refreshes a carried-over completion', { timeout: 30000 }, async () => {
+    const ids = await createResultsFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const { updateActivitySettings } = await import('@cio/core/services/activity/activity');
+      const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
+      const settings = {
+        completionRule: 'auto',
+        minScorePercent: null,
+        allowRetakes: false,
+        moduleOrder: 'free',
+        completionModules: 'all'
+      };
+      const passingTries = (attemptId: string, at: string) => [
+        {
+          attemptId,
+          unitId: ids.unitIds[0]!,
+          status: 'closed' as const,
+          cmi: { core: { lesson_status: 'passed', score: { raw: '90' } } },
+          commitSeq: 2,
+          startedAt: at,
+          lastCommitAt: at,
+          terminatedAt: at
+        },
+        {
+          attemptId,
+          unitId: ids.unitIds[1]!,
+          status: 'closed' as const,
+          cmi: { core: { lesson_status: 'completed' } },
+          commitSeq: 2,
+          startedAt: at,
+          lastCommitAt: at,
+          terminatedAt: at
+        }
+      ];
+      const completionOf = async () => {
+        const [row] = await db
+          .select()
+          .from(schema.activityCompletion)
+          .where(
+            and(
+              eq(schema.activityCompletion.activityId, ids.activityId),
+              eq(schema.activityCompletion.profileId, ids.profileId)
+            )
+          );
+        return row ?? null;
+      };
+
+      await db
+        .update(schema.course)
+        .set({ type: 'COMPLIANCE' as never })
+        .where(eq(schema.course.id, ids.courseId));
+      const cycleStart = daysAgo(1);
+      await db.insert(schema.courseCompletionRecord).values({
+        courseId: ids.courseId,
+        groupMemberId: ids.groupMemberId,
+        profileId: ids.profileId,
+        cycleNumber: 2,
+        status: 'in_progress',
+        dueDate: daysAgo(-30),
+        createdAt: cycleStart
+      });
+      const [earlierAttempt] = await db
+        .insert(schema.scormAttempt)
+        .values({
+          activityId: ids.activityId,
+          profileId: ids.profileId,
+          packageVersionId: ids.versionId,
+          attemptNumber: 1,
+          startedAt: daysAgo(10),
+          closedAt: daysAgo(10),
+          closeReason: 'finished'
+        })
+        .returning();
+      await db.insert(schema.scormScoAttempt).values(passingTries(earlierAttempt!.id, daysAgo(10)));
+
+      const fromEarlierCycle = await updateActivitySettings(ids.courseId, ids.activityId, settings);
+      expect(fromEarlierCycle.newlyCompletedProfileIds).toEqual([]);
+      expect(await completionOf()).toBeNull();
+
+      await db.insert(schema.activityCompletion).values({
+        activityId: ids.activityId,
+        profileId: ids.profileId,
+        isComplete: true,
+        completedAt: daysAgo(10)
+      });
+      const [currentAttempt] = await db
+        .insert(schema.scormAttempt)
+        .values({
+          activityId: ids.activityId,
+          profileId: ids.profileId,
+          packageVersionId: ids.versionId,
+          attemptNumber: 2,
+          startedAt: daysAgo(0)
+        })
+        .returning();
+      await db.insert(schema.scormScoAttempt).values(passingTries(currentAttempt!.id, daysAgo(0)));
+
+      const fromCurrentCycle = await updateActivitySettings(ids.courseId, ids.activityId, settings);
+      const refreshed = await completionOf();
+      expect(fromCurrentCycle.newlyCompletedProfileIds).toEqual([ids.profileId]);
+      expect(refreshed?.isComplete).toBe(true);
+      expect(new Date(refreshed!.completedAt!).getTime()).toBeGreaterThanOrEqual(new Date(cycleStart).getTime());
+
+      const unchanged = await updateActivitySettings(ids.courseId, ids.activityId, settings);
+      expect(unchanged.newlyCompletedProfileIds).toEqual([]);
+    } finally {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      await db.delete(schema.courseCompletionRecord).where(eq(schema.courseCompletionRecord.courseId, ids.courseId));
       await cleanupResultsFixture(ids);
     }
   });
