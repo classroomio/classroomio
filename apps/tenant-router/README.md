@@ -33,10 +33,20 @@ It preserves the original host as `X-Forwarded-Host` so:
 ## Deploy
 
 ```bash
-pnpm --filter @cio/tenant-router deploy
+pnpm --filter @cio/tenant-router run deploy
 ```
 
-The content route must be deployed by hand with `wrangler deploy` before the
+The deploy command binds `SCORM_BUCKET` to `OBJECT_STORAGE_BUCKET_SCORM`, defaulting
+to `scorm`. Set it to the same value as the API and jobs services:
+
+```bash
+OBJECT_STORAGE_BUCKET_SCORM=custom-scorm pnpm --filter @cio/tenant-router run deploy
+```
+
+The command generates a temporary Wrangler config and removes it afterward. Use
+this command for deployments so the content host reads the configured bucket.
+
+The content route must be deployed by hand with this command before the
 cloud SCORM beta: until the `*.classroomio-content.com` route is live, package
 files have no edge origin.
 

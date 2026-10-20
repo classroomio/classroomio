@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { eq } from 'drizzle-orm';
 
 const storedObjects = new Map<string, string>();
+let failDeletes = false;
+let listPageSize = 1000;
 
 vi.mock('@cio/core/config/storage', async (importOriginal) => {
   const original = await importOriginal<typeof import('@cio/core/config/storage')>();
@@ -16,12 +18,22 @@ vi.mock('@cio/core/config/storage', async (importOriginal) => {
       send: async (command: unknown) => {
         if (command instanceof ListObjectsV2Command) {
           const prefix = command.input.Prefix ?? '';
-          const keys = [...storedObjects.keys()].filter((key) => key.startsWith(prefix));
+          const keys = [...storedObjects.keys()]
+            .filter((key) => key.startsWith(prefix) && key > (command.input.ContinuationToken ?? ''))
+            .sort();
+          const page = keys.slice(0, listPageSize);
+          const isTruncated = keys.length > listPageSize;
 
-          return { Contents: keys.map((Key) => ({ Key })), IsTruncated: false };
+          return {
+            Contents: page.map((Key) => ({ Key })),
+            IsTruncated: isTruncated,
+            NextContinuationToken: isTruncated ? page[page.length - 1] : undefined
+          };
         }
 
         if (command instanceof DeleteObjectsCommand) {
+          if (failDeletes) return { Errors: [{ Code: 'AccessDenied' }] };
+
           const keys = (command.input.Delete?.Objects ?? []).map((entry) => entry.Key).filter(Boolean);
 
           for (const key of keys) storedObjects.delete(key as string);
@@ -176,8 +188,8 @@ function suffix() {
   return `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
 }
 
-describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
-  it('keeps replaced versions, rows and files', async () => {
+describe.skipIf(!hasDatabase)('scorm retention', () => {
+  it('deletes expired unused versions and their files', async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
     const current = suffix();
@@ -190,27 +202,30 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.clear();
     storedObjects.set(`${first.contentPrefix}/sco.html`, '<html>v1</html>');
     storedObjects.set(`${first.contentPrefix}/index.json`, '[]');
+    storedObjects.set(`${first.contentPrefix}.index.json`, '[]');
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      await runScormRetention(90);
+      const result = await runScormRetention(90);
 
-      expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
-      expect(storedObjects.get(first.uploadKey)).toBe('zip-bytes');
+      expect(storedObjects.has(`${first.contentPrefix}/sco.html`)).toBe(false);
+      expect(storedObjects.has(first.uploadKey)).toBe(false);
+      expect(storedObjects.size).toBe(0);
+      expect(result.versionsDeleted).toBe(1);
 
       const remaining = await db
         .select({ id: schema.contentPackageVersion.id })
         .from(schema.contentPackageVersion)
         .where(eq(schema.contentPackageVersion.assetId, fixture.assetId));
 
-      expect(remaining.map((row) => row.id)).toContain(first.id);
+      expect(remaining.map((row) => row.id)).not.toContain(first.id);
     } finally {
       storedObjects.clear();
       await cleanupRetentionFixture(fixture);
     }
   });
 
-  it('keeps a replaced version with attempts and files', async () => {
+  it('archives expired versions with closed attempts, preserving their ZIPs and rows', async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
     const current = suffix();
@@ -254,9 +269,9 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      await runScormRetention(90);
+      const result = await runScormRetention(90);
 
-      expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
+      expect(storedObjects.has(`${first.contentPrefix}/sco.html`)).toBe(false);
       expect(storedObjects.get(first.uploadKey)).toBe('zip-bytes');
 
       const [kept] = await db
@@ -264,7 +279,9 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
         .from(schema.contentPackageVersion)
         .where(eq(schema.contentPackageVersion.id, first.id));
 
-      expect(kept?.status).toBe('ready');
+      expect(result.versionsArchived).toBe(1);
+      expect(kept?.status).toBe('archived');
+      expect(kept?.archivedAt).not.toBeNull();
     } finally {
       storedObjects.clear();
       await cleanupRetentionFixture(fixture);
@@ -304,6 +321,63 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
 
       expect(kept?.status).toBe('ready');
     } finally {
+      storedObjects.clear();
+      await cleanupRetentionFixture(fixture);
+    }
+  });
+
+  it('keeps current, recent, and never-replaced versions with a custom retention window', async () => {
+    const { getPackageVersionById } = await import('@cio/db/queries/activity/package-version');
+    const current = suffix();
+    const fixture = await createRetentionFixture(current);
+    const nowMs = Date.now();
+    const ancient = new Date(nowMs - 40 * 86_400_000).toISOString();
+    const versions = [
+      await createVersion(fixture, 1, current, { replacedAt: ancient }),
+      await createVersion(fixture, 2, current, { replacedAt: null }),
+      await createVersion(fixture, 3, current, { isCurrent: true, replacedAt: null })
+    ];
+    for (const version of versions) storedObjects.set(`${version.contentPrefix}/sco.html`, 'content');
+
+    try {
+      const result = await runScormRetention(90, 45, nowMs);
+      expect(result.versionsDeleted).toBe(0);
+      expect(result.versionsArchived).toBe(0);
+      for (const version of versions) {
+        expect(await getPackageVersionById(version.id)).not.toBeNull();
+        expect(storedObjects.has(`${version.contentPrefix}/sco.html`)).toBe(true);
+      }
+    } finally {
+      storedObjects.clear();
+      await cleanupRetentionFixture(fixture);
+    }
+  });
+
+  it('retries failed object cleanup without losing the version, including paginated files and sidecars', async () => {
+    const { getPackageVersionById } = await import('@cio/db/queries/activity/package-version');
+    const current = suffix();
+    const fixture = await createRetentionFixture(current);
+    const replacedAt = new Date(Date.now() - 40 * 86_400_000).toISOString();
+    const version = await createVersion(fixture, 1, current, { replacedAt });
+    for (const key of ['a.html', 'b.html', 'index.json'])
+      storedObjects.set(`${version.contentPrefix}/${key}`, 'content');
+    storedObjects.set(`${version.contentPrefix}.index.json`, '[]');
+    storedObjects.set(version.uploadKey, 'zip');
+    listPageSize = 1;
+    failDeletes = true;
+
+    try {
+      await expect(runScormRetention()).rejects.toThrow('AccessDenied');
+      expect((await getPackageVersionById(version.id))?.status).toBe('ready');
+      expect(storedObjects.size).toBe(5);
+      failDeletes = false;
+      const result = await runScormRetention();
+      expect(result.versionsDeleted).toBe(1);
+      expect(storedObjects.size).toBe(0);
+      expect(await getPackageVersionById(version.id)).toBeNull();
+    } finally {
+      failDeletes = false;
+      listPageSize = 1000;
       storedObjects.clear();
       await cleanupRetentionFixture(fixture);
     }
