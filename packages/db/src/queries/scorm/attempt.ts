@@ -413,6 +413,28 @@ export async function reopenScormAttempt(
   dbClient: DbOrTxClient = db
 ): Promise<TScormAttempt | null> {
   try {
+    const [finished] = await dbClient
+      .select()
+      .from(schema.scormAttempt)
+      .where(and(eq(schema.scormAttempt.id, attemptId), eq(schema.scormAttempt.closeReason, 'finished')))
+      .limit(1);
+
+    if (!finished) return null;
+
+    const [openAttempt] = await dbClient
+      .select({ id: schema.scormAttempt.id })
+      .from(schema.scormAttempt)
+      .where(
+        and(
+          eq(schema.scormAttempt.activityId, finished.activityId),
+          eq(schema.scormAttempt.profileId, finished.profileId),
+          isNull(schema.scormAttempt.closedAt)
+        )
+      )
+      .limit(1);
+
+    if (openAttempt) return null;
+
     const [reopened] = await dbClient
       .update(schema.scormAttempt)
       .set({ closedAt: null, closeReason: null })

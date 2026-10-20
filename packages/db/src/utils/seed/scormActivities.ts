@@ -10,6 +10,7 @@ import {
   eq,
   group
 } from '@db/drizzle';
+import { provisionSeedScormPackage, resolveSeedScormStorage, type SeedScormStorage } from './scorm-content';
 
 const ENTERPRISE_ORG_ID = '2b8f4a1c-6d3e-4b2a-9f7e-1c4d8a6e9b0f';
 const ENTERPRISE_ADMIN_USER_ID = '3c9052de-7e4f-4c3a-8d8e-2d5e9b7f1a3c';
@@ -52,14 +53,27 @@ async function ensurePackageAsset(assetId: string, title: string, description: s
   console.log(`   ✓ Inserted SCORM package asset "${title}"`);
 }
 
-async function ensurePackageVersion(versionId: string, assetId: string, title: string, modules: string[]) {
+async function ensurePackageVersion(
+  versionId: string,
+  assetId: string,
+  title: string,
+  modules: string[],
+  storage: SeedScormStorage
+) {
+  const uploadKey = `scorm/${assetId}/v1.zip`;
+  const contentPrefix = `scorm/${assetId}/v1`;
+  const provisioned = await provisionSeedScormPackage(storage, contentPrefix, uploadKey, title, modules);
   const existing = await db
     .select({ id: contentPackageVersion.id })
     .from(contentPackageVersion)
     .where(eq(contentPackageVersion.id, versionId));
 
   if (existing.length > 0) {
-    console.log(`   ✓ Package version for "${title}" already exists, skipping`);
+    await db
+      .update(contentPackageVersion)
+      .set({ status: 'ready', isCurrent: true, ...provisioned })
+      .where(eq(contentPackageVersion.id, versionId));
+    console.log(`   ✓ Refreshed package content for "${title}"`);
     return;
   }
 
@@ -73,11 +87,9 @@ async function ensurePackageVersion(versionId: string, assetId: string, title: s
       format: 'scorm2004_4',
       title,
       warnings: [],
-      uploadKey: `scorm/${assetId}/v1.zip`,
-      contentPrefix: `scorm/${assetId}/v1`,
-      zipBytes: 1024,
-      extractedBytes: 2048,
-      fileCount: modules.length + 1,
+      uploadKey,
+      contentPrefix,
+      ...provisioned,
       createdByProfileId: ENTERPRISE_ADMIN_USER_ID
     });
     await tx.insert(contentPackageUnit).values(
@@ -127,6 +139,13 @@ export async function seedScormActivities() {
     return;
   }
 
+  const storage = resolveSeedScormStorage();
+
+  if (!storage) {
+    console.log('   ⏭️  Skipping SCORM seed: object storage is not configured');
+    return;
+  }
+
   await ensurePackageAsset(
     HIPAA_ASSET_ID,
     'Protecting patient information',
@@ -138,15 +157,20 @@ export async function seedScormActivities() {
     'Seeded SCORM package for the demo SCORM course.'
   );
 
-  await ensurePackageVersion(HIPAA_VERSION_ID, HIPAA_ASSET_ID, 'Protecting patient information', [
-    'Privacy rule essentials',
-    'Breach notification walkthrough'
-  ]);
-  await ensurePackageVersion(SCORM_COURSE_VERSION_ID, SCORM_COURSE_ASSET_ID, 'Workplace safety library', [
-    'Safety orientation',
-    'Hazard reporting',
-    'Emergency procedures'
-  ]);
+  await ensurePackageVersion(
+    HIPAA_VERSION_ID,
+    HIPAA_ASSET_ID,
+    'Protecting patient information',
+    ['Privacy rule essentials', 'Breach notification walkthrough'],
+    storage
+  );
+  await ensurePackageVersion(
+    SCORM_COURSE_VERSION_ID,
+    SCORM_COURSE_ASSET_ID,
+    'Workplace safety library',
+    ['Safety orientation', 'Hazard reporting', 'Emergency procedures'],
+    storage
+  );
 
   const hipaaActivities = await db
     .select({ id: courseActivity.id })

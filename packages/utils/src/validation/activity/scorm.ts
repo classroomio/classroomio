@@ -66,7 +66,7 @@ export type TScormPlayerEventKind = (typeof SCORM_PLAYER_EVENT_KINDS)[number];
  */
 export const ZScormRuntimeEvent = z.object({
   kind: z.enum(SCORM_PLAYER_EVENT_KINDS),
-  detail: z.record(z.string(), z.unknown()).default({})
+  detail: ZScormSessionEventDetail
 });
 export type TScormRuntimeEvent = z.infer<typeof ZScormRuntimeEvent>;
 

@@ -211,7 +211,9 @@ describe.skipIf(!hasDatabase)('scorm tables', () => {
         .returning();
       expect(event.detail).toEqual({});
 
-      await db.delete(schema.contentPackageVersion).where(eq(schema.contentPackageVersion.id, version.id));
+      await expect(
+        db.delete(schema.contentPackageVersion).where(eq(schema.contentPackageVersion.id, version.id))
+      ).rejects.toThrow();
 
       const remainingAttempts = await db
         .select()
@@ -221,8 +223,8 @@ describe.skipIf(!hasDatabase)('scorm tables', () => {
         .select()
         .from(schema.scormScoAttempt)
         .where(eq(schema.scormScoAttempt.id, scoAttempt.id));
-      expect(remainingAttempts).toEqual([]);
-      expect(remainingTries).toEqual([]);
+      expect(remainingAttempts).toHaveLength(1);
+      expect(remainingTries).toHaveLength(1);
     } finally {
       await cleanupScormFixture(fixture);
     }
