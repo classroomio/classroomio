@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
-  import { untrack } from 'svelte';
+  import { onDestroy, untrack } from 'svelte';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import * as Alert from '@cio/ui/base/alert';
@@ -225,14 +225,24 @@
 
   let saveDebounceTimeout: ReturnType<typeof setTimeout> | undefined;
 
+  function clearAutoSave() {
+    if (!saveDebounceTimeout) return;
+
+    clearTimeout(saveDebounceTimeout);
+    saveDebounceTimeout = undefined;
+  }
+
+  onDestroy(clearAutoSave);
+
   function triggerAutoSave() {
     if (mode === MODES.view) return;
     if (!titleDirty && !instructionsDirty) return;
 
-    if (saveDebounceTimeout) clearTimeout(saveDebounceTimeout);
+    clearAutoSave();
 
     untrack(() => {
       saveDebounceTimeout = setTimeout(() => {
+        saveDebounceTimeout = undefined;
         void saveAll();
       }, 2000);
     });
@@ -258,9 +268,9 @@
 
     savingInstructions = true;
     try {
-      const updated = await activityApi.update(courseId, activityId, { instructions });
-      if (updated && 'instructions' in updated) {
-        instructions = (updated.instructions as string | null) ?? instructions;
+      await activityApi.update(courseId, activityId, { instructions });
+      if (activityApi.success) {
+        instructions = (activityApi.activity?.instructions as string | null) ?? '';
       }
     } finally {
       savingInstructions = false;
@@ -312,7 +322,7 @@
 
   function toggleMode() {
     if (mode === MODES.edit && hasUnsavedChanges) {
-      if (saveDebounceTimeout) clearTimeout(saveDebounceTimeout);
+      clearAutoSave();
       void saveAll();
     }
     setModeQueryParam(mode === MODES.edit ? MODES.view : MODES.edit);
@@ -323,6 +333,11 @@
   }
 
   function discardSettings() {
+    settingsPanel?.discard();
+  }
+
+  function abandonPendingEdits() {
+    clearAutoSave();
     settingsPanel?.discard();
   }
 
@@ -889,7 +904,7 @@
   {/snippet}
 </Page.Body>
 
-<UnsavedChanges bind:hasUnsavedChanges />
+<UnsavedChanges bind:hasUnsavedChanges onAbandon={abandonPendingEdits} />
 
 {#if !$isCourseLearnerView && mode === MODES.edit && currentTab === 'settings'}
   <Page.SettingsActions
