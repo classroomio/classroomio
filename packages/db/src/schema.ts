@@ -4817,7 +4817,7 @@ export const scormAttempt = pgTable(
       columns: [table.packageVersionId],
       foreignColumns: [contentPackageVersion.id],
       name: 'scorm_attempt_package_version_id_fkey'
-    }).onDelete('cascade'),
+    }).onDelete('restrict'),
     unique('scorm_attempt_activity_profile_number_key').on(table.activityId, table.profileId, table.attemptNumber),
     uniqueIndex('scorm_attempt_open_key')
       .on(table.activityId, table.profileId)

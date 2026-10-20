@@ -151,7 +151,7 @@ function attemptRollupCte(activityId: string, profileIds: string[], settings: Sc
                     WHEN 'score' THEN COUNT(*) FILTER (WHERE (has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL) AND completion = 'completed')
                       = COUNT(*) FILTER (WHERE has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL)
                       AND AVG(scaled_score) FILTER (WHERE has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL) IS NOT NULL
-                      AND AVG(scaled_score) FILTER (WHERE has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL) * 100 >= COALESCE(${settings.minScorePercent}, 100)
+                      AND ROUND((AVG(scaled_score) FILTER (WHERE has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL) * 100)::numeric, 2) >= COALESCE(${settings.minScorePercent}, 100)
                     ELSE COUNT(*) FILTER (WHERE (has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL)
                       AND CASE WHEN (has_pass_mark OR success <> 'unknown')
                         THEN success = 'passed'
@@ -164,7 +164,7 @@ function attemptRollupCte(activityId: string, profileIds: string[], settings: Sc
                     WHEN 'passed' THEN COUNT(*) FILTER (WHERE success = 'passed') = COUNT(*)
                     WHEN 'score' THEN COUNT(*) FILTER (WHERE completion = 'completed') = COUNT(*)
                       AND AVG(scaled_score) IS NOT NULL
-                      AND AVG(scaled_score) * 100 >= COALESCE(${settings.minScorePercent}, 100)
+                      AND ROUND((AVG(scaled_score) * 100)::numeric, 2) >= COALESCE(${settings.minScorePercent}, 100)
                     ELSE SUM(CASE WHEN (has_pass_mark OR success <> 'unknown')
                       THEN CASE WHEN success = 'passed' THEN 1 ELSE 0 END
                       ELSE CASE WHEN completion = 'completed' THEN 1 ELSE 0 END
@@ -179,7 +179,10 @@ function attemptRollupCte(activityId: string, profileIds: string[], settings: Sc
              COUNT(*)::int AS attempts,
              MAX(score_frac) AS best_frac,
              MAX(launched_at) AS last_launched,
-             (SELECT COALESCE(SUM(try_seconds), 0)::int FROM attempt_modules m WHERE m.profile_id = ar.profile_id) AS total_seconds
+             (SELECT COALESCE(SUM(t.time_spent_seconds), 0)::int
+                FROM scorm_sco_attempt t
+                JOIN learner_attempts la ON la.id = t.attempt_id
+               WHERE la.profile_id = ar.profile_id) AS total_seconds
       FROM attempt_rollup ar
       GROUP BY profile_id
     )`;

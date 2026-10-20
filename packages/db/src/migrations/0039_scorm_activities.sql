@@ -92,7 +92,7 @@ CREATE TABLE "course_activity" (
 	"kind" "ACTIVITY_KIND" NOT NULL,
 	"title" varchar NOT NULL,
 	"instructions" text,
-	"slug" varchar,
+	"slug" varchar DEFAULT '' NOT NULL,
 	"order" bigint NOT NULL,
 	"is_unlocked" boolean DEFAULT true NOT NULL,
 	"source_id" uuid,
@@ -152,7 +152,7 @@ ALTER TABLE "course_activity" ADD CONSTRAINT "course_activity_source_id_fkey" FO
 ALTER TABLE "course_activity" ADD CONSTRAINT "course_activity_created_by_profile_id_fkey" FOREIGN KEY ("created_by_profile_id") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "scorm_attempt" ADD CONSTRAINT "scorm_attempt_activity_id_fkey" FOREIGN KEY ("activity_id") REFERENCES "public"."course_activity"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "scorm_attempt" ADD CONSTRAINT "scorm_attempt_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "scorm_attempt" ADD CONSTRAINT "scorm_attempt_package_version_id_fkey" FOREIGN KEY ("package_version_id") REFERENCES "public"."content_package_version"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "scorm_attempt" ADD CONSTRAINT "scorm_attempt_package_version_id_fkey" FOREIGN KEY ("package_version_id") REFERENCES "public"."content_package_version"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "scorm_sco_attempt" ADD CONSTRAINT "scorm_sco_attempt_attempt_id_fkey" FOREIGN KEY ("attempt_id") REFERENCES "public"."scorm_attempt"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "scorm_sco_attempt" ADD CONSTRAINT "scorm_sco_attempt_unit_id_fkey" FOREIGN KEY ("unit_id") REFERENCES "public"."content_package_unit"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "scorm_session_event" ADD CONSTRAINT "scorm_session_event_sco_attempt_id_fkey" FOREIGN KEY ("sco_attempt_id") REFERENCES "public"."scorm_sco_attempt"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

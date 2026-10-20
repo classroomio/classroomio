@@ -93,15 +93,30 @@ export async function getNextPackageVersionNumber(assetId: string, dbClient: DbO
   }
 }
 
+/**
+ * Locks one asset row for the rest of the caller's transaction. Version
+ * allocation and current-version switches take this lock so parallel uploads
+ * for the same asset cannot claim the same number or clobber each other.
+ */
+export async function lockAssetRow(assetId: string, dbClient: DbOrTxClient = db): Promise<void> {
+  try {
+    await dbClient.select({ id: schema.asset.id }).from(schema.asset).where(eq(schema.asset.id, assetId)).for('update');
+  } catch (error) {
+    console.error('lockAssetRow error:', error);
+    throw new Error(`Failed to lock asset "${assetId}": ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export async function updatePackageVersion(
   versionId: string,
   patch: Partial<TContentPackageVersion>,
   dbClient: DbOrTxClient = db
 ): Promise<TContentPackageVersion | null> {
   try {
+    const updatedAt = new Date().toISOString();
     const [updated] = await dbClient
       .update(schema.contentPackageVersion)
-      .set({ ...patch, updatedAt: new Date().toISOString() })
+      .set({ ...patch, updatedAt })
       .where(eq(schema.contentPackageVersion.id, versionId))
       .returning();
 
@@ -110,6 +125,31 @@ export async function updatePackageVersion(
     console.error('updatePackageVersion error:', error);
     throw new Error(
       `Failed to update package version "${versionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Atomically claims an `uploading` version for processing. Returns null when
+ * another request already moved it out of `uploading`.
+ */
+export async function claimPackageVersionForProcessing(
+  versionId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TContentPackageVersion | null> {
+  try {
+    const updatedAt = new Date().toISOString();
+    const [claimed] = await dbClient
+      .update(schema.contentPackageVersion)
+      .set({ status: 'processing', updatedAt })
+      .where(and(eq(schema.contentPackageVersion.id, versionId), eq(schema.contentPackageVersion.status, 'uploading')))
+      .returning();
+
+    return claimed ?? null;
+  } catch (error) {
+    console.error('claimPackageVersionForProcessing error:', error);
+    throw new Error(
+      `Failed to claim package version "${versionId}" for processing: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -126,6 +166,7 @@ export async function setCurrentPackageVersion(
   const run = async (client: DbOrTxClient): Promise<TContentPackageVersion> => {
     const version = await getPackageVersionById(versionId, client);
     if (!version) throw new Error(`Package version "${versionId}" not found`);
+    await lockAssetRow(version.assetId, client);
     if (version.status !== 'ready') throw new Error(`Package version "${versionId}" is not ready`);
 
     const now = new Date().toISOString();

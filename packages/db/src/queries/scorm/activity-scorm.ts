@@ -42,6 +42,7 @@ export async function upsertActivityScorm(
   dbClient: DbOrTxClient = db
 ): Promise<TActivityScorm> {
   try {
+    const updatedAt = new Date().toISOString();
     const [row] = await dbClient
       .insert(schema.activityScorm)
       .values(data)
@@ -54,7 +55,7 @@ export async function upsertActivityScorm(
           allowRetakes: data.allowRetakes,
           moduleOrder: data.moduleOrder,
           completionModules: data.completionModules,
-          updatedAt: new Date().toISOString()
+          updatedAt
         }
       })
       .returning();

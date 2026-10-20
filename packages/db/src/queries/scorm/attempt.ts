@@ -45,6 +45,39 @@ export async function closeSupersededAttempts(
 }
 
 /**
+ * Closes open attempts for one activity that are pinned to an older version
+ * of its package. Returns the number of attempts closed.
+ */
+export async function closeSupersededAttemptsForActivity(
+  activityId: string,
+  keepVersionId: string,
+  reason: TScormAttemptCloseReason,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const closedAt = new Date().toISOString();
+    const closed = await dbClient
+      .update(schema.scormAttempt)
+      .set({ closedAt, closeReason: reason })
+      .where(
+        and(
+          eq(schema.scormAttempt.activityId, activityId),
+          sql`${schema.scormAttempt.packageVersionId} != ${keepVersionId}`,
+          isNull(schema.scormAttempt.closedAt)
+        )
+      )
+      .returning({ id: schema.scormAttempt.id });
+
+    return closed.length;
+  } catch (error) {
+    console.error('closeSupersededAttemptsForActivity error:', error);
+    throw new Error(
+      `Failed to close superseded attempts for activity "${activityId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Closes every open attempt for an activity. Used when the activity is
  * pointed at a different package: those attempts can never resume, so
  * leaving them open would misreport progress forever. Returns the number
@@ -322,6 +355,75 @@ export async function closeScormAttempt(
     console.error('closeScormAttempt error:', error);
     throw new Error(
       `Failed to close SCORM attempt "${attemptId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Updates an attempt row with specified fields.
+ */
+export async function updateScormAttempt(
+  attemptId: string,
+  values: Partial<TScormAttempt>,
+  dbClient: DbOrTxClient = db
+): Promise<TScormAttempt | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.scormAttempt)
+      .set(values)
+      .where(eq(schema.scormAttempt.id, attemptId))
+      .returning();
+
+    return updated ?? null;
+  } catch (error) {
+    console.error('updateScormAttempt error:', error);
+    throw new Error(
+      `Failed to update SCORM attempt "${attemptId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Lists all attempts for a given activity and learner, ordered by attempt number descending.
+ */
+export async function listScormAttemptsForProfile(
+  activityId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TScormAttempt[]> {
+  try {
+    return await dbClient
+      .select()
+      .from(schema.scormAttempt)
+      .where(and(eq(schema.scormAttempt.activityId, activityId), eq(schema.scormAttempt.profileId, profileId)))
+      .orderBy(desc(schema.scormAttempt.attemptNumber));
+  } catch (error) {
+    console.error('listScormAttemptsForProfile error:', error);
+    throw new Error(
+      `Failed to list SCORM attempts for profile "${profileId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Reopens a finished attempt so a learner can continue after settings change.
+ */
+export async function reopenScormAttempt(
+  attemptId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TScormAttempt | null> {
+  try {
+    const [reopened] = await dbClient
+      .update(schema.scormAttempt)
+      .set({ closedAt: null, closeReason: null })
+      .where(and(eq(schema.scormAttempt.id, attemptId), eq(schema.scormAttempt.closeReason, 'finished')))
+      .returning();
+
+    return reopened ?? null;
+  } catch (error) {
+    console.error('reopenScormAttempt error:', error);
+    throw new Error(
+      `Failed to reopen SCORM attempt "${attemptId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

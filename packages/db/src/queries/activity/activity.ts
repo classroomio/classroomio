@@ -83,9 +83,10 @@ export async function updateActivity(
   dbClient: DbOrTxClient = db
 ): Promise<TCourseActivity | null> {
   try {
+    const updatedAt = new Date().toISOString();
     const [updated] = await dbClient
       .update(schema.courseActivity)
-      .set({ ...data, updatedAt: new Date().toISOString() })
+      .set({ ...data, updatedAt })
       .where(eq(schema.courseActivity.id, activityId))
       .returning();
     return updated || null;
@@ -315,9 +316,10 @@ export async function clearActivityCompletions(
 ): Promise<number> {
   if (activityIds.length === 0) return 0;
   try {
+    const updatedAt = new Date().toISOString();
     const cleared = await tx
       .update(schema.activityCompletion)
-      .set({ isComplete: false, completedAt: null, updatedAt: new Date().toISOString() })
+      .set({ isComplete: false, completedAt: null, updatedAt })
       .where(
         and(
           inArray(schema.activityCompletion.activityId, activityIds),
@@ -342,26 +344,18 @@ export async function markActivityCompleteOnce(
   dbClient: DbOrTxClient = db
 ): Promise<boolean> {
   try {
-    const [existing] = await dbClient
-      .select()
-      .from(schema.activityCompletion)
-      .where(
-        and(eq(schema.activityCompletion.activityId, activityId), eq(schema.activityCompletion.profileId, profileId))
-      )
-      .limit(1);
-    if (existing?.isComplete) return false;
-
     const completedAt = new Date().toISOString();
-    if (existing) {
-      await dbClient
-        .update(schema.activityCompletion)
-        .set({ isComplete: true, completedAt, updatedAt: completedAt })
-        .where(eq(schema.activityCompletion.id, existing.id));
-      return true;
-    }
+    const inserted = await dbClient
+      .insert(schema.activityCompletion)
+      .values({ activityId, profileId, isComplete: true, completedAt })
+      .onConflictDoUpdate({
+        target: [schema.activityCompletion.activityId, schema.activityCompletion.profileId],
+        set: { isComplete: true, completedAt, updatedAt: completedAt },
+        setWhere: eq(schema.activityCompletion.isComplete, false)
+      })
+      .returning({ id: schema.activityCompletion.id });
 
-    await dbClient.insert(schema.activityCompletion).values({ activityId, profileId, isComplete: true, completedAt });
-    return true;
+    return inserted.length > 0;
   } catch (error) {
     console.error('markActivityCompleteOnce error:', error);
     throw new Error(

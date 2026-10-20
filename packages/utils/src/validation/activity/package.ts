@@ -17,6 +17,7 @@ export const ZPackageParam = z.object({
 export type TPackageParam = z.infer<typeof ZPackageParam>;
 
 export const ZPackageVersionCreate = z.object({
+  fileSize: z.coerce.number().int().min(1),
   contentSha256: z
     .string()
     .regex(/^[a-f0-9]{64}$/i, 'contentSha256 must be a hex SHA-256 digest')
@@ -32,6 +33,7 @@ export const ZPackageVersionParam = z.object({
 export type TPackageVersionParam = z.infer<typeof ZPackageVersionParam>;
 
 export const ZPackageMakeCurrent = z.object({
-  closeOpenAttempts: z.boolean().optional().default(false)
+  closeOpenAttempts: z.boolean().optional().default(false),
+  activityId: z.string().min(1).optional()
 });
 export type TPackageMakeCurrent = z.infer<typeof ZPackageMakeCurrent>;
