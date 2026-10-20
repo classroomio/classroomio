@@ -2,7 +2,7 @@ import { learningPathApi } from '../api';
 import { generatePathSlug } from './path-slug';
 import type { LearningPathDetail } from './types';
 
-export type PublishPathResult = { ok: true; slug: string } | { ok: false; reason: 'failed' };
+export type PublishPathResult = { ok: true; slug: string } | { ok: false; reason: 'failed' | 'slug_taken' };
 
 /**
  * Publishes a learning path, minting a public slug first when the path
@@ -22,6 +22,10 @@ export async function publishPath(path: LearningPathDetail | null | undefined): 
   const updated = await learningPathApi.update(pathPublicId, { isPublished: true, slug }, { showSuccessToast: false });
 
   if (!updated) {
+    if (learningPathApi.errors.slug) {
+      return { ok: false, reason: 'slug_taken' };
+    }
+
     return { ok: false, reason: 'failed' };
   }
 

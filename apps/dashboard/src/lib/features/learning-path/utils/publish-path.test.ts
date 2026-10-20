@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../api', () => ({
-  learningPathApi: { update: vi.fn() }
+  learningPathApi: { update: vi.fn(), errors: {} as Record<string, string> }
 }));
 
 import { learningPathApi } from '../api';
@@ -23,6 +23,7 @@ function createMockPath(overrides: Partial<LearningPathDetail> = {}): LearningPa
 
 beforeEach(() => {
   updateMock.mockReset();
+  learningPathApi.errors = {};
 });
 
 describe('publishPath', () => {
@@ -101,5 +102,16 @@ describe('publishPath', () => {
     const result = await publishPath(createMockPath({ slug: 'my-slug' }));
 
     expect(result).toEqual({ ok: false, reason: 'failed' });
+  });
+
+  it('returns slug_taken when the update reports a slug conflict', async () => {
+    updateMock.mockImplementation(async () => {
+      learningPathApi.errors = { slug: 'learningPath.settings.general.slug_taken' };
+      return null;
+    });
+
+    const result = await publishPath(createMockPath({ slug: 'my-slug' }));
+
+    expect(result).toEqual({ ok: false, reason: 'slug_taken' });
   });
 });

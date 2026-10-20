@@ -6419,6 +6419,7 @@
         "description_placeholder": "Write your path description here",
         "description_required": "Description is required",
         "link": "Path Link",
+        "slug_taken": "That link is already used by another learning path.",
         "generate_link": "Generate new link",
         "open_link": "Open link in new tab",
         "copy_link": "Copy link",

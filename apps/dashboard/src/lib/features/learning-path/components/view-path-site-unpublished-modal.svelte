@@ -26,7 +26,11 @@
     try {
       const result = await publishPath(path);
       if (!result.ok) {
-        snackbar.error('learningPath.workspace.publish_failed');
+        snackbar.error(
+          result.reason === 'slug_taken'
+            ? 'learningPath.settings.general.slug_taken'
+            : 'learningPath.workspace.publish_failed'
+        );
         return;
       }
 
