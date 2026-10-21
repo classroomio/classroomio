@@ -10,6 +10,7 @@
     question: Record<string, unknown>;
     kicker: string;
     continueLabel?: string;
+    continueLoading?: boolean;
     initialAnswer?: unknown;
     resumePolicy?: 'any' | 'correct';
     correctAnswer?: unknown;
@@ -24,6 +25,7 @@
     question,
     kicker,
     continueLabel = 'Continue',
+    continueLoading = false,
     initialAnswer = null,
     resumePolicy = 'any',
     correctAnswer = undefined,
@@ -68,7 +70,14 @@
 <div class="mx-auto w-full max-w-3xl space-y-3">
   <VideoCheckpointPlayerFrame {timestampLabel} {durationLabel} {progressPercent}>
     {#if overlayOpen}
-      <VideoCheckpoint.Overlay {kicker} {continueLabel} {continueDisabled} {errorMessage} onContinue={handleContinue}>
+      <VideoCheckpoint.Overlay
+        {kicker}
+        {continueLabel}
+        {continueDisabled}
+        {continueLoading}
+        {errorMessage}
+        onContinue={handleContinue}
+      >
         {#snippet questionBody()}
           <ExerciseQuestion.QuestionRenderer
             showContainer={false}

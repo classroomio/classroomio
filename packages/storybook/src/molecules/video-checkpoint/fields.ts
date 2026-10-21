@@ -1,1 +1,1 @@
-export const FIELDS = ['kicker', 'continueLabel', 'continueDisabled', 'errorMessage', 'class'];
+export const FIELDS = ['kicker', 'continueLabel', 'continueDisabled', 'continueLoading', 'errorMessage', 'class'];

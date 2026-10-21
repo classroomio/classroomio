@@ -7,6 +7,7 @@
     kicker: string;
     continueLabel: string;
     continueDisabled?: boolean;
+    continueLoading?: boolean;
     errorMessage?: string;
     onContinue?: () => void;
     questionBody: Snippet;
@@ -17,6 +18,7 @@
     kicker,
     continueLabel,
     continueDisabled = false,
+    continueLoading = false,
     errorMessage = '',
     onContinue,
     questionBody,
@@ -65,6 +67,7 @@
         variant="secondary"
         testId="video-checkpoint-continue"
         disabled={continueDisabled}
+        loading={continueLoading}
         onclick={() => onContinue?.()}
       >
         {continueLabel}

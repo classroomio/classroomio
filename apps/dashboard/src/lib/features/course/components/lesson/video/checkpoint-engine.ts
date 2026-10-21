@@ -1,26 +1,28 @@
-import type { LessonVideoCheckpoint } from './checkpoint-types';
+import type { VideoCheckpoint } from '$features/course/utils/types';
 
-export function getNextUnansweredCheckpoint(
-  checkpoints: LessonVideoCheckpoint[],
-  answeredIds: Iterable<string>,
-  currentSeconds: number
-): LessonVideoCheckpoint | undefined {
-  const answered = new Set(answeredIds);
+function firstUnsatisfied(checkpoints: VideoCheckpoint[], satisfiedIds: Iterable<string>): VideoCheckpoint | undefined {
+  const satisfied = new Set(satisfiedIds);
 
   return [...checkpoints]
-    .filter((checkpoint) => !answered.has(checkpoint.id))
-    .sort((left, right) => left.timestampSeconds - right.timestampSeconds)
-    .find((checkpoint) => currentSeconds + 0.05 >= checkpoint.timestampSeconds);
+    .filter((checkpoint) => !satisfied.has(checkpoint.id))
+    .sort((left, right) => left.timestampSeconds - right.timestampSeconds)[0];
 }
 
-export function getSeekCeilingSeconds(
-  checkpoints: LessonVideoCheckpoint[],
-  answeredIds: Iterable<string>
-): number | undefined {
-  const answered = new Set(answeredIds);
-  const next = [...checkpoints]
-    .filter((checkpoint) => !answered.has(checkpoint.id))
-    .sort((left, right) => left.timestampSeconds - right.timestampSeconds)[0];
+/** The checkpoint whose time the playhead has reached and that the learner has not yet satisfied. */
+export function getNextUnansweredCheckpoint(
+  checkpoints: VideoCheckpoint[],
+  satisfiedIds: Iterable<string>,
+  currentSeconds: number
+): VideoCheckpoint | undefined {
+  const next = firstUnsatisfied(checkpoints, satisfiedIds);
 
-  return next?.timestampSeconds;
+  return next && currentSeconds + 0.05 >= next.timestampSeconds ? next : undefined;
+}
+
+/** Furthest second playback may reach: the time of the first unsatisfied checkpoint. */
+export function getSeekCeilingSeconds(
+  checkpoints: VideoCheckpoint[],
+  satisfiedIds: Iterable<string>
+): number | undefined {
+  return firstUnsatisfied(checkpoints, satisfiedIds)?.timestampSeconds;
 }

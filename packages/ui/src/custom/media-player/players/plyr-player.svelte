@@ -77,14 +77,42 @@
   }
 
   /**
+   * Furthest position a viewer may seek to: the must-watch lock (while it is active) and the next unanswered
+   * checkpoint, whichever is nearer. `Infinity` means seeking is free.
+   */
+  function seekLimitSeconds(): number {
+    const lockLimit = options.seekPolicy?.mode === 'locked_until_complete' ? seekLockFurthestSeconds : Infinity;
+    const ceilingSeconds = options.seekCeiling?.getSeconds();
+
+    return Math.min(lockLimit, ceilingSeconds ?? Infinity);
+  }
+
+  function notifySeekBlocked(): void {
+    const now = Date.now();
+    if (now - seekBlockLastNotifiedAt < SEEK_BLOCK_COOLDOWN_MS) return;
+
+    seekBlockLastNotifiedAt = now;
+    const policy = options.seekPolicy;
+    if (
+      policy?.mode === 'locked_until_complete' &&
+      seekLockFurthestSeconds <= (options.seekCeiling?.getSeconds() ?? Infinity)
+    ) {
+      policy.onSeekBlocked?.();
+      return;
+    }
+
+    options.seekCeiling?.onSeekBlocked?.();
+  }
+
+  /**
    * Plyr progress-bar seek handler. Returning `false` skips Plyr's default
    * seek, so the media never moves — the reliable way to block forward
    * skips (clamping `currentTime` after the fact is ignored on progressive
    * MP4). Rewinding and re-seeking up to the watched point stay allowed.
    */
   function handleSeekAttempt(event: Event): boolean | void {
-    const policy = options.seekPolicy;
-    if (policy?.mode !== 'locked_until_complete') return;
+    const limitSeconds = seekLimitSeconds();
+    if (!Number.isFinite(limitSeconds)) return;
 
     const input = event.currentTarget as HTMLInputElement | null;
     const duration = playerInstance?.duration;
@@ -94,12 +122,8 @@
     const raw = input.getAttribute('seek-value') ?? input.value;
     const targetSeconds = (Number(raw) / max) * duration;
 
-    if (targetSeconds > seekLockFurthestSeconds + SEEK_TOLERANCE_SECONDS) {
-      const now = Date.now();
-      if (now - seekBlockLastNotifiedAt >= SEEK_BLOCK_COOLDOWN_MS) {
-        seekBlockLastNotifiedAt = now;
-        policy.onSeekBlocked?.();
-      }
+    if (targetSeconds > limitSeconds + SEEK_TOLERANCE_SECONDS) {
+      notifySeekBlocked();
       return false;
     }
   }
@@ -121,7 +145,7 @@
 
   function attachTimeUpdates(player: Plyr, element: HTMLVideoElement): () => void {
     const policy = options.seekPolicy;
-    if (policy?.mode === 'locked_until_complete') {
+    if (policy?.mode === 'locked_until_complete' || options.seekCeiling) {
       return attachSeekEnforcement(player, element, policy);
     }
 
@@ -135,9 +159,10 @@
   function attachSeekEnforcement(
     player: Plyr,
     element: HTMLVideoElement,
-    policy: NonNullable<MediaPlayerOptions['seekPolicy']>
+    policy: MediaPlayerOptions['seekPolicy']
   ): () => void {
-    seekLockFurthestSeconds = policy.initialFurthestSeconds ?? 0;
+    const isLocked = policy?.mode === 'locked_until_complete';
+    seekLockFurthestSeconds = policy?.initialFurthestSeconds ?? 0;
     let playedSeconds = 0;
     let lastValidTime = element.currentTime;
     let isSeeking = false;
@@ -146,6 +171,8 @@
     const heartbeatIntervalMs = 15_000;
 
     const flushProgress = (force = false) => {
+      if (!policy) return;
+
       const durationSeconds = element.duration;
       if (!durationSeconds || !Number.isFinite(durationSeconds)) return;
 
@@ -161,15 +188,7 @@
       playedSeconds = 0;
     };
 
-    const isAheadOfLimit = () => player.currentTime > seekLockFurthestSeconds + SEEK_TOLERANCE_SECONDS;
-
-    const notifySeekBlocked = () => {
-      const now = Date.now();
-      if (now - seekBlockLastNotifiedAt < SEEK_BLOCK_COOLDOWN_MS) return;
-
-      seekBlockLastNotifiedAt = now;
-      policy.onSeekBlocked?.();
-    };
+    const isAheadOfLimit = () => player.currentTime > seekLimitSeconds() + SEEK_TOLERANCE_SECONDS;
 
     // Backstop for seeks that bypass the progress-bar listener (keyboard
     // shortcuts, programmatic). The progress bar itself is blocked up-front
@@ -180,7 +199,7 @@
 
       if (isAheadOfLimit()) {
         notifySeekBlocked();
-        player.currentTime = seekLockFurthestSeconds;
+        player.currentTime = seekLimitSeconds();
       }
     };
 
@@ -195,7 +214,7 @@
       if (isAheadOfLimit()) {
         isReclamping = true;
         notifySeekBlocked();
-        player.currentTime = seekLockFurthestSeconds;
+        player.currentTime = seekLimitSeconds();
         return;
       }
 
@@ -220,7 +239,7 @@
     };
 
     const onRateChange = () => {
-      if (player.speed !== 1) {
+      if (isLocked && player.speed !== 1) {
         player.speed = 1;
       }
     };
@@ -434,7 +453,9 @@
         ...(options.checkpointOverlay
           ? { fullscreen: { container: `[data-cio-player-shell="${playerShellId}"]` } }
           : {}),
-        ...(options.seekPolicy?.mode === 'locked_until_complete' ? { listeners: { seek: handleSeekAttempt } } : {}),
+        ...(options.seekPolicy?.mode === 'locked_until_complete' || options.seekCeiling
+          ? { listeners: { seek: handleSeekAttempt } }
+          : {}),
         ...(qualityConfig
           ? {
               quality: qualityConfig,

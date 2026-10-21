@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { lessonApi } from '$features/course/api';
+  import { untrack } from 'svelte';
+  import { lessonApi, videoCheckpointApi } from '$features/course/api';
   import { DeleteModal } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
@@ -16,7 +17,6 @@
   import VideoHlsStatusBadge from './video-hls-status-badge.svelte';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
-  import { lessonVideoCheckpointStore } from './checkpoint-store.svelte';
   import CheckpointTimeline from './checkpoint-timeline.svelte';
   import CheckpointBlockedState from './checkpoint-blocked-state.svelte';
   import { getVideoDurationSeconds, type LessonVideo } from './video-card-utils';
@@ -74,6 +74,20 @@
     return stopPolling;
   });
 
+  const hasUploadedVideo = $derived(videos.some((video) => video.type === 'upload' && Boolean(video.assetId)));
+
+  let checkpointsRequestedLessonId = '';
+
+  $effect(() => {
+    if (!courseId || !lessonId || !hasUploadedVideo || lessonId === checkpointsRequestedLessonId) return;
+
+    checkpointsRequestedLessonId = lessonId;
+    untrack(() => {
+      videoCheckpointApi.clear();
+      void videoCheckpointApi.load(courseId, lessonId);
+    });
+  });
+
   const hasTranscript = $derived.by(() => {
     lessonVideoBus.transcriptSources;
     return lessonVideoBus.hasTranscriptAvailable();
@@ -113,7 +127,7 @@
           ? ((videoToDelete as LessonVideo & { assetId?: string }).assetId ?? null)
           : null;
       if (assetId) {
-        lessonVideoCheckpointStore.removeForAsset(lessonId, assetId);
+        videoCheckpointApi.dropAsset(assetId);
       }
 
       lessonApi.deleteLessonVideo(videoIndexToDelete);

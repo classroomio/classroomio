@@ -11,11 +11,10 @@
   import { classroomio, isAuthError } from '$lib/utils/services/api';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { lessonApi } from '$features/course/api';
+  import { lessonApi, videoCheckpointApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { AssetTranscriptPayload } from '$features/media/utils/types';
   import { isCourseLearnerView } from '$lib/utils/store/app';
-  import { profile } from '$lib/utils/store/user';
   import type { AnswerData } from '@cio/question-types';
   import { getExerciseQuestionLabels } from '$features/course/components/exercise/question-labels';
   import { getExerciseEditorQuestionTypeLabel } from '$features/course/components/exercise/question-type-utils';
@@ -23,14 +22,12 @@
   import { resolveWatchEnforcedAssetIds, getVideoDurationSeconds, type LessonVideo } from './video-card-utils';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
-  import { lessonVideoCheckpointStore } from './checkpoint-store.svelte';
-  import type { LessonVideoCheckpoint } from './checkpoint-types';
-  import { getNextUnansweredCheckpoint } from './checkpoint-engine';
+  import type { VideoCheckpoint as VideoCheckpointData } from '$features/course/utils/types';
+  import { getNextUnansweredCheckpoint, getSeekCeilingSeconds } from './checkpoint-engine';
   import {
     checkpointPercent,
     formatCheckpointTimestamp,
     isCheckpointAnswerComplete,
-    isCheckpointAnswerCorrect,
     toOverlayCheckpointQuestion
   } from './checkpoint-utils';
 
@@ -244,15 +241,13 @@
 
   let pendingResumeSeconds: number | null = null;
   let plyrPlayer: Plyr | null = null;
-  let overlayCheckpoint = $state<LessonVideoCheckpoint | null>(null);
+  let overlayCheckpoint = $state<VideoCheckpointData | null>(null);
   let overlayAnswer = $state<AnswerData | null>(null);
   let overlayError = $state('');
 
   const questionLabels = $derived(getExerciseQuestionLabels());
-  const checkpoints = $derived(lessonVideoCheckpointStore.listForAsset(lessonId, uploadAssetId));
-  const answeredCheckpointIds = $derived(
-    lessonVideoCheckpointStore.answeredIdsFor($profile.id, lessonId, uploadAssetId)
-  );
+  const CHECKPOINT_T = 'course.navItem.lessons.materials.tabs.video.checkpoints';
+  const checkpoints = $derived(videoCheckpointApi.forAsset(uploadAssetId));
   const checkpointDurationSeconds = $derived(lessonVideoBus.durationSeconds || getVideoDurationSeconds(video) || 0);
   const checkpointMarkers = $derived(
     checkpointDurationSeconds > 0
@@ -267,7 +262,8 @@
   const overlayTypeLabel = $derived.by(() => {
     if (!overlayCheckpoint) return '';
 
-    const typeEntry = QUESTION_TYPES.find((entry) => entry.key === overlayCheckpoint.question.questionType);
+    const { questionType } = overlayCheckpoint.question;
+    const typeEntry = QUESTION_TYPES.find((entry) => entry.key === questionType);
 
     return getExerciseEditorQuestionTypeLabel(typeEntry);
   });
@@ -279,6 +275,15 @@
       type: overlayTypeLabel
     });
   });
+
+  const seekCeilingOption = $derived(
+    enableCheckpoints && uploadAssetId
+      ? {
+          getSeconds: () => getSeekCeilingSeconds(checkpoints, videoCheckpointApi.satisfiedIds),
+          onSeekBlocked: () => snackbar.error('snackbar.lesson_video.checkpoint_seek_blocked')
+        }
+      : undefined
+  );
 
   function syncPlayerDuration(player: Plyr) {
     if (!ownsPlaybackBus()) return;
@@ -292,7 +297,7 @@
   function handleCheckpointCue(seconds: number) {
     if (!enableCheckpoints || overlayCheckpoint) return;
 
-    const nextCheckpoint = getNextUnansweredCheckpoint(checkpoints, answeredCheckpointIds, seconds);
+    const nextCheckpoint = getNextUnansweredCheckpoint(checkpoints, videoCheckpointApi.satisfiedIds, seconds);
     if (!nextCheckpoint) return;
 
     overlayCheckpoint = nextCheckpoint;
@@ -310,25 +315,19 @@
     overlayError = '';
   }
 
-  function handleCheckpointContinue() {
-    if (!overlayCheckpoint || !overlayAnswer || overlayContinueDisabled) return;
+  async function handleCheckpointContinue() {
+    const activeCheckpoint = overlayCheckpoint;
+    if (!activeCheckpoint || !overlayAnswer || overlayContinueDisabled || videoCheckpointApi.isAnswering) return;
 
-    const isCorrect = isCheckpointAnswerCorrect(overlayCheckpoint.question, overlayAnswer);
-    if (overlayCheckpoint.resumePolicy === 'correct' && !isCorrect) {
-      overlayError = t.get('course.navItem.lessons.materials.tabs.video.checkpoints.try_again');
+    const result = await videoCheckpointApi.answer(courseId, lessonId, activeCheckpoint.id, overlayAnswer);
+    if (!result) {
+      overlayError = t.get(`${CHECKPOINT_T}.answer_failed`);
       return;
     }
 
-    if ($profile.id) {
-      lessonVideoCheckpointStore.recordAnswer({
-        checkpoint: overlayCheckpoint,
-        profileId: $profile.id,
-        displayName:
-          $profile.fullname || t.get('course.navItem.lessons.materials.tabs.video.checkpoints.unnamed_student'),
-        avatarUrl: $profile.avatarUrl || '',
-        answerData: overlayAnswer,
-        isCorrect
-      });
+    if (!result.satisfied) {
+      overlayError = t.get(`${CHECKPOINT_T}.try_again`);
+      return;
     }
 
     overlayCheckpoint = null;
@@ -604,6 +603,7 @@
         kicker={overlayKicker}
         continueLabel={$t('course.navItem.lessons.materials.tabs.video.checkpoints.continue')}
         continueDisabled={overlayContinueDisabled}
+        continueLoading={videoCheckpointApi.isAnswering}
         errorMessage={overlayError}
         onContinue={handleCheckpointContinue}
       >
@@ -703,7 +703,8 @@
       playbackAuthErrorLabel: $t('course.navItem.lessons.materials.tabs.video.playback_auth_error'),
       playbackAuthActionLabel: $t('course.navItem.lessons.materials.tabs.video.playback_auth_action'),
       onPlaybackAuthRequired: () => goto(resolve('/login', {})),
-      seekPolicy
+      seekPolicy,
+      seekCeiling: seekCeilingOption
     }}
   />
 </div>

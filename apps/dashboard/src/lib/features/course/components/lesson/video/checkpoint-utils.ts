@@ -1,16 +1,12 @@
-import {
-  QUESTION_TYPE_KEY,
-  scoreAnswerForQuestion,
-  type AnswerData,
-  type ExerciseQuestionModel,
-  type QuestionTypeKey
-} from '@cio/question-types';
+import { QUESTION_TYPE_KEY, type ExerciseQuestionModel, type QuestionTypeKey } from '@cio/question-types';
+import type { TVideoCheckpointUpdate } from '@cio/utils/validation/lesson';
 import { t } from '$lib/utils/functions/translations';
+import type { VideoCheckpoint } from '$features/course/utils/types';
 import {
   CHECKPOINT_COLLISION_GAP_SECONDS,
   CHECKPOINT_QUESTION_TYPE_KEYS,
   type CheckpointQuestionType,
-  type LessonVideoCheckpoint
+  type CheckpointResumePolicy
 } from './checkpoint-types';
 
 export function isCheckpointQuestionType(value: string): value is CheckpointQuestionType {
@@ -83,8 +79,18 @@ export function createEmptyCheckpointQuestion(questionType: CheckpointQuestionTy
       required: true,
       settings: { correctValue: true },
       options: [
-        { id: 1, label: 'True', value: 'true', isCorrect: true },
-        { id: 2, label: 'False', value: 'false', isCorrect: false }
+        {
+          id: 1,
+          label: t.get('course.navItem.lessons.materials.tabs.video.checkpoints.true_label'),
+          value: 'true',
+          isCorrect: true
+        },
+        {
+          id: 2,
+          label: t.get('course.navItem.lessons.materials.tabs.video.checkpoints.false_label'),
+          value: 'false',
+          isCorrect: false
+        }
       ]
     };
   }
@@ -204,20 +210,11 @@ export function isCheckpointAnswerComplete(answer: unknown): boolean {
   }
 }
 
-export function isCheckpointAnswerCorrect(question: ExerciseQuestionModel, answer: AnswerData | null): boolean {
-  if (!answer) return false;
-
-  const maxPoints = Math.max(1, Number(question.points ?? 1));
-  const scoredQuestion = { ...question, points: maxPoints };
-
-  return scoreAnswerForQuestion(scoredQuestion, answer) >= maxPoints;
-}
-
 export function findCheckpointCollision(
-  checkpoints: LessonVideoCheckpoint[],
+  checkpoints: VideoCheckpoint[],
   timestampSeconds: number,
   excludeId?: string
-): LessonVideoCheckpoint | undefined {
+): VideoCheckpoint | undefined {
   return checkpoints.find((checkpoint) => {
     if (excludeId && checkpoint.id === excludeId) return false;
 
@@ -227,37 +224,6 @@ export function findCheckpointCollision(
 
 export function getActiveOptions(question: ExerciseQuestionModel) {
   return (question.options ?? []).filter((option) => option.label.trim().length > 0 || option.value);
-}
-
-function optionLabelById(question: ExerciseQuestionModel, optionId: string | number): string {
-  const match = (question.options ?? []).find((option) => String(option.id) === String(optionId));
-
-  return match?.label?.trim() || match?.value?.toString() || String(optionId);
-}
-
-export function formatCheckpointAnswerSummary(question: ExerciseQuestionModel, answer: AnswerData): string {
-  switch (answer.type) {
-    case 'RADIO':
-      return optionLabelById(question, answer.optionId);
-    case 'CHECKBOX':
-      return answer.optionIds.map((optionId) => optionLabelById(question, optionId)).join(', ');
-    case 'TRUE_FALSE':
-      return answer.value
-        ? t.get('course.navItem.lessons.materials.tabs.video.checkpoints.true_label')
-        : t.get('course.navItem.lessons.materials.tabs.video.checkpoints.false_label');
-    case 'NUMERIC':
-      return String(answer.value);
-    case 'STAR':
-      return String(answer.value);
-    case 'FILL_BLANK':
-      return answer.values.join(', ');
-    case 'WORD_BANK':
-      return answer.filledBlanks.join(', ');
-    case 'ORDERING':
-      return answer.orderedValues.map((value) => optionLabelById(question, value)).join(' → ');
-    default:
-      return '';
-  }
 }
 
 export function validateCheckpointQuestion(question: ExerciseQuestionModel): string | null {
@@ -307,4 +273,26 @@ export function checkpointPercent(timestampSeconds: number, durationSeconds: num
   if (!durationSeconds || durationSeconds <= 0) return 0;
 
   return Math.min(100, Math.max(0, (timestampSeconds / durationSeconds) * 100));
+}
+
+export function toCheckpointRequestBody(input: {
+  timestampSeconds: number;
+  resumePolicy: CheckpointResumePolicy;
+  question: ExerciseQuestionModel;
+}): TVideoCheckpointUpdate {
+  const { question } = input;
+
+  return {
+    timestampSeconds: input.timestampSeconds,
+    questionType: question.questionType as CheckpointQuestionType,
+    title: question.title.trim(),
+    settings: { ...(question.settings ?? {}) },
+    resumePolicy: input.resumePolicy,
+    options: getActiveOptions(question).map((option) => ({
+      label: option.label,
+      value: option.value ?? null,
+      isCorrect: option.isCorrect ?? false,
+      settings: option.settings ?? {}
+    }))
+  };
 }

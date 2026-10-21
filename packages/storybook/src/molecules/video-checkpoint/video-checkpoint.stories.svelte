@@ -28,7 +28,7 @@
       docs: {
         description: {
           component:
-            'In-player checkpoint overlay chrome. The question body is ExerciseQuestion.QuestionRenderer (take in the player, edit in the teacher dialog). Overlay copy is host-supplied.'
+            'In-player checkpoint overlay chrome. The question body is ExerciseQuestion.QuestionRenderer (take in the player, edit in the teacher sheet). Overlay copy is host-supplied.'
         }
       }
     },
@@ -73,6 +73,17 @@
       resumePolicy="correct"
       correctAnswer={cloneJson(RADIO_FIXTURE.answer)}
       initialErrorMessage="Try again — that is not the correct answer."
+    />
+  {/snippet}
+</Story>
+
+<Story name="Take Submitting">
+  {#snippet template()}
+    <VideoCheckpointTakeDemo
+      question={cloneJson(RADIO_FIXTURE.question)}
+      kicker="Question · 0:45 · Single answer"
+      initialAnswer={cloneJson(RADIO_FIXTURE.answer)}
+      continueLoading
     />
   {/snippet}
 </Story>

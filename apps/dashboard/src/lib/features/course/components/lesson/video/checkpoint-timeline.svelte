@@ -5,15 +5,22 @@
   import { Button } from '@cio/ui/base/button';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { t } from '$lib/utils/functions/translations';
+  import { isFreePlan } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { DeleteModal, UpgradeBanner } from '$features/ui';
   import { QUESTION_TYPES } from '$features/ui/question/constants';
+  import { lessonApi, videoCheckpointApi } from '$features/course/api';
+  import type { VideoCheckpoint } from '$features/course/utils/types';
   import { getExerciseEditorQuestionTypeLabel } from '$features/course/components/exercise/question-type-utils';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
-  import { lessonVideoCheckpointStore } from './checkpoint-store.svelte';
-  import type { LessonVideoCheckpoint } from './checkpoint-types';
-  import { checkpointPercent, findCheckpointCollision, formatCheckpointTimestamp } from './checkpoint-utils';
-  import CheckpointEditorDialog from './checkpoint-editor-dialog.svelte';
-  import CheckpointResponsesDialog from './checkpoint-responses-dialog.svelte';
+  import {
+    checkpointPercent,
+    findCheckpointCollision,
+    formatCheckpointTimestamp,
+    toCheckpointRequestBody
+  } from './checkpoint-utils';
+  import CheckpointEditorSheet from './checkpoint-editor-sheet.svelte';
+  import CheckpointResultsSheet from './checkpoint-results-sheet.svelte';
 
   interface Props {
     courseId: string;
@@ -24,31 +31,32 @@
 
   let { courseId, lessonId, assetId, durationSeconds }: Props = $props();
 
+  const T = 'course.navItem.lessons.materials.tabs.video.checkpoints';
+
   let editorOpen = $state(false);
-  let responsesOpen = $state(false);
-  let activeCheckpoint = $state<LessonVideoCheckpoint | null>(null);
+  let resultsOpen = $state(false);
+  let activeCheckpoint = $state<VideoCheckpoint | null>(null);
+  let checkpointToDelete = $state<VideoCheckpoint | null>(null);
+  let openDeleteModal = $state(false);
   let draggingId = $state<string | null>(null);
 
-  const checkpoints = $derived(lessonVideoCheckpointStore.listForAsset(lessonId, assetId));
+  const checkpoints = $derived(videoCheckpointApi.forAsset(assetId));
   const playheadSeconds = $derived(lessonVideoBus.currentTimeSeconds);
   const knownDuration = $derived(durationSeconds || lessonVideoBus.durationSeconds || 0);
   const playheadPercent = $derived(checkpointPercent(playheadSeconds, knownDuration));
-  const canAdd = $derived(knownDuration > 0);
+  const hasUnsavedLessonChanges = $derived(lessonApi.isDirty);
+  const canAdd = $derived(knownDuration > 0 && !$isFreePlan && !hasUnsavedLessonChanges);
 
-  function typeLabel(checkpoint: LessonVideoCheckpoint): string {
+  function typeLabel(checkpoint: VideoCheckpoint): string {
     const typeEntry = QUESTION_TYPES.find((entry) => entry.key === checkpoint.question.questionType);
 
     return getExerciseEditorQuestionTypeLabel(typeEntry);
   }
 
-  function resumeLabel(checkpoint: LessonVideoCheckpoint): string {
+  function resumeLabel(checkpoint: VideoCheckpoint): string {
     return checkpoint.resumePolicy === 'correct'
       ? t.get('course.navItem.lessons.materials.tabs.video.checkpoints.resume_correct')
       : t.get('course.navItem.lessons.materials.tabs.video.checkpoints.resume_any');
-  }
-
-  function responseCount(checkpoint: LessonVideoCheckpoint): number {
-    return lessonVideoCheckpointStore.answersForCheckpoint(checkpoint.id).length;
   }
 
   function openAdd() {
@@ -56,38 +64,32 @@
     editorOpen = true;
   }
 
-  function openEdit(checkpoint: LessonVideoCheckpoint) {
+  function openEdit(checkpoint: VideoCheckpoint) {
     activeCheckpoint = checkpoint;
     editorOpen = true;
   }
 
-  function openResponses(checkpoint: LessonVideoCheckpoint) {
-    activeCheckpoint = checkpoint;
-    responsesOpen = true;
+  function handleEditorClose() {
+    editorOpen = false;
+    activeCheckpoint = null;
   }
 
-  function handleEditorOpenChange(isOpen: boolean) {
-    editorOpen = isOpen;
-
-    if (!isOpen) {
-      activeCheckpoint = null;
-    }
+  function requestRemove(checkpoint: VideoCheckpoint) {
+    checkpointToDelete = checkpoint;
+    openDeleteModal = true;
   }
 
-  function handleResponsesOpenChange(isOpen: boolean) {
-    responsesOpen = isOpen;
+  async function confirmRemove() {
+    const checkpoint = checkpointToDelete;
+    checkpointToDelete = null;
+    openDeleteModal = false;
+    if (!checkpoint) return;
 
-    if (!isOpen) {
-      activeCheckpoint = null;
-    }
+    await videoCheckpointApi.remove(courseId, lessonId, checkpoint.id);
   }
 
   function seekTo(seconds: number) {
     lessonVideoBus.seek(seconds);
-  }
-
-  function removeCheckpoint(checkpoint: LessonVideoCheckpoint) {
-    lessonVideoCheckpointStore.remove(checkpoint.id);
   }
 
   function secondsFromRail(clientX: number, rail: HTMLElement): number {
@@ -104,7 +106,18 @@
     seekTo(secondsFromRail(event.clientX, event.currentTarget));
   }
 
-  function handleMarkerPointerDown(event: PointerEvent, checkpoint: LessonVideoCheckpoint) {
+  async function moveCheckpoint(checkpoint: VideoCheckpoint, timestampSeconds: number) {
+    if (timestampSeconds === checkpoint.timestampSeconds || $isFreePlan) return;
+
+    const body = toCheckpointRequestBody({
+      timestampSeconds,
+      resumePolicy: checkpoint.resumePolicy === 'correct' ? 'correct' : 'any',
+      question: checkpoint.question
+    });
+    await videoCheckpointApi.update(courseId, lessonId, checkpoint.id, body);
+  }
+
+  function handleMarkerPointerDown(event: PointerEvent, checkpoint: VideoCheckpoint) {
     event.preventDefault();
     event.stopPropagation();
     draggingId = checkpoint.id;
@@ -112,14 +125,14 @@
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
   }
 
-  function handleMarkerPointerMove(event: PointerEvent, rail: HTMLElement, checkpoint: LessonVideoCheckpoint) {
+  function handleMarkerPointerMove(event: PointerEvent, rail: HTMLElement, checkpoint: VideoCheckpoint) {
     if (draggingId !== checkpoint.id || !knownDuration) return;
 
     const nextSeconds = secondsFromRail(event.clientX, rail);
     seekTo(nextSeconds);
   }
 
-  function handleMarkerPointerUp(event: PointerEvent, rail: HTMLElement, checkpoint: LessonVideoCheckpoint) {
+  function handleMarkerPointerUp(event: PointerEvent, rail: HTMLElement, checkpoint: VideoCheckpoint) {
     if (draggingId !== checkpoint.id) return;
 
     draggingId = null;
@@ -131,31 +144,46 @@
       return;
     }
 
-    lessonVideoCheckpointStore.upsert({ ...checkpoint, timestampSeconds: nextSeconds });
     seekTo(nextSeconds);
+    void moveCheckpoint(checkpoint, nextSeconds);
   }
 </script>
 
 <div class="mt-6 space-y-4">
-  <div class="flex items-start justify-between gap-4">
+  <div class="flex flex-wrap items-start justify-between gap-4">
     <div>
-      <p class="font-semibold">{$t('course.navItem.lessons.materials.tabs.video.checkpoints.heading')}</p>
-      <p class="ui:text-muted-foreground mt-1 text-sm">
-        {$t('course.navItem.lessons.materials.tabs.video.checkpoints.subheading')}
-      </p>
+      <p class="font-semibold">{$t(`${T}.heading`)}</p>
+      <p class="ui:text-muted-foreground mt-1 text-sm">{$t(`${T}.subheading`)}</p>
     </div>
-    <Button
-      type="button"
-      variant="secondary"
-      testId="video-checkpoint-add-question"
-      disabled={!canAdd}
-      onclick={openAdd}
-    >
-      {$t('course.navItem.lessons.materials.tabs.video.checkpoints.add_at', {
-        time: formatCheckpointTimestamp(playheadSeconds)
-      })}
-    </Button>
+    <div class="flex items-center gap-2">
+      <Button
+        type="button"
+        variant="outline"
+        testId="video-checkpoint-results"
+        disabled={$isFreePlan || checkpoints.length === 0}
+        onclick={() => (resultsOpen = true)}
+      >
+        {$t(`${T}.results_button`)}
+      </Button>
+      <Button
+        type="button"
+        variant="secondary"
+        testId="video-checkpoint-add-question"
+        disabled={!canAdd}
+        onclick={openAdd}
+      >
+        {$t(`${T}.add_at`, { time: formatCheckpointTimestamp(playheadSeconds) })}
+      </Button>
+    </div>
   </div>
+
+  <UpgradeBanner visible={$isFreePlan}>{$t(`${T}.upgrade_message`)}</UpgradeBanner>
+
+  {#if hasUnsavedLessonChanges && !$isFreePlan}
+    <p class="ui:text-muted-foreground text-sm" data-testid="video-checkpoint-save-first">
+      {$t(`${T}.save_lesson_first`)}
+    </p>
+  {/if}
 
   {#if knownDuration > 0}
     <div
@@ -165,7 +193,7 @@
       aria-valuemin={0}
       aria-valuemax={Math.floor(knownDuration)}
       aria-valuenow={Math.floor(playheadSeconds)}
-      aria-label={$t('course.navItem.lessons.materials.tabs.video.checkpoints.timeline_label')}
+      aria-label={$t(`${T}.timeline_label`)}
       onclick={handleRailClick}
       onkeydown={(event) => {
         if (event.key === 'ArrowLeft') {
@@ -204,7 +232,7 @@
 
   {#if checkpoints.length === 0}
     <p class="ui:text-muted-foreground text-sm">
-      {$t('course.navItem.lessons.materials.tabs.video.checkpoints.empty')}
+      {$t(`${T}.empty`)}
     </p>
   {:else}
     <ul class="divide-border divide-y rounded-md border">
@@ -215,7 +243,7 @@
           </time>
           <div class="min-w-0 flex-1">
             <p class="truncate text-sm font-medium">
-              {checkpoint.question.title || $t('course.navItem.lessons.materials.tabs.video.checkpoints.untitled')}
+              {checkpoint.question.title || $t(`${T}.untitled`)}
             </p>
             <div class="mt-1 flex flex-wrap gap-1.5">
               <Badge variant="secondary">{typeLabel(checkpoint)}</Badge>
@@ -223,22 +251,12 @@
             </div>
           </div>
           <div class="flex items-center gap-1">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              testId="video-checkpoint-responses"
-              onclick={() => openResponses(checkpoint)}
-            >
-              {$t('course.navItem.lessons.materials.tabs.video.checkpoints.responses_count', {
-                count: responseCount(checkpoint)
-              })}
-            </Button>
             <IconButton
               type="button"
               variant="secondary"
               size="icon-sm"
-              tooltip={$t('course.navItem.lessons.materials.tabs.video.checkpoints.edit')}
+              tooltip={$t(`${T}.edit`)}
+              disabled={$isFreePlan}
               onclick={() => openEdit(checkpoint)}
             >
               <PencilIcon />
@@ -247,8 +265,8 @@
               type="button"
               variant="secondary"
               size="icon-sm"
-              tooltip={$t('course.navItem.lessons.materials.tabs.video.checkpoints.delete')}
-              onclick={() => removeCheckpoint(checkpoint)}
+              tooltip={$t(`${T}.delete`)}
+              onclick={() => requestRemove(checkpoint)}
             >
               <Trash2Icon />
             </IconButton>
@@ -260,22 +278,19 @@
 </div>
 
 {#if editorOpen}
-  <CheckpointEditorDialog
-    open={true}
+  <CheckpointEditorSheet
+    {courseId}
     {lessonId}
     {assetId}
     {playheadSeconds}
     durationSeconds={knownDuration}
     checkpoint={activeCheckpoint}
-    onOpenChange={handleEditorOpenChange}
+    onClose={handleEditorClose}
   />
 {/if}
 
-{#if responsesOpen && activeCheckpoint}
-  <CheckpointResponsesDialog
-    open={true}
-    {courseId}
-    checkpoint={activeCheckpoint}
-    onOpenChange={handleResponsesOpenChange}
-  />
+{#if resultsOpen}
+  <CheckpointResultsSheet {courseId} {lessonId} onClose={() => (resultsOpen = false)} />
 {/if}
+
+<DeleteModal bind:open={openDeleteModal} onDelete={confirmRemove} />

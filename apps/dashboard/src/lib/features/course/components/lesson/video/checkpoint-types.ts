@@ -1,4 +1,4 @@
-import type { AnswerData, ExerciseQuestionModel, QuestionTypeKey } from '@cio/question-types';
+import type { QuestionTypeKey } from '@cio/question-types';
 
 export const CHECKPOINT_QUESTION_TYPE_KEYS = [
   'RADIO',
@@ -15,23 +15,6 @@ export type CheckpointQuestionType = (typeof CHECKPOINT_QUESTION_TYPE_KEYS)[numb
 
 export type CheckpointResumePolicy = 'any' | 'correct';
 
-export type LessonVideoCheckpoint = {
-  id: string;
-  lessonId: string;
-  assetId: string;
-  timestampSeconds: number;
-  resumePolicy: CheckpointResumePolicy;
-  question: ExerciseQuestionModel;
-};
-
-export type LessonVideoCheckpointAnswer = {
-  checkpointId: string;
-  profileId: string;
-  displayName: string;
-  avatarUrl: string;
-  answeredAt: string;
-  answerData: AnswerData;
-  isCorrect: boolean;
-};
-
 export const CHECKPOINT_COLLISION_GAP_SECONDS = 2;
+
+export const CHECKPOINT_LOW_CORRECT_PERCENT = 60;

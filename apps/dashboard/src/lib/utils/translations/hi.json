@@ -493,7 +493,10 @@
       "generate_1080_completed": "1080p प्रस्तुतिकरण जोड़ा गया",
       "generate_1080_failed": "1080p प्रस्तुतिकरण उत्पन्न नहीं हो सका",
       "checkpoint_saved": "Question saved",
-      "checkpoint_collision": "Another question is already within two seconds of this time"
+      "checkpoint_collision": "Another question is already within two seconds of this time",
+      "checkpoint_failed": "Could not save the question",
+      "checkpoint_export_failed": "Could not export the results",
+      "checkpoint_seek_blocked": "Answer the question to keep watching"
     },
     "social_auth_not_enabled": "यह प्रमाणीकरण प्रदाता सक्षम नहीं है.",
     "cohort": {
@@ -2641,7 +2644,6 @@
                 "cancel": "Cancel",
                 "close": "Close",
                 "continue": "Continue",
-                "saved": "Question saved",
                 "empty": "Pause the video with a question. Students answer in place, then the video keeps playing.",
                 "untitled": "Untitled question",
                 "kicker": "Question · {time} · {type}",
@@ -2658,16 +2660,11 @@
                 "blocked_title": "Upload a video to add questions",
                 "blocked_description": "In-video questions only work on uploaded videos. YouTube, Google Drive, and other embeds cannot pause at a timestamp.",
                 "blocked_cta": "Upload a video instead",
-                "responses_title": "Student answers",
-                "responses_description": "{time} · {prompt}",
-                "responses_count": "{count, plural, one {# answer} other {# answers}}",
                 "responses_summary": "{answered} of {total} answered · {correct} correct",
                 "responses_formative": "These answers do not appear as exercise submissions or affect the certificate exam.",
-                "responses_loading": "Loading students…",
                 "responses_empty": "No student answers yet. Preview the lesson and answer, or wait for students to watch.",
                 "responses_correct": "Correct",
                 "responses_answered": "Answered",
-                "responses_waiting": "Not yet",
                 "unnamed_student": "Student",
                 "true_label": "True",
                 "false_label": "False",
@@ -2679,7 +2676,31 @@
                   "options": "Add at least two options",
                   "correct": "Mark the correct answer",
                   "template": "Add at least one ___ blank in the template"
-                }
+                },
+                "sections": {
+                  "when": "When",
+                  "question": "Question"
+                },
+                "results_button": "Results",
+                "results_title": "Results",
+                "results_formative": "How learners answered the questions on this video. These answers do not appear as exercise submissions or affect the certificate exam.",
+                "results_loading": "Loading results…",
+                "results_unavailable": "Results could not be loaded.",
+                "results_back": "Back to all questions",
+                "results_reached": "Learners answering",
+                "results_answered_all": "Answered every question",
+                "results_overall_correct": "Correct overall",
+                "results_col_time": "Time",
+                "results_col_question": "Question",
+                "results_col_answered": "Answered",
+                "results_col_correct": "Correct",
+                "results_col_wrong": "Common wrong answer",
+                "results_needs_review": "Review",
+                "results_export": "Export CSV",
+                "responses_waiting_count": "{count, plural, one {# student has not answered yet} other {# students have not answered yet}}",
+                "upgrade_message": "Upgrade to add questions to your videos and see how learners answer.",
+                "save_lesson_first": "Save the lesson to add questions to newly added videos.",
+                "answer_failed": "Your answer could not be saved. Try again."
               }
             },
             "slide": {
