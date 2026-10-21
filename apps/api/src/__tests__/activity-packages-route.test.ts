@@ -145,7 +145,7 @@ describe('activity packages routes', () => {
     const response = await app.request('/activity/packages/asset-1/versions', {
       method: 'POST',
       headers: HEADERS,
-      body: JSON.stringify({ contentSha256: 'not-a-digest' })
+      body: JSON.stringify({ fileSize: 1024, contentSha256: 'not-a-digest' })
     });
 
     expect(response.status).toBe(400);
