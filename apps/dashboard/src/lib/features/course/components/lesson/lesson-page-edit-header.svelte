@@ -12,7 +12,6 @@
   import { RoleBasedSecurity } from '$features/ui';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
   import { slugifyTitle } from '@cio/utils/validation';
-  import type { Snippet } from 'svelte';
 
   interface Props {
     mode: (typeof MODES)[keyof typeof MODES];
@@ -26,7 +25,6 @@
     showSlugEditor?: boolean;
     slugError?: string;
     onSlugChange?: (value: string) => void;
-    trailing?: Snippet;
   }
 
   let {
@@ -40,8 +38,7 @@
     slug = '',
     showSlugEditor = false,
     slugError,
-    onSlugChange = () => {},
-    trailing
+    onSlugChange = () => {}
   }: Props = $props();
 
   // Slug field: commented out via `{#if false && ...}` below — drop `false &&` to show again.
@@ -76,15 +73,9 @@
         {/if}
       </RoleBasedSecurity>
     {:else}
-      <Page.Title>{title}</Page.Title>
+      <Page.Title class="ui:text-xl ui:md:text-2xl">{title}</Page.Title>
     {/if}
   </div>
-
-  {#if trailing}
-    <div class="shrink-0">
-      {@render trailing()}
-    </div>
-  {/if}
 
   {#if mode === MODES.edit && !$isOrgStudent}
     <RoleBasedSecurity allowedRoles={[1, 2]}>

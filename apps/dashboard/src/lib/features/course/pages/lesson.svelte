@@ -481,7 +481,7 @@
   }}
 />
 
-<Page.Header>
+<Page.Header class="ui:my-2 ui:py-1 ui:md:my-4 ui:md:py-2">
   <Page.HeaderContent>
     <LessonPageEditHeader
       {mode}
@@ -495,19 +495,17 @@
       showSlugEditor={isPublicCourse}
       slugError={lessonApi.errors.slug}
       onSlugChange={handleLessonSlugChange}
-    >
-      {#snippet trailing()}
-        <div class="md:hidden">
-          <LanguageSelector />
-        </div>
-      {/snippet}
-    </LessonPageEditHeader>
+    />
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
       {#if mode === MODES.view && $isCourseLearnerView}
         <ContentNavigationActions {lessonId} {courseId} showPrevNext={!showMobileBottomNav} />
       {/if}
+
+      <div class="md:hidden">
+        <LanguageSelector />
+      </div>
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <div class="flex flex-row items-center gap-2 lg:flex">
