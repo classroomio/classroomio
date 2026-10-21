@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
   const original = await importOriginal<typeof import('@cio/core/config/activity-content')>();
 
-  return { ...original, getActivitySigningSecret: () => 'test-activity-signing-secret' };
+  return { ...original, getActivitySigningSecret: () => 'test-activity-signing-secret-0123456789' };
 });
 
 import { getActivityProgress, launchActivity } from '@cio/core/services/activity/activity';

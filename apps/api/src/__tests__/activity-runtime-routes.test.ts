@@ -17,7 +17,7 @@ import { runtimeScormRouter } from '@api/routes/activity/runtime-scorm';
 import { env } from '@cio/core/config/env';
 import { mintLaunchToken } from '@cio/activity-packages';
 
-env.ACTIVITY_SIGNING_SECRET = 'test-activity-signing-secret';
+env.ACTIVITY_SIGNING_SECRET = 'test-activity-signing-secret-0123456789';
 
 const mockedState = vi.mocked(getScormRuntimeState);
 const mockedCommit = vi.mocked(commitScormAttempt);
@@ -38,7 +38,7 @@ async function testToken(): Promise<string> {
       mode: 'normal',
       anc: []
     },
-    'test-activity-signing-secret'
+    'test-activity-signing-secret-0123456789'
   );
 }
 
