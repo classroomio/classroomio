@@ -344,7 +344,7 @@
         {:else}
           <CourseContentIcon type={contentItem.type} size={14} />
         {/if}
-        <span class="flex-1 truncate" title={contentItem.title}>{contentItem.title}</span>
+        <span class="min-w-0 flex-1 truncate" title={contentItem.title}>{contentItem.title}</span>
         <div class="ml-auto flex items-center gap-1">
           {#if canManageContent}
             <div class="hidden items-center gap-2 group-focus-within/content-row:flex group-hover/content-row:flex">
@@ -484,7 +484,7 @@
                           {@render sectionChevron()}
                         {/if}
 
-                        <span class="flex-1 truncate">{section.title}</span>
+                        <span class="min-w-0 flex-1 truncate">{section.title}</span>
 
                         <div class="ml-auto flex items-center gap-1">
                           {#if sectionProgress.total > 0}
