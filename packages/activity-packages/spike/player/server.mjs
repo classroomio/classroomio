@@ -103,12 +103,12 @@ document.querySelectorAll('[data-module]').forEach((btn) => {
 window.addEventListener('pagehide', () => {
   const payload = JSON.stringify({ seq: ++seq, beacon: true, cmi: api.cmi });
   if (payload.length > 60000) {
-    console.warn('spike: final beacon exceeds the 64 KiB quota; the last autocommit is the final save');
+    console.warn('spike: final save exceeds the 64 KiB quota; the last autocommit is the final save');
     return;
   }
   try {
     if (!navigator.sendBeacon('/stub/commit', payload)) {
-      console.warn('spike: final beacon was not queued; the last autocommit is the final save');
+      fetch('/stub/commit', { method: 'POST', body: payload, keepalive: true }).catch(() => {});
     }
   } catch (e) {
     console.warn('spike: final beacon failed', e);
