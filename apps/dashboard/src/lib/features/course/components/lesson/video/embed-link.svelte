@@ -9,9 +9,10 @@
 
   interface Props {
     lessonId?: string;
+    onAdded?: () => void;
   }
 
-  let { lessonId = '' }: Props = $props();
+  let { lessonId = '', onAdded = () => {} }: Props = $props();
 
   let genericLinks = $state('');
   let error = $state('');
@@ -47,7 +48,7 @@
     isSubmitting = true;
 
     try {
-      await addExternalVideosToLesson({
+      const addedCount = await addExternalVideosToLesson({
         links: dedupedValidLinks,
         type: 'generic',
         lessonId
@@ -55,6 +56,7 @@
 
       genericLinks = '';
       error = '';
+      if (addedCount > 0) onAdded();
     } catch (err) {
       error = typeof err === 'string' ? err : (err as Error)?.message || 'Failed to add video';
     } finally {

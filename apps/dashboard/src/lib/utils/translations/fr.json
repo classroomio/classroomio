@@ -406,6 +406,7 @@
       }
     },
     "media_manager": {
+      "video_added": "Vidéo ajoutée à votre bibliothèque",
       "list_failed": "Échec du chargement des ressources multimédias",
       "storage_failed": "Échec du chargement du résumé du stockage",
       "create_failed": "Échec de la création de l'élément multimédia",

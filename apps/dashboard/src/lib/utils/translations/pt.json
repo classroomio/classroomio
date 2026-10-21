@@ -406,6 +406,7 @@
       }
     },
     "media_manager": {
+      "video_added": "Vídeo adicionado à sua biblioteca",
       "list_failed": "Falha ao carregar recursos de mídia",
       "storage_failed": "Falha ao carregar o resumo do armazenamento",
       "create_failed": "Falha ao criar recurso de mídia",

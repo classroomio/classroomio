@@ -12,6 +12,7 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { lessonVideoUpload } from '$features/course/components/lesson/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   interface Props {
     lessonId?: string;
     onClose?: () => void;
@@ -23,6 +24,13 @@
     lessonId ? CONSTANTS.videoTabs : CONSTANTS.videoTabs.filter((tab) => !CONSTANTS.lessonOnlyVideoTabs.has(tab.value))
   );
   let currentTab = $state(String(CONSTANTS.videoTabs[0].value));
+
+  function handleLinkAdded() {
+    snackbar.success('snackbar.media_manager.video_added');
+    $lessonVideoUpload.isModalOpen = false;
+  }
+
+  const onLinkAdded = $derived(lessonId ? undefined : handleLinkAdded);
 </script>
 
 <Dialog.Root
@@ -66,13 +74,13 @@
         {/each}
       </UnderlineTabs.List>
       <UnderlineTabs.Content value="youtube" class="mt-3">
-        <YoutubeVideo {lessonId} />
+        <YoutubeVideo {lessonId} onAdded={onLinkAdded} />
       </UnderlineTabs.Content>
       <UnderlineTabs.Content value="vimeo" class="mt-3">
-        <VimeoVideo {lessonId} />
+        <VimeoVideo {lessonId} onAdded={onLinkAdded} />
       </UnderlineTabs.Content>
       <UnderlineTabs.Content value="embed" class="mt-3">
-        <EmbedLink {lessonId} />
+        <EmbedLink {lessonId} onAdded={onLinkAdded} />
       </UnderlineTabs.Content>
       <UnderlineTabs.Content value="upload" class="mt-3">
         <UploadVideo {lessonId} />

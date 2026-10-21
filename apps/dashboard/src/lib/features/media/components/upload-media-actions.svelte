@@ -41,7 +41,7 @@
 </script>
 
 <ComboButton
-  variant="default"
+  variant="outline"
   size="default"
   label={$t('media_manager.upload.videos')}
   menuLabel={$t('media_manager.upload.more_options')}

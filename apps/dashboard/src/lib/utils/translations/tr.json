@@ -5227,6 +5227,7 @@
     "update": "Güncelleme",
     "update_failed": "Güncelleme başarısız oldu",
     "media_manager": {
+      "video_added": "Video kitaplığınıza eklendi",
       "list_failed": "Medya varlıkları yüklenemedi",
       "storage_failed": "Depolama özeti yüklenemedi",
       "create_failed": "Medya varlığı oluşturulamadı",

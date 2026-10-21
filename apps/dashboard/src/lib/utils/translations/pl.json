@@ -406,6 +406,7 @@
       }
     },
     "media_manager": {
+      "video_added": "Film dodany do biblioteki",
       "list_failed": "Nie udało się załadować zasobów multimedialnych",
       "storage_failed": "Nie udało się wczytać podsumowania miejsca na dane",
       "create_failed": "Nie udało się utworzyć zasobu multimedialnego",

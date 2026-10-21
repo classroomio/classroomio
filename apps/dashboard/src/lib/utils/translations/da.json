@@ -406,6 +406,7 @@
       }
     },
     "media_manager": {
+      "video_added": "Video føjet til dit bibliotek",
       "list_failed": "Kunne ikke indlæse medieaktiver",
       "storage_failed": "Kunne ikke indlæse lageroversigt",
       "create_failed": "Kunne ikke oprette medieaktiv",

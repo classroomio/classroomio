@@ -5242,6 +5242,7 @@
     "update": "Update",
     "update_failed": "Update failed",
     "media_manager": {
+      "video_added": "Video added to your library",
       "list_failed": "Failed to load media assets",
       "storage_failed": "Failed to load storage summary",
       "create_failed": "Failed to create media asset",

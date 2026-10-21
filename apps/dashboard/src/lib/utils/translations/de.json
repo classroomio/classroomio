@@ -406,6 +406,7 @@
       }
     },
     "media_manager": {
+      "video_added": "Video zu Ihrer Bibliothek hinzugefügt",
       "list_failed": "Medien-Assets konnten nicht geladen werden",
       "storage_failed": "Speicherzusammenfassung konnte nicht geladen werden",
       "create_failed": "Medienasset konnte nicht erstellt werden",
