@@ -2,15 +2,10 @@
   import * as Page from '@cio/ui/base/page';
   import { MediaPage } from '$features/media';
   import { mediaApi } from '$features/media/api';
-  import type { AssetKindFilter, AssetStatusFilter } from '$features/media/utils';
   import { t } from '$lib/utils/functions/translations';
   import { onMount } from 'svelte';
 
   let { data } = $props();
-
-  let search = $state('');
-  let kind = $state<AssetKindFilter>('all');
-  let status = $state<AssetStatusFilter>('all');
 
   onMount(() => {
     mediaApi.assets = data.assets ?? [];
@@ -33,7 +28,7 @@
 
   <Page.Body class="space-y-4">
     {#snippet child()}
-      <MediaPage bind:search bind:kind bind:status />
+      <MediaPage />
     {/snippet}
   </Page.Body>
 </Page.Root>
