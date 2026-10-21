@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import { TNewGroup, TNewGroupmember } from '@db/types';
-import { and, asc, eq, inArray, isNotNull, isNull, or } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNotNull, isNull, ne, or } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import { ROLE } from '@cio/utils/constants';
@@ -259,6 +259,57 @@ export const isCourseTeamMemberOrOrgAdmin = async (courseId: string, profileId: 
 };
 
 /**
+ * Active org tutor who mentors a cohort that includes this course.
+ * Cohort role must be ADMIN or TUTOR. Org-only tutors are not included.
+ */
+export const isActiveOrgTutorOfCourseCohort = async (courseId: string, profileId: string): Promise<boolean> => {
+  const result = await db
+    .select({ cohortMemberId: schema.cohortMember.id })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .innerJoin(
+      schema.organizationmember,
+      and(
+        eq(schema.organizationmember.organizationId, schema.group.organizationId),
+        eq(schema.organizationmember.profileId, profileId),
+        eq(schema.organizationmember.roleId, ROLE.TUTOR),
+        eq(schema.organizationmember.status, 'ACTIVE')
+      )
+    )
+    .innerJoin(schema.cohort, eq(schema.cohort.organizationId, schema.group.organizationId))
+    .innerJoin(
+      schema.cohortCourse,
+      and(eq(schema.cohortCourse.cohortId, schema.cohort.id), eq(schema.cohortCourse.courseId, schema.course.id))
+    )
+    .innerJoin(
+      schema.cohortMember,
+      and(
+        eq(schema.cohortMember.cohortId, schema.cohort.id),
+        eq(schema.cohortMember.profileId, profileId),
+        or(eq(schema.cohortMember.roleId, ROLE.ADMIN), eq(schema.cohortMember.roleId, ROLE.TUTOR))
+      )
+    )
+    .where(eq(schema.course.id, courseId))
+    .limit(1);
+
+  return result.length > 0;
+};
+
+/**
+ * Course group ADMIN/TUTOR, org ADMIN, or an active org tutor who mentors a cohort
+ * that includes the course. Students and org-only tutors return false.
+ */
+export const canAccessCourseSubmissions = async (courseId: string, profileId: string): Promise<boolean> => {
+  const isTeamOrOrgAdmin = await isCourseTeamMemberOrOrgAdmin(courseId, profileId);
+
+  if (isTeamOrOrgAdmin) {
+    return true;
+  }
+
+  return isActiveOrgTutorOfCourseCohort(courseId, profileId);
+};
+
+/**
  * Resolves program-based access to a course.
  * Returns the course group/org context plus the matched program member role.
  */
@@ -312,43 +363,41 @@ export async function getCourseProgramAccess(
 }
 
 /**
- * Raises a profile's course roles in one org to at least their org role, so they never
- * outrank it. Role ids ascend by privilege (ADMIN 1, TUTOR 2, STUDENT 3), so this only
- * demotes — a deliberately lower course role is preserved.
+ * Sets a profile's course roles in one org to their current org role. Role ids ascend by
+ * privilege (ADMIN 1, TUTOR 2, STUDENT 3), so this demotes outranking course roles and
+ * promotes lagging ones — a student invited as tutor or admin teaches every course
+ * they already belong to, and a demoted member keeps no elevated course access.
  *
- * @returns the number of course roles that were demoted
+ * @returns the number of course roles that were updated
  */
-export async function clampCourseRolesToOrgRole(
+export async function syncCourseRolesToOrgRole(
   orgId: string,
   profileId: string,
   orgRoleId: number,
   dbClient: DbOrTxClient = db
 ): Promise<number> {
-  const outrankingRoles = Array.from({ length: Math.max(0, orgRoleId - 1) }, (_, index) => index + 1);
-  if (outrankingRoles.length === 0) return 0;
-
   try {
     const orgGroupIds = dbClient
       .select({ id: schema.group.id })
       .from(schema.group)
       .where(eq(schema.group.organizationId, orgId));
 
-    const demoted = await dbClient
+    const updated = await dbClient
       .update(schema.groupmember)
       .set({ roleId: orgRoleId })
       .where(
         and(
           eq(schema.groupmember.profileId, profileId),
-          inArray(schema.groupmember.roleId, outrankingRoles),
+          ne(schema.groupmember.roleId, orgRoleId),
           inArray(schema.groupmember.groupId, orgGroupIds)
         )
       )
       .returning({ id: schema.groupmember.id });
 
-    return demoted.length;
+    return updated.length;
   } catch (error) {
-    console.error('clampCourseRolesToOrgRole error:', error);
-    throw new Error(`Failed to clamp course roles: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('syncCourseRolesToOrgRole error:', error);
+    throw new Error(`Failed to sync course roles: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

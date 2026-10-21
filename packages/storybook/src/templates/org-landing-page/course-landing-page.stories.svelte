@@ -15,6 +15,39 @@
     mockCourseLandingPageProps as mockProps
   } from '@cio/ui/custom/org-landing-page';
 
+  const [firstSection, ...otherSections] = mockProps.curriculum.sections;
+  const mixedCurriculum = {
+    grouped: true,
+    sections: [
+      {
+        id: 'welcome',
+        title: 'Welcome to the course',
+        lessons: [{ id: 'welcome', title: 'Welcome to the course' }],
+        exerciseCount: 0,
+        items: [],
+        standalone: 'lesson'
+      },
+      {
+        ...firstSection,
+        exerciseCount: (firstSection.exerciseCount ?? 0) + 1,
+        items: [
+          ...firstSection.lessons.map((lesson) => ({ ...lesson, kind: 'lesson' })),
+          { id: 'module-check', title: 'Check your understanding', kind: 'exercise' }
+        ]
+      },
+      {
+        id: 'midpoint-quiz',
+        title: 'Midpoint quiz',
+        lessons: [],
+        exerciseCount: 1,
+        items: [],
+        standalone: 'exercise'
+      },
+      ...otherSections
+    ]
+  };
+  const mixedProps = { ...mockProps, curriculum: mixedCurriculum };
+
   const { Story } = defineMeta({
     title: 'Templates/Course Landing Page',
     parameters: {
@@ -66,6 +99,18 @@
 
 <Story name="Quartz">
   <QuartzCourseLanding {...mockProps} authAction={{ label: 'Continue', href: '#signin' }} />
+</Story>
+
+<Story name="Quartz · standalone items in the curriculum">
+  <QuartzCourseLanding {...mixedProps} authAction={{ label: 'Continue', href: '#signin' }} />
+</Story>
+
+<Story name="Minimal · standalone items in the curriculum">
+  <MinimalCourseLanding {...mixedProps} />
+</Story>
+
+<Story name="Classic · standalone items in the curriculum">
+  <ClassicCourseLanding {...mixedProps} />
 </Story>
 
 <Story name="Gallery · all themes">

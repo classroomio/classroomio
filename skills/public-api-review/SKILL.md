@@ -35,9 +35,19 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
 - If `PUT` retains omitted fields, explicitly document that it is an idempotent merge update, including how `null`, empty objects, and empty strings clear values. Keep the behavior consistent with existing clients.
 - Keep one predictable response shape per endpoint and use the repository's standard success, error, and pagination structures.
 - Decide whether responses contain stored values or effective/defaulted values. Prefer normalized effective values when clients must reproduce dashboard behavior.
-- Use concrete resource schemas in OpenAPI. Avoid generic `{ type: "object" }` item schemas that prevent generated clients from discovering fields and validating responses.
+- Every success response declares the exact shape of `data`, for single items, list items, and mutation results alike. A bare `{ type: "object" }` is not allowed: generated clients cannot discover fields or validate responses from it.
 - Make sensitive list fields intentional and return only the personal data consumers need.
 - Document idempotency, concurrency behavior, pagination limits, filtering, sorting, and error responses in OpenAPI and client docs.
+
+## Keep descriptions to one sentence
+
+- A `describeRoute` description is one sentence: what the endpoint does, then who may call it (`List the members of a cohort; the key creator must be a cohort member or an org admin.`). Take the "who" clause from the domain `docs.ts` so the wording matches what the service enforces.
+- Put every other detail next to the thing it is about, where the reference and MCP clients still show it:
+  - a rule about one field (defaults, limits, `null` clears it, formats) goes in that field's `.describe()` in the public schema. Call `.describe()` after `.refine()`, which returns a new schema without the description.
+  - why a call fails goes in the matching error response description.
+  - what the response holds goes in the success response description or the response field's `.describe()`.
+- An MCP tool description is the same sentence plus at most one more, kept only when an agent would otherwise call the tool wrongly (a tool to call first, a status code to expect).
+- Check every claim against the service and schema, including text you only moved or shortened. A list of accepted values names every value in the schema's enum; if only some are for new data, say which. Guidance moved onto a field ("use X") is not that field's contract ("accepts X, Y, Z"). Say what to do with each value, not where values usually come from, unless the code enforces it.
 
 ## Validate at the public API boundary
 
@@ -83,6 +93,17 @@ Apply this section when the public API is exposed through MCP or automation keys
 - Group route and service modules by domain under the versioned API tree (`routes/v1/{domain}/` and `services/v1/{domain}/`). Keep the version root responsible for mounting aggregate routers.
 - Prefer concise domain filenames inside those folders over a flat `v1/` directory filled with repeated prefixes. This is part of the public API's maintainability and discoverability, not an internal-only concern.
 
+## Structure the API docs sidebar
+
+The docs site (`apps/docs`) renders the public API reference sidebar from the OpenAPI tags. Follow this structure when adding or re-tagging endpoints:
+
+- **One tag per sub-resource concept, one section per resource family.** A section (`Organization`, `Courses`, `Cohorts`, `Analytics`) is a non-collapsible header; each tag under it is a collapsible group, except the family's core CRUD routes, which render as flat items directly beneath the section header. Never nest a collapsible group whose label equals its section label ("Courses → Courses").
+- **Tags keep full names; display labels drop the family prefix.** OpenAPI tags must be unique across the spec, so tags stay `Course Members`, `Cohort Goals`, etc., while the sidebar shows `Members`, `Goals` — the section header provides the context. Cross-reference `apps/docs/blume.config.ts` (`API_SECTIONS`) where each tag maps to its display label.
+- **Don't strand operations.** Every endpoint must live in a tag listed in `API_SECTIONS`; the config warns on unplaced tags at build time. Fold single-op tags (e.g. the gradebook read) into their nearest coherent group, and split any tag exceeding ~10 operations by sub-concept (e.g. exercise questions, exercise sections, newsfeed comments).
+- **Where tag changes land (all or nothing):** per-route `tags:`/`TAG` constants in `apps/api/src/routes/v1/**`, the tag registry in `packages/utils/src/openapi/public-api.ts` (`OPERATION_TAGS`), operation summaries (`OPERATION_SUMMARIES`), tag assertions in `apps/api/src/__tests__/routes-v1-*` and `routes/v1/index.test.ts`, and the sidebar layout in `apps/docs/blume.config.ts`. The docs build fetches the published OpenAPI spec from R2 (`scripts/fetch-openapi.mjs`); `enrichPublicApiOpenApiSpec` adds shared tag metadata locally but does not change operation-level tags, so route-level tag changes require regenerating the published spec (`pnpm --filter @cio/api run upload:openapi`) before the docs build picks them up.
+- **Every PR that adds or re-tags public API endpoints includes the resulting sidebar structure breakdown in its description** — the full section → group → operation tree with HTTP methods, so reviewers can evaluate the docs IA without building the site or opening the app. New endpoints must be placed in the tree before merge, not left for an unplaced-tag warning.
+- **Sidebar styling** (badge placement, wrapping, section typography) lives in `apps/docs/theme.css`, scoped to `[data-blume-nav-tree]`. Method badges lead the row, labels wrap instead of truncating, and section headers are small uppercase muted labels — do not regress to badge-after-label or truncated rows.
+
 ## Required tests
 
 - Happy-path reads, writes, exports, actions, listing, filtering, and pagination.
@@ -102,9 +123,11 @@ Apply this section when the public API is exposed through MCP or automation keys
 - [ ] Required scopes are minimal, configured, and tested.
 - [ ] Scope migrations do not widen custom keys and are ordered safely with the migration journal.
 - [ ] Public schemas are stable and validate the documented formats.
-- [ ] OpenAPI item schemas describe concrete resources rather than generic objects.
+- [ ] Every success response declares the exact shape of `data`; no bare `{ type: "object" }`.
 - [ ] Defaults and partial-update semantics are documented.
 - [ ] Routes and services are grouped by versioned domain folders.
 - [ ] Security and failure-mode tests are included.
 - [ ] Applicable resource lifecycle, actions, bulk operations, exports/files, reporting/history, notifications/webhooks, and audit operations are either supported or explicitly scoped out.
 - [ ] OpenAPI, examples, and MCP documentation match the implementation.
+- [ ] The docs sidebar structure follows the section/tag rules above; every tag is placed in `API_SECTIONS` and the published spec is regenerated after tag changes.
+- [ ] PRs adding or re-tagging public API endpoints include the sidebar structure breakdown in the description.

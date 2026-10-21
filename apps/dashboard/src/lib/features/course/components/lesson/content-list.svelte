@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isLiveSessionJoinable, liveSessionClock } from '$features/course/utils/live-session-phase';
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
   import { dndzone } from 'svelte-dnd-action';
@@ -31,9 +32,10 @@
 
   interface Props {
     reorder?: boolean;
+    standaloneItem?: CourseContentItem;
   }
 
-  let { reorder = false }: Props = $props();
+  let { reorder = false, standaloneItem }: Props = $props();
 
   let prevTitle: string | undefined = $state();
   let errors: Record<string, string> = $state({});
@@ -62,7 +64,7 @@
   let contentItems = $state<ContentDndItem[]>([]);
 
   function buildContentItems(): ContentDndItem[] {
-    return (contentData.items || []).map((item) => ({
+    return (standaloneItem ? [standaloneItem] : contentData.items || []).map((item) => ({
       ...item,
       id: `${item.type}-${item.id}`,
       contentId: item.id
@@ -70,7 +72,33 @@
   }
 
   function syncCourseContentItems(items: ContentDndItem[]) {
-    if (!courseApi.course?.content || courseApi.course.content.grouped) return;
+    if (!courseApi.course?.content) return;
+
+    if (courseApi.course.content.grouped) {
+      const updatedStandaloneItems = items.map(({ contentId, id: _dndId, ...rest }) => ({
+        ...rest,
+        id: contentId
+      }));
+
+      courseApi.course.content = {
+        ...courseApi.course.content,
+        sections: courseApi.course.content.sections.map((section) => {
+          if (section.id !== 'ungrouped') return section;
+
+          return {
+            ...section,
+            items: section.items.map((existing) => {
+              const updated = updatedStandaloneItems.find(
+                (item) => item.id === existing.id && item.type === existing.type
+              );
+
+              return updated ?? existing;
+            })
+          };
+        })
+      };
+      return;
+    }
 
     const updatedItems = items.map(({ contentId, id: _dndId, ...rest }, index) => ({
       ...rest,
@@ -89,7 +117,7 @@
   }
 
   async function applyPendingReorder() {
-    if (!contentItems.length) return;
+    if (!contentItems.length || standaloneItem) return;
 
     const contentUpdates: Array<{
       id: string;
@@ -266,11 +294,13 @@
 />
 
 <section
-  class="mx-auto w-full p-3 lg:w-11/12 {reorder ? 'cursor-grab active:cursor-grabbing' : ''}"
+  class="mx-auto w-full px-3 lg:w-11/12 {standaloneItem ? '' : 'py-3'} {reorder
+    ? 'cursor-grab active:cursor-grabbing'
+    : ''}"
   use:dndzone={{
     items: contentItems,
     flipDurationMs,
-    dragDisabled: !reorder,
+    dragDisabled: !reorder || Boolean(standaloneItem),
     dropTargetStyle: {
       border: '2px #1d4ed8 solid',
       'border-style': 'dashed'
@@ -286,7 +316,11 @@
       ? $t('course.navItem.lessons.add_lesson.lock')
       : $t('course.navItem.lessons.add_lesson.unlock')}
     {@const canRenderJoinButton =
-      item.type === ContentType.Lesson && isLiveCourse && Boolean(item.callUrl) && !itemLocked && !isEditingItem}
+      item.type === ContentType.Lesson &&
+      isLiveCourse &&
+      isLiveSessionJoinable(item, $liveSessionClock) &&
+      !itemLocked &&
+      !isEditingItem}
     {@const canRenderContinueButton = isStudentView && !itemLocked}
     {@const isLockPending = Boolean(lockPendingItemKeys[getItemLockKey(item)])}
     {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
@@ -295,15 +329,18 @@
         ? 'border-primary-300 bg-primary-50/40 cursor-grab shadow-sm active:cursor-grabbing'
         : ''}"
     >
-      <div class="mt-0.5 mr-5">
-        <Chip value={getContentOrder(item.contentId, item.type)} />
-      </div>
+      {#if !standaloneItem}
+        <div class="mt-0.5 mr-5">
+          <Chip value={getContentOrder(item.contentId, item.type)} />
+        </div>
+      {/if}
 
       {#if item.type === ContentType.Lesson}
         <ContentRow
           {item}
           bind:title={item.title}
           isLocked={itemLocked}
+          linkDisabled={reorder}
           href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
           {errors}
@@ -375,6 +412,7 @@
           {item}
           bind:title={item.title}
           isLocked={itemLocked}
+          linkDisabled={reorder}
           href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
           {errors}

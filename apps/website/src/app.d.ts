@@ -2,6 +2,7 @@
 // for information about these interfaces
 
 import type { StarsKvNamespace } from '$lib/server/github-stars';
+import type { ChangelogKvNamespace } from '$lib/server/changelog';
 
 declare global {
   namespace App {
@@ -13,7 +14,8 @@ declare global {
         ASSETS: {
           fetch: typeof fetch;
         };
-        CACHE: StarsKvNamespace;
+        CACHE: StarsKvNamespace & ChangelogKvNamespace;
+        USERJOT_API_KEY?: string;
       };
     }
   }

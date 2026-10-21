@@ -15,11 +15,19 @@
   import CertificateDeadlineRequiredDialog from '$features/course/components/certificate-deadline-required-dialog.svelte';
   import { CourseTagPicker, PublicConversionSettingsCard } from '$features/course/components';
   import TemplateSettingsSection from '$features/course/components/template-settings-section.svelte';
+  import ReminderPicker from '$features/course/components/live-session-reminders/reminder-picker.svelte';
+  import DeliveryLogSheet from '$features/course/components/live-session-reminders/delivery-log-sheet.svelte';
+  import {
+    createReminderRow,
+    getReminderRowErrors,
+    reminderRowsToOffsets
+  } from '$features/course/utils/live-session-reminder-utils';
+  import { resolveLiveSessionReminderOffsets } from '@cio/utils/constants/live-session-reminder';
   import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
+  import { BackButton } from '@cio/ui/custom/back-button';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { NumberField } from '@cio/ui/custom/number-field';
   import { Input } from '@cio/ui/base/input';
   import * as Field from '@cio/ui/base/field';
   import {
@@ -34,7 +42,6 @@
   import { Button } from '@cio/ui/base/button';
 
   import { settings } from '$features/course/utils/settings-store';
-  import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { getNavItemRoute } from '$features/course/utils/functions';
   import Copy from '@lucide/svelte/icons/copy';
   import * as Alert from '@cio/ui/base/alert';
@@ -46,7 +53,6 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { generateSlug, isPublishedComplianceMissingDeadline, isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
-  import { ContentType } from '@cio/utils/constants/content';
   import { DeleteModal } from '$features/ui';
   import { contentApi, courseApi } from '$features/course/api';
   import { collectLockedContentItems } from '$features/course/utils/content-lock-utils';
@@ -56,7 +62,8 @@
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { page } from '$app/stores';
-  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
+  import { NAVIGATION_SOURCE, NAVIGATION_SOURCE_PARAM, ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
+  import { buildRoutePath } from '$lib/routing/route-path';
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -220,6 +227,14 @@
       return;
     }
 
+    if (
+      $settings.type === 'LIVE_CLASS' &&
+      Object.keys(getReminderRowErrors($settings.liveSessionReminders)).length > 0
+    ) {
+      snackbar.error('course.navItem.settings.live_session_reminders.validation.fix_errors');
+      return;
+    }
+
     if (Number(courseApi.course?.cost) > 0 && !(courseApi.course?.metadata?.paymentLink ?? '').trim()) {
       snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
       return;
@@ -250,8 +265,10 @@
         courseApi.course.slug = generateSlug($settings.courseTitle, { appendTimestamp: true });
       }
 
+      const reminderOffsetsPayload = getReminderOffsetsPayload(courseApi.course);
       const metadataPayload = {
         ...(isObject(courseApi.course.metadata) ? courseApi.course.metadata : {}),
+        ...reminderOffsetsPayload,
         lessonTabsOrder: $settings.tabs,
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
@@ -276,12 +293,7 @@
         callout: $settings.type === 'PUBLIC' ? sanitizeCalloutForSave($settings.callout) : null,
         certificate: {
           ...(courseApi.course.certificate ?? {}),
-          deadline: $settings.certificate.deadline,
-          threshold: $settings.certificate.threshold,
-          requiredExerciseId: $settings.certificate.requiredExerciseId,
-          exerciseMinScorePercent: $settings.certificate.requiredExerciseId
-            ? $settings.certificate.exerciseMinScorePercent
-            : null
+          deadline: $settings.certificate.deadline
         }
       };
 
@@ -369,19 +381,27 @@
         commentsEnabled: course.metadata?.commentsEnabled ?? true,
         callout: normalizeCallout(course.callout),
         welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? '',
+        liveSessionReminders: resolveLiveSessionReminderOffsets(course.metadata?.liveSessionReminderOffsetsMinutes).map(
+          createReminderRow
+        ),
         certificate: {
-          deadline: course.certificate?.deadline ?? null,
-          threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100,
-          requiredExerciseId: course.certificate?.requiredExerciseId ?? null,
-          exerciseMinScorePercent:
-            typeof course.certificate?.exerciseMinScorePercent === 'number'
-              ? course.certificate.exerciseMinScorePercent
-              : course.certificate?.requiredExerciseId
-                ? 100
-                : null
+          deadline: course.certificate?.deadline ?? null
         }
       });
     });
+  }
+
+  function getReminderOffsetsPayload(course: Course) {
+    if ($settings.type !== 'LIVE_CLASS') return {};
+
+    const nextOffsets = reminderRowsToOffsets($settings.liveSessionReminders);
+    const currentOffsets = resolveLiveSessionReminderOffsets(course.metadata?.liveSessionReminderOffsetsMinutes);
+    const isUnchanged =
+      nextOffsets.length === currentOffsets.length &&
+      nextOffsets.every((offsetMinutes) => currentOffsets.includes(offsetMinutes));
+    if (isUnchanged) return {};
+
+    return { liveSessionReminderOffsetsMinutes: nextOffsets };
   }
 
   export function handleDiscard() {
@@ -524,12 +544,17 @@
     return { before, after };
   });
 
-  const certExercises = $derived(
-    getOrderedNavigableContent(courseApi.course).filter((item) => item.type === ContentType.Exercise)
+  // Completion rules change the certificate settings, which the API only accepts on plans with certificates.
+  const areCompletionRulesLocked = $derived($isFreePlan);
+
+  const cameFromCertificateSettings = $derived(
+    $page.url.searchParams.get(NAVIGATION_SOURCE_PARAM) === NAVIGATION_SOURCE.CERTIFICATE_SETTINGS
   );
 
-  const finalExerciseTitle = $derived(
-    certExercises.find((item) => item.id === $settings.certificate.requiredExerciseId)?.title
+  const certificateSettingsHref = $derived(
+    courseApi.course?.id
+      ? resolve(buildRoutePath(ROUTE_NAME.COURSE_CERTIFICATE, { id: courseApi.course.id, tab: 'settings' }), {})
+      : undefined
   );
 
   function isoToDatetimeLocal(iso: string | null | undefined): string {
@@ -546,20 +571,6 @@
     const value = (e.currentTarget as HTMLInputElement).value;
     $settings.certificate.deadline = value ? new Date(value).toISOString() : null;
     delete courseApi.errors['certificate.deadline'];
-    hasUnsavedChanges = true;
-  }
-
-  function onFinalExerciseChange(value: string) {
-    $settings.certificate.requiredExerciseId = value && value !== 'none' ? value : null;
-
-    if (!$settings.certificate.requiredExerciseId) {
-      $settings.certificate.exerciseMinScorePercent = null;
-    } else if (typeof $settings.certificate.exerciseMinScorePercent !== 'number') {
-      $settings.certificate.exerciseMinScorePercent = 100;
-    }
-
-    delete courseApi.errors['certificate.requiredExerciseId'];
-    delete courseApi.errors['certificate.exerciseMinScorePercent'];
     hasUnsavedChanges = true;
   }
 </script>
@@ -823,6 +834,66 @@
         {:else if courseApi.errors.type}
           <p class="ui:text-destructive/90 mt-2 text-sm">{courseApi.errors.type}</p>
         {/if}
+      </Field.Group>
+    </SettingsCard>
+  </AttentionHighlight>
+
+  <AttentionHighlight
+    id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_RULES}
+    scrollBlock="start"
+    class="scroll-mt-24"
+  >
+    <SettingsCard
+      hash={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_RULES}
+      title={$t('course.navItem.settings.completion_rules_card_title')}
+      description={$t('course.navItem.settings.completion_rules_card_desc')}
+    >
+      <Field.Group class="gap-4">
+        {#if cameFromCertificateSettings && certificateSettingsHref}
+          <div class="-my-2">
+            <BackButton
+              href={certificateSettingsHref}
+              label={$t('course.navItem.settings.back_to_certificate_settings')}
+              class="px-2! py-2!"
+              testId="course-settings-back-to-certificate-settings"
+            />
+          </div>
+        {/if}
+
+        {#if areCompletionRulesLocked}
+          <UpgradeBanner>{$t('course.certification.completion_rules_upgrade')}</UpgradeBanner>
+        {/if}
+
+        <Field.Field id="progression-mode" class="scroll-mt-24">
+          <Field.Label>
+            <a href="#progression-mode" class="hover:underline"
+              >{$t('course.navItem.settings.progression_mode_title')}</a
+            >
+          </Field.Label>
+          <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
+          <RadioGroup.Root
+            value={$settings.progressionMode}
+            onValueChange={(value) => {
+              if (value === 'free' || value === 'sequential') {
+                $settings.progressionMode = value;
+                hasUnsavedChanges = true;
+              }
+            }}
+          >
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-2">
+                <RadioGroup.Item value="free" id="progression-free" />
+                <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
+              </div>
+              <div class="flex items-center gap-2">
+                <RadioGroup.Item value="sequential" id="progression-sequential" />
+                <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
+              </div>
+            </div>
+          </RadioGroup.Root>
+        </Field.Field>
+
+        <SettingsSeparator />
 
         <AttentionHighlight
           id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_DEADLINE}
@@ -841,6 +912,7 @@
               class="w-full"
               value={isoToDatetimeLocal($settings.certificate.deadline)}
               onchange={onCompletionDeadlineChange}
+              disabled={areCompletionRulesLocked}
             />
             <Field.Description>{$t('course.navItem.settings.completion_deadline_helper')}</Field.Description>
             {#if courseApi.errors['certificate.deadline']}
@@ -848,88 +920,30 @@
             {/if}
           </Field.Field>
         </AttentionHighlight>
-
-        <Field.Field id="completion-threshold" class="scroll-mt-24">
-          <Field.Label for="course-completion-threshold">
-            <a href="#completion-threshold" class="hover:underline">{$t('course.certification.threshold_label')}</a>
-          </Field.Label>
-          <NumberField
-            name="course-completion-threshold"
-            integer
-            min={0}
-            max={100}
-            className="w-full"
-            value={$settings.certificate.threshold ?? 100}
-            onValueChange={(next) => {
-              $settings.certificate.threshold = next ?? 100;
-              courseApi.clearError('certificate.threshold');
-              hasUnsavedChanges = true;
-            }}
-          />
-          <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
-          {#if courseApi.errors['certificate.threshold']}
-            <Field.Error>{courseApi.errors['certificate.threshold']}</Field.Error>
-          {/if}
-        </Field.Field>
-
-        <Field.Field id="final-exercise" class="scroll-mt-24">
-          <Field.Label>
-            <a href="#final-exercise" class="hover:underline">{$t('course.certification.final_exercise_label')}</a>
-          </Field.Label>
-          <Select.Root
-            type="single"
-            value={$settings.certificate.requiredExerciseId ?? 'none'}
-            onValueChange={onFinalExerciseChange}
-          >
-            <Select.Trigger class="w-full">
-              {finalExerciseTitle ?? $t('course.certification.final_exercise_none')}
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Group>
-                <Select.Item value="none" label={$t('course.certification.final_exercise_none')}>
-                  {$t('course.certification.final_exercise_none')}
-                </Select.Item>
-                {#each certExercises as item (item.id)}
-                  <Select.Item value={item.id} label={item.title}>
-                    {item.title}
-                  </Select.Item>
-                {/each}
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
-          <Field.Description>{$t('course.certification.final_exercise_helper')}</Field.Description>
-          <Field.Description>{$t('course.certification.final_exercise_multiple_attempts_note')}</Field.Description>
-        </Field.Field>
-
-        {#if $settings.certificate.requiredExerciseId}
-          <Field.Field id="min-exercise-score" class="scroll-mt-24">
-            <Field.Label for="course-min-exercise-score">
-              <a href="#min-exercise-score" class="hover:underline"
-                >{$t('course.certification.min_exercise_score_label')}</a
-              >
-            </Field.Label>
-            <NumberField
-              name="course-min-exercise-score"
-              integer
-              min={0}
-              max={100}
-              className="w-full"
-              value={$settings.certificate.exerciseMinScorePercent ?? 100}
-              onValueChange={(next) => {
-                $settings.certificate.exerciseMinScorePercent = next ?? 100;
-                courseApi.clearError('certificate.exerciseMinScorePercent');
-                hasUnsavedChanges = true;
-              }}
-            />
-            <Field.Description>{$t('course.certification.min_exercise_score_helper')}</Field.Description>
-            {#if courseApi.errors['certificate.exerciseMinScorePercent']}
-              <Field.Error>{courseApi.errors['certificate.exerciseMinScorePercent']}</Field.Error>
-            {/if}
-          </Field.Field>
-        {/if}
       </Field.Group>
     </SettingsCard>
   </AttentionHighlight>
+
+  {#if $settings.type === 'LIVE_CLASS' && courseApi.course?.id}
+    <SettingsCard
+      id="live-session-reminders"
+      title={$t('course.navItem.settings.live_session_reminders.legend')}
+      description={$t('course.navItem.settings.live_session_reminders.description')}
+    >
+      <Field.Group>
+        <ReminderPicker
+          bind:rows={$settings.liveSessionReminders}
+          onchange={() => {
+            hasUnsavedChanges = true;
+          }}
+        />
+
+        <SettingsSeparator />
+
+        <DeliveryLogSheet courseId={courseApi.course.id} timezone={courseApi.course.metadata?.sessionTimezone} />
+      </Field.Group>
+    </SettingsCard>
+  {/if}
 
   <SettingsCard id="content" title={$t('course.navItem.settings.content_card_title')}>
     <Field.Group>
@@ -964,35 +978,6 @@
             hasUnsavedChanges = true;
           }}
         />
-      </Field.Field>
-
-      <SettingsSeparator />
-
-      <Field.Field id="progression-mode" class="scroll-mt-24">
-        <Field.Label>
-          <a href="#progression-mode" class="hover:underline">{$t('course.navItem.settings.progression_mode_title')}</a>
-        </Field.Label>
-        <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
-        <RadioGroup.Root
-          value={$settings.progressionMode}
-          onValueChange={(value) => {
-            if (value === 'free' || value === 'sequential') {
-              $settings.progressionMode = value;
-              hasUnsavedChanges = true;
-            }
-          }}
-        >
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2">
-              <RadioGroup.Item value="free" id="progression-free" />
-              <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
-            </div>
-            <div class="flex items-center gap-2">
-              <RadioGroup.Item value="sequential" id="progression-sequential" />
-              <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
-            </div>
-          </div>
-        </RadioGroup.Root>
       </Field.Field>
 
       <SettingsSeparator />

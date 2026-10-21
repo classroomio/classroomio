@@ -20,6 +20,12 @@ export type ListLessons = ListLessonsSuccess['data'];
 // Get lesson types
 export type GetLessonRequest = (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['$get'];
 export type GetLessonResponse = InferResponseType<GetLessonRequest> | null;
+export type GetLessonVideoStatusRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['video-status']['$get'];
+export type GetLessonVideoStatusSuccess = Extract<InferResponseType<GetLessonVideoStatusRequest>, { success: true }>;
+export type LessonVideoHlsStatuses = GetLessonVideoStatusSuccess['data']['statuses'];
+export type LessonVideoHlsStatus = LessonVideoHlsStatuses[string];
+
 export type GetLessonSuccess = Extract<InferResponseType<GetLessonRequest>, { success: true }>;
 export type Lesson = GetLessonSuccess['data'];
 
@@ -635,8 +641,6 @@ export type PreviewCourseTemplateSuccess = Extract<InferResponseType<PreviewCour
 export type CourseTemplatePreviewSettings = {
   certificate: boolean;
   deadline: string | null;
-  threshold: number | null;
-  finalExercise: { title: string; score: number } | null;
   sequential: boolean;
   grading: boolean;
   commentsOff: boolean;
@@ -666,3 +670,37 @@ export type CourseTemplateUpdates = GetCourseTemplateUpdatesSuccess['data'];
 
 export type PullCourseTemplateUpdatesRequest =
   (typeof classroomio.course)[':courseId']['template-updates']['pull']['$post'];
+
+// Live session reminder types
+export type ListLiveSessionReminderDeliveriesRequest =
+  (typeof classroomio.course)[':courseId']['live-session-reminders']['deliveries']['$get'];
+export type ListLiveSessionReminderDeliveriesSuccess = Extract<
+  InferResponseType<ListLiveSessionReminderDeliveriesRequest>,
+  { success: true }
+>;
+export type LiveSessionReminderDelivery = ListLiveSessionReminderDeliveriesSuccess['data'][number];
+export type LiveSessionReminderDeliveriesPagination = ListLiveSessionReminderDeliveriesSuccess['pagination'];
+
+export type LiveSessionReminderUnit = 'days' | 'hours' | 'minutes';
+
+export type LiveSessionReminderRow = {
+  id: string;
+  amount: number;
+  unit: LiveSessionReminderUnit;
+};
+
+export type LiveSessionReminderRowError = 'amount' | 'min' | 'max' | 'duplicate';
+
+export type ReorderCourseContentRequest = (typeof classroomio.course)[':courseId']['content']['reorder']['$put'];
+export type SidebarOutlineEntry =
+  | { id: string; kind: 'item'; order: number; item: CourseContentItem }
+  | {
+      id: string;
+      kind: 'section';
+      order: number;
+      section: Omit<CourseContentSection, 'items'>;
+      items: SidebarOutlineEntry[];
+    };
+/** A lesson or exercise as a contents-page drag zone holds it: `id` is the drag key, `contentId` the item id. */
+export type ContentDndItem = CourseContentItem & { contentId: string };
+export type SidebarDeleteTarget = { kind: 'section'; sectionId: string } | { kind: 'item'; item: CourseContentItem };

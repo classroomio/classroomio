@@ -85,6 +85,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            CIO_VERSION=${{ steps.meta.outputs.version }}
           cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}:buildcache
           cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}:buildcache,mode=max
           platforms: linux/amd64,linux/arm64

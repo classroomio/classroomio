@@ -102,7 +102,7 @@ export function getSectionIdForContentItem(course: Course | null, itemId: string
 
   for (const section of content.sections) {
     if (section.items.some((item) => item.id === itemId)) {
-      return section.id;
+      return section.id === 'ungrouped' ? null : section.id;
     }
   }
 

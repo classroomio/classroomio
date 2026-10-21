@@ -327,7 +327,7 @@ settings: for each SYNCABLE_SETTINGS key K
 
 Skipped rows keep their old `sourceSyncedAt` (units) or have no newer `course_template_setting_sync` row (settings), so they stay in the list until pulled. Settings are tracked per key for this reason: one shared timestamp would hide every skipped setting after any pull. Template units deleted in the template are ignored.
 
-`SYNCABLE_SETTINGS`: description, cover image, welcome email, completion deadline, minimum completion %, final exercise (+ minimum score; the exercise id is mapped through `sourceId`), lessons tab order, content grouping, student progression, lesson comments, self-enrollment, Markdown export, lesson/course download, landing page (requirements, description, goals, skills/tools, instructor, pricing), certificate design and rules, AI tutor overrides. Never synced: see Confirmed Decision 11.
+`SYNCABLE_SETTINGS`: description, cover image, welcome email, completion deadline, lessons tab order, content grouping, student progression, lesson comments, self-enrollment, Markdown export, lesson/course download, landing page (requirements, description, goals, skills/tools, instructor, pricing), certificate design and rules, AI tutor overrides. Never synced: see Confirmed Decision 11.
 
 ### Pull
 

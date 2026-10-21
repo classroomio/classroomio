@@ -12,6 +12,7 @@
     },
     "discard": "Kassér",
     "save_changes": "Gem ændringer",
+    "cancel": "Annuller",
     "scroll_to_top": "Rul til toppen",
     "delete": "Slet",
     "restricted_page": {
@@ -160,6 +161,14 @@
       },
       "question": {
         "too_small": "Spørgsmålets titel er påkrævet"
+      }
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "Payload-URL skal starte med http:// eller https://"
+      },
+      "event_types": {
+        "required": "Vælg mindst én hændelse"
       }
     }
   },
@@ -313,7 +322,10 @@
       "user_exists": "Brugeren findes allerede",
       "invite_fail": "Kunne ikke sende invitationen. Prøv venligst igen",
       "remove_fail": "Kunne ikke fjerne bruger. Prøv venligst igen",
-      "remove_success": "Medlem fjernet"
+      "remove_success": "Medlem fjernet",
+      "role_updated": "Rollen er opdateret",
+      "role_update_failed": "Rollen kunne ikke opdateres",
+      "last_admin": "Denne organisation skal have mindst én administrator"
     },
     "lms": {
       "error": {
@@ -512,6 +524,17 @@
       "success": "Tak. Vi gennemgår denne anmeldelse.",
       "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
       "already_submitted": "Du har allerede anmeldt dette."
+    },
+    "webhooks": {
+      "created": "Webhook oprettet. Kopiér signeringshemmeligheden nu, fordi den kun vises én gang.",
+      "updated": "Webhook opdateret.",
+      "enabled": "Webhook aktiveret.",
+      "disabled": "Webhook deaktiveret.",
+      "deleted": "Webhook slettet.",
+      "secret_regenerated": "Signeringshemmelighed genereret igen. Kopiér den nu, fordi den kun vises én gang.",
+      "test_success": "Testhændelsen blev leveret.",
+      "test_failed": "Testhændelsen mislykkedes. Åbn leveringsloggen for at se hvorfor.",
+      "redelivered": "Hændelsen er sat i kø til ny levering."
     }
   },
   "explore": {
@@ -572,7 +595,8 @@
     "required": "Opgradering påkrævet",
     "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
     "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API.",
-    "unlock_field": "Opgrader for at låse denne indstilling op"
+    "unlock_field": "Opgrader for at låse denne indstilling op",
+    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks."
   },
   "analytics": {
     "title": "Analyse",
@@ -793,6 +817,7 @@
       "status": {
         "ready": "Klar",
         "already_member": "Allerede i målgruppen",
+        "invite_resent": "Invitation sendt igen",
         "invalid_email": "Ugyldig e-mail",
         "duplicate_in_file": "Duplikat i filen",
         "over_seat_limit": "Ingen pladser tilbage",
@@ -926,7 +951,10 @@
       "empty_description": "Prøv at udvide datointervallet eller rydde et filter.",
       "exclude_recent_joiners_hint": "Udelader elever, der er tilmeldt for nylig til at blive bedømt som inaktive.",
       "empty_title": "Ingen studerende matcher disse filtre",
-      "invite_status": "Invitationsstatus"
+      "invite_status": "Invitationsstatus",
+      "certificate": "Certifikat",
+      "certificate_earned": "Optjent",
+      "certificate_not_earned": "Ikke optjent"
     },
     "views": {
       "never_logged_in": "Aldrig logget ind",
@@ -937,7 +965,9 @@
       "custom": "Brugerdefinerede filtre",
       "all": "Alle studerende"
     },
-    "learner_count": "{count} elever"
+    "learner_count": "{count} elever",
+    "certificate_earned": "{count} certifikat opnået",
+    "certificates_earned": "{count} certifikater opnået"
   },
   "community": {
     "title": "Fællesskab",
@@ -1076,6 +1106,9 @@
           "animation_none": "Ingen"
         },
         "course_type_learn_more": "Få flere oplysninger",
+        "completion_rules_card_title": "Regler for fuldførelse",
+        "completion_rules_card_desc": "Bestem, hvornår studerende fuldfører dette kursus og får certifikatet. Compliance-kurser bruger også fristen som hver studerendes forfaldsdato.",
+        "back_to_certificate_settings": "Tilbage til certifikatindstillinger",
         "welcome_email": {
           "title": "Velkomstmail",
           "description": "Tilpas den e-mail, som eleverne modtager efter tilmelding. Tilføj en personlig note, instruktioner eller et link til en livesession.",
@@ -1093,7 +1126,7 @@
         "certificate_deadline_required": "Indstil certifikatfrist først",
         "go_to_certificate_settings": "Gå til Certifikatindstillinger",
         "completion_deadline_label": "Deadline for kursusafslutning",
-        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
+        "completion_deadline_helper": "Elever skal gennemføre kurset før denne dato og tid (lokal tid). Lad feltet være tomt for ingen frist.",
         "go_to_completion_deadline": "Gå til fuldførelsesfristen",
         "generate_link": "Generer nyt link",
         "open_link": "Åbn link i ny fane",
@@ -1136,7 +1169,66 @@
         "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
         "progression_mode_description": "Kontroller, om eleverne kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge. Afslutning af videoafspilning sporer kun uploadede videoer.",
         "allow_markdown_export": "Tillad elever at kopiere lektionssider som Markdown",
-        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion."
+        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion.",
+        "live_session_reminders": {
+          "legend": "E-mailpåmindelser om sessioner",
+          "description": "Vælg, hvornår tilmeldte elever får en e-mail med deltagelseslinket før hver livesession.",
+          "empty": "Ingen påmindelser. Eleverne får ikke e-mails før livesessioner.",
+          "add": "Tilføj påmindelse",
+          "presets_label": "Tilføj hurtigt:",
+          "remove": "Fjern påmindelse",
+          "unit_label": "Enhed",
+          "units": {
+            "days": "Dage",
+            "hours": "Timer",
+            "minutes": "Minutter"
+          },
+          "duration": {
+            "days": "{count, plural, one {# dag} other {# dage}}",
+            "hours": "{count, plural, one {# time} other {# timer}}",
+            "minutes": "{count, plural, one {# minut} other {# minutter}}"
+          },
+          "preview": "{duration} før hver session",
+          "offset_before": "{duration} før",
+          "max_count": "Du kan tilføje op til {count} påmindelser.",
+          "validation": {
+            "amount": "Indtast et helt tal på 1 eller mere.",
+            "min": "Påmindelser skal være mindst 15 minutter før sessionen.",
+            "max": "Påmindelser kan højst være 7 dage før sessionen.",
+            "duplicate": "Du har allerede en påmindelse på dette tidspunkt.",
+            "fix_errors": "Ret fejlene i sessionspåmindelserne, før du gemmer."
+          },
+          "log": {
+            "title": "Leveringslog",
+            "description": "Påmindelsesmails for sessioner i de sidste 30 dage og kommende sessioner.",
+            "view": "Vis log",
+            "empty": "Ingen påmindelser endnu. De vises her, når sessionerne nærmer sig.",
+            "load_error": "Leveringsloggen for påmindelser kunne ikke indlæses.",
+            "columns": {
+              "session": "Session",
+              "student": "Elev",
+              "reminder": "Påmindelse",
+              "status": "Status",
+              "detail": "Detaljer"
+            }
+          },
+          "statuses": {
+            "pending": "Afventer",
+            "queued": "I kø",
+            "sent": "Sendt",
+            "failed": "Mislykkedes",
+            "skipped": "Sprunget over"
+          },
+          "skip_reasons": {
+            "preferences": "Eleven har slået e-mailpåmindelser om sessioner fra.",
+            "no_email": "Eleven har ingen e-mailadresse.",
+            "lesson_past": "Sessionen var allerede startet.",
+            "offset_removed": "Denne påmindelse blev fjernet fra kursusindstillingerne.",
+            "lesson_rescheduled": "Sessionens tidspunkt eller deltagelseslink blev ændret.",
+            "window_passed": "Påmindelsestidspunktet var allerede passeret, da den blev planlagt.",
+            "unenrolled": "Eleven er ikke længere tilmeldt."
+          }
+        }
       },
       "analytics": {
         "title": "Analyse"
@@ -1262,7 +1354,8 @@
               "name": {
                 "min_char": "Navnet er for kort, minimum 5 tegn"
               }
-            }
+            },
+            "validation_error": "En eller flere anmeldelser er ugyldige. Åbn hver anmeldelse og ret navnet, avataren, bedømmelsen og beskrivelsen, før du gemmer."
           },
           "header_form": {
             "title": "Titel",
@@ -1423,6 +1516,13 @@
             "toggle_label": "Linkinvitation aktiv",
             "disabled_notice": "Dette link er deaktiveret. Aktiver det for at tillade nye medlemmer at deltage via link.",
             "select_role": "Vælg en rolle"
+          },
+          "change_role": {
+            "label": "Rolle for {email}",
+            "title": "Skift rolle",
+            "description": "Skift {email} fra {currentRole} til {nextRole}?",
+            "cancel": "Annuller",
+            "approve": "Godkend"
           }
         },
         "roles": {
@@ -1594,6 +1694,10 @@
       },
       "submissions": {
         "title": "Indsendte øvelser",
+        "access": {
+          "denied_title": "Du kan ikke bedømme afleveringer for dette kursus",
+          "denied_description": "Bed en administrator om at tilføje dig som kursustutor eller som mentor for et hold, der inkluderer dette kursus."
+        },
         "grading_modal": {
           "details": "Detaljer",
           "early": "Tidligt",
@@ -1628,6 +1732,22 @@
           "awaiting_manual_hint": "Trænger til manuel gennemgang",
           "failed_hint": "Automatisk bedømmelse mislykkedes. Flyt denne indsendelse tilbage til Indsendt for at prøve igen.",
           "invalid_transition": "Denne statusflytning er ikke tilladt af bedømmelsesarbejdsgangen"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1805,7 +1925,9 @@
                 "responses": "Svar",
                 "no_responses": "Ingen svar endnu",
                 "other": "Andet",
-                "attempts": "Forsøg"
+                "attempts": "Forsøg",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Indlæser indsendelser...",
               "empty_title": "Ingen indlæg endnu",
@@ -1993,6 +2115,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Accepterede typer (f.eks. pdf, docx)",
                   "max_size_placeholder": "Maksimal størrelse (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {
@@ -2492,7 +2618,15 @@
               "loading": "Indlæser video...",
               "playback_auth_error": "Din session udløb. Log venligst ind igen for at se denne video.",
               "playback_auth_action": "Log ind",
-              "vimeo_link": "Vimeo-link"
+              "vimeo_link": "Vimeo-link",
+              "hls_status": {
+                "encoding": "Kodning",
+                "ready": "Klar",
+                "failed": "Mislykkedes",
+                "skipped": "Ikke kodet",
+                "failed_hint": "Kodning mislykkedes. Videoen afspilles stadig i original kvalitet.",
+                "skipped_hint": "Adaptiv kodning er slået fra, så dette afspilles i original kvalitet."
+              }
             },
             "slide": {
               "title": "Dias",
@@ -2684,7 +2818,7 @@
         "session": {
           "join": "Deltag i session",
           "heading": "Live-session",
-          "intro": "Indstil deltagelseslinket og det planlagte tidspunkt for dette livehold. Eleverne får rykker 24 timer og 1 time før.",
+          "intro": "Indstil deltagelseslinket og det planlagte tidspunkt for denne liveklasse. Eleverne får e-mailpåmindelser før hver session. Vælg hvornår i kursusindstillingerne.",
           "link_label": "Tilmeld dig link (Zoom, Mød osv.)",
           "datetime_label": "Dato og tid",
           "timezone_label": "Tidszone",
@@ -2714,7 +2848,15 @@
           "add_apple": "Apple-kalender (.ics)",
           "starts_in": "Starter i",
           "session_ended": "Session afsluttet",
-          "link_copied": "Linket er kopieret"
+          "link_copied": "Linket er kopieret",
+          "duration_label": "Forventet sessionslængde (minutter)",
+          "duration_helper": "Bruges til at vise, hvornår sessionen er live, og hvornår den er slut.",
+          "recording_url_label": "Link til optagelse",
+          "recording_url_helper": "Vises for studerende, når sessionen er slut.",
+          "recording_url_invalid": "Indtast et link, der starter med http:// eller https://",
+          "recording_url_needs_session": "Tilføj et mødelink og et starttidspunkt, før du tilføjer en optagelse",
+          "past_sessions_heading": "Tidligere sessioner",
+          "watch_recording": "Se optagelse"
         },
         "student_share_your_knowledge": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
         "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
@@ -2728,7 +2870,8 @@
         "add_content_later": "Senere",
         "add_content_add_to_section": "Tilføj indhold",
         "expand_content": "Udvid indhold",
-        "collapse_content": "Skjul indholdet"
+        "collapse_content": "Skjul indholdet",
+        "no_section": "Ingen sektion"
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -2941,7 +3084,6 @@
         "later": "Luk",
         "checking": "Tjekker berettigelse...",
         "not_eligible_title": "Næsten der",
-        "retake_exercise": "Gentag øvelsen",
         "subtitle_no_certificate": "Tillykke - du har gennemført dette kursus."
       }
     },
@@ -2951,24 +3093,18 @@
     "certification": {
       "rules_heading": "Regler",
       "deadline_label": "Certificeringsfrist",
-      "deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
-      "threshold_label": "Minimum fuldførelse (%)",
-      "threshold_helper": "Kombineret fremskridt i lektion og træning kræves for at opnå certifikatet (0-100). Standard er 100 %.",
-      "final_exercise_label": "Afsluttende øvelse (valgfrit)",
-      "final_exercise_none": "ingen",
-      "final_exercise_helper": "Når den er indstillet, skal eleverne mindst opnå minimumscore på denne øvelse (bedste forsøg tæller) ud over fuldførelsesprocenten ovenfor.",
-      "min_exercise_score_label": "Minimumsscore på sidste øvelse (%)",
-      "min_exercise_score_helper": "Score er en procentdel af det samlede antal point, der er mulige på den øvelse (0-100).",
+      "deadline_helper": "Elever skal gennemføre kurset før denne dato og tid (lokal tid). Lad feltet være tomt for ingen frist.",
+      "completion_rules_heading": "Regler for fuldførelse",
+      "completion_rules_description": "Disse regler afgør, hvem der får dette certifikat. De angives under fanen Indstillinger for kurset.",
+      "completion_rules_deadline": "Fuldfør senest {date}",
+      "completion_rules_no_deadline": "Ingen frist",
+      "completion_rules_edit": "Rediger regler for fuldførelse",
+      "completion_rules_upgrade": "Opgrader for at redigere regler for fuldførelse",
       "blocker_progress": "Dit kursus fremskridt er {current}%; {required} % er påkrævet.",
       "blocker_deadline": "Certificeringsfristen er udløbet.",
       "blocker_no_content": "Dette kursus har ingen lektioner eller øvelser at gennemføre.",
-      "blocker_final_not_submitted": "Indsend den nødvendige øvelse \"{exerciseTitle}\" for at kvalificere dig til certifikatet.",
-      "blocker_final_pending": "Dit forsøg på \"{exerciseTitle}\" bliver stadig bedømt.",
-      "blocker_final_score": "Din bedste score på \"{exerciseTitle}\" er {bestPercent}%; {requiredPercent} % er påkrævet.",
-      "blocker_final_misconfigured": "Certificeringsøvelsen \"{exerciseTitle}\" har ingen point konfigureret; bed din instruktør om at ordne det.",
       "email_message_label": "E-mail besked",
       "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
-      "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse.",
       "deadline_required": "Overholdelseskurser kræver en fuldførelsesfrist, før de kan udgives.",
       "deadline_invalid": "Kursusets fuldførelsesfrist er ugyldig.",
       "deadline_required_enroll": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes."
@@ -3418,7 +3554,16 @@
       "monthly": "Månedligt",
       "annually": "Årligt",
       "popular": "Populært",
-      "per_org": "Per organisation"
+      "per_org": "Per organisation",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter-pris · {days, plural, one {# dag tilbage} other {# dage tilbage}}",
+        "eyebrow_closing": "Early Adopter-pris · Sidste {days} dage",
+        "eyebrow_today": "Early Adopter-pris · Slutter i dag",
+        "title": "Lav pris med vilje. Ikke for evigt.",
+        "title_closing": "Lav pris med vilje. Lukker snart.",
+        "body": "Vi holder ClassroomIO billig, fordi vi bygger det sammen med vores kunder, ikke kun til dem. Lås dagens pris inden {date}. Derefter lukker Early Adopter-planen, og nye priser træder i kraft.",
+        "link": "Læs hvorfor vi gør det"
+      }
     },
     "plan_names": {
       "free": "Gratis",
@@ -4207,7 +4352,16 @@
       "actions_menu": "Tokengodkendelseshandlinger"
     },
     "teams": {
-      "page_subtitle": "Inviter teammedlemmer og styr, hvem der hjælper med at drive denne organisation."
+      "page_subtitle": "Inviter teammedlemmer og styr, hvem der hjælper med at drive denne organisation.",
+      "permission": {
+        "title": "Du har ikke tilladelse til at se denne side",
+        "description": "Kun organisationsadministratorer kan se og administrere teamet. Kontakt en administrator, hvis du har brug for adgang."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Inviter denne elev til teamet?} other {Inviter disse elever til teamet?}}",
+        "confirm_description": "{count, plural, =1 {Denne person er allerede elev i denne organisation: {emails}. Vil du sende en invitation, så personen bliver {role}? Rollen ændres først, når invitationen accepteres.} other {Disse personer er allerede elever i denne organisation: {emails}. Vil du invitere dem som {role}? Deres roller ændres først, når de accepterer invitationen.}}",
+        "existing": "Disse personer er allerede med i teamet: {members}. Brug rollevælgeren under Teammedlemmer til at ændre deres rolle."
+      }
     },
     "ai_credits": {
       "sub_title": "AI-credits",
@@ -4845,7 +4999,6 @@
         "title": "MCP nøgler",
         "description": "Disse nøgler autentificerer den aktuelle organisation, når en MCP-klient ringer til ClassroomIO gennem `@classroomio/mcp`.",
         "generate": "Generer MCP-nøgle",
-        "secret_once": "Denne hemmelighed vises én gang. Kopier det til din MCP-klient nu.",
         "modal": {
           "title": "Opret MCP-nøgle",
           "description": "Vælg et navn til denne MCP-nøgle, før den genereres.",
@@ -4853,7 +5006,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Annuller",
           "save": "Opret nøgle"
-        }
+        },
+        "reveal_title": "Din nye MCP-nøgle"
       },
       "usage": {
         "title": "Anvendelse og grænser",
@@ -4873,7 +5027,6 @@
         "title": "API-nøgler",
         "description": "Disse nøgler autentificerer den aktuelle organisation, når der kaldes til ClassroomIOs offentlige API.",
         "generate": "Generer API-nøgle",
-        "secret_once": "Denne hemmelighed vises kun én gang. Kopiér den og opbevar den sikkert.",
         "empty_title": "Ingen API-nøgler endnu",
         "empty_description": "Opret den første organisationsnøgle til API for at bruge ClassroomIOs offentlige API.",
         "modal": {
@@ -4883,7 +5036,8 @@
           "name_placeholder": "Min API-integration",
           "cancel": "Annuller",
           "save": "Opret nøgle"
-        }
+        },
+        "reveal_title": "Din nye API-nøgle"
       },
       "setup": {
         "title": "Hurtig start",
@@ -4907,7 +5061,14 @@
       "table_key": "Nøgle",
       "table_status": "Status",
       "table_created": "Oprettet",
-      "table_last_used": "Sidst brugt"
+      "table_last_used": "Sidst brugt",
+      "reveal": {
+        "description": "Kopiér denne nøgle nu. Den vises ikke igen.",
+        "copy": "Kopiér",
+        "copied": "Kopieret",
+        "how_to_use": "Sådan bruger du denne nøgle",
+        "close": "Luk"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -4922,7 +5083,9 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhooks",
+      "new_badge": "Ny"
     },
     "permissions": {
       "disabled_title": "Skrivebeskyttet adgang",
@@ -4930,6 +5093,129 @@
     },
     "zapier": {
       "page_subtitle": "Automatiser ClassroomIO med tusindvis af apps via Zapier. Kommer snart."
+    },
+    "webhooks": {
+      "page_subtitle": "Send ClassroomIO-hændelser i realtid til Slack, dit CRM eller din egen backend.",
+      "description": "ClassroomIO sender en signeret HTTP POST til din URL, hver gang en valgt hændelse opstår. Mislykkede leverancer forsøges automatisk igen.",
+      "permissions_description": "Kun organisationsadministratorer kan oprette, redigere eller slette webhooks.",
+      "create": "Ny webhook",
+      "empty_title": "Ingen webhooks endnu",
+      "empty_description": "Opret en webhook for at sende invitationer, tilmeldinger, gennemførelser og afleveringer til dine andre værktøjer.",
+      "reveal_title": "Din nye signeringshemmelighed",
+      "reveal_description": "Kopiér denne signeringshemmelighed nu. Den vises ikke igen, og du skal bruge den til at verificere anmodninger.",
+      "reveal_docs": "Sådan verificerer du anmodninger",
+      "delete_confirm": "Slet webhooken \"{name}\"? Dens leveringshistorik fjernes også.",
+      "regenerate_confirm": "Generer signeringshemmeligheden igen? Den nuværende hemmelighed holder op med at virke med det samme.",
+      "events_all": "Alle hændelser",
+      "events_count_one": "{count} hændelse",
+      "events_count_other": "{count} hændelser",
+      "no_deliveries": "Ingen leverancer endnu",
+      "retrying_hint": "Prøver mislykkede leverancer igen",
+      "table": {
+        "name": "Destination",
+        "events": "Hændelser",
+        "health": "Status",
+        "active": "Aktiv",
+        "error_rate": "Fejlrate (24t)",
+        "error_rate_detail": "{failed} af {total} mislykkedes",
+        "no_recent_deliveries": "Ingen leverancer på 24t"
+      },
+      "health": {
+        "healthy": "Sund",
+        "retrying": "Prøver igen",
+        "degraded": "Fejler",
+        "disabled": "Automatisk deaktiveret"
+      },
+      "actions": {
+        "label": "Webhook-handlinger",
+        "edit": "Rediger",
+        "test": "Send testhændelse",
+        "deliveries": "Se leverancer",
+        "regenerate_secret": "Generer hemmelighed igen",
+        "delete": "Slet"
+      },
+      "form": {
+        "create_title": "Ny webhook",
+        "edit_title": "Rediger webhook",
+        "description": "Vælg, hvortil ClassroomIO sender hændelser, og hvilke hændelser der skal sendes.",
+        "sections": {
+          "endpoint": "Endepunkt",
+          "events": "Hændelser"
+        },
+        "name": "Navn",
+        "name_placeholder": "CRM-synkronisering",
+        "payload_url": "Payload-URL",
+        "payload_url_help": "Skal være en offentlig HTTPS-URL, der returnerer et 2xx-svar inden for 10 sekunder.",
+        "secret": "Signeringshemmelighed",
+        "secret_placeholder": "Lad feltet stå tomt for at generere en",
+        "secret_help": "Bruges til at signere hver forespørgsel, så du kan verificere, at den kom fra ClassroomIO.",
+        "secret_edit_placeholder": "Lad feltet stå tomt for at beholde den nuværende hemmelighed",
+        "secret_edit_help": "Indtast en ny værdi for at erstatte hemmeligheden. Den nuværende vises aldrig.",
+        "verify_ssl": "Verificer SSL-certifikat",
+        "verify_ssl_help": "Lad denne være slået til, medmindre du tester mod et selvsigneret certifikat.",
+        "active": "Aktiv",
+        "events_help": "Vælg de hændelser, der skal udløse denne webhook.",
+        "mode_all": "Send mig alt",
+        "mode_selected": "Lad mig vælge individuelle hændelser",
+        "cancel": "Annuller",
+        "save": "Gem webhook",
+        "select_all": "Vælg alle",
+        "events_selected": "{selected} af {total} valgt"
+      },
+      "event_groups": {
+        "organization": "Organisation",
+        "course": "Kurser",
+        "learning": "Læringsfremskridt"
+      },
+      "events": {
+        "organization_invite_created": "En teaminvitation sendes",
+        "organization_invite_accepted": "En teaminvitation accepteres",
+        "organization_invite_revoked": "En teaminvitation tilbagekaldes eller erstattes",
+        "course_invite_created": "En studerendeinvitation oprettes",
+        "course_invite_accepted": "En studerende accepterer en invitation og tilmelder sig",
+        "course_invite_revoked": "En studerendeinvitation tilbagekaldes",
+        "course_member_added": "Et medlem tilføjes til et kursus",
+        "course_member_removed": "Et medlem fjernes fra et kursus",
+        "course_completed": "En studerende gennemfører et kursus",
+        "course_certificate_issued": "Et certifikat opnås",
+        "course_submission_created": "En opgaveaflevering oprettes",
+        "course_submission_status_changed": "Status for en aflevering ændres, f.eks. når den bedømmes",
+        "lesson_completion_updated": "En lektion markeres som fuldført eller nulstilles",
+        "exercise_completion_updated": "En opgave fuldføres eller nulstilles"
+      },
+      "deliveries": {
+        "title": "Leverancer",
+        "description": "Hændelser fra de seneste 30 dage",
+        "back": "Tilbage til leverancer",
+        "filter_all": "Alle statusser",
+        "empty": "Ingen leverancer matcher dette filter.",
+        "load_error": "Kunne ikke indlæse leverancer. Prøv igen.",
+        "redeliver": "Lever igen",
+        "test_badge": "Test",
+        "status": {
+          "PENDING": "Prøver igen",
+          "SUCCESS": "Gennemført",
+          "FAILED": "Mislykket",
+          "GAVE_UP": "Mislykket"
+        },
+        "columns": {
+          "event": "Hændelse",
+          "event_id": "Hændelses-ID",
+          "status": "Status",
+          "attempt": "Forsøg",
+          "http": "HTTP-status",
+          "duration": "Svartid",
+          "time": "Sendt",
+          "next_attempt": "Næste forsøg"
+        },
+        "detail": {
+          "error": "Fejl",
+          "request_headers": "Forespørgselsheadere",
+          "payload": "Payload",
+          "response_body": "Svar",
+          "no_response": "Der blev ikke modtaget noget svar."
+        }
+      }
     }
   },
   "ai_assistant": {
@@ -5366,6 +5652,20 @@
     "delete_modal": {
       "title": "Slet widget permanent",
       "description": "Er du sikker på, at du vil slette \"{name}\" permanent? Denne handling kan ikke fortrydes."
+    },
+    "filters": {
+      "filter": "Filter",
+      "popover_title": "Filtre",
+      "clear_all": "Ryd alle",
+      "search_placeholder": "Søg efter widgets efter navn",
+      "status": "Status",
+      "layout_type": "Layout type",
+      "selection_mode": "Valgtilstand",
+      "no_results_title": "Ingen widgets matcher dine filtre",
+      "no_results_description": "Prøv en anden søgeterm, eller ryd dine filtre for at se alt igen.",
+      "no_results_page_title": "Intet på denne side",
+      "no_results_page_description": "Disse filtre matcher færre widgets end denne side starter ved.",
+      "back_to_first_page": "Tilbage til første side"
     }
   },
   "side_panel": {
@@ -6006,8 +6306,6 @@
       "settings": "Indstillinger",
       "certificate": "Certifikat aktiveret",
       "deadline": "Frist {date}",
-      "threshold": "Gennemfør {percent} % af kurset",
-      "final_exercise": "Bestå \"{title}\" med {percent} %",
       "sequential": "Lektionerne låses op i rækkefølge",
       "grading": "En vejleder bedømmer afleveringer",
       "comments_off": "Lektionens kommentarer er slået fra",
@@ -6100,8 +6398,6 @@
         "bannerImage": "Forsidebillede",
         "welcomeEmail": "Velkomstmail",
         "completionDeadline": "Afslutningsfrist",
-        "completionThreshold": "Gennemførelsestærskel",
-        "finalExercise": "Afsluttende øvelse",
         "lessonTabsOrder": "Lektionsfaner",
         "contentGrouping": "Indholdsgruppering",
         "progression": "Progression",
@@ -6130,8 +6426,7 @@
       "value": {
         "free": "Fri",
         "sequential": "Sekventiel",
-        "no_price": "Gratis",
-        "pass_mark": "Beståelsesmærke {score}"
+        "no_price": "Gratis"
       },
       "template_label": "Skabelon",
       "yours_label": "Dine"
@@ -6199,5 +6494,30 @@
     "security_notice": "Data is stored securely inside your ClassroomIO academy. This plugin cannot access billing details or member passwords. You can disable or uninstall this plugin at any time.",
     "cancel": "Cancel",
     "authorize_install": "Authorize & Install"
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Betaling modtaget. Ét trin tilbage.",
+      "body": "Opret din konto eller log ind, så forbinder vi automatisk din Early Adopter-plan med dit akademi.",
+      "sign_up": "Opret min konto",
+      "log_in": "Log ind",
+      "continue": "Fortsæt til mit akademi"
+    },
+    "success": {
+      "title": "Din Early Adopter-plan er aktiv",
+      "body": "Din pris er låst, og alle Early Adopter-funktioner er nu låst op for dit akademi.",
+      "continue": "Kom i gang"
+    },
+    "errors": {
+      "invalid": "Dette link er ikke gyldigt. Tjek den e-mail, vi sendte dig, eller kontakt support.",
+      "expired": "Dette link er udløbet. Kontakt support, så hjælper vi dig med at forbinde din plan.",
+      "unavailable": "Dette planlink er allerede brugt eller er ikke længere aktivt. Kontakt support, hvis det er en fejl.",
+      "conflict": "Dette akademi har allerede en betalt plan, så vi kunne ikke forbinde denne. Kontakt support, så hjælper vi dig."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Ny",
+    "read_full": "Læs hele ændringsloggen",
+    "close": "Luk"
   }
 }

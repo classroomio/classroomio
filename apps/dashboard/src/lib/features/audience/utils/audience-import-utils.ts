@@ -4,6 +4,7 @@ import type { ParsedImportRow, TAudienceImportRowStatus } from '@cio/utils/valid
 export const IMPORT_ROW_STATUS_LABEL: Record<TAudienceImportRowStatus, string> = {
   ready: 'audience.import.status.ready',
   already_member: 'audience.import.status.already_member',
+  invite_resent: 'audience.import.status.invite_resent',
   invalid_email: 'audience.import.status.invalid_email',
   duplicate_in_file: 'audience.import.status.duplicate_in_file',
   is_staff: 'audience.import.status.is_staff',
@@ -18,7 +19,8 @@ export function summariseImportRows(rows: Pick<ParsedImportRow, 'status'>[]) {
 
   for (const row of rows) {
     if (row.status === 'ready') ready += 1;
-    else if (row.status === 'already_member' || row.status === 'duplicate_in_file') alreadyListed += 1;
+    else if (row.status === 'already_member' || row.status === 'invite_resent' || row.status === 'duplicate_in_file')
+      alreadyListed += 1;
     else invalid += 1;
   }
 

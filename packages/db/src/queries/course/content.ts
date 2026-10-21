@@ -1,7 +1,8 @@
 import { sql } from 'drizzle-orm';
 
 import { ContentType } from '@cio/utils/constants';
-import { db, sql as drizzleSql, type DbOrTxClient } from '@db/drizzle';
+import * as schema from '@db/schema';
+import { count, db, inArray, sql as drizzleSql, type DbOrTxClient } from '@db/drizzle';
 import { isExerciseCompletedSql } from './progression';
 
 export type CourseContentItemRow = {
@@ -15,6 +16,8 @@ export type CourseContentItemRow = {
   isComplete: boolean | null;
   lessonAt: string | null;
   callUrl: string | null;
+  sessionDurationMinutes: number | null;
+  recordingUrl: string | null;
   hasNoteContent: boolean | null;
   hasSlideContent: boolean | null;
   videosCount: number | null;
@@ -59,6 +62,8 @@ export async function getCourseContentItems(
         NULL::boolean AS "isComplete",
         NULL::timestamptz AS "lessonAt",
         NULL::text AS "callUrl",
+        NULL::int AS "sessionDurationMinutes",
+        NULL::text AS "recordingUrl",
         NULL::boolean AS "hasNoteContent",
         NULL::boolean AS "hasSlideContent",
         NULL::int AS "videosCount",
@@ -81,6 +86,8 @@ export async function getCourseContentItems(
         ${lessonCompletionSql} AS "isComplete",
         lesson_at AS "lessonAt",
         call_url AS "callUrl",
+        session_duration_minutes AS "sessionDurationMinutes",
+        recording_url AS "recordingUrl",
         (
           (
             length(trim(COALESCE(note, ''))) > 0
@@ -125,6 +132,8 @@ export async function getCourseContentItems(
         ${exerciseCompletionSql} AS "isComplete",
         NULL::timestamptz AS "lessonAt",
         NULL::text AS "callUrl",
+        NULL::int AS "sessionDurationMinutes",
+        NULL::text AS "recordingUrl",
         NULL::boolean AS "hasNoteContent",
         NULL::boolean AS "hasSlideContent",
         NULL::int AS "videosCount",
@@ -157,5 +166,34 @@ export async function getCourseContentItems(
     throw new Error(
       `Failed to get course content items for course "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/** Counts the student work (exercise submissions and lesson completions) attached to the given lessons and exercises. */
+export async function countContentStudentWork(
+  lessonIds: string[],
+  exerciseIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<{ submissions: number; lessonCompletions: number }> {
+  try {
+    const [submissionRow] =
+      exerciseIds.length > 0
+        ? await dbClient
+            .select({ total: count() })
+            .from(schema.submission)
+            .where(inArray(schema.submission.exerciseId, exerciseIds))
+        : [{ total: 0 }];
+    const [completionRow] =
+      lessonIds.length > 0
+        ? await dbClient
+            .select({ total: count() })
+            .from(schema.lessonCompletion)
+            .where(inArray(schema.lessonCompletion.lessonId, lessonIds))
+        : [{ total: 0 }];
+
+    return { submissions: submissionRow?.total ?? 0, lessonCompletions: completionRow?.total ?? 0 };
+  } catch (error) {
+    console.error('countContentStudentWork error:', error);
+    throw new Error(`Failed to count student work: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

@@ -15,6 +15,8 @@ import type {
   GetLessonHistoryRequest,
   GetLessonLanguageRequest,
   GetLessonRequest,
+  GetLessonVideoStatusRequest,
+  LessonVideoHlsStatuses,
   Lesson,
   LessonComments,
   PromoteUngroupedSectionRequest,
@@ -57,6 +59,7 @@ import { snackbar } from '$features/ui/snackbar/store';
  */
 export class LessonApi extends BaseApiWithErrors {
   lesson = $state<Lesson | null>(null);
+  videoHlsStatuses = $state<LessonVideoHlsStatuses>({});
   sections = $state<CourseSectionWithLessons[]>([]);
   commentsByLessonId = $state<
     Record<
@@ -84,6 +87,29 @@ export class LessonApi extends BaseApiWithErrors {
 
   translations = $state<Record<string, Record<TLocale, string>>>({});
   note = $state('');
+
+  /**
+   * Encoding state of this lesson's uploaded videos, keyed by asset id.
+   *
+   * Served by its own endpoint rather than read off `lesson.videos`, because
+   * the editor writes that array back on save — a status folded into it would
+   * be frozen at page load — and because polling must not refetch the lesson
+   * underneath unsaved edits.
+   */
+  async getVideoStatuses(courseId: string, lessonId: string) {
+    return this.execute<GetLessonVideoStatusRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId']['video-status'].$get({
+          param: { courseId, lessonId }
+        }),
+      logContext: 'fetching lesson video status',
+      onSuccess: (response) => {
+        if (response.data) {
+          this.videoHlsStatuses = response.data.statuses;
+        }
+      }
+    });
+  }
 
   /**
    * Gets a lesson by ID

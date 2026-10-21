@@ -110,7 +110,9 @@
           type: 'FILE_UPLOAD',
           fileKey: `uploads/story-${index + 1}.pdf`,
           fileName: `lesson-plan-${index + 1}.pdf`,
-          mimeType: 'application/pdf'
+          mimeType: 'application/pdf',
+          size: 180000,
+          fileUrl: `https://example.com/lesson-plan-${index + 1}.pdf`
         };
       case 'VIDEO_RECORDING':
         return {
@@ -167,6 +169,10 @@
       return {
         id: `submission-${index + 1}`,
         studentName: `Student ${index + 1}`,
+        studentProfileId: `student-${index + 1}`,
+        studentAvatarUrl: '',
+        submittedAt: '2026-04-02T15:04:00.000Z',
+        studentHref: `?tab=submissions&submission=individual&student=student-${index + 1}`,
         answers: answerData
           ? [
               {

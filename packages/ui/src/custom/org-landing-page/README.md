@@ -211,6 +211,7 @@ export const NewthemeLandingCourseCard = newtheme.courseCard;
 ### 6. Pick body layouts
 
 - `course-curriculum.svelte` has a `layoutByTheme` map (`accordion` for collapsible, `chapters` for permanently expanded). Add `newtheme`.
+- Curriculum modules list `section.items` (lessons and exercises in course order, falling back to `section.lessons`). A section with `standalone: 'lesson' | 'exercise'` is a single item outside any section: render it as a numbered module showing its type label, with no rows or expand control. Quartz renders the curriculum itself in `quartz/course-curriculum.svelte` and follows the same rules.
 - If the info-blocks should use a different layout, do the same in `course-info-blocks.svelte`.
 
 ### 7. Storybook

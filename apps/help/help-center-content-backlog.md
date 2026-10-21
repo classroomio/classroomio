@@ -634,7 +634,7 @@ Media notes:
 ### `content/help/learner-guides/know-when-you-qualify-for-a-certificate.mdx` — Know when you qualify for a certificate
 
 - **Article type:** Student eligibility reference.
-- **Cover:** Course completion threshold; lesson/exercise requirements; grading dependencies; compliance-cycle timing; certificate availability state; reasons eligibility may be delayed; administrator-controlled rules.
+- **Cover:** Course completion requirements; lesson/exercise requirements; grading dependencies; compliance-cycle timing; certificate availability state; reasons eligibility may be delayed; administrator-controlled rules.
 - **Images:** Student course completion/eligibility indicator and certificate-ready state.
 - **Video:** No video.
 

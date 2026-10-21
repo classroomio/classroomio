@@ -27,7 +27,6 @@ import {
   getQuestionsByExerciseIds,
   stampCopiedTemplateUnits,
   syncOptionIdSequence,
-  updateCourse,
   updateExerciseSection
 } from '@db/queries';
 
@@ -359,6 +358,8 @@ async function cloneCourseWithClient(
             teacherId: crossOrg ? null : lesson.teacherId,
             isComplete: false,
             callUrl: crossOrg ? null : lesson.callUrl,
+            sessionDurationMinutes: lesson.sessionDurationMinutes,
+            recordingUrl: crossOrg ? null : lesson.recordingUrl,
             order: lesson.order,
             isUnlocked: lesson.isUnlocked,
             completionPolicy: lesson.completionPolicy,
@@ -513,16 +514,6 @@ async function cloneCourseWithClient(
   if (optionsToCreate.length > 0) {
     await syncOptionIdSequence(tx);
     await createOptions(optionsToCreate, tx);
-  }
-
-  const sourceExerciseId = courseCopy.certificate?.requiredExerciseId;
-  if (sourceExerciseId) {
-    const mappedExerciseId = exerciseMap.get(sourceExerciseId) ?? null;
-    const certificate = {
-      ...(courseCopy.certificate ?? {}),
-      requiredExerciseId: mappedExerciseId
-    };
-    await updateCourse(newCourse.id, { certificate }, tx);
   }
 
   if (options.setSourceIds) {

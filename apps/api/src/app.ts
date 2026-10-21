@@ -50,9 +50,12 @@ import { v1Router } from '@api/routes/v1';
 import { pluginsRouter } from '@api/routes/plugins';
 import { pluginApiRouter } from '@api/routes/plugin-api';
 import { handlePluginApiError } from '@api/routes/plugin-api/errors';
+import type { Hono as HonoInstance, Schema } from 'hono';
+import type { ExtractSchema, MergeSchemaPath } from 'hono/types';
+import type { AuthSession } from '@api/types/auth';
 
 // Create Hono app with chaining for RPC support
-export const app = new Hono()
+const baseApp = new Hono()
   // Middleware
   .use('*', logger())
   .use('*', prettyJSON())
@@ -238,7 +241,47 @@ export const app = new Hono()
       session,
       user
     });
-  })
+  });
+
+type MountedRoutes<Path extends string, Router extends HonoInstance<any, any, any>> =
+  Router extends HonoInstance<any, infer Routes, any>
+    ? Routes extends Schema
+      ? MergeSchemaPath<Routes, Path>
+      : never
+    : never;
+
+type AppSchema =
+  | ExtractSchema<typeof baseApp>
+  | MountedRoutes<'/onboarding', typeof onboardingRouter>
+  | MountedRoutes<'/account', typeof accountRouter>
+  | MountedRoutes<'/course', typeof courseRouter>
+  | MountedRoutes<'/domain', typeof domainRouter>
+  | MountedRoutes<'/hls', typeof hlsRouter>
+  | MountedRoutes<'/transcripts', typeof transcriptsRouter>
+  | MountedRoutes<'/mail', typeof mailRouter>
+  | MountedRoutes<'/media', typeof mediaRouter>
+  | MountedRoutes<'/jobs', typeof jobsRouter>
+  | MountedRoutes<'/license', typeof licenseRouter>
+  | MountedRoutes<'/organization', typeof organizationRouter>
+  | MountedRoutes<'/organization/sso', typeof organizationSsoRouter>
+  | MountedRoutes<'/organization/token-auth', typeof organizationTokenAuthRouter>
+  | MountedRoutes<'/sso', typeof ssoDiscoveryRouter>
+  | MountedRoutes<'/dash', typeof dashAnalyticsRouter>
+  | MountedRoutes<'/community', typeof communityRouter>
+  | MountedRoutes<'/invite', typeof inviteRouter>
+  | MountedRoutes<'/org-site/course', typeof publicCourseRouter>
+  | MountedRoutes<'/org-site/og', typeof orgSiteOgRouter>
+  | MountedRoutes<'/public-api/v1', typeof v1Router>
+  | MountedRoutes<'/cohort', typeof cohortRouter>
+  | MountedRoutes<'/unsplash', typeof unsplashRouter>
+  | MountedRoutes<'/widgets', typeof publicWidgetsRouter>
+  | MountedRoutes<'/report', typeof reportRouter>
+  | MountedRoutes<'/internal', typeof internalRouter>
+  | MountedRoutes<'/agent', typeof agentRouter>
+  | MountedRoutes<'/plugins', typeof pluginsRouter>
+  | MountedRoutes<'/plugin-api', typeof pluginApiRouter>;
+
+export const app: HonoInstance<AuthSession, AppSchema> = baseApp
   .route('/onboarding', onboardingRouter)
   .route('/account', accountRouter)
   .route('/course', courseRouter)

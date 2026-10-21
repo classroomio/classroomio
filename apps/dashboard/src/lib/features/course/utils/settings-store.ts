@@ -1,6 +1,9 @@
 import type { TCourseType } from '@cio/db/types';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import type { TCourseCallout } from '@cio/utils/validation/course';
 import { writable } from 'svelte/store';
+
+import type { LiveSessionReminderRow } from './types';
 
 type CourseSettings = {
   bannerImage: string;
@@ -14,15 +17,13 @@ type CourseSettings = {
   allowMarkdownExport: boolean;
   isPublished: boolean;
   isContentGroupingEnabled: boolean;
-  progressionMode: 'free' | 'sequential';
+  progressionMode: CourseProgressionMode;
   commentsEnabled: boolean;
   callout: TCourseCallout | null;
   welcomeEmailMessage: string;
+  liveSessionReminders: LiveSessionReminderRow[];
   certificate: {
     deadline: string | null;
-    threshold: number;
-    requiredExerciseId: string | null;
-    exerciseMinScorePercent: number | null;
   };
 };
 
@@ -47,10 +48,8 @@ export const settings = writable<CourseSettings>({
   commentsEnabled: true,
   callout: null,
   welcomeEmailMessage: '',
+  liveSessionReminders: [],
   certificate: {
-    deadline: null,
-    threshold: 100,
-    requiredExerciseId: null,
-    exerciseMinScorePercent: null
+    deadline: null
   }
 });

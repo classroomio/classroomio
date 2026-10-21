@@ -106,3 +106,17 @@ export const ZCourseRoleReconcilePayload = z.object({
   profileId: z.string().min(1)
 });
 export type TCourseRoleReconcilePayload = z.infer<typeof ZCourseRoleReconcilePayload>;
+
+/**
+ * Daily reminder for Early Adopter purchases that are paid but still not connected to an organization.
+ */
+export const ZEarlyAdopterClaimReminderPayload = z.object({
+  remindAfterDays: z.number().int().positive().default(3),
+  batchSize: z.number().int().positive().max(500).default(100)
+});
+export type TEarlyAdopterClaimReminderPayload = z.infer<typeof ZEarlyAdopterClaimReminderPayload>;
+
+export const ZWebhookRetentionPayload = z.object({
+  olderThanDays: z.number().int().positive().default(30)
+});
+export type TWebhookRetentionPayload = z.infer<typeof ZWebhookRetentionPayload>;

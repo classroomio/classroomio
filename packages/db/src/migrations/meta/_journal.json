@@ -215,8 +215,71 @@
     {
       "idx": 30,
       "version": "7",
-      "when": 1791621617541,
-      "tag": "0030_plugin_platform_complete",
+      "when": 1791535045963,
+      "tag": "0030_live_session_reminder_delivery",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1791544397388,
+      "tag": "0031_lesson_session_lifecycle",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1791626490131,
+      "tag": "0032_early_adopter_claim",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1791748761307,
+      "tag": "0033_media_upload_pipeline",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1791971013728,
+      "tag": "0034_restore_missing_unique_constraints",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1792160611625,
+      "tag": "0035_public_api_scopes_and_instance",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1792266230279,
+      "tag": "0036_mixed_course_outline",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1792391198034,
+      "tag": "0037_webhooks",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1792497761466,
+      "tag": "0038_remove_final_exercise_and_completion_threshold",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1792575299000,
+      "tag": "0039_plugin_platform_complete",
       "breakpoints": true
     }
   ]

@@ -1,76 +1,83 @@
 ---
 title: Add slides and presentations
-description: Embed Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, or Beautiful.ai in a lesson.
+description: Embed a supported presentation in a lesson using the platform’s iframe code.
+last_reviewed: '2026-10-21'
 ---
 
-A lesson can include more than one slide deck. On the lesson **Materials** tab, click **Edit**, open the **Slide** tab, then click **Add slide**. Choose your platform and paste the full iframe embed code from that tool. A share link is not enough.
+Open a lesson in **Edit** mode, choose **Slide**, and select **Add slide**. Pick the presentation platform and paste its full iframe embed code; a normal share link is not enough.
 
-![Add slide modal in the lesson editor with platform picker, embed code field, and preview](/help/add-slide-embed-picker.webp)
+![Add a slide dialog with platform picker, embed code field, and preview](./images/add-slides-and-presentations/overview.webp)
 
-ClassroomIO pulls the `src` URL from the snippet, ignores its width and height, and renders each deck at 16:9.
+## Add the presentation
 
-:::tip[Use the embed code]
-Each platform section below shows where to find the iframe code. View links usually do not work. Look for **Embed** in the tool's share menu.
+### 1. Open the slide picker
+
+Open the course's **Content**, choose the lesson, select **Edit**, and open **Slide → Add slide**. Administrators and tutors with course access can add lesson materials.
+
+### 2. Choose the platform and get its embed code
+
+Select the platform in the picker. ClassroomIO displays that platform's instructions above **Paste embed code**. Obtain the full iframe snippet from the source presentation, rather than copying the browser address or a download link.
+
+:::warning[Review the source presentation's sharing]
+Publishing or enabling an embed can make the source deck public. Remove private information and check the sharing requirements before generating its embed code. Access restrictions on the source platform still affect students.
 :::
 
-## Google Slides [#google-slides]
+### 3. Paste, preview, and add
 
-1. Open the deck and choose **File → Share → Publish to web**.
-2. Open the **Embed** tab and click **Publish**.
-3. Copy the iframe code and paste it into ClassroomIO.
+Paste the iframe snippet into **Paste embed code**. Check the **Preview**, then select **Add slide** when the embed is accepted. ClassroomIO extracts the source URL and sizes the presentation to its lesson player; you do not need to match the iframe's width and height.
 
-## Canva [#canva]
+A lesson can contain multiple slide decks. Repeat the workflow for another presentation, then review the lesson in view mode.
 
-1. Above the editor, click **Share → More**.
-2. Choose **Embed** and confirm (this makes the design public).
-3. Copy the HTML embed code and paste it into ClassroomIO.
+## Get the right code for your platform
 
-## PowerPoint [#powerpoint]
+### Google Slides [#google-slides]
 
-1. Save the deck to OneDrive and open it in **PowerPoint for the web**.
-2. Choose **File → Share → Embed**.
-3. Copy the iframe code and paste it into ClassroomIO.
+In Google Slides, use **File → Share → Publish to web**, choose **Embed**, publish, and copy the iframe code. Your organization may restrict publishing. See [Google's publishing and embedding instructions](https://support.google.com/docs/answer/183965?hl=en).
 
-Personal OneDrive embeds are viewable without signing in. Work or school OneDrive may show a Microsoft sign-in wall to learners.
+### Canva [#canva]
 
-## Keynote [#keynote]
+Use Canva's **Embed** sharing option and copy the HTML embed code, rather than the ordinary view link. Review [Canva's embed and unpublish guidance](https://www.canva.com/help/embed-designs/) before making a design available publicly.
 
-1. Click **Collaborate** and set access to **Anyone with the link · View only**.
-2. Copy the iCloud link, then get the website embed code.
-3. Paste the iframe code into ClassroomIO. Keep collaboration enabled or the embed stops working.
+### PowerPoint [#powerpoint]
 
-## Figma Slides [#figma]
+Save the deck to OneDrive and open it in **PowerPoint for the web**. Use its **Embed** sharing option and copy the iframe code. Check [Microsoft's embedding instructions](https://support.microsoft.com/en-gb/powerpoint/embed-a-presentation-in-a-web-page-or-blog) if your account's menus differ. Organization permissions may still require students to sign in.
 
-1. Open the Figma Slides file and enable link sharing.
-2. Copy the embed code for the `/slides` or `/deck` file.
-3. Paste the iframe code into ClassroomIO.
+### Keynote [#keynote]
 
-## Prezi [#prezi]
+Choose **Keynote** in the picker and use its displayed sharing instructions to obtain an iframe for the iCloud presentation. A `.key` file or an ordinary collaboration link is not the required iframe code.
 
-1. From the dashboard, open **Share** on the presentation.
-2. Click **Embed** and copy the code.
-3. Paste the iframe code into ClassroomIO.
+### Figma Slides [#figma]
 
-## Pitch [#pitch]
+Enable the sharing access your students need and copy the embed code for the Slides deck. Use a Slides presentation embed rather than a design-file link. See [Figma's embed guidance](https://help.figma.com/hc/en-us/articles/360039827134-Embed-files-and-prototypes).
 
-1. Click **Share → Share externally** and create a public link.
-2. Open the link **Options (⋯)** and choose **Copy embed code**.
-3. Paste the iframe code into ClassroomIO. Disabling the public link breaks the embed.
+### Prezi [#prezi]
 
-## Gamma [#gamma]
+Use the presentation's **Embed** sharing option and copy the code into ClassroomIO with **Prezi** selected.
 
-1. Open **Share** and toggle **Allow public access**.
-2. Copy the generated iframe embed code.
-3. Paste it into ClassroomIO.
+### Pitch [#pitch]
 
-## SlideShare [#slideshare]
+Use the external sharing link's embed-code option. Keep that link available while the deck is embedded. See [Pitch's external sharing guidance](https://help.pitch.com/en/articles/3748926-share-an-external-link-to-your-presentation).
 
-1. Open the public deck on slideshare.net.
-2. Click **Share** under the viewer and open the **Embed** tab.
-3. Copy the iframe code and paste it into ClassroomIO.
+### Gamma [#gamma]
 
-## Beautiful.ai [#beautiful]
+Use Gamma's sharing controls to obtain the iframe for your deck, then paste it with **Gamma** selected. See [Gamma's embedding guidance](https://help.gamma.app/en/articles/11047806-can-i-embed-gamma-into-another-site).
 
-1. Open **Sharing Settings** and switch the deck to **Public**.
-2. Click **Get Embed Code**.
-3. Paste the iframe code into ClassroomIO.
+### SlideShare [#slideshare]
+
+Open the deck's sharing controls and copy its embed code. Select **SlideShare** in ClassroomIO before pasting.
+
+### Beautiful.ai [#beautiful]
+
+Use the deck's sharing settings to obtain its embed code, then paste it with **Beautiful.ai** selected. Review the source deck's public-sharing requirements first.
+
+## If the presentation does not load
+
+Confirm that you pasted the full iframe from the selected supported platform. If the preview works for you but students see an access prompt, test the source presentation with the same permissions as a student and adjust its sharing.
+
+Deleting the source presentation or disabling its sharing can break the lesson embed. For a downloadable handout instead, export a PDF and [attach it under Docs](/build-courses/add-documents-and-downloads).
+
+## Related guides
+
+- [Create and edit a lesson](/build-courses/create-and-edit-a-lesson) — combine slides with other teaching materials
+- [Add documents and downloads](/build-courses/add-documents-and-downloads) — attach a handout
+- [Set course order and content grouping](/build-courses/set-course-order-and-content-grouping) — choose where the Slide tab appears

@@ -25,15 +25,21 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import type { TPluginManifest } from '@cio/utils/validation/plugin';
+import {
+  LIVE_SESSION_REMINDER_STATUS_VALUES,
+  type TLiveSessionReminderSkipReason
+} from '@cio/utils/constants/live-session-reminder';
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
 export const locale = pgEnum('LOCALE', [...EMAIL_LOCALES]);
 export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
+export const earlyAdopterClaimStatus = pgEnum('EARLY_ADOPTER_CLAIM_STATUS', ['pending', 'claimed', 'canceled']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
 export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
 export const organizationApiKeyType = pgEnum('ORGANIZATION_API_KEY_TYPE', ['mcp', 'api', 'zapier']);
@@ -770,10 +776,12 @@ export const course = pgTable(
       welcomeEmailMessage?: string | null;
       /** IANA timezone for this course's live sessions (display + scheduling). */
       sessionTimezone?: string | null;
+      /** Minutes before each live session that students get an email reminder. Missing = platform default. */
+      liveSessionReminderOffsetsMinutes?: number[];
       sectionDisplay?: Record<string, boolean>;
       isContentGroupingEnabled?: boolean;
       /** `free` = all unlocked content is accessible; `sequential` = prior items must be complete. */
-      progressionMode?: 'free' | 'sequential';
+      progressionMode?: CourseProgressionMode;
       /** Course-wide switch for lesson comments. Missing legacy values are treated as enabled. */
       commentsEnabled?: boolean;
       /** Per-course AI tutor override; missing fields inherit from org defaults. */
@@ -822,9 +830,6 @@ export const course = pgTable(
         idFormat?: string;
       };
       deadline?: string | null;
-      threshold?: number;
-      requiredExerciseId?: string | null;
-      exerciseMinScorePercent?: number | null;
       emailMessage?: string | null;
     }>(),
     compliance: jsonb().$type<{
@@ -834,7 +839,6 @@ export const course = pgTable(
       isMandatory?: boolean;
       framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
       maxRetakeAttempts?: number | null;
-      passingScore?: number;
     }>(),
     status: text().default('ACTIVE').notNull(),
     type: courseType().default('SELF_PACED'),
@@ -1113,6 +1117,8 @@ export const lesson = pgTable(
     teacherId: uuid('teacher_id'),
     isComplete: boolean('is_complete').default(false),
     callUrl: text('call_url'),
+    sessionDurationMinutes: integer('session_duration_minutes'),
+    recordingUrl: text('recording_url'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' }).notNull(),
     isUnlocked: boolean('is_unlocked').default(true),
@@ -1155,7 +1161,7 @@ export const lesson = pgTable(
       onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-    slug: varchar(),
+    slug: varchar().notNull(),
     sourceId: uuid('source_id').references((): AnyPgColumn => lesson.id, { onDelete: 'set null' }),
     sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
@@ -1206,6 +1212,7 @@ export const asset = pgTable(
     aspectRatio: text('aspect_ratio'),
     isExternal: boolean('is_external').default(false).notNull(),
     status: varchar().default('active').notNull(),
+    hlsStatus: varchar('hls_status').default('none').notNull(),
     metadata: jsonb().default({}),
     createdByProfileId: uuid('created_by_profile_id'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -1346,7 +1353,7 @@ export const exercise = pgTable(
     sectionDisplayMode: varchar('section_display_mode').default('one_question'),
     completionPolicy: varchar('completion_policy').default('submitted').notNull(),
     passThreshold: integer('pass_threshold'),
-    slug: varchar(),
+    slug: varchar().notNull(),
     sourceId: uuid('source_id').references((): AnyPgColumn => exercise.id, { onDelete: 'set null' }),
     sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
@@ -1956,6 +1963,65 @@ export const organizationPlan = pgTable(
     }),
     unique('organization_plan_subscription_id_key').on(table.subscriptionId),
     index('idx_organization_plan_org_id').on(table.orgId)
+  ]
+);
+
+export const earlyAdopterClaim = pgTable(
+  'early_adopter_claim',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'early_adopter_claim_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    tokenHash: text('token_hash').notNull(),
+    polarSubscriptionId: text('polar_subscription_id').notNull(),
+    polarCustomerId: text('polar_customer_id'),
+    polarCheckoutId: text('polar_checkout_id'),
+    email: text().notNull(),
+    status: earlyAdopterClaimStatus().default('pending').notNull(),
+    claimedOrgId: uuid('claimed_org_id'),
+    claimedByProfileId: uuid('claimed_by_profile_id'),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    reminderSentAt: timestamp('reminder_sent_at', { withTimezone: true, mode: 'string' }),
+    payload: jsonb(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    claimedAt: timestamp('claimed_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.claimedOrgId],
+      foreignColumns: [organization.id],
+      name: 'early_adopter_claim_claimed_org_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.claimedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'early_adopter_claim_claimed_by_profile_id_fkey'
+    }),
+    unique('early_adopter_claim_token_hash_key').on(table.tokenHash),
+    unique('early_adopter_claim_polar_subscription_id_key').on(table.polarSubscriptionId),
+    index('idx_early_adopter_claim_status_created_at').on(table.status, table.createdAt)
+  ]
+);
+
+/**
+ * Single row holding this install's anonymous ID, reported in self-hosted usage pings.
+ */
+export const instance = pgTable(
+  'instance',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    singleton: boolean().default(true).notNull(),
+    firstReportedAt: timestamp('first_reported_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('instance_singleton_key').on(table.singleton),
+    check('instance_singleton_check', sql`${table.singleton}`)
   ]
 );
 
@@ -4700,5 +4766,165 @@ export const pluginEventDelivery = pgTable(
     index('idx_plugin_delivery_status_retry').on(table.status, table.nextRetryAt),
     index('idx_plugin_delivery_sub_id').on(table.subscriptionId),
     index('idx_plugin_delivery_outbox_id').on(table.outboxEventId)
+  ]
+);
+
+export const liveSessionReminderStatus = pgEnum('LIVE_SESSION_REMINDER_STATUS', [
+  ...LIVE_SESSION_REMINDER_STATUS_VALUES
+]);
+
+/**
+ * `live_session_reminder_delivery` — one reminder email per (live lesson × student × offset). The reminder scan
+ * owns pending/skipped transitions; the email worker owns sent/failed.
+ */
+export const liveSessionReminderDelivery = pgTable(
+  'live_session_reminder_delivery',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    lessonId: uuid('lesson_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    offsetMinutes: integer('offset_minutes').notNull(),
+    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }).notNull(),
+    status: liveSessionReminderStatus().default('pending').notNull(),
+    skipReason: varchar('skip_reason', { length: 64 }).$type<TLiveSessionReminderSkipReason>(),
+    bullmqJobId: text('bullmq_job_id'),
+    providerId: text('provider_id'),
+    lastError: text('last_error'),
+    attemptCount: integer('attempt_count').default(0).notNull(),
+    queuedAt: timestamp('queued_at', { withTimezone: true, mode: 'string' }),
+    sentAt: timestamp('sent_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'live_session_reminder_delivery_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'live_session_reminder_delivery_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'live_session_reminder_delivery_lesson_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'live_session_reminder_delivery_profile_id_fkey'
+    }).onDelete('cascade'),
+    uniqueIndex('live_session_reminder_delivery_lesson_profile_offset_unique').on(
+      table.lessonId,
+      table.profileId,
+      table.offsetMinutes
+    ),
+    index('idx_live_session_reminder_delivery_organization_id').on(table.organizationId),
+    index('idx_live_session_reminder_delivery_course_lesson_at').on(table.courseId, table.lessonAt),
+    index('idx_live_session_reminder_delivery_profile_id').on(table.profileId),
+    index('idx_live_session_reminder_delivery_status_lesson_at').on(table.status, table.lessonAt)
+  ]
+);
+
+export const webhookDeliveryStatus = pgEnum('WEBHOOK_DELIVERY_STATUS', ['PENDING', 'SUCCESS', 'FAILED', 'GAVE_UP']);
+
+export const webhookEndpoint = pgTable(
+  'webhook_endpoint',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    name: varchar('name', { length: 120 }).notNull(),
+    payloadUrl: text('payload_url').notNull(),
+    secretCiphertext: text('secret_ciphertext'),
+    secretLast4: varchar('secret_last4', { length: 4 }),
+    verifySsl: boolean('verify_ssl').default(true).notNull(),
+    eventMode: varchar('event_mode', { length: 16 }).default('selected').notNull(),
+    isActive: boolean('is_active').default(true).notNull(),
+    consecutiveFailures: integer('consecutive_failures').default(0).notNull(),
+    autoDisabledAt: timestamp('auto_disabled_at', { withTimezone: true, mode: 'string' }),
+    lastDeliveryStatus: webhookDeliveryStatus('last_delivery_status'),
+    lastDeliveryAt: timestamp('last_delivery_at', { withTimezone: true, mode: 'string' }),
+    createdByProfileId: uuid('created_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    updatedByProfileId: uuid('updated_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [index('idx_webhook_endpoint_org_id').on(table.organizationId)]
+);
+
+export const webhookSubscription = pgTable(
+  'webhook_subscription',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    webhookId: uuid('webhook_id')
+      .notNull()
+      .references(() => webhookEndpoint.id, { onDelete: 'cascade' }),
+    eventType: varchar('event_type', { length: 64 }).notNull()
+  },
+  (table) => [
+    unique('webhook_subscription_webhook_event_key').on(table.webhookId, table.eventType),
+    index('idx_webhook_subscription_event_type').on(table.eventType)
+  ]
+);
+
+export const webhookEvent = pgTable(
+  'webhook_event',
+  {
+    id: text('id').primaryKey().notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    eventType: varchar('event_type', { length: 64 }).notNull(),
+    payload: jsonb('payload').notNull().$type<Record<string, unknown>>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_webhook_event_created_at').on(table.createdAt),
+    index('idx_webhook_event_org_created_at').on(table.organizationId, table.createdAt)
+  ]
+);
+
+export const webhookDelivery = pgTable(
+  'webhook_delivery',
+  {
+    id: text('id').primaryKey().notNull(),
+    webhookId: uuid('webhook_id')
+      .notNull()
+      .references(() => webhookEndpoint.id, { onDelete: 'cascade' }),
+    eventId: text('event_id')
+      .notNull()
+      .references(() => webhookEvent.id, { onDelete: 'cascade' }),
+    attempt: integer('attempt').default(0).notNull(),
+    status: webhookDeliveryStatus('status').default('PENDING').notNull(),
+    isTest: boolean('is_test').default(false).notNull(),
+    nextAttemptAt: timestamp('next_attempt_at', { withTimezone: true, mode: 'string' }),
+    requestHeaders: jsonb('request_headers').$type<Record<string, string>>(),
+    responseStatus: integer('response_status'),
+    responseBody: text('response_body'),
+    errorMessage: text('error_message'),
+    durationMs: integer('duration_ms'),
+    deliveredAt: timestamp('delivered_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_webhook_delivery_webhook_created_at').on(table.webhookId, table.createdAt),
+    index('idx_webhook_delivery_status_next_attempt').on(table.status, table.nextAttemptAt),
+    index('idx_webhook_delivery_event_id').on(table.eventId)
   ]
 );

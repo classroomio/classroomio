@@ -3,6 +3,7 @@ import {
   DeleteObjectCommandInput,
   GetObjectCommand,
   GetObjectCommandInput,
+  HeadObjectCommand,
   PutObjectCommand,
   PutObjectCommandInput
 } from '@aws-sdk/client-s3';
@@ -135,10 +136,47 @@ export async function generateDownloadPresignedUrls(
  * @param contentType MIME type of the file
  * @returns Presigned URL for upload
  */
+/**
+ * Whether a HeadObject rejection means the object is absent, as opposed to a
+ * credential, network or throttling failure. Treating those as absent would tell
+ * a caller its completed upload never landed.
+ */
+function isObjectNotFoundError(error: unknown): boolean {
+  const candidate = error as { name?: string; Code?: string; $metadata?: { httpStatusCode?: number } };
+
+  return (
+    candidate?.name === 'NotFound' || candidate?.Code === 'NoSuchKey' || candidate?.$metadata?.httpStatusCode === 404
+  );
+}
+
+/**
+ * Whether an object exists, used to confirm a presigned upload actually landed
+ * before an asset is treated as uploaded. Returns its size so a zero-byte PUT
+ * is not mistaken for a successful upload.
+ */
+export async function headVideoObject(key: string): Promise<{ exists: boolean; byteSize: number }> {
+  const config = getStorageConfig();
+  const client = getS3Client();
+
+  try {
+    const head = await client.send(new HeadObjectCommand({ Bucket: config.bucketVideos, Key: key }));
+
+    return { exists: true, byteSize: head.ContentLength ?? 0 };
+  } catch (error) {
+    if (isObjectNotFoundError(error)) {
+      return { exists: false, byteSize: 0 };
+    }
+
+    console.error('headVideoObject error:', error);
+    throw error;
+  }
+}
+
 export async function generateUploadPresignedUrl(
   fileKey: string,
   bucketName: string,
-  contentType: string
+  contentType: string,
+  contentLength?: number
 ): Promise<string> {
   const config = getStorageConfig();
   const client = getPresignS3Client();
@@ -146,11 +184,15 @@ export async function generateUploadPresignedUrl(
   const command = new PutObjectCommand({
     Bucket: bucketName,
     Key: fileKey,
-    ContentType: contentType
+    ContentType: contentType,
+    ...(contentLength === undefined ? {} : { ContentLength: contentLength })
   }) as GetSignedUrlParameters[1];
 
   const presignedUrl = await getSignedUrl(client as GetSignedUrlParameters[0], command, {
-    expiresIn: config.presignUploadExpiresSeconds
+    expiresIn: config.presignUploadExpiresSeconds,
+    // Signing content-length binds the declared size into the signature, so the
+    // URL cannot be used to upload a different number of bytes than was checked.
+    ...(contentLength === undefined ? {} : { signableHeaders: new Set(['content-length']) })
   });
 
   return presignedUrl;
@@ -198,9 +240,19 @@ export async function generateDocumentDownloadPresignedUrls(keys: string[]): Pro
  * @param contentType MIME type of the video file
  * @returns Presigned URL for upload
  */
-export async function generateVideoUploadPresignedUrl(fileKey: string, contentType: string): Promise<string> {
+export async function generateVideoUploadPresignedUrl(
+  fileKey: string,
+  contentType: string,
+  contentLength?: number
+): Promise<string> {
   const config = getStorageConfig();
-  return generateUploadPresignedUrl(fileKey, config.bucketVideos, contentType);
+  return generateUploadPresignedUrl(fileKey, config.bucketVideos, contentType, contentLength);
+}
+
+/** Remove a video object, used to drop an upload that broke its declared size. */
+export async function deleteVideoObject(key: string): Promise<void> {
+  const config = getStorageConfig();
+  await deleteFromS3({ Bucket: config.bucketVideos, Key: key });
 }
 
 /**

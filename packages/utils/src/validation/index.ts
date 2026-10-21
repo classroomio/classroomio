@@ -24,3 +24,4 @@ export * from './widget';
 export * from './jobs';
 export * from './invite-link';
 export * from './plugin';
+export * from './webhook';

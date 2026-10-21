@@ -65,3 +65,13 @@ export function resolveSlugCollision(baseSlug: string, takenSlugs: Iterable<stri
     counter += 1;
   }
 }
+
+/**
+ * Derives a free slug for `title` from `takenSlugs`, adds it to `takenSlugs`, and returns it.
+ */
+export function claimSlug(title: string, takenSlugs: Set<string>): string {
+  const slug = resolveSlugCollision(slugifyTitle(title), takenSlugs);
+  takenSlugs.add(slug);
+
+  return slug;
+}

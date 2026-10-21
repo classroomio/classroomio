@@ -8,6 +8,7 @@ import { ROLE } from '@cio/utils/constants';
 import { type DbOrTxClient, db } from '@db/drizzle';
 import type {
   TAudienceActivityWindow,
+  TAudienceCertificate,
   TAudienceCompletion,
   TAudienceEnrollment,
   TAudienceInviteStatus,
@@ -26,6 +27,7 @@ export type GetOrganizationAudienceOptions = {
   inviteStatus?: TAudienceInviteStatus;
   enrollment?: TAudienceEnrollment;
   completion?: TAudienceCompletion;
+  certificate?: TAudienceCertificate;
   lastLoginBefore?: TAudienceActivityWindow;
   lastActiveBefore?: TAudienceActivityWindow;
   excludeRecentJoiners?: boolean;
@@ -184,6 +186,22 @@ function completionCondition(completion: TAudienceCompletion): SQL {
   )`;
 }
 
+function certificateCountSql(orgId: string): SQL<number> {
+  return sql<number>`(
+    SELECT COUNT(*)::int
+    FROM ${schema.groupmember} gmc
+    JOIN ${schema.group} gc ON gc.id = gmc.group_id AND gc.organization_id = ${orgId}
+    WHERE gmc.profile_id = ${schema.profile.id}
+      AND gmc.certificate_earned_at IS NOT NULL
+  )`;
+}
+
+function certificateCondition(orgId: string, certificate: TAudienceCertificate): SQL {
+  const certificateCount = certificateCountSql(orgId);
+
+  return certificate === 'earned' ? sql`${certificateCount} > 0` : sql`${certificateCount} = 0`;
+}
+
 /**
  * Same shape as a `getOrganizationAudience` row, so the detail view and list
  * agree. Not status-filtered — a link to an archived learner should still work.
@@ -205,7 +223,8 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
       enrolledCount: enrolledCountSql.as('enrolledCount'),
       completedCount: completedCountSql.as('completedCount'),
       completedItems: completedItemsSql.as('completedItems'),
-      totalItems: totalItemsSql.as('totalItems')
+      totalItems: totalItemsSql.as('totalItems'),
+      certificateCount: certificateCountSql(orgId).as('certificateCount')
     })
     .from(schema.organizationmember)
     .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
@@ -244,7 +263,8 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
     lastActiveAt: row.lastActiveAt ?? null,
     enrolledCount: Number(row.enrolledCount ?? 0),
     completedCount: Number(row.completedCount ?? 0),
-    progressPercent: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
+    progressPercent: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0,
+    certificateCount: Number(row.certificateCount ?? 0)
   };
 };
 
@@ -307,6 +327,10 @@ export function buildAudienceWhereClause(
 
   if (options.completion) {
     conditions.push(completionCondition(options.completion));
+  }
+
+  if (options.certificate) {
+    conditions.push(certificateCondition(orgId, options.certificate));
   }
 
   if (options.lastLoginBefore) {
@@ -481,7 +505,8 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
       enrolledCount: enrolledCountSql.as('enrolledCount'),
       completedCount: completedCountSql.as('completedCount'),
       completedItems: completedItemsSql.as('completedItems'),
-      totalItems: totalItemsSql.as('totalItems')
+      totalItems: totalItemsSql.as('totalItems'),
+      certificateCount: certificateCountSql(orgId).as('certificateCount')
     })
     .from(schema.organizationmember)
     .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
@@ -512,7 +537,8 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
         lastActiveAt: row.lastActiveAt ?? null,
         enrolledCount: Number(row.enrolledCount ?? 0),
         completedCount: Number(row.completedCount ?? 0),
-        progressPercent
+        progressPercent,
+        certificateCount: Number(row.certificateCount ?? 0)
       };
     }),
     page,

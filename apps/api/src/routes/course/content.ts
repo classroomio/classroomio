@@ -10,6 +10,8 @@ import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
+// Installed @classroomio/mcp clients (0.1.0) still call PUT /reorder with a cio_mcp_ key. Key support stays until the
+// hosted OAuth MCP is the default, then this route goes back to session-only like the others.
 export const contentRouter = new Hono()
   .put(
     '/reorder',

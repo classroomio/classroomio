@@ -1,3 +1,6 @@
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { buildPluginCsp } from '@api/routes/plugins/assets';
 
@@ -65,26 +68,37 @@ describe('Plugin Manifest CSP Policy', () => {
   it('serves assets for approved plugins matching digest', async () => {
     const db = await import('@cio/db/queries/plugin');
     const { pluginAssetsRouter } = await import('@api/routes/plugins/assets');
+    const digest = 'sha256-7ed8d5a209603713494675cda2665c535551cf0638337fe0e9ed4bc68b63119a';
+    const artifactRoot = await mkdtemp(path.join(tmpdir(), 'cio-plugin-assets-'));
+    const artifactDirectory = path.join(artifactRoot, 'com.classroomio.announcement-banner', '1.0.0', digest);
+    await mkdir(artifactDirectory, { recursive: true });
+    await writeFile(path.join(artifactDirectory, 'settings.html'), '<!doctype html><title>Settings</title>');
+    vi.stubEnv('PLUGIN_ARTIFACTS_PATH', artifactRoot);
 
     vi.spyOn(db, 'getPluginVersion').mockResolvedValue({
       id: 'version-1',
       pluginId: 'com.classroomio.announcement-banner',
       version: '1.0.0',
       manifest: { id: 'com.classroomio.announcement-banner' } as any,
-      artifactDigest: 'sha256-7ed8d5a209603713494675cda2665c535551cf0638337fe0e9ed4bc68b63119a',
+      artifactDigest: digest,
       reviewStatus: 'approved',
       publishedAt: '2026-10-10',
       createdAt: '2026-10-10'
     } as any);
 
-    const res = await pluginAssetsRouter.request(
-      '/com.classroomio.announcement-banner/1.0.0/sha256-7ed8d5a209603713494675cda2665c535551cf0638337fe0e9ed4bc68b63119a/settings.html'
-    );
+    try {
+      const res = await pluginAssetsRouter.request(
+        `/com.classroomio.announcement-banner/1.0.0/${digest}/settings.html`
+      );
 
-    expect(res.status).toBe(200);
-    expect(res.headers.get('content-type')).toContain('text/html');
-    expect(res.headers.get('content-security-policy')).toContain("default-src 'self'");
-    const text = await res.text();
-    expect(text).toContain('<!doctype html>');
+      expect(res.status).toBe(200);
+      expect(res.headers.get('content-type')).toContain('text/html');
+      expect(res.headers.get('content-security-policy')).toContain("default-src 'self'");
+      const text = await res.text();
+      expect(text).toContain('<!doctype html>');
+    } finally {
+      vi.unstubAllEnvs();
+      await rm(artifactRoot, { recursive: true, force: true });
+    }
   });
 });

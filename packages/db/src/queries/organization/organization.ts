@@ -203,9 +203,13 @@ export async function getOrganizationMemberIdByOrgAndProfile(
   }
 }
 
-export async function getOrganizationMemberRoleId(organizationId: string, profileId: string): Promise<number | null> {
+export async function getOrganizationMemberRoleId(
+  organizationId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number | null> {
   try {
-    const [row] = await db
+    const [row] = await dbClient
       .select({ roleId: schema.organizationmember.roleId })
       .from(schema.organizationmember)
       .where(
@@ -224,13 +228,44 @@ export async function getOrganizationMemberRoleId(organizationId: string, profil
   }
 }
 
+export async function listActiveOrganizationRoles(
+  organizationId: string,
+  profileIds: string[],
+  dbClient: DbOrTxClient = db
+) {
+  if (profileIds.length === 0) return [];
+
+  try {
+    const rows = await dbClient
+      .select({
+        profileId: schema.organizationmember.profileId,
+        roleId: schema.organizationmember.roleId
+      })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          inArray(schema.organizationmember.profileId, profileIds),
+          eq(schema.organizationmember.status, 'ACTIVE')
+        )
+      );
+
+    return rows.flatMap((row) => (row.profileId ? [{ profileId: row.profileId, roleId: row.roleId }] : []));
+  } catch (error) {
+    console.error('listActiveOrganizationRoles error:', error);
+    throw new Error(
+      `Failed to list active organization roles: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 /**
  * Creates multiple organization members in a single query
  * @param data Array of organization member creation data
  * @returns Array of created members
  */
-export const createOrganizationMembers = async (data: TNewOrganizationmember[]) => {
-  const members = await db.insert(schema.organizationmember).values(data).onConflictDoNothing().returning();
+export const createOrganizationMembers = async (data: TNewOrganizationmember[], dbClient: DbOrTxClient = db) => {
+  const members = await dbClient.insert(schema.organizationmember).values(data).onConflictDoNothing().returning();
 
   return members;
 };
@@ -705,6 +740,107 @@ export const getOrganizationTeam = async (orgId: string) => {
   }));
 };
 
+export type OrganizationTeamMemberRoleRow = {
+  id: number;
+  email: string | null;
+  verified: boolean | null;
+  roleId: number;
+  profileId: string | null;
+};
+
+/**
+ * Admin or tutor membership in this org, or null when the row is missing or a student.
+ */
+export async function getOrganizationTeamMemberById(
+  orgId: string,
+  memberId: number,
+  dbClient: DbOrTxClient = db
+): Promise<OrganizationTeamMemberRoleRow | null> {
+  try {
+    const [member] = await dbClient
+      .select({
+        id: schema.organizationmember.id,
+        email: schema.organizationmember.email,
+        verified: schema.organizationmember.verified,
+        roleId: schema.organizationmember.roleId,
+        profileId: schema.organizationmember.profileId
+      })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.id, memberId),
+          or(eq(schema.organizationmember.roleId, ROLE.ADMIN), eq(schema.organizationmember.roleId, ROLE.TUTOR))
+        )
+      )
+      .limit(1);
+
+    if (!member) {
+      return null;
+    }
+
+    return member;
+  } catch (error) {
+    console.error('getOrganizationTeamMemberById error:', error);
+    throw new Error('Failed to fetch organization team member');
+  }
+}
+
+/**
+ * Writes the role and returns the row, or null when it is no longer a team member in this org.
+ */
+export async function updateOrganizationMemberRole(
+  orgId: string,
+  memberId: number,
+  roleId: number,
+  dbClient: DbOrTxClient = db
+) {
+  try {
+    const [updated] = await dbClient
+      .update(schema.organizationmember)
+      .set({ roleId })
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.id, memberId),
+          or(eq(schema.organizationmember.roleId, ROLE.ADMIN), eq(schema.organizationmember.roleId, ROLE.TUTOR))
+        )
+      )
+      .returning({
+        id: schema.organizationmember.id,
+        email: schema.organizationmember.email,
+        verified: schema.organizationmember.verified,
+        roleId: schema.organizationmember.roleId,
+        profileId: schema.organizationmember.profileId
+      });
+
+    return updated ?? null;
+  } catch (error) {
+    console.error('updateOrganizationMemberRole error:', error);
+    throw new Error('Failed to update organization member role');
+  }
+}
+
+export async function countOrganizationAdmins(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
+  try {
+    const [row] = await dbClient
+      .select({ count: count(schema.organizationmember.id) })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN),
+          ne(schema.organizationmember.status, 'ARCHIVED')
+        )
+      );
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countOrganizationAdmins error:', error);
+    throw new Error('Failed to count organization admins');
+  }
+}
+
 /**
  * Counts active organization members with the student role. Used to enforce per-plan student caps.
  */
@@ -1113,9 +1249,10 @@ export const createOrganizationPlan = async (
  */
 export const updateOrganizationPlan = async (
   subscriptionId: string,
-  updates: Partial<Pick<TOrganizationPlan, 'isActive' | 'deactivatedAt' | 'payload'>>
+  updates: Partial<Pick<TOrganizationPlan, 'isActive' | 'deactivatedAt' | 'payload'>>,
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationPlan | null> => {
-  const [plan] = await db
+  const [plan] = await dbClient
     .update(schema.organizationPlan)
     .set({ ...updates, updatedAt: sql`timezone('utc'::text, now())` })
     .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
@@ -1131,9 +1268,10 @@ export const updateOrganizationPlan = async (
  */
 export const activateOrganizationPlan = async (
   subscriptionId: string,
-  payload: TOrganizationPlan['payload']
+  payload: TOrganizationPlan['payload'],
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationPlan | null> => {
-  const [plan] = await db
+  const [plan] = await dbClient
     .update(schema.organizationPlan)
     .set({
       isActive: true,
@@ -1155,9 +1293,10 @@ export const activateOrganizationPlan = async (
  */
 export const cancelOrganizationPlan = async (
   subscriptionId: string,
-  payload: TOrganizationPlan['payload']
+  payload: TOrganizationPlan['payload'],
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationPlan> => {
-  const [plan] = await db
+  const [plan] = await dbClient
     .update(schema.organizationPlan)
     .set({
       isActive: false,

@@ -12,7 +12,7 @@
     "build:clean": "rimraf dist tsconfig.tsbuildinfo && pnpm run build",
     "predev": "pnpm --filter @cio/core run build:incremental",
     "dev": "pnpm --filter @cio/api --parallel \"/^dev:.*/\"",
-    "dev:server": "tsx watch src/index.ts",
+    "dev:server": "tsx watch --clear-screen=false --include \"./src/**/*\" src/index.ts",
     "dev:tsc": "tsc -p tsconfig.json --watch --preserveWatchOutput",
     "deploy": "wrangler deploy",
     "start": "node dist/index.js",

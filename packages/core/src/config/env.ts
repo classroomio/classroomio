@@ -60,8 +60,15 @@ const envSchema = z.object({
   UNSPLASH_API_KEY: z.string().optional(),
   /** When 'true', instance runs in self-hosted mode: single org, auto-enroll as student, no org switching */
   PUBLIC_IS_SELFHOSTED: z.string().optional(),
+  WEBHOOK_ALLOW_PRIVATE_NETWORKS: z.string().optional(),
   /** License key for enterprise features (SSO, token-auth, no-tracking, etc.) */
   LICENSE_KEY: z.string().optional(),
+  /** Reported in the self-hosted usage ping. Baked into the published jobs image; unset when run from source. */
+  CIO_VERSION: z.string().optional(),
+  /** How the instance was deployed (docker, railway, coolify, dokploy, digitalocean). */
+  CIO_DEPLOYMENT_METHOD: z.string().optional(),
+  /** Set to 'true' to stop the self-hosted usage ping. */
+  CIO_TELEMETRY_DISABLED: z.string().optional(),
   /** Dashboard origin for invite/email links (e.g. https://app.yourdomain.com). When set, all email links point here instead of app.classroomio.com. Required for self-hosted. */
   DASHBOARD_ORIGIN: z.string().optional(),
   /**

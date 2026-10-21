@@ -10,6 +10,8 @@ export type AuthSession = {
     orgRoles: Record<string, number>;
     pluginApiClaims: PluginApiAccessTokenClaims | null;
     pluginApiRequestId: string | null;
+    /** Asset an encoder job token authorizes, set by `encoderJobMiddleware`. */
+    encoderAssetId: string | undefined;
     session: typeof auth.$Infer.Session.session | null;
     user: typeof auth.$Infer.Session.user | null;
     userRole: number | null;

@@ -57,9 +57,11 @@ import { isFreeLandingPageTheme, ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
-import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
+import { inviteTeamMembers as inviteTeamMembersSecure, recordOrganizationInviteAudits } from './organization/invite';
 import { publishOutboxEvent } from './plugin/events';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
+
+export { updateTeamMemberRole } from './organization/team-role';
 
 const PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT = 4;
 const ORG_COURSES_PAGE_SIZE = 6;
@@ -188,6 +190,7 @@ export async function getOrgAudience(
         inviteStatus: query.inviteStatus,
         enrollment: query.enrollment,
         completion: query.completion,
+        certificate: query.certificate,
         lastLoginBefore: query.lastLoginBefore,
         lastActiveBefore: query.lastActiveBefore,
         excludeRecentJoiners: query.excludeRecentJoiners
@@ -251,7 +254,20 @@ export async function removeAudienceMember(orgId: string, memberId: number, remo
     }
 
     if (deleted.email && removedByProfileId) {
-      await revokeActiveOrganizationInvitesByEmails(orgId, [deleted.email.toLowerCase()], removedByProfileId);
+      const targetEmail = deleted.email.toLowerCase();
+      const revoked = await revokeActiveOrganizationInvitesByEmails(orgId, [targetEmail], removedByProfileId);
+      await recordOrganizationInviteAudits(
+        revoked.map((invite) => ({
+          inviteId: invite.id,
+          organizationId: orgId,
+          eventType: 'REVOKED' as const,
+          actorProfileId: removedByProfileId,
+          targetEmail,
+          ipAddress: null,
+          userAgent: null,
+          metadata: { reason: 'member_removed' }
+        }))
+      );
     }
 
     return deleted;
@@ -955,7 +971,20 @@ export async function removeTeamMember(orgId: string, memberId: number, removedB
     }
 
     if (deleted.email && removedByProfileId) {
-      await revokeActiveOrganizationInvitesByEmails(orgId, [deleted.email.toLowerCase()], removedByProfileId);
+      const targetEmail = deleted.email.toLowerCase();
+      const revoked = await revokeActiveOrganizationInvitesByEmails(orgId, [targetEmail], removedByProfileId);
+      await recordOrganizationInviteAudits(
+        revoked.map((invite) => ({
+          inviteId: invite.id,
+          organizationId: orgId,
+          eventType: 'REVOKED' as const,
+          actorProfileId: removedByProfileId,
+          targetEmail,
+          ipAddress: null,
+          userAgent: null,
+          metadata: { reason: 'member_removed' }
+        }))
+      );
     }
 
     return deleted;
