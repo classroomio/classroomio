@@ -131,7 +131,7 @@ export const lessonRouter = new Hono()
         const { lessonId } = c.req.valid('param');
         const data = c.req.valid('json');
 
-        const updatedLesson = await updateLessonService(lessonId, data);
+        const updatedLesson = await updateLessonService(lessonId, data, { actorProfileId: c.get('user')?.id ?? null });
         const [lesson] = await hideLessonRecordingsFromLearners(courseId, user.id, [updatedLesson]);
 
         return c.json({ success: true, data: lesson }, 200);

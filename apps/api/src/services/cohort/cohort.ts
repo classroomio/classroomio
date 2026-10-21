@@ -1,3 +1,4 @@
+import { emitCohortMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type TCreateCohort,
@@ -324,8 +325,12 @@ export async function listCohortMembersPage(cohortId: string, page: TCohortListP
   return { items, total };
 }
 
-export async function addCohortMembers(cohortId: string, data: TAddCohortMembers) {
-  const results = await addCohortMembersSettled(cohortId, data);
+export async function addCohortMembers(
+  cohortId: string,
+  data: TAddCohortMembers,
+  actorProfileId: string | null = null
+) {
+  const results = await addCohortMembersSettled(cohortId, data, actorProfileId);
 
   const added = results
     .filter((r) => r.status === 'fulfilled')
@@ -338,7 +343,11 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
 }
 
 /** One settled result per `data.members` entry, in request order. */
-export async function addCohortMembersSettled(cohortId: string, data: TAddCohortMembers) {
+export async function addCohortMembersSettled(
+  cohortId: string,
+  data: TAddCohortMembers,
+  actorProfileId: string | null = null
+) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -451,6 +460,16 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
           });
         }
 
+        if (transactionResult.member) {
+          await emitCohortMemberWebhookEvent(
+            'cohort.member.added',
+            cohort.organizationId,
+            cohortId,
+            transactionResult.member,
+            actorProfileId
+          );
+        }
+
         return transactionResult.member;
       })
     );
@@ -464,11 +483,26 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
   }
 }
 
-export async function removeCohortMemberService(cohortId: string, memberId: string) {
+export async function removeCohortMemberService(
+  cohortId: string,
+  memberId: string,
+  actorProfileId: string | null = null
+) {
   try {
     const deleted = await removeCohortMember(cohortId, memberId);
     if (!deleted) {
       throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
+    }
+
+    const cohort = await getCohortById(cohortId);
+    if (cohort) {
+      await emitCohortMemberWebhookEvent(
+        'cohort.member.removed',
+        cohort.organizationId,
+        cohortId,
+        deleted,
+        actorProfileId
+      );
     }
 
     return deleted;

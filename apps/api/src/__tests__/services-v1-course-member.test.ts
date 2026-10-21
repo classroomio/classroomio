@@ -131,7 +131,11 @@ describe('services/v1/courses/members', () => {
     const result = await addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload);
 
     expect(getOrganizationMembersByNormalizedEmails).toHaveBeenCalledWith(ORG_ID, ['a@example.com']);
-    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [{ ...payload, profileId: 'profile-1' }]);
+    expect(addMembers).toHaveBeenCalledWith(
+      COURSE_ID,
+      [{ ...payload, profileId: 'profile-1' }],
+      expect.objectContaining({ actorProfileId: ACTOR_ID })
+    );
     expect(result).toEqual({ id: MEMBER_ID });
   });
 
@@ -144,7 +148,11 @@ describe('services/v1/courses/members', () => {
 
     await addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload);
 
-    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [payload]);
+    expect(addMembers).toHaveBeenCalledWith(
+      COURSE_ID,
+      [payload],
+      expect.objectContaining({ actorProfileId: ACTOR_ID })
+    );
   });
 
   it('addCourseMemberService returns 404 when the email does not belong to this organization', async () => {
@@ -205,7 +213,7 @@ describe('services/v1/courses/members', () => {
 
     await deleteCourseMemberService(ORG_ID, ACTOR_ID, memberParams);
 
-    expect(deleteMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID);
+    expect(deleteMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID, { actorProfileId: ACTOR_ID });
   });
 
   it('update and delete pass a 404 through for a member from another course', async () => {
@@ -220,7 +228,7 @@ describe('services/v1/courses/members', () => {
       statusCode: 404
     });
     expect(updateMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID, { roleId: ROLE.TUTOR });
-    expect(deleteMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID);
+    expect(deleteMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID, { actorProfileId: ACTOR_ID });
   });
 
   it('resetCourseMemberProgressService requires an actor', async () => {

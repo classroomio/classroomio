@@ -740,7 +740,8 @@ async function emitSubmissionCreatedWebhookEvent(
 
 async function emitSubmissionStatusChangedWebhookEvent(
   submission: TSubmission,
-  previous: { statusId: number; gradingState: string }
+  previous: { statusId: number; gradingState: string },
+  actorProfileId: string | null = null
 ) {
   if (!submission.courseId) return;
 
@@ -749,7 +750,8 @@ async function emitSubmissionStatusChangedWebhookEvent(
   await emitCourseWebhookEvent(submission.courseId, 'course.submission.status_changed', {
     ...submissionData,
     previousStatusId: previous.statusId,
-    previousGradingState: previous.gradingState
+    previousGradingState: previous.gradingState,
+    actorProfileId
   });
 }
 
@@ -947,7 +949,8 @@ function assertSubmissionBelongsToCourse(submission: { courseId: string | null }
 export async function updateSubmissionService(
   submissionId: string,
   courseId: string,
-  data: TSubmissionUpdate
+  data: TSubmissionUpdate,
+  options: { actorProfileId?: string | null } = {}
 ): Promise<TSubmission> {
   try {
     const submission = await getSubmissionById(submissionId);
@@ -991,10 +994,11 @@ export async function updateSubmissionService(
     }
 
     if (statusChanged || gradingStateChanged) {
-      await emitSubmissionStatusChangedWebhookEvent(updated, {
-        statusId: previousLegacyStatusId,
-        gradingState: currentGradingState
-      });
+      await emitSubmissionStatusChangedWebhookEvent(
+        updated,
+        { statusId: previousLegacyStatusId, gradingState: currentGradingState },
+        options.actorProfileId ?? null
+      );
     }
 
     await emitExerciseCompletionIfReached(updated, wasCompleteBefore);
@@ -1065,7 +1069,8 @@ export async function updateSubmissionAnswer(
 export async function updateSubmissionGradesBatch(
   submissionId: string,
   courseId: string,
-  data: TSubmissionGradesUpdate
+  data: TSubmissionGradesUpdate,
+  options: { actorProfileId?: string | null } = {}
 ): Promise<TSubmission> {
   try {
     const submission = await getSubmissionById(submissionId);
@@ -1109,10 +1114,11 @@ export async function updateSubmissionGradesBatch(
     }
 
     if (statusChanged || currentGradingState !== targetGradingState) {
-      await emitSubmissionStatusChangedWebhookEvent(updated, {
-        statusId: previousLegacyStatusId,
-        gradingState: currentGradingState
-      });
+      await emitSubmissionStatusChangedWebhookEvent(
+        updated,
+        { statusId: previousLegacyStatusId, gradingState: currentGradingState },
+        options.actorProfileId ?? null
+      );
     }
 
     await emitExerciseCompletionIfReached(updated, wasCompleteBefore);

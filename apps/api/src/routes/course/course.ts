@@ -75,6 +75,7 @@ import { sectionRouter } from '@api/routes/course/section';
 import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
+import { emitCoursePublishWebhookEvent } from '@cio/core/services/webhook/emit';
 import { updateCourseWithTags } from '@api/services/course/update-course';
 import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
 
@@ -373,6 +374,7 @@ export const courseRouter = new Hono()
             updatedByUserId: user.id,
             tagIds
           });
+          await emitCoursePublishWebhookEvent(courseId, result.publishChange, user.id);
 
           return c.json(
             {
@@ -387,7 +389,8 @@ export const courseRouter = new Hono()
           );
         }
 
-        const { course: result, conversionOffenders } = await updateCourse(courseId, courseData);
+        const { course: result, conversionOffenders, publishChange } = await updateCourse(courseId, courseData);
+        await emitCoursePublishWebhookEvent(courseId, publishChange, c.get('user')?.id ?? null);
 
         return c.json(
           {

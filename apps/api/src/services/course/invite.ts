@@ -33,7 +33,11 @@ import type { TNewCourseInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
-import { emitCourseMemberWebhookEvent, emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
+import {
+  buildMemberSource,
+  emitCourseMemberAddedWebhookEvent,
+  emitCourseWebhookEvent
+} from '@cio/core/services/webhook/emit';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding, type EmailBranding } from '@cio/email';
@@ -1171,7 +1175,10 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
   });
 
   if (result.enrolledMember) {
-    await emitCourseMemberWebhookEvent('course.member.added', result.courseId, result.enrolledMember);
+    await emitCourseMemberAddedWebhookEvent(result.courseId, result.enrolledMember, {
+      source: buildMemberSource('invite', { inviteId: result.inviteId }),
+      actorProfileId: user.id
+    });
   }
 
   if (!result.alreadyJoined) {

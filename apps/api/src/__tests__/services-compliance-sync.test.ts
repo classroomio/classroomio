@@ -39,7 +39,21 @@ vi.mock('@cio/db/drizzle', () => ({
 }));
 
 vi.mock('@api/services/course/completion', () => ({
-  evaluateCourseCertification: vi.fn()
+  evaluateCourseCertification: vi.fn(),
+  buildCertificateWebhookInput: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/course/course', () => ({
+  getCourseCertificationRow: vi.fn().mockResolvedValue(null)
+}));
+
+vi.mock('@cio/core/services/webhook/emit', () => ({
+  emitCourseWebhookEvent: vi.fn().mockResolvedValue(undefined),
+  emitWebhookEvent: vi.fn().mockResolvedValue(undefined)
+}));
+
+vi.mock('@api/services/course/certificate-plan', () => ({
+  orgHasCertificatesEnabled: vi.fn().mockResolvedValue(false)
 }));
 
 import { db } from '@cio/db/drizzle';

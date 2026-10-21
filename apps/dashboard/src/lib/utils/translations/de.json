@@ -5163,7 +5163,9 @@
       "event_groups": {
         "organization": "Organisation",
         "course": "Kurse",
-        "learning": "Lernfortschritt"
+        "learning": "Lernfortschritt",
+        "cohort": "Cohorts",
+        "compliance": "Compliance"
       },
       "events": {
         "organization_invite_created": "Eine Team-Einladung wird gesendet",
@@ -5179,7 +5181,18 @@
         "course_submission_created": "Eine Übungseinreichung wird erstellt",
         "course_submission_status_changed": "Der Status einer Einreichung ändert sich, z. B. bei der Bewertung",
         "lesson_completion_updated": "Eine Lektion wird als abgeschlossen markiert oder zurückgesetzt",
-        "exercise_completion_updated": "Eine Übung wird abgeschlossen oder zurückgesetzt"
+        "exercise_completion_updated": "Eine Übung wird abgeschlossen oder zurückgesetzt",
+        "compliance_record_status_changed": "A student's compliance status changes",
+        "compliance_record_waived": "A student's compliance requirement is waived",
+        "organization_member_added": "A person joins the organization",
+        "organization_member_removed": "A person is removed from the organization",
+        "organization_member_updated": "A person's role or status changes",
+        "course_published": "A course is published",
+        "course_unpublished": "A course is unpublished",
+        "cohort_member_added": "A person is added to a cohort",
+        "cohort_member_removed": "A person is removed from a cohort",
+        "lesson_session_scheduled": "A live session is scheduled or moved",
+        "course_payment_request_created": "A student requests to pay for a course"
       },
       "deliveries": {
         "title": "Zustellungen",

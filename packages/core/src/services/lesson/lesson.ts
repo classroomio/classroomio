@@ -122,7 +122,11 @@ function hasSessionMoved(
  * @param data Partial lesson update data
  * @returns Updated lesson
  */
-export async function updateLessonService(lessonId: string, data: TLessonUpdate): Promise<TLesson> {
+export async function updateLessonService(
+  lessonId: string,
+  data: TLessonUpdate,
+  options: { actorProfileId?: string | null } = {}
+): Promise<TLesson> {
   try {
     const payload: TLessonUpdate = { ...data };
     const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
@@ -163,6 +167,16 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
 
     if (existing && hasSessionMoved(existing, updated)) {
       await skipActiveReminderDeliveriesForLesson(lessonId, 'lesson_rescheduled');
+
+      if (updated.courseId) {
+        await emitCourseWebhookEvent(updated.courseId, 'lesson.session.scheduled', {
+          lessonId,
+          startsAt: updated.lessonAt,
+          previousStartsAt: existing.lessonAt,
+          callUrl: updated.callUrl,
+          actorProfileId: options.actorProfileId ?? null
+        });
+      }
     }
 
     return updated;

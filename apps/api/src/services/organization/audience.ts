@@ -1,3 +1,4 @@
+import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type AudienceImportResult,
@@ -590,6 +591,10 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
       });
       insertedMembers = await createOrganizationMembers(newMemberRows, tx);
     });
+
+    for (const insertedMember of insertedMembers) {
+      await emitOrganizationMemberWebhookEvent('organization.member.added', orgId, insertedMember, invitedByProfileId);
+    }
 
     if (studentMilestoneNotification) {
       notifyStudentMilestone(studentMilestoneNotification).catch((error) => {

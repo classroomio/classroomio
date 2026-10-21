@@ -6,6 +6,8 @@ import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
+import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
+import { getProfileByEmail } from '@cio/db/queries/auth';
 
 export interface PaymentRequestData {
   courseId: string;
@@ -93,6 +95,14 @@ export async function createPaymentRequest(data: PaymentRequestData) {
       eventType: SERVER_EVENTS.ENROLLMENT_STARTED,
       courseId: data.courseId,
       props: { path: 'payment-request', orgName }
+    });
+
+    const requester = await getProfileByEmail(data.studentEmail);
+
+    await emitCourseWebhookEvent(data.courseId, 'course.payment_request.created', {
+      profileId: requester?.id ?? null,
+      email: data.studentEmail,
+      studentName: data.studentFullname || null
     });
 
     return {

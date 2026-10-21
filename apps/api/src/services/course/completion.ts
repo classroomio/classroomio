@@ -17,6 +17,9 @@ import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { assertCertificatesEnabled, orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
+import { formatCertificateId } from '@api/services/course/certificate';
+import { resolveCertificateDesign } from '@api/utils/certificate';
+import type { TWebhookEventInput } from '@cio/utils/validation/webhook';
 
 export type CertificationBlocker = {
   code: 'CERT_PROGRESS' | 'CERT_DEADLINE_PASSED' | 'CERT_NO_CONTENT';
@@ -79,6 +82,29 @@ async function buildCertificationEvaluation(
 }
 
 /**
+ * Builds the `certificate` of a `course.certificate.issued` event. Standard courses store no certificate
+ * row, so they have no `id`, and the printed id is the one the PDF shows.
+ */
+export function buildCertificateWebhookInput(params: {
+  courseRow: TCourseCertificationRow;
+  profileId: string;
+  issuedAt: string;
+  stored?: { id: string | null; cycleNumber: number; expiresAt: string; status: string } | null;
+}): TWebhookEventInput<'course.certificate.issued'>['certificate'] {
+  const { courseRow, profileId, issuedAt, stored } = params;
+  const design = resolveCertificateDesign(courseRow.certificate);
+
+  return {
+    id: stored?.id ?? null,
+    displayId: formatCertificateId(design.idFormat, profileId, new Date(issuedAt)),
+    issuedAt,
+    expiresAt: stored?.expiresAt ?? null,
+    cycleNumber: stored?.cycleNumber ?? null,
+    status: stored?.status ?? 'valid'
+  };
+}
+
+/**
  * Evaluates certification eligibility. On first eligibility, persists
  * `certificateEarnedAt` and fires the completion email (non-blocking).
  */
@@ -132,11 +158,14 @@ export async function evaluateCourseCertification(
     if (didClaimCertificate) {
       isNewCompletion = true;
 
-      await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', {
-        courseId,
-        ...completionEventData,
-        completedAt: earnedAt
-      });
+      if (courseRow.type !== 'COMPLIANCE') {
+        await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', {
+          courseId,
+          ...completionEventData,
+          completedAt: earnedAt,
+          certificate: buildCertificateWebhookInput({ courseRow, profileId, issuedAt: earnedAt })
+        });
+      }
 
       scheduleCertificationCompletionWork({
         courseId,

@@ -1,3 +1,4 @@
+import type { TOrganizationmember } from '@cio/db/types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   claimPendingOrganizationInvite,
@@ -26,7 +27,7 @@ import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
-import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
+import { emitOrganizationMemberWebhookEvent, emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import { addCohortMember, getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
@@ -133,7 +134,10 @@ async function readInviteAfterOrganizationLock<T extends { invite: { organizatio
 async function syncOrgMemberForOrgInvite(
   tx: DbOrTxClient,
   params: { organizationId: string; roleId: number; normalizedEmail: string; userId: string }
-): Promise<StudentMilestoneNotification | null> {
+): Promise<{
+  studentMilestoneNotification: StudentMilestoneNotification | null;
+  createdMember: TOrganizationmember | null;
+}> {
   const orgMemberByEmail = await selectOrganizationMemberByOrgAndNormalizedEmail(
     tx,
     params.organizationId,
@@ -152,7 +156,7 @@ async function syncOrgMemberForOrgInvite(
       verified: true
     });
 
-    return null;
+    return { studentMilestoneNotification: null, createdMember: null };
   }
 
   const orgMemberByProfile = await selectOrganizationMemberByOrgAndProfile(tx, params.organizationId, params.userId);
@@ -164,7 +168,7 @@ async function syncOrgMemberForOrgInvite(
       verified: true
     });
 
-    return null;
+    return { studentMilestoneNotification: null, createdMember: null };
   }
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
@@ -174,7 +178,7 @@ async function syncOrgMemberForOrgInvite(
     });
   }
 
-  await createOrganizationMember(
+  const createdMember = await createOrganizationMember(
     {
       organizationId: params.organizationId,
       roleId: params.roleId,
@@ -185,7 +189,7 @@ async function syncOrgMemberForOrgInvite(
     tx
   );
 
-  return studentMilestoneNotification;
+  return { studentMilestoneNotification, createdMember };
 }
 
 const ORGANIZATION_INVITE_WEBHOOK_EVENTS: Partial<
@@ -364,7 +368,11 @@ export async function inviteTeamMembers(
   const newEmails = normalizedEmails.filter((email) => !membersByEmail.has(email));
   if (newEmails.length > 0) {
     const newMembers = newEmails.map((email) => ({ organizationId: orgId, email, roleId, verified: false }));
-    await createOrganizationMembers(newMembers);
+    const createdMembers = await createOrganizationMembers(newMembers);
+
+    for (const createdMember of createdMembers) {
+      await emitOrganizationMemberWebhookEvent('organization.member.added', orgId, createdMember, invitedByProfileId);
+    }
   }
 
   const emailsToInvite = normalizedEmails;
@@ -547,14 +555,15 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 
     const alreadyAccepted = status === 'ACCEPTED';
     let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+    let createdMember: TOrganizationmember | null = null;
 
     if (!alreadyAccepted) {
-      studentMilestoneNotification = await syncOrgMemberForOrgInvite(tx, {
+      ({ studentMilestoneNotification, createdMember } = await syncOrgMemberForOrgInvite(tx, {
         organizationId: row.invite.organizationId,
         roleId: row.invite.roleId,
         normalizedEmail,
         userId: user.id
-      });
+      }));
 
       const acceptedInvite = await claimPendingOrganizationInvite(tx, row.invite.id, user.id);
 
@@ -579,9 +588,19 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       roleId: row.invite.roleId,
       alreadyAccepted,
       studentMilestoneNotification,
+      createdMember,
       enrolledCount
     };
   });
+
+  if (result.createdMember) {
+    await emitOrganizationMemberWebhookEvent(
+      'organization.member.added',
+      result.organization.id,
+      result.createdMember,
+      user.id
+    );
+  }
 
   // Must run after commit: the reconcile reads the org role outside this transaction.
   if (!result.alreadyAccepted) {
@@ -843,14 +862,15 @@ export async function acceptOrganizationInviteById(
 
     const alreadyAccepted = status === 'ACCEPTED';
     let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+    let createdMember: TOrganizationmember | null = null;
 
     if (!alreadyAccepted) {
-      studentMilestoneNotification = await syncOrgMemberForOrgInvite(tx, {
+      ({ studentMilestoneNotification, createdMember } = await syncOrgMemberForOrgInvite(tx, {
         organizationId: row.invite.organizationId,
         roleId: row.invite.roleId,
         normalizedEmail,
         userId: user.id
-      });
+      }));
 
       const acceptedInvite = await claimPendingOrganizationInvite(tx, row.invite.id, user.id);
 
@@ -875,9 +895,19 @@ export async function acceptOrganizationInviteById(
       roleId: row.invite.roleId,
       alreadyAccepted,
       studentMilestoneNotification,
+      createdMember,
       enrolledCount
     };
   });
+
+  if (result.createdMember) {
+    await emitOrganizationMemberWebhookEvent(
+      'organization.member.added',
+      result.invite.organizationId,
+      result.createdMember,
+      user.id
+    );
+  }
 
   if (!result.alreadyAccepted) {
     // Must run after commit: the reconcile reads the org role outside this transaction.

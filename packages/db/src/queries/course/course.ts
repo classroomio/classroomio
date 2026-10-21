@@ -750,6 +750,7 @@ export type TCourseCertificationRow = {
     emailMessage?: string | null;
   } | null;
   title: string;
+  type: string | null;
   orgId: string;
   orgSiteName: string | null;
   orgCustomDomain: string | null;
@@ -765,6 +766,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
       .select({
         certificate: schema.course.certificate,
         title: schema.course.title,
+        type: schema.course.type,
         orgId: schema.organization.id,
         orgSiteName: schema.organization.siteName,
         orgCustomDomain: schema.organization.customDomain,
