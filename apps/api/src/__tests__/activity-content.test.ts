@@ -7,7 +7,7 @@ vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
 
   return {
     ...actual,
-    getActivitySigningSecret: () => 'test-activity-secret-0123456789'
+    getActivitySigningSecret: () => 'test-activity-secret-01234567890'
   };
 });
 
@@ -22,7 +22,7 @@ import { activityContentRouter } from '@api/routes/activity/content';
 import { normalizeContentPath } from '@api/routes/activity/content';
 import { Hono } from '@api/utils/hono';
 
-const SECRET = 'test-activity-secret-0123456789';
+const SECRET = 'test-activity-secret-01234567890';
 const PREFIX = 'scorm/asset-1/v1';
 const ORG = 'org-1';
 const ANC = ['https://app.test'];

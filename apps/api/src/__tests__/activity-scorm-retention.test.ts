@@ -38,7 +38,7 @@ vi.mock('@cio/core/config/storage', async (importOriginal) => {
 vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
   const original = await importOriginal<typeof import('@cio/core/config/activity-content')>();
 
-  return { ...original, getActivitySigningSecret: () => 'test-activity-signing-secret' };
+  return { ...original, getActivitySigningSecret: () => 'test-activity-signing-secret-0123456789' };
 });
 
 import { runScormRetention } from '@cio/core/services/activity/retention';

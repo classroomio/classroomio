@@ -6,14 +6,14 @@ vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
 
   return {
     ...actual,
-    getActivitySigningSecret: () => 'test-activity-secret-0123456789'
+    getActivitySigningSecret: () => 'test-activity-secret-01234567890'
   };
 });
 
 import { activityPlayerRouter } from '@api/routes/activity/player';
 import { Hono } from '@api/utils/hono';
 
-const SECRET = 'test-activity-secret-0123456789';
+const SECRET = 'test-activity-secret-01234567890';
 
 function buildApp() {
   return new Hono().route('/activity', activityPlayerRouter);

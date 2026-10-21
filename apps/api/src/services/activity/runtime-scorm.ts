@@ -632,7 +632,16 @@ export async function commitScormAttempt(
 
     if (result.activityId && result.profileId) {
       try {
-        const completedIds = await getActivityCompletionsByProfile([result.activityId], result.profileId);
+        const activity = await getActivityById(result.activityId);
+        const cycleStart = activity?.courseId
+          ? await getComplianceCycleStartIso(activity.courseId, result.profileId)
+          : null;
+        const completedIds = await getActivityCompletionsByProfile(
+          [result.activityId],
+          result.profileId,
+          undefined,
+          cycleStart
+        );
         if (completedIds.length > 0) {
           const snapshot = await getComplianceSnapshot(result.activityId, result.profileId);
           await runActivityCompletionSideEffects(result.activityId, result.profileId, snapshot?.minutes);

@@ -11,6 +11,7 @@ import type { TActivityKind } from '@cio/utils/constants/activity';
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { getActivityCompletionsByProfile } from '@cio/db/queries/activity/activity';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
+import { getComplianceCycleStartIso } from '@cio/db/queries/course/compliance';
 import { getCourseMembers } from '@cio/db/queries/course/people';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { attachScormPackage, detachScormPackage } from '@cio/core/services/activity/providers';
@@ -243,7 +244,8 @@ export const activityRouter = new Hono()
         const result = await getActivityProgress(courseId, activityId, { profileId: user.id, isPreview });
 
         if (!isPreview) {
-          const completedIds = await getActivityCompletionsByProfile([activityId], user.id);
+          const cycleStart = await getComplianceCycleStartIso(courseId, user.id);
+          const completedIds = await getActivityCompletionsByProfile([activityId], user.id, undefined, cycleStart);
           if (completedIds.length > 0) {
             void (async () => {
               try {
