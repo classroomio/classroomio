@@ -1,8 +1,75 @@
 ---
 title: 'Connect Claude Code, Codex, Cursor, or OpenCode'
-description: 'This ClassroomIO Help Center guide is still being worked on.'
+description: 'Connect a supported AI client to the ClassroomIO MCP server.'
+last_reviewed: '2026-10-21'
 ---
 
-:::info[This guide is coming soon]
-Bookmark this page and check back for the complete instructions.
-:::
+First [create an MCP key](/integrations-and-automation/create-rotate-and-revoke-mcp-keys) in **Automation → MCP**. Install Node.js so your client can run `npx -y @classroomio/mcp`. The server needs `CLASSROOMIO_API_URL=https://api.classroomio.com` and your key in `CLASSROOMIO_API_KEY`.
+
+![MCP client setup with the Codex tab selected](./images/connect-claude-code-codex-cursor-or-opencode/overview.webp)
+
+The **Automation → MCP** page also has client-specific setup snippets. Replace `<cio_mcp_key>` below with your own key in a private configuration. Never commit a configuration containing a live key.
+
+## Claude Code
+
+```bash
+claude mcp add-json classroomio '{
+  "command": "npx",
+  "args": ["-y", "@classroomio/mcp"],
+  "env": {
+    "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+    "CLASSROOMIO_API_KEY": "<cio_mcp_key>"
+  }
+}'
+```
+
+## Codex
+
+```bash
+codex mcp add classroomio \
+  --env CLASSROOMIO_API_URL=https://api.classroomio.com \
+  --env CLASSROOMIO_API_KEY=<cio_mcp_key> \
+  -- npx -y @classroomio/mcp
+```
+
+## Cursor and OpenCode
+
+For Cursor, add a `classroomio` entry to your MCP server configuration:
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "command": "npx",
+      "args": ["-y", "@classroomio/mcp"],
+      "env": {
+        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+        "CLASSROOMIO_API_KEY": "<cio_mcp_key>"
+      }
+    }
+  }
+}
+```
+
+For OpenCode, add a local server to your OpenCode configuration:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "classroomio": {
+      "type": "local",
+      "command": ["npx", "-y", "@classroomio/mcp"],
+      "enabled": true,
+      "environment": {
+        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+        "CLASSROOMIO_API_KEY": "<cio_mcp_key>"
+      }
+    }
+  }
+}
+```
+
+Use the configuration file or UI specified by your client. The locations can change with client releases.
+
+Restart or reconnect the client and check that ClassroomIO tools are listed. Try a read-only request in the intended organization before allowing writes. If no tools appear, check that Node.js can run the package and the JSON or command is valid. If a request is unauthorized, check the API URL, key status, and the key creator's permissions. The [developer MCP guide](https://classroomio.com/docs/developers/mcp) has full, current examples for all four clients.
