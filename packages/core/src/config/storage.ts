@@ -9,7 +9,8 @@ import { env } from './env';
 const BUCKET_DEFAULTS = {
   VIDEOS: 'videos',
   DOCUMENTS: 'documents',
-  MEDIA: 'media'
+  MEDIA: 'media',
+  SCORM: 'scorm'
 } as const;
 
 /** Whether we're using the generic S3-compatible config vs Cloudflare R2 fallback */
@@ -32,6 +33,7 @@ export interface StorageConfig {
   bucketVideos: string;
   bucketDocuments: string;
   bucketMedia: string;
+  bucketScorm: string;
   mediaPublicBaseUrl: string | null;
   presignUploadExpiresSeconds: number;
   presignDownloadExpiresSeconds: number;
@@ -50,6 +52,7 @@ function resolveStorageConfig(): StorageConfig {
       bucketVideos: env.OBJECT_STORAGE_BUCKET_VIDEOS || BUCKET_DEFAULTS.VIDEOS,
       bucketDocuments: env.OBJECT_STORAGE_BUCKET_DOCUMENTS || BUCKET_DEFAULTS.DOCUMENTS,
       bucketMedia: env.OBJECT_STORAGE_BUCKET_MEDIA || BUCKET_DEFAULTS.MEDIA,
+      bucketScorm: env.OBJECT_STORAGE_BUCKET_SCORM || BUCKET_DEFAULTS.SCORM,
       mediaPublicBaseUrl: env.OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL || null,
       presignUploadExpiresSeconds: 60 * 60, // 1 hour
       presignDownloadExpiresSeconds: 60 * 60 // 1 hour
@@ -66,6 +69,7 @@ function resolveStorageConfig(): StorageConfig {
       bucketVideos: BUCKET_DEFAULTS.VIDEOS,
       bucketDocuments: BUCKET_DEFAULTS.DOCUMENTS,
       bucketMedia: BUCKET_DEFAULTS.MEDIA,
+      bucketScorm: env.OBJECT_STORAGE_BUCKET_SCORM || BUCKET_DEFAULTS.SCORM,
       mediaPublicBaseUrl: env.CLOUDFLARE_IMAGE_BUCKET_DOMAIN || null,
       presignUploadExpiresSeconds: 60 * 60,
       presignDownloadExpiresSeconds: 60 * 60

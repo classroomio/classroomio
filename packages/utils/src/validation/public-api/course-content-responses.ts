@@ -3,7 +3,7 @@ import * as z from 'zod';
 // Response shapes for OpenAPI docs only; handlers don't validate against them.
 const timestamp = z.string();
 const nullableTimestamp = z.string().nullable();
-const contentType = z.enum(['LESSON', 'EXERCISE']);
+const contentType = z.enum(['LESSON', 'EXERCISE', 'ACTIVITY']);
 
 export const ZPublicApiCourseSectionResponse = z.object({
   id: z.string().uuid(),
@@ -117,7 +117,8 @@ export const ZPublicApiCourseLessonCommentsResponse = z.object({
 export const ZPublicApiReorderCourseContentResponse = z.object({
   updatedSections: z.number(),
   updatedLessons: z.number(),
-  updatedExercises: z.number()
+  updatedExercises: z.number(),
+  updatedActivities: z.number().optional()
 });
 
 export const ZPublicApiCourseContentLockResponse = z.object({

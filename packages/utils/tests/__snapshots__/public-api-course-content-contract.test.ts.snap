@@ -312,6 +312,7 @@ exports[`public API course content request contract > ZPublicApiDeleteCourseCont
             "enum": [
               "LESSON",
               "EXERCISE",
+              "ACTIVITY",
             ],
             "type": "string",
           },
@@ -368,6 +369,7 @@ exports[`public API course content request contract > ZPublicApiReorderCourseCon
             "enum": [
               "LESSON",
               "EXERCISE",
+              "ACTIVITY",
             ],
             "type": "string",
           },
@@ -460,6 +462,7 @@ exports[`public API course content request contract > ZPublicApiUpdateCourseCont
             "enum": [
               "LESSON",
               "EXERCISE",
+              "ACTIVITY",
             ],
             "type": "string",
           },
@@ -546,6 +549,7 @@ exports[`public API course content response contract > ZPublicApiCourseContentDe
             "enum": [
               "LESSON",
               "EXERCISE",
+              "ACTIVITY",
             ],
             "type": "string",
           },
@@ -590,6 +594,7 @@ exports[`public API course content response contract > ZPublicApiCourseContentLo
             "enum": [
               "LESSON",
               "EXERCISE",
+              "ACTIVITY",
             ],
             "type": "string",
           },

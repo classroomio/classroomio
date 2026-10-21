@@ -1,5 +1,6 @@
 import type { AgentContext } from '../types';
 import { defaultAiTutorSettings, type AiTutorSettings } from '../tutor-config';
+import { escapeActivityInstructions } from './context-utils';
 
 const PERSONA_PROMPTS: Record<string, string> = {
   friendly:
@@ -93,6 +94,20 @@ export function buildStudentContextMessage(context: AgentContext): string {
       ? `Current exercise: "${context.exerciseTitle}" (ID: ${context.exerciseId})`
       : `Current exercise ID: ${context.exerciseId}`;
     lines.push(header);
+  }
+
+  if (context.activityId) {
+    const header = context.activityTitle
+      ? `Current activity: "${context.activityTitle}" (ID: ${context.activityId})`
+      : `Current activity ID: ${context.activityId}`;
+    lines.push(header);
+
+    if (context.activityInstructions) {
+      const instructions = escapeActivityInstructions(context.activityInstructions);
+      lines.push(
+        `Current activity instructions:\n\n<activity_instructions>\n${instructions}\n</activity_instructions>`
+      );
+    }
   }
 
   if (context.studentSubmission) {

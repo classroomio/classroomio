@@ -113,7 +113,8 @@ describe('services/v1/courses/sections', () => {
     vi.mocked(promoteUngroupedSection).mockResolvedValue({
       section: section(),
       movedLessons: 2,
-      movedExercises: 1
+      movedExercises: 1,
+      movedActivities: 0
     });
     const promoted = await createPublicApiCourseSectionService(
       ORG_ID,

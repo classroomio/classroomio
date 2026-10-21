@@ -5,6 +5,9 @@ import {
   scheduleCertificationCompletionWork
 } from '@api/utils/course-completion';
 import { REQUIRED_COURSE_COMPLETION_PERCENT } from '@cio/utils/functions/course-progression';
+import { getActivitiesByCourseId, getActivityCompletionsByProfile } from '@cio/db/queries/activity/activity';
+import { getComplianceCycleStartIso } from '@cio/db/queries/course/compliance';
+import { db } from '@cio/db/drizzle';
 import {
   getCourseById,
   getCourseCertificationRow,
@@ -39,16 +42,33 @@ async function buildCertificationEvaluation(
   const progress = progressArg ?? (await getCourseProgressQuery(courseId, profileId));
   const certificate = courseRow.certificate ?? {};
 
+  const activities = await getActivitiesByCourseId(courseId);
+  const completedSinceIso =
+    courseRow.type === 'COMPLIANCE' ? await getComplianceCycleStartIso(courseId, profileId) : null;
+  const completedActivityIds =
+    activities.length > 0
+      ? await getActivityCompletionsByProfile(
+          activities.map((activity) => activity.id),
+          profileId,
+          db,
+          completedSinceIso
+        )
+      : [];
+  const activitiesCount = activities.length;
+  const activitiesCompleted = completedActivityIds.length;
+
   const progressPercent = calcCourseProgressPercent({
     lessonsCompleted: progress.lessonsCompleted,
     totalLessons: progress.lessonsCount,
     exercisesCompleted: progress.exercisesCompleted,
-    exercisesCount: progress.exercisesCount
+    exercisesCount: progress.exercisesCount,
+    activitiesCompleted,
+    activitiesCount
   });
 
   const now = new Date();
-  const totalContentCount = progress.lessonsCount + progress.exercisesCount;
-  const completedContentCount = progress.lessonsCompleted + progress.exercisesCompleted;
+  const totalContentCount = progress.lessonsCount + progress.exercisesCount + activitiesCount;
+  const completedContentCount = progress.lessonsCompleted + progress.exercisesCompleted + activitiesCompleted;
   const hasContent = totalContentCount > 0;
   const hasCompletedAllContent = hasContent && completedContentCount >= totalContentCount;
   const withinDeadline = isBeforeOrEqualDeadline(certificate.deadline, now);

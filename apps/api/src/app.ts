@@ -13,6 +13,9 @@ import {
   shouldRewriteOAuthProxyCallbackLocation
 } from '@api/utils/oauth-proxy-redirect';
 import { Hono } from '@api/utils/hono';
+import type { AuthSession } from '@api/types/auth';
+import type { Hono as HonoBase } from 'hono';
+import type { MergeSchemaPath } from 'hono/types';
 import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
 import { accountRouter } from '@api/routes/account';
 import { agentRouter } from '@api/routes/agent';
@@ -49,7 +52,7 @@ import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 
 // Create Hono app with chaining for RPC support
-export const app = new Hono()
+const baseApp = new Hono()
   // Middleware
   .use('*', logger())
   .use('*', prettyJSON())
@@ -231,7 +234,41 @@ export const app = new Hono()
       session,
       user
     });
-  })
+  });
+
+type AppSchemaOf<T> = T extends HonoBase<any, infer S, any> ? (S extends object ? S : never) : never;
+type Mount<Path extends string, Router> = MergeSchemaPath<AppSchemaOf<Router>, Path>;
+
+type AppSchema =
+  | AppSchemaOf<typeof baseApp>
+  | Mount<'/onboarding', typeof onboardingRouter>
+  | Mount<'/account', typeof accountRouter>
+  | Mount<'/course', typeof courseRouter>
+  | Mount<'/domain', typeof domainRouter>
+  | Mount<'/hls', typeof hlsRouter>
+  | Mount<'/transcripts', typeof transcriptsRouter>
+  | Mount<'/mail', typeof mailRouter>
+  | Mount<'/media', typeof mediaRouter>
+  | Mount<'/jobs', typeof jobsRouter>
+  | Mount<'/license', typeof licenseRouter>
+  | Mount<'/organization', typeof organizationRouter>
+  | Mount<'/organization/sso', typeof organizationSsoRouter>
+  | Mount<'/organization/token-auth', typeof organizationTokenAuthRouter>
+  | Mount<'/sso', typeof ssoDiscoveryRouter>
+  | Mount<'/dash', typeof dashAnalyticsRouter>
+  | Mount<'/community', typeof communityRouter>
+  | Mount<'/invite', typeof inviteRouter>
+  | Mount<'/org-site/course', typeof publicCourseRouter>
+  | Mount<'/org-site/og', typeof orgSiteOgRouter>
+  | Mount<'/public-api/v1', typeof v1Router>
+  | Mount<'/cohort', typeof cohortRouter>
+  | Mount<'/unsplash', typeof unsplashRouter>
+  | Mount<'/widgets', typeof publicWidgetsRouter>
+  | Mount<'/report', typeof reportRouter>
+  | Mount<'/internal', typeof internalRouter>
+  | Mount<'/agent', typeof agentRouter>;
+
+const routes = baseApp
   .route('/onboarding', onboardingRouter)
   .route('/account', accountRouter)
   .route('/course', courseRouter)
@@ -270,6 +307,8 @@ export const app = new Hono()
 
     return c.json({ error: 'Internal Server Error' }, 500);
   });
+
+export const app: HonoBase<AuthSession, AppSchema> = routes;
 
 // Dev-only BullMQ dashboard at /admin/queues. Mounted after the typed RPC
 // chain so it doesn't pollute the client type.

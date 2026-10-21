@@ -13,8 +13,10 @@ export type StudentCourseMembership = {
 export type CourseTrackableContentCounts = {
   lessonIds: string[];
   exerciseIds: string[];
+  activityIds: string[];
   lessonsCount: number;
   exercisesCount: number;
+  activitiesCount: number;
 };
 
 /**
@@ -111,23 +113,30 @@ export async function getBatchStudentCourseMembership(
  */
 export async function getCourseTrackableContentCounts(courseId: string): Promise<CourseTrackableContentCounts> {
   try {
-    const [lessons, exercises] = await Promise.all([
+    const [lessons, exercises, activities] = await Promise.all([
       db.select({ id: schema.lesson.id }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId)),
       db
         .select({ id: schema.exercise.id })
         .from(schema.exercise)
         .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-        .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)))
+        .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId))),
+      db
+        .select({ id: schema.courseActivity.id })
+        .from(schema.courseActivity)
+        .where(eq(schema.courseActivity.courseId, courseId))
     ]);
 
     const lessonIds = lessons.map((lesson) => lesson.id);
     const exerciseIds = exercises.map((exercise) => exercise.id);
+    const activityIds = activities.map((activity) => activity.id);
 
     return {
       lessonIds,
       exerciseIds,
+      activityIds,
       lessonsCount: lessonIds.length,
-      exercisesCount: exerciseIds.length
+      exercisesCount: exerciseIds.length,
+      activitiesCount: activityIds.length
     };
   } catch (error) {
     console.error('getCourseTrackableContentCounts error:', error);
@@ -183,6 +192,53 @@ export async function getBatchCompletedExerciseIdsForMembers(
     console.error('getBatchCompletedExerciseIdsForMembers error:', error);
     throw new Error(
       `Failed to get batch completed exercise IDs: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Returns completed activity IDs grouped by profile for a course.
+ */
+export async function getBatchActivityCompletionsForCourse(
+  courseId: string,
+  profileIds: string[]
+): Promise<Map<string, Set<string>>> {
+  const completionMap = new Map<string, Set<string>>(profileIds.map((profileId) => [profileId, new Set<string>()]));
+
+  if (profileIds.length === 0) {
+    return completionMap;
+  }
+
+  try {
+    const rows = await db
+      .select({
+        profileId: schema.activityCompletion.profileId,
+        activityId: schema.activityCompletion.activityId
+      })
+      .from(schema.activityCompletion)
+      .innerJoin(schema.courseActivity, eq(schema.activityCompletion.activityId, schema.courseActivity.id))
+      .where(
+        and(
+          eq(schema.courseActivity.courseId, courseId),
+          eq(schema.activityCompletion.isComplete, true),
+          inArray(schema.activityCompletion.profileId, profileIds)
+        )
+      );
+
+    for (const row of rows) {
+      if (!row.profileId || !row.activityId) continue;
+
+      const activitySet = completionMap.get(row.profileId);
+      if (activitySet) {
+        activitySet.add(row.activityId);
+      }
+    }
+
+    return completionMap;
+  } catch (error) {
+    console.error('getBatchActivityCompletionsForCourse error:', error);
+    throw new Error(
+      `Failed to get batch activity completions: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

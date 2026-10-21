@@ -50,7 +50,8 @@ describe('services/v1/courses/content', () => {
       updatedSections: 0,
       updatedItems: 1,
       updatedLessons: 1,
-      updatedExercises: 0
+      updatedExercises: 0,
+      updatedActivities: 0
     });
     const payload = { items: [{ ...lessonItem, sectionId: 'section-1', order: 1 }] };
 

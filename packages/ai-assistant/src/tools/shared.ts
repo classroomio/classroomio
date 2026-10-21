@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 export const getCourseStructureSchema = {
   description:
-    'Get the full course structure including sections, lessons, and exercises as a tree. Use this to understand what content already exists before creating new content.',
+    'Get the full course structure including sections, lessons, exercises and activities as a tree. Use this to understand what content already exists before creating new content.',
   parameters: z.object({
     courseId: z.string().describe('The course ID')
   })

@@ -15,6 +15,14 @@ vi.mock('@cio/db/queries/course/course', () => ({
   getCourseProgress: mocks.getCourseProgress
 }));
 
+vi.mock('@cio/db/queries/activity/activity', () => ({
+  getActivitiesByCourseId: vi.fn().mockResolvedValue([]),
+  getActivityCompletionsByProfile: vi.fn().mockResolvedValue([])
+}));
+
+vi.mock('@cio/db/queries/course/compliance', () => ({
+  getComplianceCycleStartIso: vi.fn()
+}));
 vi.mock('@cio/db/queries/course/people', () => ({
   claimMemberCertificateEarned: mocks.claimMemberCertificateEarned
 }));

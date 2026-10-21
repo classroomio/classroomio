@@ -31,6 +31,8 @@ import {
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
+import { ContentType } from '@cio/utils/constants';
+import { assertCourseAcceptsContent } from '../course/content';
 import { guardNonAutoGradableQuestionsForCourseType } from '../course/public-course-guard';
 
 import { db } from '@cio/db/drizzle';
@@ -277,6 +279,8 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
   try {
     const sanitizedData = sanitizeExercisePayload(data);
     const exerciseData = await prepareExerciseRow(sanitizedData);
+
+    await assertCourseAcceptsContent(sanitizedData.courseId, ContentType.Exercise);
 
     const exercise = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;

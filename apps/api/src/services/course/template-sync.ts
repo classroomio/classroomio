@@ -1,8 +1,10 @@
-import type { TCourse, TCourseSection, TExercise, TLesson, TLessonLanguage } from '@db/types';
+import type { TCourse, TCourseActivity, TCourseSection, TExercise, TLesson, TLessonLanguage } from '@db/types';
 import type { DbOrTxClient } from '@db/drizzle';
 import { db } from '@db/drizzle';
 import {
+  closeOpenAttemptsForActivity,
   countSubmissionsByExerciseIds,
+  createActivities,
   createCourseSections,
   createExerciseSections,
   createExercises,
@@ -10,34 +12,52 @@ import {
   createLessons,
   createOptions,
   createQuestions,
+  deleteAssetUsagesByTarget,
   deleteExerciseChildren,
+  getActivitiesByCourseId,
+  getActivityScormByActivityId,
+  getAssetById,
+  createAssetUsage,
   getCourseById,
   getCourseOrganizationId,
   getCourseSectionsByCourseId,
+  getCurrentPackageVersion,
   getExerciseSectionsByExerciseIds,
   getExercisesByCourseId,
   getLessonLanguagesByLessonIds,
   getLessonsByCourseId,
   getOptionsByQuestionIds,
   getQuestionsByExerciseIds,
+  listCurrentPackageVersionsForActivities,
   listTemplateSettingSync,
   shiftCourseRootOrders,
+  setCurrentPackageVersion,
+  shiftActivityOrders,
   shiftExerciseOrders,
   shiftLessonOrders,
   stampCopiedTemplateUnits,
+  updateActivity,
   updateCourse,
   updateCourseSection,
   updateExercise,
   updateExerciseSection,
   updateLesson,
   updateLessonLanguage,
+  upsertActivityScorm,
   upsertTemplateSettingSync,
   canReadLinkedTemplate,
   lockCourseForUpdate
 } from '@db/queries';
 import { env } from '@cio/core/config/env';
+import { ACTIVITY_PROVIDERS } from '@cio/core/services/activity/providers';
+import { ACTIVITY_PACKAGE_SLOT } from '@cio/utils/validation/assets/assets';
+import type { TActivityKind } from '@cio/utils/constants/activity';
 import { recordLessonLanguageVersion } from '@cio/core/services/lesson-version';
-import { withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
+import {
+  copyPackageVersionToAsset,
+  transferScormPackageAsset,
+  withAssetStorageRollback
+} from '@cio/core/services/assets/asset-transfer';
 import {
   applySettingChanges,
   detectSettingChanges,
@@ -50,6 +70,7 @@ import {
   type SettingCertificate,
   type SettingMetadata,
   type SyncableSettingKey,
+  type SyncActivity,
   type SyncExercise,
   type SyncLesson,
   type SyncSection
@@ -58,12 +79,15 @@ import {
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { syncLessonAssetUsages, remapContentAssets } from '@api/services/course/clone';
+import { runSettingsCompletionSideEffects } from '@api/services/activity/activity-settings';
 
 type SyncGraph = {
   sections: TCourseSection[];
   lessons: TLesson[];
   languages: TLessonLanguage[];
   exercises: TExercise[];
+  activities: TCourseActivity[];
+  activityPackages: Map<string, { versionId: string | null; versionUpdatedAt: string | null }>;
   exerciseSections: Awaited<ReturnType<typeof getExerciseSectionsByExerciseIds>>;
   questions: Awaited<ReturnType<typeof getQuestionsByExerciseIds>>;
   options: Awaited<ReturnType<typeof getOptionsByQuestionIds>>;
@@ -107,6 +131,22 @@ function bumpOrders<T extends { order: number }>(items: T[], fromOrder: number) 
   }
 }
 
+/**
+ * Every top-level item a section holds, in the one 1-based order sequence
+ * they share. New sections insert against the whole list so a pulled item
+ * lands where the template places it relative to lessons, exercises and
+ * activities alike.
+ */
+function sectionOrderEntries(graph: SyncGraph, sectionId: string | null) {
+  if (!sectionId) return [];
+
+  return [
+    ...graph.lessons.filter((item) => item.sectionId === sectionId),
+    ...graph.exercises.filter((item) => item.sectionId === sectionId),
+    ...graph.activities.filter((item) => item.sectionId === sectionId)
+  ];
+}
+
 async function claimSectionLessonOrder(
   templateLessons: TLesson[],
   courseGraph: SyncGraph,
@@ -116,10 +156,31 @@ async function claimSectionLessonOrder(
   client: DbOrTxClient
 ) {
   const templateSiblings = templateLessons.filter((sibling) => sibling.sectionId === lesson.sectionId);
-  const placed = courseGraph.lessons.filter((sibling) => sibling.sectionId === parentId);
-  const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(placed), placed);
+  const sectionEntries = sectionOrderEntries(courseGraph, parentId);
+  const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(sectionEntries), sectionEntries);
   await shiftLessonOrders(courseId, parentId, order, client);
-  bumpOrders(placed, order);
+  await shiftExerciseOrders(courseId, { sectionId: parentId }, order, client);
+  await shiftActivityOrders(courseId, parentId, order, client);
+  bumpOrders(sectionEntries, order);
+
+  return order;
+}
+
+async function claimSectionActivityOrder(
+  templateActivities: TCourseActivity[],
+  courseGraph: SyncGraph,
+  activity: TCourseActivity,
+  parentId: string,
+  courseId: string,
+  client: DbOrTxClient
+) {
+  const templateSiblings = templateActivities.filter((sibling) => sibling.sectionId === activity.sectionId);
+  const sectionEntries = sectionOrderEntries(courseGraph, parentId);
+  const order = insertionOrder(templateSiblings, activity.id, sourceOrders(sectionEntries), sectionEntries);
+  await shiftLessonOrders(courseId, parentId, order, client);
+  await shiftExerciseOrders(courseId, { sectionId: parentId }, order, client);
+  await shiftActivityOrders(courseId, parentId, order, client);
+  bumpOrders(sectionEntries, order);
 
   return order;
 }
@@ -142,14 +203,21 @@ async function claimNestedExerciseOrder(
       ? sibling.sectionId === parent.sectionId
       : sibling.lessonId === parent.lessonId && !sibling.sectionId
   );
-  const order = insertionOrder(templateSiblings, exercise.id, sourceOrders(placed), placed);
+  const sectionEntries = parent.lessonId ? placed : sectionOrderEntries(courseGraph, parent.sectionId);
+  const order = insertionOrder(templateSiblings, exercise.id, sourceOrders(sectionEntries), sectionEntries);
   await shiftExerciseOrders(
     courseId,
     { sectionId: parent.sectionId, lessonId: parent.sectionId ? null : parent.lessonId },
     order,
     client
   );
-  bumpOrders(placed, order);
+  if (!parent.lessonId) {
+    await shiftLessonOrders(courseId, parent.sectionId, order, client);
+    await shiftActivityOrders(courseId, parent.sectionId, order, client);
+    bumpOrders(sectionEntries, order);
+  } else {
+    bumpOrders(placed, order);
+  }
 
   return order;
 }
@@ -157,8 +225,9 @@ async function claimNestedExerciseOrder(
 function rootEntries(graph: SyncGraph): { id: string; sourceId: string | null; order: number }[] {
   const rootLessons = graph.lessons.filter((lesson) => !lesson.sectionId);
   const rootExercises = graph.exercises.filter((exercise) => !exercise.sectionId && !exercise.lessonId);
+  const rootActivities = graph.activities.filter((activity) => !activity.sectionId);
 
-  return [...graph.sections, ...rootLessons, ...rootExercises];
+  return [...graph.sections, ...rootLessons, ...rootExercises, ...rootActivities];
 }
 
 /**
@@ -183,6 +252,7 @@ async function loadGraph(courseId: string, client: DbOrTxClient): Promise<SyncGr
   const sections = await getCourseSectionsByCourseId(courseId, client);
   const lessons = await getLessonsByCourseId(courseId, client);
   const exercises = await getExercisesByCourseId(courseId, {}, client);
+  const activities = await getActivitiesByCourseId(courseId, client);
   const lessonIds = lessons.map((lesson) => lesson.id);
   const exerciseIds = exercises.map((exercise) => exercise.id);
   const languages = lessonIds.length > 0 ? await getLessonLanguagesByLessonIds(lessonIds, client) : [];
@@ -191,8 +261,29 @@ async function loadGraph(courseId: string, client: DbOrTxClient): Promise<SyncGr
   const questionIds = questions.map((question) => question.id).filter((id): id is number => id !== undefined);
   const options = questionIds.length > 0 ? await getOptionsByQuestionIds(questionIds, client) : [];
   const submissionCounts = await countSubmissionsByExerciseIds(exerciseIds, client);
+  const packageVersions = await listCurrentPackageVersionsForActivities(
+    activities.map((activity) => activity.id),
+    client
+  );
+  const activityPackages = new Map(
+    packageVersions.map((entry) => [
+      entry.activityId,
+      { versionId: entry.versionId, versionUpdatedAt: entry.versionUpdatedAt }
+    ])
+  );
 
-  return { sections, lessons, languages, exercises, exerciseSections, questions, options, submissionCounts };
+  return {
+    sections,
+    lessons,
+    languages,
+    exercises,
+    activities,
+    activityPackages,
+    exerciseSections,
+    questions,
+    options,
+    submissionCounts
+  };
 }
 
 function snapshotSections(sections: TCourseSection[]): SyncSection[] {
@@ -222,6 +313,21 @@ function snapshotLessons(lessons: TLesson[], languages: TLessonLanguage[]): Sync
 
       return [{ locale: language.locale, updatedAt: language.updatedAt }];
     })
+  }));
+}
+
+function snapshotActivities(graph: SyncGraph): SyncActivity[] {
+  return graph.activities.map((activity) => ({
+    id: activity.id,
+    title: activity.title,
+    createdAt: activity.createdAt,
+    updatedAt: activity.updatedAt,
+    order: activity.order,
+    sectionId: activity.sectionId,
+    sourceId: activity.sourceId,
+    sourceSyncedAt: activity.sourceSyncedAt,
+    packageVersionId: graph.activityPackages.get(activity.id)?.versionId ?? null,
+    packageUpdatedAt: graph.activityPackages.get(activity.id)?.versionUpdatedAt ?? null
   }));
 }
 
@@ -281,9 +387,11 @@ function detectFromGraphs(course: TCourse, templateGraph: SyncGraph, courseGraph
     templateSections: snapshotSections(templateGraph.sections),
     templateLessons: snapshotLessons(templateGraph.lessons, templateGraph.languages),
     templateExercises: snapshotExercises(templateGraph),
+    templateActivities: snapshotActivities(templateGraph),
     courseSections: snapshotSections(courseGraph.sections),
     courseLessons: snapshotLessons(courseGraph.lessons, courseGraph.languages),
-    courseExercises: snapshotExercises(courseGraph)
+    courseExercises: snapshotExercises(courseGraph),
+    courseActivities: snapshotActivities(courseGraph)
   });
 }
 
@@ -335,6 +443,7 @@ export async function getCourseTemplateUpdates(courseId: string, orgId: string) 
     ...courseGraph.sections.map((section) => section.sourceSyncedAt),
     ...courseGraph.lessons.map((lesson) => lesson.sourceSyncedAt),
     ...courseGraph.exercises.map((exercise) => exercise.sourceSyncedAt),
+    ...courseGraph.activities.map((activity) => activity.sourceSyncedAt),
     ...syncRows.map((row) => row.syncedAt)
   ]);
 
@@ -490,6 +599,128 @@ async function writeLessonLanguages(
   }
 }
 
+async function pullActivityDetails(
+  templateActivityId: string,
+  courseActivityId: string,
+  templateOrgId: string | null,
+  courseOrgId: string | null,
+  userId: string,
+  client: DbOrTxClient
+): Promise<string[]> {
+  const templateDetails = await getActivityScormByActivityId(templateActivityId, client);
+  const courseDetails = await getActivityScormByActivityId(courseActivityId, client);
+
+  if (!templateDetails) {
+    if (!courseDetails) return [];
+
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: null }, client);
+    await deleteAssetUsagesByTarget('activity', courseActivityId, client);
+    return [];
+  }
+
+  const settings = {
+    completionRule: templateDetails.completionRule,
+    minScorePercent: templateDetails.minScorePercent,
+    allowRetakes: templateDetails.allowRetakes,
+    moduleOrder: templateDetails.moduleOrder,
+    completionModules: templateDetails.completionModules
+  };
+  const crossOrg = Boolean(templateOrgId && courseOrgId && templateOrgId !== courseOrgId);
+  const applySettings = async (): Promise<string[]> => {
+    const { newlyCompletedProfileIds } = await ACTIVITY_PROVIDERS.scorm.updateSettings(
+      courseActivityId,
+      settings,
+      client
+    );
+
+    return newlyCompletedProfileIds;
+  };
+
+  if (!templateDetails.assetId) {
+    if (!courseDetails) return [];
+
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: null }, client);
+    await deleteAssetUsagesByTarget('activity', courseActivityId, client);
+    return applySettings();
+  }
+
+  if (!crossOrg) {
+    if (courseDetails?.assetId === templateDetails.assetId) {
+      return applySettings();
+    }
+
+    if (courseDetails?.assetId) {
+      await closeOpenAttemptsForActivity(courseActivityId, 'replaced', client);
+    }
+    await deleteAssetUsagesByTarget('activity', courseActivityId, client);
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: templateDetails.assetId }, client);
+
+    if (courseOrgId) {
+      await createAssetUsage(
+        {
+          organizationId: courseOrgId,
+          assetId: templateDetails.assetId,
+          targetType: 'activity',
+          targetId: courseActivityId,
+          slotType: ACTIVITY_PACKAGE_SLOT,
+          createdByProfileId: userId
+        },
+        client
+      );
+    }
+
+    return applySettings();
+  }
+
+  if (!courseDetails?.assetId) {
+    const templateAsset = await getAssetById(templateDetails.assetId, templateOrgId ?? undefined);
+    if (!templateAsset || !courseOrgId) return [];
+
+    const transfer = await transferScormPackageAsset(templateAsset, courseOrgId, userId, client);
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: transfer.asset.id }, client);
+    await createAssetUsage(
+      {
+        organizationId: courseOrgId,
+        assetId: transfer.asset.id,
+        targetType: 'activity',
+        targetId: courseActivityId,
+        slotType: ACTIVITY_PACKAGE_SLOT,
+        createdByProfileId: userId
+      },
+      client
+    );
+
+    return applySettings();
+  }
+
+  await upsertActivityScorm({ activityId: courseActivityId, assetId: courseDetails.assetId }, client);
+
+  if (!templateDetails.assetId || templateDetails.assetId === courseDetails.assetId || !courseOrgId) {
+    return applySettings();
+  }
+
+  const [templateCurrent, courseCurrent] = await Promise.all([
+    getCurrentPackageVersion(templateDetails.assetId, client),
+    getCurrentPackageVersion(courseDetails.assetId, client)
+  ]);
+  if (!templateCurrent || templateCurrent.status !== 'ready') {
+    return applySettings();
+  }
+  if (courseCurrent && templateCurrent.contentSha256 && courseCurrent.contentSha256 === templateCurrent.contentSha256) {
+    return applySettings();
+  }
+
+  const copied = await copyPackageVersionToAsset(
+    templateCurrent.id,
+    courseDetails.assetId,
+    courseOrgId,
+    userId,
+    client
+  );
+  await setCurrentPackageVersion(copied.id, client);
+  return applySettings();
+}
+
 export async function pullCourseTemplateUpdates(
   courseId: string,
   orgId: string,
@@ -497,6 +728,7 @@ export async function pullCourseTemplateUpdates(
   requestedUnitIds: string[],
   requestedSettingKeys: SyncableSettingKey[]
 ) {
+  const completedProfilesByActivity = new Map<string, string[]>();
   const pulled = await withAssetStorageRollback(() =>
     db.transaction(async (tx) => {
       await lockCourseForUpdate(courseId, tx);
@@ -531,7 +763,12 @@ export async function pullCourseTemplateUpdates(
       const selected = new Set(selection.unitIds);
       const syncedAt = new Date().toISOString();
       const crossOrg = Boolean(templateOrgId && courseOrgId && templateOrgId !== courseOrgId);
-      const stamped = { sectionIds: [] as string[], lessonIds: [] as string[], exerciseIds: [] as string[] };
+      const stamped = {
+        sectionIds: [] as string[],
+        lessonIds: [] as string[],
+        exerciseIds: [] as string[],
+        activityIds: [] as string[]
+      };
 
       const templateSections = templateGraph.sections.slice().sort((left, right) => left.order - right.order);
       for (const section of templateSections) {
@@ -744,6 +981,82 @@ export async function pullCourseTemplateUpdates(
         stamped.exerciseIds.push(created.id);
       }
 
+      const templateActivities = templateGraph.activities.slice().sort((left, right) => left.order - right.order);
+      for (const activity of templateActivities) {
+        if (!selected.has(activity.id)) continue;
+
+        const existing = copyBySource(courseGraph.activities, activity.id);
+        if (existing) {
+          await updateActivity(
+            existing.id,
+            {
+              title: activity.title,
+              instructions: activity.instructions,
+              isUnlocked: activity.isUnlocked,
+              slug: activity.slug
+            },
+            tx
+          );
+          const completedProfiles = await pullActivityDetails(
+            activity.id,
+            existing.id,
+            templateOrgId,
+            courseOrgId,
+            userId,
+            tx
+          );
+          if (completedProfiles.length > 0) {
+            completedProfilesByActivity.set(existing.id, completedProfiles);
+          }
+          stamped.activityIds.push(existing.id);
+          continue;
+        }
+
+        const parentId = activity.sectionId
+          ? (copyBySource(courseGraph.sections, activity.sectionId)?.id ?? null)
+          : null;
+        if (activity.sectionId && !parentId) {
+          throw new AppError('Template changes are out of date', ErrorCodes.CONFLICT, 409);
+        }
+
+        const order = parentId
+          ? await claimSectionActivityOrder(templateActivities, courseGraph, activity, parentId, course.id, tx)
+          : await claimRootOrder(templateGraph, courseGraph, activity.id, course.id, tx);
+        const createdActivities = await createActivities(
+          [
+            {
+              kind: activity.kind,
+              title: activity.title,
+              instructions: activity.instructions,
+              slug: activity.slug,
+              order,
+              isUnlocked: activity.isUnlocked,
+              courseId: course.id,
+              sectionId: parentId,
+              sourceId: activity.id,
+              sourceSyncedAt: syncedAt,
+              createdByProfileId: userId
+            }
+          ],
+          tx
+        );
+        const created = createdActivities[0];
+        if (!created) throw new AppError('Failed to pull activity', ErrorCodes.INTERNAL_ERROR, 500);
+
+        const provider = ACTIVITY_PROVIDERS[activity.kind as TActivityKind];
+        if (!provider) {
+          throw new AppError(`Unknown activity kind "${activity.kind}"`, ErrorCodes.VALIDATION_ERROR, 400);
+        }
+
+        await provider.copy(
+          { activityId: activity.id, organizationId: templateOrgId },
+          { activityId: created.id, organizationId: courseOrgId, userId },
+          tx
+        );
+        courseGraph.activities.push(created);
+        stamped.activityIds.push(created.id);
+      }
+
       if (selection.settingKeys.length > 0) {
         const patch = applySettingChanges(toCarrier(course), toCarrier(template), selection.settingKeys);
         const remappedPatch = await remapContentAssets(patch, templateOrgId, courseOrgId, userId, tx);
@@ -761,5 +1074,8 @@ export async function pullCourseTemplateUpdates(
   );
 
   await invalidateOrgStats(orgId);
+  for (const [activityId, profileIds] of completedProfilesByActivity) {
+    await runSettingsCompletionSideEffects(activityId, profileIds);
+  }
   return pulled;
 }

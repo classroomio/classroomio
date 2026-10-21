@@ -195,6 +195,7 @@ export function formatCourseForWidget(
     price: isPaidCourse && course.cost ? `${course.currency} ${course.cost}` : 'Free',
     lessonCount: course.lessonCount,
     exerciseCount: course.exerciseCount ?? 0,
+    activityCount: course.activityCount ?? 0,
     courseType: course.type,
     createdAt: course.createdAt ?? new Date().toISOString(),
     tags
