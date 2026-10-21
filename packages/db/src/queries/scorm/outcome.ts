@@ -81,11 +81,15 @@ export async function evaluateTryOutcome(
   dbClient: DbOrTxClient = db
 ): Promise<EvaluatedTryOutcome> {
   try {
+    const cmiSql = sql<typeof input.cmi>`${JSON.stringify(input.cmi)}::jsonb`;
+    const formatSql = sql<string>`${input.format}::text`;
+    const masteryScoreRawSql = sql<number | string | null>`${input.masteryScoreRaw}::numeric`;
+    const passingScoreScaledSql = sql<number | null>`${input.passingScoreScaled}::numeric`;
     const columns = scormTryOutcomeColumns({
-      cmi: sql<typeof input.cmi>`${JSON.stringify(input.cmi)}::jsonb`,
-      format: sql<string>`${input.format}::text`,
-      masteryScoreRaw: sql<number | string | null>`${input.masteryScoreRaw}::numeric`,
-      passingScoreScaled: sql<number | null>`${input.passingScoreScaled}::numeric`
+      cmi: cmiSql,
+      format: formatSql,
+      masteryScoreRaw: masteryScoreRawSql,
+      passingScoreScaled: passingScoreScaledSql
     });
 
     const [row] = await dbClient
@@ -99,11 +103,16 @@ export async function evaluateTryOutcome(
 
     if (!row) throw new Error('Outcome probe returned no row');
 
+    const completion = String(row.completion);
+    const success = String(row.success);
+    const scaledScore = row.scaledScore === null ? null : Number(row.scaledScore);
+    const hasPassMark = row.hasPassMark === true;
+
     return {
-      completion: String(row.completion),
-      success: String(row.success),
-      scaledScore: row.scaledScore === null ? null : Number(row.scaledScore),
-      hasPassMark: row.hasPassMark === true
+      completion,
+      success,
+      scaledScore,
+      hasPassMark
     };
   } catch (error) {
     console.error('evaluateTryOutcome error:', error);

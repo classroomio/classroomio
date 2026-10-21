@@ -305,17 +305,29 @@ export async function listVersionsDueForRetention(
         AND v.status != 'archived'
       ORDER BY v.replaced_at ASC`);
 
-    return (result as unknown as Array<Record<string, unknown>>).map((row) => ({
-      id: String(row['id']),
-      assetId: String(row['asset_id']),
-      contentPrefix: String(row['content_prefix']),
-      uploadKey: String(row['upload_key']),
-      versionNumber: Number(row['version_number']),
-      status: String(row['status']),
-      replacedAt: row['replaced_at'] === null ? null : String(row['replaced_at']),
-      hasAttempts: row['has_attempts'] === true,
-      hasOpenAttempts: row['has_open_attempts'] === true
-    }));
+    return (result as unknown as Array<Record<string, unknown>>).map((row) => {
+      const id = String(row['id']);
+      const assetId = String(row['asset_id']);
+      const contentPrefix = String(row['content_prefix']);
+      const uploadKey = String(row['upload_key']);
+      const versionNumber = Number(row['version_number']);
+      const status = String(row['status']);
+      const replacedAt = row['replaced_at'] === null ? null : String(row['replaced_at']);
+      const hasAttempts = row['has_attempts'] === true;
+      const hasOpenAttempts = row['has_open_attempts'] === true;
+
+      return {
+        id,
+        assetId,
+        contentPrefix,
+        uploadKey,
+        versionNumber,
+        status,
+        replacedAt,
+        hasAttempts,
+        hasOpenAttempts
+      };
+    });
   } catch (error) {
     console.error('listVersionsDueForRetention error:', error);
     throw new Error(

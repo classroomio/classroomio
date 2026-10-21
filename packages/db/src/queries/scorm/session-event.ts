@@ -84,15 +84,25 @@ export async function listScormSessionEventsByLearner(
       WHERE a.activity_id = ${activityId} AND a.profile_id = ${profileId}
       ORDER BY e.created_at ASC, e.id ASC`);
 
-    return (result as unknown as Array<Record<string, unknown>>).map((row) => ({
-      id: String(row['id']),
-      attemptId: String(row['attempt_id']),
-      unitId: String(row['unit_id']),
-      kind: String(row['kind']),
-      detail: (row['detail'] ?? {}) as Record<string, unknown>,
-      userAgent: row['user_agent'] === null ? null : String(row['user_agent']),
-      createdAt: String(row['created_at'])
-    }));
+    return (result as unknown as Array<Record<string, unknown>>).map((row) => {
+      const id = String(row['id']);
+      const attemptId = String(row['attempt_id']);
+      const unitId = String(row['unit_id']);
+      const kind = String(row['kind']);
+      const detail = (row['detail'] ?? {}) as Record<string, unknown>;
+      const userAgent = row['user_agent'] === null ? null : String(row['user_agent']);
+      const createdAt = String(row['created_at']);
+
+      return {
+        id,
+        attemptId,
+        unitId,
+        kind,
+        detail,
+        userAgent,
+        createdAt
+      };
+    });
   } catch (error) {
     console.error('listScormSessionEventsByLearner error:', error);
     throw new Error(

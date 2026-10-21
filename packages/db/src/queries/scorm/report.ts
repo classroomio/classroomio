@@ -247,22 +247,39 @@ export async function listScormLearnerResults(
       ORDER BY ${sortExpression} ${direction} NULLS LAST, COALESCE(fullname, ''), profile_id
       LIMIT ${paging.limit} OFFSET ${offset}`);
 
-    const rows = (result as unknown as Array<Record<string, unknown>>).map((row) => ({
-      profileId: String(row['profile_id']),
-      fullname: row['fullname'] === null ? null : String(row['fullname']),
-      email: row['email'] === null ? null : String(row['email']),
-      attempts: Number(row['attempts'] ?? 0),
-      lastLaunchedAt: row['last_launched_at'] === null ? null : String(row['last_launched_at']),
-      timeSpentSeconds: Number(row['time_spent_seconds'] ?? 0),
-      scorePercent: row['latest_score'] === null ? null : Number(row['latest_score']),
-      bestScorePercent: row['best_score'] === null ? null : Number(row['best_score']),
-      completed: row['completed'] === true,
-      completedAt: row['completed_at'] === null ? null : String(row['completed_at']),
-      latestRuleMet: row['latest_rule_met'] === true,
-      latestAnyPassed: row['latest_any_passed'] === true,
-      latestAnyFailed: row['latest_any_failed'] === true,
-      modules: (row['modules'] ?? []) as ScormResultModule[]
-    }));
+    const rows = (result as unknown as Array<Record<string, unknown>>).map((row) => {
+      const profileId = String(row['profile_id']);
+      const fullname = row['fullname'] === null ? null : String(row['fullname']);
+      const email = row['email'] === null ? null : String(row['email']);
+      const attempts = Number(row['attempts'] ?? 0);
+      const lastLaunchedAt = row['last_launched_at'] === null ? null : String(row['last_launched_at']);
+      const timeSpentSeconds = Number(row['time_spent_seconds'] ?? 0);
+      const scorePercent = row['latest_score'] === null ? null : Number(row['latest_score']);
+      const bestScorePercent = row['best_score'] === null ? null : Number(row['best_score']);
+      const completed = row['completed'] === true;
+      const completedAt = row['completed_at'] === null ? null : String(row['completed_at']);
+      const latestRuleMet = row['latest_rule_met'] === true;
+      const latestAnyPassed = row['latest_any_passed'] === true;
+      const latestAnyFailed = row['latest_any_failed'] === true;
+      const modules = (row['modules'] ?? []) as ScormResultModule[];
+
+      return {
+        profileId,
+        fullname,
+        email,
+        attempts,
+        lastLaunchedAt,
+        timeSpentSeconds,
+        scorePercent,
+        bestScorePercent,
+        completed,
+        completedAt,
+        latestRuleMet,
+        latestAnyPassed,
+        latestAnyFailed,
+        modules
+      };
+    });
 
     return { rows, total: profileIds.length };
   } catch (error) {
@@ -311,13 +328,19 @@ export async function getScormResultsSummary(
 
     const row = (result as unknown as Array<Record<string, unknown>>)[0];
 
+    const enrolled = Number(row?.['enrolled'] ?? 0);
+    const started = Number(row?.['started'] ?? 0);
+    const completed = Number(row?.['completed'] ?? 0);
+    const passed = Number(row?.['passed'] ?? 0);
+    const averageScore =
+      row?.['average_score'] === null || row?.['average_score'] === undefined ? null : Number(row['average_score']);
+
     return {
-      enrolled: Number(row?.['enrolled'] ?? 0),
-      started: Number(row?.['started'] ?? 0),
-      completed: Number(row?.['completed'] ?? 0),
-      passed: Number(row?.['passed'] ?? 0),
-      averageScore:
-        row?.['average_score'] === null || row?.['average_score'] === undefined ? null : Number(row['average_score'])
+      enrolled,
+      started,
+      completed,
+      passed,
+      averageScore
     };
   } catch (error) {
     console.error('getScormResultsSummary error:', error);
@@ -411,15 +434,25 @@ export async function getScormActivityStatsForProfile(
       FROM per_activity pa
       LEFT JOIN activity_completion ac ON ac.activity_id = pa.activity_id AND ac.profile_id = ${profileId}`);
 
-    return (result as unknown as Array<Record<string, unknown>>).map((row) => ({
-      activityId: String(row['activity_id']),
-      attempts: Number(row['attempts'] ?? 0),
-      scorePercent: row['score_percent'] === null ? null : Number(row['score_percent']),
-      bestScorePercent: row['best_score_percent'] === null ? null : Number(row['best_score_percent']),
-      timeSpentSeconds: Number(row['time_spent_seconds'] ?? 0),
-      completed: row['completed'] === true,
-      lastLaunchedAt: row['last_launched_at'] === null ? null : String(row['last_launched_at'])
-    }));
+    return (result as unknown as Array<Record<string, unknown>>).map((row) => {
+      const activityId = String(row['activity_id']);
+      const attempts = Number(row['attempts'] ?? 0);
+      const scorePercent = row['score_percent'] === null ? null : Number(row['score_percent']);
+      const bestScorePercent = row['best_score_percent'] === null ? null : Number(row['best_score_percent']);
+      const timeSpentSeconds = Number(row['time_spent_seconds'] ?? 0);
+      const completed = row['completed'] === true;
+      const lastLaunchedAt = row['last_launched_at'] === null ? null : String(row['last_launched_at']);
+
+      return {
+        activityId,
+        attempts,
+        scorePercent,
+        bestScorePercent,
+        timeSpentSeconds,
+        completed,
+        lastLaunchedAt
+      };
+    });
   } catch (error) {
     console.error('getScormActivityStatsForProfile error:', error);
     throw new Error(
@@ -460,31 +493,58 @@ export async function getScormLearnerAttempts(
       WHERE a.activity_id = ${activityId} AND a.profile_id = ${profileId}
       ORDER BY a.attempt_number, u.position`);
 
-    return (result as unknown as Array<Record<string, unknown>>).map((row) => ({
-      attemptId: String(row['attempt_id']),
-      attemptNumber: Number(row['attempt_number']),
-      attemptStartedAt: String(row['attempt_started_at']),
-      attemptClosedAt: row['attempt_closed_at'] === null ? null : String(row['attempt_closed_at']),
-      attemptCloseReason: row['attempt_close_reason'] === null ? null : String(row['attempt_close_reason']),
-      packageVersionNumber: row['package_version_number'] === null ? null : Number(row['package_version_number']),
-      packageFormat: row['package_format'] === null ? null : String(row['package_format']),
-      tryId: row['try_id'] === null ? null : String(row['try_id']),
-      tryStatus: row['try_status'] === null ? null : String(row['try_status']),
-      unitId: row['unit_id'] === null ? null : String(row['unit_id']),
-      unitIdentifier: row['unit_identifier'] === null ? null : String(row['unit_identifier']),
-      unitTitle: row['unit_title'] === null ? null : String(row['unit_title']),
-      unitPosition: row['unit_position'] === null ? null : Number(row['unit_position']),
-      unitType: row['unit_type'] === null ? null : String(row['unit_type']),
-      masteryScoreRaw: row['mastery_score_raw'] === null ? null : String(row['mastery_score_raw']),
-      passingScoreScaled: row['passing_score_scaled'] === null ? null : String(row['passing_score_scaled']),
-      completionThreshold: row['completion_threshold'] === null ? null : String(row['completion_threshold']),
-      cmi: (row['cmi'] ?? {}) as Record<string, unknown>,
-      commitSeq: row['commit_seq'] === null ? null : Number(row['commit_seq']),
-      tryStartedAt: row['try_started_at'] === null ? null : String(row['try_started_at']),
-      lastCommitAt: row['last_commit_at'] === null ? null : String(row['last_commit_at']),
-      terminatedAt: row['terminated_at'] === null ? null : String(row['terminated_at']),
-      timeSpentSeconds: Number(row['time_spent_seconds'] ?? 0)
-    }));
+    return (result as unknown as Array<Record<string, unknown>>).map((row) => {
+      const attemptId = String(row['attempt_id']);
+      const attemptNumber = Number(row['attempt_number']);
+      const attemptStartedAt = String(row['attempt_started_at']);
+      const attemptClosedAt = row['attempt_closed_at'] === null ? null : String(row['attempt_closed_at']);
+      const attemptCloseReason = row['attempt_close_reason'] === null ? null : String(row['attempt_close_reason']);
+      const packageVersionNumber =
+        row['package_version_number'] === null ? null : Number(row['package_version_number']);
+      const packageFormat = row['package_format'] === null ? null : String(row['package_format']);
+      const tryId = row['try_id'] === null ? null : String(row['try_id']);
+      const tryStatus = row['try_status'] === null ? null : String(row['try_status']);
+      const unitId = row['unit_id'] === null ? null : String(row['unit_id']);
+      const unitIdentifier = row['unit_identifier'] === null ? null : String(row['unit_identifier']);
+      const unitTitle = row['unit_title'] === null ? null : String(row['unit_title']);
+      const unitPosition = row['unit_position'] === null ? null : Number(row['unit_position']);
+      const unitType = row['unit_type'] === null ? null : String(row['unit_type']);
+      const masteryScoreRaw = row['mastery_score_raw'] === null ? null : String(row['mastery_score_raw']);
+      const passingScoreScaled = row['passing_score_scaled'] === null ? null : String(row['passing_score_scaled']);
+      const completionThreshold = row['completion_threshold'] === null ? null : String(row['completion_threshold']);
+      const cmi = (row['cmi'] ?? {}) as Record<string, unknown>;
+      const commitSeq = row['commit_seq'] === null ? null : Number(row['commit_seq']);
+      const tryStartedAt = row['try_started_at'] === null ? null : String(row['try_started_at']);
+      const lastCommitAt = row['last_commit_at'] === null ? null : String(row['last_commit_at']);
+      const terminatedAt = row['terminated_at'] === null ? null : String(row['terminated_at']);
+      const timeSpentSeconds = Number(row['time_spent_seconds'] ?? 0);
+
+      return {
+        attemptId,
+        attemptNumber,
+        attemptStartedAt,
+        attemptClosedAt,
+        attemptCloseReason,
+        packageVersionNumber,
+        packageFormat,
+        tryId,
+        tryStatus,
+        unitId,
+        unitIdentifier,
+        unitTitle,
+        unitPosition,
+        unitType,
+        masteryScoreRaw,
+        passingScoreScaled,
+        completionThreshold,
+        cmi,
+        commitSeq,
+        tryStartedAt,
+        lastCommitAt,
+        terminatedAt,
+        timeSpentSeconds
+      };
+    });
   } catch (error) {
     console.error('getScormLearnerAttempts error:', error);
     throw new Error(

@@ -6,7 +6,7 @@ export const ZPackageCreate = z.object({
     .min(1)
     .max(256)
     .refine((name) => name.toLowerCase().endsWith('.zip'), 'Package file must be a .zip file'),
-  fileSize: z.coerce.number().int().min(1),
+  fileSize: z.number().int().min(1),
   title: z.string().min(1).max(256).optional()
 });
 export type TPackageCreate = z.infer<typeof ZPackageCreate>;
@@ -17,7 +17,7 @@ export const ZPackageParam = z.object({
 export type TPackageParam = z.infer<typeof ZPackageParam>;
 
 export const ZPackageVersionCreate = z.object({
-  fileSize: z.coerce.number().int().min(1),
+  fileSize: z.number().int().min(1),
   contentSha256: z
     .string()
     .regex(/^[a-f0-9]{64}$/i, 'contentSha256 must be a hex SHA-256 digest')
