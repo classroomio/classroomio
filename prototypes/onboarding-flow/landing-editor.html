@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Landing Page Editor - ClassroomIO</title>
+    <link rel="stylesheet" href="fonts/geist.css" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="landing-editor.css" />
+  </head>
+  <body>
+    <div class="le" id="le">
+      <aside class="le-side" id="le-side" aria-label="Landing page editor"></aside>
+      <main class="le-inset">
+        <button class="btn btn-secondary btn-icon le-trigger" id="le-trigger" type="button" aria-label="Toggle sidebar"></button>
+        <iframe class="le-frame" id="le-frame" title="Landing page preview" src="site.html?embed=1"></iframe>
+      </main>
+    </div>
+    <div class="le-toast" id="le-toast" role="status" aria-live="polite"></div>
+
+    <script src="proto.js"></script>
+    <script src="model.js"></script>
+    <script src="site/copy.js"></script>
+    <script src="site-model.js"></script>
+    <script src="academy-common.js"></script>
+    <script src="landing-editor.js"></script>
+  </body>
+</html>

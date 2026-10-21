@@ -1,0 +1,329 @@
+/* The production landing page editor (routes/(app)/org/[slug]/landingpage/edit): a full-screen layer with a
+ * 360px sidebar (collapsible to 4rem) and the live page beside it. Tokens come from app-theme.css. */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+.le {
+  --w: 360px;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  background: var(--background);
+}
+.le.is-collapsed {
+  --w: 4rem;
+}
+.le svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.le-side {
+  display: flex;
+  flex-direction: column;
+  width: var(--w);
+  flex: none;
+  height: 100%;
+  background: var(--sidebar);
+  color: var(--sidebar-foreground);
+  border-right: 1px solid var(--sidebar-border);
+  transition: width 0.2s ease;
+}
+.le-inset {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+.le-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.le-trigger {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 60;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+.le-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+.is-collapsed .le-head {
+  justify-content: center;
+}
+.le-head h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.le-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.le-body {
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.le-group {
+  padding: 8px;
+}
+.le-group-label {
+  padding: 0 8px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: color-mix(in oklab, var(--sidebar-foreground) 70%, transparent);
+}
+.is-collapsed .le-group-label {
+  display: none;
+}
+.le-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.le-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.le-item:hover,
+.le-item:focus-visible {
+  background: var(--sidebar-accent);
+  outline: none;
+}
+.le-item span {
+  flex: 1;
+}
+.is-collapsed .le-item {
+  justify-content: center;
+  padding: 0;
+}
+.is-collapsed .le-item span,
+.is-collapsed .le-item .chev,
+.is-collapsed .le-form {
+  display: none;
+}
+.le-form {
+  padding: 16px;
+  min-width: 0;
+}
+.le-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.le-legend {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.le-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.le-field .label {
+  margin: 0;
+}
+.le-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.le-row.start {
+  justify-content: flex-start;
+  gap: 12px;
+}
+.le-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+.le-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.le-card .le-del {
+  position: absolute;
+  top: -12px;
+  right: 8px;
+}
+.le-card.col {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.le-card.col .le-del {
+  top: 8px;
+}
+.le-sub {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.le-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.le-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.le .input,
+.le .textarea,
+.le .select {
+  background: var(--background);
+}
+.le .textarea {
+  min-height: 76px;
+}
+.le-img {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  object-fit: cover;
+}
+.le-course {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--background);
+  cursor: grab;
+}
+.le-course.over {
+  border: 2px dashed #1d4ed8;
+}
+.le-course .n {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+.le-course img {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.le-course b {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+.le-pop {
+  margin-top: 8px;
+  padding: 4px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--popover);
+  box-shadow: var(--shadow-sm);
+}
+.le-pop p {
+  margin: 0;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.le-pop label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.le-pop label:hover {
+  background: var(--accent);
+}
+.le-pop label span {
+  flex: 1;
+}
+.le-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 300;
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 11px 16px;
+  border-radius: 10px;
+  background: var(--ink-900);
+  color: #fff;
+  font-size: 13.5px;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  pointer-events: none;
+  transition:
+    opacity 0.18s,
+    transform 0.18s;
+}
+.le-toast.on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+@media (max-width: 760px) {
+  .le {
+    --w: 300px;
+  }
+}

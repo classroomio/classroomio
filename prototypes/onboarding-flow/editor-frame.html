@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Editor</title>
+    <link rel="stylesheet" href="fonts/geist.css" />
+    <link rel="stylesheet" href="site/editor-frame.css" />
+    <link rel="stylesheet" href="site/editor-bundle.css" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: var(--background);
+        font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+        color: var(--foreground);
+        -webkit-font-smoothing: antialiased;
+      }
+      #editor-root {
+        height: 100%;
+        box-sizing: border-box;
+      }
+      #editor-root.fill > div {
+        height: 100%;
+      }
+      #exercise-root {
+        min-height: 100%;
+      }
+      .cio-prose {
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .cio-prose h1,
+      .cio-prose h2,
+      .cio-prose h3 {
+        margin: 1em 0 0.4em;
+        line-height: 1.25;
+        font-weight: 600;
+      }
+      .cio-prose p {
+        margin: 0.6em 0;
+      }
+      .cio-prose ul {
+        list-style: disc;
+        padding-left: 1.4em;
+      }
+      .cio-prose ol {
+        list-style: decimal;
+        padding-left: 1.4em;
+      }
+      .cio-prose a {
+        color: var(--primary);
+        text-decoration: underline;
+      }
+      .cio-prose img {
+        max-width: 100%;
+        border-radius: 6px;
+      }
+      .cio-prose blockquote {
+        margin: 0.8em 0;
+        padding-left: 1em;
+        border-left: 3px solid var(--border);
+        color: var(--muted-foreground);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="editor-root" class="fill"></div>
+    <script src="site/editor-bundle.js"></script>
+  </body>
+</html>
