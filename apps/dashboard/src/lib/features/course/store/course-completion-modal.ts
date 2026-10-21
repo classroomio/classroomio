@@ -8,8 +8,6 @@ export type CourseCompletionModalState = {
   courseId: string;
   step: ModalStep;
   evaluation: CertificationEvaluationData | null;
-  /** Exercise to retake when not-eligible */
-  exerciseId?: string;
 };
 
 export const courseCompletionModal = writable<CourseCompletionModalState | null>(null);
@@ -21,10 +19,9 @@ export function openCourseCompletionModal(courseId: string) {
 export function updateCourseCompletionModal(
   courseId: string,
   step: ModalStep,
-  evaluation: CertificationEvaluationData,
-  exerciseId?: string
+  evaluation: CertificationEvaluationData
 ) {
-  courseCompletionModal.set({ open: true, courseId, step, evaluation, exerciseId });
+  courseCompletionModal.set({ open: true, courseId, step, evaluation });
 }
 
 export function closeCourseCompletionModal() {

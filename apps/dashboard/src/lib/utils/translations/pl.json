@@ -817,6 +817,7 @@
       "status": {
         "ready": "Gotowe",
         "already_member": "Już w grupie",
+        "invite_resent": "Zaproszenie wysłane ponownie",
         "invalid_email": "Nieprawidłowy adres e-mail",
         "duplicate_in_file": "Duplikat w pliku",
         "over_seat_limit": "Brak wolnych miejsc",
@@ -1105,6 +1106,9 @@
           "animation_none": "Żadne"
         },
         "course_type_learn_more": "Dowiedz się więcej",
+        "completion_rules_card_title": "Zasady ukończenia",
+        "completion_rules_card_desc": "Określ, kiedy uczniowie kończą ten kurs i otrzymują jego certyfikat. Kursy zgodności używają też tego terminu jako terminu dla każdego ucznia.",
+        "back_to_certificate_settings": "Wróć do ustawień certyfikatu",
         "welcome_email": {
           "title": "Witamy e-mail",
           "description": "Dostosuj wiadomość e-mail otrzymywaną przez uczniów po zarejestrowaniu się. Dodaj osobistą notatkę, instrukcje lub link do sesji na żywo.",
@@ -1122,7 +1126,7 @@
         "certificate_deadline_required": "Najpierw ustal termin wydania certyfikatu",
         "go_to_certificate_settings": "Przejdź do Ustawień certyfikatu",
         "completion_deadline_label": "Termin zakończenia kursu",
-        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu.",
+        "completion_deadline_helper": "Uczniowie muszą ukończyć kurs przed tą datą i godziną (czas lokalny). Pozostaw puste, jeśli nie ma terminu.",
         "go_to_completion_deadline": "Przejdź do terminu ukończenia",
         "generate_link": "Wygeneruj nowy link",
         "open_link": "Otwórz link w nowej karcie",
@@ -3080,7 +3084,6 @@
         "later": "Zamknij",
         "checking": "Sprawdzam uprawnienia…",
         "not_eligible_title": "Prawie tam",
-        "retake_exercise": "Powtórz ćwiczenie",
         "subtitle_no_certificate": "Gratulacje — ukończyłeś ten kurs."
       }
     },
@@ -3090,24 +3093,18 @@
     "certification": {
       "rules_heading": "Zasady",
       "deadline_label": "Termin certyfikacji",
-      "deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu.",
-      "threshold_label": "Minimalne ukończenie (%)",
-      "threshold_helper": "Do uzyskania certyfikatu wymagany jest łączny postęp w lekcjach i ćwiczeniach (0–100). Wartość domyślna to 100%.",
-      "final_exercise_label": "Ćwiczenie końcowe (opcjonalnie)",
-      "final_exercise_none": "żaden",
-      "final_exercise_helper": "Jeśli ta opcja jest ustawiona, uczniowie muszą osiągnąć co najmniej minimalny wynik w tym ćwiczeniu (liczą się najlepsze próby) oprócz powyższego procentu ukończenia.",
-      "min_exercise_score_label": "Minimalny wynik w ćwiczeniu końcowym (%)",
-      "min_exercise_score_helper": "Wynik to procent wszystkich punktów możliwych do uzyskania w tym ćwiczeniu (0–100).",
+      "deadline_helper": "Uczniowie muszą ukończyć kurs przed tą datą i godziną (czas lokalny). Pozostaw puste, jeśli nie ma terminu.",
+      "completion_rules_heading": "Zasady ukończenia",
+      "completion_rules_description": "Te zasady decydują, kto otrzyma ten certyfikat. Ustawia się je na karcie Ustawienia kursu.",
+      "completion_rules_deadline": "Ukończ najpóźniej {date}",
+      "completion_rules_no_deadline": "Brak terminu",
+      "completion_rules_edit": "Edytuj zasady ukończenia",
+      "completion_rules_upgrade": "Uaktualnij plan, aby edytować zasady ukończenia",
       "blocker_progress": "Twój postęp w kursie wynosi {current}%; Wymagany jest {required}%.",
       "blocker_deadline": "Termin certyfikacji minął.",
       "blocker_no_content": "Ten kurs nie zawiera żadnych lekcji ani ćwiczeń do ukończenia.",
-      "blocker_final_not_submitted": "Wykonaj wymagane ćwiczenie „{exerciseTitle}”, aby zakwalifikować się do certyfikatu.",
-      "blocker_final_pending": "Twoje podejście do zadania „{exerciseTitle}” jest nadal oceniane.",
-      "blocker_final_score": "Twój najlepszy wynik w „{exerciseTitle}” to {bestPercent}%; Wymagany jest {requiredPercent}%.",
-      "blocker_final_misconfigured": "W ćwiczeniu certyfikacyjnym „{exerciseTitle}” nie skonfigurowano żadnych punktów; poproś instruktora, żeby to naprawił.",
       "email_message_label": "Wiadomość e-mail",
       "email_message_placeholder": "np. Jesteśmy dumni z Twoich postępów — ucz się dalej!",
-      "final_exercise_multiple_attempts_note": "Studenci będą mieli nieograniczoną liczbę prób wykonania wybranego ćwiczenia.",
       "deadline_required": "Kursy zgodności wymagają terminu ukończenia przed publikacją.",
       "deadline_invalid": "Termin ukończenia kursu jest nieprawidłowy.",
       "deadline_required_enroll": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów."
@@ -6309,8 +6306,6 @@
       "settings": "Ustawienia",
       "certificate": "Certyfikat włączony",
       "deadline": "Termin {date}",
-      "threshold": "Ukończ {percent}% kursu",
-      "final_exercise": "Przekaż „{title}” za {percent}%",
       "sequential": "Lekcje odblokowują się w kolejności",
       "grading": "Nauczyciel ocenia przesłane prace",
       "comments_off": "Komentarze do lekcji są wyłączone",
@@ -6403,8 +6398,6 @@
         "bannerImage": "Obraz na okładce",
         "welcomeEmail": "Witamy e-mail",
         "completionDeadline": "Termin realizacji",
-        "completionThreshold": "Próg ukończenia",
-        "finalExercise": "Ćwiczenie końcowe",
         "lessonTabsOrder": "Zakładki z lekcjami",
         "contentGrouping": "Grupowanie treści",
         "progression": "Postęp",
@@ -6433,8 +6426,7 @@
       "value": {
         "free": "Dowolnie",
         "sequential": "Sekwencyjnie",
-        "no_price": "Bezpłatny",
-        "pass_mark": "Wynik pozytywny {score}"
+        "no_price": "Bezpłatny"
       },
       "template_label": "Szablon",
       "yours_label": "Twój"

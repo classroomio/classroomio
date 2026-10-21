@@ -817,6 +817,7 @@
       "status": {
         "ready": "Klar",
         "already_member": "Allerede i målgruppen",
+        "invite_resent": "Invitation sendt igen",
         "invalid_email": "Ugyldig e-mail",
         "duplicate_in_file": "Duplikat i filen",
         "over_seat_limit": "Ingen pladser tilbage",
@@ -1105,6 +1106,9 @@
           "animation_none": "Ingen"
         },
         "course_type_learn_more": "Få flere oplysninger",
+        "completion_rules_card_title": "Regler for fuldførelse",
+        "completion_rules_card_desc": "Bestem, hvornår studerende fuldfører dette kursus og får certifikatet. Compliance-kurser bruger også fristen som hver studerendes forfaldsdato.",
+        "back_to_certificate_settings": "Tilbage til certifikatindstillinger",
         "welcome_email": {
           "title": "Velkomstmail",
           "description": "Tilpas den e-mail, som eleverne modtager efter tilmelding. Tilføj en personlig note, instruktioner eller et link til en livesession.",
@@ -1122,7 +1126,7 @@
         "certificate_deadline_required": "Indstil certifikatfrist først",
         "go_to_certificate_settings": "Gå til Certifikatindstillinger",
         "completion_deadline_label": "Deadline for kursusafslutning",
-        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
+        "completion_deadline_helper": "Elever skal gennemføre kurset før denne dato og tid (lokal tid). Lad feltet være tomt for ingen frist.",
         "go_to_completion_deadline": "Gå til fuldførelsesfristen",
         "generate_link": "Generer nyt link",
         "open_link": "Åbn link i ny fane",
@@ -3080,7 +3084,6 @@
         "later": "Luk",
         "checking": "Tjekker berettigelse...",
         "not_eligible_title": "Næsten der",
-        "retake_exercise": "Gentag øvelsen",
         "subtitle_no_certificate": "Tillykke - du har gennemført dette kursus."
       }
     },
@@ -3090,24 +3093,18 @@
     "certification": {
       "rules_heading": "Regler",
       "deadline_label": "Certificeringsfrist",
-      "deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
-      "threshold_label": "Minimum fuldførelse (%)",
-      "threshold_helper": "Kombineret fremskridt i lektion og træning kræves for at opnå certifikatet (0-100). Standard er 100 %.",
-      "final_exercise_label": "Afsluttende øvelse (valgfrit)",
-      "final_exercise_none": "ingen",
-      "final_exercise_helper": "Når den er indstillet, skal eleverne mindst opnå minimumscore på denne øvelse (bedste forsøg tæller) ud over fuldførelsesprocenten ovenfor.",
-      "min_exercise_score_label": "Minimumsscore på sidste øvelse (%)",
-      "min_exercise_score_helper": "Score er en procentdel af det samlede antal point, der er mulige på den øvelse (0-100).",
+      "deadline_helper": "Elever skal gennemføre kurset før denne dato og tid (lokal tid). Lad feltet være tomt for ingen frist.",
+      "completion_rules_heading": "Regler for fuldførelse",
+      "completion_rules_description": "Disse regler afgør, hvem der får dette certifikat. De angives under fanen Indstillinger for kurset.",
+      "completion_rules_deadline": "Fuldfør senest {date}",
+      "completion_rules_no_deadline": "Ingen frist",
+      "completion_rules_edit": "Rediger regler for fuldførelse",
+      "completion_rules_upgrade": "Opgrader for at redigere regler for fuldførelse",
       "blocker_progress": "Dit kursus fremskridt er {current}%; {required} % er påkrævet.",
       "blocker_deadline": "Certificeringsfristen er udløbet.",
       "blocker_no_content": "Dette kursus har ingen lektioner eller øvelser at gennemføre.",
-      "blocker_final_not_submitted": "Indsend den nødvendige øvelse \"{exerciseTitle}\" for at kvalificere dig til certifikatet.",
-      "blocker_final_pending": "Dit forsøg på \"{exerciseTitle}\" bliver stadig bedømt.",
-      "blocker_final_score": "Din bedste score på \"{exerciseTitle}\" er {bestPercent}%; {requiredPercent} % er påkrævet.",
-      "blocker_final_misconfigured": "Certificeringsøvelsen \"{exerciseTitle}\" har ingen point konfigureret; bed din instruktør om at ordne det.",
       "email_message_label": "E-mail besked",
       "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
-      "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse.",
       "deadline_required": "Overholdelseskurser kræver en fuldførelsesfrist, før de kan udgives.",
       "deadline_invalid": "Kursusets fuldførelsesfrist er ugyldig.",
       "deadline_required_enroll": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes."
@@ -6309,8 +6306,6 @@
       "settings": "Indstillinger",
       "certificate": "Certifikat aktiveret",
       "deadline": "Frist {date}",
-      "threshold": "Gennemfør {percent} % af kurset",
-      "final_exercise": "Bestå \"{title}\" med {percent} %",
       "sequential": "Lektionerne låses op i rækkefølge",
       "grading": "En vejleder bedømmer afleveringer",
       "comments_off": "Lektionens kommentarer er slået fra",
@@ -6403,8 +6398,6 @@
         "bannerImage": "Forsidebillede",
         "welcomeEmail": "Velkomstmail",
         "completionDeadline": "Afslutningsfrist",
-        "completionThreshold": "Gennemførelsestærskel",
-        "finalExercise": "Afsluttende øvelse",
         "lessonTabsOrder": "Lektionsfaner",
         "contentGrouping": "Indholdsgruppering",
         "progression": "Progression",
@@ -6433,8 +6426,7 @@
       "value": {
         "free": "Fri",
         "sequential": "Sekventiel",
-        "no_price": "Gratis",
-        "pass_mark": "Beståelsesmærke {score}"
+        "no_price": "Gratis"
       },
       "template_label": "Skabelon",
       "yours_label": "Dine"

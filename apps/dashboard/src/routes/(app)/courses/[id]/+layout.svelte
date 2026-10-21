@@ -37,6 +37,7 @@
     COURSE_SIDEBAR_DEFAULT_WIDTH,
     COURSE_SIDEBAR_MAX_WIDTH,
     COURSE_SIDEBAR_MIN_WIDTH,
+    COURSE_SIDEBAR_OPEN_STORAGE_KEY,
     COURSE_SIDEBAR_STORAGE_KEY
   } from '$features/course/components/sidebar/constants';
 
@@ -61,6 +62,8 @@
   const currentPath = $derived(page.url.pathname);
   let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);
   let hasLoadedSidebarWidth = $state(false);
+  let sidebarOpen = $state(true);
+  let hasLoadedSidebarOpen = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
 
   $effect(() => {
@@ -160,11 +163,18 @@
       if (Number.isFinite(storedWidth)) {
         sidebarWidth = clampSidebarWidth(storedWidth);
       }
+
+      const storedOpen = localStorage.getItem(COURSE_SIDEBAR_OPEN_STORAGE_KEY);
+
+      if (storedOpen !== null) {
+        sidebarOpen = storedOpen !== 'false';
+      }
     } catch {
       // localStorage unavailable
     }
 
     hasLoadedSidebarWidth = true;
+    hasLoadedSidebarOpen = true;
 
     if (IS_AI_ENABLED && get(initialChatPrompt)) {
       openAiAssistant();
@@ -178,6 +188,18 @@
 
     try {
       localStorage.setItem(COURSE_SIDEBAR_STORAGE_KEY, String(Math.round(sidebarWidth)));
+    } catch {
+      // localStorage unavailable
+    }
+  });
+
+  $effect(() => {
+    if (!hasLoadedSidebarOpen) {
+      return;
+    }
+
+    try {
+      localStorage.setItem(COURSE_SIDEBAR_OPEN_STORAGE_KEY, String(sidebarOpen));
     } catch {
       // localStorage unavailable
     }
@@ -214,6 +236,7 @@
 {/if}
 
 <Sidebar.Provider
+  bind:open={sidebarOpen}
   bind:ref={sidebarProviderElement}
   data-sveltekit-preload-data="off"
   style={`--sidebar-width: ${sidebarWidth}px; --side-panel-width: ${sidePanel.width}px;`}

@@ -187,45 +187,14 @@ exports[`public certificate contract > keeps the ZPublicApiUpdateCourseCertifica
       ],
       "description": "Send null to clear it.",
     },
-    "exerciseMinScorePercent": {
-      "anyOf": [
-        {
-          "maximum": 100,
-          "minimum": 0,
-          "type": "integer",
-        },
-        {
-          "type": "null",
-        },
-      ],
-      "description": "Send null to clear it.",
-    },
     "isDownloadable": {
       "description": "Controls learner downloads only; the download endpoint works either way.",
       "type": "boolean",
-    },
-    "requiredExerciseId": {
-      "anyOf": [
-        {
-          "format": "uuid",
-          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-          "type": "string",
-        },
-        {
-          "type": "null",
-        },
-      ],
-      "description": "Send null to clear it.",
     },
     "theme": {
       "maxLength": 40,
       "minLength": 1,
       "type": "string",
-    },
-    "threshold": {
-      "maximum": 100,
-      "minimum": 0,
-      "type": "integer",
     },
   },
   "type": "object",

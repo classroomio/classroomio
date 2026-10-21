@@ -252,15 +252,6 @@ function snapshotExercises(graph: SyncGraph): SyncExercise[] {
   });
 }
 
-function exerciseCopyMap(exercises: TExercise[]) {
-  const copies = new Map<string, string>();
-  for (const exercise of exercises) {
-    if (exercise.sourceId) copies.set(exercise.sourceId, exercise.id);
-  }
-
-  return copies;
-}
-
 async function requireLinkedCourse(courseId: string, orgId: string, client: DbOrTxClient = db) {
   const [course] = await getCourseById(courseId, client);
   if (!course || course.status === 'DELETED' || !course.templateId) {
@@ -299,15 +290,13 @@ function detectFromGraphs(course: TCourse, templateGraph: SyncGraph, courseGraph
 function settingChangesFor(
   template: TCourse,
   course: TCourse,
-  courseGraph: SyncGraph,
   syncedAtByKey: Partial<Record<SyncableSettingKey, string>>
 ) {
   return detectSettingChanges({
     template: toCarrier(template),
     course: toCarrier(course),
     courseCreatedAt: course.createdAt,
-    syncedAtByKey,
-    exerciseCopyBySourceId: exerciseCopyMap(courseGraph.exercises)
+    syncedAtByKey
   });
 }
 
@@ -340,7 +329,7 @@ export async function getCourseTemplateUpdates(courseId: string, orgId: string) 
     Record<SyncableSettingKey, string>
   >;
   const units = detectFromGraphs(course, templateGraph, courseGraph);
-  const settings = settingChangesFor(template, course, courseGraph, syncedAtByKey);
+  const settings = settingChangesFor(template, course, syncedAtByKey);
   const lastPulledAt = latestIso([
     course.createdAt,
     ...courseGraph.sections.map((section) => section.sourceSyncedAt),
@@ -523,7 +512,7 @@ export async function pullCourseTemplateUpdates(
         Record<SyncableSettingKey, string>
       >;
       const units = detectFromGraphs(course, templateGraph, courseGraph);
-      const settings = settingChangesFor(template, course, courseGraph, syncedAtByKey);
+      const settings = settingChangesFor(template, course, syncedAtByKey);
       const selection = preparePullSelection(units, settings, requestedUnitIds, requestedSettingKeys);
       if (!selection.ok) {
         const message =
@@ -756,12 +745,7 @@ export async function pullCourseTemplateUpdates(
       }
 
       if (selection.settingKeys.length > 0) {
-        const patch = applySettingChanges(
-          toCarrier(course),
-          toCarrier(template),
-          selection.settingKeys,
-          exerciseCopyMap(courseGraph.exercises)
-        );
+        const patch = applySettingChanges(toCarrier(course), toCarrier(template), selection.settingKeys);
         const remappedPatch = await remapContentAssets(patch, templateOrgId, courseOrgId, userId, tx);
         await updateCourse(course.id, remappedPatch as Partial<TCourse>, tx);
         await upsertTemplateSettingSync(course.id, selection.settingKeys, syncedAt, tx);

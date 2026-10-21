@@ -2421,25 +2421,19 @@
     "certification": {
       "rules_heading": "Rules",
       "deadline_label": "Certification deadline",
-      "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
+      "deadline_helper": "Students must complete the course before this datetime (local time). Leave empty for no deadline.",
       "deadline_required": "Compliance courses require a completion deadline before they can be published.",
       "deadline_required_enroll": "Compliance courses require a certificate deadline before students can be enrolled.",
       "deadline_invalid": "The course completion deadline is invalid.",
-      "threshold_label": "Minimum completion (%)",
-      "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
-      "final_exercise_label": "Final exercise (optional)",
-      "final_exercise_none": "none",
-      "final_exercise_helper": "When set, students must reach at least the minimum score on this exercise (best attempt counts) in addition to the completion percentage above.",
-      "final_exercise_multiple_attempts_note": "Students will be allowed unlimited attempts on the selected exercise.",
-      "min_exercise_score_label": "Minimum score on final exercise (%)",
-      "min_exercise_score_helper": "Score is a percentage of the total points possible on that exercise (0–100).",
+      "completion_rules_heading": "Completion rules",
+      "completion_rules_description": "These rules decide who earns this certificate. They are set on the course Settings tab.",
+      "completion_rules_deadline": "Complete by {date}",
+      "completion_rules_no_deadline": "No deadline",
+      "completion_rules_edit": "Edit completion rules",
+      "completion_rules_upgrade": "Upgrade to edit completion rules",
       "blocker_progress": "Your course progress is {current}%; {required}% is required.",
       "blocker_deadline": "The certification deadline has passed.",
       "blocker_no_content": "This course has no lessons or exercises to complete.",
-      "blocker_final_not_submitted": "Submit the required exercise \"{exerciseTitle}\" to qualify for the certificate.",
-      "blocker_final_pending": "Your attempt on \"{exerciseTitle}\" is still being graded.",
-      "blocker_final_score": "Your best score on \"{exerciseTitle}\" is {bestPercent}%; {requiredPercent}% is required.",
-      "blocker_final_misconfigured": "The certification exercise \"{exerciseTitle}\" has no points configured; ask your instructor to fix it.",
       "email_message_label": "Email Message",
       "email_message_placeholder": "e.g. We are proud of your progress — keep learning!"
     },
@@ -2451,8 +2445,7 @@
         "view_certificate": "View certificate",
         "later": "Close",
         "checking": "Checking eligibility…",
-        "not_eligible_title": "Almost there",
-        "retake_exercise": "Retake exercise"
+        "not_eligible_title": "Almost there"
       }
     },
     "header": {
@@ -4320,7 +4313,7 @@
         "certificate_deadline_required_description": "Compliance courses require a certificate deadline before students can be enrolled. Please set a deadline in the course settings before publishing.",
         "go_to_completion_deadline": "Go to Completion Deadline",
         "completion_deadline_label": "Course Completion Deadline",
-        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
+        "completion_deadline_helper": "Students must complete the course before this datetime (local time). Leave empty for no deadline.",
         "locked_content": {
           "title": "{count} course item(s) are locked",
           "description": "Enrolled students won't be able to take locked lessons or exercises until you unlock them.",
@@ -4330,6 +4323,9 @@
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
         "course_type_learn_more": "Learn more",
+        "completion_rules_card_title": "Completion rules",
+        "completion_rules_card_desc": "Decide when students complete this course and earn its certificate. Compliance courses also use the deadline as each student's due date.",
+        "back_to_certificate_settings": "Back to certificate settings",
         "live_class": "Live class",
         "self_paced": "Self paced",
         "compliance": "Compliance",
@@ -4616,6 +4612,7 @@
       "status": {
         "ready": "Ready",
         "already_member": "Already in audience",
+        "invite_resent": "Invite resent",
         "invalid_email": "Invalid email",
         "duplicate_in_file": "Duplicate in file",
         "is_staff": "Staff, not a student",
@@ -6277,8 +6274,6 @@
       "settings": "Settings",
       "certificate": "Certificate enabled",
       "deadline": "Deadline {date}",
-      "threshold": "Complete {percent}% of the course",
-      "final_exercise": "Pass “{title}” at {percent}%",
       "sequential": "Lessons unlock in order",
       "grading": "A tutor grades submissions",
       "comments_off": "Lesson comments are off",
@@ -6373,8 +6368,6 @@
         "bannerImage": "Cover image",
         "welcomeEmail": "Welcome email",
         "completionDeadline": "Completion deadline",
-        "completionThreshold": "Completion threshold",
-        "finalExercise": "Final exercise",
         "lessonTabsOrder": "Lesson tabs",
         "contentGrouping": "Content grouping",
         "progression": "Progression",
@@ -6403,8 +6396,7 @@
       "value": {
         "free": "Free",
         "sequential": "Sequential",
-        "no_price": "Free",
-        "pass_mark": "Pass mark {score}"
+        "no_price": "Free"
       },
       "template_label": "Template",
       "yours_label": "Yours"

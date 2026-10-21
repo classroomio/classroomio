@@ -322,13 +322,6 @@ Media notes:
 - **Images:** Relevant Customize LMS settings and student views of news feed and marks.
 - **Video:** No video.
 
-### `content/help/publish-and-brand/configure-polls-and-live-comments.mdx` — Configure polls and live comments
-
-- **Article type:** Settings and moderation guide.
-- **Cover:** Availability and permissions; enabling each feature; where it appears; participation and moderation behavior; notifications; disabling after activity exists; student-facing experience.
-- **Images:** Poll/comment settings and an active student-facing poll or live-comment surface.
-- **Video:** Recommended if comments update in real time; show participation and moderation continuity.
-
 ### `content/help/publish-and-brand/customize-the-sign-in-background.mdx` — Customize the sign-in background
 
 - **Article type:** Branding task guide.
@@ -634,7 +627,7 @@ Media notes:
 ### `content/help/learner-guides/know-when-you-qualify-for-a-certificate.mdx` — Know when you qualify for a certificate
 
 - **Article type:** Student eligibility reference.
-- **Cover:** Course completion threshold; lesson/exercise requirements; grading dependencies; compliance-cycle timing; certificate availability state; reasons eligibility may be delayed; administrator-controlled rules.
+- **Cover:** Course completion requirements; lesson/exercise requirements; grading dependencies; compliance-cycle timing; certificate availability state; reasons eligibility may be delayed; administrator-controlled rules.
 - **Images:** Student course completion/eligibility indicator and certificate-ready state.
 - **Video:** No video.
 

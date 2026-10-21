@@ -15,12 +15,6 @@ vi.mock('@cio/db/queries/course/course', () => ({
   getCourseProgress: mocks.getCourseProgress
 }));
 
-vi.mock('@cio/db/queries/course/certification-exercise', () => ({
-  exerciseBelongsToCourse: vi.fn(),
-  getExerciseTitleAndMaxPoints: vi.fn(),
-  getStudentSubmissionsForExercise: vi.fn()
-}));
-
 vi.mock('@cio/db/queries/course/people', () => ({
   claimMemberCertificateEarned: mocks.claimMemberCertificateEarned
 }));

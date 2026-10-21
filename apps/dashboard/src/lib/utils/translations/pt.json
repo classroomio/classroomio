@@ -817,6 +817,7 @@
       "status": {
         "ready": "Pronto",
         "already_member": "Já na plateia",
+        "invite_resent": "Convite reenviado",
         "invalid_email": "E-mail inválido",
         "duplicate_in_file": "Duplicado no arquivo",
         "over_seat_limit": "Sem vagas disponíveis",
@@ -1105,6 +1106,9 @@
           "animation_none": "Nenhum"
         },
         "course_type_learn_more": "Saiba mais",
+        "completion_rules_card_title": "Regras de conclusão",
+        "completion_rules_card_desc": "Defina quando os alunos concluem este curso e recebem o certificado. Cursos de conformidade também usam o prazo como data de vencimento de cada aluno.",
+        "back_to_certificate_settings": "Voltar às configurações do certificado",
         "welcome_email": {
           "title": "E-mail de boas-vindas",
           "description": "Personalize o e-mail que os alunos recebem após a inscrição. Adicione uma nota pessoal, instruções ou um link de sessão ao vivo.",
@@ -1122,7 +1126,7 @@
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
         "go_to_certificate_settings": "Vá para configurações de certificado",
         "completion_deadline_label": "Prazo para conclusão do curso",
-        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
+        "completion_deadline_helper": "Os alunos devem concluir o curso antes desta data e hora (hora local). Deixe em branco para não definir um prazo.",
         "go_to_completion_deadline": "Ir para o prazo de conclusão",
         "generate_link": "Gerar novo link",
         "open_link": "Abrir link em nova aba",
@@ -3080,7 +3084,6 @@
         "later": "Fechar",
         "checking": "Verificando elegibilidade…",
         "not_eligible_title": "Quase lá",
-        "retake_exercise": "Refazer o exercício",
         "subtitle_no_certificate": "Parabéns – você concluiu este curso."
       }
     },
@@ -3090,24 +3093,18 @@
     "certification": {
       "rules_heading": "Regras",
       "deadline_label": "Prazo de certificação",
-      "deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
-      "threshold_label": "Conclusão mínima (%)",
-      "threshold_helper": "Progresso combinado de aulas e exercícios necessário para obter o certificado (0–100). O padrão é 100%.",
-      "final_exercise_label": "Exercício final (opcional)",
-      "final_exercise_none": "nenhum",
-      "final_exercise_helper": "Quando definido, os alunos devem atingir pelo menos a pontuação mínima neste exercício (melhores tentativas contam), além do percentual de conclusão acima.",
-      "min_exercise_score_label": "Nota mínima no exercício final (%)",
-      "min_exercise_score_helper": "A pontuação é uma porcentagem do total de pontos possíveis naquele exercício (0–100).",
+      "deadline_helper": "Os alunos devem concluir o curso antes desta data e hora (hora local). Deixe em branco para não definir um prazo.",
+      "completion_rules_heading": "Regras de conclusão",
+      "completion_rules_description": "Estas regras decidem quem recebe este certificado. Elas são definidas na aba Configurações do curso.",
+      "completion_rules_deadline": "Concluir até {date}",
+      "completion_rules_no_deadline": "Sem prazo",
+      "completion_rules_edit": "Editar regras de conclusão",
+      "completion_rules_upgrade": "Atualize seu plano para editar as regras de conclusão",
       "blocker_progress": "O progresso do seu curso é {current}%; {required}% é obrigatório.",
       "blocker_deadline": "O prazo de certificação expirou.",
       "blocker_no_content": "Este curso não possui lições ou exercícios para serem concluídos.",
-      "blocker_final_not_submitted": "Envie o exercício obrigatório \"{exerciseTitle}\" para se qualificar para o certificado.",
-      "blocker_final_pending": "Sua tentativa em \"{exerciseTitle}\" ainda está sendo avaliada.",
-      "blocker_final_score": "Sua melhor pontuação em \"{exerciseTitle}\" é {bestPercent}%; {requiredPercent}% é obrigatório.",
-      "blocker_final_misconfigured": "O exercício de certificação \"{exerciseTitle}\" não possui pontos configurados; peça ao seu instrutor para consertar.",
       "email_message_label": "Mensagem de e-mail",
       "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
-      "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado.",
       "deadline_required": "Os cursos de conformidade exigem um prazo de conclusão antes de serem publicados.",
       "deadline_invalid": "O prazo de conclusão do curso é inválido.",
       "deadline_required_enroll": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados."
@@ -6309,8 +6306,6 @@
       "settings": "Configurações",
       "certificate": "Certificado ativado",
       "deadline": "Prazo {date}",
-      "threshold": "Conclua {percent}% do curso",
-      "final_exercise": "Aprovado em “{title}” em {percent}%",
       "sequential": "Lições desbloqueadas em ordem",
       "grading": "Um tutor avalia os envios",
       "comments_off": "Os comentários da lição estão desativados",
@@ -6403,8 +6398,6 @@
         "bannerImage": "Imagem da capa",
         "welcomeEmail": "E-mail de boas-vindas",
         "completionDeadline": "Prazo de conclusão",
-        "completionThreshold": "Limite de conclusão",
-        "finalExercise": "Exercício final",
         "lessonTabsOrder": "Guias de aula",
         "contentGrouping": "Agrupamento de conteúdo",
         "progression": "Progressão",
@@ -6433,8 +6426,7 @@
       "value": {
         "free": "Livre",
         "sequential": "Sequencial",
-        "no_price": "Grátis",
-        "pass_mark": "Nota de aprovação {score}"
+        "no_price": "Grátis"
       },
       "template_label": "Modelo",
       "yours_label": "Seu"

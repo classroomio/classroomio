@@ -25,9 +25,12 @@ export async function createAudienceService(orgId: string, actorId: string | nul
   assertAutomationActor(actorId);
   await assertOrgAdmin(orgId, actorId);
 
+  const recipients = payload.emails?.map((email) => ({ email }));
+
   return importAudienceMembers(
     orgId,
     {
+      recipients,
       recipientCsv: payload.email,
       courseIds: payload.courseIds,
       allCourses: false,

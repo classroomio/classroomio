@@ -19,6 +19,7 @@ import {
   updateAudienceService
 } from '@api/services/v1/audience';
 
+import { AUDIENCE_IMPORT_MAX_ROWS } from '@cio/utils/validation/organization';
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
@@ -31,6 +32,12 @@ const AudienceListEnvelope = z.object({ query: ZPublicApiAudienceQuery });
 const forbidden = (scope: 'audience:read' | 'audience:write') => ({
   description: `The key has neither the public_api:* nor the ${scope} scope, or ${ORG_ADMIN_FORBIDDEN}`
 });
+
+const audienceWriteForbidden = forbidden('audience:write');
+
+const createAudienceForbidden = {
+  description: `${audienceWriteForbidden.description} Also returned with UPGRADE_REQUIRED when the Free plan student limit is reached while the request runs.`
+};
 
 export const v1AudienceRouter = new Hono()
   .get(
@@ -74,13 +81,16 @@ export const v1AudienceRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Invite someone to the organization as an audience member; ${ORG_ADMIN_RULE}.`,
+      description: `Invite one person (email) or up to ${AUDIENCE_IMPORT_MAX_ROWS} (emails) to the organization as students; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
-        201: jsonResponse('Audience member created successfully', itemResponse(ZPublicApiCreateAudienceResponse)),
+        201: jsonResponse(
+          'Invites processed. rows has one entry per address, in order, with what happened to it',
+          itemResponse(ZPublicApiCreateAudienceResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: forbidden('audience:write'),
+        403: createAudienceForbidden,
         429: mcpRateLimitResponse
       }
     }),

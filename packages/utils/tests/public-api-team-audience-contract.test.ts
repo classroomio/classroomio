@@ -12,6 +12,7 @@ import {
   ZPublicApiUpdateAudience,
   ZPublicApiUpdateTeamMember
 } from '../src/validation/public-api';
+import { AUDIENCE_IMPORT_MAX_ROWS } from '../src/validation/organization/audience-import';
 
 // The public API is versioned; a change to any of these shapes is a contract change and must be deliberate.
 const requestSchemas = {
@@ -59,6 +60,46 @@ describe('public API team and audience update contract', () => {
       email: 'a@example.com',
       sendEmail: true
     });
+  });
+
+  it('invites one person by email, as before', () => {
+    expect(ZPublicApiCreateAudience.parse({ email: 'a@example.com' })).toEqual({
+      email: 'a@example.com',
+      sendEmail: true
+    });
+    expect(ZPublicApiCreateAudience.safeParse({ email: 'broken' }).success).toBe(false);
+  });
+
+  it('trims the single email the same way as the list', () => {
+    expect(ZPublicApiCreateAudience.parse({ email: ' a@example.com ' }).email).toBe('a@example.com');
+  });
+
+  it('invites a list, leaving bad addresses for the per-row result', () => {
+    expect(ZPublicApiCreateAudience.parse({ emails: [' a@example.com ', 'broken'] })).toEqual({
+      emails: ['a@example.com', 'broken'],
+      sendEmail: true
+    });
+  });
+
+  it('leaves an overlong address for the per-row result instead of failing the request', () => {
+    expect(
+      ZPublicApiCreateAudience.safeParse({ emails: ['a@example.com', `${'x'.repeat(400)}@example.com`] }).success
+    ).toBe(true);
+  });
+
+  it('takes email or emails, not both and not neither', () => {
+    expect(ZPublicApiCreateAudience.safeParse({}).success).toBe(false);
+    expect(ZPublicApiCreateAudience.safeParse({ email: 'a@example.com', emails: ['b@example.com'] }).success).toBe(
+      false
+    );
+    expect(ZPublicApiCreateAudience.safeParse({ emails: [] }).success).toBe(false);
+  });
+
+  it('caps a list at the dashboard import limit', () => {
+    const emails = (count: number) => Array.from({ length: count }, (_, i) => `p${i}@example.com`);
+
+    expect(ZPublicApiCreateAudience.safeParse({ emails: emails(AUDIENCE_IMPORT_MAX_ROWS) }).success).toBe(true);
+    expect(ZPublicApiCreateAudience.safeParse({ emails: emails(AUDIENCE_IMPORT_MAX_ROWS + 1) }).success).toBe(false);
   });
 
   it('rejects email and name together, since they apply to different kinds of member', () => {
