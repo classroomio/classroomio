@@ -4529,3 +4529,108 @@ export const webhookDelivery = pgTable(
     index('idx_webhook_delivery_event_id').on(table.eventId)
   ]
 );
+
+export type PersonalLearningMessage = {
+  role: 'user' | 'assistant';
+  content: string;
+  createdAt?: string;
+};
+
+export type PersonalLearningOfferPayload = {
+  suggestedStudyDays: 1 | 7 | 30;
+  reason: string;
+};
+
+export type PersonalLearningSource = {
+  url: string;
+  title: string;
+  accessedAt: string;
+};
+
+export type PersonalLearningGenerationMeta = {
+  model?: string;
+  promptVersion?: string;
+  generatedAt?: string;
+};
+
+export const personalLearningConversation = pgTable(
+  'personal_learning_conversation',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    ownerUserId: uuid('owner_user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    organizationId: uuid('organization_id').references(() => organization.id, { onDelete: 'set null' }),
+    messages: jsonb().default([]).notNull().$type<PersonalLearningMessage[]>(),
+    offerId: uuid('offer_id'),
+    offerPayload: jsonb('offer_payload').$type<PersonalLearningOfferPayload>(),
+    offerStatus: varchar('offer_status', { length: 16 }).default('active').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('personal_learning_conversation_offer_id_unique').on(table.offerId),
+    index('personal_learning_conversation_owner_idx').on(table.ownerUserId)
+  ]
+);
+
+export const personalLearningJourney = pgTable(
+  'personal_learning_journey',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    ownerUserId: uuid('owner_user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    organizationId: uuid('organization_id').references(() => organization.id, { onDelete: 'set null' }),
+    courseId: uuid('course_id')
+      .notNull()
+      .references(() => course.id, { onDelete: 'cascade' }),
+    conversationId: uuid('conversation_id')
+      .notNull()
+      .references(() => personalLearningConversation.id, { onDelete: 'cascade' }),
+    goal: text().notNull(),
+    language: varchar({ length: 16 }).notNull(),
+    targetStudyDays: integer('target_study_days').notNull(),
+    dailyMinutes: integer('daily_minutes').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('personal_learning_journey_course_id_unique').on(table.courseId),
+    unique('personal_learning_journey_conversation_id_unique').on(table.conversationId),
+    check('personal_learning_journey_target_study_days_check', sql`${table.targetStudyDays} in (1, 7, 30)`),
+    check('personal_learning_journey_daily_minutes_check', sql`${table.dailyMinutes} in (30, 60, 120)`),
+    index('personal_learning_journey_owner_idx').on(table.ownerUserId)
+  ]
+);
+
+export const personalLearningSession = pgTable(
+  'personal_learning_session',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    journeyId: uuid('journey_id')
+      .notNull()
+      .references(() => personalLearningJourney.id, { onDelete: 'cascade' }),
+    sessionIndex: integer('session_index').notNull(),
+    lessonId: uuid('lesson_id').references(() => lesson.id, { onDelete: 'set null' }),
+    status: varchar({ length: 16 }).default('queued').notNull(),
+    sourceManifest: jsonb('source_manifest').default([]).notNull().$type<PersonalLearningSource[]>(),
+    generationMeta: jsonb('generation_meta').default({}).notNull().$type<PersonalLearningGenerationMeta>(),
+    failureCode: varchar('failure_code', { length: 64 }),
+    attempt: integer().default(0).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('personal_learning_session_journey_index_unique').on(table.journeyId, table.sessionIndex),
+    check('personal_learning_session_index_check', sql`${table.sessionIndex} > 0`),
+    check('personal_learning_session_attempt_check', sql`${table.attempt} >= 0`),
+    index('personal_learning_session_status_idx').on(table.status)
+  ]
+);
