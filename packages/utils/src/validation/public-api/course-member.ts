@@ -41,10 +41,10 @@ export const ZPublicApiCourseMembersQuery = ZPublicApiPaginationQuery.extend({
     'Not logged in for N days or more (including never); never = no login recorded.'
   ),
   certificateEarned: z
-    .enum(['true', 'false'])
+    .union([z.boolean(), z.enum(['true', 'false'])])
     .optional()
     .describe('true = has earned the course certificate, false = has not.')
-    .transform((value) => (value === undefined ? undefined : value === 'true'))
+    .transform((value) => (value == null ? undefined : value === true || value === 'true'))
 });
 export type TPublicApiCourseMembersQuery = z.infer<typeof ZPublicApiCourseMembersQuery>;
 
@@ -76,9 +76,8 @@ export type TPublicApiUpdateCourseMember = z.infer<typeof ZPublicApiUpdateCourse
 
 export const ZPublicApiCourseMemberAnalyticsQuery = z.object({
   includeProgressImpact: z
-    .enum(['true', 'false'])
-    .optional()
-    .default('false')
-    .transform((value) => value === 'true')
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .default(false)
+    .transform((value) => value === true || value === 'true')
 });
 export type TPublicApiCourseMemberAnalyticsQuery = z.infer<typeof ZPublicApiCourseMemberAnalyticsQuery>;

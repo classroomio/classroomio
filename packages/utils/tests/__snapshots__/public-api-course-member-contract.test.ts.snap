@@ -73,12 +73,19 @@ exports[`public API course member request contract > ZPublicApiCourseMemberAnaly
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "includeProgressImpact": {
-      "default": "false",
-      "enum": [
-        "true",
-        "false",
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "enum": [
+            "true",
+            "false",
+          ],
+          "type": "string",
+        },
       ],
-      "type": "string",
+      "default": false,
     },
   },
   "type": "object",
@@ -90,12 +97,19 @@ exports[`public API course member request contract > ZPublicApiCourseMembersQuer
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "certificateEarned": {
-      "description": "true = has earned the course certificate, false = has not.",
-      "enum": [
-        "true",
-        "false",
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "enum": [
+            "true",
+            "false",
+          ],
+          "type": "string",
+        },
       ],
-      "type": "string",
+      "description": "true = has earned the course certificate, false = has not.",
     },
     "enrolledWithin": {
       "description": "Added to the course within the last N days.",

@@ -8,11 +8,25 @@
   import { courseMetaDeta } from '$features/course/utils/store';
   import { coursesApi } from '$features/course/api';
   import type { RecommendedCourses } from '$features/course/types';
-  import { CourseSortBy, DEFAULT_COURSE_SORT, parseCourseSortValue } from '$features/course/utils/constants';
+  import {
+    CourseSortBy,
+    CourseSortOrder,
+    DEFAULT_COURSE_SORT,
+    parseCourseSortValue
+  } from '$features/course/utils/constants';
   import CoursePreviewModal from '$features/lms/components/course-preview-modal.svelte';
   import * as Pagination from '@cio/ui/base/pagination';
 
   const EXPLORE_LIMIT = 12;
+
+  const EXPLORE_SORT_ORDER: Record<CourseSortBy, CourseSortOrder> = {
+    [CourseSortBy.DateCreated]: CourseSortOrder.Desc,
+    [CourseSortBy.LastUpdatedAt]: CourseSortOrder.Desc,
+    [CourseSortBy.Published]: CourseSortOrder.Desc,
+    [CourseSortBy.Lessons]: CourseSortOrder.Desc,
+    [CourseSortBy.Name]: CourseSortOrder.Asc,
+    [CourseSortBy.Price]: CourseSortOrder.Asc
+  };
 
   let searchValue = $state('');
   let sortKey = $state<CourseSortBy>(DEFAULT_COURSE_SORT);
@@ -26,50 +40,27 @@
     localStorage.setItem('classroomio_filter_course_key', sortKey);
   });
 
-  const filteredExploreCourses: RecommendedCourses = $derived.by(() => {
-    const coursesFiltered = coursesApi.recommendedCourses.filter((course) => {
-      if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
-        return true;
-      }
-
-      return false;
-    });
-
-    if (sortKey === CourseSortBy.DateCreated) {
-      return coursesFiltered.sort(
-        (a, b) => new Date(a.createdAt ?? '').getTime() - new Date(b.createdAt ?? '').getTime()
-      );
-    } else if (sortKey === CourseSortBy.LastUpdatedAt) {
-      return coursesFiltered.sort((a, b) => {
-        const aUpdatedAt = new Date(a.updatedAt ?? a.createdAt ?? '').getTime();
-        const bUpdatedAt = new Date(b.updatedAt ?? b.createdAt ?? '').getTime();
-
-        return bUpdatedAt - aUpdatedAt;
-      });
-    } else if (sortKey === CourseSortBy.Published) {
-      return coursesFiltered.sort((a, b) => Number(b.isPublished) - Number(a.isPublished));
-    } else if (sortKey === CourseSortBy.Lessons) {
-      return coursesFiltered.sort((a, b) => (b.lessonCount ?? 0) - (a.lessonCount ?? 0));
-    } else if (sortKey === CourseSortBy.Name) {
-      return coursesFiltered.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sortKey === CourseSortBy.Price) {
-      return coursesFiltered.sort((a, b) => (a.cost ?? 0) - (b.cost ?? 0));
-    }
-
-    return coursesFiltered;
-  });
+  const filteredExploreCourses: RecommendedCourses = $derived(
+    coursesApi.recommendedCourses.filter(
+      (course) => !searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())
+    )
+  );
 
   const pagination = $derived(coursesApi.recommendedCoursesPagination);
 
   function fetchPage(page: number) {
     currentPage = page;
-    coursesApi.getRecommendedCourses({ limit: EXPLORE_LIMIT, page });
   }
 
   $effect(() => {
     if (searchValue) {
       currentPage = 1;
     }
+  });
+
+  $effect(() => {
+    void sortKey;
+    currentPage = 1;
   });
 
   onMount(() => {
@@ -85,7 +76,12 @@
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
-    coursesApi.getRecommendedCourses({ limit: EXPLORE_LIMIT, page: currentPage });
+    coursesApi.getRecommendedCourses({
+      limit: EXPLORE_LIMIT,
+      page: currentPage,
+      sort: sortKey,
+      order: EXPLORE_SORT_ORDER[sortKey]
+    });
   });
 </script>
 

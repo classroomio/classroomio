@@ -67,6 +67,8 @@ export const ZSetCohortInviteLinkRevokedToolInput = ZPublicApiSetCohortInviteLin
   cohortId: ZPublicApiCohortParam.shape.cohortId
 });
 
+export const ZListMyEnrolledCohortsToolInput = ZPublicApiPaginationQuery;
+
 const listOrgCohortsShape = ZListOrgCohortsToolInput.shape as unknown as ZodRawShapeCompat;
 const createCohortShape = ZCreateCohortToolInput.shape as unknown as ZodRawShapeCompat;
 const getCohortShape = ZGetCohortToolInput.shape as unknown as ZodRawShapeCompat;
@@ -83,6 +85,7 @@ const inviteStudentsToCohortShape = ZInviteStudentsToCohortToolInput.shape as un
 const assignStudentsToCohortShape = ZAssignStudentsToCohortToolInput.shape as unknown as ZodRawShapeCompat;
 const cohortInviteLinkShape = ZCohortInviteLinkToolInput.shape as unknown as ZodRawShapeCompat;
 const setCohortInviteLinkRevokedShape = ZSetCohortInviteLinkRevokedToolInput.shape as unknown as ZodRawShapeCompat;
+const listMyEnrolledCohortsShape = ZListMyEnrolledCohortsToolInput.shape as unknown as ZodRawShapeCompat;
 
 export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
@@ -226,10 +229,10 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
   server.tool(
     'list_my_enrolled_cohorts',
     'List the cohorts the API key creator is enrolled in within this organization, with their role in each.',
-    listOrgCohortsShape,
+    listMyEnrolledCohortsShape,
     READ_ONLY,
     async (args) => {
-      const result = await apiClient.listMyEnrolledCohorts(ZPublicApiPaginationQuery.parse(args));
+      const result = await apiClient.listMyEnrolledCohorts(ZListMyEnrolledCohortsToolInput.parse(args));
       return jsonContent(result);
     }
   );

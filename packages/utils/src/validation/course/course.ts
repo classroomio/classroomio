@@ -5,10 +5,13 @@ import { ALLOWED_CONTENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
 import { ZCourseType } from './course-type';
 import { ZLiveSessionReminderOffsets } from './live-session-reminder';
+import { ZOrganizationCourseSort } from '../organization/organization';
 
 export const ZGetRecommendedCourses = z.object({
   limit: z.string().transform(Number).pipe(z.number().min(1).max(50)).optional(),
-  page: z.string().transform(Number).pipe(z.number().min(1)).optional()
+  page: z.string().transform(Number).pipe(z.number().min(1)).optional(),
+  sort: ZOrganizationCourseSort.optional(),
+  order: z.enum(['asc', 'desc']).optional()
 });
 export type TGetRecommendedCourses = z.infer<typeof ZGetRecommendedCourses>;
 

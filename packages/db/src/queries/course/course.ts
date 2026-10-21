@@ -1247,6 +1247,8 @@ interface GetExploreCoursesOptions {
   profileId: string;
   limit?: number;
   page?: number;
+  sortKey?: OrgCourseSortKey;
+  order?: OrgCourseSortOrder;
 }
 
 export interface GetExploreCoursesResult {
@@ -1267,7 +1269,9 @@ export const getExploreCourses = async ({
   orgId,
   profileId,
   limit,
-  page = 1
+  page = 1,
+  sortKey,
+  order
 }: GetExploreCoursesOptions): Promise<GetExploreCoursesResult> => {
   try {
     const whereCondition = and(
@@ -1304,7 +1308,7 @@ export const getExploreCourses = async ({
       )
       .where(whereCondition)
       .groupBy(schema.course.id, schema.group.id)
-      .orderBy(desc(schema.course.createdAt));
+      .orderBy(...orgCourseListOrderBy(sortKey, order));
 
     const countSelect = db
       .select({ total: count(schema.course.id) })
