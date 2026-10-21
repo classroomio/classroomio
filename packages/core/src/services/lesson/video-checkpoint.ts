@@ -418,7 +418,6 @@ export async function updateVideoCheckpointService(
   return toTeacherVideoCheckpoint(checkpoint);
 }
 
-/** Deleting is not plan-gated, so an org that downgraded can still remove a question that blocks its learners. */
 export async function deleteVideoCheckpointService(lessonId: string, checkpointId: string) {
   await requireLesson(lessonId);
   await requireCheckpoint(lessonId, checkpointId);

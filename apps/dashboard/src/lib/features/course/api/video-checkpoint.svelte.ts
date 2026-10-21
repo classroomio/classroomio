@@ -70,7 +70,6 @@ class VideoCheckpointApi extends BaseApiWithErrors {
     });
   }
 
-  /** The server drops an asset's questions when the lesson is saved without it; mirror that locally right away. */
   dropAsset(assetId: string) {
     const removedIds = this.checkpoints.filter((checkpoint) => checkpoint.assetId === assetId).map((c) => c.id);
     this.checkpoints = this.checkpoints.filter((checkpoint) => checkpoint.assetId !== assetId);
