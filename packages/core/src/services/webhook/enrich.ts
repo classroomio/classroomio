@@ -7,7 +7,19 @@ const ROLE_LABELS: Record<number, string> = {
   [ROLE.STUDENT]: 'student'
 };
 
-const EMPTY_CONTEXT: TWebhookEventContext = { profiles: new Map(), course: null, exercise: null, lesson: null };
+const EMPTY_CONTEXT: TWebhookEventContext = {
+  profiles: new Map(),
+  course: null,
+  statusLabels: new Map(),
+  exercise: null,
+  lesson: null
+};
+
+function readNumber(data: Record<string, unknown>, key: string): number | null {
+  const value = data[key];
+
+  return typeof value === 'number' ? value : null;
+}
 
 function readString(data: Record<string, unknown>, key: string): string | null {
   const value = data[key];
@@ -15,14 +27,20 @@ function readString(data: Record<string, unknown>, key: string): string | null {
   return typeof value === 'string' ? value : null;
 }
 
-async function loadContext(data: Record<string, unknown>): Promise<TWebhookEventContext> {
+async function loadContext(organizationId: string, data: Record<string, unknown>): Promise<TWebhookEventContext> {
   const profileIds = [readString(data, 'profileId'), readString(data, 'actorProfileId')].filter(
     (id): id is string => id !== null
   );
 
   try {
+    const statusIds = [readNumber(data, 'statusId'), readNumber(data, 'previousStatusId')].filter(
+      (id): id is number => id !== null
+    );
+
     return await getWebhookEventContext({
+      organizationId,
       profileIds,
+      statusIds,
       courseId: readString(data, 'courseId') ?? undefined,
       exerciseId: readString(data, 'exerciseId') ?? undefined,
       lessonId: readString(data, 'lessonId') ?? undefined
@@ -38,26 +56,43 @@ function toPersonRef(
   profileId: string | null,
   email: string | null,
   profiles: TWebhookEventContext['profiles']
-): { id: string | null; name: string | null; email: string | null } {
+): { id: string | null; name: string | null; email: string | null; externalId: string | null } {
   const profile = profileId ? profiles.get(profileId) : undefined;
 
-  return { id: profileId, name: profile?.name ?? null, email: email ?? profile?.email ?? null };
+  return {
+    id: profileId,
+    name: profile?.name ?? null,
+    email: email ?? profile?.email ?? null,
+    externalId: profile?.externalId ?? null
+  };
 }
 
 /**
- * Adds the readable details (student, course, exercise, lesson, actor, role) next to the ids an event
+ * Adds the readable details (student, course, exercise, lesson, actor, role, status) next to the ids an event
  * was created with. The existing fields are kept as they are. Details that cannot be read come back
  * as `null` so the event is still sent.
  */
-export async function enrichWebhookEventData(data: Record<string, unknown>): Promise<Record<string, unknown>> {
-  const context = await loadContext(data);
+export async function enrichWebhookEventData(
+  organizationId: string,
+  data: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const context = await loadContext(organizationId, data);
   const enriched: Record<string, unknown> = { ...data };
   const courseId = readString(data, 'courseId');
   const exerciseId = readString(data, 'exerciseId');
   const lessonId = readString(data, 'lessonId');
 
   if (courseId) {
-    enriched.course = { id: courseId, title: context.course?.title ?? null, slug: context.course?.slug ?? null };
+    enriched.course = {
+      id: courseId,
+      title: context.course?.title ?? null,
+      slug: context.course?.slug ?? null,
+      type: context.course?.type ?? null,
+      isPublished: context.course?.isPublished ?? null,
+      cost: context.course?.cost ?? null,
+      currency: context.course?.currency ?? null,
+      tags: context.course?.tags ?? []
+    };
   }
 
   if (exerciseId) {
@@ -77,6 +112,16 @@ export async function enrichWebhookEventData(data: Record<string, unknown>): Pro
   if ('actorProfileId' in data) {
     const actorId = readString(data, 'actorProfileId');
     enriched.actor = actorId ? toPersonRef(actorId, null, context.profiles) : null;
+  }
+
+  if ('statusId' in data) {
+    const statusId = readNumber(data, 'statusId');
+    enriched.status = statusId === null ? null : (context.statusLabels.get(statusId) ?? null);
+  }
+
+  if ('previousStatusId' in data) {
+    const previousStatusId = readNumber(data, 'previousStatusId');
+    enriched.previousStatus = previousStatusId === null ? null : (context.statusLabels.get(previousStatusId) ?? null);
   }
 
   if (typeof data.roleId === 'number') {

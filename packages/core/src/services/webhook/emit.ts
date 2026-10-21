@@ -112,7 +112,7 @@ export async function recordWebhookEvent<TEvent extends TWebhookEventType>(
 
     if (!(await hasWebhookEntitlement(organizationId))) return;
 
-    const detailedData = await enrichWebhookEventData(data);
+    const detailedData = await enrichWebhookEventData(organizationId, data);
     const envelope = await buildWebhookEnvelope(organizationId, eventType, detailedData, occurredAt);
     const now = new Date().toISOString();
     const deliveries = await insertWebhookEventWithDeliveries(

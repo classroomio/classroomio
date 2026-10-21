@@ -41,7 +41,7 @@ export const WEBHOOK_AUTO_DISABLE_FAILURE_THRESHOLD = 100;
 export const WEBHOOK_RETENTION_DAYS = 30;
 export const WEBHOOK_RESPONSE_BODY_LIMIT = 2_048;
 export const WEBHOOK_MAX_ENDPOINTS_PER_ORG = 20;
-export const WEBHOOK_API_VERSION = '2026-10-13';
+export const WEBHOOK_API_VERSION = '2026-10-21';
 
 export const WEBHOOK_SIGNATURE_HEADER = 'X-Cio-Signature-256';
 export const WEBHOOK_TIMESTAMP_HEADER = 'X-Cio-Timestamp';

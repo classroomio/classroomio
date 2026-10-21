@@ -9,6 +9,7 @@ import { ZWebhookEventData, ZWebhookEventInput } from '@cio/utils/validation/web
 import { WEBHOOK_EVENT_TYPES } from '@cio/utils/constants/webhook';
 
 const ids = {
+  org: '1a1dcddd-1abc-4f72-b644-0bd18191a289',
   course: '000000c1-0000-4000-8000-0000000000c1',
   profile: '000000b1-0000-4000-8000-0000000000b1',
   actor: '000000b2-0000-4000-8000-0000000000b2',
@@ -74,10 +75,22 @@ const inputs: Record<string, Record<string, unknown>> = {
 
 const fullContext = () => ({
   profiles: new Map([
-    [ids.profile, { name: 'Alex Johnson', email: 'alex@example.com' }],
-    [ids.actor, { name: 'Sam Rivera', email: 'sam@example.com' }]
+    [ids.profile, { name: 'Alex Johnson', email: 'alex@example.com', externalId: 'EMP-10482' }],
+    [ids.actor, { name: 'Sam Rivera', email: 'sam@example.com', externalId: null }]
   ]),
-  course: { title: 'Intro to Data Science', slug: 'intro-to-data-science' },
+  statusLabels: new Map([
+    [2, 'in_progress'],
+    [3, 'graded']
+  ]),
+  course: {
+    title: 'Intro to Data Science',
+    slug: 'intro-to-data-science',
+    type: 'SELF_PACED',
+    isPublished: true,
+    cost: 0,
+    currency: 'USD',
+    tags: ['data']
+  },
   exercise: { title: 'Week 1 quiz' },
   lesson: { title: 'Getting started' }
 });
@@ -95,61 +108,99 @@ describe('webhook event enrichment', () => {
   it.each(Object.keys(inputs))('%s enriches into its delivered schema', async (eventType) => {
     const key = eventType as keyof typeof ZWebhookEventData;
     const input = ZWebhookEventInput[key].parse(inputs[eventType]);
-    const enriched = await enrichWebhookEventData(input);
+    const enriched = await enrichWebhookEventData(ids.org, input);
 
     expect(() => ZWebhookEventData[key].parse(enriched)).not.toThrow();
     expect(enriched).toMatchObject(input);
   });
 
   it('adds readable student, course and exercise details', async () => {
-    const enriched = await enrichWebhookEventData(inputs['course.submission.created']);
+    const enriched = await enrichWebhookEventData(ids.org, inputs['course.submission.created']);
 
-    expect(enriched.student).toEqual({ id: ids.profile, name: 'Alex Johnson', email: 'alex@example.com' });
-    expect(enriched.course).toEqual({ id: ids.course, title: 'Intro to Data Science', slug: 'intro-to-data-science' });
+    expect(enriched.student).toEqual({
+      id: ids.profile,
+      name: 'Alex Johnson',
+      email: 'alex@example.com',
+      externalId: 'EMP-10482'
+    });
+    expect(enriched.course).toEqual({
+      id: ids.course,
+      title: 'Intro to Data Science',
+      slug: 'intro-to-data-science',
+      type: 'SELF_PACED',
+      isPublished: true,
+      cost: 0,
+      currency: 'USD',
+      tags: ['data']
+    });
     expect(enriched.exercise).toEqual({ id: ids.exercise, title: 'Week 1 quiz' });
   });
 
   it('prefers the email recorded on the event over the profile email', async () => {
-    const enriched = await enrichWebhookEventData({ ...inputs['course.member.added'], email: 'invited@example.com' });
+    const enriched = await enrichWebhookEventData(ids.org, {
+      ...inputs['course.member.added'],
+      email: 'invited@example.com'
+    });
 
     expect(enriched.student).toMatchObject({ email: 'invited@example.com' });
   });
 
   it('labels the role next to roleId', async () => {
-    const admin = await enrichWebhookEventData({ ...inputs['course.member.added'], roleId: 1 });
-    const tutor = await enrichWebhookEventData({ ...inputs['course.member.added'], roleId: 2 });
-    const student = await enrichWebhookEventData({ ...inputs['course.member.added'], roleId: 3 });
+    const admin = await enrichWebhookEventData(ids.org, { ...inputs['course.member.added'], roleId: 1 });
+    const tutor = await enrichWebhookEventData(ids.org, { ...inputs['course.member.added'], roleId: 2 });
+    const student = await enrichWebhookEventData(ids.org, { ...inputs['course.member.added'], roleId: 3 });
 
     expect([admin.role, tutor.role, student.role]).toEqual(['admin', 'tutor', 'student']);
   });
 
+  it('labels the submission status next to statusId and previousStatusId', async () => {
+    const enriched = await enrichWebhookEventData(ids.org, inputs['course.submission.status_changed']);
+
+    expect(enriched).toMatchObject({ status: 'graded', previousStatus: 'in_progress' });
+  });
+
   it('sets actor to null when nobody triggered the event', async () => {
-    const enriched = await enrichWebhookEventData(inputs['organization.invite.accepted']);
+    const enriched = await enrichWebhookEventData(ids.org, inputs['organization.invite.accepted']);
 
     expect(enriched.actor).toBeNull();
   });
 
   it('sets exercise to null when the submission has no exercise', async () => {
-    const enriched = await enrichWebhookEventData(inputs['course.submission.status_changed']);
+    const enriched = await enrichWebhookEventData(ids.org, inputs['course.submission.status_changed']);
 
     expect(enriched.exercise).toBeNull();
   });
 
   it('returns null names and titles when the records no longer exist', async () => {
-    mocks.getWebhookEventContext.mockResolvedValue({ profiles: new Map(), course: null, exercise: null, lesson: null });
-    const enriched = await enrichWebhookEventData(inputs['lesson.completion.updated']);
+    mocks.getWebhookEventContext.mockResolvedValue({
+      profiles: new Map(),
+      course: null,
+      statusLabels: new Map(),
+      exercise: null,
+      lesson: null
+    });
+    const enriched = await enrichWebhookEventData(ids.org, inputs['lesson.completion.updated']);
 
-    expect(enriched.student).toEqual({ id: ids.profile, name: null, email: null });
-    expect(enriched.course).toEqual({ id: ids.course, title: null, slug: null });
+    expect(enriched.student).toEqual({ id: ids.profile, name: null, email: null, externalId: null });
+    expect(enriched.course).toEqual({
+      id: ids.course,
+      title: null,
+      slug: null,
+      type: null,
+      isPublished: null,
+      cost: null,
+      currency: null,
+      tags: []
+    });
     expect(enriched.lesson).toEqual({ id: ids.lesson, title: null });
   });
 
   it('still returns the event when loading the details fails', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
     mocks.getWebhookEventContext.mockRejectedValue(new Error('db down'));
-    const enriched = await enrichWebhookEventData(inputs['course.completed']);
+    const enriched = await enrichWebhookEventData(ids.org, inputs['course.completed']);
 
     expect(enriched).toMatchObject(inputs['course.completed']);
-    expect(enriched.student).toEqual({ id: ids.profile, name: null, email: null });
+    expect(enriched.student).toEqual({ id: ids.profile, name: null, email: null, externalId: null });
   });
 });

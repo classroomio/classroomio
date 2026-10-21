@@ -100,10 +100,26 @@ export const ZWebhookEventInput = {
 export type TWebhookEventInput<TEvent extends TWebhookEventType> = z.infer<(typeof ZWebhookEventInput)[TEvent]>;
 
 const personRef = z
-  .object({ id: z.string().nullable(), name: z.string().nullable(), email: z.string().nullable() })
+  .object({
+    id: z.string().nullable(),
+    name: z.string().nullable(),
+    email: z.string().nullable(),
+    externalId: z.string().nullable()
+  })
   .strict();
 
-const courseRef = z.object({ id: z.string(), title: z.string().nullable(), slug: z.string().nullable() }).strict();
+const courseRef = z
+  .object({
+    id: z.string(),
+    title: z.string().nullable(),
+    slug: z.string().nullable(),
+    type: z.string().nullable(),
+    isPublished: z.boolean().nullable(),
+    cost: z.number().nullable(),
+    currency: z.string().nullable(),
+    tags: z.array(z.string())
+  })
+  .strict();
 
 const itemRef = z.object({ id: z.string(), title: z.string().nullable() }).strict();
 
@@ -116,12 +132,15 @@ const courseMemberData = courseMemberInput.extend({ course: courseRef, student: 
 const courseCompletionData = courseCompletionInput.extend({ course: courseRef, student: personRef });
 
 const submissionData = submissionInput.extend({
+  status: z.string().nullable(),
   course: courseRef,
   exercise: itemRef.nullable(),
   student: personRef
 });
 
 const submissionStatusChangedData = submissionStatusChangedInput.extend({
+  status: z.string().nullable(),
+  previousStatus: z.string().nullable(),
   course: courseRef,
   exercise: itemRef.nullable(),
   student: personRef
