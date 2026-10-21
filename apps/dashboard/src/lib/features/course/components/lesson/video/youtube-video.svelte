@@ -28,4 +28,4 @@
   onSubmit={addVideo}
 />
 
-<AddedVideoList type="youtube" />
+<AddedVideoList type="youtube" {lessonId} />

@@ -1414,6 +1414,11 @@
     "common": {
       "not_available": "N/A"
     },
+    "upload": {
+      "videos": "Upload videos",
+      "documents": "Upload documents",
+      "more_options": "More upload options"
+    },
     "storage": {
       "total_bytes": "Total Storage",
       "internal_bytes": "Internal Storage",

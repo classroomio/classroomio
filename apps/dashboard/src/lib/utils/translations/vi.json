@@ -3713,6 +3713,11 @@
       },
       "refresh": "Làm cho khỏe lại"
     },
+    "upload": {
+      "videos": "Tải video lên",
+      "documents": "Tải tài liệu lên",
+      "more_options": "Thêm tùy chọn tải lên"
+    },
     "storage": {
       "total_bytes": "Tổng dung lượng lưu trữ",
       "internal_bytes": "Bộ nhớ trong",

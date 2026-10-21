@@ -90,4 +90,4 @@
   </Button>
 </form>
 
-<AddedVideoList type="generic" />
+<AddedVideoList type="generic" {lessonId} />

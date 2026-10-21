@@ -332,11 +332,11 @@ export interface AddExternalVideosToLessonOptions {
  */
 export async function addExternalVideosToLesson(options: AddExternalVideosToLessonOptions): Promise<number> {
   const { links, type, lessonId, fallbackTitle } = options;
-  if (!lessonApi.lesson || links.length === 0) {
+  if (links.length === 0 || (lessonId && !lessonApi.lesson)) {
     return 0;
   }
 
-  const existingVideos = Array.isArray(lessonApi.lesson.videos) ? lessonApi.lesson.videos : [];
+  const existingVideos = lessonId && Array.isArray(lessonApi.lesson?.videos) ? lessonApi.lesson.videos : [];
   const { uniqueLinks, duplicateLinks } = filterDuplicateVideoLinks(links, type, existingVideos);
 
   if (uniqueLinks.length === 0) {
@@ -367,7 +367,7 @@ export async function addExternalVideosToLesson(options: AddExternalVideosToLess
     .map((result) => result.value);
   const failedCount = results.length - newVideos.length;
 
-  if (newVideos.length > 0) {
+  if (newVideos.length > 0 && lessonId) {
     lessonApi.updateLessonState('videos', newVideos, { append: true });
   }
 

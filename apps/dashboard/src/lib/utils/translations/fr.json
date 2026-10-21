@@ -3713,6 +3713,11 @@
       },
       "refresh": "Rafraîchir"
     },
+    "upload": {
+      "videos": "Téléverser des vidéos",
+      "documents": "Téléverser des documents",
+      "more_options": "Plus d'options de téléversement"
+    },
     "storage": {
       "total_bytes": "Stockage total",
       "internal_bytes": "Stockage interne",

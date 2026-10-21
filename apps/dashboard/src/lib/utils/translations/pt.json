@@ -3713,6 +3713,11 @@
       },
       "refresh": "Atualizar"
     },
+    "upload": {
+      "videos": "Enviar vídeos",
+      "documents": "Enviar documentos",
+      "more_options": "Mais opções de envio"
+    },
     "storage": {
       "total_bytes": "Armazenamento total",
       "internal_bytes": "Armazenamento Interno",

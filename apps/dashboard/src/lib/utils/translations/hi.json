@@ -3713,6 +3713,11 @@
       },
       "refresh": "ताज़ा करना"
     },
+    "upload": {
+      "videos": "वीडियो अपलोड करें",
+      "documents": "दस्तावेज़ अपलोड करें",
+      "more_options": "अधिक अपलोड विकल्प"
+    },
     "storage": {
       "total_bytes": "कुल संग्रहण",
       "internal_bytes": "आंतरिक भंडारण",

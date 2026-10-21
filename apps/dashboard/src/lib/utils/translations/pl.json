@@ -3713,6 +3713,11 @@
       },
       "refresh": "Odświeżać"
     },
+    "upload": {
+      "videos": "Prześlij filmy",
+      "documents": "Prześlij dokumenty",
+      "more_options": "Więcej opcji przesyłania"
+    },
     "storage": {
       "total_bytes": "Całkowita pamięć",
       "internal_bytes": "Pamięć wewnętrzna",

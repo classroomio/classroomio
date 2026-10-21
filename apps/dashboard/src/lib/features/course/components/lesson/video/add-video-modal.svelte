@@ -19,8 +19,10 @@
 
   let { lessonId = '', onClose = () => {} }: Props = $props();
 
-  const tabs = CONSTANTS.videoTabs;
-  let currentTab = $state(String(tabs[0].value));
+  const tabs = $derived(
+    lessonId ? CONSTANTS.videoTabs : CONSTANTS.videoTabs.filter((tab) => !CONSTANTS.lessonOnlyVideoTabs.has(tab.value))
+  );
+  let currentTab = $state(String(CONSTANTS.videoTabs[0].value));
 </script>
 
 <Dialog.Root
@@ -75,12 +77,14 @@
       <UnderlineTabs.Content value="upload" class="mt-3">
         <UploadVideo {lessonId} />
       </UnderlineTabs.Content>
-      <UnderlineTabs.Content value="library" class="mt-3">
-        <LibraryVideo {lessonId} />
-      </UnderlineTabs.Content>
-      <UnderlineTabs.Content value="google_drive" class="mt-3">
-        <GoogleDriveVideo {lessonId} />
-      </UnderlineTabs.Content>
+      {#if lessonId}
+        <UnderlineTabs.Content value="library" class="mt-3">
+          <LibraryVideo {lessonId} />
+        </UnderlineTabs.Content>
+        <UnderlineTabs.Content value="google_drive" class="mt-3">
+          <GoogleDriveVideo {lessonId} />
+        </UnderlineTabs.Content>
+      {/if}
     </UnderlineTabs.Root>
   </Dialog.Content>
 </Dialog.Root>

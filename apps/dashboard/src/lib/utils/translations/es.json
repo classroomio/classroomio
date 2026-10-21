@@ -3713,6 +3713,11 @@
       },
       "refresh": "Refrescar"
     },
+    "upload": {
+      "videos": "Subir videos",
+      "documents": "Subir documentos",
+      "more_options": "Más opciones de carga"
+    },
     "storage": {
       "total_bytes": "Almacenamiento total",
       "internal_bytes": "Almacenamiento interno",

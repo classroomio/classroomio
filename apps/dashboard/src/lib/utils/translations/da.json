@@ -3713,6 +3713,11 @@
       },
       "refresh": "Opfriske"
     },
+    "upload": {
+      "videos": "Upload videoer",
+      "documents": "Upload dokumenter",
+      "more_options": "Flere uploadmuligheder"
+    },
     "storage": {
       "total_bytes": "Samlet opbevaring",
       "internal_bytes": "Intern opbevaring",

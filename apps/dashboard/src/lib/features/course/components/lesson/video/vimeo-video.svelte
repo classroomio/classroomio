@@ -30,4 +30,4 @@
   onSubmit={addVideo}
 />
 
-<AddedVideoList type="vimeo" />
+<AddedVideoList type="vimeo" {lessonId} />

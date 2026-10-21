@@ -1424,6 +1424,11 @@
     "common": {
       "not_available": "N/A"
     },
+    "upload": {
+      "videos": "Video yükle",
+      "documents": "Belge yükle",
+      "more_options": "Diğer yükleme seçenekleri"
+    },
     "storage": {
       "total_bytes": "Toplam Depolama",
       "internal_bytes": "Dahili Depolama",

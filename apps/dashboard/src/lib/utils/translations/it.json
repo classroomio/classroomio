@@ -1414,6 +1414,11 @@
     "common": {
       "not_available": "N / A"
     },
+    "upload": {
+      "videos": "Carica video",
+      "documents": "Carica documenti",
+      "more_options": "Altre opzioni di caricamento"
+    },
     "storage": {
       "total_bytes": "Spazio di archiviazione totale",
       "internal_bytes": "Archiviazione interna",
