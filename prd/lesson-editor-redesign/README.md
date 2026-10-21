@@ -5,10 +5,10 @@
 A clickable, high-fidelity prototype lives at [`prototypes/lesson-editor-redesign/index.html`](../../prototypes/lesson-editor-redesign/index.html) — a single self-contained HTML file, built on the real `@cio/ui` design tokens, that a developer or reviewer can open directly in a browser (`open prototypes/lesson-editor-redesign/index.html`, no build step required). It demonstrates every interaction described in this PRD. The list below is the plain-English summary of what the prototype shows, and all of it is in this PRD's scope:
 
 * **One canvas instead of tabs.** The lesson is an ordered list of content blocks, not one section per type. An admin can add any number of blocks, of any type, in any order, interleaved freely (see [Confirmed Decision 2](#2-the-canvas-is-an-ordered-list-of-blocks-not-one-section-per-type)).
-* **Ten block types.** Note, Video, Slides, Document, and Image, plus five interactive blocks: **Chart, Flashcards, Tabs, Multiple Choice, and Process** (see [Confirmed Decisions 3 and 11](#11-five-interactive-blocks-chart-flashcards-tabs-multiple-choice-process)).
+* **Ten block types in the prototype (v1 ships four).** Note, Video, Slides, and Document are v1. **Image** and five interactive blocks are **v2**: **Chart, Flashcards, Tabs, Multiple Choice, and Process** (see [Confirmed Decisions 3 and 11](#11-five-interactive-blocks-chart-flashcards-tabs-multiple-choice-process)).
 * **Three ways to add content**, all offering the same choices (see [Confirmed Decision 12](#12-three-ways-to-add-content)):
   * the **empty-lesson card** ("What goes in this lesson?", a 5×2 grid of block tiles) with **Ask AI** docked at the bottom where the floating nav sits;
-  * the **floating nav** at the bottom of the editor (Ask AI plus the ten types), which appends to the end of the lesson;
+  * the **floating nav** at the bottom of the editor (Ask AI plus the block types; ten in the prototype, four in v1), which appends to the end of the lesson;
   * the **per-gap "+"** between any two blocks, which opens a compact version of the same tile grid at that exact spot.
 * **Ask AI opens a chat panel on the right**, like the production assistant. It drafts a Note the admin inserts into the lesson with one click (see [Confirmed Decision 4](#4-an-ai-assistant-can-draft-a-note-block)).
 * **Adding Video, Slides, Document, or Image inserts a real, fully-rendered example immediately** — not a blank form — which the admin keeps, edits in place, or replaces via "Change …". The prototype's specific examples (one particular YouTube video, one particular stock photo) are illustrative only, not a literal product requirement (see [Confirmed Decision 10](#10-existing-add-video--add-slide-flows-are-preserved-exactly-only-re-hosted)).
@@ -20,6 +20,29 @@ A clickable, high-fidelity prototype lives at [`prototypes/lesson-editor-redesig
 
 When this document and the prototype disagree on a UI detail, the prototype wins.
 
+## Release scope: v1 and v2
+
+The structure below (ordered block canvas, add-content entry points, Ask AI panel, Settings slider, Preview) is the same in both releases. What changes is **which block types exist**. v1 ships the four types the editor already has. v2 adds Image and the five interactive blocks on top of the same structure, with no rework.
+
+| Area | v1 | v2 (adds) |
+| --- | --- | --- |
+| Block types | Note, Video, Slides, Document | Image, Chart, Flashcards, Tabs, Multiple Choice, Process |
+| Canvas | Ordered block list, any number of blocks of any type, any order, per lesson | Same, with the new types |
+| Add content: empty-lesson card | "What goes in this lesson?" card with a tile per v1 type, Ask AI pill docked at the bottom | Tile grid grows to 5×2 (ten types) |
+| Add content: floating nav | Ask AI + the four v1 types | Ask AI + all ten types |
+| Add content: per-gap "+" | Compact tile popover with the four v1 types and "Ask AI instead" | Same popover with ten types (5×2) |
+| Ask AI | Right-side chat panel that drafts a Note, with Insert into lesson | Unchanged (still Note only) |
+| Block actions | Drag handle, move up/down, remove, small type label | Same for every new type |
+| Note | Callout styles (Default, Info, Tip, Important, Warning, Highlight) | Unchanged |
+| Video, Slides, Document | Realistic example on add; existing Add modals re-hosted behind "Change …" | Unchanged |
+| Settings | Right-side slider with Live class, Progression, Lesson comments, Reading density | Unchanged |
+| Preview | In-page, read-only, in-app learner experience, large Video and Slides, no type labels, reading density | Interactive blocks usable by a learner |
+| Scroll-position dots + tooltips | Yes | Yes |
+| Data model | Per-lesson ordered block list, reading-density field, AI draft endpoint | Image reference, inline interactive block content |
+| Learner answers / analytics | None | None (still out of scope) |
+
+Sections below that describe Image or the interactive blocks are tagged **(v2)**. The prototype shows the full v2 set so both releases can be reviewed together. A v1 build simply offers the four v1 types.
+
 ## Purpose
 
 Replace the current tab-based lesson editor with a unified authoring canvas.
@@ -27,14 +50,14 @@ Replace the current tab-based lesson editor with a unified authoring canvas.
 Today, Video, Notes, Slides, Documents, and Settings are separate tabs, with only one panel visible at a time. The redesigned editor will let admins:
 
 * Edit all existing lesson content from one canvas
-* Add, reorder, and remove any number of content blocks — of any of ten types, in any order — without being limited to one section per type
+* Add, reorder, and remove any number of content blocks — of any type, in any order (four types in v1, ten in v2) — without being limited to one section per type
 * See content together in the order they actually arranged it
 * Preview the lesson from the in-app learner perspective without leaving the page
 * Access lesson settings through a right-side slider
 
 The editing philosophy is inspired by Notion's directness, where the content itself is the main editing surface.
 
-This does **not** mean adopting Notion's visual design, colors, branding, or free-form block system. ClassroomIO's existing `@cio/ui` design system remains the visual language, and block types stay fixed to the ten this PRD defines — admins choose from Note, Video, Slides, Document, Image, Chart, Flashcards, Tabs, Multiple Choice, and Process, not an open-ended block palette.
+This does **not** mean adopting Notion's visual design, colors, branding, or free-form block system. ClassroomIO's existing `@cio/ui` design system remains the visual language, and block types stay a fixed list (four in v1, ten in v2) — admins choose from Note, Video, Slides, Document, Image, Chart, Flashcards, Tabs, Multiple Choice, and Process, not an open-ended block palette.
 
 ---
 
@@ -103,7 +126,7 @@ Do not introduce Notion's:
 * Colors
 * Branding
 * Iconography
-* Free-form block canvas (block types stay fixed to the ten this PRD defines)
+* Free-form block canvas (block types stay a fixed list: four in v1, ten in v2)
 
 Continue using `@cio/ui`.
 
@@ -121,7 +144,9 @@ The canvas holds an ordered sequence of content blocks. Each block is one of: No
 
 This replaces the one-section-per-type model and supersedes `course.metadata.lessonTabsOrder` as the mechanism for ordering content within a lesson — see [Problem Statement #5](#5-content-ordering-is-hard-coded-to-one-slot-per-type-at-course-level) and [Data Model and API](#data-model-and-api).
 
-## 3. Image becomes a fifth content type
+## 3. Image becomes a fifth content type (v2)
+
+**Release: v2.** v1 does not include Image.
 
 Image joins Video, Note, Slide, and Document as a first-class block type.
 
@@ -214,7 +239,9 @@ The redesign re-hosts these exact flows inside the unified canvas — it does no
 
 **What the example itself is made of is illustrative, not prescribed.** The prototype hotlinks one specific real YouTube video and one specific real Unsplash photo so the canvas reads as a genuinely built lesson in a demo, rather than an empty frame. This PRD does not propose that production literally defaults every new Video/Image block to that same third-party video/photo for every admin. The actual default asset per type — e.g. a ClassroomIO-owned example video and image, served from ClassroomIO's own storage rather than hotlinked from YouTube/Unsplash — is an implementation decision, not something to guess at here. The Slide and Document examples (a designed cover-slide layout, a sample file row) are already ClassroomIO-authored content, not third-party hotlinks, and need no equivalent decision.
 
-## 11. Five interactive blocks: Chart, Flashcards, Tabs, Multiple Choice, Process
+## 11. Five interactive blocks: Chart, Flashcards, Tabs, Multiple Choice, Process (v2)
+
+**Release: v2.** v1 does not include these blocks. The structure they plug into (ordered blocks, add-content entry points, block actions, Preview) is built in v1, so v2 adds block types without changing it.
 
 Five new block types join Note, Video, Slides, Document, and Image. Each is authored in place on the canvas and works as a learner would use it in Preview. None has an existing component to reuse, so all five are new UI.
 
@@ -236,7 +263,7 @@ Rules that apply to all five:
 
 ## 12. Three ways to add content
 
-Every way of adding content offers the same choices: **Ask AI** plus the ten block types. All are available at all times, regardless of what the canvas already contains. The labels are Note, Video, Slides, Document, Image, Chart, Flashcards, Tabs, Multiple Choice, and Process.
+Every way of adding content offers the same choices: **Ask AI** plus the block types for the release (four in v1, ten in v2). The descriptions below show the full v2 set; in v1 the grid simply has four tiles (Note, Video, Slides, Document) in one row. All are available at all times, regardless of what the canvas already contains. The labels are Note, Video, Slides, Document, Image, Chart, Flashcards, Tabs, Multiple Choice, and Process.
 
 1. **Empty-lesson card.** A lesson with no blocks shows a card titled "What goes in this lesson?" with the line "Pick a block to begin. You can add more at any time." Below it is a 5×2 grid of centered tiles, one per block type. The **Ask AI pill** (`Ask AI | ⌘ I`, matching production) is docked at the bottom of the screen, where the floating nav sits. When the admin adds the first block, the pill is replaced by the full floating nav.
 2. **Floating nav.** Once the lesson has content, a bar at the bottom of the editor (centered on the editor column, not the whole window) shows Ask AI and the ten types. Choosing one always appends a block at the end of the lesson. It is hidden on narrow screens, where the per-gap control and the mobile layout take over.
@@ -309,21 +336,23 @@ The redesign is based on the current implementation in:
 3. Open lesson settings without replacing the content being edited.
 4. Preserve all existing content capabilities, including the full Add Video / Add Slide pickers exactly as they work today, re-hosted behind a "Change …" action rather than a first-add modal.
 5. Continue using the existing ClassroomIO design system.
-6. Let an admin add images directly to a lesson as their own content block, not only as formatting inside a Note.
+6. (v2) Let an admin add images directly to a lesson as their own content block, not only as formatting inside a Note.
 7. Let an admin get a first draft of a Note from a chat message to Ask AI, as a starting point they edit rather than a finished product.
-8. Let an admin make a lesson interactive (charts, flashcards, tabs, multiple-choice questions, step-by-step processes) without leaving the lesson editor.
+8. (v2) Let an admin make a lesson interactive (charts, flashcards, tabs, multiple-choice questions, step-by-step processes) without leaving the lesson editor.
 9. Make adding content obvious: an empty-lesson card, a floating nav, and a per-gap "+" that all offer the same choices.
 
 ---
 
 # Non-Goals
 
-The following are outside v1:
+The following are outside v1. Image and the five interactive blocks are not rejected, they are scheduled for v2 (see [Release scope](#release-scope-v1-and-v2)):
+
+* Image and the interactive blocks (Chart, Flashcards, Tabs, Multiple Choice, Process) — v2
 
 * Public renderer parity
 * Learner experience redesign
 * Persistent editor/preview split view
-* Free-form Notion-style block editing (block types remain the fixed ten: Note, Video, Slide, Document, Image, Chart, Flashcards, Tabs, Multiple Choice, Process)
+* Free-form Notion-style block editing (block types remain a fixed list: Note, Video, Slide, Document in v1, plus Image, Chart, Flashcards, Tabs, Multiple Choice, Process in v2)
 * New video or slide source integrations beyond the existing 6 video sources and 10 slide platforms
 * A stock-photo library, or any image source other than direct upload
 * AI-generated content for any block type other than Note (no AI-generated video, slides, images, or documents)
@@ -363,7 +392,7 @@ Content tabs are removed. Scrolling becomes the normal way to move between block
 
 ## 2. Add Content
 
-There are three entry points for adding a block (see [Confirmed Decision 12](#12-three-ways-to-add-content)). All offer the same eleven choices — **Ask AI**, Note, Video, Slides, Document, Image, Chart, Flashcards, Tabs, Multiple Choice, Process — and all are always available regardless of what the canvas already contains:
+There are three entry points for adding a block (see [Confirmed Decision 12](#12-three-ways-to-add-content)). All offer the same choices — in v1 **Ask AI**, Note, Video, Slides, Document; v2 adds Image, Chart, Flashcards, Tabs, Multiple Choice, Process — and all are always available regardless of what the canvas already contains:
 
 * **Empty-lesson card.** The starting state of a lesson with no blocks: a "What goes in this lesson?" card with a 5×2 grid of block tiles. The Ask AI pill is docked at the bottom of the screen, where the floating nav sits, and the floating nav replaces it as soon as the first block exists.
 * **Floating nav.** A bottom bar centered on the editor column, shown once the lesson has content. Choosing one always appends a new block at the end of the lesson. Hidden on narrow screens.
@@ -373,8 +402,8 @@ Selecting a choice behaves as follows:
 
 * **Ask AI** opens the chat panel on the right (see [Confirmed Decision 4](#4-an-ai-assistant-can-draft-a-note-block)). Nothing is inserted until the admin chooses **Insert into lesson** on a draft, which adds an editable Note at the gap (or at the end).
 * **Note** inserts a new Note block with real starting guidance text the admin edits or replaces — not an empty field.
-* **Video**, **Slides**, **Document**, **Image** each insert a realistic, fully-rendered example of that type immediately, flagged internally as a starting example. Its own "Change …" action always opens a fresh Add modal (never pre-filled from the example); any other, admin-configured block of that type opens the same modal pre-filled with its real source, exactly as today (see [Confirmed Decision 10](#10-existing-add-video--add-slide-flows-are-preserved-exactly-only-re-hosted)).
-* **Chart**, **Flashcards**, **Tabs**, **Multiple Choice**, **Process** each insert a ready-to-edit example of that block (see [Confirmed Decision 11](#11-five-interactive-blocks-chart-flashcards-tabs-multiple-choice-process)), edited directly on the canvas with no modal.
+* **Video**, **Slides**, **Document** (and **Image** in v2) each insert a realistic, fully-rendered example of that type immediately, flagged internally as a starting example. Its own "Change …" action always opens a fresh Add modal (never pre-filled from the example); any other, admin-configured block of that type opens the same modal pre-filled with its real source, exactly as today (see [Confirmed Decision 10](#10-existing-add-video--add-slide-flows-are-preserved-exactly-only-re-hosted)).
+* **(v2)** **Chart**, **Flashcards**, **Tabs**, **Multiple Choice**, **Process** each insert a ready-to-edit example of that block (see [Confirmed Decision 11](#11-five-interactive-blocks-chart-flashcards-tabs-multiple-choice-process)), edited directly on the canvas with no modal.
 
 After insertion, the new block is briefly highlighted and the canvas scrolls the minimum distance needed to bring it fully into view — never a jarring, page-length scroll.
 
@@ -458,7 +487,7 @@ On smaller screens, it may become full-width.
 
 ---
 
-## 4b. Interactive blocks
+## 4b. Interactive blocks (v2)
 
 The five interactive blocks (Chart, Flashcards, Tabs, Multiple Choice, Process) follow the table in [Confirmed Decision 11](#11-five-interactive-blocks-chart-flashcards-tabs-multiple-choice-process). Requirements common to all:
 
@@ -635,7 +664,7 @@ Add:
 * Three entry points: the empty-lesson card, the floating nav, and the per-gap "+"
 * The empty-lesson card is titled "What goes in this lesson?", with a 5×2 grid of centered tiles (icon above label) and the Ask AI pill docked at the bottom where the floating nav sits; the floating nav replaces the pill after the first block
 * The per-gap popover is a compact version of that grid, with an "Ask AI instead" row, and it shrinks to three columns in a narrow column
-* All offer the same eleven choices (Ask AI plus ten block types) regardless of what already exists — no "only show missing types"
+* All offer the same choices (Ask AI plus the release's block types: four in v1, ten in v2) regardless of what already exists — no "only show missing types"
 * Video, Slides, Document, and Image insert a realistic example immediately; Note inserts starting text; interactive blocks insert a ready-to-edit example
 * Use existing add flows for "Change …" and for editing an admin-configured block
 * Ask AI opens the right-side chat panel (see below)
@@ -784,13 +813,13 @@ This is the change Decision 8 calls out as necessary. Scoped narrowly to what it
 * The exact shape (a new ordered jsonb array on `lesson`, a new child table, or another approach) is an implementation decision to make against the real shape in `packages/db/src/schema.ts`, not something to guess at here.
 * What becomes of `course.metadata.lessonTabsOrder` and the course-level reorder control (`reorder-material-tabs.svelte`) once lessons carry their own order is also an implementation decision — options range from leaving it as a legacy/default ordering for lessons that haven't been touched, to retiring it entirely — not prescribed here.
 
-## Image (new)
+## Image (new, v2)
 
 * Needs a way to store an uploaded image's reference (object storage key/URL), alt text, and fit mode, associated with its position in the lesson's block list.
 * No change is proposed to how other lesson media (e.g. documents) is uploaded, stored, or served — Image should follow the same underlying storage approach where practical.
 * The default example shown when an admin first adds a Video or Image block (see [Confirmed Decision 10](#10-existing-add-video--add-slide-flows-are-preserved-exactly-only-re-hosted)) needs its own ClassroomIO-owned asset — not a hotlinked third-party URL — stored and served the same way as any other lesson media. Sourcing/producing that specific asset is an implementation detail, not prescribed here.
 
-## Interactive blocks (new)
+## Interactive blocks (new, v2)
 
 Each interactive block is one entry in the ordered block list, with its own content stored inline in the entry, since none of it refers to an existing record. The shapes below are what the prototype uses and are a starting point, not a final schema:
 
@@ -838,17 +867,17 @@ Verify all existing content components work when mounted together, any number of
 
 ## 3. Add Content
 
-Add the three entry points (empty-lesson card, floating nav, per-gap compact tile grid), the eleven choices, and the realistic-example-on-add behavior for Video/Slides/Document/Image.
+Add the three entry points (empty-lesson card, floating nav, per-gap compact tile grid), the v1 choices (Ask AI plus four types), designed so v2 types are added to the same list, and the realistic-example-on-add behavior for Video/Slides/Document.
 
 ## 4. Block actions
 
 Add the per-block menu (Edit/Remove), drag reordering, and move up/down controls.
 
-## 5. Image
+## 5. Image (v2)
 
 Build the new Image block: upload, rendering, and its alt-text/fit settings.
 
-## 6. Interactive blocks
+## 6. Interactive blocks (v2)
 
 Build Chart, Flashcards, Multiple Choice, and Process, then Tabs last (it depends on the canvas being reusable inside a tab). Each ships with its Edit and Preview behavior together.
 
@@ -886,8 +915,8 @@ Manually verify:
 
 * Existing published courses
 * Existing lessons, migrated into the new block list
-* All ten block types, including multiple blocks of the same type
-* Each interactive block in Edit and in Preview (flip a card, switch a tab, check an answer, step through a process, change a chart type)
+* All v1 block types, including multiple blocks of the same type (v2: Image and the interactive blocks)
+* (v2) Each interactive block in Edit and in Preview (flip a card, switch a tab, check an answer, step through a process, change a chart type)
 * All three add-content entry points, including the per-gap popover near the top, bottom, and in a narrow column
 * Drag and move-up/down reordering
 * AI note drafting through the right-side chat panel
@@ -902,7 +931,9 @@ Manually verify:
 
 # Acceptance Criteria
 
-1. All ten block types (Note, Video, Slide, Document, Image, Chart, Flashcards, Tabs, Multiple Choice, Process) can be viewed and edited in one canvas, as any number of blocks in any admin-chosen order.
+## v1
+
+1. Note, Video, Slide, and Document can be viewed and edited in one canvas, as any number of blocks in any admin-chosen order.
 2. All existing content capabilities remain available.
 3. Content tabs are removed.
 4. Admins can Preview without opening another page or browser tab.
@@ -922,30 +953,36 @@ Manually verify:
 18. In Preview, Slides render as a large, full-width viewer, not a compact edit-mode card.
 19. In Preview, no block's type label is shown.
 20. The existing Add Video (6 sources) and Add Slide (search, 10 platforms, guided steps, live embed validation) flows are re-hosted unchanged, reached via "Change …" or Edit — no reduction in sources, platforms, or steps.
-21. A lesson can contain more than one block of the same type (e.g. two Notes, three Images), in an order the admin controls.
+21. A lesson can contain more than one block of the same type (e.g. two Notes, two Videos), in an order the admin controls.
 22. A block can be moved via drag handle or move up/down controls without any content being lost.
-23. Adding Video, Slides, Document, or Image inserts a realistic, immediately-viewable example rather than a blank form; its "Change …" action opens the existing Add modal blank, not pre-filled from the example.
+23. Adding Video, Slides, or Document inserts a realistic, immediately-viewable example rather than a blank form; its "Change …" action opens the existing Add modal blank, not pre-filled from the example.
 24. A new block is briefly highlighted and the canvas scrolls it into view without a jarring, page-length jump.
 25. Choosing Ask AI opens a chat panel docked on the right (not a modal), and the lesson stays visible beside it. A draft can be inserted as an editable Note with **Insert into lesson**, at the gap it was opened from or at the end of the lesson. The panel stays open after inserting and closes with its close button or Escape. The prompt itself is not persisted.
 26. Note blocks support the six callout styles (Default, Info, Tip, Important, Warning, Highlight), selectable without altering the note's text.
-27. Image blocks can be uploaded, and their alt text and fit can be edited independently of replacing the image.
-28. Reading density is a persisted, per-lesson setting: set once from the Settings slider, it determines block spacing in both Preview and the real in-app learner view, with no effect on the Edit canvas.
-29. The Settings slider's visibility rules match production exactly: Live class fields only for live-class-type courses; video-watch threshold and per-video enforcement only when the completion rule is "Video watch".
-30. The scroll-position indicator (dots in Edit, progress fill in Preview) reflects the block currently in view and can jump to any block on click; it does not appear on the mobile frame.
-31. Hovering or focusing a scroll-position dot shows a tooltip with that block's real content-type icon and title (reading it from the block's own content, not a hardcoded value, with an "Untitled …" fallback when the block has no title); it disappears when the pointer or focus moves away, and this works identically for the admin's Edit/Preview canvas and the real in-app learner view.
+27. Reading density is a persisted, per-lesson setting: set once from the Settings slider, it determines block spacing in both Preview and the real in-app learner view, with no effect on the Edit canvas.
+28. The Settings slider's visibility rules match production exactly: Live class fields only for live-class-type courses; video-watch threshold and per-video enforcement only when the completion rule is "Video watch".
+29. The scroll-position indicator (dots in Edit, progress fill in Preview) reflects the block currently in view and can jump to any block on click; it does not appear on the mobile frame.
+30. Hovering or focusing a scroll-position dot shows a tooltip with that block's real content-type icon and title (read from the block's own content, with an "Untitled …" fallback when the block has no title); it disappears when the pointer or focus moves away, and this works identically for the admin's Edit/Preview canvas and the real in-app learner view.
+31. An empty lesson shows the "What goes in this lesson?" card with a tile for each v1 block type, and the Ask AI pill is docked at the bottom where the floating nav sits. Adding the first block replaces the pill with the floating nav.
+32. Once the lesson has content, the floating nav at the bottom offers Ask AI and the v1 block types and appends a new block at the end. It is centered on the editor column and re-centers while the Ask AI panel is open.
+33. Every gap between blocks has a "+" that is quiet at rest and accent-colored on hover or focus. Clicking it opens a compact tile grid with the v1 block types and an "Ask AI instead" row, at that gap, and the chosen block is inserted exactly there. The popover opens below the gap when there is no room above, fits a narrow column, and closes on Escape or an outside click.
+34. All three add-content entry points offer the same choices at all times, and there is no radial/circular add-content menu.
+35. Each block shows a small, quiet type label in Edit, hidden in Preview.
 
-32. An empty lesson shows the "What goes in this lesson?" card with a 5×2 grid of the ten block types, and the Ask AI pill is docked at the bottom where the floating nav sits. Adding the first block replaces the pill with the floating nav.
-33. Once the lesson has content, the floating nav at the bottom offers Ask AI and the ten types and appends a new block at the end. It is centered on the editor column and re-centers while the Ask AI panel is open.
-34. Every gap between blocks has a "+" that is quiet at rest and accent-colored on hover or focus. Clicking it opens a compact tile grid with all ten types and an "Ask AI instead" row, at that gap, and the chosen block is inserted exactly there. The popover opens below the gap when there is no room above, shows three columns in a narrow column, and closes on Escape or an outside click.
-35. All three add-content entry points offer the same eleven choices at all times, and there is no radial/circular add-content menu.
-36. A Chart block lets the admin set a title, switch between Bar, Line, Pie, and Donut, and edit the label/value/color data table (add and remove rows); the chart and its summary line update live. In Preview the chart is read-only.
-37. A Flashcards block lets the admin edit both faces of each card, add, delete, and reorder cards, and jump to any card. In Preview a learner flips a card (click or Space) and moves through the deck with previous/next and a progress indicator.
-38. A Tabs block lets the admin rename, add, and remove tabs, set the tab row's position (left, center, right), and add any block inside each tab. An empty tab shows an empty state with a "+" that reveals the add-content choices. In Preview a learner switches tabs and sees each tab's note and blocks.
-39. A Multiple Choice block lets the admin write a question, add and remove lettered options, mark exactly one as correct, and add an optional image. In Preview a learner picks one option, selects **Check answer**, sees correct/incorrect feedback with the right answer highlighted, and can **Try again**. The correct answer is not revealed before they check, and no answer is stored.
-40. A Process block lets the admin add and delete steps, each with a heading, body, and optional image. In Preview a learner moves through the steps with Back/Next, a labelled stepper, and a progress indicator.
-41. In Preview, none of the interactive blocks shows authoring controls or a type label, and each can be used as a learner would use it.
-42. Each block shows a small, quiet type label in Edit, hidden in Preview.
-43. Interactive blocks can be dragged, moved up/down, and removed like any other block, and every interactive block autosaves through the existing save system.
+## v2
+
+These build on v1 without changing its structure. Criteria 1, 21, 22, and 31–35 above then apply to the larger set of block types.
+
+1. **Image:** Image blocks can be uploaded (drag-and-drop or browse), and their alt text and fit (Fill / Fit) can be edited independently of replacing the image via "Change image".
+2. **Chart:** the admin can set a title, switch between Bar, Line, Pie, and Donut, and edit the label/value/color data table (add and remove rows); the chart and its summary line update live. In Preview the chart is read-only.
+3. **Flashcards:** the admin can edit both faces of each card, add, delete, and reorder cards, and jump to any card. In Preview a learner flips a card (click or Space) and moves through the deck with previous/next and a progress indicator.
+4. **Tabs:** the admin can rename, add, and remove tabs, set the tab row's position (left, center, right), and add any block inside each tab. An empty tab shows an empty state with a "+" that reveals the add-content choices. In Preview a learner switches tabs and sees each tab's note and blocks.
+5. **Multiple Choice:** the admin can write a question, add and remove lettered options, mark exactly one as correct, and add an optional image. In Preview a learner picks one option, selects **Check answer**, sees correct/incorrect feedback with the right answer highlighted, and can **Try again**. The correct answer is not revealed before they check, and no answer is stored.
+6. **Process:** the admin can add and delete steps, each with a heading, body, and optional image. In Preview a learner moves through the steps with Back/Next, a labelled stepper, and a progress indicator.
+7. In Preview, none of the interactive blocks shows authoring controls or a type label, and each can be used as a learner would use it.
+8. Interactive blocks and Image can be dragged, moved up/down, and removed like any other block, and autosave through the existing save system.
+9. The empty-lesson card, floating nav, and per-gap popover grow to offer all ten block types (a 5×2 tile grid, three columns in a narrow column) plus Ask AI.
+10. Adding Image or an interactive block inserts a realistic, ready-to-edit example rather than a blank form.
 
 ---
 
@@ -953,6 +990,6 @@ Manually verify:
 
 Draft, backed by a working prototype (`prototypes/lesson-editor-redesign/index.html`). This PRD defines the scope, information architecture, interaction model, existing behavior to preserve, and implementation direction for the lesson editor redesign.
 
-**Core decision:** The lesson becomes one editable canvas holding an ordered list of ten block types — Note, Video, Slide, Document, Image, Chart, Flashcards, Tabs, Multiple Choice, and Process — any count, any order, per lesson, instead of four fixed content tabs. Content is added from an empty-lesson card, a floating nav, or a per-gap compact tile grid, and Ask AI opens a chat panel on the right. Settings becomes a right-side slider, and Preview becomes an in-page toggle using the existing learner rendering path, rendering Video and Slides at full learner-facing size, hiding block-type labels, and offering a reading-density control.
+**Core decision:** The lesson becomes one editable canvas holding an ordered list of blocks — any count, any order, per lesson — instead of four fixed content tabs. **v1 ships Note, Video, Slide, and Document. v2 adds Image, Chart, Flashcards, Tabs, Multiple Choice, and Process** on the same structure (see [Release scope](#release-scope-v1-and-v2)). Content is added from an empty-lesson card, a floating nav, or a per-gap compact tile grid, and Ask AI opens a chat panel on the right. Settings becomes a right-side slider, and Preview becomes an in-page toggle using the existing learner rendering path, rendering Video and Slides at full learner-facing size, hiding block-type labels, and offering a reading-density control.
 
-**Scope of data-model change:** the per-lesson ordered block list (replacing `lessonTabsOrder`'s role in content ordering), a new Image block, five new interactive blocks (Chart, Flashcards, Tabs, Multiple Choice, Process) stored inline in the block list, a new AI note-drafting endpoint behind the right-side chat panel, and a new persisted reading-density field. Everything else — the existing Live class / Progression / Lesson comments settings (with their existing conditional visibility unchanged), Preview's rendering path, and the existing Add Video/Add Slide/Add Document flows — continues on existing data and APIs.
+**Scope of data-model change in v1:** the per-lesson ordered block list (replacing `lessonTabsOrder`'s role in content ordering), a new AI note-drafting endpoint behind the right-side chat panel, and a new persisted reading-density field. **v2 adds** an Image reference and the five interactive blocks stored inline in the block list. Everything else — the existing Live class / Progression / Lesson comments settings (with their existing conditional visibility unchanged), Preview's rendering path, and the existing Add Video/Add Slide/Add Document flows — continues on existing data and APIs.
