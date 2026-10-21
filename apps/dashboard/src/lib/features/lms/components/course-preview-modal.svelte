@@ -12,6 +12,7 @@
   import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import type { RecommendedCourses } from '$features/course/types';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import pluralize from 'pluralize';
 
   interface Props {
@@ -35,6 +36,14 @@
   const selfEnrollmentAllowed = $derived(isSelfEnrollmentAllowed(metadata));
   const requirements = $derived(metadata?.requirements?.trim() || null);
   const formatter = $derived(getCurrencyFormatter(course.currency ?? 'USD'));
+
+  const isSingleActivity = $derived(isSingleActivityCourse(course));
+  const scormModuleCount = $derived.by(() => {
+    const c = course as { moduleCount?: number; totalModules?: number };
+    if (typeof c.moduleCount === 'number') return c.moduleCount;
+    if (typeof c.totalModules === 'number') return c.totalModules;
+    return null;
+  });
 
   function handleJoinCourse() {
     if (!course.slug) return;
@@ -71,14 +80,32 @@
       {/if}
 
       <div class="ui:text-muted-foreground mt-4 flex items-center gap-4 text-sm">
-        <span class="flex items-center gap-1.5">
-          <BookOpenIcon class="size-4" />
-          {course.lessonCount ?? 0}
-          {$t('courses.course_card.lessons_number')}
-        </span>
-        <span>
-          {pluralize($t('courses.course_card.exercise'), course.exerciseCount ?? 0, true)}
-        </span>
+        {#if isSingleActivity}
+          <span class="flex items-center gap-1.5">
+            <BookOpenIcon class="size-4" />
+            {#if scormModuleCount !== null}
+              {$t('courses.course_card.scorm_modules', { count: scormModuleCount })}
+            {:else}
+              {$t('courses.course_card.scorm_course')}
+            {/if}
+          </span>
+        {:else}
+          <span class="flex items-center gap-1.5">
+            <BookOpenIcon class="size-4" />
+            {course.lessonCount ?? 0}
+            {$t('courses.course_card.lessons_number')}
+          </span>
+          <span>
+            {pluralize($t('courses.course_card.exercise'), course.exerciseCount ?? 0, true)}
+          </span>
+          {#if ('activityCount' in course ? (course.activityCount ?? 0) : 0) > 0}
+            <span>
+              {$t('courses.course_card.activities_count', {
+                count: 'activityCount' in course ? (course.activityCount ?? 0) : 0
+              })}
+            </span>
+          {/if}
+        {/if}
       </div>
 
       {#if requirements}

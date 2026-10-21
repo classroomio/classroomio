@@ -18,10 +18,16 @@
   } from '$features/media/components';
   import { mediaApi } from '$features/media/api';
   import type { AssetKindFilter, AssetStatusFilter, AssetUsageGraph, OrganizationAsset } from '$features/media/utils';
+  import { packageApi } from '$features/course/api/package.svelte';
+  import CoursesFromPackagesDialog, {
+    type DialogPackage
+  } from '$features/course/components/activity/courses-from-packages-dialog.svelte';
+  import type { CreatedPackageCourses } from '$features/course/utils/types';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
-  import { onDestroy, untrack } from 'svelte';
+  import { onDestroy, onMount, untrack } from 'svelte';
+  import { SvelteSet } from 'svelte/reactivity';
 
   interface Props {
     search?: string;
@@ -52,11 +58,59 @@
   const pagination = $derived(mediaApi.pagination);
   let assetsRequestId = 0;
 
+  let selecting = $state(false);
+  let selectedIds = new SvelteSet<string>();
+  let scormMeta = $state<Record<string, { moduleCount: number | null; ready: boolean }>>({});
+  let coursesDialogOpen = $state(false);
+  let coursesDialogPackages = $state<DialogPackage[]>([]);
+
+  const isScormFilter = $derived(kind === 'scorm');
+  const selectedCount = $derived(selectedIds.size);
+
+  $effect(() => {
+    if (!isScormFilter && selecting) {
+      selecting = false;
+      selectedIds.clear();
+    }
+  });
+
+  function scormMetaFor(assetId: string) {
+    return scormMeta[assetId] ?? { moduleCount: null, ready: false };
+  }
+
+  function isPackageSelectable(asset: OrganizationAsset) {
+    return asset.kind === 'scorm' && scormMetaFor(asset.id).ready;
+  }
+
+  async function loadScormMeta(requestId: number, scopedAssets: OrganizationAsset[]) {
+    const packages = scopedAssets.filter((asset) => asset.kind === 'scorm');
+
+    await Promise.all(
+      packages.map(async (asset) => {
+        const details = await packageApi.get(asset.id);
+        if (requestId !== assetsRequestId) return;
+
+        const current = details?.currentVersion ?? null;
+        const moduleCount = details ? details.units.filter((unit) => unit.unitType === 'sco').length : null;
+        scormMeta = {
+          ...scormMeta,
+          [asset.id]: { moduleCount, ready: current?.status === 'ready' }
+        };
+      })
+    );
+  }
+
   const searchBox = new DebouncedSearch({
     initial: untrack(() => search),
     onApply: (nextSearch) => {
       search = nextSearch;
       void refreshAssets(1);
+    }
+  });
+
+  onMount(() => {
+    if (mediaApi.assets.length > 0) {
+      void loadScormMeta(assetsRequestId, mediaApi.assets);
     }
   });
 
@@ -78,6 +132,10 @@
         },
         { abortPrevious: true }
       );
+      if (requestId === assetsRequestId) {
+        selectedIds.clear();
+        await loadScormMeta(requestId, mediaApi.assets);
+      }
     } finally {
       if (requestId === assetsRequestId) isRefreshing = false;
     }
@@ -194,6 +252,45 @@
     }
   }
 
+  function toggleSelecting() {
+    selecting = !selecting;
+    selectedIds.clear();
+  }
+
+  function togglePackageSelected(asset: OrganizationAsset) {
+    if (!isPackageSelectable(asset)) return;
+
+    if (selectedIds.has(asset.id)) selectedIds.delete(asset.id);
+    else selectedIds.add(asset.id);
+  }
+
+  function openCoursesDialog(scopedAssets: OrganizationAsset[]) {
+    const selectable = scopedAssets.filter((asset) => isPackageSelectable(asset));
+    if (selectable.length === 0) return;
+
+    coursesDialogPackages = selectable.map((asset) => ({
+      assetId: asset.id,
+      title: asset.title?.trim() || asset.id,
+      moduleCount: scormMetaFor(asset.id).moduleCount
+    }));
+    coursesDialogOpen = true;
+  }
+
+  function handleCoursesCreated(created: CreatedPackageCourses) {
+    void created;
+    coursesDialogOpen = false;
+    coursesDialogPackages = [];
+    selecting = false;
+    selectedIds.clear();
+    void refreshAssets(1);
+  }
+
+  function handleCoursesDialogOpenChange(isOpen: boolean) {
+    if (!isOpen) {
+      coursesDialogPackages = [];
+    }
+  }
+
   const prevPage = $derived(Math.max(1, (pagination?.page ?? 1) - 1));
   const nextPage = $derived((pagination?.page ?? 1) + 1);
 </script>
@@ -210,6 +307,32 @@
     onApply={() => void refreshAssets(1)}
     onRefresh={refreshMediaData}
   />
+  {#if isScormFilter}
+    <div class="flex flex-wrap items-center gap-2">
+      <Button
+        variant={selecting ? 'secondary' : 'outline'}
+        size="sm"
+        onclick={toggleSelecting}
+        testId="media-scorm-select"
+      >
+        {selecting ? $t('media_manager.scorm.cancel_select') : $t('media_manager.scorm.select')}
+      </Button>
+      {#if selecting}
+        <p class="ui:text-muted-foreground text-sm" aria-live="polite">
+          {$t('media_manager.scorm.selected_count', { count: selectedCount })}
+        </p>
+        <Button
+          variant="default"
+          size="sm"
+          disabled={selectedCount === 0}
+          onclick={() => openCoursesDialog(assets.filter((asset) => selectedIds.has(asset.id)))}
+          testId="media-create-courses"
+        >
+          {$t('media_manager.scorm.create_n_courses', { count: selectedCount })}
+        </Button>
+      {/if}
+    </div>
+  {/if}
 </Page.BodyHeader>
 
 {#if assets.length === 0}
@@ -225,11 +348,18 @@
       <AssetCard
         {asset}
         {downloadingAssetId}
+        selectable={selecting}
+        selected={selectedIds.has(asset.id)}
+        selectDisabled={selecting && !isPackageSelectable(asset)}
+        scormModuleCount={asset.kind === 'scorm' ? scormMetaFor(asset.id).moduleCount : null}
+        scormReady={asset.kind === 'scorm' ? scormMetaFor(asset.id).ready : false}
         onEdit={openEditAsset}
         onUsage={openUsage}
         onDownload={downloadAsset}
         onManageThumbnails={openManageThumbnails}
         onDelete={openDelete}
+        onToggleSelect={togglePackageSelected}
+        onCreateCourse={(single) => openCoursesDialog([single])}
       />
     {/each}
   </Item.Group>
@@ -283,4 +413,11 @@
   onConfirm={confirmDelete}
   onRefresh={refreshUsage}
   onOpenChange={handleDeleteOpenChange}
+/>
+
+<CoursesFromPackagesDialog
+  bind:open={coursesDialogOpen}
+  packages={coursesDialogPackages}
+  onCreated={handleCoursesCreated}
+  onOpenChange={handleCoursesDialogOpenChange}
 />

@@ -16,13 +16,38 @@
     analytics: AudienceAnalytics;
   } = $props();
 
-  function isComplete(course: AudienceAnalyticsCourse): boolean {
-    return course.lessons_count > 0 && course.lessons_completed === course.lessons_count;
+  function isComplete(c: AudienceAnalyticsCourse): boolean {
+    const record = c as Record<string, unknown>;
+    const asNumber = (value: unknown) => (typeof value === 'number' ? value : 0);
+    const lessonsCount = asNumber(record.lessons_count ?? record.lessonCount);
+    const lessonsCompleted = asNumber(record.lessons_completed ?? record.progressRate);
+    const exercisesCount = asNumber(record.exercises_count ?? record.exerciseCount);
+    const exercisesCompleted = asNumber(record.exercises_completed ?? record.exercisesCompleted);
+    const activitiesCount = asNumber(record.activities_count ?? record.activityCount);
+    const activitiesCompleted = asNumber(record.activities_completed ?? record.activitiesCompleted);
+
+    const totalRequired = lessonsCount + exercisesCount + activitiesCount;
+    if (totalRequired === 0) return false;
+
+    const lessonsDone = lessonsCount === 0 || lessonsCompleted >= lessonsCount;
+    const exercisesDone = exercisesCount === 0 || exercisesCompleted >= exercisesCount;
+    const activitiesDone = activitiesCount === 0 || activitiesCompleted >= activitiesCount;
+    return lessonsDone && exercisesDone && activitiesDone;
+  }
+
+  function hasStarted(c: AudienceAnalyticsCourse): boolean {
+    const record = c as Record<string, unknown>;
+    const asNumber = (value: unknown) => (typeof value === 'number' ? value : 0);
+    return (
+      asNumber(record.lessons_completed ?? record.progressRate) > 0 ||
+      asNumber(record.exercises_completed ?? record.exercisesCompleted) > 0 ||
+      asNumber(record.activities_completed ?? record.activitiesCompleted) > 0
+    );
   }
 
   let completedCourses = $derived(analytics.courses.filter(isComplete).length);
   let inProgressCourses = $derived(
-    analytics.courses.filter((course) => !isComplete(course) && course.lessons_completed > 0).length
+    analytics.courses.filter((course) => !isComplete(course) && hasStarted(course)).length
   );
 
   function gradeLabel(grade: number | null): string {

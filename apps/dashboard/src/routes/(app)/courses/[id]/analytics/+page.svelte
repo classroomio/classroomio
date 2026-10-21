@@ -17,6 +17,8 @@
           lessons: $t('course.navItem.lessons.heading_v2'),
           exercisesSubmitted: $t('analytics.exercises_completed'),
           exercises: $t('analytics.exercises'),
+          packagesCompleted: $t('analytics.packages_completed'),
+          packages: $t('analytics.packages'),
           progress: $t('analytics.progress'),
           averageGrade: $t('analytics.total_average_grade'),
           lastSeen: $t('audience.filter.last_activity')

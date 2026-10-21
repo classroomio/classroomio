@@ -27,7 +27,7 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import * as Collapsible from '@cio/ui/base/collapsible';
   import { ContentType } from '@cio/utils/constants/content';
-  import { courseApi, contentApi, exerciseApi, lessonApi } from '$features/course/api';
+  import { courseApi, contentApi, exerciseApi, lessonApi, activityApi } from '$features/course/api';
   import { deleteContent } from '$features/course/components/lesson/content-action-helpers';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -239,7 +239,8 @@
       },
       courseId,
       lessonApi,
-      exerciseApi
+      exerciseApi,
+      activityApi
     });
   }
 
@@ -301,12 +302,18 @@
   {@const isLockedForStudent = $isCourseLearnerView && (isContentLocked || contentItem.accessible === false)}
   {@const sessionPhase =
     contentItem.type === ContentType.Lesson ? getSessionIndicatorPhase(contentItem, $liveSessionClock) : null}
+  {@const itemTitle =
+    contentItem.title?.trim() ||
+    (contentItem.type === ContentType.Activity
+      ? $t('course.navItem.lessons.add_content_options.activity_scorm_default_title')
+      : '')}
   <Sidebar.MenuSubButton isActive={isContentItemInPath(contentItem.id, currentPath)}>
     {#snippet child({ props })}
       <a
         {...props}
         href={resolve(getContentRoute(id, contentItem), {})}
         aria-disabled={isLockedForStudent}
+        title={itemTitle}
         data-sidebar-content-id={contentItem.id}
         class="{props.class} group/content-row flex w-full items-center gap-2 {isLockedForStudent
           ? 'cursor-not-allowed opacity-50'
@@ -344,7 +351,7 @@
         {:else}
           <CourseContentIcon type={contentItem.type} size={14} />
         {/if}
-        <span class="flex-1 truncate" title={contentItem.title}>{contentItem.title}</span>
+        <span class="flex-1 truncate" title={itemTitle}>{itemTitle}</span>
         <div class="ml-auto flex items-center gap-1">
           {#if canManageContent}
             <div class="hidden items-center gap-2 group-focus-within/content-row:flex group-hover/content-row:flex">

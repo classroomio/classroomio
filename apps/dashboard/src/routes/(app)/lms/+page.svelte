@@ -18,8 +18,12 @@
     coursesApi.enrolledCourses.reduce((acc, course) => {
       const exercisesCompleted =
         'exercisesCompleted' in course && typeof course.exercisesCompleted === 'number' ? course.exercisesCompleted : 0;
+      const activitiesCompleted =
+        'activitiesCompleted' in course && typeof course.activitiesCompleted === 'number'
+          ? course.activitiesCompleted
+          : 0;
 
-      return acc + (course.progressRate || 0) + exercisesCompleted;
+      return acc + (course.progressRate || 0) + exercisesCompleted + activitiesCompleted;
     }, 0)
   );
 
@@ -27,8 +31,10 @@
     coursesApi.enrolledCourses.reduce((acc, course) => {
       const exercises =
         'exerciseCount' in course && typeof course.exerciseCount === 'number' ? course.exerciseCount : 0;
+      const activities =
+        'activityCount' in course && typeof course.activityCount === 'number' ? course.activityCount : 0;
 
-      return acc + (course.lessonCount || 0) + exercises;
+      return acc + (course.lessonCount || 0) + exercises + activities;
     }, 0)
   );
 

@@ -101,22 +101,25 @@
 
   const lessonId = $derived(page.params.lessonId as string | undefined);
   const exerciseId = $derived((page.params.exerciseId as string | undefined) ?? data.exerciseId);
-  const isLessonOrExercisePage = $derived(Boolean(lessonId || exerciseId));
-  const isLessonEditMode = $derived(page.url.searchParams.get('mode') === 'edit');
+  const activityId = $derived(page.params.activityId as string | undefined);
+  const isContentPage = $derived(Boolean(lessonId || exerciseId || activityId));
+  const isEditMode = $derived(page.url.searchParams.get('mode') === 'edit');
 
-  const contentAskAiWidthClass = $derived(getContentAskAiBarWidthClass({ lessonId, isLessonEditMode }));
+  const contentAskAiWidthClass = $derived(
+    getContentAskAiBarWidthClass({ lessonId, activityId, isLessonEditMode: isEditMode, isEditMode })
+  );
 
   const isContentLockedForStudent = $derived(
     isCourseContentLockedForStudent(
       courseApi.course,
-      lessonId ?? exerciseId,
-      lessonId ? ContentType.Lesson : exerciseId ? ContentType.Exercise : null
+      lessonId ?? exerciseId ?? activityId,
+      lessonId ? ContentType.Lesson : exerciseId ? ContentType.Exercise : activityId ? ContentType.Activity : null
     )
   );
 
   const showContentAskAiBar = $derived(
     isCourseReady &&
-      isLessonOrExercisePage &&
+      isContentPage &&
       IS_AI_ENABLED &&
       !($isCourseLearnerView && isContentLockedForStudent) &&
       sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID
@@ -127,7 +130,7 @@
     isCourseMobileBottomNavVisible({
       isCourseLearnerView: $isCourseLearnerView,
       isMobile: isMobileStore.current,
-      isLessonOrExercisePage,
+      isContentPage,
       courseProgress
     })
   );

@@ -446,6 +446,9 @@ importers:
       is-valid-domain:
         specifier: ^0.1.6
         version: 0.1.6
+      isomorphic-dompurify:
+        specifier: ^3.7.1
+        version: 3.7.1(@noble/hashes@2.0.1)
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.1
@@ -13682,7 +13685,6 @@ packages:
 
   plyr@3.8.4:
     resolution: {integrity: sha512-DrzLbK9Wol3zeiuZCleD9aUOl0KAaBHR9H6WVVVYPZ4Ya+LYxUFTgSF1jooHcMQCv96Ws96wCaZzIoP3bES8pQ==}
-    deprecated: 'Plyr is deprecated and receives security updates only. Use Video.js 10 for new projects. Migration guide: https://videojs.org/docs/framework/html/guides/migrate-from-plyr'
 
   pngjs@5.0.0:
     resolution: {integrity: sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==}

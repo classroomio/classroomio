@@ -11,6 +11,7 @@ const adapterCloudflare = IS_CLOUDFLARE ? (await import('@sveltejs/adapter-cloud
 const isSelfHosted = process.env.PUBLIC_IS_SELFHOSTED === 'true';
 const isProduction = process.env.NODE_ENV === 'production';
 const devConnectSrc = !isProduction ? ['ws:', 'wss:'] : [];
+const devFrameSrc = !isProduction ? ['http://content.localhost:3004', 'http://content.localhost:3002'] : [];
 const csp = getCspDomains(isSelfHosted, process.env.PUBLIC_SERVER_URL);
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -54,7 +55,7 @@ const config = {
           'http://localhost:9000',
           ...(csp.apiOrigin ? [csp.apiOrigin] : [])
         ],
-        'frame-src': ['self', ...csp.frameSrc],
+        'frame-src': ['self', ...csp.frameSrc, ...devFrameSrc],
         'connect-src': [
           'self',
           'blob:',
@@ -87,7 +88,7 @@ const config = {
           'http://localhost:9000',
           ...(csp.apiOrigin ? [csp.apiOrigin] : [])
         ],
-        'frame-src': ['self', ...csp.frameSrc],
+        'frame-src': ['self', ...csp.frameSrc, ...devFrameSrc],
         'connect-src': [
           'self',
           'blob:',

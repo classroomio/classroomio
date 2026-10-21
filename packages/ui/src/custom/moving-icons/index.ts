@@ -25,6 +25,7 @@ export { default as MarksIcon } from './marks.svelte';
 export { default as MaximizeIcon } from './maximize.svelte';
 export { default as MoneyIcon } from './money.svelte';
 export { default as NewsFeedIcon } from './news-feed.svelte';
+export { default as PackageCheckIcon } from './package-check.svelte';
 export { default as PathIcon } from './path.svelte';
 export { default as PeopleIcon } from './people.svelte';
 export { default as PersonIcon } from './person.svelte';

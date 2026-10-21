@@ -122,7 +122,8 @@ export function getTargetTypeLabel(targetType: string): string {
   const keyMap: Record<string, string> = {
     lesson: 'media_manager.usage.target.lesson',
     exercise: 'media_manager.usage.target.exercise',
-    question: 'media_manager.usage.target.question'
+    question: 'media_manager.usage.target.question',
+    activity: 'media_manager.usage.target.activity'
   };
   return t.get(keyMap[targetType] ?? 'media_manager.usage.target.unknown');
 }
@@ -130,7 +131,8 @@ export function getTargetTypeLabel(targetType: string): string {
 export function getSlotTypeLabel(slotType: string): string {
   const keyMap: Record<string, string> = {
     lesson_video: 'media_manager.usage.slot_type.lesson_video',
-    lesson_document: 'media_manager.usage.slot_type.lesson_document'
+    lesson_document: 'media_manager.usage.slot_type.lesson_document',
+    activity_package: 'media_manager.usage.slot_type.activity_package'
   };
   return t.get(keyMap[slotType] ?? 'media_manager.usage.slot_type.unknown');
 }

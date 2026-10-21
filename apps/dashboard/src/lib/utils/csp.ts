@@ -38,6 +38,10 @@ function buildCspExtensions(): Record<string, string[]> {
   const serverUrl = process.env.PUBLIC_SERVER_URL;
   const connectSrc = serverUrl ? [...connectSrcBase, serverUrl] : connectSrcBase;
 
+  const contentOrigin = process.env.SCORM_CONTENT_ORIGIN;
+  const frameSrcWithContent =
+    contentOrigin && !frameSrc.includes(contentOrigin) ? [...frameSrc, contentOrigin] : frameSrc;
+
   const extensions: Record<string, string[]> = {};
   if (scriptSrc.length) extensions['script-src'] = scriptSrc;
   if (styleSrc.length) {
@@ -45,7 +49,7 @@ function buildCspExtensions(): Record<string, string[]> {
     extensions['style-src-elem'] = styleSrc;
   }
   if (connectSrc.length) extensions['connect-src'] = connectSrc;
-  if (frameSrc.length) extensions['frame-src'] = frameSrc;
+  if (frameSrcWithContent.length) extensions['frame-src'] = frameSrcWithContent;
   if (fontSrc.length) extensions['font-src'] = fontSrc;
   if (mediaSrc.length) {
     extensions['img-src'] = mediaSrc;

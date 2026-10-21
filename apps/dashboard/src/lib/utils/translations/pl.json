@@ -354,7 +354,8 @@
         "content_grouping_enabled": "Grupowanie treści włączone",
         "content_grouping_disabled": "Grupowanie treści wyłączone",
         "link_generated": "Link do kursu został pomyślnie zaktualizowany",
-        "converted_to_public": "Kurs pomyślnie przekonwertowany na publiczny"
+        "converted_to_public": "Kurs pomyślnie przekonwertowany na publiczny",
+        "converted_to_standard": "Kurs przekonwertowany na kurs standardowy"
       },
       "info": {
         "conversion_blocked": "Popraw poniższe pytania, aby zakończyć konwersję do wersji publicznej."
@@ -535,6 +536,20 @@
       "test_success": "Zdarzenie testowe zostało dostarczone.",
       "test_failed": "Zdarzenie testowe nie powiodło się. Otwórz dziennik dostarczeń, aby zobaczyć powód.",
       "redelivered": "Zdarzenie dodane do kolejki ponownego dostarczenia."
+    },
+    "activity": {
+      "created": "Pakiet SCORM utworzony",
+      "upload_failed": "Przesyłanie pakietu nie powiodło się",
+      "settings_saved": "Ustawienia pakietu zapisane",
+      "settings_failed": "Nie udało się zapisać ustawień pakietu",
+      "attach_failed": "Nie udało się dołączyć pakietu",
+      "detached": "Pakiet usunięty",
+      "detach_failed": "Nie udało się usunąć pakietu",
+      "launch_failed": "Nie można otworzyć pakietu",
+      "learner_reset": "Resetowanie prób dla tego ucznia",
+      "learner_reset_failed": "Nie udało się zresetować prób",
+      "courses_created": "Utworzono wersje robocze kursów SCORM",
+      "courses_create_failed": "Nie udało się utworzyć kursów z pakietów"
     }
   },
   "explore": {
@@ -731,7 +746,9 @@
       "students_table_description": "Sortowalny przegląd z linkami do profili studentów.",
       "kpi_team_tutors": "{count, plural, one {# korepetytor w zespole kursu} other {# korepetytorów w zespole kursu}}",
       "kpi_lessons_exercises": "{count, plural, one {# ćwiczenie} other {# ćwiczeń}} przypisane do lekcji",
-      "kpi_progress_grade": "{grade}% średniej oceny z ćwiczeń wśród zapisanych uczniów"
+      "kpi_progress_grade": "{grade}% średniej oceny z ćwiczeń wśród zapisanych uczniów",
+      "kpi_packages": "{count, plural, one {# pakiet} few {# pakiety} many {# pakietów} other {# pakietu}}",
+      "kpi_activity_completion": "{rate}% ukończenia pakietów przez zapisanych uczestników"
     },
     "exercises_completed": "Ćwiczenia ukończone",
     "course_progress": "Postęp kursu",
@@ -740,7 +757,10 @@
     "hours_ago": "{count, plural, one {# godzinę temu} other {# godzin temu}}",
     "days_ago": "{count, plural, one {# dzień temu} other {# dni temu}}",
     "months_ago": "{count, plural, one {# miesiąc temu} other {# miesięcy temu}}",
-    "years_ago": "{count, plural, one {# rok temu} other {# lat temu}}"
+    "years_ago": "{count, plural, one {# rok temu} other {# lat temu}}",
+    "packages": "Pakiety",
+    "packages_completed": "Ukończone pakiety",
+    "activities": "Pakiety SCORM"
   },
   "audience": {
     "title": "Publiczność",
@@ -858,7 +878,14 @@
         "activity": "Aktywność"
       },
       "activity_empty_title": "Harmonogram aktywności Już wkrótce",
-      "activity_empty_description": "Harmonogram ukończonych lekcji i przesłanych ćwiczeń z kursów będzie dostępny w przyszłej wersji."
+      "activity_empty_description": "Harmonogram ukończonych lekcji i przesłanych ćwiczeń z kursów będzie dostępny w przyszłej wersji.",
+      "activities_title": "Pakiety SCORM",
+      "scorm_package": "Pakiet SCORM",
+      "activity_status": {
+        "completed": "Ukończono",
+        "in_progress": "W toku",
+        "not_started": "Nie rozpoczęto"
+      }
     },
     "delete": {
       "action": "Usuń",
@@ -1228,7 +1255,12 @@
             "window_passed": "Czas przypomnienia już minął w chwili planowania.",
             "unenrolled": "Uczeń nie jest już zapisany."
           }
-        }
+        },
+        "convert_card_title": "Przekonwertuj na kurs standardowy",
+        "convert_card_description": "Dodaj lekcje, ćwiczenia i sekcje do pakietu. Pakiet stanie się pierwszym elementem. Tej czynności nie można cofnąć.",
+        "convert_card_cta": "Przekonwertować na standardowy",
+        "convert_confirm_title": "Przekonwertować ten kurs?",
+        "convert_confirm_body": "Pakiet pozostanie pierwszym elementem, a treść powróci do nawigacji. Tej czynności nie można cofnąć."
       },
       "analytics": {
         "title": "Analityka"
@@ -1388,7 +1420,8 @@
           "skills_placeholder": "np. Analiza danych",
           "tools_placeholder": "np. Figma",
           "remove": "Usuń"
-        }
+        },
+        "packages": "pakiety"
       },
       "certificates": {
         "title": "Certyfikaty",
@@ -1550,7 +1583,8 @@
               "video_progress": "Postęp oglądania wideo — {count} śledzonych lekcji",
               "attendance": "Wpisy obecności — {count}",
               "certificate_yes": "Rekordy certyfikacji/zgodności — tak",
-              "certificate_no": "Rekordy certyfikacji/zgodności — nie"
+              "certificate_no": "Rekordy certyfikacji/zgodności — nie",
+              "activities": "Ukończone pakiety SCORM — {completed} z {total} ({attempts} prób)"
             },
             "warning": "Tej operacji nie można cofnąć.",
             "cancel": "Anuluj",
@@ -2651,64 +2685,64 @@
               },
               "platforms": {
                 "google-slides": {
-                  "hint": "File → Share → Publish to web → Embed",
-                  "step_1": "Open your deck and choose File → Share → Publish to web.",
-                  "step_2": "Switch to the Embed tab and click Publish.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "Plik → Udostępnij → Opublikuj w internecie → Umieść",
+                  "step_1": "Otwórz prezentację i wybierz Plik → Udostępnij → Opublikuj w internecie.",
+                  "step_2": "Przejdź do karty Umieść i kliknij Opublikuj.",
+                  "step_3": "Skopiuj kod osadzenia iframe i wklej go tutaj."
                 },
                 "canva": {
-                  "hint": "Share → More → Embed",
-                  "step_1": "Above the editor, click Share → More.",
-                  "step_2": "Choose Embed and confirm (this makes the design public).",
-                  "step_3": "Copy the HTML embed code and paste it here."
+                  "hint": "Udostępnij → Więcej → Umieść",
+                  "step_1": "Nad edytorem kliknij Udostępnij → Więcej.",
+                  "step_2": "Wybierz Umieść i potwierdź (to sprawi, że projekt będzie publiczny).",
+                  "step_3": "Skopiuj kod osadzenia HTML i wklej go tutaj."
                 },
                 "powerpoint": {
-                  "hint": "PowerPoint for the web → File → Share → Embed",
-                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
-                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
-                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                  "hint": "PowerPoint w przeglądarce → Plik → Udostępnij → Umieść",
+                  "step_1": "Zapisz prezentację w usłudze OneDrive, a następnie otwórz ją w programie PowerPoint w przeglądarce.",
+                  "step_2": "Wybierz Plik → Udostępnij → Umieść i wybierz wymiary.",
+                  "step_3": "Skopiuj kod osadzenia iframe i wklej go tutaj. Sami dopasowujemy rozmiar odtwarzacza."
                 },
                 "keynote": {
-                  "hint": "Collaborate → Copy Link, then embed",
-                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
-                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Współpracuj → Kopiuj łącze, a następnie umieść",
+                  "step_1": "Kliknij Współpracuj i ustaw dostęp na Każda osoba mająca łącze · Tylko do odczytu.",
+                  "step_2": "Skopiuj łącze iCloud, a następnie pobierz kod osadzenia dla swojej witryny.",
+                  "step_3": "Wklej kod osadzenia iframe tutaj."
                 },
                 "figma": {
-                  "hint": "Share a Figma Slides file and copy the embed",
-                  "step_1": "Open your Figma Slides file and enable link sharing.",
-                  "step_2": "Copy the embed code for the /slides or /deck file.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Udostępnij plik Figma Slides i skopiuj kod osadzenia",
+                  "step_1": "Otwórz plik Figma Slides i włącz udostępnianie linku.",
+                  "step_2": "Skopiuj kod osadzenia dla pliku /slides lub /deck.",
+                  "step_3": "Wklej kod osadzenia iframe tutaj."
                 },
                 "prezi": {
-                  "hint": "Share → Embed",
-                  "step_1": "From the dashboard, open Share on your presentation.",
-                  "step_2": "Click Embed and copy the code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Udostępnij → Umieść",
+                  "step_1": "W panelu otwórz Udostępnij dla swojej prezentacji.",
+                  "step_2": "Kliknij Umieść i skopiuj kod.",
+                  "step_3": "Wklej kod osadzenia iframe tutaj."
                 },
                 "pitch": {
-                  "hint": "Share externally → Copy embed code",
-                  "step_1": "Click Share → Share externally and create a public link.",
-                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Udostępnij zewnętrznie → Kopiuj kod osadzenia",
+                  "step_1": "Kliknij Udostępnij → Udostępnij zewnętrznie i utwórz łącze publiczne.",
+                  "step_2": "Otwórz Opcje łącza (⋯) i wybierz Kopiuj kod osadzenia.",
+                  "step_3": "Wklej kod osadzenia iframe tutaj."
                 },
                 "gamma": {
-                  "hint": "Share → enable public access → copy iframe",
-                  "step_1": "Open Share and toggle Allow public access.",
-                  "step_2": "Copy the generated iframe embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Udostępnij → włącz dostęp publiczny → kopiuj iframe",
+                  "step_1": "Otwórz Udostępnij i włącz Zezwalaj na dostęp publiczny.",
+                  "step_2": "Skopiuj wygenerowany kod osadzenia iframe.",
+                  "step_3": "Wklej kod osadzenia iframe tutaj."
                 },
                 "slideshare": {
-                  "hint": "Share → Embed under the deck",
-                  "step_1": "Open the public deck on slideshare.net.",
-                  "step_2": "Click Share under the viewer and open the Embed tab.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "Udostępnij → Umieść pod prezentacją",
+                  "step_1": "Otwórz publiczną prezentację na slideshare.net.",
+                  "step_2": "Kliknij Udostępnij pod odtwarzaczem i otwórz kartę Umieść.",
+                  "step_3": "Skopiuj kod osadzenia iframe i wklej go tutaj."
                 },
                 "beautiful": {
-                  "hint": "Sharing Settings → Public → Get Embed Code",
-                  "step_1": "Open Sharing Settings and switch the deck to Public.",
-                  "step_2": "Click Get Embed Code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Ustawienia udostępniania → Publiczne → Pobierz kod osadzenia",
+                  "step_1": "Otwórz Ustawienia udostępniania i przełącz prezentację na Publiczną.",
+                  "step_2": "Kliknij Pobierz kod osadzenia.",
+                  "step_3": "Wklej kod osadzenia iframe tutaj."
                 }
               },
               "frame_title": "{platform} ({index} z {total})"
@@ -2734,7 +2768,16 @@
           "lesson_title": "Lekcja",
           "lesson_description": "Ucz, korzystając z notatek, slajdów i filmów.",
           "exercise_title": "Ćwicz",
-          "exercise_description": "Oceniaj uczniów za pomocą quizów i zadań."
+          "exercise_description": "Oceniaj uczniów za pomocą quizów i zadań.",
+          "activity_scorm_title": "Pakiet SCORM",
+          "activity_scorm_description": "Uruchom pakiet interaktywny z Storyline, Captivate lub iSpring.",
+          "activity_scorm_title_label": "Tytuł pakietu",
+          "activity_scorm_title_placeholder": "np. Szkolenie wprowadzające do bezpieczeństwa w miejscu pracy",
+          "activity_scorm_gated": "Plany płatne",
+          "activity_scorm_upgrade_notice": "Pakiety SCORM są zawarte w każdym planie płatnym. Przejdź na wyższy plan, aby dodać pakiety do swoich kursów.",
+          "activity_scorm_upgrade_cta": "Wyświetl plany",
+          "activity_scorm_license_notice": "Pakiety SCORM wymagają licencji Enterprise na tym serwerze. Uczestnicy zachowują dostęp do istniejących pakietów.",
+          "activity_scorm_default_title": "Pakiet SCORM"
         },
         "add_lesson": {
           "button_title": "Dodaj",
@@ -2813,7 +2856,8 @@
         "stats": {
           "sections": "Sekcje",
           "lessons": "Lekcje",
-          "exercises": "Ćwiczenia"
+          "exercises": "Ćwiczenia",
+          "activities": "Aktywności"
         },
         "session": {
           "join": "Dołącz do sesji",
@@ -2871,7 +2915,296 @@
         "add_content_add_to_section": "Dodaj treść",
         "expand_content": "Rozwiń treść",
         "collapse_content": "Zwiń zawartość",
-        "no_section": "Brak sekcji"
+        "no_section": "Brak sekcji",
+        "content_progression_locked_description_activity": "Ten pakiet odblokowuje się po ukończeniu poprzedniego wymaganego elementu kursu.",
+        "activities": {
+          "not_available_title": "Pakiet jest jeszcze niedostępny",
+          "not_available_description": "Ten pakiet SCORM jest nadal konfigurowany. Zapraszamy do ponownego odwiedzenia strony wkrótce.",
+          "header_locked": "Zablokowany",
+          "delete_confirm_title": "Usunąć ten element pakietu?",
+          "delete_confirm_body": "Wyniki uczniów dla tego elementu zostaną usunięte. Pakiet pozostanie w Menedżerze multimediów.",
+          "results_placeholder_title": "Brak wyników",
+          "results_placeholder_description": "Wyniki, próby i czas pojawią się tutaj po otwarciu pakietu przez uczniów.",
+          "settings": {
+            "completion_rule": "Zasada ukończenia",
+            "completion_rule_helper": "Sposób, w jaki ClassroomIO decyduje o ukończeniu pakietu.",
+            "rule_auto": "Automatycznie",
+            "rule_completed": "Ukończono",
+            "rule_passed": "Zaliczono",
+            "rule_score": "Minimalny wynik",
+            "graded_hint": "Ten pakiet ma próg zaliczenia {score}%, więc uczniowie muszą go zaliczyć.",
+            "ungraded_hint": "Ten pakiet nie ma progu zaliczenia, więc uczniowie kończą go, kończąc go.",
+            "passed_warning": "Moduł, który nigdy nie zgłasza zaliczenia, uniemożliwia ukończenie elementu.",
+            "min_score": "Minimalny wynik (%)",
+            "retakes": "Zezwalaj na powtórzenia",
+            "retakes_helper": "Ukończone pakiety otwierają się ponownie za pomocą przycisku Rozpocznij nową próbę. Liczy się najlepszy wynik.",
+            "module_order": "Kolejność modułów",
+            "order_free": "Dowolna kolejność",
+            "order_sequential": "W kolejności",
+            "module_order_helper": "W kolejności blokuje każdy moduł do momentu ukończenia poprzedniego. Pakiety bez reguł kolejności działają tak samo.",
+            "custom_threshold_hint": "Ten pakiet nie stawia progu zaliczenia. Uczestnicy kończą go, kończąc każdy moduł i uzyskując średnią ocen co najmniej {score}%.",
+            "completion_modules": "Zakres ukończenia",
+            "completion_modules_all": "Wszystkie moduły",
+            "completion_modules_graded_only": "Tylko moduły oceniane",
+            "completion_modules_helper": "Opcja „Tylko moduły oceniane” pozwala uczestnikom pominąć opcjonalne ankiety i glosariusze. O ukończeniu decydują wyłącznie moduły, w których wymagane jest uzyskanie progu zaliczenia lub wyniku punktowego.",
+            "completion_modules_single_note": "Ten pakiet zawiera tylko jeden moduł, więc zakres ukończenia nie ma tu zastosowania."
+          },
+          "instructions": {
+            "label": "Instrukcje dla uczestników",
+            "placeholder": "Co uczestnicy powinni wiedzieć przed otwarciem pakietu?"
+          },
+          "package": {
+            "drop_label": "Przenieś plik SCORM .zip tutaj",
+            "wrong_type": "Tylko pliki .zip można przesyłać jako pakiety SCORM.",
+            "too_large": "Ten plik jest większy niż {size}.",
+            "uploading": "Przesyłanie {progress}%",
+            "cancel_upload": "Anuluj przesyłanie",
+            "processing": "Przetwarzanie pakietu…",
+            "processing_stage": "{stage} · {progress}%",
+            "failed_title": "Nie można użyć tego pakietu",
+            "retry": "Wypróbuj inny plik",
+            "remove": "Usuń",
+            "remove_confirm_title": "Usunąć ten pakiet?",
+            "remove_confirm_body": "Użytkownicy tracą dostęp do momentu dołączenia kolejnego pakietu. Plik pozostaje w Menedżerze multimediów.",
+            "case_warning": "Niektóre nazwy plików różnią się tylko wielkością liter.",
+            "rebased_warning": "Manifest został znaleziony w pojedynczym folderze najwyższego poziomu.",
+            "version": "Wersja {version}",
+            "files": "Pliki",
+            "size": "Rozmiar",
+            "status": {
+              "uploading": "Przesyłanie",
+              "processing": "Przetwarzanie",
+              "ready": "Gotowe",
+              "failed": "Niepowodzenie"
+            },
+            "errors": {
+              "missing_manifest": "Nie znaleziono pliku imsmanifest.xml. Wyeksportuj ponownie pakiet dla systemu LMS.",
+              "xapi_package": "To jest pakiet xAPI (Tin Can). Wyeksportuj go ponownie jako SCORM.",
+              "cmi5_package": "To jest pakiet cmi5. Wyeksportuj go ponownie jako SCORM.",
+              "unsupported_version": "Ta wersja SCORM nie jest obsługiwana. Użyj standardu SCORM 1.2 lub SCORM 2004.",
+              "invalid_xml": "Nie udało się odczytać pliku manifestu. Wyeksportuj pakiet ponownie.",
+              "doctype_rejected": "Nie udało się odczytać pliku manifestu. Wyeksportuj pakiet ponownie.",
+              "missing_launch": "Moduł nie posiada pliku uruchomieniowego. Wyeksportuj pakiet ponownie.",
+              "external_launch": "Ten pakiet otwiera zawartość z innej witryny, która nie może zapisywać tutaj postępów.",
+              "assets_only": "Żaden element tego pakietu nie raportuje postępów.",
+              "not_a_zip": "Ten plik nie jest poprawnym plikiem ZIP.",
+              "file_too_large": "Ten plik przekracza limit rozmiaru dla obszaru roboczego.",
+              "total_too_large": "Rozpakowany pakiet przekracza limit rozmiaru dla obszaru roboczego.",
+              "too_many_entries": "Ten pakiet zawiera zbyt wiele plików.",
+              "compression_bomb": "Ten pakiet nie przeszedł kontroli bezpieczeństwa.",
+              "unsafe_path": "Ten pakiet zawiera niebezpieczne ścieżki plików.",
+              "symlink_rejected": "Ten pakiet zawiera niebezpieczne ścieżki plików.",
+              "encrypted_entry": "Ten pakiet jest chroniony hasłem.",
+              "upload_missing": "Przesyłanie nie zostało ukończone. Spróbuj ponownie.",
+              "generic": "Wystąpił błąd podczas przetwarzania tego pakietu. Spróbuj ponownie."
+            },
+            "remove_confirm_body_with_count": "{count, plural, one {# uczestnik jest} other {# uczestników jest}} w trakcie realizacji tego pakietu. Jeśli dodasz inny pakiet, zaczną go od początku. Status ukończenia dla osób, które już go ukończyły, pozostanie bez zmian.",
+            "replace_choice_title": "Co stanie się z uczestnikami, którzy są w trakcie realizacji?",
+            "replace_keep": "Pozwól im ukończyć bieżącą wersję",
+            "replace_keep_hint": "{count, plural, one {# uczestnik pozostaje} other {# uczestników pozostaje}} przy starej wersji do momentu jej ukończenia.",
+            "replace_restart": "Rozpocznij z nimi nowy pakiet",
+            "replace_restart_hint": "{count, plural, one {# uczestnik zaczyna} other {# uczestników zaczyna}} od początku.",
+            "stale_banner": "{count, plural, one {# uczestnik jest} other {# uczestników jest}} nadal w wersji {version}.",
+            "move_stale": "Przenieś ich do tej wersji",
+            "move_stale_confirm_title": "Przenieść wszystkich do tej wersji?",
+            "move_stale_confirm_body": "{count, plural, one {# uczestnik jest} other {# uczestników jest}} w trakcie realizacji. Rozpoczną oni bieżącą wersję od początku.",
+            "upload_new_version": "Prześlij nową wersję",
+            "swap_package": "Zamień pakiet",
+            "swap_confirm_title": "Zamienić na inny pakiet?",
+            "swap_confirm_body": "Uczestnicy rozpoczną nowy pakiet od początku. Obecny pakiet pozostanie w Menedżerze mediów.",
+            "swap_confirm_body_with_count": "{count, plural, one {# uczestnik jest} other {# uczestników jest}} w trakcie realizacji. Rozpoczną oni nowy pakiet od początku. Status ukończenia dla uczestników, którzy już ukończyli ten pakiet, pozostanie bez zmian.",
+            "promote_confirm_title": "Uczestnicy rozpoczęli naukę w trakcie przesyłania",
+            "promote_confirm_body": "{count, plural, one {# uczestnik rozpoczął} other {# uczestników rozpoczęło}} naukę w czasie przetwarzania nowej wersji.",
+            "no_lms_warning": "Wygląda na to, że ten pakiet nie raportuje postępów do systemu LMS. Uczestnicy mogą przeglądać zawartość, ale nie ma możliwości automatycznego śledzenia ukończenia ani wyników.",
+            "peek_checking": "Sprawdzanie zawartości pakietu…",
+            "peek_match": "„{title}” · {count, plural, one {# moduł} few {# moduły} other {# modułów}} — zgodny z bieżącym pakietem.",
+            "peek_swap_ok": "„{title}” · {count, plural, one {# moduł} few {# moduły} other {# modułów}} — zostanie dołączony jako nowy pakiet.",
+            "confirm_upgrade_anyway": "To nowa wersja tego kursu — mimo to prześlij",
+            "confirm_swap_anyway": "Mimo to zamień",
+            "unchanged": "Wersja jest już aktualna. Nie utworzono nowej wersji.",
+            "peek_diff": "„{title}” · {count, plural, one {# module} other {# modules}} — wygląda na to, że to inny kurs. Jeśli to nowa wersja tego kursu, potwierdź poniżej. W przeciwnym razie zamień pakiet.",
+            "peek_same_course": "„{title}” · {count, plural, one {# module} other {# modules}} — wygląda na to, że to ten sam kurs. Prześlij go jako nową wersję lub potwierdź poniżej, aby mimo wszystko dokonać zamiany.",
+            "peek_same_file": "Ten plik jest identyczny z obecną wersją. Nic się nie zmieni.",
+            "peek_unknown": "Nie można odczytać zawartości pakietu, więc nie został on porównany z obecnym pakietem.",
+            "sequencing_ordered": "Ten pakiet określa kolejność modułów: każdy moduł zostaje odblokowany po ukończeniu poprzedniego. Inne zasady sekwencjonowania, takie jak testy wstępne czy agregacja wyników (rollup), są ignorowane.",
+            "sequencing_unordered": "Ten pakiet określa kolejność modułów, jednak obecnie uczestnicy mogą otwierać je w dowolnej kolejności. Aby wymusić określoną kolejność, w ustawieniach należy wybrać opcję „Sekwencyjnie” (In sequence). Inne zasady sekwencjonowania, takie jak testy wstępne czy agregacja wyników (rollup), są ignorowane.",
+            "empty_title": "Nie przesłano żadnego pakietu",
+            "empty_description": "Prześlij pakiet SCORM, aby rozpocząć jego przeglądanie i testowanie.",
+            "upload_package": "Prześlij pakiet",
+            "version_current": "Bieżąca",
+            "revert_confirm_title": "Przywrócić wersję {version}?",
+            "revert_confirm_body": "Od teraz uczestnicy będą korzystać z wersji {version}.",
+            "revert_confirm_body_with_count": "{count, plural, one {# uczestnik korzysta} few {# uczestników korzysta} other {# uczestników korzysta}} obecnie z tego pakietu. Przywrócenie wersji {version} uczyni ją aktywnym pakietem dla uczestników.",
+            "revert_confirm_button": "Przywróć tę wersję",
+            "stat_pass_mark": "Próg zaliczenia",
+            "none": "Brak",
+            "modules": "Moduły",
+            "warnings_summary": "{count, plural, one {# rzeczy, które warto wiedzieć o tym pakiecie} other {# rzeczy, które warto wiedzieć o tym pakiecie}}",
+            "module_order_sequential": "Zaliczone w kolejności pakietów",
+            "module_order_free": "Otwarte w dowolnej kolejności",
+            "table_num": "#",
+            "table_title": "Tytuł",
+            "table_type": "Typ",
+            "table_grading": "Ocenianie",
+            "graded_pass": "Zaliczenie na poziomie {score}%",
+            "ungraded": "Bez oceny",
+            "details": "Szczegóły",
+            "version_label": "Wersja",
+            "remove_package": "Usuń pakiet",
+            "launchable_count": "{count, plural, one {# element możliwy do uruchomienia} other {# elementów możliwych do uruchomienia}}",
+            "drop_hint": "Do {size}. Pozostaw tę stronę otwartą do czasu dołączenia paczki.",
+            "prerequisites_warning": "Ten pakiet blokuje moduły za wymaganiami wstępnymi. Są one egzekwowane w kolejności sekwencyjnej modułów; bardziej szczegółowe reguły wymagań wstępnych są ignorowane.",
+            "modal_title": "Dodaj pakiet",
+            "library_search": "Wyszukaj w bibliotece",
+            "library_search_action": "Szukaj",
+            "library_loading": "Ładowanie pakietów…",
+            "library_empty": "Nie znaleziono pakietów w bibliotece",
+            "library_attach": "Przytwierdzać",
+            "library_attached_success": "Pakiet został pomyślnie dołączony.",
+            "tabs": {
+              "upload": "Wgrywać",
+              "library": "Biblioteka"
+            }
+          },
+          "gating": {
+            "title": "Tworzenie pakietów SCORM zostało wstrzymane.",
+            "plan_lapsed": "Twój plan nie obejmuje już pakietów SCORM. Uczestnicy nadal mogą z nich korzystać, a wyniki pozostają dostępne.",
+            "no_license": "Ten serwer wymaga licencji Enterprise z SCORM, aby móc zmieniać pakiety."
+          },
+          "tabs": {
+            "package": "Pakiet",
+            "instructions": "Instrukcje",
+            "results": "Wyniki",
+            "settings": "Ustawienia"
+          },
+          "player": {
+            "modules_complete": "Ukończono {complete} z {total} modułów",
+            "module_menu": "Moduły",
+            "status_completed": "Ukończono",
+            "status_review": "W trakcie sprawdzania",
+            "status_not_passed": "Nie zaliczono jeszcze",
+            "status_in_progress": "W trakcie",
+            "load_failed_title": "Nie można otworzyć pakietu",
+            "load_failed_body": "Wystąpił błąd podczas otwierania tego pakietu. Spróbuj ponownie.",
+            "reload": "Odśwież",
+            "expired_title": "Ta sesja wygasła",
+            "expired_body": "Sesja pakietu wygasła. Odśwież, aby rozpocząć od miejsca, w którym przerwano.",
+            "review_title": "Wyniki zostały już zapisane",
+            "review_body": "Nic w tej sesji nie zostało zapisane.",
+            "new_attempt": "Rozpocznij nową próbę",
+            "retakes_off": "Powtórki dla tego pakietu są wyłączone, więc nie można rozpocząć nowej próby.",
+            "no_connection_title": "Pakiet nie nawiązał połączenia",
+            "no_connection_body": "Pakiet nigdy nie wywołał odtwarzacza kursów. Wyeksportuj go ponownie za pomocą opcji publikacji LMS lub SCORM albo załaduj ponownie, aby spróbować ponownie.",
+            "fullscreen": "Pełny ekran",
+            "complete_title": "Pakiet ukończony",
+            "complete_body": "Twoje wyniki zostały zarejestrowane.",
+            "continue": "Kontynuuj",
+            "next_module": "Następny moduł",
+            "autosave_hint": "Postęp zapisuje się automatycznie.",
+            "archived_title": "Pobrano wcześniejszą wersję tego pakietu",
+            "archived_body": "Wyniki pozostają bez zmian.",
+            "restarted_title": "Treść została zaktualizowana",
+            "restarted_body": "Uczestnicy zaczną od początku, ponieważ pakiet uległ zmianie.",
+            "prev_module": "Poprzedni moduł",
+            "module_position": "Moduł {current} z {total}",
+            "exit_fullscreen": "Wyjdź z trybu pełnoekranowego",
+            "status_preview": "Podgląd",
+            "preview_title": "Tryb podglądu",
+            "preview_body": "Testujesz tę aktywność jako instruktor. Żadne Twoje działania nie są rejestrowane.",
+            "module_locked": "Najpierw ukończ poprzednie moduły.",
+            "time_limit": "Sugerowane: {time}",
+            "loading": "Ładowanie pakietu…",
+            "module_complete_title": "Moduł ukończony",
+            "dismiss": "Zamknij",
+            "fullscreen_video_hint": "Filmów nie można wyświetlać w trybie pełnoekranowym, gdy aktywność jest w tym trybie."
+          },
+          "results": {
+            "sheet": {
+              "title": "Próby użytkownika {learnerName}",
+              "description": "Każda próba (wraz z podejściami do poszczególnych modułów), odpowiedzi zgłoszone przez pakiet oraz czas poświęcony na realizację.",
+              "attempt": "Próba {number}",
+              "version": "Wersja pakietu {number}",
+              "rule_met": "Warunek spełniony",
+              "interactions": "Zgłoszono {count} odpowiedzi",
+              "no_attempts_title": "Brak prób",
+              "no_attempts_description": "Próby pojawią się tutaj, gdy użytkownik otworzy pakiet.",
+              "reset": "Resetuj dla tego ucznia",
+              "confirm_reset": "Kliknij ponownie, aby potwierdzić resetowanie",
+              "columns": {
+                "module": "Moduł",
+                "completion": "Ukończenie",
+                "success": "Sukces",
+                "score": "Wynik",
+                "time": "Czas"
+              },
+              "diagnostics_title": "Diagnostyka",
+              "events": {
+                "launch": "Uruchomiono",
+                "initialize": "Połączono",
+                "commit": "Zapisano",
+                "terminate": "Zakończono",
+                "beacon": "Zapisano przy wyjściu",
+                "error": "Błąd",
+                "not_initialized": "Nie nawiązano połączenia",
+                "duplicate": "Zduplikowany zapis został zignorowany"
+              },
+              "interaction_correct": "Poprawna odpowiedź: {answer}",
+              "technical_details": "Dane techniczne",
+              "session_device": "Urządzenie sesji: {device}",
+              "module_success": {
+                "passed": "Minęło",
+                "failed": "Nie udało się",
+                "unknown": "Nieznany"
+              },
+              "module_completion": {
+                "completed": "Ukończono",
+                "incomplete": "Niekompletny",
+                "not_attempted": "Nie podjęto próby",
+                "unknown": "Nieznany"
+              }
+            },
+            "export": {
+              "title": "Wyniki SCORM"
+            },
+            "pass_fail": {
+              "passed": "Zaliczone",
+              "failed": "Niezaliczone"
+            },
+            "status": {
+              "not_started": "Nie rozpoczęto",
+              "in_progress": "W toku",
+              "failed": "Jeszcze nie zaliczono",
+              "completed": "Ukończono"
+            },
+            "table": {
+              "student": "Uczestnik",
+              "score": "Wynik",
+              "status": "Status",
+              "pass_fail": "Zaliczenie",
+              "best_score": "Najlepszy wynik",
+              "time_spent": "Czas poświęcony",
+              "attempts": "Próby",
+              "last_launched": "Ostatnie uruchomienie"
+            },
+            "summary": {
+              "enrolled": "Zapisano",
+              "completed": "Ukończono",
+              "average_score": "Średni wynik",
+              "in_progress": "W trakcie",
+              "not_started": "Nie rozpoczęto"
+            }
+          },
+          "header_unlocked": "Odblokowano",
+          "menu_delete": "Usuń aktywność",
+          "delete_confirm_body_with_count": "{count, plural, one {# uczniów jest} other {# uczniów jest}} w trakcie realizacji tego elementu. Usunięcie go powoduje utratę postępów.",
+          "single_activity_empty_title": "Nie dodano jeszcze żadnego pakietu",
+          "single_activity_empty_description": "Prześlij pakiet SCORM, aby udostępnić go uczestnikom tego kursu.",
+          "single_activity_empty_student_desc": "Ten kurs nie zawiera jeszcze żadnych treści.",
+          "add_package_button": "Dodaj pakiet"
+        },
+        "add_content_created_activity": "Pakiet SCORM został pomyślnie utworzony!",
+        "add_content_create_another_activity": "Utwórz kolejny pakiet",
+        "view": "Podgląd"
       },
       "news_feed": {
         "heading": "Kanał wiadomości",
@@ -3041,7 +3374,8 @@
       "back_to_course": "Powrót na kurs",
       "content_count": {
         "lessons": "{count} lekcji",
-        "exercises": "Ćwiczenia: {count}"
+        "exercises": "Ćwiczenia: {count}",
+        "activities": "{count} aktywności"
       },
       "compliance": {
         "title": "Zgodność",
@@ -3052,7 +3386,8 @@
         "title": "Twój postęp",
         "completed": "Ukończono {completed} z {total}",
         "lessons": "{completed} z {total} lekcji",
-        "exercises": "{completed} z {total} ćwiczeń"
+        "exercises": "{completed} z {total} ćwiczeń",
+        "activities": "{completed} z {total} pakietów"
       },
       "footer_nav": {
         "label": "Nawigacja po treści kursu",
@@ -3074,7 +3409,8 @@
       "nav_settings": "Ustawienia",
       "nav_ai_assistant": "Asystent",
       "nav_ai_tutor": "Nauczyciel AI",
-      "exit_course": "Wyjdź z kursu"
+      "exit_course": "Wyjdź z kursu",
+      "nav_package": "Pakiet"
     },
     "completion": {
       "modal": {
@@ -3243,7 +3579,11 @@
       "student_empty_description": "W tej organizacji nie ma jeszcze dostępnych kursów. Sprawdź później.",
       "updated_at": "Zaktualizowano {date}",
       "lessons_count": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}}",
-      "exercises_count": "{count, plural, one {# ćwiczenie} few {# ćwiczenia} many {# ćwiczeń} other {# ćwiczeń}}"
+      "exercises_count": "{count, plural, one {# ćwiczenie} few {# ćwiczenia} many {# ćwiczeń} other {# ćwiczeń}}",
+      "activities_count": "{count, plural, one {# pakiet} few {# pakiety} many {# pakietów} other {# pakietu}}",
+      "scorm_modules": "SCORM · {count, plural, one {# moduł} few {# moduły} many {# modułów} other {# modułu}}",
+      "scorm": "SCORM",
+      "scorm_course": "Kurs SCORM"
     },
     "course_filter": {
       "date_created_newest": "Data utworzenia: od najnowszych",
@@ -3627,15 +3967,18 @@
         "lesson": "Lekcja",
         "exercise": "Ćwicz",
         "question": "Pytanie",
-        "unknown": "Nieznany"
+        "unknown": "Nieznany",
+        "activity": "Pakiet SCORM"
       },
       "go_to_lesson": "Idź na lekcję",
       "slot_type": {
         "lesson_video": "Film z lekcją",
         "lesson_document": "Dokument lekcji",
-        "unknown": "Załącznik"
+        "unknown": "Załącznik",
+        "activity_package": "Pakiet SCORM"
       },
-      "refresh": "Odśwież użycie"
+      "refresh": "Odśwież użycie",
+      "go_to_package": "Przejdź do pakietu"
     },
     "form": {
       "file_name": "Nazwa pliku",
@@ -3666,7 +4009,8 @@
       "where_used": "Gdzie używany",
       "download": "Pobierz",
       "manage_thumbnails": "Zarządzaj miniaturami",
-      "delete": "Usuń"
+      "delete": "Usuń",
+      "create_course_from_package": "Utwórz kurs z pakietu"
     },
     "table": {
       "title": "Tytuł",
@@ -3694,7 +4038,8 @@
       "document": "Dokument",
       "image": "Obraz",
       "audio": "Audio",
-      "other": "Inne"
+      "other": "Inne",
+      "scorm": "Pakiet SCORM"
     },
     "filters": {
       "search_placeholder": "Wyszukaj zasoby",
@@ -3709,7 +4054,8 @@
         "document": "Dokument",
         "image": "Obraz",
         "audio": "Audio",
-        "other": "Inne"
+        "other": "Inne",
+        "scorm": "Pakiet SCORM"
       },
       "refresh": "Odświeżać"
     },
@@ -3717,7 +4063,8 @@
       "total_bytes": "Całkowita pamięć",
       "internal_bytes": "Pamięć wewnętrzna",
       "external_assets": "Aktywa zewnętrzne",
-      "bytes_by_kind": "Przechowywanie według typu zasobu"
+      "bytes_by_kind": "Przechowywanie według typu zasobu",
+      "scorm_bytes": "Pakiety SCORM"
     },
     "common": {
       "not_available": "N/D"
@@ -3748,6 +4095,25 @@
       "confirm": "Usuń trwale",
       "cancel": "Anuluj",
       "close": "Zamknij"
+    },
+    "scorm": {
+      "select": "Wybierz",
+      "cancel_select": "Anuluj",
+      "cancel": "Anuluj",
+      "selected_count": "{count, plural, one {Wybrano # pakiet} other {Wybrano # pakiety/pakietów}}",
+      "create_n_courses": "{count, plural, one {Utwórz # kurs} other {Utwórz # kursy/kursów}}",
+      "select_package": "Wybierz pakiet {title}",
+      "modules_count": "{count, plural, one {# moduł} other {# moduły/modułów}}",
+      "create_course_title_single": "Utwórz kurs z tego pakietu",
+      "create_course_title_many": "Utwórz {count, plural, one {# kurs} other {# kursy/kursów}} z pakietów",
+      "create_course_description": "Dla każdego pakietu utworzymy wersję roboczą kursu SCORM. Jego moduły będą zgrupowane w menu nad pakietem.",
+      "course_nav_preview": "Nawigacja kursu SCORM: Pakiet",
+      "course_title_label": "Tytuł kursu",
+      "course_title_label_for": "Nazwa kursu dla {title}",
+      "create_course_confirm_single": "Utwórz kurs",
+      "create_course_confirm_many": "Utwórz {count, plural, one {# kurs} few {# kursy} other {# kursów}}",
+      "track_compliance_label": "Śledź jako szkolenie z zakresu zgodności",
+      "track_compliance_hint": "Dodaj terminy, odnowienia i przypomnienia"
     }
   },
   "settings": {
@@ -4356,8 +4722,8 @@
         "description": "Tylko administratorzy organizacji mogą wyświetlać zespół i nim zarządzać. Jeśli potrzebujesz dostępu, skontaktuj się z administratorem."
       },
       "invite": {
-        "confirm_title": "{count, plural, =1 {Zaprosić tego ucznia do zespołu?} other {Zaprosić tych uczniów do zespołu?}}",
-        "confirm_description": "{count, plural, =1 {Ta osoba jest już uczniem w tej organizacji: {emails}. Czy wysłać zaproszenie z rolą {role}? Rola zmieni się dopiero po zaakceptowaniu zaproszenia.} other {Te osoby są już uczniami w tej organizacji: {emails}. Czy wysłać im zaproszenie z rolą {role}? Ich role zmienią się dopiero po zaakceptowaniu zaproszenia.}}",
+        "confirm_title": "Zaprosić uczniów do zespołu?",
+        "confirm_description": "Te osoby są już uczniami w tej organizacji: {emails}. Czy wysłać im zaproszenie z rolą {role}? Ich rola zmieni się dopiero po zaakceptowaniu zaproszenia.",
         "existing": "Te osoby są już w zespole: {members}. Aby zmienić ich rolę, użyj wyboru roli na liście członków zespołu."
       }
     },
@@ -4793,7 +5159,17 @@
     "compliance_label": "Zgodność",
     "compliance_subtitle": "Szkolenia cykliczne z powtórzeniami, przypomnieniami i śledzeniem odnowień",
     "public_label": "Publiczne",
-    "public_subtitle": "Bezpłatne strony kursów bez rejestracji, które możesz udostępniać publicznie — idealne dla lead gen"
+    "public_subtitle": "Bezpłatne strony kursów bez rejestracji, które możesz udostępniać publicznie — idealne dla lead gen",
+    "build_course_label": "Utwórz kurs",
+    "build_course_subtitle": "Lekcje, ćwiczenia i sekcje, które sam utworzysz",
+    "scorm_course_label": "Prześlij pakiet SCORM",
+    "scorm_course_subtitle": "Jeden interaktywny pakiet jako cały kurs",
+    "scorm_gated": "Plany płatne",
+    "scorm_upgrade_notice": "Kursy SCORM są zawarte w każdym planie płatnym. Uaktualnij, aby utworzyć taki plan.",
+    "scorm_upgrade_cta": "Zobacz plany",
+    "scorm_license_notice": "Kursy SCORM wymagają licencji Enterprise na tym serwerze.",
+    "track_compliance_label": "Śledź jako szkolenie z zakresu zgodności",
+    "track_compliance_hint": "Dodaj terminy, odnowienia i przypomnienia"
   },
   "delete_modal": {
     "label": "Usuń",
@@ -5005,7 +5381,8 @@
           "cancel": "Anuluj",
           "save": "Utwórz klucz"
         },
-        "reveal_title": "Twój nowy klucz MCP"
+        "reveal_title": "Twój nowy klucz MCP",
+        "secret_once": "Sekret ten zostaje pokazany raz. Skopiuj go teraz do swojego klienta MCP."
       },
       "usage": {
         "title": "Zastosowanie i ograniczenia",
@@ -5035,7 +5412,8 @@
           "cancel": "Anuluj",
           "save": "Utwórz klucz"
         },
-        "reveal_title": "Twój nowy klucz API"
+        "reveal_title": "Twój nowy klucz API",
+        "secret_once": "Ten sekret jest wyświetlany tylko raz. Skopiuj go i przechowuj bezpiecznie."
       },
       "setup": {
         "title": "Szybki start",
@@ -5520,7 +5898,8 @@
         "course": "Kurs",
         "lessons": "Lekcje",
         "tags": "Tagi"
-      }
+      },
+      "packages_suffix": "pakiety"
     },
     "plan": {
       "free": "Darmowy plan",

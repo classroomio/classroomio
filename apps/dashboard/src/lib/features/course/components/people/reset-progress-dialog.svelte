@@ -28,20 +28,36 @@
       return [];
     }
 
-    return [
+    const bullets = [
       {
         key: 'lessons',
         text: t.get('course.navItem.people.reset_progress.dialog.bullets.lessons', {
           completed: progressImpact.completedLessons,
           total: progressImpact.totalLessons
         })
-      },
-      {
-        key: 'exercises',
-        text: t.get('course.navItem.people.reset_progress.dialog.bullets.exercises', {
-          count: progressImpact.exerciseSubmissions
+      }
+    ];
+
+    if (progressImpact.totalActivities > 0 || progressImpact.activityAttempts > 0) {
+      bullets.push({
+        key: 'activities',
+        text: t.get('course.navItem.people.reset_progress.dialog.bullets.activities', {
+          completed: progressImpact.completedActivities,
+          total: progressImpact.totalActivities,
+          attempts: progressImpact.activityAttempts
         })
-      },
+      });
+    }
+
+    bullets.push({
+      key: 'exercises',
+      text: t.get('course.navItem.people.reset_progress.dialog.bullets.exercises', {
+        count: progressImpact.exerciseSubmissions
+      })
+    });
+
+    return [
+      ...bullets,
       {
         key: 'comments',
         text: t.get('course.navItem.people.reset_progress.dialog.bullets.comments', {

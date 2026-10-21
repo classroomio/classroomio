@@ -11,6 +11,7 @@
     isSaving?: boolean;
     lockLabel?: string;
     showLock?: boolean;
+    showEdit?: boolean;
     showDelete?: boolean;
     onEdit: () => void;
     onSave: () => void;
@@ -25,6 +26,7 @@
     isSaving = false,
     lockLabel = '',
     showLock = true,
+    showEdit = true,
     showDelete = true,
     onEdit,
     onSave,
@@ -57,9 +59,11 @@
               {lockLabel}
             </DropdownMenu.Item>
           {/if}
-          <DropdownMenu.Item onclick={onEdit} {disabled}>
-            {$t('course.navItem.lessons.add_lesson.edit')}
-          </DropdownMenu.Item>
+          {#if showEdit}
+            <DropdownMenu.Item onclick={onEdit} {disabled}>
+              {$t('course.navItem.lessons.add_lesson.edit')}
+            </DropdownMenu.Item>
+          {/if}
           {#if showDelete}
             <DropdownMenu.Separator />
             <DropdownMenu.Item class="text-red-600 focus:text-red-600 dark:text-red-400" onclick={onDelete} {disabled}>

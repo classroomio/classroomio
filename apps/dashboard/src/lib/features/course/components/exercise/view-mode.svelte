@@ -40,12 +40,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { toggleConfetti } from '$features/ui/confetti/store';
   import { ContentType } from '@cio/utils/constants/content';
-  import { getOrderedNavigableContent } from '$features/course/utils/content';
-  import {
-    openCourseCompletionModal,
-    updateCourseCompletionModal,
-    closeCourseCompletionModal
-  } from '$features/course/store/course-completion-modal';
+  import { openCourseCompletionIfDone } from '$features/course/utils/toggle-lesson-completion';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
@@ -213,24 +208,8 @@
         setTimeout(toggleConfetti, 3000);
       }
 
-      const allContentItems = getOrderedNavigableContent(courseApi.course);
-      const allComplete =
-        shouldMarkComplete && allContentItems.length > 0 && allContentItems.every((item) => item.isComplete);
-
-      if (allComplete && courseApi.course?.id) {
-        openCourseCompletionModal(courseApi.course.id);
-
-        const certRes = await courseApi.getCertificationEvaluation(courseApi.course.id);
-        if (certRes?.data) {
-          const hasCompletedCourse = Boolean(certRes.data.eligibleForCertificate || certRes.data.certificateEarnedAt);
-          updateCourseCompletionModal(
-            courseApi.course.id,
-            hasCompletedCourse ? 'eligible' : 'not-eligible',
-            certRes.data
-          );
-        } else {
-          closeCourseCompletionModal();
-        }
+      if (shouldMarkComplete && courseApi.course?.id) {
+        await openCourseCompletionIfDone(courseApi.course.id);
       }
     }
 

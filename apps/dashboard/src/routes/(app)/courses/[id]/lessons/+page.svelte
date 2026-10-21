@@ -11,6 +11,9 @@
   import { openAddContentModal } from '$features/course/components/content/open-content-create';
   import { courseApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
+  import { getCourseContent } from '$features/course/utils/content';
+  import { ContentType } from '@cio/utils/constants/content';
 
   let { data } = $props();
 
@@ -23,8 +26,15 @@
     }
   });
 
+  const isSingleActivity = $derived(isSingleActivityCourse(courseApi.course));
+  const contentData = $derived(getCourseContent(courseApi.course));
+  const contentItems = $derived(
+    contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
+  );
+  const hasActivity = $derived(contentItems.some((item) => item.type === ContentType.Activity));
+
   function addContent() {
-    if (!data.courseId) {
+    if (!data.courseId || (isSingleActivity && hasActivity)) {
       return;
     }
 
@@ -42,38 +52,48 @@
     <Page.Action>
       <div class="flex w-full justify-end gap-2">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <Button variant="outline" onclick={() => (reorder = !reorder)} disabled={!!$contentEditingStore}>
-            {$t(`course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`)}
-          </Button>
-          <Tooltip.Provider>
-            <Tooltip.Root>
-              <Tooltip.Trigger>
-                {#snippet child({ props })}
-                  <Button
-                    {...props}
-                    variant="secondary"
-                    onclick={addContent}
-                    disabled={!!$contentEditingStore}
-                    aria-keyshortcuts="Control+Shift+N"
-                  >
-                    {$t('course.navItem.lessons.add_content')}
-                  </Button>
-                {/snippet}
-              </Tooltip.Trigger>
-              <Tooltip.Content side="bottom" sideOffset={4}>
-                <span class="flex items-center gap-2">
-                  {$t('course.navItem.lessons.add_content')}
-                  <Kbd.Group>
-                    <Kbd.Root>Ctrl</Kbd.Root>
-                    <Kbd.Root>⇧</Kbd.Root>
-                    <Kbd.Root>N</Kbd.Root>
-                  </Kbd.Group>
-                </span>
-              </Tooltip.Content>
-            </Tooltip.Root>
-          </Tooltip.Provider>
+          {#if !isSingleActivity}
+            <Button variant="outline" onclick={() => (reorder = !reorder)} disabled={!!$contentEditingStore}>
+              {$t(`course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`)}
+            </Button>
+          {/if}
+          {#if !isSingleActivity || !hasActivity}
+            <Tooltip.Provider>
+              <Tooltip.Root>
+                <Tooltip.Trigger>
+                  {#snippet child({ props })}
+                    <Button
+                      {...props}
+                      variant="secondary"
+                      onclick={addContent}
+                      disabled={!!$contentEditingStore}
+                      aria-keyshortcuts="Control+Shift+N"
+                    >
+                      {isSingleActivity
+                        ? $t('course.navItem.lessons.activities.add_package_button')
+                        : $t('course.navItem.lessons.add_content')}
+                    </Button>
+                  {/snippet}
+                </Tooltip.Trigger>
+                <Tooltip.Content side="bottom" sideOffset={4}>
+                  <span class="flex items-center gap-2">
+                    {isSingleActivity
+                      ? $t('course.navItem.lessons.activities.add_package_button')
+                      : $t('course.navItem.lessons.add_content')}
+                    <Kbd.Group>
+                      <Kbd.Root>Ctrl</Kbd.Root>
+                      <Kbd.Root>⇧</Kbd.Root>
+                      <Kbd.Root>N</Kbd.Root>
+                    </Kbd.Group>
+                  </span>
+                </Tooltip.Content>
+              </Tooltip.Root>
+            </Tooltip.Provider>
+          {/if}
         </RoleBasedSecurity>
-        <ContentPageMenu courseId={data.courseId} disabled={!!$contentEditingStore} />
+        {#if !isSingleActivity}
+          <ContentPageMenu courseId={data.courseId} disabled={!!$contentEditingStore} />
+        {/if}
         <RefreshPageData onRefresh={() => courseApi.refreshCourse(data.courseId, $profile.id)} />
       </div>
     </Page.Action>

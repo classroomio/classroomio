@@ -226,7 +226,17 @@
     "compliance_label": "Compliance",
     "compliance_subtitle": "Tekrar almalar, hatırlatıcılar ve yenileme takibi ile yinelenen eğitim",
     "public_label": "Public",
-    "public_subtitle": "Herkese açık olarak paylaşabileceğiniz ücretsiz, kayıt gerektirmeyen kurs sayfaları - lider nesil için harika"
+    "public_subtitle": "Herkese açık olarak paylaşabileceğiniz ücretsiz, kayıt gerektirmeyen kurs sayfaları - lider nesil için harika",
+    "build_course_label": "Kurs oluştur",
+    "build_course_subtitle": "Kendi oluşturduğunuz dersler, alıştırmalar ve bölümler",
+    "scorm_course_label": "SCORM paketi yükle",
+    "scorm_course_subtitle": "Tüm kurs olarak tek bir etkileşimli paket",
+    "scorm_gated": "Ücretli planlar",
+    "scorm_upgrade_notice": "SCORM kursları her ücretli plana dahildir. Bir tane oluşturmak için yükseltme yapın.",
+    "scorm_upgrade_cta": "Planları görüntüle",
+    "scorm_license_notice": "SCORM kursları için bu sunucuda kurumsal lisans gereklidir.",
+    "track_compliance_label": "Uyumluluk eğitimi olarak izle",
+    "track_compliance_hint": "Son tarihleri, yenilemeleri ve hatırlatıcıları ekle"
   },
   "public_course": {
     "header": {
@@ -770,8 +780,8 @@
         "description": "Yalnızca kuruluş yöneticileri ekibi görüntüleyebilir ve yönetebilir. Erişime ihtiyacınız varsa bir yöneticiyle iletişime geçin."
       },
       "invite": {
-        "confirm_title": "{count, plural, =1 {Bu öğrenci ekibe davet edilsin mi?} other {Bu öğrenciler ekibe davet edilsin mi?}}",
-        "confirm_description": "{count, plural, =1 {Bu kişi zaten bu kuruluşta öğrenci: {emails}. Onu {role} rolüyle davet etmek istiyor musunuz? Rolü yalnızca daveti kabul ettiğinde değişir.} other {Bu kişiler zaten bu kuruluşta öğrenci: {emails}. Onları {role} rolüyle davet etmek istiyor musunuz? Rolleri yalnızca daveti kabul ettiklerinde değişir.}}",
+        "confirm_title": "Öğrenciler ekibe davet edilsin mi?",
+        "confirm_description": "Bu kişiler zaten bu kuruluşta öğrenci: {emails}. Onları {role} rolüyle davet etmek istiyor musunuz? Rolleri yalnızca daveti kabul ettiklerinde değişir.",
         "existing": "Bu kişiler zaten ekipte: {members}. Rollerini değiştirmek için Ekip üyeleri bölümündeki rol seçiciyi kullanın."
       }
     },
@@ -1428,7 +1438,8 @@
       "total_bytes": "Toplam Depolama",
       "internal_bytes": "Dahili Depolama",
       "external_assets": "Harici Varlıklar",
-      "bytes_by_kind": "Varlık Türüne Göre Depolama"
+      "bytes_by_kind": "Varlık Türüne Göre Depolama",
+      "scorm_bytes": "SCORM paketleri"
     },
     "filters": {
       "search_placeholder": "Varlıklarda ara",
@@ -1439,7 +1450,8 @@
         "document": "Belge",
         "image": "Görüntü",
         "audio": "Audio",
-        "other": "Diğer"
+        "other": "Diğer",
+        "scorm": "SCORM paketi"
       },
       "status_options": {
         "all": "Tüm durumlar",
@@ -1452,7 +1464,8 @@
       "document": "Document",
       "image": "Image",
       "audio": "Audio",
-      "other": "Other"
+      "other": "Other",
+      "scorm": "SCORM paketi"
     },
     "provider": {
       "upload": "Upload",
@@ -1480,7 +1493,8 @@
       "where_used": "Kullanıldığı yer",
       "download": "İndir",
       "manage_thumbnails": "Küçük resimleri yönet",
-      "delete": "Sil"
+      "delete": "Sil",
+      "create_course_from_package": "Paketten kurs oluştur"
     },
     "delete": {
       "title": "Videoyu sil",
@@ -1543,12 +1557,14 @@
         "lesson": "LDers",
         "exercise": "Alıştırma",
         "question": "Soru",
-        "unknown": "Bilinmeyen"
+        "unknown": "Bilinmeyen",
+        "activity": "SCORM paketi"
       },
       "slot_type": {
         "lesson_video": "Lders videosu",
         "lesson_document": "Lders belgesi",
-        "unknown": "Attachment"
+        "unknown": "Attachment",
+        "activity_package": "SCORM paketi"
       },
       "table": {
         "target_type": "Hedef Türü",
@@ -1556,7 +1572,27 @@
         "slot": "Slot",
         "position": "Position",
         "added": "Added"
-      }
+      },
+      "go_to_package": "Pakete git"
+    },
+    "scorm": {
+      "select": "Seç",
+      "cancel_select": "İptal",
+      "cancel": "İptal",
+      "selected_count": "{count, plural, one {# paket seçildi} other {# paket seçildi}}",
+      "create_n_courses": "{count, plural, one {# kurs oluştur} other {# kurs oluştur}}",
+      "select_package": "{title} paketini seç",
+      "modules_count": "{count, plural, one {# modül} other {# modül}}",
+      "create_course_title_single": "Bu paketten bir kurs oluştur",
+      "create_course_title_many": "Paketlerden {count, plural, one {# kurs} other {# kurs}} oluştur",
+      "create_course_description": "Her bir paketle bir taslak SCORM kursu oluşturacağız. Paketin modülleri, paketin üzerindeki bir menüde bir arada yer alır.",
+      "course_nav_preview": "SCORM kursu gezintisi: Paket",
+      "course_title_label": "Kurs başlığı",
+      "course_title_label_for": "{title} için kurs başlığı",
+      "create_course_confirm_single": "Kurs oluştur",
+      "create_course_confirm_many": "{count, plural, one {# kurs} other {# kurs}} oluştur",
+      "track_compliance_label": "Uyumluluk eğitimi olarak izle",
+      "track_compliance_hint": "Son tarihleri, yenilemeleri ve hatırlatıcıları ekle"
     }
   },
   "tags_admin": {
@@ -1849,7 +1885,8 @@
         "lessons": "Lessons",
         "tags": "Tags"
       },
-      "exercises_suffix": "egzersizler"
+      "exercises_suffix": "egzersizler",
+      "packages_suffix": "paket"
     },
     "actions": {
       "create": "Widget Oluştur",
@@ -2279,7 +2316,11 @@
         "students": "Students",
         "published": "Published",
         "type": "Type"
-      }
+      },
+      "activities_count": "{count, plural, one {# paket} other {# paket}}",
+      "scorm_modules": "SCORM · {count, plural, one {# modül} other {# modül}}",
+      "scorm": "SCORM",
+      "scorm_course": "SCORM eğitimi"
     },
     "new_course_modal": {
       "heading": "Kurs Oluştur",
@@ -2380,7 +2421,8 @@
       "nav_settings": "Ayarlar",
       "nav_ai_assistant": "Assistant",
       "nav_ai_tutor": "AI Öğretmen",
-      "exit_course": "Kurstan çık"
+      "exit_course": "Kurstan çık",
+      "nav_package": "Paket"
     },
     "sidebar": {
       "back_to_course": "Kursa geri dön",
@@ -2391,13 +2433,15 @@
       },
       "content_count": {
         "lessons": "{count} dersler",
-        "exercises": "{count} egzersizler"
+        "exercises": "{count} egzersizler",
+        "activities": "{count} etkinlik"
       },
       "progress": {
         "title": "İlerlemeniz",
         "completed": "{completed} {total} tamamlandı",
         "lessons": "{completed} {total} dersleri",
-        "exercises": "{completed} {total} egzersizleri"
+        "exercises": "{completed} {total} egzersizleri",
+        "activities": "{total} paketten {completed}"
       },
       "footer_nav": {
         "label": "Kurs içeriğinde gezinme",
@@ -2534,7 +2578,8 @@
         "stats": {
           "sections": "Sections",
           "lessons": "Lessons",
-          "exercises": "Alıştırmalar"
+          "exercises": "Alıştırmalar",
+          "activities": "Etkinlikler"
         },
         "drag": "yeniden sıralamak için bir kartı sürükleyin",
         "no_lesson": "Henüz ders yok",
@@ -2682,7 +2727,16 @@
           "lesson_title": "LDers",
           "lesson_description": "Notlarla, slaytlarla ve videolarla öğretin.",
           "exercise_title": "Alıştırma",
-          "exercise_description": "Öğrencileri sınavlar ve görevlerle değerlendirin."
+          "exercise_description": "Öğrencileri sınavlar ve görevlerle değerlendirin.",
+          "activity_scorm_title": "SCORM paketi",
+          "activity_scorm_description": "Storyline, Captivate veya iSpring'den etkileşimli bir paket çalıştırın.",
+          "activity_scorm_title_label": "Paket başlığı",
+          "activity_scorm_title_placeholder": "Örneğin, İşyeri güvenliği oryantasyonu",
+          "activity_scorm_gated": "Ücretli planlar",
+          "activity_scorm_upgrade_notice": "SCORM paketleri her ücretli plana dahildir. Kurslarınıza paket eklemek için yükseltme yapın.",
+          "activity_scorm_upgrade_cta": "Planları görüntüle",
+          "activity_scorm_license_notice": "Bu sunucuda SCORM paketleri için kurumsal lisans gereklidir. Öğrenciler mevcut paketlere erişimlerini korurlar.",
+          "activity_scorm_default_title": "SCORM paketi"
         },
         "add_content_section_title_placeholder": "ör., Modül 1: Giriş",
         "add_content_lesson_title_placeholder": "örn., Değişkenlere Başlarken",
@@ -2792,7 +2846,7 @@
                   "step_3": "iframe yerleştirme kodunu buraya yapıştırın."
                 },
                 "prezi": {
-                  "hint": "Share → Embed",
+                  "hint": "Paylaş → Göm",
                   "step_1": "Kontrol panelinden sununuzda Paylaş'ı açın.",
                   "step_2": "Yerleştir'i tıklayın ve kodu kopyalayın.",
                   "step_3": "iframe yerleştirme kodunu buraya yapıştırın."
@@ -3636,7 +3690,296 @@
         },
         "expand_content": "İçeriği genişlet",
         "collapse_content": "İçeriği daralt",
-        "no_section": "Bölüm yok"
+        "no_section": "Bölüm yok",
+        "content_progression_locked_description_activity": "Bu paket, kurstaki önceki gerekli öğeyi tamamladıktan sonra açılır.",
+        "activities": {
+          "not_available_title": "Paket henüz mevcut değil",
+          "not_available_description": "Bu SCORM paketi henüz kurulma aşamasındadır. Lütfen kısa süre sonra tekrar kontrol edin.",
+          "header_locked": "Kilitli",
+          "delete_confirm_title": "Bu paket öğesi silinsin mi?",
+          "delete_confirm_body": "Öğrencilerin bu öğeye ait sonuçları silinir. Paket Medya Yöneticisinde kalır.",
+          "results_placeholder_title": "Henüz sonuç yok",
+          "results_placeholder_description": "Öğrenciler paketi açtıktan sonra puanlar, denemeler ve süre burada görünür.",
+          "settings": {
+            "completion_rule": "Tamamlama kuralı",
+            "completion_rule_helper": "ClassroomIO'nun paketin tamamlandığına nasıl karar verdiği.",
+            "rule_auto": "Otomatik",
+            "rule_completed": "Tamamlandı",
+            "rule_passed": "Geçti",
+            "rule_score": "Minimum puan",
+            "graded_hint": "Bu paketin geçme notu %{score}, bu nedenle öğrencilerin geçmesi gerekir.",
+            "ungraded_hint": "Bu paketin geçme notu yoktur, bu nedenle öğrenciler tamamlayarak bitirirler.",
+            "passed_warning": "Geçtiğini bildirmeyen bir modül, öğenin tamamlanmasını engeller.",
+            "min_score": "Minimum puan (%)",
+            "retakes": "Tekrar denemeye izin ver",
+            "retakes_helper": "Tamamlanan paketler \"Yeni bir deneme başlat\" düğmesiyle yeniden açılır. En iyi puan geçerlidir.",
+            "module_order": "Modül sırası",
+            "order_free": "Herhangi bir sıra",
+            "order_sequential": "Sıralı",
+            "module_order_helper": "Sıralı seçeneği, bir önceki modül tamamlanana kadar her modülü kilitler. Sıralama kuralı olmayan paketler her iki şekilde de aynı şekilde oynanır.",
+            "custom_threshold_hint": "Bu pakette geçme notu bulunmamaktadır. Öğrenciler her modülü tamamlayarak ve ortalama en az {score}% puan alarak paketi tamamlarlar.",
+            "completion_modules": "Tamamlama kapsamı",
+            "completion_modules_all": "Tüm modüller",
+            "completion_modules_graded_only": "Yalnızca notlandırılan modüller",
+            "completion_modules_helper": "\"Yalnızca notlandırılan modüller\" seçeneği, öğrencilerin isteğe bağlı anketleri ve terim sözlüklerini atlamasına olanak tanır. Tamamlama koşulunu yalnızca geçer notu veya raporlanan bir puanı olan modüller belirler.",
+            "completion_modules_single_note": "Bu paket tek bir modülden oluşmaktadır; bu nedenle tamamlama kapsamı geçerli değildir."
+          },
+          "instructions": {
+            "label": "Öğrenciler için talimatlar",
+            "placeholder": "Öğrenciler paketi açmadan önce neleri bilmelidir?"
+          },
+          "package": {
+            "drop_label": "SCORM .zip dosyanızı buraya bırakın",
+            "wrong_type": "SCORM paketleri olarak yalnızca .zip dosyaları yüklenebilir.",
+            "too_large": "Bu dosya {size}'dan daha büyük.",
+            "uploading": "Yükleniyor %{progress}",
+            "cancel_upload": "Yüklemeyi iptal et",
+            "processing": "Paket işleniyor…",
+            "processing_stage": "{stage} · %{progress}",
+            "failed_title": "Bu paket kullanılamadı",
+            "retry": "Başka bir dosya deneyin",
+            "remove": "Kaldır",
+            "remove_confirm_title": "Bu paketi kaldırmak ister misiniz?",
+            "remove_confirm_body": "Başka bir paket ekleyene kadar öğrenciler erişimlerini kaybeder. Dosya Medya Yöneticisinde kalır.",
+            "case_warning": "Bazı dosya adları yalnızca büyük/küçük harf bakımından farklılık gösterir.",
+            "rebased_warning": "Manifest dosyası tek bir üst düzey klasörün içinde bulundu.",
+            "version": "Sürüm {version}",
+            "files": "Dosyalar",
+            "size": "Boyut",
+            "status": {
+              "uploading": "Yükleniyor",
+              "processing": "İşleniyor",
+              "ready": "Hazır",
+              "failed": "Başarısız"
+            },
+            "errors": {
+              "missing_manifest": "imsmanifest.xml bulunamadı. Paketi bir LMS için yeniden dışa aktarın.",
+              "xapi_package": "Bu bir xAPI (Tin Can) paketidir. SCORM olarak yeniden dışa aktarın.",
+              "cmi5_package": "Bu bir cmi5 paketidir. SCORM olarak yeniden dışa aktarın.",
+              "unsupported_version": "Bu SCORM sürümü desteklenmiyor. SCORM 1.2 veya SCORM 2004 kullanın.",
+              "invalid_xml": "Manifest dosyası okunamadı. Paketi yeniden dışa aktarın.",
+              "doctype_rejected": "Manifest dosyası okunamadı. Paketi yeniden dışa aktarın.",
+              "missing_launch": "Bir modülün başlatma dosyası yok. Paketi yeniden dışa aktarın.",
+              "external_launch": "Bu paket, ilerleme durumunu burada kaydedemeyen başka bir web sitesindeki içeriği açıyor.",
+              "assets_only": "Bu pakette ilerleme durumunu bildiren herhangi bir öğe yok.",
+              "not_a_zip": "Bu dosya geçerli bir ZIP dosyası değil.",
+              "file_too_large": "Bu dosya, çalışma alanı sınırından daha büyük.",
+              "total_too_large": "Paketin sıkıştırılmış halden çıkarılmış boyutu, çalışma alanı sınırını aşıyor.",
+              "too_many_entries": "Bu paket çok fazla dosya içeriyor.",
+              "compression_bomb": "Bu paket güvenlik kontrolünden geçemedi.",
+              "unsafe_path": "Bu paket güvenli olmayan dosya yolları içeriyor.",
+              "symlink_rejected": "Bu paket güvenli olmayan dosya yolları içeriyor.",
+              "encrypted_entry": "Bu paket parola korumalı.",
+              "upload_missing": "Yükleme tamamlanamadı. Tekrar deneyin.",
+              "generic": "Bu paket işlenirken bir sorun oluştu. Tekrar deneyin."
+            },
+            "remove_confirm_body_with_count": "{count, plural, one {# öğrenci} other {# öğrenci}} bu paketi kısmen tamamladı. Farklı bir paket eklerseniz, o pakete baştan başlayacaklardır. Paketi tamamlamış olan öğrencilerin durumu değişmez.",
+            "replace_choice_title": "Paketi kısmen tamamlamış öğrencilere ne olacak?",
+            "replace_keep": "Mevcut sürümü tamamlamalarına izin ver",
+            "replace_keep_hint": "{count, plural, one {# öğrenci} other {# öğrenci}}, tamamlayana kadar eski sürümde kalır.",
+            "replace_restart": "Yeni pakette yeniden başlat",
+            "replace_restart_hint": "{count, plural, one {# öğrenci} other {# öğrenci}} baştan yeniden başlar.",
+            "stale_banner": "{count, plural, one {# öğrenci} other {# öğrenci}} hâlâ {version} sürümünde.",
+            "move_stale": "Onları bu sürüme taşı",
+            "move_stale_confirm_title": "Herkesi bu sürüme taşıyın mı?",
+            "move_stale_confirm_body": "{count, plural, one {# öğrenci} other {# öğrenci}} paketi kısmen tamamladı. Mevcut sürümde baştan yeniden başlayacaklar.",
+            "upload_new_version": "Yeni sürüm yükle",
+            "swap_package": "Paketi değiştir",
+            "swap_confirm_title": "Farklı bir paketle değiştirilsin mi?",
+            "swap_confirm_body": "Öğrenenler yeni pakete baştan başlayacak. Mevcut paket Medya Yöneticisi'nde kalmaya devam eder.",
+            "swap_confirm_body_with_count": "{count, plural, one {# öğrenen} other {# öğrenen}} paketi kısmen tamamladı. Bu kişiler yeni pakete baştan başlayacak. Paketi tamamlamış olan öğrenenlerin durumu \"tamamlandı\" olarak kalır.",
+            "promote_confirm_title": "Yükleme sırasında başlayan öğrenenler oldu",
+            "promote_confirm_body": "Yeni sürüm işlenirken {count, plural, one {# öğrenen} other {# öğrenen}} başladı.",
+            "no_lms_warning": "Bu paket, bir LMS'e ilerleme durumu bildiriyor gibi görünmüyor. Öğrenenler içeriği görüntüleyebilir; ancak tamamlama durumu ve puanlar otomatik olarak takip edilemez.",
+            "peek_checking": "Paket içeriği kontrol ediliyor…",
+            "peek_match": "“{title}” · {count, plural, one {# modül} other {# modül}} — mevcut paketle eşleşiyor.",
+            "peek_swap_ok": "“{title}” · {count, plural, one {# modül} other {# modül}} — yeni bir paket olarak eklenecek.",
+            "confirm_upgrade_anyway": "Bu kursun yeni bir sürümü — yine de yükle",
+            "confirm_swap_anyway": "Yine de değiştir",
+            "unchanged": "Zaten güncel. Yeni bir sürüm oluşturulmadı.",
+            "peek_diff": "“{title}” · {count, plural, one {# modül} other {# modül}} — bu farklı bir kurs gibi görünüyor. Bu kursun yeni bir sürümü ise, aşağıda onaylayın. Aksi takdirde, paketi değiştirin.",
+            "peek_same_course": "“{title}” · {count, plural, one {# modül} other {# modül}} — bu aynı kurs gibi görünüyor. Bunun yerine yeni bir sürüm olarak yükleyin veya yine de değiştirmek için aşağıda onaylayın.",
+            "peek_same_file": "Bu dosya mevcut sürümle aynıdır. Hiçbir şey değişmeyecek.",
+            "peek_unknown": "Paket içeriği okunamadığı için mevcut paketle karşılaştırılmadı.",
+            "sequencing_ordered": "Bu paket bir modül sırası belirler: her bir modül, bir önceki tamamlandığında açılır. Ön testler ve toplu sonuç hesaplama (rollup) gibi diğer sıralama kuralları dikkate alınmaz.",
+            "sequencing_unordered": "Bu paket bir modül sırası belirler, ancak öğrenciler şu anda modülleri istedikleri sırayla açabilirler. Bu sıralamayı zorunlu kılmak için Ayarlar bölümünde Modül sırasını “Sırayla” (In sequence) olarak ayarlayın. Ön testler ve toplu sonuç hesaplama (rollup) gibi diğer sıralama kuralları dikkate alınmaz.",
+            "empty_title": "Paket yüklenmedi",
+            "empty_description": "Görüntülemeye ve test etmeye başlamak için bir SCORM paketi yükleyin.",
+            "upload_package": "Paket yükle",
+            "version_current": "Mevcut",
+            "revert_confirm_title": "{version} sürümüne geri dönülsün mü?",
+            "revert_confirm_body": "Öğrenenler bundan böyle {version} sürümünü almaya başlayacaklar.",
+            "revert_confirm_body_with_count": "Şu anda {count, plural, one {# öğrenen} other {# öğrenen}} bu paketi alıyor. {version} sürümüne geri dönmek, bu sürümü öğrenenler için etkin paket haline getirecektir.",
+            "revert_confirm_button": "Bu sürüme geri dön",
+            "stat_pass_mark": "Geçme notu",
+            "none": "Yok",
+            "modules": "Modüller",
+            "warnings_summary": "{count, plural, one {# bu paket hakkında bilmeniz gerekenler} other {# bu paket hakkında bilmeniz gerekenler}}",
+            "module_order_sequential": "Paket sırasına göre alınır",
+            "module_order_free": "İstediğiniz sırayla açın",
+            "table_num": "#",
+            "table_title": "Başlık",
+            "table_type": "Tür",
+            "table_grading": "Notlandırma",
+            "graded_pass": "Geçme notu {score}%",
+            "ungraded": "Notlandırılmadı",
+            "details": "Ayrıntılar",
+            "version_label": "Sürüm",
+            "remove_package": "Paketi kaldır",
+            "launchable_count": "{count, plural, one {# başlatılabilir öğe} other {# başlatılabilir öğe}}",
+            "drop_hint": "{size} kadar. Paket eklenene kadar bu sayfayı açık tutun.",
+            "prerequisites_warning": "Bu paket, modülleri ön koşullar arkasına yerleştirir. Bu ön koşullar, sıralı modül sırasına göre uygulanır; daha ayrıntılı ön koşul kuralları göz ardı edilir.",
+            "modal_title": "Paket ekle",
+            "library_search": "Kütüphanede arama yap",
+            "library_search_action": "Aramak",
+            "library_loading": "Paketler yükleniyor…",
+            "library_empty": "Kütüphanede hiçbir paket bulunamadı.",
+            "library_attach": "Eklemek",
+            "library_attached_success": "Paket başarıyla eklendi.",
+            "tabs": {
+              "upload": "Yüklemek",
+              "library": "Kütüphane"
+            }
+          },
+          "gating": {
+            "title": "SCORM oluşturma işlemi duraklatıldı.",
+            "plan_lapsed": "Planınız artık SCORM paketlerini kapsamıyor. Öğrenciler bu paketleri almaya devam edebilir ve sonuçlar erişilebilir kalır.",
+            "no_license": "Bu sunucuda paketleri değiştirmek için SCORM içeren bir kurumsal lisans gereklidir."
+          },
+          "tabs": {
+            "package": "Paket",
+            "instructions": "Talimatlar",
+            "results": "Sonuçlar",
+            "settings": "Ayarlar"
+          },
+          "player": {
+            "modules_complete": "{total} modülün {complete}'i tamamlandı",
+            "module_menu": "Modüller",
+            "status_completed": "Tamamlandı",
+            "status_review": "İncelemede",
+            "status_not_passed": "Henüz geçmedi",
+            "status_in_progress": "Devam ediyor",
+            "load_failed_title": "Paket açılamadı",
+            "load_failed_body": "Bu paketi açarken bir sorun oluştu. Tekrar deneyin.",
+            "reload": "Yeniden yükle",
+            "expired_title": "Bu oturumun süresi doldu",
+            "expired_body": "Paket oturumu sona erdi. Kaldığınız yerden devam etmek için yeniden yükleyin.",
+            "review_title": "Sonuçlar zaten kaydedildi",
+            "review_body": "Bu oturumda hiçbir şey kaydedilmedi.",
+            "new_attempt": "Yeni bir deneme başlat",
+            "retakes_off": "Bu paket için tekrar denemeler kapalı, bu nedenle yeni bir deneme başlatılamaz.",
+            "no_connection_title": "Paket bağlanamadı",
+            "no_connection_body": "Paket, ders oynatıcısını hiç çağırmadı. Bir LMS veya SCORM yayınlama seçeneğiyle yeniden dışa aktarın veya tekrar denemek için yeniden yükleyin.",
+            "fullscreen": "Tam ekran",
+            "complete_title": "Paket tamamlandı",
+            "complete_body": "Sonuçlarınız kaydedildi.",
+            "continue": "Devam et",
+            "next_module": "Sonraki modül",
+            "autosave_hint": "İlerleme otomatik olarak kaydedilir.",
+            "archived_title": "Bu paketin daha önceki bir sürümünü aldınız",
+            "archived_body": "Sonuçlarınız değişmedi.",
+            "restarted_title": "Bu içerik güncellendi",
+            "restarted_body": "Paket değiştiği için baştan başlıyorsunuz.",
+            "prev_module": "Önceki modül",
+            "module_position": "{total} modülden {current}. modül",
+            "exit_fullscreen": "Tam ekrandan çık",
+            "status_preview": "Önizleme",
+            "preview_title": "Önizleme modu",
+            "preview_body": "Bu etkinliği eğitmen olarak test ediyorsunuz. Burada yaptığınız hiçbir şey kaydedilmez.",
+            "module_locked": "Önceki modülleri önce tamamlayın",
+            "time_limit": "Önerilen: {time}",
+            "loading": "Paket yükleniyor…",
+            "module_complete_title": "Modül tamamlandı",
+            "dismiss": "Kapat",
+            "fullscreen_video_hint": "Buradaki videolar, etkinlik tam ekran modundayken tam ekran moduna geçemez."
+          },
+          "results": {
+            "sheet": {
+              "title": "{learnerName} için denemeler",
+              "description": "Her modül denemesiyle ilgili tüm girişimler, paketin raporladığı yanıtlar ve harcanan süre.",
+              "attempt": "{number}. deneme",
+              "version": "Paket sürümü {number}",
+              "rule_met": "Kural karşılandı",
+              "interactions": "{count} yanıt raporlandı",
+              "no_attempts_title": "Henüz deneme yok",
+              "no_attempts_description": "Öğrenci paketi açtığında denemeler burada görünür.",
+              "reset": "Bu öğrenci için sıfırla",
+              "confirm_reset": "Sıfırlamayı onaylamak için tekrar tıklayın",
+              "columns": {
+                "module": "Modül",
+                "completion": "Tamamlanma",
+                "success": "Başarı",
+                "score": "Puan",
+                "time": "Zaman"
+              },
+              "diagnostics_title": "Tanılama",
+              "events": {
+                "launch": "Başlatıldı",
+                "initialize": "Bağlandı",
+                "commit": "Kaydedildi",
+                "terminate": "Tamamlandı",
+                "beacon": "Çıkışta kaydedildi",
+                "error": "Hata",
+                "not_initialized": "Bağlanamadı",
+                "duplicate": "Yinelenen kaydetme göz ardı edildi"
+              },
+              "interaction_correct": "Doğru: {answer}",
+              "technical_details": "Teknik detaylar",
+              "session_device": "Oturum cihazı: {device}",
+              "module_success": {
+                "passed": "Geçti",
+                "failed": "Başarısız",
+                "unknown": "Bilinmiyor"
+              },
+              "module_completion": {
+                "completed": "Tamamlandı",
+                "incomplete": "Tamamlanmamış",
+                "not_attempted": "Denenmedi",
+                "unknown": "Bilinmiyor"
+              }
+            },
+            "export": {
+              "title": "SCORM sonuçları"
+            },
+            "pass_fail": {
+              "passed": "Geçti",
+              "failed": "Başarısız"
+            },
+            "status": {
+              "not_started": "Başlanmadı",
+              "in_progress": "Devam ediyor",
+              "failed": "Henüz geçilmedi",
+              "completed": "Tamamlandı"
+            },
+            "table": {
+              "student": "Öğrenci",
+              "score": "Puan",
+              "status": "Durum",
+              "pass_fail": "Başarı durumu",
+              "best_score": "En iyi puan",
+              "time_spent": "Harcanan süre",
+              "attempts": "Denemeler",
+              "last_launched": "Son başlatılma"
+            },
+            "summary": {
+              "enrolled": "Kaydolundu",
+              "completed": "Tamamlandı",
+              "average_score": "Ortalama puan",
+              "in_progress": "Devam ediyor",
+              "not_started": "Başlamadı"
+            }
+          },
+          "header_unlocked": "Kilidi Açıldı",
+          "menu_delete": "Etkinliği Sil",
+          "delete_confirm_body_with_count": "{count, plural, one {# öğrenci} other {# öğrenci}} bu öğenin ortasında. Silmek, ilerlemelerini kaldırır.",
+          "single_activity_empty_title": "Henüz paket eklenmedi",
+          "single_activity_empty_description": "Bu kurstaki öğrencilerin kullanımına sunmak için bir SCORM paketi yükleyin.",
+          "single_activity_empty_student_desc": "Bu kursun henüz içeriği yok.",
+          "add_package_button": "Paket ekle"
+        },
+        "add_content_created_activity": "SCORM paketi başarıyla oluşturuldu!",
+        "add_content_create_another_activity": "Başka bir paket oluştur",
+        "view": "Görünüm"
       },
       "attendance": {
         "title": "Attendance",
@@ -3924,7 +4267,8 @@
               "video_progress": "Video izleme ilerlemesi — {count} izlenen dersler",
               "attendance": "Katılım girişleri — {count}",
               "certificate_yes": "Sertifikasyon / uyumluluk kayıtları — evet",
-              "certificate_no": "Sertifikasyon / uyumluluk kayıtları — hayır"
+              "certificate_no": "Sertifikasyon / uyumluluk kayıtları — hayır",
+              "activities": "Tamamlanan SCORM paketleri — {total} paketten {completed} tanesi ({attempts} deneme)"
             },
             "warning": "Bu geri alınamaz.",
             "cancel": "İptal",
@@ -4239,7 +4583,8 @@
           "ratings": "Ratings"
         },
         "instructor": "Eğitmen",
-        "courses": "kurslar"
+        "courses": "kurslar",
+        "packages": "paket"
       },
       "analytics": {
         "title": "Analytics"
@@ -4458,7 +4803,12 @@
             "window_passed": "Planlandığında hatırlatma zamanı zaten geçmişti.",
             "unenrolled": "Öğrenci artık kayıtlı değil."
           }
-        }
+        },
+        "convert_card_title": "Standart kursa dönüştür",
+        "convert_card_description": "Paketin yanına dersler, alıştırmalar ve bölümler ekleyin. Paket ilk öğe olur. Bu işlem geri alınamaz.",
+        "convert_card_cta": "Standart kursa dönüştür",
+        "convert_confirm_title": "Bu kursu dönüştürelim mi?",
+        "convert_confirm_body": "Paket ilk öğe olarak kalır ve İçerik navigasyona geri döner. Bu işlem geri alınamaz."
       }
     },
     "not_permitted": {
@@ -4540,7 +4890,7 @@
       "tabs": {
         "courses": "Dersler",
         "grades": "Notlar",
-        "activity": "Activity"
+        "activity": "Aktivite"
       },
       "activity_empty_title": "Etkinlik zaman çizelgesi Çok yakında",
       "activity_empty_description": "Kurslar genelinde ders tamamlama ve alıştırma gönderimlerine ilişkin bir zaman çizelgesi gelecekteki bir sürümde mevcut olacaktır.",
@@ -4549,8 +4899,8 @@
       "awaiting_grade": "Bekliyor not",
       "not_submitted": "Gönderilmedi",
       "course_level_exercise": "Kurs düzeyinde alıştırma",
-      "score": "Score",
-      "status": "Status",
+      "score": "Puan",
+      "status": "Durum",
       "export_progress": "İlerlemeyi dışa aktar",
       "student_actions": "Öğrenci eylemleri",
       "no_courses_title": "Henüz kurs yok",
@@ -4563,7 +4913,14 @@
       "load_failed_description": "Bir şeyler gitti Bu öğrenciyi yüklerken yanlış. Lütfen tekrar deneyin.",
       "retry": "Yeniden deneyin",
       "exercise": "Alıştırma",
-      "exercise_load_failed": "Bu kurs için alıştırmalar yüklenemedi."
+      "exercise_load_failed": "Bu kurs için alıştırmalar yüklenemedi.",
+      "activities_title": "SCORM paketleri",
+      "scorm_package": "SCORM paketi",
+      "activity_status": {
+        "completed": "Tamamlandı",
+        "in_progress": "Devam ediyor",
+        "not_started": "Başlanmadı"
+      }
     },
     "import": {
       "page_subtitle": "E-postayla aynı anda çok sayıda kişi ekleyin, ardından isterseniz kurslar veya gruplar atayın.",
@@ -4803,7 +5160,9 @@
       "students_table_description": "Öğrenci profillerine bağlantılar içeren sıralanabilir genel bakış.",
       "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} derslere eşlendi",
-      "kpi_progress_grade": "{grade} kayıtlı öğrenciler arasında ortalama egzersiz notunun yüzdesi"
+      "kpi_progress_grade": "{grade} kayıtlı öğrenciler arasında ortalama egzersiz notunun yüzdesi",
+      "kpi_packages": "{count, plural, one {# paket} other {# paket}}",
+      "kpi_activity_completion": "Kayıtlı öğrenciler genelinde %{rate} paket tamamlama oranı"
     },
     "tabs": {
       "overview": "Overview",
@@ -4873,7 +5232,10 @@
       "views": "Görünümler"
     },
     "course_progress": "Kurs ilerlemesi",
-    "exercises_completed": "Tamamlanan Alıştırmalar"
+    "exercises_completed": "Tamamlanan Alıştırmalar",
+    "packages": "Paketler",
+    "packages_completed": "Tamamlanan Paketler",
+    "activities": "SCORM paketleri"
   },
   "upgrade": {
     "certificate": "Sertifika oluşturmak için planınızı yükseltin",
@@ -4962,7 +5324,8 @@
           "cancel": "İptal",
           "save": "Anahtar oluştur"
         },
-        "reveal_title": "Yeni MCP anahtarınız"
+        "reveal_title": "Yeni MCP anahtarınız",
+        "secret_once": "Bu sır bir kez gösterilir. Şimdi MCP istemcinize kopyalayın."
       },
       "setup": {
         "title": "İstemci kurulumu",
@@ -4990,7 +5353,8 @@
           "cancel": "İptal",
           "save": "Anahtar oluştur"
         },
-        "reveal_title": "Yeni API anahtarınız"
+        "reveal_title": "Yeni API anahtarınız",
+        "secret_once": "Bu sır bir kez gösterilir. Kopyalayın ve güvenli bir şekilde saklayın."
       },
       "setup": {
         "title": "Hızlı başlangıç",
@@ -5314,7 +5678,8 @@
         "successful_deletion": "Entegrasyon silindi",
         "update_successful": "Güncelleme başarılı",
         "link_generated": "Ders bağlantısı başarıyla güncellendi",
-        "converted_to_public": "Ders başarıyla Herkese Açık hale dönüştürüldü"
+        "converted_to_public": "Ders başarıyla Herkese Açık hale dönüştürüldü",
+        "converted_to_standard": "Kurs standart kursa dönüştürüldü"
       },
       "error": {
         "not_right": "Bir sorun var - Lütfen daha sonra deneyin",
@@ -5520,6 +5885,20 @@
       "test_success": "Test olayı başarıyla teslim edildi.",
       "test_failed": "Test olayı başarısız oldu. Nedenini görmek için teslimat günlüğünü açın.",
       "redelivered": "Olay yeniden teslim için sıraya alındı."
+    },
+    "activity": {
+      "created": "SCORM paketi oluşturuldu",
+      "upload_failed": "Paket yükleme başarısız oldu",
+      "settings_saved": "Paket ayarları kaydedildi",
+      "settings_failed": "Paket ayarları kaydedilemedi",
+      "attach_failed": "Paket eklenemedi",
+      "detached": "Paket kaldırıldı",
+      "detach_failed": "Paket kaldırılamadı",
+      "launch_failed": "Paket açılamadı",
+      "learner_reset": "Bu öğrenci için denemeleri sıfırla",
+      "learner_reset_failed": "Denemeler sıfırlanamadı",
+      "courses_created": "Taslak SCORM kursları oluşturuldu",
+      "courses_create_failed": "Paketlerden kurs oluşturulamadı"
     }
   },
   "specialization": {
