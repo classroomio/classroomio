@@ -88,9 +88,9 @@ export async function updatePublicApiCourseService(
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCertificateChangeAllowed(params.courseId, payload.certificate);
 
-  const { tagIds, ...courseData } = payload;
+  const { tagIds, addTagIds, ...courseData } = payload;
 
-  if (tagIds === undefined) {
+  if (tagIds === undefined && addTagIds === undefined) {
     const { course, conversionOffenders } = await updateCourseService(params.courseId, courseData);
     const tags = await getCourseTagsForOrganization(orgId, params.courseId);
 
@@ -104,7 +104,7 @@ export async function updatePublicApiCourseService(
     courseData,
     orgId,
     updatedByUserId: actorId,
-    tagIds
+    ...(addTagIds ? { addTagIds } : { tagIds: tagIds! })
   });
 
   return { course: { ...course, tags: tags.map(toCourseTag) }, conversionOffenders };

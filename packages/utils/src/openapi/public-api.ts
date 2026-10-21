@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the audience, team, cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their \`audience:*\`, \`team:*\`, \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:read\`/\`course:write\`, \`course:exercise:*\`, \`course:submission:*\`, \`course:student:write\`, and \`media:write\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`, and the tag endpoints (\`/tags/**\`) through \`course:read\` and \`course:tag:write\`. With \`course:tag:write\` they can also call \`PUT /courses/{courseId}\`, but only with a body that holds just \`tagIds\`. Every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the audience, team, cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their \`audience:*\`, \`team:*\`, \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:read\`/\`course:write\`, \`course:exercise:*\`, \`course:submission:*\`, \`course:student:write\`, and \`media:write\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`, and the tag endpoints (\`/tags/**\`) through \`course:read\` and \`course:tag:write\`. With \`course:tag:write\` they can also call \`PUT /courses/{courseId}\`, but only with a body that holds just \`tagIds\` or \`addTagIds\`. Every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -275,7 +275,10 @@ const OPERATION_SUMMARIES: Record<string, string> = {
 const OPERATION_TAGS = [
   { name: 'Audience', description: 'Manage people in your organization.' },
   { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
-  { name: 'Tags', description: 'Create tag groups and tags. Set them on a course with tagIds on the course update.' },
+  {
+    name: 'Tags',
+    description: 'Create tag groups and tags. Set them on a course with tagIds or addTagIds on the course update.'
+  },
   { name: 'Courses', description: 'Create, update, and delete courses.' },
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
   { name: 'Course Members', description: 'Manage the people in a course and their progress.' },

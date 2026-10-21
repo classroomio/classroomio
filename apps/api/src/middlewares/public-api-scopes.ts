@@ -71,7 +71,7 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return isRead ? 'course:read' : 'course:tag:write';
   }
 
-  // The handler limits these keys to a tagIds-only body; every other course field still needs public_api:*.
+  // The handler limits these keys to a tagIds- or addTagIds-only body; every other course field still needs public_api:*.
   if (COURSE_ITEM_PATH.test(path) && method === 'PUT') {
     return 'course:tag:write';
   }

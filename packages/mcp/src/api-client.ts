@@ -381,11 +381,10 @@ export class ClassroomIoApiClient {
 
     for (const courseId of courseIds) {
       try {
-        const existingIds =
+        const course =
           payload.mode === 'merge'
-            ? (await this.listAllTagGroups(courseId)).flatMap((group) => group.tags.map((tag) => tag.id))
-            : [];
-        const course = await this.setCourseTags(courseId, [...new Set([...existingIds, ...tagIds])]);
+            ? await this.addCourseTags(courseId, tagIds)
+            : await this.setCourseTags(courseId, tagIds);
 
         results.push({ courseId, tags: course.tags });
       } catch (error) {
@@ -412,6 +411,13 @@ export class ClassroomIoApiClient {
     return this.request<{ tags: TCourseTag[] }>(`/public-api/v1/courses/${encodeURIComponent(courseId)}`, {
       method: 'PUT',
       body: { tagIds }
+    });
+  }
+
+  async addCourseTags(courseId: string, addTagIds: string[]) {
+    return this.request<{ tags: TCourseTag[] }>(`/public-api/v1/courses/${encodeURIComponent(courseId)}`, {
+      method: 'PUT',
+      body: { addTagIds }
     });
   }
 

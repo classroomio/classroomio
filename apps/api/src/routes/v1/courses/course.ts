@@ -280,18 +280,21 @@ export const v1CourseRouter = new Hono()
   .put(
     '/:courseId',
     describeRoute({
-      description: `Update a course; ${ANY_KEY_RULE}, and a key with only course:tag:write may send tagIds alone.`,
+      description: `Update a course; ${ANY_KEY_RULE}, and a key with only course:tag:write may send just tagIds or addTagIds.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
           'Course updated successfully; tags lists the tags on the course after the update',
           itemResponse(ZPublicApiUpdateCourseResponse, ZPublicApiUpdateCourseEnvelope)
         ),
-        400: { description: 'Invalid request body, or a tagIds entry that is not a tag in this organization' },
+        400: {
+          description:
+            'Invalid request body, tagIds and addTagIds sent together, or a tag id that is not a tag in this organization'
+        },
         401: errorResponses.unauthorized,
         403: {
           description:
-            'The key lacks public_api:*, or it only holds course:tag:write and the body has fields other than tagIds, or tagIds was sent and the key creator is not an org admin'
+            'The key lacks public_api:*, or it only holds course:tag:write and the body has fields other than tagIds or addTagIds, or tags were sent and the key creator is not an org admin'
         },
         404: { description: 'Course not found' },
         429: mcpRateLimitResponse
@@ -306,7 +309,8 @@ export const v1CourseRouter = new Hono()
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
 
-        const tagsOnly = payload.tagIds !== undefined && Object.keys(payload).every((field) => field === 'tagIds');
+        const fields = Object.keys(payload);
+        const tagsOnly = fields.length > 0 && fields.every((field) => field === 'tagIds' || field === 'addTagIds');
         const keyScopes = c.get('automationKey')?.scopes ?? [];
         if (!tagsOnly && !organizationApiKeyHasScopes(keyScopes, ['public_api:*'])) {
           return c.json(

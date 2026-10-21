@@ -26,12 +26,25 @@ export const ZPublicApiUpdateCourse = ZCourseUpdateBase.extend({
     .max(100)
     .optional()
     .describe(
-      "Replaces the course's tags. Send [] to remove them all. Keys without public_api:* (MCP keys) may only send this field."
+      "Replaces the course's tags. Send [] to remove them all. Keys without public_api:* (MCP keys) may only send this field or addTagIds."
+    ),
+  addTagIds: z
+    .array(z.string().uuid())
+    .min(1)
+    .max(100)
+    .optional()
+    .describe(
+      "Adds these tags and keeps the ones already on the course. Calls on the same course run one after another, so none drops another's tags. Can't be sent with tagIds."
     )
-}).refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
-  message: 'Compliance settings are required when changing a course to COMPLIANCE',
-  path: ['compliance']
-});
+})
+  .refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
+    message: 'Compliance settings are required when changing a course to COMPLIANCE',
+    path: ['compliance']
+  })
+  .refine((data) => data.tagIds === undefined || data.addTagIds === undefined, {
+    message: 'Send either tagIds or addTagIds, not both',
+    path: ['addTagIds']
+  });
 export type TPublicApiUpdateCourse = z.infer<typeof ZPublicApiUpdateCourse>;
 
 export const ZPublicApiUpdateCourseStructure = z.object({

@@ -78,6 +78,18 @@ describe('updatePublicApiCourseService tags', () => {
     expect(updateCourseWithTags).toHaveBeenCalledWith(expect.objectContaining({ courseData: {}, tagIds: [] }));
   });
 
+  it('passes addTagIds through so the server adds them to the existing tags', async () => {
+    await updatePublicApiCourseService(ORG_ID, ACTOR_ID, params, { addTagIds: [TAG_ID] });
+
+    expect(updateCourseWithTags).toHaveBeenCalledWith({
+      courseId: 'course-1',
+      courseData: {},
+      orgId: ORG_ID,
+      updatedByUserId: ACTOR_ID,
+      addTagIds: [TAG_ID]
+    });
+  });
+
   it('leaves tags alone without tagIds and still returns them', async () => {
     const result = await updatePublicApiCourseService(ORG_ID, ACTOR_ID, params, { title: 'New' });
 
