@@ -1228,6 +1228,44 @@ export async function publishCourseImportDraftToExistingCourseService(
       }
     }
 
+    const draftSectionIds = new Set(draft.sections.map((section) => section.externalId));
+    const draftLessonIds = new Set(draft.lessons.map((lesson) => lesson.externalId));
+    for (const lesson of draft.lessons) {
+      if (lesson.sectionExternalId && !draftSectionIds.has(lesson.sectionExternalId)) {
+        throw new AppError(`Lesson "${lesson.title}" references an unknown section`, ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+    for (const activity of draft.activities ?? []) {
+      if (!draftSectionIds.has(activity.sectionExternalId)) {
+        throw new AppError(
+          `Activity "${activity.existingActivityId}" references an unknown section`,
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
+      }
+    }
+    for (const exercise of draft.exercises ?? []) {
+      if (exercise.lessonExternalId && !draftLessonIds.has(exercise.lessonExternalId)) {
+        throw new AppError(
+          `Exercise "${exercise.title}" references an unknown lesson`,
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
+      }
+      if (exercise.sectionExternalId && !draftSectionIds.has(exercise.sectionExternalId)) {
+        throw new AppError(
+          `Exercise "${exercise.title}" references an unknown section`,
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
+      }
+    }
+    for (const lessonLanguage of draft.lessonLanguages ?? []) {
+      if (!draftLessonIds.has(lessonLanguage.lessonExternalId)) {
+        throw new AppError('Referenced lesson was not created', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
     await updateCourse(course.id, {
       title: courseTitle,
       description: courseDescription,
