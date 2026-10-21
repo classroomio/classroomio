@@ -12,20 +12,23 @@
   --bg: #f5f6f9; --surface: #ffffff; --fg: #14171f; --muted: #5b6477; --line: #e2e5ec;
   --accent: #2447d6; --accent-soft: #e8edff; --good: #1b8a5a; --warn: #a96f12; --bad: #c4372e;
   --good-tint: #dff3e8; --warn-tint: #fbeccd; --bad-tint: #f9dad7;
+  --skel: oklch(0.97 0 0);
   --font-body: 'Figtree', system-ui, sans-serif; --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --skel: oklch(0.269 0 0);
   --bg: #0e1117; --surface: #171b23; --fg: #e8ebf2; --muted: #98a2b6; --line: #272d39;
   --accent: #8aa3ff; --accent-soft: #1e2850; --good: #4cc38a; --warn: #e0b04a; --bad: #f0766e;
   --good-tint: #163528; --warn-tint: #3a2e14; --bad-tint: #3d1d1b; color-scheme: dark; } }
 :root[data-theme="dark"] {
+  --skel: oklch(0.269 0 0);
   --bg: #0e1117; --surface: #171b23; --fg: #e8ebf2; --muted: #98a2b6; --line: #272d39;
   --accent: #8aa3ff; --accent-soft: #1e2850; --good: #4cc38a; --warn: #e0b04a; --bad: #f0766e;
   --good-tint: #163528; --warn-tint: #3a2e14; --bad-tint: #3d1d1b; color-scheme: dark; }
 
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.45; padding-inline: 16px; }
-.wrap { max-width: 1180px; margin-inline: auto; padding-block: 20px 56px; display: flex; flex-direction: column; gap: 18px; }
+.wrap { max-width: 1320px; margin-inline: auto; padding-block: 20px 56px; display: flex; flex-direction: column; gap: 18px; }
 h1, h2, h3, p { margin: 0; }
 h1 { font-size: 22px; font-weight: 700; text-wrap: balance; }
 h2 { font-size: 14px; font-weight: 600; }
@@ -48,7 +51,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .keyrow { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 13px; color: var(--muted); }
 .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
 .w { grid-column: span 12; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-@media (min-width: 860px) { .s4 { grid-column: span 4; } .s5 { grid-column: span 5; } .s6 { grid-column: span 6; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; } }
+@container (min-width: 700px) { .s4 { grid-column: span 4; } .s5 { grid-column: span 5; } .s6 { grid-column: span 6; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; } }
 .wh { display: flex; flex-direction: column; gap: 6px; }
 .wt { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
 .tags { display: inline-flex; gap: 8px; align-items: center; }
@@ -117,10 +120,41 @@ th small { display: block; font-weight: 400; }
 .donut { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
 .donut .stack { flex: 1 1 160px; min-width: 0; }
 .qrow .note { margin-top: 2px; }
+.place { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.place .pt { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-weight: 600; }
+.place code, .pagehead code { font-family: var(--font-mono); font-size: 11.5px; background: var(--accent-soft); color: var(--accent); border-radius: 6px; padding: 2px 7px; overflow-wrap: anywhere; }
+.place ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; color: var(--muted); }
+.app { display: grid; grid-template-columns: 236px minmax(0, 1fr); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.side { border-right: 1px solid var(--line); padding: 14px 10px; display: flex; flex-direction: column; gap: 4px; background: var(--surface); }
+.side .back { font-size: 12px; color: var(--muted); padding: 2px 10px 10px; }
+.side .who { padding: 0 10px 10px; display: flex; flex-direction: column; gap: 1px; }
+.side .who b { font-size: 14px; } .side .who span { font-size: 12px; color: var(--muted); }
+.side .gl { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 12px 10px 4px; }
+.ni { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px; color: var(--muted); font: inherit; border: 0; background: transparent; width: 100%; text-align: left; }
+button.ni { cursor: pointer; }
+button.ni:hover { background: var(--bg); }
+.ni.sub { margin-left: 14px; width: calc(100% - 14px); }
+.ni.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.ni.grp { color: var(--fg); font-weight: 600; }
+.nt { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+.nt.new { background: var(--good-tint); color: var(--good); }
+.nt.replaced, .nt.renamed { background: var(--warn-tint); color: var(--warn); }
+.mainwrap { min-width: 0; background: var(--bg); }
+.main { container-type: inline-size; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.pagehead { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+.skl { position: relative; }
+.skl > :not(.sk) { visibility: hidden; }
+.sk { position: absolute; inset: 0; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.sk i { display: block; background: var(--skel); border-radius: 6px; animation: skpulse 2s cubic-bezier(.4, 0, .6, 1) infinite; }
+.sk i.fill { flex: 1; min-height: 60px; }
+@keyframes skpulse { 50% { opacity: .5; } }
+@media (prefers-reduced-motion: reduce) { .sk i { animation: none; } }
+.stub { background: var(--surface); border: 1.5px dashed var(--line); border-radius: 12px; padding: 28px 20px; text-align: center; color: var(--muted); display: flex; flex-direction: column; gap: 6px; align-items: center; }
+@media (max-width: 780px) { .app { grid-template-columns: minmax(0, 1fr); } .side { border-right: 0; border-bottom: 1px solid var(--line); max-height: 260px; overflow: auto; } }
 </style>
-
 </head>
 <body>
+
 <div class="wrap">
   <div class="head" id="top"></div>
   <div class="bar">
@@ -132,8 +166,17 @@ th small { display: block; font-weight: 400; }
     <label class="toggle" id="srctoggle"><input type="checkbox" id="showsrc" checked> Show metric specs</label>
   </div>
 
-  <div class="chips" id="scopechips"></div>
-  <div id="view"></div>
+  <div class="place" id="place"></div>
+  <div class="app">
+    <aside class="side" id="side" aria-label="App navigation"></aside>
+    <div class="mainwrap">
+      <main class="main">
+        <div class="pagehead" id="pagehead"></div>
+        <div class="chips" id="scopechips"></div>
+        <div id="view"></div>
+      </main>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -683,13 +726,107 @@ function renderTop() {
        <div class="keyrow"><span><span class="badge ok">Data available</span> already stored</span><span><span class="badge drv">Derived</span> computed from stored data</span><span><span class="badge new">Needs work</span> a feature still to build</span><span>Widgets whose data is not collected yet are left out. See the PRD, Blocked Sections.</span></div>`;
   if (CUSTOMER) $('#srctoggle').remove();
 }
+let orgPage = 'analytics';
+const ORG_SLUG = 'example-co';
+const TAGS = { new: 'New', replaced: 'Replaced', renamed: 'Renamed' };
+function navItem(it, sub) {
+  const tag = !CUSTOMER && it.tag ? `<span class="nt ${it.tag}">${TAGS[it.tag]}</span>` : '';
+  const cls = `ni${it.on ? ' on' : ''}${sub ? ' sub' : ''}${it.head ? ' grp' : ''}`;
+  const inner = `<span>${it.l}</span>${tag}`;
+  if (it.go) return `<button class="${cls}" data-go="${it.go}"${it.on ? ' aria-current="page"' : ''}>${inner}</button>`;
+  return `<span class="${cls}"${it.on ? ' aria-current="page"' : ''}>${inner}</span>`;
+}
+const navGroup = (label, items) => `${label ? `<div class="gl">${label}</div>` : ''}${items.join('')}`;
+function shell() {
+  const plain = (labels) => labels.map((l) => navItem({ l }));
+  const cohortNav = () => ({
+    route: '/cohorts/[id]/analytics',
+    kind: 'New page',
+    tag: 'new',
+    files: [
+      ['Add the route', 'apps/dashboard/src/routes/(app)/cohorts/[id]/analytics/+page.svelte'],
+      ['Add the sidebar item, after People', 'apps/dashboard/src/lib/features/cohort/components/sidebar/cohort-sidebar-navigation.svelte']
+    ],
+    side: `<div class="back">← Exit this cohort</div><div class="who"><b>Cohort 7</b><span>US Tax Prep</span></div>
+      ${plain(['Newsfeed', 'Courses', 'People']).join('')}${navItem({ l: 'Analytics', on: true, tag: 'new' })}${navItem({ l: 'Settings' })}`
+  });
+  const courseNav = () => ({
+    route: '/courses/[id]/analytics',
+    kind: 'Replaces the current course analytics page',
+    tag: 'replaced',
+    files: [
+      ['Replace the page content, same route', 'apps/dashboard/src/routes/(app)/courses/[id]/analytics/+page.svelte'],
+      ['Sidebar item already exists, keep it', 'apps/dashboard/src/lib/features/course/components/sidebar/course-sidebar-navigation.svelte']
+    ],
+    side: `<div class="back">← Exit this course</div><div class="who"><b>${COURSES[0].title}</b><span>Course</span></div>
+      ${plain(['News Feed', 'Content', 'Certificates']).join('')}${navItem({ l: 'Analytics', on: true, tag: 'replaced' })}
+      ${plain(['Submissions', 'Marks', 'Landing Page', 'People', 'AI Tutor', 'Settings']).join('')}`
+  });
+  const orgNav = () => {
+    const onAnalytics = orgPage === 'analytics';
+    return {
+      route: onAnalytics ? `/org/[slug]/analytics` : `/org/[slug]/marketing`,
+      kind: onAnalytics ? 'New page, takes the "Analytics" name' : 'Existing page, renamed to "Marketing"',
+      tag: onAnalytics ? 'new' : 'renamed',
+      files: [
+        ['Move the current page to /marketing and build the new /analytics page', 'apps/dashboard/src/routes/(app)/org/[slug]/'],
+        ['Add the "Marketing" item under Stats', 'apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts'],
+        ['Add the org_navigation.marketing key in every locale', 'apps/dashboard/src/lib/utils/translations/en.json']
+      ],
+      side: `<div class="who"><b>${CUSTOMER ? 'Your organization' : 'Example Co'}</b><span>${ORG_SLUG}</span></div>
+        ${plain(['Home', 'Dashboard']).join('')}
+        ${navItem({ l: 'Stats', head: true })}
+        ${navItem({ l: 'Marketing', on: !onAnalytics, tag: 'renamed', go: 'marketing' }, true)}
+        ${navItem({ l: 'Analytics', on: onAnalytics, tag: 'new', go: 'analytics' }, true)}
+        ${navItem({ l: 'Compliance' }, true)}
+        ${navGroup('Create', plain(['Courses', 'Cohorts', 'Media', 'Tags']))}
+        ${navGroup('Distribute', plain(['Widgets', 'Landing page']))}
+        ${navGroup('People', plain(['Audience', 'Community']))}
+        ${navGroup('Tools', plain(['Automation']))}`
+    };
+  };
+  const cfg = { cohort: cohortNav, course: courseNav, org: orgNav }[scope]();
+  $('#side').innerHTML = cfg.side;
+  const title = scope === 'org' && orgPage === 'marketing' ? 'Marketing' : 'Analytics';
+  $('#pagehead').innerHTML = `<h1>${title}</h1>${CUSTOMER ? '' : `<code>${cfg.route}</code>`}`;
+  $('#place').style.display = CUSTOMER ? 'none' : '';
+  $('#place').innerHTML = CUSTOMER ? '' : `<div class="pt"><span class="nt ${cfg.tag}">${TAGS[cfg.tag]}</span>${cfg.kind}<code>${cfg.route}</code></div>
+    <ul>${cfg.files.map((f) => `<li>${f[0]}: <code>${f[1]}</code></li>`).join('')}</ul>`;
+}
+function marketingStub() {
+  $('#scopechips').innerHTML = '';
+  return `<div class="stub"><b>The current org analytics page, unchanged</b><span>Landing-page views, enrollments, funnel, countries and top courses. Only its name and path change.</span></div>`;
+}
+let skTimer = null;
+const SK_MS = 700;
+function showSkeleton() {
+  clearTimeout(skTimer);
+  const cards = [...document.querySelectorAll('#view .w, #view .kpi')];
+  cards.forEach((card) => {
+    const blocks = card.classList.contains('kpi')
+      ? '<i style="width:60%;height:12px"></i><i style="width:45%;height:28px"></i><i style="width:35%;height:12px"></i>'
+      : '<i style="width:38%;height:16px"></i><i class="fill"></i><i style="width:70%;height:12px"></i>';
+    card.classList.add('skl');
+    card.insertAdjacentHTML('beforeend', `<div class="sk" aria-hidden="true">${blocks}</div>`);
+  });
+  $('#view').setAttribute('aria-busy', 'true');
+  skTimer = setTimeout(() => {
+    document.querySelectorAll('#view .sk').forEach((el) => el.remove());
+    document.querySelectorAll('#view .skl').forEach((el) => el.classList.remove('skl'));
+    $('#view').removeAttribute('aria-busy');
+  }, SK_MS);
+}
 function render() {
-  $('#view').innerHTML = views[scope]();
+  shell();
+  const marketing = scope === 'org' && orgPage === 'marketing';
+  $('#view').innerHTML = marketing ? marketingStub() : views[scope]();
   if (scope === 'cohort') initCohort();
+  showSkeleton();
   startClock();
   document.querySelectorAll('[data-scope]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.scope === scope)));
 }
-document.querySelectorAll('[data-scope]').forEach((b) => b.addEventListener('click', () => { scope = b.dataset.scope; render(); }));
+document.querySelectorAll('[data-scope]').forEach((b) => b.addEventListener('click', () => { scope = b.dataset.scope; orgPage = 'analytics'; render(); }));
+$('#side').addEventListener('click', (e) => { const go = e.target.closest('[data-go]'); if (go) { orgPage = go.dataset.go; render(); } });
 if (!CUSTOMER) $('#showsrc').addEventListener('change', (e) => document.body.classList.toggle('hide-src', !e.target.checked));
 renderTop();
 render();

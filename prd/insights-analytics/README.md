@@ -28,7 +28,7 @@ The prospect that prompted this runs about 5,000 contract learners in cohorts of
 1. **One spec, three scopes.** A widget is a query spec plus a viz type. Scope (`org`, `course`, `cohort`) is a filter, not a different widget.
 2. **Presets are data, not components.** Built-in dashboards ship as JSON specs in code. A later builder only persists and edits the same shape.
 3. **Registry, not raw SQL.** Users combine whitelisted metrics, dimensions and filters. The server compiles specs to parameterized SQL and injects tenant and scope filters.
-4. **Live queries with a short cache.** Learner performance is read live from source tables with a 30- to 60-second Redis cache (`cachedRead`). No new rollup tables in v1.
+4. **Live queries with a short cache.** Learner performance is read live from source tables with a 30- to 60-second Redis cache (`cachedRead`, see Caching). No new rollup tables in v1.
 5. **Exercises are shown by name, in course order.** There is no pre-assessment or module label. The only special exercise is the **final exam**, which the course already designates for its certificate. No schema change (see below).
 6. **Show only what we can compute.** Where the data is not collected yet, a ticket tracks collecting it, the dashboard does not show the widget, the section here is marked **Blocked by** that ticket, and its implementation items stay commented out until the ticket ships (see Blocked Sections).
 
@@ -174,9 +174,11 @@ Each section below needs data the product does not collect today. A ticket track
 
 | Scope | Where it lives | What happens to what exists today |
 | --- | --- | --- |
-| Cohort | A new "Analytics" tab at `/cohorts/[id]/analytics`, beside newsfeed, people, courses and settings | Nothing exists today, so nothing is replaced |
+| Cohort | A new "Analytics" item in the cohort sidebar at `/cohorts/[id]/analytics`, beside Newsfeed, Courses, People and Settings | Nothing exists today, so nothing is replaced |
 | Course | `/courses/[id]/analytics`, the existing "Analytics" item in the course sidebar | **Replaced.** Same route and nav item, new content. The new course dashboard covers what the page shows today: course KPIs and the per-student table, with filters and export |
 | Organization | `/org/[slug]/analytics`, labelled "Analytics" in the org navigation | The page at that path today shows landing-page and marketing stats (views, enrollments, funnel, countries, top courses). It is **renamed "Marketing"** and moves to `/org/[slug]/marketing`. The new learner dashboard takes the "Analytics" name and path |
+
+The prototype (`prototypes/insights-analytics`) draws each dashboard inside the real app navigation for its page, with the route and the files to touch, so the placement above can be checked on screen.
 
 Unchanged: the course and organization compliance pages, course marks, course attendance, and the per-user analytics in the audience page. The audience page links into the new learner list.
 
@@ -192,12 +194,12 @@ Follows the layering in `CLAUDE.md`:
 
 1. **Validation:** `packages/utils/src/validation/insights/` holds the spec, result and dashboard schemas.
 2. **Queries:** `packages/db/src/queries/insights/` holds the registry, scope resolver and compiler. The folder is named `insights` because `queries/analytics` is page events and `queries/report` is content moderation. Each query accepts an optional `DbOrTxClient` and logs the original error with its function name.
-3. **Service:** `apps/api/src/services/insights/` handles authorization, caching (`cachedRead`, key = spec hash + scope) and orchestration. It throws `AppError`.
+3. **Service:** `apps/api/src/services/insights/` handles authorization, caching (see Caching) and orchestration. It throws `AppError`.
 4. **Routes:** one `/insights` root mounted in `app.ts`.
    - `POST /insights/query` returns `{ columns, rows }` (one type).
    - `GET /insights/dashboards/:scopeType/:scopeId` returns the preset specs.
    - Authorization is scope-aware and runs in the service. The existing `cohortTeamMemberMiddleware` and `courseTeamMemberMiddleware` read `cohortId` and `courseId` from the path, and these routes do not have those params, so the routes use `authMiddleware` only. The service reuses the underlying queries: `getCohortMemberRole` and `isOrgAdminByCohortId` for cohort scope, `isCourseTeamMemberOrOrgAdmin` for course scope, and an org admin check for org scope.
-5. **Dashboard app:** `apps/dashboard/src/lib/features/insights/` with API class, `utils/types.ts` inferred from the RPC client, widget components, and a dashboard tab on cohort, course and org pages.
+5. **Dashboard app:** `apps/dashboard/src/lib/features/insights/` with API class, `utils/types.ts` inferred from the RPC client, widget components, and the analytics page for each scope (see Placement).
    - Charts use the browser-only dynamic import (see Chart Imports and SSR in `CLAUDE.md`).
    - All copy goes through translations.
    - Filters and search follow the live-update form rules (`DebouncedSearch` for server-backed search).
@@ -213,8 +215,64 @@ Follows the layering in `CLAUDE.md`:
 ### Performance
 
 - Aggregate in SQL. Do not build per-student rows in JS.
-- Target: a 250-learner cohort dashboard under one second warm, and an org rollup over 5,000 learners using grouped queries and the 30- to 60-second cache.
+- Target: a 250-learner cohort dashboard under one second warm, and an org rollup over 5,000 learners using grouped queries and the cache described in Caching.
 - Add indexes only after measuring against a seeded 5,000-learner org.
+
+## Caching
+
+Dashboards are read by many people at once (a CEO's page, every head of L&D, a screen on a wall), so the same spec is asked for over and over. The cache absorbs that load and keeps the numbers close to live. It reuses `cachedRead` in `apps/api/src/utils/redis/cached-read.ts`: cache-aside, a `{key}:lock` so one caller computes while the others wait (no stampede), and a plain database read when Redis is unavailable. It returns `{ data, generatedAt }`.
+
+### What is cached
+
+- One entry per **widget result**: the `{ columns, rows }` the compiler returns for one spec in one scope. Never per-learner rows stitched together in JS, and never the HTTP response.
+- Results are the same for every viewer who is allowed to see the scope, because authorization decides who may ask, not which rows come back. So the viewer is **not** in the key. If a future spec filters by the viewer (a "mine" filter), the actor id goes in the key for that spec only.
+- Not cached: free-text search, because its key space is unbounded; it runs against indexed columns instead. Exports read fresh and are rate limited, so a file always matches the latest data. Failed computes and thrown errors are never written to the cache.
+
+### Keys
+
+`insights:{section}:{orgId}:{scopeType}:{scopeId}:{specHash}`, built by one `insightsKey()` helper next to `publicApiAnalyticsKey` in `apps/api/src/utils/redis/key-generators.ts`. This is a separate namespace from `public-api:analytics:*`, which keeps its own entries and TTLs.
+
+- `orgId` is always in the key and always comes from the server-side scope, never from the request. Two organizations can never share an entry, even for identical specs.
+- `specHash` is a hash of the spec **after** scope injection and canonicalization (sorted keys, defaults applied, filter order normalized), so two requests that mean the same thing hit the same entry.
+- Authorization runs **before** the cache lookup. A cached entry is never served to someone who failed the scope check.
+- Paging, sorting and filters are part of the spec, so they are part of the hash. Page size is capped so the key space stays bounded.
+
+### Freshness
+
+TTLs are named constants in the same file, tuned after measuring, starting here:
+
+| Data | TTL | Why |
+| --- | --- | --- |
+| Cohort and course scope widgets (progress, scores, overdue, needs attention, learner matrix) | 30 seconds | A cohort is about 250 learners and the page is read during live work, so it should feel live |
+| Organization scope widgets (5,000 learners, grouped queries) | 60 seconds | The heaviest queries, and the numbers move slowly at that size |
+| Course structure used by the compiler (exercise order, final exam, point totals) | 10 minutes | Changes only when an author edits the course |
+
+- The response carries `generatedAt`, and the page shows "Updated Ns ago" from it. The age shown is the real age of the data, not the time since the last request. An entry never looks fresher than it is.
+- **No event-based invalidation in v1.** Invalidating on every submission, lesson completion and enrollment would couple the dashboard to every write path. Expiry is the rule. The one exception is a deliberate **Refresh** control.
+- **Refresh** recomputes and rewrites the entry for that widget's scope, with a per-user, per-scope limit (for example once every 15 seconds) so it cannot be used to hammer the database. Because the entry is rewritten, everyone else's next read is fresh too.
+- Editing a course's certificate-required exercise or pass mark clears that course's structure entry, since that change is rare and the result would otherwise stay wrong for 10 minutes.
+
+### Client behavior
+
+- The page refetches on the scope's TTL, and only while the tab is visible. A hidden tab stops polling and refetches once on return.
+- Responses are sent with `Cache-Control: private, no-store`. Per-tenant learner data must never sit in a shared CDN or proxy cache. The Redis entry is the only cache.
+- A widget keeps its last result on screen while a refetch runs, so refreshing never blanks a chart.
+
+### Failure and load
+
+- If Redis is down, `cachedRead` computes directly and logs once. The dashboard still works, only slower. The org rollup should therefore stay inside its latency budget uncached, not only warm.
+- Widgets on one dashboard load in parallel. Identical specs requested at the same time are collapsed by the existing lock.
+- Measure before adding a shared per-scope base query that several widgets read from. Do not build it first.
+
+### Tests
+
+- Two organizations with the same spec never read each other's entry.
+- Specs that differ only in key order or filter order produce one key.
+- A request that fails the scope check never reads the cache.
+- A second request inside the TTL does not run the query; one after it does.
+- Concurrent misses run the query once (stampede lock).
+- With Redis unavailable, the endpoint returns correct data.
+- Refresh is rate limited and rewrites the entry.
 
 ## Schema Changes
 
@@ -238,9 +296,9 @@ Phase 2 adds an `insights_dashboard` table (`org_id`, `scope_type`, `definition 
 - [ ] Query compiler and `POST /insights/query`, plus preset dashboards endpoint.
 - [ ] Widgets: KPI, line with band, bar and distribution, matrix table, horizontal bar.
 - [ ] Cohort dashboard: KPIs, course picker, courses table (all courses), scores by exercise, progress distribution, learner score progression, section-by-section scorecard, needs attention, hardest questions, logged in per day, learner matrix with search, filters, sort and CSV export.
-- [ ] Last-updated indicator and 30 second auto-refresh.
+- [ ] Caching per the Caching section: key builder and TTL constants, `generatedAt` in the response, "Updated Ns ago" indicator, visibility-aware auto-refresh, rate-limited refresh.
 - [ ] Course dashboard and organization dashboard from the same widgets.
-- [ ] Placement: new `/cohorts/[id]/analytics` tab, new `/org/[slug]/analytics` page, and the course analytics page at `/courses/[id]/analytics` replaced (remove its old components and export utils once the new page ships).
+- [ ] Placement: new `/cohorts/[id]/analytics` page with its cohort sidebar item, new `/org/[slug]/analytics` page, and the course analytics page at `/courses/[id]/analytics` replaced (remove its old components and export utils once the new page ships).
 - [ ] Rollback-sensitive and cache tests, and a seeded 5,000-learner performance check.
 
 <!--
