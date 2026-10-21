@@ -685,7 +685,12 @@
 
           <UnderlineTabs.Content value="results">
             <div class="py-4">
-              <ActivityResultsPanel {courseId} {activityId} {resultsRefreshKey} onSelectLearner={openLearnerSheet} />
+              <ActivityResultsPanel
+                {courseId}
+                {activityId}
+                refreshKey={resultsRefreshKey}
+                onSelectLearner={openLearnerSheet}
+              />
             </div>
           </UnderlineTabs.Content>
 
