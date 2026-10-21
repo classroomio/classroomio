@@ -279,6 +279,58 @@ export function filterNavItems(course: Course, reviews: Review[]) {
   });
 }
 
+function toCurriculumModule(module: { id: string; title: string | null }) {
+  const title = module.title ?? t.get('common.restricted_page.untitled_lesson');
+  return { id: module.id, title };
+}
+
+function toCurriculumLesson(lesson: LandingPageLesson) {
+  const title = lesson.title ?? t.get('common.restricted_page.untitled_lesson');
+  return { id: lesson.id, title };
+}
+
+function toCurriculumItem(item: LandingPageItem) {
+  const itemTitle = item.title ?? t.get('common.restricted_page.untitled_lesson');
+  const modules = item.modules ? item.modules.map(toCurriculumModule) : undefined;
+  return { id: item.id, title: itemTitle, kind: item.kind, modules };
+}
+
+function toCurriculumActivity(activity: LandingPageActivity) {
+  const activityTitle = activity.title ?? t.get('common.restricted_page.untitled_lesson');
+  const activityKind = activity.activityKind ?? undefined;
+  const modules = (activity.modules ?? []).map(toCurriculumModule);
+  return { id: activity.id, title: activityTitle, activityKind, modules };
+}
+
+function toCurriculumSection(section: LandingPageSection) {
+  const title = section.title ?? t.get('course.navItem.landing_page.lessons');
+  const lessons = section.lessons.map(toCurriculumLesson);
+  const items = section.items.map(toCurriculumItem);
+  const activities = section.activities.map(toCurriculumActivity);
+
+  return {
+    id: section.id,
+    title,
+    lessons,
+    exerciseCount: section.exerciseCount,
+    items,
+    activities,
+    activityCount: section.activityCount,
+    standalone: section.standalone
+  };
+}
+
+function toLandingPageReview(r: NonNullable<NonNullable<Course['metadata']>['reviews']>[number], idx: number) {
+  return {
+    id: `review-${r.id ?? idx}`,
+    name: r.name ?? 'Anonymous',
+    avatarUrl: r.avatar_url || undefined,
+    rating: r.rating ?? 0,
+    description: r.description ?? '',
+    createdAt: r.created_at ? new Date(r.created_at).toISOString() : undefined
+  };
+}
+
 export function buildCourseLandingPageProps(
   course: Course,
   org: AccountOrg | PublicOrg,
@@ -347,6 +399,8 @@ export function buildCourseLandingPageProps(
     ? t.get('course.navItem.landing_page.pricing_section.enroll')
     : t.get('course.navItem.landing_page.pricing_section.buy');
   const paidEnrollClick = !isFree && !options.enrollDisabled ? options.onPaidEnrollClick : undefined;
+  const curriculumSections = sections.map(toCurriculumSection);
+  const reviewItems = includeReviews ? reviewsVisible.map(toLandingPageReview) : [];
 
   return {
     theme: landing.theme as OrgLandingPageTheme,
@@ -383,62 +437,7 @@ export function buildCourseLandingPageProps(
     },
     curriculum: {
       grouped: course.content?.grouped ?? false,
-      sections: sections.map((section) => {
-        const title = section.title ?? t.get('course.navItem.landing_page.lessons');
-        const lessons = section.lessons.map((lesson) => {
-          const lessonTitle = lesson.title ?? t.get('common.restricted_page.untitled_lesson');
-          return {
-            id: lesson.id,
-            title: lessonTitle
-          };
-        });
-        const items = section.items.map((item) => {
-          const itemTitle = item.title ?? t.get('common.restricted_page.untitled_lesson');
-          const modules = item.modules?.map((module) => {
-            const moduleTitle = module.title ?? t.get('common.restricted_page.untitled_lesson');
-            return {
-              id: module.id,
-              title: moduleTitle
-            };
-          });
-
-          return {
-            id: item.id,
-            title: itemTitle,
-            kind: item.kind,
-            modules
-          };
-        });
-        const activities = section.activities.map((activity) => {
-          const activityTitle = activity.title ?? t.get('common.restricted_page.untitled_lesson');
-          const activityKind = activity.activityKind ?? undefined;
-          const modules = (activity.modules ?? []).map((module) => {
-            const moduleTitle = module.title ?? t.get('common.restricted_page.untitled_lesson');
-            return {
-              id: module.id,
-              title: moduleTitle
-            };
-          });
-
-          return {
-            id: activity.id,
-            title: activityTitle,
-            activityKind,
-            modules
-          };
-        });
-
-        return {
-          id: section.id,
-          title,
-          lessons,
-          exerciseCount: section.exerciseCount,
-          items,
-          activities,
-          activityCount: section.activityCount,
-          standalone: section.standalone
-        };
-      })
+      sections: curriculumSections
     },
     chips: {
       skills: metadata?.skills ?? undefined,
@@ -454,16 +453,7 @@ export function buildCourseLandingPageProps(
         }
       : { name: '' },
     reviews: {
-      items: includeReviews
-        ? reviewsVisible.map((r, idx) => ({
-            id: `review-${r.id ?? idx}`,
-            name: r.name ?? 'Anonymous',
-            avatarUrl: r.avatar_url || undefined,
-            rating: r.rating ?? 0,
-            description: r.description ?? '',
-            createdAt: r.created_at ? new Date(r.created_at).toISOString() : undefined
-          }))
-        : [],
+      items: reviewItems,
       averageRating
     },
     pricing: {
