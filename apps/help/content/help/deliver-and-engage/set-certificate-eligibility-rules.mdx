@@ -1,10 +1,33 @@
 ---
-title: 'Set certificate eligibility rules'
-description: 'This ClassroomIO Help Center guide is still being worked on.'
+title: Set certificate eligibility rules
+description: Require course progress, an optional final exercise score, and an optional deadline before issuing a certificate.
+last_reviewed: '2026-10-21'
 ---
 
-For now, use [the related ClassroomIO guide](/create-and-deliver/certificates) for the available instructions.
+Certificate eligibility is set on each course. A student must meet the configured course completion threshold and any final exercise or deadline requirement before ClassroomIO issues the certificate record.
 
-:::info[More guidance is coming]
-We are preparing a focused, step-by-step version of this guide.
+![Course Certificates Settings tab with eligibility rules](./images/set-certificate-eligibility-rules/overview.webp)
+
+:::info[Paid plan required]
+Certificate controls are visible but disabled on the Free plan.
 :::
+
+## Set the requirements
+
+1. Open the course's **Settings** tab and find the certificate rules near **Course type**.
+2. Set **Minimum completion (%)**. It counts lesson and exercise progress together and defaults to 100%.
+3. If a final assessment is required, choose **Final exercise (optional)** and set **Minimum score on final exercise (%)**. The student's best attempt counts, and this exercise allows unlimited attempts.
+4. If completion must happen by a certain time, set **Course Completion Deadline**. The student's local time is used; finishing exactly at the deadline qualifies.
+5. Save changes and test the rules with a demo student.
+
+:::warning[Check existing students before changing the rules]
+Changing the threshold, final exercise, or deadline can change who qualifies next. Review current progress and submissions before saving stricter requirements.
+:::
+
+The separate **Certificates → Settings** sub-tab controls whether an eligible student can download the certificate. Turning off download does not stop the student from earning the certificate record.
+
+## Related guides
+
+- [Create certificates](/create-and-deliver/certificates) — see every certificate setting in context
+- [Design a course certificate](/deliver-and-engage/design-a-course-certificate) — prepare the issued document
+- [Set exercise completion rules](/deliver-and-engage/set-exercise-completion-rules) — configure the final exercise
