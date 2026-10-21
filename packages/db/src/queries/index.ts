@@ -24,3 +24,4 @@ export * from './youtube-caption';
 export * from './report';
 export * from './instance';
 export * from './webhook';
+export * from './personal-learning';

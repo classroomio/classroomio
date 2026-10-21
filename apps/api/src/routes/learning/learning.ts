@@ -1,4 +1,5 @@
 import { answerLearningQuestion, dismissLearningOffer } from '@api/services/learning/conversation';
+import { acceptLearningOffer } from '@api/services/learning/accept-offer';
 import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
@@ -11,6 +12,13 @@ const ZLearningChatBody = z.object({
 });
 
 const ZLearningOfferParams = z.object({ offerId: z.string().uuid() });
+const ZAcceptLearningOfferBody = z.object({
+  consent: z.literal(true),
+  goal: z.string().trim().min(1).max(2000),
+  language: z.string().trim().min(2).max(16).default('en'),
+  targetStudyDays: z.union([z.literal(1), z.literal(7), z.literal(30)]),
+  dailyMinutes: z.union([z.literal(30), z.literal(60), z.literal(120)])
+});
 
 export const learningRouter = new Hono()
   .post('/chat', authMiddleware, zValidator('json', ZLearningChatBody), async (c) => {
@@ -33,4 +41,21 @@ export const learningRouter = new Hono()
     } catch (error) {
       return handleError(c, error, 'Failed to dismiss learning offer');
     }
-  });
+  })
+  .post(
+    '/offers/:offerId/accept',
+    authMiddleware,
+    zValidator('param', ZLearningOfferParams),
+    zValidator('json', ZAcceptLearningOfferBody),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { offerId } = c.req.valid('param');
+        const result = await acceptLearningOffer({ ownerUserId: user.id, offerId, ...c.req.valid('json') });
+
+        return c.json({ success: true, ...result }, 202);
+      } catch (error) {
+        return handleError(c, error, 'Failed to accept learning offer');
+      }
+    }
+  );

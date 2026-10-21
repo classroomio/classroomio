@@ -15,6 +15,7 @@ import {
 } from '@cio/db/queries/organization';
 import { buildEarlyAdopterClaimUrl, deriveEarlyAdopterClaimToken } from '@cio/core/services/early-adopter/claim-token';
 import { capAutoLessonVersionsPerLanguage, pruneAutoLessonVersions } from '@cio/db/queries/lesson/version';
+import { recoverPersonalLearningSessions } from '@cio/db/queries/personal-learning';
 import {
   JOB_NAMES,
   QUEUE_NAMES,
@@ -26,6 +27,8 @@ import {
   ZLessonVersionRetentionPayload,
   ZMediaJobReapPayload,
   ZMemberActivityReconcilePayload,
+  ZPersonalLearningRecoveryScanPayload,
+  enqueuePersonalLearningSession,
   ZRetentionCompactPayload,
   ZWebhookRetentionPayload,
   createRedisConnection,
@@ -193,6 +196,14 @@ const worker = new Worker(
       return { requeued: webhookIds.length };
     }
 
+    if (job.name === JOB_NAMES.maintenance.personalLearningRecovery) {
+      const data = ZPersonalLearningRecoveryScanPayload.parse(job.data ?? {});
+      const sessions = await recoverPersonalLearningSessions(data.staleAfterMinutes, data.limit);
+      await Promise.all(sessions.map((session) => enqueuePersonalLearningSession(session)));
+      log.info('personal-learning-recovery-scan-done', { queued: sessions.length });
+      return { queued: sessions.length };
+    }
+
     throw new Error(`Unknown maintenance job: ${job.name}`);
   },
   { connection, concurrency: 1 }
@@ -246,6 +257,12 @@ async function registerSchedulers(): Promise<void> {
       'lesson-version-retention-scheduler',
       { every: 86_400_000 },
       { name: JOB_NAMES.maintenance.lessonVersionRetention, data: {} }
+    );
+
+    await maintenanceQueue.upsertJobScheduler(
+      'personal-learning-recovery-scheduler',
+      { every: 60_000 },
+      { name: JOB_NAMES.maintenance.personalLearningRecovery, data: {} }
     );
     log.info('lesson-version-retention-scheduler-registered', {
       name: JOB_NAMES.maintenance.lessonVersionRetention,

@@ -38,6 +38,7 @@ CREATE TABLE "personal_learning_session" (
 	"failure_code" varchar(64),
 	"attempt" integer DEFAULT 0 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "personal_learning_session_journey_index_unique" UNIQUE("journey_id","session_index"),
 	CONSTRAINT "personal_learning_session_index_check" CHECK ("personal_learning_session"."session_index" > 0),
 	CONSTRAINT "personal_learning_session_attempt_check" CHECK ("personal_learning_session"."attempt" >= 0)

@@ -12,6 +12,7 @@ export const QUEUE_NAMES = {
   webhooks: 'webhooks',
   courseImports: 'course-imports',
   agentCourseGeneration: 'agent-course-generation',
+  personalLearning: 'personal-learning',
   onboardingBootstrap: 'onboarding-bootstrap',
   audience: 'audience',
   maintenance: 'maintenance'
@@ -53,6 +54,9 @@ export const JOB_NAMES = {
   agentCourseGeneration: {
     run: 'run'
   },
+  personalLearning: {
+    generateSession: 'generate-session'
+  },
   audience: {
     bulkAction: 'bulk-action'
   },
@@ -68,6 +72,7 @@ export const JOB_NAMES = {
     earlyAdopterClaimReminder: 'early-adopter-claim-reminder',
     instanceTelemetry: 'instance-telemetry',
     webhookRetention: 'webhook-retention',
-    webhookSweep: 'webhook-sweep'
+    webhookSweep: 'webhook-sweep',
+    personalLearningRecovery: 'personal-learning-recovery'
   }
 } as const;
