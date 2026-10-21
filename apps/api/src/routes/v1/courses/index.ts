@@ -7,6 +7,7 @@ import { v1CourseExerciseQuestionsRouter } from './exercise-questions';
 import { v1CourseExerciseSectionsRouter } from './exercise-sections';
 import { v1CourseExercisesRouter } from './exercises';
 import { v1CourseInvitesRouter } from './invites';
+import { v1CourseLessonCheckpointsRouter } from './lesson-checkpoints';
 import { v1CourseLessonCommentsRouter } from './lesson-comments';
 import { v1CourseLessonHistoryRouter, v1CourseLessonTranslationsRouter } from './lesson-translations';
 import { v1CourseLessonsRouter } from './lessons';
@@ -27,6 +28,7 @@ export const v1CoursesRouter = new Hono()
   .route('/:courseId/sections', v1CourseSectionsRouter)
   .route('/:courseId/lessons/:lessonId/translations', v1CourseLessonTranslationsRouter)
   .route('/:courseId/lessons/:lessonId/history', v1CourseLessonHistoryRouter)
+  .route('/:courseId/lessons/:lessonId/checkpoints', v1CourseLessonCheckpointsRouter)
   .route('/:courseId/lessons/:lessonId/comments', v1CourseLessonCommentsRouter)
   .route('/:courseId/lessons', v1CourseLessonsRouter)
   .route('/:courseId/content', v1CourseContentRouter)

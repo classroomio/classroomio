@@ -33,6 +33,7 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
       { tag: 'Course Sections', label: 'Sections' },
       { tag: 'Course Lessons', label: 'Lessons' },
       { tag: 'Lesson Translations', label: 'Translations' },
+      { tag: 'Lesson Video Questions', label: 'Video Questions' },
       { tag: 'Lesson Comments', label: 'Comments' },
       { tag: 'Course Content', label: 'Content' },
       { tag: 'Course Members', label: 'Members' },

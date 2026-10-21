@@ -61,9 +61,14 @@ vi.mock('@api/services/v1/courses/sections', () => ({
   listPublicApiCourseSectionsService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
 }));
 
+vi.mock('@api/services/v1/courses/lesson-checkpoints', () => ({
+  listPublicApiVideoCheckpointsService: vi.fn().mockResolvedValue({ checkpoints: [] })
+}));
+
 import { v1Router } from '@api/routes/v1';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
+const LESSON_ID = '22222222-2222-4222-8222-222222222222';
 
 const MCP_DEFAULT_SCOPES = [
   'course_import:draft:create',
@@ -86,7 +91,9 @@ const MCP_DEFAULT_SCOPES = [
   'audience:read',
   'audience:write',
   'team:read',
-  'team:write'
+  'team:write',
+  'course:video_checkpoint:read',
+  'course:video_checkpoint:write'
 ];
 
 const app = new Hono().route('/public-api/v1', v1Router);
@@ -111,6 +118,7 @@ describe('default MCP key across the cohort, course member, certificate, exercis
     [`/courses/${COURSE_ID}/members`, 'list_course_members'],
     [`/courses/${COURSE_ID}/certificate`, 'get_course_certificate'],
     [`/courses/${COURSE_ID}/sections`, 'list_course_sections'],
+    [`/courses/${COURSE_ID}/lessons/${LESSON_ID}/checkpoints`, 'list_lesson_video_checkpoints'],
     [`/courses/${COURSE_ID}/exercises`, 'list_course_exercises'],
     [`/courses/${COURSE_ID}/submissions`, 'list_course_submissions'],
     ['/audience', 'list_audience_members'],

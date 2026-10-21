@@ -42,12 +42,16 @@ const ADDED_IN_0035 = [
   'team:write'
 ];
 
+const ADDED_AFTER_0035 = ['course:video_checkpoint:read', 'course:video_checkpoint:write'];
+
 describe('0035_public_api_scopes_and_instance', () => {
   const sql = readMigration('0035_public_api_scopes_and_instance');
 
   it('requires exactly the MCP default set as it stood before the new scopes', () => {
     const required = scopesInFirstJsonbArray(sql, 'AND "scopes" @>');
-    const priorDefault = DEFAULT_SCOPES.mcp.filter((scope: string) => !ADDED_IN_0035.includes(scope));
+    const priorDefault = DEFAULT_SCOPES.mcp.filter(
+      (scope: string) => !ADDED_IN_0035.includes(scope) && !ADDED_AFTER_0035.includes(scope)
+    );
 
     expect(new Set(required)).toEqual(new Set(priorDefault));
   });
@@ -57,7 +61,9 @@ describe('0035_public_api_scopes_and_instance', () => {
     const required = scopesInFirstJsonbArray(sql, 'AND "scopes" @>');
 
     expect(new Set(added)).toEqual(new Set(ADDED_IN_0035));
-    expect(new Set([...required, ...added])).toEqual(new Set(DEFAULT_SCOPES.mcp));
+    expect(new Set([...required, ...added])).toEqual(
+      new Set(DEFAULT_SCOPES.mcp.filter((scope: string) => !ADDED_AFTER_0035.includes(scope)))
+    );
   });
 
   it('only touches mcp keys, leaving public_api:* keys alone', () => {
@@ -66,5 +72,29 @@ describe('0035_public_api_scopes_and_instance', () => {
 
   it('skips keys already holding every new scope, so re-running is a no-op', () => {
     expect(sql).toContain(`AND NOT "scopes" @> '${JSON.stringify(ADDED_IN_0035).replace(/","/g, '", "')}'::jsonb`);
+  });
+});
+
+describe('0039_video_checkpoints', () => {
+  const sql = readMigration('0039_video_checkpoints');
+
+  it('requires exactly the MCP default set as it stood before the checkpoint scopes', () => {
+    const required = scopesInFirstJsonbArray(sql, 'AND "scopes" @>');
+    const priorDefault = DEFAULT_SCOPES.mcp.filter((scope: string) => !ADDED_AFTER_0035.includes(scope));
+
+    expect(new Set(required)).toEqual(new Set(priorDefault));
+  });
+
+  it('adds the checkpoint scopes, so a new key and a migrated key agree', () => {
+    const added = scopesInFirstJsonbArray(sql, 'SET "scopes" =');
+    const required = scopesInFirstJsonbArray(sql, 'AND "scopes" @>');
+
+    expect(new Set(added)).toEqual(new Set(ADDED_AFTER_0035));
+    expect(new Set([...required, ...added])).toEqual(new Set(DEFAULT_SCOPES.mcp));
+  });
+
+  it('only touches mcp keys and is a no-op on re-run', () => {
+    expect(sql).toContain(`"type" = 'mcp'`);
+    expect(sql).toContain(`AND NOT "scopes" @> '["course:video_checkpoint:read"]'::jsonb`);
   });
 });

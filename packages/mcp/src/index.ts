@@ -14,6 +14,7 @@ import { registerCourseCertificateTools } from './tools/course-certificates';
 import { registerCourseContentTools } from './tools/course-content';
 import { registerCourseDraftTools } from './tools/course-drafts';
 import { registerCourseLessonTools } from './tools/course-lessons';
+import { registerLessonVideoCheckpointTools } from './tools/lesson-video-checkpoints';
 import { registerCourseMemberTools } from './tools/course-members';
 import { registerCourseSectionTools } from './tools/course-sections';
 import { registerCourseExerciseTools } from './tools/course-exercises';
@@ -38,6 +39,7 @@ async function main() {
   registerCourseCertificateTools(server, apiClient);
   registerCourseSectionTools(server, apiClient);
   registerCourseLessonTools(server, apiClient);
+  registerLessonVideoCheckpointTools(server, apiClient);
   registerCourseContentTools(server, apiClient);
   registerCourseExerciseTools(server, apiClient);
   registerCourseSubmissionTools(server, apiClient);

@@ -176,6 +176,12 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations': 'List lesson translations',
   'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations/{locale}': 'Save a lesson translation',
   'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/history': 'List lesson version history',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/checkpoints': 'List video questions',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/checkpoints': 'Add a video question',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/checkpoints/results': 'Get video question results',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/checkpoints/results/csv': 'Export video question results',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/checkpoints/{checkpointId}': 'Replace a video question',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}/checkpoints/{checkpointId}': 'Delete a video question',
   'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments': 'List lesson comments',
   'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments': 'Post a lesson comment',
   'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments/{commentId}': 'Edit a lesson comment',
@@ -282,6 +288,10 @@ const OPERATION_TAGS = [
   {
     name: 'Lesson Translations',
     description: "Read and save a lesson's content per language, and its version history."
+  },
+  {
+    name: 'Lesson Video Questions',
+    description: "Add questions that pause a lesson's uploaded videos, and read how learners answered them."
   },
   { name: 'Lesson Comments', description: 'Read, post, edit and delete comments on a lesson.' },
   { name: 'Course Content', description: 'Reorder, lock and delete lessons and exercises in bulk.' },

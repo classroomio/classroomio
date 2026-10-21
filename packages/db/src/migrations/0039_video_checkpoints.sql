@@ -38,3 +38,12 @@ ALTER TABLE "lesson_video_checkpoint_answer" ADD CONSTRAINT "lesson_video_checkp
 ALTER TABLE "lesson_video_checkpoint_option" ADD CONSTRAINT "lesson_video_checkpoint_option_checkpoint_id_fkey" FOREIGN KEY ("checkpoint_id") REFERENCES "public"."lesson_video_checkpoint"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "idx_lesson_video_checkpoint_lesson_asset" ON "lesson_video_checkpoint" USING btree ("lesson_id","asset_id");--> statement-breakpoint
 CREATE INDEX "idx_lesson_video_checkpoint_option_checkpoint" ON "lesson_video_checkpoint_option" USING btree ("checkpoint_id");
+--> statement-breakpoint
+--> Give existing MCP keys the video checkpoint scopes that new MCP keys get by default.
+--> Only keys holding the full previous default set are touched, so a key created
+--> with a narrower custom scope list is not widened.
+UPDATE "organization_api_key"
+SET "scopes" = "scopes" || '["course:video_checkpoint:read", "course:video_checkpoint:write"]'::jsonb
+WHERE "type" = 'mcp'
+  AND "scopes" @> '["course_import:draft:create", "course_import:draft:read", "course_import:draft:update", "course_import:draft:publish", "course:read", "course:write", "course:tag:write", "course:exercise:read", "course:exercise:write", "cohort:read", "cohort:write", "course:member:read", "course:member:write", "course:certificate:read", "course:certificate:write", "analytics:read", "media:write", "course:submission:read", "course:submission:write", "course:student:write", "audience:read", "audience:write", "team:read", "team:write"]'::jsonb
+  AND NOT "scopes" @> '["course:video_checkpoint:read"]'::jsonb;

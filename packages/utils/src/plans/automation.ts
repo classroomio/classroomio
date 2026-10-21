@@ -106,6 +106,11 @@ export const MCP_TOOL_CREDIT_COST = {
   create_course_lesson_comment: 1,
   update_course_lesson_comment: 1,
   delete_course_lesson_comment: 1,
+  list_lesson_video_checkpoints: 0,
+  create_lesson_video_checkpoint: 1,
+  update_lesson_video_checkpoint: 1,
+  delete_lesson_video_checkpoint: 1,
+  get_lesson_video_checkpoint_results: 0,
   set_course_content_unlocked: 1,
   delete_course_content: 1,
   list_course_submissions: 0,
@@ -228,6 +233,8 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_course_lesson' ||
     toolName === 'list_course_lesson_translations' ||
     toolName === 'list_course_lesson_history' ||
+    toolName === 'list_lesson_video_checkpoints' ||
+    toolName === 'get_lesson_video_checkpoint_results' ||
     toolName === 'list_course_lesson_comments' ||
     toolName === 'get_course_exercise_notify_status' ||
     toolName === 'list_exercise_templates' ||

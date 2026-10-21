@@ -45,6 +45,19 @@ export const contentForbiddenResponses = {
   )
 };
 
+export const checkpointForbiddenResponses = {
+  read: forbidden('course:video_checkpoint:read', TEAM_FORBIDDEN),
+  write: forbidden(
+    'course:video_checkpoint:write',
+    `${TEAM_FORBIDDEN}, or the organization is on the Basic (free) plan, where video questions are locked (UPGRADE_REQUIRED)`
+  ),
+  results: forbidden(
+    'course:video_checkpoint:read',
+    `${TEAM_FORBIDDEN}, or the organization is on the Basic (free) plan, where video questions are locked (UPGRADE_REQUIRED)`
+  ),
+  delete: forbidden('course:video_checkpoint:write', TEAM_FORBIDDEN)
+};
+
 export const exerciseForbiddenResponses = {
   read: forbidden('course:exercise:read', TEAM_FORBIDDEN),
   write: forbidden('course:exercise:write', TEAM_FORBIDDEN),
