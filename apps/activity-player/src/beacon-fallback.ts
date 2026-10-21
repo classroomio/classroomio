@@ -128,7 +128,8 @@ async function flushPendingSaves(): Promise<void> {
     }
   }
 
-  writePendingSaves(remaining);
+  const appended = readPendingSaves().slice(entries.length);
+  writePendingSaves([...remaining, ...appended]);
 }
 
 /**
@@ -137,10 +138,8 @@ async function flushPendingSaves(): Promise<void> {
  * fetch. Payloads above the keepalive limit cannot be delivered during unload
  * at all, so they are persisted and replayed on the next launch.
  */
-export function installLargeBeaconFetchFallback(limit: number = BEACON_BYTE_LIMIT): void {
-  if (typeof navigator === 'undefined' || typeof navigator.sendBeacon !== 'function') return;
-
-  void flushPendingSaves();
+export function installLargeBeaconFetchFallback(limit: number = BEACON_BYTE_LIMIT): Promise<void> {
+  if (typeof navigator === 'undefined' || typeof navigator.sendBeacon !== 'function') return Promise.resolve();
 
   const nativeSendBeacon = navigator.sendBeacon.bind(navigator);
 
@@ -171,4 +170,6 @@ export function installLargeBeaconFetchFallback(limit: number = BEACON_BYTE_LIMI
       return false;
     }
   };
+
+  return flushPendingSaves().catch(() => {});
 }

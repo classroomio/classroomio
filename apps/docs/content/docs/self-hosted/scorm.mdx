@@ -22,7 +22,7 @@ On self-hosted, set one hostname under your existing domain plus one DNS record,
 
 ```zsh title=".env"
 SCORM_CONTENT_ORIGIN=https://content.yourdomain.com
-ACTIVITY_SIGNING_SECRET=<openssl rand -hex 32>
+ACTIVITY_SIGNING_SECRET=
 OBJECT_STORAGE_BUCKET_SCORM=scorm
 UPLOAD_MAX_SCORM_MB=500
 LICENSE_KEY=<your enterprise license key with scorm>
@@ -93,7 +93,7 @@ Packages that stream content from the vendor (Rustici Dispatch, Elucidat's defau
 
 ### Uploads stay stuck or fail
 
-The jobs worker processes packages. Without it, uploads stay stuck with no error. Check `docker compose logs -f jobs` and confirm the worker is running.
+The jobs worker processes packages. Without it, uploads stay stuck with no error. Check `./classroomio.sh logs jobs` and confirm the worker is running.
 
 ### The player says the session expired
 
