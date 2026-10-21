@@ -1584,7 +1584,7 @@
               "attendance": "Fremmødeposter — {count}",
               "certificate_yes": "Certificerings-/compliance-data — ja",
               "certificate_no": "Certificerings-/compliance-data — nej",
-              "activities": "SCORM-pakker fuldført – {completed} ud af {total} ({attempts} forsøg)"
+              "activities": "SCORM-pakker fuldført – {completed} ud af {total} ({attempts, plural, one {# forsøg} other {# forsøg}})"
             },
             "warning": "Dette kan ikke fortrydes.",
             "cancel": "Annuller",

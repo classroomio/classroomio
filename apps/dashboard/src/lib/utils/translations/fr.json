@@ -1584,7 +1584,7 @@
               "attendance": "Entrées de présence — {count}",
               "certificate_yes": "Dossiers de certification/conformité — oui",
               "certificate_no": "Dossiers de certification/conformité — non",
-              "activities": "Packages SCORM terminés : {completed} sur {total} ({attempts} tentatives)"
+              "activities": "Packages SCORM terminés : {completed} sur {total} ({attempts, plural, one {# tentative} other {# tentatives}})"
             },
             "warning": "Cette action est irréversible.",
             "cancel": "Annuler",

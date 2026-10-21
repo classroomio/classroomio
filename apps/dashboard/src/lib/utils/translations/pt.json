@@ -1584,7 +1584,7 @@
               "attendance": "Registros de presença — {count}",
               "certificate_yes": "Registros de certificação/conformidade — sim",
               "certificate_no": "Registros de certificação/conformidade — não",
-              "activities": "Pacotes SCORM concluídos — {completed} de {total} ({attempts} tentativas)"
+              "activities": "Pacotes SCORM concluídos — {completed} de {total} ({attempts, plural, one {# tentativa} other {# tentativas}})"
             },
             "warning": "Isso não pode ser desfeito.",
             "cancel": "Cancelar",

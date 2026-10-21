@@ -48,6 +48,7 @@ export class ActivityApi extends BaseApiWithErrors {
   private launchReqId = 0;
   private progressReqId = 0;
   private activityReqId = 0;
+  private updateReqId = 0;
   private resultsReqId = 0;
   private learnerAttemptsReqId = 0;
 
@@ -207,7 +208,9 @@ export class ActivityApi extends BaseApiWithErrors {
       this.errors = mapZodErrorsToTranslations(result.error, 'activity');
       return;
     }
+
     this.errors = {};
+    const reqId = ++this.updateReqId;
     await this.execute<UpdateActivityRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].activity[':activityId'].$put({
@@ -216,6 +219,8 @@ export class ActivityApi extends BaseApiWithErrors {
         }),
       logContext: 'updating activity',
       onSuccess: (response) => {
+        if (reqId !== this.updateReqId) return;
+
         if (response.data) {
           this.activity = response.data;
           this.success = true;
@@ -223,11 +228,14 @@ export class ActivityApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
+        if (reqId !== this.updateReqId) return;
+
         this.success = false;
         if (typeof result === 'string') {
           snackbar.error('Failed to update activity');
           return;
         }
+
         if ('error' in result && 'field' in result && result.field) {
           this.errors[result.field] = result.error;
           snackbar.error(result.error);

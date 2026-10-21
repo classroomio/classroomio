@@ -4258,7 +4258,7 @@
               "attendance": "Voci di partecipazione — {count}",
               "certificate_yes": "Documenti di certificazione/conformità: sì",
               "certificate_no": "Documenti di certificazione/conformità — n",
-              "activities": "Pacchetti SCORM completati — {completed} su {total} ({attempts} tentativi)"
+              "activities": "Pacchetti SCORM completati — {completed} su {total} ({attempts, plural, one {# tentativo} other {# tentativi}})"
             },
             "warning": "Questa operazione non può essere annullata.",
             "cancel": "Annulla",

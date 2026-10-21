@@ -4272,7 +4272,7 @@
               "attendance": "Attendance entries — {count}",
               "certificate_yes": "Certification / compliance records — yes",
               "certificate_no": "Certification / compliance records — no",
-              "activities": "SCORM packages completed — {completed} of {total} ({attempts} attempts)"
+              "activities": "SCORM packages completed — {completed} of {total} ({attempts, plural, one {# attempt} other {# attempts}})"
             },
             "warning": "This cannot be undone.",
             "cancel": "Cancel",

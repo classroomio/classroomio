@@ -14,8 +14,10 @@ export function openAddContentModal(courseId: string, sectionId = '') {
   const courseItems = getOrderedNavigableContent(courseApi.course);
   const courseHasActivity = courseItems.some((item) => item.type === ContentType.Activity);
 
-  if (isSingleActivityCourse(courseApi.course) && !courseHasActivity) {
-    contentCreateStoreUtils.openActivity();
+  if (isSingleActivityCourse(courseApi.course)) {
+    if (!courseHasActivity) {
+      contentCreateStoreUtils.openActivity();
+    }
     return;
   }
 

@@ -1584,7 +1584,7 @@
               "attendance": "Anwesenheitseinträge — {count}",
               "certificate_yes": "Zertifizierungs-/Compliance-Daten — ja",
               "certificate_no": "Zertifizierungs-/Compliance-Daten — nein",
-              "activities": "SCORM-Pakete abgeschlossen – {completed} von {total} ({attempts} Versuche)"
+              "activities": "SCORM-Pakete abgeschlossen – {completed} von {total} ({attempts, plural, one {# Versuch} other {# Versuche}})"
             },
             "warning": "Dies kann nicht rückgängig gemacht werden.",
             "cancel": "Abbrechen",

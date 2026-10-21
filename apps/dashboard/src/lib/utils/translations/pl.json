@@ -1584,7 +1584,7 @@
               "attendance": "Wpisy obecności — {count}",
               "certificate_yes": "Rekordy certyfikacji/zgodności — tak",
               "certificate_no": "Rekordy certyfikacji/zgodności — nie",
-              "activities": "Ukończone pakiety SCORM — {completed} z {total} ({attempts} prób)"
+              "activities": "Ukończone pakiety SCORM — {completed} z {total} ({attempts, plural, one {# próba} few {# próby} other {# prób}})"
             },
             "warning": "Tej operacji nie można cofnąć.",
             "cancel": "Anuluj",
@@ -3022,8 +3022,8 @@
             "confirm_upgrade_anyway": "To nowa wersja tego kursu — mimo to prześlij",
             "confirm_swap_anyway": "Mimo to zamień",
             "unchanged": "Wersja jest już aktualna. Nie utworzono nowej wersji.",
-            "peek_diff": "„{title}” · {count, plural, one {# module} other {# modules}} — wygląda na to, że to inny kurs. Jeśli to nowa wersja tego kursu, potwierdź poniżej. W przeciwnym razie zamień pakiet.",
-            "peek_same_course": "„{title}” · {count, plural, one {# module} other {# modules}} — wygląda na to, że to ten sam kurs. Prześlij go jako nową wersję lub potwierdź poniżej, aby mimo wszystko dokonać zamiany.",
+            "peek_diff": "„{title}” · {count, plural, one {# moduł} few {# moduły} other {# modułów}} — wygląda na to, że to inny kurs. Jeśli to nowa wersja tego kursu, potwierdź poniżej. W przeciwnym razie zamień pakiet.",
+            "peek_same_course": "„{title}” · {count, plural, one {# moduł} few {# moduły} other {# modułów}} — wygląda na to, że to ten sam kurs. Prześlij go jako nową wersję lub potwierdź poniżej, aby mimo wszystko dokonać zamiany.",
             "peek_same_file": "Ten plik jest identyczny z obecną wersją. Nic się nie zmieni.",
             "peek_unknown": "Nie można odczytać zawartości pakietu, więc nie został on porównany z obecnym pakietem.",
             "sequencing_ordered": "Ten pakiet określa kolejność modułów: każdy moduł zostaje odblokowany po ukończeniu poprzedniego. Inne zasady sekwencjonowania, takie jak testy wstępne czy agregacja wyników (rollup), są ignorowane.",

@@ -637,20 +637,31 @@ export function buildPlayerUiState(
     : '';
   const completeLabel = label('modules_complete', { complete: completedCount, total: input.units.length });
   const timeLimitLabel = timeLimit ? label('time_limit', { time: timeLimit }) : '';
+  const previousLabel = label('prev_module');
+  const nextLabel = label('next_module');
+  const menuLabel = label('module_menu');
+  const lockedLabel = label('module_locked');
+  const exitFullscreenLabel = label('exit_fullscreen');
+  const loadingLabel = label('loading');
+  const didNotConnectLabel = label('no_connection_title');
+  const loadFailedLabel = label('load_failed_title');
+  const videoFullscreenHintLabel = label('fullscreen_video_hint');
+  const dismissLabel = label('dismiss');
+
   const labels: PlayerUiLabels = {
-    previous: label('prev_module'),
-    next: label('next_module'),
-    menu: label('module_menu'),
+    previous: previousLabel,
+    next: nextLabel,
+    menu: menuLabel,
     position: positionLabel,
     complete: completeLabel,
-    locked: label('module_locked'),
-    exitFullscreen: label('exit_fullscreen'),
+    locked: lockedLabel,
+    exitFullscreen: exitFullscreenLabel,
     timeLimit: timeLimitLabel,
-    loading: label('loading'),
-    didNotConnect: label('no_connection_title'),
-    loadFailed: label('load_failed_title'),
-    videoFullscreenHint: label('fullscreen_video_hint'),
-    dismiss: label('dismiss')
+    loading: loadingLabel,
+    didNotConnect: didNotConnectLabel,
+    loadFailed: loadFailedLabel,
+    videoFullscreenHint: videoFullscreenHintLabel,
+    dismiss: dismissLabel
   };
 
   return {

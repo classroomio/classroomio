@@ -253,14 +253,17 @@
     if (!titleDirty || savingTitle) return;
 
     savingTitle = true;
+    let saved = false;
     try {
       await activityApi.update(courseId, activityId, { title: next });
-      if (activityApi.success) {
+      saved = activityApi.success;
+      if (saved) {
         courseApi.updateContentItem(activityId, ContentType.Activity, { title: next });
       }
     } finally {
       savingTitle = false;
     }
+    if (saved && titleDirty) triggerAutoSave();
   }
 
   async function saveInstructions() {
