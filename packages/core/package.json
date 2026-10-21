@@ -24,13 +24,18 @@
       "types": "./dist/utils/*.d.ts",
       "default": "./dist/utils/*.js"
     },
+    "./utils/*/*": {
+      "types": "./dist/utils/*/*.d.ts",
+      "default": "./dist/utils/*/*.js"
+    },
     "./config/*": {
       "types": "./dist/config/*.d.ts",
       "default": "./dist/config/*.js"
     }
   },
   "scripts": {
-    "build": "tsc && tsc-alias && node scripts/restore-bare-specifiers.mjs",
+    "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias && node scripts/restore-bare-specifiers.mjs",
+    "build:incremental": "tsc && tsc-alias && node scripts/restore-bare-specifiers.mjs",
     "dev": "tsc --watch",
     "format": "prettier --write ."
   },
@@ -54,6 +59,7 @@
     "nanoid": "^5.1.5",
     "pdf-parse": "^1.1.1",
     "redis": "^4.7.0",
+    "@supadata/js": "^1.4.0",
     "zod": "^4.2.1"
   },
   "devDependencies": {

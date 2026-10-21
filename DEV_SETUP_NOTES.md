@@ -16,7 +16,7 @@ fresh machine or to onboard a new contributor.
 |------|---------|-----------|-------|
 | Node.js | 20.x (`.nvmrc` = v20.19.3) | **Required** | `nvm install && nvm use` |
 | pnpm | 10.x | **Required** | The package scripts call `pnpm` directly (e.g. `build:clean` runs `pnpm run build`) — npm/yarn are not supported substitutes. `corepack enable` then `corepack prepare pnpm@latest --activate`, or `npm i -g pnpm` |
-| Docker (Desktop) | latest | **Required** | Runs Postgres + Redis (and optionally MinIO). No local install of those needed. |
+| Docker (Desktop) | latest | **Required** | Runs Postgres + Redis (and optionally the bundled SeaweedFS object storage). No local install of those needed. |
 | Git | latest | **Required** | Windows: includes Git Bash |
 | ffmpeg / ffprobe | latest | Optional | Only for media/thumbnail background jobs |
 
@@ -72,7 +72,7 @@ cp apps/api/.env apps/jobs/.env
 docker compose -f docker-compose.yaml up -d postgres redis
 ```
 (Optional — object storage for uploads:
-`docker compose -f docker-compose.yaml --profile minio up -d minio minio-init`.)
+`docker compose -f docker-compose.yaml --profile storage up -d storage storage-init`.)
 
 ### Step 4 — Set up + seed the database
 ```bash
@@ -97,6 +97,27 @@ pnpm dashboard:dev    # dashboard UI (port 5173)
 > Don't use `pnpm dev` — it tries to start the whole monorepo (~20 services) and
 > currently trips a turbo concurrency limit. The two scoped commands above are the
 > day-to-day workflow.
+
+> Before starting the dashboard, kill leftover watchers from previous sessions
+> (`pnpm api:dev` alone leaves ~10: `tsc --watch` ×3 + `tsx watch` ×7). macOS caps
+> concurrent FSEvents streams system-wide, and past that cap the `@cio/ui` CSS
+> watcher crashes with `Error: Error starting FSEvents stream`, taking
+> `pnpm dashboard:dev` down with it. Use `pnpm dashboard:dev:fresh` (kills this
+> checkout's leftover watchers, then starts the dashboard), `pnpm dev:kill-watchers`
+> on its own, or `pnpm dev:kill-watchers --all` to also stop other projects'/checkouts'
+> watchers.
+
+#### Testing on mobile or LAN with HTTPS (optional)
+To test the dashboard on a mobile device or other local network device over HTTPS with locally-trusted certificates (via `mkcert`):
+```bash
+pnpm dashboard:dev:https
+# or after killing stale watchers:
+pnpm dashboard:dev:https:fresh
+```
+This automatically sets `HTTPS=true`, provisions local certificates, and binds Vite to `0.0.0.0`, serving on both `https://localhost:5173` and `https://<lan-ip>:5173`. Other UIs also support this (e.g. `pnpm storybook:dev:https`, `pnpm website:dev:https`, `pnpm embeds:dev:https`).
+
+> [!NOTE]
+> On separate mobile or LAN devices, the browser will display an untrusted certificate warning since the `mkcert` CA is installed only on your development host machine. If you have the option, you can bypass the warning by selecting **Advanced → Proceed** (or **Show Details → visit this website** in Safari) to continue testing.
 
 ### Step 7 — Log in
 Open http://localhost:5173/login → `admin@test.com` / `123456`.
@@ -128,7 +149,7 @@ enough — developing costs nothing.
 | Dashboard   | http://localhost:5173 | Vite dev server                  |
 | Postgres    | localhost:5432        | Docker container `cio-postgres`  |
 | Redis       | localhost:6379        | Docker container `cio-redis`     |
-| MinIO       | 9000 / console 9001   | only if started (optional)       |
+| Storage     | localhost:9000        | SeaweedFS, only if started (optional) |
 | jobs-worker | (none)                | background worker, no HTTP port  |
 
 ## 4. Demo accounts
@@ -158,6 +179,7 @@ Seeded accounts use password **`123456`** (verified against the seed's bcrypt ha
 | Login `Invalid email or password` | wrong demo password | Use `admin@test.com` / **`123456`** |
 | Login still fails after upstream fix | API auth env empty | Fill `BETTER_AUTH_SECRET`, `TRUSTED_ORIGINS=http://localhost:5173`, `PUBLIC_SERVER_URL` in `apps/api/.env`, restart API |
 | Changed a `.env` but nothing changed | env is read at process start | Restart the affected `*:dev` server |
+| `[Error: Error starting FSEvents stream]` — `@cio/ui` CSS watcher crashes, `pnpm dashboard:dev` exits | macOS cap on concurrent FSEvents streams hit (stale `api:dev` watchers, other projects' dev servers, editors) | `pnpm dashboard:dev:fresh` (or `pnpm dev:kill-watchers [--all]`, then retry `pnpm dashboard:dev`) |
 
 > After editing any `.env`, **restart** the relevant dev server.
 

@@ -10,18 +10,57 @@ import type {
   TNewLessonCompletion,
   TNewLessonLanguage
 } from '@db/types';
-import { and, db, desc, eq, inArray, lt, ne, sql } from '@db/drizzle';
+import { and, asc, count, db, desc, eq, inArray, lt, ne, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
+import { contentWriteBumpsTimestamp } from '@db/queries/course/content-timestamp';
 
 // Lesson Queries
-export async function getLessonsByCourseId(courseId: string) {
+export async function getLessonsByCourseId(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return db.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseId));
+    return dbClient.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseId));
   } catch (error) {
     console.error('getLessonsByCourseId error:', error);
     throw new Error(
       `Failed to get lessons by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function getPaginatedLessonsByCourseId(
+  courseId: string,
+  options: { sectionId?: string; page: number; limit: number }
+): Promise<{ items: TLesson[]; total: number }> {
+  try {
+    const { sectionId, page, limit } = options;
+    const where = and(
+      eq(schema.lesson.courseId, courseId),
+      sectionId ? eq(schema.lesson.sectionId, sectionId) : undefined
+    );
+
+    const [countRows, items] = await Promise.all([
+      db.select({ total: count() }).from(schema.lesson).where(where),
+      // A lesson in a section sorts at its section's top-level position, then by its order in the section.
+      db
+        .select({ lesson: schema.lesson })
+        .from(schema.lesson)
+        .leftJoin(schema.courseSection, eq(schema.courseSection.id, schema.lesson.sectionId))
+        .where(where)
+        .orderBy(
+          asc(sql`coalesce(${schema.courseSection.order}, ${schema.lesson.order})`),
+          asc(schema.lesson.sectionId),
+          asc(schema.lesson.order),
+          asc(schema.lesson.id)
+        )
+        .limit(limit)
+        .offset((page - 1) * limit)
+    ]);
+
+    return { items: items.map((row) => row.lesson), total: Number(countRows[0]?.total ?? 0) };
+  } catch (error) {
+    console.error('getPaginatedLessonsByCourseId error:', error);
+    throw new Error(
+      `Failed to get paginated lessons for course "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -167,9 +206,9 @@ export async function getLessonNavInfoByIds(lessonIds: string[]): Promise<Lesson
   }
 }
 
-export async function createLessons(values: TNewLesson[]) {
+export async function createLessons(values: TNewLesson[], dbClient: DbOrTxClient = db) {
   try {
-    return db.insert(schema.lesson).values(values).returning();
+    return await dbClient.insert(schema.lesson).values(values).returning();
   } catch (error) {
     console.error('createLessons error:', error);
     throw new Error(`Failed to create lessons: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -178,11 +217,11 @@ export async function createLessons(values: TNewLesson[]) {
 
 export async function updateLesson(lessonId: string, data: Partial<TLesson>, dbClient: DbOrTxClient = db) {
   try {
-    const [updated] = await dbClient
-      .update(schema.lesson)
-      .set({ ...data, updatedAt: new Date().toISOString() })
-      .where(eq(schema.lesson.id, lessonId))
-      .returning();
+    const fields = { ...data };
+    delete fields.updatedAt;
+    const fieldNames = Object.keys(fields);
+    const patch = contentWriteBumpsTimestamp(fieldNames) ? { ...fields, updatedAt: new Date().toISOString() } : fields;
+    const [updated] = await dbClient.update(schema.lesson).set(patch).where(eq(schema.lesson.id, lessonId)).returning();
     return updated || null;
   } catch (error) {
     console.error('updateLesson error:', error);
@@ -241,6 +280,28 @@ export async function getLessonCommentsByLessonId(lessonId: string) {
   }
 }
 
+// Date.parse rolls Feb 31 over to March; Postgres rejects it.
+function isRealTimestamp(value: string): boolean {
+  if (Number.isNaN(Date.parse(value))) return false;
+
+  const [year, month, day] = value.slice(0, 10).split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+}
+
+// Cursor is `<createdAt>|<id>`; a bare id is the format dashboards loaded before this change still hold.
+function parseLessonCommentCursor(cursor?: string): { createdAt?: string; id: number } | undefined {
+  if (!cursor) return undefined;
+  if (/^\d+$/.test(cursor)) return { id: Number(cursor) };
+
+  const separatorIndex = cursor.lastIndexOf('|');
+  const createdAt = cursor.slice(0, separatorIndex);
+  const id = cursor.slice(separatorIndex + 1);
+  if (separatorIndex <= 0 || !/^\d+$/.test(id) || !isRealTimestamp(createdAt)) return undefined;
+
+  return { createdAt, id: Number(id) };
+}
+
 /**
  * Gets paginated comments for a lesson with author profile
  * @param lessonId Lesson ID
@@ -262,13 +323,17 @@ export async function getLessonCommentsByLessonIdPaginated(
   nextCursor: string | null;
 }> {
   try {
-    const { cursor, limit } = options;
+    const { limit } = options;
+    const cursor = parseLessonCommentCursor(options.cursor);
 
     // Build where conditions
     const whereConditions = [eq(schema.lessonComment.lessonId, lessonId)];
     if (cursor) {
-      // Cursor is the last comment ID, fetch comments created before it
-      whereConditions.push(lt(schema.lessonComment.id, Number(cursor)));
+      whereConditions.push(
+        cursor.createdAt
+          ? sql`(${schema.lessonComment.createdAt}, ${schema.lessonComment.id}) < (${cursor.createdAt}::timestamptz, ${cursor.id}::bigint)`
+          : lt(schema.lessonComment.id, cursor.id)
+      );
     }
 
     // Get total count
@@ -289,15 +354,16 @@ export async function getLessonCommentsByLessonIdPaginated(
       .leftJoin(schema.groupmember, eq(schema.lessonComment.groupmemberId, schema.groupmember.id))
       .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
       .where(and(...whereConditions))
-      .orderBy(desc(schema.lessonComment.createdAt))
+      .orderBy(desc(schema.lessonComment.createdAt), desc(schema.lessonComment.id))
       .limit(limit + 1);
 
     // Check if there are more comments
     const hasMore = comments.length > limit;
     const items = comments.slice(0, limit);
 
-    // Get next cursor (ID of the oldest comment in this batch - for loading older comments)
-    const nextCursor = hasMore && items.length > 0 ? String(items[items.length - 1].comment.id) : null;
+    // Get next cursor (oldest comment in this batch - for loading older comments)
+    const lastComment = items[items.length - 1]?.comment;
+    const nextCursor = hasMore && lastComment ? `${lastComment.createdAt}|${lastComment.id}` : null;
 
     return {
       items: items.map((row) => ({
@@ -336,6 +402,22 @@ export async function createLessonComment(data: TNewLessonComment): Promise<TLes
   } catch (error) {
     console.error('createLessonComment error:', error);
     throw new Error(`Failed to create lesson comment: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function getLessonCommentById(commentId: number): Promise<TLessonComment | null> {
+  try {
+    const [comment] = await db
+      .select()
+      .from(schema.lessonComment)
+      .where(eq(schema.lessonComment.id, commentId))
+      .limit(1);
+    return comment || null;
+  } catch (error) {
+    console.error('getLessonCommentById error:', error);
+    throw new Error(
+      `Failed to get lesson comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -406,10 +488,10 @@ export async function upsertLessonCompletion(data: TNewLessonCompletion): Promis
 }
 
 // Lesson Language Queries
-export async function getLessonLanguagesByLessonIds(lessonIds: string[]) {
+export async function getLessonLanguagesByLessonIds(lessonIds: string[], dbClient: DbOrTxClient = db) {
   if (lessonIds.length === 0) return [];
   try {
-    return db.select().from(schema.lessonLanguage).where(inArray(schema.lessonLanguage.lessonId, lessonIds));
+    return dbClient.select().from(schema.lessonLanguage).where(inArray(schema.lessonLanguage.lessonId, lessonIds));
   } catch (error) {
     console.error('getLessonLanguagesByLessonIds error:', error);
     throw new Error(
@@ -418,49 +500,12 @@ export async function getLessonLanguagesByLessonIds(lessonIds: string[]) {
   }
 }
 
-export async function createLessonLanguages(values: TNewLessonLanguage[]) {
+export async function createLessonLanguages(values: TNewLessonLanguage[], dbClient: DbOrTxClient = db) {
   if (values.length === 0) return [];
   try {
-    return db.insert(schema.lessonLanguage).values(values).returning();
+    return await dbClient.insert(schema.lessonLanguage).values(values).returning();
   } catch (error) {
     console.error('createLessonLanguages error:', error);
     throw new Error(`Failed to create lesson languages: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-}
-
-/**
- * Gets lesson version history for a lesson and locale
- * @param lessonId Lesson ID
- * @param locale Locale
- * @param endRange End range for pagination (0-indexed, inclusive)
- * @returns Array of lesson version history entries
- */
-export async function getLessonVersionHistory(
-  lessonId: string,
-  locale: string,
-  endRange: number
-): Promise<
-  Array<{
-    oldContent: string | null;
-    newContent: string | null;
-    timestamp: string | null;
-    locale: string | null;
-    lessonId: string | null;
-  }>
-> {
-  try {
-    const result = await db
-      .select()
-      .from(schema.lessonVersions)
-      .where(and(eq(schema.lessonVersions.lessonId, lessonId), eq(schema.lessonVersions.locale, locale as any)))
-      .orderBy(desc(schema.lessonVersions.timestamp))
-      .limit(endRange + 1);
-
-    return result;
-  } catch (error) {
-    console.error('getLessonVersionHistory error:', error);
-    throw new Error(
-      `Failed to get lesson version history: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
   }
 }

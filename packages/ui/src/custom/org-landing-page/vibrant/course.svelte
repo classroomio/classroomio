@@ -28,7 +28,8 @@
     reviews,
     pricing,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: CourseLandingPageProps = $props();
 
   const heroProps = $derived(alignHeroCtaWithPricing(hero, pricing));
@@ -41,7 +42,7 @@
   <main>
     <VibrantHero hero={heroProps}>
       {#snippet navigation()}
-        <VibrantNav {orgName} {logoUrl} {navItems} {authAction} />
+        <VibrantNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </VibrantHero>
 
@@ -52,7 +53,7 @@
     {#if chips}
       <CourseChips variant="vibrant" {chips} {labels} />
     {/if}
-    <CourseInstructor variant="vibrant" {instructor} {labels} />
+    <CourseInstructor variant="vibrant" {instructor} {logoUrl} {labels} />
     <CourseReviews variant="vibrant" {reviews} {labels} />
     <CoursePricing variant="vibrant" {pricing} {labels} />
   </main>

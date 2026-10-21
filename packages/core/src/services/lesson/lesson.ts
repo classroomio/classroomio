@@ -1,7 +1,7 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { sanitizeHtml } from '../../utils/sanitize-html';
 import type { TLesson, TNewLessonComment, TNewLessonCompletion } from '@cio/db/types';
-import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
+import type { TLessonCreate, TLessonUpdate } from '@cio/utils/validation/lesson';
 import {
   createLessonComment,
   createLessons,
@@ -14,9 +14,11 @@ import {
   getLessonCommentsByLessonIdPaginated,
   getLessonCompletion,
   getLessonVersionHistory,
+  type TLessonVersionCursor,
   getLessonVideoProgress,
   getLessonVideoProgressForLesson,
   getLessonsByCourseId,
+  getPaginatedLessonsByCourseId,
   updateLesson,
   updateLessonComment,
   upsertLessonCompletion,
@@ -24,12 +26,14 @@ import {
   type LessonById
 } from '@cio/db/queries/lesson';
 import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
-import { touchCourseUpdatedAt } from '@cio/db/queries/course';
+import { skipActiveReminderDeliveriesForLesson, touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { db } from '@cio/db/drizzle';
 import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
+import { claimItemOrder } from '../course/root-order';
+import { emitCourseWebhookEvent } from '../webhook/emit';
 
 /**
  * Creates a new lesson
@@ -52,7 +56,10 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
       isUnlocked: data.isUnlocked ?? true
     };
 
-    const [lesson] = await createLessons([lessonData]);
+    const [lesson] = await db.transaction(async (tx) => {
+      const order = await claimItemOrder(courseId, { sectionId: data.sectionId }, data.order, null, tx);
+      return createLessons([{ ...lessonData, order }], tx);
+    });
     if (!lesson) {
       throw new AppError('Failed to create lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
@@ -99,6 +106,16 @@ export async function getLesson(lessonId: string): Promise<LessonById> {
   }
 }
 
+function hasSessionMoved(
+  before: Pick<TLesson, 'lessonAt' | 'callUrl'>,
+  after: Pick<TLesson, 'lessonAt' | 'callUrl'>
+): boolean {
+  const beforeAt = before.lessonAt ? new Date(before.lessonAt).getTime() : null;
+  const afterAt = after.lessonAt ? new Date(after.lessonAt).getTime() : null;
+
+  return beforeAt !== afterAt || (before.callUrl ?? null) !== (after.callUrl ?? null);
+}
+
 /**
  * Updates a lesson
  * @param lessonId Lesson ID
@@ -108,9 +125,11 @@ export async function getLesson(lessonId: string): Promise<LessonById> {
 export async function updateLessonService(lessonId: string, data: TLessonUpdate): Promise<TLesson> {
   try {
     const payload: TLessonUpdate = { ...data };
+    const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
+    const needsExisting = payload.slug !== undefined || payload.order !== undefined || touchesSession;
+    const existing = needsExisting ? await getLessonById(lessonId) : null;
 
     if (payload.slug !== undefined) {
-      const existing = await getLessonById(lessonId);
       if (!existing) {
         throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
       }
@@ -126,13 +145,24 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
       });
     }
 
-    const updated = await updateLesson(lessonId, payload);
+    const sectionId = payload.sectionId === undefined ? existing?.sectionId : payload.sectionId;
+    const orderCourseId = payload.order !== undefined ? existing?.courseId : null;
+    const updated = orderCourseId
+      ? await db.transaction(async (tx) => {
+          payload.order = await claimItemOrder(orderCourseId, { sectionId }, payload.order, lessonId, tx);
+          return updateLesson(lessonId, payload, tx);
+        })
+      : await updateLesson(lessonId, payload);
     if (!updated) {
       throw new AppError('Failed to update lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
     if (updated.courseId) {
       await touchCourseUpdatedAt(updated.courseId);
+    }
+
+    if (existing && hasSessionMoved(existing, updated)) {
+      await skipActiveReminderDeliveriesForLesson(lessonId, 'lesson_rescheduled');
     }
 
     return updated;
@@ -217,36 +247,25 @@ export async function listLessons(courseId: string, sectionId?: string): Promise
 }
 
 /**
- * Reorders lessons
- * @param lessons Array of lesson IDs, orders, and optional sectionIds
- * @returns Updated lessons
+ * Lists one page of a course's lessons, in course order
+ * @param courseId Course ID
+ * @param options Section filter and page options
+ * @returns Lessons on the page and the total count
  */
-export async function reorderLessons(lessons: TLessonReorder['lessons']): Promise<TLesson[]> {
+export async function listLessonsPaginated(
+  courseId: string,
+  options: { sectionId?: string; page: number; limit: number }
+): Promise<{ items: TLesson[]; total: number }> {
   try {
-    // Update each lesson's order and optionally sectionId
-    const updatePromises = lessons.map(({ id, order, sectionId }) =>
-      updateLesson(id, { order, ...(sectionId !== undefined && { sectionId }) })
-    );
-
-    const updated = await Promise.all(updatePromises);
-    const validLessons = updated.filter((l): l is TLesson => l !== null);
-
-    const courseId = validLessons[0]?.courseId;
-    if (courseId) {
-      await touchCourseUpdatedAt(courseId);
-    }
-
-    return validLessons;
+    return await getPaginatedLessonsByCourseId(courseId, options);
   } catch (error) {
     throw new AppError(
-      error instanceof Error ? error.message : 'Failed to reorder lessons',
+      error instanceof Error ? error.message : 'Failed to list lessons',
       ErrorCodes.INTERNAL_ERROR,
       500
     );
   }
 }
-
-// Lesson Comment Services
 
 async function assertLessonCommentsEnabled(lessonId: string) {
   const availability = await getLessonCommentsAvailability(lessonId);
@@ -461,7 +480,11 @@ export async function upsertLessonCompletionService(lessonId: string, profileId:
       isComplete
     };
 
-    return await upsertLessonCompletion(completionData);
+    const completion = await upsertLessonCompletion(completionData);
+
+    await emitCourseWebhookEvent(lesson.courseId, 'lesson.completion.updated', { lessonId, profileId, isComplete });
+
+    return completion;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -678,6 +701,11 @@ export async function updateLessonWatchProgressService(
         profileId,
         isComplete: true
       });
+      await emitCourseWebhookEvent(lesson.courseId, 'lesson.completion.updated', {
+        lessonId,
+        profileId,
+        isComplete: true
+      });
     }
 
     if (!aggregate) {
@@ -701,16 +729,35 @@ export async function updateLessonWatchProgressService(
   }
 }
 
+function parseLessonVersionCursor(cursor?: string): TLessonVersionCursor | undefined {
+  if (!cursor) return undefined;
+
+  const separatorIndex = cursor.lastIndexOf('|');
+  if (separatorIndex <= 0) return undefined;
+
+  const timestamp = cursor.slice(0, separatorIndex);
+  const id = Number(cursor.slice(separatorIndex + 1));
+
+  if (!timestamp || !Number.isInteger(id)) return undefined;
+
+  // The timestamp is interpolated into a Postgres timestamp comparison, so it has to be a
+  // real date here. Without this check a cursor like `garbage|5` reaches the driver and
+  // fails the query with a 500 instead of restarting at the newest page.
+  if (Number.isNaN(new Date(timestamp).getTime())) return undefined;
+
+  return { timestamp, id };
+}
+
 /**
- * Gets lesson version history for a lesson and locale
- * @param lessonId Lesson ID
- * @param locale Locale
- * @param endRange End range for pagination (0-indexed, inclusive)
- * @returns Array of lesson version history entries
+ * Gets one keyset page of lesson version history.
+ *
+ * @param cursor Serialized `<iso timestamp>|<id>` from the previous page's `nextCursor`.
+ *   Malformed input is treated as absent so a hand-edited URL restarts at the newest page
+ *   rather than erroring.
  */
-export async function getLessonHistoryService(lessonId: string, locale: string, endRange: number) {
+export async function getLessonHistoryService(lessonId: string, locale: string, limit: number, cursor?: string) {
   try {
-    return getLessonVersionHistory(lessonId, locale, endRange);
+    return getLessonVersionHistory(lessonId, locale, limit, parseLessonVersionCursor(cursor));
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to get lesson history',

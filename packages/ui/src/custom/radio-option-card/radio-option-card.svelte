@@ -29,14 +29,16 @@
 
 <Field.Label for={id} class={className}>
   <Field.Field orientation="horizontal">
-    <Field.Content>
+    <Field.Content class="ui:min-w-0">
       <Field.Title class="ui:flex ui:items-center ui:gap-2">
         {title}
         {#if titleSuffix}
           {@render titleSuffix()}
         {/if}
       </Field.Title>
-      <Field.Description>{description}</Field.Description>
+      {#if description}
+        <Field.Description>{description}</Field.Description>
+      {/if}
     </Field.Content>
     <RadioGroup.Item {value} {id} aria-label={title} {disabled} />
   </Field.Field>

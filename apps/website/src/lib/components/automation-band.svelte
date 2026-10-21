@@ -1,8 +1,13 @@
 <script>
-  import BoxedGrid from './boxed-grid.svelte';
+  import { BlurFade } from '@cio/ui/custom/animation/blurfade';
+  import { MachineEventWire } from '@cio/ui/custom/animation/machines';
   import Webhook from '@lucide/svelte/icons/webhook';
   import Code2 from '@lucide/svelte/icons/code-2';
   import Sparkles from '@lucide/svelte/icons/sparkles';
+  import CtaButton from './ui/cta-button.svelte';
+  import NotchCard from './ui/notch-card.svelte';
+  import Section from './ui/section.svelte';
+  import SectionHeader from './ui/section-header.svelte';
 
   const lanes = [
     {
@@ -23,33 +28,50 @@
   ];
 </script>
 
-<section class="bg-gray-50 px-6 py-12 lg:px-12 lg:py-16">
-  <div class="mx-auto max-w-[1100px]">
-    <div class="mb-8 max-w-[640px]">
-      <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">For developers</div>
-      <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">API, Webhooks, MCP.</h2>
-      <p class="mt-3 text-sm leading-relaxed text-gray-500">
-        No middleware in between. Wire it into the stack you already have.
-      </p>
-    </div>
+<Section class="bg-gray-50">
+  <div class="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+    <SectionHeader
+      align="left"
+      size="h3"
+      eyebrow="For developers"
+      eyebrowClass="text-blue-700"
+      lede="No middleware in between. Wire it into the stack you already have."
+      ledeClass="text-gray-500"
+      titleClass=""
+    >
+      {#snippet title()}API, Webhooks, MCP.{/snippet}
+    </SectionHeader>
 
-    <BoxedGrid items={lanes} cols={3} padding="p-5 lg:p-6">
-      {#snippet cell(lane)}
-        <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-          <lane.Icon size={16} strokeWidth={1.75} />
-        </div>
-        <h3 class="text-sm font-medium text-gray-950 lg:text-base">{lane.title}</h3>
-        <p class="mt-1.5 text-xs leading-relaxed text-gray-500 lg:text-sm">{lane.description}</p>
-      {/snippet}
-    </BoxedGrid>
-
-    <div class="mt-6">
-      <a
-        href="/automation"
-        class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-950 no-underline transition-all hover:border-gray-950"
-      >
-        See the developer reference →
-      </a>
+    <div class="automation-machine h-56 sm:h-64 lg:h-80">
+      <MachineEventWire
+        class="h-full"
+        label="Events wired from ClassroomIO to a CRM and a help desk, retrying when one gives no response"
+      />
     </div>
   </div>
-</section>
+
+  <div class="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
+    {#each lanes as lane, i}
+      <BlurFade delay={0.05 * i} once class="h-full">
+        <NotchCard class="h-full bg-white" notchClass="bg-gray-50">
+          <div class="flex size-10 items-center justify-center rounded-md bg-blue-50 text-blue-700">
+            <lane.Icon size={20} strokeWidth={1.8} />
+          </div>
+          <h3 class="text-card-title mt-5 font-medium text-gray-950">{lane.title}</h3>
+          <p class="mt-2 text-[15px] leading-relaxed text-gray-500">{lane.description}</p>
+        </NotchCard>
+      </BlurFade>
+    {/each}
+  </div>
+
+  <div class="mt-9">
+    <CtaButton href="/automation" variant="secondary">See the developer reference →</CtaButton>
+  </div>
+</Section>
+
+<style>
+  .automation-machine {
+    --machine-ink: var(--color-blue-700);
+    --machine-face: var(--color-gray-50);
+  }
+</style>

@@ -1,60 +1,51 @@
 <script lang="ts">
-  import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { t } from '$lib/utils/functions/translations';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     isTitle?: boolean;
-    onClose?: any;
-    scrollToQuestion?: boolean;
-    points?: any;
+    onClose?: () => void;
+    points?: number | string;
     hasError?: boolean;
     errorMsg?: string | null;
     /** Hint shown next to the points input while points is 0 (e.g. auto-grade requires non-zero points) */
     pointsHint?: string | null;
-    onPointsChange?: any;
+    onPointsChange?: (value?: unknown) => void;
     elementId?: string;
+    class?: string;
     key?: string;
-    children?: import('svelte').Snippet;
+    children?: Snippet;
   }
 
   let {
     isTitle = false,
     onClose = () => {},
-    scrollToQuestion = false,
     points = $bindable(undefined),
     hasError = false,
     errorMsg = null,
     pointsHint = null,
     onPointsChange = () => {},
     elementId,
+    class: className = '',
     children
   }: Props = $props();
-
-  let ref: HTMLDivElement | undefined = $state();
 
   // `points` is often bound to a plain store object property, which is not deeply
   // reactive — a local reactive owner keeps the zero-points warning live while typing.
   let pointsValue = $state(points);
-
-  $effect(() => {
-    if (ref && scrollToQuestion) {
-      ref.scrollIntoView({
-        block: 'start',
-        behavior: 'smooth',
-        inline: 'nearest'
-      });
-    }
-  });
+  let pointsFocused = $state(false);
 </script>
 
 <div
   id={elementId}
-  bind:this={ref}
-  class="border-border border bg-white dark:bg-black {hasError ? 'border-red-700' : ''} root relative mb-6 rounded-md"
+  class="{hasError
+    ? 'ui:border-destructive ui:dark:border-destructive'
+    : 'ui:border-border'} root relative rounded-md border bg-white dark:bg-black {className}"
 >
   {#if isTitle}
     <div class="title bg-primary-700 absolute"></div>
@@ -69,28 +60,23 @@
         <p class="mr-2 text-sm dark:text-white">
           {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}:
         </p>
-        <InputField
+        <NumberField
           placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
-          bind:value={
-            () => pointsValue,
-            (nextValue) => {
-              const parsedValue = Number(nextValue);
-              const clampedValue =
-                nextValue === '' || nextValue == null || !Number.isFinite(parsedValue)
-                  ? nextValue // ← empty/invalid: preserve unchanged
-                  : Math.max(parsedValue, 1); // ← finite value: ALWAYS a number, min 1
-
-              pointsValue = clampedValue;
-              points = clampedValue;
-            }
-          }
-          type="number"
+          integer
           min={1}
-          step={1}
-          onchange={onPointsChange}
+          value={typeof pointsValue === 'number' ? pointsValue : null}
+          onValueChange={(next) => {
+            if (next === null) return;
+
+            pointsValue = next;
+            points = next;
+            onPointsChange();
+          }}
+          onFocus={() => (pointsFocused = true)}
+          onBlur={() => (pointsFocused = false)}
         />
 
-        {#if Number(pointsValue) === 0}
+        {#if !pointsFocused && Number(pointsValue) === 0}
           <Tooltip.Provider>
             <Tooltip.Root>
               <Tooltip.Trigger class="ml-2 shrink-0">
@@ -106,7 +92,7 @@
 
       {#if errorMsg}
         <p class="text-xs text-red-500">{errorMsg}</p>
-      {:else if pointsHint && Number(pointsValue) === 0}
+      {:else if pointsHint && !pointsFocused && Number(pointsValue) === 0}
         <p class="ui:text-muted-foreground max-w-[min(100%,12rem)] text-xs">{pointsHint}</p>
       {/if}
 

@@ -1,0 +1,2 @@
+export interface CourseCardProps { media?: React.ReactNode; tag?: string; title?: string; meta?: string; children?: React.ReactNode; style?: React.CSSProperties; }
+export declare function CourseCard(props: CourseCardProps): JSX.Element;

@@ -1,21 +1,22 @@
 import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { isUniqueConstraintViolation } from '@cio/utils/errors';
 import {
   addCourseMember,
   deleteCourseMember,
   getCourseMember,
-  getCourseMembers,
   getPaginatedCourseMembers,
   getCourseTeachers,
   updateCourseMember
 } from '@cio/db/queries/course/people';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 
-import type { TAddCourseMembers, TCourseMembersQuery } from '@cio/utils/validation/course/people';
+import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
-import type { CourseMemberWithProfile } from '@cio/db/queries/course/people';
+import type { PaginatedCourseMember, PaginatedCourseMembersOptions } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { emitCourseMemberWebhookEvent, emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
@@ -25,12 +26,13 @@ import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
 
 /**
- * Attaches progress, stage, last login and enrollment date to student members.
- * @param courseId Course ID
- * @param members Course members to decorate
- * @returns The same members, with progress fields set on students
+ * Attaches only `stage` to a page of members.
+ *
+ * Progress, last login and enrollment date already come from the query, but
+ * `stage` names a content item in canonical course order, which is derived in
+ * application code rather than SQL.
  */
-async function addProgressSummaries(courseId: string, members: CourseMemberWithProfile[]) {
+async function addMemberStages(courseId: string, members: PaginatedCourseMember[]) {
   const progressSummaries = await getCourseMemberProgressSummaries(
     courseId,
     members.map((member) => ({
@@ -41,54 +43,29 @@ async function addProgressSummaries(courseId: string, members: CourseMemberWithP
   );
 
   return members.map((member) => {
-    const progress =
-      member.profileId && member.roleId === ROLE.STUDENT ? progressSummaries.get(member.profileId) : undefined;
+    if (!member.profileId || member.roleId !== ROLE.STUDENT) {
+      return member;
+    }
 
+    const progress = progressSummaries.get(member.profileId);
     if (!progress) {
       return member;
     }
 
-    return {
-      ...member,
-      progressPercent: progress.progressPercent,
-      stage: progress.stage,
-      lastLoginAt: progress.lastLoginAt,
-      enrolledAt: progress.enrolledAt
-    };
+    return { ...member, stage: progress.stage };
   });
 }
 
 /**
- * Gets every course member (people) for a course.
+ * Gets one filtered, sorted page of course members for a course.
  * @param courseId Course ID
- * @returns Array of course members with profile and progress data
+ * @param query Page, page size, search term, filters and sort
+ * @returns One page of course members with profile, progress and stage data, plus pagination totals
  */
-export async function listCourseMembers(courseId: string) {
-  try {
-    const members = await getCourseMembers(courseId);
-    return await addProgressSummaries(courseId, members);
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to list course members',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
- * Gets one filtered page of course members for a course.
- * @param courseId Course ID
- * @param query Page, page size, search term and role filter
- * @returns One page of course members with profile and progress data, plus pagination totals
- */
-export async function listPaginatedCourseMembers(courseId: string, query: TCourseMembersQuery) {
+export async function listPaginatedCourseMembers(courseId: string, query: PaginatedCourseMembersOptions) {
   try {
     const result = await getPaginatedCourseMembers(courseId, query);
-    const items = await addProgressSummaries(courseId, result.items);
+    const items = await addMemberStages(courseId, result.items);
 
     return {
       ...result,
@@ -123,6 +100,7 @@ export async function addMember(
     }
 
     const addedMember = await addCourseMember(courseId, data);
+    await emitCourseMemberWebhookEvent('course.member.added', courseId, addedMember);
 
     if (data.roleId === ROLE.STUDENT) {
       const statsOrgId = await getOrgIdByCourseId(courseId);
@@ -226,6 +204,9 @@ export async function addMember(
     if (error instanceof AppError) {
       throw error;
     }
+    if (isUniqueConstraintViolation(error)) {
+      throw new AppError('Already a member of this course', ErrorCodes.CONFLICT, 409);
+    }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to add course member',
       ErrorCodes.INTERNAL_ERROR,
@@ -281,6 +262,7 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       for (const member of members) {
         const addedMember = await addCourseMember(courseId, member);
         addedMembers.push(addedMember);
+        await emitCourseMemberWebhookEvent('course.member.added', courseId, addedMember);
 
         if (member.roleId === ROLE.STUDENT) {
           addedStudentMember = true;
@@ -351,6 +333,9 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     if (error instanceof AppError) {
       throw error;
     }
+    if (isUniqueConstraintViolation(error)) {
+      throw new AppError('Already a member of this course', ErrorCodes.CONFLICT, 409);
+    }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to add course members',
       ErrorCodes.INTERNAL_ERROR,
@@ -393,6 +378,9 @@ export async function updateMember(courseId: string, memberId: string, data: Par
     if (error instanceof AppError) {
       throw error;
     }
+    if (isUniqueConstraintViolation(error)) {
+      throw new AppError('Another member of this course already uses that email', ErrorCodes.CONFLICT, 409);
+    }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update course member',
       ErrorCodes.INTERNAL_ERROR,
@@ -418,6 +406,8 @@ export async function deleteMember(courseId: string, memberId: string) {
       const statsOrgId = await getOrgIdByCourseId(courseId);
       await invalidateOrgStats(statsOrgId);
     }
+
+    await emitCourseMemberWebhookEvent('course.member.removed', courseId, deleted);
 
     return deleted;
   } catch (error) {
@@ -446,7 +436,7 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
       throw new AppError('Only student progress can be reset', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    const summary = await resetStudentCourseProgress({
+    const { summary, resetLessonIds, resetExerciseIds } = await resetStudentCourseProgress({
       courseId,
       groupMemberId: memberId,
       profileId: member.profileId
@@ -461,6 +451,23 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
 
     const statsOrgId = await getOrgIdByCourseId(courseId);
     await invalidateOrgStats(statsOrgId);
+
+    const profileId = member.profileId;
+    const lessonResetEvents = profileId
+      ? resetLessonIds.map((lessonId) =>
+          emitCourseWebhookEvent(courseId, 'lesson.completion.updated', { lessonId, profileId, isComplete: false })
+        )
+      : [];
+    const exerciseResetEvents = resetExerciseIds.map((exerciseId) =>
+      emitCourseWebhookEvent(courseId, 'exercise.completion.updated', {
+        exerciseId,
+        memberId,
+        profileId,
+        isComplete: false
+      })
+    );
+
+    await Promise.all([...lessonResetEvents, ...exerciseResetEvents]);
 
     return summary;
   } catch (error) {

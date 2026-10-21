@@ -37,6 +37,13 @@ export const QUESTION_LABELS = {
   'question.edit.upload_error_only_images': 'Only image files are supported.',
   'question.edit.upload_error_skipped': 'Some files were skipped because they are not images.',
   'question.edit.upload_error_failed': 'Failed to upload image. Try again.',
+  'question.edit.expand_description': 'Expand',
+  'question.media.enlarge_image': 'Click to enlarge',
+  'question.media.close': 'Close',
+  'question.media.zoom_in': 'Zoom in',
+  'question.media.zoom_out': 'Zoom out',
+  'question.media.previous_image': 'Previous image',
+  'question.media.next_image': 'Next image',
   'radio.edit.helper': 'Select exactly one correct option.',
   'radio.edit.correct_selected_tooltip': 'Correct answer selected',
   'radio.edit.mark_correct_tooltip': 'Mark as correct answer',
@@ -110,6 +117,8 @@ export const QUESTION_LABELS = {
   'file_upload.take.download': 'Download',
   'file_upload.preview.accepted_types_label': 'Accepted types',
   'file_upload.preview.max_size_label': 'Max size (MB)',
+  'file_upload.review.empty': 'No file was submitted.',
+  'file_upload.review.unavailable': 'This file cannot be opened.',
   'video_recording.edit.max_duration_label': 'Max duration',
   'video_recording.edit.max_duration_helper': 'Students record in the browser and can retake before submitting.',
   'video_recording.edit.max_duration_placeholder': '60',
@@ -184,5 +193,7 @@ export const QUESTION_LABELS = {
   'submission.chart.responses': 'Responses',
   'submission.chart.no_data': 'No responses yet',
   'submission.list.responses': 'Responses',
-  'submission.list.no_responses': 'No responses yet'
+  'submission.list.no_responses': 'No responses yet',
+  'submission.list.unknown_student': 'Unknown student',
+  'submission.list.no_file': 'No file'
 } as const;

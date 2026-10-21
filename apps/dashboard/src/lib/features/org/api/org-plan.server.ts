@@ -1,14 +1,23 @@
-import type { TCancelOrgPlan, TCreateOrgPlan, TUpdateOrgPlan } from '@cio/utils/validation/organization';
+import type {
+  TCancelOrgPlan,
+  TCreateOrgPlan,
+  TEarlyAdopterSubscriptionEvent,
+  TUpdateOrgPlan
+} from '@cio/utils/validation/organization';
 
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
 
 type CreateOrgPlanRequest = typeof classroomio.organization.plan.$post;
 type CreateOrgPlanSuccess = Extract<InferResponseType<CreateOrgPlanRequest>, { success: true }>;
+type ActivateOrgPlanRequest = typeof classroomio.organization.plan.activate.$post;
+type ActivateOrgPlanSuccess = Extract<InferResponseType<ActivateOrgPlanRequest>, { success: true }>;
 type UpdateOrgPlanRequest = typeof classroomio.organization.plan.$put;
 type UpdateOrgPlanSuccess = Extract<InferResponseType<UpdateOrgPlanRequest>, { success: true }>;
 type CancelOrgPlanRequest = typeof classroomio.organization.plan.cancel.$post;
 type CancelOrgPlanSuccess = Extract<InferResponseType<CancelOrgPlanRequest>, { success: true }>;
+type RecordEarlyAdopterEventRequest = (typeof classroomio.organization.plan)['early-adopter-event']['$post'];
+type RecordEarlyAdopterEventSuccess = Extract<InferResponseType<RecordEarlyAdopterEventRequest>, { success: true }>;
 
 /**
  * Server-side API methods for organization plan operations
@@ -33,6 +42,29 @@ export class OrgPlanApiServer {
 
     if (!result.ok) {
       console.error('Error creating org plan (server):', result);
+      return null;
+    }
+
+    return result.body.data;
+  }
+
+  /**
+   * Activates an organization plan or creates it when no local plan exists yet.
+   * @param params Organization plan activation parameters
+   * @returns Response data or null on error
+   */
+  static async activateOrgPlan(params: TCreateOrgPlan) {
+    const result = await safeServerApi<ActivateOrgPlanSuccess>(() =>
+      classroomio.organization.plan.activate.$post(
+        {
+          json: params
+        },
+        getApiKeyHeaders()
+      )
+    );
+
+    if (!result.ok) {
+      console.error('Error activating org plan (server):', result);
       return null;
     }
 
@@ -79,6 +111,29 @@ export class OrgPlanApiServer {
 
     if (!result.ok) {
       console.error('Error canceling org plan (server):', result);
+      return null;
+    }
+
+    return result.body.data;
+  }
+
+  /**
+   * Records a Polar subscription event for a purchase made without an account (server-side)
+   * @param params Subscription event parameters
+   * @returns Response data or null on error
+   */
+  static async recordEarlyAdopterEvent(params: TEarlyAdopterSubscriptionEvent) {
+    const result = await safeServerApi<RecordEarlyAdopterEventSuccess>(() =>
+      classroomio.organization.plan['early-adopter-event'].$post(
+        {
+          json: params
+        },
+        getApiKeyHeaders()
+      )
+    );
+
+    if (!result.ok) {
+      console.error('Error recording early adopter event (server):', result);
       return null;
     }
 

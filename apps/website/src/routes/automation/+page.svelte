@@ -1,7 +1,8 @@
 <script lang="ts">
   import { CodeBlock, HeroSubtitle, McpServerSection, PageHeader, PageSignupCTA } from '$lib/components';
+  import { CtaButton, MachineCard, Section, SectionHeader } from '$lib/components/ui';
   import { Badge } from '@cio/ui/base/badge';
-  import { Button } from '@cio/ui/base/button';
+  import { MachineEventWire } from '@cio/ui/custom/animation/machines';
   import Code2 from '@lucide/svelte/icons/code-2';
   import Github from '@lucide/svelte/icons/github';
 
@@ -42,165 +43,175 @@
 </script>
 
 <section class="bg-white">
-  <PageHeader className="px-6 lg:px-12">
-    <div class="mx-auto max-w-[1100px]">
-      <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">
-        <Code2 size={14} class="text-blue-700" />
-        Developer reference
-      </Badge>
-      <h1 class="max-w-[820px] text-[clamp(2rem,3.4vw,2.8rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
-        API, Webhooks, MCP.
-        <em class="text-blue-700 not-italic">No integration tax.</em>
-      </h1>
-      <HeroSubtitle>
-        ClassroomIO ships with a public REST API, signed Webhooks, and an MCP server. No closed marketplace, no "premium
-        connector" plans. Build the integration that fits your stack.
-      </HeroSubtitle>
-      <div class="mt-8 flex flex-wrap items-center gap-3">
-        <Button href="https://classroomio.com/docs/api">Read the API docs</Button>
-        <Button href="/github" variant="outline">Star on GitHub</Button>
+  <PageHeader className="px-6 md:px-10">
+    <div class="max-w-content mx-auto grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
+      <div>
+        <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">
+          <Code2 size={14} class="text-blue-700" />
+          Developer reference
+        </Badge>
+        <h1 class="text-title font-medium text-balance text-gray-950 lg:text-[64px]">
+          API, Webhooks, MCP.
+          <em class="text-blue-700 not-italic">No integration tax.</em>
+        </h1>
+        <HeroSubtitle>
+          ClassroomIO ships with a public REST API, signed Webhooks, and an MCP server. No closed marketplace, no
+          "premium connector" plans. Build the integration that fits your stack.
+        </HeroSubtitle>
+        <div class="mt-9 flex flex-wrap items-center gap-3">
+          <CtaButton href="https://classroomio.com/docs/api">Read the API docs</CtaButton>
+          <CtaButton href="/github" variant="secondary">Star on GitHub</CtaButton>
+        </div>
       </div>
+
+      <MachineCard>
+        <MachineEventWire
+          class="h-64 w-full md:h-80"
+          label="Webhook events travelling from ClassroomIO to a CRM and a help desk, retrying after no response"
+        />
+      </MachineCard>
     </div>
   </PageHeader>
 
-  <!-- REST API -->
-  <section class="px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
-      <div>
-        <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">REST API</div>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          Everything in the LMS is reachable over HTTP.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Bearer-token auth, JSON in, JSON out. Provision learners from your CRM, pull completion data into your
-          warehouse, or build your own admin tooling on the same surface the dashboard uses.
-        </p>
+  <Section innerClass="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
+    <div>
+      <SectionHeader
+        align="left"
+        size="h3"
+        eyebrow="REST API"
+        eyebrowClass="text-blue-700"
+        titleClass=""
+        ledeClass="text-gray-500"
+        lede="Bearer-token auth, JSON in, JSON out. Provision learners from your CRM, pull completion data into your warehouse, or build your own admin tooling on the same surface the dashboard uses."
+      >
+        {#snippet title()}Everything in the LMS is reachable over HTTP.{/snippet}
+      </SectionHeader>
 
-        <ul class="mt-6 space-y-3 text-sm text-gray-700">
-          <li class="flex items-start gap-2">
-            <span class="mt-0.5 text-blue-700">→</span> Orgs, users, courses, lessons, exercises, submissions, certificates
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="mt-0.5 text-blue-700">→</span> Per-org API keys, scoped permissions
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="mt-0.5 text-blue-700">→</span> Cursor-based pagination, rate limits documented
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="mt-0.5 text-blue-700">→</span> Same endpoints whether you self-host or run on our cloud
-          </li>
-        </ul>
-      </div>
-      <CodeBlock
-        fileName="enrol-a-learner.sh"
-        lang="bash"
-        codeLines={apiCurl}
-        statusBar="POST · application/json · authenticated"
-      />
+      <ul class="mt-8 space-y-3 text-[15px] text-gray-700">
+        <li class="flex items-start gap-2">
+          <span class="text-blue-700">→</span> Orgs, users, courses, lessons, exercises, submissions, certificates
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-700">→</span> Per-org API keys, scoped permissions
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-700">→</span> Cursor-based pagination, rate limits documented
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-700">→</span> Same endpoints whether you self-host or run on our cloud
+        </li>
+      </ul>
     </div>
-  </section>
+    <CodeBlock
+      fileName="enrol-a-learner.sh"
+      lang="bash"
+      codeLines={apiCurl}
+      statusBar="POST · application/json · authenticated"
+    />
+  </Section>
 
-  <!-- Webhooks -->
-  <section class="bg-gray-50 px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
-      <CodeBlock
-        fileName="webhook-payload.json"
-        lang="JSON"
-        codeLines={webhookSample}
-        statusBar="signed with HMAC-SHA256 · retries up to 24h"
-      />
-      <div>
-        <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Webhooks</div>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          Subscribe to the events you care about, instead of polling.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Every important state change posts to your endpoint, signed with your shared secret. We retry with exponential
-          backoff, and you can replay any event from the dashboard.
-        </p>
+  <Section class="bg-gray-50" innerClass="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
+    <CodeBlock
+      fileName="webhook-payload.json"
+      lang="JSON"
+      codeLines={webhookSample}
+      statusBar="signed with HMAC-SHA256 · retries up to 24h"
+    />
+    <div>
+      <SectionHeader
+        align="left"
+        size="h3"
+        eyebrow="Webhooks"
+        eyebrowClass="text-blue-700"
+        titleClass=""
+        ledeClass="text-gray-500"
+        lede="Every important state change posts to your endpoint, signed with your shared secret. We retry with exponential backoff, and you can replay any event from the dashboard."
+      >
+        {#snippet title()}Subscribe to the events you care about, instead of polling.{/snippet}
+      </SectionHeader>
 
-        <div class="mt-6 flex flex-wrap gap-2">
-          {#each events as event}
-            <span class="rounded-full border border-gray-200 bg-white px-3 py-1 font-mono text-xs text-blue-700">
-              {event}
-            </span>
-          {/each}
-        </div>
+      <div class="mt-8 flex flex-wrap gap-2">
+        {#each events as event}
+          <span class="rounded-full border border-gray-200 bg-white px-3 py-1 font-mono text-xs text-blue-700">
+            {event}
+          </span>
+        {/each}
       </div>
     </div>
-  </section>
+  </Section>
 
   <McpServerSection />
 
-  <!-- Self-host -->
-  <section class="px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
-      <div>
-        <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Self-host</div>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          Or run the whole thing in your own VPC.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          ClassroomIO is open source on GitHub. You can self-host the dashboard, the API, the AI assistant, and the MCP
-          server, and bring your own AI keys. It's the same product with the same API surface.
-        </p>
+  <Section innerClass="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <div>
+      <SectionHeader
+        align="left"
+        size="h3"
+        eyebrow="Self-host"
+        eyebrowClass="text-blue-700"
+        titleClass=""
+        ledeClass="text-gray-500"
+        lede="ClassroomIO is open source on GitHub. You can self-host the dashboard, the API, the AI assistant, and the MCP server, and bring your own AI keys. It's the same product with the same API surface."
+      >
+        {#snippet title()}Or run the whole thing in your own VPC.{/snippet}
+      </SectionHeader>
 
-        <div class="mt-8 flex flex-wrap items-center gap-3">
-          <a
-            href="https://classroomio.com/docs/self-hosted/docker"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-medium text-white no-underline transition-all hover:-translate-y-0.5 hover:bg-blue-700"
-          >
-            Self-hosting guide →
-          </a>
-          <a
-            href="/github"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-950 no-underline transition-all hover:border-gray-950"
-          >
-            <Github size={16} />
-            View the source
-          </a>
-        </div>
-      </div>
-
-      <div class="rounded-2xl border border-gray-200 bg-gray-50 p-6">
-        <p class="text-xs font-medium tracking-widest text-gray-500 uppercase">Stack</p>
-        <ul class="mt-4 space-y-3 text-sm text-gray-700">
-          <li class="flex items-start gap-3">
-            <span
-              class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-blue-50 text-[10px] font-medium text-blue-700"
-              >API</span
-            >
-            Hono on Node, Drizzle, Postgres
-          </li>
-          <li class="flex items-start gap-3">
-            <span
-              class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-blue-50 text-[10px] font-medium text-blue-700"
-              >UI</span
-            >
-            SvelteKit 2, Svelte 5, Tailwind v4
-          </li>
-          <li class="flex items-start gap-3">
-            <span
-              class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-blue-50 text-[10px] font-medium text-blue-700"
-              >AI</span
-            >
-            Bring your own keys for OpenAI, Anthropic, Google Gemini, or Moonshot
-          </li>
-          <li class="flex items-start gap-3">
-            <span
-              class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-blue-50 text-[10px] font-medium text-blue-700"
-              >MCP</span
-            >
-            Open-source server, <span class="font-mono text-xs">@classroomio/mcp</span>
-          </li>
-        </ul>
+      <div class="mt-9 flex flex-wrap items-center gap-3">
+        <CtaButton
+          href="https://classroomio.com/docs/self-hosted/docker"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bg-gray-950 hover:bg-blue-700 hover:brightness-100"
+        >
+          Self-hosting guide →
+        </CtaButton>
+        <CtaButton
+          href="/github"
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="secondary"
+          class="hover:border-gray-950 hover:brightness-100"
+        >
+          <Github size={16} />
+          View the source
+        </CtaButton>
       </div>
     </div>
-  </section>
+
+    <div class="rounded-xl border border-gray-200 bg-gray-50 p-6 md:p-8">
+      <p class="text-label font-mono text-gray-500 uppercase">Stack</p>
+      <ul class="mt-5 space-y-4 text-[15px] text-gray-700">
+        <li class="flex items-start gap-3">
+          <span
+            class="flex h-6 min-w-9 shrink-0 items-center justify-center rounded-xs bg-blue-50 px-1.5 font-mono text-[10px] font-medium text-blue-700"
+            >API</span
+          >
+          Hono on Node, Drizzle, Postgres
+        </li>
+        <li class="flex items-start gap-3">
+          <span
+            class="flex h-6 min-w-9 shrink-0 items-center justify-center rounded-xs bg-blue-50 px-1.5 font-mono text-[10px] font-medium text-blue-700"
+            >UI</span
+          >
+          SvelteKit 2, Svelte 5, Tailwind v4
+        </li>
+        <li class="flex items-start gap-3">
+          <span
+            class="flex h-6 min-w-9 shrink-0 items-center justify-center rounded-xs bg-blue-50 px-1.5 font-mono text-[10px] font-medium text-blue-700"
+            >AI</span
+          >
+          Bring your own keys for OpenAI, Anthropic, Google Gemini, or Moonshot
+        </li>
+        <li class="flex items-start gap-3">
+          <span
+            class="flex h-6 min-w-9 shrink-0 items-center justify-center rounded-xs bg-blue-50 px-1.5 font-mono text-[10px] font-medium text-blue-700"
+            >MCP</span
+          >
+          Open-source server, <span class="font-mono text-xs">@classroomio/mcp</span>
+        </li>
+      </ul>
+    </div>
+  </Section>
 
   <PageSignupCTA
     header="Programmable from day one."

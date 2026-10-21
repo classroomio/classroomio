@@ -17,9 +17,15 @@
   const labelClass = $derived(size === 'small' ? 'ui:text-[10px]' : 'ui:text-sm');
 </script>
 
-<div class="ui:relative ui:shrink-0">
+<!-- `w-fit` so the wrapper hugs the svg. As a plain block it stretches to the
+     container — in a table cell that made `inset-0` wider than the ring and
+     pushed the label off centre. `shrink-0` only applies in a flex parent. -->
+<div class="ui:relative ui:w-fit ui:shrink-0">
+  <!-- `block` removes the inline descender gap below the svg. Left inline, the
+       wrapper is taller than the circle, so the `inset-0` label centres below
+       the ring's centre instead of inside it. -->
   <svg
-    class="{sizeClass} ui:-rotate-90"
+    class="{sizeClass} ui:-rotate-90 ui:block"
     style="transform-box: fill-box; transform-origin: center;"
     viewBox="0 0 100 100"
     aria-hidden="true"
@@ -46,7 +52,8 @@
       stroke-dashoffset={strokeDashoffset}
     />
   </svg>
-  <div class="ui:absolute ui:inset-0 ui:flex ui:flex-col ui:items-center ui:justify-center">
-    <p class={labelClass}>{labelPercentage}%</p>
+  <div class="ui:absolute ui:inset-0 ui:flex ui:items-center ui:justify-center">
+    <!-- `leading-none` so the label's line box does not shift it off centre. -->
+    <p class="{labelClass} ui:leading-none">{labelPercentage}%</p>
   </div>
 </div>

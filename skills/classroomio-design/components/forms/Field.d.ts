@@ -1,0 +1,3 @@
+export interface FieldProps { label?: React.ReactNode; htmlFor?: string; required?: boolean; description?: React.ReactNode; error?: React.ReactNode; orientation?: 'vertical'|'horizontal'; children?: React.ReactNode; style?: React.CSSProperties; }
+/** @startingPoint section="Forms" subtitle="Label + control + description + error" viewport="700x380" */
+export declare function Field(props: FieldProps): JSX.Element;

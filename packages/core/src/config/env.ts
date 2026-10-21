@@ -1,5 +1,8 @@
 import * as z from 'zod';
 
+/** Coursera Test in the local seed. Production should set its own org id. */
+export const DEFAULT_PLATFORM_TEMPLATES_ORG_ID = '2b8f4a1c-6d3e-4b2a-9f7e-1c4d8a6e9b0f';
+
 const envSchema = z.object({
   // Legacy Cloudflare R2 config (used when OBJECT_STORAGE_* vars are absent)
   CLOUDFLARE_ACCESS_KEY: z.string().optional(),
@@ -14,7 +17,9 @@ const envSchema = z.object({
   APPROXIMATED_DNS_TARGET_IP: z.string().optional(),
   /** Optional CNAME target customers can point to instead of A record. */
   APPROXIMATED_DNS_TARGET_CNAME: z.string().optional(),
-  // S3-compatible storage (MinIO, AWS S3, or other S3-compatible backends)
+  /** Comma-separated brand-zone hosts served as org sites, e.g. academy.classroomio.com. */
+  FIRST_PARTY_ORG_SITE_HOSTS: z.string().optional(),
+  // S3-compatible storage (SeaweedFS, AWS S3, or other S3-compatible backends)
   OBJECT_STORAGE_ENDPOINT: z.string().optional(),
   OBJECT_STORAGE_REGION: z.string().optional(),
   OBJECT_STORAGE_ACCESS_KEY_ID: z.string().optional(),
@@ -46,8 +51,15 @@ const envSchema = z.object({
   UNSPLASH_API_KEY: z.string().optional(),
   /** When 'true', instance runs in self-hosted mode: single org, auto-enroll as student, no org switching */
   PUBLIC_IS_SELFHOSTED: z.string().optional(),
+  WEBHOOK_ALLOW_PRIVATE_NETWORKS: z.string().optional(),
   /** License key for enterprise features (SSO, token-auth, no-tracking, etc.) */
   LICENSE_KEY: z.string().optional(),
+  /** Reported in the self-hosted usage ping. Baked into the published jobs image; unset when run from source. */
+  CIO_VERSION: z.string().optional(),
+  /** How the instance was deployed (docker, railway, coolify, dokploy, digitalocean). */
+  CIO_DEPLOYMENT_METHOD: z.string().optional(),
+  /** Set to 'true' to stop the self-hosted usage ping. */
+  CIO_TELEMETRY_DISABLED: z.string().optional(),
   /** Dashboard origin for invite/email links (e.g. https://app.yourdomain.com). When set, all email links point here instead of app.classroomio.com. Required for self-hosted. */
   DASHBOARD_ORIGIN: z.string().optional(),
   /**
@@ -89,6 +101,8 @@ const envSchema = z.object({
 
       return Number.isFinite(parsed) && parsed >= 1 ? Math.trunc(parsed) : 500;
     }),
+  /** Inbox for user-submitted content reports. Defaults to help@classroomio.com. */
+  MODERATION_EMAIL: z.union([z.string().email(), z.literal('')]).optional(),
   /** Max course lesson document upload size in megabytes (default 5). */
   UPLOAD_MAX_DOCUMENT_MB: z.string().optional(),
   /** Max image upload size in megabytes — avatars, media, editor images (default 5). */
@@ -102,7 +116,13 @@ const envSchema = z.object({
   /** Max org landing page image upload size in megabytes (default 0.5). */
   UPLOAD_MAX_LANDING_IMAGE_MB: z.string().optional(),
   /** Max media thumbnail upload size in megabytes (default 5). */
-  UPLOAD_MAX_THUMBNAIL_MB: z.string().optional()
+  UPLOAD_MAX_THUMBNAIL_MB: z.string().optional(),
+  /** Org that owns ClassroomIO launch templates. Empty hides them. */
+  PLATFORM_TEMPLATES_ORG_ID: z.union([z.string().uuid(), z.literal('')]).default(DEFAULT_PLATFORM_TEMPLATES_ORG_ID),
+  /** Supadata API key for YouTube caption fetching. Leave unset to disable YouTube transcripts. */
+  SUPADATA_API_KEY: z.string().optional(),
+  /** YouTube caption provider identifier (default 'supadata'). */
+  YOUTUBE_CAPTION_PROVIDER: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);

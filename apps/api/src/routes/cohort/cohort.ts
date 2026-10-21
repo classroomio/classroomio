@@ -4,6 +4,7 @@ import {
   ZAddCourseToCohort,
   ZAddCohortMembers,
   ZAssignExistingStudentsToCohort,
+  ZCohortNewsfeedListQuery,
   ZCreateCohort,
   ZCreateCohortGoal,
   ZCreateCohortNewsfeed,
@@ -13,7 +14,9 @@ import {
   ZUpdateCohortGoal,
   ZUpdateCohortMember,
   ZUpdateCohortNewsfeed,
-  ZUpdateCohortReaction
+  ZUpdateCohortReaction,
+  ZCohortPeopleParam,
+  ZCohortPeopleQuery
 } from '@cio/utils/validation/cohort';
 import {
   addCourseToCohortService,
@@ -30,6 +33,7 @@ import {
   listOrgCohorts,
   listCohortCourses,
   listCohortMembers,
+  listPaginatedCohortPeople,
   listCohortNewsfeed,
   listCohortNewsfeedComments,
   removeCourseFromCohortService,
@@ -39,6 +43,12 @@ import {
   updateCohortNewsfeedService
 } from '@api/services/cohort/cohort';
 import { assignExistingStudentsToCohort, inviteStudentsToCohort } from '@api/services/cohort/invite';
+import {
+  fetchInviteLinkForResource,
+  getOrCreateInviteLinkForResource,
+  toggleInviteLinkForResource
+} from '@api/services/invite-link';
+import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
 import {
   archiveGoal,
   createGoal,
@@ -71,10 +81,6 @@ const ZCommentParam = z.object({
   commentId: z.coerce.number().int()
 });
 const ZGoalParam = z.object({ cohortId: z.string().uuid(), goalId: z.string().uuid() });
-const ZListQuery = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(50).default(10)
-});
 const ZOrgQuery = z.object({ organizationId: z.string().uuid() });
 
 export const cohortRouter = new Hono()
@@ -102,8 +108,9 @@ export const cohortRouter = new Hono()
    */
   .get('/', authMiddleware, zValidator('query', ZOrgQuery), async (c) => {
     try {
+      const user = c.get('user')!;
       const { organizationId } = c.req.valid('query');
-      const cohorts = await listOrgCohorts(organizationId);
+      const cohorts = await listOrgCohorts(organizationId, user.id);
       return c.json({ success: true, data: cohorts }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list cohorts');
@@ -195,6 +202,27 @@ export const cohortRouter = new Hono()
       return handleError(c, error, 'Failed to list cohort members');
     }
   })
+
+  /**
+   * Returns one filtered, sorted page of the cohort roster.
+   */
+  .get(
+    '/:cohortId/people',
+    authMiddleware,
+    cohortMemberMiddleware,
+    zValidator('param', ZCohortPeopleParam),
+    zValidator('query', ZCohortPeopleQuery),
+    async (c) => {
+      try {
+        const { cohortId } = c.req.valid('param');
+        const result = await listPaginatedCohortPeople(cohortId, c.req.valid('query'));
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to list cohort people');
+      }
+    }
+  )
 
   /**
    * POST /cohort/:cohortId/members
@@ -310,6 +338,72 @@ export const cohortRouter = new Hono()
     }
   )
 
+  // ── Invite link ───────────────────────────────────────────────────────────
+
+  /**
+   * GET /cohort/:cohortId/invite-link
+   * Returns the cohort's shareable join link, or null if one was never created.
+   */
+  .get(
+    '/:cohortId/invite-link',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    zValidator('param', ZCohortParam),
+    async (c) => {
+      try {
+        const { cohortId } = c.req.valid('param');
+        const result = await fetchInviteLinkForResource('COHORT', cohortId);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to load cohort invite link');
+      }
+    }
+  )
+
+  /**
+   * POST /cohort/:cohortId/invite-link
+   * Returns the cohort's shareable join link, creating it on first call.
+   */
+  .post(
+    '/:cohortId/invite-link',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    zValidator('param', ZCohortParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { cohortId } = c.req.valid('param');
+        const result = await getOrCreateInviteLinkForResource('COHORT', cohortId, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create cohort invite link');
+      }
+    }
+  )
+
+  /**
+   * PATCH /cohort/:cohortId/invite-link
+   * Disables or re-enables the cohort's shareable join link.
+   */
+  .patch(
+    '/:cohortId/invite-link',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    zValidator('param', ZCohortParam),
+    zValidator('json', ZToggleInviteLink),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { cohortId } = c.req.valid('param');
+        const { isRevoked } = c.req.valid('json');
+        const result = await toggleInviteLinkForResource('COHORT', cohortId, isRevoked, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update cohort invite link');
+      }
+    }
+  )
+
   // ── Courses ───────────────────────────────────────────────────────────────
 
   /**
@@ -380,7 +474,7 @@ export const cohortRouter = new Hono()
     authMiddleware,
     cohortMemberMiddleware,
     zValidator('param', ZCohortParam),
-    zValidator('query', ZListQuery),
+    zValidator('query', ZCohortNewsfeedListQuery),
     async (c) => {
       try {
         const { cohortId } = c.req.valid('param');
@@ -428,9 +522,9 @@ export const cohortRouter = new Hono()
     zValidator('json', ZUpdateCohortNewsfeed),
     async (c) => {
       try {
-        const { feedId } = c.req.valid('param');
+        const { cohortId, feedId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const feed = await updateCohortNewsfeedService(feedId, data);
+        const feed = await updateCohortNewsfeedService(cohortId, feedId, data);
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update cohort newsfeed post');
@@ -450,9 +544,9 @@ export const cohortRouter = new Hono()
     zValidator('json', ZUpdateCohortReaction),
     async (c) => {
       try {
-        const { feedId } = c.req.valid('param');
+        const { cohortId, feedId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const feed = await updateCohortNewsfeedReactionService(feedId, data);
+        const feed = await updateCohortNewsfeedReactionService(cohortId, feedId, data);
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update cohort newsfeed reaction');
@@ -471,8 +565,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZFeedParam),
     async (c) => {
       try {
-        const { feedId } = c.req.valid('param');
-        const feed = await deleteCohortNewsfeedService(feedId);
+        const { cohortId, feedId } = c.req.valid('param');
+        const feed = await deleteCohortNewsfeedService(cohortId, feedId);
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to delete cohort newsfeed post');
@@ -491,8 +585,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZFeedParam),
     async (c) => {
       try {
-        const { feedId } = c.req.valid('param');
-        const comments = await listCohortNewsfeedComments(feedId);
+        const { cohortId, feedId } = c.req.valid('param');
+        const comments = await listCohortNewsfeedComments(cohortId, feedId);
         return c.json({ success: true, data: comments }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to list cohort newsfeed comments');
@@ -513,9 +607,9 @@ export const cohortRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const { feedId } = c.req.valid('param');
+        const { cohortId, feedId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const comment = await createCohortNewsfeedCommentService(feedId, user.id, data);
+        const comment = await createCohortNewsfeedCommentService(cohortId, feedId, user.id, data);
         return c.json({ success: true, data: comment }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to create cohort newsfeed comment');
@@ -534,8 +628,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZCommentParam),
     async (c) => {
       try {
-        const { commentId } = c.req.valid('param');
-        const comment = await deleteCohortNewsfeedCommentService(commentId);
+        const { cohortId, feedId, commentId } = c.req.valid('param');
+        const comment = await deleteCohortNewsfeedCommentService(cohortId, feedId, commentId);
         return c.json({ success: true, data: comment }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to delete cohort newsfeed comment');
@@ -620,8 +714,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZGoalParam),
     async (c) => {
       try {
-        const { goalId } = c.req.valid('param');
-        const goal = await getGoal(goalId);
+        const { cohortId, goalId } = c.req.valid('param');
+        const goal = await getGoal(cohortId, goalId);
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to get cohort goal');
@@ -640,9 +734,9 @@ export const cohortRouter = new Hono()
     zValidator('json', ZUpdateCohortGoal),
     async (c) => {
       try {
-        const { goalId } = c.req.valid('param');
+        const { cohortId, goalId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const goal = await updateGoal(goalId, data);
+        const goal = await updateGoal(cohortId, goalId, data);
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update cohort goal');
@@ -661,8 +755,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZGoalParam),
     async (c) => {
       try {
-        const { goalId } = c.req.valid('param');
-        const goal = await removeGoal(goalId);
+        const { cohortId, goalId } = c.req.valid('param');
+        const goal = await removeGoal(cohortId, goalId);
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to delete cohort goal');
@@ -680,8 +774,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZGoalParam),
     async (c) => {
       try {
-        const { goalId } = c.req.valid('param');
-        const goal = await archiveGoal(goalId);
+        const { cohortId, goalId } = c.req.valid('param');
+        const goal = await archiveGoal(cohortId, goalId);
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to archive cohort goal');
@@ -700,8 +794,9 @@ export const cohortRouter = new Hono()
     zValidator('param', ZGoalParam),
     async (c) => {
       try {
-        const { goalId } = c.req.valid('param');
-        const result = await evaluateGoal(goalId);
+        const { cohortId, goalId } = c.req.valid('param');
+        const goal = await getGoal(cohortId, goalId);
+        const result = await evaluateGoal(goal.id);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to evaluate cohort goal');

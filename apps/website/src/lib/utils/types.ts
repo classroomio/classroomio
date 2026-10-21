@@ -24,3 +24,27 @@ export type OssFriend = {
   description: string;
   href: string;
 };
+
+export type TestimonialSegment = {
+  text: string;
+  highlight?: boolean;
+};
+
+export type Testimonial = {
+  id: string;
+  quote: TestimonialSegment[];
+  name: string;
+  role: string;
+  avatar: string;
+};
+
+export type ChangelogEntry = {
+  id: string;
+  title: string;
+  summary: string | null;
+  url: string;
+  videoId: string | null;
+  coverUrl: string | null;
+  publishedAt: string;
+  tags: string[];
+};

@@ -8,6 +8,8 @@
   import LmsBreadcrumbs from './lms-breadcrumbs.svelte';
   import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
   import * as Empty from '@cio/ui/base/empty';
+  import VisitOrgSiteBtn from '../visit-org-site-btn.svelte';
+  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 
   interface Props {
     hideSearch?: boolean;
@@ -31,6 +33,8 @@
     <span class="grow"></span>
 
     {#if !hideSearch}
+      <VisitOrgSiteBtn variant="outline" labelKey="lms.view_landing_page" pathname="/" icon={ExternalLinkIcon} />
+
       <Search scope="lms" />
 
       <Popover.Root>

@@ -1,14 +1,21 @@
 import * as z from 'zod';
 
 import type { EmailId } from '../utils/types';
+import type { EmailLocale } from '@cio/utils/email';
+
+export interface EmailRenderContext {
+  locale?: EmailLocale;
+  contentOverride?: string;
+  subjectOverride?: string;
+}
 
 /**
  * Base email template interface
  */
 export interface EmailTemplate<TSchema extends z.ZodType = z.ZodType> {
-  subject: string | ((fields: z.infer<TSchema>) => string);
+  subject: string | ((fields: z.infer<TSchema>, context?: EmailRenderContext) => string);
   schema: TSchema;
-  render: (fields: z.infer<TSchema>) => string;
+  render: (fields: z.infer<TSchema>, context?: EmailRenderContext) => string;
   from?: string;
   replyTo?: string;
 }
@@ -33,6 +40,9 @@ export interface SendConfig<TSchema extends z.ZodType = z.ZodType> {
   subject?: string;
   /** Optional iCalendar (.ics) body delivered as a text/calendar part. */
   ics?: string;
+  locale?: EmailLocale;
+  contentOverride?: string;
+  subjectOverride?: string;
 }
 
 /**
@@ -47,9 +57,9 @@ export interface SendTemplateConfig<TSchema extends z.ZodType = z.ZodType> exten
  */
 export interface DefineEmailConfig<TSchema extends z.ZodType = z.ZodType> {
   id: EmailId;
-  subject: string | ((fields: z.infer<TSchema>) => string);
+  subject: string | ((fields: z.infer<TSchema>, context?: EmailRenderContext) => string);
   schema: TSchema;
-  render: (fields: z.infer<TSchema>) => string;
+  render: (fields: z.infer<TSchema>, context?: EmailRenderContext) => string;
   from?: string;
   replyTo?: string;
 }

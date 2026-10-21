@@ -18,7 +18,7 @@
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
-  import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+  import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 
   import { Badge } from '@cio/ui/base/badge';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -32,7 +32,8 @@
   import * as Field from '@cio/ui/base/field';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
-  let siteName = $derived($currentOrg.siteName);
+  let siteName = $state('');
+  let capturedSiteNameOrgId = $state<string | null>(null);
   let customDomain = $state('');
   let customCode = $state('');
   let favicon = $state<string | File | undefined>();
@@ -236,11 +237,6 @@
 
     const sanitizedDomain = sanitizeDomain(customDomain);
 
-    if (sanitizedDomain.includes(BRAND_ROOT_DOMAIN) || sanitizedDomain.includes(TENANT_ROOT_DOMAIN)) {
-      errors.customDomain = $t('components.settings.domains.custom_domain_not_classroomio');
-      return;
-    }
-
     isCustomDomainLoading = true;
 
     try {
@@ -334,6 +330,14 @@
 
   const DOMAIN_POLL_INTERVAL_MS = 15000;
 
+  $effect(() => {
+    const organizationId = $currentOrg?.id;
+    if (!organizationId || organizationId === capturedSiteNameOrgId) return;
+
+    capturedSiteNameOrgId = organizationId;
+    siteName = $currentOrg.siteName ?? '';
+  });
+
   onMount(() => {
     if ($currentOrg.customDomain) {
       void refreshDomainApex($currentOrg.customDomain);
@@ -368,13 +372,7 @@
 
     <Field.Field>
       <Field.Label>URL</Field.Label>
-      <DomainInput
-        value={siteName ?? ''}
-        onchange={(e) => (siteName = (e.target as HTMLInputElement)?.value ?? '')}
-        placeholder="myschool"
-        prefix="https://"
-        suffix=".{TENANT_ROOT_DOMAIN}"
-      />
+      <DomainInput bind:value={siteName} placeholder="myschool" prefix="https://" suffix=".{TENANT_ROOT_DOMAIN}" />
       {#if errors.siteName}
         <Field.Error>{errors.siteName}</Field.Error>
       {/if}

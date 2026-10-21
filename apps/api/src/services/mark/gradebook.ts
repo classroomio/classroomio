@@ -1,9 +1,12 @@
+import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { getMarksByCourseId, type Mark } from '@cio/db/queries/mark';
-import { getCourseMembers } from '@cio/db/queries/course/people';
+import { getCourseMember, getCourseMembers, type CourseMemberWithProfile } from '@cio/db/queries/course/people';
 import { getCourseWithRelations } from '@cio/db/queries/course';
-import { buildCourseContent, type CourseContentItem } from '@api/services/course/utils';
+import { buildCourseContent, type CourseContentItem } from '@cio/core/services/course/utils';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { resolveSubmissionGradingState } from '@api/services/submission';
+import { resolveMarksViewerScope } from './mark';
 
 export type GradebookExercise = {
   id: string;
@@ -13,10 +16,13 @@ export type GradebookExercise = {
 
 export type GradebookStudentMarks = Record<string, Record<string, string>>;
 
+export type GradebookGradedPoints = Record<string, Record<string, number>>;
+
 export type GradebookResponse = {
-  students: Awaited<ReturnType<typeof getCourseMembers>>;
+  students: CourseMemberWithProfile[];
   exercises: GradebookExercise[];
   studentMarksByExerciseId: GradebookStudentMarks;
+  gradedPointsByExerciseId: GradebookGradedPoints;
 };
 
 function buildStudentMarksByExerciseId(marks: Mark[]): GradebookStudentMarks {
@@ -26,6 +32,20 @@ function buildStudentMarksByExerciseId(marks: Mark[]): GradebookStudentMarks {
     if (!groupmemberId || !exerciseId) continue;
     if (!result[groupmemberId]) result[groupmemberId] = {};
     result[groupmemberId][exerciseId] = totalPointsGotten?.toString() ?? '0';
+  }
+  return result;
+}
+
+/** Returns each student's best graded points per exercise; an exercise with no graded submission has no entry. */
+function buildGradedPointsByExerciseId(marks: Mark[]): GradebookGradedPoints {
+  const result: GradebookGradedPoints = {};
+  for (const mark of marks) {
+    const { groupmemberId, exerciseId, totalPointsGotten, statusId } = mark;
+    if (!groupmemberId || !exerciseId || totalPointsGotten === null) continue;
+    if (resolveSubmissionGradingState({ statusId }) !== 'completed') continue;
+
+    const studentPoints = (result[groupmemberId] ??= {});
+    studentPoints[exerciseId] = Math.max(studentPoints[exerciseId] ?? totalPointsGotten, totalPointsGotten);
   }
   return result;
 }
@@ -61,39 +81,96 @@ function buildExercises(marks: Mark[], contentItems: CourseContentItem[]): Grade
     const fromMarks = marksByExerciseId.get(id)!;
     return {
       id,
-      title: fromMarks?.title ?? '',
-      points: fromMarks?.points ?? 0
+      title: fromMarks.title ?? '',
+      points: fromMarks.points ?? 0
     };
   });
 }
 
+function scopeStudentMarksToMember<T>(
+  studentMarksByExerciseId: Record<string, T>,
+  groupMemberId: string | null
+): Record<string, T> {
+  if (!groupMemberId) {
+    return {};
+  }
+
+  const ownMarks = studentMarksByExerciseId[groupMemberId];
+  if (!ownMarks) {
+    return {};
+  }
+
+  return { [groupMemberId]: ownMarks };
+}
+
+async function loadGradebookStudents(
+  courseId: string,
+  canViewAllMarks: boolean,
+  groupMemberId: string | null
+): Promise<CourseMemberWithProfile[]> {
+  if (canViewAllMarks) {
+    const members = await getCourseMembers(courseId);
+    return members.filter((member) => Number(member.roleId) === ROLE.STUDENT);
+  }
+
+  if (!groupMemberId) {
+    return [];
+  }
+
+  const member = await getCourseMember(courseId, groupMemberId);
+  if (!member || Number(member.roleId) !== ROLE.STUDENT) {
+    return [];
+  }
+
+  return [member];
+}
+
+function flattenCourseContentItems(course: Awaited<ReturnType<typeof getCourseWithRelations>>): CourseContentItem[] {
+  if (course?.contentItems == null) {
+    return [];
+  }
+
+  const isGrouping = course.metadata?.isContentGroupingEnabled ?? true;
+  const content = buildCourseContent(course.contentItems, isGrouping);
+  return flattenNavigableItems(content);
+}
+
 /**
- * Returns all data needed to render the marks gradebook: students, exercises in order, and marks per student per exercise.
+ * Returns data needed to render the marks gradebook: students, exercises in order,
+ * and marks per student per exercise.
+ *
+ * Instructors see every learner. Students only receive their own row and scores.
  */
-export async function getGradebook(courseId: string): Promise<GradebookResponse> {
+export async function getGradebook(courseId: string, profileId: string): Promise<GradebookResponse> {
   try {
-    const [marks, members, course] = await Promise.all([
-      getMarksByCourseId(courseId),
-      getCourseMembers(courseId),
-      getCourseWithRelations(courseId)
-    ]);
+    const { canViewAllMarks, groupMemberId } = await resolveMarksViewerScope(courseId, profileId);
 
-    const students = members.filter((m) => Number(m.roleId) === ROLE.STUDENT);
+    const marksPromise = canViewAllMarks
+      ? getMarksByCourseId(courseId)
+      : groupMemberId
+        ? getMarksByCourseId(courseId, groupMemberId)
+        : Promise.resolve([] as Mark[]);
+    const studentsPromise = loadGradebookStudents(courseId, canViewAllMarks, groupMemberId);
+    const coursePromise = getCourseWithRelations(courseId);
 
-    let contentItems: CourseContentItem[] = [];
-    if (course?.contentItems != null) {
-      const isGrouping = course.metadata?.isContentGroupingEnabled ?? true;
-      const content = buildCourseContent(course.contentItems, isGrouping);
-      contentItems = content.grouped ? (content.sections ?? []).flatMap((s) => s.items ?? []) : (content.items ?? []);
-    }
+    const [marks, students, course] = await Promise.all([marksPromise, studentsPromise, coursePromise]);
 
+    const contentItems = flattenCourseContentItems(course);
     const exercises = buildExercises(marks, contentItems);
-    const studentMarksByExerciseId = buildStudentMarksByExerciseId(marks);
+    const allStudentMarksByExerciseId = buildStudentMarksByExerciseId(marks);
+    const studentMarksByExerciseId = canViewAllMarks
+      ? allStudentMarksByExerciseId
+      : scopeStudentMarksToMember(allStudentMarksByExerciseId, groupMemberId);
+
+    const allGradedPointsByExerciseId = buildGradedPointsByExerciseId(marks);
 
     return {
       students,
       exercises,
-      studentMarksByExerciseId
+      studentMarksByExerciseId,
+      gradedPointsByExerciseId: canViewAllMarks
+        ? allGradedPointsByExerciseId
+        : scopeStudentMarksToMember(allGradedPointsByExerciseId, groupMemberId)
     };
   } catch (error) {
     console.error('getGradebook error:', error);

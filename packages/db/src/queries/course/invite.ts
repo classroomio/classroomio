@@ -1,7 +1,7 @@
 import type { TCourseInvite, TCourseInviteAudit, TNewCourseInvite, TNewCourseInviteAudit } from '@db/types';
 import * as schema from '@db/schema';
 
-import { and, desc, eq, gte, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 export async function createCourseInvite(values: TNewCourseInvite): Promise<TCourseInvite> {
@@ -113,36 +113,96 @@ export async function listCourseInvites(courseId: string): Promise<TCourseInvite
       .where(eq(schema.courseInvite.courseId, courseId))
       .orderBy(desc(schema.courseInvite.createdAt));
 
-    return result.map((row) => {
-      const creator = row.creator?.id
-        ? {
-            id: row.creator.id,
-            fullname: row.creator.fullname,
-            email: row.creator.email
-          }
-        : null;
-
-      return {
-        id: row.invite.id,
-        courseId: row.invite.courseId,
-        roleId: row.invite.roleId,
-        expiresAt: row.invite.expiresAt,
-        maxUses: row.invite.maxUses,
-        usedCount: row.invite.usedCount,
-        isRevoked: row.invite.isRevoked,
-        allowedEmails: row.invite.allowedEmails,
-        allowedDomains: row.invite.allowedDomains,
-        createdAt: row.invite.createdAt,
-        updatedAt: row.invite.updatedAt,
-        lastUsedAt: row.invite.lastUsedAt || null,
-        revokedAt: row.invite.revokedAt || null,
-        revokedByProfileId: row.invite.revokedByProfileId || null,
-        createdBy: creator
-      };
-    });
+    return result.map(mapCourseInviteRow);
   } catch (error) {
     console.error('listCourseInvites error:', error);
     throw new Error(`Failed to list course invites: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export type PaginatedCourseInvitesOptions = {
+  page: number;
+  limit: number;
+};
+
+export type PaginatedCourseInvitesResult = {
+  items: TCourseInviteListItem[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
+function mapCourseInviteRow(row: {
+  invite: TCourseInvite;
+  creator: { id: string; fullname: string | null; email: string | null } | null;
+}): TCourseInviteListItem {
+  const creator = row.creator?.id
+    ? {
+        id: row.creator.id,
+        fullname: row.creator.fullname,
+        email: row.creator.email
+      }
+    : null;
+
+  return {
+    id: row.invite.id,
+    courseId: row.invite.courseId,
+    roleId: row.invite.roleId,
+    expiresAt: row.invite.expiresAt,
+    maxUses: row.invite.maxUses,
+    usedCount: row.invite.usedCount,
+    isRevoked: row.invite.isRevoked,
+    allowedEmails: row.invite.allowedEmails,
+    allowedDomains: row.invite.allowedDomains,
+    createdAt: row.invite.createdAt,
+    updatedAt: row.invite.updatedAt,
+    lastUsedAt: row.invite.lastUsedAt || null,
+    revokedAt: row.invite.revokedAt || null,
+    revokedByProfileId: row.invite.revokedByProfileId || null,
+    createdBy: creator
+  };
+}
+
+export async function getPaginatedCourseInvites(
+  courseId: string,
+  { page, limit }: PaginatedCourseInvitesOptions
+): Promise<PaginatedCourseInvitesResult> {
+  try {
+    const [countRow] = await db
+      .select({ count: sql<number>`count(*)::int`.as('count') })
+      .from(schema.courseInvite)
+      .where(eq(schema.courseInvite.courseId, courseId));
+
+    const total = countRow?.count ?? 0;
+    const rows = await db
+      .select({
+        invite: schema.courseInvite,
+        creator: {
+          id: schema.profile.id,
+          fullname: schema.profile.fullname,
+          email: schema.profile.email
+        }
+      })
+      .from(schema.courseInvite)
+      .leftJoin(schema.profile, eq(schema.courseInvite.createdByProfileId, schema.profile.id))
+      .where(eq(schema.courseInvite.courseId, courseId))
+      .orderBy(desc(schema.courseInvite.createdAt), desc(schema.courseInvite.id))
+      .limit(limit)
+      .offset((page - 1) * limit);
+
+    return {
+      items: rows.map(mapCourseInviteRow),
+      page,
+      limit,
+      total,
+      totalPages: total === 0 ? 0 : Math.ceil(total / limit)
+    };
+  } catch (error) {
+    console.error('getPaginatedCourseInvites error:', error);
+    throw new Error(
+      `Failed to get paginated course invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -208,6 +268,37 @@ export async function listCourseInviteAuditStats(courseId: string): Promise<TCou
   } catch (error) {
     console.error('listCourseInviteAuditStats error:', error);
     throw new Error(`Failed to list invite audit stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function listCourseInviteAuditStatsForInvites(
+  courseId: string,
+  inviteIds: string[]
+): Promise<TCourseInviteAuditStatsRow[]> {
+  if (inviteIds.length === 0) {
+    return [];
+  }
+
+  try {
+    const rows = await db
+      .select({
+        inviteId: schema.courseInviteAudit.inviteId,
+        eventType: schema.courseInviteAudit.eventType,
+        count: sql<number>`count(*)::int`.as('count'),
+        lastAt: sql<string | null>`max(${schema.courseInviteAudit.createdAt})`.as('last_at')
+      })
+      .from(schema.courseInviteAudit)
+      .where(
+        and(eq(schema.courseInviteAudit.courseId, courseId), inArray(schema.courseInviteAudit.inviteId, inviteIds))
+      )
+      .groupBy(schema.courseInviteAudit.inviteId, schema.courseInviteAudit.eventType);
+
+    return rows;
+  } catch (error) {
+    console.error('listCourseInviteAuditStatsForInvites error:', error);
+    throw new Error(
+      `Failed to list invite audit stats for invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

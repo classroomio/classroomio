@@ -17,13 +17,18 @@
 
 <script lang="ts">
   // Type-only imports are erased at build time — no static TipTap dependency.
-  import type { HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
+  import type { EditorToolbarPreset, HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
+  import type { Snippet } from 'svelte';
   import { cn } from '@cio/ui/tools';
+  import { uploadImage } from '$lib/utils/services/upload';
+  import { queryUnsplash } from './upload-widget/utils';
 
   interface Props {
     placeholder?: string | ((node: any) => string);
     content?: HTMLContent;
     showToolBar?: boolean;
+    toolbarPreset?: EditorToolbarPreset;
+    toolbarTrailing?: Snippet<[]>;
     editable?: boolean;
     enablePersistence?: boolean;
     contentStorageKey?: string;
@@ -33,11 +38,17 @@
     onChange?: (content: HTMLContent) => void;
     onReady?: (editor: TiptapEditor) => void;
     onEditorDestroy?: () => void;
+    expandable?: boolean;
+    expanded?: boolean;
+    expandedTitle?: string;
+    expandedDescription?: string;
   }
 
   let {
     content = '',
     showToolBar = true,
+    toolbarPreset = 'default',
+    toolbarTrailing,
     editable = true,
     enablePersistence = false,
     contentStorageKey = 'edra-content',
@@ -47,7 +58,11 @@
     placeholder = 'Welcome to ClassroomIO',
     onChange,
     onReady,
-    onEditorDestroy
+    onEditorDestroy,
+    expandable = false,
+    expanded = $bindable(false),
+    expandedTitle = '',
+    expandedDescription = ''
   }: Props = $props();
 </script>
 
@@ -58,14 +73,16 @@
     aria-hidden="true"
   >
     {#if showToolBar}
-      <div class="ui:bg-muted/50 h-9 shrink-0 border-b border-dashed" />
+      <div class="ui:bg-muted/50 h-9 shrink-0 border-b border-dashed"></div>
     {/if}
-    <div class={cn('ui:bg-muted/50 relative h-128 w-full animate-pulse overflow-auto p-4', editorClass)} />
+    <div class={cn('ui:bg-muted/50 relative h-full w-full animate-pulse overflow-auto p-4', editorClass)}></div>
   </div>
 {:then { Editor }}
   <Editor
     {content}
     {showToolBar}
+    {toolbarPreset}
+    {toolbarTrailing}
     {editable}
     {enablePersistence}
     {contentStorageKey}
@@ -76,5 +93,11 @@
     onContentChange={onChange}
     onEditorReady={onReady}
     {onEditorDestroy}
+    onImageUpload={uploadImage}
+    onSearchUnsplash={queryUnsplash}
+    {expandable}
+    bind:expanded
+    {expandedTitle}
+    {expandedDescription}
   />
 {/await}

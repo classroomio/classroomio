@@ -3,6 +3,7 @@ import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/
 import { getCourseTagsByCourseIdsForOrganization, getTagGroupsWithTags } from '@cio/db/queries/tag';
 import { listWidgetCourses } from '@cio/db/queries/widget';
 import { PLAN } from '@cio/utils/plans';
+import { isCoursePaid } from '@cio/utils/validation/course';
 import { EMBED_PUBLIC_BASE_URL, getEmbedBaseUrl, getEmbedPublicUrl, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import {
   buildWidgetPayload as buildWidgetPayloadShared,
@@ -14,6 +15,7 @@ import {
 import type { TWidget } from '@db/types';
 import * as csstree from 'css-tree';
 import { env } from '@cio/core/config/env';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 const DEFAULT_EMBED_CDN_BASE_URL = EMBED_PUBLIC_BASE_URL;
@@ -178,14 +180,19 @@ export function formatCourseForWidget(
   course: OrgCourse,
   tags: BuildWidgetPayloadCourse['tags']
 ): BuildWidgetPayloadCourse {
+  const isPaidCourse = isCoursePaid(
+    course.cost as number | null | undefined,
+    course.metadata as { paymentEnabled?: boolean; paymentLink?: string | null } | null | undefined
+  );
+
   return {
     id: course.id,
     slug: course.slug ?? course.id,
     title: course.title,
     description: course.description,
-    imageUrl: course.bannerImage || course.logo || null,
+    imageUrl: resolveCourseBannerImage(course),
     isPublished: course.isPublished,
-    price: course.cost ? `${course.currency} ${course.cost}` : 'Free',
+    price: isPaidCourse && course.cost ? `${course.currency} ${course.cost}` : 'Free',
     lessonCount: course.lessonCount,
     exerciseCount: course.exerciseCount ?? 0,
     courseType: course.type,

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Academy editor · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Instrument+Serif&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="academy.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      body { margin: 0; }
+      .ed { display: flex; flex-direction: column; height: 100dvh; background: var(--background); color: var(--foreground); }
+      .ed-top { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+      .ed-top .nm { font-size: 14.5px; font-weight: 600; }
+      .ed-top .sp { flex: 1; }
+      .ed-main { display: flex; flex: 1; min-height: 0; }
+      .rail { width: 56px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--secondary); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 0; }
+      .rail .ib { width: 34px; height: 34px; border-radius: var(--radius-md); border: 0; background: transparent; color: var(--muted-foreground); display: grid; place-items: center; cursor: pointer; }
+      .rail .ib:hover { background: var(--accent); color: var(--foreground); }
+      .rail .ib.on { background: var(--primary); color: var(--primary-foreground); }
+      .rail .ib svg { width: 16px; height: 16px; stroke-width: 2; }
+      .panel { width: 336px; flex-shrink: 0; border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 14px 28px; }
+      .panel h2 { font-size: 13px; font-weight: 650; margin: 0 0 3px; }
+      .panel .ph { font-size: 12.3px; color: var(--muted-foreground); margin: 0 0 15px; line-height: 1.5; }
+      .sec-list { display: flex; flex-direction: column; gap: 7px; }
+      .sec-row { display: grid; grid-template-columns: 18px 30px 1fr auto; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 9px 10px; cursor: pointer; box-shadow: var(--shadow-2xs); transition: border-color 0.12s, box-shadow 0.12s, opacity 0.12s; }
+      .sec-row:hover { border-color: color-mix(in oklab, var(--foreground) 22%, transparent); }
+      .sec-row.on { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 14%, transparent); }
+      .sec-row.dragging { opacity: 0.35; }
+      .sec-row.over { border-color: var(--primary); }
+      .sec-row .gr { color: var(--muted-foreground); cursor: grab; display: grid; place-items: center; }
+      .sec-row .gr svg { width: 14px; height: 14px; stroke-width: 2; }
+      .sec-row .ico { width: 28px; height: 28px; border-radius: 7px; background: color-mix(in oklab, var(--primary) 10%, transparent); color: var(--primary); display: grid; place-items: center; }
+      .sec-row .ico svg { width: 14px; height: 14px; stroke-width: 2; }
+      .sec-row .tt { font-size: 13px; font-weight: 550; line-height: 1.2; }
+      .sec-row .sb { font-size: 11.5px; color: var(--muted-foreground); margin-top: 2px; }
+      .sec-row .del { width: 24px; height: 24px; border: 0; background: transparent; border-radius: 6px; color: var(--muted-foreground); display: grid; place-items: center; cursor: pointer; }
+      .sec-row .del:hover { color: var(--destructive); background: color-mix(in oklab, var(--destructive) 10%, transparent); }
+      .sec-row .del svg { width: 13px; height: 13px; stroke-width: 2; }
+      .add-sec { width: 100%; margin-top: 9px; border: 1px dashed var(--border); border-radius: var(--radius-md); background: transparent; color: var(--muted-foreground); font-size: 13px; font-weight: 550; padding: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; font-family: inherit; }
+      .add-sec:hover { border-color: var(--primary); color: var(--primary); background: color-mix(in oklab, var(--primary) 5%, transparent); }
+      .add-sec svg { width: 15px; height: 15px; stroke-width: 2.3; }
+      .add-menu { display: none; margin-top: 8px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card); overflow: hidden; box-shadow: var(--shadow-md); }
+      .add-menu.open { display: block; }
+      .add-menu .grp { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 650; color: var(--muted-foreground); padding: 9px 12px 5px; }
+      .add-menu button { width: 100%; text-align: left; border: 0; background: transparent; padding: 8px 12px; font-size: 13px; cursor: pointer; color: var(--foreground); font-family: inherit; display: flex; align-items: center; gap: 9px; }
+      .add-menu button:hover { background: var(--accent); }
+      .add-menu button svg { width: 14px; height: 14px; stroke-width: 2; color: var(--muted-foreground); }
+      .add-menu button .rs { margin-left: auto; font-size: 10.5px; color: var(--muted-foreground); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; }
+      .settings { display: none; }
+      .settings.open { display: block; }
+      .set-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+      .set-head button { border: 0; background: transparent; color: var(--muted-foreground); cursor: pointer; display: grid; place-items: center; padding: 0; }
+      .set-head svg { width: 15px; height: 15px; stroke-width: 2.2; }
+      .set-head .t { font-size: 13px; font-weight: 650; }
+      .prev { flex: 1; min-width: 0; background: color-mix(in oklab, var(--foreground) 4%, transparent); overflow-y: auto; position: relative; }
+      .prev-bar { position: sticky; top: 0; z-index: 4; display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: var(--background); border-bottom: 1px solid var(--border); font-size: 12.5px; color: var(--muted-foreground); }
+      .prev-frame { margin: 22px auto; max-width: 880px; background: var(--host-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); }
+      .save-bar { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 8px 8px 8px 18px; box-shadow: var(--shadow-md); z-index: 40; font-size: 13px; }
+      .lockbox { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 11px 13px; font-size: 12.3px; color: var(--muted-foreground); line-height: 1.55; background: color-mix(in oklab, var(--primary) 4%, transparent); margin-top: 10px; }
+    </style>
+  </head>
+  <body>
+    <div class="ed">
+      <header class="ed-top">
+        <a class="btn btn-sm btn-ghost" href="admin-academies.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Academies</a>
+        <span class="nm">Northwind Learn</span>
+        <span class="badge badge-warning">Draft · unpublished changes</span>
+        <span class="sp"></span>
+        <a class="btn btn-sm btn-ghost" href="admin-analytics.html">Analytics</a>
+        <button class="btn btn-sm btn-outline">Discard</button>
+        <button class="btn btn-sm btn-secondary">Save</button>
+        <button class="btn btn-sm btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Publish</button>
+      </header>
+
+      <div class="ed-main">
+        <nav class="rail">
+          <button class="ib on" title="Sections"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="6" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="14" y="13" width="7" height="8" rx="1"/></svg></button>
+          <button class="ib" title="Design"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2a10 10 0 1 0 0 20 2 2 0 0 0 0-4 2 2 0 0 1 0-4h3a5 5 0 0 0 5-5c0-4-4-7-8-7z"/></svg></button>
+          <button class="ib" title="Embed and identity" onclick="location.href='admin-embed.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
+        </nav>
+
+        <aside class="panel">
+          <div id="list-view">
+            <h2>Sections</h2>
+            <p class="ph">Drag to reorder. The academy renders sections top to bottom.</p>
+            <div class="sec-list" id="sections">
+              <div class="sec-row on" draggable="true" onclick="openSettings('Page header')"><span class="gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h10"/></svg></span><span><span class="tt">Learn</span><span class="sb">page_header</span></span><button class="del" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>
+              <div class="sec-row" draggable="true" onclick="openSettings('Jump back in')"><span class="gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></span><span><span class="tt">Jump back in</span><span class="sb">continue_learning · per learner</span></span><button class="del" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>
+              <div class="sec-row" draggable="true" onclick="openSettings('Featured courses')"><span class="gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M3 12h18M3 18h18"/></svg></span><span><span class="tt">Featured courses</span><span class="sb">compact_list · 2 courses, manual</span></span><button class="del" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>
+              <div class="sec-row" draggable="true" onclick="openSettings('Getting started')"><span class="gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span><span><span class="tt">Getting started</span><span class="sb">card_grid · tag: Onboarding</span></span><button class="del" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>
+              <div class="sec-row" draggable="true" onclick="openSettings('Browse by role')"><span class="gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg></span><span><span class="tt">Browse by role</span><span class="sb">category_grid · 8 tags</span></span><button class="del" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>
+            </div>
+
+            <button class="add-sec" onclick="document.getElementById('add-menu').classList.toggle('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add section</button>
+            <div class="add-menu" id="add-menu">
+              <div class="grp">Content</div>
+              <button onclick="addSection('Page header', 'page_header')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h10"/></svg>Page header</button>
+              <button onclick="addSection('Rich text', 'rich_text')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Rich text</button>
+              <button onclick="addSection('Banner', 'cta_banner')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="7" width="18" height="10" rx="2"/></svg>CTA banner</button>
+              <div class="grp">Courses</div>
+              <button onclick="addSection('New card grid', 'card_grid')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Card grid</button>
+              <button onclick="addSection('New list', 'compact_list')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Compact list</button>
+              <button onclick="addSection('New carousel', 'carousel')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="6" y="5" width="12" height="14" rx="2"/><path d="M2 9v6M22 9v6"/></svg>Carousel</button>
+              <button onclick="addSection('New spotlight', 'editorial_spotlight')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="12" height="18" rx="1"/><rect x="17" y="3" width="4" height="8" rx="1"/></svg>Editorial spotlight</button>
+              <button onclick="addSection('Browse by role', 'category_grid')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>Category grid</button>
+              <button onclick="addSection('Jump back in', 'continue_learning')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Continue learning</button>
+              <button disabled style="opacity: 0.5; cursor: not-allowed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning path list<span class="rs">Reserved</span></button>
+            </div>
+          </div>
+
+          <div class="settings" id="settings-view">
+            <div class="set-head">
+              <button onclick="closeSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+              <span class="t" id="set-title">Featured courses</span>
+            </div>
+            <div class="field"><label class="label">Heading</label><input class="input" value="Featured courses" /></div>
+            <div class="field"><label class="label">Subheading</label><input class="input" value="Self-paced, multi-lesson courses from the Northwind Academy." /></div>
+            <div class="field">
+              <label class="label">Source</label>
+              <select class="select"><option>Selected courses (manual)</option><option>Courses with a tag</option><option>All published courses</option></select>
+              <p class="hint">Manual keeps the exact order you set below.</p>
+            </div>
+            <div class="field">
+              <label class="label">Courses</label>
+              <div class="item item-outline" style="margin-bottom: 6px"><span class="item-content"><span class="item-title">Automations for Support Teams</span><span class="item-desc">8 lessons · Free</span></span></div>
+              <div class="item item-outline"><span class="item-content"><span class="item-title">Northwind 101</span><span class="item-desc">6 lessons · Free</span></span></div>
+              <button class="add-sec" style="margin-top: 7px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add course</button>
+            </div>
+            <div class="field" style="display: flex; align-items: center; gap: 10px"><label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label><span style="font-size: 13.5px">Show course image</span></div>
+            <div class="field" style="display: flex; align-items: center; gap: 10px"><label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label><span style="font-size: 13.5px">Show description excerpt</span></div>
+            <div class="field" style="display: flex; align-items: center; gap: 10px"><label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label><span style="font-size: 13.5px">Show progress for signed-in learners</span></div>
+            <div class="field"><label class="label">CTA label</label><input class="input" value="View course" /></div>
+            <div class="lockbox">Progress, <b>Jump back in</b>, and <b>For you</b> only render when the host page supplies a learner token. Set that up in <a href="admin-embed.html" class="text-primary">Embed &amp; identity</a>.</div>
+          </div>
+        </aside>
+
+        <section class="prev">
+          <div class="prev-bar">
+            <span>Preview</span>
+            <div class="seg-toggle" style="margin-left: 6px">
+              <button class="on" onclick="setPreview('personal', this)">Signed in</button>
+              <button onclick="setPreview('anon', this)">Anonymous</button>
+            </div>
+            <div class="seg-toggle">
+              <button class="on">Desktop</button>
+              <button>Mobile</button>
+            </div>
+            <span style="margin-left: auto">Last synced 2 minutes ago</span>
+            <button class="icon-btn" title="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+          </div>
+
+          <div class="prev-frame">
+            <div class="ac">
+              <div class="ac-page" style="padding: 40px 30px 56px">
+                <h1 class="ac-h1">Learn</h1>
+                <p class="ac-lead">Courses, tutorials, and use cases from the Northwind Academy.</p>
+
+                <section class="ac-sec" data-personal>
+                  <h2 class="ac-h2">Jump back in</h2>
+                  <div class="ac-sec-body ac-continue">
+                    <a class="ac-cont-card" href="#"><div class="ac-eyebrow">Course · 62% complete</div><h4>Automations for Support Teams</h4><div class="ac-prog"><span style="width: 62%"></span></div></a>
+                    <a class="ac-cont-card" href="#"><div class="ac-eyebrow">Course · 40% complete</div><h4>Reporting Fundamentals</h4><div class="ac-prog"><span style="width: 40%"></span></div></a>
+                  </div>
+                </section>
+
+                <section class="ac-sec">
+                  <h2 class="ac-h2">Featured courses</h2>
+                  <p class="ac-sub">Self-paced, multi-lesson courses from the Northwind Academy.</p>
+                  <div class="ac-sec-body ac-rows">
+                    <a class="ac-row" href="#"><div class="thumb" style="background: var(--ac-tint-a)"></div><div><div class="ac-eyebrow">Course</div><h3>Automations for Support Teams</h3><p>Route, escalate, and resolve tickets automatically.</p></div><span class="ac-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+                    <a class="ac-row" href="#"><div class="thumb" style="background: var(--ac-tint-b)"></div><div><div class="ac-eyebrow">Course</div><h3>Northwind 101</h3><p>Everything you need for your first week.</p></div><span class="ac-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+                  </div>
+                </section>
+
+                <section class="ac-sec">
+                  <h2 class="ac-h2">Getting started</h2>
+                  <div class="ac-sec-body ac-grid">
+                    <a class="ac-card" href="#"><div class="shot" style="background: var(--ac-tint-a)"><span class="dur">4 min</span></div><div class="body"><div class="ac-eyebrow">Tutorial</div><h4>Set up your first workspace</h4></div></a>
+                    <a class="ac-card" href="#"><div class="shot" style="background: var(--ac-tint-b)"><span class="dur">4 min</span></div><div class="body"><div class="ac-eyebrow">Tutorial</div><h4>Delegating your first task</h4></div></a>
+                    <a class="ac-card" href="#"><div class="shot" style="background: var(--ac-tint-c)"><span class="dur">6 min</span></div><div class="body"><div class="ac-eyebrow">Tutorial</div><h4>Getting started with connectors</h4></div></a>
+                  </div>
+                </section>
+
+                <section class="ac-sec">
+                  <h2 class="ac-h2">Browse by role</h2>
+                  <div class="ac-sec-body ac-cats" style="grid-template-columns: repeat(3, 1fr)">
+                    <a class="ac-cat" href="#"><span class="ico"></span><span><span class="nm">Engineering</span><br /><span class="ac-foryou" data-personal>For you</span></span></a>
+                    <a class="ac-cat" href="#"><span class="ico"></span><span class="nm">Marketing</span></a>
+                    <a class="ac-cat" href="#"><span class="ico"></span><span class="nm">Sales</span></a>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="save-bar">
+        <span>Unsaved changes</span>
+        <button class="btn btn-sm btn-outline">Discard</button>
+        <button class="btn btn-sm btn-primary">Save changes</button>
+      </div>
+    </div>
+
+    <div class="proto-bar">
+      <button onclick="toggleTheme(this)">Dark</button>
+      <a class="btn btn-sm btn-ghost" href="index.html">Map</a>
+    </div>
+
+    <script>
+      function openSettings(title) {
+        document.getElementById('set-title').textContent = title;
+        document.getElementById('list-view').style.display = 'none';
+        document.getElementById('settings-view').classList.add('open');
+      }
+      function closeSettings() {
+        document.getElementById('list-view').style.display = 'block';
+        document.getElementById('settings-view').classList.remove('open');
+      }
+      function addSection(label, type) {
+        document.getElementById('add-menu').classList.remove('open');
+        const list = document.getElementById('sections');
+        const row = list.lastElementChild.cloneNode(true);
+        row.querySelector('.tt').textContent = label;
+        row.querySelector('.sb').textContent = type + ' · not configured';
+        row.classList.remove('on');
+        row.setAttribute('onclick', "openSettings('" + label + "')");
+        list.appendChild(row);
+        wireDrag();
+      }
+      let dragged = null;
+      function wireDrag() {
+        document.querySelectorAll('#sections .sec-row').forEach((row) => {
+          row.ondragstart = () => { dragged = row; row.classList.add('dragging'); };
+          row.ondragend = () => { row.classList.remove('dragging'); document.querySelectorAll('.sec-row').forEach((r) => r.classList.remove('over')); };
+          row.ondragover = (event) => { event.preventDefault(); if (row !== dragged) row.classList.add('over'); };
+          row.ondragleave = () => row.classList.remove('over');
+          row.ondrop = (event) => {
+            event.preventDefault();
+            row.classList.remove('over');
+            if (!dragged || row === dragged) return;
+
+            const list = document.getElementById('sections');
+            const rows = [...list.children];
+            if (rows.indexOf(dragged) < rows.indexOf(row)) row.after(dragged);
+            else row.before(dragged);
+          };
+        });
+      }
+      wireDrag();
+      function setPreview(mode, el) {
+        el.parentElement.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+        el.classList.add('on');
+        document.querySelectorAll('.prev [data-personal]').forEach((node) => (node.style.display = mode === 'anon' ? 'none' : ''));
+      }
+      function toggleTheme(el) {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        el.textContent = dark ? 'Light' : 'Dark';
+      }
+    </script>
+  </body>
+</html>

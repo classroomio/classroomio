@@ -1,4 +1,4 @@
-import { isAutoGradableQuestionTypeId } from '@cio/question-types';
+import { getManualQuestionsFromList } from './public-conversion-utils';
 
 import type { Question } from '$features/course/types';
 import type { SubmissionListItem } from '$features/course/utils/types';
@@ -17,6 +17,12 @@ export type ExerciseSubmissionStudentGroup = {
   attempts: ExerciseAttempt[];
 };
 
+/**
+ * Filters an array of exercise questions to only active, non-deleted questions.
+ *
+ * @param questions - Array of questions to filter.
+ * @returns Array of non-deleted questions.
+ */
 export function getActiveExerciseQuestions(questions: Question[]): Question[] {
   return questions.filter((question) => !question.deletedAt);
 }
@@ -25,13 +31,14 @@ export function getTotalPossibleExercisePoints(questions: Question[]): number {
   return getActiveExerciseQuestions(questions).reduce((total, question) => total + Number(question.points ?? 0), 0);
 }
 
+/**
+ * Filters an exercise's questions to only those requiring manual grading.
+ *
+ * @param questions - Array of exercise questions.
+ * @returns Array of manual-graded questions.
+ */
 export function getManualGradedExerciseQuestions(questions: Question[]): Question[] {
-  return getActiveExerciseQuestions(questions).filter((question) => {
-    const questionTypeId = Number(question.questionTypeId ?? question.questionType?.id);
-    if (!Number.isFinite(questionTypeId)) return true;
-
-    return !isAutoGradableQuestionTypeId(questionTypeId);
-  });
+  return getManualQuestionsFromList(getActiveExerciseQuestions(questions));
 }
 
 function getSubmissionScore(submission: SubmissionListItem): number {

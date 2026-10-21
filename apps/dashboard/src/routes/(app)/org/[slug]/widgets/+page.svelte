@@ -37,7 +37,7 @@
   <title>{$t('widgets.heading')} - ClassroomIO</title>
 </svelte:head>
 
-<Page.Root class="w-full">
+<Page.Root class="w-full gap-0">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>{$t('widgets.heading')}</Page.Title>
@@ -48,14 +48,27 @@
     </Page.Action>
   </Page.Header>
 
-  <Page.Body>
+  <Page.Body class="gap-0">
     {#snippet child()}
-      <WidgetsPage initialWidgets={data.initialWidgets} onCreate={() => (createModalOpen = true)} />
+      <WidgetsPage
+        initialWidgets={data.initialWidgets}
+        initialArchivedWidgets={data.initialArchivedWidgets}
+        widgetPagination={data.widgetPagination}
+        archivedWidgetPagination={data.archivedWidgetPagination}
+        onCreate={() => {
+          createModalOpen = true;
+        }}
+      />
     {/snippet}
   </Page.Body>
 </Page.Root>
 
-<Dialog.Root bind:open={createModalOpen}>
+<Dialog.Root
+  bind:open={createModalOpen}
+  onOpenChange={(open) => {
+    if (!open) newWidgetName = '';
+  }}
+>
   <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>{$t('widgets.actions.create')}</Dialog.Title>

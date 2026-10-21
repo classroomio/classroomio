@@ -1,7 +1,14 @@
 import type { EmailBranding } from '../core/branding';
+import type { EmailLocale, StudentEmailLocaleCopy } from '@cio/utils/email';
 
 const DEFAULT_BUTTON_COLOR = '#1D4EE2';
 const CLASSROOMIO_LOGO = 'https://brand.cdn.clsrio.com/cio-bg-transparent.png';
+const DEFAULT_FOOTER_COPY: StudentEmailLocaleCopy['footer'] = {
+  rightsReserved: 'All rights reserved.',
+  website: 'Website',
+  terms: 'Terms',
+  privacy: 'Privacy'
+};
 
 function escapeHtmlAttr(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -27,12 +34,17 @@ function buildMasthead(branding: EmailBranding): string {
       </a>`;
 }
 
-export const getDefaultTemplate = (content: string, branding?: EmailBranding): string => {
+export const getDefaultTemplate = (
+  content: string,
+  branding?: EmailBranding,
+  locale?: EmailLocale,
+  footerCopy: StudentEmailLocaleCopy['footer'] = DEFAULT_FOOTER_COPY
+): string => {
   const buttonColor = branding?.themeColor || DEFAULT_BUTTON_COLOR;
   const masthead = buildMasthead(branding);
 
   return `<!DOCTYPE html>
-<html>
+<html lang="${locale ?? 'en'}">
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -148,13 +160,13 @@ export const getDefaultTemplate = (content: string, branding?: EmailBranding): s
       color:#94a3b8;
       padding:24px 30px;
       border-top:1px solid #f0f0f0;">
-      ClassroomIO ${new Date().getFullYear()}. All rights reserved.
+      ClassroomIO ${new Date().getFullYear()}. ${footerCopy.rightsReserved}
       <br />
-      <a href="https://classroomio.com" style="color:#94a3b8;text-decoration:none;">Website</a>
+      <a href="https://classroomio.com" style="color:#94a3b8;text-decoration:none;">${footerCopy.website}</a>
       &nbsp;&middot;&nbsp;
-      <a href="https://classroomio.com/tos" style="color:#94a3b8;text-decoration:none;">Terms</a>
+      <a href="https://classroomio.com/tos" style="color:#94a3b8;text-decoration:none;">${footerCopy.terms}</a>
       &nbsp;&middot;&nbsp;
-      <a href="https://classroomio.com/privacy" style="color:#94a3b8;text-decoration:none;">Privacy</a>
+      <a href="https://classroomio.com/privacy" style="color:#94a3b8;text-decoration:none;">${footerCopy.privacy}</a>
     </div>
   </div>
 </body>

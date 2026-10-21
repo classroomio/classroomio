@@ -2,6 +2,8 @@
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import Check from '@lucide/svelte/icons/check';
   import X from '@lucide/svelte/icons/x';
+  import Section from './ui/section.svelte';
+  import SectionHeader from './ui/section-header.svelte';
 
   /**
    * @typedef {Object} Props
@@ -79,68 +81,71 @@
   ];
 </script>
 
-<section class="{bgClass} px-6 py-16 lg:px-12 lg:py-24">
-  <div class="mx-auto max-w-[1100px]">
-    {#if showHeading}
-      <div class="mb-12 max-w-[680px]">
-        <div class="mb-3 text-xs font-medium tracking-widest text-blue-700 uppercase">{eyebrow}</div>
-        <h2 class="text-[clamp(2rem,3vw,2.8rem)] leading-[1.15] font-medium tracking-tight">{heading}</h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">{subhead}</p>
-      </div>
-    {/if}
+{#snippet headingTitle()}{heading}{/snippet}
 
-    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <div
-        class="grid grid-cols-[1.6fr_repeat(2,minmax(0,0.8fr))_1.4fr] gap-0 border-b border-gray-200 bg-gray-50 px-5 py-3.5 text-[11px] font-medium tracking-widest text-gray-500 uppercase"
-      >
-        <div>Capability</div>
-        <div class="text-center">Help docs</div>
-        <div class="text-center">Company academy</div>
-        <div class="hidden lg:block">Why it matters</div>
-      </div>
+<Section class={bgClass}>
+  {#if showHeading}
+    <SectionHeader
+      class="mb-14"
+      {eyebrow}
+      eyebrowClass="text-blue-700"
+      ledeClass="text-gray-500"
+      lede={subhead}
+      title={headingTitle}
+    />
+  {/if}
 
-      {#each rows as row, i}
-        <BlurFade delay={0.03 * i} once>
-          <div
-            class="grid grid-cols-[1.6fr_repeat(2,minmax(0,0.8fr))_1.4fr] items-start gap-0 border-b border-gray-100 px-5 py-4 text-sm last:border-b-0 hover:bg-blue-50/30"
-          >
-            <div class="font-medium text-gray-950">{row.capability}</div>
-
-            <div class="flex justify-center">
-              {#if row.docs}
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                  <Check size={16} strokeWidth={2.5} />
-                </span>
-              {:else}
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-400">
-                  <X size={16} strokeWidth={2.5} />
-                </span>
-              {/if}
-            </div>
-
-            <div class="flex justify-center">
-              {#if row.academy}
-                <span
-                  class="flex h-7 w-7 items-center justify-center rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-200"
-                >
-                  <Check size={16} strokeWidth={2.5} />
-                </span>
-              {:else}
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-400">
-                  <X size={16} strokeWidth={2.5} />
-                </span>
-              {/if}
-            </div>
-
-            <div class="hidden text-xs leading-relaxed text-gray-500 lg:block">{row.note}</div>
-          </div>
-        </BlurFade>
-      {/each}
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+    <div
+      class="text-tag grid grid-cols-[1.6fr_repeat(2,minmax(0,0.8fr))] gap-3 border-b border-gray-200 bg-gray-50 px-5 py-3.5 font-mono text-gray-500 uppercase lg:grid-cols-[1.6fr_repeat(2,minmax(0,0.8fr))_1.4fr]"
+    >
+      <div>Capability</div>
+      <div class="text-center">Help docs</div>
+      <div class="text-center">Company academy</div>
+      <div class="hidden lg:block">Why it matters</div>
     </div>
 
-    <p class="mt-6 text-xs text-gray-500">
-      Compared against typical capabilities of Intercom Articles, Zendesk Guide, and Confluence at time of writing. Run
-      your own academy alongside your existing help center. Most teams who launch a customer academy keep both.
-    </p>
+    {#each rows as row, i}
+      <BlurFade delay={0.03 * i} once>
+        <div
+          class="grid grid-cols-[1.6fr_repeat(2,minmax(0,0.8fr))] items-start gap-3 border-b border-gray-100 px-5 py-4 text-[15px] transition-colors last:border-b-0 hover:bg-blue-50/30 lg:grid-cols-[1.6fr_repeat(2,minmax(0,0.8fr))_1.4fr]"
+        >
+          <div class="font-medium text-gray-950">{row.capability}</div>
+
+          <div class="flex justify-center">
+            {#if row.docs}
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                <Check size={16} strokeWidth={2.5} />
+              </span>
+            {:else}
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                <X size={16} strokeWidth={2.5} />
+              </span>
+            {/if}
+          </div>
+
+          <div class="flex justify-center">
+            {#if row.academy}
+              <span
+                class="flex h-7 w-7 items-center justify-center rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-200"
+              >
+                <Check size={16} strokeWidth={2.5} />
+              </span>
+            {:else}
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                <X size={16} strokeWidth={2.5} />
+              </span>
+            {/if}
+          </div>
+
+          <div class="hidden text-sm leading-relaxed text-gray-500 lg:block">{row.note}</div>
+        </div>
+      </BlurFade>
+    {/each}
   </div>
-</section>
+
+  <p class="text-caption mt-6 text-gray-500">
+    Compared against typical capabilities of Intercom Articles, Zendesk Guide, and Confluence at time of writing. Run
+    your own academy alongside your existing help center. Most teams who launch a customer academy keep both.
+  </p>
+</Section>

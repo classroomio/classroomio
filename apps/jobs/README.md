@@ -52,6 +52,7 @@ through this worker.
 | `media`            | `probe-metadata`, `generate-thumbnail`, `extract-audio` | `startMediaJob` after a video asset upload                                                    |
 | `media-transcribe` | `transcribe-audio`                                      | Same flow; only enqueued when `OPENAI_API_KEY` is set                                         |
 | `maintenance`      | `retention-compact`, `dead-letter-cleanup`              | Repeatable scheduled jobs                                                                     |
+| `audience`         | `bulk-action`                                           | `enqueueAudienceBulkAction` when a bulk lifecycle action exceeds the synchronous ceiling      |
 
 ### Persisted state (Postgres)
 

@@ -15,6 +15,10 @@ export type OrgCoursesQuery = {
   limit: number;
   search?: string;
   tags?: string;
+  type?: string;
+  status?: 'published' | 'unpublished';
+  sort?: string;
+  order?: 'asc' | 'desc';
 };
 
 // User Enrolled Courses types

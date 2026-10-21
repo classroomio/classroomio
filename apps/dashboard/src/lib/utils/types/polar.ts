@@ -101,9 +101,9 @@ export interface SubscriptionData {
   customerCancellationReason: string | null;
   customerCancellationComment: string | null;
   metadata: {
-    orgId: string;
-    orgSlug: string;
-    triggeredBy: string;
+    orgId?: string;
+    orgSlug?: string;
+    triggeredBy?: string;
     kind?: string;
   };
   customFieldData: Record<string, any>;
@@ -137,6 +137,8 @@ export interface PolarSubscriptionWebhookPayload {
     | 'subscription.created'
     | 'subscription.updated'
     | 'subscription.active'
+    | 'subscription.uncanceled'
+    | 'subscription.past_due'
     | 'subscription.revoked'
     | 'subscription.canceled';
   data: SubscriptionData;

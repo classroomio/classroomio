@@ -2,8 +2,11 @@
   import { page } from '$app/state';
 
   import { UpgradeModal, PageLoadProgress, PageRestricted } from '$features/ui';
-  import { VerifyEmailModal } from '$features/onboarding/components';
+  import { VerifyEmailModal, WelcomeModal } from '$features/onboarding/components';
+  import { EarlyAdopterClaimHandler } from '$features/early-adopter-claim/components';
   import { CommandPalette, KeyboardShortcutListener } from '$features/search';
+  import { ReportDialog } from '$features/report';
+  import SaveAsTemplateDialog from '$features/course/components/save-as-template-dialog.svelte';
   import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
   import { currentOrg } from '$lib/utils/store/org';
   import { authClient } from '$lib/utils/services/auth/client';
@@ -42,10 +45,14 @@
   });
 </script>
 
+<EarlyAdopterClaimHandler />
 <UpgradeModal />
 <VerifyEmailModal />
+<WelcomeModal />
 <CommandPalette />
 <KeyboardShortcutListener />
+<ReportDialog />
+<SaveAsTemplateDialog />
 
 {#if data.org?.isRestricted || $currentOrg.isRestricted}
   <PageRestricted />

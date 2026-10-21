@@ -19,12 +19,42 @@ import {
 } from '@cio/jobs';
 
 import { logRedisUnavailableOnce } from '@cio/core/utils/redis/redis';
+import { startYoutubeCaptionsJob } from '@cio/core/services/jobs/media-jobs';
 import type { TMediaJob } from '@db/types';
 
 export interface StartTranscriptionOnlyMediaJobInput {
   organizationId: string;
   assetId: string;
   triggeredByProfileId: string | null;
+}
+
+/** Uploads go to Whisper; YouTube embeds go to the caption provider. */
+export async function startAssetTranscriptJob(input: StartTranscriptionOnlyMediaJobInput): Promise<TMediaJob> {
+  const asset = await getAssetById(input.assetId);
+  if (!asset || asset.organizationId !== input.organizationId) {
+    throw new AppError('Asset not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  if (asset.kind !== 'video' || asset.provider !== 'youtube') {
+    return startTranscriptionOnlyMediaJob(input);
+  }
+
+  if (!input.triggeredByProfileId) {
+    throw new AppError('A signed-in profile is required to fetch captions', ErrorCodes.UNAUTHORIZED, 401);
+  }
+
+  const youtubeVideoId = (asset.metadata as { videoId?: string } | undefined)?.videoId;
+  if (!youtubeVideoId || !asset.sourceUrl) {
+    throw new AppError('Asset cannot be transcribed', ErrorCodes.ASSET_NOT_TRANSCRIBABLE, 400);
+  }
+
+  return startYoutubeCaptionsJob({
+    organizationId: input.organizationId,
+    assetId: input.assetId,
+    triggeredByProfileId: input.triggeredByProfileId,
+    youtubeVideoId,
+    canonicalUrl: asset.sourceUrl
+  });
 }
 
 /**

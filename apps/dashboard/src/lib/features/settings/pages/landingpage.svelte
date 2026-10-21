@@ -8,14 +8,16 @@
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import PaintbrushIcon from '@lucide/svelte/icons/paintbrush';
   import ZapIcon from '@lucide/svelte/icons/zap';
+  import { isFreeLandingPageTheme } from '@cio/utils/constants';
 
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { t } from '$lib/utils/functions/translations';
-  import { user } from '$lib/utils/store/user';
-  import { basePath } from '$lib/utils/store/app';
+  import { user, profile } from '$lib/utils/store/user';
   import type { AccountOrg } from '$features/app/types';
   import { orgApi } from '$features/org/api/org.svelte';
+  import { getPreviewOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { getPreviewOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
   import { snackbar } from '$features/ui/snackbar/store';
 
   import { Button } from '@cio/ui/base/button';
@@ -52,6 +54,12 @@
   const CDN_BASE = 'https://assets.cdn.clsrio.com/templates';
 
   const themeCards = [
+    {
+      value: 'quartz',
+      preview: `${CDN_BASE}/quartz.png`,
+      titleKey: 'settings.landing_page.theme.cards.quartz.title',
+      descriptionKey: 'settings.landing_page.theme.cards.quartz.description'
+    },
     {
       value: 'minimal',
       preview: `${CDN_BASE}/minimal.png`,
@@ -123,25 +131,21 @@
   const otherThemeCards = $derived(themeCards.filter((card) => card.value !== currentTheme));
 
   function isPaidTheme(theme: LandingPageTheme): boolean {
-    return theme !== 'minimal';
+    return !isFreeLandingPageTheme(theme);
   }
 
-  const authAction = $derived(
-    $user.isLoggedIn
-      ? {
-          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
-          href: resolve(`${$basePath !== '#' ? $basePath : '/lms'}`, {})
-        }
-      : { label: t.get('navigation.login'), href: '/login' }
-  );
+  const authAction = $derived(getPreviewOrgLandingAuthAction($user.isLoggedIn));
 
   const previewSiteName = $derived($currentOrg.siteName || page.params.slug || '');
 
   const coursesLoaded = $derived(!previewSiteName || orgApi.publicCoursesLoadedSiteName === previewSiteName);
 
+  const learnerAccount = $derived(getPreviewOrgLandingLearnerAccount($profile, $currentOrg));
+
   const previewProps = $derived.by(() =>
     buildOrgLandingPageProps($currentOrg, normalized, orgApi.publicCourses, orgApi.hasMorePublicCourses, authAction, {
-      coursesLoaded
+      coursesLoaded,
+      learnerAccount
     })
   );
 
@@ -153,7 +157,7 @@
 
   const ThemeComponent = $derived(landingPageThemeComponents[currentTheme] ?? landingPageThemeComponents.minimal);
 
-  const customizeHref = $derived(resolve(`${$currentOrgPath}/settings/landingpage/edit`, {}));
+  const customizeHref = $derived(resolve(`${$currentOrgPath}/landingpage/edit`, {}));
 
   function handleAddTheme(theme: LandingPageTheme) {
     if ($isFreePlan && isPaidTheme(theme)) {
@@ -161,7 +165,7 @@
       return;
     }
 
-    goto(resolve(`${$currentOrgPath}/settings/landingpage/edit?theme=${theme}`, {}));
+    goto(resolve(`${$currentOrgPath}/landingpage/edit?theme=${theme}`, {}));
   }
 
   async function handleApplyTheme(theme: LandingPageTheme) {
@@ -322,14 +326,20 @@
               {/if}
             </DropdownMenu.Content>
           </DropdownMenu.Root>
-          <div class="ui:bg-background aspect-[4/3] w-full overflow-hidden">
+          <!-- The preview image doubles as the card's click target, matching the menu's Preview action. -->
+          <button
+            type="button"
+            class="ui:bg-background block aspect-[4/3] w-full cursor-pointer overflow-hidden"
+            onclick={() => handlePreviewTheme(themeCard.value)}
+            aria-label={`${$t('settings.landing_page.gallery.preview')}: ${$t(themeCard.titleKey)}`}
+          >
             <img
               src={themeCard.preview}
               alt={$t(themeCard.titleKey)}
               class="h-full w-full object-cover object-top"
               loading="lazy"
             />
-          </div>
+          </button>
           <div class="flex items-center justify-between gap-3 px-4 py-3">
             <div class="min-w-0">
               <p class="ui:text-primary truncate text-sm font-semibold">{$t(themeCard.titleKey)}</p>

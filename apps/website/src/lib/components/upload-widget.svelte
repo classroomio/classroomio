@@ -78,7 +78,7 @@
     </p>
   {/if}
   <div
-    class="flex min-h-[200px] w-full items-center justify-center rounded-md border p-4"
+    class="flex min-h-[200px] w-full items-center justify-center rounded-xl border border-gray-200 p-4"
     onclick={() => fileInput?.click()}
   >
     <input

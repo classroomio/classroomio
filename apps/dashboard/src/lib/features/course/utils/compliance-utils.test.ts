@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { shouldShowStudentCourseComplianceStatusBadge, getStudentCourseComplianceStatusKey } from './compliance-utils';
 
 function makeCourse(overrides: { type?: string; complianceStatus?: string | null }) {

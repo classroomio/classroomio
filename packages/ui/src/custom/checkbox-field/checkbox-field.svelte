@@ -78,7 +78,7 @@
       <!-- svelte-ignore a11y_click_events_have_key_events -->
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <div class="ui:w-2/4" onclick={(e) => e.stopPropagation()}>
-        <InputField bind:value={label} placeholder="Your option" className="ui:ml-1" type="text" {onchange} />
+        <InputField bind:value={label} placeholder="Your option" className="ui:ml-1" type="text" onChange={onchange} />
       </div>
     {:else}
       <span class="ui:ml-2 ui:dark:text-white ui:text-sm">{label}</span>
@@ -90,7 +90,7 @@
   <div class={rowClass}>
     <Checkbox {name} {value} disabled={disabled || isEditable} bind:checked data-testid={testId} />
     <div class="ui:w-2/4">
-      <InputField bind:value={label} placeholder="Your option" className="ui:ml-1" type="text" {onchange} />
+      <InputField bind:value={label} placeholder="Your option" className="ui:ml-1" type="text" onChange={onchange} />
     </div>
 
     {@render children?.()}

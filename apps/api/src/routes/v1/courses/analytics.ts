@@ -1,0 +1,93 @@
+import {
+  ANALYTICS_CACHE_CONTROL,
+  CACHE_NOTE,
+  COURSE_TEAM_RULE,
+  LIST_CACHE_NOTE,
+  TAG,
+  analyticsForbiddenResponses
+} from '../analytics/docs';
+import {
+  ZPublicApiCourseAnalyticsMeta,
+  ZPublicApiCourseAnalyticsQuery,
+  ZPublicApiCourseAnalyticsResponse,
+  ZPublicApiCourseAnalyticsStudentResponse,
+  ZPublicApiCourseAnalyticsStudentsQuery,
+  ZPublicApiCourseParam
+} from '@cio/utils/validation/public-api';
+import { errorResponses, itemWithMetaResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+import {
+  getPublicApiCourseAnalyticsService,
+  listPublicApiCourseAnalyticsStudentsService
+} from '@api/services/v1/analytics/course';
+
+import { Hono } from '@api/utils/hono';
+import { handlePublicApiError } from '@api/utils/errors';
+import { describeRoute, validator } from 'hono-openapi';
+
+export const v1CourseAnalyticsRouter = new Hono()
+  .get(
+    '/',
+    describeRoute({
+      description: `Get a course's analytics, with the sections chosen by include; ${COURSE_TEAM_RULE}.`,
+      tags: [TAG],
+      responses: {
+        200: jsonResponse(
+          `Course analytics returned; ${CACHE_NOTE}. List the students with GET /courses/{courseId}/analytics/students.`,
+          itemWithMetaResponse(ZPublicApiCourseAnalyticsResponse, ZPublicApiCourseAnalyticsMeta)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: analyticsForbiddenResponses.courseTeam,
+        404: { description: 'Course not found' }
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    validator('query', ZPublicApiCourseAnalyticsQuery),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const params = c.req.valid('param');
+        const query = c.req.valid('query');
+        const { data, meta } = await getPublicApiCourseAnalyticsService(orgId, actorId, params, query);
+
+        c.header('Cache-Control', ANALYTICS_CACHE_CONTROL);
+        return c.json({ success: true, data, meta }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to load course analytics');
+      }
+    }
+  )
+  .get(
+    '/students',
+    describeRoute({
+      description: `List each student's progress, exercise submissions, average grade and last seen for a course; ${COURSE_TEAM_RULE}.`,
+      tags: [TAG],
+      responses: {
+        200: jsonResponse(
+          `Course students returned, ordered by name; ${LIST_CACHE_NOTE}`,
+          paginatedResponse(ZPublicApiCourseAnalyticsStudentResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: analyticsForbiddenResponses.courseTeam,
+        404: { description: 'Course not found' }
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    validator('query', ZPublicApiCourseAnalyticsStudentsQuery),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const params = c.req.valid('param');
+        const query = c.req.valid('query');
+        const result = await listPublicApiCourseAnalyticsStudentsService(orgId, actorId, params, query);
+
+        c.header('Cache-Control', ANALYTICS_CACHE_CONTROL);
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to list course analytics students');
+      }
+    }
+  );

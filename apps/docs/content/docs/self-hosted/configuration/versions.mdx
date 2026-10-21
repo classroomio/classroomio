@@ -29,19 +29,24 @@ Before deploying, confirm the tag you set actually exists at
 ./classroomio.sh upgrade
 ```
 
-The script [backs up](/self-hosted/backups) Postgres and MinIO first, lets you pin a new
+:::note[Still on the bundled MinIO?]
+MinIO's images are gone from Docker Hub, so the first upgrade also moves your uploads to the new
+bundled store. See [Migrating from MinIO](/self-hosted/migrating-from-minio) before you start.
+:::
+
+The script [backs up](/self-hosted/backups) Postgres and object storage first, lets you pin a new
 `CIO_VERSION`, then re-pulls and recreates. Running compose by hand is equivalent (minus the
 backup): bump `CIO_VERSION` in `.env`, then:
 
 ```zsh title="Terminal"
-docker compose -f docker-compose.images.yaml --env-file .env --profile minio pull
-docker compose -f docker-compose.images.yaml --env-file .env --profile minio up -d
+docker compose -f docker-compose.images.yaml --env-file .env --profile storage pull
+docker compose -f docker-compose.images.yaml --env-file .env --profile storage up -d
 ```
 
 ### Build from source (Docker)
 
 `git pull`, then re-run `./classroomio.sh upgrade --build` to rebuild. Like the pre-built path,
-this backs up Postgres and MinIO first, then rebuilds and restarts. (`start --build` also
+this backs up Postgres and object storage first, then rebuilds and restarts. (`start --build` also
 rebuilds, but skips the backup step — use `upgrade --build` when upgrading an existing
 deployment with real data.)
 

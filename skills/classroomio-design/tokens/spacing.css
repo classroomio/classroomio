@@ -1,0 +1,38 @@
+:root {
+  /* Layout */
+  --page-width: 1440px;
+  --gutter-page: 120px;     /* section side padding */
+  --gutter-nav: 56px;
+  --nav-height: 84px;
+  --section-gap: 150px;     /* between marketing sections */
+  --content-width: 1200px;
+
+  /* Scale (values as used in source) */
+  --space-2: 2px; --space-4: 4px; --space-6: 6px; --space-8: 8px; --space-10: 10px;
+  --space-12: 12px; --space-14: 14px; --space-16: 16px; --space-18: 18px; --space-20: 20px;
+  --space-24: 24px; --space-28: 28px; --space-32: 32px; --space-36: 36px; --space-40: 40px;
+  --space-48: 48px; --space-56: 56px; --space-64: 64px; --space-72: 72px; --space-80: 80px; --space-100: 100px;
+
+  /* Radii */
+  --radius-spine: 3px;   /* book spines, shelf */
+  --radius-xs: 4px;      /* checkbox, swatch */
+  --radius-tag: 6px;
+  --radius-sm: 8px;      /* inputs inside mocks */
+  --radius-md: 10px;     /* buttons, notch cards, icon tiles */
+  --radius-lg: 12px;     /* menu items */
+  --radius-xl: 14px;     /* content cards, browser frame */
+  --radius-2xl: 18px;    /* menus, big panels */
+  --radius-pill: 999px;
+
+  /* Borders & elevation */
+  --border-hair: 1px;
+  --border-sketch: 1.6px;  /* ink outline illustration style */
+  --shadow-subtle: 0 1px 2px rgba(23,20,15,0.05);
+  --shadow-board: 0 1px 3px rgba(0,0,0,.12);
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(.2,.8,.2,1);
+  --ease-drop: cubic-bezier(.55,0,.9,.45);
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+}

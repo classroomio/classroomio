@@ -27,8 +27,7 @@ export const defaultCourse: Course = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   groupId: null,
-  isTemplate: true,
-  logo: '',
+  isTemplate: false,
   slug: null,
   bannerImage: null,
   attendance: [],
@@ -47,6 +46,7 @@ export const defaultCourse: Course = {
     videoUrl: '',
     showDiscount: false,
     discount: 0,
+    paymentEnabled: false,
     paymentLink: '',
     reward: {
       show: false,

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson player · Embedded Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Instrument+Serif&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="academy.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="host">
+      <aside class="host-side">
+        <div class="host-brand"><span class="mk">N</span>Northwind</div>
+        <a class="host-nav" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <div class="host-sec">Resources</div>
+        <a class="host-nav on" href="embed-learn.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Learn</a>
+        <div class="host-foot"><span class="av">RA</span><div><div class="nm">Ruth Adeyemi</div><div class="rl">Engineering</div></div></div>
+      </aside>
+
+      <main class="host-main">
+        <div class="embed-wrap" id="embed">
+          <div class="ac">
+            <div class="ac-page" style="max-width: 1080px; padding-top: 34px">
+              <a class="ac-back" href="embed-course.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Automations for Support Teams</a>
+
+              <div class="ac-shell">
+                <aside class="ac-side">
+                  <div class="ac-side-head">
+                    <div class="t">Automations for Support Teams</div>
+                    <div class="ac-prog"><span style="width: 62%"></span></div>
+                    <div class="ac-pmeta">5 of 8 complete</div>
+                  </div>
+                  <a class="ac-srow done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>What automations can do</a>
+                  <a class="ac-srow done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Anatomy of a workflow</a>
+                  <a class="ac-srow done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Your first routing rule</a>
+                  <a class="ac-srow done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Matching on customer tier</a>
+                  <a class="ac-srow done" href="embed-exercise.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Knowledge check — conditions</a>
+                  <a class="ac-srow on" href="embed-lesson.html"><span class="ic"></span>Branching on ticket priority</a>
+                  <a class="ac-srow" href="embed-lesson.html"><span class="ic"></span>Business hours and time zones</a>
+                  <a class="ac-srow" href="embed-lesson.html"><span class="ic"></span>Reading the automation report</a>
+                  <a class="ac-srow" href="embed-exercise.html"><span class="ic"></span>Final exercise</a>
+                </aside>
+
+                <div class="ac-body">
+                  <div class="ac-eyebrow">Lesson 6 of 9 · 11 min</div>
+                  <h1>Branching on ticket priority</h1>
+
+                  <div class="ac-video" style="background: var(--ac-tint-a)"><span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg></span></div>
+
+                  <div class="ac-prose">
+                    <p>Priority is the most common branch in a support workflow, and it is also where most automations quietly go wrong. A rule that treats every urgent ticket the same way will page someone at 3am for a password reset.</p>
+                    <h2>Reading priority safely</h2>
+                    <p>Priority arrives from three places: the customer's own selection, your triage rules, and the SLA attached to the account tier. They disagree often, so decide once which one your workflow trusts and make that explicit at the top of the branch.</p>
+                    <ul>
+                      <li><b>Customer-set</b> — fast, but self-reported and frequently inflated.</li>
+                      <li><b>Triage-set</b> — accurate, but only after a human has looked.</li>
+                      <li><b>Tier-derived</b> — predictable, and the right default for escalation paths.</li>
+                    </ul>
+                    <h2>Building the branch</h2>
+                    <p>Open the workflow you built in lesson 3 and add a condition node after the routing step. Set the left-hand operand to the tier-derived priority, then add one path per level rather than a single catch-all.</p>
+                  </div>
+
+                  <div class="ac-footnav">
+                    <a class="ac-btn ac-btn-ghost" href="embed-exercise.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Knowledge check</a>
+                    <button class="ac-btn ac-btn-primary" id="complete" onclick="markComplete(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Mark complete and continue</button>
+                  </div>
+                  <p style="font-size: 12px; color: var(--ac-muted); text-align: right; margin: 10px 0 0" id="write-note">Writes to the same completion record the LMS uses.</p>
+                </div>
+              </div>
+
+              <div class="ac-sec" style="text-align: center; font-size: 12px; color: var(--ac-muted)">Powered by ClassroomIO</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="proto-bar">
+      <span class="lbl">State</span>
+      <button class="on" onclick="setState('progress', this)">In progress</button>
+      <button onclick="setState('done', this)">Complete</button>
+      <button onclick="setState('locked', this)">Not enrolled</button>
+      <span class="lbl">View</span>
+      <button onclick="document.getElementById('embed').classList.toggle('show-bounds')">Bounds</button>
+      <button onclick="toggleTheme(this)">Dark</button>
+      <a class="btn btn-sm btn-ghost" href="index.html">Map</a>
+    </div>
+
+    <script>
+      function markComplete(el) {
+        el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Completed · next lesson';
+        document.querySelector('.ac-srow.on').classList.add('done');
+        document.querySelector('.ac-srow.on .ic').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>';
+      }
+      function setState(key, el) {
+        el.parentElement.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+        el.classList.add('on');
+        const body = document.querySelector('.ac-body');
+        const gate = document.getElementById('gate');
+        if (key === 'locked') {
+          body.style.display = 'none';
+          if (!gate) {
+            const node = document.createElement('div');
+            node.id = 'gate';
+            node.className = 'ac-body';
+            node.style.display = 'grid';
+            node.style.placeItems = 'center';
+            node.innerHTML = '<div style="text-align:center;max-width:340px"><div class="ac-eyebrow">Lesson 6 of 9</div><h1 style="margin-top:6px">Enrol to continue</h1><p style="color:var(--ac-muted);font-size:14px;line-height:1.6;margin:0 0 20px">This lesson is part of Automations for Support Teams. Enrolling is free and happens without leaving this page.</p><a class="ac-btn ac-btn-primary" href="embed-course.html">Enrol free</a></div>';
+            document.querySelector('.ac-shell').appendChild(node);
+          } else gate.style.display = 'grid';
+        } else {
+          body.style.display = 'block';
+          if (gate) gate.style.display = 'none';
+          const complete = document.getElementById('complete');
+          if (key === 'done') markComplete(complete);
+          else complete.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Mark complete and continue';
+        }
+      }
+      function toggleTheme(el) {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        el.textContent = dark ? 'Light' : 'Dark';
+      }
+    </script>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import type { DbOrTxClient } from '@cio/db/drizzle';
+import type { NonAutoGradableQuestionOffender } from '@cio/utils/validation/course';
 import { findNonAutoGradableQuestionsInCourse, getCourseTypeById } from '@cio/db/queries/course';
 import { AUTO_GRADABLE_QUESTION_TYPE_IDS, isAutoGradableQuestionTypeId } from '@cio/question-types';
 
@@ -35,33 +36,18 @@ export async function guardNonAutoGradableQuestionsForCourseType(params: {
 
 /**
  * When converting a course to `PUBLIC`, enumerate any questions whose type is not
- * auto-gradable. Throws `PUBLIC_COURSE_CONVERSION_BLOCKED` with the offending list
- * in `message`; callers should surface the list to the creator so they can fix them.
+ * auto-gradable. Returns the offending list so callers can block the type conversion
+ * while allowing other changes to proceed.
  */
-export async function guardCourseTypeTransition(params: {
+export async function getPublicConversionOffenders(params: {
   courseId: string;
   currentType: string | null;
   nextType: string | null | undefined;
   dbClient?: DbOrTxClient;
-}): Promise<void> {
-  if (!params.nextType) return;
-  if (params.nextType !== 'PUBLIC') return;
-  if (params.currentType === 'PUBLIC') return;
+}): Promise<NonAutoGradableQuestionOffender[]> {
+  if (!params.nextType) return [];
+  if (params.nextType !== 'PUBLIC') return [];
+  if (params.currentType === 'PUBLIC') return [];
 
-  const offenders = await findNonAutoGradableQuestionsInCourse(
-    params.courseId,
-    AUTO_GRADABLE_QUESTION_TYPE_IDS,
-    params.dbClient
-  );
-  if (offenders.length === 0) return;
-
-  const preview = offenders.slice(0, 5).map((item) => `"${item.questionTitle}" in "${item.exerciseTitle}"`);
-  const more = offenders.length > 5 ? ` (+${offenders.length - 5} more)` : '';
-
-  throw new AppError(
-    `Remove or replace these non-auto-gradable questions before converting to Public: ${preview.join('; ')}${more}`,
-    ErrorCodes.PUBLIC_COURSE_CONVERSION_BLOCKED,
-    400,
-    'type'
-  );
+  return findNonAutoGradableQuestionsInCourse(params.courseId, AUTO_GRADABLE_QUESTION_TYPE_IDS, params.dbClient);
 }

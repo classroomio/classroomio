@@ -1,5 +1,9 @@
 import { ZOnboardingCreateOrg, ZOnboardingUpdateMetadata } from '@cio/utils/validation/onboarding';
-import { completeOnboarding, createOrganizationWithOwner, updateUserOnboarding } from '@api/services/onboarding';
+import {
+  createOrganizationWithOwner,
+  markOnboardingWelcomeEmailPending,
+  updateUserOnboarding
+} from '@api/services/onboarding';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -22,23 +26,20 @@ export const onboardingRouter = new Hono()
   .post('/update-metadata', authMiddleware, zValidator('json', ZOnboardingUpdateMetadata), async (c) => {
     try {
       const user = c.get('user')!;
-      const { goal, source, fullname } = c.req.valid('json');
+      const data = c.req.valid('json');
 
-      const result = await updateUserOnboarding(user.id, { goal, source, fullname });
+      const result = await updateUserOnboarding(user.id, data);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to update onboarding data');
     }
   })
-  .post('/complete', authMiddleware, async (c) => {
+  .post('/welcome-email-pending', authMiddleware, async (c) => {
     try {
-      const user = c.get('user')!;
-
-      await completeOnboarding(user);
-
-      return c.json({ success: true }, 200);
+      await markOnboardingWelcomeEmailPending(c.get('user')!.id);
+      return c.json({ success: true, data: null }, 200);
     } catch (error) {
-      return handleError(c, error, 'Failed to complete onboarding');
+      return handleError(c, error, 'Failed to prepare welcome email');
     }
   });

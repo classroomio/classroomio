@@ -1,22 +1,21 @@
 <script>
   import { Badge } from '@cio/ui/base/badge';
   import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+  import Section from './ui/section.svelte';
 </script>
 
-<section id="student-dashboard" class="bg-black px-3 py-[10%] text-center text-white lg:px-0">
-  <Badge class="px-4! py-2! text-sm! underline">yourorg.{TENANT_ROOT_DOMAIN}</Badge>
-  <h1 class="mx-auto flex flex-col items-center gap-4 text-3xl leading-[1.5] font-normal md:text-4xl lg:text-6xl">
-    Your Student Dashboard
-  </h1>
+<Section id="student-dashboard" class="bg-black text-center text-white" innerClass="flex flex-col items-center">
+  <Badge class="px-4! py-2! font-mono text-sm! underline">yourorg.{TENANT_ROOT_DOMAIN}</Badge>
+  <h1 class="text-title mt-6 font-medium text-balance">Your Student Dashboard</h1>
 
-  <p class="mx-auto mt-10 px-4 text-base leading-6 tracking-wide text-gray-400 lg:mt-6 lg:w-2/4 lg:p-0">
+  <p class="text-lead max-w-lede mt-[18px] text-pretty text-gray-400">
     Once you create an account, you get a dedicated dashboard where your students can access all their courses,
     assignments, and more.
   </p>
 
-  <div class="relative my-5 md:my-10">
+  <div class="relative mt-14 w-full">
     <video
-      class="floating mx-auto w-[85%] rounded-lg shadow-lg lg:w-[70%]"
+      class="floating mx-auto w-full rounded-xl lg:w-[85%]"
       autoplay
       loop
       muted
@@ -28,4 +27,4 @@
       <track kind="captions" />
     </video>
   </div>
-</section>
+</Section>

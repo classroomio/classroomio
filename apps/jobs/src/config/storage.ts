@@ -67,7 +67,7 @@ export function getStorageConfig(): StorageConfig {
     };
   } else {
     throw new Error(
-      'Object storage not configured. Set OBJECT_STORAGE_* (MinIO/S3) or CLOUDFLARE_* (R2) env vars on apps/jobs.'
+      'Object storage not configured. Set OBJECT_STORAGE_* (S3-compatible) or CLOUDFLARE_* (R2) env vars on apps/jobs.'
     );
   }
 

@@ -57,10 +57,7 @@ breaks every upload with `SignatureDoesNotMatch`. A separate hostname preserves 
 
 ## Deployment
 
-<Steps>
-
-<Step>
-### Set your domain
+### 1. Set your domain
 
 Everything below derives from this one variable. Run it in **every** new SSH session:
 
@@ -75,10 +72,8 @@ export DOMAIN=203.0.113.10.sslip.io
 ```
 
 Your dashboard will be `https://app.$DOMAIN` and storage `https://s3.$DOMAIN`.
-</Step>
 
-<Step>
-### Create a non-root user
+### 2. Create a non-root user
 
 Connect as root, then create the account you'll actually work from:
 
@@ -106,10 +101,8 @@ systemctl restart ssh
 :::
 
 Close the root session. Everything from here runs as `cio`.
-</Step>
 
-<Step>
-### Firewall and swap
+### 3. Firewall and swap
 
 ```zsh title="Terminal"
 sudo apt update && sudo apt upgrade -y
@@ -130,10 +123,8 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 The swap file matters: a video transcode can spike memory enough to get Postgres killed on a 4 GB
 server.
-</Step>
 
-<Step>
-### Install Docker
+### 4. Install Docker
 
 ```zsh title="Terminal"
 sudo apt install -y ca-certificates curl
@@ -171,10 +162,8 @@ docker compose version     # must be v2.24.0 or newer
 Compose **v2.24.0+** is required: Step 6 uses the `!override` YAML tag. Older versions
 *concatenate* port lists instead of replacing them, which would leave your internal services exposed
 to the internet.
-</Step>
 
-<Step>
-### Download the compose file
+### 5. Download the compose file
 
 ```zsh title="Terminal"
 mkdir -p ~/classroomio && cd ~/classroomio
@@ -183,16 +172,14 @@ curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker-co
 
 This is the same [pull-based stack](/self-hosted/docker#quick-start) used
 by the other guides. It pulls the published `classroomio/*` images and builds nothing.
-</Step>
 
-<Step>
-### Create the `.env` file
+### 6. Create the `.env` file
 
 This generates every secret for you. Paste it whole:
 
 ```zsh title="Terminal"
 cd ~/classroomio
-MINIO_PASS=$(openssl rand -hex 24)
+STORAGE_PASS=$(openssl rand -hex 24)
 
 cat > .env <<EOF
 CIO_VERSION=1.0.0
@@ -212,12 +199,10 @@ PRIVATE_APP_SUBDOMAINS=app
 PUBLIC_SERVER_URL=https://app.$DOMAIN
 TRUSTED_ORIGINS=
 
-MINIO_ROOT_USER=cio-storage-admin
-MINIO_ROOT_PASSWORD=$MINIO_PASS
-OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_ENDPOINT=http://storage:9000
 OBJECT_STORAGE_PUBLIC_ENDPOINT=https://s3.$DOMAIN
 OBJECT_STORAGE_ACCESS_KEY_ID=cio-storage-admin
-OBJECT_STORAGE_SECRET_ACCESS_KEY=$MINIO_PASS
+OBJECT_STORAGE_SECRET_ACCESS_KEY=$STORAGE_PASS
 OBJECT_STORAGE_FORCE_PATH_STYLE=true
 OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://s3.$DOMAIN/media
 
@@ -233,6 +218,8 @@ SMTP_SENDER=ClassroomIO <you@yourdomain.com>
 OPENAI_API_KEY=
 UNSPLASH_API_KEY=
 LICENSE_KEY=
+
+CIO_DEPLOYMENT_METHOD=digitalocean
 EOF
 
 chmod 600 .env
@@ -256,10 +243,8 @@ silently corrupt a password or URL.
 :::
 
 Every remaining variable is documented in [Configuration](/self-hosted/configuration).
-</Step>
 
-<Step>
-### Add Caddy and close the internal ports
+### 7. Add Caddy and close the internal ports
 
 Right now each part of ClassroomIO runs on its own port number: the dashboard on `3082`, file
 storage on `9000`. That leaves two problems: nobody wants to visit `yoursite.com:3082`, and neither
@@ -303,10 +288,9 @@ services:
     ports: !override
       - '127.0.0.1:3082:3082'
 
-  minio:
+  storage:
     ports: !override
       - '127.0.0.1:9000:9000'
-      - '127.0.0.1:9001:9001'
 
 volumes:
   caddy-data:
@@ -322,7 +306,7 @@ app.$DOMAIN {
 }
 
 s3.$DOMAIN {
-	reverse_proxy minio:9000
+	reverse_proxy storage:9000
 }
 EOF
 ```
@@ -343,21 +327,19 @@ That's why the `!override` lines above matter. `127.0.0.1` means "this machine o
 services stop accepting outside connections altogether. Caddy still reaches them because it sits on
 the same internal Docker network. Step 9 proves it from outside the server.
 :::
-</Step>
 
-<Step>
-### Download the images
+### 8. Download the images
 
 Save the long compose command as an alias first:
 
 ```zsh title="Terminal"
-echo "alias dc='docker compose -f ~/classroomio/docker-compose.images.yaml -f ~/classroomio/docker-compose.caddy.yaml --env-file ~/classroomio/.env -p classroomio --profile minio'" >> ~/.bashrc
+echo "alias dc='docker compose -f ~/classroomio/docker-compose.images.yaml -f ~/classroomio/docker-compose.caddy.yaml --env-file ~/classroomio/.env -p classroomio --profile storage'" >> ~/.bashrc
 source ~/.bashrc
 
 dc config --services
 ```
 
-You should see: `postgres redis api dashboard jobs minio minio-init caddy`
+You should see: `postgres redis api dashboard jobs storage storage-init caddy`
 
 Then pull:
 
@@ -369,10 +351,8 @@ dc pull
 The images are large (`api` 3.7 GB, `dashboard` 3.9 GB, `jobs` 4.2 GB). On a 2-vCPU droplet the
 **progress bars sit still for minutes at a time. This is normal, it is not frozen.** Don't cancel it.
 :::
-</Step>
 
-<Step>
-### Start and verify
+### 9. Start and verify
 
 ```zsh title="Terminal"
 dc up -d
@@ -391,22 +371,21 @@ cio-api         Up About a minute (healthy)   127.0.0.1:3081->3081/tcp
 cio-caddy       Up 42 seconds                 0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp, ...
 cio-dashboard   Up 43 seconds                 3000/tcp, 127.0.0.1:3082->3082/tcp
 cio-jobs        Up About a minute
-cio-minio       Up About a minute             127.0.0.1:9000-9001->9000-9001/tcp
+cio-storage     Up About a minute (healthy)   127.0.0.1:9000->9000/tcp
 cio-postgres    Up About a minute (healthy)
 cio-redis       Up About a minute (healthy)
 ```
 
-`cio-minio-init` is absent on purpose: it creates the storage buckets and exits. Confirm it worked:
+`cio-storage-init` is absent on purpose: it creates the storage buckets and exits. Confirm it worked:
 
 ```zsh title="Terminal"
-docker logs cio-minio-init | tail -4
+docker logs cio-storage-init 2>&1 | grep "created bucket"
 ```
 
 ```
-Bucket created successfully `local/videos`.
-Bucket created successfully `local/documents`.
-Bucket created successfully `local/media`.
-Access permission for `local/media` is set to `download`
+created bucket videos
+created bucket documents
+created bucket media
 ```
 
 Check the certificates were issued:
@@ -418,19 +397,17 @@ docker logs cio-caddy 2>&1 | grep "certificate obtained"
 Now confirm nothing internal is exposed. **Run this from your own machine, not the droplet:**
 
 ```zsh title="Terminal"
-for p in 3081 3082 9000 9001; do
+for p in 3081 3082 9000; do
   curl -s --max-time 6 -o /dev/null "http://<your-droplet-ip>:$p" \
     && echo "port $p REACHABLE  <-- problem" \
     || echo "port $p no response (correct)"
 done
 ```
 
-All four must report `no response`. If any is reachable, your Compose version ignored `!override`.
+All three must report `no response`. If any is reachable, your Compose version ignored `!override`.
 Check that `docker compose version` is v2.24.0 or newer.
-</Step>
 
-<Step>
-### Sign up
+### 10. Sign up
 
 Open `https://app.<your-domain>` and create the first account: it becomes the organization
 **admin**. Every signup after that joins as a student unless you invite them with a specific role.
@@ -439,9 +416,6 @@ Then verify uploads end to end: create a course, upload an image, and upload a s
 worker process it with `dc logs -f jobs`. In your browser's DevTools the media URLs must point at
 `https://s3.<your-domain>/...`. If you see `localhost:9000`, `OBJECT_STORAGE_PUBLIC_ENDPOINT` is
 wrong.
-</Step>
-
-</Steps>
 
 ## Day-to-day commands
 
@@ -453,7 +427,7 @@ dc down                   # stop, keeping all data
 ```
 
 :::danger[Never use `dc down -v`]
-The `-v` flag deletes the `postgres-data`, `redis-data` and `minio-data` volumes: your database and
+The `-v` flag deletes the `postgres-data`, `redis-data` and `storage-data` volumes: your database and
 every upload. Plain `dc down` is always safe.
 :::
 
@@ -464,8 +438,8 @@ mkdir -p ~/backups
 
 docker exec cio-postgres pg_dump -U postgres classroomio | gzip > ~/backups/cio-db-$(date +%F).sql.gz
 
-docker run --rm -v classroomio_minio-data:/data -v ~/backups:/backup alpine \
-  tar czf /backup/cio-minio-$(date +%F).tar.gz -C /data .
+docker run --rm -v classroomio_storage-data:/data -v ~/backups:/backup alpine \
+  tar czf /backup/cio-storage-$(date +%F).tar.gz -C /data .
 ```
 
 Run both on a daily cron, copy them off the droplet, and enable DigitalOcean snapshots for whole-box
@@ -538,7 +512,7 @@ This deployment reads the same variables as every other self-hosted install:
     Signup verification, password resets, invites.
   </Card>
   <Card title="Object storage & uploads" href="/self-hosted/configuration/storage" icon="hard-drive">
-    MinIO or external S3/R2, plus upload size limits.
+    Bundled storage or external S3/R2, plus upload size limits.
   </Card>
   <Card title="CSP / allowed domains" href="/self-hosted/configuration/csp" icon="shield">
     Allowed external CDN, font, and media domains.

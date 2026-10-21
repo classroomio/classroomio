@@ -7,6 +7,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: 1,
+  // loginAsAdmin waits up to 60s for the authenticated shell; keep headroom above that.
+  timeout: 90_000,
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
   outputDir: 'test-results',
   use: {

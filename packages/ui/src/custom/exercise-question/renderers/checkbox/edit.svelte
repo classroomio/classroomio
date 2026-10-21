@@ -183,7 +183,7 @@
             placeholder={[label('common.option_prefix'), String(index + 1)].filter(Boolean).join(' ').trim()}
             value={option.label}
             {disabled}
-            onchange={(event) => updateOption(index, { label: event.currentTarget.value })}
+            oninput={(event) => updateOption(index, { label: event.currentTarget.value })}
           />
 
           <div class="ui:flex ui:flex-wrap ui:items-start ui:gap-2">

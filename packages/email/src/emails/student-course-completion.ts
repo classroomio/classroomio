@@ -1,12 +1,12 @@
 import * as z from 'zod';
 
 import { defineEmail } from '../send';
-import { getDefaultTemplate } from '../templates';
 import { ZEmailBranding } from '../core/branding';
+import { renderStudentEmail, renderStudentEmailSubject } from '../core/student-email';
 
 export const studentCourseCompletionEmail = defineEmail({
   id: 'studentCourseCompletion',
-  subject: 'Congratulations — you completed the course requirements',
+  subject: (fields, context) => renderStudentEmailSubject('studentCourseCompletion', fields, context),
   schema: z.object({
     orgName: z.string().min(1),
     courseName: z.string().min(1),
@@ -15,21 +15,19 @@ export const studentCourseCompletionEmail = defineEmail({
     customMessage: z.string().nullable().optional(),
     branding: ZEmailBranding
   }),
-  render: (fields) => {
+  render: (fields, context) => {
     const customBlock =
       fields.customMessage && fields.customMessage.trim().length > 0
         ? `<div style="margin:16px 0;padding:12px;border-left:3px solid #6366f1;background:#f8fafc;">${fields.customMessage}</div>`
         : '';
 
-    const content = `
-      <p>Hi ${fields.studentName},</p>
-      <p>Congratulations! You have met the completion requirements for <strong>${fields.courseName}</strong>.</p>
-      ${customBlock}
-      <p><a href="${fields.certificateUrl}" style="display:inline-block;padding:10px 16px;background:#111827;color:#fff;text-decoration:none;border-radius:6px;">View your certificate</a></p>
-      <p>If the button does not work, copy and paste this link into your browser:<br/><span style="word-break:break-all;">${fields.certificateUrl}</span></p>
-      <p>Cheers,<br/>${fields.orgName}</p>
-    `;
-
-    return getDefaultTemplate(content, fields.branding);
+    return renderStudentEmail({
+      id: 'studentCourseCompletion',
+      values: { org_name: fields.orgName, course_name: fields.courseName, student_name: fields.studentName },
+      trustedHtml: { course_message: customBlock },
+      actionUrl: fields.certificateUrl,
+      branding: fields.branding,
+      context
+    });
   }
 });

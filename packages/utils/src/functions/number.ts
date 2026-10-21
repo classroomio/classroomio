@@ -17,3 +17,84 @@ export function toFiniteNumber(value: unknown): number | undefined {
 
   return undefined;
 }
+
+/**
+ * Clamps a number to optional minimum and maximum bounds.
+ */
+function clamp(value: number, bounds: { min?: number; max?: number }): number {
+  let result = value;
+  if (bounds.min !== undefined && result < bounds.min) result = bounds.min;
+  if (bounds.max !== undefined && result > bounds.max) result = bounds.max;
+  return result;
+}
+
+/**
+ * Parses a committed numeric input, rounded and clamped to optional [min, max].
+ * Returns undefined for empty/invalid input.
+ */
+export function parseBoundedInteger(raw: string, bounds: { min?: number; max?: number } = {}): number | undefined {
+  const parsed = toFiniteNumber(raw);
+  if (parsed === undefined) return undefined;
+
+  return clamp(Math.round(parsed), bounds);
+}
+
+/**
+ * Parses a committed numeric input, clamped to optional [min, max] without rounding.
+ * Returns undefined for empty/invalid input.
+ */
+export function parseBoundedNumber(raw: string, bounds: { min?: number; max?: number } = {}): number | undefined {
+  const parsed = toFiniteNumber(raw);
+  if (parsed === undefined) return undefined;
+
+  return clamp(parsed, bounds);
+}
+
+/**
+ * Parses a number typed into a field without rounding or clamping.
+ * Returns undefined when the text is empty, not finite, not an integer (when required) or out of bounds.
+ */
+export function parseNumberInRange(
+  raw: string,
+  bounds: { min?: number; max?: number; integer?: boolean } = {}
+): number | undefined {
+  const parsed = toFiniteNumber(raw);
+  if (parsed === undefined) return undefined;
+  if (bounds.integer && !Number.isInteger(parsed)) return undefined;
+  if (bounds.min !== undefined && parsed < bounds.min) return undefined;
+  if (bounds.max !== undefined && parsed > bounds.max) return undefined;
+
+  return parsed;
+}
+
+const COMPACT_COUNT_UNITS = [
+  { suffix: 'b', divisor: 1_000_000_000 },
+  { suffix: 'm', divisor: 1_000_000 },
+  { suffix: 'k', divisor: 1_000 }
+] as const;
+
+/**
+ * Formats a whole-number count for compact UI (e.g. sidebar totals).
+ * Values under 1000 stay exact; larger values use lowercase k/m/b with at most one decimal.
+ */
+export function formatCompactCount(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) {
+    return '0';
+  }
+
+  const count = Math.floor(value);
+  if (count < 1000) {
+    return String(count);
+  }
+
+  for (const { suffix, divisor } of COMPACT_COUNT_UNITS) {
+    if (count >= divisor) {
+      const compact = count / divisor;
+      const rounded = Math.round(compact * 10) / 10;
+      const formatted = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+      return `${formatted}${suffix}`;
+    }
+  }
+
+  return String(count);
+}

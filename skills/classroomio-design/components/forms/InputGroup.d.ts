@@ -1,0 +1,2 @@
+export interface InputGroupProps { start?: React.ReactNode; end?: React.ReactNode; placeholder?: string; value?: string; defaultValue?: string; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; type?: string; invalid?: boolean; inputProps?: React.InputHTMLAttributes<HTMLInputElement>; style?: React.CSSProperties; }
+export declare function InputGroup(props: InputGroupProps): JSX.Element;

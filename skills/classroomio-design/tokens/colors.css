@@ -1,0 +1,50 @@
+:root {
+  /* Ink (warm near-blacks) */
+  --ink-900: #17140F;   /* headings, primary text, strokes */
+  --ink-700: #2A251D;   /* body copy */
+  --ink-500: #6B6152;   /* muted / eyebrow / footer links */
+  --ink-400: #8C8272;   /* placeholder, counts */
+
+  /* Paper & sand (warm neutrals) */
+  --white: #FFFFFF;
+  --page: #FAFAFA;      /* page background */
+  --paper: #FDFBF7;     /* raised surface: menus, frames, pills, secondary btn */
+  --paper-2: #FAF8F4;   /* card media well */
+  --sand-100: #F6F2E9;  /* icon tiles, browser chrome, integrations band */
+  --sand-200: #F1EEE7;  /* notch-card fill */
+  --sand-300: #E3DACA;  /* hairlines, borders, ruled lines */
+  --sand-400: #CFC5B3;  /* strong border */
+
+  /* Brand blue */
+  --blue-700: #0233BD;  /* primary brand / accent */
+  --blue-600: #0542CC;  /* alt accent (hero variant) */
+  --blue-500: #2F5BE0;  /* CTA glow */
+  --blue-300: #ADC3FF;  /* highlight, swipe marker, quote marks */
+  --blue-200: #D6DEFF;  /* text on blue */
+  --blue-100: #EEF2FF;  /* tint wash */
+  --navy-900: #0B1A4A;  /* alt dark accent */
+
+  /* Semantic */
+  --bg-page: var(--page);
+  --surface-raised: var(--paper);
+  --surface-card: var(--sand-200);
+  --surface-muted: var(--sand-100);
+  --border: var(--sand-300);
+  --border-strong: var(--sand-400);
+  --border-ink: var(--ink-900);
+  --hairline-ink: rgba(23,20,15,0.10);
+  --text-strong: var(--ink-900);
+  --text-body: var(--ink-700);
+  --text-muted: var(--ink-500);
+  --text-subtle: var(--ink-400);
+  --text-on-accent: var(--white);
+  --text-on-accent-muted: var(--blue-200);
+  --accent: var(--blue-700);
+  --accent-soft: var(--blue-300);
+  --accent-tint: var(--blue-100);
+  --link: var(--ink-900);
+  --link-hover: var(--blue-700);
+  --scrim: rgba(23,20,15,0.78);
+  --photo-protect: linear-gradient(to top, rgba(23,20,15,0.92) 0%, rgba(23,20,15,0.25) 50%, transparent 75%);
+  --cta-gradient: radial-gradient(ellipse 60% 80% at 50% 0%, #2F5BE0 0%, rgba(47,91,224,0) 70%), #0233BD;
+}

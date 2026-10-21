@@ -61,7 +61,7 @@
 
   const sendVerificationCode = async () => {
     if (!$profile.email) {
-      snackbar.error('verify_email_modal.snackbar.error');
+      snackbar.error('verify_email_modal.snackbar_error');
       return;
     }
 
@@ -95,7 +95,7 @@
         return;
       }
 
-      snackbar.error('verify_email_modal.snackbar.error');
+      snackbar.error('verify_email_modal.snackbar_error');
     } finally {
       loading = false;
     }

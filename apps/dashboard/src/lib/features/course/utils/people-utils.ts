@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import type { CourseMember, ListPeopleQuery, ListPeopleRequestQuery } from '$features/course/utils/types';
 import { ROLE } from '@cio/utils/constants';
+import { ROLE_LABEL } from '$lib/utils/constants/roles';
 
 export type CourseMemberStage = NonNullable<CourseMember['stage']>;
 
@@ -9,14 +10,21 @@ export const DEFAULT_PEOPLE_PAGE_SIZE = 20;
 /** Role filter value that means "every role" and so sends no roleId to the API. */
 export const ALL_ROLES_FILTER = 'all';
 
-/** The API reads pagination and filters from the query string, so numbers go over the wire as strings. */
+/** The API reads pagination and filters from the query string, so numbers and booleans go over the wire as strings. */
 export function toPeopleRequestQuery(query: ListPeopleQuery): ListPeopleRequestQuery {
   return {
     page: String(query.page),
     limit: String(query.limit),
     search: query.search,
-    roleId: query.roleId === undefined ? undefined : String(query.roleId)
-  };
+    roleId: query.roleId === undefined ? undefined : String(query.roleId),
+    sortBy: query.sortBy,
+    sortOrder: query.sortOrder,
+    progress: query.progress,
+    membership: query.membership,
+    enrolledWithin: query.enrolledWithin,
+    lastLoginBefore: query.lastLoginBefore,
+    certificateEarned: query.certificateEarned === undefined ? undefined : String(query.certificateEarned)
+  } as ListPeopleRequestQuery;
 }
 
 export function formatPeopleShortDate(value: string | null | undefined): string {
@@ -30,6 +38,15 @@ export function formatPeopleShortDate(value: string | null | undefined): string 
 
 export function isStudentMember(member: CourseMember): boolean {
   return member.roleId === ROLE.STUDENT && !!member.profileId;
+}
+
+/**
+ * Returns the translation key for the member's course role, or undefined when unknown.
+ */
+export function getMemberRoleLabel(member: CourseMember): string | undefined {
+  if (!member.roleId) return undefined;
+
+  return ROLE_LABEL[member.roleId as keyof typeof ROLE_LABEL];
 }
 
 export function getMemberProgressPercent(member: CourseMember): number | null {

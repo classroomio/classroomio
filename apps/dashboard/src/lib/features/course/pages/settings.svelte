@@ -1,6 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { Badge } from '@cio/ui/base/badge';
   import { Label } from '@cio/ui/base/label';
   import { Switch } from '@cio/ui/base/switch';
@@ -12,17 +13,36 @@
 
   import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
   import CertificateDeadlineRequiredDialog from '$features/course/components/certificate-deadline-required-dialog.svelte';
-  import { CourseTagPicker } from '$features/course/components';
+  import { CourseTagPicker, PublicConversionSettingsCard } from '$features/course/components';
+  import TemplateSettingsSection from '$features/course/components/template-settings-section.svelte';
+  import ReminderPicker from '$features/course/components/live-session-reminders/reminder-picker.svelte';
+  import DeliveryLogSheet from '$features/course/components/live-session-reminders/delivery-log-sheet.svelte';
+  import {
+    createReminderRow,
+    getReminderRowErrors,
+    reminderRowsToOffsets
+  } from '$features/course/utils/live-session-reminder-utils';
+  import { resolveLiveSessionReminderOffsets } from '@cio/utils/constants/live-session-reminder';
+  import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
+  import { BackButton } from '@cio/ui/custom/back-button';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
   import { Input } from '@cio/ui/base/input';
   import * as Field from '@cio/ui/base/field';
-  import { UpgradeBanner, UnsavedChanges, UploadWidget, TextEditor, AttentionHighlight } from '$features/ui';
+  import {
+    UpgradeBanner,
+    UnsavedChanges,
+    UploadWidget,
+    TextEditor,
+    AttentionHighlight,
+    SettingsCard,
+    SettingsSeparator
+  } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
   import { settings } from '$features/course/utils/settings-store';
-  import { getOrderedNavigableContent } from '$features/course/utils/content';
+  import { getNavItemRoute } from '$features/course/utils/functions';
   import Copy from '@lucide/svelte/icons/copy';
   import * as Alert from '@cio/ui/base/alert';
   import LockOpenIcon from '@lucide/svelte/icons/lock-open';
@@ -33,7 +53,6 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { generateSlug, isPublishedComplianceMissingDeadline, isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
-  import { ContentType } from '@cio/utils/constants/content';
   import { DeleteModal } from '$features/ui';
   import { contentApi, courseApi } from '$features/course/api';
   import { collectLockedContentItems } from '$features/course/utils/content-lock-utils';
@@ -43,7 +62,8 @@
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { page } from '$app/stores';
-  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
+  import { NAVIGATION_SOURCE, NAVIGATION_SOURCE_PARAM, ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
+  import { buildRoutePath } from '$lib/routing/route-path';
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -123,7 +143,7 @@
   };
 
   const deleteBannerImage = () => {
-    $settings.logo = '';
+    $settings.bannerImage = '';
     hasUnsavedChanges = true;
   };
 
@@ -207,17 +227,25 @@
       return;
     }
 
+    if (
+      $settings.type === 'LIVE_CLASS' &&
+      Object.keys(getReminderRowErrors($settings.liveSessionReminders)).length > 0
+    ) {
+      snackbar.error('course.navItem.settings.live_session_reminders.validation.fix_errors');
+      return;
+    }
+
     if (Number(courseApi.course?.cost) > 0 && !(courseApi.course?.metadata?.paymentLink ?? '').trim()) {
       snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
       return;
     }
 
     try {
-      let logoUrl = $settings.logo;
+      let bannerImageUrl = $settings.bannerImage;
 
       // Upload image if avatar is provided
       if (avatar) {
-        logoUrl = await uploadImage(new File([avatar], avatar));
+        bannerImageUrl = await uploadImage(new File([avatar], avatar));
       }
 
       if (!courseApi.course) return;
@@ -237,12 +265,15 @@
         courseApi.course.slug = generateSlug($settings.courseTitle, { appendTimestamp: true });
       }
 
+      const reminderOffsetsPayload = getReminderOffsetsPayload(courseApi.course);
       const metadataPayload = {
         ...(isObject(courseApi.course.metadata) ? courseApi.course.metadata : {}),
+        ...reminderOffsetsPayload,
         lessonTabsOrder: $settings.tabs,
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
         allowSelfEnrollment: $settings.allowSelfEnrollment,
+        allowMarkdownExport: $settings.allowMarkdownExport,
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
         progressionMode: $settings.progressionMode,
         commentsEnabled: $settings.commentsEnabled,
@@ -253,7 +284,7 @@
         title: $settings.courseTitle,
         description: $settings.courseDescription,
         type: $settings.type,
-        logo: logoUrl,
+        bannerImage: bannerImageUrl,
         isPublished: $settings.isPublished,
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
@@ -262,12 +293,7 @@
         callout: $settings.type === 'PUBLIC' ? sanitizeCalloutForSave($settings.callout) : null,
         certificate: {
           ...(courseApi.course.certificate ?? {}),
-          deadline: $settings.certificate.deadline,
-          threshold: $settings.certificate.threshold,
-          requiredExerciseId: $settings.certificate.requiredExerciseId,
-          exerciseMinScorePercent: $settings.certificate.requiredExerciseId
-            ? $settings.certificate.exerciseMinScorePercent
-            : null
+          deadline: $settings.certificate.deadline
         }
       };
 
@@ -279,19 +305,31 @@
         ...(hasTagChanges ? { tagIds: normalizedSelectedTagIds } : {})
       };
 
+      const draftAtSave = JSON.stringify({
+        settings: $settings,
+        tagIds: [...selectedTagIds].sort(),
+        avatar
+      });
+
       const response = await courseApi.update(courseApi.course.id, updatePayload, {
         showSuccessToast: !hasTagChanges
       });
 
       if (courseApi.success && response) {
+        const draftUnchanged =
+          JSON.stringify({ settings: $settings, tagIds: [...selectedTagIds].sort(), avatar }) === draftAtSave;
+
         if (hasTagChanges) {
+          // The server stored the submitted tags; keep the user's newer toggles selected.
           initialTagIds = normalizedSelectedTagIds;
-          selectedTagIds = normalizedSelectedTagIds;
-          snackbar.success('snackbar.course_settings.success.update_successful');
+          if (draftUnchanged) {
+            selectedTagIds = normalizedSelectedTagIds;
+          }
         }
 
-        // courseApi.update() already updates courseApi.course internally
-        hasUnsavedChanges = false;
+        if (draftUnchanged) {
+          hasUnsavedChanges = false;
+        }
       }
     } catch (error) {
       console.error(error);
@@ -322,15 +360,20 @@
   async function setDefault(course: Course) {
     if (!course || !Object.keys(course).length) return;
 
+    const isConversionFlowActive = publicConversionFlow.isActive && publicConversionFlow.courseId === course.id;
+
     untrack(() => {
       settings.set({
         courseTitle: course.title,
-        type: (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
+        type: isConversionFlowActive
+          ? ('PUBLIC' as TCourseType)
+          : (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
         courseDescription: course.description,
-        logo: course.logo || '',
+        bannerImage: course.bannerImage || '',
         tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
+        allowMarkdownExport: !!course.metadata?.allowMarkdownExport,
         isPublished: !!course.isPublished,
         allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
@@ -338,28 +381,38 @@
         commentsEnabled: course.metadata?.commentsEnabled ?? true,
         callout: normalizeCallout(course.callout),
         welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? '',
+        liveSessionReminders: resolveLiveSessionReminderOffsets(course.metadata?.liveSessionReminderOffsetsMinutes).map(
+          createReminderRow
+        ),
         certificate: {
-          deadline: course.certificate?.deadline ?? null,
-          threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100,
-          requiredExerciseId: course.certificate?.requiredExerciseId ?? null,
-          exerciseMinScorePercent:
-            typeof course.certificate?.exerciseMinScorePercent === 'number'
-              ? course.certificate.exerciseMinScorePercent
-              : course.certificate?.requiredExerciseId
-                ? 100
-                : null
+          deadline: course.certificate?.deadline ?? null
         }
       });
     });
   }
 
+  function getReminderOffsetsPayload(course: Course) {
+    if ($settings.type !== 'LIVE_CLASS') return {};
+
+    const nextOffsets = reminderRowsToOffsets($settings.liveSessionReminders);
+    const currentOffsets = resolveLiveSessionReminderOffsets(course.metadata?.liveSessionReminderOffsetsMinutes);
+    const isUnchanged =
+      nextOffsets.length === currentOffsets.length &&
+      nextOffsets.every((offsetMinutes) => currentOffsets.includes(offsetMinutes));
+    if (isUnchanged) return {};
+
+    return { liveSessionReminderOffsetsMinutes: nextOffsets };
+  }
+
   export function handleDiscard() {
     if (!courseApi.course) return;
 
+    publicConversionFlow.cancel();
     setDefault(courseApi.course);
     selectedTagIds = [...initialTagIds];
     avatar = undefined;
     errors = { title: undefined, description: undefined };
+    delete courseApi.errors.type;
     hasUnsavedChanges = false;
   }
 
@@ -417,6 +470,7 @@
     const course = courseApi.course;
     if (course?.id && initializedCourseId !== course.id) {
       initializedCourseId = course.id;
+      publicConversionFlow.restoreForCourse(course.id);
       setDefault(course);
     }
   });
@@ -472,14 +526,35 @@
     return selected;
   });
 
-  let courseLink = $derived(courseApi.course?.slug ? `${$currentOrgDomain}/course/${courseApi.course.slug}` : '#');
+  const hasAnyTagsCreated = $derived(tagApi.tagGroups.some((group) => group.tags.length > 0));
 
-  const certExercises = $derived(
-    getOrderedNavigableContent(courseApi.course).filter((item) => item.type === ContentType.Exercise)
+  let courseLink = $derived(courseApi.course?.slug ? `${$currentOrgDomain}/course/${courseApi.course.slug}` : '#');
+  const landingPageHref = $derived(
+    courseApi.course?.id ? resolve(getNavItemRoute(courseApi.course.id, 'landingpage'), {}) : '#'
   );
 
-  const finalExerciseTitle = $derived(
-    certExercises.find((item) => item.id === $settings.certificate.requiredExerciseId)?.title
+  const PEOPLE_LINK_MARKER = '@@people@@';
+
+  const peoplePageHref = $derived(courseApi.course?.id ? resolve(`/courses/${courseApi.course.id}/people`, {}) : '#');
+
+  const selfEnrollmentAccessParts = $derived.by(() => {
+    const accessText = $t('course.navItem.settings.access', { people: PEOPLE_LINK_MARKER });
+    const [before = '', after = ''] = accessText.split(PEOPLE_LINK_MARKER);
+
+    return { before, after };
+  });
+
+  // Completion rules change the certificate settings, which the API only accepts on plans with certificates.
+  const areCompletionRulesLocked = $derived($isFreePlan);
+
+  const cameFromCertificateSettings = $derived(
+    $page.url.searchParams.get(NAVIGATION_SOURCE_PARAM) === NAVIGATION_SOURCE.CERTIFICATE_SETTINGS
+  );
+
+  const certificateSettingsHref = $derived(
+    courseApi.course?.id
+      ? resolve(buildRoutePath(ROUTE_NAME.COURSE_CERTIFICATE, { id: courseApi.course.id, tab: 'settings' }), {})
+      : undefined
   );
 
   function isoToDatetimeLocal(iso: string | null | undefined): string {
@@ -495,30 +570,7 @@
   function onCompletionDeadlineChange(e: Event) {
     const value = (e.currentTarget as HTMLInputElement).value;
     $settings.certificate.deadline = value ? new Date(value).toISOString() : null;
-    hasUnsavedChanges = true;
-  }
-
-  function onThresholdInput(e: Event) {
-    const value = Number((e.currentTarget as HTMLInputElement).value);
-    $settings.certificate.threshold = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 100;
-    hasUnsavedChanges = true;
-  }
-
-  function onFinalExerciseChange(value: string) {
-    $settings.certificate.requiredExerciseId = value && value !== 'none' ? value : null;
-
-    if (!$settings.certificate.requiredExerciseId) {
-      $settings.certificate.exerciseMinScorePercent = null;
-    } else if (typeof $settings.certificate.exerciseMinScorePercent !== 'number') {
-      $settings.certificate.exerciseMinScorePercent = 100;
-    }
-
-    hasUnsavedChanges = true;
-  }
-
-  function onMinExerciseScoreInput(e: Event) {
-    const value = Number((e.currentTarget as HTMLInputElement).value);
-    $settings.certificate.exerciseMinScorePercent = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 100;
+    delete courseApi.errors['certificate.deadline'];
     hasUnsavedChanges = true;
   }
 </script>
@@ -529,98 +581,105 @@
 
 <CertificateDeadlineRequiredDialog bind:open={openCertificateDeadlineDialog} onGoToDeadline={goToCompletionDeadline} />
 
-<Field.Group class="w-full max-w-md! px-2">
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.cover_image')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.optional_image')}</Field.Description>
+<div class="flex w-full flex-col gap-8">
+  <SettingsCard id="general" title={$t('course.navItem.settings.general_card_title')}>
     <Field.Group>
-      <Field.Field>
-        <div class="flex items-center gap-2">
-          <Button variant="secondary" onclick={widgetControl}>
-            {$t('course.navItem.settings.replace')}
-          </Button>
-          <Button variant="outline" onclick={deleteBannerImage}>
-            {$t('ai.reset')}
-          </Button>
+      <Field.Field id="cover-image" class="scroll-mt-24">
+        <div class="flex flex-col items-start gap-4 sm:flex-row">
+          <img
+            alt={$t('course.navItem.settings.cover_image')}
+            src={$settings.bannerImage ? $settings.bannerImage : '/images/classroomio-course-img-template.jpg'}
+            class="h-[120px] w-[168px] rounded-md border object-cover"
+          />
+          <div class="flex min-w-0 flex-1 flex-col gap-2">
+            <Field.Label>
+              <a href="#cover-image" class="hover:underline">{$t('course.navItem.settings.cover_image')}</a>
+            </Field.Label>
+            <Field.Description>{$t('course.navItem.settings.optional_image')}</Field.Description>
+            <div class="flex items-center gap-2">
+              <Button variant="secondary" onclick={widgetControl}>
+                {$t('course.navItem.settings.replace')}
+              </Button>
+              <Button variant="outline" onclick={deleteBannerImage}>
+                {$t('course.navItem.settings.remove')}
+              </Button>
+            </div>
+          </div>
         </div>
         {#if $handleOpenWidget.open}
           <UploadWidget
-            bind:imageURL={$settings.logo}
+            bind:imageURL={$settings.bannerImage}
             onchange={() => {
               hasUnsavedChanges = true;
             }}
           />
         {/if}
       </Field.Field>
-      <Field.Field>
-        <div class="relative w-fit">
-          <img
-            alt="Course cover"
-            src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
-            class="relative mt-2 h-[200px] w-[280px] rounded-md border object-cover md:mt-0"
-          />
-        </div>
-      </Field.Field>
-    </Field.Group>
-  </Field.Set>
 
-  <Field.Separator />
-
-  <Field.Set id="share">
-    <Field.Legend>{$t('course.navItem.settings.course_details')}</Field.Legend>
-    <Field.Group>
-      <Field.Field>
+      <div id="course-title" class="scroll-mt-24">
         <InputField
           label={$t('course.navItem.settings.course_title')}
           placeholder={$t('course.navItem.settings.course_title_placeholder')}
           className="w-full"
           isRequired
           bind:value={$settings.courseTitle}
-          errorMessage={errors?.title}
-          onInputChange={() => {
+          errorMessage={errors?.title || courseApi.errors?.title}
+          onInput={() => {
+            errors.title = undefined;
+            delete courseApi.errors.title;
             hasUnsavedChanges = true;
           }}
         />
-      </Field.Field>
-      <Field.Field>
+      </div>
+
+      <div id="course-description" class="scroll-mt-24">
         <TextareaField
           label={$t('course.navItem.settings.course_description')}
           placeholder={$t('course.navItem.settings.placeholder')}
           className="w-full"
           isRequired
           bind:value={$settings.courseDescription}
-          errorMessage={errors?.description}
+          errorMessage={errors?.description || courseApi.errors?.description}
+          oninput={() => {
+            errors.description = undefined;
+            delete courseApi.errors.description;
+            hasUnsavedChanges = true;
+          }}
           onchange={() => {
+            errors.description = undefined;
+            delete courseApi.errors.description;
             hasUnsavedChanges = true;
           }}
         />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label class="justify-between"
-          >{$t('course.navItem.settings.link')}
+      </div>
 
-          <div class="flex items-center gap-1">
-            <IconButton
-              onclick={generateNewCourseLink}
-              loading={isGeneratingLink}
-              tooltip={$t('course.navItem.settings.generate_link')}
-            >
-              <RotateCcwIcon size={16} />
-            </IconButton>
-            <IconButton
-              href={courseLink}
-              target="_blank"
-              disabled={isGeneratingLink || !courseApi.course?.slug}
-              tooltip={$t('course.navItem.settings.open_link')}
-            >
-              <ArrowUpRightIcon size={16} />
-            </IconButton>
-          </div>
+      <Field.Field id="share" class="scroll-mt-24">
+        <Field.Label class="justify-between">
+          <a href="#share" class="hover:underline">{$t('course.navItem.settings.link')}</a>
+          {#if courseApi.course?.slug}
+            <div class="flex items-center gap-1">
+              <IconButton
+                onclick={generateNewCourseLink}
+                loading={isGeneratingLink}
+                tooltip={$t('course.navItem.settings.generate_link')}
+              >
+                <RotateCcwIcon size={16} />
+              </IconButton>
+              <IconButton
+                href={courseLink}
+                target="_blank"
+                disabled={isGeneratingLink || !courseApi.course?.slug}
+                tooltip={$t('course.navItem.settings.open_link')}
+              >
+                <ArrowUpRightIcon size={16} />
+              </IconButton>
+            </div>
+          {/if}
         </Field.Label>
 
-        <div class="flex items-center justify-between rounded-md border p-1">
-          {#if courseApi.course?.slug}
-            <p class="text-sm">{courseLink}</p>
+        {#if courseApi.course?.slug}
+          <div class="flex items-center justify-between rounded-md border p-1">
+            <p class="min-w-0 truncate text-sm">{courseLink}</p>
             <IconButton
               onclick={() => {
                 copyToClipboard(courseLink);
@@ -630,372 +689,334 @@
             >
               <Copy size={16} />
             </IconButton>
-          {:else}
-            <p class="text-sm">{$t('course.navItem.settings.setup_landing_for_link')}</p>
-          {/if}
-        </div>
-      </Field.Field>
-    </Field.Group>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.type')}</Field.Legend>
-    <Field.Description>
-      {$t('course.navItem.settings.course_type_desc')}
-      <a
-        href="https://classroomio.com/help/build-a-course/course-types"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="ui:text-primary underline"
-      >
-        {$t('course.navItem.settings.course_type_learn_more')}
-      </a>
-    </Field.Description>
-    <Field.Field>
-      <Select.Root
-        type="single"
-        value={$settings.type}
-        onValueChange={(value) => {
-          if (!value) return;
-          $settings.type = value as TCourseType;
-          hasUnsavedChanges = true;
-        }}
-      >
-        <Select.Trigger class="w-full">
-          {$t(`course.navItem.settings.${$settings.type.toLowerCase()}`)}
-        </Select.Trigger>
-        <Select.Content>
-          <Select.Group>
-            <Select.Item value="SELF_PACED" label={$t('course.navItem.settings.self_paced')}>
-              {$t('course.navItem.settings.self_paced')}
-            </Select.Item>
-            <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
-              {$t('course.navItem.settings.live_class')}
-            </Select.Item>
-            <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
-              {$t('course.navItem.settings.compliance')}
-            </Select.Item>
-            <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
-              {$t('course.navItem.settings.public')}
-            </Select.Item>
-          </Select.Group>
-        </Select.Content>
-      </Select.Root>
-    </Field.Field>
-
-    {#if courseApi.errors.type}
-      <div
-        class="ui:mt-2 ui:rounded-md ui:border ui:border-destructive/30 ui:bg-destructive/5 ui:p-3 ui:text-sm ui:text-destructive"
-        role="alert"
-      >
-        <div class="ui:font-medium">{$t('course.navItem.settings.convert_to_public_blocked')}</div>
-        <p class="ui:mt-1 ui:text-destructive/90">{courseApi.errors.type}</p>
-      </div>
-    {/if}
-
-    <Field.Group class="mt-3">
-      <AttentionHighlight
-        id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_DEADLINE}
-        trigger={completionDeadlineTrigger}
-      >
-        <Field.Field>
-          <Field.Label>
-            {$t('course.navItem.settings.completion_deadline_label')}
-          </Field.Label>
-          <Input
-            id="course-completion-deadline"
-            type="datetime-local"
-            class="w-full"
-            value={isoToDatetimeLocal($settings.certificate.deadline)}
-            onchange={onCompletionDeadlineChange}
-          />
-          <Field.Description>{$t('course.navItem.settings.completion_deadline_helper')}</Field.Description>
-          {#if courseApi.errors['certificate.deadline']}
-            <Field.Error>{courseApi.errors['certificate.deadline']}</Field.Error>
-          {/if}
-        </Field.Field>
-      </AttentionHighlight>
-
-      <Field.Field>
-        <Field.Label for="course-completion-threshold">
-          {$t('course.certification.threshold_label')}
-        </Field.Label>
-        <Input
-          id="course-completion-threshold"
-          type="number"
-          min={0}
-          max={100}
-          class="w-full"
-          value={String($settings.certificate.threshold)}
-          oninput={onThresholdInput}
-        />
-        <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
-        {#if courseApi.errors['certificate.threshold']}
-          <Field.Error>{courseApi.errors['certificate.threshold']}</Field.Error>
+          </div>
+        {:else}
+          <Field.Description>{$t('course.navItem.settings.setup_landing_for_link')}</Field.Description>
+          <Button variant="secondary" href={landingPageHref} class="w-fit">
+            {$t('course.navItem.settings.setup_landing_page')}
+          </Button>
         {/if}
       </Field.Field>
 
-      <Field.Field>
-        <Field.Label for="course-final-exercise">
-          {$t('course.certification.final_exercise_label')}
+      <Field.Field id="tags" class="scroll-mt-24">
+        <Field.Label>
+          <a href="#tags" class="hover:underline">{$t('course.navItem.settings.tags.title')}</a>
         </Field.Label>
-        <Select.Root
-          type="single"
-          value={$settings.certificate.requiredExerciseId ?? 'none'}
-          onValueChange={onFinalExerciseChange}
-        >
-          <Select.Trigger class="w-full">
-            {finalExerciseTitle ?? $t('course.certification.final_exercise_none')}
-          </Select.Trigger>
-          <Select.Content>
-            <Select.Group>
-              <Select.Item value="none" label={$t('course.certification.final_exercise_none')}>
-                {$t('course.certification.final_exercise_none')}
-              </Select.Item>
-              {#each certExercises as item (item.id)}
-                <Select.Item value={item.id} label={item.title}>
-                  {item.title}
-                </Select.Item>
+        <Field.Description>{$t('course.navItem.settings.tags.description')}</Field.Description>
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-center gap-2">
+            {#if !selectedTagChips.length && !hasAnyTagsCreated}
+              <p class="ui:text-muted-foreground text-sm">{$t('course.navItem.settings.tags.none_created')}</p>
+            {:else if !selectedTagChips.length}
+              <p class="ui:text-muted-foreground text-sm">{$t('course.navItem.settings.tags.empty')}</p>
+            {:else}
+              {#each selectedTagChips as tag (tag.id)}
+                <Badge variant="outline" class="flex items-center gap-2">
+                  <span
+                    class="inline-block h-2.5 w-2.5 rounded-full border"
+                    style={`background-color: ${tag.color}`}
+                    aria-hidden="true"
+                  ></span>
+                  <span>{tag.name}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    class="h-5 w-5"
+                    onclick={() => removeSelectedTag(tag.id)}
+                  >
+                    <XIcon />
+                  </Button>
+                </Badge>
               {/each}
-            </Select.Group>
-          </Select.Content>
-        </Select.Root>
-        <Field.Description>{$t('course.certification.final_exercise_helper')}</Field.Description>
-        <Field.Description>{$t('course.certification.final_exercise_multiple_attempts_note')}</Field.Description>
+            {/if}
+
+            <CourseTagPicker
+              tagGroups={tagApi.tagGroups}
+              {selectedTagIds}
+              bind:open={isTagPopoverOpen}
+              onTagToggle={toggleTagSelection}
+              onTagCreated={toggleTagSelection}
+            />
+          </div>
+        </div>
       </Field.Field>
 
-      {#if $settings.certificate.requiredExerciseId}
-        <Field.Field>
-          <Field.Label for="course-min-exercise-score">
-            {$t('course.certification.min_exercise_score_label')}
-          </Field.Label>
-          <Input
-            id="course-min-exercise-score"
-            type="number"
-            min={0}
-            max={100}
-            class="w-full"
-            value={String($settings.certificate.exerciseMinScorePercent ?? 100)}
-            oninput={onMinExerciseScoreInput}
-          />
-          <Field.Description>{$t('course.certification.min_exercise_score_helper')}</Field.Description>
-          {#if courseApi.errors['certificate.exerciseMinScorePercent']}
-            <Field.Error>{courseApi.errors['certificate.exerciseMinScorePercent']}</Field.Error>
-          {/if}
-        </Field.Field>
-      {/if}
-    </Field.Group>
-  </Field.Set>
+      <SettingsSeparator />
 
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.welcome_email.title')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.welcome_email.description')}</Field.Description>
-    <div class="w-full max-w-md">
-      <TextEditor
-        content={$settings.welcomeEmailMessage}
-        placeholder={$t('course.navItem.settings.welcome_email.placeholder')}
-        class="w-full"
-        editorClass="h-auto! max-h-[200px] min-h-[120px]"
-        onChange={(text) => {
-          $settings.welcomeEmailMessage = text;
-          hasUnsavedChanges = true;
-        }}
-      />
-    </div>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.tags.title')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.tags.description')}</Field.Description>
-    <Field.Field>
-      <div class="space-y-3">
-        <div class="flex flex-wrap items-center gap-2">
-          {#if !selectedTagChips.length}
-            <p class="ui:text-muted-foreground text-sm">{$t('course.navItem.settings.tags.empty')}</p>
-          {:else}
-            {#each selectedTagChips as tag (tag.id)}
-              <Badge variant="outline" class="flex items-center gap-2">
-                <span
-                  class="inline-block h-2.5 w-2.5 rounded-full border"
-                  style={`background-color: ${tag.color}`}
-                  aria-hidden="true"
-                ></span>
-                <span>{tag.name}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  class="h-5 w-5"
-                  onclick={() => removeSelectedTag(tag.id)}
-                >
-                  <XIcon />
-                </Button>
-              </Badge>
-            {/each}
-          {/if}
-
-          <CourseTagPicker
-            tagGroups={tagApi.tagGroups}
-            {selectedTagIds}
-            bind:open={isTagPopoverOpen}
-            onTagToggle={toggleTagSelection}
-          />
-        </div>
-      </div>
-    </Field.Field>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.order')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.drag')}</Field.Description>
-    <Field.Field>
-      <ReorderMaterialTabs
-        onchange={() => {
-          hasUnsavedChanges = true;
-        }}
-      />
-    </Field.Field>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.content_grouping_title')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.content_grouping_description')}</Field.Description>
-    <Field.Field orientation="horizontal">
-      <Switch
-        id="content-grouping"
-        checked={$settings.isContentGroupingEnabled}
-        onCheckedChange={(checked) => {
-          console.log('checked', checked);
-          $settings.isContentGroupingEnabled = checked;
-          hasUnsavedChanges = true;
-        }}
-      />
-      <Label for="content-grouping">
-        {$settings.isContentGroupingEnabled
-          ? $t('course.navItem.settings.enabled')
-          : $t('course.navItem.settings.disabled')}
-      </Label>
-    </Field.Field>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.progression_mode_title')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
-    <Field.Field>
-      <RadioGroup.Root
-        value={$settings.progressionMode}
-        onValueChange={(value) => {
-          if (value === 'free' || value === 'sequential') {
-            $settings.progressionMode = value;
-            hasUnsavedChanges = true;
-          }
-        }}
-      >
-        <div class="flex flex-col gap-3">
-          <div class="flex items-center gap-2">
-            <RadioGroup.Item value="free" id="progression-free" />
-            <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
-          </div>
-          <div class="flex items-center gap-2">
-            <RadioGroup.Item value="sequential" id="progression-sequential" />
-            <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
-          </div>
-        </div>
-      </RadioGroup.Root>
-    </Field.Field>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <AttentionHighlight id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS}>
-    <Field.Set>
-      <Field.Legend>{$t('course.navItem.settings.comments.title')}</Field.Legend>
-      <Field.Description>{$t('course.navItem.settings.comments.description')}</Field.Description>
-      <Field.Field orientation="horizontal">
-        <Switch
-          id="course-comments"
-          checked={$settings.commentsEnabled}
-          onCheckedChange={(checked) => {
-            $settings.commentsEnabled = checked;
+      <Field.Field id="welcome-email" class="scroll-mt-24">
+        <Field.Label>
+          <a href="#welcome-email" class="hover:underline">{$t('course.navItem.settings.welcome_email.title')}</a>
+        </Field.Label>
+        <Field.Description>{$t('course.navItem.settings.welcome_email.description')}</Field.Description>
+        <TextEditor
+          content={$settings.welcomeEmailMessage}
+          placeholder={$t('course.navItem.settings.welcome_email.placeholder')}
+          class="w-full"
+          editorClass="h-auto! max-h-[200px] min-h-[120px]"
+          onChange={(text) => {
+            $settings.welcomeEmailMessage = text;
             hasUnsavedChanges = true;
           }}
         />
-        <Label for="course-comments">
-          {$settings.commentsEnabled
-            ? $t('course.navItem.settings.comments.enabled')
-            : $t('course.navItem.settings.comments.disabled')}
-        </Label>
       </Field.Field>
-    </Field.Set>
+    </Field.Group>
+  </SettingsCard>
+
+  <AttentionHighlight id="course-type" scrollBlock="center" class="scroll-mt-24">
+    <SettingsCard hash="course-type" title={$t('course.navItem.settings.type')}>
+      {#snippet description()}
+        {$t('course.navItem.settings.course_type_desc')}
+        <a
+          href="https://classroomio.com/help/create-and-deliver/course-types"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="ui:text-primary underline"
+        >
+          {$t('course.navItem.settings.course_type_learn_more')}
+        </a>
+      {/snippet}
+      <Field.Group>
+        <Field.Field>
+          <Select.Root
+            type="single"
+            value={$settings.type}
+            onValueChange={(value) => {
+              if (!value) return;
+              $settings.type = value as TCourseType;
+              if (value !== 'PUBLIC') {
+                delete courseApi.errors.type;
+                courseApi.publicConversionOffenders = [];
+                publicConversionFlow.cancel();
+              }
+              hasUnsavedChanges = true;
+            }}
+          >
+            <Select.Trigger class="w-full">
+              {$t(`course.navItem.settings.${$settings.type.toLowerCase()}`)}
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Group>
+                <Select.Item value="SELF_PACED" label={$t('course.navItem.settings.self_paced')}>
+                  {$t('course.navItem.settings.self_paced')}
+                </Select.Item>
+                <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
+                  {$t('course.navItem.settings.live_class')}
+                </Select.Item>
+                <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
+                  {$t('course.navItem.settings.compliance')}
+                </Select.Item>
+                <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
+                  {$t('course.navItem.settings.public')}
+                </Select.Item>
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+        </Field.Field>
+
+        {#if publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id && publicConversionFlow.offenders.length > 0}
+          {#if courseApi.course}
+            <PublicConversionSettingsCard
+              class="mt-4"
+              course={courseApi.course}
+              offenders={publicConversionFlow.offenders}
+              disabled={hasUnsavedChanges}
+              onCancel={() => {
+                if (courseApi.course) {
+                  $settings.type = (courseApi.course.type as TCourseType) || 'SELF_PACED';
+                  delete courseApi.errors.type;
+                  publicConversionFlow.cancel();
+                  hasUnsavedChanges = false;
+                }
+              }}
+            />
+          {/if}
+        {:else if courseApi.errors.type}
+          <p class="ui:text-destructive/90 mt-2 text-sm">{courseApi.errors.type}</p>
+        {/if}
+      </Field.Group>
+    </SettingsCard>
   </AttentionHighlight>
 
-  <Field.Separator />
+  <AttentionHighlight
+    id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_RULES}
+    scrollBlock="start"
+    class="scroll-mt-24"
+  >
+    <SettingsCard
+      hash={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_RULES}
+      title={$t('course.navItem.settings.completion_rules_card_title')}
+      description={$t('course.navItem.settings.completion_rules_card_desc')}
+    >
+      <Field.Group class="gap-4">
+        {#if cameFromCertificateSettings && certificateSettingsHref}
+          <div class="-my-2">
+            <BackButton
+              href={certificateSettingsHref}
+              label={$t('course.navItem.settings.back_to_certificate_settings')}
+              class="px-2! py-2!"
+              testId="course-settings-back-to-certificate-settings"
+            />
+          </div>
+        {/if}
 
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.lesson_download')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.available')}</Field.Description>
-    <Field.Field>
-      {#if $isFreePlan}
-        <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
-      {:else}
-        <div class="flex items-center space-x-2">
+        {#if areCompletionRulesLocked}
+          <UpgradeBanner>{$t('course.certification.completion_rules_upgrade')}</UpgradeBanner>
+        {/if}
+
+        <Field.Field id="progression-mode" class="scroll-mt-24">
+          <Field.Label>
+            <a href="#progression-mode" class="hover:underline"
+              >{$t('course.navItem.settings.progression_mode_title')}</a
+            >
+          </Field.Label>
+          <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
+          <RadioGroup.Root
+            value={$settings.progressionMode}
+            onValueChange={(value) => {
+              if (value === 'free' || value === 'sequential') {
+                $settings.progressionMode = value;
+                hasUnsavedChanges = true;
+              }
+            }}
+          >
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-2">
+                <RadioGroup.Item value="free" id="progression-free" />
+                <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
+              </div>
+              <div class="flex items-center gap-2">
+                <RadioGroup.Item value="sequential" id="progression-sequential" />
+                <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
+              </div>
+            </div>
+          </RadioGroup.Root>
+        </Field.Field>
+
+        <SettingsSeparator />
+
+        <AttentionHighlight
+          id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_DEADLINE}
+          trigger={completionDeadlineTrigger}
+          class="scroll-mt-24"
+        >
+          <Field.Field class="scroll-mt-24">
+            <Field.Label>
+              <a href="#{ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_DEADLINE}" class="hover:underline">
+                {$t('course.navItem.settings.completion_deadline_label')}
+              </a>
+            </Field.Label>
+            <Input
+              id="course-completion-deadline"
+              type="datetime-local"
+              class="w-full"
+              value={isoToDatetimeLocal($settings.certificate.deadline)}
+              onchange={onCompletionDeadlineChange}
+              disabled={areCompletionRulesLocked}
+            />
+            <Field.Description>{$t('course.navItem.settings.completion_deadline_helper')}</Field.Description>
+            {#if courseApi.errors['certificate.deadline']}
+              <Field.Error>{courseApi.errors['certificate.deadline']}</Field.Error>
+            {/if}
+          </Field.Field>
+        </AttentionHighlight>
+      </Field.Group>
+    </SettingsCard>
+  </AttentionHighlight>
+
+  {#if $settings.type === 'LIVE_CLASS' && courseApi.course?.id}
+    <SettingsCard
+      id="live-session-reminders"
+      title={$t('course.navItem.settings.live_session_reminders.legend')}
+      description={$t('course.navItem.settings.live_session_reminders.description')}
+    >
+      <Field.Group>
+        <ReminderPicker
+          bind:rows={$settings.liveSessionReminders}
+          onchange={() => {
+            hasUnsavedChanges = true;
+          }}
+        />
+
+        <SettingsSeparator />
+
+        <DeliveryLogSheet courseId={courseApi.course.id} timezone={courseApi.course.metadata?.sessionTimezone} />
+      </Field.Group>
+    </SettingsCard>
+  {/if}
+
+  <SettingsCard id="content" title={$t('course.navItem.settings.content_card_title')}>
+    <Field.Group>
+      <Field.Field id="lesson-tabs" class="scroll-mt-24">
+        <Field.Label>
+          <a href="#lesson-tabs" class="hover:underline">{$t('course.navItem.settings.order')}</a>
+        </Field.Label>
+        <Field.Description>{$t('course.navItem.settings.drag')}</Field.Description>
+        <ReorderMaterialTabs
+          onchange={() => {
+            hasUnsavedChanges = true;
+          }}
+        />
+      </Field.Field>
+
+      <SettingsSeparator />
+
+      <Field.Field class="scroll-mt-24" orientation="horizontal">
+        <Field.Content>
+          <Field.Label for="content-grouping">
+            <a href="#content-grouping" class="hover:underline"
+              >{$t('course.navItem.settings.content_grouping_title')}</a
+            >
+          </Field.Label>
+          <Field.Description>{$t('course.navItem.settings.content_grouping_description')}</Field.Description>
+        </Field.Content>
+        <Switch
+          id="content-grouping"
+          checked={$settings.isContentGroupingEnabled}
+          onCheckedChange={(checked) => {
+            $settings.isContentGroupingEnabled = checked;
+            hasUnsavedChanges = true;
+          }}
+        />
+      </Field.Field>
+
+      <SettingsSeparator />
+
+      <AttentionHighlight id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS} class="scroll-mt-24">
+        <Field.Field orientation="horizontal" class="scroll-mt-24">
+          <Field.Content>
+            <Field.Label>
+              <a href="#{ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS}" class="hover:underline"
+                >{$t('course.navItem.settings.comments.title')}</a
+              >
+            </Field.Label>
+            <Field.Description>{$t('course.navItem.settings.comments.description')}</Field.Description>
+          </Field.Content>
           <Switch
-            id="lesson-download"
-            checked={$settings.lessonDownload}
+            id="course-comments"
+            checked={$settings.commentsEnabled}
             onCheckedChange={(checked) => {
-              $settings.lessonDownload = checked;
+              $settings.commentsEnabled = checked;
               hasUnsavedChanges = true;
             }}
           />
-          <Label for="lesson-download">
-            {$settings.lessonDownload ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
-          </Label>
-        </div>
-      {/if}
-    </Field.Field>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.course_download')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.course_avail')}</Field.Description>
-    <Field.Field>
-      {#if $isFreePlan}
-        <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
-      {:else}
-        <Button variant="outline" onclick={downloadCourse} disabled={isLoading} loading={isLoading}>
-          {$t('course.navItem.settings.download')}
-        </Button>
-      {/if}
-    </Field.Field>
-  </Field.Set>
+        </Field.Field>
+      </AttentionHighlight>
+    </Field.Group>
+  </SettingsCard>
 
   {#if $settings.type === 'PUBLIC' && $settings.callout}
-    <Field.Separator />
-
-    <Field.Set>
-      <Field.Legend>{$t('course.navItem.settings.callout.legend')}</Field.Legend>
-      <Field.Description>{$t('course.navItem.settings.callout.description')}</Field.Description>
-
+    <SettingsCard
+      id="callout"
+      title={$t('course.navItem.settings.callout.legend')}
+      description={$t('course.navItem.settings.callout.description')}
+    >
       <Field.Group>
         <Field.Field>
           <Field.Label>{$t('course.navItem.settings.callout.title_label')}</Field.Label>
           <InputField
             bind:value={$settings.callout.title}
-            onInputChange={() => (hasUnsavedChanges = true)}
+            onInput={() => (hasUnsavedChanges = true)}
             placeholder={$t('course.navItem.settings.callout.title_placeholder')}
           />
         </Field.Field>
@@ -1014,7 +1035,7 @@
           <Field.Label>{$t('course.navItem.settings.callout.button_label')}</Field.Label>
           <InputField
             bind:value={$settings.callout.buttonLabel}
-            onInputChange={() => (hasUnsavedChanges = true)}
+            onInput={() => (hasUnsavedChanges = true)}
             placeholder={$t('course.navItem.settings.callout.button_label_placeholder')}
           />
         </Field.Field>
@@ -1023,7 +1044,7 @@
           <Field.Label>{$t('course.navItem.settings.callout.button_url_label')}</Field.Label>
           <InputField
             bind:value={$settings.callout.buttonUrl}
-            onInputChange={() => (hasUnsavedChanges = true)}
+            onInput={() => (hasUnsavedChanges = true)}
             placeholder={$t('course.navItem.settings.callout.button_url_placeholder')}
             type="url"
           />
@@ -1044,7 +1065,7 @@
               );
               hasUnsavedChanges = true;
             }}
-            class="ui:mt-1 flex flex-col gap-2"
+            class="mt-1 flex flex-col gap-2"
           >
             <Field.Field orientation="horizontal">
               <RadioGroup.Item value="waves" id="callout-animation-waves" />
@@ -1066,97 +1087,171 @@
             </Field.Field>
           </RadioGroup.Root>
         </Field.Field>
-      </Field.Group>
 
-      <Field.Field>
-        <Button
-          variant="outline"
-          size="sm"
-          onclick={() => {
-            settings.update((prev) => ({ ...prev, callout: null }));
-            hasUnsavedChanges = true;
-          }}
-        >
-          {$t('course.navItem.settings.callout.clear')}
-        </Button>
-      </Field.Field>
-    </Field.Set>
-  {/if}
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.allow')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.access')}</Field.Description>
-    <Field.Field orientation="horizontal">
-      <Switch
-        id="allow-self-enrollment"
-        checked={$settings.allowSelfEnrollment}
-        onCheckedChange={(checked) => {
-          $settings.allowSelfEnrollment = checked;
-          hasUnsavedChanges = true;
-        }}
-      />
-      <Label for="allow-self-enrollment">
-        {$settings.allowSelfEnrollment ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
-      </Label>
-    </Field.Field>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set id="publish">
-    <Field.Legend>{$t('course.navItem.settings.publish')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
-    <AttentionHighlight id="publish">
-      <Field.Field orientation="horizontal">
-        <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
-        <Label for="publish">
-          {$settings.isPublished ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
-        </Label>
-      </Field.Field>
-    </AttentionHighlight>
-
-    {#if showLockedContentNotice}
-      <Alert.Root variant={isLiveClassCourse ? 'information' : 'warning'}>
-        <LockOpenIcon />
-        <Alert.Title>
-          {$t('course.navItem.settings.locked_content.title', { count: lockedContentItems.length })}
-        </Alert.Title>
-        <Alert.Description>
-          {isLiveClassCourse
-            ? $t('course.navItem.settings.locked_content.description_live')
-            : $t('course.navItem.settings.locked_content.description')}
+        <Field.Field>
           <Button
             variant="outline"
             size="sm"
-            class="mt-2 w-fit"
-            loading={isUnlockingAll}
-            disabled={isUnlockingAll}
-            onclick={handleUnlockAllContent}
+            onclick={() => {
+              settings.update((prev) => ({ ...prev, callout: null }));
+              hasUnsavedChanges = true;
+            }}
           >
-            {$t('course.navItem.settings.locked_content.unlock_all')}
+            {$t('course.navItem.settings.callout.clear')}
           </Button>
-        </Alert.Description>
-      </Alert.Root>
-    {/if}
-  </Field.Set>
+        </Field.Field>
+      </Field.Group>
+    </SettingsCard>
+  {/if}
 
-  <Field.Separator />
+  <SettingsCard id="access" title={$t('course.navItem.settings.access_card_title')}>
+    <Field.Group>
+      {#if !courseApi.course?.isTemplate}
+        <Field.Set id="self-enrollment" class="scroll-mt-24">
+          <Field.Field orientation="horizontal">
+            <Field.Content>
+              <Field.Label for="allow-self-enrollment">
+                <a href="#self-enrollment" class="hover:underline">{$t('course.navItem.settings.allow')}</a>
+              </Field.Label>
+              <Field.Description>
+                {selfEnrollmentAccessParts.before}<a
+                  href={peoplePageHref}
+                  data-testid="course-settings-people-link"
+                  class="ui:text-primary">{$t('course.navItem.settings.access_people')}</a
+                >{selfEnrollmentAccessParts.after}
+              </Field.Description>
+            </Field.Content>
+            <Switch
+              id="allow-self-enrollment"
+              checked={$settings.allowSelfEnrollment}
+              onCheckedChange={(checked) => {
+                $settings.allowSelfEnrollment = checked;
+                hasUnsavedChanges = true;
+              }}
+            />
+          </Field.Field>
+        </Field.Set>
 
-  <Field.Set id="delete">
-    <Field.Legend>{$t('course.navItem.settings.delete')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.delete_text')}</Field.Description>
-    <Field.Field>
-      <Button
-        variant="destructive"
-        onclick={() => (openDeleteModal = true)}
-        loading={isDeleting}
-        disabled={isDeleting}
-        class="w-fit!"
-      >
-        {$t('course.navItem.settings.delete')}
-      </Button>
-    </Field.Field>
-  </Field.Set>
-</Field.Group>
+        <SettingsSeparator />
+      {/if}
+
+      {#if !courseApi.course?.isTemplate}
+        <Field.Set id="publish" class="scroll-mt-24">
+          <AttentionHighlight id="publish">
+            <Field.Field orientation="horizontal">
+              <Field.Content>
+                <Field.Label for="is-published">
+                  <a href="#publish" class="hover:underline">{$t('course.navItem.settings.publish')}</a>
+                </Field.Label>
+                <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
+              </Field.Content>
+              <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
+            </Field.Field>
+          </AttentionHighlight>
+
+          {#if showLockedContentNotice}
+            <Alert.Root variant={isLiveClassCourse ? 'information' : 'warning'}>
+              <LockOpenIcon />
+              <Alert.Title>
+                {$t('course.navItem.settings.locked_content.title', { count: lockedContentItems.length })}
+              </Alert.Title>
+              <Alert.Description>
+                {isLiveClassCourse
+                  ? $t('course.navItem.settings.locked_content.description_live')
+                  : $t('course.navItem.settings.locked_content.description')}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="mt-2 w-fit"
+                  loading={isUnlockingAll}
+                  disabled={isUnlockingAll}
+                  onclick={handleUnlockAllContent}
+                >
+                  {$t('course.navItem.settings.locked_content.unlock_all')}
+                </Button>
+              </Alert.Description>
+            </Alert.Root>
+          {/if}
+        </Field.Set>
+
+        <SettingsSeparator />
+      {/if}
+
+      {#if $isFreePlan}
+        <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
+      {:else}
+        <Field.Field class="scroll-mt-24" orientation="horizontal">
+          <Field.Content>
+            <Field.Label for="lesson-download">
+              <a href="#lesson-download" class="hover:underline">{$t('course.navItem.settings.lesson_download')}</a>
+            </Field.Label>
+            <Field.Description>{$t('course.navItem.settings.available')}</Field.Description>
+          </Field.Content>
+          <Switch
+            id="lesson-download"
+            checked={$settings.lessonDownload}
+            onCheckedChange={(checked) => {
+              $settings.lessonDownload = checked;
+              hasUnsavedChanges = true;
+            }}
+          />
+        </Field.Field>
+      {/if}
+
+      <SettingsSeparator />
+
+      {#if $isFreePlan}
+        <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
+      {:else}
+        <Field.Field id="course-download" class="scroll-mt-24" orientation="horizontal">
+          <Field.Content>
+            <Field.Label>
+              <a href="#course-download" class="hover:underline">{$t('course.navItem.settings.course_download')}</a>
+            </Field.Label>
+            <Field.Description>{$t('course.navItem.settings.course_avail')}</Field.Description>
+          </Field.Content>
+          <Button variant="outline" onclick={downloadCourse} disabled={isLoading} loading={isLoading}>
+            {$t('course.navItem.settings.download')}
+          </Button>
+        </Field.Field>
+      {/if}
+
+      <SettingsSeparator />
+
+      <Field.Field id="markdown-export" class="scroll-mt-24" orientation="horizontal">
+        <Field.Content>
+          <Field.Label for="allow-markdown-export">
+            <a href="#markdown-export" class="hover:underline">{$t('course.navItem.settings.allow_markdown_export')}</a>
+          </Field.Label>
+          <Field.Description>{$t('course.navItem.settings.allow_markdown_export_description')}</Field.Description>
+        </Field.Content>
+        <Switch
+          id="allow-markdown-export"
+          checked={$settings.allowMarkdownExport}
+          onCheckedChange={(checked) => {
+            $settings.allowMarkdownExport = checked;
+            hasUnsavedChanges = true;
+          }}
+        />
+      </Field.Field>
+    </Field.Group>
+  </SettingsCard>
+
+  <TemplateSettingsSection />
+
+  <SettingsCard
+    id="delete"
+    title={$t('course.navItem.settings.delete')}
+    description={$t('course.navItem.settings.delete_text')}
+  >
+    <Button
+      variant="destructive"
+      onclick={() => (openDeleteModal = true)}
+      loading={isDeleting}
+      disabled={isDeleting}
+      class="w-fit!"
+    >
+      {$t('course.navItem.settings.delete')}
+    </Button>
+  </SettingsCard>
+</div>

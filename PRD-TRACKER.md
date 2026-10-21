@@ -8,6 +8,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | --- | --- | --- | --- |
 | - | - | `prd/super-admin` | draft |
 | - | - | `prd/embed-link-platforms` | draft |
+| - | - | `prd/short-links` | proposal |
 | - | - | `prd/mobile-app` | draft (blocked on `prd/notification-system` for push) |
 | 1 | - | `prd/notification-system` | todo |
 | 2 | 14 | `prd/course-templates` | todo |
@@ -28,15 +29,16 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/release-process` | draft |
 | - | - | `prd/events` | draft |
 | - | - | `prd/plugin-system` | proposal |
-| - | - | `prd/youtube-embed-transcripts` | draft |
 | - | - | `prd/interactive-video-checkpoints` | draft (prototyped) |
 | - | - | `prd/scroll-to-top` | draft |
 | - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
+| - | - | `prd/gamification` | draft (prototyped; learner XP, streaks, badges, leaderboards, admin settings) |
 
 ## DONE (Completed PRDs)
 
 | PRD | Status |
 | --- | --- |
+| `prd/add-content-created [DONE]` | done |
 | `prd/ai-course-assistant [DONE]` | done |
 | `prd/compliance-training-platform [DONE]` | done |
 | `prd/course-widget-embed [DONE]` | done |
@@ -54,5 +56,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | `prd/reset-student-course-progress [DONE]` | done |
 | `prd/secure-student-invites [DONE]` | done |
 | `prd/self-host-single-org.md` | done |
+| `prd/student-profile-redesign [DONE]` | done |
 | `prd/tags-feature [DONE]` | done |
 | `prd/video-recording-question-type [DONE]` | done |
+| `prd/youtube-embed-transcripts [DONE]` | done |

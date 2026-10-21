@@ -1,22 +1,30 @@
 <script lang="ts">
   import * as Table from '@cio/ui/base/table';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import * as Tooltip from '@cio/ui/base/tooltip';
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Badge } from '@cio/ui/base/badge';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
+  import { CertificateIcon } from '@cio/ui/custom/moving-icons';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import type { ResolvedPathname } from '$app/paths';
   import type { OrganizationAudienceMember } from '$features/org/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { PercentRingProgress } from '@cio/ui/custom/percent-ring-progress';
   import {
     canResendAudienceInvite,
     canRevokeAudienceInvite,
+    formatActivityAge,
+    formatActivityExact,
+    memberStatusBadgeVariant,
+    memberStatusLabelKey,
     statusBadgeVariant,
     statusLabelKey
   } from '$features/audience/utils/audience-utils';
 
   interface Props {
     row: OrganizationAudienceMember;
-    memberDetailHref: string | null;
+    memberDetailHref: ResolvedPathname | null;
     selected: boolean;
     onToggleSelect: () => void;
     inviteActionEmail: string | null;
@@ -45,30 +53,100 @@
   );
   const isActionDisabled = $derived(inviteActionEmail === row.email || deletingMemberId === String(row.id));
   const showRowActions = $derived(showInviteActions || canDeleteMembers);
+
+  const lastLoginAge = $derived(formatActivityAge(row.lastLoginAt));
+  const lastActiveAge = $derived(formatActivityAge(row.lastActiveAt));
+  // Suspended learners read as muted so a filtered list makes their state
+  // obvious without needing the status column.
+  const isSuspended = $derived(row.memberStatus !== 'ACTIVE');
+
+  const certificateTooltip = $derived(
+    $t(row.certificateCount === 1 ? 'audience.certificate_earned' : 'audience.certificates_earned', {
+      count: row.certificateCount
+    })
+  );
+
+  let isRowHovered = $state(false);
 </script>
 
-<Table.Row>
-  <Table.Cell class="w-10">
-    <Checkbox disabled={!row.profileId} checked={selected} onCheckedChange={onToggleSelect} />
-  </Table.Cell>
-  <Table.Cell>
+{#snippet nameCellContent(triggerProps: Record<string, unknown>)}
+  <div {...triggerProps} class="flex items-center gap-2">
     {#if memberDetailHref}
-      <a href={memberDetailHref} class="ui:text-primary flex items-center gap-2 hover:underline">
+      <a href={memberDetailHref} class="ui:text-primary inline-flex items-center gap-2 hover:underline">
         <UserAvatar src={row.avatarUrl} alt={row.name ?? 'User'} class="h-5 w-5" />
         {row.name}
       </a>
     {:else}
-      <span class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-2">
         <UserAvatar src={row.avatarUrl} alt={row.name ?? 'User'} class="h-5 w-5" />
         {row.name}
       </span>
     {/if}
+
+    {#if row.certificateCount > 0}
+      <span class="inline-flex items-center gap-1" aria-hidden="true">
+        <span
+          class="inline-flex items-center justify-center rounded-full bg-amber-100 p-1 text-amber-800 dark:bg-amber-500/20 dark:text-amber-200"
+        >
+          <CertificateIcon size={14} isHovered={isRowHovered} />
+        </span>
+        {#if row.certificateCount > 1}
+          <span
+            class="rounded-full bg-amber-100 px-1.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-500/20 dark:text-amber-200"
+          >
+            {row.certificateCount}
+          </span>
+        {/if}
+      </span>
+    {/if}
+  </div>
+{/snippet}
+
+<Table.Row
+  class={isSuspended ? 'ui:text-muted-foreground' : undefined}
+  onmouseenter={() => (isRowHovered = true)}
+  onmouseleave={() => (isRowHovered = false)}
+>
+  <Table.Cell class="w-10">
+    <Checkbox disabled={!row.profileId} checked={selected} onCheckedChange={onToggleSelect} />
+  </Table.Cell>
+  <Table.Cell>
+    {#if row.certificateCount > 0}
+      <Tooltip.Root>
+        <Tooltip.Trigger>
+          {#snippet child({ props })}
+            {@render nameCellContent(props)}
+          {/snippet}
+        </Tooltip.Trigger>
+        <Tooltip.Content side="top" sideOffset={4}>{certificateTooltip}</Tooltip.Content>
+      </Tooltip.Root>
+    {:else}
+      {@render nameCellContent({})}
+    {/if}
   </Table.Cell>
   <Table.Cell>{row.email}</Table.Cell>
   <Table.Cell>
-    <Badge variant={statusBadgeVariant(row.status)}>{$t(statusLabelKey(row.status))}</Badge>
+    {#if isSuspended}
+      <Badge variant={memberStatusBadgeVariant(row.memberStatus)}>
+        {$t(memberStatusLabelKey(row.memberStatus))}
+      </Badge>
+    {:else}
+      <Badge variant={statusBadgeVariant(row.status)}>{$t(statusLabelKey(row.status))}</Badge>
+    {/if}
   </Table.Cell>
-  <Table.Cell>{row.createdAt}</Table.Cell>
+  <Table.Cell class="whitespace-nowrap">
+    {$t('audience.enrolled_ratio', { completed: row.completedCount, total: row.enrolledCount })}
+  </Table.Cell>
+  <Table.Cell>
+    <PercentRingProgress value={row.progressPercent} />
+  </Table.Cell>
+  <Table.Cell class="whitespace-nowrap" title={formatActivityExact(row.lastLoginAt)}>
+    {lastLoginAge ?? $t('audience.never')}
+  </Table.Cell>
+  <Table.Cell class="whitespace-nowrap" title={formatActivityExact(row.lastActiveAt)}>
+    {lastActiveAge ?? $t('audience.never')}
+  </Table.Cell>
+  <Table.Cell class="whitespace-nowrap">{row.createdAt}</Table.Cell>
   <Table.Cell class="text-right">
     {#if showRowActions}
       <DropdownMenu.Root>

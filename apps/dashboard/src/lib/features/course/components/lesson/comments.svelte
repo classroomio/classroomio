@@ -12,6 +12,7 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { lessonApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
+  import { ReportMenuItem } from '$features/report';
 
   interface Props {
     lessonId: string;
@@ -23,6 +24,7 @@
   let openDeleteModal = $state(false);
   let deleteCommentId: number | null = $state(null);
   let editCommentId: number | null = $state(null);
+  let editingText = $state('');
 
   const courseId = $derived(courseApi.course?.id ?? '');
   const groupmemberId = $derived(courseApi.group.memberId ?? '');
@@ -130,15 +132,22 @@
               </span>
             </p>
 
-            {#if courseApi.group.memberId === commentItem.groupmemberId}
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger
-                  class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
-                >
-                  <EllipsisVerticalIcon class="size-4" />
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content align="end">
-                  <DropdownMenu.Item onclick={() => (editCommentId = commentItem.id)}>Edit</DropdownMenu.Item>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger
+                class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
+              >
+                <EllipsisVerticalIcon class="size-4" />
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                {#if courseApi.group.memberId === commentItem.groupmemberId}
+                  <DropdownMenu.Item
+                    onclick={() => {
+                      editCommentId = commentItem.id;
+                      editingText = commentItem.comment ?? '';
+                    }}
+                  >
+                    {$t('course.navItem.lessons.comments.edit')}
+                  </DropdownMenu.Item>
                   <DropdownMenu.Item
                     class="text-red-600"
                     onclick={() => {
@@ -146,30 +155,29 @@
                       openDeleteModal = true;
                     }}
                   >
-                    Delete
+                    {$t('course.navItem.lessons.comments.delete')}
                   </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            {/if}
+                {:else}
+                  <ReportMenuItem targetType="lesson_comment" targetId={commentItem.id} />
+                {/if}
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
           </div>
 
           {#if editCommentId === commentItem.id}
-            <TextareaField
-              placeholder={$t('course.navItem.lessons.comments.placeholder')}
-              bind:value={commentItem.comment}
-            />
+            <TextareaField placeholder={$t('course.navItem.lessons.comments.placeholder')} bind:value={editingText} />
             <div class="mt-2 flex flex-row-reverse items-center gap-2">
               <Button variant="outline" onclick={() => (editCommentId = null)} disabled={lessonApi.isUpdatingComment}>
                 {$t('course.navItem.lessons.comments.cancel_btn')}
               </Button>
               <Button
                 onclick={async () => {
-                  await lessonApi.updateComment(courseId, lessonId, String(editCommentId), commentItem.comment!);
+                  await lessonApi.updateComment(courseId, lessonId, String(editCommentId), editingText);
                   if (lessonApi.success) {
                     editCommentId = null;
                   }
                 }}
-                disabled={!commentItem.comment}
+                disabled={!editingText.trim()}
                 loading={lessonApi.isUpdatingComment}
               >
                 {$t('course.navItem.lessons.comments.comment_btn')}

@@ -17,8 +17,9 @@ import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organizatio
 import { ROLE } from '@cio/utils/constants';
 import type { TProfile } from '@cio/db/types';
 import type { TUpdateProfile } from '@cio/utils/validation/account';
+import { countOrgTemplates } from '@cio/db/queries/course';
 import { env } from '@cio/core/config/env';
-import { getLicenseStatus } from '@api/services/license';
+import { getLicenseStatus } from '@cio/core/services/license';
 
 export type GetAccountDataResult = {
   profile: TProfile;
@@ -77,8 +78,13 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
         const activePlan = org.plans.find((plan) => plan.isActive);
         const studentsUsed = await countActiveStudents(org.id);
         const studentsLimit = getPlanLimit('students', activePlan?.planName);
+        const templatesUsed = await countOrgTemplates(org.id);
+        const templatesLimit = getPlanLimit('templates', activePlan?.planName);
 
-        org.limits = { students: toResourceUsage(studentsUsed, studentsLimit) };
+        org.limits = {
+          students: toResourceUsage(studentsUsed, studentsLimit),
+          templates: toResourceUsage(templatesUsed, templatesLimit)
+        };
       })
     );
   }

@@ -66,3 +66,17 @@ export const EXERCISE_CREATE_TYPE = {
 } as const;
 
 export type ExerciseCreateType = (typeof EXERCISE_CREATE_TYPE)[keyof typeof EXERCISE_CREATE_TYPE];
+
+/** Success message translation keys keyed by created ContentType */
+export const SUCCESS_SENTENCE_KEYS: Record<ContentType, string> = {
+  [ContentType.Section]: 'course.navItem.lessons.add_content_created_section',
+  [ContentType.Lesson]: 'course.navItem.lessons.add_content_created_lesson',
+  [ContentType.Exercise]: 'course.navItem.lessons.add_content_created_exercise'
+};
+
+/** "Create another" button label translation keys keyed by ContentType */
+export const REPEAT_LABEL_KEYS: Record<ContentType, string> = {
+  [ContentType.Section]: 'course.navItem.lessons.add_content_create_another_section',
+  [ContentType.Lesson]: 'course.navItem.lessons.add_content_create_another_lesson',
+  [ContentType.Exercise]: 'course.navItem.lessons.add_content_create_another_exercise'
+};

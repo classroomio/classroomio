@@ -6,7 +6,7 @@
   } from '@cio/question-types';
   import { Button } from '../../../../base/button';
   import { Checkbox } from '../../../../base/checkbox';
-  import { Input } from '../../../../base/input';
+  import { NumberField } from '../../../number-field';
   import * as Popover from '../../../../base/popover';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import {
@@ -51,27 +51,6 @@
   const platformMaxMb = $derived(resolveExerciseFileUploadMaxSizeMb(undefined, platformMaxFileSizeMb));
 
   const rawMaxSize = $derived(question.settings?.maxSizeMb as number | undefined);
-  const maxSizeMb = $derived(
-    typeof rawMaxSize === 'number' && !Number.isNaN(rawMaxSize) && rawMaxSize >= 0
-      ? String(Math.min(rawMaxSize, platformMaxMb))
-      : ''
-  );
-
-  $effect(() => {
-    const raw = question.settings?.maxSizeMb as number | undefined;
-    if (typeof raw === 'number' && raw > platformMaxMb) {
-      patchSettings({ maxSizeMb: platformMaxMb });
-    }
-  });
-
-  function onMaxSizeChange(value: string) {
-    const num = Number(value);
-    if (value === '' || Number.isNaN(num)) {
-      patchSettings({ maxSizeMb: undefined });
-      return;
-    }
-    patchSettings({ maxSizeMb: Math.min(platformMaxMb, Math.max(0, num)) });
-  }
 </script>
 
 <div class="ui:space-y-3">
@@ -113,15 +92,15 @@
 
     <div class="ui:space-y-1">
       <p class="ui:text-sm ui:font-medium">{label('file_upload.preview.max_size_label')}</p>
-      <Input
-        type="number"
-        min="0"
+      <NumberField
+        min={0}
         max={platformMaxMb}
-        step="0.1"
+        step={0.1}
         placeholder={label('file_upload.edit.max_size_placeholder')}
-        value={maxSizeMb}
-        {disabled}
-        onchange={(event) => onMaxSizeChange(event.currentTarget.value)}
+        value={typeof rawMaxSize === 'number' && Number.isFinite(rawMaxSize) ? rawMaxSize : null}
+        isDisabled={disabled}
+        allowEmpty
+        onValueChange={(next) => patchSettings({ maxSizeMb: next ?? undefined })}
       />
     </div>
   </div>

@@ -9,6 +9,8 @@
 
   import { t } from '$lib/utils/functions/translations';
   import type { AiTutorSettings } from '@cio/ai-assistant/tutor-config';
+  import { FieldDraft } from '@cio/ui/hooks/field-draft.svelte';
+  import { NumberField } from '@cio/ui/custom/number-field';
 
   interface Props {
     store: Writable<AiTutorSettings>;
@@ -49,20 +51,21 @@
     { value: 'workspace', labelKey: 'aiTutor.groundingScope.workspace' as const }
   ];
 
-  let forbiddenTopicsInput = $state($store.forbiddenTopics.join(', '));
-
-  $effect(() => {
-    forbiddenTopicsInput = $store.forbiddenTopics.join(', ');
-  });
-
-  function syncForbiddenTopics() {
-    const list = forbiddenTopicsInput
+  function parseForbiddenTopics(text: string): string[] {
+    return text
       .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0)
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0)
       .slice(0, 20);
-    store.update((value) => ({ ...value, forbiddenTopics: list }));
   }
+
+  const forbiddenTopics = new FieldDraft<string[]>({
+    value: () => $store.forbiddenTopics,
+    format: (topics) => topics.join(', '),
+    parse: parseForbiddenTopics,
+    normalize: parseForbiddenTopics,
+    onChange: (topics) => store.update((value) => ({ ...value, forbiddenTopics: topics }))
+  });
 </script>
 
 <Field.Group>
@@ -160,8 +163,9 @@
       <Field.Field>
         <Field.Label>{$t('aiTutor.field.forbiddenTopics')}</Field.Label>
         <Input
-          bind:value={forbiddenTopicsInput}
-          onblur={syncForbiddenTopics}
+          value={forbiddenTopics.draft}
+          oninput={(event) => forbiddenTopics.input(event.currentTarget.value)}
+          onchange={() => forbiddenTopics.commit()}
           placeholder={$t('aiTutor.field.forbiddenTopics_placeholder')}
           {disabled}
         />
@@ -206,17 +210,7 @@
 
       <Field.Field>
         <Field.Label>{$t('aiTutor.field.revealSolutionsAfterAttempts')}</Field.Label>
-        <Input
-          type="number"
-          min="0"
-          max="20"
-          value={$store.revealSolutionsAfterAttempts}
-          oninput={(e) => {
-            const v = Number((e.target as HTMLInputElement).value);
-            if (Number.isFinite(v)) store.update((s) => ({ ...s, revealSolutionsAfterAttempts: v }));
-          }}
-          {disabled}
-        />
+        <NumberField integer min={0} max={20} bind:value={$store.revealSolutionsAfterAttempts} isDisabled={disabled} />
         <Field.Description>{$t('aiTutor.field.revealSolutionsAfterAttempts_description')}</Field.Description>
       </Field.Field>
 

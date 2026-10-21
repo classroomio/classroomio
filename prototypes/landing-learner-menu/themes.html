@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learner menu — theme fidelity</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="landing-theme.css" />
+    <style>
+      html,
+      body {
+        background: #f3f3f4;
+        color: #111114;
+        font-family: 'Inter', system-ui, sans-serif;
+      }
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 32px 120px;
+      }
+      .page-head {
+        max-width: 760px;
+        margin-bottom: 36px;
+      }
+      .page-head h1 {
+        font-size: 30px;
+        letter-spacing: -0.03em;
+      }
+      .page-head p {
+        margin-top: 12px;
+        color: #6e6e77;
+        font-size: 14.5px;
+      }
+      .page-head code {
+        background: #e7e7ea;
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-size: 12.5px;
+      }
+      .themes {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+        gap: 26px;
+      }
+      /* Each tile is its own theme scope — exactly what themeStyle(theme) does at runtime. */
+      .tile {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #dedee2;
+        background: var(--landing-bg);
+        color: var(--landing-fg);
+        font-family: var(--landing-font);
+      }
+      .tile-label {
+        font-family: 'Inter', system-ui, sans-serif;
+        font-size: 11.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 9px 14px;
+        background: #111114;
+        color: #fff;
+      }
+      .tile-body {
+        padding: 16px;
+      }
+      .tile .nav-in {
+        height: 50px;
+        padding: 0;
+        gap: 10px;
+      }
+      .tile .lm-panel.static {
+        margin-left: auto;
+        margin-top: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="page-head">
+        <h1>Theme fidelity across the 11 landing themes</h1>
+        <p>
+          The menu reads only from <code>--landing-*</code> variables, so each theme's radius, border
+          weight, palette and typeface carry through with no per-theme code. Five representative
+          themes shown; the Storybook story covers all eleven. Note the portalled popover must
+          re-apply <code>themeStyle(theme)</code> — each tile below is its own theme scope,
+          demonstrating that.
+        </p>
+      </div>
+
+      <div class="themes" id="themes"></div>
+    </div>
+
+    <div class="proto-bar">
+      <span class="proto-tag">Theme fidelity</span>
+      <a href="index.html">Map</a>
+      <a href="learner-member.html">Member</a>
+      <a href="menu-states.html">States</a>
+    </div>
+
+    <template id="tpl">
+      <div class="tile-body">
+        <div class="nav-in">
+          <a class="logo" href="#"><i></i> <span class="org"></span></a>
+          <div class="nav-right">
+            <a class="btn btn-sm btn-primary" href="#">Continue Learning</a>
+            <img class="lm-avatar" src="avatar.svg" alt="" />
+          </div>
+        </div>
+        <div class="lm">
+          <div class="lm-panel static">
+            <div class="lm-identity">
+              <div class="lm-name">Rotimi Best</div>
+              <div class="lm-email">rotimi@northwind.com</div>
+            </div>
+            <div class="lm-sep"></div>
+            <a class="lm-item" href="#">My Courses</a>
+            <a class="lm-item" href="#">My Certificates</a>
+            <a class="lm-item" href="#">Account Settings</a>
+            <div class="lm-sep"></div>
+            <div class="lm-theme-row">
+              <span>Theme</span>
+              <div class="lm-seg">
+                <button type="button" aria-pressed="true">☀</button>
+                <button type="button" aria-pressed="false">☾</button>
+                <button type="button" aria-pressed="false">▭</button>
+              </div>
+            </div>
+            <div class="lm-sep"></div>
+            <a class="lm-item" href="#">Log Out</a>
+            <div class="lm-cta"><a class="btn btn-primary btn-full" href="#">Continue Learning</a></div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      const THEMES = [
+        { key: 'quartz', org: 'SMI Consulting' },
+        { key: 'bold', org: 'Northwind Labs' },
+        { key: 'terminal', org: 'runtime.sh' },
+        { key: 'editorial', org: 'The Practice' },
+        { key: 'vibrant', org: 'Kite Academy' }
+      ];
+
+      const host = document.getElementById('themes');
+      const tpl = document.getElementById('tpl');
+
+      THEMES.forEach(function (theme) {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.setAttribute('data-landing-theme', theme.key);
+
+        const label = document.createElement('div');
+        label.className = 'tile-label';
+        label.textContent = theme.key;
+        tile.appendChild(label);
+
+        const body = tpl.content.cloneNode(true);
+        body.querySelector('.org').textContent = theme.org;
+        tile.appendChild(body);
+
+        host.appendChild(tile);
+      });
+    </script>
+    <script src="menu.js"></script>
+  </body>
+</html>

@@ -131,6 +131,14 @@
     video.type === 'upload' && typeof video.key === 'string' && video.key.length > 0 ? video.key : null
   );
 
+  // YouTube assets also register on the transcript bus so the side panel
+  // can display their captions once fetched.
+  const youtubeAssetId =
+    video.type === 'youtube' ? ((video as LessonVideo & { assetId?: string }).assetId ?? null) : null;
+
+  /** The assetId used for transcript loading — upload or YouTube. */
+  const transcriptAssetId = uploadAssetId ?? youtubeAssetId;
+
   /** Refresh ~10 minutes before server presign expiry (1 hour). */
   const PLAYBACK_URL_REFRESH_MS = 50 * 60 * 1000;
 
@@ -156,9 +164,9 @@
   }
 
   function syncTranscriptToRegistry(): void {
-    if (!uploadAssetId) return;
+    if (!transcriptAssetId) return;
 
-    lessonVideoBus.updateTranscriptSource(uploadAssetId, {
+    lessonVideoBus.updateTranscriptSource(transcriptAssetId, {
       transcript: localTranscript,
       transcriptLoading: localTranscriptLoading
     });
@@ -367,7 +375,7 @@
   }
 
   async function loadTranscript(): Promise<void> {
-    if (!uploadAssetId) {
+    if (!transcriptAssetId) {
       if (isMounted) {
         localTranscript = null;
         syncTranscriptToRegistry();
@@ -382,7 +390,7 @@
     syncTranscriptToRegistry();
 
     try {
-      const data = await mediaApi.getAssetTranscript(uploadAssetId);
+      const data = await mediaApi.getAssetTranscript(transcriptAssetId);
 
       if (!isMounted) return;
 
@@ -398,11 +406,11 @@
   }
 
   async function watchJobsUntilTerminalThenReload(): Promise<void> {
-    if (!uploadAssetId || localTranscript || !isMounted) return;
+    if (!transcriptAssetId || localTranscript || !isMounted) return;
 
     stopJobPoller();
 
-    const runs = await jobsApi.getMediaJobsForAsset(uploadAssetId);
+    const runs = await jobsApi.getMediaJobsForAsset(transcriptAssetId);
 
     if (!isMounted) return;
 
@@ -500,18 +508,19 @@
   }
 
   onMount(() => {
-    if (uploadAssetId) {
+    // Register on the transcript bus for both upload and YouTube assets
+    if (transcriptAssetId) {
       lessonVideoBus.registerTranscriptSource({
-        assetId: uploadAssetId,
+        assetId: transcriptAssetId,
         videoIndex,
         transcript: null,
         transcriptLoading: false,
         currentTimeSeconds: 0,
-        seek: (seconds) => localSeekFn(seconds)
+        seek: video.type === 'youtube' ? () => {} : (seconds) => localSeekFn(seconds)
       });
     }
 
-    if (lessonVideoBus.assetId === null || lessonVideoBus.assetId === uploadAssetId) {
+    if (uploadAssetId && (lessonVideoBus.assetId === null || lessonVideoBus.assetId === uploadAssetId)) {
       syncPlaybackBus();
     }
 
@@ -533,8 +542,8 @@
     revokeBlobTrackUrl?.();
     revokeBlobTrackUrl = null;
 
-    if (uploadAssetId) {
-      lessonVideoBus.unregisterTranscriptSource(uploadAssetId);
+    if (transcriptAssetId) {
+      lessonVideoBus.unregisterTranscriptSource(transcriptAssetId);
     }
 
     if (lessonVideoBus.transcriptSources.size === 0) {
@@ -572,9 +581,9 @@
   }
 
   function openTranscriptPanel() {
-    if (!uploadAssetId) return;
+    if (!transcriptAssetId) return;
 
-    lessonVideoBus.selectTranscriptSource(uploadAssetId);
+    lessonVideoBus.selectTranscriptSource(transcriptAssetId);
     sidePanel.open(TRANSCRIPT_PANEL_ID);
   }
 
@@ -629,6 +638,28 @@
       playsinline: true,
       checkpointMarkers,
       checkpointOverlay,
+      isLearnerView: $isCourseLearnerView,
+      vimeoPrivacyErrorTitle: $t('course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_title'),
+      vimeoPrivacyErrorDescription: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_description'
+      ),
+      vimeoPrivacyErrorUnlistedHint: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_unlisted_hint'
+      ),
+      vimeoPrivacyErrorDomainPrefix: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_domain_prefix'
+      ),
+      vimeoPrivacyErrorDomainSuffix: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_domain_suffix'
+      ),
+      vimeoPrivacyErrorOtherHint: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_other_hint'
+      ),
+      vimeoRetryLabel: $t('course.navItem.lessons.materials.tabs.video.add_video.vimeo_retry_label'),
+      vimeoLearnerErrorTitle: $t('course.navItem.lessons.materials.tabs.video.add_video.vimeo_learner_error_title'),
+      vimeoLearnerErrorDescription: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_learner_error_description'
+      ),
       onTimeUpdate: (seconds) => {
         if (uploadAssetId) {
           lessonVideoBus.updateTranscriptSource(uploadAssetId, { currentTimeSeconds: seconds });

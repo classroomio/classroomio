@@ -1,6 +1,6 @@
 import { stat } from 'node:fs/promises';
 
-import { getJobStep, updateAsset, updateMediaJob, upsertJobStep } from '@cio/db/queries';
+import { getJobStep, mergeAssetMetadata, updateAsset, updateMediaJob, upsertJobStep } from '@cio/db/queries';
 import { ZProbeMetadataPayload, type TProbeMetadataPayload } from '@cio/jobs/payloads/media';
 
 import { downloadObjectToTempFile, safeUnlink, videosBucket } from '../../utils/storage';
@@ -74,18 +74,18 @@ export async function processProbeMetadata(rawData: unknown): Promise<ProbeResul
 
     await updateAsset(assetId, actorContext.organizationId, {
       durationSeconds: result.durationSeconds,
-      aspectRatio: result.width && result.height ? `${result.width}:${result.height}` : null,
-      metadata: {
-        probe: {
-          durationSeconds: result.durationSeconds,
-          width: result.width,
-          height: result.height,
-          videoCodec: result.videoCodec,
-          audioCodec: result.audioCodec,
-          hasAudio: result.hasAudio,
-          fileSizeBytes: result.fileSizeBytes,
-          probedAt: new Date().toISOString()
-        }
+      aspectRatio: result.width && result.height ? `${result.width}:${result.height}` : null
+    });
+    await mergeAssetMetadata(assetId, actorContext.organizationId, {
+      probe: {
+        durationSeconds: result.durationSeconds,
+        width: result.width,
+        height: result.height,
+        videoCodec: result.videoCodec,
+        audioCodec: result.audioCodec,
+        hasAudio: result.hasAudio,
+        fileSizeBytes: result.fileSizeBytes,
+        probedAt: new Date().toISOString()
       }
     });
 

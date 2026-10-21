@@ -13,12 +13,10 @@
 </script>
 
 <div
-  class="relative aspect-video w-full overflow-hidden rounded-2xl border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50 via-white to-gray-100 {className}"
+  class="relative aspect-video w-full overflow-hidden rounded-xl border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50 via-white to-gray-100 {className}"
 >
   <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center">
-    <div
-      class="flex h-20 w-20 items-center justify-center rounded-full bg-white text-blue-700 shadow-lg ring-1 ring-blue-100"
-    >
+    <div class="flex h-20 w-20 items-center justify-center rounded-full bg-white text-blue-700 ring-1 ring-blue-100">
       <PlayCircle size={48} strokeWidth={1.4} />
     </div>
     <p class="text-sm font-medium text-gray-700">Video placeholder</p>

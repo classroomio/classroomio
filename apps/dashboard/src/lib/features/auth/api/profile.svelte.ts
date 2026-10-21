@@ -101,6 +101,7 @@ export class ProfileApi extends BaseApiWithErrors {
   }
 
   async submit(fields: TProfileUpdateForm, hasLangChanged: boolean, locale?: TLocale) {
+    this.success = false;
     if (!this.validateForm(fields)) {
       return;
     }

@@ -4,7 +4,8 @@
   import type { OrganizationAudienceMember } from '$features/org/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import AudienceMemberRow from './audience-member-row.svelte';
-  import { resolve } from '$app/paths';
+  import AudienceSkeletonRow from './audience-skeleton-row.svelte';
+  import { resolve, type ResolvedPathname } from '$app/paths';
 
   interface Header {
     key: string;
@@ -14,6 +15,8 @@
   interface Props {
     headers: Header[];
     rows: OrganizationAudienceMember[];
+    /** Replaces the rows with placeholders while a reload is in flight. */
+    loading?: boolean;
     allPageSelected: boolean;
     somePageSelected: boolean;
     onToggleSelectAll: () => void;
@@ -30,6 +33,7 @@
   let {
     headers,
     rows,
+    loading = false,
     allPageSelected,
     somePageSelected,
     onToggleSelectAll,
@@ -43,13 +47,15 @@
     onDeleteRow
   }: Props = $props();
 
-  function memberHref(row: OrganizationAudienceMember): string | null {
+  function memberHref(row: OrganizationAudienceMember): ResolvedPathname | null {
     if (!row.profileId) return null;
     return resolve(`${window.location.pathname}/${row.profileId}`, {});
   }
 </script>
 
-<div class="rounded-md border">
+<!-- Eight columns overflow narrow viewports. The scroll is confined to this
+     wrapper so the page body itself never scrolls horizontally. -->
+<div class="overflow-x-auto rounded-md border">
   <Table.Root>
     <Table.Header>
       <Table.Row>
@@ -70,20 +76,28 @@
       </Table.Row>
     </Table.Header>
     <Table.Body>
-      {#each rows as row (String(row.id))}
-        <AudienceMemberRow
-          {row}
-          memberDetailHref={memberHref(row)}
-          selected={isRowSelected(String(row.id))}
-          onToggleSelect={() => onToggleRow(String(row.id))}
-          {inviteActionEmail}
-          {deletingMemberId}
-          {canDeleteMembers}
-          {onResendInvite}
-          {onRevokeInvite}
-          onDelete={() => onDeleteRow(row)}
-        />
-      {/each}
+      {#if loading}
+        <!-- As many placeholders as the page currently shows, so the table
+             keeps its height and the surrounding layout does not jump. -->
+        {#each Array(Math.max(rows.length, 1)) as _, index (index)}
+          <AudienceSkeletonRow />
+        {/each}
+      {:else}
+        {#each rows as row (String(row.id))}
+          <AudienceMemberRow
+            {row}
+            memberDetailHref={memberHref(row)}
+            selected={isRowSelected(String(row.id))}
+            onToggleSelect={() => onToggleRow(String(row.id))}
+            {inviteActionEmail}
+            {deletingMemberId}
+            {canDeleteMembers}
+            {onResendInvite}
+            {onRevokeInvite}
+            onDelete={() => onDeleteRow(row)}
+          />
+        {/each}
+      {/if}
     </Table.Body>
   </Table.Root>
 </div>

@@ -10,8 +10,20 @@
 const PROXY_PREFIX = '/proxy';
 const AUTH_PREFIX = '/api/auth';
 
-/** Hop-by-hop / encoding headers that must not be forwarded after Node fetch decompresses. */
-const RESPONSE_HEADERS_TO_STRIP = ['content-encoding', 'content-length', 'transfer-encoding'] as const;
+/** Hop-by-hop, connection-specific, and encoding headers that must not be forwarded to the browser (forbidden in HTTP/2). */
+const RESPONSE_HEADERS_TO_STRIP = [
+  'connection',
+  'keep-alive',
+  'proxy-connection',
+  'proxy-authenticate',
+  'proxy-authorization',
+  'te',
+  'trailer',
+  'transfer-encoding',
+  'upgrade',
+  'content-encoding',
+  'content-length'
+] as const;
 
 export function shouldForwardToApi(pathname: string): boolean {
   return (

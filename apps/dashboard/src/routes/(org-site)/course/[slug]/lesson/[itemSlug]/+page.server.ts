@@ -24,25 +24,18 @@ export const load = async ({ params = { slug: '', itemSlug: '' }, url, parent })
 
   const item = itemResult.body.data;
 
-  const itemTitle = 'title' in item ? item.title : tree.course.title;
-  const itemSummary =
-    item.kind === 'lesson' && typeof item.body === 'string'
-      ? item.body.replace(/<[^>]+>/g, '').slice(0, 155)
-      : (tree.course.description ?? '');
-
-  const canonicalUrl = new URL(url.pathname, url.origin).href;
-  const fullTitle = `${itemTitle} · ${tree.course.title}`;
-  const description = itemSummary || tree.course.description || '';
+  const courseUrl = new URL(`/course/${tree.course.slug}`, url.origin).href;
+  const description = tree.course.description || '';
   const ogImage = tree.course.bannerImage || null;
 
   const pageMetaTags = Object.freeze({
-    title: fullTitle,
+    title: tree.course.title,
     description,
-    canonical: canonicalUrl,
+    canonical: courseUrl,
     openGraph: {
-      type: 'article',
-      url: canonicalUrl,
-      title: itemTitle,
+      type: 'website',
+      url: courseUrl,
+      title: tree.course.title,
       description,
       images: ogImage
         ? [
@@ -61,7 +54,7 @@ export const load = async ({ params = { slug: '', itemSlug: '' }, url, parent })
       handle: '@classroomio',
       site: '@classroomio',
       cardType: 'summary_large_image' as const,
-      title: fullTitle,
+      title: tree.course.title,
       description,
       image: ogImage ?? undefined,
       imageAlt: tree.course.title

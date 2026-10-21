@@ -1,15 +1,16 @@
-import { PLAN, STUDENT_LIMITS } from './constants';
+import { PLAN, STUDENT_LIMITS, TEMPLATE_LIMITS } from './constants';
 
 /**
  * Org-scoped resources that carry a per-plan limit and are surfaced to the
  * dashboard. Extend this tuple (plus PLAN_LIMITS) to add a new limited resource.
  */
-export const PLAN_LIMIT_RESOURCES = ['students'] as const;
+export const PLAN_LIMIT_RESOURCES = ['students', 'templates'] as const;
 export type PlanLimitResource = (typeof PLAN_LIMIT_RESOURCES)[number];
 
 /** Per-resource, per-plan numeric caps (Infinity = unlimited). */
 export const PLAN_LIMITS: Record<PlanLimitResource, Record<string, number>> = {
-  students: STUDENT_LIMITS
+  students: STUDENT_LIMITS,
+  templates: TEMPLATE_LIMITS
 };
 
 export function getPlanLimit(resource: PlanLimitResource, planName: string | null | undefined): number {

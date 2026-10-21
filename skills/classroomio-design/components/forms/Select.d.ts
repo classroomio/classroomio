@@ -1,0 +1,3 @@
+export interface SelectOption { value?: string; label?: React.ReactNode; disabled?: boolean; /** render a group heading row instead of an option */ heading?: string; }
+export interface SelectProps { options: SelectOption[]; value?: string; defaultValue?: string; onChange?: (value: string) => void; placeholder?: string; size?: 'default'|'sm'; disabled?: boolean; invalid?: boolean; width?: number|string; style?: React.CSSProperties; }
+export declare function Select(props: SelectProps): JSX.Element;

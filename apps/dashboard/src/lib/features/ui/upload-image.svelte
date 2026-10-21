@@ -52,8 +52,17 @@
     // Convert the cropped data URL to a File object
     const response = await fetch(croppedUrl);
     const blob = await response.blob();
-    // getCroppedImg outputs PNG format, so use blob.type (which will be 'image/png') and matching filename
-    const fileName = isSignaturePreview ? 'signature.png' : 'cropped-image.png';
+    const maxFileSizeInBytes = maxFileSizeInMb * 1024 * 1024;
+    if (blob.size > maxFileSizeInBytes) {
+      errorMessage = `${$t('settings.profile.profile_picture.validation_error')} File size exceeds ${maxFileSizeInMb}MB limit`;
+      src = '';
+      avatar = undefined;
+
+      return;
+    }
+
+    const fileExtension = blob.type === 'image/jpeg' ? 'jpg' : blob.type.split('/')[1] || 'bin';
+    const fileName = `${isSignaturePreview ? 'signature' : 'cropped-image'}.${fileExtension}`;
     const file = new File([blob], fileName, { type: blob.type });
 
     const validation = validateImageUpload(file);
@@ -62,6 +71,7 @@
       errorMessage = $t('snackbar.landing_page_settings.error.try_again');
 
       src = '';
+      avatar = undefined;
 
       return;
     }
@@ -110,6 +120,7 @@
     {onUnsupportedFile}
     maxFileSize={maxFileSizeInMb * 1024 * 1024}
     accept=".jpg, .jpeg, .png, .webp"
+    outputFormat={isSignaturePreview ? 'image/png' : 'image/webp'}
     disabled={isDisabled || isUploading}
   >
     <ImageCropper.UploadTrigger aria-disabled={isDisabled || isUploading}>

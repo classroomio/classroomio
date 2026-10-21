@@ -48,7 +48,7 @@ pick, have mail credentials ready before you start.
 
 - A **Postgres** database and a **Redis** instance (both are included in the Docker and Coolify compose files).
 - An **SMTP provider** for transactional email.
-- Object storage (**MinIO** or S3-compatible) if you want file and video uploads.
+- Object storage (the bundled **SeaweedFS** or any S3-compatible service) if you want file and video uploads.
 - *Optional:* an **OpenAI API key** for transcription and AI course generation.
 
 The [Configuration](/self-hosted/configuration) section has the full environment variable reference
@@ -57,10 +57,10 @@ stack reads.
 
 ## Server requirements
 
-ClassroomIO is not a single container. It runs **seven services**: Postgres, Redis, MinIO (object
+ClassroomIO is not a single container. It runs **seven services**: Postgres, Redis, SeaweedFS (object
 storage), the API, the dashboard, a background **jobs worker** that handles video processing,
-transcription, and AI course generation, and **`minio-init`**, a one-shot container that creates
-the MinIO buckets on first start and then exits, so it won't show up in `docker ps` afterward. The
+transcription, and AI course generation, and **`storage-init`**, a one-shot container that creates
+the storage buckets on first start and then exits, so it won't show up in `docker ps` afterward. The
 jobs worker spikes RAM whenever it runs, so a server's idle memory use understates what you
 actually need.
 

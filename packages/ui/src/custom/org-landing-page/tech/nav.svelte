@@ -1,21 +1,19 @@
 <script lang="ts">
-  import type { NavItem } from '../types';
-  import { Button } from '../../../base/button';
+  import type { LandingNavAuthAction, NavItem, OrgLandingPageProps } from '../types';
+  import { safeHref } from '../safe-href';
   import EditableLandingSection from '../editable-section.svelte';
+  import LearnerMenu from '../learner-menu.svelte';
+  import LandingNavCta from '../landing-nav-cta.svelte';
 
   interface Props {
     orgName: string;
     logoUrl?: string;
     navItems: NavItem[];
-    authAction?: {
-      label: string;
-      href: string;
-      loading?: boolean;
-      disabled?: boolean;
-    };
+    authAction?: LandingNavAuthAction;
+    learnerAccount?: OrgLandingPageProps['learnerAccount'];
   }
 
-  let { orgName, logoUrl, navItems, authAction }: Props = $props();
+  let { orgName, logoUrl, navItems, authAction, learnerAccount }: Props = $props();
 </script>
 
 <EditableLandingSection sectionKey="navigation" capPlacement="inside">
@@ -34,7 +32,7 @@
       <nav class="ui:hidden ui:md:flex ui:gap-1.5 ui:font-mono ui:text-[13px]">
         {#each navItems as item (item.href + item.label)}
           <a
-            href={item.href}
+            href={safeHref(item.href)}
             class="ui:px-3 ui:py-1.5 ui:rounded-full ui:border ui:border-transparent ui:text-[var(--landing-accent-fg)]/85 ui:hover:text-[var(--landing-accent-fg)] ui:hover:border-[var(--landing-accent-fg)]/30 ui:hover:bg-[var(--landing-accent-fg)]/10 ui:transition-colors ui:no-underline ui:cursor-pointer"
           >
             ( {item.label.toLowerCase()} )
@@ -43,17 +41,15 @@
       </nav>
     {/if}
 
-    {#if authAction}
-      <Button
-        href={authAction.href}
-        loading={authAction.loading}
-        disabled={authAction.disabled}
-        size="sm"
-        variant="outline"
-        class="ui:rounded-none ui:font-semibold ui:border-[var(--landing-accent-fg)] ui:text-[var(--landing-accent-fg)] ui:bg-transparent ui:hover:bg-[var(--landing-accent-fg)]/10 ui:hover:text-[var(--landing-accent-fg)]"
-      >
-        {authAction.label} →
-      </Button>
+    {#if authAction || learnerAccount}
+      <div class="ui:flex ui:items-center ui:gap-3">
+        {#if authAction}
+          <LandingNavCta {authAction} theme="tech" />
+        {/if}
+        {#if learnerAccount}
+          <LearnerMenu account={learnerAccount} {authAction} theme="tech" />
+        {/if}
+      </div>
     {/if}
   </header>
 </EditableLandingSection>

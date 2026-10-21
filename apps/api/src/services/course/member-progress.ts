@@ -1,3 +1,4 @@
+import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
 import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
 import { getLastSeenForUserIds } from '@cio/db/queries/analytics';
@@ -10,7 +11,7 @@ import {
   getCourseTrackableContentCounts
 } from '@cio/db/queries/course/member-progress';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
-import { buildCourseContent, type CourseContentItem } from './utils';
+import { buildCourseContent, type CourseContentItem } from '@cio/core/services/course/utils';
 
 export type CourseMemberStage =
   | { kind: 'not_started' }
@@ -60,7 +61,7 @@ function buildOrderedTrackableItems(
   isContentGroupingEnabled: boolean
 ): Omit<TrackableContentItem, 'isComplete'>[] {
   const content = buildCourseContent(contentRows, isContentGroupingEnabled);
-  const orderedItems = content.grouped ? content.sections.flatMap((section) => section.items) : content.items;
+  const orderedItems = flattenNavigableItems(content);
 
   return toTrackableContentItems(orderedItems as CourseContentItem[]).map(({ id, type, title }) => ({
     id,

@@ -40,6 +40,7 @@ import {
   incrementStudentTutorCount
 } from '@api/services/agent/tutor-usage';
 import { buildStudentAgentTools } from '@api/services/agent/student-tools';
+import { getStudentSubmissionReview } from '@api/services/submission/student-submission';
 import { parseAndStoreDocument } from '@cio/core/services/agent/document';
 import { recordCreditPurchase } from '@api/services/agent/credit-purchase';
 import { generateCourseMeta } from '@api/services/agent/title-generation';
@@ -487,6 +488,21 @@ const agentCoreRouter = new Hono()
         }
       }
 
+      const studentAgentTools =
+        role === AgentRole.STUDENT ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings) : null;
+      let studentSubmission: unknown;
+      if (role === AgentRole.STUDENT && context?.exerciseId) {
+        try {
+          studentSubmission = await getStudentSubmissionReview({
+            courseId,
+            profileId: user.id,
+            exerciseId: context.exerciseId
+          });
+        } catch {
+          studentSubmission = undefined;
+        }
+      }
+
       const agentContext: AgentContext = {
         orgId,
         courseId,
@@ -500,6 +516,7 @@ const agentCoreRouter = new Hono()
         lessonContent,
         exerciseId: context?.exerciseId,
         exerciseTitle,
+        studentSubmission,
         documentId: context?.documentId,
         documentText,
         documentAssets,
@@ -536,12 +553,15 @@ const agentCoreRouter = new Hono()
         approvedPlan
       });
 
-      const agentTools =
-        role === AgentRole.STUDENT
-          ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings)
-          : filterToolsForChatMode(
-              buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid, documentAssets })
-            );
+      const agentTools = studentAgentTools
+        ? studentAgentTools
+        : filterToolsForChatMode(
+            buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid, documentAssets }),
+            {
+              activeTemplateId,
+              hasDocuments: documentAssets.length > 0
+            }
+          );
 
       const contextManaged = await buildModelContextMessages({
         conversationId,
@@ -554,6 +574,7 @@ const agentCoreRouter = new Hono()
       let finishReason: string | undefined;
 
       const isAnthropic = providerConfig.provider === AIProvider.ANTHROPIC;
+      const isMoonshot = providerConfig.provider === AIProvider.MOONSHOT;
 
       // 1h TTL keeps the prefix warm across tool-execution gaps in long agent
       // runs. Break-even is 3 requests within the hour; well under most plan-
@@ -567,6 +588,10 @@ const agentCoreRouter = new Hono()
             }
           }
         : systemPrompt;
+
+      // Sticky cluster routing keeps Moonshot's automatic prefix cache warm across turns.
+      const moonshotProviderOptions =
+        isMoonshot && conversationId ? { moonshotai: { prompt_cache_key: conversationId } } : undefined;
 
       // Prepend volatile context as a user-turn message so the stable system +
       // tools prefix stays cacheable even when the teacher navigates to a
@@ -601,6 +626,7 @@ const agentCoreRouter = new Hono()
         system: systemContent,
         messages: modelMessages,
         tools: agentTools,
+        providerOptions: moonshotProviderOptions,
         stopWhen: stepCountIs(MAX_STEPS_PER_ROUND),
         onStepFinish: () => {
           completedStepCount += 1;
@@ -615,7 +641,7 @@ const agentCoreRouter = new Hono()
           // Cache hit/miss visibility. If cacheRead stays 0 across repeated
           // turns of the same conversation, a silent invalidator is leaking
           // into the cached prefix — audit system prompt and tool definitions.
-          if (isAnthropic) {
+          if (isAnthropic || isMoonshot) {
             const details = totalUsage?.inputTokenDetails;
             const cacheRead = details?.cacheReadTokens ?? 0;
             const cacheWrite = details?.cacheWriteTokens ?? 0;
@@ -670,7 +696,7 @@ const agentCoreRouter = new Hono()
               totalTokens: part.totalUsage.totalTokens
             },
             continuation:
-              completedStepCount >= MAX_STEPS_PER_ROUND
+              completedStepCount >= MAX_STEPS_PER_ROUND && finishReason === 'tool-calls'
                 ? {
                     reason: 'step_limit' as const,
                     maxSteps: MAX_STEPS_PER_ROUND,

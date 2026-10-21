@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { buildProxiedApiResponse, proxyRequestToApi, shouldForwardToApi } from './proxy-api-request';
 
 describe('shouldForwardToApi', () => {
@@ -34,6 +36,24 @@ describe('buildProxiedApiResponse', () => {
     expect(proxied.headers.get('content-length')).toBeNull();
     expect(proxied.headers.get('transfer-encoding')).toBeNull();
     expect(await proxied.text()).toBe('{"user":null}');
+  });
+
+  it('strips HTTP/1 connection-specific headers that crash HTTP/2', async () => {
+    const upstream = new Response('{"ok":true}', {
+      status: 200,
+      headers: {
+        'content-type': 'application/json',
+        connection: 'keep-alive',
+        'keep-alive': 'timeout=5',
+        'proxy-connection': 'keep-alive'
+      }
+    });
+
+    const proxied = buildProxiedApiResponse(upstream);
+
+    expect(proxied.headers.get('connection')).toBeNull();
+    expect(proxied.headers.get('keep-alive')).toBeNull();
+    expect(proxied.headers.get('proxy-connection')).toBeNull();
   });
 
   it('preserves multiple Set-Cookie headers without collapsing Expires commas', async () => {
@@ -78,7 +98,7 @@ describe('proxyRequestToApi', () => {
     }
 
     global.fetch = originalFetch;
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('returns 502 when PRIVATE_SERVER_URL is missing', async () => {
@@ -93,7 +113,7 @@ describe('proxyRequestToApi', () => {
   it('requests identity encoding and returns a stripped response', async () => {
     process.env.PRIVATE_SERVER_URL = 'http://api.internal:3081';
 
-    const fetchMock = jest.fn().mockResolvedValue(
+    const fetchMock = vi.fn().mockResolvedValue(
       new Response('{"session":null}', {
         status: 200,
         headers: {

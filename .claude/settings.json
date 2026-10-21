@@ -1,4 +1,14 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(gh pr list --repo classroomio/classroomio *)",
+      "WebFetch(domain:www.awesomescreenshot.com)",
+      "WebFetch(domain:cursor.com)",
+      "WebFetch(domain:shots.classai.work)",
+      "WebFetch(domain:www.loom.com)",
+      "WebFetch(domain:loom.com)"
+    ]
+  },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true
   }

@@ -26,6 +26,6 @@
     placeholder={label('fill_blank.edit.accepted_answers_placeholder')}
     value={String((question.settings?.acceptedAnswers as string | undefined) ?? '')}
     {disabled}
-    onchange={(event) => patchSettings({ acceptedAnswers: event.currentTarget.value })}
+    oninput={(event) => patchSettings({ acceptedAnswers: event.currentTarget.value })}
   />
 </div>

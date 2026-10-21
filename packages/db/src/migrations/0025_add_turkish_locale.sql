@@ -1,0 +1,1 @@
+ALTER TYPE "public"."LOCALE" ADD VALUE IF NOT EXISTS 'tr';

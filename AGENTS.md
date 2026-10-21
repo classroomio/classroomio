@@ -2,6 +2,10 @@
 
 This document collects implementation rules and workflow conventions for code changes.
 
+## Writing Code
+
+**Read [`skills/writing-code/SKILL.md`](skills/writing-code/SKILL.md) before writing or editing any code.** The comment policy there is mandatory: default to no comments, use JSDoc only for function contracts, and never add an inline comment to explain a design choice — refactor the code instead. The only allowed inline comments record an external constraint the code cannot express.
+
 ## Research Requirements
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
@@ -9,6 +13,10 @@ When a task requires factual information (API specifications, context window siz
 ## Out of scope paths
 
 The `prototypes/` directory holds standalone HTML/CSS design mocks for exploration. Do not treat prototype files as production code: avoid implementing features there unless explicitly asked, and do not apply production review standards (CodeRabbit/Greptile exclude this path via `.coderabbit.yaml` and `.greptile/config.json`).
+
+## Help Center screenshots
+
+**Read [`skills/add-docs-image/SKILL.md`](skills/add-docs-image/SKILL.md) before capturing, producing, or placing any screenshot under `apps/help/**`.** Every help screenshot is captured at 1350×830 with device scale 1 and framed in the ClassroomIO browser board with `pnpm --filter @cio/help frame-screenshot`. Never ship an unframed image, and do not try to fix a soft-looking screenshot by raising the capture scale.
 
 ## Translation, Formatting, and Git Workflow
 
@@ -45,7 +53,44 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
   pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
   ```
 
+- **Certificate changes** (`packages/certificates/**`):
+
+  ```bash
+  pnpm --filter @cio/certificates build
+  ```
+
 Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
+
+## Database migrations
+
+**One migration file per PR.** However many schema changes a branch makes, and however many times
+you revise them while the PR is in review, they ship as a single migration. Fold later changes into
+the file the branch already added rather than adding a second one.
+
+**Block the merge if a new migration's `when` is not later than every migration already on `main`.**
+
+`drizzle-orm` keeps no record of which migrations ran. It reads one high-water mark
+(`select ... order by created_at desc limit 1`) and applies a migration only when
+`lastCreatedAt < migration.folderMillis`, where `folderMillis` is the `when` in
+`packages/db/src/migrations/meta/_journal.json`. A migration stamped below that mark never runs,
+never errors, and never appears in `drizzle.__drizzle_migrations`: the objects it creates simply do
+not exist. A future-dated `when` is the same bug mirrored, marking the ledger ahead of reality so
+later migrations are skipped.
+
+Fresh databases apply everything in journal order and are unaffected, so this passes on a rebuilt
+local database and on CI, then silently no-ops everywhere else.
+
+Check before merging any PR that adds a migration:
+
+```bash
+git show origin/main:packages/db/src/migrations/meta/_journal.json |
+  python3 -c "import json,sys; print(max(e['when'] for e in json.load(sys.stdin)['entries']))"
+python3 -c "import json; print(max(e['when'] for e in json.load(open('packages/db/src/migrations/meta/_journal.json'))['entries']))"
+```
+
+The branch value must be greater. If it is not, restamp the new entry to `int(time.time() * 1000)`
+and renumber the file so its index follows main's last migration. Renumber on a plain index
+collision too: two branches both adding `0016_*` is the usual way this arises.
 
 ## Naming Convention
 
@@ -351,6 +396,14 @@ Pattern:
 
 Use `@cio/ui/custom/*-field` wrappers for standard app forms. When building larger settings/editor screens that need legends, descriptions, separators, grouped rows, or mixed controls such as `Switch`, `Checkbox`, `RadioGroup`, image pickers, and action buttons, compose the form with `@cio/ui/base/field` primitives and the matching base inputs instead.
 
+### Form inputs: live updates
+
+- Anything the user should see react to typing (dirty state, save bars, enabled buttons, answers, counters, previews, search, error clearing) updates on `input`, never only on `change`/`blur`.
+- Number inputs use `NumberField` (`@cio/ui/custom/number-field`). Never `Number(value)` an input directly.
+- A field whose text is a formatted version of a parsed value (comma lists, JSON, trimmed lists) uses `FieldDraft` (`@cio/ui/hooks/field-draft.svelte`).
+- Server-backed search boxes use `DebouncedSearch` (`$lib/utils/functions/debounced-search.svelte`).
+- Edit page-local drafts, never global stores; never write the edited model from an `$effect` on mount.
+
 ### Reactive built-in collections
 
 In Svelte 5, the built-in `Set` and `Map` classes are **not** reactive. Use `SvelteSet` and `SvelteMap` from `svelte/reactivity` instead. They are already reactive on their own — do **not** wrap them in `$state()`.
@@ -429,7 +482,45 @@ fields.email = '';
 - **Effect mirrors props into local state** — use `$bindable`, `bind:`, or derive a value; only copy props when you need a draft the user can cancel.
 - **Effect fetches or navigates on every dependency tick** — gate with a guard, run on submit/route enter, or track “already loaded” so work runs once per intent.
 
-When cleanup or reset must follow a specific lifecycle moment, use the matching hook: `onOpenChange` for dialogs, submit/success handlers for forms, `onMount` / load functions for one-time setup.
+When cleanup or reset must follow a specific lifecycle moment, use the matching hook: `onOpenChange` for dialogs, submit/success handlers for forms, `onMount` / load functions for one-time setup that does not depend on the current org. Org-scoped page data is covered below.
+
+### Loading org-scoped page data
+
+The app shell renders the page before `currentOrg` is set. A fetch in `onMount` that returns when the org id is missing does nothing on a full reload, then succeeds on the next client navigation, because the org is already in the store.
+
+Load that data in an `$effect` that reads `$currentOrg.id` and returns until the id is set. Remember which org you already loaded only after the id is present, so the effect runs again when the id arrives. If the fetch bails on a missing org id, do not mark that load as done first — the next run has to be allowed to try again.
+
+`onMount` stays right for one-time setup that does not need the org, such as reading `localStorage` or attaching a listener.
+
+```svelte
+let listedOrgId = '';
+
+$effect(() => {
+  const organizationId = $currentOrg.id;
+  if (!organizationId || organizationId === listedOrgId) return;
+
+  listedOrgId = organizationId;
+  void courseTemplateApi.list();
+});
+```
+
+### Skeleton cards
+
+A card row or gallery shows skeleton cards until the first payload arrives. The gap before the request starts is still loading: `cards === null` while the loading flag is still false is an empty row, not a finished one.
+
+Show skeletons while there are no cards yet. Keep the cards you already have during a later refetch. Use the card's `loading` prop, or `Skeleton` blocks with the same footprint, so the row does not jump when the data arrives. A small fixed count is enough — the template row uses three, the gallery four.
+
+```svelte
+{#if !courseTemplateApi.cards}
+  {#each [0, 1, 2] as index (index)}
+    <TemplateCard loading />
+  {/each}
+{:else}
+  {#each templates as template (template.id)}
+    <TemplateCard title={template.title} />
+  {/each}
+{/if}
+```
 
 ### Server-Side API Calls
 
@@ -482,7 +573,23 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Use base primitives (`@cio/ui/base/input`, `@cio/ui/base/textarea`, `@cio/ui/base/checkbox`, `@cio/ui/base/label`) only when creating/updating reusable UI components or when no custom field wrapper exists.
 - In app-level form UIs, do not introduce native form controls (`<input>`, `<textarea>`, `<label>`) when equivalent `packages/ui` components exist.
 - **Icon-only buttons** (a `Button` whose content is just an icon, e.g. `size="icon"`) must use `variant="secondary"`.
-- **Theme color classes:** Classes that use colors from `packages/ui/src/index.css` (e.g. `text-muted-foreground`, `text-primary`) must be prefixed with `ui:` in dashboard code so they resolve against the UI theme (e.g. `ui:text-muted-foreground`, `ui:text-primary`). Only color-related utilities need the prefix; layout/sizing classes like `rounded`, `border`, `p-4` stay unprefixed (Tailwind defaults).
+- **`ui:` prefix rules in consumer code (`apps/dashboard/**` & `packages/storybook/**`):**
+  - **Theme tokens and semantic colors:** Prefix with `ui:` for classes binding to `@cio/ui` theme variables (e.g. `ui:bg-background`, `ui:text-muted-foreground`, `ui:border-input`, `ui:ring-ring`, `ui:text-primary`, `ui:bg-muted`, `ui:border-border`).
+  - **Named z-index scale:** Prefix with `ui:` for custom stacking layers defined in `@cio/ui` (`ui:z-app-bar`, `ui:z-app-bar-elevated`, `ui:z-modal`, `ui:z-menu-elevated`).
+  - **Custom animations and font tokens:** Prefix with `ui:` for custom animations and font utilities in `@cio/ui` (e.g. `ui:font-cio`, `ui:animate-meteor`, `ui:animate-shine`).
+  - **Standard Tailwind utilities:** Do not prefix layout, sizing, typography, spacing, borders, standard animations, or fonts (e.g. `flex`, `grid`, `w-full`, `min-h-*`, `p-*`, `m-*`, `gap-*`, `rounded-*`, `border`, `text-sm`, `font-semibold`, `animate-spin`, `focus-visible:outline-none`, `focus-visible:ring-2`).
+  - **Inside `packages/ui/src/**` only:** ALL Tailwind utility classes must use the `ui:` prefix (enforced by `pnpm --filter @cio/ui prefix:check`).
+- **Tailwind `ui:` variant prefix ordering:** When applying variants (`hover:`, `focus:`, `dark:`, `placeholder:`, `md:`) to `ui:` prefixed classes, `ui:` must come before the variant modifier (e.g. `ui:hover:text-primary`, `ui:focus-visible:ring-ring`, `ui:placeholder:text-muted-foreground`, `ui:dark:text-white`).
+
+### Dialog button hierarchy
+
+When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every button and follow this variant hierarchy (left to right):
+
+- **Left / external action** (e.g. "Create another …") — `variant="secondary"`
+- **Cancel / dismiss** (e.g. "Later", "Cancel") — `variant="outline"`
+- **Main CTA** (e.g. "Open now", "Save", "Create") — default primary (`variant="default"`)
+
+Place the main CTA on the right; group cancel and primary together when both appear on the right.
 
 ### Page layout and settings save bar
 
@@ -535,6 +642,23 @@ Full behavior, threshold, clearance, and mount points: `prd/scroll-to-top/README
 <ScrollToTop label={$t('common.scroll_to_top')} />
 ```
 
+### Landing-page href sanitization
+
+All user-controlled URLs in org landing pages (nav links, hero CTAs, footer links, callout buttons, links-section cards) must pass through `safeHref()` before reaching an `<a href>` attribute. This prevents `javascript:`, `data:`, and `vbscript:` XSS payloads from being rendered.
+
+**Shared source of truth:** `packages/utils/src/validation/shared/safe-href.ts` exports two functions:
+- `isAllowedHref(value)` — allowlist check: `http`, `https`, `mailto`, `tel`, `#`, `/`, `./`, `../`, plain paths (`courses/intro`).
+- `containsDisallowedHrefs(value)` — recursive tree walker for Zod refinements on freeform JSON blobs.
+
+**Three consumers, one rule:**
+- **Render-time:** `packages/ui/src/custom/org-landing-page/safe-href.ts` re-exports `isAllowedHref` as `safeHref(value, fallback)` — wrap every user-controlled href. Wired into all 11 themes via shared components (`LandingButton`, `SecondaryActionButton`) and direct `<a>` bindings.
+- **Dashboard normalization:** `normalizeHref()` in `apps/dashboard/src/lib/features/org/utils/landing-page.ts` imports `isAllowedHref` to strip bad schemes when loading/saving config.
+- **API boundary:** Zod refinement on `ZUpdateOrganization.landingpage` imports `containsDisallowedHrefs` to reject bad schemes at write time.
+
+**When adding new landing-page components or themes:** always route hrefs through `safeHref()`. Never pass a user-controlled string directly to `href`.
+
+Theme previews in the dashboard are visual-only. Render preview content inside an `inert` container so links, buttons, and other controls cannot navigate or trigger actions while previewing a theme.
+
 ## Emails: system vs org-branded
 
 Every transactional email in `packages/email/src/emails` is one of two kinds — decide deliberately, because it changes the branding, the schema, and the `from` address.
@@ -560,6 +684,92 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - **Teacher/tutor/admin dashboard actions** (course management, grading, team invites, auto-enroll): build URLs with `getAppBaseUrl()` from `@cio/core/config/dashboard-url`. This resolves to the admin app (`app.classroomio.com` in cloud, or `DASHBOARD_ORIGIN` / localhost in dev). Do **not** pass org `customDomain` or tenant `siteName` — staff sign in on the admin app, not the org public site.
 - **Student/learner-facing links** (course enroll, org audience invites, login): build URLs with `getDashboardBaseUrl(org)` so links land on the org's public site (verified custom domain, tenant subdomain, or platform fallback).
 
+## Certificate Templates & Dynamic Text Fitting (`packages/certificates`)
+
+Certificate templates in `packages/certificates/src/templates/` render fixed-dimension certificate layouts for preview and PDF export. Dynamic user-generated fields (such as `orgName`, `courseName`, `recipientName`, `subtitle`, `description`, `certificateId`, and `date`) vary in length and must dynamically fit within their assigned layout boundaries without text clipping or layout overflow.
+
+### Rules for Certificate Template Edits:
+
+1. **Compute font sizes dynamically from font metrics — never hardcode fixed font sizes for dynamic text**:
+   - All user-generated content must have its font size computed via `prepareCertificateRenderContext(design, data, FIELDS)` and the font metrics engine (`font-metrics.ts`).
+   - Define a `FIELDS` constant object declaring `maxWidth`, `maxHeight`, `fontFamily`, `basePx`, `lineHeight`, `allowWrap`, `letterSpacingEm`, and `textTransform` for each field.
+   - Inject the computed font size via inline style in the HTML markup (e.g. `style="font-size: ${fontSizes.recipient}px;"`).
+   - Wrap all interpolated user strings with `escapeHtml(...)`.
+
+2. **Define dedicated constants/variables for layout factors (e.g. paddings, gaps, borders, sibling columns, decorations) used in layout calculations**:
+   - Extract layout values into named constants when calculations or multiple dependent declarations use them (e.g. element paddings, flex/grid gaps, border widths, sibling column widths, or flanking decorations that reduce `FIELDS.maxWidth` or `FIELDS.maxHeight`, or values reused across CSS and FIELDS).
+   - Standalone, non-computed dimension literals (like fixed container limits) do not need redundant variable wrappers.
+
+   ```ts
+   const recipientPaddingBottom = 14;
+   const recipientRowPaddingBottom = 14;
+   const recipientNumColumnWidth = 120;
+   const recipientRowGap = 30;
+   const borderLeftWidth = 12;
+   const certIdPaddingHorizontal = 10;
+   const certIdPaddingVertical = 6;
+   const subtitleDecorationLineWidth = 50;
+   const subtitleDecorationGap = 14;
+   const subtitleTotalDecorationWidth = (subtitleDecorationLineWidth + subtitleDecorationGap) * 2;
+   ```
+
+3. **`FIELDS` must subtract layout factors (e.g. paddings, gaps, borders, sibling elements) before computing font size**:
+   - The sizing engine uses `maxWidth` and `maxHeight` in `FIELDS` to measure available space for text glyphs.
+   - If an element has layout factors (e.g. CSS padding, flanking decorations, border widths, or shares a row with sibling columns/gaps), **subtract those dimensions from `FIELDS.maxWidth` or `FIELDS.maxHeight`** so the font size calculation accounts for the exact available text area:
+
+   ```ts
+   const FIELDS = {
+     certId: {
+       maxWidth: 280 - certIdPaddingHorizontal * 2,
+       maxHeight: 60 - certIdPaddingVertical * 2,
+       fontFamily: FONTS.mono,
+       basePx: 11,
+       allowWrap: false,
+       textTransform: 'uppercase' as const
+     },
+     subtitle: {
+       maxWidth: 800 - subtitleTotalDecorationWidth,
+       maxHeight: 34,
+       fontFamily: FONTS.heading,
+       basePx: 13,
+       allowWrap: false,
+       letterSpacingEm: 0.35,
+       textTransform: 'uppercase' as const
+     },
+     recipient: {
+       maxWidth: 900 - borderLeftWidth - recipientNumColumnWidth - recipientRowGap,
+       maxHeight: 86 - recipientPaddingBottom,
+       fontFamily: FONTS.display,
+       basePx: 54,
+       lineHeight: 1.05,
+       allowWrap: true
+     }
+   } as const;
+   ```
+
+4. **CSS styles must use the dedicated layout variables**:
+   - Reference the same dedicated layout constants (e.g. paddings, gaps, column widths, border dimensions) in the template's CSS styles.
+   - Container max dimensions in CSS should reflect the total outer boundary where needed (e.g., inner width/height from `FIELDS` plus the padding):
+
+   ```css
+   .t-minimal .recipient-row {
+     display: grid;
+     grid-template-columns: ${recipientNumColumnWidth}px 1fr;
+     gap: ${recipientRowGap}px;
+     padding-bottom: ${recipientRowPaddingBottom}px;
+   }
+   .t-classique .recipient {
+     padding-bottom: ${recipientPaddingBottom}px;
+     max-width: ${FIELDS.recipient.maxWidth}px;
+     max-height: ${FIELDS.recipient.maxHeight + recipientPaddingBottom}px;
+     overflow-wrap: break-word;
+     word-break: normal;
+   }
+   ```
+
+5. **Keep `FIELDS` typography configuration and CSS declarations strictly synchronized**:
+   - If CSS applies `letter-spacing`, `text-transform: uppercase`, or a specific `line-height`, the same values must be declared in `FIELDS` (`letterSpacingEm`, `textTransform: 'uppercase'`, `lineHeight`) so the advance-width and line-wrap calculations match the browser rendering.
+
 ## Best Practices Summary
 
 ### ✅ DO
@@ -576,8 +786,12 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
 - Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
 - Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
+- Load org-scoped page data in an `$effect` that waits for `$currentOrg.id` (see **Loading org-scoped page data**)
+- Show skeleton cards until the first card payload arrives (see **Skeleton cards**)
 - Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
 - Add `testId` on `@cio/ui` wrappers or shell surfaces when Playwright needs a stable hook (see **E2E test hooks**)
+- In certificate templates, compute font sizes for dynamic text using `FIELDS` and `prepareCertificateRenderContext` (`packages/certificates`)
+- In certificate templates, extract layout factors (e.g. paddings, gaps, borders, sibling columns, decorations) into dedicated constants, subtract them in `FIELDS` before computing font sizes, and reference those constants in CSS
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -593,9 +807,13 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - Use `new Set()`/`new Map()` for mutable reactive state — use `SvelteSet`/`SvelteMap` instead
 - Wrap `SvelteSet`/`SvelteMap` in `$state()` — they are already reactive
 - **Use `$effect` to reset form/modal state whenever a boolean is false** — use `onOpenChange` or explicit handlers on close instead
+- **Fetch org-scoped page data in `onMount`** — the org id is often still empty, so a full reload no-ops and the next client navigation is what finally loads (see **Loading org-scoped page data**)
+- **Leave a card row blank on first load** — show skeleton cards until cards exist, including the gap before the request starts (see **Skeleton cards**)
 - **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
 - Build a one-off back-to-top button — use `ScrollToTop` (see **Scroll to top** and `prd/scroll-to-top/README.md`)
+- Hardcode font sizes in CSS for user-generated certificate fields
+- Use magic padding numbers in certificate templates without subtracting them from `FIELDS` bounding boxes
 
 ## E2E test hooks
 
@@ -615,6 +833,8 @@ Playwright specs and PR demos should use stable, locale-independent selectors. F
 Do not annotate every control — add hooks only for high-impact flows (auth, nav, save bars, primary actions).
 
 ## Checklist for New Routes
+
+For public API design, security, contracts, MCP/API-key behavior, and dashboard parity, read [`skills/public-api-review/SKILL.md`](skills/public-api-review/SKILL.md) before implementation and review.
 
 - [ ] **Validation**: Schema in `packages/utils/src/validation/{entity}/`
 - [ ] **Query**: Pure functions in `packages/db/src/queries/{domain}/`
@@ -713,7 +933,7 @@ Do not use `pnpm dev` (it trips turbo's concurrency cap). Build shared package `
 
 ### Known caveats
 - **Vite SSR circular dependency (layerchart):** authenticated/chart pages occasionally render "Something unexpected occurred" on a cold load. Reload the page (or restart `dashboard:dev`) and it renders — it is intermittent, not a setup failure.
-- **MinIO is optional and not started by default.** Without it, image/media thumbnails show "Failed to load"; that is expected. Start it with `docker compose -f docker-compose.yaml --profile minio up -d minio minio-init` and add the `OBJECT_STORAGE_*` vars from `README.md` to `apps/api/.env`.
+- **Object storage is optional and not started by default.** Without it, image/media thumbnails show "Failed to load"; that is expected. Start the bundled SeaweedFS with `docker compose -f docker-compose.yaml --profile storage up -d storage storage-init` and add the `OBJECT_STORAGE_*` vars from `README.md` to `apps/api/.env`.
 - **Pre-existing lint/test issues (not environment problems):** `pnpm --filter @cio/api lint` fails (missing ESLint v9 `eslint.config.*`); `pnpm --filter @cio/dashboard lint` runs but reports pre-existing errors; api `vitest run` passes 61 tests but 5 files fail to load `@cio/core/services/*/*` subpaths (Vite nested-wildcard exports quirk; Node resolves them fine); `pnpm --filter @cio/dashboard test` (jest) fails to parse `jest.config.ts`. The pre-commit gate `pnpm format:check` passes.
 - The optional `@cio/storybook` build fails on an unresolved `@lucide/svelte/icons/bot` import; it does not affect api/dashboard.
 

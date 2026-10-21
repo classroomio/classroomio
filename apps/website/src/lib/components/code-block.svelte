@@ -22,10 +22,7 @@
   } = $props();
 </script>
 
-<div
-  class="relative overflow-hidden rounded-2xl bg-[#0d1117] shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] ring-1 ring-white/[0.08] {className}"
->
-  <!-- Editor chrome -->
+<div class="relative overflow-hidden rounded-xl bg-[#0d1117] ring-1 ring-white/[0.08] {className}">
   <div class="flex items-center justify-between border-b border-white/[0.06] bg-[#0a0e14] px-4 py-3">
     <div class="flex items-center gap-2">
       <div class="h-2.5 w-2.5 rounded-full bg-[#ff5f57]"></div>
@@ -35,21 +32,19 @@
     </div>
     <div class="flex items-center gap-2">
       {#if lang}
-        <span
-          class="cio-code-font rounded-md bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium tracking-wider text-slate-400 uppercase"
+        <span class="cio-code-font rounded-tag text-tag bg-white/[0.04] px-2 py-0.5 text-slate-400 uppercase"
           >{lang}</span
         >
       {/if}
       {#if copyable}
         <span
-          class="cio-code-font cursor-pointer rounded-md bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium tracking-wide text-blue-300 ring-1 ring-blue-500/20 transition-colors hover:bg-blue-500/15"
+          class="cio-code-font rounded-tag text-tag cursor-pointer bg-blue-500/10 px-2 py-0.5 text-blue-300 uppercase ring-1 ring-blue-500/20 transition-colors hover:bg-blue-500/15"
           >Copy</span
         >
       {/if}
     </div>
   </div>
 
-  <!-- Body -->
   <div class="cio-code-font flex text-[13px] leading-[1.6] text-slate-300">
     {#if showLineNumbers}
       <div class="py-5 pr-3 pl-5 text-right text-slate-600 tabular-nums select-none">
@@ -74,12 +69,11 @@
 </div>
 
 <style>
-  /* JetBrains Mono loaded via the Google Fonts link in src/app.html. System stack as fallback. */
   /* :global(...*) forces the font onto every descendant, including {@html}-rendered
      spans that don't carry Svelte's scope hash, and overrides any stray universal rules. */
   .cio-code-font,
   :global(.cio-code-font *) {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+    font-family: var(--font-mono);
     font-feature-settings:
       'liga' 0,
       'calt' 0;

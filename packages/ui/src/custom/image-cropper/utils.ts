@@ -1,6 +1,14 @@
 import type { CropArea } from 'svelte-easy-crop';
 
-export const getFileFromUrl = async (url: string, fileName = 'cropped.png'): Promise<File> => {
+const getImageExtension = (mimeType: string): string => {
+  if (mimeType === 'image/jpeg') return 'jpg';
+  if (mimeType === 'image/png') return 'png';
+  if (mimeType === 'image/webp') return 'webp';
+
+  return 'bin';
+};
+
+export const getFileFromUrl = async (url: string, fileName?: string): Promise<File> => {
   // Fetch the file data from the URL
   const response = await fetch(url);
 
@@ -10,9 +18,10 @@ export const getFileFromUrl = async (url: string, fileName = 'cropped.png'): Pro
 
   // Convert the response into a Blob
   const blob = await response.blob();
+  const resolvedFileName = fileName ?? `cropped.${getImageExtension(blob.type)}`;
 
   // Create and return a File. You can set a custom type if needed.
-  return new File([blob], fileName, { type: blob.type });
+  return new File([blob], resolvedFileName, { type: blob.type });
 };
 
 const createImage = (url: string): Promise<HTMLImageElement> => {
@@ -36,7 +45,12 @@ const getRadianAngle = (degreeValue: number) => {
  * @param rotation
  * @returns
  */
-export const getCroppedImg = async (imageSrc: string, pixelCrop: CropArea, rotation = 0): Promise<string> => {
+export const getCroppedImg = async (
+  imageSrc: string,
+  pixelCrop: CropArea,
+  rotation = 0,
+  outputFormat: 'image/png' | 'image/webp' = 'image/webp'
+): Promise<string> => {
   const image = await createImage(imageSrc);
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -73,9 +87,18 @@ export const getCroppedImg = async (imageSrc: string, pixelCrop: CropArea, rotat
     Math.round(0 - safeArea / 2 + image.height * 0.5 - pixelCrop.y)
   );
 
-  return new Promise((resolve) => {
-    canvas.toBlob((file) => {
-      resolve(URL.createObjectURL(file!));
-    }, 'image/png');
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (file) => {
+        if (!file) {
+          reject(new Error('Failed to create cropped image'));
+          return;
+        }
+
+        resolve(URL.createObjectURL(file));
+      },
+      outputFormat,
+      outputFormat === 'image/webp' ? 0.85 : undefined
+    );
   });
 };

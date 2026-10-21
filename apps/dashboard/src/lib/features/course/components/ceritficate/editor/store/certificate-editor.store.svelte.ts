@@ -1,6 +1,6 @@
 import {
   DEFAULT_CERTIFICATE_DESIGN,
-  resolveTemplateId,
+  resolveCertificateDesign,
   type CertificateDesign,
   type CertificateTemplateId
 } from '@cio/certificates';
@@ -84,21 +84,7 @@ function fromDraft(draft: CertificateEditorDraft): CertificateDesign {
 }
 
 function readStoredDesign(): CertificateDesign {
-  const certificate = courseApi.course?.certificate;
-  const stored = certificate?.design as Partial<CertificateDesign> | undefined;
-  const legacyTheme = certificate?.theme;
-
-  return {
-    templateId: resolveTemplateId(stored?.templateId ?? legacyTheme),
-    accentColor: stored?.accentColor ?? DEFAULT_CERTIFICATE_DESIGN.accentColor,
-    subtitle: stored?.subtitle ?? DEFAULT_CERTIFICATE_DESIGN.subtitle,
-    descriptionOverride: stored?.descriptionOverride,
-    signatories: [
-      toDraftSignatory(stored?.signatories?.[0], DEFAULT_CERTIFICATE_DESIGN.signatories[0]),
-      toDraftSignatory(stored?.signatories?.[1], DEFAULT_CERTIFICATE_DESIGN.signatories[1])
-    ],
-    idFormat: stored?.idFormat ?? DEFAULT_CERTIFICATE_DESIGN.idFormat
-  };
+  return resolveCertificateDesign(courseApi.course?.certificate);
 }
 
 class CertificateEditorStore {

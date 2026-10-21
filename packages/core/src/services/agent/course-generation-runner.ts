@@ -85,15 +85,15 @@ async function assertRunCanContinue(runId: string): Promise<NonNullable<Awaited<
   const run = await getAgentRunById(runId);
 
   if (!run) {
-    throw new AppError('Agent run not found', 'AGENT_RUN_NOT_FOUND', 404);
+    throw new AppError('Course generation not found', 'AGENT_RUN_NOT_FOUND', 404);
   }
 
   if (run.status === 'completed') {
-    throw new AppError('Agent run is already completed', 'AGENT_RUN_ALREADY_COMPLETED', 409);
+    throw new AppError('Course generation is already completed', 'AGENT_RUN_ALREADY_COMPLETED', 409);
   }
 
   if (run.status === 'canceled' || run.cancelRequestedAt) {
-    throw new AppError('Agent run was canceled', 'AGENT_RUN_CANCELED', 409);
+    throw new AppError('Course generation was canceled', 'AGENT_RUN_CANCELED', 409);
   }
 
   return run;

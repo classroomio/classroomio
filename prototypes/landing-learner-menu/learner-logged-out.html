@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en" data-landing-theme="quartz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SMI Consulting — logged out (unchanged baseline)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="landing-theme.css" />
+    <style>
+      .hero {
+        padding: 84px 0 64px;
+        max-width: 780px;
+      }
+      .hero h1 {
+        font-size: 56px;
+      }
+      .hero h1 span {
+        color: var(--landing-fg-muted);
+      }
+      .hero .lede {
+        margin-top: 22px;
+        font-size: 17px;
+        color: var(--landing-fg-muted);
+        max-width: 620px;
+      }
+      .hero-acts {
+        margin-top: 30px;
+        display: flex;
+        gap: 12px;
+      }
+      .resume {
+        margin-top: 40px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border: 1px solid var(--landing-border);
+        background: var(--landing-card);
+        border-radius: var(--landing-radius-card);
+        font-size: 13.5px;
+        color: var(--landing-fg-muted);
+      }
+      .resume b {
+        color: var(--landing-fg);
+        font-weight: 600;
+      }
+      .catalog {
+        border-top: 1px solid var(--landing-border);
+        padding: 44px 0 90px;
+      }
+      .eyebrow {
+        font-size: 11.5px;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--landing-fg-faint);
+      }
+      .grid {
+        margin-top: 24px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+      .card {
+        background: var(--landing-card);
+        border: 1px solid var(--landing-border);
+        border-radius: var(--landing-radius-card);
+        padding: 20px;
+      }
+      .card h3 {
+        font-size: 17px;
+      }
+      .card p {
+        margin-top: 8px;
+        font-size: 13.5px;
+        color: var(--landing-fg-muted);
+      }
+      .card .meta {
+        margin-top: 16px;
+        font-size: 12px;
+        color: var(--landing-fg-faint);
+      }
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .hero h1 {
+          font-size: 38px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="nav-in">
+        <a class="logo" href="index.html"><i></i> SMI Consulting</a>
+        <nav class="nav-mid">
+          <a href="#catalog">Courses</a><a href="#">Certifications</a><a href="#">Pricing</a><a href="#">Company</a>
+        </nav>
+
+        <div class="nav-right">
+          <!-- Logged out: byte-identical to today. No avatar, no skeleton, no extra slot. -->
+          <a class="btn btn-sm btn-primary" href="#">
+            <span class="btn-label">Login</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="shell">
+      <header class="hero">
+        <h1>Compliance and product training, <span>done properly.</span></h1>
+        <p class="lede">
+          Certification tracks built by practising consultants. Finish a track, earn a verifiable
+          certificate, and prove it to your auditor.
+        </p>
+        <div class="hero-acts">
+          <a class="btn btn-lg btn-primary" href="#catalog">Browse catalog</a>
+          <a class="btn btn-lg btn-secondary" href="#">Talk to us</a>
+        </div>
+      </header>
+    </div>
+
+    <div class="catalog">
+      <div class="shell" id="catalog">
+        <div class="eyebrow">Catalog</div>
+        <div class="grid">
+          <div class="card">
+            <h3>SOC 2 Security Basics</h3>
+            <p>The controls, the evidence, and what an auditor actually asks for.</p>
+            <div class="meta">8 lessons · Certificate</div>
+          </div>
+          <div class="card">
+            <h3>HIPAA Awareness 2026</h3>
+            <p>Annual refresher for everyone who touches protected health information.</p>
+            <div class="meta">6 lessons · Certificate</div>
+          </div>
+          <div class="card">
+            <h3>Incident Response Drills</h3>
+            <p>Run a tabletop exercise your team will not sleep through.</p>
+            <div class="meta">11 lessons · Certificate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proto-bar">
+      <span class="proto-tag">Logged out · AC-1 baseline</span>
+      <a href="index.html">Map</a>
+      <a href="learner-non-member.html">Non-member</a>
+      <a href="learner-member.html">Member</a>
+      <a href="menu-states.html">States</a>
+      <select data-proto-theme aria-label="Landing theme">
+        <option value="quartz">quartz</option>
+        <option value="bold">bold</option>
+        <option value="terminal">terminal</option>
+        <option value="editorial">editorial</option>
+        <option value="vibrant">vibrant</option>
+      </select>
+    </div>
+
+    <script src="menu.js"></script>
+  </body>
+</html>

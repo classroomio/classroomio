@@ -1,6 +1,7 @@
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import type {
   TCreateWidget,
+  TListWidgetsQuery,
   TUpdateWidget,
   TWidgetConfig,
   TWidgetDetail,
@@ -8,15 +9,23 @@ import type {
 } from '@cio/utils/validation/widget';
 
 export type GetWidgetsRequest = (typeof classroomio.organization)['widgets']['$get'];
+export type GetArchivedWidgetsRequest = (typeof classroomio.organization)['widgets']['archived']['$get'];
 export type GetWidgetDetailRequest = (typeof classroomio.organization)['widgets'][':widgetId']['$get'];
 export type CreateWidgetRequest = (typeof classroomio.organization)['widgets']['$post'];
 export type UpdateWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['$put'];
 export type PublishWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['publish']['$post'];
 export type RollbackWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['rollback']['$post'];
+export type ArchiveWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['archive']['$post'];
+export type RestoreWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['restore']['$post'];
 export type DeleteWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['$delete'];
 
 export type GetWidgetsSuccess = Extract<InferResponseType<GetWidgetsRequest>, { success: true }>;
 export type WidgetListItem = GetWidgetsSuccess['data'][number];
+export type WidgetListPagination = GetWidgetsSuccess['pagination'];
+
+export type GetArchivedWidgetsSuccess = Extract<InferResponseType<GetArchivedWidgetsRequest>, { success: true }>;
+export type ArchivedWidgetListPagination = GetArchivedWidgetsSuccess['pagination'];
+export type RestoreWidgetSuccess = Extract<InferResponseType<RestoreWidgetRequest>, { success: true }>;
 
 export type GetWidgetDetailSuccess = Extract<InferResponseType<GetWidgetDetailRequest>, { success: true }>;
 export type WidgetDetailResponse = GetWidgetDetailSuccess['data'];
@@ -29,3 +38,4 @@ export type WidgetConfig = TWidgetConfig;
 export type WidgetPayload = TWidgetPayload;
 export type CreateWidgetInput = TCreateWidget;
 export type UpdateWidgetInput = TUpdateWidget;
+export type ListWidgetsQuery = TListWidgetsQuery;

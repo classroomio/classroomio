@@ -1,0 +1,22 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Display" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--ui-background);font-family:var(--font-sans);color:var(--ui-foreground)}.lbl{font-family:var(--font-mono);font-size:10px;color:var(--ink-500);letter-spacing:.08em;width:78px;flex-shrink:0}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ClassroomIODesignSystem || window[Object.keys(window).find(k => { try { return window[k] && window[k].NotchCard && window[k].Select; } catch (e) { return false; } })] || {};
+const Row = ({ l, children, top }) => <div style={{ display: 'flex', alignItems: top ? 'flex-start' : 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}><span className="lbl">{l}</span>{children}</div>;
+const { Badge, NumberBadge, Alert, Card, Avatar, Tabs, Progress, Skeleton, Spinner, Kbd, Separator, Button, Breadcrumb } = NS;
+ReactDOM.createRoot(document.getElementById('root')).render(<div>
+<Row l="BADGE"><Badge>Published</Badge><Badge variant="secondary">Draft</Badge><Badge variant="success">Passed</Badge><Badge variant="warning">Due soon</Badge><Badge variant="destructive">Failed</Badge><Badge variant="outline">Free</Badge><NumberBadge number={1} active/><NumberBadge number={2}/><NumberBadge number={3} locked/></Row>
+<Row l="AVATAR"><Avatar src="../../assets/images/portrait-1.jpg"/><Avatar fallback="DR"/><Avatar fallback="PN" size={40}/><Separator orientation="vertical" style={{ height: 24 }}/><Spinner/><Spinner size={20} color="var(--ui-primary)"/><Kbd>⌘</Kbd><Kbd>K</Kbd><Breadcrumb items={[{label:'Courses'},{label:'Admin 101'},{label:'Lesson 3'}]}/></Row>
+<Row l="PROGRESS"><div style={{ width: 200 }}><Progress value={64}/></div><div style={{ width: 120 }}><Progress value={30} variant="muted"/></div><Skeleton circle width={28} height={28}/><Skeleton width={140}/></Row>
+<Row l="TABS"><Tabs tabs={[{value:'l',label:'Lessons'},{value:'p',label:'People'},{value:'s',label:'Settings'}]}/></Row>
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+<Alert variant="information" title="Drafted by your agent">Review the outline before publishing.</Alert>
+<Alert variant="destructive" title="Payment failed">Update your card to keep Growth features.</Alert>
+</div>
+</div>);
+</script></body></html>

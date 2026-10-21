@@ -7,19 +7,28 @@
   import { t } from '$lib/utils/functions/translations';
   import type { AccountOrg } from '$features/app/types';
   import { currentOrg } from '$lib/utils/store/org';
-  import { Button } from '@cio/ui/base/button';
-  import { Progress } from '@cio/ui/base/progress';
-  import DownloadIcon from '@lucide/svelte/icons/download';
-  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import { courseApi } from '$features/course/api';
-  import { generateMarksCSV, generateMarksPDF } from '$features/course/utils/marks-utils';
-  import { RefreshPageData } from '$features/ui';
+  import { buildMarksExportDocument } from '$features/course/utils/marks-utils';
+  import { ExportMenu, RefreshPageData } from '$features/ui';
 
   let { data } = $props();
 
-  let isDownloading = $state(false);
-
   const exercises = $derived(data.marksData?.exercises ?? []);
+
+  // One column definition drives every format.
+  const exportDocument = $derived(
+    buildMarksExportDocument(
+      data.marksData?.students ?? [],
+      exercises,
+      data.marksData?.studentMarksByExerciseId ?? {},
+      courseApi.course?.title || 'Course',
+      {
+        name: $t('audience.name'),
+        email: $t('audience.email'),
+        averageGrade: $t('course.navItem.marks.avg_grade')
+      }
+    )
+  );
 
   function getPageRoles(org: AccountOrg) {
     const roles = [1, 2];
@@ -28,38 +37,6 @@
     }
     return roles;
   }
-
-  const downloadCSV = () => {
-    if (!data.marksData) return;
-    isDownloading = true;
-    try {
-      generateMarksCSV(
-        data.marksData.students,
-        exercises,
-        data.marksData.studentMarksByExerciseId,
-        courseApi.course?.title || 'Course'
-      );
-    } finally {
-      isDownloading = false;
-    }
-  };
-
-  const downloadPDF = async () => {
-    if (!data.marksData) return;
-    isDownloading = true;
-    try {
-      await generateMarksPDF(
-        data.marksData.students,
-        exercises,
-        data.marksData.studentMarksByExerciseId,
-        courseApi.course?.title || 'Course'
-      );
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    } finally {
-      isDownloading = false;
-    }
-  };
 </script>
 
 <RoleBasedSecurity
@@ -78,25 +55,12 @@
       <Page.Action>
         <div class="flex w-full justify-end gap-2">
           <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                <Button variant="ghost" size="icon" class="rounded-full">
-                  {#if isDownloading}
-                    <Progress />
-                  {:else}
-                    <DownloadIcon size={16} />
-                  {/if}
-                </Button>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end">
-                <DropdownMenu.Item onclick={downloadCSV}>
-                  {$t('course.navItem.marks.export.csv')}
-                </DropdownMenu.Item>
-                <DropdownMenu.Item onclick={downloadPDF}>
-                  {$t('course.navItem.marks.export.pdf')}
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
+            <ExportMenu
+              document={exportDocument}
+              estimatedRowCount={exportDocument.rows.length}
+              disabled={!data.marksData}
+              testId="marks-export"
+            />
           </RoleBasedSecurity>
           <RefreshPageData />
         </div>

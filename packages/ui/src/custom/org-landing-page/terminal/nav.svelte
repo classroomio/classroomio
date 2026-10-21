@@ -1,21 +1,19 @@
 <script lang="ts">
-  import type { NavItem } from '../types';
-  import { Button } from '../../../base/button';
+  import type { LandingNavAuthAction, NavItem, OrgLandingPageProps } from '../types';
+  import { safeHref } from '../safe-href';
   import EditableLandingSection from '../editable-section.svelte';
+  import LearnerMenu from '../learner-menu.svelte';
+  import LandingNavCta from '../landing-nav-cta.svelte';
 
   interface Props {
     orgName: string;
     logoUrl?: string;
     navItems: NavItem[];
-    authAction?: {
-      label: string;
-      href: string;
-      loading?: boolean;
-      disabled?: boolean;
-    };
+    authAction?: LandingNavAuthAction;
+    learnerAccount?: OrgLandingPageProps['learnerAccount'];
   }
 
-  let { orgName, logoUrl, navItems, authAction }: Props = $props();
+  let { orgName, logoUrl, navItems, authAction, learnerAccount }: Props = $props();
 </script>
 
 <EditableLandingSection sectionKey="navigation" capPlacement="inside">
@@ -47,7 +45,7 @@
             <nav class="ui:hidden ui:md:flex ui:items-center ui:gap-6">
               {#each navItems as item (item.href + item.label)}
                 <a
-                  href={item.href}
+                  href={safeHref(item.href)}
                   class="ui:text-[11px] ui:font-medium ui:tracking-[0.12em] ui:uppercase ui:no-underline ui:transition-colors ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:cursor-pointer"
                 >
                   {item.label}
@@ -58,20 +56,16 @@
           {/if}
         </div>
 
-        <div class="ui:flex ui:items-center ui:gap-3">
-          {#if authAction}
-            <Button
-              href={authAction.href}
-              loading={authAction.loading}
-              disabled={authAction.disabled}
-              size="sm"
-              variant="outline"
-              class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-transparent ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-white/5"
-            >
-              {authAction.label}
-            </Button>
-          {/if}
-        </div>
+        {#if authAction || learnerAccount}
+          <div class="ui:flex ui:items-center ui:gap-3">
+            {#if authAction}
+              <LandingNavCta {authAction} theme="terminal" />
+            {/if}
+            {#if learnerAccount}
+              <LearnerMenu account={learnerAccount} {authAction} theme="terminal" />
+            {/if}
+          </div>
+        {/if}
       </div>
     </div>
   </header>

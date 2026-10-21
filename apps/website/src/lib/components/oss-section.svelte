@@ -3,6 +3,10 @@
   import Github from '@lucide/svelte/icons/github';
   import Server from '@lucide/svelte/icons/server';
   import Coins from '@lucide/svelte/icons/coins';
+  import CtaButton from './ui/cta-button.svelte';
+  import NotchCard from './ui/notch-card.svelte';
+  import Section from './ui/section.svelte';
+  import SectionHeader from './ui/section-header.svelte';
 
   /** @type {{ stars?: number }} */
   let { stars = 0 } = $props();
@@ -26,60 +30,53 @@
   ];
 </script>
 
-<section class="bg-white px-6 py-16 lg:px-12 lg:py-24">
-  <div class="mx-auto max-w-[1100px]">
-    <div class="mb-12 grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-20">
-      <BlurFade once>
-        <div>
-          <div class="mb-3 text-xs font-medium tracking-widest text-blue-700 uppercase">Open source</div>
-          <h2 class="text-[clamp(2rem,3vw,2.8rem)] leading-[1.15] font-medium tracking-tight">
-            Read it. Fork it. Run it.
-          </h2>
-        </div>
-      </BlurFade>
+<Section class="bg-white">
+  <BlurFade once>
+    <SectionHeader
+      eyebrow="Open source"
+      eyebrowClass="text-blue-700"
+      ledeClass="text-gray-500"
+      lede="AGPL on GitHub. Self-host or use ours. Bring your own AI keys."
+    >
+      {#snippet title()}Read it. Fork it. Run it.{/snippet}
+    </SectionHeader>
+  </BlurFade>
 
-      <BlurFade delay={0.1} once>
-        <p class="text-base leading-relaxed text-gray-500 lg:text-lg">
-          AGPL on GitHub. Self-host or use ours. Bring your own AI keys.
-        </p>
-      </BlurFade>
-    </div>
-
-    <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
-      {#each lanes as lane, i}
-        <BlurFade delay={0.08 * i} once>
-          <div class="h-full rounded-2xl border border-gray-200 bg-gray-50 p-6">
-            <div
-              class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-blue-700 ring-1 ring-gray-200"
-            >
-              <lane.Icon size={20} strokeWidth={1.75} />
-            </div>
-            <h3 class="text-base font-medium text-gray-950">{lane.title}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-gray-500">{lane.description}</p>
+  <div class="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
+    {#each lanes as lane, i}
+      <BlurFade delay={0.08 * i} once class="h-full">
+        <NotchCard class="h-full bg-gray-50">
+          <div
+            class="mb-4 flex size-10 items-center justify-center rounded-md bg-white text-blue-700 ring-1 ring-gray-200"
+          >
+            <lane.Icon size={20} strokeWidth={1.8} />
           </div>
-        </BlurFade>
-      {/each}
-    </div>
-
-    <div class="mt-8 flex flex-wrap items-center gap-3">
-      <a
-        href="/github"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-medium text-white no-underline transition-all hover:-translate-y-0.5 hover:bg-blue-700"
-      >
-        <Github size={16} />
-        Star on GitHub
-        {#if stars}<span class="text-blue-300">{stars}</span>{/if}
-      </a>
-      <a
-        href="https://classroomio.com/docs/self-hosted/docker"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-950 no-underline transition-all hover:border-gray-950"
-      >
-        Self-hosting guide →
-      </a>
-    </div>
+          <h3 class="text-card-title font-medium text-gray-950">{lane.title}</h3>
+          <p class="mt-2 text-[15px] leading-relaxed text-gray-500">{lane.description}</p>
+        </NotchCard>
+      </BlurFade>
+    {/each}
   </div>
-</section>
+
+  <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+    <CtaButton
+      href="/github"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="bg-gray-950 hover:bg-blue-700 hover:brightness-100"
+    >
+      <Github size={16} />
+      Star on GitHub
+      {#if stars}<span class="text-blue-300">{stars}</span>{/if}
+    </CtaButton>
+    <CtaButton
+      variant="secondary"
+      href="https://classroomio.com/docs/self-hosted/docker"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="hover:border-gray-950 hover:brightness-100"
+    >
+      Self-hosting guide →
+    </CtaButton>
+  </div>
+</Section>

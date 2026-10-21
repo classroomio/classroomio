@@ -4,13 +4,16 @@ import {
   createCourseInviteAudit,
   getCourseInviteById,
   getCourseInviteByTokenHash,
+  getPaginatedCourseInvites,
   listCourseInviteAudit,
   listCourseInviteAuditStats,
+  listCourseInviteAuditStatsForInvites,
   listCourseInvites,
   optimisticIncrementCourseInviteUsedCount,
   revokeCourseInvite,
   selectCourseInviteAcceptBundleByTokenHash
 } from '@cio/db/queries/course/invite';
+import type { TCourseInviteListItem } from '@cio/db/queries/course/invite';
 import { createOrganizationMember, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { addGroupMember, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
 import {
@@ -24,11 +27,13 @@ import {
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 import { ROLE } from '@cio/utils/constants';
+import { isCoursePaid } from '@cio/utils/validation/course';
 import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
 import type { TNewCourseInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { emitCourseMemberWebhookEvent, emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding, type EmailBranding } from '@cio/email';
@@ -291,17 +296,48 @@ function toInviteResponse(
   };
 }
 
+const COURSE_INVITE_WEBHOOK_EVENTS: Partial<
+  Record<
+    TNewCourseInviteAudit['eventType'],
+    'course.invite.created' | 'course.invite.accepted' | 'course.invite.revoked'
+  >
+> = {
+  CREATED: 'course.invite.created',
+  ACCEPTED: 'course.invite.accepted',
+  REVOKED: 'course.invite.revoked'
+};
+
+type TInviteAuditContext = {
+  actorProfileId?: string | null;
+  targetEmail?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  metadata?: Record<string, unknown>;
+  deferWebhook?: boolean;
+};
+
+async function emitInviteWebhook(
+  inviteId: string,
+  courseId: string,
+  eventType: TNewCourseInviteAudit['eventType'],
+  context: Pick<TInviteAuditContext, 'actorProfileId' | 'targetEmail'>
+) {
+  const webhookEventType = COURSE_INVITE_WEBHOOK_EVENTS[eventType];
+
+  if (!webhookEventType) return;
+
+  await emitCourseWebhookEvent(courseId, webhookEventType, {
+    inviteId,
+    email: context.targetEmail ?? null,
+    actorProfileId: context.actorProfileId ?? null
+  });
+}
+
 async function recordInviteAudit(
   inviteId: string,
   courseId: string,
   eventType: TNewCourseInviteAudit['eventType'],
-  context: {
-    actorProfileId?: string | null;
-    targetEmail?: string | null;
-    ipAddress?: string | null;
-    userAgent?: string | null;
-    metadata?: Record<string, unknown>;
-  } = {}
+  context: TInviteAuditContext = {}
 ) {
   await createCourseInviteAudit({
     inviteId,
@@ -313,6 +349,10 @@ async function recordInviteAudit(
     userAgent: context.userAgent ?? null,
     metadata: context.metadata ?? {}
   });
+
+  if (context.deferWebhook) return;
+
+  await emitInviteWebhook(inviteId, courseId, eventType, context);
 }
 
 async function createSingleInvite(
@@ -426,6 +466,7 @@ async function createEmailInviteAndSend(input: {
   recipientEmail: string;
   policy: { expiresAt: string; maxUses: number };
   orgName: string;
+  organizationId: string;
   courseName: string;
   courseSlug: string;
   org: OrgUrlInfo;
@@ -470,6 +511,7 @@ async function createEmailInviteAndSend(input: {
         branding: input.branding
       },
       from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
+      organizationId: input.organizationId,
       idempotencyKey: `course-invite-email:${createdInvite.id}`
     });
 
@@ -580,6 +622,7 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
         recipientEmail,
         policy,
         orgName,
+        organizationId: courseOrgData.orgId,
         courseName,
         courseSlug,
         org: orgUrlInfo,
@@ -639,8 +682,11 @@ export async function enrollInCourse(
   }
 
   const { groupId, cost: courseCost, status, isPublished, title } = courseWithRelations;
-  const cost = Number(courseCost ?? 0);
-  if (cost > 0) {
+  const isPaidCourse = isCoursePaid(
+    courseCost,
+    courseWithRelations.metadata as { paymentEnabled?: boolean; paymentLink?: string | null } | null | undefined
+  );
+  if (isPaidCourse) {
     throw new AppError('Paid courses require an invite or payment', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
@@ -743,24 +789,20 @@ export async function enrollInCourse(
   };
 }
 
-/**
- * Lists secure invites for a course, enriched with activity stats.
- */
-export async function listStudentInvites(courseId: string) {
-  const [invites, stats] = await Promise.all([listCourseInvites(courseId), listCourseInviteAuditStats(courseId)]);
+type InviteActivity = {
+  previewedCount: number;
+  acceptedCount: number;
+  emailSentCount: number;
+  emailFailedCount: number;
+  lastPreviewedAt: string | null;
+  lastAcceptedAt: string | null;
+  lastEmailSentAt: string | null;
+};
 
-  const statsByInvite = new Map<
-    string,
-    {
-      previewedCount: number;
-      acceptedCount: number;
-      emailSentCount: number;
-      emailFailedCount: number;
-      lastPreviewedAt: string | null;
-      lastAcceptedAt: string | null;
-      lastEmailSentAt: string | null;
-    }
-  >();
+function buildInviteActivityMap(
+  stats: Awaited<ReturnType<typeof listCourseInviteAuditStats>>
+): Map<string, InviteActivity> {
+  const statsByInvite = new Map<string, InviteActivity>();
 
   for (const row of stats) {
     if (!statsByInvite.has(row.inviteId)) {
@@ -793,25 +835,51 @@ export async function listStudentInvites(courseId: string) {
     }
   }
 
-  return invites.map((invite) => {
-    const status = getInviteStatus(invite);
-    const activity = statsByInvite.get(invite.id) || {
-      previewedCount: 0,
-      acceptedCount: 0,
-      emailSentCount: 0,
-      emailFailedCount: 0,
-      lastPreviewedAt: null,
-      lastAcceptedAt: null,
-      lastEmailSentAt: null
-    };
+  return statsByInvite;
+}
 
-    return {
-      ...invite,
-      status,
-      usesRemaining: Math.max(invite.maxUses - invite.usedCount, 0),
-      activity
-    };
-  });
+function enrichInviteWithActivity(invite: TCourseInviteListItem, statsByInvite: Map<string, InviteActivity>) {
+  const status = getInviteStatus(invite);
+  const activity = statsByInvite.get(invite.id) || {
+    previewedCount: 0,
+    acceptedCount: 0,
+    emailSentCount: 0,
+    emailFailedCount: 0,
+    lastPreviewedAt: null,
+    lastAcceptedAt: null,
+    lastEmailSentAt: null
+  };
+
+  return {
+    ...invite,
+    status,
+    usesRemaining: Math.max(invite.maxUses - invite.usedCount, 0),
+    activity
+  };
+}
+
+/**
+ * Lists secure invites for a course, enriched with activity stats.
+ */
+export async function listStudentInvites(courseId: string) {
+  const [invites, stats] = await Promise.all([listCourseInvites(courseId), listCourseInviteAuditStats(courseId)]);
+  const statsByInvite = buildInviteActivityMap(stats);
+
+  return invites.map((invite) => enrichInviteWithActivity(invite, statsByInvite));
+}
+
+export async function listPaginatedStudentInvites(courseId: string, options: { page: number; limit: number }) {
+  const result = await getPaginatedCourseInvites(courseId, options);
+  const stats = await listCourseInviteAuditStatsForInvites(
+    courseId,
+    result.items.map((invite) => invite.id)
+  );
+  const statsByInvite = buildInviteActivityMap(stats);
+
+  return {
+    ...result,
+    items: result.items.map((invite) => enrichInviteWithActivity(invite, statsByInvite))
+  };
 }
 
 export async function getStudentInviteAuditTrail(courseId: string, inviteId: string) {
@@ -981,11 +1049,14 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         targetEmail: normalizedEmail,
         ipAddress: context.ipAddress,
         userAgent: context.userAgent,
-        metadata: { alreadyJoined: true }
+        metadata: { alreadyJoined: true },
+        deferWebhook: true
       });
 
       return {
         alreadyJoined: true,
+        inviteId: invite.id,
+        enrolledMember: null,
         courseId: course.id,
         courseName: course.title,
         orgName: organization.name,
@@ -1048,7 +1119,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       );
     }
 
-    await addGroupMember(
+    const [enrolledMember] = await addGroupMember(
       {
         groupId: course.groupId,
         roleId: ROLE.STUDENT,
@@ -1071,11 +1142,14 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       targetEmail: normalizedEmail,
       ipAddress: context.ipAddress,
       userAgent: context.userAgent,
-      metadata: { alreadyJoined: false }
+      metadata: { alreadyJoined: false },
+      deferWebhook: true
     });
 
     return {
       alreadyJoined: false,
+      inviteId: invite.id,
+      enrolledMember: enrolledMember ?? null,
       courseId: course.id,
       courseName: course.title,
       orgName: organization.name,
@@ -1090,6 +1164,15 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         (course.metadata as { welcomeEmailMessage?: string | null } | null)?.welcomeEmailMessage ?? null
     };
   });
+
+  await emitInviteWebhook(result.inviteId, result.courseId, 'ACCEPTED', {
+    actorProfileId: user.id,
+    targetEmail: normalizedEmail
+  });
+
+  if (result.enrolledMember) {
+    await emitCourseMemberWebhookEvent('course.member.added', result.courseId, result.enrolledMember);
+  }
 
   if (!result.alreadyJoined) {
     await invalidateOrgStats(result.organizationId);

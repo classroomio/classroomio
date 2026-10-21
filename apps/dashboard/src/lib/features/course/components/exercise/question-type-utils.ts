@@ -54,7 +54,7 @@ export function toExerciseQuestionModel(question: Question): ExerciseQuestionMod
     .filter((option) => !option.deletedAt)
     .map((option) => ({
       id: option.id,
-      label: option.label || String(option.value ?? ''),
+      label: option.label ?? '',
       value: option.value ?? undefined,
       isCorrect: option.isCorrect,
       settings:

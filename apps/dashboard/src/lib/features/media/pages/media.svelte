@@ -20,6 +20,8 @@
   import type { AssetKindFilter, AssetStatusFilter, AssetUsageGraph, OrganizationAsset } from '$features/media/utils';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
+  import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
+  import { onDestroy, untrack } from 'svelte';
 
   interface Props {
     search?: string;
@@ -48,19 +50,36 @@
   const assets = $derived(mediaApi.assets);
   const storageSummary = $derived(mediaApi.storageSummary);
   const pagination = $derived(mediaApi.pagination);
+  let assetsRequestId = 0;
+
+  const searchBox = new DebouncedSearch({
+    initial: untrack(() => search),
+    onApply: (nextSearch) => {
+      search = nextSearch;
+      void refreshAssets(1);
+    }
+  });
+
+  onDestroy(() => {
+    searchBox.destroy();
+  });
 
   async function refreshAssets(page = 1) {
+    const requestId = ++assetsRequestId;
     isRefreshing = true;
     try {
-      await mediaApi.listAssets({
-        page,
-        limit: pagination?.limit ?? 20,
-        search: search.trim() || undefined,
-        kind: kind === 'all' ? undefined : kind,
-        status: status === 'all' ? undefined : status
-      });
+      await mediaApi.listAssets(
+        {
+          page,
+          limit: pagination?.limit ?? 20,
+          search: searchBox.applied || undefined,
+          kind: kind === 'all' ? undefined : kind,
+          status: status === 'all' ? undefined : status
+        },
+        { abortPrevious: true }
+      );
     } finally {
-      isRefreshing = false;
+      if (requestId === assetsRequestId) isRefreshing = false;
     }
   }
 
@@ -183,11 +202,12 @@
 
 <Page.BodyHeader class="flex-col flex-wrap! items-start! gap-3 lg:flex-row">
   <MediaFilters
-    bind:search
     bind:kind
     bind:status
+    searchDraft={searchBox.draft}
+    onSearchInput={(nextValue) => searchBox.input(nextValue)}
     {isRefreshing}
-    onApply={() => refreshAssets(1)}
+    onApply={() => void refreshAssets(1)}
     onRefresh={refreshMediaData}
   />
 </Page.BodyHeader>

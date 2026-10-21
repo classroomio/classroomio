@@ -1,0 +1,1687 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClassroomIO Help Center — Sidebar Proposal</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #18181b;
+        --muted: #6b6b73;
+        --faint: #96969f;
+        --line: #e4e4e7;
+        --line-strong: #d4d4d8;
+        --paper: #ffffff;
+        --wash: #f7f7f8;
+        --soft: #f0f1f3;
+        --accent: #3157d5;
+        --accent-soft: #eef2ff;
+        --green: #18794e;
+        --green-soft: #edf8f2;
+        --amber: #946200;
+        --amber-soft: #fff7df;
+        --red: #b42318;
+        --red-soft: #fff1f0;
+        --sidebar-width: 410px;
+        --radius: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .app {
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 20;
+        display: flex;
+        width: var(--sidebar-width);
+        flex-direction: column;
+        border-right: 1px solid var(--line);
+        background: #fbfbfc;
+      }
+
+      .brand {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 22px;
+        border-bottom: 1px solid var(--line);
+        background: var(--paper);
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--wash);
+        font-size: 17px;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+      }
+
+      .brand-copy {
+        min-width: 0;
+      }
+
+      .brand-copy strong,
+      .brand-copy span {
+        display: block;
+      }
+
+      .brand-copy strong {
+        font-size: 16px;
+        letter-spacing: -0.01em;
+      }
+
+      .brand-copy span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .proposal-pill {
+        margin-left: auto;
+        padding: 4px 8px;
+        border: 1px solid #cfd7ff;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .search-wrap {
+        padding: 18px 18px 8px;
+      }
+
+      .search {
+        position: relative;
+      }
+
+      .search svg {
+        position: absolute;
+        top: 50%;
+        left: 14px;
+        width: 18px;
+        height: 18px;
+        color: var(--muted);
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+
+      .search input {
+        width: 100%;
+        height: 46px;
+        padding: 0 40px 0 42px;
+        border: 1px solid var(--line-strong);
+        border-radius: 12px;
+        outline: none;
+        background: var(--paper);
+        color: var(--ink);
+        transition: border-color 120ms ease;
+      }
+
+      .search input:focus {
+        border-color: var(--accent);
+      }
+
+      .search input::placeholder {
+        color: var(--faint);
+      }
+
+      .clear-search {
+        position: absolute;
+        top: 50%;
+        right: 8px;
+        display: none;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        transform: translateY(-50%);
+      }
+
+      .clear-search:hover {
+        background: var(--soft);
+      }
+
+      .nav-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 22px 11px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .nav-meta button {
+        padding: 2px 0;
+        border: 0;
+        background: transparent;
+        color: var(--accent);
+        cursor: pointer;
+      }
+
+      .coverage-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        padding: 0 22px 11px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+      }
+
+      .nav-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2px 18px 40px;
+        overscroll-behavior: contain;
+      }
+
+      .nav-section {
+        padding-top: 23px;
+      }
+
+      .nav-section + .nav-section {
+        margin-top: 20px;
+        border-top: 1px solid var(--line);
+      }
+
+      .section-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 9px 8px;
+        color: #4f4f57;
+        font-size: 13px;
+        font-weight: 720;
+        letter-spacing: 0.015em;
+      }
+
+      .section-label span:last-child {
+        color: var(--faint);
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .nav-item,
+      .group-summary {
+        display: flex;
+        width: 100%;
+        min-height: 38px;
+        align-items: center;
+        gap: 9px;
+        margin: 1px 0;
+        padding: 8px 9px;
+        border: 0;
+        border-radius: 9px;
+        background: transparent;
+        color: #4c4c54;
+        text-align: left;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .nav-item:hover,
+      .group-summary:hover {
+        background: var(--soft);
+        color: var(--ink);
+      }
+
+      .nav-item.active {
+        background: var(--accent-soft);
+        color: #2746b6;
+        font-weight: 650;
+      }
+
+      .nav-item.level-three {
+        min-height: 35px;
+        padding: 7px 9px 7px 31px;
+        color: #66666f;
+        font-size: 14px;
+      }
+
+      .nav-item.level-three::before {
+        width: 5px;
+        height: 5px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: #c5c5cb;
+        content: "";
+      }
+
+      .nav-item.level-three.active::before {
+        background: var(--accent);
+      }
+
+      details {
+        margin: 0;
+      }
+
+      summary {
+        list-style: none;
+      }
+
+      summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .group-summary .chevron {
+        width: 16px;
+        height: 16px;
+        margin-left: auto;
+        color: var(--faint);
+        transition: transform 140ms ease;
+      }
+
+      details[open] > .group-summary .chevron {
+        transform: rotate(90deg);
+      }
+
+      .group-children {
+        position: relative;
+        margin-left: 9px;
+        padding-left: 8px;
+      }
+
+      .group-children::before {
+        position: absolute;
+        top: 1px;
+        bottom: 6px;
+        left: 8px;
+        width: 1px;
+        background: var(--line);
+        content: "";
+      }
+
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: #b9b9c0;
+      }
+
+      .status-dot.existing {
+        background: #39a673;
+      }
+
+      .status-dot.split {
+        background: #e5a020;
+      }
+
+      .status-dot.new {
+        background: #d92d20;
+      }
+
+      .status-dot.external {
+        background: #39a673;
+      }
+
+      .nav-empty {
+        display: none;
+        margin: 28px 8px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .main {
+        min-height: 100vh;
+        margin-left: var(--sidebar-width);
+        background: var(--paper);
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        height: 72px;
+        align-items: center;
+        gap: 12px;
+        padding: 0 34px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(12px);
+      }
+
+      .topbar svg {
+        width: 18px;
+        height: 18px;
+        color: var(--muted);
+      }
+
+      .breadcrumb {
+        overflow: hidden;
+        color: var(--muted);
+        font-size: 13px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .topbar-tag {
+        margin-left: auto;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .content {
+        width: min(1120px, calc(100% - 56px));
+        margin: 0 auto;
+        padding: 66px 0 90px;
+      }
+
+      .eyebrow {
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 760;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 850px;
+        margin-bottom: 18px;
+        font-size: clamp(38px, 5vw, 64px);
+        font-weight: 730;
+        letter-spacing: -0.045em;
+        line-height: 1.02;
+      }
+
+      h2 {
+        margin-bottom: 16px;
+        font-size: 27px;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 16px;
+        font-weight: 680;
+        letter-spacing: -0.01em;
+      }
+
+      .lede {
+        max-width: 820px;
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.65;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 26px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 38px;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 14px;
+        border: 1px solid var(--line-strong);
+        border-radius: 9px;
+        background: var(--paper);
+        color: var(--ink);
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .button.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .button:hover {
+        border-color: #aaaab2;
+      }
+
+      .button.primary:hover {
+        border-color: #2747bb;
+        background: #2747bb;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1px;
+        margin-top: 48px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--line);
+      }
+
+      .metric {
+        min-height: 118px;
+        padding: 22px;
+        background: var(--paper);
+      }
+
+      .metric strong,
+      .metric span {
+        display: block;
+      }
+
+      .metric strong {
+        margin-bottom: 4px;
+        font-size: 28px;
+        letter-spacing: -0.035em;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .section-block {
+        padding-top: 74px;
+      }
+
+      .section-intro {
+        max-width: 780px;
+        margin-bottom: 24px;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card {
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+      }
+
+      .card p:last-child {
+        margin-bottom: 0;
+      }
+
+      .card p,
+      .card li {
+        color: var(--muted);
+      }
+
+      .card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      .card li + li {
+        margin-top: 7px;
+      }
+
+      .benchmark {
+        display: grid;
+        grid-template-columns: 155px 1fr 1fr;
+        gap: 0;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+
+      .benchmark > div {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .benchmark > div:nth-last-child(-n + 3) {
+        border-bottom: 0;
+      }
+
+      .benchmark > div:nth-child(3n + 1) {
+        background: var(--wash);
+        font-weight: 700;
+      }
+
+      .benchmark > div:nth-child(3n + 2) {
+        border-right: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      .benchmark > div:nth-child(3n + 3) {
+        color: var(--muted);
+      }
+
+      .benchmark .head {
+        background: var(--ink) !important;
+        color: #fff !important;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .callout {
+        margin-top: 20px;
+        padding: 18px 20px;
+        border-left: 3px solid var(--accent);
+        background: var(--accent-soft);
+        color: #273777;
+      }
+
+      .callout strong {
+        color: #1e2d67;
+      }
+
+      .selected-preview {
+        display: none;
+        margin-top: 34px;
+        padding: 24px;
+        border: 1px solid #ccd5ff;
+        border-radius: var(--radius);
+        background: #fafbff;
+      }
+
+      .selected-preview.visible {
+        display: block;
+      }
+
+      .selected-path {
+        margin-bottom: 8px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .selected-preview p {
+        max-width: 750px;
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 26px;
+        padding: 4px 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .badge.existing {
+        border-color: #bde4cf;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .badge.split {
+        border-color: #eed79e;
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .badge.new {
+        border-color: #f1b9b5;
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .badge.external {
+        border-color: #bde4cf;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .numbered-list {
+        display: grid;
+        gap: 1px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--line);
+      }
+
+      .numbered-item {
+        display: grid;
+        grid-template-columns: 42px 180px 1fr;
+        align-items: start;
+        gap: 16px;
+        padding: 17px 20px;
+        background: var(--paper);
+      }
+
+      .numbered-item .number {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--soft);
+        color: #55555e;
+        font-size: 12px;
+        font-weight: 750;
+      }
+
+      .numbered-item strong {
+        padding-top: 3px;
+      }
+
+      .numbered-item p {
+        margin: 2px 0 0;
+        color: var(--muted);
+      }
+
+      .source-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        padding: 0;
+        list-style: none;
+      }
+
+      .source-list a {
+        color: var(--accent);
+        text-underline-offset: 3px;
+      }
+
+      .footer-note {
+        margin-top: 72px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .mobile-menu {
+        display: none;
+        width: 36px;
+        height: 36px;
+        place-items: center;
+        padding: 0;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--paper);
+      }
+
+      @media (max-width: 980px) {
+        :root {
+          --sidebar-width: 360px;
+        }
+
+        .metrics,
+        .grid.three {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .benchmark {
+          grid-template-columns: 130px 1fr;
+        }
+
+        .benchmark > div:nth-child(3n + 3) {
+          grid-column: 2;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .benchmark .head:nth-child(3) {
+          display: none;
+        }
+
+        .numbered-item {
+          grid-template-columns: 42px 150px 1fr;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .sidebar {
+          width: min(92vw, 390px);
+          transform: translateX(-101%);
+          transition: transform 180ms ease;
+        }
+
+        body.menu-open .sidebar {
+          transform: translateX(0);
+        }
+
+        .main {
+          margin-left: 0;
+        }
+
+        .mobile-menu {
+          display: grid;
+        }
+
+        .topbar {
+          padding: 0 18px;
+        }
+
+        .content {
+          width: min(100% - 32px, 680px);
+          padding-top: 42px;
+        }
+
+        h1 {
+          font-size: 40px;
+        }
+
+        .metrics,
+        .grid,
+        .grid.three {
+          grid-template-columns: 1fr;
+        }
+
+        .benchmark {
+          display: block;
+        }
+
+        .benchmark > div,
+        .benchmark > div:nth-child(3n + 2),
+        .benchmark > div:nth-child(3n + 3) {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .benchmark .head {
+          display: none;
+        }
+
+        .numbered-item {
+          grid-template-columns: 36px 1fr;
+        }
+
+        .numbered-item p {
+          grid-column: 2;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar" aria-label="Proposed help center navigation">
+        <div class="brand">
+          <div class="brand-mark">C</div>
+          <div class="brand-copy">
+            <strong>ClassroomIO Help</strong>
+            <span>Proposed information architecture</span>
+          </div>
+          <span class="proposal-pill">Draft</span>
+        </div>
+
+        <div class="search-wrap">
+          <div class="search">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m20 20-3.5-3.5"></path>
+            </svg>
+            <input id="nav-search" type="search" placeholder="Search proposed articles…" autocomplete="off" />
+            <button class="clear-search" id="clear-search" type="button" aria-label="Clear search">×</button>
+          </div>
+        </div>
+
+        <div class="nav-meta">
+          <span id="nav-count">Loading map…</span>
+          <button id="toggle-groups" type="button">Expand all</button>
+        </div>
+
+        <div class="coverage-legend" aria-label="Article content coverage">
+          <span class="legend-item"><span class="status-dot existing" aria-hidden="true"></span><span><strong id="complete-count">0</strong> complete</span></span>
+          <span class="legend-item"><span class="status-dot split" aria-hidden="true"></span><span><strong id="partial-count">0</strong> partial</span></span>
+          <span class="legend-item"><span class="status-dot new" aria-hidden="true"></span><span><strong id="missing-count">0</strong> missing</span></span>
+        </div>
+
+        <nav class="nav-scroll" id="nav-tree"></nav>
+        <p class="nav-empty" id="nav-empty">No proposed articles match that search.</p>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Open navigation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+            <path d="M9 4v16"></path>
+          </svg>
+          <span class="breadcrumb" id="top-breadcrumb">Help center / Proposed sidebar</span>
+          <span class="topbar-tag">Research completed 12 Sep 2026</span>
+        </header>
+
+        <div class="content">
+          <section>
+            <div class="eyebrow">Final information architecture proposal</div>
+            <h1>A help center organized around the work people are trying to finish.</h1>
+            <p class="lede">
+              The proposed sidebar uses exactly three navigational layers: section headers, direct articles or
+              expandable topic groups, and shareable article destinations. It covers the current ClassroomIO admin,
+              course, learner, reporting, security, and automation surfaces without copying the dashboard menu.
+            </p>
+            <div class="hero-actions">
+              <button class="button primary" type="button" id="open-first-section">Explore the sidebar</button>
+              <a class="button" href="#audit">Read the audit</a>
+              <a class="button" href="#rules">See the content rules</a>
+            </div>
+
+            <div class="metrics">
+              <div class="metric">
+                <strong id="section-count">10</strong>
+                <span>top-level sections</span>
+              </div>
+              <div class="metric">
+                <strong id="group-count">—</strong>
+                <span>expandable topic groups</span>
+              </div>
+              <div class="metric">
+                <strong id="article-count">—</strong>
+                <span>independent article destinations</span>
+              </div>
+              <div class="metric">
+                <strong>3</strong>
+                <span>maximum sidebar layers</span>
+              </div>
+            </div>
+
+            <div class="selected-preview" id="selected-preview" aria-live="polite">
+              <div class="selected-path" id="selected-path"></div>
+              <h2 id="selected-title"></h2>
+              <p id="selected-description"></p>
+              <div class="badge-row" id="selected-badges"></div>
+            </div>
+          </section>
+
+          <section class="section-block" id="audit">
+            <div class="eyebrow">Corpus-level audit</div>
+            <h2>What the research actually showed</h2>
+            <p class="section-intro">
+              The benchmark was taken from every public article in both support centers—not only their home pages.
+              The counts below come from Teachable’s public sitemap and article pages, Thinkific’s public Zendesk help
+              center API, and ClassroomIO’s current MDX corpus.
+            </p>
+
+            <div class="benchmark" role="table" aria-label="Help center benchmark comparison">
+              <div class="head">Platform</div>
+              <div class="head">Corpus and structure</div>
+              <div class="head">What it teaches us</div>
+
+              <div>Teachable</div>
+              <div>
+                194 articles in 9 collections and 38 subcollections. Median article length: 758 words. Average per
+                article: 17.9 links, 5.5 images, and 2.9 callouts. 145 articles contain images; 137 use ordered lists.
+              </div>
+              <div>
+                It is strongest at deep task grouping, visible breadcrumbs, in-page tables of contents, full-size
+                screenshots, explicit caveats, and related-task linking. The structure separates creator work,
+                student guidance, trust, and support.
+              </div>
+
+              <div>Thinkific</div>
+              <div>
+                1,104 articles in 11 categories and 95 sections. Median article length: 359 words. It has 385 short
+                Quick Reference articles in addition to its main topic tree. Average per article: 14.5 links, 1.2
+                images, 3.8 H2 headings, and 1.5 ordered lists.
+              </div>
+              <div>
+                It deliberately supports two search intents: long-form feature guides and short question-shaped
+                answers using “Question / Solution / Learn more.” Its homepage also exposes featured articles,
+                platform status, training, and support escalation.
+              </div>
+
+              <div>ClassroomIO now</div>
+              <div>
+                44 MDX pages across the current Help Center. Median length: 469 words. The corpus averages 7.1 links
+                and 0.8 images per article; 36 of 44 pages contain no images. The explicit sidebar currently places
+                most creator features under one broad “Your Academy” umbrella.
+              </div>
+              <div>
+                The foundation is sound—static URLs, Orama search, review dates, and a CMS workflow already exist.
+                The main problem is coverage and information architecture: important shipped surfaces are missing,
+                and unrelated concepts such as Community currently sit under Integrations.
+              </div>
+            </div>
+
+            <div class="callout">
+              <strong>The most important benchmark insight:</strong> neither competitor treats the product’s visible
+              navigation as the documentation taxonomy. Their categories describe outcomes and user journeys; the
+              product UI path appears inside the article as instructions.
+            </div>
+          </section>
+
+          <section class="section-block">
+            <div class="eyebrow">Decisions applied to the sidebar</div>
+            <h2>What to borrow—and what not to copy</h2>
+            <div class="grid">
+              <article class="card">
+                <h3>Borrow from Teachable</h3>
+                <ul>
+                  <li>Use a small number of durable lifecycle sections.</li>
+                  <li>Create subgroups only when a topic has several distinct jobs.</li>
+                  <li>Give long guides a local table of contents and anchored headings.</li>
+                  <li>Place screenshots directly after the step that creates the pictured state.</li>
+                  <li>Use breadcrumbs and related guides to expose the parent context.</li>
+                </ul>
+              </article>
+              <article class="card">
+                <h3>Borrow from Thinkific</h3>
+                <ul>
+                  <li>Write titles in the language people search: “How…”, “Why…”, and clear verb-object tasks.</li>
+                  <li>Offer short troubleshooting answers alongside deeper feature guides.</li>
+                  <li>Make Getting Started a curated journey, not a miscellaneous folder.</li>
+                  <li>Expose status, training, and contact routes outside the topic hierarchy.</li>
+                  <li>Show prerequisites, availability, and important considerations early.</li>
+                </ul>
+              </article>
+              <article class="card">
+                <h3>Avoid their debt</h3>
+                <ul>
+                  <li>Do not duplicate hundreds of quick-reference pages in the visible sidebar.</li>
+                  <li>Do not let plan labels or old/new builder variants dominate article titles.</li>
+                  <li>Do not depend on screenshots with empty alt text: 21% of Teachable and 56% of Thinkific image
+                    tags in the audited corpus lacked useful alt text.</li>
+                  <li>Do not expose unfinished features simply because a route exists.</li>
+                </ul>
+              </article>
+              <article class="card">
+                <h3>Use ClassroomIO’s strengths</h3>
+                <ul>
+                  <li>Preserve stable, readable URLs and the existing explicit sidebar ordering.</li>
+                  <li>Keep Developers and API as separate top navigation destinations.</li>
+                  <li>Use existing <code>last_reviewed</code> metadata for maintenance.</li>
+                  <li>Keep admin and learner instructions separate when the interface and permissions differ.</li>
+                </ul>
+              </article>
+            </div>
+          </section>
+
+          <section class="section-block" id="rules">
+            <div class="eyebrow">Article system</div>
+            <h2>The standard every article should follow</h2>
+            <p class="section-intro">
+              The sidebar only works if each destination solves one recognizable problem. These rules keep articles
+              independent, searchable, linkable, and maintainable.
+            </p>
+            <div class="numbered-list">
+              <div class="numbered-item">
+                <span class="number">1</span>
+                <strong>Title the task</strong>
+                <p>Use a verb and object: “Invite students”, “Connect a custom domain”, “Grade a submission”. Avoid internal component names.</p>
+              </div>
+              <div class="numbered-item">
+                <span class="number">2</span>
+                <strong>State the outcome</strong>
+                <p>Open with one sentence explaining who the guide is for and what will be true when they finish.</p>
+              </div>
+              <div class="numbered-item">
+                <span class="number">3</span>
+                <strong>Front-load constraints</strong>
+                <p>Show required role, plan, course type, publication state, and prerequisites before the procedure.</p>
+              </div>
+              <div class="numbered-item">
+                <span class="number">4</span>
+                <strong>Follow the UI path</strong>
+                <p>Write numbered steps with one meaningful action per step. Bold exact labels and include the full navigation path once.</p>
+              </div>
+              <div class="numbered-item">
+                <span class="number">5</span>
+                <strong>Use purposeful visuals</strong>
+                <p>Use tightly cropped, annotated WebP screenshots only where the interface state is hard to infer. Add useful alt text and a short caption.</p>
+              </div>
+              <div class="numbered-item">
+                <span class="number">6</span>
+                <strong>Confirm success</strong>
+                <p>End the procedure with what the user should now see, receive, or be able to do.</p>
+              </div>
+              <div class="numbered-item">
+                <span class="number">7</span>
+                <strong>Link with intent</strong>
+                <p>Use descriptive anchors. Separate “Next step” links from explanatory “Related guides”, and keep each list to a few high-value destinations.</p>
+              </div>
+              <div class="numbered-item">
+                <span class="number">8</span>
+                <strong>Maintain the page</strong>
+                <p>Record review date, verify screenshots after UI changes, preserve redirects, and collect helpfulness and failed-search signals.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="section-block">
+            <div class="eyebrow">Launch boundaries</div>
+            <h2>What is intentionally not in the launch sidebar</h2>
+            <div class="grid three">
+              <article class="card">
+                <h3>Zapier</h3>
+                <p>The app labels this “Coming soon.” Prepare the slug and draft privately, but do not surface it until users can complete the workflow.</p>
+              </article>
+              <article class="card">
+                <h3>Telegram integration</h3>
+                <p>The settings page contains unimplemented profile updates. It should not receive a help article until connection and disconnection work end to end.</p>
+              </article>
+              <article class="card">
+                <h3>Internal operations</h3>
+                <p>Queue administration, jobs internals, contributor setup, and self-hosting operations remain in developer or operator documentation—not customer help.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="section-block">
+            <div class="eyebrow">Sources</div>
+            <h2>Primary material reviewed</h2>
+            <ul class="source-list">
+              <li><a href="https://support.teachable.com/en/" target="_blank" rel="noreferrer">Teachable Help Center</a></li>
+              <li><a href="https://support.teachable.com/sitemap.xml" target="_blank" rel="noreferrer">Teachable public sitemap</a></li>
+              <li><a href="https://support.thinkific.com/hc/en-us" target="_blank" rel="noreferrer">Thinkific Help Center</a></li>
+              <li><a href="https://support.thinkific.com/api/v2/help_center/en-us/articles.json" target="_blank" rel="noreferrer">Thinkific public article API</a></li>
+              <li><a href="https://support.thinkific.com/api/v2/help_center/en-us/sections.json" target="_blank" rel="noreferrer">Thinkific public section API</a></li>
+              <li><a href="https://support.thinkific.com/api/v2/help_center/en-us/categories.json" target="_blank" rel="noreferrer">Thinkific public category API</a></li>
+            </ul>
+            <p class="footer-note">
+              ClassroomIO evidence: current Help Center MDX files and navigation config, organization and learner
+              navigation modules, course sidebar, route tree, API route tree, settings forms, translations, widgets,
+              exercise question types, AI Tutor settings, compliance, analytics, and onboarding flows in this repository.
+            </p>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const article = (title, status = "new", description = "") => ({ title, status, description });
+      const group = (title, items) => ({ title, items });
+
+      const navigation = [
+        {
+          title: "Get started",
+          items: [
+            article("What is ClassroomIO?", "new", "A concise product mental model for academy owners, instructors, and learners."),
+            article("Create your ClassroomIO account", "existing"),
+            article("Understand the admin dashboard", "existing"),
+            group("Set up your first academy", [
+              article("Complete your onboarding checklist", "existing"),
+              article("Create your first course", "existing"),
+              article("Customize your academy profile", "split"),
+              article("Invite your first team member", "existing"),
+              article("Preview your academy as a learner", "new"),
+            ]),
+            group("Plans, billing, and workspaces", [
+              article("Compare plans and feature limits", "new"),
+              article("Manage your subscription and billing", "new"),
+              article("Understand usage and plan limits", "new"),
+              article("Create and manage workspaces", "new"),
+            ]),
+          ],
+        },
+        {
+          title: "Build courses",
+          items: [
+            group("Create a course", [
+              article("Create a course from scratch", "split"),
+              article("Create a course with AI", "new"),
+              article("Create a course from a template", "split"),
+              article("Duplicate or import a course", "new"),
+            ]),
+            group("Choose a course type", [
+              article("Compare ClassroomIO course types", "existing"),
+              article("Create a self-paced course", "split"),
+              article("Create a live class course", "split"),
+              article("Create a compliance course", "split"),
+              article("Create a public course", "split"),
+            ]),
+            group("Organize course content", [
+              article("Organize content with sections", "new"),
+              article("Create and reorder lessons and exercises", "new"),
+              article("Turn content grouping on or off", "new"),
+            ]),
+            group("Build lessons", [
+              article("Create and edit a lesson", "new"),
+              article("Write lesson content in the editor", "new"),
+              article("Add math and LaTeX", "existing"),
+              article("Add or upload a video", "new"),
+              article("Add slides and presentations", "split"),
+              article("Add documents and downloads", "new"),
+              article("Recover drafts and use version history", "new"),
+            ]),
+            group("Build exercises", [
+              article("Create an exercise", "existing"),
+              article("Create an exercise with AI or a template", "split"),
+              article("Choose an exercise question type", "new"),
+              article("Set answers, points, and automatic grading", "new"),
+              article("Reorder exercise questions", "split"),
+              article("Preview an exercise before publishing", "split"),
+            ]),
+            group("Configure course settings", [
+              article("Update course details and cover image", "new"),
+              article("Organize courses with tags", "existing"),
+              article("Set course order and content grouping", "new"),
+              article("Control progression and completion", "existing"),
+              article("Enable comments and course downloads", "new"),
+              article("Customize the course welcome email", "existing"),
+              article("Add a course callout", "new"),
+              article("Publish a course and allow self-enrollment", "split"),
+            ]),
+          ],
+        },
+        {
+          title: "Manage learners",
+          items: [
+            article("Understand how course enrollment works", "existing"),
+            group("Enroll and invite learners", [
+              article("Let learners enroll themselves", "split"),
+              article("Invite learners by email", "existing"),
+              article("Invite learners with a reusable link", "split"),
+              article("Add a learner directly to a course", "split"),
+              article("Enroll learners in a paid course", "split"),
+              article("Restrict enrollment to your organization", "existing"),
+            ]),
+            group("Manage your audience", [
+              article("Browse, search, and filter your audience", "split"),
+              article("View a learner profile and activity", "new"),
+              article("Import learners from a CSV file", "split"),
+              article("Export your audience", "split"),
+              article("Assign learners to courses in bulk", "split"),
+              article("Manage pending invitations", "split"),
+              article("Find and remove inactive learners", "existing"),
+            ]),
+            group("Manage people in a course", [
+              article("Add and remove people from a course", "new"),
+              article("Review a learner’s course progress", "new"),
+            ]),
+            group("Organize learners with cohorts", [
+              article("Understand cohorts and goals", "existing"),
+              article("Create a cohort", "existing"),
+              article("Add courses to a cohort", "split"),
+              article("Assign learners to a cohort", "split"),
+              article("Configure cohort goals and settings", "split"),
+              article("Post to a cohort news feed", "new"),
+            ]),
+          ],
+        },
+        {
+          title: "Deliver and engage",
+          items: [
+            group("Run live classes", [
+              article("Schedule a live class", "existing"),
+              article("Change a live class time or join link", "split"),
+              article("Send reminders and calendar invitations", "split"),
+              article("Take attendance", "existing"),
+            ]),
+            group("Review and grade work", [
+              article("Understand the submission workflow", "split"),
+              article("Grade an exercise manually", "existing"),
+              article("Grade an exercise with AI", "split"),
+              article("View and export marks", "new"),
+              article("Notify learners about an exercise", "new"),
+            ]),
+            group("Control progression and completion", [
+              article("Choose free or sequential progression", "split"),
+              article("Set lesson completion rules", "split"),
+              article("Set exercise completion rules", "split"),
+              article("Understand locked course content", "new"),
+            ]),
+            group("Issue certificates", [
+              article("Set certificate eligibility rules", "split"),
+              article("Design a course certificate", "split"),
+              article("Add certificate signatories", "split"),
+              article("Review certificate reports", "new"),
+              article("Help a learner download a certificate", "new"),
+            ]),
+            group("Manage compliance training", [
+              article("Understand compliance courses", "new"),
+              article("Configure recurring compliance training", "new"),
+              article("Manage active compliance cycles", "new"),
+              article("Review learner compliance history", "new"),
+              article("Monitor organization compliance", "new"),
+            ]),
+            group("Use Community and news feeds", [
+              article("Understand the Community forum", "existing"),
+              article("Ask and answer a Community question", "existing"),
+              article("Moderate Community questions and answers", "split"),
+              article("Post a course announcement", "new"),
+            ]),
+            group("Configure AI Tutor", [
+              article("Set organization-wide AI Tutor defaults", "new"),
+              article("Override AI Tutor settings for a course", "new"),
+              article("Use AI Tutor as a learner", "new"),
+            ]),
+          ],
+        },
+        {
+          title: "Publish and brand",
+          items: [
+            article("Customize your organization profile and theme", "existing"),
+            article("Set your favicon and social sharing preview", "existing"),
+            group("Customize the learner LMS", [
+              article("Choose which LMS navigation tabs learners see", "new"),
+              article("Customize the learner dashboard banner", "new"),
+              article("Show course news feeds and grading", "new"),
+              article("Configure polls and live comments", "new"),
+              article("Customize the sign-in background", "new"),
+            ]),
+            group("Build your academy landing page", [
+              article("Choose an academy landing page theme", "split"),
+              article("Edit navigation and hero actions", "split"),
+              article("Configure the course catalog section", "new"),
+              article("Add embeds, links, and callouts", "new"),
+              article("Edit the academy footer", "split"),
+              article("Preview and publish the academy landing page", "split"),
+            ]),
+            group("Build a course landing page", [
+              article("Open and edit a course landing page", "existing"),
+              article("Set course pricing and currency", "split"),
+              article("Configure enrollment calls to action", "split"),
+              article("Preview and publish a course landing page", "split"),
+            ]),
+            group("Connect a custom domain", [
+              article("Add the required DNS records", "split"),
+              article("Verify your domain and SSL certificate", "split"),
+              article("Reconnect a domain that needs attention", "new"),
+              article("Add a custom favicon or custom code", "split"),
+              article("Understand which links use your custom domain", "existing"),
+            ]),
+            group("Create and embed course widgets", [
+              article("Create a course widget", "new"),
+              article("Choose courses, layout, and design", "new"),
+              article("Embed a widget on another website", "new"),
+              article("Use widget version history", "new"),
+              article("Archive or restore a widget", "new"),
+            ]),
+          ],
+        },
+        {
+          title: "Analytics and reporting",
+          items: [
+            article("Understand the organization dashboard", "existing"),
+            group("Use organization analytics", [
+              article("Read your organization analytics overview", "new"),
+              article("Analyze landing views, enrollments, and completions", "new"),
+              article("View top countries and popular course types", "new"),
+              article("Compare your top courses", "new"),
+            ]),
+            group("Use course analytics", [
+              article("Review course performance and learner progress", "new"),
+              article("View submissions and completion data", "new"),
+            ]),
+            article("View a learner’s analytics", "new"),
+            article("Export audiences, marks, and reports", "existing"),
+            article("Report on compliance status", "new"),
+          ],
+        },
+        {
+          title: "Account, team, and security",
+          items: [
+            article("Update your personal profile", "new"),
+            article("Manage your notification preferences", "new"),
+            article("Update organization settings", "split"),
+            group("Manage your team", [
+              article("Invite a team member by email", "existing"),
+              article("Invite a team member with a link", "split"),
+              article("Choose admin and tutor roles", "existing"),
+              article("Remove a team member", "new"),
+            ]),
+            group("Manage workspaces", [
+              article("Understand primary and secondary workspaces", "new"),
+              article("Create another workspace", "new"),
+              article("Switch between workspaces", "new"),
+              article("Delete a workspace", "new"),
+            ]),
+            group("Manage billing and usage", [
+              article("View and change your plan", "new"),
+              article("Understand student and workspace limits", "new"),
+              article("View and manage AI credits", "new"),
+            ]),
+            group("Configure authentication", [
+              article("Choose allowed sign-in methods", "new"),
+              article("Set up enterprise SSO", "existing"),
+              article("Configure SSO access policies", "split"),
+              article("Set up token-based authentication", "new"),
+            ]),
+          ],
+        },
+        {
+          title: "Integrations and automation",
+          items: [
+            article("Understand ClassroomIO integrations", "new"),
+            group("Connect AI tools with MCP", [
+              article("Understand ClassroomIO MCP", "new"),
+              article("Create, rotate, and revoke MCP keys", "new"),
+              article("Connect Claude Code, Codex, Cursor, or OpenCode", "new"),
+              article("Understand MCP limits and permissions", "new"),
+            ]),
+            group("Use the public API", [
+              article("Create and manage API keys", "new"),
+              article("Authenticate an API request", "new"),
+              article("Open the API reference", "external"),
+            ]),
+            article("Open the developer documentation", "external"),
+          ],
+        },
+        {
+          title: "Learner guides",
+          items: [
+            group("Join and manage your account", [
+              article("Accept an academy or course invitation", "split"),
+              article("Enroll yourself in a course", "split"),
+              article("Join a paid course", "split"),
+              article("Sign in and reset your password", "new"),
+              article("Update your profile and preferences", "new"),
+            ]),
+            group("Navigate the learner LMS", [
+              article("Use your learner dashboard", "existing"),
+              article("Find courses in My Learning", "split"),
+              article("Discover courses in Explore", "split"),
+              article("View your cohorts and goals", "split"),
+            ]),
+            group("Take a course", [
+              article("Navigate lessons and exercises", "new"),
+              article("Understand locked content and progression", "new"),
+              article("Complete and submit an exercise", "new"),
+              article("View marks and instructor feedback", "new"),
+              article("Join a live class", "existing"),
+            ]),
+            group("Participate in Community", [
+              article("Ask a Community question", "existing"),
+              article("Answer, edit, or remove a post", "split"),
+            ]),
+            group("Use certificates", [
+              article("Know when you qualify for a certificate", "new"),
+              article("View and download your certificates", "new"),
+            ]),
+          ],
+        },
+        {
+          title: "Troubleshooting and reference",
+          items: [
+            group("Troubleshoot common problems", [
+              article("Troubleshoot login and verification emails", "new"),
+              article("Troubleshoot course access and enrollment", "new"),
+              article("Troubleshoot video uploads and playback", "new"),
+              article("Troubleshoot invitation and notification emails", "new"),
+              article("Troubleshoot custom domains and SSL", "new"),
+              article("Troubleshoot course publishing and visibility", "new"),
+            ]),
+            article("Supported browsers and devices", "new"),
+            article("Contact ClassroomIO support", "new"),
+            group("ClassroomIO concepts", [
+              article("Organization", "existing"),
+              article("Workspace", "new"),
+              article("Course", "existing"),
+              article("Section, lesson, and exercise", "new"),
+              article("Audience", "existing"),
+              article("Cohort", "existing"),
+              article("Community", "existing"),
+              article("Tags", "existing"),
+              article("Certificate and compliance cycle", "new"),
+            ]),
+            article("Roles and permissions reference", "existing"),
+            article("Course type comparison", "existing"),
+            article("Enrollment and visibility reference", "existing"),
+            article("Exports reference", "existing"),
+            article("ClassroomIO glossary", "existing"),
+          ],
+        },
+      ];
+
+      const navTree = document.querySelector("#nav-tree");
+      const navSearch = document.querySelector("#nav-search");
+      const clearSearch = document.querySelector("#clear-search");
+      const toggleGroups = document.querySelector("#toggle-groups");
+      const navEmpty = document.querySelector("#nav-empty");
+      const selectedPreview = document.querySelector("#selected-preview");
+      const selectedPath = document.querySelector("#selected-path");
+      const selectedTitle = document.querySelector("#selected-title");
+      const selectedDescription = document.querySelector("#selected-description");
+      const selectedBadges = document.querySelector("#selected-badges");
+      const topBreadcrumb = document.querySelector("#top-breadcrumb");
+
+      const statusLabels = {
+        existing: "Content exists",
+        split: "Partial content",
+        new: "Content missing",
+        external: "External content exists",
+      };
+
+      function countArticles(items) {
+        return items.reduce((total, item) => total + (item.items ? countArticles(item.items) : 1), 0);
+      }
+
+      function countGroups(items) {
+        return items.reduce((total, item) => total + (item.items ? 1 + countGroups(item.items) : 0), 0);
+      }
+
+      function countStatuses(items, counts = { complete: 0, partial: 0, missing: 0 }) {
+        items.forEach((item) => {
+          if (item.items) {
+            countStatuses(item.items, counts);
+            return;
+          }
+
+          if (item.status === "existing" || item.status === "external") counts.complete += 1;
+          else if (item.status === "split") counts.partial += 1;
+          else counts.missing += 1;
+        });
+        return counts;
+      }
+
+      function defaultDescription(item) {
+        if (item.description) return item.description;
+        if (item.status === "existing") return "Retain the current guide as a stable, independently shareable destination and revise it to the new article standard.";
+        if (item.status === "split") return "Create a focused destination from material that is currently bundled inside a broader ClassroomIO guide.";
+        if (item.status === "external") return "Keep this as a clearly labeled external destination rather than duplicating technical reference content in the Help Center.";
+        return "Create a focused Help Center article for this shipped workflow, with prerequisites, numbered steps, verification, screenshots where useful, and related next steps.";
+      }
+
+      function selectArticle(button, sectionTitle, groupTitle, item) {
+        document.querySelectorAll(".nav-item.active").forEach((element) => element.classList.remove("active"));
+        button.classList.add("active");
+        const pathParts = [sectionTitle, groupTitle, item.title].filter(Boolean);
+        const path = pathParts.join(" / ");
+        selectedPath.textContent = path;
+        selectedTitle.textContent = item.title;
+        selectedDescription.textContent = defaultDescription(item);
+        selectedBadges.innerHTML = `<span class="badge ${item.status}">${statusLabels[item.status]}</span><span class="badge">Independent URL</span><span class="badge">Searchable</span>`;
+        selectedPreview.classList.add("visible");
+        topBreadcrumb.textContent = `Help center / ${path}`;
+        if (window.innerWidth <= 760) document.body.classList.remove("menu-open");
+        selectedPreview.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      function articleButton(item, sectionTitle, groupTitle, levelThree = false) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `nav-item${levelThree ? " level-three" : ""}`;
+        button.dataset.search = `${sectionTitle} ${groupTitle || ""} ${item.title}`.toLowerCase();
+        button.innerHTML = `<span class="status-dot ${item.status}" aria-hidden="true"></span><span>${item.title}</span>`;
+        button.addEventListener("click", () => selectArticle(button, sectionTitle, groupTitle, item));
+        return button;
+      }
+
+      function renderNavigation() {
+        navigation.forEach((section, sectionIndex) => {
+          const sectionElement = document.createElement("section");
+          sectionElement.className = "nav-section";
+          sectionElement.dataset.section = section.title.toLowerCase();
+
+          const sectionLabel = document.createElement("div");
+          sectionLabel.className = "section-label";
+          sectionLabel.innerHTML = `<span>${section.title}</span><span>${countArticles(section.items)}</span>`;
+          sectionElement.appendChild(sectionLabel);
+
+          section.items.forEach((item, itemIndex) => {
+            if (!item.items) {
+              sectionElement.appendChild(articleButton(item, section.title, ""));
+              return;
+            }
+
+            const details = document.createElement("details");
+            details.dataset.search = `${section.title} ${item.title} ${item.items.map((child) => child.title).join(" ")}`.toLowerCase();
+            if (sectionIndex === 0 && itemIndex === 3) details.open = true;
+
+            const summary = document.createElement("summary");
+            summary.className = "group-summary";
+            summary.innerHTML = `<span>${item.title}</span><svg class="chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"></path></svg>`;
+            details.appendChild(summary);
+
+            const children = document.createElement("div");
+            children.className = "group-children";
+            item.items.forEach((child) => children.appendChild(articleButton(child, section.title, item.title, true)));
+            details.appendChild(children);
+            sectionElement.appendChild(details);
+          });
+
+          navTree.appendChild(sectionElement);
+        });
+
+        const totalArticles = navigation.reduce((total, section) => total + countArticles(section.items), 0);
+        const totalGroups = navigation.reduce((total, section) => total + countGroups(section.items), 0);
+        const coverage = navigation.reduce((counts, section) => countStatuses(section.items, counts), {
+          complete: 0,
+          partial: 0,
+          missing: 0,
+        });
+        document.querySelector("#section-count").textContent = navigation.length;
+        document.querySelector("#group-count").textContent = totalGroups;
+        document.querySelector("#article-count").textContent = totalArticles;
+        document.querySelector("#nav-count").textContent = `${totalArticles} article destinations`;
+        document.querySelector("#complete-count").textContent = coverage.complete;
+        document.querySelector("#partial-count").textContent = coverage.partial;
+        document.querySelector("#missing-count").textContent = coverage.missing;
+      }
+
+      function filterNavigation() {
+        const query = navSearch.value.trim().toLowerCase();
+        clearSearch.style.display = query ? "block" : "none";
+        let visibleCount = 0;
+
+        document.querySelectorAll(".nav-section").forEach((sectionElement) => {
+          let sectionHasMatch = false;
+          sectionElement.querySelectorAll(":scope > .nav-item").forEach((item) => {
+            const matches = !query || item.dataset.search.includes(query);
+            item.style.display = matches ? "flex" : "none";
+            if (matches) {
+              sectionHasMatch = true;
+              visibleCount += 1;
+            }
+          });
+
+          sectionElement.querySelectorAll(":scope > details").forEach((details) => {
+            let groupHasMatch = false;
+            details.querySelectorAll(".nav-item").forEach((item) => {
+              const matches = !query || item.dataset.search.includes(query);
+              item.style.display = matches ? "flex" : "none";
+              if (matches) {
+                groupHasMatch = true;
+                visibleCount += 1;
+              }
+            });
+            details.style.display = groupHasMatch || !query ? "block" : "none";
+            if (query && groupHasMatch) details.open = true;
+            if (groupHasMatch) sectionHasMatch = true;
+          });
+
+          sectionElement.style.display = sectionHasMatch || !query ? "block" : "none";
+        });
+
+        navEmpty.style.display = query && visibleCount === 0 ? "block" : "none";
+        if (query) document.querySelector("#nav-count").textContent = `${visibleCount} matching destinations`;
+        else {
+          const totalArticles = navigation.reduce((total, section) => total + countArticles(section.items), 0);
+          document.querySelector("#nav-count").textContent = `${totalArticles} article destinations`;
+        }
+      }
+
+      renderNavigation();
+
+      navSearch.addEventListener("input", filterNavigation);
+      clearSearch.addEventListener("click", () => {
+        navSearch.value = "";
+        filterNavigation();
+        navSearch.focus();
+      });
+
+      toggleGroups.addEventListener("click", () => {
+        const details = [...document.querySelectorAll("#nav-tree details")].filter((element) => element.style.display !== "none");
+        const shouldOpen = details.some((element) => !element.open);
+        details.forEach((element) => {
+          element.open = shouldOpen;
+        });
+        toggleGroups.textContent = shouldOpen ? "Collapse all" : "Expand all";
+      });
+
+      document.querySelector("#open-first-section").addEventListener("click", () => {
+        const firstGroup = document.querySelector("#nav-tree details");
+        if (firstGroup) firstGroup.open = true;
+        document.querySelector(".nav-scroll").scrollTo({ top: 0, behavior: "smooth" });
+        if (window.innerWidth <= 760) document.body.classList.add("menu-open");
+      });
+
+      document.querySelector("#mobile-menu").addEventListener("click", () => document.body.classList.toggle("menu-open"));
+    </script>
+  </body>
+</html>

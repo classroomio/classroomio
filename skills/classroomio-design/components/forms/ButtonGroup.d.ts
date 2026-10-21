@@ -1,0 +1,2 @@
+export interface ButtonGroupProps { orientation?: 'horizontal'|'vertical'; children?: React.ReactNode; style?: React.CSSProperties; }
+export declare function ButtonGroup(props: ButtonGroupProps): JSX.Element;

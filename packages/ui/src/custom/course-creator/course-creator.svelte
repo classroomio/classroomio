@@ -87,7 +87,7 @@
       rows={4}
       disabled={loading}
       onkeydown={handleKeydown}
-      class="ui:w-full ui:resize-none ui:border-0! ui:focus-visible:ring-0! ui:focus-visible:ring-offset-0! ui:dark:bg-card!"
+      class="ui:w-full ui:max-h-64 ui:resize-none ui:overflow-y-auto ui:border-0! ui:focus-visible:ring-0! ui:focus-visible:ring-offset-0! ui:dark:bg-card!"
     />
 
     <div class="ui:mt-3 ui:flex ui:items-center ui:gap-2">

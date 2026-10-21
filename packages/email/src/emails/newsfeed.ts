@@ -3,10 +3,11 @@ import * as z from 'zod';
 import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
 import { ZEmailBranding } from '../core/branding';
+import { renderStudentEmail, renderStudentEmailSubject } from '../core/student-email';
 
 export const newsfeedPostEmail = defineEmail({
   id: 'newsfeedPost',
-  subject: 'New post in course',
+  subject: (fields, context) => renderStudentEmailSubject('newsfeedPost', fields, context),
   schema: z.object({
     courseTitle: z.string().min(1),
     teacherName: z.string().min(1),
@@ -15,17 +16,19 @@ export const newsfeedPostEmail = defineEmail({
     orgName: z.string().min(1),
     branding: ZEmailBranding
   }),
-  render: (fields) => {
-    const content = `
-      <p>${fields.teacherName} made a post in a course you are taking: ${fields.courseTitle}.</p>
-      <div style="font-style: italic; margin-top: 10px;">${fields.content}</div>
-      <div>
-        <a class="button" href="${fields.postLink}">View post</a>
-      </div>
-    `;
-
-    return getDefaultTemplate(content, fields.branding);
-  }
+  render: (fields, context) =>
+    renderStudentEmail({
+      id: 'newsfeedPost',
+      values: {
+        org_name: fields.orgName,
+        course_name: fields.courseTitle,
+        teacher_name: fields.teacherName
+      },
+      trustedHtml: { post_content: `<div style="font-style:italic;margin-top:10px;">${fields.content}</div>` },
+      actionUrl: fields.postLink,
+      branding: fields.branding,
+      context
+    })
 });
 
 export const newsfeedCommentEmail = defineEmail({

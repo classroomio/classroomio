@@ -3,26 +3,46 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
-import { ZCreateWidget, ZRollbackWidget, ZUpdateWidget, ZWidgetIdParams } from '@cio/utils/validation/widget';
 import {
+  ZCreateWidget,
+  ZListWidgetsQuery,
+  ZRollbackWidget,
+  ZUpdateWidget,
+  ZWidgetIdParams
+} from '@cio/utils/validation/widget';
+import {
+  archiveOrganizationWidget,
   createOrganizationWidget,
   deleteOrganizationWidget,
   getOrganizationWidgetDetail,
+  listArchivedOrganizationWidgets,
   listOrganizationWidgets,
   publishOrganizationWidget,
+  restoreOrganizationWidget,
   rollbackOrganizationWidget,
   updateOrganizationWidget
 } from '@api/services/widget';
 import { zValidator } from '@hono/zod-validator';
 
 export const widgetsRouter = new Hono()
-  .get('/', authMiddleware, orgTeamMemberMiddleware, async (c) => {
+  .get('/', authMiddleware, orgTeamMemberMiddleware, zValidator('query', ZListWidgetsQuery), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
-      const widgets = await listOrganizationWidgets(orgId);
-      return c.json({ success: true, data: widgets });
+      const query = c.req.valid('query');
+      const widgets = await listOrganizationWidgets(orgId, query);
+      return c.json({ success: true, data: widgets.items, pagination: widgets.pagination });
     } catch (error) {
       return handleError(c, error, 'Failed to fetch widgets');
+    }
+  })
+  .get('/archived', authMiddleware, orgTeamMemberMiddleware, zValidator('query', ZListWidgetsQuery), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const query = c.req.valid('query');
+      const widgets = await listArchivedOrganizationWidgets(orgId, query);
+      return c.json({ success: true, data: widgets.items, pagination: widgets.pagination });
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch archived widgets');
     }
   })
   .post('/', authMiddleware, orgTeamMemberMiddleware, zValidator('json', ZCreateWidget), async (c) => {
@@ -68,6 +88,18 @@ export const widgetsRouter = new Hono()
       }
     }
   )
+  .post('/:widgetId/archive', authMiddleware, orgAdminMiddleware, zValidator('param', ZWidgetIdParams), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const user = c.get('user')!;
+      const { widgetId } = c.req.valid('param');
+      const widget = await archiveOrganizationWidget(orgId, widgetId, user.id);
+
+      return c.json({ success: true, data: widget });
+    } catch (error) {
+      return handleError(c, error, 'Failed to archive widget');
+    }
+  })
   .delete('/:widgetId', authMiddleware, orgAdminMiddleware, zValidator('param', ZWidgetIdParams), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
@@ -78,6 +110,18 @@ export const widgetsRouter = new Hono()
       return c.json({ success: true, data: widget });
     } catch (error) {
       return handleError(c, error, 'Failed to delete widget');
+    }
+  })
+  .post('/:widgetId/restore', authMiddleware, orgAdminMiddleware, zValidator('param', ZWidgetIdParams), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const user = c.get('user')!;
+      const { widgetId } = c.req.valid('param');
+      const widget = await restoreOrganizationWidget(orgId, widgetId, user.id);
+
+      return c.json({ success: true, data: widget });
+    } catch (error) {
+      return handleError(c, error, 'Failed to restore widget');
     }
   })
   .post('/:widgetId/publish', authMiddleware, orgAdminMiddleware, zValidator('param', ZWidgetIdParams), async (c) => {

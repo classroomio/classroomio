@@ -2,8 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { Empty } from '@cio/ui/custom/empty';
-  import { Spinner } from '@cio/ui/base/spinner';
+  import { BlockLoader } from '@cio/ui/custom/block-loader';
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
   import type { Course } from '$features/course/types';
@@ -57,39 +56,45 @@
   }
 
   let { children, data }: Props = $props();
+  const courseId = $derived(data.courseId);
+  const loadedCourseId = $derived(courseApi.course?.id);
   const currentPath = $derived(page.url.pathname);
   let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);
   let hasLoadedSidebarWidth = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
 
-  // Initialize course store on the client (fetch once, then reuse store data).
   $effect(() => {
-    if (!data.courseId || !$profile.id) return;
+    const profileId = $profile.id;
+    if (!courseId || !profileId) return;
+    if (loadedCourseId === courseId) return;
 
     if (data.course) {
-      courseApi.setCourse(data.course, $profile.id);
+      courseApi.setCourse(data.course, profileId);
       return;
     }
 
-    courseApi.ensureCourse(data.courseId, $profile.id);
+    void courseApi.ensureCourse(courseId, profileId);
   });
 
-  const isCourseReady = $derived.by(() => {
-    return courseApi.course?.id === data.courseId && !!courseApi.group.id;
-  });
+  const isCourseReady = $derived(loadedCourseId === courseId && !!courseApi.group.id);
 
   const user: CourseMember | undefined = $derived(
     courseApi.group.people.find((person) => person.profileId === $profile.id)
   );
   const canCheck = $derived(!!$profile.id && isCourseReady);
 
+  const serverAuthorizedCourse = $derived(data.course?.id === courseId);
+
   const isPermitted = $derived.by(() => {
     if (!isCourseReady) return false;
+
     if (!canCheck) return true;
 
     if ($isOrgAdmin === null) return true;
 
-    return $isOrgAdmin || user;
+    if ($isOrgAdmin || user) return true;
+
+    return serverAuthorizedCourse;
   });
 
   const isExercisePage = $derived(!!data.exerciseId);
@@ -215,7 +220,7 @@
 >
   <CourseSidebar
     path={currentPath}
-    id={data.courseId}
+    id={courseId}
     {isCourseReady}
     {sidebarWidth}
     onSidebarWidthPreview={handleSidebarWidthPreview}
@@ -229,12 +234,10 @@
 
     {#if !isCourseReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
-        <Empty
-          title="Loading course…"
-          description="Please wait while we load your course data."
-          icon={Spinner}
-          iconClass="h-8 w-8"
-          variant="page"
+        <BlockLoader
+          blockText={false}
+          title={$t('common.loading_states.opening_course.title')}
+          caption={$t('common.loading_states.opening_course.caption')}
         />
       </div>
     {:else}
@@ -253,7 +256,7 @@
       {/if}
 
       {#if showMobileBottomNav}
-        <CourseMobileBottomNav courseId={data.courseId} path={currentPath} />
+        <CourseMobileBottomNav {courseId} path={currentPath} />
       {/if}
     {/if}
   </Sidebar.Inset>

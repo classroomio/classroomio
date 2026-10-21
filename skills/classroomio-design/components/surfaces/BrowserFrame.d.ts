@@ -1,0 +1,2 @@
+export interface BrowserFrameProps { url?: string; /** ink 1.6px outline (hero) vs sand hairline (product mock) */ sketch?: boolean; children?: React.ReactNode; style?: React.CSSProperties; }
+export declare function BrowserFrame(props: BrowserFrameProps): JSX.Element;

@@ -31,10 +31,10 @@
   aria-disabled={disableCourseLinks}
   tabindex={disableCourseLinks ? -1 : undefined}
 >
-  {#if course.logo}
+  {#if course.bannerImage}
     <div
       class="ui:h-[180px] ui:bg-cover ui:bg-center"
-      style="background-image: url('{course.logo}');"
+      style="background-image: url('{course.bannerImage}');"
       aria-hidden="true"
     ></div>
   {:else}

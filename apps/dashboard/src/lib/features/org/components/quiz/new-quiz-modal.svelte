@@ -112,10 +112,11 @@
       <InputField
         label={$t('components.quiz.quiz_title')}
         bind:value={$createQuizModal.title}
-        placeholder={$t('components.quiz.placehoolder')}
+        placeholder={$t('components.quiz.placeholder')}
         className="mb-4"
         isRequired={true}
         errorMessage={errors.title}
+        onInput={() => delete errors.title}
         autoComplete={false}
       />
 

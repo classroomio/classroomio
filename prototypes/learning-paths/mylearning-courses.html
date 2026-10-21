@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Learning · Courses · ClassroomIO LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      /* ============ Course grid card ============ */
+      .clib-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      .clib-card { overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.15s, border-color 0.15s; }
+      .clib-card:hover { border-color: var(--ring); box-shadow: var(--shadow-md); }
+      .clib-cover { height: 86px; position: relative; }
+      .clib-cover .badge { position: absolute; top: 11px; left: 13px; }
+      .clib-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+      .clib-title { font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+      .clib-desc { font-size: 12.5px; color: var(--muted-foreground); margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 33px; }
+      .clib-meta { font-size: 12px; color: var(--muted-foreground); display: flex; align-items: center; gap: 5px; }
+      .clib-meta svg { width: 13px; height: 13px; stroke-width: 2; }
+      .clib-progress-top { display: flex; align-items: baseline; justify-content: space-between; font-size: 12px; }
+      .clib-progress-top .p { font-weight: 600; }
+      .clib-done { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; color: var(--success); }
+      .clib-done svg { width: 14px; height: 14px; stroke-width: 2.4; }
+      .clib-body .btn { width: 100%; margin-top: 2px; }
+
+      @media (max-width: 900px) { .clib-grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 640px) { .clib-grid { grid-template-columns: 1fr; } }
+
+      .emore-tagline { font-size: 13px; color: var(--muted-foreground); margin: -6px 0 16px; }
+      .emore-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+      @media (max-width: 900px) { .emore-grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="mobile-backdrop" id="mobileBackdrop"></div>
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">C</div><div class="brand-name">ClassroomIO</div></div>
+        <div class="nav-label">Main</div>
+        <a class="nav-item" href="lms-home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+
+        <button class="nav-item nav-parent open section-active" id="myLearningToggle" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>My Learning</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="nav-sub" id="myLearningSub">
+          <a class="nav-subitem" href="mylearning.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Paths</a>
+          <a class="nav-subitem active" href="mylearning-courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses</a>
+        </div>
+
+        <a class="nav-item" href="explore.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></svg>Explore</a>
+        <a class="nav-item" href="assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Assignments<span class="nav-badge">3</span></a>
+        <a class="nav-item" href="community.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Community</a>
+        <div class="nav-label">Personal</div>
+        <a class="nav-item" href="certificates.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificates</a>
+        <a class="nav-item nav-pinned" href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>Settings</a>
+        <div class="sidebar-foot"><div class="avatar">AO</div><div class="who"><div class="nm">Ada Okafor</div><div class="rl">Student</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <button class="icon-btn mobile-nav-btn" id="mobileNavBtn" title="Menu" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          <span class="top-title">My Learning</span>
+          <div class="top-actions">
+            <button class="icon-btn" title="Notifications" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1000px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">My Learning</h1>
+                <p class="page-sub">The individual courses you're enrolled in, in or out of a learning path.</p>
+              </div>
+            </div>
+
+            <!-- ============ Currently Learning ============ -->
+            <div class="sec-head" style="margin-top: 0">
+              <h2 class="sec-title">Currently Learning</h2>
+            </div>
+
+            <a class="card cl-hero" href="course-in-path.html">
+              <div class="cl-hero-inner">
+                <div class="cl-hero-cover" style="background: linear-gradient(135deg, oklch(0.685 0.169 237.323), oklch(0.488 0.243 264.376))">
+                  <span class="badge badge-course-label">Course</span>
+                  <svg class="cl-hero-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                </div>
+                <div class="cl-hero-body">
+                  <h3 class="cl-hero-title">Modern Web Development with React</h3>
+                  <div class="cl-hero-meta">6 weeks · <span class="part-of" style="display: inline-flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Part of: <strong>Frontend Engineering Bootcamp</strong></span></div>
+                  <div class="cl-hero-progress-top"><span class="l">Progress</span><span class="p tnum">45%</span></div>
+                  <div class="progress"><span style="width: 45%"></span></div>
+                  <div class="cl-hero-foot">
+                    <span class="cl-hero-sub tnum">9 of 12 lessons · ~4h left</span>
+                    <span class="btn btn-primary">Continue Course<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- ============ Courses (remaining enrolled) ============ -->
+            <div class="sec-head">
+              <h2 class="sec-title">Courses</h2>
+            </div>
+
+            <div class="lib-toolbar" style="margin-top: 0">
+              <div class="lib-toolbar-left">
+                <div class="filter-popover" id="filterPopover">
+                  <button class="filter-btn" id="filterBtn" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg>
+                    Filters
+                    <span class="filter-count" id="filterCount" hidden>0</span>
+                  </button>
+                  <div class="filter-panel">
+                    <div class="filter-panel-head">
+                      <span class="filter-panel-title">Filters</span>
+                      <button class="filter-clear-all" id="clearFilters" type="button">Clear all</button>
+                    </div>
+                    <div class="filter-group">
+                      <div class="filter-group-label">Status</div>
+                      <div class="filter-pill-row">
+                        <button class="filter-pill on" type="button" data-group="status">All</button>
+                        <button class="filter-pill" type="button" data-group="status">Not Started</button>
+                        <button class="filter-pill" type="button" data-group="status">In Progress</button>
+                        <button class="filter-pill" type="button" data-group="status">Completed</button>
+                      </div>
+                    </div>
+                    <div class="filter-group">
+                      <div class="filter-group-label">Difficulty</div>
+                      <div class="filter-pill-row">
+                        <button class="filter-pill on" type="button" data-group="difficulty">Any</button>
+                        <button class="filter-pill" type="button" data-group="difficulty">Beginner</button>
+                        <button class="filter-pill" type="button" data-group="difficulty">Intermediate</button>
+                        <button class="filter-pill" type="button" data-group="difficulty">Advanced</button>
+                      </div>
+                    </div>
+                    <div class="filter-group">
+                      <div class="filter-group-label">Duration</div>
+                      <div class="filter-pill-row">
+                        <button class="filter-pill on" type="button" data-group="duration">Any</button>
+                        <button class="filter-pill" type="button" data-group="duration">Under 1h</button>
+                        <button class="filter-pill" type="button" data-group="duration">1–4h</button>
+                        <button class="filter-pill" type="button" data-group="duration">4h+</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="view-toggle" id="viewToggle">
+                <button data-view="grid" class="on" title="Grid view" aria-label="Grid view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+                <button data-view="list" title="List view" aria-label="List view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+              </div>
+            </div>
+
+            <div class="clib-grid" data-view-content="grid">
+              <a class="card clib-card" href="#">
+                <div class="clib-cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))">
+                  <span class="badge badge-course-label">Course</span>
+                </div>
+                <div class="clib-body">
+                  <h3 class="clib-title">Intro to Python</h3>
+                  <p class="clib-desc">Syntax, data types, and your first scripts.</p>
+                  <span class="clib-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>8 weeks</span>
+                  <div class="clib-progress-top"><span class="l" style="color: var(--muted-foreground)">Progress</span><span class="p tnum">30%</span></div>
+                  <div class="progress progress-thin"><span style="width: 30%"></span></div>
+                  <div class="part-of"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Part of: <strong>Data Science with Python</strong></div>
+                  <span class="btn btn-primary">Continue Course<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+              </a>
+
+              <a class="card clib-card" href="course-in-path.html">
+                <div class="clib-cover" style="background: linear-gradient(135deg, oklch(0.705 0.213 47.604), oklch(0.75 0.183 55.934))">
+                  <span class="badge badge-course-label">Course</span>
+                </div>
+                <div class="clib-body">
+                  <h3 class="clib-title">HTML &amp; CSS Foundations</h3>
+                  <p class="clib-desc">Semantic markup, the box model, and responsive layout.</p>
+                  <span class="clib-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>4 weeks</span>
+                  <div class="clib-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Completed</div>
+                  <div class="part-of"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Part of: <strong>Frontend Engineering Bootcamp</strong></div>
+                  <span class="btn btn-outline">Review Course</span>
+                </div>
+              </a>
+
+              <a class="card clib-card" href="#">
+                <div class="clib-cover" style="background: linear-gradient(135deg, oklch(0.585 0.233 277.117), oklch(0.606 0.25 292.717))">
+                  <span class="badge badge-course-label">Course</span>
+                </div>
+                <div class="clib-body">
+                  <h3 class="clib-title">Getting Started with MVC</h3>
+                  <p class="clib-desc">A standalone course on the model-view-controller pattern.</p>
+                  <span class="clib-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>4 weeks</span>
+                  <div class="clib-progress-top"><span class="l" style="color: var(--muted-foreground)">Progress</span><span class="p tnum">20%</span></div>
+                  <div class="progress progress-thin"><span style="width: 20%"></span></div>
+                  <span class="btn btn-primary">Continue Course<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+              </a>
+            </div>
+
+            <div class="lp-list" data-view-content="list" hidden>
+              <a class="card lp-row" href="#">
+                <div class="lp-row-thumb" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))"></div>
+                <div class="lp-row-main">
+                  <div class="lp-row-top"><span class="badge badge-course-label">Course</span></div>
+                  <h3 class="lp-row-title">Intro to Python</h3>
+                  <p class="lp-row-desc">Syntax, data types, and your first scripts.</p>
+                  <div class="lp-row-meta">
+                    <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>8 weeks</span>
+                    <span class="badge badge-primary-soft">In Progress</span>
+                    <span class="part-of"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Part of: <strong>Data Science with Python</strong></span>
+                  </div>
+                </div>
+                <div class="lp-row-side">
+                  <div class="lp-row-progress"><div class="progress progress-thin"><span style="width: 30%"></span></div><span class="p tnum">30%</span></div>
+                  <span class="btn btn-primary btn-sm">Continue<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+              </a>
+
+              <a class="card lp-row" href="course-in-path.html">
+                <div class="lp-row-thumb" style="background: linear-gradient(135deg, oklch(0.705 0.213 47.604), oklch(0.75 0.183 55.934))"></div>
+                <div class="lp-row-main">
+                  <div class="lp-row-top"><span class="badge badge-course-label">Course</span></div>
+                  <h3 class="lp-row-title">HTML &amp; CSS Foundations</h3>
+                  <p class="lp-row-desc">Semantic markup, the box model, and responsive layout.</p>
+                  <div class="lp-row-meta">
+                    <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>4 weeks</span>
+                    <span class="badge badge-success">Completed</span>
+                    <span class="part-of"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Part of: <strong>Frontend Engineering Bootcamp</strong></span>
+                  </div>
+                </div>
+                <div class="lp-row-side">
+                  <div class="lp-row-progress"><div class="progress progress-thin progress-success"><span style="width: 100%"></span></div><span class="p tnum" style="color: var(--success)">100%</span></div>
+                  <span class="btn btn-outline btn-sm">Review</span>
+                </div>
+              </a>
+
+              <a class="card lp-row" href="#">
+                <div class="lp-row-thumb" style="background: linear-gradient(135deg, oklch(0.585 0.233 277.117), oklch(0.606 0.25 292.717))"></div>
+                <div class="lp-row-main">
+                  <div class="lp-row-top"><span class="badge badge-course-label">Course</span></div>
+                  <h3 class="lp-row-title">Getting Started with MVC</h3>
+                  <p class="lp-row-desc">A standalone course on the model-view-controller pattern.</p>
+                  <div class="lp-row-meta">
+                    <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>4 weeks</span>
+                    <span class="badge badge-primary-soft">In Progress</span>
+                  </div>
+                </div>
+                <div class="lp-row-side">
+                  <div class="lp-row-progress"><div class="progress progress-thin"><span style="width: 20%"></span></div><span class="p tnum">20%</span></div>
+                  <span class="btn btn-primary btn-sm">Continue<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+              </a>
+            </div>
+
+            <!-- ============ Explore More Courses ============ -->
+            <div class="sec-head" style="margin-top: 36px">
+              <h2 class="sec-title">Explore More Courses</h2>
+              <a class="more" href="explore.html">View more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+            <p class="emore-tagline">A few courses picked based on what you're taking now.</p>
+
+            <div class="emore-grid">
+              <a class="card xcourse-card" href="explore.html">
+                <div class="xc-cover" style="background: linear-gradient(135deg, oklch(0.645 0.246 16.439), oklch(0.586 0.253 17.585))">
+                  <span class="badge badge-course-label">Course</span>
+                </div>
+                <div class="xc-body">
+                  <h3 class="xc-title">Advanced Reporting</h3>
+                  <span class="xc-meta">42 min</span>
+                  <span class="part-of"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Part of: <strong>Become a Product Analytics Expert</strong></span>
+                  <div class="xc-foot"><span class="btn btn-outline btn-sm">View Course</span></div>
+                </div>
+              </a>
+              <a class="card xcourse-card" href="explore.html">
+                <div class="xc-cover" style="background: linear-gradient(135deg, oklch(0.606 0.25 292.717), oklch(0.585 0.233 277.117))">
+                  <span class="badge badge-course-label">Course</span>
+                </div>
+                <div class="xc-body">
+                  <h3 class="xc-title">Webhook Fundamentals</h3>
+                  <span class="xc-meta">28 min · Standalone</span>
+                  <div class="xc-foot" style="margin-top: 8px"><span class="btn btn-outline btn-sm">View Course</span></div>
+                </div>
+              </a>
+              <a class="card xcourse-card" href="explore.html">
+                <div class="xc-cover" style="background: linear-gradient(135deg, oklch(0.75 0.183 55.934), oklch(0.705 0.213 47.604))">
+                  <span class="badge badge-course-label">Course</span>
+                </div>
+                <div class="xc-body">
+                  <h3 class="xc-title">Slack Automations</h3>
+                  <span class="xc-meta">31 min</span>
+                  <span class="part-of"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Part of: <strong>Automating Your Workflows</strong></span>
+                  <div class="xc-foot"><span class="btn btn-outline btn-sm">View Course</span></div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+
+      const appShell = document.querySelector('.app');
+      const mobileNavBtn = document.getElementById('mobileNavBtn');
+      const mobileBackdrop = document.getElementById('mobileBackdrop');
+      mobileNavBtn?.addEventListener('click', () => appShell.classList.add('mobile-nav-open'));
+      mobileBackdrop?.addEventListener('click', () => appShell.classList.remove('mobile-nav-open'));
+
+      const myLearningToggle = document.getElementById('myLearningToggle');
+      const myLearningSub = document.getElementById('myLearningSub');
+      myLearningToggle.addEventListener('click', () => {
+        const isOpen = myLearningToggle.classList.toggle('open');
+        myLearningSub.hidden = !isOpen;
+      });
+
+      const filterPopover = document.getElementById('filterPopover');
+      const filterBtn = document.getElementById('filterBtn');
+      const filterCount = document.getElementById('filterCount');
+
+      function updateFilterCount() {
+        let active = 0;
+        document.querySelectorAll('.filter-pill-row').forEach((row) => {
+          const selected = row.querySelector('.filter-pill.on');
+          const first = row.querySelector('.filter-pill');
+          if (selected && selected !== first) active++;
+        });
+        filterCount.hidden = active === 0;
+        filterCount.textContent = active;
+      }
+
+      filterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterPopover.classList.toggle('open');
+      });
+      document.querySelectorAll('.filter-pill-row').forEach((row) => {
+        row.querySelectorAll('.filter-pill').forEach((pill) => {
+          pill.addEventListener('click', () => {
+            row.querySelector('.filter-pill.on')?.classList.remove('on');
+            pill.classList.add('on');
+            updateFilterCount();
+          });
+        });
+      });
+      document.getElementById('clearFilters').addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill-row').forEach((row) => {
+          row.querySelector('.filter-pill.on')?.classList.remove('on');
+          row.querySelector('.filter-pill').classList.add('on');
+        });
+        updateFilterCount();
+      });
+      document.addEventListener('click', () => filterPopover.classList.remove('open'));
+
+      document.querySelectorAll('#viewToggle button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelector('#viewToggle .on')?.classList.remove('on');
+          btn.classList.add('on');
+          document.querySelectorAll('[data-view-content]').forEach((el) => {
+            el.hidden = el.dataset.viewContent !== btn.dataset.view;
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -41,6 +41,7 @@ export interface AgentContext {
   lessonContent?: string;
   exerciseId?: string;
   exerciseTitle?: string;
+  studentSubmission?: unknown;
   documentId?: string;
   documentText?: string;
   /** Metadata for documents attached to this conversation — used to attach originals to lessons. */
@@ -149,6 +150,7 @@ export const ToolName = {
   LIST_COURSE_OUTLINE: 'list_course_outline',
   READ_LESSON: 'read_lesson',
   READ_EXERCISE: 'read_exercise',
+  READ_MY_SUBMISSIONS: 'read_my_submissions',
   SEARCH_COURSE: 'search_course'
 } as const;
 
@@ -204,7 +206,7 @@ export interface DocumentUploadResult {
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 /** Maximum characters of extracted document text to include in LLM context */
-export const MAX_DOCUMENT_TEXT_LENGTH = 100_000;
+export const MAX_DOCUMENT_TEXT_LENGTH = 40_000;
 
 /** Maximum file size for document upload (5MB) */
 export const MAX_AGENT_DOCUMENT_SIZE = 5 * 1024 * 1024;
@@ -212,8 +214,8 @@ export const MAX_AGENT_DOCUMENT_SIZE = 5 * 1024 * 1024;
 /** Redis TTL for uploaded document text (1 hour) */
 export const DOCUMENT_REDIS_TTL = 3600;
 
-/** Maximum steps per streamText() round */
-export const MAX_STEPS_PER_ROUND = 15;
+/** Maximum steps per streamText() round; each step re-bills the full prompt. */
+export const MAX_STEPS_PER_ROUND = 8;
 
 /** Supported MIME types for document upload */
 export const SUPPORTED_DOCUMENT_TYPES = [

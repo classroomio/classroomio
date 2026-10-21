@@ -1,4 +1,10 @@
-import type { AnswerData, FileUploadAnswerData, VideoRecordingAnswerData } from '@cio/question-types';
+import type {
+  AnswerData,
+  ExerciseQuestionModel,
+  FileUploadAnswerData,
+  VideoRecordingAnswerData
+} from '@cio/question-types';
+import { db } from '@cio/db/drizzle';
 import {
   getVideoRecordingMaxDurationSeconds,
   scoreSubmissionAnswers,
@@ -6,6 +12,7 @@ import {
   validateTextareaAnswer
 } from '@cio/question-types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { isFileTypeAllowed, normalizeAcceptedFileTypes } from '@cio/utils/file-upload';
 import type { TNewQuestionAnswer, TNewSubmission, TSubmission } from '@cio/db/types';
 import type {
   TSubmissionAnswerUpdate,
@@ -23,6 +30,7 @@ import {
   getSubmissionsForGrading,
   hasSubmission,
   insertQuestionAnswersBatch,
+  lockSubmissionAttempt,
   updateQuestionAnswer,
   updateSubmission,
   updateSubmissionGrades
@@ -37,11 +45,12 @@ import {
 import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { getCourseTeachers, getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 import { getExerciseById, getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
-import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { canAccessCourseSubmissions, getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 
 import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
@@ -98,7 +107,7 @@ function projectLegacyStatusId(gradingState: SubmissionGradingState): number {
   return GRADING_STATE_TO_LEGACY_STATUS[gradingState];
 }
 
-function resolveSubmissionGradingState(submission: Partial<TSubmission>): SubmissionGradingState {
+export function resolveSubmissionGradingState(submission: Partial<TSubmission>): SubmissionGradingState {
   const rawState = typeof submission.gradingState === 'string' ? submission.gradingState : '';
   if (rawState && rawState in GRADING_STATE_TO_LEGACY_STATUS) {
     return rawState as SubmissionGradingState;
@@ -121,6 +130,22 @@ function resolveOverallStatusFromTypenames(typenames: string[]): SubmissionOvera
   if (hasManual && hasAuto) return 'hybrid';
   if (hasManual) return 'manual_required';
   return 'auto_graded';
+}
+
+/** The stored overall status, or the one the exercise's question types imply when none is stored. */
+export function resolveSubmissionOverallStatus(
+  storedOverallStatus: unknown,
+  questionTypeIds: number[]
+): SubmissionOverallStatus {
+  if (
+    storedOverallStatus === 'auto_graded' ||
+    storedOverallStatus === 'manual_required' ||
+    storedOverallStatus === 'hybrid'
+  ) {
+    return storedOverallStatus;
+  }
+
+  return resolveOverallStatusFromQuestionTypeIds(questionTypeIds);
 }
 
 function resolveOverallStatusFromQuestionTypeIds(questionTypeIds: number[]): SubmissionOverallStatus {
@@ -335,12 +360,11 @@ export async function listSubmissionsByExercise(
 export type ExerciseSubmissionsOverview = {
   mySubmission: Awaited<ReturnType<typeof listSubmissionsByExercise>>;
   allSubmissions: Awaited<ReturnType<typeof listSubmissionsByExercise>>;
+  canGrade: boolean;
 };
 
 /**
- * Returns submission overview for an exercise based on user role.
- * - Students: mySubmission = their submission(s), allSubmissions = []
- * - Instructors: mySubmission = [], allSubmissions = all submissions in exercise
+ * Students receive only their own submissions. Graders also receive every submission in the exercise.
  */
 export async function listExerciseSubmissionsOverview(
   courseId: string,
@@ -348,20 +372,20 @@ export async function listExerciseSubmissionsOverview(
   profileId: string
 ): Promise<ExerciseSubmissionsOverview> {
   try {
-    const [groupMemberId, isInstructor] = await Promise.all([
+    const [groupMemberId, canGrade] = await Promise.all([
       getGroupMemberIdByCourseAndProfile(courseId, profileId),
-      isCourseTeamMemberOrOrgAdmin(courseId, profileId)
+      canAccessCourseSubmissions(courseId, profileId)
     ]);
 
     const mySubmission = groupMemberId ? await listSubmissionsByExercise(courseId, exerciseId, groupMemberId) : [];
 
-    if (!isInstructor) {
-      return { mySubmission, allSubmissions: [] };
+    if (!canGrade) {
+      return { mySubmission, allSubmissions: [], canGrade: false };
     }
 
     const allSubmissions = await listSubmissionsByExercise(courseId, exerciseId);
 
-    return { mySubmission, allSubmissions };
+    return { mySubmission, allSubmissions, canGrade: true };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list exercise submissions overview',
@@ -389,6 +413,9 @@ export async function listSubmissionsForGrading(courseId: string) {
       isEarly: boolean;
       feedback: string | null;
       submittedAt: string;
+      createdAt: string | null;
+      memberId: string | null;
+      total: number | null;
       exercise: {
         id: string;
         title: string;
@@ -413,18 +440,10 @@ export async function listSubmissionsForGrading(courseId: string) {
     for (const submission of rawSubmissions) {
       const gradingState = resolveSubmissionGradingState(submission);
       const statusId = projectLegacyStatusId(gradingState);
-      const storedOverallStatus = typeof submission.overallStatus === 'string' ? submission.overallStatus : '';
-      const fallbackOverallStatus = resolveOverallStatusFromQuestionTypeIds(
-        (submission.exercise.questions || [])
-          .map((question: any) => Number(question.questionTypeId))
-          .filter((questionTypeId: number) => Number.isFinite(questionTypeId))
-      );
-      const overallStatus: SubmissionOverallStatus =
-        storedOverallStatus === 'auto_graded' ||
-        storedOverallStatus === 'manual_required' ||
-        storedOverallStatus === 'hybrid'
-          ? (storedOverallStatus as SubmissionOverallStatus)
-          : fallbackOverallStatus;
+      const questionTypeIds = (submission.exercise.questions || [])
+        .map((question: any) => Number(question.questionTypeId))
+        .filter((questionTypeId: number) => Number.isFinite(questionTypeId));
+      const overallStatus = resolveSubmissionOverallStatus(submission.overallStatus, questionTypeIds);
       const isEarly = submission.exercise.dueBy
         ? new Date(submission.createdAt!).getTime() <= new Date(submission.exercise.dueBy).getTime()
         : true;
@@ -469,6 +488,9 @@ export async function listSubmissionsForGrading(courseId: string) {
         isEarly,
         feedback: submission.feedback,
         submittedAt,
+        createdAt: submission.createdAt ?? null,
+        memberId: submission.submittedBy ?? null,
+        total: submission.total ?? null,
         exercise: {
           id: submission.exercise.id,
           title: submission.exercise.title
@@ -538,19 +560,228 @@ export async function listSubmissionsForGrading(courseId: string) {
   }
 }
 
+type SubmissionAnswerInput = { questionId: number; optionId?: number; answer?: string };
+type ExerciseQuestionRow = Awaited<ReturnType<typeof getExerciseWithRelationsOptimized>>['questions'][number];
+
+export type CreateSubmissionOptions = {
+  /** Reject unknown questions, undecodable answers, foreign options and non-number values instead of skipping them. */
+  strict?: boolean;
+  allowUploads?: boolean;
+};
+
+const UPLOAD_QUESTION_TYPES = new Set(['FILE_UPLOAD', 'VIDEO_RECORDING']);
+
+function toQuestionModelsById(questions: ExerciseQuestionRow[]): Map<number, ExerciseQuestionModel> {
+  return new Map(
+    questions.map((q) => {
+      const questionTypeKey = QUESTION_TYPE_ID_TO_KEY[q.questionTypeId] ?? 'TEXTAREA';
+      const settings =
+        q.settings && typeof q.settings === 'object' && !Array.isArray(q.settings)
+          ? (q.settings as Record<string, unknown>)
+          : {};
+      const options = (q.options ?? []).map((o) => ({
+        id: o.id as number,
+        label: o.label ?? '',
+        value: o.value ?? undefined,
+        isCorrect: o.isCorrect
+      }));
+
+      return [
+        q.id as number,
+        {
+          id: q.id as number,
+          title: String(q.title ?? ''),
+          questionType: questionTypeKey,
+          points: Number(q.points ?? 0),
+          settings,
+          options
+        }
+      ];
+    })
+  );
+}
+
+function invalidAnswer(questionId: number, reason: string) {
+  return new AppError(`Question ${questionId}: ${reason}`, ErrorCodes.VALIDATION_ERROR, 400);
+}
+
+function decodeAnswer(question: ExerciseQuestionModel, input: SubmissionAnswerInput, strict: boolean) {
+  const payload = { questionId: input.questionId, optionId: input.optionId, answer: input.answer };
+  if (!strict) {
+    return fromApiPayload(question.questionType, payload, question);
+  }
+
+  try {
+    return fromApiPayload(question.questionType, payload, question);
+  } catch {
+    return null;
+  }
+}
+
+function textareaLengthMessage(validation: ReturnType<typeof validateTextareaAnswer>) {
+  if (validation.minCharacters !== undefined && validation.maxCharacters !== undefined) {
+    return `Paragraph answer must be between ${validation.minCharacters} and ${validation.maxCharacters} characters`;
+  }
+
+  return validation.reason === 'below_min' && validation.minCharacters !== undefined
+    ? `Paragraph answer must be at least ${validation.minCharacters} characters`
+    : `Paragraph answer must be at most ${validation.maxCharacters} characters`;
+}
+
+/** Returns the decoded answers by question id; throws 400 (or 404 for an unknown question in strict mode) before anything is saved. */
+function decodeSubmissionAnswers(
+  questionById: Map<number, ExerciseQuestionModel>,
+  answers: SubmissionAnswerInput[],
+  options: CreateSubmissionOptions
+): Map<number, AnswerData> {
+  const strict = options.strict === true;
+  const answerByQuestionId = new Map<number, AnswerData>();
+
+  for (const input of answers) {
+    const question = questionById.get(input.questionId);
+    if (!question) {
+      if (strict) {
+        throw new AppError(`Question ${input.questionId} not found in this exercise`, ErrorCodes.NOT_FOUND, 404);
+      }
+      continue;
+    }
+
+    if (options.allowUploads === false && UPLOAD_QUESTION_TYPES.has(question.questionType)) {
+      throw invalidAnswer(input.questionId, 'needs a file or video upload, which the API does not support');
+    }
+
+    const answerData = decodeAnswer(question, input, strict);
+    if (!answerData) {
+      if (strict) {
+        throw invalidAnswer(
+          input.questionId,
+          `the answer is not in the format a ${question.questionType} question takes`
+        );
+      }
+      continue;
+    }
+
+    if (strict) {
+      const optionIds = new Set((question.options ?? []).map((option) => Number(option.id)));
+      const chosenOptionIds =
+        answerData.type === 'RADIO'
+          ? [answerData.optionId]
+          : answerData.type === 'CHECKBOX'
+            ? answerData.optionIds
+            : [];
+      if (chosenOptionIds.some((optionId) => !optionIds.has(Number(optionId)))) {
+        throw invalidAnswer(input.questionId, 'an option does not belong to this question');
+      }
+
+      if (answerData.type === 'NUMERIC' && !Number.isFinite(answerData.value)) {
+        throw invalidAnswer(input.questionId, 'the value must be a number');
+      }
+    }
+
+    if (answerData.type === 'TEXTAREA') {
+      const validation = validateTextareaAnswer(answerData.text, question);
+      if (!validation.isValid) {
+        throw new AppError(textareaLengthMessage(validation), ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
+    if (answerData.type === 'VIDEO_RECORDING') {
+      const maxDurationSeconds = getVideoRecordingMaxDurationSeconds(question.settings);
+      if (answerData.durationSeconds > maxDurationSeconds + 2) {
+        throw new AppError('Recording exceeds the configured duration', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
+    if (answerData.type === 'FILE_UPLOAD') {
+      const acceptedTypes = normalizeAcceptedFileTypes(question.settings?.acceptedTypes);
+      const mimeType = answerData.mimeType ?? '';
+      if (!isFileTypeAllowed({ name: answerData.fileName, type: mimeType }, acceptedTypes)) {
+        throw new AppError('File type is not allowed for this question', ErrorCodes.FILE_TYPE_NOT_ALLOWED, 400);
+      }
+    }
+
+    answerByQuestionId.set(input.questionId, answerData);
+  }
+
+  return answerByQuestionId;
+}
+
 /**
- * Creates a new submission with question answers
- * @param courseId Course ID
- * @param exerciseId Exercise ID
- * @param submittedBy Group member ID
- * @param answers Array of question answers
- * @returns Created submission (with `answers` when auto-graded on the server)
+ * Creates a submission with its answers, saving nothing if an answer is invalid. Throws 409 for a second attempt on a
+ * one-attempt exercise. Returns the submission, with `answers` when auto-graded.
  */
+async function buildSubmissionWebhookData(
+  submission: TSubmission & { courseId: string },
+  overrides: { statusId?: number | null; gradingState?: string | null } = {}
+) {
+  const profile = submission.submittedBy ? await getProfileByGroupMemberId(submission.submittedBy) : null;
+
+  return {
+    submissionId: submission.id,
+    exerciseId: submission.exerciseId,
+    memberId: submission.submittedBy,
+    profileId: profile?.id ?? null,
+    statusId: overrides.statusId === undefined ? submission.statusId : overrides.statusId,
+    gradingState: overrides.gradingState === undefined ? submission.gradingState : overrides.gradingState,
+    total: submission.total
+  };
+}
+
+async function emitSubmissionCreatedWebhookEvent(
+  submission: TSubmission,
+  overrides: { statusId?: number | null; gradingState?: string | null } = {}
+) {
+  if (!submission.courseId) return;
+
+  const data = await buildSubmissionWebhookData({ ...submission, courseId: submission.courseId }, overrides);
+
+  await emitCourseWebhookEvent(submission.courseId, 'course.submission.created', data);
+}
+
+async function emitSubmissionStatusChangedWebhookEvent(
+  submission: TSubmission,
+  previous: { statusId: number; gradingState: string }
+) {
+  if (!submission.courseId) return;
+
+  const submissionData = await buildSubmissionWebhookData({ ...submission, courseId: submission.courseId });
+
+  await emitCourseWebhookEvent(submission.courseId, 'course.submission.status_changed', {
+    ...submissionData,
+    previousStatusId: previous.statusId,
+    previousGradingState: previous.gradingState
+  });
+}
+
+async function wasExerciseCompleteForMember(exerciseId: string | null, groupMemberId: string | null) {
+  if (!exerciseId || !groupMemberId) return false;
+
+  return isExerciseCompletedForMember(exerciseId, groupMemberId);
+}
+
+async function emitExerciseCompletionIfReached(submission: TSubmission, wasCompleteBefore: boolean) {
+  if (!submission.courseId || !submission.exerciseId || !submission.submittedBy || wasCompleteBefore) return;
+
+  const isCompleteNow = await isExerciseCompletedForMember(submission.exerciseId, submission.submittedBy);
+
+  if (!isCompleteNow) return;
+
+  const profile = await getProfileByGroupMemberId(submission.submittedBy);
+
+  await emitCourseWebhookEvent(submission.courseId, 'exercise.completion.updated', {
+    exerciseId: submission.exerciseId,
+    memberId: submission.submittedBy,
+    profileId: profile?.id ?? null,
+    isComplete: true
+  });
+}
+
 export async function createSubmissionService(
   courseId: string,
   exerciseId: string,
   submittedBy: string,
-  answers: Array<{ questionId: number; optionId?: number; answer?: string }>
+  answers: SubmissionAnswerInput[],
+  options: CreateSubmissionOptions = {}
 ): Promise<TSubmission & { answers?: any[] }> {
   try {
     const [exerciseWithRelations, courseRows] = await Promise.all([
@@ -559,12 +790,10 @@ export async function createSubmissionService(
     ]);
     const course = courseRows[0];
 
-    if (!exerciseWithRelations.exercise.allowMultipleAttempts) {
-      const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
-      if (alreadySubmitted) {
-        throw new AppError('This exercise allows only one submission', ErrorCodes.VALIDATION_ERROR, 400);
-      }
-    }
+    const questionById = toQuestionModelsById(exerciseWithRelations.questions);
+    const answerByQuestionId = decodeSubmissionAnswers(questionById, answers, options);
+    const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
+    const wasCompleteBefore = await wasExerciseCompleteForMember(exerciseId, submittedBy);
 
     const overallStatus = resolveOverallStatusFromTypenames(
       exerciseWithRelations.questions
@@ -584,98 +813,42 @@ export async function createSubmissionService(
       total: 0
     };
 
-    let submission = await createSubmission(submissionData);
+    const shouldAutoGrade = overallStatus === 'auto_graded' && exerciseWithRelations.questions.length > 0;
+    const unansweredQuestionIds = shouldAutoGrade
+      ? exerciseWithRelations.questions
+          .map((question) => question.id)
+          .filter((questionId): questionId is number => questionId != null && !answerByQuestionId.has(questionId))
+      : [];
 
-    const questionById = new Map(
-      exerciseWithRelations.questions.map((q) => {
-        const questionTypeKey = QUESTION_TYPE_ID_TO_KEY[q.questionTypeId] ?? 'TEXTAREA';
-        return [
-          q.id,
-          {
-            id: q.id,
-            title: String(q.title ?? ''),
-            questionType: questionTypeKey,
-            points: Number(q.points ?? 0),
-            settings:
-              q.settings && typeof q.settings === 'object' && !Array.isArray(q.settings)
-                ? (q.settings as Record<string, unknown>)
-                : {},
-            options: (q.options ?? []).map((o) => ({
-              id: o.id,
-              label: o.label ?? '',
-              value: o.value ?? undefined,
-              isCorrect: o.isCorrect
-            }))
-          }
-        ];
-      })
-    );
+    const created = await db.transaction(async (tx) => {
+      if (!exerciseWithRelations.exercise.allowMultipleAttempts) {
+        await lockSubmissionAttempt(exerciseId, submittedBy, tx);
 
-    const answerByQuestionId = new Map<number, AnswerData>();
-    const answerRows: TNewQuestionAnswer[] = [];
-
-    for (const ans of answers) {
-      const question = questionById.get(ans.questionId);
-      if (!question) continue;
-
-      const answerData = fromApiPayload(
-        question.questionType,
-        { questionId: ans.questionId, optionId: ans.optionId, answer: ans.answer },
-        question
-      );
-      if (!answerData) continue;
-
-      if (answerData.type === 'TEXTAREA') {
-        const validation = validateTextareaAnswer(answerData.text, question);
-
-        if (!validation.isValid) {
-          throw new AppError(
-            validation.minCharacters !== undefined && validation.maxCharacters !== undefined
-              ? `Paragraph answer must be between ${validation.minCharacters} and ${validation.maxCharacters} characters`
-              : validation.reason === 'below_min' && validation.minCharacters !== undefined
-                ? `Paragraph answer must be at least ${validation.minCharacters} characters`
-                : `Paragraph answer must be at most ${validation.maxCharacters} characters`,
-            ErrorCodes.VALIDATION_ERROR,
-            400
-          );
+        if (await hasSubmission(exerciseId, submittedBy, tx)) {
+          throw new AppError('This exercise allows only one submission', ErrorCodes.CONFLICT, 409);
         }
       }
 
-      if (answerData.type === 'VIDEO_RECORDING') {
-        const maxDurationSeconds = getVideoRecordingMaxDurationSeconds(question.settings);
-        if (answerData.durationSeconds > maxDurationSeconds + 2) {
-          throw new AppError('Recording exceeds the configured duration', ErrorCodes.VALIDATION_ERROR, 400);
-        }
-      }
-
-      answerByQuestionId.set(ans.questionId, answerData);
-
-      answerRows.push({
-        submissionId: submission.id,
-        questionId: ans.questionId,
+      const createdSubmission = await createSubmission(submissionData, tx);
+      const answeredRows: TNewQuestionAnswer[] = [...answerByQuestionId].map(([questionId, answerData]) => ({
+        submissionId: createdSubmission.id,
+        questionId,
         groupMemberId: submittedBy,
         answerData
-      });
-    }
+      }));
+      const unansweredRows: TNewQuestionAnswer[] = unansweredQuestionIds.map((questionId) => ({
+        submissionId: createdSubmission.id,
+        questionId,
+        groupMemberId: submittedBy,
+        answerData: null
+      }));
+      const insertedRows = await insertQuestionAnswersBatch([...answeredRows, ...unansweredRows], tx);
 
-    const shouldAutoGrade = overallStatus === 'auto_graded' && exerciseWithRelations.questions.length > 0;
+      return { submission: createdSubmission, insertedAnswers: insertedRows };
+    });
 
-    if (shouldAutoGrade) {
-      const answeredIds = new Set(answerByQuestionId.keys());
-      for (const q of exerciseWithRelations.questions) {
-        if (q.id == null) continue;
-        if (!answeredIds.has(q.id)) {
-          answerRows.push({
-            submissionId: submission.id,
-            questionId: q.id,
-            groupMemberId: submittedBy,
-            answerData: null
-          });
-        }
-      }
-    }
-
-    const insertedAnswers = answerRows.length > 0 ? await insertQuestionAnswersBatch(answerRows) : [];
+    let submission = created.submission;
+    const insertedAnswers = created.insertedAnswers;
     await createVideoRecordingAssetUsages(insertedAnswers);
 
     if (shouldAutoGrade) {
@@ -717,8 +890,17 @@ export async function createSubmissionService(
           console.error('Failed to send exercise submission update email:', emailError);
         });
 
-        await syncComplianceProgressFromSubmission(courseId, submittedBy);
+        await syncComplianceProgressFromSubmission(courseId, submittedBy, exerciseId);
         await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
+        await emitSubmissionCreatedWebhookEvent(submission, {
+          statusId: projectLegacyStatusId(gradingState),
+          gradingState
+        });
+        await emitSubmissionStatusChangedWebhookEvent(submission, {
+          statusId: projectLegacyStatusId(gradingState),
+          gradingState
+        });
+        await emitExerciseCompletionIfReached(submission, wasCompleteBefore);
 
         const enrichedAnswers =
           answersWithPoints.length > 0 ? await enrichFileUploadAnswersArray(answersWithPoints) : answersWithPoints;
@@ -730,8 +912,10 @@ export async function createSubmissionService(
       console.error('Failed to send exercise submission update email:', emailError);
     });
 
-    await syncComplianceProgressFromSubmission(courseId, submittedBy);
+    await syncComplianceProgressFromSubmission(courseId, submittedBy, exerciseId);
     await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
+    await emitSubmissionCreatedWebhookEvent(submission);
+    await emitExerciseCompletionIfReached(submission, wasCompleteBefore);
 
     return submission;
   } catch (error) {
@@ -747,18 +931,31 @@ export async function createSubmissionService(
   }
 }
 
+function assertSubmissionBelongsToCourse(submission: { courseId: string | null }, courseId: string) {
+  if (submission.courseId !== courseId) {
+    throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
+  }
+}
+
 /**
- * Updates a submission
+ * Updates a submission in the given course.
  * @param submissionId Submission ID
+ * @param courseId Course the caller is allowed to grade
  * @param data Partial submission update data
  * @returns Updated submission
  */
-export async function updateSubmissionService(submissionId: string, data: TSubmissionUpdate): Promise<TSubmission> {
+export async function updateSubmissionService(
+  submissionId: string,
+  courseId: string,
+  data: TSubmissionUpdate
+): Promise<TSubmission> {
   try {
     const submission = await getSubmissionById(submissionId);
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const currentGradingState = resolveSubmissionGradingState(submission);
     const requestedGradingState = resolveRequestedGradingState(data);
@@ -767,6 +964,7 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
     }
 
     const previousLegacyStatusId = projectLegacyStatusId(currentGradingState);
+    const wasCompleteBefore = await wasExerciseCompleteForMember(submission.exerciseId, submission.submittedBy);
     const updatePayload: Partial<TSubmission> = { ...data };
     if (requestedGradingState) {
       updatePayload.gradingState = requestedGradingState;
@@ -775,6 +973,7 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
 
     const nextLegacyStatusId = Number(updatePayload.statusId ?? previousLegacyStatusId);
     const statusChanged = nextLegacyStatusId !== previousLegacyStatusId;
+    const gradingStateChanged = Boolean(requestedGradingState) && requestedGradingState !== currentGradingState;
 
     const updated = await updateSubmission(submissionId, updatePayload);
     if (!updated) {
@@ -788,8 +987,17 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
     }
 
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
-      await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+      await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
     }
+
+    if (statusChanged || gradingStateChanged) {
+      await emitSubmissionStatusChangedWebhookEvent(updated, {
+        statusId: previousLegacyStatusId,
+        gradingState: currentGradingState
+      });
+    }
+
+    await emitExerciseCompletionIfReached(updated, wasCompleteBefore);
 
     return updated;
   } catch (error) {
@@ -808,12 +1016,14 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
 /**
  * Updates a question answer in a submission
  * @param submissionId Submission ID
+ * @param courseId Course the caller is allowed to grade
  * @param questionId Question ID
  * @param data Question answer update data
  * @returns Updated question answer
  */
 export async function updateSubmissionAnswer(
   submissionId: string,
+  courseId: string,
   questionId: number,
   data: TSubmissionAnswerUpdate
 ): Promise<any> {
@@ -822,6 +1032,8 @@ export async function updateSubmissionAnswer(
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const updateData: { point?: number } = {};
     if (data.points !== undefined) updateData.point = data.points;
@@ -852,6 +1064,7 @@ export async function updateSubmissionAnswer(
  */
 export async function updateSubmissionGradesBatch(
   submissionId: string,
+  courseId: string,
   data: TSubmissionGradesUpdate
 ): Promise<TSubmission> {
   try {
@@ -859,6 +1072,8 @@ export async function updateSubmissionGradesBatch(
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const currentGradingState = resolveSubmissionGradingState(submission);
     const targetGradingState: SubmissionGradingState = 'completed';
@@ -869,6 +1084,7 @@ export async function updateSubmissionGradesBatch(
 
     const previousLegacyStatusId = projectLegacyStatusId(currentGradingState);
     const statusChanged = targetStatusId !== previousLegacyStatusId;
+    const wasCompleteBefore = await wasExerciseCompleteForMember(submission.exerciseId, submission.submittedBy);
 
     const updated = await updateSubmissionGrades(submissionId, {
       answers: data.answers,
@@ -889,8 +1105,17 @@ export async function updateSubmissionGradesBatch(
     }
 
     if (updated.courseId && updated.submittedBy) {
-      await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+      await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
     }
+
+    if (statusChanged || currentGradingState !== targetGradingState) {
+      await emitSubmissionStatusChangedWebhookEvent(updated, {
+        statusId: previousLegacyStatusId,
+        gradingState: currentGradingState
+      });
+    }
+
+    await emitExerciseCompletionIfReached(updated, wasCompleteBefore);
 
     return updated;
   } catch (error) {
@@ -909,14 +1134,17 @@ export async function updateSubmissionGradesBatch(
 /**
  * Deletes a submission
  * @param submissionId Submission ID
+ * @param courseId Course the caller is allowed to grade
  * @returns Deleted submission
  */
-export async function deleteSubmissionService(submissionId: string): Promise<TSubmission> {
+export async function deleteSubmissionService(submissionId: string, courseId: string): Promise<TSubmission> {
   try {
     const submission = await getSubmissionById(submissionId);
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const deleted = await deleteSubmission(submissionId);
     if (!deleted) {
@@ -963,7 +1191,6 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
 
   const orgName = orgResult?.orgName || 'ClassroomIO';
 
-  const statusText = LEGACY_BOARD_STATUS_LABELS[newStatusId] || 'Updated';
   const baseUrl = getDashboardBaseUrl({
     siteName: orgResult?.orgSiteName,
     customDomain: orgResult?.orgCustomDomain,
@@ -987,7 +1214,7 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
         studentName: fullSubmission.groupmember.profile.fullname || 'Student',
         exerciseTitle: fullSubmission.exercise.title,
         courseName: course.title,
-        statusText,
+        statusId: newStatusId,
         exerciseLink,
         score,
         lessonTitle: fullSubmission.lesson?.title,

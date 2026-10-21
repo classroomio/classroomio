@@ -43,9 +43,6 @@
   $effect(() => {
     onTemplateChange(avatar);
   });
-  $effect(() => {
-    setter(show, `metadata.sectionDisplay.${NAV_ITEM_KEY.CERTIFICATE}`);
-  });
 </script>
 
 <div class="flex flex-col items-center">
@@ -62,7 +59,10 @@
     </p>
 
     <div class="flex items-center space-x-2">
-      <Switch bind:checked={show} />
+      <Switch
+        checked={show}
+        onCheckedChange={(checked) => setter(checked, `metadata.sectionDisplay.${NAV_ITEM_KEY.CERTIFICATE}`)}
+      />
       <Label class="text-gray-600">
         {show ? $t('settings.landing_page.show_section') : $t('settings.landing_page.hide_section')}
       </Label>

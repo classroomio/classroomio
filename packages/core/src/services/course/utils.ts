@@ -1,5 +1,9 @@
 import { ContentType } from '@cio/utils/constants';
+import { getReleasedRecordingUrl } from '@cio/utils/functions/live-session';
+import { getCourseOutline } from '@cio/utils/functions/course-content';
 import type { CourseContentItemRow } from '@cio/db/queries/course';
+
+export const DEFAULT_CONTENT_GROUPING = true;
 
 export type CourseContentItem = {
   id: string;
@@ -12,6 +16,8 @@ export type CourseContentItem = {
   isComplete: boolean | null;
   lessonAt: string | null;
   callUrl: string | null;
+  sessionDurationMinutes: number | null;
+  recordingUrl: string | null;
   hasNoteContent: boolean | null;
   hasSlideContent: boolean | null;
   videosCount: number | null;
@@ -37,6 +43,8 @@ export type CourseContent = {
   sections: CourseContentSection[];
   items: CourseContentItem[];
 };
+
+export type CourseOutlineRef = { kind: 'section'; id: string } | { kind: 'item'; id: string; type: ContentType };
 
 const CONTENT_TYPE_PRIORITY: Record<ContentType, number> = {
   [ContentType.Section]: -1,
@@ -77,6 +85,8 @@ function mapCourseContentItems(rows: CourseContentItemRow[]): CourseContentItem[
     isComplete: row.isComplete ?? null,
     lessonAt: row.lessonAt ?? null,
     callUrl: row.callUrl ?? null,
+    sessionDurationMinutes: row.sessionDurationMinutes ?? null,
+    recordingUrl: getReleasedRecordingUrl(row),
     hasNoteContent: row.hasNoteContent ?? null,
     hasSlideContent: row.hasSlideContent ?? null,
     videosCount: row.videosCount ?? null,
@@ -125,10 +135,15 @@ export function buildCourseContent(rows: CourseContentItemRow[], isContentGroupi
   );
 
   if (ungroupedItems.length > 0) {
+    const lastRootOrder = Math.max(
+      0,
+      ...sections.map((section) => section.order ?? 0),
+      ...ungroupedItems.map((item) => item.order ?? 0)
+    );
     sections.push({
       id: 'ungrouped',
       title: 'Ungrouped',
-      order: sections.length + 1,
+      order: lastRootOrder + 1,
       items: sortContentItems(ungroupedItems)
     });
   }
@@ -138,6 +153,17 @@ export function buildCourseContent(rows: CourseContentItemRow[], isContentGroupi
     sections,
     items: []
   };
+}
+
+/**
+ * Top-level reading order: sections, and lessons or exercises outside any section, in course order.
+ */
+export function buildCourseOutline(content: CourseContent): CourseOutlineRef[] {
+  return getCourseOutline(content).map((entry) =>
+    entry.kind === 'section'
+      ? { kind: 'section' as const, id: entry.section.id }
+      : { kind: 'item' as const, id: entry.item.id, type: entry.item.type }
+  );
 }
 
 export function calcPercentageWithRounding(a: number, b: number): number {

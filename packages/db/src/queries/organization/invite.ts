@@ -81,14 +81,15 @@ export async function createOrganizationInviteAudits(
 export async function revokeActiveOrganizationInvitesByEmails(
   organizationId: string,
   emails: string[],
-  revokedByProfileId: string
+  revokedByProfileId: string,
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationInvite[]> {
   if (emails.length === 0) {
     return [];
   }
 
   try {
-    const updated = await db
+    const updated = await dbClient
       .update(schema.organizationInvite)
       .set({
         isRevoked: true,
@@ -115,6 +116,43 @@ export async function revokeActiveOrganizationInvitesByEmails(
   }
 }
 
+/**
+ * Updates every unaccepted invite for this email to the given role.
+ */
+export async function updateActiveOrganizationInviteRoleByEmail(
+  organizationId: string,
+  email: string,
+  roleId: number,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) {
+    return;
+  }
+
+  const updatedAt = new Date().toISOString();
+
+  try {
+    await dbClient
+      .update(schema.organizationInvite)
+      .set({
+        roleId,
+        updatedAt
+      })
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          sql`lower(${schema.organizationInvite.email}) = ${normalizedEmail}`,
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt)
+        )
+      );
+  } catch (error) {
+    console.error('updateActiveOrganizationInviteRoleByEmail error:', error);
+    throw new Error('Failed to update organization invite role');
+  }
+}
+
 export type TOrganizationInviteTokenData = {
   invite: TOrganizationInvite;
   organization: {
@@ -122,6 +160,11 @@ export type TOrganizationInviteTokenData = {
     name: string;
     siteName: string;
   };
+};
+
+/** List rows for the notification panel: the token data plus the org avatar. */
+export type TPendingOrgInviteListItem = Omit<TOrganizationInviteTokenData, 'organization'> & {
+  organization: TOrganizationInviteTokenData['organization'] & { avatarUrl: string | null };
 };
 
 export async function getOrganizationInviteByTokenHash(
@@ -279,6 +322,52 @@ export async function getLatestOrgInvitesByEmails(
  * Returns the latest active (non-revoked, non-accepted, non-expired) org invite for a given org+email.
  * Used to surface a pending invite to a logged-in student on the LMS dashboard.
  */
+/**
+ * Active pending org invites for an email across every organization. Unlike
+ * `getActivePendingOrgInviteForEmail` this is not scoped to one org, so it can surface an
+ * invite to an org the user is not currently viewing.
+ */
+export async function getActivePendingOrgInvitesForEmail(email: string): Promise<TPendingOrgInviteListItem[]> {
+  const normalized = email.toLowerCase().trim();
+  if (!normalized) {
+    return [];
+  }
+
+  try {
+    const rows = await db
+      .select({
+        invite: schema.organizationInvite,
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName,
+          avatarUrl: schema.organization.avatarUrl
+        }
+      })
+      .from(schema.organizationInvite)
+      .innerJoin(schema.organization, eq(schema.organizationInvite.organizationId, schema.organization.id))
+      .where(
+        and(
+          eq(schema.organizationInvite.email, normalized),
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt),
+          gt(schema.organizationInvite.expiresAt, sql`NOW()`)
+        )
+      )
+      .orderBy(desc(schema.organizationInvite.createdAt));
+
+    return rows.map((row) => ({
+      ...row,
+      organization: { ...row.organization, siteName: row.organization.siteName ?? '' }
+    }));
+  } catch (error) {
+    console.error('getActivePendingOrgInvitesForEmail error:', error);
+    throw new Error(
+      `Failed to get active pending org invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function getActivePendingOrgInviteForEmail(
   organizationId: string,
   email: string

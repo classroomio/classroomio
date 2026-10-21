@@ -56,7 +56,7 @@ All components in the `base` directory are primarily from [shadcn-svelte](https:
 **Examples:**
 
 - `base/button/` - Button component from shadcn-svelte
-- `base/dialog/` - Dialog component from shadcn-svelte
+- `base/dialog/` - Dialog component from shadcn-svelte (see [Dialog button hierarchy](#dialog-button-hierarchy) below)
 - `base/tooltip/` - Tooltip component from shadcn-svelte
 
 ### Custom Components (`src/custom/`)
@@ -81,6 +81,99 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/checkbox-field/` - Field component built on top of base Checkbox
 - `custom/newsfeed-reactions/` - Newsfeed reaction picker and summary used by course and program feeds
 - `custom/course-creator/` - ChatGPT-style course creation input with level and type selects
+- `custom/attention-highlight/` - Prop-driven focus pulse and smooth scroll wrapper to draw user attention to specific items
+- `custom/question-type-picker/` - Question type picker modal and QuestionTypeIcon glyph/icon component
+- `custom/org-landing-page/` - 11-theme org and course landing page system, including `LearnerMenu` authenticated popover
+
+### Question type icon (`src/custom/question-type-picker/question-type-icon.svelte`)
+
+Renders a question type glyph tile or Lucide icon based on `key` (QuestionTypeKey) or `typeId` (number), matching the design system from the question type picker.
+
+| Prop        | Type                        | Default | Description                                          |
+| ----------- | --------------------------- | ------- | ---------------------------------------------------- |
+| `key`       | `QuestionTypeKey \| string` | `null`  | Question type key (e.g. `'RADIO'`, `'SHORT_ANSWER'`) |
+| `typeId`    | `number`                    | `null`  | Numeric question type ID                             |
+| `class`     | `string`                    | `''`    | Additional classes for the container tile            |
+| `iconClass` | `string`                    | `''`    | Additional classes for the inner Lucide icon         |
+
+```svelte
+<QuestionTypeIcon typeId={offender.typeId} />
+<QuestionTypeIcon key="SHORT_ANSWER" class="ui:size-8" />
+```
+
+### Attention highlight (`src/custom/attention-highlight/`)
+
+Wrapper component that highlights its content with an animated focus pulse ring and smooth scrolls into view when triggered.
+
+| Prop          | Type                    | Default     | Description                                                                     |
+| ------------- | ----------------------- | ----------- | ------------------------------------------------------------------------------- |
+| `highlight`   | `boolean`               | `false`     | When true, triggers the pulse animation and auto-scroll                         |
+| `trigger`     | `number`                | `0`         | Incremental counter to imperatively trigger the pulse animation and auto-scroll |
+| `duration`    | `number`                | `3`         | Duration of the pulse animation in seconds                                      |
+| `autoScroll`  | `boolean`               | `true`      | Whether to smoothly scroll the element into view on trigger                     |
+| `scrollBlock` | `ScrollLogicalPosition` | `'center'`  | Scroll alignment (`'center'`, `'start'`, `'nearest'`, `'end'`)                  |
+| `id`          | `string`                | `undefined` | Optional DOM element id                                                         |
+| `class`       | `string`                | `''`        | Additional CSS classes                                                          |
+| `onComplete`  | `() => void`            | `undefined` | Callback fired when the duration timer completes                                |
+
+```svelte
+<!-- Declarative (e.g. from URL / state) -->
+<AttentionHighlight highlight={isHighlighted} duration={3}>
+  <div class="rounded border p-4">Content to highlight</div>
+</AttentionHighlight>
+
+<!-- Imperative (e.g. from button click) -->
+<AttentionHighlight trigger={triggerCount} duration={3}>
+  <div class="rounded border p-4">Content to highlight</div>
+</AttentionHighlight>
+```
+
+### Brand wash (`src/custom/animation/brand-wash/`)
+
+Decorative background layer: a top-down gradient tinted from `--primary` with an optional faded dot grid. Because it reads `--primary`, it renders in ClassroomIO blue on the app and in the org's theme colour on org sites. Place it as the first child of a `relative` container; later siblings stack above it.
+
+| Prop    | Type      | Default     | Description                 |
+| ------- | --------- | ----------- | --------------------------- |
+| `dots`  | `boolean` | `true`      | Show the masked dot grid    |
+| `class` | `string`  | `undefined` | Additional classes on layer |
+
+```svelte
+<div class="relative">
+  <BrandWash />
+  <div class="relative">Content</div>
+</div>
+```
+
+### Block skyline (`src/custom/animation/block-skyline/`)
+
+Ambient brand animation: notch blocks drop in one at a time and stack. By default they clear together and repeat on a 10s loop; with `loop={false}` they drop in once and stay. Hidden from assistive tech and static under `prefers-reduced-motion`. Tones come from `--muted` and `--primary`. Use it for ClassroomIO-branded surfaces only, not org sites.
+
+| Prop     | Type      | Default     | Description                                                          |
+| -------- | --------- | ----------- | -------------------------------------------------------------------- |
+| `loop`   | `boolean` | `true`      | Clear and repeat every 10s; `false` drops in once and stays          |
+| `repeat` | `number`  | `1`         | Repeats the column pattern across the width (extra copies from `md`) |
+| `rows`   | `number`  | `3`         | Tallest stack; values above 3 add same-size blocks to every column   |
+| `class`  | `string`  | `undefined` | Width / placement                                                    |
+
+```svelte
+<BlockSkyline class="w-full max-w-[400px]" />
+
+<!-- Taller stacks -->
+<BlockSkyline rows={6} class="w-full" />
+
+<!-- Full-width page footer -->
+<BlockSkyline loop={false} repeat={3} class="absolute inset-x-0 bottom-0 px-4" />
+```
+
+### Notch cutout utility (`ui:notch-cutout`)
+
+Cuts the brand notch (a trapezoid with flared top corners and rounded bottom corners) out of an element's top edge with a CSS mask, so it reads correctly over gradients and images. Tune it with `--notch-x` (default `2.5rem`), `--notch-w` (`46px`) and `--notch-h` (`11px`). Masks clip `box-shadow`, so put shadows on a wrapper with `drop-shadow`.
+
+```svelte
+<div class="drop-shadow-md">
+  <Card.Root class="ui:notch-cutout">…</Card.Root>
+</div>
+```
 
 ### Exercise question (`src/custom/exercise-question/`)
 
@@ -101,6 +194,33 @@ In-player chrome for lesson video checkpoints. The overlay sits `absolute inset-
 
 See `Molecules/VideoCheckpoint` in Storybook.
 
+### Image lightbox (`src/custom/image-lightbox/`)
+
+Full-screen image viewer for screenshots and other detailed images. `ZoomableImage` renders an image uncropped (`object-contain`) as a button with a hover "enlarge" hint. `ImageLightbox` opens one image or a gallery: click or `+`/`-` to zoom (up to 300%), arrow keys or the side buttons to move between images, Esc or a click on the backdrop to close. Both `open` and `index` are bindable. Copy is passed via `labels: ImageLightboxLabels` (`close`, `zoomIn`, `zoomOut`, `previous`, `next`). Exercise question and option images use both in every non-edit mode. See `Molecules/ImageLightbox` in Storybook.
+
+```svelte
+<ZoomableImage {src} {alt} enlargeLabel="Click to enlarge" onclick={() => (open = true)} />
+<ImageLightbox images={[{ src, alt }]} {labels} bind:open />
+```
+
+### Board frame (`src/custom/board-frame/`)
+
+`BoardFrame` wraps one image in the ClassroomIO browser board used for help screenshots: browser chrome with three dots and a URL pill, the paper-colored board, a shelf and two feet. It mirrors the geometry in `apps/help/scripts/frame-screenshot.mjs`, so a framed image looks the same whether it is composited at build time or loaded at runtime. Pass `src`, `alt`, and optionally `url` (the text in the address pill, truncated with an ellipsis). The frame scales with its container width, and the image keeps its aspect ratio uncropped. See `Molecules/BoardFrame` in Storybook.
+
+```svelte
+<BoardFrame src={coverUrl} alt={title} url="feedback.classroomio.com/updates" />
+```
+
+### Changelog cover (`src/custom/changelog-cover/`)
+
+`ChangelogCover` is the fallback image for a changelog entry that has no cover. It draws a 1600×838 SVG in the brand style (sand background, the blue ClassroomIO mark and wordmark, a heavy Geist title with tight tracking, Geist Mono labels and a hairline) from `title`, with optional `label` (top right, default "Changelog") and `footer` (bottom left, for example a date). SVG text cannot wrap, so `layoutChangelogTitle` from `@cio/utils/functions/changelog-cover` wraps the title and steps the font size down for long ones, cutting a very long title with an ellipsis. The SVG fills its container (`preserveAspectRatio="xMidYMin slice"`, so a wide crop keeps the top row and trims from the bottom), so give the parent the aspect ratio. It inherits the page's Geist when loaded and falls back to system fonts otherwise. See `Molecules/ChangelogCover` in Storybook.
+
+```svelte
+<div class="aspect-video w-full overflow-hidden rounded-md border">
+  <ChangelogCover {title} footer="Oct 5, 2026" />
+</div>
+```
+
 ### Question type picker (`src/custom/question-type-picker/`)
 
 Marketing / demo widget: left-hand list of question types and a live **take**-mode preview using `ExerciseQuestion.QuestionRenderer`. Copy is English-only (no dashboard i18n). Also consumed by the **`@cio/embeds`** app as a CDN bundle (`apps/embeds`).
@@ -108,6 +228,34 @@ Marketing / demo widget: left-hand list of question types and a live **take**-mo
 ### Attachment list (`src/custom/attachment-list/`)
 
 Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop (including `reorder` for the drag handle) so dashboard wrappers can supply translated strings. `AttachmentListFile.type` accepts a file extension or MIME type for icon styling. See `Molecules/AttachmentList` in Storybook.
+
+### Slide embed (`src/custom/slide-embed/`)
+
+Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
+
+### Public course Copy Page (`src/custom/public-course/copy-page-button.svelte`)
+
+Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Both halves use `variant="secondary"`. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyChatUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet so it sits beside the lesson title at every breakpoint, with `ShareButton` to its right. The outline rail still has the matching copy / share / chat actions. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.
+
+### Public course Share button (`src/custom/public-course/share-button.svelte`)
+
+Icon-only secondary share control for the public lesson/exercise title row. Opens the same Facebook / LinkedIn / X / Instagram menu as `OutlineRailActions`. Copy is passed via `labels: ShareActionLabels`. Instagram copies the page URL and the host shows a snackbar via `onInstagramCopied`. The outline rail keeps its own share row on `lg+`.
+
+### Public course outline rail actions (`src/custom/public-course/outline-rail-actions.svelte`)
+
+Muted icon+label links rendered **under** `PageOutline`, separated by a top border. Matches the docs-site pattern (copy, share, open in chat):
+
+- **Copy as Markdown** — same fetch as Copy Page; only when `markdownUrl` is set.
+- **Share on social media** — dropdown for Facebook, LinkedIn, and X (intent URLs). Instagram copies the page URL (there is no web share intent) and the host shows a snackbar via `onInstagramCopied`.
+- **Open in chat** — dropdown for ChatGPT and Claude when those URLs are passed.
+
+Pass copy via `labels: OutlineRailActionLabels`. Render through `PublicLessonView` / `PublicExerciseView`'s `outlineActions` snippet. Share-only is valid for exercises. See `Molecules/PublicCourse` → **Lesson · outline rail actions**.
+
+### Page outline (`src/custom/page-outline/`)
+
+Sticky in-page table of contents for long-form content (public lessons, exercises, docs). Pass `items: PageOutlineItem[]` (`id`, `title`, `level` 1–3). Clicking an item updates the URL hash, restores that hash on reload, and highlights the active heading via `IntersectionObserver`. Hierarchy is shown with indent (`h1` / `h2` / `h3`) along a dotted left rail; the active item uses the primary color.
+
+**Hidden on mobile by default.** `hideBelow` defaults to `lg` (`hidden` below that breakpoint). Pass `never` when the parent already hides the rail (for example `PublicLessonView`'s `aside`). Pin the rail to the **page** edge (a full-width flex sibling of the article column), not next to a centered content max-width. Put copy / share / chat links under the outline via `OutlineRailActions` (see **Public course outline rail actions**). Helpers: `injectHeadingIds(html)` rewrites `h1`–`h3` with unique ids and returns outline entries; `withPageTitle` prefixes the page title; `outlineFromSections` builds a title + subsection list. See `Molecules/PageOutline` in Storybook.
 
 ### Comment tree (`src/custom/comment-tree/`)
 
@@ -127,7 +275,183 @@ Presentational parts for an arbitrarily deep comment thread. All copy is passed 
 
 ### Live session card (`src/custom/live-session-card/`)
 
-Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.
+Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. When ended, a "Watch recording" button opens `recordingUrl` if one is set. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.
+
+### Action popover (`src/custom/action-popover/`)
+
+Popover with a scrollable body, an optional search bar, and a pinned full-width action button in the footer. Import as `import { ActionPopover } from '@cio/ui/custom/action-popover'`. The default trigger is an outline icon `Button` with a plus icon; pass a `trigger` snippet (receives `{ props }` to spread on your own control) to replace it. Content is passed via the `children` snippet and scrolls at `max-h-64` (override with `bodyClass`). When `buttonText` is set, the footer renders below a border; clicking it awaits `onAction` (showing a spinner when it returns a Promise) and closes the popover unless `closeOnAction` is false. Omitting `buttonText` renders no footer. All copy comes from props, so dashboard wrappers supply translated strings.
+
+Passing `searchPlaceholder` renders a search input above the scrollable body — independent of `title`, so it works with or without a heading. The component does not filter content itself; bind `searchQuery` (cleared automatically when the popover closes) and filter your list in the consumer.
+
+| Prop                | Description                                                  |
+| ------------------- | ------------------------------------------------------------ |
+| `title`             | Optional heading rendered above the scrollable body          |
+| `buttonText`        | Footer button label; omit to render no footer                |
+| `onAction`          | Footer button handler; may return a Promise (shows loading)  |
+| `buttonDisabled`    | Disables the footer button                                   |
+| `buttonLoading`     | Forces the footer loading state                              |
+| `closeOnAction`     | Close the popover after the action resolves (default `true`) |
+| `align`             | Popover alignment (default `start`)                          |
+| `contentClass`      | Extra classes on `Popover.Content` (e.g. width)              |
+| `bodyClass`         | Extra classes on the padded body wrapper                     |
+| `searchPlaceholder` | Show a search bar when provided; used as its placeholder     |
+| `searchQuery`       | Bindable search query; cleared when the popover closes       |
+| `open`              | Bindable open state                                          |
+| `trigger`           | Optional snippet replacing the default plus-icon trigger     |
+| `children`          | Snippet with the popover body content                        |
+
+See `Molecules/ActionPopover` in Storybook.
+
+### Vimeo link form (`src/custom/vimeo-link-form/`)
+
+Form component for validating, normalizing, and attaching Vimeo video links (standard, channels, showcases, and unlisted URLs with privacy hashes). Displays domain-level privacy guidance with a one-click host copy button and a direct link to Vimeo's official domain privacy documentation.
+
+| Prop                  | Purpose                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `inputLabel`          | Text label for the link input                                                                    |
+| `inputPlaceholder`    | Placeholder text inside the input                                                                |
+| `addButtonLabel`      | Label for the submit button                                                                      |
+| `invalidVimeoMessage` | Error text displayed when the input contains invalid Vimeo links                                 |
+| `privacyHintPrefix`   | Optional leading text before the copyable domain badge                                           |
+| `privacyHintSuffix`   | Optional trailing text after the copyable domain badge                                           |
+| `disabled`            | Disables the input and submit button                                                             |
+| `onSubmit`            | Callback `(links: string[]) => Promise<void> \| void` invoked with deduplicated, canonical links |
+| `onInputChange`       | Optional callback when the raw input text changes                                                |
+
+See `Molecules/VimeoLinkForm` in Storybook.
+
+### Media player (`src/custom/media-player/`)
+
+Unified video player component supporting HTML5 video (direct MP4 and HLS via `hls.js`), YouTube embeds, and Vimeo videos via the official `@vimeo/player` SDK.
+
+**Features:**
+
+- **Native Vimeo SDK Integration**: Seamless playback with strict-origin referrer policy and unlisted privacy hash support (`?h=...`).
+- **Domain Privacy Error Recovery**: Automatically detects Vimeo `PrivacyError` events on domain-restricted videos, providing instructors with the exact host to whitelist and a live Retry button, while displaying a learner-friendly notice in learner mode.
+- **HLS Adaptive Streaming**: Plays master manifests via signed cookies or token auth with automatic rendition selection.
+- **YouTube Embeds**: Lightweight iframe embed with responsive aspect-ratio wrappers.
+
+| Option                    | Purpose                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `source`                  | `VideoSource` object (`type: 'upload' \| 'hls' \| 'youtube' \| 'vimeo' \| 'generic'`, `url`, `metadata`, `tracks`) |
+| `options.isLearnerView`   | When `true`, displays learner-friendly fallback messages instead of technical configuration hints                  |
+| `options.onTimeUpdate`    | Callback invoked as playback position advances                                                                     |
+| `options.onPlayerReady`   | Callback invoked when the underlying player SDK is initialized                                                     |
+| `options.vimeoRetryLabel` | Optional label override for the Vimeo playback retry button                                                        |
+
+### Combo button (`src/custom/combo-button/`)
+
+A split button: a labelled primary action joined to a chevron that opens a menu of alternatives. Import as `import { ComboButton, type ComboButtonItem } from '@cio/ui/custom/combo-button'`.
+
+Use it when there is a genuine default worth one click, and **label the primary half with the action it performs** — `Export as CSV`, not `Export`. An unlabelled primary silently picks one of the alternatives for the user. When no option dominates, use a plain `Button` with a `DropdownMenu` instead.
+
+Each item owns its own handler, so the component carries no behaviour: the consumer passes `onSelect` for the primary and one per item. Copy comes from props, so dashboard callers supply translated strings.
+
+| Prop        | Description                                                      |
+| ----------- | ---------------------------------------------------------------- |
+| `label`     | Primary button label; name the action, not a category            |
+| `onSelect`  | Primary button handler; may return a Promise                     |
+| `items`     | Menu entries (`ComboButtonItem[]`), each with its own `onSelect` |
+| `menuLabel` | Accessible name for the chevron, which has no visible text       |
+| `icon`      | Optional lucide icon for the primary half                        |
+| `variant`   | Button variant applied to both halves (default `outline`)        |
+| `size`      | `sm` \| `default` \| `lg` (default `sm`)                         |
+| `disabled`  | Disables both halves                                             |
+| `loading`   | Spinner on the primary half; also disables the menu              |
+| `align`     | Menu alignment (default `end`)                                   |
+| `testId`    | Primary `data-testid`; the chevron gets `${testId}-menu`         |
+
+`ComboButtonItem` takes `id`, `label`, and `onSelect`, plus optional `icon`, `description` (rendered muted beneath the label — use it to say _why_ an item is disabled rather than hiding it), `disabled` and `destructive`.
+
+See `Molecules/ComboButton` in Storybook.
+
+### Machines (`src/custom/animation/machines/`)
+
+Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). The animation is SVG SMIL, so it needs no JavaScript to run. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
+
+The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the drawings is placeholder copy (brand and domain names are placeholders). Use it for ClassroomIO-branded surfaces only, not org sites.
+
+| Prop      | Type     | Default     | Description                                              |
+| --------- | -------- | ----------- | -------------------------------------------------------- |
+| `label`   | `string` | `undefined` | Accessible description; omit to hide from assistive tech |
+| `stillAt` | `number` | `6`         | Second to freeze on under `prefers-reduced-motion`       |
+| `class`   | `string` | `undefined` | Size and placement                                       |
+
+```svelte
+<div class="bg-muted rounded-xl p-6">
+  <MachineTrainingLine label={$t('marketing.machines.training_line')} class="h-80" />
+</div>
+```
+
+Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag by default; pass `price` (e.g. `price="35/mo"`) to show the real plan price.
+
+### Loaders (`src/custom/block-loader/`, `src/custom/compact-loader/`)
+
+Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `BlockLoader` for page-level waits (the root page, a course opening) and `CompactLoader` for small waits inside panels, tables, settings pages and modals. The blocks use the theme tokens (`--muted`, `--primary`, `--foreground`), cut the notch with `ui:notch-cutout`, and need no surface colour. Under `prefers-reduced-motion` the stack is shown without animation.
+
+`BlockLoader`: four blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block under it.
+
+| Prop        | Type                 | Default     | Description                                                               |
+| ----------- | -------------------- | ----------- | ------------------------------------------------------------------------- |
+| `title`     | `string`             | `undefined` | Heading under the stack; also the accessible name when `label` is not set |
+| `caption`   | `string`             | `undefined` | Supporting line under the title                                           |
+| `label`     | `string`             | `undefined` | Accessible name when there is no `title`                                  |
+| `blocks`    | `BlockLoaderBlock[]` | 4 blocks    | `{ kind, title, tone: 'muted' \| 'tint' \| 'primary' \| 'dark', width }`  |
+| `blockText` | `boolean`            | `true`      | Show the kind and title inside each block; `false` gives plain blocks     |
+| `class`     | `string`             | `undefined` | Placement                                                                 |
+
+`CompactLoader`: three wordless blocks, so it works in any language.
+
+| Prop    | Type           | Default     | Description         |
+| ------- | -------------- | ----------- | ------------------- |
+| `size`  | `'sm' \| 'md'` | `'md'`      | `sm` is 60% of `md` |
+| `label` | `string`       | `undefined` | Accessible name     |
+| `class` | `string`       | `undefined` | Placement           |
+
+The default block labels in `BlockLoader` ("LESSON", "Getting started", ...) are illustrative English copy; pass `blocks` with translated text where that matters. Pass `title`, `caption` and `label` from the host (`$t(...)` in the dashboard).
+
+```svelte
+<BlockLoader title={$t('common.loading_states.opening_academy_title')} />
+<CompactLoader label={$t('common.loading')} />
+```
+
+### Number field (`src/custom/number-field/`)
+
+Number input that emits live only for valid in-range values and never rewrites text while typing. Use it for every numeric field instead of `Number(value)`.
+
+| User does                               | Text shown                                | Value emitted                       |
+| --------------------------------------- | ----------------------------------------- | ----------------------------------- |
+| types a valid in-range number           | as typed                                  | that number, on the keystroke       |
+| types an intermediate (`-`, `1.`, `1e`) | as typed                                  | nothing                             |
+| types out of range (`150` in 0–100)     | as typed                                  | nothing until blur                  |
+| blurs or presses Enter                  | normalized (`100`; `3` for `2.5` integer) | the normalized value, if it changed |
+| clears an optional field                | empty                                     | `null`, on the keystroke            |
+| clears a required field, then blurs     | the value it had when focused is restored | that value, if it changed           |
+| value changes from outside              | re-seeded                                 | —                                   |
+
+Pass `onCommit` for follow-up work that must run only on blur or Enter with the normalized value (for example re-clamping a dependent field). It fires after the value settles, even when the value itself did not change.
+
+```svelte
+<script lang="ts">
+  import { NumberField } from '@cio/ui/custom/number-field';
+
+  let points = $state<number | null>(1);
+</script>
+
+<NumberField label="Points" integer min={1} bind:value={points} />
+```
+
+### Copy input (`src/custom/copy-input/`)
+
+Read-only `InputGroup` that shows a value with an inline Copy button. Focusing the input selects the value; the button switches to the copied label for two seconds. Use it to reveal a one-time secret, an invite link, or any value the user should copy rather than edit. The host passes translated labels.
+
+```svelte
+<script lang="ts">
+  import { CopyInput } from '@cio/ui/custom/copy-input';
+</script>
+
+<CopyInput value={secret} copyLabel={$t('automation.keys.reveal.copy')} copiedLabel={$t('automation.keys.reveal.copied')} />
+```
 
 ### Hooks (`src/hooks/`)
 
@@ -137,6 +461,7 @@ Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelt
 
 - `is-mobile.svelte.ts` - Media query hook for mobile breakpoints
 - `use-clipboard.svelte.ts` - Clipboard copy functionality with state management
+- `field-draft.svelte.ts` - Text draft separate from stored value that re-seeds only on external change, with live `input()` and blur-time `commit()`
 
 **Usage:**
 
@@ -151,6 +476,18 @@ Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelt
 
 Utility functions and helpers are located in `src/tools/`. The main utility is the `cn` function for class name merging.
 
+### Dialog button hierarchy
+
+When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every button and follow this variant hierarchy (left to right):
+
+| Position            | Role                                               | Variant         |
+| ------------------- | -------------------------------------------------- | --------------- |
+| Left                | External / repeat action (e.g. "Create another …") | `secondary`     |
+| Right group (first) | Cancel / dismiss (e.g. "Later", "Cancel")          | `outline`       |
+| Right group (last)  | Main CTA (e.g. "Open now", "Save", "Create")       | default primary |
+
+Place the main CTA on the right; group cancel and primary together when both appear on the right.
+
 ### Page layout (`src/base/page/`)
 
 Composable page shell used across dashboard list and settings screens. Import as `import * as Page from '@cio/ui/base/page'`.
@@ -164,7 +501,14 @@ Composable page shell used across dashboard list and settings screens. Import as
 | `Page.Action`                  | Right-aligned header actions                                 |
 | `Page.Body`                    | Main content area (`child` snippet)                          |
 | `Page.BodyHeader`              | Toolbar inside the body                                      |
+| `Page.FloatingBar`             | Shell for the bar that rises from the bottom of a page       |
 | `Page.SettingsActions`         | Compact save/discard card for dirty settings forms           |
+
+**`Page.FloatingBar`** owns the dark pill itself: sticky at the bottom, centered, `z-50`, with a `pointer-events: none` wrapper so it does not block clicks beside it. `Page.SettingsActions` is built on it, and so is the audience selection bar, which is why the two look identical without either re-implementing the pill. Pass `show`, a `status` string (also announced to screen readers, since the bar appearing _is_ the notification), an optional `badge` snippet before the status, and the buttons as children.
+
+Set `fixed` to pin it to the viewport instead of sticking it to the end of the page content. **Anything rendered through `Page.Body`'s `child` snippet must use `fixed`**, because `Page.Body` sets `overflow-x-hidden` and a sticky bar inside a scroll container has no travel. It is a boolean rather than a `'sticky' | 'fixed'` union deliberately: the `ui:` prefix script rewrites class-like string literals, and turns `position === 'fixed'` into `position === 'ui:fixed'`, which never matches.
+
+See `Molecules/PageFloatingBar` in Storybook.
 
 **Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The card uses `position: sticky; bottom: 0` so it stays pinned to the viewport bottom while you scroll, then settles into normal flow at the end of the page. Do not put `overflow` on `Page.Root` that would break sticky positioning (horizontal overflow on `Page.Body` is fine). The card is compact and centered (not full width) and **only renders when `hasChanges` is true**. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard. Save is a primary button; Discard is a secondary button. Use `disabled` to block Save only (Discard still follows `loading`). Use `contentClass` for extra classes on the inner card when needed.
 
@@ -265,6 +609,26 @@ Supported today: `InputField`, `TextareaField`, `CheckboxField`, `Button`. Fixed
 ```
 
 Registry and naming rules: `e2e/README.md` and AGENTS.md § E2E test hooks.
+
+## Chevrons up down
+
+`ChevronsUpDownIcon` is the moving chevron pair. Hovering it splits the chevrons apart for 200ms, then they settle. Pass `animate` to play that motion from a parent, and `ariaHidden` when it sits next to a visible label.
+
+```svelte
+<script lang="ts">
+  import { ChevronsUpDownIcon } from '@cio/ui/custom/moving-icons';
+</script>
+
+<ChevronsUpDownIcon size={16} ariaHidden />
+```
+
+## Template card
+
+`TemplateCard` is the small course-template tile used on the courses page and in the template gallery. Pass `blank` for the empty plus tile, which uses a dashed border. Pass `loading` for the skeleton, `typeBadge` for the course-type chip, and `overlay` for a menu that sits outside the button.
+
+```svelte
+<TemplateCard title="Customer Onboarding" subtitle="by ClassroomIO" imageUrl={cover} />
+```
 
 ## Component Exports
 
@@ -367,3 +731,9 @@ When adding a new component to this package, follow these steps:
 - `jsrepo.json` - jsrepo configuration for component installation
 - `svelte.config.js` - Svelte configuration
 - `tsconfig.json` - TypeScript configuration
+
+### Public course mixed outline
+
+`PublicCourseSidebarSection.standalone` renders its items directly, without a section heading or collapse control. Group consecutive root lessons and exercises into one standalone entry, interleaved with section entries in course order. Standalone rows show the item type icon in the badge instead of a number, since numbers count position within a section. Standalone entries stay visible when `collapsibleSections` is enabled.
+
+`NumberBadge` renders its `children` snippet in place of `number`, for a badge that shows an icon.

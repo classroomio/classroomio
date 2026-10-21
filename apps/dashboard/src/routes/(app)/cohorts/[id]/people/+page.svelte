@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import * as Avatar from '@cio/ui/base/avatar';
@@ -7,36 +7,67 @@
   import { Button } from '@cio/ui/base/button';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as Page from '@cio/ui/base/page';
-  import * as Select from '@cio/ui/base/select';
   import * as Table from '@cio/ui/base/table';
   import { Search } from '@cio/ui/custom/search';
   import { Chip } from '@cio/ui/custom/chip';
   import { IconButton } from '@cio/ui/custom/icon-button';
+  import ArrowDownIcon from '@lucide/svelte/icons/arrow-down';
+  import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
   import CheckIcon from '@lucide/svelte/icons/check';
   import CopyIcon from '@lucide/svelte/icons/copy';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import UserIcon from '@lucide/svelte/icons/user';
+  import { onDestroy, untrack } from 'svelte';
+  import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { shortenName } from '$lib/utils/functions/string';
   import { ROLE } from '@cio/utils/constants';
   import { ROLE_LABEL } from '$lib/utils/constants/roles';
   import { isOrgAdmin, isStudentLimitReached } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import { UpgradeBanner } from '$features/ui';
+  import { TablePagination, UpgradeBanner } from '$features/ui';
+  import { snackbar } from '$features/ui/snackbar/store';
   import InviteMembersModal from '$features/cohort/components/invite-members-modal.svelte';
   import GoalsOverviewTiles from '$features/cohort/components/goals/goals-overview-tiles.svelte';
+  import PeopleFilterPopover from '$features/cohort/components/people-filter-popover.svelte';
+  import PeopleViewSwitcher from '$features/cohort/components/people-view-switcher.svelte';
   import { cohortApi } from '$features/cohort/api';
+  import { formatPeopleShortDate } from '$features/course/utils/people-utils';
+  import {
+    applyCohortPeopleView,
+    clearCohortPeopleFilters,
+    countActiveCohortPeopleFilters,
+    getCohortPeopleQueryFromSearchParams,
+    getCohortPeopleSearchParams,
+    matchCohortPeopleView
+  } from '$features/cohort/utils/people-query-utils';
+  import type { CohortPeopleView, CohortPerson, ListCohortPeopleQuery } from '$features/cohort/utils/types';
 
   let { data } = $props();
 
-  let memberToDelete = $state<(typeof cohortApi.members)[number] | null>(null);
+  let memberToDelete = $state<CohortPerson | null>(null);
   let isDeleteModalOpen = $state(false);
-  let filterBy = $state('all');
-  let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
+  let peopleRows = $state<CohortPerson[]>([]);
+  let peoplePagination = $state<{ page: number; limit: number; total: number; totalPages: number } | null>(null);
+  let isLoadingPeople = $state(false);
+  let peopleRequestId = 0;
+  let loadedQueryKey: string | null = null;
 
-  const members = $derived(sortAndFilterPeople(cohortApi.members, filterBy));
+  const query = $derived(getCohortPeopleQueryFromSearchParams(page.url.searchParams));
+  const activeView = $derived(matchCohortPeopleView(query));
+  const activeFilterCount = $derived(countActiveCohortPeopleFilters(query));
+
+  const search = new DebouncedSearch({
+    initial: untrack(() => query.search ?? ''),
+    onApply: (nextSearch) => void navigatePeople({ ...query, page: 1, search: nextSearch || undefined })
+  });
+
+  afterNavigate(() => {
+    search.sync(query.search ?? '');
+  });
+
   const currentUserRole = $derived.by(() => {
     const currentMember = cohortApi.members.find((member) => member.profileId === $profile.id);
     return currentMember ? Number(currentMember.roleId) : null;
@@ -44,36 +75,94 @@
   const canManageMembers = $derived.by(
     () => Boolean($isOrgAdmin) || currentUserRole === ROLE.ADMIN || currentUserRole === ROLE.TUTOR
   );
-  const selectOptions = $derived([
-    { label: $t('course.navItem.people.roles.filter'), value: 'all' },
-    { label: $t(ROLE_LABEL[ROLE.TUTOR]), value: `${ROLE.TUTOR}` },
-    { label: $t(ROLE_LABEL[ROLE.STUDENT]), value: `${ROLE.STUDENT}` }
+
+  const tableColumns: { label: string; sortKey?: ListCohortPeopleQuery['sortBy'] }[] = $derived([
+    { label: $t('cohorts.people.name'), sortKey: 'name' },
+    { label: $t('course.navItem.people.role'), sortKey: 'role' },
+    { label: $t('course.navItem.people.last_login_at'), sortKey: 'lastLogin' },
+    { label: $t('cohorts.people.joined'), sortKey: 'joined' }
   ]);
 
-  function sortAndFilterPeople(people: typeof cohortApi.members, activeFilter: string) {
-    return [...(people || [])]
-      .filter((person) => {
-        if (activeFilter === 'all') {
-          return true;
-        }
+  async function navigatePeople(nextQuery: ListCohortPeopleQuery) {
+    const searchParams = getCohortPeopleSearchParams(nextQuery, page.url.searchParams);
+    const nextSearch = searchParams.toString();
+    if (nextSearch === page.url.searchParams.toString()) return;
 
-        return Number(person.roleId) === Number(activeFilter);
-      })
-      .sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime())
-      .sort((a, b) => Number(a.roleId) - Number(b.roleId));
+    try {
+      await goto(`${page.url.pathname}?${nextSearch}`, { keepFocus: true, noScroll: true });
+    } catch (error) {
+      console.error('navigation failed:', error);
+    }
   }
 
-  function filterPeople(query: string, people: typeof cohortApi.members) {
-    const normalizedQuery = query.toLowerCase();
+  async function loadPeople(cohortId: string, activeQuery: ListCohortPeopleQuery) {
+    const requestId = ++peopleRequestId;
+    isLoadingPeople = true;
 
-    return people.filter((person) => {
-      const fullname = person.profile?.fullname?.toLowerCase() ?? '';
-      const email = getEmail(person).toLowerCase();
-      return fullname.includes(normalizedQuery) || email.includes(normalizedQuery);
-    });
+    try {
+      const response = await cohortApi.listPeople(cohortId, activeQuery);
+      if (requestId !== peopleRequestId) return;
+
+      if (response?.data) {
+        peopleRows = response.data;
+        peoplePagination = response.pagination ?? null;
+      }
+    } catch (error) {
+      console.error('Failed to load cohort people:', error);
+      if (requestId === peopleRequestId) {
+        snackbar.error('snackbar.something');
+      }
+    } finally {
+      if (requestId === peopleRequestId) {
+        isLoadingPeople = false;
+      }
+    }
   }
 
-  function getEmail(person: (typeof cohortApi.members)[number]) {
+  // Svelte effects re-run on any read value, so the fetch is untracked to keep the
+  // local search box from retriggering it on every keystroke.
+  $effect(() => {
+    const cohortId = data.cohortId;
+    const activeQuery = query;
+    if (!cohortId) return;
+
+    const queryKey = `${cohortId}:${JSON.stringify(activeQuery)}`;
+    if (queryKey === loadedQueryKey) return;
+
+    loadedQueryKey = queryKey;
+    untrack(() => void loadPeople(cohortId, activeQuery));
+  });
+
+  onDestroy(() => {
+    search.destroy();
+  });
+
+  function handleFilterChange(patch: Partial<ListCohortPeopleQuery>) {
+    void navigatePeople({ ...query, ...patch, page: 1, search: search.takePending() || undefined });
+  }
+
+  function handleSortChange(sortBy: ListCohortPeopleQuery['sortBy'], sortOrder: ListCohortPeopleQuery['sortOrder']) {
+    void navigatePeople({ ...query, sortBy, sortOrder, page: 1, search: search.takePending() || undefined });
+  }
+
+  function handlePageChange(nextPage: number) {
+    void navigatePeople({ ...query, page: nextPage, search: search.takePending() || undefined });
+  }
+
+  function handleSelectView(view: CohortPeopleView) {
+    void navigatePeople({ ...applyCohortPeopleView(view, query), search: search.takePending() || undefined });
+  }
+
+  function handleClearFilters() {
+    void navigatePeople(clearCohortPeopleFilters(query));
+  }
+
+  function handleSortByHeader(sortKey: ListCohortPeopleQuery['sortBy']) {
+    const sortOrder = query.sortBy === sortKey && query.sortOrder === 'asc' ? 'desc' : 'asc';
+    handleSortChange(sortKey, sortOrder);
+  }
+
+  function getEmail(person: CohortPerson) {
     return person.profile?.email ?? person.email ?? '';
   }
 
@@ -124,11 +213,24 @@
     if (cohortApi.success) {
       isDeleteModalOpen = false;
       memberToDelete = null;
+
+      const nextPage = peopleRows.length <= 1 && query.page > 1 ? query.page - 1 : query.page;
+      if (nextPage === query.page) {
+        await loadPeople(data.cohortId, query);
+      } else {
+        await navigatePeople({ ...query, page: nextPage, search: search.takePending() || undefined });
+      }
     }
   }
 
   function openInviteModal() {
-    goto(resolve(`${page.url.pathname}?add=true`, {}));
+    const searchParams = new URLSearchParams(page.url.searchParams);
+    const pendingSearch = search.takePending();
+    if (pendingSearch) {
+      searchParams.set('search', pendingSearch);
+    }
+    searchParams.set('add', 'true');
+    void goto(resolve(`${page.url.pathname}?${searchParams.toString()}`, {}));
   }
 </script>
 
@@ -157,59 +259,117 @@
 
       <section class="space-y-2">
         <div class="flex flex-col items-center justify-end gap-2 md:flex-row">
-          <Search placeholder={$t('course.navItem.people.search')} bind:value={searchValue} />
-          <Select.Root type="single" name="roles" bind:value={filterBy}>
-            <Select.Trigger class="max-w-[100px]">
-              {selectOptions.find((option) => option.value === filterBy)?.label}
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Group>
-                {#each selectOptions as option (option.value)}
-                  <Select.Item value={option.value} label={option.label} disabled={option.value === filterBy}>
-                    {option.label}
-                  </Select.Item>
-                {/each}
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
+          <Search
+            placeholder={$t('course.navItem.people.search')}
+            value={search.draft}
+            onValueChange={(nextValue) => search.input(nextValue)}
+          />
+          <PeopleFilterPopover
+            {query}
+            {activeFilterCount}
+            isLoading={isLoadingPeople}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+            onSortChange={handleSortChange}
+          />
         </div>
 
         <div class="rounded-md border">
           <Table.Root>
             <Table.Header>
               <Table.Row>
-                <Table.Head>{$t('course.navItem.people.name')}</Table.Head>
-                <Table.Head>{$t('course.navItem.people.role')}</Table.Head>
+                {#each tableColumns as column (column.label)}
+                  <Table.Head>
+                    {#if column.sortKey}
+                      <button
+                        type="button"
+                        class="hover:text-foreground focus-visible:ring-ring flex items-center gap-1 rounded focus-visible:ring-2 focus-visible:outline-none"
+                        onclick={() => handleSortByHeader(column.sortKey)}
+                      >
+                        {column.label}
+                        {#if query.sortBy === column.sortKey}
+                          {#if query.sortOrder === 'asc'}
+                            <ArrowUpIcon class="size-3.5" aria-hidden="true" />
+                          {:else}
+                            <ArrowDownIcon class="size-3.5" aria-hidden="true" />
+                          {/if}
+                        {/if}
+                      </button>
+                    {:else}
+                      {column.label}
+                    {/if}
+                  </Table.Head>
+                {/each}
                 <Table.Head>{$t('course.navItem.people.action')}</Table.Head>
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {#each filterPeople(searchValue, members) as person}
+              {#if isLoadingPeople && peopleRows.length === 0}
                 <Table.Row>
-                  <Table.Cell class="w-4/6 md:w-3/6">
-                    {#if person.profile}
-                      <div class="flex items-start lg:items-center">
-                        <Avatar.Root class="mr-3">
-                          {#if person.profile.avatarUrl}
-                            <Avatar.Image
-                              src={person.profile.avatarUrl}
-                              alt={person.profile.fullname ? person.profile.fullname : 'User'}
-                            />
-                          {/if}
-                          <Avatar.Fallback>
-                            <UserIcon class="ui:text-muted-foreground size-4" />
-                          </Avatar.Fallback>
-                        </Avatar.Root>
-                        <div class="flex flex-col items-start lg:flex-row lg:items-center">
-                          <div class="mr-2">
-                            <p class="text-base font-normal dark:text-white">
-                              {person.profile.fullname}
-                            </p>
-                            <p class="ui:text-primary line-clamp-1 text-xs">
-                              {obscureEmail(getEmail(person))}
-                            </p>
+                  <Table.Cell colspan={5} class="ui:text-muted-foreground py-8 text-center text-sm">
+                    {$t('course.navItem.people.invite_modal.loading')}
+                  </Table.Cell>
+                </Table.Row>
+              {:else if peopleRows.length === 0}
+                <Table.Row>
+                  <Table.Cell colspan={5} class="ui:text-muted-foreground py-8 text-center text-sm">
+                    {$t('cohorts.people.empty_title')}
+                  </Table.Cell>
+                </Table.Row>
+              {:else}
+                {#each peopleRows as person (person.id)}
+                  <Table.Row>
+                    <Table.Cell class="w-4/6 md:w-3/6">
+                      {#if person.profile}
+                        <div class="flex items-start lg:items-center">
+                          <Avatar.Root class="mr-3">
+                            {#if person.profile.avatarUrl}
+                              <Avatar.Image
+                                src={person.profile.avatarUrl}
+                                alt={person.profile.fullname ? person.profile.fullname : 'User'}
+                              />
+                            {/if}
+                            <Avatar.Fallback>
+                              <UserIcon class="ui:text-muted-foreground size-4" />
+                            </Avatar.Fallback>
+                          </Avatar.Root>
+                          <div class="flex flex-col items-start lg:flex-row lg:items-center">
+                            <div class="mr-2">
+                              <p class="text-base font-normal dark:text-white">
+                                {person.profile.fullname}
+                              </p>
+                              <p class="ui:text-primary line-clamp-1 text-xs">
+                                {obscureEmail(getEmail(person))}
+                              </p>
+                            </div>
+                            <div class="flex items-center">
+                              {#if canManageMembers}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  class="h-8 w-8"
+                                  onclick={() => copyToClipboard(getEmail(person))}
+                                >
+                                  {#if copiedEmail === getEmail(person)}
+                                    <CheckIcon size={16} class="text-green-600" />
+                                  {:else}
+                                    <CopyIcon size={16} />
+                                  {/if}
+                                </Button>
+                              {/if}
+                              {#if person.profileId === $profile.id}
+                                <Badge variant="secondary">{$t('course.navItem.people.you')}</Badge>
+                              {/if}
+                            </div>
                           </div>
-                          <div class="flex items-center">
+                        </div>
+                      {:else}
+                        <div class="flex w-2/4 items-start lg:items-center">
+                          <Chip value={shortenName(person.email ?? '')} className="mr-3" />
+                          <a href={`mailto:${person.email ?? ''}`} class="text-md ui:text-primary mr-2 dark:text-white">
+                            {person.email}
+                          </a>
+                          <div class="flex items-center justify-between">
                             {#if canManageMembers}
                               <Button
                                 variant="ghost"
@@ -224,71 +384,77 @@
                                 {/if}
                               </Button>
                             {/if}
-                            {#if person.profileId === $profile.id}
-                              <Badge variant="secondary">{$t('course.navItem.people.you')}</Badge>
-                            {/if}
+
+                            <Chip
+                              value={$t('course.navItem.people.pending')}
+                              className="bg-yellow-200 text-yellow-700"
+                            />
                           </div>
                         </div>
-                      </div>
-                    {:else}
-                      <div class="flex w-2/4 items-start lg:items-center">
-                        <Chip value={shortenName(person.email ?? '')} className="mr-3" />
-                        <a href={`mailto:${person.email ?? ''}`} class="text-md ui:text-primary mr-2 dark:text-white">
-                          {person.email}
-                        </a>
-                        <div class="flex items-center justify-between">
-                          {#if canManageMembers}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              class="h-8 w-8"
-                              onclick={() => copyToClipboard(getEmail(person))}
-                            >
-                              {#if copiedEmail === getEmail(person)}
-                                <CheckIcon size={16} class="text-green-600" />
-                              {:else}
-                                <CopyIcon size={16} />
-                              {/if}
-                            </Button>
-                          {/if}
+                      {/if}
+                    </Table.Cell>
 
-                          <Chip value={$t('course.navItem.people.pending')} className="bg-yellow-200 text-yellow-700" />
+                    <Table.Cell class="w-1/6">
+                      <p class="text-center text-base font-normal dark:text-white">
+                        {getRoleLabel(Number(person.roleId))}
+                      </p>
+                    </Table.Cell>
+
+                    <Table.Cell class="w-1/6">
+                      <span class="ui:text-muted-foreground text-sm">
+                        {person.lastLoginAt ? formatPeopleShortDate(person.lastLoginAt) : '—'}
+                      </span>
+                    </Table.Cell>
+
+                    <Table.Cell class="w-1/6">
+                      <span class="ui:text-muted-foreground text-sm">
+                        {formatPeopleShortDate(person.createdAt)}
+                      </span>
+                    </Table.Cell>
+
+                    <Table.Cell class="w-1/6">
+                      {#if canManageMembers && person.profileId !== $profile.id}
+                        <div class="hidden space-x-2 sm:flex sm:items-center">
+                          <IconButton
+                            onclick={() => {
+                              memberToDelete = person;
+                              isDeleteModalOpen = true;
+                            }}
+                          >
+                            <TrashIcon size={16} />
+                          </IconButton>
                         </div>
-                      </div>
-                    {/if}
-                  </Table.Cell>
-
-                  <Table.Cell class="w-1/4">
-                    <p class="w-1/4 text-center text-base font-normal dark:text-white">
-                      {getRoleLabel(Number(person.roleId))}
-                    </p>
-                  </Table.Cell>
-
-                  <Table.Cell class="w-1/4">
-                    {#if canManageMembers && person.profileId !== $profile.id}
-                      <div class="hidden space-x-2 sm:flex sm:items-center">
-                        <IconButton
-                          onclick={() => {
-                            memberToDelete = person;
-                            isDeleteModalOpen = true;
-                          }}
-                        >
-                          <TrashIcon size={16} />
-                        </IconButton>
-                      </div>
-                    {/if}
-                  </Table.Cell>
-                </Table.Row>
-              {/each}
+                      {/if}
+                    </Table.Cell>
+                  </Table.Row>
+                {/each}
+              {/if}
             </Table.Body>
           </Table.Root>
         </div>
+
+        {#if peoplePagination && peoplePagination.totalPages > 1}
+          <div class="pt-4">
+            <TablePagination
+              count={peoplePagination.total}
+              perPage={peoplePagination.limit}
+              page={query.page}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        {/if}
       </section>
     {/snippet}
   </Page.Body>
 </Page.Root>
 
-<InviteMembersModal cohortId={data.cohortId} />
+<InviteMembersModal
+  cohortId={data.cohortId}
+  onMembersChanged={() => {
+    loadedQueryKey = null;
+    loadPeople(data.cohortId, query);
+  }}
+/>
 
 <Dialog.Root bind:open={isDeleteModalOpen}>
   <Dialog.Content class="w-96 pt-3">

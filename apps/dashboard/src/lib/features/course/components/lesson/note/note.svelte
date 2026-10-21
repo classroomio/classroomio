@@ -49,7 +49,7 @@
     lessonApi.translations[lessonId][lessonApi.currentLocale] = `${content}`;
 
     saveDraft(lessonId, lessonApi.currentLocale, `${content}`);
-    lessonApi.isDirty = true;
+    lessonApi.markDirty();
   }
 
   const content = $derived(lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '');

@@ -8,13 +8,14 @@ import {
   searchOrgWidgets
 } from '@cio/db/queries';
 
-export async function searchOrganization(orgId: string, search: string, limit: number) {
+export async function searchOrganization(orgId: string, search: string, limit: number, includeAudience: boolean) {
+  const audiencePromise = includeAudience ? searchOrgAudience(orgId, search, limit) : Promise.resolve([]);
   const [courses, cohorts, widgets, tags, audience] = await Promise.all([
     searchOrgCourses(orgId, search, limit),
     searchOrgCohorts(orgId, search, limit),
     searchOrgWidgets(orgId, search, limit),
     searchOrgTagsAndGroups(orgId, search, limit),
-    searchOrgAudience(orgId, search, limit)
+    audiencePromise
   ]);
 
   return {

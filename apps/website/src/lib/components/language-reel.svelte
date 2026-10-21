@@ -2,6 +2,8 @@
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import Check from '@lucide/svelte/icons/check';
   import Languages from '@lucide/svelte/icons/languages';
+  import Eyebrow from './ui/eyebrow.svelte';
+  import Section from './ui/section.svelte';
 
   /**
    * @typedef {Object} Lang
@@ -38,34 +40,29 @@
   } = $props();
 </script>
 
-<section class="relative overflow-hidden px-6 py-16 lg:px-12 lg:py-24 {bgClass}">
+<Section class="relative overflow-hidden {bgClass}">
   <div
     class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_40%,rgba(2,51,189,0.06),transparent_55%)]"
   ></div>
 
-  <div class="relative mx-auto max-w-[1100px]">
+  <div class="relative">
     <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
       <BlurFade delay={0} once>
         <div>
-          <div class="mb-3 inline-flex items-center gap-2 text-xs font-medium tracking-widest text-blue-700 uppercase">
-            <Languages size={14} />
+          <Eyebrow class="inline-flex items-center gap-2 text-blue-700">
+            <Languages size={16} strokeWidth={1.8} />
             {eyebrow}
-          </div>
-          <h2 class="text-[clamp(2rem,3vw,2.6rem)] leading-[1.15] font-medium tracking-tight">
+          </Eyebrow>
+          <h2 class="text-h3 mt-4 text-balance">
             {headlineLead}
             <span class="cio-lang-headline relative inline-block">
               <span class="text-blue-700">{headlineAccent}</span>
             </span>
           </h2>
-          <p class="mt-5 text-base leading-relaxed text-gray-500">{description}</p>
+          <p class="text-lead mt-[18px] text-pretty text-gray-500">{description}</p>
 
-          <!-- Inline language switcher mock -->
-          <div
-            class="mt-7 inline-flex w-full max-w-[320px] flex-col rounded-2xl border border-gray-200 bg-white p-1.5 shadow-sm"
-          >
-            <div class="px-3 py-1.5 text-[10px] font-medium tracking-widest text-gray-500 uppercase">
-              Lesson language
-            </div>
+          <div class="mt-8 inline-flex w-full max-w-[320px] flex-col rounded-xl border border-gray-200 bg-white p-1.5">
+            <div class="text-tag px-3 py-1.5 font-mono text-gray-500 uppercase">Lesson language</div>
             <div class="space-y-1">
               {#each langs.slice(0, 4) as lang, i}
                 <div
@@ -96,14 +93,9 @@
         </div>
       </BlurFade>
 
-      <!-- Animated polyglot lesson reel -->
       <BlurFade delay={0.15} once>
         <div class="relative">
-          <div
-            class="pointer-events-none absolute -inset-4 z-0 rounded-3xl bg-[conic-gradient(from_30deg,rgba(2,51,189,0.08),rgba(2,51,189,0.18),rgba(2,51,189,0.08))] blur-2xl"
-          ></div>
-
-          <div class="relative rounded-2xl border border-gray-200 bg-white shadow-2xl/5">
+          <div class="relative rounded-xl border border-gray-200 bg-white">
             <div class="flex items-center justify-between border-b border-gray-100 px-5 py-3.5">
               <div class="flex items-center gap-2 text-xs text-gray-500">
                 <span class="relative flex h-2 w-2">
@@ -112,10 +104,9 @@
                 </span>
                 {moduleLabel}
               </div>
-              <div class="text-[10px] font-medium tracking-widest text-blue-700 uppercase">Live preview</div>
+              <div class="text-tag font-mono text-blue-700 uppercase">Live preview</div>
             </div>
 
-            <!-- Cycling lesson card -->
             <div class="relative h-[260px] overflow-hidden">
               {#each langs as lang, i}
                 <div
@@ -130,7 +121,7 @@
                       {lang.code.toUpperCase()}
                     </span>
                     <div>
-                      <p class="text-[11px] tracking-wide text-gray-400 uppercase">Now rendering · {lang.en}</p>
+                      <p class="text-tag font-mono text-gray-400 uppercase">Now rendering · {lang.en}</p>
                       <p class="text-xs text-gray-600">{lang.native}</p>
                     </div>
                   </div>
@@ -150,7 +141,6 @@
               {/each}
             </div>
 
-            <!-- Progress dots -->
             <div class="border-t border-gray-100 px-5 py-3">
               <div class="flex items-center justify-center gap-1.5">
                 {#each langs as _, i}
@@ -167,10 +157,9 @@
       </BlurFade>
     </div>
   </div>
-</section>
+</Section>
 
 <style>
-  /* Each language gets a 2s window; total = langs.length × 2s, supplied via --total */
   .cio-lang-cycle {
     opacity: 0;
     animation: cio-lang-fade var(--total, 20s) ease-in-out infinite;

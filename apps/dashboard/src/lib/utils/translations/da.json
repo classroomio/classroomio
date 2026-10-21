@@ -11,7 +11,32 @@
       "reload": "Genindlæs"
     },
     "discard": "Kassér",
-    "save_changes": "Gem ændringer"
+    "save_changes": "Gem ændringer",
+    "cancel": "Annuller",
+    "scroll_to_top": "Rul til toppen",
+    "delete": "Slet",
+    "restricted_page": {
+      "title": "Begrænset side",
+      "description": "Denne organisation er begrænset. I mellemtiden kan du se vores funktioner.",
+      "home": "Gå hjem",
+      "learning_paths_heading": "Læringsforløb",
+      "learning_path_label": "Læringsforløb",
+      "tracks_label": "{count, plural, one {# spor} other {# spor}}",
+      "included": "Inkluderet",
+      "untitled_lesson": "Lektion uden titel",
+      "format": "Format"
+    },
+    "loading": "Indlæser...",
+    "loading_states": {
+      "opening_course": {
+        "title": "Indlæser kursus...",
+        "caption": "Vent venligst mens vi indlæser dine kursusdata."
+      },
+      "opening_academy": {
+        "title": "Åbner dit akademi...",
+        "caption": "Vi gør dine kurser, elever og indstillinger klar."
+      }
+    }
   },
   "validations": {
     "generic": {
@@ -137,12 +162,21 @@
       "question": {
         "too_small": "Spørgsmålets titel er påkrævet"
       }
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "Payload-URL skal starte med http:// eller https://"
+      },
+      "event_types": {
+        "required": "Vælg mindst én hændelse"
+      }
     }
   },
   "generic": {
     "locked": "Låst",
     "unlocked": "Ulåst",
-    "loading": "Indlæser"
+    "loading": "Indlæser",
+    "progress": "Fremskridt"
   },
   "content": {
     "heading": "Internationalisering i SvelteKit",
@@ -183,7 +217,11 @@
       "error": {
         "try_again": "Fejl - prøv venligst igen senere",
         "deleting_comments": "Fejl ved sletning af kommentarer",
-        "deleting_question": "Fejl ved sletning af spørgsmål"
+        "deleting_question": "Fejl ved sletning af spørgsmål",
+        "comment_failed": "Kunne ikke indsende kommentar",
+        "delete_failed": "Kunne ikke slette",
+        "missing_context": "Manglende kontekst — genindlæs siden",
+        "update_failed": "Spørgsmålet kunne ikke opdateres"
       }
     },
     "invite": {
@@ -209,8 +247,6 @@
       "section_update_failed": "Kunne ikke opdatere kursusafsnittet",
       "sections_reordered": "Kursusafsnit blev omorganiseret",
       "sections_reorder_failed": "Kunne ikke omarrangere kursusafsnit",
-      "lessons_reordered": "Lektioner blev omorganiseret",
-      "lessons_reorder_failed": "Kunne ikke omarrangere undervisningen",
       "comment_fetch_failed": "Kunne ikke hente lektionskommentarer",
       "load_more_comments_failed": "Kunne ikke indlæse flere kommentarer",
       "comment_add_failed": "Kunne ikke tilføje kommentar",
@@ -255,18 +291,30 @@
       "people": {
         "progress_reset": "Fremskridt nulstillet",
         "progress_reset_failed": "Kunne ikke nulstille fremskridt"
+      },
+      "compliance": {
+        "overview_failed": "Kunne ikke indlæse overholdelsesoversigt",
+        "history_failed": "Kunne ikke indlæse overholdelseshistorik",
+        "reset_success": "Overholdelsescyklus nulstilles",
+        "reset_failed": "Overholdelsescyklus kunne ikke nulstilles",
+        "extend_success": "Overholdelsesfrist forlænget",
+        "extend_failed": "Overholdelsesfristen kunne ikke forlænges",
+        "waive_success": "Overholdelseskrav frafaldet",
+        "waive_failed": "Kunne ikke give afkald på overholdelseskravet"
       }
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Komplet :)"
+        "complete": "Komplet :)",
+        "courses_reordered": "Kursusrækkefølge opdateret"
       },
       "error": {
         "file_size": "Filstørrelsen må ikke være større end 500 kb",
         "try_again": "Prøv igen",
         "label": "Upload billede",
         "fetch_error": "Fejl ved hentning af billeder fra Unsplash",
-        "upload_failed": "Kunne ikke uploade billede. Prøv venligst igen."
+        "upload_failed": "Kunne ikke uploade billede. Prøv venligst igen.",
+        "courses_reorder_failed": "Kunne ikke opdatere kursusrækkefølgen. Prøv igen."
       }
     },
     "team_members": {
@@ -274,7 +322,10 @@
       "user_exists": "Brugeren findes allerede",
       "invite_fail": "Kunne ikke sende invitationen. Prøv venligst igen",
       "remove_fail": "Kunne ikke fjerne bruger. Prøv venligst igen",
-      "remove_success": "Medlem fjernet"
+      "remove_success": "Medlem fjernet",
+      "role_updated": "Rollen er opdateret",
+      "role_update_failed": "Rollen kunne ikke opdateres",
+      "last_admin": "Denne organisation skal have mindst én administrator"
     },
     "lms": {
       "error": {
@@ -302,7 +353,11 @@
         "all_content_already_unlocked": "Alt indhold er allerede låst op",
         "content_grouping_enabled": "Indholdsgruppering aktiveret",
         "content_grouping_disabled": "Indholdsgruppering deaktiveret",
-        "link_generated": "Kursuslinket blev opdateret"
+        "link_generated": "Kursuslinket blev opdateret",
+        "converted_to_public": "Kurset blev konverteret til offentligt"
+      },
+      "info": {
+        "conversion_blocked": "Ret spørgsmålene nedenfor for at fuldføre konverteringen til Offentlig."
       }
     },
     "people": {
@@ -380,7 +435,8 @@
       "delete_success": "Video slettet",
       "delete_in_use": "Denne video er stadig knyttet til en lektion. Fjern det der først.",
       "delete_failed": "Videoen kunne ikke slettes",
-      "added_to_lesson": "Video tilføjet til lektion"
+      "added_to_lesson": "Video tilføjet til lektion",
+      "transcript_unavailable": "Transskription utilgængelig"
     },
     "tags": {
       "group_created": "Taggruppe oprettet",
@@ -465,6 +521,22 @@
         "post_created": "Indlægget er oprettet",
         "post_updated": "Opslaget blev opdateret"
       }
+    },
+    "report": {
+      "success": "Tak. Vi gennemgår denne anmeldelse.",
+      "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
+      "already_submitted": "Du har allerede anmeldt dette."
+    },
+    "webhooks": {
+      "created": "Webhook oprettet. Kopiér signeringshemmeligheden nu, fordi den kun vises én gang.",
+      "updated": "Webhook opdateret.",
+      "enabled": "Webhook aktiveret.",
+      "disabled": "Webhook deaktiveret.",
+      "deleted": "Webhook slettet.",
+      "secret_regenerated": "Signeringshemmelighed genereret igen. Kopiér den nu, fordi den kun vises én gang.",
+      "test_success": "Testhændelsen blev leveret.",
+      "test_failed": "Testhændelsen mislykkedes. Åbn leveringsloggen for at se hvorfor.",
+      "redelivered": "Hændelsen er sat i kø til ny levering."
     }
   },
   "explore": {
@@ -504,7 +576,7 @@
     "go_to_my_learning": "Gå til Min Læring"
   },
   "lms_navigation": {
-    "home": "Hjem",
+    "home": "Dashboard",
     "my_learning": "Min Læring",
     "certificates": "Certifikater",
     "exercise": "Motion",
@@ -525,7 +597,8 @@
     "required": "Opgradering påkrævet",
     "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
     "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API.",
-    "unlock_field": "Opgrader for at låse denne indstilling op"
+    "unlock_field": "Opgrader for at låse denne indstilling op",
+    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks."
   },
   "analytics": {
     "title": "Analyse",
@@ -601,6 +674,14 @@
         "PUBLIC": "Offentlig"
       }
     },
+    "topCourses": {
+      "heading": "Topkurser efter visninger",
+      "description": "Kurser rangeret efter sidevisninger",
+      "subtitle": "Rangeret efter sidevisninger i dette interval",
+      "empty": "Ingen kursussidevisninger endnu",
+      "course": "Kursus",
+      "views": "Visninger"
+    },
     "countries": {
       "heading": "Toplande",
       "subtitle": "{total} besøgende i alt",
@@ -653,7 +734,15 @@
       "kpi_team_tutors": "{count, plural, one {# underviser på kursusholdet} other {# undervisere på kursusholdet}}",
       "kpi_lessons_exercises": "{count, plural, one {# øvelse} other {# øvelser}} knyttet til lektioner",
       "kpi_progress_grade": "{grade} % gennemsnitlig øvelseskarakter på tværs af tilmeldte elever"
-    }
+    },
+    "exercises_completed": "Øvelser fuldført",
+    "course_progress": "Kursusstatus",
+    "just_now": "lige nu",
+    "minutes_ago": "{count, plural, one {# minut siden} other {# minutter siden}}",
+    "hours_ago": "{count, plural, one {# time siden} other {# timer siden}}",
+    "days_ago": "{count, plural, one {# dag siden} other {# dage siden}}",
+    "months_ago": "{count, plural, one {# måned siden} other {# måneder siden}}",
+    "years_ago": "{count, plural, one {# år siden} other {# år siden}}"
   },
   "audience": {
     "title": "Publikum",
@@ -705,7 +794,6 @@
       "select_courses": "Vælg specifikke kurser",
       "select_courses_placeholder": "Vælg kurser...",
       "send_email": "Send invitationsmail til importerede brugere",
-      "submit": "Importer brugere",
       "back": "Tilbage til Publikum",
       "snackbar_success": "{imported} nye invitationer, {assigned} eksisterende studerende med kursusadgang, {pendingInvitesRenewed} afventende invitationer fornyet ({emailsSent} e-mails sendt)",
       "snackbar_no_emails": "Indtast venligst mindst én e-mailadresse",
@@ -715,12 +803,64 @@
       "no_cohorts": "Ingen kohortetildeling",
       "all_cohorts": "Alle kohorter",
       "select_cohorts": "Vælg specifikke kohorter",
-      "select_cohorts_placeholder": "Vælg kohorter..."
+      "select_cohorts_placeholder": "Vælg kohorter...",
+      "drop_csv": "Slip en CSV-fil her, eller klik for at vælge en",
+      "csv_hint": "UTF-8 CSV med en e-mail-kolonne. Op til {rows} rækker, 5 MB.",
+      "download_template": "Download skabelonen",
+      "paste_hint": "Én adresse pr. linje eller kommasepareret.",
+      "review": "Gennemgå",
+      "done": "Udført",
+      "count_ready": "{count} klar",
+      "count_duplicate": "{count} allerede angivet",
+      "count_invalid": "{count} skal gøres opmærksom på",
+      "truncated": "{count} rækker efter grænsen på {rows}-rækker blev udeladt. Opdel filen, og importer resten.",
+      "unknown_columns": "Ignorerede ukendte kolonner: {columns}",
+      "download_errors": "Download de rækker, der mislykkedes",
+      "status": {
+        "ready": "Klar",
+        "already_member": "Allerede i målgruppen",
+        "invite_resent": "Invitation sendt igen",
+        "invalid_email": "Ugyldig e-mail",
+        "duplicate_in_file": "Duplikat i filen",
+        "over_seat_limit": "Ingen pladser tilbage",
+        "missing_email": "Ingen e-mail",
+        "is_staff": "Personal, ikke en studerende"
+      },
+      "submit_count": "Importer {count} studerende",
+      "result_heading": "{count} studerende importeret",
+      "start_over": "Vælg en anden fil"
     },
     "page_subtitle": "Se hvem der hører til din organisation, hvem der lærer, hvem der er inviteret, og hvordan du kan kontakte dem.",
     "user_analytics": {
       "title": "Elevprofil",
-      "page_subtitle": "Fremskridt, karakterer og aktivitet på tværs af deres kurser."
+      "page_subtitle": "Fremskridt, karakterer og aktivitet på tværs af deres kurser.",
+      "in_progress": "Igangværende",
+      "not_started": "Ikke startet",
+      "awaiting_grade": "Venter på karakter",
+      "not_submitted": "Ikke afleveret",
+      "course_level_exercise": "Øvelse på kursusniveau",
+      "score": "Score",
+      "status": "Status",
+      "export_progress": "Eksporter status",
+      "student_actions": "Studenthandlinger",
+      "no_courses_title": "Ingen kurser endnu",
+      "no_courses_description": "Tilmeld denne elev for at begynde at spore status.",
+      "no_exercises_title": "Ingen øvelser i dette kursus",
+      "no_exercises_description": "Tilføj en øvelse til en lektion, og hver elevs forsøg vises her.",
+      "no_grades_title": "Intet bedømt endnu",
+      "no_grades_description": "Karakterer vises, når denne elev afleverer en øvelse.",
+      "load_failed_title": "Kan ikke indlæse denne elev",
+      "load_failed_description": "Noget gik galt under indlæsning af denne elev. Prøv igen.",
+      "retry": "Prøv igen",
+      "exercise": "Øvelse",
+      "exercise_load_failed": "Kunne ikke indlæse øvelser til dette kursus.",
+      "tabs": {
+        "courses": "Kurser",
+        "grades": "Karakterer",
+        "activity": "Aktivitet"
+      },
+      "activity_empty_title": "Aktivitetstidslinje Kommer snart",
+      "activity_empty_description": "En tidslinje over gennemførte lektioner og øvelsesafleveringer på tværs af deres kurser vil være tilgængelig i en fremtidig udgivelse."
     },
     "delete": {
       "action": "Slet",
@@ -731,7 +871,105 @@
       "confirm": "Slet",
       "snackbar_success": "Medlem slettet"
     },
-    "import_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at importere flere elever."
+    "import_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at importere flere elever.",
+    "never": "Aldrig",
+    "progress": "Fremskridt",
+    "enrolled_ratio": "{completed} / {total}",
+    "bulk": {
+      "actions": "Handlinger",
+      "select_all_matching": "Vælg alle {count} matchende",
+      "clear_selection": "Ryd valg",
+      "sample_heading": "Inkluderer",
+      "sample_more": "og {count} mere",
+      "export_first": "Eksporter denne liste først",
+      "reason_label": "Årsag (valgfri)",
+      "reason_hint": "Registreret i revisionssporet, så dette kan besvares senere.",
+      "type_count_label": "Skriv {count} for at bekræfte",
+      "delete_is_permanent": "Sletning kan ikke fortrydes.",
+      "partial_success": "{succeeded} opdateret, {failed} sprunget over",
+      "undo_available": "Anvendt. Du kan stadig fortryde dette.",
+      "undo": "Fortryd",
+      "undo_success": "Tilbageført",
+      "confirm_action": {
+        "archive": "Arkivér",
+        "deactivate": "Deaktiver",
+        "reactivate": "Genaktiver",
+        "unarchive": "Fjern arkivering",
+        "delete": "Slet permanent"
+      },
+      "confirm_body": {
+        "archive": "De mister adgang og frigør en plads på din plan. Du kan til enhver tid fjerne arkivering fra dem.",
+        "deactivate": "De mister adgang, men beholder deres plads på din plan. Du kan til enhver tid genaktivere dem.",
+        "reactivate": "De får adgang til din organisation og dens kurser tilbage.",
+        "unarchive": "De får adgang igen og tager plads på din plan.",
+        "delete": "Dette fjerner dem fra denne organisation og kan ikke fortrydes. Deres konto, afleveringer og resultater gemmes."
+      },
+      "confirm_title": {
+        "archive": "Arkivere {count} elever?",
+        "deactivate": "Deaktivere {count} elever?",
+        "reactivate": "Genaktivere {count} elever?",
+        "unarchive": "Afarkivere {count} elever?",
+        "delete": "Fjerne {count} elever permanent?"
+      },
+      "action": {
+        "archive": "Arkivere {count} elever",
+        "deactivate": "Deaktivere {count} elever",
+        "reactivate": "Genaktivere {count} elever",
+        "unarchive": "Afarkivere {count} elever",
+        "delete": "Slet {count} elever"
+      },
+      "queued_failed": "Denne massehandling blev ikke afsluttet. Intet yderligere blev anvendt.",
+      "queued_lost": "Vi mistede overblikket over denne kørsel. Genindlæs for at se den aktuelle status.",
+      "all_matching_selected": "Alle {count} matchende elever er valgt",
+      "not_archived_blocker": "{count} af disse elever er ikke arkiverede. Arkivér dem først.",
+      "success": "Elever opdateret",
+      "queued_running": "Ansøger om at blive optaget på {count} elever. Du kan fortsætte med at arbejde - vi giver dig besked, når det er færdigt.",
+      "undo_dismiss": "Luk",
+      "clear": "Ryd"
+    },
+    "filter": {
+      "status": "Medlemsstatus",
+      "status_active": "Aktiv",
+      "status_deactivated": "Deaktiveret",
+      "status_archived": "Arkiveret",
+      "last_login": "Seneste login",
+      "last_activity": "Seneste aktivitet",
+      "no_login_since": "Ingen login i",
+      "no_activity_since": "Ingen aktivitet i",
+      "window_7d": "7 dage",
+      "window_30d": "30 dage",
+      "window_90d": "90 dage",
+      "window_180d": "180 dage",
+      "window_never": "Aldrig",
+      "enrollment": "Tilmelding",
+      "enrolled": "Tilmeldt",
+      "not_enrolled": "Ikke tilmeldt",
+      "completion": "Afslutning",
+      "not_started": "Ikke startet",
+      "in_progress": "Igangværende",
+      "completed": "Afsluttet",
+      "exclude_recent_joiners": "Ekskluder nylige tilmeldte",
+      "clear": "Ryd filtre",
+      "empty_description": "Prøv at udvide datointervallet eller rydde et filter.",
+      "exclude_recent_joiners_hint": "Udelader elever, der er tilmeldt for nylig til at blive bedømt som inaktive.",
+      "empty_title": "Ingen studerende matcher disse filtre",
+      "invite_status": "Invitationsstatus",
+      "certificate": "Certifikat",
+      "certificate_earned": "Optjent",
+      "certificate_not_earned": "Ikke optjent"
+    },
+    "views": {
+      "never_logged_in": "Aldrig logget ind",
+      "inactive_90d": "Inaktiv i 90+ ​​dage",
+      "inactive_180d": "Inaktiv i 180+ dage",
+      "enrolled_not_started": "Tilmeldt, aldrig startet",
+      "archived": "Arkiveret",
+      "custom": "Brugerdefinerede filtre",
+      "all": "Alle studerende"
+    },
+    "learner_count": "{count} elever",
+    "certificate_earned": "{count} certifikat opnået",
+    "certificates_earned": "{count} certifikater opnået"
   },
   "community": {
     "title": "Fællesskab",
@@ -782,6 +1020,7 @@
         "cover_image": "Forsidebillede",
         "optional_image": "Dette valgfrie billede vises på din velkomstside. Hvis du inkluderer en, skal den være mindst 280 x 200",
         "replace": "Udskift",
+        "remove": "Fjern",
         "del": "Slet",
         "course_details": "Kursusdetaljer",
         "course_title": "Kursus titel",
@@ -789,6 +1028,7 @@
         "placeholder": "Skriv din kursusbeskrivelse her",
         "course_title_placeholder": "Skriv kursets titel her",
         "setup_landing_for_link": "Opsæt landingsside for at få kursuslink",
+        "setup_landing_page": "Opsæt landingsside",
         "coming_soon": "Kommer snart",
         "link": "Kursus link",
         "grading": "Bedømmelse",
@@ -800,7 +1040,6 @@
         "content_grouping_title": "Indholdsgruppering",
         "content_grouping_description": "Gruppelektioner og øvelser efter afsnit i indholdslisten.",
         "progression_mode_title": "Elevprogression",
-        "progression_mode_description": "Styr om elever kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge.",
         "progression_mode_free": "Fri — ulåst indhold er tilgængeligt",
         "progression_mode_sequential": "Sekventiel — fuldfør tidligere elementer for at låse næste op",
         "comments": {
@@ -815,7 +1054,8 @@
         "course_avail": "Download en kopi af dette kursus.",
         "download": "Download",
         "allow": "Studerende kan tilmelde sig selv",
-        "access": "Når det er slået fra, kan studerende kun deltage via et invitationslink eller ved at blive tilføjet under Personer.",
+        "access": "Når det er slået fra, kan studerende kun deltage via et invitationslink eller ved at blive tilføjet under {people}.",
+        "access_people": "Personer",
         "publish": "Udgiv kursus",
         "determines": "Dette afgør, om dit kursus vises på din landingsside",
         "published": "Udgivet",
@@ -833,11 +1073,14 @@
           "empty": "Ingen tags valgt",
           "add": "Tilføj tag",
           "popover_title": "Vælg tags",
-          "empty_groups": "Ingen tags tilgængelige endnu"
+          "empty_groups": "Ingen tags tilgængelige endnu",
+          "create_tag": "Opret tag",
+          "none_created": "Ingen tags oprettet endnu",
+          "search_placeholder": "Søg tags...",
+          "no_results": "Ingen tags fundet"
         },
         "compliance": "Overholdelse",
         "public": "Offentlig",
-        "convert_to_public_blocked": "Dette kursus har spørgsmål, der ikke kan automatisk bedømmes, så det kan ikke gøres offentligt endnu.",
         "fix_blocking_questions": "Ret blokerende spørgsmål",
         "slug": {
           "label": "URL-slug",
@@ -865,11 +1108,17 @@
           "animation_none": "Ingen"
         },
         "course_type_learn_more": "Få flere oplysninger",
+        "completion_rules_card_title": "Regler for fuldførelse",
+        "completion_rules_card_desc": "Bestem, hvornår studerende fuldfører dette kursus og får certifikatet. Compliance-kurser bruger også fristen som hver studerendes forfaldsdato.",
+        "back_to_certificate_settings": "Tilbage til certifikatindstillinger",
         "welcome_email": {
           "title": "Velkomstmail",
           "description": "Tilpas den e-mail, som eleverne modtager efter tilmelding. Tilføj en personlig note, instruktioner eller et link til en livesession.",
           "placeholder": "Skriv den velkomstbesked, eleverne får, når de tilmelder sig..."
         },
+        "general_card_title": "Generelt",
+        "content_card_title": "Indhold",
+        "access_card_title": "Adgang",
         "locked_content": {
           "title": "{count} kursuselement(er) er låst",
           "description": "Tilmeldte elever vil ikke kunne tage låste lektioner eller øvelser, før du låser dem op.",
@@ -877,14 +1126,111 @@
           "unlock_all": "Lås alle op"
         },
         "certificate_deadline_required": "Indstil certifikatfrist først",
-        "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i kursusindstillingerne før udgivelse.",
         "go_to_certificate_settings": "Gå til Certifikatindstillinger",
         "completion_deadline_label": "Deadline for kursusafslutning",
-        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
+        "completion_deadline_helper": "Elever skal gennemføre kurset før denne dato og tid (lokal tid). Lad feltet være tomt for ingen frist.",
         "go_to_completion_deadline": "Gå til fuldførelsesfristen",
         "generate_link": "Generer nyt link",
         "open_link": "Åbn link i ny fane",
-        "copy_link": "Kopiér link"
+        "copy_link": "Kopiér link",
+        "question_in_exercise": "I \"{exercise}\"",
+        "fix_question": "Rediger",
+        "convert_to_public_blocked": "Offentlige kurser kræver udelukkende spørgsmål, der bedømmes automatisk.",
+        "convert_to_public_blocked_desc": "Øvelser i et offentligt kursus bedømmes automatisk i browseren, hvorfor vi kun understøtter spørgsmål med automatisk bedømmelse. Fjern eller erstat følgende spørgsmål, før du konverterer dette kursus til offentligt:",
+        "fix_in_exercise": "Ret i øvelse",
+        "cancel_conversion": "Annuller konvertering",
+        "public_conversion": {
+          "banner_title": "Konvertering af kursus til offentlig",
+          "exercise_fixed": "Denne øvelse er klar",
+          "back_to_settings": "Tilbage til Indstillinger",
+          "complete_conversion": "Gennemfør offentlig konvertering",
+          "jump_to": "Hop til",
+          "blocks_public_conversion": "Ikke automatisk bedømmelig",
+          "blocks_public_conversion_desc": "Offentlige kurser understøtter kun spørgsmål med automatisk bedømmelse. Skift dette spørgsmåls type eller slet det for at fortsætte med konverteringen.",
+          "blocks_public_conversion_title": "Manuel karaktergivning understøttes ikke i offentlige kurser",
+          "aria_label": "Status for konvertering af offentlige kurser",
+          "all_exercises_fixed": "Alle {total} øvelser rettet",
+          "ready_to_convert": "Klar til at konvertere!",
+          "questions_left_other_singular": "· {count} spørgsmål tilbage i andre øvelser",
+          "questions_left_other_plural": "· {count} spørgsmål tilbage i andre øvelser",
+          "progress_summary_singular": "{resolved}/{total} rettet · {remaining} spørgsmål tilbage",
+          "progress_summary_plural": "{resolved}/{total} rettet · {remaining} spørgsmål tilbage",
+          "next_exercise": "Næste: {exercise}",
+          "next": "Næste",
+          "question_fallback": "Spørgsmål {number}",
+          "question_count_singular": "{count} spørgsmål",
+          "question_count_plural": "{count} spørgsmål",
+          "exercise_count_singular": "{count} øvelse",
+          "exercise_count_plural": "{count} øvelser",
+          "exercises_fixed": "{resolved}/{total} rettet",
+          "questions_left_singular": "rettet · {count} spørgsmål tilbage",
+          "questions_left_plural": "rettet · {count} spørgsmål tilbage"
+        },
+        "fix": "Ret",
+        "save_changes_to_fix_questions": "Gem dine ikke-gemte ændringer, før du navigerer for at rette spørgsmål.",
+        "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
+        "progression_mode_description": "Kontroller, om eleverne kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge. Afslutning af videoafspilning sporer kun uploadede videoer.",
+        "allow_markdown_export": "Tillad elever at kopiere lektionssider som Markdown",
+        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion.",
+        "live_session_reminders": {
+          "legend": "E-mailpåmindelser om sessioner",
+          "description": "Vælg, hvornår tilmeldte elever får en e-mail med deltagelseslinket før hver livesession.",
+          "empty": "Ingen påmindelser. Eleverne får ikke e-mails før livesessioner.",
+          "add": "Tilføj påmindelse",
+          "presets_label": "Tilføj hurtigt:",
+          "remove": "Fjern påmindelse",
+          "unit_label": "Enhed",
+          "units": {
+            "days": "Dage",
+            "hours": "Timer",
+            "minutes": "Minutter"
+          },
+          "duration": {
+            "days": "{count, plural, one {# dag} other {# dage}}",
+            "hours": "{count, plural, one {# time} other {# timer}}",
+            "minutes": "{count, plural, one {# minut} other {# minutter}}"
+          },
+          "preview": "{duration} før hver session",
+          "offset_before": "{duration} før",
+          "max_count": "Du kan tilføje op til {count} påmindelser.",
+          "validation": {
+            "amount": "Indtast et helt tal på 1 eller mere.",
+            "min": "Påmindelser skal være mindst 15 minutter før sessionen.",
+            "max": "Påmindelser kan højst være 7 dage før sessionen.",
+            "duplicate": "Du har allerede en påmindelse på dette tidspunkt.",
+            "fix_errors": "Ret fejlene i sessionspåmindelserne, før du gemmer."
+          },
+          "log": {
+            "title": "Leveringslog",
+            "description": "Påmindelsesmails for sessioner i de sidste 30 dage og kommende sessioner.",
+            "view": "Vis log",
+            "empty": "Ingen påmindelser endnu. De vises her, når sessionerne nærmer sig.",
+            "load_error": "Leveringsloggen for påmindelser kunne ikke indlæses.",
+            "columns": {
+              "session": "Session",
+              "student": "Elev",
+              "reminder": "Påmindelse",
+              "status": "Status",
+              "detail": "Detaljer"
+            }
+          },
+          "statuses": {
+            "pending": "Afventer",
+            "queued": "I kø",
+            "sent": "Sendt",
+            "failed": "Mislykkedes",
+            "skipped": "Sprunget over"
+          },
+          "skip_reasons": {
+            "preferences": "Eleven har slået e-mailpåmindelser om sessioner fra.",
+            "no_email": "Eleven har ingen e-mailadresse.",
+            "lesson_past": "Sessionen var allerede startet.",
+            "offset_removed": "Denne påmindelse blev fjernet fra kursusindstillingerne.",
+            "lesson_rescheduled": "Sessionens tidspunkt eller deltagelseslink blev ændret.",
+            "window_passed": "Påmindelsestidspunktet var allerede passeret, da den blev planlagt.",
+            "unenrolled": "Eleven er ikke længere tilmeldt."
+          }
+        }
       },
       "analytics": {
         "title": "Analyse"
@@ -971,7 +1317,13 @@
             "yes": "Ja",
             "percent": "Rabatprocent",
             "gift": "Om gave",
-            "payment_required": "Et betalingslink er påkrævet for betalte kurser"
+            "payment_required": "Et betalingslink er påkrævet for betalte kurser",
+            "enable_paid": "Aktiver betalt",
+            "payment_invalid_url": "Indtast venligst en gyldig webadresse (f.eks. https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy eller et hvilket som helst betalingslink",
+            "percentage_helper": "I procent %",
+            "gift_on_completion": "Gave ved færdiggørelse",
+            "payment_cost_required": "Betalte kurser skal have en pris på over 0"
           },
           "instructor_form": {
             "upload": "Instruktør logo",
@@ -1004,7 +1356,8 @@
               "name": {
                 "min_char": "Navnet er for kort, minimum 5 tegn"
               }
-            }
+            },
+            "validation_error": "En eller flere anmeldelser er ugyldige. Åbn hver anmeldelse og ret navnet, avataren, bedømmelsen og beskrivelsen, før du gemmer."
           },
           "header_form": {
             "title": "Titel",
@@ -1133,7 +1486,6 @@
         "you": "Dig",
         "pending": "Afventer",
         "name": "Navn",
-        "learner": "Deltager",
         "progress": "Fremskridt",
         "stage": "Fase",
         "last_login_at": "Sidste login",
@@ -1166,6 +1518,13 @@
             "toggle_label": "Linkinvitation aktiv",
             "disabled_notice": "Dette link er deaktiveret. Aktiver det for at tillade nye medlemmer at deltage via link.",
             "select_role": "Vælg en rolle"
+          },
+          "change_role": {
+            "label": "Rolle for {email}",
+            "title": "Skift rolle",
+            "description": "Skift {email} fra {currentRole} til {nextRole}?",
+            "cancel": "Annuller",
+            "approve": "Godkend"
           }
         },
         "roles": {
@@ -1289,6 +1648,39 @@
             "custom": "Brugerdefineret"
           },
           "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever."
+        },
+        "learner": "Studerende",
+        "views": {
+          "all": "Alle mennesker",
+          "not_started": "Ikke startet",
+          "in_progress": "I gang",
+          "completed": "Afsluttet",
+          "never_logged_in": "Aldrig logget ind",
+          "awaiting_certificate": "Afventer certifikat",
+          "custom": "Brugerdefinerede filtre"
+        },
+        "window": {
+          "7d": "7 dage",
+          "30d": "30 dage",
+          "90d": "90 dage",
+          "180d": "180 dage",
+          "never": "Aldrig"
+        },
+        "filter": {
+          "title": "Filtrer folk",
+          "role": "Rolle",
+          "all_roles": "Alle roller",
+          "progress": "Fremskridt",
+          "in_progress": "I gang",
+          "completed": "Afsluttet",
+          "membership": "Medlemskab",
+          "joined": "Tiltrådte",
+          "invited": "Inviteret, ingen konto endnu",
+          "certificate": "Certifikat",
+          "earned": "Optjent",
+          "not_earned": "Ikke tjent",
+          "no_login_since": "Intet login siden",
+          "joined_within": "Tiltrådte indenfor"
         }
       },
       "marks": {
@@ -1304,6 +1696,10 @@
       },
       "submissions": {
         "title": "Indsendte øvelser",
+        "access": {
+          "denied_title": "Du kan ikke bedømme afleveringer for dette kursus",
+          "denied_description": "Bed en administrator om at tilføje dig som kursustutor eller som mentor for et hold, der inkluderer dette kursus."
+        },
         "grading_modal": {
           "details": "Detaljer",
           "early": "Tidligt",
@@ -1338,6 +1734,22 @@
           "awaiting_manual_hint": "Trænger til manuel gennemgang",
           "failed_hint": "Automatisk bedømmelse mislykkedes. Flyt denne indsendelse tilbage til Indsendt for at prøve igen.",
           "invalid_transition": "Denne statusflytning er ikke tilladt af bedømmelsesarbejdsgangen"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1397,7 +1809,17 @@
           "title": "Versionshistorik",
           "fetch_more_versions": "Hent flere versioner",
           "current_version": "Nuværende version",
-          "restore_version": "Gendan denne version"
+          "restore_version": "Gendan denne version",
+          "edit_count": "{count, plural, one {# redigering} other {# redigeringer}}",
+          "today": "I dag",
+          "yesterday": "I går",
+          "by_author": "af {name}",
+          "empty": "Ingen versioner endnu",
+          "kind": {
+            "auto": "Automatisk gemning",
+            "manual": "Gemt version",
+            "publish": "Udgivet"
+          }
         },
         "poll": {
           "voted": "Stemte",
@@ -1435,7 +1857,9 @@
           "comment_btn": "Kommentar",
           "cancel_btn": "Annuller",
           "load_more_btn": "Indlæs mere",
-          "comment_error": "Kunne ikke skrive kommentar. Prøv venligst igen."
+          "comment_error": "Kunne ikke skrive kommentar. Prøv venligst igen.",
+          "edit": "Rediger",
+          "delete": "Slet"
         },
         "exercises": {
           "heading": "Alle øvelser",
@@ -1493,7 +1917,9 @@
                 "status_pending": "Afventer",
                 "counts_as_complete": "Tæller som gennemført",
                 "passed": "Bestået",
-                "not_passed": "Ikke bestået"
+                "not_passed": "Ikke bestået",
+                "no_submission_title": "Denne bruger har ingen afleveringer til denne øvelse",
+                "no_submission_description": "Afleveringer vises her, når denne elev har gennemført øvelsen."
               },
               "summary": {
                 "heading": "Resumé",
@@ -1501,7 +1927,9 @@
                 "responses": "Svar",
                 "no_responses": "Ingen svar endnu",
                 "other": "Andet",
-                "attempts": "Forsøg"
+                "attempts": "Forsøg",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Indlæser indsendelser...",
               "empty_title": "Ingen indlæg endnu",
@@ -1541,7 +1969,11 @@
               "try_again": "Prøv igen",
               "back": "Tilbage",
               "begin_section": "Start sektion",
-              "complete_section": "Fuldfør afsnit"
+              "complete_section": "Fuldfør afsnit",
+              "instructions": "Instruktioner",
+              "close_instructions": "Luk instruktionerne",
+              "show_more": "Vis mere",
+              "show_less": "Vis mindre"
             },
             "edit_mode": {
               "delete_modal": "Slet øvelse",
@@ -1590,7 +2022,8 @@
               "title": "Titel",
               "heading": "Beskrivelse",
               "describe": "Beskriv øvelsen for din elev",
-              "no": "Ingen beskrivelse"
+              "no": "Ingen beskrivelse",
+              "expand": "Udvid"
             },
             "shared_question": {
               "textarea": {
@@ -1684,6 +2117,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Accepterede typer (f.eks. pdf, docx)",
                   "max_size_placeholder": "Maksimal størrelse (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {
@@ -1797,7 +2234,16 @@
                   "video_invalid_link": "Indtast venligst et gyldigt YouTube-link.",
                   "upload_error_only_images": "Kun billedfiler understøttes.",
                   "upload_error_skipped": "Nogle filer blev sprunget over, fordi de ikke er billeder.",
-                  "upload_error_failed": "Kunne ikke uploade billede. Prøv igen."
+                  "upload_error_failed": "Kunne ikke uploade billede. Prøv igen.",
+                  "expand": "Udvid"
+                },
+                "media": {
+                  "enlarge_image": "Klik for at forstørre",
+                  "close": "Luk",
+                  "zoom_in": "Zoom ind",
+                  "zoom_out": "Zoom ud",
+                  "previous_image": "Forrige billede",
+                  "next_image": "Næste billede"
                 }
               },
               "navigation": {
@@ -2079,7 +2525,7 @@
                 "size": "(Maks. 500 MB)",
                 "oops": "Ups `😬, videoen kunne ikke uploades",
                 "big_file": "Beklager, at videoen ikke blev uploadet. Filstørrelsen er for stor,",
-                "maximum_size": "maksimal størrelse er 30 MB. Prøv igen!",
+                "maximum_size": "maksimal størrelse er {size}. Prøv igen!",
                 "button": "Prøv en anden fil",
                 "try_again": "Prøv venligst igen",
                 "unsupported_format": "Beklager, at videoen ikke blev uploadet, filformatet understøttes ikke, eller noget gik galt på serveren.",
@@ -2112,12 +2558,32 @@
                   "completed": "Behandling afsluttet",
                   "failed": "Behandlingen mislykkedes",
                   "canceled": "Behandlingen blev annulleret"
-                }
+                },
+                "vimeo_link": "Vimeo-link",
+                "invalid_vimeo": "Ugyldige Vimeo-link(er)",
+                "vimeo_privacy_hint_prefix": "For domænebegrænsede videoer skal du tilføje",
+                "vimeo_privacy_hint_suffix": "til Vimeos privatlivsindstillinger.",
+                "vimeo_privacy_error_title": "Indlejring begrænset af Vimeos privatlivsindstillinger",
+                "vimeo_privacy_error_prefix": "Denne video har privatlivsbegrænsninger på domæneniveau. For at tillade afspilning skal du tilføje",
+                "vimeo_privacy_error_suffix": "til videoens tilladte domæner i dine Vimeo-videoindstillinger.",
+                "vimeo_retry_label": "Prøv at afspille igen",
+                "vimeo_learner_error_title": "Video utilgængelig",
+                "vimeo_learner_error_description": "Denne video er midlertidigt utilgængelig. Giv venligst din instruktør besked.",
+                "duplicate_video_error": "Denne video er allerede blevet tilføjet til denne lektion.",
+                "duplicates_skipped": "Duplikerede videoer blev sprunget over.",
+                "add_video_failed": "Kunne ikke tilføje video. Prøv igen.",
+                "some_videos_failed": "Nogle videoer kunne ikke tilføjes. Prøv igen.",
+                "vimeo_privacy_error_description": "Afspilning blev blokeret af Vimeos privatlivsindstillinger. Mulige årsager til at kontrollere inkluderer:",
+                "vimeo_privacy_error_unlisted_hint": "Ikke-listet videolink mangler muligvis sin privatlivsnøgle (hash)",
+                "vimeo_privacy_error_domain_prefix": "Domænebegrænsninger på Vimeo (sørg for, at",
+                "vimeo_privacy_error_domain_suffix": "er tilladt i videoindstillingerne)",
+                "vimeo_privacy_error_other_hint": "Andre Vimeo-privatlivsindstillinger"
               },
               "empty_title": "Ingen videoer endnu",
               "empty_description": "Tilføj videoer fra YouTube, upload eller dit mediebibliotek",
               "google_drive": "Google Drive",
               "generate_transcript": "Generer transskription",
+              "transcript_in_progress": "Henter transskription…",
               "generate_transcript_in_progress": "Transskriberer…",
               "transcript": {
                 "title": "Transskription",
@@ -2141,7 +2607,8 @@
                 "kind_generic": "Indlejret",
                 "course_fallback": "Kursus",
                 "menu_aria": "Video muligheder",
-                "transcription_in_progress": "(Transskriptionsgenerering i gang)"
+                "transcription_in_progress": "(Transskriptionsgenerering i gang)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Se transskription",
               "playback_error": "Indlæsningen af denne video mislykkedes.",
@@ -2153,6 +2620,15 @@
               "loading": "Indlæser video...",
               "playback_auth_error": "Din session udløb. Log venligst ind igen for at se denne video.",
               "playback_auth_action": "Log ind",
+              "vimeo_link": "Vimeo-link",
+              "hls_status": {
+                "encoding": "Kodning",
+                "ready": "Klar",
+                "failed": "Mislykkedes",
+                "skipped": "Ikke kodet",
+                "failed_hint": "Kodning mislykkedes. Videoen afspilles stadig i original kvalitet.",
+                "skipped_hint": "Adaptiv kodning er slået fra, så dette afspilles i original kvalitet."
+              },
               "checkpoints": {
                 "heading": "Questions on this video",
                 "subheading": "They pause playback at that time. Students answer in place, then the video continues.",
@@ -2209,7 +2685,87 @@
             "slide": {
               "title": "Dias",
               "slide_link": "Diaslink",
-              "helper_message": "Du kan integrere Google Slides eller Canva Presentation"
+              "helper_message": "Du kan integrere Google Slides eller Canva Presentation",
+              "button": "Tilføj dias",
+              "remove_slide": "Fjern dias",
+              "menu_aria": "Dias-handlinger",
+              "empty_title": "Ingen dias endnu",
+              "empty_description": "Integrer Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare eller Beautiful.ai",
+              "add_slide": {
+                "title": "Tilføj en dias",
+                "search": "Søg platforme",
+                "empty_prompt": "Vælg en platform for trin-for-trin vejledning og indsæt din embed-kode.",
+                "embed_code": "Indsæt embed-kode",
+                "embed_placeholder": "Indsæt den fulde iframe embed-kode her",
+                "how_to_embed": "Sådan integrerer du",
+                "preview": "Forhåndsvisning",
+                "embed_ready": "Embed klar",
+                "invalid_embed": "Indsæt den fulde iframe embed-kode fra denne platform.",
+                "unsupported": "Den embed kommer fra en platform, vi endnu ikke understøtter."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "Fil → Del → Udgiv på nettet → Integrer",
+                  "step_1": "Åbn din præsentation og vælg Fil → Del → Udgiv på nettet.",
+                  "step_2": "Skift til fanen Integrer og klik Udgiv.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her."
+                },
+                "canva": {
+                  "hint": "Del → Mere → Integrer",
+                  "step_1": "Klik Del → Mere over editoren.",
+                  "step_2": "Vælg Integrer og bekræft (gør designet offentligt).",
+                  "step_3": "Kopiér HTML embed-koden og indsæt den her."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint på nettet → Fil → Del → Integrer",
+                  "step_1": "Gem præsentationen på OneDrive og åbn den i PowerPoint på nettet.",
+                  "step_2": "Vælg Fil → Del → Integrer og vælg dimensioner.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her. Vi tilpasser afspilleren selv."
+                },
+                "keynote": {
+                  "hint": "Samarbejd → Kopiér link, derefter integrer",
+                  "step_1": "Klik Samarbejd og sæt adgang til Alle med linket · Kun visning.",
+                  "step_2": "Kopiér iCloud-linket og hent embed-koden til dit website.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "figma": {
+                  "hint": "Del en Figma Slides-fil og kopiér embed",
+                  "step_1": "Åbn din Figma Slides-fil og aktiver linkdeling.",
+                  "step_2": "Kopiér embed-koden for /slides- eller /deck-filen.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "prezi": {
+                  "hint": "Del → Integrer",
+                  "step_1": "Åbn Del på din præsentation fra dashboardet.",
+                  "step_2": "Klik Integrer og kopiér koden.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "pitch": {
+                  "hint": "Del eksternt → Kopiér embed-kode",
+                  "step_1": "Klik Del → Del eksternt og opret et offentligt link.",
+                  "step_2": "Åbn linkets Indstillinger (⋯) og vælg Kopiér embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "gamma": {
+                  "hint": "Del → aktiver offentlig adgang → kopiér iframe",
+                  "step_1": "Åbn Del og slå Tillad offentlig adgang til.",
+                  "step_2": "Kopiér den genererede iframe embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "slideshare": {
+                  "hint": "Del → Integrer under præsentationen",
+                  "step_1": "Åbn den offentlige præsentation på slideshare.net.",
+                  "step_2": "Klik Del under afspilleren og åbn fanen Integrer.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her."
+                },
+                "beautiful": {
+                  "hint": "Delingsindstillinger → Offentlig → Hent embed-kode",
+                  "step_1": "Åbn Delingsindstillinger og skift præsentationen til Offentlig.",
+                  "step_2": "Klik Hent embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                }
+              },
+              "frame_title": "{platform} ({index} af {total})"
             },
             "note": {
               "title": "Bemærk",
@@ -2272,10 +2828,10 @@
           "manual_label": "Manuel",
           "manual_description": "Elever markerer selv lektionen som fuldført.",
           "video_watch_label": "Videoafspilning",
-          "video_watch_description": "Lektionen fuldføres automatisk, når elever har set de valgte videoer.",
           "none_label": "Ingen",
           "none_description": "Denne lektion blokerer ikke kursusprogression.",
-          "watch_threshold": "Segrænse (%)"
+          "watch_threshold": "Segrænse (%)",
+          "video_watch_description": "Lektionen afsluttes automatisk, når eleverne har set de valgte uploadede videoer. YouTube og eksterne indlejringer kan ikke spores."
         },
         "settings": {
           "comments": {
@@ -2292,9 +2848,11 @@
             "option_guide_heading": "Hvad hver mulighed betyder",
             "watch_videos_heading": "Videoer der håndhæves",
             "watch_videos_helper": "Kun uploadede videoer kan håndhæves. YouTube og eksterne indlejringer kan ikke spores.",
-            "watch_videos_empty": "Tilføj en uploadet video i fanen Video for at bruge visningskontrol.",
             "watch_videos_required": "Vælg mindst én video ved videoafspilning.",
-            "students_only_note": "Disse regler gælder kun for elever. Du kan forhåndsvise og navigere frit som underviser."
+            "students_only_note": "Disse regler gælder kun for elever. Du kan forhåndsvise og navigere frit som underviser.",
+            "watch_videos_empty": "Videoafspilning sporer kun uploadede videoer. YouTube og eksterne indlejringer kan ikke spores, så denne lektion kan ikke fuldføres automatisk, og eleverne kan ikke markere den som fuldført. Upload videoen på fanen Video, eller indstil fuldførelsesreglen til Manuel.",
+            "watch_videos_no_uploads_title": "Ingen uploadede videoer i denne lektion",
+            "watch_videos_learn_more": "Få flere oplysninger"
           }
         },
         "watch_progress": {
@@ -2314,7 +2872,7 @@
         "session": {
           "join": "Deltag i session",
           "heading": "Live-session",
-          "intro": "Indstil deltagelseslinket og det planlagte tidspunkt for dette livehold. Eleverne får rykker 24 timer og 1 time før.",
+          "intro": "Indstil deltagelseslinket og det planlagte tidspunkt for denne liveklasse. Eleverne får e-mailpåmindelser før hver session. Vælg hvornår i kursusindstillingerne.",
           "link_label": "Tilmeld dig link (Zoom, Mød osv.)",
           "datetime_label": "Dato og tid",
           "timezone_label": "Tidszone",
@@ -2344,10 +2902,30 @@
           "add_apple": "Apple-kalender (.ics)",
           "starts_in": "Starter i",
           "session_ended": "Session afsluttet",
-          "link_copied": "Linket er kopieret"
+          "link_copied": "Linket er kopieret",
+          "duration_label": "Forventet sessionslængde (minutter)",
+          "duration_helper": "Bruges til at vise, hvornår sessionen er live, og hvornår den er slut.",
+          "recording_url_label": "Link til optagelse",
+          "recording_url_helper": "Vises for studerende, når sessionen er slut.",
+          "recording_url_invalid": "Indtast et link, der starter med http:// eller https://",
+          "recording_url_needs_session": "Tilføj et mødelink og et starttidspunkt, før du tilføjer en optagelse",
+          "past_sessions_heading": "Tidligere sessioner",
+          "watch_recording": "Se optagelse"
         },
         "student_share_your_knowledge": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
-        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere."
+        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
+        "add_content_created_section": "Sektion er oprettet!",
+        "add_content_created_lesson": "Lektion er oprettet!",
+        "add_content_created_exercise": "Øvelse er oprettet!",
+        "add_content_create_another_section": "Opret en anden sektion",
+        "add_content_create_another_lesson": "Opret en anden lektion",
+        "add_content_create_another_exercise": "Opret en anden øvelse",
+        "add_content_open_now": "Åbn nu",
+        "add_content_later": "Senere",
+        "add_content_add_to_section": "Tilføj indhold",
+        "expand_content": "Udvid indhold",
+        "collapse_content": "Skjul indholdet",
+        "no_section": "Ingen sektion"
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -2560,7 +3138,6 @@
         "later": "Luk",
         "checking": "Tjekker berettigelse...",
         "not_eligible_title": "Næsten der",
-        "retake_exercise": "Gentag øvelsen",
         "subtitle_no_certificate": "Tillykke - du har gennemført dette kursus."
       }
     },
@@ -2570,27 +3147,21 @@
     "certification": {
       "rules_heading": "Regler",
       "deadline_label": "Certificeringsfrist",
-      "deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
-      "threshold_label": "Minimum fuldførelse (%)",
-      "threshold_helper": "Kombineret fremskridt i lektion og træning kræves for at opnå certifikatet (0-100). Standard er 100 %.",
-      "final_exercise_label": "Afsluttende øvelse (valgfrit)",
-      "final_exercise_none": "ingen",
-      "final_exercise_helper": "Når den er indstillet, skal eleverne mindst opnå minimumscore på denne øvelse (bedste forsøg tæller) ud over fuldførelsesprocenten ovenfor.",
-      "min_exercise_score_label": "Minimumsscore på sidste øvelse (%)",
-      "min_exercise_score_helper": "Score er en procentdel af det samlede antal point, der er mulige på den øvelse (0-100).",
+      "deadline_helper": "Elever skal gennemføre kurset før denne dato og tid (lokal tid). Lad feltet være tomt for ingen frist.",
+      "completion_rules_heading": "Regler for fuldførelse",
+      "completion_rules_description": "Disse regler afgør, hvem der får dette certifikat. De angives under fanen Indstillinger for kurset.",
+      "completion_rules_deadline": "Fuldfør senest {date}",
+      "completion_rules_no_deadline": "Ingen frist",
+      "completion_rules_edit": "Rediger regler for fuldførelse",
+      "completion_rules_upgrade": "Opgrader for at redigere regler for fuldførelse",
       "blocker_progress": "Dit kursus fremskridt er {current}%; {required} % er påkrævet.",
       "blocker_deadline": "Certificeringsfristen er udløbet.",
       "blocker_no_content": "Dette kursus har ingen lektioner eller øvelser at gennemføre.",
-      "blocker_final_not_submitted": "Indsend den nødvendige øvelse \"{exerciseTitle}\" for at kvalificere dig til certifikatet.",
-      "blocker_final_pending": "Dit forsøg på \"{exerciseTitle}\" bliver stadig bedømt.",
-      "blocker_final_score": "Din bedste score på \"{exerciseTitle}\" er {bestPercent}%; {requiredPercent} % er påkrævet.",
-      "blocker_final_misconfigured": "Certificeringsøvelsen \"{exerciseTitle}\" har ingen point konfigureret; bed din instruktør om at ordne det.",
       "email_message_label": "E-mail besked",
       "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
-      "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse.",
       "deadline_required": "Overholdelseskurser kræver en fuldførelsesfrist, før de kan udgives.",
-      "deadline_required_enroll": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes.",
-      "deadline_invalid": "Kursusets fuldførelsesfrist er ugyldig."
+      "deadline_invalid": "Kursusets fuldførelsesfrist er ugyldig.",
+      "deadline_required_enroll": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes."
     },
     "creator": {
       "heading": "Hvilket kursus vil du lave?",
@@ -2614,7 +3185,7 @@
       "untitled_course": "Unavngivet kursus",
       "untitled_course_description": "Kursusdetaljer vil blive udfyldt af assistenten efter opsætning.",
       "template": {
-        "heading": "Eller start fra en skabelon",
+        "heading": "Eller start med en prompt",
         "submit": "Fortsæt",
         "skip": "Svar i chatten i stedet for",
         "submitted_summary": "Indsendte svar",
@@ -2669,6 +3240,9 @@
       "create_button": "Opret",
       "error": {
         "failed_to_clone": "Kurset kunne ikke klones"
+      },
+      "success": {
+        "course_cloned": "Kurset blev klonet"
       }
     },
     "new_course_modal": {
@@ -2749,7 +3323,8 @@
       "tags": "Tags",
       "empty_tags": "Ingen tags tilgængelige"
     },
-    "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger."
+    "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger.",
+    "load_more": "Indlæs mere"
   },
   "ai": {
     "help_me": "Hjælp mig med at skrive",
@@ -2765,8 +3340,8 @@
     "afternoon_heading": "God eftermiddag",
     "evening_heading": "God aften",
     "create_course": "Opret kursus",
-    "view_site": "Åbent Akademi",
-    "visit_site": "Åbent Akademi",
+    "view_site": "Din akademi",
+    "visit_site": "Din akademi",
     "current_lesson": "Lærer i øjeblikket",
     "your_progress": "Dine fremskridt",
     "continue": "Fortsæt",
@@ -2821,7 +3396,7 @@
     "login_activity_description": "Ugens mest aktive dage (sidste 90 dage)",
     "login_activity_no_data": "Ingen login-aktivitet endnu",
     "login_activity_logins": "logins",
-    "open_academy": "Åbent Akademi",
+    "open_academy": "Din akademi",
     "explore_more_courses": "Udforsk flere kurser",
     "view_more": "Se mere",
     "upcoming_sessions_heading": "Live sessioner"
@@ -2837,6 +3412,12 @@
     "settings": {
       "customize_lms": {
         "title": "Tilpas LMS",
+        "language": {
+          "title": "Sprog",
+          "description": "Vælg det sprog, der bruges i den elevvendte LMS-grænseflade.",
+          "default_language": "Standardsprog",
+          "enforce": "Påtving dette sprog for elever"
+        },
         "disabled": "Deaktiveret",
         "enabled": "Aktiveret",
         "save": "Gem ændringer",
@@ -3027,7 +3608,16 @@
       "monthly": "Månedligt",
       "annually": "Årligt",
       "popular": "Populært",
-      "per_org": "Per organisation"
+      "per_org": "Per organisation",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter-pris · {days, plural, one {# dag tilbage} other {# dage tilbage}}",
+        "eyebrow_closing": "Early Adopter-pris · Sidste {days} dage",
+        "eyebrow_today": "Early Adopter-pris · Slutter i dag",
+        "title": "Lav pris med vilje. Ikke for evigt.",
+        "title_closing": "Lav pris med vilje. Lukker snart.",
+        "body": "Vi holder ClassroomIO billig, fordi vi bygger det sammen med vores kunder, ikke kun til dem. Lås dagens pris inden {date}. Derefter lukker Early Adopter-planen, og nye priser træder i kraft.",
+        "link": "Læs hvorfor vi gør det"
+      }
     },
     "plan_names": {
       "free": "Gratis",
@@ -3058,9 +3648,17 @@
     "analytics": "Analyse",
     "compliance": "Overholdelse",
     "cohorts": "Kohorter",
+    "exit_course": "Forlad dette kursus",
+    "exit_cohort": "Forlad denne kohorte",
     "upgrade_now": "Opgrader nu",
+    "upgrade_label": "Opgrader",
+    "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} af {studentLimit} elever",
-    "upgrade_left": "{count} tilbage"
+    "upgrade_left": "{count} tilbage",
+    "back_to_app": "Tilbage til app",
+    "create": "Opret",
+    "distribute": "Fordel",
+    "tools": "Værktøjer"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -3142,7 +3740,8 @@
       "youtube": "YouTube",
       "generic": "Generisk",
       "external_url": "Ekstern URL",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Video",
@@ -3153,7 +3752,6 @@
     },
     "filters": {
       "search_placeholder": "Søg efter aktiver",
-      "apply": "Ansøg",
       "status_options": {
         "all": "Alle statusser",
         "active": "Aktiv",
@@ -3207,6 +3805,19 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Arbejdsområde",
+      "personal": "Personlig",
+      "product": "Produkt",
+      "connections": "Forbindelser",
+      "security": "Sikkerhed",
+      "billing": "Fakturering",
+      "branding": "Branding",
+      "ai": "AI",
+      "search": "Søg i indstillinger...",
+      "extensions": "Udvidelser",
+      "new_badge": "Ny"
+    },
     "heading": "Indstillinger",
     "billing": {
       "sub_title": "Faktureringsoplysninger",
@@ -3304,7 +3915,8 @@
         "title": "Titel",
         "content": "Indhold",
         "upload_an_image": "Upload et billede",
-        "select_image": "Vælg Billede"
+        "select_image": "Vælg Billede",
+        "create": "Opret"
       },
       "actions": {
         "heading": "Handlinger",
@@ -3416,6 +4028,9 @@
           "remove": "Fjern navigationslink"
         },
         "hero": {
+          "eyebrow": "Overlinje",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Valgfri etiket over overskriften (bruges af skabeloner, der understøtter det, f.eks. Tech). Lad feltet være tomt for at skjule det.",
           "heading": "Overskrift",
           "subheading": "Underoverskrift",
           "primary_label": "Etiket med primær knap",
@@ -3449,7 +4064,9 @@
           "footer": "Sidefod",
           "footer_desc": "Brandlinje, sociale medier, linkkolonner og juridisk bundrække.",
           "links": "Links",
-          "links_desc": "Valgfri blok af eksterne links (hjælpecenter, fællesskab, webinarer) vist efter kurser."
+          "links_desc": "Valgfri blok af eksterne links (hjælpecenter, fællesskab, webinarer) vist efter kurser.",
+          "courses": "Kurser",
+          "courses_desc": "Træk for at indstille rækkefølgen af ​​offentliggjorte kurser på landingssiden."
         },
         "links": {
           "toggle": "Vis linksafsnittet",
@@ -3487,6 +4104,16 @@
             "calendar": "Begivenheder",
             "mail": "E-mail"
           }
+        },
+        "courses": {
+          "drag_hint": "Træk kurser for at ændre deres rækkefølge på landingssiden.",
+          "empty": "Ingen kurser valgt.",
+          "load_failed": "Kunne ikke indlæse offentliggjorte kurser.",
+          "add_button": "Tilføj",
+          "popover_title": "Vælg kurser",
+          "popover_empty": "Ingen offentliggjorte kurser tilgængelige.",
+          "search_no_results": "Ingen kurser matcher din søgning.",
+          "search_placeholder": "Søg efter kurser..."
         }
       },
       "content": {
@@ -3537,6 +4164,10 @@
           "editorial": {
             "title": "Redaktionel",
             "description": "Varm cremepalette, malerisk helt, raffineret magasinfølelse"
+          },
+          "quartz": {
+            "title": "Kvarts",
+            "description": "Monokromt fint gitter, linjerede rækker, fastlåst indskrivningsskinne"
           }
         }
       },
@@ -3638,10 +4269,11 @@
       "teams_tab": "Hold",
       "ai_credits_tab": "AI-credits",
       "ai_tutor_tab": "AI underviser",
-      "notifications_tab": "Notifikationer"
+      "notifications_tab": "Notifikationer",
+      "emails_tab": "E-mails"
     },
     "subheadings": {
-      "view_site": "Åbent Akademi"
+      "view_site": "Din akademi"
     },
     "auth": {
       "title": "Autentificering",
@@ -3772,7 +4404,16 @@
       "actions_menu": "Tokengodkendelseshandlinger"
     },
     "teams": {
-      "page_subtitle": "Inviter teammedlemmer og styr, hvem der hjælper med at drive denne organisation."
+      "page_subtitle": "Inviter teammedlemmer og styr, hvem der hjælper med at drive denne organisation.",
+      "permission": {
+        "title": "Du har ikke tilladelse til at se denne side",
+        "description": "Kun organisationsadministratorer kan se og administrere teamet. Kontakt en administrator, hvis du har brug for adgang."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Inviter denne elev til teamet?} other {Inviter disse elever til teamet?}}",
+        "confirm_description": "{count, plural, =1 {Denne person er allerede elev i denne organisation: {emails}. Vil du sende en invitation, så personen bliver {role}? Rollen ændres først, når invitationen accepteres.} other {Disse personer er allerede elever i denne organisation: {emails}. Vil du invitere dem som {role}? Deres roller ændres først, når de accepterer invitationen.}}",
+        "existing": "Disse personer er allerede med i teamet: {members}. Brug rollevælgeren under Teammedlemmer til at ændre deres rolle."
+      }
     },
     "ai_credits": {
       "sub_title": "AI-credits",
@@ -3883,6 +4524,105 @@
         }
       },
       "personal_page_subtitle": "Vælg hvilke e-mailnotifikationer du modtager fra ClassroomIO."
+    },
+    "account": {
+      "language": "Sprog",
+      "select_language": "Vælg et sprog"
+    },
+    "emails": {
+      "page_title": "Email skabeloner",
+      "language_note": "Elev-e-mails bruger din organisations håndhævede sprog. Når det ikke håndhæves, bruger e-mails engelsk.",
+      "heading": "Student e-mail skabeloner",
+      "description": "Tilpas de e-mails, eleverne modtager. Personalets e-mails sendes altid på engelsk.",
+      "paid_plan_note": "Opgrader din plan for at oversætte og tilpasse studerendes e-mails.",
+      "sending_in": "Sender ind",
+      "change": "Skift",
+      "template_navigation": "Typer af studerendes e-mail",
+      "edited": "Redigeret",
+      "insert": "Indsæt",
+      "link_chip": "Link",
+      "edit": "Rediger",
+      "preview": "Forhåndsvisning",
+      "unsaved_changes": "Ikke-gemte ændringer",
+      "send_test": "Send prøve",
+      "test_sent": "Test-e-mail i kø til levering",
+      "template": "E-mail",
+      "language": "Sprog",
+      "language_note_link": "Skift din organisations sprogstandard her.",
+      "subject": "Emne",
+      "editor_heading": "Meddelelsestekst",
+      "editor_description": "Rediger beskeden for dette sprog. Dynamiske værdier tilføjes, når e-mailen sendes, og bliver aldrig oversat.",
+      "editor_placeholder": "Skriv e-mail-beskeden",
+      "dynamic_content": "Dynamisk indhold",
+      "dynamic_content_description": "Indsæt værdier eller et valgfrit link ved markøren. Hold bøjlerne uændrede, så værdien kan tilføjes på afsendelsestidspunktet.",
+      "dynamic_link": "Indsæt dynamisk link",
+      "protected_content": "Beskyttet e-mail-indhold",
+      "protected_content_description": "Den nødvendige handlingsknap, destination, branding og sidefod administreres af ClassroomIO og kan ikke fjernes.",
+      "reset": "Nulstil til oversat standard",
+      "templates": {
+        "studentCourseInvite": "Kursusinvitation",
+        "studentCourseWelcome": "Kursus velkommen",
+        "studentCourseCompletion": "Kursusafslutning",
+        "studentOrgInvite": "Organisation invitation",
+        "studentCohortWelcome": "Kohorte velkommen",
+        "studentProvePayment": "Anmodning om betalingsbevis",
+        "cohortGoalReminder": "Påmindelse om kohortemål",
+        "quizAssigned": "Quiz tildelt",
+        "sessionReminder": "Live session påmindelse",
+        "sessionUpdated": "Live session opdateret",
+        "submissionGraded": "Indsendelse bedømt",
+        "newsfeedPost": "Kursus nyhedsfeed indlæg"
+      },
+      "descriptions": {
+        "studentCourseInvite": "Sendes, når du inviterer nogen til et kursus.",
+        "studentOrgInvite": "Sendes, når du inviterer nogen til din organisation.",
+        "studentCourseWelcome": "Sendes når en elev får adgang til et kursus.",
+        "studentCohortWelcome": "Sendes når en elev får adgang til en kohorte.",
+        "quizAssigned": "Sendes når en quiz er tildelt en elev.",
+        "submissionGraded": "Sendes når en elevs øvelsesindlevering gennemgås.",
+        "cohortGoalReminder": "Sendes, når et kohortemål er forfaldent eller forsinket.",
+        "studentCourseCompletion": "Sendes, når en elev gennemfører et kursus.",
+        "sessionReminder": "Sendt før en planlagt live-session.",
+        "sessionUpdated": "Sendes, når detaljerne i livesessionen ændres.",
+        "newsfeedPost": "Sendes når et nyt kursusopslag er offentliggjort.",
+        "studentProvePayment": "Sendes, når en elev skal fremlægge betalingsbevis."
+      },
+      "groups": {
+        "enrollment": "Tilmelding",
+        "learning": "Læring",
+        "live_sessions": "Live sessioner",
+        "updates_billing": "Opdateringer og fakturering"
+      },
+      "variables": {
+        "organization": "Organisation",
+        "expires_at": "Udløbsdato",
+        "course_name": "Kursusnavn",
+        "cohort_name": "Kohortenavn",
+        "student_name": "Elevens navn",
+        "course_message": "Instruktør besked",
+        "course_names": "Kurser",
+        "teacher_name": "Lærerens navn",
+        "teacher_email": "Lærerens e-mail",
+        "goal_title": "Mål",
+        "due_status": "Forfalden status",
+        "completed_count": "Fuldført optælling",
+        "required_count": "Påkrævet optælling",
+        "exercise_title": "Øvelses titel",
+        "session_title": "Sessions titel",
+        "session_time": "Sessionstid",
+        "when": "Starttidspunkt",
+        "status": "Status",
+        "score": "Score",
+        "lesson_title": "Lektionens titel",
+        "post_content": "Post indhold"
+      },
+      "test_dialog": {
+        "title": "Send en test-e-mail",
+        "description": "Vi sender det aktuelle udkast med eksempelværdier i stedet for pladsholderne. Det behøver ikke at blive gemt først.",
+        "recipients": "Send til",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Indtast op til 5 gyldige e-mailadresser, adskilt af kommaer."
+      }
     }
   },
   "profileMenu": {
@@ -3914,6 +4654,7 @@
     "login_with_google": "Log ind med Google",
     "create_to_join": "Opret en gratis konto for at deltage",
     "create_account": "Opret konto",
+    "sign_in_to_continue": "Log ind for at fortsætte",
     "login_to_join": "Log ind for at deltage",
     "validation": {
       "unable_to_create_profile": "Kan ikke oprette profil",
@@ -3967,7 +4708,9 @@
       }
     },
     "cancel": "Annuller",
-    "save": "Gem"
+    "save": "Gem",
+    "next": "Næste",
+    "previous": "Forrige"
   },
   "welcome_modal": {
     "we_at": "Vi kl",
@@ -3981,6 +4724,16 @@
     "customers": "Opret kurser for mine kunder",
     "explore": "Bare her for at udforske",
     "articles": "Artikler",
+    "ai": "AI",
+    "ai_select": "Vælg en AI-assistent",
+    "ai_required": "Vælg en AI-assistent",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Søgemaskine",
     "social": "Sociale medier",
     "friends": "Venner og familie",
@@ -3990,7 +4743,101 @@
     "what_brings": "Hvad bringer dig til",
     "how": "Hvordan hørte du om os?",
     "back": "Tilbage",
-    "continue": "Fortsæt"
+    "continue": "Fortsæt",
+    "other": "Andet (fortæl os)",
+    "other_placeholder": "Fortæl os mere",
+    "other_required": "Fortæl os venligst mere",
+    "sources": {
+      "label": "Hvordan hørte du om os?",
+      "blog": "Blog eller artikel",
+      "ai": "AI",
+      "search_engine": "Søgemaskine",
+      "github": "GitHub eller open source",
+      "youtube": "YouTube eller podcast",
+      "social_media": "Sociale medier",
+      "product_hunt": "Product Hunt eller en anmeldelsesside",
+      "friends_family": "Venner, familie eller en kollega",
+      "subtitle": "Valgfrit, men det hjælper et lille team med at vide, hvad der virker."
+    },
+    "job_roles": {
+      "label": "Hvad er din rolle?",
+      "founder": "Stifter eller CEO",
+      "product_ops": "Produkt eller operationer",
+      "cs_education": "Kundesucces, uddannelse eller aktivering",
+      "developer": "Udvikler eller ingeniør",
+      "subtitle": "Dette hjælper os med at skræddersy dit setup."
+    },
+    "learning_methods": {
+      "label": "Hvordan lærer dine kunder dit produkt i dag?",
+      "self_serve": "De finder ud af det på egen hånd",
+      "live_onboarding": "Live onboarding-sessioner eller opkald",
+      "help_docs": "Hjælpedokumenter og support",
+      "no_training": "Vi har ikke træning endnu",
+      "subtitle": "Vælg den, der er tættest på, hvordan den fungerer lige nu."
+    },
+    "use_cases": {
+      "label": "Hvad vil du bruge ClassroomIO til?",
+      "customer_training": "Træn mine kunder i mit produkt",
+      "customer_certification": "Certificere kunder eller partnere",
+      "partner_training": "Træn partnere eller forhandlere",
+      "team_training": "Træn mit eget hold",
+      "sell_courses": "Sælg kurser til offentligheden",
+      "subtitle": "Vælg alt, hvad der er relevant. Vi vil forme din organisation omkring det."
+    },
+    "step_of": "Trin {current} af {total}",
+    "skip": "Spring over",
+    "finish_setup": "Afslut opsætningen",
+    "company_sizes": {
+      "label": "Hvor stor er din virksomhed?",
+      "subtitle": "Tæl alle i virksomheden, ikke kun dit team.",
+      "enterprise": {
+        "label": "200+",
+        "description": "mennesker"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "mennesker"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "mennesker"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "mennesker"
+      },
+      "solo": {
+        "label": "Bare mig",
+        "description": "Solo"
+      }
+    },
+    "ai_assistant": {
+      "label": "AI assistent",
+      "subtitle": "Hvilken anbefalede os?"
+    },
+    "step_labels": {
+      "use_cases": "Use case",
+      "learning_methods": "Træning i dag",
+      "company_size": "Virksomhedens størrelse",
+      "job_role": "Rolle",
+      "source": "Opdagelse",
+      "org_setup": "Organisation"
+    },
+    "org_setup": {
+      "subtitle": "Fortæl os om dig og din organisation for at komme i gang.",
+      "title": "Konfigurer din organisation",
+      "created_subtitle": "Din organisation er konfigureret. Du kan ændre disse detaljer senere i Indstillinger."
+    },
+    "header": {
+      "tagline": "Kundeuddannelsesplatform, der forbinder med dine systemer"
+    },
+    "testimonials": {
+      "eyebrow": "Fra de hold, der bruger det",
+      "footer": "Open source · Selvvært eller sky",
+      "headline": "Stop med at træne hver kunde {highlight}.",
+      "headline_highlight": "manuelt",
+      "subtitle": "Konfigurer det én gang, massetilmeld dine kunder gennem API'en. Følg derefter deres fremskridt med analyser."
+    }
   },
   "new_course_modal": {
     "live_class_label": "Live klasse",
@@ -4106,7 +4953,9 @@
       "color": "Farve",
       "color_help": "Vælg en af 10 farver",
       "select_category": "Vælg en kategori",
-      "no_groups": "Opret en tag-gruppe, før du opretter tags"
+      "no_groups": "Opret en tag-gruppe, før du opretter tags",
+      "search_category": "Søg kategori",
+      "no_results": "Ingen kategorier fundet"
     },
     "group_modal": {
       "create_title": "Opret taggruppe",
@@ -4162,7 +5011,15 @@
         "joined": "Tilsluttet organisation",
         "join_failed": "Kunne ikke deltage i organisationen",
         "try_again": "Prøv igen"
-      }
+      },
+      "limit_reached": {
+        "title": "Dette akademi er fyldt lige nu",
+        "description": "{orgName} har nået sin elevgrænse på sit nuværende abonnement, så vi kunne ikke tilføje dig. Din konto er i orden, og intet du gjorde forårsagede dette.",
+        "technical_details": "Tekniske detaljer",
+        "error_code": "Fejl"
+      },
+      "not_found": "Denne invitation er ikke længere tilgængelig.",
+      "loading": "Indlæser invitation..."
     },
     "link": {
       "page_title": "Tilmeld dig {orgName} på ClassroomIO",
@@ -4194,7 +5051,6 @@
         "title": "MCP nøgler",
         "description": "Disse nøgler autentificerer den aktuelle organisation, når en MCP-klient ringer til ClassroomIO gennem `@classroomio/mcp`.",
         "generate": "Generer MCP-nøgle",
-        "secret_once": "Denne hemmelighed vises én gang. Kopier det til din MCP-klient nu.",
         "modal": {
           "title": "Opret MCP-nøgle",
           "description": "Vælg et navn til denne MCP-nøgle, før den genereres.",
@@ -4202,7 +5058,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Annuller",
           "save": "Opret nøgle"
-        }
+        },
+        "reveal_title": "Din nye MCP-nøgle"
       },
       "usage": {
         "title": "Anvendelse og grænser",
@@ -4222,7 +5079,6 @@
         "title": "API-nøgler",
         "description": "Disse nøgler autentificerer den aktuelle organisation, når der kaldes til ClassroomIOs offentlige API.",
         "generate": "Generer API-nøgle",
-        "secret_once": "Denne hemmelighed vises kun én gang. Kopiér den og opbevar den sikkert.",
         "empty_title": "Ingen API-nøgler endnu",
         "empty_description": "Opret den første organisationsnøgle til API for at bruge ClassroomIOs offentlige API.",
         "modal": {
@@ -4232,7 +5088,8 @@
           "name_placeholder": "Min API-integration",
           "cancel": "Annuller",
           "save": "Opret nøgle"
-        }
+        },
+        "reveal_title": "Din nye API-nøgle"
       },
       "setup": {
         "title": "Hurtig start",
@@ -4256,7 +5113,14 @@
       "table_key": "Nøgle",
       "table_status": "Status",
       "table_created": "Oprettet",
-      "table_last_used": "Sidst brugt"
+      "table_last_used": "Sidst brugt",
+      "reveal": {
+        "description": "Kopiér denne nøgle nu. Den vises ikke igen.",
+        "copy": "Kopiér",
+        "copied": "Kopieret",
+        "how_to_use": "Sådan bruger du denne nøgle",
+        "close": "Luk"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -4271,7 +5135,9 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhooks",
+      "new_badge": "Ny"
     },
     "permissions": {
       "disabled_title": "Skrivebeskyttet adgang",
@@ -4279,6 +5145,129 @@
     },
     "zapier": {
       "page_subtitle": "Automatiser ClassroomIO med tusindvis af apps via Zapier. Kommer snart."
+    },
+    "webhooks": {
+      "page_subtitle": "Send ClassroomIO-hændelser i realtid til Slack, dit CRM eller din egen backend.",
+      "description": "ClassroomIO sender en signeret HTTP POST til din URL, hver gang en valgt hændelse opstår. Mislykkede leverancer forsøges automatisk igen.",
+      "permissions_description": "Kun organisationsadministratorer kan oprette, redigere eller slette webhooks.",
+      "create": "Ny webhook",
+      "empty_title": "Ingen webhooks endnu",
+      "empty_description": "Opret en webhook for at sende invitationer, tilmeldinger, gennemførelser og afleveringer til dine andre værktøjer.",
+      "reveal_title": "Din nye signeringshemmelighed",
+      "reveal_description": "Kopiér denne signeringshemmelighed nu. Den vises ikke igen, og du skal bruge den til at verificere anmodninger.",
+      "reveal_docs": "Sådan verificerer du anmodninger",
+      "delete_confirm": "Slet webhooken \"{name}\"? Dens leveringshistorik fjernes også.",
+      "regenerate_confirm": "Generer signeringshemmeligheden igen? Den nuværende hemmelighed holder op med at virke med det samme.",
+      "events_all": "Alle hændelser",
+      "events_count_one": "{count} hændelse",
+      "events_count_other": "{count} hændelser",
+      "no_deliveries": "Ingen leverancer endnu",
+      "retrying_hint": "Prøver mislykkede leverancer igen",
+      "table": {
+        "name": "Destination",
+        "events": "Hændelser",
+        "health": "Status",
+        "active": "Aktiv",
+        "error_rate": "Fejlrate (24t)",
+        "error_rate_detail": "{failed} af {total} mislykkedes",
+        "no_recent_deliveries": "Ingen leverancer på 24t"
+      },
+      "health": {
+        "healthy": "Sund",
+        "retrying": "Prøver igen",
+        "degraded": "Fejler",
+        "disabled": "Automatisk deaktiveret"
+      },
+      "actions": {
+        "label": "Webhook-handlinger",
+        "edit": "Rediger",
+        "test": "Send testhændelse",
+        "deliveries": "Se leverancer",
+        "regenerate_secret": "Generer hemmelighed igen",
+        "delete": "Slet"
+      },
+      "form": {
+        "create_title": "Ny webhook",
+        "edit_title": "Rediger webhook",
+        "description": "Vælg, hvortil ClassroomIO sender hændelser, og hvilke hændelser der skal sendes.",
+        "sections": {
+          "endpoint": "Endepunkt",
+          "events": "Hændelser"
+        },
+        "name": "Navn",
+        "name_placeholder": "CRM-synkronisering",
+        "payload_url": "Payload-URL",
+        "payload_url_help": "Skal være en offentlig HTTPS-URL, der returnerer et 2xx-svar inden for 10 sekunder.",
+        "secret": "Signeringshemmelighed",
+        "secret_placeholder": "Lad feltet stå tomt for at generere en",
+        "secret_help": "Bruges til at signere hver forespørgsel, så du kan verificere, at den kom fra ClassroomIO.",
+        "secret_edit_placeholder": "Lad feltet stå tomt for at beholde den nuværende hemmelighed",
+        "secret_edit_help": "Indtast en ny værdi for at erstatte hemmeligheden. Den nuværende vises aldrig.",
+        "verify_ssl": "Verificer SSL-certifikat",
+        "verify_ssl_help": "Lad denne være slået til, medmindre du tester mod et selvsigneret certifikat.",
+        "active": "Aktiv",
+        "events_help": "Vælg de hændelser, der skal udløse denne webhook.",
+        "mode_all": "Send mig alt",
+        "mode_selected": "Lad mig vælge individuelle hændelser",
+        "cancel": "Annuller",
+        "save": "Gem webhook",
+        "select_all": "Vælg alle",
+        "events_selected": "{selected} af {total} valgt"
+      },
+      "event_groups": {
+        "organization": "Organisation",
+        "course": "Kurser",
+        "learning": "Læringsfremskridt"
+      },
+      "events": {
+        "organization_invite_created": "En teaminvitation sendes",
+        "organization_invite_accepted": "En teaminvitation accepteres",
+        "organization_invite_revoked": "En teaminvitation tilbagekaldes eller erstattes",
+        "course_invite_created": "En studerendeinvitation oprettes",
+        "course_invite_accepted": "En studerende accepterer en invitation og tilmelder sig",
+        "course_invite_revoked": "En studerendeinvitation tilbagekaldes",
+        "course_member_added": "Et medlem tilføjes til et kursus",
+        "course_member_removed": "Et medlem fjernes fra et kursus",
+        "course_completed": "En studerende gennemfører et kursus",
+        "course_certificate_issued": "Et certifikat opnås",
+        "course_submission_created": "En opgaveaflevering oprettes",
+        "course_submission_status_changed": "Status for en aflevering ændres, f.eks. når den bedømmes",
+        "lesson_completion_updated": "En lektion markeres som fuldført eller nulstilles",
+        "exercise_completion_updated": "En opgave fuldføres eller nulstilles"
+      },
+      "deliveries": {
+        "title": "Leverancer",
+        "description": "Hændelser fra de seneste 30 dage",
+        "back": "Tilbage til leverancer",
+        "filter_all": "Alle statusser",
+        "empty": "Ingen leverancer matcher dette filter.",
+        "load_error": "Kunne ikke indlæse leverancer. Prøv igen.",
+        "redeliver": "Lever igen",
+        "test_badge": "Test",
+        "status": {
+          "PENDING": "Prøver igen",
+          "SUCCESS": "Gennemført",
+          "FAILED": "Mislykket",
+          "GAVE_UP": "Mislykket"
+        },
+        "columns": {
+          "event": "Hændelse",
+          "event_id": "Hændelses-ID",
+          "status": "Status",
+          "attempt": "Forsøg",
+          "http": "HTTP-status",
+          "duration": "Svartid",
+          "time": "Sendt",
+          "next_attempt": "Næste forsøg"
+        },
+        "detail": {
+          "error": "Fejl",
+          "request_headers": "Forespørgselsheadere",
+          "payload": "Payload",
+          "response_body": "Svar",
+          "no_response": "Der blev ikke modtaget noget svar."
+        }
+      }
     }
   },
   "ai_assistant": {
@@ -4322,7 +5311,7 @@
     "tool": {
       "pending": {
         "working": "Arbejder",
-        "unknown_tool": "Kører {toolName}",
+        "unknown_tool": "Arbejder på {toolName}",
         "get_course_structure": "Læser kursusstruktur",
         "get_lesson_content": "Læser lektionsindhold",
         "get_exercise_details": "Læser øvelse",
@@ -4344,7 +5333,10 @@
         "generate_course_plan": "Genererer kursusplan",
         "ask_template_questions": "Udarbejdelse af skabelonformular",
         "fetch_documentation_url": "Læse dokumenter side",
-        "fetch_documentation_url_with_url": "Læser {url}"
+        "fetch_documentation_url_with_url": "Læser {url}",
+        "list_youtube_playlist_videos": "Viser afspilningslistens videoer",
+        "get_lesson_transcript": "Læser videotransskription",
+        "add_youtube_video_to_lesson": "Indlejret YouTube-video"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# tegn} other {# tegn}})",
@@ -4376,7 +5368,15 @@
         "go_live_not_published": "Kurset blev ikke publiceret",
         "generate_course_plan": "Kursusplan genereret",
         "ask_template_questions": "Skabelonformular klar",
-        "fetch_documentation_url": "Læs {url}"
+        "fetch_documentation_url": "Læs {url}",
+        "list_youtube_playlist_videos": "Fundet {count} videoer på afspilningslisten",
+        "list_youtube_playlist_videos_unavailable": "Kunne ikke vise afspilningslistens videoer",
+        "get_lesson_transcript": "Læste transskriptionen for {title}",
+        "get_lesson_transcript_fetching": "Henter transskriptionen for {title}",
+        "get_lesson_transcript_plan_gated": "Transskriptioner kræver et betalt abonnement",
+        "get_lesson_transcript_no_credits": "Ingen AI-kreditter tilbage til transskriptioner",
+        "get_lesson_transcript_unavailable": "Ingen transskription tilgængelig for {title}",
+        "add_youtube_video_to_lesson": "Indlejret video: {title}"
       }
     },
     "student_empty_state": "Spørg mig om noget om dette kursus - få forklaringer, quiz dig selv, eller opsummer det, du læser.",
@@ -4417,14 +5417,14 @@
     "retry": "Prøv igen",
     "run_monitor_aria": "Kursusgenerering i gang",
     "run_summary": {
-      "completed": "Kørsel afsluttet.",
-      "completed_with_counts": "Kørsel afsluttet — oprettet {counts}.",
-      "failed": "Kørsel mislykkedes.",
-      "failed_with_reason": "Kørsel mislykkedes — {reason}.",
-      "canceled": "Kørsel annulleret.",
-      "canceled_with_counts": "Kørsel annulleret — oprettet {counts} før stop.",
-      "paused": "Løb sat på pause. Genoptag for at fortsætte.",
-      "paused_with_counts": "Kør på pause – oprettet {counts} indtil videre. Genoptag for at fortsætte."
+      "completed": "Kursusgenerering fuldført.",
+      "completed_with_counts": "Kursusgenerering fuldført — oprettede {counts}.",
+      "failed": "Kursusgenerering mislykkedes.",
+      "failed_with_reason": "Kursusgenerering mislykkedes — {reason}.",
+      "canceled": "Kursusgenerering annulleret.",
+      "canceled_with_counts": "Kursusgenerering annulleret — oprettede {counts} før stop.",
+      "paused": "Kursusgenerering sat på pause. Genoptag for at fortsætte.",
+      "paused_with_counts": "Kursusgenerering sat på pause — oprettede {counts} indtil videre. Genoptag for at fortsætte."
     },
     "changes_card": {
       "summary_count": "{count} elementer blev ændret",
@@ -4451,16 +5451,16 @@
       "collapse": "Kollaps plan"
     },
     "run_monitor": {
-      "cancel": "Annuller kørsel",
+      "cancel": "Annuller generering",
       "dismiss": "Afvis",
       "now_doing": "Nu",
       "input_disabled_hint": "Chatten er sat på pause, mens agenten er færdig med at bygge kurset. Annuller eller vent på, at det er fuldført.",
       "dismiss_confirm": "Gå væk",
-      "dismiss_cancel": "Fortsæt løb",
-      "dismiss_confirm_body": "Vil du gå væk fra dette aflyste løb? Genoptag-knappen forsvinder - enhver yderligere chat starter på en frisk og fortsætter ikke planen.",
+      "dismiss_cancel": "Bliv her",
+      "dismiss_confirm_body": "Vil du forlade denne annullerede generering? Knappen Fortsæt forsvinder — al yderligere chat starter forfra og fortsætter ikke planen.",
       "stuck_queued": {
         "title": "Arbejder reagerer ikke",
-        "body": "Denne kørsel har ventet i mere end 30 sekunder uden nogen afhentning af arbejderen. Baggrundsarbejderen er muligvis nede eller genstarter."
+        "body": "Kursusgenereringen har ventet i mere end 30 sekunder uden at en baggrundsproces har overtaget. Baggrundsprocessen er muligvis nede eller genstarter."
       }
     },
     "ask_ai": "Spørg AI",
@@ -4475,6 +5475,11 @@
     "heading": "Widgets",
     "subtitle": "Udgive brandede kursussamlinger til eksterne hjemmesider.",
     "empty_state": "Ingen widgets endnu. Opret en for at generere en indlejrbar kursusblok.",
+    "archived": {
+      "heading": "Arkiverede widgets",
+      "empty": "Ingen arkiverede widgets",
+      "empty_description": "Widgets, du arkiverer, vises her. Du kan gendanne dem når som helst."
+    },
     "filter": {
       "status": "Status",
       "all": "Alle",
@@ -4486,8 +5491,14 @@
       "saved": "Widget er gemt",
       "published": "Widget offentliggjort",
       "rolled_back": "Widget gendannet",
-      "deleted": "Widget arkiveret",
-      "validation_failed": "Nogle felter er ugyldige. Tjek de fremhævede indgange."
+      "restored": "Widget gendannet",
+      "archived_load_failed": "Kunne ikke indlæse arkiverede widgets",
+      "restore_failed": "Kunne ikke gendanne widget",
+      "validation_failed": "Nogle felter er ugyldige. Tjek de fremhævede indgange.",
+      "archived": "Widget arkiveret",
+      "archive_failed": "Widget kunne ikke arkiveres",
+      "permanently_deleted": "Widget slettet permanent",
+      "delete_failed": "Widget kunne ikke slettes"
     },
     "form": {
       "name": "Widget navn",
@@ -4537,7 +5548,7 @@
       "copy_embed": "Kopiér indlejring",
       "copy_url": "Kopiér URL",
       "rename": "Omdøb",
-      "delete": "Slet"
+      "delete_permanently": "Slet permanent"
     },
     "embed": {
       "tabs": {
@@ -4672,13 +5683,16 @@
       },
       "current_version": "Nuværende version",
       "active_badge": "Aktiv",
-      "active_badge_description": "Denne version er i øjeblikket live på din indlejring"
+      "active_badge_description": "Denne version er i øjeblikket live på din indlejring",
+      "upgrade_callout": "Opgrader for at låse op for brugerdefinerede temaer, farver, typografi og styling."
     },
     "tabs": {
       "select_courses": "Vælg Kurser",
       "layout": "Layout",
       "design": "Design",
-      "embed": "Integrer kode"
+      "embed": "Integrer kode",
+      "active": "Aktiv",
+      "archived": "Arkiveret"
     },
     "defaults": {
       "name_prefix": "Kursus-widget"
@@ -4686,6 +5700,24 @@
     "empty": {
       "heading": "Ingen widgets endnu",
       "description": "Opret en widget for at generere en indlejrbar kursusblok til eksterne websteder."
+    },
+    "delete_modal": {
+      "title": "Slet widget permanent",
+      "description": "Er du sikker på, at du vil slette \"{name}\" permanent? Denne handling kan ikke fortrydes."
+    },
+    "filters": {
+      "filter": "Filter",
+      "popover_title": "Filtre",
+      "clear_all": "Ryd alle",
+      "search_placeholder": "Søg efter widgets efter navn",
+      "status": "Status",
+      "layout_type": "Layout type",
+      "selection_mode": "Valgtilstand",
+      "no_results_title": "Ingen widgets matcher dine filtre",
+      "no_results_description": "Prøv en anden søgeterm, eller ryd dine filtre for at se alt igen.",
+      "no_results_page_title": "Intet på denne side",
+      "no_results_page_description": "Disse filtre matcher færre widgets end denne side starter ved.",
+      "back_to_first_page": "Tilbage til første side"
     }
   },
   "side_panel": {
@@ -4768,6 +5800,30 @@
     "header": {
       "explore_courses": "Udforsk kurser",
       "sign_in": "Log ind"
+    },
+    "copy_page": {
+      "copy": "Kopiér side",
+      "copied": "Kopieret",
+      "view_as_markdown": "Vis som Markdown",
+      "open_in_chatgpt": "Åbn i ChatGPT",
+      "open_in_claude": "Åbn i Claude",
+      "more_actions": "Flere handlinger til kopi af siden",
+      "copy_failed": "Kunne ikke kopiere denne lektion som Markdown"
+    },
+    "outline": {
+      "label": "På denne side"
+    },
+    "rail": {
+      "copy_as_markdown": "Kopiér som Markdown",
+      "open_in_chat": "Åbn i chat"
+    },
+    "share": {
+      "label": "Del dette kursus",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Link kopieret. Indsæt det i Instagram."
     }
   },
   "account": {
@@ -4892,7 +5948,8 @@
       "inheritance_description": "Nedarv arbejdsområdestandarder eller sæt tilsidesættelser pr. kursus."
     },
     "snackbar": {
-      "saved": "AI-vejlederindstillinger gemt"
+      "saved": "AI-vejlederindstillinger gemt",
+      "fetchError": "Kunne ikke indlæse AI-vejlederindstillinger"
     },
     "state": {
       "loading": "Indlæser AI-vejlederindstillinger..."
@@ -4925,8 +5982,8 @@
     },
     "stage": {
       "probing": "Læser video...",
-      "encoding": "Kodning {rung} ({percent}%)",
-      "uploading": "Uploader segmenter ({uploaded}/{total})",
+      "encoding": "Koder video…",
+      "uploading": "Uploader…",
       "thumbnail": "Genererer thumbnail...",
       "finalizing": "Gemmer...",
       "done": "Klar",
@@ -4970,7 +6027,17 @@
       "add_another": "Tilføj en anden",
       "invite_submit": "Send invitationer",
       "empty_title": "Ingen medlemmer endnu",
-      "empty_description": "Inviter folk til at deltage i dette kohorte."
+      "empty_description": "Inviter folk til at deltage i dette kohorte.",
+      "name": "Navn",
+      "joined": "Tiltrådte",
+      "filter_title": "Filtrer folk",
+      "views": {
+        "all": "Alle mennesker",
+        "tutors": "Undervisere",
+        "students": "studerende",
+        "pending_invites": "Afventende invitationer",
+        "never_logged_in": "Aldrig logget ind"
+      }
     },
     "courses": {
       "add": "Tilføj kursus",
@@ -5139,5 +6206,312 @@
         "cancel": "Annuller"
       }
     }
+  },
+  "invite_link": {
+    "tab_label": "Invitationslink",
+    "title": "Invitationslink",
+    "description": "Alle med dette link kan deltage. Del det i stedet for at indtaste e-mails én efter én.",
+    "course_description": "Alle med dette link kan deltage i dette kursus som studerende. Del det i stedet for at indtaste e-mails én efter én.",
+    "cohort_description": "Alle med dette link kan deltage i denne kohorte og alle kurser i den. Del det i stedet for at indtaste e-mails én efter én.",
+    "generate": "Opret invitationslink",
+    "copy": "Kopier invitationslink",
+    "copied": "Invitationslink kopieret",
+    "copy_failed": "Kunne ikke kopiere invitationslinket",
+    "toggle_label": "Linket er aktivt",
+    "disabled_notice": "Dette link er deaktiveret. Ingen kan deltage med det, før du aktiverer det igen.",
+    "join_count": "{count} personer har tilmeldt sig via dette link",
+    "snackbar": {
+      "enabled": "Invitationslink aktiveret",
+      "disabled": "Invitationslink deaktiveret"
+    },
+    "join": {
+      "page_title": "Tilmeld dig {resourceName} på ClassroomIO",
+      "invitation": "Du er blevet inviteret til at deltage i {resourceName} på {orgName}.",
+      "course_button": "Tilmeld dig kurset",
+      "cohort_button": "Tilmeld dig kohorte",
+      "disabled": "Dette invitationslink er blevet deaktiveret.",
+      "closed": "Dette accepterer ikke længere nye medlemmer.",
+      "succeeded": "Du er tilmeldt",
+      "failed": "Kunne ikke deltage. Prøv igen."
+    },
+    "load_failed": "Kunne ikke indlæse invitationslinket",
+    "generate_failed": "Kunne ikke oprette invitationslinket",
+    "toggle_failed": "Kunne ikke opdatere invitationslinket"
+  },
+  "lms": {
+    "view_landing_page": "Hjem"
+  },
+  "notifications": {
+    "title": "Notifikationer",
+    "empty_title": "Ingen notifikationer",
+    "empty_description": "Du er helt opdateret. Nye notifikationer vises her.",
+    "refresh": "Opdater",
+    "pending_invite": {
+      "heading": "Organisationsinvitation",
+      "body": "{orgName} inviterede dig til at deltage som {role}.",
+      "action": "Se invitation"
+    },
+    "latest": "Seneste",
+    "only_show_unread": "Vis kun ulæste",
+    "unread": "Ulæste",
+    "more_options": "Flere muligheder",
+    "give_feedback": "Giv feedback",
+    "watching_empty_title": "Intet at se endnu",
+    "watching_empty_description": "Opdateringer om elementer, du følger, vises her.",
+    "tabs": {
+      "direct": "Direkte",
+      "watching": "Ser"
+    }
+  },
+  "export": {
+    "as_csv": "Eksporter som CSV",
+    "as_excel": "Eksporter som Excel",
+    "as_pdf": "Eksporter som PDF",
+    "as_html": "Eksporter som HTML",
+    "more_formats": "Flere eksportformater",
+    "pdf_too_many_rows": "For mange rækker — brug CSV eller Excel over {limit}",
+    "nothing_to_export": "Der er intet at eksportere",
+    "failed": "Eksport mislykkedes",
+    "label": "Eksporter",
+    "copy": "Kopiér",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Kopieret til udklipsholder",
+    "copy_failed": "Kunne ikke kopiere til udklipsholder"
+  },
+  "report": {
+    "menu": "Anmeld",
+    "title": "Anmeld indhold",
+    "description": "Fortæl os, hvad der er galt. Vores team vil gennemgå denne anmeldelse.",
+    "reason_label": "Årsag",
+    "reason_placeholder": "Vælg en årsag",
+    "reason_required": "Vælg venligst en årsag",
+    "details_label": "Yderligere oplysninger",
+    "details_placeholder": "Tilføj kontekst, der kan hjælpe os med at gennemgå dette (valgfrit)",
+    "submit": "Send anmeldelse",
+    "cancel": "Annuller",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Chikane eller mobning",
+      "hate_speech": "Hadefuld tale",
+      "sexual_content": "Seksuelt indhold",
+      "violence": "Vold eller trusler",
+      "misinformation": "Misinformation",
+      "privacy": "Brud på privatlivet",
+      "other": "Andet"
+    }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Kontomenu, logget ind som {email}",
+      "trigger_label_anonymous": "Kontomenu",
+      "my_courses": "Mine kurser",
+      "my_certificates": "Mine certifikater",
+      "account_settings": "Kontoindstillinger",
+      "theme": "Tema",
+      "continue_learning": "Fortsæt læring",
+      "not_enrolled_note": "Ikke tilmeldt dette akademi endnu — læringsdestinationer vises efter tilmelding.",
+      "theme_light": "Lys",
+      "theme_dark": "Mørk",
+      "theme_system": "System"
+    }
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Opret et nyt kursus",
+      "gallery": "Skabelongalleri",
+      "yours": "Dine kurser",
+      "blank": "Blank bane",
+      "blank_subtitle": "Start fra bunden"
+    },
+    "card": {
+      "yours": "Din skabelon",
+      "used": "Din skabelon · Brugt {date}",
+      "curated": "Kurateret skabelon"
+    },
+    "gallery": {
+      "title": "Skabelongalleri",
+      "subtitle": "Start et kursus fra en af dine skabeloner eller en, der er bygget af ClassroomIO.",
+      "search": "Find skabelon",
+      "scope_all": "Alle skabeloner",
+      "scope_org": "Mine skabeloner",
+      "scope_global": "KlasseværelseIO",
+      "empty_org": "Du har ikke lavet nogen skabeloner endnu. Gem ethvert kursus som en skabelon fra dets ⋯-menu.",
+      "no_match": "Ingen skabeloner matcher \"{query}\".",
+      "empty_global": "Ingen ClassroomIO-skabeloner endnu.",
+      "back": "Alle kurser"
+    },
+    "preview": {
+      "course_name": "Kursusnavn",
+      "use": "Brug skabelon",
+      "open": "Åbn skabelon",
+      "cancel": "Annuller",
+      "copying": "Kopierer {sections, plural, one {# sektion} other {# sektioner}}, {lessons, plural, one {# lektion} other {# lektioner}}…",
+      "created": "Kursus oprettet fra {title}",
+      "shows_off": "Viser sig",
+      "counts": "{sections} sektioner · {lessons} lektioner · {exercises} øvelser",
+      "questions": "{count, plural, one {# spørgsmål} other {# spørgsmål}}",
+      "loading": "Indlæser skabelon…",
+      "settings": "Indstillinger",
+      "certificate": "Certifikat aktiveret",
+      "deadline": "Frist {date}",
+      "sequential": "Lektionerne låses op i rækkefølge",
+      "grading": "En vejleder bedømmer afleveringer",
+      "comments_off": "Lektionens kommentarer er slået fra",
+      "lesson_download": "Elever kan downloade lektioner",
+      "self_enrollment": "Eleverne kan selv være med",
+      "ai_tutor": "AI-vejleder er tændt",
+      "compliance_retake": "Gentag hver {months, plural, one {# måned} other {# måneder}}",
+      "compliance_mandatory": "Obligatorisk"
+    },
+    "menu": {
+      "open": "Åbn",
+      "duplicate": "Duplikat",
+      "delete": "Slet",
+      "save": "Gem som skabelon...",
+      "create_course": "Opret kursus fra skabelon",
+      "duplicated": "Skabelon duplikeret",
+      "deleted": "Skabelonen er slettet"
+    },
+    "save": {
+      "title": "Gem som skabelon",
+      "copy": "Gem en kopi som skabelon",
+      "copy_description": "Kurset bliver som det er.",
+      "convert": "Konverter dette kursus",
+      "convert_description": "Kurset bliver en skabelon. Det kan ikke udgives eller have elever.",
+      "has_students": "Har {count, plural, one {# elev} other {# elever}} – gem en kopi i stedet.",
+      "unpublish": "Konvertering fjerner udgivelsen af dette kursus.",
+      "name": "Skabelonnavn",
+      "save_button": "Gem skabelon",
+      "convert_button": "Konverter til skabelon",
+      "saved": "Skabelonen er gemt",
+      "converted": "Kursus konverteret til skabelon",
+      "limit_title": "Din plan inkluderer {count, plural, one {# skabelon} other {# skabeloner}}",
+      "limit_body": "Du har allerede {used, plural, one {{title}} other {# skabeloner}}. Opgrader for at få flere skabeloner, eller slet en du har.",
+      "upgrade": "Opgrader",
+      "manage": "Administrer skabeloner",
+      "view_templates": "Se skabeloner"
+    },
+    "empty": {
+      "title": "Ingen kurser endnu",
+      "description": "Vælg en skabelon for at se, hvordan et godt ClassroomIO-kursus ser ud, eller start fra et tomt kursus.",
+      "browse": "Gennemse skabeloner"
+    },
+    "editor": {
+      "badge": "Skabelon"
+    },
+    "sync": {
+      "alert_title": "Skabelonen har {count, plural, one {# opdatering} other {# opdateringer}}",
+      "alert_body": "{title} ændret siden du sidst trak den {date}.",
+      "review_in_settings": "Gennemgå i indstillinger",
+      "section_title": "Skabelon",
+      "last_pulled": "Sidst trukket {date}",
+      "review": "Gennemgå opdateringer",
+      "up_to_date": "Opdateret med skabelonen.",
+      "deleted": "{title} blev slettet. Dette kursus beholder alt sit indhold; der er intet tilbage at trække.",
+      "deleted_unknown": "Denne skabelon blev slettet. Dette kursus beholder alt sit indhold; der er intet tilbage at trække.",
+      "available_detail": "{count, plural, one {# tilgængelig opdatering} other {# tilgængelige opdateringer}} — {list}.",
+      "join": "{rest} og {last}",
+      "sections_count": "{count, plural, one {# sektion} other {# sektioner}}",
+      "settings_count": "{count, plural, one {# indstilling} other {# indstillinger}}",
+      "content": "Indhold",
+      "settings": "Indstillinger",
+      "select_all": "Vælg alle",
+      "new": "Ny",
+      "updated": "Opdateret",
+      "locked": "{count, plural, one {# indsendelse — kan ikke opdateres} other {# indsendelser — kan ikke opdateres}}",
+      "edited_locally": "Du redigerede dette den {date} — træk erstatter dine ændringer.",
+      "removed_locally": "Du har slettet dette fra dit kursus.",
+      "also_adds": "Tilføjer også {kind}: {title}",
+      "template_value": "Skabelon: {value}",
+      "yours_value": "Dine: {value}",
+      "yes": "Ja",
+      "no": "Nej",
+      "empty_value": "Ingen",
+      "custom_value": "Brugerdefineret",
+      "selected": "{count, plural, one {# valgt} other {# valgte}}",
+      "pull": "Hent {count, plural, one {# ændring} other {# ændringer}}",
+      "pulled": "Hentede {count, plural, one {# ændring} other {# ændringer}} fra {title}",
+      "kind": {
+        "section": "Sektion",
+        "lesson": "Lektion",
+        "exercise": "Motion"
+      },
+      "detail": {
+        "title": "Titel",
+        "content": "Indhold",
+        "locales": "{locales} tilføjet"
+      },
+      "setting": {
+        "description": "Beskrivelse",
+        "bannerImage": "Forsidebillede",
+        "welcomeEmail": "Velkomstmail",
+        "completionDeadline": "Afslutningsfrist",
+        "lessonTabsOrder": "Lektionsfaner",
+        "contentGrouping": "Indholdsgruppering",
+        "progression": "Progression",
+        "comments": "Lektionens kommentarer",
+        "selfEnrollment": "Selvtilmelding",
+        "markdownExport": "Markdown eksport",
+        "lessonDownload": "Hent lektion",
+        "landingRequirements": "Landingskrav",
+        "landingDescription": "Landingsbeskrivelse",
+        "landingGoals": "Landingsmål",
+        "landingSkills": "Færdigheder",
+        "landingTools": "Værktøjer",
+        "landingInstructor": "Instruktør",
+        "pricing": "Prissætning",
+        "certificateDesign": "Certifikat design",
+        "certificateRules": "Certifikatregler",
+        "aiTutor": "AI underviser"
+      },
+      "section_description": "Dette kursus er oprettet fra en skabelon. Hent ændringerne, når du vil have dem — intet ændrer sig af sig selv.",
+      "updates_title": "{count, plural, one {# opdatering tilgængelig} other {# opdateringer tilgængelige}}",
+      "deleted_title": "Skabelon slettet",
+      "sheet_title": "Skabelonopdateringer",
+      "sheet_description": "Fra {title}, siden {date}. Vælg, hvad der skal hentes — intet fjernes fra dit kursus.",
+      "nothing_selected": "Intet valgt",
+      "loading": "Indlæser opdateringer…",
+      "value": {
+        "free": "Fri",
+        "sequential": "Sekventiel",
+        "no_price": "Gratis"
+      },
+      "template_label": "Skabelon",
+      "yours_label": "Dine"
+    },
+    "home": {
+      "heading": "Eller start fra en skabelon",
+      "description": "Et komplet kursus med lektioner, øvelser og indstillinger. Kopier det, og gør det derefter til dit.",
+      "browse": "Gennemse alle skabeloner"
+    }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Betaling modtaget. Ét trin tilbage.",
+      "body": "Opret din konto eller log ind, så forbinder vi automatisk din Early Adopter-plan med dit akademi.",
+      "sign_up": "Opret min konto",
+      "log_in": "Log ind",
+      "continue": "Fortsæt til mit akademi"
+    },
+    "success": {
+      "title": "Din Early Adopter-plan er aktiv",
+      "body": "Din pris er låst, og alle Early Adopter-funktioner er nu låst op for dit akademi.",
+      "continue": "Kom i gang"
+    },
+    "errors": {
+      "invalid": "Dette link er ikke gyldigt. Tjek den e-mail, vi sendte dig, eller kontakt support.",
+      "expired": "Dette link er udløbet. Kontakt support, så hjælper vi dig med at forbinde din plan.",
+      "unavailable": "Dette planlink er allerede brugt eller er ikke længere aktivt. Kontakt support, hvis det er en fejl.",
+      "conflict": "Dette akademi har allerede en betalt plan, så vi kunne ikke forbinde denne. Kontakt support, så hjælper vi dig."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Ny",
+    "read_full": "Læs hele ændringsloggen",
+    "close": "Luk"
   }
 }

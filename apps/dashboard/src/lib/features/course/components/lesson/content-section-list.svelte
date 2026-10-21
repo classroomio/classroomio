@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { isLiveSessionJoinable, liveSessionClock } from '$features/course/utils/live-session-phase';
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
   import { flip } from 'svelte/animate';
-  import { dndzone } from 'svelte-dnd-action';
+  import { dndzone, type DndEvent, type DndEventInfo } from 'svelte-dnd-action';
   import CalendarClockIcon from '@lucide/svelte/icons/calendar-clock';
   import FileTextIcon from '@lucide/svelte/icons/file-text';
   import HelpCircleIcon from '@lucide/svelte/icons/help-circle';
@@ -19,7 +20,13 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { profile } from '$lib/utils/store/user';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
-  import type { CourseContent, CourseContentItem } from '$features/course/utils/types';
+  import type {
+    ContentDndItem as OutlineDndItem,
+    CourseContent,
+    CourseContentItem,
+    SidebarOutlineEntry
+  } from '$features/course/utils/types';
+  import { toContentDndItem, toOutlineEntry } from '$features/course/utils/sidebar-outline';
   import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
   import { getCourseContent } from '$features/course/utils/content';
   import { ContentType } from '@cio/utils/constants/content';
@@ -36,11 +43,25 @@
     lessonTitle?: string;
   };
 
+  type ZoneHandler = (sectionId: string, entries: SidebarOutlineEntry[], info: DndEventInfo) => void;
+
   interface Props {
     reorder?: boolean;
+    sectionId?: string;
+    dndType?: string;
+    dropFromOthersDisabled?: boolean;
+    onZoneConsider?: ZoneHandler;
+    onZoneFinalize?: ZoneHandler;
   }
 
-  let { reorder = false }: Props = $props();
+  let {
+    reorder = false,
+    sectionId,
+    dndType = 'section-content',
+    dropFromOthersDisabled = false,
+    onZoneConsider,
+    onZoneFinalize
+  }: Props = $props();
 
   let prevTitle: string | undefined = $state();
   let errors: Record<string, string> = $state({});
@@ -92,10 +113,12 @@
   }
 
   function syncSections() {
-    sections = (contentData.sections || []).map((section) => ({
-      ...section,
-      items: buildSectionItems(section)
-    }));
+    sections = (contentData.sections || [])
+      .filter((section) => !sectionId || section.id === sectionId)
+      .map((section) => ({
+        ...section,
+        items: buildSectionItems(section)
+      }));
   }
 
   function toCourseContentItems(items: ContentDndItem[]): CourseContentItem[] {
@@ -110,11 +133,16 @@
 
     courseApi.course.content = {
       ...courseApi.course.content,
-      sections: updatedSections.map((section) => ({
-        ...section,
-        items: toCourseContentItems(section.items),
-        order: section.order ?? null
-      }))
+      sections: courseApi.course.content.sections.map((existing) => {
+        const section = updatedSections.find((entry) => entry.id === existing.id);
+        if (!section) return existing;
+
+        return {
+          ...section,
+          items: toCourseContentItems(section.items),
+          order: sectionId ? existing.order : (section.order ?? null)
+        };
+      })
     };
   }
 
@@ -127,7 +155,7 @@
   }
 
   async function applyPendingReorder() {
-    if (!sections.length) return;
+    if (!sections.length || onZoneFinalize) return;
 
     const contentUpdates: Array<{
       id: string;
@@ -161,7 +189,7 @@
 
       return {
         ...section,
-        order: sectionIndex + 1,
+        order: sectionId ? section.order : sectionIndex + 1,
         items: updatedItems
       };
     });
@@ -173,7 +201,7 @@
       .filter((section) => section.id !== 'ungrouped')
       .map((section) => ({ id: section.id, order: section.order ?? 0 }));
 
-    if (sectionsToReorder.length > 0) {
+    if (!sectionId && sectionsToReorder.length > 0) {
       await lessonApi.reorderSections(courseId, sectionsToReorder);
     }
 
@@ -199,8 +227,10 @@
     const activeEditId = $contentEditingStore;
     if (!activeEditId) return;
 
-    const hasMatchingSection = sections.some((section) => section.id === activeEditId);
-    const hasMatchingItem = sections.some((section) => section.items.some((item) => item.contentId === activeEditId));
+    const hasMatchingSection = contentData.sections.some((section) => section.id === activeEditId);
+    const hasMatchingItem = contentData.sections.some((section) =>
+      section.items.some((item) => item.id === activeEditId)
+    );
 
     if (!hasMatchingSection && !hasMatchingItem) {
       contentEditingStore.set(undefined);
@@ -275,7 +305,10 @@
 
   function removeSection(sectionId: string) {
     sections = sections.filter((section) => section.id !== sectionId);
-    syncCourseContentSections(sections);
+    if (courseApi.course?.content) {
+      const remainingSections = courseApi.course.content.sections.filter((section) => section.id !== sectionId);
+      courseApi.course.content = { ...courseApi.course.content, sections: remainingSections };
+    }
   }
 
   async function deleteLesson() {
@@ -423,14 +456,29 @@
     syncCourseContentSections(updatedSections);
   }
 
-  function handleDndConsiderCards(sectionId: string, e) {
-    updateSectionItems(sectionId, e.detail.items as ContentDndItem[]);
+  function toZoneItems(elements: Array<SidebarOutlineEntry | OutlineDndItem>): ContentDndItem[] {
+    return elements.flatMap((element) => toContentDndItem(element) ?? []);
+  }
+
+  function handleDndConsiderCards(sectionId: string, e: CustomEvent<DndEvent<SidebarOutlineEntry | OutlineDndItem>>) {
+    const items = toZoneItems(e.detail.items);
+    updateSectionItems(sectionId, items);
+    if (onZoneConsider) {
+      onZoneConsider(sectionId, items.map(toOutlineEntry), e.detail.info);
+      return;
+    }
+
     syncCourseContentSections(sections);
   }
 
-  function handleDndFinalizeCards(sectionId: string, e) {
-    const items = e.detail.items as ContentDndItem[];
+  function handleDndFinalizeCards(sectionId: string, e: CustomEvent<DndEvent<SidebarOutlineEntry | OutlineDndItem>>) {
+    const items = toZoneItems(e.detail.items);
     updateSectionItems(sectionId, items);
+    if (onZoneFinalize) {
+      onZoneFinalize(sectionId, items.map(toOutlineEntry), e.detail.info);
+      return;
+    }
+
     syncCourseContentSections(sections);
 
     if (!reorder) {
@@ -442,7 +490,7 @@
 <DeleteLessonConfirmation bind:openDeleteModal {deleteLesson} />
 
 <section
-  class="mx-auto w-full p-3 lg:w-11/12"
+  class="mx-auto w-full px-3 lg:w-11/12 {sectionId ? '' : 'py-3'}"
   use:dndzone={{
     items: sections,
     flipDurationMs,
@@ -451,7 +499,7 @@
       border: '2px #1d4ed8 solid',
       'border-style': 'dashed'
     },
-    dragDisabled: !reorder
+    dragDisabled: !reorder || Boolean(sectionId)
   }}
   onconsider={handleDndConsiderColumns}
   onfinalize={handleDndFinalizeColumns}
@@ -505,7 +553,8 @@
             'border-style': 'dashed'
           },
           dragDisabled: !reorder,
-          type: 'section-content'
+          dropFromOthersDisabled,
+          type: dndType
         }}
         onconsider={(e) => handleDndConsiderCards(section.id, e)}
         onfinalize={(e) => handleDndFinalizeCards(section.id, e)}
@@ -517,7 +566,11 @@
             ? $t('course.navItem.lessons.add_lesson.lock')
             : $t('course.navItem.lessons.add_lesson.unlock')}
           {@const canRenderJoinButton =
-            item.type === ContentType.Lesson && isLiveCourse && Boolean(item.callUrl) && !itemLocked && !isEditingItem}
+            item.type === ContentType.Lesson &&
+            isLiveCourse &&
+            isLiveSessionJoinable(item, $liveSessionClock) &&
+            !itemLocked &&
+            !isEditingItem}
           {@const canRenderContinueButton = isStudentView && !itemLocked}
           {@const isLockPending = Boolean(lockPendingItemKeys[getItemLockKey(item)])}
           {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
@@ -532,6 +585,7 @@
                 {item}
                 bind:title={item.title}
                 isLocked={itemLocked}
+                linkDisabled={reorder}
                 href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
                 isEditing={isEditingItem}
                 {errors}
@@ -605,6 +659,7 @@
                 {item}
                 bind:title={item.title}
                 isLocked={itemLocked}
+                linkDisabled={reorder}
                 href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
                 isEditing={isEditingItem}
                 {errors}

@@ -11,6 +11,7 @@
     TerminalLandingPage,
     EditorialLandingPage,
     VibrantLandingPage,
+    QuartzLandingPage,
     mockOrgLandingPageProps as mockProps
   } from '@cio/ui/custom/org-landing-page';
 
@@ -38,6 +39,12 @@
     embedEyebrow: 'Integración',
     calloutEyebrow: 'Cuando quieras',
     learnMoreLabel: 'Visitar',
+    learningPathsHeading: 'Rutas de aprendizaje',
+    browseLearningPathsLabel: 'Ver más rutas de aprendizaje',
+    learningPathLabel: 'Ruta de aprendizaje',
+    learningPathCourseCountLabel: (n) => (n === 1 ? '1 curso' : `${n} cursos`),
+    learningPathHoursLabel: (hours) => (hours === 1 ? '1 hora' : `${hours} horas`),
+    learningPathCertificateLabel: 'Certificado',
     lessonsLabel: (n) => (n === 1 ? '1 lección' : `${n} lecciones`),
     exercisesLabel: (n) => (n === 1 ? '1 ejercicio' : `${n} ejercicios`),
     enrolledLabel: (n) => `${n.toLocaleString()} inscritos`
@@ -90,4 +97,8 @@
 -->
 <Story name="Editorial (localized labels)">
   <EditorialLandingPage {...mockProps} labels={localizedLabels} />
+</Story>
+
+<Story name="Quartz">
+  <QuartzLandingPage {...mockProps} authAction={{ label: 'Continue', href: '#signin' }} />
 </Story>

@@ -1,0 +1,2 @@
+export interface TooltipProps { content: React.ReactNode; side?: 'top'|'right'|'bottom'|'left'; children: React.ReactNode; defaultOpen?: boolean; }
+export declare function Tooltip(props: TooltipProps): JSX.Element;

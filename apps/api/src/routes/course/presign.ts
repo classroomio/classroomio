@@ -13,9 +13,30 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
+import { findUnauthorizedDownloadKeys, resolveUploadOrganizationId } from '@api/middlewares/presign-auth';
 import { generateFileKey } from '@cio/core/utils/upload';
-import { AppError } from '@api/utils/errors';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
+import type { Context } from 'hono';
+import { isFileTypeAllowed, normalizeAcceptedFileTypes } from '@cio/utils/file-upload';
+
+const PresignForbiddenResponse = {
+  description: 'One or more requested keys belong to an organization the caller is not a member of'
+};
+
+async function rejectUnauthorizedKeys(c: Context, keys: string[]) {
+  const unauthorizedKeys = await findUnauthorizedDownloadKeys(c, keys);
+  if (unauthorizedKeys.length === 0) return null;
+
+  return c.json(
+    {
+      success: false,
+      error: 'One or more requested keys do not belong to this organization',
+      code: ErrorCodes.FORBIDDEN
+    },
+    403
+  );
+}
 
 /**
  * Advisory check on client-reported `fileSize`. Upload bytes go directly to object storage
@@ -73,7 +94,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: PresignForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -85,7 +107,7 @@ export const presignRouter = new Hono()
 
       assertPresignFileSizeWithinLimit(fileSize, MAX_FILE_SIZE);
 
-      const fileKey = generateFileKey(fileName);
+      const fileKey = generateFileKey(fileName, resolveUploadOrganizationId(c));
 
       const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
 
@@ -116,7 +138,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: PresignForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -124,11 +147,23 @@ export const presignRouter = new Hono()
     async (c) => {
       const body = c.req.valid('json');
 
-      const { fileName, fileType, fileSize } = body;
+      const { fileName, fileType, fileSize, acceptedTypes } = body;
+      const normalizedAcceptedTypes = normalizeAcceptedFileTypes(acceptedTypes);
+
+      if (!isFileTypeAllowed({ name: fileName, type: fileType }, normalizedAcceptedTypes)) {
+        return c.json(
+          {
+            success: false,
+            error: 'File type is not allowed',
+            code: ErrorCodes.FILE_TYPE_NOT_ALLOWED
+          },
+          400
+        );
+      }
 
       assertPresignFileSizeWithinLimit(fileSize, MAX_DOCUMENT_SIZE);
 
-      const fileKey = generateFileKey(fileName);
+      const fileKey = generateFileKey(fileName, resolveUploadOrganizationId(c));
 
       const presignedUrl = await generateDocumentUploadPresignedUrl(fileKey, fileType);
 
@@ -159,7 +194,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: PresignForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -168,6 +204,9 @@ export const presignRouter = new Hono()
       const body = c.req.valid('json');
 
       const { keys } = body;
+
+      const forbidden = await rejectUnauthorizedKeys(c, keys);
+      if (forbidden) return forbidden;
 
       const signedUrls = await generateVideoDownloadPresignedUrls(keys);
 
@@ -197,7 +236,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: PresignForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -206,6 +246,9 @@ export const presignRouter = new Hono()
       const body = c.req.valid('json');
 
       const { keys } = body;
+
+      const forbidden = await rejectUnauthorizedKeys(c, keys);
+      if (forbidden) return forbidden;
 
       const signedUrls = await generateDocumentDownloadPresignedUrls(keys);
 

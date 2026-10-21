@@ -8,30 +8,38 @@
   import { Button } from '@cio/ui/base/button';
   import { ROLE } from '@cio/utils/constants';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrg, isStudentLimitReached } from '$lib/utils/store/org';
+  import { currentOrg, isOrgAdmin, isStudentLimitReached } from '$lib/utils/store/org';
   import { orgApi } from '$features/org/api/org.svelte';
   import { DEFAULT_ORG_AUDIENCE_QUERY } from '$features/org/utils/audience-query-utils';
-  import { BulkEmailSection, ExistingStudentsSection, TutorSelectSection } from '$features/people/components';
+  import {
+    BulkEmailSection,
+    ExistingStudentsSection,
+    InviteLinkSection,
+    TutorSelectSection
+  } from '$features/people/components';
   import { UpgradeBanner } from '$features/ui';
   import type { OrgStudent, Tutor } from '$features/people/utils/types';
+  import { buildResourceInviteLink } from '$features/people/utils/invite-link-utils';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { cohortApi } from '../api';
 
   interface Props {
     cohortId: string;
+    onMembersChanged?: () => void;
   }
 
-  let { cohortId }: Props = $props();
+  let { cohortId, onMembersChanged }: Props = $props();
 
   let tutors = $state<Tutor[]>([]);
   let selectedIds = $state<string[]>([]);
   let isLoadingStudents = $state(false);
-  let activeTab = $state<'tutors' | 'students'>('students');
+  let activeTab = $state<'tutors' | 'students' | 'link'>('students');
 
   const addPeopleParam = $derived(new URLSearchParams(page.url.search).get('add'));
   const isOpen = $derived(addPeopleParam === 'true');
   const selectedTutors = $derived(tutors.filter((tutor) => selectedIds.includes(tutor.id.toString())));
   const availableStudents = $derived.by(() => getAvailableStudents(orgApi.audience, cohortApi.members));
+  const inviteLink = $derived(buildResourceInviteLink(cohortApi.inviteLink?.token, $currentOrg));
   const INVITE_MODAL = 'course.navItem.people.invite_modal';
 
   function getTutors(team: OrgTeamMember[]) {
@@ -71,11 +79,15 @@
   }
 
   function closeModal() {
-    goto(resolve(page.url.pathname, {}));
+    const searchParams = new URLSearchParams(page.url.searchParams);
+    searchParams.delete('add');
+    const nextSearch = searchParams.toString();
+
+    void goto(resolve(`${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}`, {}));
   }
 
   function setTutors(orgId: string | undefined) {
-    if (!orgId) {
+    if (!orgId || !$isOrgAdmin) {
       return;
     }
 
@@ -91,7 +103,7 @@
   }
 
   function loadStudents(orgId: string | undefined) {
-    if (!orgId) {
+    if (!orgId || !$isOrgAdmin) {
       return;
     }
 
@@ -108,7 +120,7 @@
 
   async function handleStudentSearch(value: string) {
     const orgId = $currentOrg.id;
-    if (!orgId) {
+    if (!orgId || !$isOrgAdmin) {
       return;
     }
 
@@ -146,16 +158,31 @@
     });
 
     if (cohortApi.success) {
+      onMembersChanged?.();
       closeModal();
     }
   }
 
   async function assignExistingStudents(profileIds: string[], sendEmail: boolean) {
     await cohortApi.assignExistingStudentsToCohort(cohortId, { profileIds, sendEmail });
+    if (cohortApi.success) {
+      onMembersChanged?.();
+    }
   }
 
   async function inviteNewStudents(recipientCsv: string, sendEmail: boolean) {
     await cohortApi.inviteStudentsToCohort(cohortId, { recipientCsv, sendEmail });
+    if (cohortApi.success) {
+      onMembersChanged?.();
+    }
+  }
+
+  async function generateInviteLink() {
+    await cohortApi.generateInviteLink(cohortId);
+  }
+
+  async function toggleInviteLink(isRevoked: boolean) {
+    await cohortApi.toggleInviteLink(cohortId, isRevoked);
   }
 
   $effect(() => {
@@ -171,6 +198,7 @@
       activeTab = 'students';
       selectedIds = [];
       void loadStudents($currentOrg.id);
+      void cohortApi.getInviteLink(cohortId);
     });
   });
 </script>
@@ -188,43 +216,70 @@
 
     <UnderlineTabs.Root bind:value={activeTab}>
       <UnderlineTabs.List class="flex flex-wrap">
-        <UnderlineTabs.Trigger value="tutors">
-          {$t(`${INVITE_MODAL}.invite`)}
-        </UnderlineTabs.Trigger>
+        {#if $isOrgAdmin}
+          <UnderlineTabs.Trigger value="tutors">
+            {$t(`${INVITE_MODAL}.invite`)}
+          </UnderlineTabs.Trigger>
+        {/if}
         <UnderlineTabs.Trigger value="students">
           {$t(`${INVITE_MODAL}.invite_students`)}
         </UnderlineTabs.Trigger>
+        <UnderlineTabs.Trigger value="link">
+          {$t('invite_link.tab_label')}
+        </UnderlineTabs.Trigger>
       </UnderlineTabs.List>
 
-      <UnderlineTabs.Content value="tutors">
-        <div class="space-y-3">
-          <TutorSelectSection
-            {tutors}
-            bind:selectedIds
-            isLoading={orgApi.isLoading}
-            helperHref={`/org/${$currentOrg.siteName}/settings/teams`}
-          />
+      {#if $isOrgAdmin}
+        <UnderlineTabs.Content value="tutors">
+          <div class="space-y-3">
+            <TutorSelectSection
+              {tutors}
+              bind:selectedIds
+              isLoading={orgApi.isLoading}
+              helperHref={`/org/${$currentOrg.siteName}/settings/teams`}
+            />
 
-          <div class="mt-5 flex flex-row-reverse items-center gap-2">
-            <Button variant="secondary" type="button" onclick={addTutors} loading={cohortApi.isLoading}>
-              {$t(`${INVITE_MODAL}.finish`)}
-            </Button>
+            <div class="mt-5 flex flex-row-reverse items-center gap-2">
+              <Button variant="secondary" type="button" onclick={addTutors} loading={cohortApi.isLoading}>
+                {$t(`${INVITE_MODAL}.finish`)}
+              </Button>
+            </div>
           </div>
-        </div>
-      </UnderlineTabs.Content>
+        </UnderlineTabs.Content>
+      {/if}
 
       <UnderlineTabs.Content value="students">
         <div class="space-y-6">
-          <ExistingStudentsSection
-            students={availableStudents}
-            isLoading={isLoadingStudents}
-            onSearchValueChange={handleStudentSearch}
-            onAssign={assignExistingStudents}
-          />
+          {#if $isOrgAdmin}
+            <ExistingStudentsSection
+              students={availableStudents}
+              isLoading={isLoadingStudents}
+              onSearchValueChange={handleStudentSearch}
+              onAssign={assignExistingStudents}
+            />
+          {/if}
           {#if $isStudentLimitReached}
             <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
           {/if}
           <BulkEmailSection onInvite={inviteNewStudents} disabled={$isStudentLimitReached} />
+        </div>
+      </UnderlineTabs.Content>
+
+      <UnderlineTabs.Content value="link">
+        <div class="space-y-6">
+          <InviteLinkSection
+            link={inviteLink}
+            isRevoked={cohortApi.inviteLink?.isRevoked ?? false}
+            isLoading={cohortApi.isLoading}
+            joinCount={cohortApi.inviteLink?.joinCount}
+            descriptionKey="invite_link.cohort_description"
+            onGenerate={generateInviteLink}
+            onToggle={toggleInviteLink}
+          />
+
+          {#if $isStudentLimitReached}
+            <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
+          {/if}
         </div>
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>

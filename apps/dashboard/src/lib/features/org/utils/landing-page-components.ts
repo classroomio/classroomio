@@ -35,6 +35,10 @@ import {
   TerminalLandingHero,
   TerminalLandingNav,
   TerminalLandingPage,
+  QuartzCourseLanding,
+  QuartzLandingHero,
+  QuartzLandingNav,
+  QuartzLandingPage,
   VibrantCourseLanding,
   VibrantLandingHero,
   VibrantLandingNav,
@@ -51,7 +55,8 @@ export const landingPageThemeComponents = {
   corporate: CorporateLandingPage,
   terminal: TerminalLandingPage,
   editorial: EditorialLandingPage,
-  vibrant: VibrantLandingPage
+  vibrant: VibrantLandingPage,
+  quartz: QuartzLandingPage
 } as const;
 
 export const courseLandingPageThemeComponents = {
@@ -64,7 +69,8 @@ export const courseLandingPageThemeComponents = {
   corporate: CorporateCourseLanding,
   terminal: TerminalCourseLanding,
   editorial: EditorialCourseLanding,
-  vibrant: VibrantCourseLanding
+  vibrant: VibrantCourseLanding,
+  quartz: QuartzCourseLanding
 } as const;
 
 export const landingPageNavComponents = {
@@ -77,7 +83,8 @@ export const landingPageNavComponents = {
   corporate: CorporateLandingNav,
   terminal: TerminalLandingNav,
   editorial: EditorialLandingNav,
-  vibrant: VibrantLandingNav
+  vibrant: VibrantLandingNav,
+  quartz: QuartzLandingNav
 } as const;
 
 export const landingPageHeroComponents = {
@@ -90,5 +97,6 @@ export const landingPageHeroComponents = {
   corporate: CorporateLandingHero,
   terminal: TerminalLandingHero,
   editorial: EditorialLandingHero,
-  vibrant: VibrantLandingHero
+  vibrant: VibrantLandingHero,
+  quartz: QuartzLandingHero
 } as const;

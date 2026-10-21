@@ -1,3 +1,4 @@
+import { getCourseOutline } from '@cio/utils/functions/course-content';
 import type { Course, CourseContentItem, CourseContentSection } from './types';
 import { ExerciseIcon, LessonIcon } from '@cio/ui/custom/moving-icons';
 
@@ -49,6 +50,18 @@ export function getContentRoute(courseId: string, item: { id: string; type: stri
   }
 
   return '';
+}
+
+/**
+ * Route that opens a lesson or exercise ready to edit. Exercises edit on their questions tab.
+ */
+export function getContentEditRoute(courseId: string, item: { id: string; type: string }) {
+  const route = getContentRoute(courseId, item);
+  if (item.type === CourseContentType.Lesson) return `${route}?mode=edit`;
+
+  if (item.type === CourseContentType.Exercise) return `${route}?tab=questions`;
+
+  return route;
 }
 
 export function getCourseContent(course: Course | null) {
@@ -117,11 +130,16 @@ export function getMentionableContent(course: Course | null): MentionableContent
 
   const result: MentionableContent[] = [];
 
-  for (const section of content.sections) {
-    if (section.id !== 'ungrouped' && section.title) {
-      result.push({ id: section.id, title: section.title, type: CourseContentType.Section });
+  for (const entry of getCourseOutline(content)) {
+    if (entry.kind === 'item') {
+      if (NAVIGABLE_CONTENT_TYPES.includes(entry.item.type as (typeof NAVIGABLE_CONTENT_TYPES)[number])) {
+        result.push({ id: entry.item.id, title: entry.item.title, type: entry.item.type as CourseContentType });
+      }
+      continue;
     }
 
+    const section = entry.section;
+    result.push({ id: section.id, title: section.title, type: CourseContentType.Section });
     for (const item of section.items) {
       if (NAVIGABLE_CONTENT_TYPES.includes(item.type as (typeof NAVIGABLE_CONTENT_TYPES)[number])) {
         result.push({ id: item.id, title: item.title, type: item.type as CourseContentType });

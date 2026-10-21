@@ -3,27 +3,34 @@
   import { resolve } from '$app/paths';
   import get from 'lodash/get';
 
+  import { page } from '$app/state';
   import { currentOrg } from '$lib/utils/store/org';
-  import { basePath } from '$lib/utils/store/app';
-  import { user } from '$lib/utils/store/user';
+  import { user, profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { importCourseLandingPageTheme, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
   import type { Course } from '$features/course/utils/types';
-  import type { AccountOrg } from '$features/app/types';
+  import type { AccountOrg, PublicOrg } from '$features/app/types';
   import UploadWidget from '$features/ui/upload-widget/upload-widget.svelte';
   import PaymentModal from './components/payment-modal.svelte';
   import { buildCourseLandingPageProps } from './utils';
   import { handleOpenWidget } from './store';
-  import { calcCourseDiscount, isCourseFree } from '$lib/utils/functions/course';
+  import { calcCourseCost, isCourseFree } from '$lib/utils/functions/course';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { appInitApi } from '$features/app/init.svelte';
-  import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import {
+    getPreviewOrgLandingAuthAction,
+    resolveOrgLandingAuthAction
+  } from '$features/org/utils/org-landing-auth-action';
+  import {
+    getPreviewOrgLandingLearnerAccount,
+    resolveOrgLandingLearnerAccount
+  } from '$features/org/utils/org-landing-learner-account';
 
   interface Props {
     editMode?: boolean;
     courseData: Course;
-    org?: AccountOrg | null;
+    org?: AccountOrg | PublicOrg | null;
     /** Pre-resolved theme component from the route's load function (eliminates the flash on SSR pages). */
     themeComponent?: Component | null;
   }
@@ -37,25 +44,28 @@
 
   const authAction = $derived.by(() => {
     if (editMode) {
-      return $user.isLoggedIn
-        ? {
-            label: t.get(
-              $basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'
-            ),
-            href: resolve($basePath !== '#' ? $basePath : '/lms', {})
-          }
-        : {
-            label: t.get('navigation.login'),
-            href: '/login'
-          };
+      return getPreviewOrgLandingAuthAction($user.isLoggedIn);
     }
 
-    return getOrgLandingAuthAction({
-      isLoggedIn: $user.isLoggedIn,
-      isInitialized: appInitApi.isInitializedAndReady,
+    return resolveOrgLandingAuthAction({
       org: activeOrg,
-      organizations: appInitApi.data?.success ? appInitApi.data.organizations : [],
-      hasPendingInvite: !!appInitApi.pendingOrgInvite
+      locals: page.data?.locals,
+      user: $user,
+      appInitApi
+    });
+  });
+
+  const learnerAccount = $derived.by(() => {
+    if (editMode) {
+      return getPreviewOrgLandingLearnerAccount($profile, activeOrg);
+    }
+
+    return resolveOrgLandingLearnerAccount({
+      org: activeOrg,
+      locals: page.data?.locals,
+      user: $user,
+      profile: $profile,
+      appInitApi
     });
   });
 
@@ -67,9 +77,7 @@
   const enrollmentsOpen = $derived(isSelfEnrollmentAllowed(courseData?.metadata));
   const enrollDisabled = $derived(editMode || !enrollmentsOpen);
 
-  const discount = $derived(get(courseData, 'metadata.discount', 0));
-  const showDiscount = $derived(get(courseData, 'metadata.showDiscount', false));
-  const calculatedCost = $derived(calcCourseDiscount(discount, courseData.cost || 0, !!showDiscount));
+  const calculatedCost = $derived(calcCourseCost(courseData));
   const isFree = $derived(isCourseFree(calculatedCost));
 
   function handlePaidEnrollClick(event: MouseEvent) {
@@ -94,6 +102,7 @@
       enrollHref,
       enrollDisabled,
       authAction,
+      learnerAccount,
       onPaidEnrollClick: handlePaidEnrollClick
     })
   );
@@ -131,7 +140,10 @@
 {#if ThemeComponent}
   {#if editMode && $handleOpenWidget.open}
     <div class="mx-auto w-full max-w-7xl px-6 py-3">
-      <UploadWidget imageURL={courseData.logo} onchange={(newLogo) => (courseData.logo = newLogo)} />
+      <UploadWidget
+        imageURL={courseData.bannerImage}
+        onchange={(newBannerImage) => (courseData.bannerImage = newBannerImage)}
+      />
     </div>
   {/if}
   <ThemeComponent {...landingProps} />

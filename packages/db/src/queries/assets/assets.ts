@@ -1,6 +1,20 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, desc, eq, inArray, ne, sql, type SQL, type InferSelectModel } from '@db/drizzle';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  inArray,
+  like,
+  lt,
+  ne,
+  or,
+  sql,
+  type SQL,
+  type InferSelectModel
+} from '@db/drizzle';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TAsset, TAssetUsage, TNewAsset, TNewAssetUsage } from '@db/types';
 
@@ -26,6 +40,13 @@ export interface AssetStorageSummary {
   internalBytes: number;
   externalAssetCount: number;
   bytesByKind: Record<string, number>;
+}
+
+export class AssetUsageAlreadyExistsError extends Error {
+  constructor() {
+    super('Asset is already attached to this target');
+    this.name = 'AssetUsageAlreadyExistsError';
+  }
 }
 
 export interface AssetDetachInput {
@@ -138,7 +159,39 @@ export async function getAssetById(assetId: string, orgId?: string): Promise<TAs
   }
 }
 
-export async function getAssetsByIds(assetIds: string[], orgId?: string): Promise<TAsset[]> {
+export async function getActiveAssetBySourceUrl(
+  orgId: string,
+  provider: string,
+  sourceUrl: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [item] = await dbClient
+      .select()
+      .from(schema.asset)
+      .where(
+        and(
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.provider, provider),
+          eq(schema.asset.sourceUrl, sourceUrl),
+          eq(schema.asset.status, 'active')
+        )
+      )
+      .orderBy(asc(schema.asset.createdAt))
+      .limit(1);
+
+    return item || null;
+  } catch (error) {
+    console.error('getActiveAssetBySourceUrl error:', error);
+    throw new Error(`Failed to get asset by source url: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function getAssetsByIds(
+  assetIds: string[],
+  orgId?: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset[]> {
   try {
     if (assetIds.length === 0) {
       return [];
@@ -149,13 +202,91 @@ export async function getAssetsByIds(assetIds: string[], orgId?: string): Promis
       conditions.push(eq(schema.asset.organizationId, orgId));
     }
 
-    return await db
+    return await dbClient
       .select()
       .from(schema.asset)
       .where(and(...conditions));
   } catch (error) {
     console.error('getAssetsByIds error:', error);
     throw new Error(`Failed to get assets by ids: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Storage keys and prefixes that another asset row still points at. */
+export async function assetLocationsReferencedElsewhere(
+  assetId: string,
+  keys: string[],
+  prefixes: string[],
+  dbClient: DbOrTxClient = db
+) {
+  const sharedKeys = new Set<string>();
+  const sharedPrefixes = new Set<string>();
+  if (keys.length === 0 && prefixes.length === 0) {
+    return { keys: sharedKeys, prefixes: sharedPrefixes };
+  }
+
+  try {
+    const conditions: SQL[] = [];
+    if (keys.length > 0) {
+      conditions.push(
+        inArray(schema.asset.storageKey, keys),
+        inArray(schema.asset.hlsManifestKey, keys),
+        inArray(schema.asset.hlsAudioKey, keys)
+      );
+    }
+
+    for (const prefix of prefixes) {
+      const pattern = `${prefix}%`;
+      const contained = `%${prefix.replace(/[\\%_]/g, (character) => `\\${character}`)}%`;
+      conditions.push(
+        like(schema.asset.storageKey, pattern),
+        like(schema.asset.hlsManifestKey, pattern),
+        like(schema.asset.hlsAudioKey, pattern),
+        sql`${schema.asset.thumbnailUrl} like ${contained}`,
+        sql`${schema.asset.thumbnailCandidates}::text like ${contained}`,
+        sql`${schema.asset.sourceUrl} like ${contained}`,
+        sql`${schema.asset.metadata}::text like ${contained}`
+      );
+    }
+
+    const rows = await dbClient
+      .select({
+        storageKey: schema.asset.storageKey,
+        hlsManifestKey: schema.asset.hlsManifestKey,
+        hlsAudioKey: schema.asset.hlsAudioKey,
+        thumbnailUrl: schema.asset.thumbnailUrl,
+        thumbnailCandidates: schema.asset.thumbnailCandidates,
+        sourceUrl: schema.asset.sourceUrl,
+        metadata: schema.asset.metadata
+      })
+      .from(schema.asset)
+      .where(and(ne(schema.asset.id, assetId), or(...conditions)));
+
+    for (const row of rows) {
+      const metadataText = row.metadata == null ? null : JSON.stringify(row.metadata);
+      const locations = [
+        row.storageKey,
+        row.hlsManifestKey,
+        row.hlsAudioKey,
+        row.thumbnailUrl,
+        row.sourceUrl,
+        metadataText,
+        ...row.thumbnailCandidates
+      ].filter((location): location is string => Boolean(location));
+      for (const location of locations) {
+        if (keys.includes(location)) sharedKeys.add(location);
+        for (const prefix of prefixes) {
+          if (location.startsWith(prefix) || location.includes(prefix)) sharedPrefixes.add(prefix);
+        }
+      }
+    }
+
+    return { keys: sharedKeys, prefixes: sharedPrefixes };
+  } catch (error) {
+    console.error('assetLocationsReferencedElsewhere error:', error);
+    throw new Error(
+      `Failed to check shared asset locations: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -193,6 +324,23 @@ export async function listAssetsByOrg(orgId: string, options: ListAssetsOptions 
     console.error('listAssetsByOrg error:', error);
     throw new Error(
       `Failed to list assets by organization: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function countAssetsByOrg(orgId: string, options: ListAssetsOptions = {}): Promise<number> {
+  try {
+    const conditions = buildAssetWhereConditions(orgId, options);
+    const [totalRow] = await db
+      .select({ count: count(schema.asset.id) })
+      .from(schema.asset)
+      .where(and(...conditions));
+
+    return Number(totalRow?.count ?? 0);
+  } catch (error) {
+    console.error('countAssetsByOrg error:', error);
+    throw new Error(
+      `Failed to count assets by organization: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -311,6 +459,284 @@ export async function finalizeHlsAsset(
   }
 }
 
+/**
+ * Patch keys into `assets.metadata` without disturbing the rest of the column.
+ * Callers that need to add a key must use this rather than passing `metadata`
+ * to `updateAsset`, which performs a plain `.set()` and replaces the column.
+ */
+export async function mergeAssetMetadata(
+  assetId: string,
+  orgId: string,
+  patch: Record<string, unknown>,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  try {
+    await dbClient
+      .update(schema.asset)
+      .set({
+        metadata: sql`coalesce(${schema.asset.metadata}, '{}'::jsonb) || ${JSON.stringify(patch)}::jsonb`,
+        updatedAt: new Date().toISOString()
+      })
+      .where(and(eq(schema.asset.id, assetId), eq(schema.asset.organizationId, orgId)));
+  } catch (error) {
+    console.error('mergeAssetMetadata error:', error);
+    throw new Error(`Failed to merge asset metadata: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Looks up which organizations own the given storage keys. Used to authorize
+ * download presigns for keys minted before organization-prefixed keys existed,
+ * where ownership cannot be read off the key itself.
+ *
+ * Asset uniqueness is scoped per organization, so the same unprefixed key can
+ * be registered by more than one. Every owner is returned rather than one, so
+ * the caller can refuse a key whose ownership is ambiguous instead of matching
+ * whichever row happened to be kept.
+ */
+export async function getAssetOrganizationIdsByStorageKeys(
+  storageKeys: string[],
+  dbClient: DbOrTxClient = db
+): Promise<Map<string, string[]>> {
+  try {
+    if (storageKeys.length === 0) {
+      return new Map();
+    }
+
+    const rows = await dbClient
+      .select({ storageKey: schema.asset.storageKey, organizationId: schema.asset.organizationId })
+      .from(schema.asset)
+      .where(inArray(schema.asset.storageKey, storageKeys));
+
+    const ownersByKey = new Map<string, string[]>();
+    for (const row of rows) {
+      if (!row.storageKey) continue;
+
+      ownersByKey.set(row.storageKey, [...(ownersByKey.get(row.storageKey) ?? []), row.organizationId]);
+    }
+
+    return ownersByKey;
+  } catch (error) {
+    console.error('getAssetOrganizationIdsByStorageKeys error:', error);
+    throw new Error(
+      `Failed to get asset organizations by storage keys: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export type AssetHlsStatus = 'none' | 'pending' | 'converting' | 'ready' | 'failed' | 'skipped';
+
+export async function setAssetHlsStatus(
+  assetId: string,
+  orgId: string,
+  hlsStatus: AssetHlsStatus,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  try {
+    await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus, updatedAt: new Date().toISOString() })
+      .where(and(eq(schema.asset.id, assetId), eq(schema.asset.organizationId, orgId)));
+  } catch (error) {
+    console.error('setAssetHlsStatus error:', error);
+    throw new Error(`Failed to set asset HLS status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Claim an asset for conversion, so two dispatchers cannot encode the same one.
+ * A claim older than 30 minutes is reclaimable: the encoder is a disposable
+ * machine, so a lost claim means the machine died rather than that it is busy.
+ */
+export async function claimAssetForHlsEncode(
+  assetId: string,
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [claimed] = await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus: 'converting', updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          sql`(${schema.asset.hlsStatus} IN ('none', 'pending', 'failed') OR (${schema.asset.hlsStatus} = 'converting' AND ${schema.asset.updatedAt} < now() - interval '30 minutes'))`,
+          sql`${schema.asset.hlsManifestKey} IS NULL`
+        )
+      )
+      .returning();
+
+    return claimed || null;
+  } catch (error) {
+    console.error('claimAssetForHlsEncode error:', error);
+    throw new Error(
+      `Failed to claim asset for HLS encode: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Refresh a converting asset's `updatedAt` so a long encode is not reclaimed by
+ * the stale-claim window, without being able to move a finished or failed asset
+ * back to `converting`. Returns false when the job no longer owns the asset.
+ */
+export async function touchConvertingAsset(
+  assetId: string,
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const [touched] = await dbClient
+      .update(schema.asset)
+      .set({ updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.hlsStatus, 'converting')
+        )
+      )
+      .returning();
+
+    return Boolean(touched);
+  } catch (error) {
+    console.error('touchConvertingAsset error:', error);
+    throw new Error(`Failed to touch converting asset: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Mark a conversion failed, conditional on the asset still being `converting`,
+ * so a superseded job's failure cannot un-ready an asset another job finalized.
+ */
+export async function failConvertingAsset(
+  assetId: string,
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const [failed] = await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus: 'failed', updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.hlsStatus, 'converting')
+        )
+      )
+      .returning();
+
+    return Boolean(failed);
+  } catch (error) {
+    console.error('failConvertingAsset error:', error);
+    throw new Error(`Failed to fail converting asset: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Fail assets left mid-encode.
+ *
+ * A machine that dies takes its job with it: no `/fail` ever arrives, and the
+ * asset would sit in `converting` indefinitely, invisible because the raw
+ * upload still plays. Sweeping them to `failed` is what makes the loss
+ * reportable rather than silent.
+ */
+export async function reapStuckHlsEncodes(
+  staleBeforeIso: string,
+  dbClient: DbOrTxClient = db
+): Promise<Pick<TAsset, 'id' | 'organizationId'>[]> {
+  try {
+    return await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus: 'failed', updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.hlsStatus, 'converting'),
+          lt(schema.asset.updatedAt, staleBeforeIso),
+          sql`${schema.asset.hlsManifestKey} IS NULL`
+        )
+      )
+      .returning({ id: schema.asset.id, organizationId: schema.asset.organizationId });
+  } catch (error) {
+    console.error('reapStuckHlsEncodes error:', error);
+    throw new Error('Failed to reap stuck HLS encodes');
+  }
+}
+
+export interface FinalizeServerHlsInput {
+  manifestKey: string;
+  audioKey: string | null;
+  metadata: Record<string, unknown>;
+}
+
+/**
+ * Record the finished ladder. Conditional on the asset still being `converting`,
+ * so a superseded or reclaimed job cannot overwrite a newer result.
+ */
+export async function finalizeServerHls(
+  assetId: string,
+  orgId: string,
+  input: FinalizeServerHlsInput,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.asset)
+      .set({
+        hlsManifestKey: input.manifestKey,
+        hlsAudioKey: input.audioKey,
+        hlsStatus: 'ready',
+        status: 'active',
+        metadata: sql`coalesce(${schema.asset.metadata}, '{}'::jsonb) || ${JSON.stringify(input.metadata)}::jsonb`,
+        updatedAt: new Date().toISOString()
+      })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.hlsStatus, 'converting')
+        )
+      )
+      .returning();
+
+    return updated || null;
+  } catch (error) {
+    console.error('finalizeServerHls error:', error);
+    throw new Error(`Failed to finalize server HLS: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Record that an upload's bytes arrived, so the media pipeline can find them. */
+export async function markAssetUploadComplete(
+  assetId: string,
+  orgId: string,
+  storageKey: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.asset)
+      .set({ storageKey, hlsStatus: 'pending', updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          sql`${schema.asset.storageKey} IS NULL`
+        )
+      )
+      .returning();
+
+    return updated || null;
+  } catch (error) {
+    console.error('markAssetUploadComplete error:', error);
+    throw new Error(
+      `Failed to mark asset upload complete: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export interface FinalizeHls1080Input {
   byteSize: number;
   metadata: Record<string, unknown>;
@@ -423,6 +849,34 @@ export async function createAssetUsage(values: TNewAssetUsage, dbClient: DbOrTxC
   }
 }
 
+/**
+ * Create an asset and its first usage in one transaction. This keeps the
+ * asset table and polymorphic usage table consistent when attachment fails.
+ */
+export async function createAssetAndUsage(
+  assetValues: TNewAsset,
+  usageValues: Omit<TNewAssetUsage, 'assetId'>
+): Promise<{ asset: TAsset; usage: TAssetUsage }> {
+  return db.transaction(async (tx) => {
+    const asset = await createOrGetAssetByStorageKey(assetValues, tx);
+    const alreadyAttached = await assetUsageExistsForTarget(
+      asset.id,
+      assetValues.organizationId,
+      usageValues.targetType,
+      usageValues.targetId,
+      tx
+    );
+
+    if (alreadyAttached) {
+      throw new AssetUsageAlreadyExistsError();
+    }
+
+    const usage = await createAssetUsage({ ...usageValues, assetId: asset.id }, tx);
+
+    return { asset, usage };
+  });
+}
+
 export async function deleteAssetUsage(
   orgId: string,
   assetId: string,
@@ -495,6 +949,39 @@ export async function deleteAssetUsagesByTarget(
   }
 }
 
+/**
+ * Removes the usages a target holds in the given slots, leaving its other slots
+ * untouched. Returns the number of rows removed.
+ */
+export async function deleteAssetUsagesByTargetSlots(
+  targetType: string,
+  targetId: string,
+  slotTypes: string[],
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    if (slotTypes.length === 0) return 0;
+
+    const deleted = await dbClient
+      .delete(schema.assetUsage)
+      .where(
+        and(
+          eq(schema.assetUsage.targetType, targetType),
+          eq(schema.assetUsage.targetId, targetId),
+          inArray(schema.assetUsage.slotType, slotTypes)
+        )
+      )
+      .returning({ id: schema.assetUsage.id });
+
+    return deleted.length;
+  } catch (error) {
+    console.error('deleteAssetUsagesByTargetSlots error:', error);
+    throw new Error(
+      `Failed to delete asset usages by target slots: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function listAssetUsagesByAsset(assetId: string, orgId: string): Promise<TAssetUsage[]> {
   try {
     return await db
@@ -512,10 +999,11 @@ export async function assetUsageExistsForTarget(
   assetId: string,
   orgId: string,
   targetType: string,
-  targetId: string
+  targetId: string,
+  dbClient: DbOrTxClient = db
 ): Promise<boolean> {
   try {
-    const [existing] = await db
+    const [existing] = await dbClient
       .select({ id: schema.assetUsage.id })
       .from(schema.assetUsage)
       .where(

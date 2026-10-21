@@ -17,7 +17,7 @@
 
   import { Image } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { calcCourseDiscount } from '$lib/utils/functions/course';
+  import { calcCourseCost } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
   import {
@@ -66,7 +66,7 @@
   } = $derived({
     id: course.id,
     slug: course.slug,
-    bannerImage: course.logo || DEFAULT_COURSE_BANNER_IMAGE,
+    bannerImage: course.bannerImage || DEFAULT_COURSE_BANNER_IMAGE,
     title: course.title,
     type: course.type,
     description: course.description,
@@ -141,7 +141,7 @@
     }
   };
 
-  let cost = $derived(calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount));
+  let cost = $derived(calcCourseCost(course));
 
   const isExploreClickable = $derived(!!(isLMS && isExplore && onExploreClick));
 
@@ -249,7 +249,7 @@
       {@render actions()}
     {:else if !isOnLandingPage}
       {#if !isLMS}
-        <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} />
+        <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} studentCount={totalStudents} />
       {:else if showLmsPublicCourseMenu}
         <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} lmsPublicQuickOnly={true} />
       {/if}

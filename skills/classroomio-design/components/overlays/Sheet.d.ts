@@ -1,0 +1,2 @@
+export interface SheetProps { open?: boolean; onOpenChange?: (open: boolean) => void; side?: 'top'|'right'|'bottom'|'left'; title?: React.ReactNode; description?: React.ReactNode; children?: React.ReactNode; footer?: React.ReactNode; inline?: boolean; style?: React.CSSProperties; }
+export declare function Sheet(props: SheetProps): JSX.Element;

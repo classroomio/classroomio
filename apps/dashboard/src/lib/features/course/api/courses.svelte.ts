@@ -76,7 +76,11 @@ export class CoursesApi extends BaseApiWithErrors {
       page: String(query.page ?? 1),
       limit: String(query.limit ?? 20),
       search: query.search,
-      tags: normalizedTagSlugs.length > 0 ? normalizedTagSlugs.join(',') : undefined
+      tags: normalizedTagSlugs.length > 0 ? normalizedTagSlugs.join(',') : undefined,
+      type: query.type,
+      status: query.status,
+      sort: query.sort,
+      order: query.order
     };
 
     let requestSignal = options.signal;

@@ -10,6 +10,7 @@
   import { CourseCreator } from '@cio/ui/custom/course-creator';
   import { aiAssistantApi } from '$features/ai-assistant/api/ai-assistant.svelte';
   import { courseApi } from '$features/course/api';
+  import HomeTemplateSection from '$features/course/components/home-template-section.svelte';
   import {
     setInitialChatModel,
     setInitialChatPrompt,
@@ -284,6 +285,8 @@
           </button>
         {/each}
       </div>
+
+      <HomeTemplateSection />
     </div>
   </div>
 {/if}

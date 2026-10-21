@@ -2,7 +2,13 @@
   import type { MediaPlayerOptions, VideoSource } from './types';
   import PlyrPlayer from './players/plyr-player.svelte';
   import MusePlayer from './players/muse-player.svelte';
-  import { formatYoutubeEmbedUrl } from './utils';
+  import VimeoPlayer from './players/vimeo-player.svelte';
+  import {
+    formatYoutubeEmbedUrl,
+    formatVimeoEmbedUrl,
+    isValidYoutubeUrl as isYoutubeUrl,
+    isValidVimeoUrl as isVimeoUrl
+  } from '@cio/utils';
 
   interface Props {
     source: VideoSource;
@@ -27,13 +33,15 @@
   const tracks = $derived(source.tracks ?? []);
   const isMuse = $derived.by(() => source.type === 'muse' && source.metadata?.svid);
   const isGoogleDrive = $derived(source.type === 'google_drive');
-  const isYouTube = $derived(source.type === 'youtube');
+  const isYouTube = $derived(source.type === 'youtube' || (source.type === 'generic' && isYoutubeUrl(source.url)));
+  const isVimeo = $derived(source.type === 'vimeo' || (source.type === 'generic' && isVimeoUrl(source.url)));
   const poster = $derived(source.type === 'upload' ? source.metadata?.thumbnailUrl : undefined);
 
   const iframeTitle = $derived(source.metadata?.title?.trim() || 'Video');
   const iframeMaxHeight = $derived(options.maxHeight ?? '400px');
   const iframeWidth = $derived(options.width ?? '100%');
   const youtubeEmbedUrl = $derived(isYouTube ? formatYoutubeEmbedUrl(source.url) : '');
+  const vimeoEmbedUrl = $derived(isVimeo ? formatVimeoEmbedUrl(source.url) : '');
 </script>
 
 <div class={className}>
@@ -70,6 +78,16 @@
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen
       ></iframe>
+    </div>
+  {:else if isVimeo}
+    <div
+      class="ui:w-full ui:max-w-full"
+      style:max-height={iframeMaxHeight}
+      style:width={iframeWidth}
+      style:min-height={options.minHeight}
+      style:height={options.height}
+    >
+      <VimeoPlayer url={vimeoEmbedUrl} title={iframeTitle} {options} />
     </div>
   {:else}
     <PlyrPlayer bind:this={plyrRef} src={source.url} {poster} hls={source.hls === true} {options} {tracks} />

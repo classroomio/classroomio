@@ -26,10 +26,108 @@ export const MCP_TOOL_CREDIT_COST = {
   tag_course_draft: 1,
   tag_courses: 1,
   create_course_exercise: 1,
-  create_course_exercise_from_template: 1,
   update_course_exercise: 1,
+  create_course_exercise_from_template: 1,
+  delete_course_exercise: 1,
+  add_exercise_question: 1,
+  update_exercise_question: 1,
+  delete_exercise_question: 1,
+  add_exercise_section: 1,
+  update_exercise_section: 1,
+  delete_exercise_section: 1,
+  notify_course_exercise: 1,
+  get_course_exercise_notify_status: 0,
+  list_exercise_templates: 0,
+  get_exercise_template: 0,
   publish_course_draft: 5,
-  publish_course_draft_to_existing_course: 5
+  publish_course_draft_to_existing_course: 5,
+  list_org_cohorts: 0,
+  get_cohort: 0,
+  list_cohort_members: 0,
+  list_cohort_courses: 0,
+  create_cohort: 1,
+  update_cohort: 1,
+  delete_cohort: 1,
+  add_cohort_members: 1,
+  update_cohort_member: 1,
+  delete_cohort_member: 1,
+  add_cohort_course: 1,
+  remove_cohort_course: 1,
+  list_cohort_newsfeed: 0,
+  create_cohort_newsfeed_post: 1,
+  update_cohort_newsfeed_post: 1,
+  update_cohort_newsfeed_reaction: 1,
+  delete_cohort_newsfeed_post: 1,
+  list_cohort_newsfeed_comments: 0,
+  create_cohort_newsfeed_comment: 1,
+  delete_cohort_newsfeed_comment: 1,
+  list_cohort_goals: 0,
+  create_cohort_goal: 1,
+  get_cohort_goal: 0,
+  update_cohort_goal: 1,
+  archive_cohort_goal: 1,
+  delete_cohort_goal: 1,
+  evaluate_cohort_goal: 1,
+  evaluate_all_cohort_goals: 1,
+  get_org_goals_overview: 0,
+  list_my_enrolled_cohorts: 0,
+  list_my_cohort_goals: 0,
+  invite_students_to_cohort: 1,
+  assign_students_to_cohort: 1,
+  get_cohort_invite_link: 0,
+  create_cohort_invite_link: 1,
+  set_cohort_invite_link_revoked: 1,
+  list_course_members: 0,
+  get_course_member: 0,
+  get_course_member_analytics: 0,
+  list_course_invites: 0,
+  add_course_member: 1,
+  update_course_member: 1,
+  delete_course_member: 1,
+  reset_course_member_progress: 1,
+  create_course_invite: 1,
+  revoke_course_invite: 1,
+  get_course_certificate: 0,
+  list_course_certificates: 0,
+  download_course_certificate: 0,
+  update_course_certificate: 1,
+  list_course_sections: 0,
+  create_course_section: 1,
+  update_course_section: 1,
+  delete_course_section: 1,
+  list_course_lessons: 0,
+  get_course_lesson: 0,
+  delete_course_lesson: 1,
+  notify_course_lesson_session_update: 1,
+  list_course_lesson_translations: 0,
+  set_course_lesson_translation: 1,
+  list_course_lesson_history: 0,
+  list_course_lesson_comments: 0,
+  create_course_lesson_comment: 1,
+  update_course_lesson_comment: 1,
+  delete_course_lesson_comment: 1,
+  set_course_content_unlocked: 1,
+  delete_course_content: 1,
+  list_course_submissions: 0,
+  get_course_submission: 0,
+  grade_course_submission: 1,
+  update_course_submission: 1,
+  delete_course_submission: 1,
+  get_course_marks: 0,
+  get_org_analytics: 0,
+  list_compliance_learners: 0,
+  get_learner_analytics: 0,
+  get_course_analytics: 0,
+  list_course_analytics_students: 0,
+  list_audience_members: 0,
+  get_audience_member: 0,
+  add_audience_member: 1,
+  assign_audience_courses: 1,
+  update_audience_member: 1,
+  remove_audience_member: 1,
+  list_team_members: 0,
+  get_team_member: 0,
+  update_team_member: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -105,7 +203,47 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_course_draft' ||
     toolName === 'list_org_courses' ||
     toolName === 'list_course_exercises' ||
-    toolName === 'get_course_exercise'
+    toolName === 'get_course_exercise' ||
+    toolName === 'list_org_cohorts' ||
+    toolName === 'get_cohort' ||
+    toolName === 'list_cohort_members' ||
+    toolName === 'list_cohort_courses' ||
+    toolName === 'list_cohort_newsfeed' ||
+    toolName === 'list_cohort_newsfeed_comments' ||
+    toolName === 'list_cohort_goals' ||
+    toolName === 'get_cohort_goal' ||
+    toolName === 'get_org_goals_overview' ||
+    toolName === 'list_my_enrolled_cohorts' ||
+    toolName === 'list_my_cohort_goals' ||
+    toolName === 'get_cohort_invite_link' ||
+    toolName === 'list_course_members' ||
+    toolName === 'get_course_member' ||
+    toolName === 'get_course_member_analytics' ||
+    toolName === 'list_course_invites' ||
+    toolName === 'get_course_certificate' ||
+    toolName === 'list_course_certificates' ||
+    toolName === 'download_course_certificate' ||
+    toolName === 'list_course_sections' ||
+    toolName === 'list_course_lessons' ||
+    toolName === 'get_course_lesson' ||
+    toolName === 'list_course_lesson_translations' ||
+    toolName === 'list_course_lesson_history' ||
+    toolName === 'list_course_lesson_comments' ||
+    toolName === 'get_course_exercise_notify_status' ||
+    toolName === 'list_exercise_templates' ||
+    toolName === 'get_exercise_template' ||
+    toolName === 'list_course_submissions' ||
+    toolName === 'get_course_submission' ||
+    toolName === 'get_course_marks' ||
+    toolName === 'get_org_analytics' ||
+    toolName === 'list_compliance_learners' ||
+    toolName === 'get_learner_analytics' ||
+    toolName === 'get_course_analytics' ||
+    toolName === 'list_course_analytics_students' ||
+    toolName === 'list_audience_members' ||
+    toolName === 'get_audience_member' ||
+    toolName === 'list_team_members' ||
+    toolName === 'get_team_member'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

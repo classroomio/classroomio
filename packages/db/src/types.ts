@@ -60,6 +60,10 @@ export type TNewSubmissionstatus = typeof schema.submissionstatus.$inferInsert;
 
 export type TCourse = typeof schema.course.$inferSelect;
 export type TNewCourse = typeof schema.course.$inferInsert;
+export type TTemplateHighlight = typeof schema.templateHighlight.$inferSelect;
+export type TNewTemplateHighlight = typeof schema.templateHighlight.$inferInsert;
+export type TCourseTemplateSettingSync = typeof schema.courseTemplateSettingSync.$inferSelect;
+export type TNewCourseTemplateSettingSync = typeof schema.courseTemplateSettingSync.$inferInsert;
 export type TCourseCompletionRecord = typeof schema.courseCompletionRecord.$inferSelect;
 export type TNewCourseCompletionRecord = typeof schema.courseCompletionRecord.$inferInsert;
 export type TCourseCompletionNotificationEvent = typeof schema.courseCompletionNotificationEvent.$inferSelect;
@@ -103,6 +107,9 @@ export type TNewCourseInvite = typeof schema.courseInvite.$inferInsert;
 export type TCourseInviteAudit = typeof schema.courseInviteAudit.$inferSelect;
 export type TNewCourseInviteAudit = typeof schema.courseInviteAudit.$inferInsert;
 
+export type TInviteLink = typeof schema.inviteLink.$inferSelect;
+export type TNewInviteLink = typeof schema.inviteLink.$inferInsert;
+
 export type TOrganizationInvite = typeof schema.organizationInvite.$inferSelect;
 export type TNewOrganizationInvite = typeof schema.organizationInvite.$inferInsert;
 
@@ -132,12 +139,17 @@ export type TNewTestTenant = typeof schema.testTenant.$inferInsert;
 
 export type TOrganizationPlan = typeof schema.organizationPlan.$inferSelect;
 export type TNewOrganizationPlan = typeof schema.organizationPlan.$inferInsert;
+export type TEarlyAdopterClaim = typeof schema.earlyAdopterClaim.$inferSelect;
+export type TNewEarlyAdopterClaim = typeof schema.earlyAdopterClaim.$inferInsert;
+export type TInstance = typeof schema.instance.$inferSelect;
 
 export type TLessonLanguage = typeof schema.lessonLanguage.$inferSelect;
 export type TNewLessonLanguage = typeof schema.lessonLanguage.$inferInsert;
 
 export type TLessonLanguageHistory = typeof schema.lessonLanguageHistory.$inferSelect;
 export type TNewLessonLanguageHistory = typeof schema.lessonLanguageHistory.$inferInsert;
+
+export type TLessonVersion = typeof schema.lessonVersions.$inferSelect;
 
 export type TOrganizationmember = typeof schema.organizationmember.$inferSelect;
 export type TNewOrganizationmember = typeof schema.organizationmember.$inferInsert;
@@ -244,5 +256,24 @@ export type TNewMediaTranscript = typeof schema.mediaTranscript.$inferInsert;
 export type TJobStep = typeof schema.jobStep.$inferSelect;
 export type TNewJobStep = typeof schema.jobStep.$inferInsert;
 
+export type TYoutubeCaption = typeof schema.youtubeCaption.$inferSelect;
+export type TNewYoutubeCaption = typeof schema.youtubeCaption.$inferInsert;
+
 export type TDeadLetterJob = typeof schema.deadLetterJob.$inferSelect;
 export type TNewDeadLetterJob = typeof schema.deadLetterJob.$inferInsert;
+
+export type TContentReportTargetType = (typeof schema.contentReportTargetType.enumValues)[number];
+export type TContentReportReason = (typeof schema.contentReportReason.enumValues)[number];
+export type TContentReportStatus = (typeof schema.contentReportStatus.enumValues)[number];
+export type TContentReportResolutionCode = (typeof schema.contentReportResolutionCode.enumValues)[number];
+export type TContentReport = typeof schema.contentReport.$inferSelect;
+export type TNewContentReport = typeof schema.contentReport.$inferInsert;
+export type TLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferSelect;
+export type TNewLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferInsert;
+
+export type TWebhookEndpoint = typeof schema.webhookEndpoint.$inferSelect;
+export type TNewWebhookEndpoint = typeof schema.webhookEndpoint.$inferInsert;
+export type TWebhookEvent = typeof schema.webhookEvent.$inferSelect;
+export type TNewWebhookEvent = typeof schema.webhookEvent.$inferInsert;
+export type TWebhookDelivery = typeof schema.webhookDelivery.$inferSelect;
+export type TNewWebhookDelivery = typeof schema.webhookDelivery.$inferInsert;

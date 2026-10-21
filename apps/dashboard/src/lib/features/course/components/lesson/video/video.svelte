@@ -13,6 +13,8 @@
   import LessonVideoSimpleCard from './lesson-video-simple-card.svelte';
   import LessonVideoPlayer from './lesson-video-player.svelte';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
+  import VideoHlsStatusBadge from './video-hls-status-badge.svelte';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
   import { lessonVideoCheckpointStore } from './checkpoint-store.svelte';
   import CheckpointTimeline from './checkpoint-timeline.svelte';
@@ -28,6 +30,49 @@
   let { mode = MODES.view, courseId, lessonId }: Props = $props();
 
   const videos = $derived(lessonApi.lesson?.videos || []);
+
+  const POLL_INTERVAL_MS = 10_000;
+
+  let statusLessonId = $state('');
+  let pollTimer: ReturnType<typeof setInterval> | undefined;
+
+  function isEncoding() {
+    return Object.values(lessonApi.videoHlsStatuses).some((status) => status === 'pending' || status === 'converting');
+  }
+
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = undefined;
+    }
+  }
+
+  async function refreshVideoStatuses() {
+    await lessonApi.getVideoStatuses(courseId, lessonId);
+
+    // Encoding runs for minutes, so keep checking until nothing is in flight —
+    // then stop, rather than polling an idle lesson forever.
+    if (!isEncoding()) {
+      stopPolling();
+      return;
+    }
+
+    pollTimer ??= setInterval(() => void refreshVideoStatuses(), POLL_INTERVAL_MS);
+  }
+
+  // Staff see encoding state wherever they look at the lesson. A learner never
+  // does: the video plays either way, so the state is theirs to act on, not
+  // theirs to worry about.
+  const showsEncodingState = $derived(mode === MODES.edit || $isOrgStudent !== true);
+
+  $effect(() => {
+    if (!showsEncodingState || !courseId || !lessonId || lessonId === statusLessonId) return;
+
+    statusLessonId = lessonId;
+    void refreshVideoStatuses();
+
+    return stopPolling;
+  });
 
   const hasTranscript = $derived.by(() => {
     lessonVideoBus.transcriptSources;
@@ -151,6 +196,11 @@
     <div class="w-full">
       {#each videos as video, index (`${index}-${(video as LessonVideo & { assetId?: string }).assetId ?? video.link}`)}
         <div class="{index < videos.length - 1 ? 'mb-5' : ''} w-full overflow-hidden">
+          {#if showsEncodingState && video.assetId}
+            <div class="mb-1.5 flex justify-end">
+              <VideoHlsStatusBadge status={lessonApi.videoHlsStatuses[video.assetId]} />
+            </div>
+          {/if}
           {@render content(video, index)}
         </div>
       {/each}

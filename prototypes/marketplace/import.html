@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Import Customer Onboarding Academy · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      body { background: var(--muted); }
+      .shell { min-height: 100vh; display: grid; place-items: center; padding: 40px 16px 90px; }
+      .panel { width: min(520px, 100%); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); overflow: hidden; }
+      .panel-head { display: flex; gap: 14px; padding: 18px; border-bottom: 1px solid var(--border); align-items: center; }
+      .panel-head .cover { width: 112px; flex-shrink: 0; border-radius: 8px; }
+      .panel-head .cover .glyph, .panel-head .cover .type-badge { display: none; }
+      .panel-body { padding: 18px; }
+      .org-opt { display: flex; gap: 11px; align-items: center; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; margin-bottom: 8px; font-size: 14px; }
+      .org-opt:has(input:checked) { border-color: var(--primary); background: oklch(0.488 0.243 264.376 / 0.05); }
+      .org-opt input { accent-color: var(--primary); }
+      .org-opt.disabled { opacity: 0.55; cursor: not-allowed; }
+      .creates { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+      .logo-top { display: flex; gap: 8px; align-items: center; justify-content: center; font-weight: 600; margin-bottom: 18px; font-size: 14px; }
+      .logo-top i { width: 24px; height: 24px; border-radius: 7px; background: linear-gradient(135deg, #1d4ed8, #60a5fa); display: grid; place-items: center; color: #fff; font-style: normal; font-size: 11px; }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div>
+        <div class="logo-top"><i>C</i>ClassroomIO</div>
+
+        <!-- SIGNED OUT -->
+        <div class="panel" data-state-view="signedout">
+          <div class="panel-body" style="text-align: center; padding: 28px 24px">
+            <h1 class="sec-title" style="font-size: 19px">Log in to import this template</h1>
+            <p class="page-sub" style="margin: 6px 0 20px">You'll pick which organization to add <b>Customer Onboarding Academy</b> to next.</p>
+            <div class="field" style="text-align: left"><label class="label" for="em">Email</label><input class="input" id="em" value="priya@acadiatutors.com" /></div>
+            <div class="field" style="text-align: left"><label class="label" for="pw">Password</label><input class="input" id="pw" type="password" value="xxxxxxxx" /></div>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center" data-goto="pick">Log in</button>
+            <p class="hint" style="margin-top: 14px">New to ClassroomIO? <a class="text-primary" href="#">Create a free account</a></p>
+            <p class="hint mono" style="margin-top: 16px; font-size: 11px">app.classroomio.com/login?redirect=/marketplace/import/customer-onboarding-academy</p>
+          </div>
+        </div>
+
+        <!-- PICK ORG + LIMIT -->
+        <div class="panel" data-state-view="pick limit already">
+          <div class="panel-head">
+            <div id="cover"></div>
+            <div class="grow">
+              <div class="hint" style="margin: 0">Course template · Loopwise</div>
+              <div style="font-weight: 600; font-size: 15.5px; letter-spacing: -0.01em">Customer Onboarding Academy</div>
+              <div class="creates"><span class="badge badge-muted">1 template</span><span class="badge badge-muted">14 lessons</span><span class="badge badge-muted">5 exercises</span><span class="badge badge-muted">9 images</span></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="label" style="margin-bottom: 8px">Import into</div>
+            <label class="org-opt"><input type="radio" name="org" checked /><span class="pub-av" style="background: #0891b2; width: 28px; height: 28px; border-radius: 7px; font-size: 12px">A</span><div class="grow"><div style="font-weight: 500">Acadia Tutors</div><div class="hint" style="margin: 0" id="plan-line">Free plan · 0 of 1 templates used</div></div></label>
+            <label class="org-opt"><input type="radio" name="org" /><span class="pub-av" style="background: #7c3aed; width: 28px; height: 28px; border-radius: 7px; font-size: 12px">E</span><div class="grow"><div style="font-weight: 500">Exam Prep Collective</div><div class="hint" style="margin: 0">Early Adopter · 4 of 25 templates used</div></div></label>
+            <label class="org-opt disabled" title="Only admins can import"><input type="radio" name="org" disabled /><span class="pub-av" style="background: #64748b; width: 28px; height: 28px; border-radius: 7px; font-size: 12px">W</span><div class="grow"><div style="font-weight: 500">Westfield College</div><div class="hint" style="margin: 0">You're a tutor here — only admins can import</div></div></label>
+
+            <div class="callout callout-warn" data-state-view="limit" style="margin-top: 12px"><span data-icon="alert"></span><div><b>Acadia Tutors has used its 1 free template.</b> Upgrade to import more templates, or delete an existing one. Images, docs and AI skills can still be imported.<div class="frow" style="margin-top: 10px"><a class="btn btn-primary btn-sm" href="#">Upgrade plan</a><a class="btn btn-outline btn-sm" href="#">Manage templates</a></div></div></div>
+            <div class="callout callout-info" data-state-view="already" style="margin-top: 12px"><span data-icon="info"></span><div>Acadia Tutors imported this on <b>Sep 3, 2026</b>. Importing again creates a second, separate copy. <a class="text-primary" href="imported-template.html">Open existing copy</a></div></div>
+
+            <div class="callout" style="margin-top: 12px; font-size: 12.5px"><span data-icon="cc"></span><div><b>CC BY license.</b> You can use, change and share it, including commercially, as long as you credit Loopwise. We add the credit to your copy automatically.</div></div>
+          </div>
+          <div class="dialog-foot" style="margin: 0">
+            <a class="btn btn-outline btn-sm" href="listing-course.html">Cancel</a>
+            <button class="btn btn-primary btn-sm" id="import-btn" data-goto="importing">Import template</button>
+          </div>
+        </div>
+
+        <!-- IMPORTING -->
+        <div class="panel" data-state-view="importing">
+          <div class="panel-body" style="text-align: center; padding: 36px 24px">
+            <div class="ring" style="margin: 0 auto 14px; width: 36px; height: 36px; border-radius: 999px; border: 3px solid var(--muted); border-top-color: var(--primary); animation: spin 0.8s linear infinite"></div>
+            <h1 class="sec-title">Importing into Acadia Tutors…</h1>
+            <p class="page-sub" style="margin-top: 6px">Copying 4 sections, 14 lessons and 5 exercises.</p>
+          </div>
+        </div>
+
+        <!-- NO ADMIN ORG -->
+        <div class="panel" data-state-view="noorg">
+          <div class="panel-body" style="text-align: center; padding: 30px 24px">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--muted); display: grid; place-items: center; margin: 0 auto 12px"><span data-icon="building"></span></div>
+            <h1 class="sec-title" style="font-size: 18px">You need an organization to import into</h1>
+            <p class="page-sub" style="margin: 6px auto 20px; max-width: 380px">Templates are added to an organization you're an admin of. You're a tutor at Westfield College, where only admins can import.</p>
+            <a class="btn btn-primary btn-sm" href="#">Create an organization</a>
+            <p class="hint" style="margin-top: 12px">We'll bring you back here to finish the import.</p>
+          </div>
+        </div>
+
+        <!-- GONE -->
+        <div class="panel" data-state-view="gone">
+          <div class="panel-body" style="text-align: center; padding: 30px 24px">
+            <h1 class="sec-title" style="font-size: 18px">This listing is no longer available</h1>
+            <p class="page-sub" style="margin: 6px 0 18px">The publisher unpublished it or it was removed.</p>
+            <a class="btn btn-outline btn-sm" href="discover.html">Back to Discover</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar"><span class="lbl">State</span><button data-state="signedout">Signed out</button><button data-state="pick">Pick org</button><button data-state="limit">Template limit</button><button data-state="already">Already imported</button><button data-state="noorg">No admin org</button><button data-state="gone">Unavailable</button><a href="index.html">← Map</a></div>
+    <button class="icon-btn theme-fab" data-theme-toggle aria-label="Toggle theme"></button>
+
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+    <script>
+      Object.assign(ICONS, {
+        alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>',
+        info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+        cc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M10 9.5a3 3 0 1 0 0 5M17 9.5a3 3 0 1 0 0 5"/></svg>',
+        building: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01M12 14h.01"/></svg>'
+      });
+      document.querySelector('.theme-fab').innerHTML = ICONS.sun;
+      document.querySelectorAll('[data-icon]').forEach((node) => (node.outerHTML = ICONS[node.dataset.icon]));
+      document.getElementById('cover').innerHTML = coverHtml(LISTINGS[0]);
+
+      const importButton = document.getElementById('import-btn');
+      document.addEventListener('statechange', (event) => {
+        const atLimit = event.detail === 'limit';
+        importButton.disabled = atLimit;
+        importButton.textContent = event.detail === 'already' ? 'Import another copy' : 'Import template';
+        document.getElementById('plan-line').textContent = atLimit ? 'Free plan · 1 of 1 templates used' : 'Free plan · 0 of 1 templates used';
+      });
+      document.querySelectorAll('[data-goto]').forEach((button) =>
+        button.addEventListener('click', () => {
+          document.querySelector(`.state-bar [data-state="${button.dataset.goto}"]`)?.click();
+          if (button.dataset.goto === 'importing') {
+            document.querySelectorAll('[data-state-view]').forEach((view) => view.classList.toggle('shown', view.dataset.stateView === 'importing'));
+            setTimeout(() => (location.href = 'imported-template.html?state=fresh'), 1400);
+          }
+        })
+      );
+      document.querySelectorAll('input[name=org]').forEach((radio, index) =>
+        radio.addEventListener('change', () => {
+          const limitState = document.querySelector('.state-bar [data-state="limit"]').classList.contains('on');
+          importButton.disabled = limitState && index === 0;
+          document.querySelector('[data-state-view="limit"]').classList.toggle('shown', limitState && index === 0);
+        })
+      );
+      bindStatePicker('pick');
+    </script>
+  </body>
+</html>

@@ -3,6 +3,8 @@
   import { untrack } from 'svelte';
   import cloneDeep from 'lodash/cloneDeep';
   import set from 'lodash/set';
+  import get from 'lodash/get';
+  import isEqual from 'lodash/isEqual';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { currentOrgDomain } from '$lib/utils/store/org';
@@ -20,10 +22,11 @@
     PreviewIcon
   } from '@cio/ui/custom/moving-icons';
   import type { TCourseUpdate } from '@cio/utils/validation/course';
+  import { ZPaymentLink } from '@cio/utils/validation/course';
   import type { LandingSectionKey } from '@cio/ui/custom/org-landing-page';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { CloseButton } from '$features/ui';
+  import { CloseButton, UnsavedChanges } from '$features/ui';
   import HeaderForm from './header-form.svelte';
   import RequirementForm from './requirement-form.svelte';
   import DescriptionForm from './description-form.svelte';
@@ -41,8 +44,9 @@
   import { useSidebar } from '@cio/ui/base/sidebar';
 
   import type { Course } from '$features/course/utils/types';
+  import { isEmptyReview, normalizeReview, validateReview } from '../../utils';
   import { t } from '$lib/utils/functions/translations';
-  import { isCourseFree } from '$lib/utils/functions/course';
+  import { isCoursePaid } from '$lib/utils/functions/course';
   import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
@@ -64,9 +68,38 @@
   const sidebar = useSidebar();
   let loading = $state(false);
   let showPaymentError = $state(false);
+  // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: bound to UnsavedChanges
+  let hasUnsavedChanges = $state(false);
+  let editRevision = $state(0);
+  let courseSnapshot = $state('');
+  let snapshottedCourseId = $state<string | null>(null);
 
-  const isPaidWithoutPaymentLink = $derived(
-    !isCourseFree(course.cost || 0) && !(course.metadata?.paymentLink ?? '').trim()
+  $effect(() => {
+    if (!courseId) return;
+
+    if (snapshottedCourseId !== courseId) {
+      snapshottedCourseId = courseId;
+      courseSnapshot = '';
+      return;
+    }
+
+    if (!courseSnapshot && course?.id) {
+      courseSnapshot = JSON.stringify(course);
+    }
+  });
+
+  function restoreCourseSnapshot() {
+    if (!courseSnapshot) return;
+
+    course = JSON.parse(courseSnapshot);
+  }
+
+  const paymentLink = $derived((course.metadata?.paymentLink ?? '').trim());
+  const courseIsPaid = $derived(isCoursePaid(course));
+
+  const isPaymentLinkEmpty = $derived(courseIsPaid && !paymentLink);
+  const isPaymentLinkInvalid = $derived(
+    courseIsPaid && !isPaymentLinkEmpty && !ZPaymentLink.safeParse(paymentLink).success
   );
 
   interface Section {
@@ -143,10 +176,18 @@
       return;
     }
 
-    if (selectedSectionKey === 'pricing' && isPaidWithoutPaymentLink) {
-      showPaymentError = true;
-      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
-      return;
+    if (selectedSectionKey === 'pricing') {
+      if (isPaymentLinkEmpty) {
+        showPaymentError = true;
+        snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
+        return;
+      }
+
+      if (isPaymentLinkInvalid) {
+        showPaymentError = true;
+        snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
+        return;
+      }
     }
 
     showPaymentError = false;
@@ -175,35 +216,61 @@
   });
 
   async function handleSave() {
-    if (isPaidWithoutPaymentLink) {
+    if (isPaymentLinkEmpty) {
       snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
       selectedSectionKey = 'pricing';
       return;
     }
 
+    const courseReviews = course.metadata?.reviews;
+    if (courseReviews?.length) {
+      const savedReviews = courseReviews
+        .map((review) => normalizeReview(review))
+        .filter((review) => !isEmptyReview(review));
+
+      if (savedReviews.some((review) => Object.keys(validateReview(review)).length)) {
+        snackbar.error('course.navItem.landing_page.editor.reviews_form.validation_error');
+        selectedSectionKey = 'reviews';
+        return;
+      }
+
+      courseReviews.splice(0, courseReviews.length, ...savedReviews);
+    }
+
     loading = true;
-    course.slug = course.slug || generateSlug(course.title, { appendTimestamp: true });
+    try {
+      course.slug = course.slug || generateSlug(course.title, { appendTimestamp: true });
 
-    const updatePayload = {
-      ...course,
-      type: course.type!,
-      slug: course.slug!,
-      isPublished: course.isPublished ?? undefined,
-      overview: course.overview ?? undefined,
-      compliance: course.compliance ?? undefined,
-      certificate: course.certificate
-        ? {
-            ...course.certificate,
-            isDownloadable: course.certificate.isDownloadable ?? undefined,
-            theme: course.certificate.theme ?? undefined
-          }
-        : undefined
-    } as TCourseUpdate;
+      const updatePayload = {
+        ...course,
+        type: course.type ?? undefined,
+        slug: course.slug!,
+        isPublished: course.isPublished ?? undefined,
+        bannerImage: course.bannerImage ?? undefined,
+        cost: course.cost ?? undefined,
+        overview: course.overview ?? undefined,
+        compliance: course.compliance ?? undefined,
+        certificate: course.certificate
+          ? {
+              ...course.certificate,
+              isDownloadable: course.certificate.isDownloadable ?? undefined,
+              theme: course.certificate.theme ?? undefined
+            }
+          : undefined
+      } as TCourseUpdate;
 
-    await courseApi.update(courseId, updatePayload);
+      const submittedRevision = editRevision;
+      const updated = await courseApi.update(courseId, updatePayload);
+      if (!updated) return;
 
-    loading = false;
-    syncCourseStore(course);
+      syncCourseStore(course);
+      courseSnapshot = JSON.stringify(course);
+      if (editRevision === submittedRevision) {
+        hasUnsavedChanges = false;
+      }
+    } finally {
+      loading = false;
+    }
   }
 
   function handlePreview() {
@@ -217,12 +284,25 @@
   function setter(value: unknown, setterKey: string) {
     if (typeof value === 'undefined') return;
 
+    if (isEqual(get(course, setterKey), value)) return;
+
+    if (!courseSnapshot) courseSnapshot = JSON.stringify(course);
+
     const _course = untrack(() => cloneDeep(course));
     set(_course, setterKey, value);
 
     course = _course;
+    hasUnsavedChanges = true;
+    editRevision += 1;
+  }
+
+  function markDirty() {
+    hasUnsavedChanges = true;
+    editRevision += 1;
   }
 </script>
+
+<UnsavedChanges bind:hasUnsavedChanges onAbandon={restoreCourseSnapshot} />
 
 <Sidebar.Header
   class="flex flex-row! items-center {sidebar.open ? 'justify-between' : 'justify-center'} border-b px-2 py-2"
@@ -232,13 +312,7 @@
       <CloseButton onClick={handleClose} />
 
       <div class="flex items-center gap-1" data-open={sidebar.open} data-mobile={sidebar.isMobile}>
-        <Button
-          type="button"
-          variant="outline"
-          onclick={handleSave}
-          {loading}
-          disabled={loading || isPaidWithoutPaymentLink}
-        >
+        <Button type="button" variant="outline" onclick={handleSave} {loading} disabled={loading || isPaymentLinkEmpty}>
           {$t('course.navItem.landing_page.editor.save')}
         </Button>
         <HoverableItem>
@@ -292,7 +366,7 @@
   {:else}
     <div class="p-4">
       {#if selectedSection.key === 'header'}
-        <HeaderForm bind:course />
+        <HeaderForm bind:course {markDirty} />
       {:else if selectedSection.key === 'requirement'}
         <RequirementForm bind:course {setter} />
       {:else if selectedSection.key === 'description'}

@@ -31,27 +31,33 @@ export async function seedLessons({
       courseId: mvcCourseId,
       sectionId: mvcSectionId,
       title: 'Lesson 1: Introduction to MVC Architecture',
+      slug: 'lesson-1-introduction-to-mvc-architecture',
       teacherId: adminUserId,
       videos: [{ link: 'https://youtu.be/pXLWqkA87e4?si=rUHaBMnuFgAMjm2T', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 1
     },
     {
       id: 'a99e65b7-1394-4751-ad8d-a5fb670ccb9e',
       courseId: mvcCourseId,
       sectionId: mvcSectionId,
       title: 'Anatomy of MVC Components',
+      slug: 'anatomy-of-mvc-components',
       teacherId: adminUserId,
       videos: [{ link: 'https://youtu.be/4Qfk8MhtZJU?si=VZ7cF-pjvm_RmFMp', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 2
     },
     {
       id: '266b3daa-1eb2-401e-9510-1819952b44b7',
       courseId: mvcCourseId,
       sectionId: mvcSectionId,
       title: 'Building Your First MVC Application',
+      slug: 'building-your-first-mvc-application',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=EMwu8F0dCXE', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 3
     },
     // React Course lessons
     {
@@ -59,27 +65,33 @@ export async function seedLessons({
       courseId: reactCourseId,
       sectionId: reactSectionId,
       title: 'Introduction to React: Understanding the Basics',
+      slug: 'introduction-to-react-understanding-the-basics',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=H-PkPKF2Tfk', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 1
     },
     {
       id: '0a39ab2f-9451-4a90-902c-3030bf965637',
       courseId: reactCourseId,
       sectionId: reactSectionId,
       title: 'Components and Props: Building Reusable UI Elements',
+      slug: 'components-and-props-building-reusable-ui-elements',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=H-PkPKF2Tfk', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 2
     },
     {
       id: '80b79665-733b-41bf-9853-34fd8ab50496',
       courseId: reactCourseId,
       sectionId: reactSectionId,
       title: 'State and Lifecycle: Managing Data in React Applications',
+      slug: 'state-and-lifecycle-managing-data-in-react-applications',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=DveeFlWzWzc', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 3
     },
     // Pandas Course lessons
     {
@@ -87,27 +99,33 @@ export async function seedLessons({
       courseId: pandasCourseId,
       sectionId: pandasSectionId,
       title: 'Python Essentials: An Introduction to Data Science',
+      slug: 'python-essentials-an-introduction-to-data-science',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=T5pRlIbr6gg&vl=en', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: true
+      isUnlocked: true,
+      order: 1
     },
     {
       id: '829da386-8ccd-4c81-b2fb-b9891102c83c',
       courseId: pandasCourseId,
       sectionId: pandasSectionId,
       title: 'Delving into Data Analysis with Pandas',
+      slug: 'delving-into-data-analysis-with-pandas',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=T5pRlIbr6gg&vl=en', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: true
+      isUnlocked: true,
+      order: 2
     },
     {
       id: '05f03084-3ff1-49e3-aa2a-7a13840cc4b1',
       courseId: pandasCourseId,
       sectionId: pandasSectionId,
       title: 'Data Cleaning and Preprocessing Techniques',
+      slug: 'data-cleaning-and-preprocessing-techniques',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=LI7s_lyooO8', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: true
+      isUnlocked: true,
+      order: 3
     }
   ].filter((l) => !existingLessonIds.includes(l.id));
 

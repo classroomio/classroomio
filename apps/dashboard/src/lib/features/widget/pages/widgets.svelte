@@ -1,112 +1,177 @@
 <script lang="ts">
-  import { resolve } from '$app/paths';
-  import pluralize from 'pluralize';
-  import { widgetApi } from '../api/widget.svelte';
-  import type { WidgetListItem } from '../utils/types';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/state';
+  import type { ArchivedWidgetListPagination, WidgetListItem, WidgetListPagination } from '../utils/types';
+  import {
+    clearWidgetListFilters,
+    countActiveWidgetFilters,
+    DEFAULT_WIDGET_LIST_FILTERS,
+    getWidgetListFiltersFromSearchParams,
+    mergeWidgetListSearchParams,
+    withFilterChange,
+    withoutStatusFilter,
+    type WidgetListFilters
+  } from '../utils/widget-list-filters';
+  import type { TWidgetLayoutType, TWidgetListStatus, TWidgetSelectionMode } from '@cio/utils/validation/widget';
+  import * as Page from '@cio/ui/base/page';
   import { Button } from '@cio/ui/base/button';
-  import * as Item from '@cio/ui/base/item';
-  import { Empty } from '@cio/ui/custom/empty';
-  import WidgetLayoutThumbnail from '../components/widget-layout-thumbnail.svelte';
-  import { cn } from '@cio/ui/tools';
-  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import { Search } from '@cio/ui/custom/search';
+  import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
+  import ArchiveIcon from '@lucide/svelte/icons/archive';
   import PanelsTopLeftIcon from '@lucide/svelte/icons/panels-top-left';
-  import WidgetCardDropdown from '../components/widget-card-dropdown.svelte';
+  import WidgetList from '../components/widget-list.svelte';
+  import WidgetFilterPopover from '../components/widget-filter-popover.svelte';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
     initialWidgets?: WidgetListItem[];
+    initialArchivedWidgets?: WidgetListItem[];
+    widgetPagination?: WidgetListPagination;
+    archivedWidgetPagination?: ArchivedWidgetListPagination;
     onCreate: () => void | Promise<void>;
   }
 
-  let { initialWidgets = [] as WidgetListItem[], onCreate }: Props = $props();
+  const SEARCH_DEBOUNCE_MS = 300;
+  const EMPTY_PAGINATION: WidgetListPagination = { page: 1, limit: 20, total: 0, totalPages: 0 };
+
+  let {
+    initialWidgets = [],
+    initialArchivedWidgets = [],
+    widgetPagination = EMPTY_PAGINATION,
+    archivedWidgetPagination = EMPTY_PAGINATION,
+    onCreate
+  }: Props = $props();
+
+  let currentTab = $state<'active' | 'archived'>('active');
+  let searchValue = $state('');
+
+  const filters = $derived(getWidgetListFiltersFromSearchParams(page.url.searchParams));
+  const tabFilters = $derived(currentTab === 'archived' ? withoutStatusFilter(filters) : filters);
+  const activeFilterCount = $derived(countActiveWidgetFilters(tabFilters));
+  const isFiltering = $derived(activeFilterCount > 0);
 
   $effect(() => {
-    widgetApi.widgets = initialWidgets;
+    searchValue = filters.search;
   });
 
-  function getStatusDotClass(status: string) {
-    const normalizedStatus = status.toLowerCase();
+  $effect(() => {
+    const normalizedSearch = searchValue.trim();
+    if (normalizedSearch === filters.search) return;
 
-    if (normalizedStatus === 'published') {
-      return 'bg-emerald-500';
-    }
+    const timeoutId = setTimeout(() => {
+      void navigateFilters(withFilterChange(filters, { search: normalizedSearch }), { replaceState: true });
+    }, SEARCH_DEBOUNCE_MS);
 
-    if (normalizedStatus === 'draft') {
-      return 'bg-amber-500';
-    }
+    return () => clearTimeout(timeoutId);
+  });
 
-    return 'ui:bg-muted-foreground/60';
+  async function navigateFilters(nextFilters: WidgetListFilters, options: { replaceState?: boolean } = {}) {
+    const params = mergeWidgetListSearchParams(page.url.searchParams, nextFilters);
+    const nextSearch = params.toString();
+
+    if (nextSearch === page.url.searchParams.toString()) return;
+
+    const target = `${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}${page.url.hash}`;
+    await goto(target, {
+      replaceState: options.replaceState ?? false,
+      keepFocus: true,
+      noScroll: true,
+      invalidateAll: true
+    });
   }
+
+  function handlePageChange(nextPage: number) {
+    if (nextPage === filters.page) return;
+
+    void navigateFilters({ ...filters, page: nextPage });
+  }
+
+  function handleStatusesChange(statuses: TWidgetListStatus[]) {
+    void navigateFilters(withFilterChange(filters, { statuses }));
+  }
+
+  function handleLayoutTypesChange(layoutTypes: TWidgetLayoutType[]) {
+    void navigateFilters(withFilterChange(filters, { layoutTypes }));
+  }
+
+  function handleSelectionModesChange(selectionModes: TWidgetSelectionMode[]) {
+    void navigateFilters(withFilterChange(filters, { selectionModes }));
+  }
+
+  function handleClearFilters() {
+    searchValue = '';
+    const clearedFilters = clearWidgetListFilters(filters);
+    void navigateFilters({ ...clearedFilters, page: DEFAULT_WIDGET_LIST_FILTERS.page });
+  }
+
+  function handleTabChange() {
+    if (filters.page === DEFAULT_WIDGET_LIST_FILTERS.page) return;
+
+    void navigateFilters({ ...filters, page: DEFAULT_WIDGET_LIST_FILTERS.page });
+  }
+
+  const tabs = $derived([
+    { value: 'active' as const, label: `${$t('widgets.tabs.active')} (${widgetPagination.total})` },
+    {
+      value: 'archived' as const,
+      label: `${$t('widgets.tabs.archived')} (${archivedWidgetPagination.total})`
+    }
+  ]);
 </script>
 
-{#if widgetApi.widgets.length === 0}
-  <Empty
-    title={$t('widgets.empty.heading')}
-    description={$t('widgets.empty.description')}
-    icon={PanelsTopLeftIcon}
-    variant="page"
-  >
-    <Button onclick={onCreate}>{$t('widgets.actions.create')}</Button>
-  </Empty>
-{:else}
-  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-    {#each widgetApi.widgets as widget (widget.id)}
-      {@const widgetHref = resolve(`/widgets/${widget.id}`, {})}
+<Page.BodyHeader align="right" class="p-0!">
+  <Search placeholder={$t('widgets.filters.search_placeholder')} bind:value={searchValue} />
+  <WidgetFilterPopover
+    mode={currentTab}
+    statuses={filters.statuses}
+    layoutTypes={filters.layoutTypes}
+    selectionModes={filters.selectionModes}
+    {activeFilterCount}
+    onStatusesChange={handleStatusesChange}
+    onLayoutTypesChange={handleLayoutTypesChange}
+    onSelectionModesChange={handleSelectionModesChange}
+    onClearFilters={handleClearFilters}
+  />
+</Page.BodyHeader>
 
-      <Item.Root variant="outline" class="group ui:bg-card relative overflow-hidden rounded-2xl border p-0!">
-        <WidgetCardDropdown id={widget.id} name={widget.name} />
-        {#snippet child({ props })}
-          <a href={widgetHref} {...props} class={cn('block h-full w-full', props.class as string)}>
-            <div class="relative flex h-full w-full flex-col p-3.5">
-              <div class="flex items-start justify-between gap-2">
-                <div class="flex min-w-0 items-start gap-2.5">
-                  <div
-                    class="ui:bg-primary/10 ui:text-primary flex size-8 shrink-0 items-center justify-center rounded-lg"
-                  >
-                    <PanelsTopLeftIcon class="size-4" />
-                  </div>
-
-                  <div class="min-w-0">
-                    <Item.Title class="w-full text-sm! leading-tight font-semibold">
-                      <span class="line-clamp-2">{widget.name}</span>
-                    </Item.Title>
-                    <Item.Description class="mt-0.5 line-clamp-1! text-xs">
-                      {$t(`widgets.layout.${widget.layoutType}`)}
-                    </Item.Description>
-                  </div>
-                </div>
-
-                <span
-                  class={cn('mt-1 block size-2 shrink-0 rounded-full', getStatusDotClass(widget.status))}
-                  aria-label={widget.status}
-                  title={widget.status}
-                ></span>
-              </div>
-
-              <WidgetLayoutThumbnail
-                class="mt-3"
-                compact
-                layoutType={widget.layoutType}
-                label={$t(`widgets.layout.${widget.layoutType}`)}
-              />
-
-              <div class="ui:text-muted-foreground mt-3 flex items-center justify-between gap-3 text-xs">
-                <span class="truncate">{$t(`widgets.selection.${widget.selectionMode}`)}</span>
-                <span class="shrink-0">
-                  {pluralize($t('tags_admin.table.course'), widget.courseCount ?? 0, true)}
-                </span>
-              </div>
-
-              <div class="ui:border-border/60 mt-3 flex items-center justify-end border-t pt-2.5">
-                <Button variant="secondary" size="sm" href={widgetHref} class="h-8 gap-1 rounded-full px-3 text-xs">
-                  {$t('widgets.actions.edit')}
-                  <ArrowUpRightIcon size={14} />
-                </Button>
-              </div>
-            </div>
-          </a>
-        {/snippet}
-      </Item.Root>
+<UnderlineTabs.Root bind:value={currentTab} onValueChange={handleTabChange}>
+  <UnderlineTabs.List class="mb-6">
+    {#each tabs as tab (tab.value)}
+      <UnderlineTabs.Trigger value={tab.value}>
+        {tab.label}
+      </UnderlineTabs.Trigger>
     {/each}
-  </div>
-{/if}
+  </UnderlineTabs.List>
+
+  <UnderlineTabs.Content value="active">
+    <WidgetList
+      widgets={initialWidgets}
+      mode="active"
+      pagination={widgetPagination}
+      {isFiltering}
+      emptyTitle={$t('widgets.empty.heading')}
+      emptyDescription={$t('widgets.empty.description')}
+      emptyIcon={PanelsTopLeftIcon}
+      onClearFilters={handleClearFilters}
+      onPageChange={handlePageChange}
+    >
+      {#snippet emptyAction()}
+        <Button onclick={onCreate}>{$t('widgets.actions.create')}</Button>
+      {/snippet}
+    </WidgetList>
+  </UnderlineTabs.Content>
+
+  <UnderlineTabs.Content value="archived">
+    <WidgetList
+      widgets={initialArchivedWidgets}
+      mode="archived"
+      pagination={archivedWidgetPagination}
+      {isFiltering}
+      emptyTitle={$t('widgets.archived.empty')}
+      emptyDescription={$t('widgets.archived.empty_description')}
+      emptyIcon={ArchiveIcon}
+      onClearFilters={handleClearFilters}
+      onPageChange={handlePageChange}
+    />
+  </UnderlineTabs.Content>
+</UnderlineTabs.Root>

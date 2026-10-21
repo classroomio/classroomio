@@ -1,0 +1,18 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Brand (launch assets)" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--page);font-family:var(--font-sans)}.lbl{font-family:var(--font-mono);font-size:10px;color:var(--ink-500);letter-spacing:.08em}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ClassroomIODesignSystem || window[Object.keys(window).find(k => { try { return window[k] && window[k].PersonCard; } catch (e) { return false; } })] || {};
+const { PersonCard, CertifiedRibbon, CourseBook, DetailRows, Shelf, FlowLines, Stamp } = NS;
+ReactDOM.createRoot(document.getElementById('root')).render(<div style={{ display: 'flex', gap: 28, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+<PersonCard size="compact" img="../../assets/images/portrait-1.jpg" name="Dana Iwu" role="Operations · Acme" certified stats={[{label:'Completed',value:'5/5'}]}/>
+<CourseBook title="Product onboarding" value={14} caption="learners enrolled" width={150} height={230}/>
+<DetailRows style={{ width: 220 }} rows={[{label:'Awarded to',value:'Ada O.'},{label:'Expires',value:'2027'}]}/>
+<Shelf spines={[{label:'Free',value:'0',height:160,width:50},{label:'Growth',value:'69',tone:'blue',height:220,width:66},{label:'Scale',value:'139',tone:'ink',height:190,width:56}]}/>
+<Stamp size={110}/>
+</div>);
+</script></body></html>

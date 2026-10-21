@@ -15,6 +15,7 @@ import {
   enqueueGenerateThumbnailOnly,
   enqueueLessonVideoPipeline,
   enqueueTranscriptionOnly,
+  enqueueYoutubeCaptionsFetch,
   isRedisConfigured
 } from '@cio/jobs';
 
@@ -334,4 +335,90 @@ export async function getMediaJobSteps(jobId: string, orgId: string) {
   }
 
   return listJobStepsByRun('media', jobId);
+}
+
+export interface StartYoutubeCaptionsJobInput {
+  organizationId: string;
+  assetId: string;
+  /** Billed for the provider call, so a real profile is required. */
+  triggeredByProfileId: string;
+  /** Course to attribute the spend to; `null` when the asset is not attached to one yet. */
+  courseId?: string | null;
+  youtubeVideoId: string;
+  canonicalUrl: string;
+  preferredLanguages?: string[];
+}
+
+/**
+ * Create a `media_job` row and enqueue a YouTube captions fetch job.
+ * Used by `createAssetFromUploadService` when a YouTube asset is created.
+ * No-ops gracefully when Redis or the provider key is missing.
+ */
+export async function startYoutubeCaptionsJob(input: StartYoutubeCaptionsJobInput): Promise<TMediaJob> {
+  // Pre-enqueue guard. The BullMQ job id is deterministic on asset + language,
+  // so a duplicate enqueue is silently dropped — but the `media_job` row would
+  // already have been written and would then never be processed. Callers that
+  // retry (a lesson transcript re-asked before captions land) would leave a
+  // trail of orphan `queued` rows. Only caption jobs run for a YouTube asset,
+  // so the helper's lack of a domain filter cannot block an unrelated job here.
+  const hasActive = await hasActiveMediaJobForAsset(input.assetId, input.organizationId);
+  if (hasActive) {
+    const latestJobs = await listLatestMediaJobsByAsset(input.assetId, input.organizationId);
+    const activeJob = latestJobs.find((row) => row.status === 'queued' || row.status === 'running');
+
+    if (activeJob) {
+      return activeJob;
+    }
+  }
+
+  const job = await createMediaJob({
+    organizationId: input.organizationId,
+    assetId: input.assetId,
+    triggeredByProfileId: input.triggeredByProfileId,
+    status: 'queued',
+    stage: 'queued',
+    progressPercent: 0
+  });
+
+  if (!isRedisConfigured()) {
+    logRedisUnavailableOnce('Redis not configured: YouTube captions job cannot be processed.');
+    const failedJob = await updateMediaJob(job.id, {
+      status: 'failed',
+      stage: 'failed',
+      error: { code: 'REDIS_UNAVAILABLE', message: 'Redis not configured; captions job cannot run' }
+    });
+
+    return failedJob ?? { ...job, status: 'failed', stage: 'failed' };
+  }
+
+  try {
+    await enqueueYoutubeCaptionsFetch({
+      mediaJobId: job.id,
+      assetId: input.assetId,
+      organizationId: input.organizationId,
+      triggeredByProfileId: input.triggeredByProfileId,
+      courseId: input.courseId ?? null,
+      youtubeVideoId: input.youtubeVideoId,
+      canonicalUrl: input.canonicalUrl,
+      preferredLanguages: input.preferredLanguages
+    });
+
+    return job;
+  } catch (error) {
+    console.error('startYoutubeCaptionsJob enqueue failed:', error);
+    await updateMediaJob(job.id, {
+      status: 'failed',
+      stage: 'failed',
+      error: {
+        code: 'ENQUEUE_FAILED',
+        message: error instanceof Error ? error.message : 'Failed to enqueue YouTube captions job'
+      }
+    });
+
+    throw new AppError(
+      error instanceof Error ? error : 'Failed to enqueue YouTube captions job',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
 }

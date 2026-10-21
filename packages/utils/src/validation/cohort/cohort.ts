@@ -8,12 +8,16 @@ export const ZCreateCohort = z.object({
 });
 export type TCreateCohort = z.infer<typeof ZCreateCohort>;
 
-export const ZUpdateCohort = z.object({
-  name: z.string().min(1).max(255).optional(),
-  description: z.string().max(2000).nullable().optional(),
-  coverImage: z.string().url().nullable().optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED']).optional()
-});
+const hasFieldsToUpdate = (data: object) => Object.keys(data).length > 0;
+
+export const ZUpdateCohort = z
+  .object({
+    name: z.string().min(1).max(255).optional(),
+    description: z.string().max(2000).nullable().optional(),
+    coverImage: z.string().url().nullable().optional(),
+    status: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED']).optional()
+  })
+  .refine(hasFieldsToUpdate, { message: 'No fields to update' });
 export type TUpdateCohort = z.infer<typeof ZUpdateCohort>;
 
 export const ZAddCourseToCohort = z.object({
@@ -49,11 +53,27 @@ export const ZCreateCohortNewsfeed = z.object({
 });
 export type TCreateCohortNewsfeed = z.infer<typeof ZCreateCohortNewsfeed>;
 
-export const ZUpdateCohortNewsfeed = z.object({
-  content: z.string().min(1).optional(),
-  isPinned: z.boolean().optional()
-});
+export const ZUpdateCohortNewsfeed = z
+  .object({
+    content: z.string().min(1).optional(),
+    isPinned: z.boolean().optional()
+  })
+  .refine(hasFieldsToUpdate, { message: 'No fields to update' });
 export type TUpdateCohortNewsfeed = z.infer<typeof ZUpdateCohortNewsfeed>;
+
+const NEWSFEED_CURSOR_PATTERN =
+  /^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}(:?\d{2})?)(\|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$/i;
+
+export const ZCohortNewsfeedListQuery = z.object({
+  cursor: z
+    .string()
+    .refine((cursor) => NEWSFEED_CURSOR_PATTERN.test(cursor) && !Number.isNaN(Date.parse(cursor.split('|')[0]!)), {
+      message: 'Invalid cursor'
+    })
+    .optional(),
+  limit: z.coerce.number().int().min(1).max(50).default(10)
+});
+export type TCohortNewsfeedListQuery = z.infer<typeof ZCohortNewsfeedListQuery>;
 
 export const ZUpdateCohortReaction = z.object({
   reaction: z.object({
@@ -178,8 +198,6 @@ export const ZUpdateCohortGoal = z
     recurringMonths: z.number().int().min(1).max(120).nullable().optional(),
     status: z.enum(['active', 'archived']).optional()
   })
-  .refine((data) => Object.keys(data).length > 0, {
-    message: 'No fields to update'
-  });
+  .refine(hasFieldsToUpdate, { message: 'No fields to update' });
 
 export type TUpdateCohortGoal = z.infer<typeof ZUpdateCohortGoal>;

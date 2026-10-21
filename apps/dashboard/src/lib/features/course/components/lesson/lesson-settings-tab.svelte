@@ -8,14 +8,29 @@
   import * as Field from '@cio/ui/base/field';
   import * as Select from '@cio/ui/base/select';
   import * as Tooltip from '@cio/ui/base/tooltip';
+  import * as Alert from '@cio/ui/base/alert';
   import InfoIcon from '@lucide/svelte/icons/info';
+  import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { toast } from '@cio/ui/base/sonner';
   import { classroomio } from '$lib/utils/services/api';
   import { t } from '$lib/utils/functions/translations';
   import { goAndHighlight } from '$lib/routing/go-and-highlight';
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
   import { getBrowserTimezone, instantToZonedWallClock, zonedWallClockToInstant } from '$lib/utils/functions/date';
+  import { NumberField } from '@cio/ui/custom/number-field';
+  import {
+    DEFAULT_SESSION_DURATION_MINUTES,
+    MAX_SESSION_DURATION_MINUTES,
+    MIN_SESSION_DURATION_MINUTES
+  } from '@cio/utils/functions/live-session';
+  import { ZLessonRecordingUrl } from '@cio/utils/validation/lesson';
   import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
+
+  interface Props {
+    hasUnsavedSessionChanges?: boolean;
+  }
+
+  let { hasUnsavedSessionChanges = $bindable(false) }: Props = $props();
 
   type LessonCompletionPolicy = 'manual' | 'video_watch' | 'none';
 
@@ -32,6 +47,9 @@
   let sessionCallUrl = $state('');
   let sessionWallClock = $state('');
   let sessionTimezone = $state(getBrowserTimezone());
+  let sessionDurationMinutes = $state<number | null>(DEFAULT_SESSION_DURATION_MINUTES);
+  let sessionRecordingUrl = $state('');
+  let recordingUrlError = $state('');
   let sessionInitializedFor = $state<string | null>(null);
   let isSavingSession = $state(false);
   let confirmOpen = $state(false);
@@ -44,6 +62,9 @@
     sessionTimezone = tz;
     sessionCallUrl = lesson.callUrl ?? '';
     sessionWallClock = instantToZonedWallClock(lesson.lessonAt, tz);
+    sessionDurationMinutes = lesson.sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES;
+    sessionRecordingUrl = lesson.recordingUrl ?? '';
+    recordingUrlError = '';
     sessionInitializedFor = lesson.id;
   });
 
@@ -53,14 +74,45 @@
     return sessionWallClock ? zonedWallClockToInstant(sessionWallClock, sessionTimezone) : '';
   }
 
-  function sessionChanged(): boolean {
+  function scheduleChanged(): boolean {
     const currentTz = courseApi.course?.metadata?.sessionTimezone || getBrowserTimezone();
 
     return (
-      sessionCallUrl !== (lessonApi.lesson?.callUrl ?? '') ||
-      computeNewInstant() !== (lessonApi.lesson?.lessonAt ?? '') ||
+      sessionCallUrl.trim() !== (lessonApi.lesson?.callUrl ?? '') ||
+      sessionWallClock !== instantToZonedWallClock(lessonApi.lesson?.lessonAt, currentTz) ||
       sessionTimezone !== currentTz
     );
+  }
+
+  function sessionDetailsChanged(): boolean {
+    const savedDuration = lessonApi.lesson?.sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES;
+
+    return (
+      (sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES) !== savedDuration ||
+      sessionRecordingUrl.trim() !== (lessonApi.lesson?.recordingUrl ?? '')
+    );
+  }
+
+  function sessionChanged(): boolean {
+    return scheduleChanged() || sessionDetailsChanged();
+  }
+
+  function validateRecordingUrl(): boolean {
+    const recordingUrl = sessionRecordingUrl.trim();
+    recordingUrlError = '';
+    if (!recordingUrl) return true;
+
+    if (!ZLessonRecordingUrl.safeParse(recordingUrl).success) {
+      recordingUrlError = t.get('course.navItem.lessons.session.recording_url_invalid');
+      return false;
+    }
+
+    if (!sessionCallUrl.trim() || !computeNewInstant()) {
+      recordingUrlError = t.get('course.navItem.lessons.session.recording_url_needs_session');
+      return false;
+    }
+
+    return true;
   }
 
   async function persistSession() {
@@ -68,11 +120,18 @@
     const lessonId = lessonApi.lesson?.id;
     if (!courseId || !lessonId) return;
 
+    const savedDurationMinutes = lessonApi.lesson?.sessionDurationMinutes ?? null;
+    const durationMinutes = sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES;
+    const isDurationUnchanged = durationMinutes === (savedDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES);
+    const durationToSave = isDurationUnchanged ? savedDurationMinutes : durationMinutes;
+
     isSavingSession = true;
     try {
       await lessonApi.update(courseId, lessonId, {
-        callUrl: sessionCallUrl || undefined,
-        lessonAt: computeNewInstant() || undefined
+        callUrl: sessionCallUrl.trim() || null,
+        lessonAt: computeNewInstant() || null,
+        sessionDurationMinutes: durationToSave,
+        recordingUrl: sessionRecordingUrl.trim() || null
       });
 
       const currentTz = courseApi.course?.metadata?.sessionTimezone || '';
@@ -104,9 +163,9 @@
   }
 
   async function handleSaveSession() {
-    if (!sessionChanged()) return;
+    if (!sessionChanged() || !validateRecordingUrl()) return;
 
-    if (hadPriorSession) {
+    if (hadPriorSession && scheduleChanged()) {
       confirmOpen = true;
       return;
     }
@@ -120,6 +179,10 @@
     await persistSession();
     await notifySessionUpdate();
   }
+
+  $effect(() => {
+    hasUnsavedSessionChanges = sessionChanged();
+  });
 
   const completionPolicy = $derived(lessonApi.lesson?.completionPolicy ?? 'manual');
   const courseCommentsEnabled = $derived(courseApi.course?.metadata?.commentsEnabled ?? true);
@@ -150,13 +213,6 @@
     if (value !== 'manual' && value !== 'video_watch' && value !== 'none') return;
 
     lessonApi.updateLessonState('completionPolicy', value);
-  }
-
-  function handleVideoWatchThresholdChange(event: Event) {
-    const parsed = Number((event.currentTarget as HTMLInputElement).value);
-    if (Number.isNaN(parsed)) return;
-
-    lessonApi.updateLessonState('videoWatchThreshold', parsed);
   }
 
   function toggleVideoWatchEnforced(index: number, checked: boolean) {
@@ -203,7 +259,7 @@
             label={$t('course.navItem.lessons.session.link_label')}
             placeholder="https://zoom.us/j/..."
             value={sessionCallUrl}
-            onInputChange={(e) => (sessionCallUrl = (e.currentTarget as HTMLInputElement).value)}
+            onInput={(e) => (sessionCallUrl = e.currentTarget.value)}
           />
         </Field.Field>
 
@@ -234,6 +290,31 @@
             <Field.Description>{$t('course.navItem.lessons.session.timezone_helper')}</Field.Description>
           </Field.Field>
         </div>
+
+        <Field.Field>
+          <NumberField
+            integer
+            min={MIN_SESSION_DURATION_MINUTES}
+            max={MAX_SESSION_DURATION_MINUTES}
+            label={$t('course.navItem.lessons.session.duration_label')}
+            helperMessage={$t('course.navItem.lessons.session.duration_helper')}
+            bind:value={sessionDurationMinutes}
+            testId="lesson-session-duration"
+          />
+        </Field.Field>
+
+        <Field.Field>
+          <InputField
+            type="url"
+            label={$t('course.navItem.lessons.session.recording_url_label')}
+            helperMessage={$t('course.navItem.lessons.session.recording_url_helper')}
+            placeholder="https://zoom.us/rec/share/..."
+            value={sessionRecordingUrl}
+            errorMessage={recordingUrlError}
+            onInput={(e) => (sessionRecordingUrl = e.currentTarget.value)}
+            testId="lesson-session-recording-url"
+          />
+        </Field.Field>
 
         <div>
           <Button size="sm" onclick={handleSaveSession} loading={isSavingSession}>
@@ -319,11 +400,13 @@
 
         {#if completionPolicy === 'video_watch'}
           <Field.Field>
-            <InputField
-              type="number"
+            <NumberField
+              integer
+              min={1}
+              max={100}
               label={$t('course.navItem.lessons.completion_policy.watch_threshold')}
-              value={String(videoWatchThreshold)}
-              onInputChange={handleVideoWatchThresholdChange}
+              value={videoWatchThreshold}
+              onValueChange={(next) => lessonApi.updateLessonState('videoWatchThreshold', next ?? 95)}
             />
           </Field.Field>
 
@@ -334,9 +417,25 @@
             >
 
             {#if enforceableVideos.length === 0}
-              <Field.Description
-                >{$t('course.navItem.lessons.settings.progression.watch_videos_empty')}</Field.Description
-              >
+              <Alert.Root variant="warning">
+                <TriangleAlertIcon />
+                <Alert.Title>
+                  {$t('course.navItem.lessons.settings.progression.watch_videos_no_uploads_title')}
+                </Alert.Title>
+                <Alert.Description>
+                  <p>
+                    {$t('course.navItem.lessons.settings.progression.watch_videos_empty')}
+                    <a
+                      href="https://classroomio.com/help/create-and-deliver/course-progression"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="ui:text-primary underline"
+                    >
+                      {$t('course.navItem.lessons.settings.progression.watch_videos_learn_more')}
+                    </a>
+                  </p>
+                </Alert.Description>
+              </Alert.Root>
             {:else}
               <Field.Group class="gap-3">
                 {#each enforceableVideos as { video, index } (video.assetId ?? index)}
@@ -352,10 +451,10 @@
                   </Field.Field>
                 {/each}
               </Field.Group>
-            {/if}
 
-            {#if showWatchVideosError}
-              <Field.Error>{$t('course.navItem.lessons.settings.progression.watch_videos_required')}</Field.Error>
+              {#if showWatchVideosError}
+                <Field.Error>{$t('course.navItem.lessons.settings.progression.watch_videos_required')}</Field.Error>
+              {/if}
             {/if}
           </Field.Field>
         {/if}

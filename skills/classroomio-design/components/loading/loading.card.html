@@ -1,0 +1,39 @@
+<!-- @dsCard group="Components" viewport="1200x820" name="Loading states" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;padding:24px;background:#FAFAFA;font-family:var(--font-sans);color:var(--ink-900)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ClassroomIODesignSystem || window[Object.keys(window).find(k => { try { return window[k] && window[k].BlockLoader; } catch (e) { return false; } })] || {};
+const { BlockLoader, CompactLoader, ImportProgress, BlockSkeleton, BlockGlyph, AgentDrafting } = NS;
+const Card = ({ children, style }) => <div style={{ background: '#FFFFFF', border: '1px solid rgba(23,20,15,0.08)', borderRadius: 10, boxShadow: '0 1px 2px rgba(23,20,15,0.05)', boxSizing: 'border-box', ...style }}>{children}</div>;
+const Label = ({ children }) => <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.12em', color: 'var(--blue-700)' }}>{children}</span>;
+ReactDOM.createRoot(document.getElementById('root')).render(<div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+  <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 20, alignItems: 'stretch' }}>
+    <Card style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+      <span style={{ position: 'absolute', top: 20, left: 22 }}><Label>01 · FULL PAGE</Label></span>
+      <BlockLoader height={340} caption="Blocks drop into place one at a time, then clear and repeat." />
+    </Card>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <Card style={{ padding: 18, display: 'flex', alignItems: 'center', gap: 18 }}>
+        <CompactLoader />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><Label>02 · COMPACT</Label><b style={{ fontSize: 17, letterSpacing: '-0.01em' }}>Wordless loader</b><span style={{ fontSize: 14, lineHeight: 1.45, color: 'var(--ink-500)' }}>Three blocks stack and clear. No text, so it works in any language.</span></div>
+      </Card>
+      <Card style={{ padding: '16px 22px', display: 'flex', flexDirection: 'column', gap: 12 }}><Label>03 · INLINE</Label><ImportProgress /></Card>
+      <Card style={{ padding: '16px 22px', display: 'flex', flexDirection: 'column', gap: 12 }}><Label>04 · BUTTON</Label>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 44, padding: '0 18px', borderRadius: 10, background: 'var(--blue-700)', color: '#fff', fontSize: 16, fontWeight: 600 }}><BlockGlyph size={18} />Publishing…</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', height: 44, padding: '0 18px', borderRadius: 10, background: '#fff', border: '1px solid rgba(23,20,15,0.14)', fontSize: 16, fontWeight: 600 }}>Cancel</span>
+        </div>
+      </Card>
+      <Card style={{ padding: '16px 22px', display: 'flex', flexDirection: 'column', gap: 12 }}><Label>05 · BLOCK SKELETON</Label><BlockSkeleton /></Card>
+    </div>
+  </div>
+  <Card style={{ padding: '24px 28px', display: 'grid', gridTemplateColumns: '300px minmax(0, 1fr)', gap: 40, alignItems: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}><Label>06 · AGENT DRAFTING</Label><b style={{ fontSize: 20, letterSpacing: '-0.02em' }}>The agent types, blocks appear</b><span style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--ink-500)' }}>For long jobs like drafting a course. The prompt types out, then draft blocks fill in underneath.</span></div>
+    <AgentDrafting />
+  </Card>
+</div>);
+</script></body></html>

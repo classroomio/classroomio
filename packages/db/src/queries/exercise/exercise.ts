@@ -11,6 +11,37 @@ import type {
 import { and, asc, db, eq, inArray, isNull, or, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
+import { contentWriteBumpsTimestamp, stampContentUpdatedAt } from '@db/queries/course/content-timestamp';
+
+export async function touchExercisesUpdatedAt(exerciseIds: string[], dbClient: DbOrTxClient = db) {
+  const ids = [...new Set(exerciseIds.filter(Boolean))];
+  if (ids.length === 0) return;
+
+  try {
+    await dbClient
+      .update(schema.exercise)
+      .set({ updatedAt: new Date().toISOString() })
+      .where(inArray(schema.exercise.id, ids));
+  } catch (error) {
+    console.error('touchExercisesUpdatedAt error:', error);
+    throw new Error(`Failed to touch exercises: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+async function touchExercisesForQuestions(questionIds: number[], dbClient: DbOrTxClient) {
+  const ids = [...new Set(questionIds)];
+  if (ids.length === 0) return;
+
+  const rows = await dbClient
+    .select({ exerciseId: schema.question.exerciseId })
+    .from(schema.question)
+    .where(inArray(schema.question.id, ids));
+
+  await touchExercisesUpdatedAt(
+    rows.map((row) => row.exerciseId),
+    dbClient
+  );
+}
 
 export async function createExercises(values: TNewExercise[], dbClient: DbOrTxClient = db) {
   try {
@@ -137,9 +168,13 @@ export async function getExercisesByCourseId(
 
 export async function updateExercise(exerciseId: string, data: Partial<TExerciseType>, dbClient: DbOrTxClient = db) {
   try {
+    const fields = { ...data };
+    delete fields.updatedAt;
+    const fieldNames = Object.keys(fields);
+    const patch = contentWriteBumpsTimestamp(fieldNames) ? { ...fields, updatedAt: new Date().toISOString() } : fields;
     const [updated] = await dbClient
       .update(schema.exercise)
-      .set({ ...data, updatedAt: new Date().toISOString() })
+      .set(patch)
       .where(eq(schema.exercise.id, exerciseId))
       .returning();
     return updated || null;
@@ -214,7 +249,12 @@ export async function createQuestions(values: TNewQuestion[], dbClient: DbOrTxCl
     // Keep the identity sequence aligned before bulk inserts so restored data
     // or manual imports cannot reuse an existing question id.
     await syncQuestionIdSequence(dbClient);
-    return dbClient.insert(schema.question).values(values).returning();
+    const created = await dbClient.insert(schema.question).values(values).returning();
+    await touchExercisesUpdatedAt(
+      created.map((question) => question.exerciseId),
+      dbClient
+    );
+    return created;
   } catch (error) {
     const err = error as Error & { code?: string; cause?: unknown };
     console.error('createQuestions error:', {
@@ -245,9 +285,13 @@ export async function updateQuestion(questionId: number, data: Partial<TNewQuest
   try {
     const [updated] = await dbClient
       .update(schema.question)
-      .set(data)
+      .set(stampContentUpdatedAt(data))
       .where(eq(schema.question.id, questionId))
       .returning();
+    if (updated) {
+      await touchExercisesUpdatedAt([updated.exerciseId], dbClient);
+    }
+
     return updated || null;
   } catch (error) {
     console.error('updateQuestion error:', error);
@@ -260,6 +304,10 @@ export async function updateQuestion(questionId: number, data: Partial<TNewQuest
 export async function deleteQuestion(questionId: number, dbClient: DbOrTxClient = db) {
   try {
     const [deleted] = await dbClient.delete(schema.question).where(eq(schema.question.id, questionId)).returning();
+    if (deleted) {
+      await touchExercisesUpdatedAt([deleted.exerciseId], dbClient);
+    }
+
     return deleted || null;
   } catch (error) {
     console.error('deleteQuestion error:', error);
@@ -273,7 +321,12 @@ export async function createOptions(values: TNewOption[], dbClient: DbOrTxClient
   if (values.length === 0) return [];
   try {
     await syncOptionIdSequence(dbClient);
-    return dbClient.insert(schema.option).values(values).returning();
+    const created = await dbClient.insert(schema.option).values(values).returning();
+    await touchExercisesForQuestions(
+      created.map((option) => option.questionId),
+      dbClient
+    );
+    return created;
   } catch (error) {
     console.error('createOptions error:', error);
     throw new Error(`Failed to create options: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -298,7 +351,15 @@ export async function getOptionsByQuestionIds(questionIds: number[], dbClient: D
 
 export async function updateOption(optionId: number, data: Partial<TNewOption>, dbClient: DbOrTxClient = db) {
   try {
-    const [updated] = await dbClient.update(schema.option).set(data).where(eq(schema.option.id, optionId)).returning();
+    const [updated] = await dbClient
+      .update(schema.option)
+      .set(stampContentUpdatedAt(data))
+      .where(eq(schema.option.id, optionId))
+      .returning();
+    if (updated) {
+      await touchExercisesForQuestions([updated.questionId], dbClient);
+    }
+
     return updated || null;
   } catch (error) {
     console.error('updateOption error:', error);
@@ -311,6 +372,10 @@ export async function updateOption(optionId: number, data: Partial<TNewOption>, 
 export async function deleteOption(optionId: number, dbClient: DbOrTxClient = db) {
   try {
     const [deleted] = await dbClient.delete(schema.option).where(eq(schema.option.id, optionId)).returning();
+    if (deleted) {
+      await touchExercisesForQuestions([deleted.questionId], dbClient);
+    }
+
     return deleted || null;
   } catch (error) {
     console.error('deleteOption error:', error);
@@ -326,7 +391,12 @@ export async function deleteOption(optionId: number, dbClient: DbOrTxClient = db
 export async function deleteOptionsByQuestionIds(questionIds: number[], dbClient: DbOrTxClient = db) {
   if (questionIds.length === 0) return [];
   try {
-    return dbClient.delete(schema.option).where(inArray(schema.option.questionId, questionIds)).returning();
+    const deleted = await dbClient
+      .delete(schema.option)
+      .where(inArray(schema.option.questionId, questionIds))
+      .returning();
+    await touchExercisesForQuestions(questionIds, dbClient);
+    return deleted;
   } catch (error) {
     console.error('deleteOptionsByQuestionIds error:', error);
     throw new Error(
@@ -341,7 +411,12 @@ export async function deleteOptionsByQuestionIds(questionIds: number[], dbClient
 export async function deleteQuestionsByIds(questionIds: number[], dbClient: DbOrTxClient = db) {
   if (questionIds.length === 0) return [];
   try {
-    return dbClient.delete(schema.question).where(inArray(schema.question.id, questionIds)).returning();
+    const deleted = await dbClient.delete(schema.question).where(inArray(schema.question.id, questionIds)).returning();
+    await touchExercisesUpdatedAt(
+      deleted.map((question) => question.exerciseId),
+      dbClient
+    );
+    return deleted;
   } catch (error) {
     console.error('deleteQuestionsByIds error:', error);
     throw new Error(`Failed to delete questions by IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -354,7 +429,12 @@ export async function deleteQuestionsByIds(questionIds: number[], dbClient: DbOr
 export async function deleteOptionsByIds(optionIds: number[], dbClient: DbOrTxClient = db) {
   if (optionIds.length === 0) return [];
   try {
-    return dbClient.delete(schema.option).where(inArray(schema.option.id, optionIds)).returning();
+    const deleted = await dbClient.delete(schema.option).where(inArray(schema.option.id, optionIds)).returning();
+    await touchExercisesForQuestions(
+      deleted.map((option) => option.questionId),
+      dbClient
+    );
+    return deleted;
   } catch (error) {
     console.error('deleteOptionsByIds error:', error);
     throw new Error(`Failed to delete options by IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -370,20 +450,26 @@ export async function updateOptions(
 ) {
   if (updates.length === 0) return [];
   try {
-    const run = (client: DbOrTxClient) =>
-      Promise.all(
+    const run = async (client: DbOrTxClient) => {
+      const results = await Promise.all(
         updates.map(({ id, data }) =>
           client
             .update(schema.option)
-            .set(data)
+            .set(stampContentUpdatedAt(data))
             .where(eq(schema.option.id, id))
             .returning()
-            .then((r) => r[0])
+            .then((rows) => rows[0])
         )
       );
+      const updated = results.filter((row) => row !== undefined);
+      await touchExercisesForQuestions(
+        updated.map((option) => option.questionId),
+        client
+      );
+      return updated;
+    };
 
-    const results = dbClient ? await run(dbClient) : await db.transaction((tx) => run(tx));
-    return results.filter((r) => r !== undefined);
+    return dbClient ? await run(dbClient) : db.transaction((tx) => run(tx));
   } catch (error) {
     console.error('batchUpdateOptions error:', error);
     throw new Error(`Failed to batch update options: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -399,20 +485,26 @@ export async function updateQuestions(
 ) {
   if (updates.length === 0) return [];
   try {
-    const run = (client: DbOrTxClient) =>
-      Promise.all(
+    const run = async (client: DbOrTxClient) => {
+      const results = await Promise.all(
         updates.map(({ id, data }) =>
           client
             .update(schema.question)
-            .set(data)
+            .set(stampContentUpdatedAt(data))
             .where(eq(schema.question.id, id))
             .returning()
-            .then((r) => r[0])
+            .then((rows) => rows[0])
         )
       );
+      const updated = results.filter((row) => row !== undefined);
+      await touchExercisesUpdatedAt(
+        updated.map((question) => question.exerciseId),
+        client
+      );
+      return updated;
+    };
 
-    const results = dbClient ? await run(dbClient) : await db.transaction((tx) => run(tx));
-    return results.filter((r) => r !== undefined);
+    return dbClient ? await run(dbClient) : db.transaction((tx) => run(tx));
   } catch (error) {
     console.error('batchUpdateQuestions error:', error);
     throw new Error(`Failed to batch update questions: ${error instanceof Error ? error.message : 'Unknown error'}`);

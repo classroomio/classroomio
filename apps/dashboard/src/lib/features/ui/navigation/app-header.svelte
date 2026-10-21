@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { Separator } from '@cio/ui/base/separator';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import BellIcon from '@lucide/svelte/icons/bell';
@@ -6,19 +7,24 @@
   import * as Popover from '@cio/ui/base/popover';
   import Search from '$features/ui/search.svelte';
   import AppBreadcrumbs from './app-breadcrumbs.svelte';
-  import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
-  import * as Empty from '@cio/ui/base/empty';
   import { currentOrg } from '$lib/utils/store/org';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
+  import { notificationsApi } from '$features/notifications/api/notifications.svelte';
+  import NotificationsPanel from '$features/notifications/components/notifications-panel.svelte';
   import AppSetup from './app-setup.svelte';
   import VisitOrgSiteBtn from '$features/ui/visit-org-site-btn.svelte';
 
   const siteName = $derived($currentOrg.siteName);
+  const notificationCount = $derived(notificationsApi.unreadCount);
 
   $effect(() => {
     if (!siteName) return;
 
     setupProgressApi.fetchSetupProgress(siteName);
+  });
+
+  onMount(() => {
+    notificationsApi.fetchOnce();
   });
 </script>
 
@@ -41,29 +47,27 @@
 
     <Search />
 
-    <Popover.Root>
-      <Popover.Trigger>
-        <Button variant="outline" size="icon" testId="app-notifications-trigger">
-          <BellIcon class="custom rounded-full" />
-        </Button>
-      </Popover.Trigger>
-      <Popover.Content>
-        <Empty.Root class="ui:from-muted/50 ui:to-background h-full bg-gradient-to-b from-30%">
-          <Empty.Header>
-            <Empty.Media variant="icon">
-              <BellIcon />
-            </Empty.Media>
-            <Empty.Title>No Notifications</Empty.Title>
-            <Empty.Description>You're all caught up. New notifications will appear here.</Empty.Description>
-          </Empty.Header>
-          <Empty.Content>
-            <Button variant="outline" size="sm">
-              <RefreshCcwIcon />
-              Refresh
+    <div class="relative">
+      <Popover.Root>
+        <Popover.Trigger>
+          {#snippet child({ props })}
+            <Button {...props} variant="secondary" size="icon" testId="app-notifications-trigger">
+              <BellIcon class="custom rounded-full" />
             </Button>
-          </Empty.Content>
-        </Empty.Root>
-      </Popover.Content>
-    </Popover.Root>
+          {/snippet}
+        </Popover.Trigger>
+        <Popover.Content align="end" sideOffset={8} class="ui:p-0! w-[460px]">
+          <NotificationsPanel />
+        </Popover.Content>
+      </Popover.Root>
+
+      {#if notificationCount > 0}
+        <span
+          class="ui:bg-primary ui:text-primary-foreground pointer-events-none absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-medium"
+        >
+          {notificationCount}
+        </span>
+      {/if}
+    </div>
   </div>
 </header>

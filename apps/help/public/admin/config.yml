@@ -1,0 +1,208 @@
+# Sveltia CMS config for the ClassroomIO Help Center (apps/help).
+# Docs: https://github.com/sveltia/sveltia-cms#configuration
+#
+# Adding a page here does NOT add it to the sidebar — that's the separate
+# navigation.sidebar array in apps/help/blume.config.ts. See apps/help/CMS_GUIDE.md.
+
+backend:
+  name: github
+  repo: classroomio/classroomio
+  branch: main
+  base_url: https://cio-help-cms.digdippa.workers.dev # apps/help-cms's deployed Worker
+  auth_endpoint: auth
+
+publish_mode: editorial_workflow
+
+# Images live flat under apps/help/public, referenced as absolute /help/<file> paths.
+media_folder: apps/help/public
+public_folder: /help
+
+collections:
+  - name: get_started
+    label: 'Get Started'
+    folder: apps/help/content/help/get-started
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: create_and_deliver
+    label: 'Create & Deliver Learning'
+    folder: apps/help/content/help/create-and-deliver
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: manage_students
+    label: 'Manage Students & Enrollment'
+    folder: apps/help/content/help/manage-students
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: publish_and_brand
+    label: 'Publish & Brand Your Academy'
+    folder: apps/help/content/help/publish-and-brand
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: organization_and_team
+    label: 'Organization & Team'
+    folder: apps/help/content/help/organization-and-team
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: integrations
+    label: 'Integrations & SSO'
+    folder: apps/help/content/help/integrations
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: student_onboarding
+    label: 'For Students: Get Started'
+    folder: apps/help/content/help/student-onboarding
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: student_guides
+    label: 'For Students: Using ClassroomIO'
+    folder: apps/help/content/help/student-guides
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: reference
+    label: 'Reference'
+    folder: apps/help/content/help/reference
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }

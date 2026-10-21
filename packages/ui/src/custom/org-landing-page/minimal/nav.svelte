@@ -1,21 +1,19 @@
 <script lang="ts">
-  import type { NavItem } from '../types';
-  import { Button } from '../../../base/button';
+  import type { LandingNavAuthAction, NavItem, OrgLandingPageProps } from '../types';
+  import { safeHref } from '../safe-href';
   import EditableLandingSection from '../editable-section.svelte';
+  import LearnerMenu from '../learner-menu.svelte';
+  import LandingNavCta from '../landing-nav-cta.svelte';
 
   interface Props {
     orgName: string;
     logoUrl?: string;
     navItems: NavItem[];
-    authAction?: {
-      label: string;
-      href: string;
-      loading?: boolean;
-      disabled?: boolean;
-    };
+    authAction?: LandingNavAuthAction;
+    learnerAccount?: OrgLandingPageProps['learnerAccount'];
   }
 
-  let { orgName, logoUrl, navItems, authAction }: Props = $props();
+  let { orgName, logoUrl, navItems, authAction, learnerAccount }: Props = $props();
 
   const navigationGradientBackground = `
     linear-gradient(
@@ -41,22 +39,21 @@
       <nav class="ui:hidden ui:md:flex ui:gap-8">
         {#each navItems as item}
           <a
-            href={item.href}
+            href={safeHref(item.href)}
             class="ui:text-sm ui:text-[var(--landing-fg)]/70 ui:hover:text-[var(--landing-fg)] ui:transition-colors ui:cursor-pointer"
             >{item.label}</a
           >
         {/each}
       </nav>
-      {#if authAction}
-        <Button
-          href={authAction.href}
-          loading={authAction.loading}
-          disabled={authAction.disabled}
-          variant="outline"
-          class="ui:rounded-full"
-        >
-          {authAction.label}
-        </Button>
+      {#if authAction || learnerAccount}
+        <div class="ui:flex ui:items-center ui:gap-3">
+          {#if authAction}
+            <LandingNavCta {authAction} theme="minimal" />
+          {/if}
+          {#if learnerAccount}
+            <LearnerMenu account={learnerAccount} {authAction} theme="minimal" />
+          {/if}
+        </div>
       {/if}
     </div>
   </header>

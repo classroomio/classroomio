@@ -1,9 +1,10 @@
 <script>
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import CodeBlock from './code-block.svelte';
+  import Eyebrow from './ui/eyebrow.svelte';
+  import Section from './ui/section.svelte';
+  import SectionHeader from './ui/section-header.svelte';
 
-  // mcp.json: sky-300 keys · emerald-300 strings · slate-500 punctuation
-  // 2-space indent (real spaces; body uses whitespace-pre).
   const mcpJsonLines = [
     '<span class="text-slate-500">{</span>',
     '  <span class="text-sky-300">"mcpServers"</span><span class="text-slate-500">: {</span>',
@@ -48,70 +49,65 @@
   ];
 </script>
 
-<section
-  id="ai"
-  class="relative overflow-hidden bg-linear-to-br from-gray-950 to-[#0f1629] px-6 py-16 text-white lg:px-12 lg:py-24"
->
+<Section id="ai" class="relative overflow-hidden bg-linear-to-br from-gray-950 to-[#0f1629] text-white">
   <div
     class="pointer-events-none absolute -top-[200px] -right-[200px] h-[600px] w-[600px] bg-[radial-gradient(circle,rgba(2,51,189,0.15)_0%,transparent_70%)]"
   ></div>
 
-  <div class="mx-auto max-w-[1100px]">
-    <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
-      <div>
-        <BlurFade once>
-          <div class="mb-3.5 text-xs font-medium tracking-widest text-blue-400 uppercase">AI-Powered Content</div>
-          <h2 class="mb-4 text-[clamp(2rem,3vw,2.8rem)] leading-[1.15] font-medium tracking-tight text-white">
-            Let your agent do<br />the course building.
-          </h2>
-          <p class="mb-14 max-w-[520px] text-base leading-relaxed text-gray-500 lg:text-lg">
-            Connect your favorite AI agent to ClassroomIO via MCP. Create, update, and publish entire courses from your
-            terminal in seconds.
-          </p>
-        </BlurFade>
+  <div class="relative grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <div>
+      <BlurFade once>
+        <SectionHeader
+          align="left"
+          size="h3"
+          eyebrow="AI-Powered Content"
+          eyebrowClass="text-blue-400"
+          titleClass="text-white"
+          ledeClass="text-gray-500"
+          lede="Connect your favorite AI agent to ClassroomIO via MCP. Create, update, and publish entire courses from your terminal in seconds."
+        >
+          {#snippet title()}Let your agent do<br />the course building.{/snippet}
+        </SectionHeader>
+      </BlurFade>
 
-        <div class="flex flex-col gap-6">
-          {#each aiFeatures as feature, i}
-            <BlurFade delay={0.15 * i} once>
-              <div class="flex items-start gap-4 rounded-xl border border-white/[0.08] bg-white/[0.04] p-6">
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-blue-700/20 text-2xl">
-                  {feature.icon}
-                </div>
-                <div>
-                  <h4 class="mb-1.5 text-sm font-medium text-white">{feature.title}</h4>
-                  <p class="text-sm leading-relaxed text-gray-500">{feature.description}</p>
-                </div>
+      <div class="mt-12 flex flex-col gap-4">
+        {#each aiFeatures as feature, i}
+          <BlurFade delay={0.15 * i} once>
+            <div class="flex items-start gap-4 rounded-xl border border-white/[0.08] bg-white/[0.04] p-6">
+              <div class="flex size-10 shrink-0 items-center justify-center rounded-md bg-blue-700/20 text-xl">
+                {feature.icon}
               </div>
-            </BlurFade>
-          {/each}
-        </div>
-      </div>
-
-      <BlurFade delay={0.2} once>
-        <div>
-          <CodeBlock
-            fileName="mcp.json"
-            lang="JSON"
-            codeLines={mcpJsonLines}
-            statusBar="paste into ~/.claude/mcp.json · restart your client"
-          />
-
-          <!-- Supported Agents -->
-          <div class="mt-6">
-            <div class="mb-3 text-xs tracking-wider text-gray-600 uppercase">Works with</div>
-            <div class="flex flex-wrap gap-3">
-              {#each agents as agent}
-                <div
-                  class="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.06] px-3.5 py-2"
-                >
-                  <img src={agent.logo} alt="{agent.name} logo" class="h-5 w-5 rounded-full" />
-                  <span class="text-xs text-gray-300">{agent.name}</span>
-                </div>
-              {/each}
+              <div>
+                <h3 class="text-card-title mb-1.5 font-medium text-white">{feature.title}</h3>
+                <p class="text-[15px] leading-relaxed text-gray-500">{feature.description}</p>
+              </div>
             </div>
+          </BlurFade>
+        {/each}
+      </div>
+    </div>
+
+    <BlurFade delay={0.2} once class="min-w-0">
+      <div>
+        <CodeBlock
+          fileName="mcp.json"
+          lang="JSON"
+          codeLines={mcpJsonLines}
+          statusBar="paste into ~/.claude/mcp.json · restart your client"
+        />
+
+        <div class="mt-6">
+          <Eyebrow size="sm" class="mb-3 text-gray-600">Works with</Eyebrow>
+          <div class="flex flex-wrap gap-3">
+            {#each agents as agent}
+              <div class="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.06] px-3.5 py-2">
+                <img src={agent.logo} alt="{agent.name} logo" class="h-5 w-5 rounded-full" />
+                <span class="text-xs text-gray-300">{agent.name}</span>
+              </div>
+            {/each}
           </div>
         </div>
-      </BlurFade>
-    </div>
+      </div>
+    </BlurFade>
   </div>
-</section>
+</Section>

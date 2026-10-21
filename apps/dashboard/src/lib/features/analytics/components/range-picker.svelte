@@ -18,7 +18,7 @@
 
 <div class="inline-flex gap-1 rounded-md border p-1">
   {#each options as opt (opt.days)}
-    <Button variant={value === opt.days ? 'default' : 'ghost'} size="sm" onclick={() => onChange(opt.days)}>
+    <Button variant={value === opt.days ? 'default' : 'ghost'} size="xs" onclick={() => onChange(opt.days)}>
       {$t(opt.labelKey)}
     </Button>
   {/each}

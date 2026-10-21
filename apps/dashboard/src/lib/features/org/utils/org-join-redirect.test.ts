@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { resolveOrgJoinRedirect } from './org-join-redirect';
 
 const ORIGIN = 'https://academy.example.com';

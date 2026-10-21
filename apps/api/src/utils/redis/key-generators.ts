@@ -149,7 +149,7 @@ export const agentUploadKeyGenerator = (c: Context): string => {
 
 /**
  * Redis keys for engagement analytics read endpoints (landing-stats, funnel,
- * country breakdown, time-to-enrollment). Value: JSON.
+ * country breakdown, popular types, top courses). Value: JSON.
  */
 export function dashAnalyticsKey(route: string, orgId: string, days: number, extra?: string): string {
   const suffix = extra ? `:${extra}` : '';
@@ -158,3 +158,14 @@ export function dashAnalyticsKey(route: string, orgId: string, days: number, ext
 
 /** TTL for engagement analytics caches (10 min). */
 export const DASH_ANALYTICS_TTL_SECONDS = 600;
+
+/**
+ * Redis key for one public API analytics section, e.g. `public-api:analytics:traffic:{orgId}:30`.
+ * Value: `{ data, generatedAt }`. TTL: `PUBLIC_API_ANALYTICS_TTL_SECONDS`, or 24h for login activity.
+ */
+export function publicApiAnalyticsKey(section: string, ...parts: Array<string | number>): string {
+  return ['public-api:analytics', section, ...parts].join(':');
+}
+
+export const PUBLIC_API_ANALYTICS_TTL_SECONDS = 600;
+export const PUBLIC_API_LOGIN_ACTIVITY_TTL_SECONDS = 86_400;

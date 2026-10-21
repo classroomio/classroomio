@@ -5,6 +5,9 @@
   import Summary from './summary.svelte';
   import Individual from './individual.svelte';
   import { submissions } from './store';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/state';
+  import { untrack } from 'svelte';
   import { t } from '$lib/utils/functions/translations';
   import type { ExerciseSubmissions } from './types';
   import type { SubmissionListItem } from '$features/course/utils/types';
@@ -13,19 +16,53 @@
   interface Props {
     exerciseId: string;
     submissions: SubmissionListItem[];
+    enrolledStudentKeys?: string[];
   }
 
-  let { exerciseId = $bindable(''), submissions: submissionsData }: Props = $props();
+  let { exerciseId = $bindable(''), submissions: submissionsData, enrolledStudentKeys = [] }: Props = $props();
 
   type SubmissionTab = 'summary' | 'individual';
-  let currentTab = $state<SubmissionTab>('summary');
+
+  function normalizeSubmissionTab(tabParam: string | null): SubmissionTab {
+    if (tabParam === 'individual') {
+      return 'individual';
+    }
+
+    return 'summary';
+  }
+
+  let currentTab = $derived(normalizeSubmissionTab(page.url.searchParams.get('submission')));
   const submissionGroups = $derived(groupSubmissionsByStudentAndAttempt(submissionsData));
+
+  $effect(() => {
+    const currentSubmission = page.url.searchParams.get('submission') ?? '';
+    if (currentSubmission === currentTab) return;
+
+    if ((page.url.searchParams.get('tab') ?? '') !== 'submissions') return;
+
+    untrack(() => {
+      const url = new URL(page.url);
+      url.searchParams.set('submission', currentTab);
+
+      if (currentTab !== 'individual') {
+        url.searchParams.delete('student');
+        url.searchParams.delete('attempt');
+      }
+
+      goto(`${url.pathname}${url.search}`, {
+        replaceState: true,
+        keepFocus: true,
+        noScroll: true
+      });
+    });
+  });
 
   function normalizeSubmissions(items: SubmissionListItem[]): ExerciseSubmissions[] {
     return items.map(
       (submission): ExerciseSubmissions => ({
         id: submission.id,
         statusId: submission.statusId ?? 1,
+        createdAt: typeof submission.createdAt === 'string' ? submission.createdAt : null,
         groupmember: submission.groupmember?.profile
           ? {
               profile: {
@@ -68,7 +105,7 @@
     </Tabs.Content>
 
     <Tabs.Content value="individual" class="pt-2">
-      <Individual isLoading={false} {submissionGroups} />
+      <Individual isLoading={false} {submissionGroups} {enrolledStudentKeys} />
     </Tabs.Content>
   </Tabs.Root>
 {:else}

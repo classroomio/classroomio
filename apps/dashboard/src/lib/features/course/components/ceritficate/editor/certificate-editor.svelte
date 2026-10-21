@@ -12,6 +12,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { isFreePlan } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
+  import { UnsavedChanges } from '$features/ui';
   import CertificateEditorHeader from './certificate-editor-header.svelte';
   import TemplatesPanel from './panels/templates-panel.svelte';
   import ContentPanel from './panels/content-panel.svelte';
@@ -59,6 +60,7 @@
 </script>
 
 {#if courseApi.course?.id === courseId}
+  <UnsavedChanges hasUnsavedChanges={store.isDirty} onAbandon={() => store.reset()} />
   <div class="ui:bg-background ui:text-foreground flex h-dvh flex-col">
     <CertificateEditorHeader
       {courseId}

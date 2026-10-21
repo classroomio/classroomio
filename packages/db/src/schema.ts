@@ -1,6 +1,7 @@
 import {
   bigint,
   boolean,
+  check,
   date,
   doublePrecision,
   foreignKey,
@@ -11,22 +12,33 @@ import {
   pgEnum,
   pgTable,
   pgView,
+  primaryKey,
   serial,
   text,
   timestamp,
   unique,
   uniqueIndex,
   uuid,
-  varchar
+  varchar,
+  type AnyPgColumn
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
+import { EMAIL_LOCALES } from '@cio/utils/email';
+import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
+import {
+  LIVE_SESSION_REMINDER_STATUS_VALUES,
+  type TLiveSessionReminderSkipReason
+} from '@cio/utils/constants/live-session-reminder';
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
-export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
+export const locale = pgEnum('LOCALE', [...EMAIL_LOCALES]);
+export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
+export const earlyAdopterClaimStatus = pgEnum('EARLY_ADOPTER_CLAIM_STATUS', ['pending', 'claimed', 'canceled']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
 export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
 export const organizationApiKeyType = pgEnum('ORGANIZATION_API_KEY_TYPE', ['mcp', 'api', 'zapier']);
@@ -70,6 +82,26 @@ export const organizationInviteEventType = pgEnum('ORGANIZATION_INVITE_EVENT_TYP
   'ABUSE_BLOCKED'
 ]);
 export const organizationInviteType = pgEnum('ORGANIZATION_INVITE_TYPE', ['EMAIL', 'LINK']);
+
+/**
+ * Lifecycle state of an organization membership. Orthogonal to `verified`,
+ * which records whether the invite was accepted rather than whether the member
+ * is allowed in.
+ *
+ * - `ACTIVE` — normal member.
+ * - `DEACTIVATED` — access suspended, reversible, still occupies a plan seat.
+ * - `ARCHIVED` — access suspended, reversible, and releases the plan seat
+ *   (see `countActiveStudents`). The intended answer to "remove them".
+ */
+export const organizationMemberStatus = pgEnum('ORGANIZATION_MEMBER_STATUS', ['ACTIVE', 'DEACTIVATED', 'ARCHIVED']);
+
+export const organizationMemberEventType = pgEnum('ORGANIZATION_MEMBER_EVENT_TYPE', [
+  'DEACTIVATED',
+  'REACTIVATED',
+  'ARCHIVED',
+  'UNARCHIVED',
+  'REMOVED'
+]);
 
 export const user = pgTable('user', {
   id: uuid()
@@ -283,18 +315,28 @@ export const analyticsCountryDaily = pgTable(
   ]
 );
 
-export const courseSection = pgTable('course_section', {
-  id: uuid().defaultRandom().primaryKey().notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-  title: varchar(),
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-  order: bigint({ mode: 'number' }).default(sql`'0'`),
-  courseId: uuid('course_id').references(() => course.id, {
-    onDelete: 'cascade',
-    onUpdate: 'cascade'
-  })
-});
+export const courseSection = pgTable(
+  'course_section',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    title: varchar(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    order: bigint({ mode: 'number' }).notNull(),
+    courseId: uuid('course_id').references(() => course.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade'
+    }),
+    sourceId: uuid('source_id').references((): AnyPgColumn => courseSection.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    index('course_section_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
+  ]
+);
 
 export const group = pgTable(
   'group',
@@ -402,12 +444,24 @@ export const profile = pgTable(
     canAddCourse: boolean('can_add_course').default(true),
     role: varchar(),
     goal: varchar(),
+    useCases: jsonb('use_cases').default([]).notNull().$type<string[]>(),
+    useCaseOther: text('use_case_other'),
+    learningMethod: varchar('learning_method'),
+    learningMethodOther: text('learning_method_other'),
+    companySize: varchar('company_size'),
+    jobRole: varchar('job_role'),
+    jobRoleOther: text('job_role_other'),
     source: varchar(),
+    sourceOther: text('source_other'),
+    aiProvider: varchar('ai_provider'),
+    aiProviderOther: text('ai_provider_other'),
     metadata: json(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     telegramChatId: bigint('telegram_chat_id', { mode: 'number' }),
     isEmailVerified: boolean('is_email_verified').default(false),
     verifiedAt: timestamp('verified_at', { withTimezone: true, mode: 'string' }),
+    welcomeEmailPending: boolean('welcome_email_pending').default(false).notNull(),
+    welcomeEmailSentAt: timestamp('welcome_email_sent_at', { withTimezone: true, mode: 'string' }),
     locale: locale().default('en'),
     isRestricted: boolean('is_restricted').default(false).notNull(),
     settings: jsonb().default({}).$type<Record<string, unknown>>()
@@ -647,7 +701,10 @@ export const course = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     groupId: uuid('group_id'),
-    isTemplate: boolean('is_template').default(true),
+    isTemplate: boolean('is_template').default(false).notNull(),
+    templateId: uuid('template_id').references((): AnyPgColumn => course.id, { onDelete: 'set null' }),
+    publicForAll: boolean('public_for_all').default(false).notNull(),
+    seedKey: varchar('seed_key'),
     logo: text().default('').notNull(),
     slug: varchar(),
     metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull().$type<{
@@ -657,6 +714,7 @@ export const course = pgTable(
       videoUrl?: string;
       showDiscount?: boolean;
       discount?: number;
+      paymentEnabled?: boolean;
       paymentLink?: string;
       reward?: {
         show: boolean;
@@ -692,14 +750,18 @@ export const course = pgTable(
       allowSelfEnrollment?: boolean;
       /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. Kept because there is no backfill. */
       allowNewStudent?: boolean;
+      /** When true, public lesson pages expose a Copy Page / Markdown export surface. Off by default. */
+      allowMarkdownExport?: boolean;
       /** Teacher-authored HTML sent in the welcome email after a student enrolls. */
       welcomeEmailMessage?: string | null;
       /** IANA timezone for this course's live sessions (display + scheduling). */
       sessionTimezone?: string | null;
+      /** Minutes before each live session that students get an email reminder. Missing = platform default. */
+      liveSessionReminderOffsetsMinutes?: number[];
       sectionDisplay?: Record<string, boolean>;
       isContentGroupingEnabled?: boolean;
       /** `free` = all unlocked content is accessible; `sequential` = prior items must be complete. */
-      progressionMode?: 'free' | 'sequential';
+      progressionMode?: CourseProgressionMode;
       /** Course-wide switch for lesson comments. Missing legacy values are treated as enabled. */
       commentsEnabled?: boolean;
       /** Per-course AI tutor override; missing fields inherit from org defaults. */
@@ -729,6 +791,8 @@ export const course = pgTable(
     currency: varchar().default('USD').notNull(),
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
+    /** Manual display position on public surfaces; NULL = not curated (sorts by createdAt DESC). */
+    displayOrder: integer('display_order'),
     certificate: jsonb().default({}).$type<{
       isDownloadable?: boolean;
       /** @deprecated Use `design.templateId`. Legacy 6-theme id; mapped on read via LEGACY_THEME_MAP. */
@@ -739,16 +803,13 @@ export const course = pgTable(
         accentColor: string;
         subtitle?: string;
         descriptionOverride?: string;
-        signatories: [
+        signatories?: [
           { name: string; role: string; enabled?: boolean; signatureUrl?: string },
           { name: string; role: string; enabled?: boolean; signatureUrl?: string }
         ];
         idFormat?: string;
       };
       deadline?: string | null;
-      threshold?: number;
-      requiredExerciseId?: string | null;
-      exerciseMinScorePercent?: number | null;
       emailMessage?: string | null;
     }>(),
     compliance: jsonb().$type<{
@@ -758,7 +819,6 @@ export const course = pgTable(
       isMandatory?: boolean;
       framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
       maxRetakeAttempts?: number | null;
-      passingScore?: number;
     }>(),
     status: text().default('ACTIVE').notNull(),
     type: courseType().default('SELF_PACED'),
@@ -777,8 +837,40 @@ export const course = pgTable(
       name: 'course_group_id_fkey'
     }),
     unique('course_slug_key').on(table.slug),
-    index('idx_course_group_id').on(table.groupId)
+    index('idx_course_group_id').on(table.groupId),
+    index('course_template_id_idx')
+      .on(table.templateId)
+      .where(sql`${table.templateId} is not null`),
+    uniqueIndex('course_seed_key_unique')
+      .on(table.seedKey)
+      .where(sql`${table.seedKey} is not null`)
   ]
+);
+
+export const templateHighlight = pgTable(
+  'template_highlight',
+  {
+    id: uuid().defaultRandom().primaryKey(),
+    courseId: uuid('course_id')
+      .notNull()
+      .references(() => course.id, { onDelete: 'cascade' }),
+    position: integer().notNull(),
+    title: varchar({ length: 80 }).notNull(),
+    description: varchar({ length: 200 })
+  },
+  (table) => [index('template_highlight_course_id_idx').on(table.courseId)]
+);
+
+export const courseTemplateSettingSync = pgTable(
+  'course_template_setting_sync',
+  {
+    courseId: uuid('course_id')
+      .notNull()
+      .references(() => course.id, { onDelete: 'cascade' }),
+    settingKey: varchar('setting_key').notNull(),
+    syncedAt: timestamp('synced_at', { withTimezone: true, mode: 'string' }).notNull()
+  },
+  (table) => [primaryKey({ columns: [table.courseId, table.settingKey] })]
 );
 
 export const courseCompletionRecord = pgTable(
@@ -975,6 +1067,23 @@ export const lesson = pgTable(
     note: varchar(),
     videoUrl: varchar('video_url'),
     slideUrl: varchar('slide_url'),
+    slides: jsonb().default([]).$type<
+      {
+        id: string;
+        src: string;
+        platform:
+          | 'google-slides'
+          | 'canva'
+          | 'powerpoint'
+          | 'keynote'
+          | 'figma'
+          | 'prezi'
+          | 'pitch'
+          | 'gamma'
+          | 'slideshare'
+          | 'beautiful';
+      }[]
+    >(),
     courseId: uuid('course_id').notNull(),
     id: uuid()
       .default(sql`gen_random_uuid()`)
@@ -988,15 +1097,17 @@ export const lesson = pgTable(
     teacherId: uuid('teacher_id'),
     isComplete: boolean('is_complete').default(false),
     callUrl: text('call_url'),
+    sessionDurationMinutes: integer('session_duration_minutes'),
+    recordingUrl: text('recording_url'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    order: bigint({ mode: 'number' }),
+    order: bigint({ mode: 'number' }).notNull(),
     isUnlocked: boolean('is_unlocked').default(true),
     completionPolicy: varchar('completion_policy').default('manual').notNull(),
     videoWatchThreshold: integer('video_watch_threshold').default(95),
     commentsEnabled: boolean('comments_enabled').default(true).notNull(),
     videos: jsonb().default([]).$type<
       {
-        type: 'youtube' | 'generic' | 'upload' | 'google_drive';
+        type: 'youtube' | 'vimeo' | 'generic' | 'upload' | 'google_drive';
         link: string;
         key?: string;
         assetId?: string;
@@ -1011,6 +1122,8 @@ export const lesson = pgTable(
           duration?: number;
           aspectRatio?: string;
           createdAt?: string;
+          videoId?: string;
+          hash?: string;
         };
       }[]
     >(),
@@ -1028,7 +1141,9 @@ export const lesson = pgTable(
       onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-    slug: varchar()
+    slug: varchar().notNull(),
+    sourceId: uuid('source_id').references((): AnyPgColumn => lesson.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -1041,7 +1156,10 @@ export const lesson = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_teacher_id_fkey'
     }),
-    index('idx_lesson_course_slug').on(table.courseId, table.slug)
+    index('idx_lesson_course_slug').on(table.courseId, table.slug),
+    index('lesson_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
   ]
 );
 
@@ -1074,6 +1192,7 @@ export const asset = pgTable(
     aspectRatio: text('aspect_ratio'),
     isExternal: boolean('is_external').default(false).notNull(),
     status: varchar().default('active').notNull(),
+    hlsStatus: varchar('hls_status').default('none').notNull(),
     metadata: jsonb().default({}),
     createdByProfileId: uuid('created_by_profile_id'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -1196,11 +1315,12 @@ export const exercise = pgTable(
   {
     title: varchar().notNull(),
     description: varchar(),
+    // @deprecated - we no longer support exercises belonging to a lesson
     lessonId: uuid('lesson_id'),
     courseId: uuid('course_id'),
     sectionId: uuid('section_id'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    order: bigint({ mode: 'number' }),
+    order: bigint({ mode: 'number' }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     id: uuid()
@@ -1213,7 +1333,9 @@ export const exercise = pgTable(
     sectionDisplayMode: varchar('section_display_mode').default('one_question'),
     completionPolicy: varchar('completion_policy').default('submitted').notNull(),
     passThreshold: integer('pass_threshold'),
-    slug: varchar()
+    slug: varchar().notNull(),
+    sourceId: uuid('source_id').references((): AnyPgColumn => exercise.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -1231,7 +1353,10 @@ export const exercise = pgTable(
       foreignColumns: [courseSection.id],
       name: 'exercise_section_id_fkey'
     }),
-    index('idx_exercise_course_slug').on(table.courseId, table.slug)
+    index('idx_exercise_course_slug').on(table.courseId, table.slug),
+    index('exercise_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
   ]
 );
 
@@ -1508,6 +1633,55 @@ export const organizationInviteAudit = pgTable(
   ]
 );
 
+/**
+ * Lifecycle history for organization memberships — who deactivated, archived or
+ * removed whom, when, and off the back of which filter.
+ *
+ * `memberId` and `profileId` are recorded values, not live references, and
+ * carry no foreign key on purpose: the rows that matter most describe members
+ * that no longer exist, and a cascade would delete exactly the evidence this
+ * table is for. `targetEmail` is the durable identity for those rows.
+ */
+export const organizationMemberAudit = pgTable(
+  'organization_member_audit',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    memberId: bigint('member_id', { mode: 'number' }),
+    profileId: uuid('profile_id'),
+    targetEmail: varchar('target_email'),
+    eventType: organizationMemberEventType('event_type').notNull(),
+    actorProfileId: uuid('actor_profile_id'),
+    reason: text(),
+    /** The filter a bulk action was launched from, so it stays replayable. Empty for per-row actions. */
+    filterSnapshot: jsonb('filter_snapshot').default({}).notNull(),
+    metadata: jsonb().default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_member_audit_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.actorProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_member_audit_actor_profile_id_fkey'
+    }).onDelete('set null'),
+    index('idx_organization_member_audit_org_id').on(table.organizationId),
+    index('idx_organization_member_audit_member_id').on(table.memberId),
+    index('idx_organization_member_audit_profile_id').on(table.profileId),
+    index('idx_organization_member_audit_event_type').on(table.eventType),
+    index('idx_organization_member_audit_created_at').on(table.createdAt)
+  ]
+);
+
 export const lessonVideoProgress = pgTable(
   'lesson_video_progress',
   {
@@ -1772,6 +1946,65 @@ export const organizationPlan = pgTable(
   ]
 );
 
+export const earlyAdopterClaim = pgTable(
+  'early_adopter_claim',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'early_adopter_claim_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    tokenHash: text('token_hash').notNull(),
+    polarSubscriptionId: text('polar_subscription_id').notNull(),
+    polarCustomerId: text('polar_customer_id'),
+    polarCheckoutId: text('polar_checkout_id'),
+    email: text().notNull(),
+    status: earlyAdopterClaimStatus().default('pending').notNull(),
+    claimedOrgId: uuid('claimed_org_id'),
+    claimedByProfileId: uuid('claimed_by_profile_id'),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    reminderSentAt: timestamp('reminder_sent_at', { withTimezone: true, mode: 'string' }),
+    payload: jsonb(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    claimedAt: timestamp('claimed_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.claimedOrgId],
+      foreignColumns: [organization.id],
+      name: 'early_adopter_claim_claimed_org_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.claimedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'early_adopter_claim_claimed_by_profile_id_fkey'
+    }),
+    unique('early_adopter_claim_token_hash_key').on(table.tokenHash),
+    unique('early_adopter_claim_polar_subscription_id_key').on(table.polarSubscriptionId),
+    index('idx_early_adopter_claim_status_created_at').on(table.status, table.createdAt)
+  ]
+);
+
+/**
+ * Single row holding this install's anonymous ID, reported in self-hosted usage pings.
+ */
+export const instance = pgTable(
+  'instance',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    singleton: boolean().default(true).notNull(),
+    firstReportedAt: timestamp('first_reported_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('instance_singleton_key').on(table.singleton),
+    check('instance_singleton_check', sql`${table.singleton}`)
+  ]
+);
+
 export const lessonLanguage = pgTable(
   'lesson_language',
   {
@@ -1785,7 +2018,8 @@ export const lessonLanguage = pgTable(
     }),
     content: text(),
     lessonId: uuid('lesson_id').defaultRandom(),
-    locale: locale().default('en')
+    locale: locale().default('en'),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
   (table) => [
     foreignKey({
@@ -1798,16 +2032,39 @@ export const lessonLanguage = pgTable(
   ]
 );
 
+/**
+ * One row per *editing session*, not per save. Autosave coalesces consecutive
+ * edits by the same author into the newest unsealed row (see
+ * `recordLessonLanguageVersion` in `@cio/core/services/lesson-version`), so a
+ * long writing session produces one entry instead of one per keystroke pause.
+ *
+ * `old_content` is deliberately absent: the previous row's `new_content` is the
+ * old content, so storing both would persist every document twice. The
+ * `lesson_versions` view derives it with a window function.
+ */
 export const lessonLanguageHistory = pgTable(
   'lesson_language_history',
   {
     id: serial().primaryKey().notNull(),
     lessonLanguageId: integer('lesson_language_id'),
-    oldContent: text('old_content'),
     newContent: text('new_content'),
+    /** `auto` rows are prunable by retention; `manual` and `publish` are kept forever. */
+    kind: lessonVersionKind().default('auto').notNull(),
+    /** Optional author-supplied name for a milestone version. */
+    label: text(),
+    authorId: uuid('author_id'),
+    /** First edit in the session this row represents. */
+    sessionStartedAt: timestamp('session_started_at', { mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    /** Last edit in the session; the row's user-visible time. */
     timestamp: timestamp({ mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
-      .notNull()
+      .notNull(),
+    /** How many saves were coalesced into this session. */
+    editCount: integer('edit_count').default(1).notNull(),
+    /** Sealed rows are never extended. Set by an explicit save and by publishing. */
+    isSealed: boolean('is_sealed').default(false).notNull()
   },
   (table) => [
     foreignKey({
@@ -1816,7 +2073,19 @@ export const lessonLanguageHistory = pgTable(
       name: 'public_lesson_language_history_lesson_language_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [profile.id],
+      name: 'lesson_language_history_author_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('lesson_language_history_language_timestamp_idx').using(
+      'btree',
+      table.lessonLanguageId.asc(),
+      table.timestamp.desc()
+    )
   ]
 );
 
@@ -1837,6 +2106,16 @@ export const organizationmember = pgTable(
     profileId: uuid('profile_id'),
     email: text(),
     verified: boolean().default(false),
+    status: organizationMemberStatus().default('ACTIVE').notNull(),
+    statusChangedAt: timestamp('status_changed_at', { withTimezone: true, mode: 'string' }),
+    statusChangedBy: uuid('status_changed_by'),
+    /**
+     * Denormalized "last did anything in this org" timestamp. Maintained on
+     * page-event ingest and reconciled nightly from `analytics_page_event` and
+     * `lesson_completion`. Filtering 20k-row rosters against the raw event
+     * table does not hold up, which is why this column exists at all.
+     */
+    lastActiveAt: timestamp('last_active_at', { withTimezone: true, mode: 'string' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull()
@@ -1847,6 +2126,11 @@ export const organizationmember = pgTable(
       foreignColumns: [organization.id],
       name: 'organizationmember_organization_id_fkey'
     }),
+    foreignKey({
+      columns: [table.statusChangedBy],
+      foreignColumns: [profile.id],
+      name: 'organizationmember_status_changed_by_fkey'
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.profileId],
       foreignColumns: [profile.id],
@@ -1860,6 +2144,8 @@ export const organizationmember = pgTable(
     index('idx_organizationmember_profile_id').on(table.profileId),
     index('idx_organizationmember_organization_id').on(table.organizationId),
     index('idx_organizationmember_profile_org').on(table.profileId, table.organizationId),
+    index('idx_orgmember_org_role_status').on(table.organizationId, table.roleId, table.status),
+    index('idx_orgmember_org_last_active').on(table.organizationId, table.lastActiveAt),
     uniqueIndex('organizationmember_org_profile_unique')
       .on(table.organizationId, table.profileId)
       .where(sql`${table.profileId} IS NOT NULL`),
@@ -2054,6 +2340,10 @@ export const organization = pgTable(
         inviteOnly?: boolean;
       };
       internalEnrollmentOnly?: boolean;
+      language?: {
+        locale?: (typeof locale.enumValues)[number];
+        enforced?: boolean;
+      };
       studentLimitNotified?: {
         half?: boolean;
         reached?: boolean;
@@ -2261,6 +2551,26 @@ export const organization = pgTable(
       name: 'organization_parent_organization_id_fkey'
     }).onDelete('set null'),
     index('idx_organization_parent_id').on(table.parentOrganizationId)
+  ]
+);
+
+export const organizationStudentEmailTemplate = pgTable(
+  'organization_student_email_template',
+  {
+    organizationId: uuid('organization_id').notNull(),
+    emailId: varchar('email_id').notNull(),
+    subject: text(),
+    locale: locale().notNull(),
+    content: text().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    primaryKey({ columns: [table.organizationId, table.emailId, table.locale] }),
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_student_email_template_organization_id_fkey'
+    }).onDelete('cascade')
   ]
 );
 
@@ -2497,14 +2807,28 @@ export const dashOrgStats = pgView('dash_org_stats', {
   sql`SELECT gp.organization_id AS org_id, count(DISTINCT course.id) AS no_of_courses, count(DISTINCT gm.profile_id) AS enrolled_students FROM course JOIN "group" gp ON gp.id = course.group_id LEFT JOIN groupmember gm ON gm.group_id = gp.id AND gm.role_id = 3 WHERE course.status = 'ACTIVE'::text GROUP BY gp.organization_id`
 );
 
+/**
+ * Reader-facing shape of lesson version history. `old_content` is derived from
+ * the previous snapshot of the same lesson language rather than stored, and the
+ * author is joined in so the history panel doesn't need a second round trip.
+ */
 export const lessonVersions = pgView('lesson_versions', {
+  id: integer(),
   oldContent: text('old_content'),
   newContent: text('new_content'),
+  kind: lessonVersionKind(),
+  label: text(),
+  sessionStartedAt: timestamp('session_started_at', { mode: 'string' }),
   timestamp: timestamp({ mode: 'string' }),
+  editCount: integer('edit_count'),
+  isSealed: boolean('is_sealed'),
+  authorId: uuid('author_id'),
+  authorName: text('author_name'),
+  authorAvatarUrl: text('author_avatar_url'),
   locale: locale(),
   lessonId: uuid('lesson_id')
 }).as(
-  sql`SELECT llh.old_content, llh.new_content, llh."timestamp", ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id`
+  sql`SELECT llh.id, lag(llh.new_content) OVER (PARTITION BY llh.lesson_language_id ORDER BY llh."timestamp", llh.id) AS old_content, llh.new_content, llh.kind, llh.label, llh.session_started_at, llh."timestamp", llh.edit_count, llh.is_sealed, llh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id LEFT JOIN profile p ON p.id = llh.author_id`
 );
 
 export const exerciseTemplate = pgTable('exercise_template', {
@@ -3117,6 +3441,76 @@ export const cohortMember = pgTable(
     unique('cohort_member_cohort_id_profile_id_unique').on(table.cohortId, table.profileId),
     index('idx_cohort_member_cohort_id').on(table.cohortId),
     index('idx_cohort_member_profile_id').on(table.profileId)
+  ]
+);
+
+export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT']);
+
+/**
+ * Permanent, revocable share links for resource invites (course, cohort, ...).
+ * Separate from `organization_invite`, which owns platform invites.
+ */
+export const inviteLink = pgTable(
+  'invite_link',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    resourceType: inviteLinkResourceType('resource_type').notNull(),
+    courseId: uuid('course_id'),
+    cohortId: uuid('cohort_id'),
+    roleId: bigint('role_id', { mode: 'number' }).notNull(),
+    /** Raw token, kept so staff can re-copy the link. */
+    token: text().notNull(),
+    tokenHash: text('token_hash').notNull(),
+    createdByProfileId: uuid('created_by_profile_id').notNull(),
+    revokedByProfileId: uuid('revoked_by_profile_id'),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    isRevoked: boolean('is_revoked').default(false).notNull(),
+    joinCount: integer('join_count').default(0).notNull(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'invite_link_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'invite_link_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'invite_link_cohort_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'invite_link_role_id_fkey'
+    }),
+    unique('invite_link_token_hash_key').on(table.tokenHash),
+    // One link per (resource, role); NULLs are distinct so the two never collide.
+    unique('invite_link_course_id_role_id_unique').on(table.courseId, table.roleId),
+    unique('invite_link_cohort_id_role_id_unique').on(table.cohortId, table.roleId),
+    check(
+      'invite_link_resource_target_check',
+      sql`(
+        (${table.resourceType} = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL)
+        OR (${table.resourceType} = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL)
+      )`
+    ),
+    index('idx_invite_link_organization_id').on(table.organizationId)
   ]
 );
 
@@ -3800,6 +4194,44 @@ export const mediaTranscript = pgTable(
 );
 
 /**
+ * `youtube_caption` — platform-wide caption store for YouTube videos.
+ * One row per video + language. Shared across orgs so the provider is only
+ * hit once per unique YouTube video. Unavailable rows (`status: 'unavailable'`)
+ * with an `expiresAt` TTL prevent hammering the provider for videos without captions.
+ */
+export const youtubeCaption = pgTable(
+  'youtube_caption',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    youtubeVideoId: varchar('youtube_video_id', { length: 11 }).notNull(),
+    language: varchar({ length: 8 }).notNull(),
+    /** `ready` = captions stored, `unavailable` = no captions / private / disabled, `failed` = provider error */
+    status: varchar({ length: 16 }).notNull().default('ready'),
+    unavailableReason: varchar('unavailable_reason', { length: 32 }),
+    /** YouTube ASR (auto-generated) vs creator-uploaded captions */
+    isGenerated: boolean('is_generated').default(false).notNull(),
+    text: text(),
+    segments: jsonb().$type<{ start: number; end: number; text: string }[]>(),
+    provider: varchar({ length: 32 }).notNull().default('supadata'),
+    /** Hash of provider payload for change detection */
+    sourceHash: text('source_hash'),
+    costCents: integer('cost_cents').default(0).notNull(),
+    fetchedAt: timestamp('fetched_at', { withTimezone: true, mode: 'string' }).notNull(),
+    /** Optional TTL — null for `ready` rows (keep indefinitely), set for unavailable entries (~24h) */
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('youtube_caption_video_lang_unique').on(table.youtubeVideoId, table.language),
+    index('idx_youtube_caption_video_id').on(table.youtubeVideoId)
+  ]
+);
+
+/**
  * `dead_letter_job` — terminal failure record after BullMQ exhausts attempts
  * or a domain explicitly dead-letters a run. Drives the admin retry/replay UI
  * and Tinybird/Slack alerting.
@@ -3828,5 +4260,272 @@ export const deadLetterJob = pgTable(
   (table) => [
     index('idx_dead_letter_job_domain_created').on(table.domain, table.createdAt),
     index('idx_dead_letter_job_org_created').on(table.organizationId, table.createdAt)
+  ]
+);
+
+export const contentReportTargetType = pgEnum('CONTENT_REPORT_TARGET_TYPE', [
+  'course_newsfeed_post',
+  'course_newsfeed_comment',
+  'cohort_newsfeed_post',
+  'cohort_newsfeed_comment',
+  'community_question',
+  'community_answer',
+  'lesson_comment',
+  'profile'
+]);
+
+export const contentReportReason = pgEnum('CONTENT_REPORT_REASON', [
+  'spam',
+  'harassment',
+  'hate_speech',
+  'sexual_content',
+  'violence',
+  'misinformation',
+  'privacy',
+  'other'
+]);
+
+export const contentReportStatus = pgEnum('CONTENT_REPORT_STATUS', ['open', 'in_review', 'actioned', 'dismissed']);
+
+export const contentReportResolutionCode = pgEnum('CONTENT_REPORT_RESOLUTION_CODE', [
+  'removed',
+  'warned',
+  'restricted',
+  'no_action',
+  'duplicate'
+]);
+
+/**
+ * `content_report` — user-submitted flags of UGC for platform review.
+ * Email alerts notify ops; this row is the source of truth, including a
+ * snapshot of the reported content so evidence survives hard-deletes.
+ */
+export const contentReport = pgTable(
+  'content_report',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    reporterId: uuid('reporter_id'),
+    targetType: contentReportTargetType('target_type').notNull(),
+    targetId: text('target_id').notNull(),
+    targetAuthorId: uuid('target_author_id'),
+    reason: contentReportReason().notNull(),
+    details: text(),
+    status: contentReportStatus().default('open').notNull(),
+    priority: integer().default(2).notNull(),
+    contentSnapshot: jsonb('content_snapshot')
+      .$type<{
+        text: string;
+        title?: string | null;
+        authorId: string | null;
+        authorName: string | null;
+        surface: string;
+        url?: string | null;
+        capturedAt: string;
+      }>()
+      .notNull(),
+    assignedTo: uuid('assigned_to'),
+    resolutionCode: contentReportResolutionCode('resolution_code'),
+    resolutionNote: text('resolution_note'),
+    reviewedBy: uuid('reviewed_by'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    resolvedAt: timestamp('resolved_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'content_report_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.reporterId],
+      foreignColumns: [profile.id],
+      name: 'content_report_reporter_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.targetAuthorId],
+      foreignColumns: [profile.id],
+      name: 'content_report_target_author_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.assignedTo],
+      foreignColumns: [profile.id],
+      name: 'content_report_assigned_to_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.reviewedBy],
+      foreignColumns: [profile.id],
+      name: 'content_report_reviewed_by_fkey'
+    }).onDelete('set null'),
+    index('idx_content_report_status_priority_created').on(table.status, table.priority, table.createdAt),
+    index('idx_content_report_org_created').on(table.organizationId, table.createdAt),
+    index('idx_content_report_target').on(table.targetType, table.targetId),
+    uniqueIndex('content_report_reporter_target_open_unique')
+      .on(table.organizationId, table.reporterId, table.targetType, table.targetId)
+      .where(sql`${table.reporterId} IS NOT NULL AND ${table.status} IN ('open', 'in_review')`)
+  ]
+);
+
+export const liveSessionReminderStatus = pgEnum('LIVE_SESSION_REMINDER_STATUS', [
+  ...LIVE_SESSION_REMINDER_STATUS_VALUES
+]);
+
+/**
+ * `live_session_reminder_delivery` — one reminder email per (live lesson × student × offset). The reminder scan
+ * owns pending/skipped transitions; the email worker owns sent/failed.
+ */
+export const liveSessionReminderDelivery = pgTable(
+  'live_session_reminder_delivery',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    lessonId: uuid('lesson_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    offsetMinutes: integer('offset_minutes').notNull(),
+    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }).notNull(),
+    status: liveSessionReminderStatus().default('pending').notNull(),
+    skipReason: varchar('skip_reason', { length: 64 }).$type<TLiveSessionReminderSkipReason>(),
+    bullmqJobId: text('bullmq_job_id'),
+    providerId: text('provider_id'),
+    lastError: text('last_error'),
+    attemptCount: integer('attempt_count').default(0).notNull(),
+    queuedAt: timestamp('queued_at', { withTimezone: true, mode: 'string' }),
+    sentAt: timestamp('sent_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'live_session_reminder_delivery_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'live_session_reminder_delivery_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'live_session_reminder_delivery_lesson_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'live_session_reminder_delivery_profile_id_fkey'
+    }).onDelete('cascade'),
+    uniqueIndex('live_session_reminder_delivery_lesson_profile_offset_unique').on(
+      table.lessonId,
+      table.profileId,
+      table.offsetMinutes
+    ),
+    index('idx_live_session_reminder_delivery_organization_id').on(table.organizationId),
+    index('idx_live_session_reminder_delivery_course_lesson_at').on(table.courseId, table.lessonAt),
+    index('idx_live_session_reminder_delivery_profile_id').on(table.profileId),
+    index('idx_live_session_reminder_delivery_status_lesson_at').on(table.status, table.lessonAt)
+  ]
+);
+
+export const webhookDeliveryStatus = pgEnum('WEBHOOK_DELIVERY_STATUS', ['PENDING', 'SUCCESS', 'FAILED', 'GAVE_UP']);
+
+export const webhookEndpoint = pgTable(
+  'webhook_endpoint',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    name: varchar('name', { length: 120 }).notNull(),
+    payloadUrl: text('payload_url').notNull(),
+    secretCiphertext: text('secret_ciphertext'),
+    secretLast4: varchar('secret_last4', { length: 4 }),
+    verifySsl: boolean('verify_ssl').default(true).notNull(),
+    eventMode: varchar('event_mode', { length: 16 }).default('selected').notNull(),
+    isActive: boolean('is_active').default(true).notNull(),
+    consecutiveFailures: integer('consecutive_failures').default(0).notNull(),
+    autoDisabledAt: timestamp('auto_disabled_at', { withTimezone: true, mode: 'string' }),
+    lastDeliveryStatus: webhookDeliveryStatus('last_delivery_status'),
+    lastDeliveryAt: timestamp('last_delivery_at', { withTimezone: true, mode: 'string' }),
+    createdByProfileId: uuid('created_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    updatedByProfileId: uuid('updated_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [index('idx_webhook_endpoint_org_id').on(table.organizationId)]
+);
+
+export const webhookSubscription = pgTable(
+  'webhook_subscription',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    webhookId: uuid('webhook_id')
+      .notNull()
+      .references(() => webhookEndpoint.id, { onDelete: 'cascade' }),
+    eventType: varchar('event_type', { length: 64 }).notNull()
+  },
+  (table) => [
+    unique('webhook_subscription_webhook_event_key').on(table.webhookId, table.eventType),
+    index('idx_webhook_subscription_event_type').on(table.eventType)
+  ]
+);
+
+export const webhookEvent = pgTable(
+  'webhook_event',
+  {
+    id: text('id').primaryKey().notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    eventType: varchar('event_type', { length: 64 }).notNull(),
+    payload: jsonb('payload').notNull().$type<Record<string, unknown>>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_webhook_event_created_at').on(table.createdAt),
+    index('idx_webhook_event_org_created_at').on(table.organizationId, table.createdAt)
+  ]
+);
+
+export const webhookDelivery = pgTable(
+  'webhook_delivery',
+  {
+    id: text('id').primaryKey().notNull(),
+    webhookId: uuid('webhook_id')
+      .notNull()
+      .references(() => webhookEndpoint.id, { onDelete: 'cascade' }),
+    eventId: text('event_id')
+      .notNull()
+      .references(() => webhookEvent.id, { onDelete: 'cascade' }),
+    attempt: integer('attempt').default(0).notNull(),
+    status: webhookDeliveryStatus('status').default('PENDING').notNull(),
+    isTest: boolean('is_test').default(false).notNull(),
+    nextAttemptAt: timestamp('next_attempt_at', { withTimezone: true, mode: 'string' }),
+    requestHeaders: jsonb('request_headers').$type<Record<string, string>>(),
+    responseStatus: integer('response_status'),
+    responseBody: text('response_body'),
+    errorMessage: text('error_message'),
+    durationMs: integer('duration_ms'),
+    deliveredAt: timestamp('delivered_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_webhook_delivery_webhook_created_at').on(table.webhookId, table.createdAt),
+    index('idx_webhook_delivery_status_next_attempt').on(table.status, table.nextAttemptAt),
+    index('idx_webhook_delivery_event_id').on(table.eventId)
   ]
 );

@@ -7,7 +7,12 @@ export const FIELDS: (keyof EditorProps)[] = [
   'contentStorageKey',
   'editableStorageKey',
   'class',
-  'editorClass'
+  'editorClass',
+  'showDragHandle',
+  'expandable',
+  'expanded',
+  'expandedTitle',
+  'expandedDescription'
 ];
 
 export const DEFAULT_CONTENT = {

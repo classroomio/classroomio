@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Widgets · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Instrument+Serif&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="academy.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .org-pill { display: flex; align-items: center; gap: 8px; padding: 7px 9px; margin: 4px 0 14px; border: 1px solid var(--sidebar-border); border-radius: var(--radius-md); font-size: 13px; }
+      .org-pill .l { width: 20px; height: 20px; border-radius: 5px; background: var(--primary); color: var(--primary-foreground); display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+      .org-pill .n { font-weight: 550; }
+      .org-pill svg { width: 14px; height: 14px; stroke-width: 2; margin-left: auto; color: var(--muted-foreground); }
+      .wgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+      .wcard { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); overflow: hidden; box-shadow: var(--shadow-2xs); text-decoration: none; color: inherit; display: block; transition: border-color 0.12s, transform 0.12s; }
+      .wcard:hover { border-color: color-mix(in oklab, var(--foreground) 22%, transparent); transform: translateY(-1px); }
+      .wcard .mini-prev { height: 132px; padding: 12px; background: color-mix(in oklab, var(--foreground) 4%, transparent); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+      .mini-prev .bar { height: 8px; border-radius: 3px; background: color-mix(in oklab, var(--foreground) 16%, transparent); }
+      .mini-prev .bar.w40 { width: 40%; } .mini-prev .bar.w60 { width: 60%; }
+      .mini-prev .strip { height: 26px; border-radius: 5px; background: color-mix(in oklab, var(--foreground) 9%, transparent); }
+      .mini-prev .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .mini-prev .cols > div { height: 30px; border-radius: 5px; background: color-mix(in oklab, var(--foreground) 9%, transparent); }
+      .wcard .meta { padding: 13px 15px 15px; }
+      .wcard .tt { font-size: 14.5px; font-weight: 600; }
+      .wcard .sb { font-size: 12.3px; color: var(--muted-foreground); margin-top: 4px; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+      .newcard { border: 1px dashed var(--border); border-radius: var(--radius-lg); display: grid; place-items: center; min-height: 244px; color: var(--muted-foreground); cursor: pointer; text-decoration: none; }
+      .newcard:hover { border-color: var(--primary); color: var(--primary); background: color-mix(in oklab, var(--primary) 4%, transparent); }
+      .newcard svg { width: 22px; height: 22px; stroke-width: 2; }
+      .tmpl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+      .tmpl button { text-align: left; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card); padding: 14px; cursor: pointer; font-family: inherit; color: inherit; }
+      .tmpl button:hover { border-color: var(--primary); }
+      .tmpl b { font-size: 13.5px; } .tmpl p { font-size: 12.3px; color: var(--muted-foreground); margin: 5px 0 0; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">C</div><div class="brand-name">ClassroomIO</div></div>
+        <div class="org-pill"><span class="l">N</span><span class="n">Northwind Academy</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></div>
+        <div class="nav-label">Workspace</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Audience</a>
+        <a class="nav-item active" href="admin-academies.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Widgets<span class="nav-tail tnum">4</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 9V5a3 3 0 0 0-6 0v4"/><rect x="4" y="9" width="16" height="12" rx="2"/></svg>Community</a>
+        <div class="nav-label">Settings</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>Organization</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <nav class="crumbs"><span class="here">Widgets</span></nav>
+          <div class="top-actions"><button class="btn btn-sm btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>New</button></div>
+        </header>
+
+        <div class="content">
+          <div class="wrap">
+            <div class="page-head">
+              <h1 class="page-title">Widgets</h1>
+              <p class="page-sub">Embed your courses on any site — a single block, or your whole academy.</p>
+            </div>
+
+            <div class="seg-toggle" style="width: fit-content">
+              <button onclick="showTab('blocks', this)">Blocks<span style="opacity: 0.6; margin-left: 6px">2</span></button>
+              <button class="on" onclick="showTab('academies', this)">Academies<span style="opacity: 0.6; margin-left: 6px">2</span></button>
+            </div>
+
+            <div id="tab-academies">
+              <div class="wgrid">
+                <a class="wcard" href="admin-editor.html">
+                  <div class="mini-prev">
+                    <div class="bar w40"></div>
+                    <div class="strip"></div>
+                    <div class="strip"></div>
+                    <div class="cols"><div></div><div></div><div></div></div>
+                  </div>
+                  <div class="meta">
+                    <div class="tt">Northwind Learn</div>
+                    <div class="sb"><span class="badge badge-warning">Draft</span><span>5 sections</span><span>Identity on</span></div>
+                  </div>
+                </a>
+                <a class="wcard" href="admin-editor.html">
+                  <div class="mini-prev">
+                    <div class="bar w60"></div>
+                    <div class="cols"><div></div><div></div><div></div></div>
+                    <div class="cols"><div></div><div></div><div></div></div>
+                  </div>
+                  <div class="meta">
+                    <div class="tt">Partner Enablement Hub</div>
+                    <div class="sb"><span class="badge badge-success">Published</span><span>3 sections</span><span>v4 · 6 days ago</span></div>
+                  </div>
+                </a>
+                <a class="newcard" href="#new" onclick="document.getElementById('new-panel').scrollIntoView({behavior:'smooth'})">
+                  <div style="text-align: center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+                    <div style="font-size: 13.5px; font-weight: 550; margin-top: 8px">New academy</div>
+                  </div>
+                </a>
+              </div>
+
+              <div id="new-panel" class="card card-pad" style="margin-top: 26px">
+                <h2 style="font-size: 14px; font-weight: 650; margin: 0">Start from a template</h2>
+                <p style="font-size: 12.8px; color: var(--muted-foreground); margin: 5px 0 0">Templates pre-fill sections. You can add, reorder, or remove any of them afterwards.</p>
+                <div class="tmpl">
+                  <button onclick="location.href='admin-editor.html'"><b>Learn page</b><p>Header, continue learning, featured list, tutorial grid, and browse-by-role. Matches the in-app academy pattern.</p></button>
+                  <button onclick="location.href='admin-editor.html'"><b>Catalog</b><p>Header, category grid, and a full card grid of every published course.</p></button>
+                  <button onclick="location.href='admin-editor.html'"><b>Blank</b><p>One empty page. Add your own sections from scratch.</p></button>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-blocks" style="display: none">
+              <div class="wgrid">
+                <a class="wcard" href="#"><div class="mini-prev"><div class="cols"><div></div><div></div><div></div></div></div><div class="meta"><div class="tt">Homepage course grid</div><div class="sb"><span class="badge badge-success">Published</span><span>card_grid · 6 courses</span></div></div></a>
+                <a class="wcard" href="#"><div class="mini-prev"><div class="strip"></div><div class="strip"></div><div class="strip"></div></div><div class="meta"><div class="tt">Docs sidebar list</div><div class="sb"><span class="badge badge-secondary">Archived</span><span>compact_list · 4 courses</span></div></div></a>
+                <a class="newcard" href="#"><div style="text-align: center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg><div style="font-size: 13.5px; font-weight: 550; margin-top: 8px">New block</div></div></a>
+              </div>
+            </div>
+
+            <div id="tab-empty" style="display: none">
+              <div class="ac-empty" style="margin-top: 20px; border-color: var(--border); color: var(--muted-foreground)">
+                <div style="font-size: 15px; font-weight: 600; color: var(--foreground); margin-bottom: 6px">No academies yet</div>
+                An academy is a full page — your Learn tab, dropped into your own product with one script tag.
+                <div style="margin-top: 16px"><button class="btn btn-primary" onclick="location.href='admin-editor.html'">Create your first academy</button></div>
+              </div>
+            </div>
+
+            <div id="tab-locked" style="display: none">
+              <div class="card card-pad" style="margin-top: 20px; text-align: center">
+                <span class="badge badge-primary-soft">Paid plan</span>
+                <div style="font-size: 16px; font-weight: 600; margin: 12px 0 6px">Academies are available on paid plans</div>
+                <p style="font-size: 13.3px; color: var(--muted-foreground); max-width: 460px; margin: 0 auto 16px; line-height: 1.6">Blocks stay on your current plan. Full-page academies — and the learner personalization that comes with them — need an upgrade.</p>
+                <button class="btn btn-primary">See plans</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proto-bar">
+      <span class="lbl">State</span>
+      <button class="on" onclick="showState('list', this)">Has academies</button>
+      <button onclick="showState('empty', this)">Empty</button>
+      <button onclick="showState('locked', this)">Free plan</button>
+      <button onclick="toggleTheme(this)">Dark</button>
+      <a class="btn btn-sm btn-ghost" href="index.html">Map</a>
+    </div>
+
+    <script>
+      function showTab(tab, el) {
+        el.parentElement.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+        el.classList.add('on');
+        document.getElementById('tab-academies').style.display = tab === 'academies' ? 'block' : 'none';
+        document.getElementById('tab-blocks').style.display = tab === 'blocks' ? 'block' : 'none';
+      }
+      function showState(state, el) {
+        el.parentElement.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+        el.classList.add('on');
+        document.getElementById('tab-academies').style.display = state === 'list' ? 'block' : 'none';
+        document.getElementById('tab-empty').style.display = state === 'empty' ? 'block' : 'none';
+        document.getElementById('tab-locked').style.display = state === 'locked' ? 'block' : 'none';
+      }
+      function toggleTheme(el) {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        el.textContent = dark ? 'Light' : 'Dark';
+      }
+    </script>
+  </body>
+</html>

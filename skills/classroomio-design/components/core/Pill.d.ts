@@ -1,0 +1,2 @@
+export interface PillProps { children: React.ReactNode; icon?: React.ReactNode; trailing?: React.ReactNode; href?: string; mono?: boolean; style?: React.CSSProperties; }
+export declare function Pill(props: PillProps): JSX.Element;

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import AwardIcon from '@lucide/svelte/icons/award';
   import BookIcon from '@lucide/svelte/icons/book';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
@@ -8,7 +9,7 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
 
   import { CreateCourseButton } from '$features/course/components';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
@@ -60,7 +61,8 @@
               title: $t('dashboard.certificates_earned'),
               percentage: totalCertificates ?? 0,
               description: $t('dashboard.certificates_earned_description'),
-              hidePercentage: true
+              hidePercentage: true,
+              href: $isOrgAdmin ? resolve(`${$currentOrgPath}/audience?certificate=earned`, {}) : undefined
             }}
           />
           <ActivityCard
@@ -69,7 +71,8 @@
               title: $t('dashboard.no_of_courses'),
               percentage: numberOfCourses ?? 0,
               description: $t('dashboard.no_courses_description'),
-              hidePercentage: true
+              hidePercentage: true,
+              href: resolve(`${$currentOrgPath}/courses`, {})
             }}
           />
           <ActivityCard
@@ -78,7 +81,8 @@
               title: $t('dashboard.total_students'),
               percentage: totalStudents ?? 0,
               description: $t('dashboard.total_students_description'),
-              hidePercentage: true
+              hidePercentage: true,
+              href: $isOrgAdmin ? resolve(`${$currentOrgPath}/audience`, {}) : undefined
             }}
           />
         </div>

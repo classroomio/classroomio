@@ -24,15 +24,17 @@ export type OrgLandingPageTheme =
   | 'corporate'
   | 'terminal'
   | 'editorial'
-  | 'vibrant';
+  | 'vibrant'
+  | 'quartz';
 
 export type CourseItem = {
   id: string;
   slug?: string;
-  logo?: string | null;
+  bannerImage?: string | null;
   title: string;
   description: string;
   type?: string;
+  typeLabel?: string;
   isPublished?: boolean;
   cost?: number;
   currency?: string;
@@ -55,6 +57,28 @@ export type CourseItem = {
   price?: string;
   duration?: string;
   level?: string;
+};
+
+export type LearningPathItem = {
+  id: string;
+  slug?: string;
+  logo?: string | null;
+  title: string;
+  description: string;
+  isPublished?: boolean;
+  cost?: number;
+  currency?: string;
+  courseCount?: number;
+  totalHours?: number;
+  hasCertificate?: boolean;
+  metadata?: {
+    discount?: number;
+    showDiscount?: boolean;
+  };
+  // Fallbacks for specific templates that might still want to use these
+  image?: string;
+  link?: string;
+  price?: string;
 };
 
 export type FooterSocialPlatform =
@@ -185,12 +209,37 @@ export interface OrgLandingPageLabels {
   catalogEmptyTitle?: string;
   /** Empty catalog description when no courses are published. Default: "Check back soon for new programs." */
   catalogEmptyDescription?: string;
+  /** Section heading for the Learning Paths catalog on the home page. Default: "Learning Paths". */
+  learningPathsHeading?: string;
+  /** Label for the Learning Paths "browse all"/"view more" CTA. Default: "View more learning paths". */
+  browseLearningPathsLabel?: string;
+  /** "Learning Path" identity chip shown on every learning path card. Default: "Learning Path". */
+  learningPathLabel?: string;
+  /** Plural-aware course-count label for a learning path card. Default: `${count} courses` / `1 course`. */
+  learningPathCourseCountLabel?: (count: number) => string;
+  /** Empty catalog title when no learning paths are published. Default: "No learning paths published yet". */
+  learningPathsEmptyTitle?: string;
+  /** Empty catalog description when no learning paths are published. Default: "Check back soon for new programs." */
+  learningPathsEmptyDescription?: string;
+  /** Duration label for a learning path card. Default: `${hours}h`. */
+  learningPathHoursLabel?: (hours: number) => string;
+  /** Certificate label for a learning path card. Default: "Certificate". */
+  learningPathCertificateLabel?: string;
+  courseOutlineHeading?: string;
+  courseOutlineDescription?: string;
+  courseCountLabel?: (count: number) => string;
+  learnersLabel?: (count: number) => string;
+  tracksLabel?: (count: number) => string;
+  terminalEnrollLabel?: string;
 }
+
+export type CourseCurriculumItemKind = 'lesson' | 'exercise';
 
 export type CourseCurriculumLesson = {
   id: string;
   title: string;
   durationMinutes?: number;
+  kind?: CourseCurriculumItemKind;
 };
 
 export type CourseCurriculumSection = {
@@ -198,6 +247,10 @@ export type CourseCurriculumSection = {
   title: string;
   lessons: CourseCurriculumLesson[];
   exerciseCount?: number;
+  /** Rows to list, lessons and exercises in course order. Falls back to `lessons`. */
+  items?: CourseCurriculumLesson[];
+  /** Marks a lesson or exercise outside any section, shown as its own module with no rows. */
+  standalone?: CourseCurriculumItemKind;
 };
 
 export type CourseReviewItem = {
@@ -222,6 +275,20 @@ export type LandingPrimaryAction = {
   href?: string;
   disabled?: boolean;
   onclick?: (event: MouseEvent) => void;
+};
+
+/** Fallback kicker for the Tech template when `hero.eyebrow` is unset. */
+export const DEFAULT_TECH_HERO_EYEBROW = '// engineering academy';
+
+export type LandingPageHero = {
+  heading: string;
+  subheading: string;
+  primaryAction: LandingPrimaryAction;
+  secondaryAction?: { label: string; href: string };
+  image?: string;
+  stats?: Array<{ label: string; value: string }>;
+  /** Small kicker above the heading. Used by templates that render one (e.g. Tech). */
+  eyebrow?: string;
 };
 
 export type CoursePricing = {
@@ -273,6 +340,10 @@ export interface CourseLandingPageLabels {
   curriculumHeading?: string;
   lessonsLabel?: (count: number) => string;
   exercisesLabel?: (count: number) => string;
+  /** Type label on a module that is a single lesson outside any section. Default: "Lesson". */
+  standaloneLessonLabel?: string;
+  /** Type label on a module that is a single exercise outside any section. Default: "Exercise". */
+  standaloneExerciseLabel?: string;
   lecturePrefix?: (index: number) => string;
   infoRequirementsHeading?: string;
   infoRequirementsEyebrow?: string;
@@ -303,27 +374,53 @@ export interface CourseLandingPageLabels {
   navInstructorLabel?: string;
   navReviewsLabel?: string;
   navPricingLabel?: string;
+  /** Curriculum heading combining both counts. Default: `${lessons} across ${modules} modules`. */
+  curriculumSummaryLabel?: (lessonCount: number, moduleCount: number) => string;
+  /** Lesson duration shown on a curriculum row. Default: `${minutes} min`. */
+  lessonDurationLabel?: (minutes: number) => string;
+  /** Row label for the exercise count in a facts table. Default: "Exercises". */
+  factExercisesLabel?: string;
+  /** Value shown when a course includes a certificate. Default: "Included". */
+  factIncludedLabel?: string;
 }
+
+export interface LandingLearnerAccount {
+  fullname: string;
+  email: string;
+  avatarUrl?: string;
+  /** Learner-scoped destinations; empty when the viewer is not a member of this academy. */
+  items: { key: 'myCourses' | 'myCertificates' | 'accountSettings'; label: string; href: string }[];
+  /** Optional enrollment note shown above the CTA when not a member (from prototype). */
+  note?: string;
+  logoutLabel: string;
+  logoutHref: string;
+  themeLabel: string;
+  /** Localized labels for the light/dark/system theme options. */
+  themeModeLabels?: { light: string; dark: string; system: string };
+  triggerLabel: string;
+  /** True while the account payload is still loading — render a skeleton trigger. */
+  loading?: boolean;
+  /** True in the settings preview — render the trigger but do not open the popover. */
+  inert?: boolean;
+  /** Callback fired when user selects a theme mode in the segmented control. */
+  onThemeChange?: (mode: 'light' | 'dark' | 'system') => void;
+}
+
+export type LandingNavAuthAction = {
+  label: string;
+  href: string;
+  loading?: boolean;
+  disabled?: boolean;
+};
 
 export interface CourseLandingPageProps {
   theme: OrgLandingPageTheme;
   orgName: string;
   logoUrl?: string;
   navItems: NavItem[];
-  authAction?: {
-    label: string;
-    href: string;
-    loading?: boolean;
-    disabled?: boolean;
-  };
-  hero: {
-    heading: string;
-    subheading: string;
-    primaryAction: LandingPrimaryAction;
-    secondaryAction?: { label: string; href: string };
-    image?: string;
-    stats?: Array<{ label: string; value: string }>;
-  };
+  authAction?: LandingNavAuthAction;
+  learnerAccount?: LandingLearnerAccount;
+  hero: LandingPageHero;
   socialProof: CourseSocialProof;
   info: CourseInfoBlocks;
   curriculum: CourseCurriculum;
@@ -342,25 +439,22 @@ export interface OrgLandingPageProps {
   orgName: string;
   logoUrl?: string;
   navItems: NavItem[];
-  authAction?: {
-    label: string;
-    href: string;
-    loading?: boolean;
-    disabled?: boolean;
-  };
-  hero: {
-    heading: string;
-    subheading: string;
-    primaryAction: LandingPrimaryAction;
-    secondaryAction?: { label: string; href: string };
-    image?: string;
-    stats?: Array<{ label: string; value: string }>;
-  };
+  authAction?: LandingNavAuthAction;
+  learnerAccount?: LandingLearnerAccount;
+  hero: LandingPageHero;
   courses: CourseItem[];
   hasMoreCourses?: boolean;
   /** When false, templates suppress the empty catalog state while courses are still loading. */
   coursesLoaded?: boolean;
   disableCourseLinks?: boolean;
+  /**
+   * Optional — no `learning_path` API exists yet, so this is undefined on the real,
+   * live org home page today. Templates only render the Learning Paths section when
+   * this is provided and non-empty; they never show a permanent empty state for it,
+   * unlike Courses. Pass mock/real data once available to opt an org site in.
+   */
+  learningPaths?: LearningPathItem[];
+  hasMoreLearningPaths?: boolean;
   embed?: LandingPageEmbed;
   callout?: LandingPageCallout;
   links?: LandingPageLinks;

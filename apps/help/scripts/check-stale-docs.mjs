@@ -42,10 +42,7 @@ function daysSince(dateString) {
 
   const [, year, month, day] = match.map(Number);
   const parsed = new Date(Date.UTC(year, month - 1, day));
-  const isValid =
-    parsed.getUTCFullYear() === year &&
-    parsed.getUTCMonth() === month - 1 &&
-    parsed.getUTCDate() === day;
+  const isValid = parsed.getUTCFullYear() === year && parsed.getUTCMonth() === month - 1 && parsed.getUTCDate() === day;
   if (!isValid) return null;
 
   return Math.floor((Date.now() - parsed.getTime()) / (1000 * 60 * 60 * 24));

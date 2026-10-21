@@ -28,8 +28,22 @@
   let replaceText = $state('');
   let caseSensitive = $state(false);
 
-  let searchIndex = $derived(editor.storage?.searchAndReplace?.resultIndex);
-  let searchCount = $derived(editor.storage?.searchAndReplace?.results.length);
+  let searchIndex = $state(0);
+  let searchCount = $state(0);
+
+  $effect(() => {
+    const syncSearchState = () => {
+      searchIndex = editor.storage?.searchAndReplace?.resultIndex ?? 0;
+      searchCount = editor.storage?.searchAndReplace?.results?.length ?? 0;
+    };
+
+    syncSearchState();
+    editor.on('transaction', syncSearchState);
+
+    return () => {
+      editor.off('transaction', syncSearchState);
+    };
+  });
 
   function updateSearchTerm(clearIndex: boolean = false) {
     if (clearIndex) editor.commands.resetIndex();

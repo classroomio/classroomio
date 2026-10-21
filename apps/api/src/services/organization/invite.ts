@@ -1,15 +1,17 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
-  checkEmailsExistInOrg,
   claimPendingOrganizationInvite,
   createOrganizationInvite,
   createOrganizationInviteAudit,
+  createOrganizationInviteAudits,
   createOrganizationMember,
   createOrganizationMembers,
   createLinkInvite,
   getActivePendingOrgInviteForEmail,
   getOrganizationById,
+  getOrganizationMembersByNormalizedEmails,
   getOrganizationInviteByTokenHash,
+  lockOrganizationForUpdate,
   getOrgLinkInvite,
   getOrgLinkInviteWithOrg,
   revokeActiveOrganizationInvitesByEmails,
@@ -22,7 +24,9 @@ import {
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
+import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import { addCohortMember, getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
@@ -68,7 +72,7 @@ function buildTeamInviteLink(token: string): string {
   return `${getAppBaseUrl()}/invite/${encodeURIComponent(token)}`;
 }
 
-function getRoleLabel(roleId: number): string {
+export function getRoleLabel(roleId: number): string {
   if (roleId === ROLE.ADMIN) return 'Admin';
   if (roleId === ROLE.TUTOR) return 'Tutor';
   if (roleId === ROLE.STUDENT) return 'Student';
@@ -101,6 +105,29 @@ function getExpiryLabel(expiresAtIso: string): string {
     timeStyle: 'short',
     timeZone: 'UTC'
   });
+}
+
+/**
+ * Returns the invite after locking its organization.
+ */
+async function readInviteAfterOrganizationLock<T extends { invite: { organizationId: string } }>(
+  tx: DbOrTxClient,
+  loadInvite: (client: DbOrTxClient) => Promise<T | null>,
+  missingMessage: string
+): Promise<T> {
+  const preview = await loadInvite(tx);
+  if (!preview) {
+    throw new AppError(missingMessage, ErrorCodes.NOT_FOUND, 404);
+  }
+
+  await lockOrganizationForUpdate(preview.invite.organizationId, tx);
+
+  const lockedInvite = await loadInvite(tx);
+  if (!lockedInvite) {
+    throw new AppError(missingMessage, ErrorCodes.NOT_FOUND, 404);
+  }
+
+  return lockedInvite;
 }
 
 async function syncOrgMemberForOrgInvite(
@@ -161,6 +188,17 @@ async function syncOrgMemberForOrgInvite(
   return studentMilestoneNotification;
 }
 
+const ORGANIZATION_INVITE_WEBHOOK_EVENTS: Partial<
+  Record<
+    TNewOrganizationInviteAudit['eventType'],
+    'organization.invite.created' | 'organization.invite.accepted' | 'organization.invite.revoked'
+  >
+> = {
+  CREATED: 'organization.invite.created',
+  ACCEPTED: 'organization.invite.accepted',
+  REVOKED: 'organization.invite.revoked'
+};
+
 async function recordOrganizationInviteAudit(
   inviteId: string,
   organizationId: string,
@@ -183,6 +221,37 @@ async function recordOrganizationInviteAudit(
     userAgent: context.userAgent ?? null,
     metadata: context.metadata ?? {}
   });
+
+  const webhookEventType = ORGANIZATION_INVITE_WEBHOOK_EVENTS[eventType];
+
+  if (webhookEventType) {
+    await emitWebhookEvent(organizationId, webhookEventType, {
+      inviteId,
+      email: context.targetEmail ?? null,
+      actorProfileId: context.actorProfileId ?? null,
+      reason: typeof context.metadata?.reason === 'string' ? context.metadata.reason : null
+    });
+  }
+}
+
+export async function recordOrganizationInviteAudits(rows: TNewOrganizationInviteAudit[]) {
+  await createOrganizationInviteAudits(rows);
+
+  for (const row of rows) {
+    const webhookEventType = ORGANIZATION_INVITE_WEBHOOK_EVENTS[row.eventType];
+
+    if (!webhookEventType) continue;
+
+    const metadata = (row.metadata ?? {}) as Record<string, unknown>;
+    const reason = typeof metadata.reason === 'string' ? metadata.reason : null;
+
+    await emitWebhookEvent(row.organizationId, webhookEventType, {
+      inviteId: row.inviteId,
+      email: row.targetEmail ?? null,
+      actorProfileId: row.actorProfileId ?? null,
+      reason
+    });
+  }
 }
 
 async function enrollOrganizationInviteUser(
@@ -251,11 +320,21 @@ async function enrollOrganizationInviteUser(
   return enrolledCount;
 }
 
-/**
- * Creates secure organization role invites from org settings.
- * Invites are role-aware and tokenized; legacy payload links are not used.
- */
-export async function inviteTeamMembers(orgId: string, emails: string[], roleId: number, invitedByProfileId: string) {
+type TeamInviteResult = {
+  requiresConfirmation: boolean;
+  studentEmails: string[];
+  existingTeamMembers: { email: string; roleId: number }[];
+  queuedCount: number;
+  failedEmails: string[];
+};
+
+export async function inviteTeamMembers(
+  orgId: string,
+  emails: string[],
+  roleId: number,
+  invitedByProfileId: string,
+  confirmedStudentEmails: string[] = []
+): Promise<TeamInviteResult> {
   if (roleId !== ROLE.ADMIN && roleId !== ROLE.TUTOR) {
     throw new AppError('Invalid organization role for invite', ErrorCodes.VALIDATION_ERROR, 400, 'roleId');
   }
@@ -266,22 +345,29 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
   }
 
   const normalizedEmails = normalizeEmails(emails);
-  const existingEmails = await checkEmailsExistInOrg(orgId, normalizedEmails);
-  const emailsToInvite = normalizedEmails.filter((email) => !existingEmails.includes(email));
+  const existingMembers = await getOrganizationMembersByNormalizedEmails(orgId, normalizedEmails);
+  const membersByEmail = new Map(existingMembers.map((member) => [member.normalizedEmail, member]));
+  const studentEmails = normalizedEmails.filter((email) => membersByEmail.get(email)?.roleId === ROLE.STUDENT);
+  const existingTeamMembers = normalizedEmails.flatMap((email) => {
+    const member = membersByEmail.get(email);
+    if (!member || member.roleId === ROLE.STUDENT) return [];
 
-  if (emailsToInvite.length === 0) {
-    return [];
+    return [{ email, roleId: member.roleId }];
+  });
+  const confirmedStudents = new Set(normalizeEmails(confirmedStudentEmails));
+  const requiresConfirmation = studentEmails.some((email) => !confirmedStudents.has(email));
+
+  if (existingTeamMembers.length > 0 || requiresConfirmation) {
+    return { requiresConfirmation, studentEmails, existingTeamMembers, queuedCount: 0, failedEmails: [] };
   }
 
-  const members = await createOrganizationMembers(
-    emailsToInvite.map((email) => ({
-      organizationId: orgId,
-      email,
-      roleId,
-      verified: false
-    }))
-  );
+  const newEmails = normalizedEmails.filter((email) => !membersByEmail.has(email));
+  if (newEmails.length > 0) {
+    const newMembers = newEmails.map((email) => ({ organizationId: orgId, email, roleId, verified: false }));
+    await createOrganizationMembers(newMembers);
+  }
 
+  const emailsToInvite = normalizedEmails;
   const revokedInvites = await revokeActiveOrganizationInvitesByEmails(orgId, emailsToInvite, invitedByProfileId);
   await Promise.all(
     revokedInvites.map((invite) =>
@@ -297,11 +383,19 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
   const roleName = getRoleLabel(roleId);
   const inviterProfile = invitedByProfileId ? await getProfileById(invitedByProfileId) : null;
   const inviterName = inviterProfile?.fullname?.trim() || undefined;
+  const expiryLabel = getExpiryLabel(expiresAt);
+  const branding = buildEmailBranding(organization);
+  const from = buildEmailFromName(`${organization.name} (via ClassroomIO.com)`);
+  const subject = sanitizeEmailSubject(`You have been invited to join ${organization.name} on ClassroomIO`);
+  const failedEmails = new Set<string>();
+  let queuedCount = 0;
 
   for (const email of emailsToInvite) {
+    let emailQueued = false;
     try {
       const token = generateToken();
       const tokenHash = hashToken(token);
+      const previousRoleId = membersByEmail.get(email)?.roleId ?? null;
 
       const invite = await createOrganizationInvite({
         organizationId: orgId,
@@ -312,7 +406,8 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
         expiresAt,
         isRevoked: false,
         metadata: {
-          source: 'ORG_SETTINGS_TEAM_INVITE'
+          source: 'ORG_SETTINGS_TEAM_INVITE',
+          previousRoleId
         }
       });
 
@@ -321,6 +416,7 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
         targetEmail: email,
         metadata: {
           roleId,
+          previousRoleId,
           roleName,
           expiresAt
         }
@@ -337,14 +433,17 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
             orgSiteName: organization.siteName,
             roleName,
             inviterName,
-            expiresAt: getExpiryLabel(expiresAt),
+            expiresAt: expiryLabel,
             inviteLink,
-            branding: buildEmailBranding(organization)
+            branding
           },
-          from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
-          subject: sanitizeEmailSubject(`You have been invited to join ${organization.name} on ClassroomIO`),
+          from,
+          subject,
           idempotencyKey: `org-invite-teacher:${invite.id}`
         });
+
+        emailQueued = true;
+        queuedCount += 1;
 
         // Record EMAIL_SENT optimistically — the worker retries up to 5 times,
         // and a final failure flips the email_delivery row to `failed` for
@@ -355,6 +454,12 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
           targetEmail: email
         });
       } catch (emailError) {
+        if (emailQueued) {
+          console.error(`Failed to audit queued org invite for ${email}:`, emailError);
+          continue;
+        }
+
+        failedEmails.add(email);
         const message = emailError instanceof Error ? emailError.message : 'Unknown email error';
 
         await recordOrganizationInviteAudit(invite.id, orgId, 'EMAIL_FAILED', {
@@ -365,10 +470,18 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
       }
     } catch (error) {
       console.error(`Failed to create org invite for ${email}:`, error);
+      if (!emailQueued) failedEmails.add(email);
     }
   }
 
-  return members;
+  const failedEmailList = [...failedEmails];
+  return {
+    requiresConfirmation: false,
+    studentEmails,
+    existingTeamMembers,
+    queuedCount,
+    failedEmails: failedEmailList
+  };
 }
 
 /**
@@ -413,11 +526,11 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
   const tokenHash = hashToken(token);
 
   const result = await db.transaction(async (tx) => {
-    const row = await selectOrganizationInviteWithOrgByTokenHash(tx, tokenHash);
-
-    if (!row) {
-      throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
-    }
+    const row = await readInviteAfterOrganizationLock(
+      tx,
+      (client) => selectOrganizationInviteWithOrgByTokenHash(client, tokenHash),
+      'Invalid invite link'
+    );
 
     const status = getInviteStatus(row.invite);
     if (status === 'REVOKED') {
@@ -470,6 +583,11 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     };
   });
 
+  // Must run after commit: the reconcile reads the org role outside this transaction.
+  if (!result.alreadyAccepted) {
+    await scheduleCourseRoleReconcile(result.organization.id, user.id);
+  }
+
   const siteName = result.organization.siteName || '';
 
   if (!result.alreadyAccepted) {
@@ -507,47 +625,55 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 const LINK_INVITE_FAR_FUTURE_MS = 100 * 365 * 24 * 60 * 60 * 1000;
 
 /**
- * Returns the current org link invite if one already exists, otherwise creates one.
- * One link invite per org — subsequent calls return the same record.
+ * Returns a reusable link for the requested organization role.
  */
 export async function getOrCreateLinkInvite(orgId: string, roleId: number, profileId: string) {
   if (roleId !== ROLE.ADMIN && roleId !== ROLE.TUTOR) {
     throw new AppError('Invalid organization role for link invite', ErrorCodes.VALIDATION_ERROR, 400, 'roleId');
   }
 
-  const existing = await getOrgLinkInvite(orgId);
+  let wasCreated = false;
+  const invite = await db.transaction(async (transaction) => {
+    await lockOrganizationForUpdate(orgId, transaction);
 
-  if (existing) {
-    const token = (existing.metadata as Record<string, unknown>)?.token as string | undefined;
-    return { id: existing.id, token: token ?? '', roleId: existing.roleId, isRevoked: existing.isRevoked };
+    const existing = await getOrgLinkInvite(orgId, roleId, transaction);
+    if (existing) return existing;
+
+    const token = generateToken();
+    const tokenHash = hashToken(token);
+    const expiresAt = new Date(Date.now() + LINK_INVITE_FAR_FUTURE_MS).toISOString();
+
+    const created = await createLinkInvite(
+      {
+        organizationId: orgId,
+        roleId,
+        tokenHash,
+        createdByProfileId: profileId,
+        expiresAt,
+        metadata: { token, source: 'ORG_SETTINGS_LINK_INVITE' }
+      },
+      transaction
+    );
+    wasCreated = true;
+    return created;
+  });
+
+  if (wasCreated) {
+    await recordOrganizationInviteAudit(invite.id, orgId, 'CREATED', {
+      actorProfileId: profileId,
+      metadata: { roleId, type: 'LINK' }
+    });
   }
 
-  const token = generateToken();
-  const tokenHash = hashToken(token);
-  const expiresAt = new Date(Date.now() + LINK_INVITE_FAR_FUTURE_MS).toISOString();
-
-  const invite = await createLinkInvite({
-    organizationId: orgId,
-    roleId,
-    tokenHash,
-    createdByProfileId: profileId,
-    expiresAt,
-    metadata: { token, source: 'ORG_SETTINGS_LINK_INVITE' }
-  });
-
-  await recordOrganizationInviteAudit(invite.id, orgId, 'CREATED', {
-    actorProfileId: profileId,
-    metadata: { roleId, type: 'LINK' }
-  });
-
-  return { id: invite.id, token, roleId: invite.roleId, isRevoked: invite.isRevoked };
+  const token = (invite.metadata as Record<string, unknown>)?.token as string | undefined;
+  return { id: invite.id, token: token ?? '', roleId: invite.roleId, isRevoked: invite.isRevoked };
 }
 
 /**
- * Returns current link invite for the org (for GET endpoint — returns null if none created yet).
+ * Returns the active link for the requested organization role, if one exists.
  */
-export async function fetchOrgLinkInvite(orgId: string) {
-  const row = await getOrgLinkInvite(orgId);
+export async function fetchOrgLinkInvite(orgId: string, roleId: number) {
+  const row = await getOrgLinkInvite(orgId, roleId);
 
   if (!row) return null;
 
@@ -558,8 +684,12 @@ export async function fetchOrgLinkInvite(orgId: string) {
 /**
  * Enables or disables the org link invite (toggle isRevoked).
  */
-export async function toggleOrgLinkInvite(orgId: string, isRevoked: boolean, profileId: string) {
-  const updated = await setLinkInviteRevoked(orgId, isRevoked, profileId);
+export async function toggleOrgLinkInvite(orgId: string, roleId: number, isRevoked: boolean, profileId: string) {
+  const updated = await db.transaction(async (transaction) => {
+    await lockOrganizationForUpdate(orgId, transaction);
+
+    return setLinkInviteRevoked(orgId, roleId, isRevoked, profileId, transaction);
+  });
 
   if (!updated) {
     throw new AppError('Link invite not found', ErrorCodes.NOT_FOUND, 404);
@@ -609,11 +739,11 @@ export async function acceptLinkInvite(token: string, user: TAuthUser, context: 
   const tokenHash = hashToken(token);
 
   const result = await db.transaction(async (tx) => {
-    const row = await getOrgLinkInviteWithOrg(tx, tokenHash);
-
-    if (!row) {
-      throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
-    }
+    const row = await readInviteAfterOrganizationLock(
+      tx,
+      (client) => getOrgLinkInviteWithOrg(client, tokenHash),
+      'Invalid invite link'
+    );
 
     if (row.invite.isRevoked) {
       throw new AppError('This invite link has been disabled', ErrorCodes.UNAUTHORIZED, 403);
@@ -630,6 +760,9 @@ export async function acceptLinkInvite(token: string, user: TAuthUser, context: 
 
     return { organization: row.organization, roleId: row.invite.roleId, inviteId: row.invite.id };
   });
+
+  // Must run after commit: the reconcile reads the org role outside this transaction.
+  await scheduleCourseRoleReconcile(result.organization.id, user.id);
 
   await recordOrganizationInviteAudit(result.inviteId, result.organization.id, 'ACCEPTED', {
     actorProfileId: user.id,
@@ -688,11 +821,11 @@ export async function acceptOrganizationInviteById(
   const normalizedEmail = user.email.toLowerCase().trim();
 
   const result = await db.transaction(async (tx) => {
-    const row = await selectOrganizationInviteWithOrgByInviteId(tx, inviteId);
-
-    if (!row) {
-      throw new AppError('Invalid invite', ErrorCodes.NOT_FOUND, 404);
-    }
+    const row = await readInviteAfterOrganizationLock(
+      tx,
+      (client) => selectOrganizationInviteWithOrgByInviteId(client, inviteId),
+      'Invalid invite'
+    );
 
     const status = getInviteStatus(row.invite);
     if (status === 'REVOKED') {
@@ -747,6 +880,9 @@ export async function acceptOrganizationInviteById(
   });
 
   if (!result.alreadyAccepted) {
+    // Must run after commit: the reconcile reads the org role outside this transaction.
+    await scheduleCourseRoleReconcile(result.invite.organizationId, user.id);
+
     await recordOrganizationInviteAudit(result.invite.id, result.invite.organizationId, 'ACCEPTED', {
       actorProfileId: user.id,
       targetEmail: normalizedEmail,

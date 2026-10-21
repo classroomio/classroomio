@@ -22,7 +22,8 @@ docker ps                      # anything restarting or exited?
 | Login loops or CSRF errors | `DASHBOARD_ORIGIN` doesn't match the URL users actually visit | Set it to the exact `https://` origin, restart |
 | Uploads stuck at "processing" forever, no error | The `jobs` worker isn't running, or Redis is unreachable | [details](#uploads-stuck-at-processing) |
 | Containers randomly killed, stack unstable | Out of memory — a transcode can exhaust a 4 GB server | [details](#containers-are-oom-killed) |
-| `No space left on device`, MinIO "minimum free drive threshold" | Disk full (images, build cache, uploads) | [details](#no-space-left-on-device) |
+| `No space left on device`, uploads failing | Disk full (images, build cache, uploads) | [details](#no-space-left-on-device) |
+| Pull fails on `minio/minio` or `minio/mc` | Install predates the switch to SeaweedFS | [Migrating from MinIO](/self-hosted/migrating-from-minio) |
 | API container exits immediately at boot | Database migration failed | [details](#api-container-exits-at-boot) |
 | No signup / invite / reset emails, logs show `ECONNREFUSED` | SMTP not configured or wrong host/port | Check [Email settings](/self-hosted/configuration/email) |
 | Videos never get captions; no transcription | `OPENAI_API_KEY` not set | [details](#transcription-never-happens) |
@@ -72,7 +73,7 @@ killed on a 4 GB server even though the stack idles comfortably. See
 
 ## "No space left on device"
 
-Also surfaces as MinIO's "Storage reached its minimum free drive threshold".
+Also surfaces as uploads failing while everything else still works.
 
 ```zsh title="Terminal"
 df -h                          # check host disk
@@ -87,7 +88,7 @@ Then restart: `./classroomio.sh start`
 :::danger[Never use `docker volume prune` or `down -v`]
 `docker volume prune` removes volumes not attached to a running container: run after
 `docker compose down`, it deletes your **database, Redis, and uploads** (`postgres-data`,
-`redis-data`, `minio-data`). `docker compose down -v` does the same explicitly. Use only the prune
+`redis-data`, `storage-data`). `docker compose down -v` does the same explicitly. Use only the prune
 commands above to free space.
 :::
 

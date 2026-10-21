@@ -10,6 +10,7 @@ import { courseTokens as corporateTokens } from './corporate/course-tokens';
 import { courseTokens as terminalTokens } from './terminal/course-tokens';
 import { courseTokens as editorialTokens } from './editorial/course-tokens';
 import { courseTokens as vibrantTokens } from './vibrant/course-tokens';
+import { courseTokens as quartzTokens } from './quartz/course-tokens';
 
 export type { CourseLandingTokens } from './course-tokens-base';
 
@@ -23,7 +24,8 @@ const TOKENS: Record<OrgLandingPageTheme, CourseLandingTokens> = {
   corporate: corporateTokens,
   terminal: terminalTokens,
   editorial: editorialTokens,
-  vibrant: vibrantTokens
+  vibrant: vibrantTokens,
+  quartz: quartzTokens
 };
 
 export function courseLandingTokens(theme: OrgLandingPageTheme): CourseLandingTokens {

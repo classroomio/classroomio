@@ -21,6 +21,14 @@
       "types": "./dist/plans/index.d.ts",
       "default": "./dist/plans/index.js"
     },
+    "./export": {
+      "types": "./dist/export/index.d.ts",
+      "default": "./dist/export/index.js"
+    },
+    "./export/xlsx": {
+      "types": "./dist/export/xlsx.d.ts",
+      "default": "./dist/export/xlsx.js"
+    },
     "./senja": {
       "types": "./dist/senja/index.d.ts",
       "default": "./dist/senja/index.js"
@@ -57,6 +65,10 @@
       "types": "./dist/config/upload-limits.d.ts",
       "default": "./dist/config/upload-limits.js"
     },
+    "./file-upload": {
+      "types": "./dist/file-upload.d.ts",
+      "default": "./dist/file-upload.js"
+    },
     "./openapi/public-api": {
       "types": "./dist/openapi/public-api.d.ts",
       "default": "./dist/openapi/public-api.js"
@@ -68,6 +80,10 @@
     "./notifications": {
       "types": "./dist/notifications/index.d.ts",
       "default": "./dist/notifications/index.js"
+    },
+    "./email": {
+      "types": "./dist/email/index.d.ts",
+      "default": "./dist/email/index.js"
     }
   },
   "scripts": {

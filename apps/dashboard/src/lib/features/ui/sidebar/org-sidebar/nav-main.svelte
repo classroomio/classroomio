@@ -7,11 +7,21 @@
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { getOrgNavigationGroups } from '$features/ui/navigation/org-navigation';
   import { HoverableItem, PremiumIcon } from '@cio/ui/custom/moving-icons';
+  import { formatCompactCount } from '@cio/utils/functions';
+  import { orgNavCountsApi } from './org-nav-counts.svelte';
 
   const groups = $derived(
-    getOrgNavigationGroups($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname + page.url.search, {
-      students: $isStudentLimitReached
-    })
+    getOrgNavigationGroups(
+      $currentOrgPath,
+      $currentOrg,
+      $isOrgAdmin,
+      $t,
+      page.url.pathname + page.url.search,
+      {
+        students: $isStudentLimitReached
+      },
+      orgNavCountsApi.counts
+    )
   );
 </script>
 
@@ -76,6 +86,11 @@
                             {:else}
                               <span>{item.title}</span>
                             {/if}
+                            {#if item.isNew}
+                              <Sidebar.MenuBadge class="ui:text-primary ui:bg-primary/10">
+                                {$t('automation.tabs.new_badge')}
+                              </Sidebar.MenuBadge>
+                            {/if}
                           </span>
                         {:else}
                           <a href={item.url} {...props} data-testid={item.testId}>
@@ -86,8 +101,14 @@
                             {:else}
                               <span>{item.title}</span>
                             {/if}
-                            {#if item.upgrade}
+                            {#if item.isNew}
+                              <Sidebar.MenuBadge class="ui:text-primary ui:bg-primary/10">
+                                {$t('automation.tabs.new_badge')}
+                              </Sidebar.MenuBadge>
+                            {:else if item.upgrade}
                               <PremiumIcon {isHovered} size={16} class="ui:text-primary ml-auto" />
+                            {:else if item.count}
+                              <Sidebar.MenuBadge>{formatCompactCount(item.count)}</Sidebar.MenuBadge>
                             {/if}
                           </a>
                         {/if}

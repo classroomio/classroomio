@@ -1,7 +1,7 @@
 import type { CourseContentItem, CourseMembers } from '$features/course/utils/types';
 import type { Marks } from './types';
 import { ContentType } from '@cio/utils/constants/content';
-import Papa from 'papaparse';
+import type { ExportColumn, ExportDocument } from '@cio/utils/export';
 
 /** Exercise information for display in marks table (linear, no lesson grouping) */
 export interface ExerciseInfo {
@@ -142,92 +142,38 @@ export function processMarksIntoExercises(marks: Marks, contentItems: CourseCont
 }
 
 /**
- * Generate and download CSV export of marks (student by exercise + avg grade)
- * @param students Array of students
- * @param exercises Ordered exercises
- * @param studentMarksByExerciseId Student marks by exercise
- * @param courseTitle Course title for filename
+ * Describes the marks table as a shared `ExportDocument`.
+ *
+ * Replaces the one-off CSV and PDF generators that used to live here: both
+ * renderings now come from one column definition, so a formatting change cannot
+ * apply to one format and not the other.
  */
-export function generateMarksCSV(
+export function buildMarksExportDocument(
   students: CourseMembers,
   exercises: ExerciseInfo[],
   studentMarksByExerciseId: StudentMarksByExercise,
-  courseTitle: string
-): void {
-  const exportData = students.map((student) => {
-    const marks = studentMarksByExerciseId[student.id] || {};
-    const rowData: Record<string, string | number> = {
-      name: student.profile?.fullname || '',
-      email: student.profile?.email || ''
-    };
-    exercises.forEach((ex) => {
-      rowData[ex.title] = marks[ex.id] ?? '-';
-    });
-    const avg = calculateStudentAverage(marks, exercises);
-    rowData['Avg grade'] = avg != null ? avg : '-';
-    return rowData;
-  });
+  courseTitle: string,
+  headers: { name: string; email: string; averageGrade: string }
+): ExportDocument<CourseMembers[number]> {
+  const exerciseColumns: ExportColumn<CourseMembers[number]>[] = exercises.map((exercise) => ({
+    key: exercise.id,
+    header: exercise.title,
+    value: (student) => studentMarksByExerciseId[student.id]?.[exercise.id] ?? null
+  }));
 
-  const csv = Papa.unparse(exportData);
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', `${courseTitle}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-/**
- * Generate and download PDF export of marks (student by exercise + avg grade)
- * @param students Array of students
- * @param exercises Ordered exercises
- * @param studentMarksByExerciseId Student marks by exercise
- * @param courseTitle Course title for filename and header
- */
-export async function generateMarksPDF(
-  students: CourseMembers,
-  exercises: ExerciseInfo[],
-  studentMarksByExerciseId: StudentMarksByExercise,
-  courseTitle: string
-): Promise<void> {
-  try {
-    const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable')
-    ]);
-
-    const doc = new jsPDF({ orientation: 'landscape' });
-    const head = [['Student', ...exercises.map((ex) => ex.title), 'Avg grade']];
-
-    const body = students.map((student) => {
-      const marks = studentMarksByExerciseId[student.id] || {};
-      const row: string[] = [student?.profile?.fullname ?? ''];
-      exercises.forEach((ex) => {
-        row.push(marks[ex.id] ?? '-');
-      });
-      const avg = calculateStudentAverage(marks, exercises);
-      row.push(avg != null ? String(avg) : '-');
-      return row;
-    });
-
-    autoTable(doc, {
-      head,
-      body,
-      startY: 20,
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [22, 160, 133] },
-      footStyles: { fillColor: [22, 160, 133] },
-      didDrawPage: function (data) {
-        doc.setFontSize(14);
-        doc.setTextColor(40);
-        doc.text(`${courseTitle} - Marks`, data.settings.margin.left, 10);
+  return {
+    filename: `${courseTitle}-marks`,
+    title: `${courseTitle} — ${headers.averageGrade}`,
+    columns: [
+      { key: 'name', header: headers.name, value: (student) => student.profile?.fullname ?? '' },
+      { key: 'email', header: headers.email, value: (student) => student.profile?.email ?? '' },
+      ...exerciseColumns,
+      {
+        key: 'average',
+        header: headers.averageGrade,
+        value: (student) => calculateStudentAverage(studentMarksByExerciseId[student.id] || {}, exercises)
       }
-    });
-    doc.save(`${courseTitle}-marks.pdf`);
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    throw error;
-  }
+    ],
+    rows: students
+  };
 }

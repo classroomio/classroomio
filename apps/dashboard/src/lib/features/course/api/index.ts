@@ -1,6 +1,7 @@
 export * from './attendance.svelte';
 export * from './compliance.svelte';
 export * from './course-clone.svelte';
+export * from './course-template.svelte';
 export * from './course.svelte';
 export * from './courses.svelte';
 export * from './content.svelte';
@@ -11,3 +12,4 @@ export * from './newsfeed.svelte';
 export * from './people.svelte';
 export * from './presign.svelte';
 export * from './submission.svelte';
+export * from './live-session-reminder.svelte';

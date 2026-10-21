@@ -1,7 +1,8 @@
 import * as schema from '@db/schema';
 
 import { TNewGroup, TNewGroupmember } from '@db/types';
-import { and, asc, eq, inArray, isNotNull, or } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNotNull, isNull, ne, or } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -135,13 +136,15 @@ export const isUserCourseMember = async (
 };
 
 /**
- * Checks if a user is either:
- * - a member of the course's group (any role), OR
- * - an ADMIN of the organization that owns the course's group.
+ * Course-group member (any role) or org ADMIN. Both require live, `ACTIVE` org
+ * membership — a `groupmember` row outlives removal from the org. This join is
+ * the single place course access is revoked.
  *
- * This is designed for middleware use to avoid doing multiple DB queries.
+ * Designed for middleware use, to avoid multiple DB queries.
  */
 export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
+  const orgMembership = alias(schema.organizationmember, 'org_membership');
+
   const result = await db
     .select({
       groupMemberId: schema.groupmember.id,
@@ -158,11 +161,24 @@ export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: 
       and(
         eq(schema.organizationmember.organizationId, schema.group.organizationId),
         eq(schema.organizationmember.profileId, profileId),
-        eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        eq(schema.organizationmember.roleId, ROLE.ADMIN),
+        eq(schema.organizationmember.status, 'ACTIVE')
+      )
+    )
+    .leftJoin(
+      orgMembership,
+      and(
+        eq(orgMembership.organizationId, schema.group.organizationId),
+        eq(orgMembership.profileId, profileId),
+        eq(orgMembership.status, 'ACTIVE')
       )
     )
     .where(
-      and(eq(schema.course.id, courseId), or(isNotNull(schema.groupmember.id), isNotNull(schema.organizationmember.id)))
+      and(
+        eq(schema.course.id, courseId),
+        or(isNull(schema.group.organizationId), isNotNull(orgMembership.id)),
+        or(isNotNull(schema.groupmember.id), isNotNull(schema.organizationmember.id))
+      )
     )
     .limit(1);
 
@@ -191,9 +207,13 @@ export const getUserCourseRole = async (courseId: string, profileId: string): Pr
  * - a team member (ADMIN or TUTOR) of the course's group, OR
  * - an ADMIN of the organization that owns the course's group.
  *
+ * Requires live, `ACTIVE` org membership, as `isUserCourseMemberOrOrgAdmin` does.
+ *
  * This is designed for middleware use to avoid doing multiple DB queries.
  */
 export const isCourseTeamMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
+  const orgMembership = alias(schema.organizationmember, 'org_membership');
+
   const result = await db
     .select({
       groupMemberId: schema.groupmember.id,
@@ -214,15 +234,79 @@ export const isCourseTeamMemberOrOrgAdmin = async (courseId: string, profileId: 
       and(
         eq(schema.organizationmember.organizationId, schema.group.organizationId),
         eq(schema.organizationmember.profileId, profileId),
-        eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        eq(schema.organizationmember.roleId, ROLE.ADMIN),
+        eq(schema.organizationmember.status, 'ACTIVE')
+      )
+    )
+    .leftJoin(
+      orgMembership,
+      and(
+        eq(orgMembership.organizationId, schema.group.organizationId),
+        eq(orgMembership.profileId, profileId),
+        eq(orgMembership.status, 'ACTIVE')
       )
     )
     .where(
-      and(eq(schema.course.id, courseId), or(isNotNull(schema.groupmember.id), isNotNull(schema.organizationmember.id)))
+      and(
+        eq(schema.course.id, courseId),
+        or(isNull(schema.group.organizationId), isNotNull(orgMembership.id)),
+        or(isNotNull(schema.groupmember.id), isNotNull(schema.organizationmember.id))
+      )
     )
     .limit(1);
 
   return result.length > 0;
+};
+
+/**
+ * Active org tutor who mentors a cohort that includes this course.
+ * Cohort role must be ADMIN or TUTOR. Org-only tutors are not included.
+ */
+export const isActiveOrgTutorOfCourseCohort = async (courseId: string, profileId: string): Promise<boolean> => {
+  const result = await db
+    .select({ cohortMemberId: schema.cohortMember.id })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .innerJoin(
+      schema.organizationmember,
+      and(
+        eq(schema.organizationmember.organizationId, schema.group.organizationId),
+        eq(schema.organizationmember.profileId, profileId),
+        eq(schema.organizationmember.roleId, ROLE.TUTOR),
+        eq(schema.organizationmember.status, 'ACTIVE')
+      )
+    )
+    .innerJoin(schema.cohort, eq(schema.cohort.organizationId, schema.group.organizationId))
+    .innerJoin(
+      schema.cohortCourse,
+      and(eq(schema.cohortCourse.cohortId, schema.cohort.id), eq(schema.cohortCourse.courseId, schema.course.id))
+    )
+    .innerJoin(
+      schema.cohortMember,
+      and(
+        eq(schema.cohortMember.cohortId, schema.cohort.id),
+        eq(schema.cohortMember.profileId, profileId),
+        or(eq(schema.cohortMember.roleId, ROLE.ADMIN), eq(schema.cohortMember.roleId, ROLE.TUTOR))
+      )
+    )
+    .where(eq(schema.course.id, courseId))
+    .limit(1);
+
+  return result.length > 0;
+};
+
+/**
+ * Course group ADMIN/TUTOR, org ADMIN, or an active org tutor who mentors a cohort
+ * that includes the course. Students and org-only tutors return false.
+ */
+export const canAccessCourseSubmissions = async (courseId: string, profileId: string): Promise<boolean> => {
+  const isTeamOrOrgAdmin = await isCourseTeamMemberOrOrgAdmin(courseId, profileId);
+
+  if (isTeamOrOrgAdmin) {
+    return true;
+  }
+
+  return isActiveOrgTutorOfCourseCohort(courseId, profileId);
 };
 
 /**
@@ -275,6 +359,83 @@ export async function getCourseProgramAccess(
   } catch (error) {
     console.error('getCourseProgramAccess error:', error);
     throw new Error(`Failed to get course program access: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Sets a profile's course roles in one org to their current org role. Role ids ascend by
+ * privilege (ADMIN 1, TUTOR 2, STUDENT 3), so this demotes outranking course roles and
+ * promotes lagging ones — a student invited as tutor or admin teaches every course
+ * they already belong to, and a demoted member keeps no elevated course access.
+ *
+ * @returns the number of course roles that were updated
+ */
+export async function syncCourseRolesToOrgRole(
+  orgId: string,
+  profileId: string,
+  orgRoleId: number,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const orgGroupIds = dbClient
+      .select({ id: schema.group.id })
+      .from(schema.group)
+      .where(eq(schema.group.organizationId, orgId));
+
+    const updated = await dbClient
+      .update(schema.groupmember)
+      .set({ roleId: orgRoleId })
+      .where(
+        and(
+          eq(schema.groupmember.profileId, profileId),
+          ne(schema.groupmember.roleId, orgRoleId),
+          inArray(schema.groupmember.groupId, orgGroupIds)
+        )
+      )
+      .returning({ id: schema.groupmember.id });
+
+    return updated.length;
+  } catch (error) {
+    console.error('syncCourseRolesToOrgRole error:', error);
+    throw new Error(`Failed to sync course roles: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Resolves the course group an org ADMIN may act in before they have a `groupmember` row.
+ * Returns null when the profile is not an admin of the course's organization.
+ */
+export async function getCourseOrgAdminAccess(
+  courseId: string,
+  profileId: string
+): Promise<{ courseGroupId: string; organizationId: string | null } | null> {
+  try {
+    const result = await db
+      .select({
+        courseGroupId: schema.group.id,
+        organizationId: schema.group.organizationId
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(
+        schema.organizationmember,
+        and(
+          eq(schema.organizationmember.organizationId, schema.group.organizationId),
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN),
+          // Feeds `ensureCourseGroupMemberId`, which can create a membership.
+          eq(schema.organizationmember.status, 'ACTIVE')
+        )
+      )
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
+
+    return result[0] ?? null;
+  } catch (error) {
+    console.error('getCourseOrgAdminAccess error:', error);
+    throw new Error(
+      `Failed to get course org admin access: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

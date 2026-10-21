@@ -1,6 +1,9 @@
 import * as z from 'zod';
+import { EMAIL_LOCALES, STUDENT_EMAIL_IDS } from '../../email';
 
-import { blockedSubdomain } from '@cio/utils/constants';
+import { ROLE, blockedSubdomain } from '@cio/utils/constants';
+import { ZCourseType } from '../course/course-type';
+import { containsDisallowedHrefs } from '../shared';
 
 export const ZGetOrganizations = z.object({
   siteName: z.string().min(1).optional(),
@@ -32,10 +35,47 @@ export const ZGetOrganizationCoursesQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().trim().optional(),
-  tags: z.string().optional()
+  tags: z.string().optional(),
+  type: ZCourseType.optional(),
+  status: z.enum(['published', 'unpublished']).optional(),
+  sort: z.enum(['date_created', 'last_updated_at', 'published', 'lessons']).optional(),
+  order: z.enum(['asc', 'desc']).optional()
 });
 
 export type TGetOrganizationCoursesQuery = z.infer<typeof ZGetOrganizationCoursesQuery>;
+
+export const ZCourseReorder = z.object({
+  courses: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        order: z.number().int().min(0)
+      })
+    )
+    .min(1)
+    .max(4)
+    .superRefine((courses, ctx) => {
+      const uniqueIds = new Set(courses.map((course) => course.id));
+      if (uniqueIds.size !== courses.length) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['courses'],
+          message: 'Course ids must be unique'
+        });
+      }
+
+      const expectedOrders = Array.from({ length: courses.length }, (_, index) => index);
+      const actualOrders = courses.map((course) => course.order).sort((a, b) => a - b);
+      if (actualOrders.some((order, index) => order !== expectedOrders[index])) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['courses'],
+          message: 'Orders must form a contiguous sequence starting at 0'
+        });
+      }
+    })
+});
+export type TCourseReorder = z.infer<typeof ZCourseReorder>;
 
 export const ZGetOrgSetup = z.object({
   siteName: z.string().min(1)
@@ -66,6 +106,23 @@ export const ZCancelOrgPlan = z.object({
 });
 
 export type TCancelOrgPlan = z.infer<typeof ZCancelOrgPlan>;
+
+export const ZEarlyAdopterSubscriptionEvent = z.object({
+  event: z.enum(['activated', 'updated', 'revoked']),
+  subscriptionId: z.string().min(1),
+  customerId: z.string().min(1).nullish(),
+  customerEmail: z.email(),
+  checkoutId: z.string().min(1).nullish(),
+  payload: z.record(z.string(), z.unknown())
+});
+
+export type TEarlyAdopterSubscriptionEvent = z.infer<typeof ZEarlyAdopterSubscriptionEvent>;
+
+export const ZClaimEarlyAdopterPlan = z.object({
+  token: z.string().trim().min(20).max(200)
+});
+
+export type TClaimEarlyAdopterPlan = z.infer<typeof ZClaimEarlyAdopterPlan>;
 
 export const ZCreateOrganization = z.object({
   name: z
@@ -98,7 +155,12 @@ export const ZUpdateOrganization = z.object({
   avatarUrl: z.url().optional(),
   favicon: z.union([z.url(), z.null()]).optional(),
   theme: z.string().optional(),
-  landingpage: z.record(z.string(), z.unknown()).optional(),
+  landingpage: z
+    .record(z.string(), z.unknown())
+    .optional()
+    .refine((val) => !val || !containsDisallowedHrefs(val), {
+      message: 'URLs with javascript:, data:, or vbscript: schemes are not allowed'
+    }),
   siteName: z.string().min(1).optional(),
   customDomain: z.string().nullable().optional(),
   isCustomDomainVerified: z.boolean().optional(),
@@ -116,6 +178,12 @@ export const ZUpdateOrganization = z.object({
         })
         .optional(),
       internalEnrollmentOnly: z.boolean().optional(),
+      language: z
+        .object({
+          locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it']).optional(),
+          enforced: z.boolean().optional()
+        })
+        .optional(),
       emailNotifications: z
         .object({
           newStudent: z.boolean().optional(),
@@ -135,9 +203,28 @@ export const ZUpdateOrganization = z.object({
 
 export type TUpdateOrganization = z.infer<typeof ZUpdateOrganization>;
 
+export const ZStudentEmailTemplateParams = z.object({
+  emailId: z.enum(STUDENT_EMAIL_IDS),
+  locale: z.enum(EMAIL_LOCALES)
+});
+
+export const ZUpsertStudentEmailTemplate = z.object({
+  content: z.string().min(1).max(50_000),
+  subject: z.string().min(1).max(200).nullable().optional()
+});
+
+export const ZStudentEmailTestRecipients = z.array(z.string().trim().email()).min(1).max(5);
+
+export const ZTestStudentEmailTemplate = z.object({
+  content: z.string().min(1).max(50_000),
+  subject: z.string().min(1).max(200),
+  recipientEmails: ZStudentEmailTestRecipients
+});
+
 export const ZInviteTeamMembers = z.object({
   emails: z.array(z.string().email()).min(1).max(50),
-  roleId: z.number().int().positive()
+  roleId: z.number().int().positive(),
+  confirmedStudentEmails: z.array(z.string().email()).max(50).default([])
 });
 
 export type TInviteTeamMembers = z.infer<typeof ZInviteTeamMembers>;
@@ -148,13 +235,24 @@ export const ZRemoveTeamMember = z.object({
 
 export type TRemoveTeamMember = z.infer<typeof ZRemoveTeamMember>;
 
+export const ZUpdateTeamMemberRole = z.object({
+  roleId: z.union([z.literal(ROLE.ADMIN), z.literal(ROLE.TUTOR)])
+});
+
+export type TUpdateTeamMemberRole = z.infer<typeof ZUpdateTeamMemberRole>;
+
 export const ZCreateLinkInvite = z.object({
   roleId: z.number().int().positive()
 });
 
 export type TCreateLinkInvite = z.infer<typeof ZCreateLinkInvite>;
 
+export const ZGetLinkInvite = z.object({
+  roleId: z.coerce.number().int().positive()
+});
+
 export const ZToggleLinkInvite = z.object({
+  roleId: z.number().int().positive(),
   isRevoked: z.boolean()
 });
 

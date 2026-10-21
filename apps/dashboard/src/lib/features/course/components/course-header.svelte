@@ -22,6 +22,7 @@
   import { openCoursePreview } from '$features/course/utils/course-preview';
   import { t } from '$lib/utils/functions/translations';
   import CourseProgressPopover from './course-progress-popover.svelte';
+  import { Badge } from '@cio/ui/base/badge';
   import CoursePublishBadge from './course-publish-badge.svelte';
   import CoursePublicBadge from './course-public-badge.svelte';
   import CourseContextMenuContent from './course-context-menu-content.svelte';
@@ -59,6 +60,8 @@
       return;
     }
 
+    if (course.isTemplate) return;
+
     if (!isPublished) {
       viewCourseSiteUnpublishedOpen = true;
       return;
@@ -92,7 +95,9 @@
           <CoursePublicBadge class="shrink-0" />
         {/if}
 
-        {#if showCoursePublishBadge}
+        {#if courseApi.course?.isTemplate}
+          <Badge variant="secondary">{$t('course_templates.editor.badge')}</Badge>
+        {:else if showCoursePublishBadge}
           <CoursePublishBadge {isPublished} />
         {/if}
       </div>
@@ -126,16 +131,18 @@
 
     {#if !$isStudentExperience}
       <ButtonGroup.Root>
-        <Button
-          variant="outline"
-          size="sm"
-          onclick={handleViewCourseSite}
-          disabled={!courseApi.course?.id}
-          aria-label={$t('course.header.view_course_site')}
-        >
-          <ExternalLinkIcon size={14} />
-          <span class="hidden sm:inline">{$t('course.header.view_course_site')}</span>
-        </Button>
+        {#if !courseApi.course?.isTemplate}
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={handleViewCourseSite}
+            disabled={!courseApi.course?.id}
+            aria-label={$t('course.header.view_course_site')}
+          >
+            <ExternalLinkIcon size={14} />
+            <span class="hidden sm:inline">{$t('course.header.view_course_site')}</span>
+          </Button>
+        {/if}
         <DropdownMenu.Root>
           <DropdownMenu.Trigger>
             {#snippet child({ props })}
@@ -159,6 +166,8 @@
                 isPublished={courseApi.course.isPublished ?? false}
                 courseType={courseApi.course.type}
                 slug={courseApi.course.slug ?? ''}
+                isTemplate={courseApi.course.isTemplate}
+                studentCount={courseApi.group.students.length}
                 includeViewAsStudent={true}
                 onViewAsStudent={() => (viewAsStudentOpen = true)}
               />

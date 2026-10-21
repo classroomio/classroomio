@@ -2,5 +2,5 @@
 export * from './drizzle';
 export * from './schema';
 export * from './relations';
-export * from './auth';
+export * from './auth.js';
 export * from './types';

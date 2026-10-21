@@ -10,7 +10,7 @@
   import { fade } from 'svelte/transition';
   import Save from '@lucide/svelte/icons/save';
   import Pencil from '@lucide/svelte/icons/pencil';
-  // import HistoryIcon from '@lucide/svelte/icons/history';
+  import HistoryIcon from '@lucide/svelte/icons/history';
   import VideoIcon from '@lucide/svelte/icons/video';
   import SettingsIcon from '@lucide/svelte/icons/settings';
 
@@ -30,6 +30,7 @@
   import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
   import { t } from '$lib/utils/functions/translations';
   import { ContentType } from '@cio/utils/constants/content';
+  import { resolveLessonSlides } from '@cio/utils/functions';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
@@ -55,6 +56,7 @@
     LessonMaterialActions
   } from '$features/course/components/lesson';
 
+  import type { TLessonVersionIntentRequest } from '@cio/utils/validation/lesson';
   import type { TLocale } from '@cio/db/types';
   import { orderedTabs, SETTINGS_TAB_VALUE, tabs as materialTabs } from '$features/course/components/lesson/constants';
   import { getViewModeComponents } from '$features/course/components/lesson/utils';
@@ -62,6 +64,8 @@
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
   import LiveSessionCard from '$features/course/components/lesson/live-session-card.svelte';
+  import { liveSessionClock } from '$features/course/utils/live-session-phase';
+  import { getLiveSessionPhase, type LiveSessionPhase } from '@cio/utils/functions/live-session';
 
   interface Props {
     courseId: string;
@@ -80,14 +84,20 @@
     })
   );
 
+  const HISTORY_PARAM = 'history';
+  const VERSION_PARAM = 'version';
+
   let prevModeParam = $state<string | null>(null);
   let isDeletingLesson = $state(false);
-  let isVersionDrawerOpen = $state(false);
+  // Derived from the URL so a reload reopens the drawer. The URL is the single source of
+  // truth; nothing sets this directly.
+  const isVersionDrawerOpen = $derived($page.url.searchParams.get(HISTORY_PARAM) === 'open');
   // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: cleared before intentional navigations and bound to UnsavedChanges
   let hasUnsavedChanges = $state(false);
+  let sessionHasUnsavedChanges = $state(false);
 
   $effect(() => {
-    hasUnsavedChanges = lessonApi.isDirty && mode === MODES.edit;
+    hasUnsavedChanges = (lessonApi.isDirty || sessionHasUnsavedChanges) && mode === MODES.edit;
   });
 
   const currentLessonContentItem = $derived(
@@ -128,12 +138,42 @@
   const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const isLiveSessionLesson = $derived(Boolean(lessonApi.lesson?.callUrl && lessonApi.lesson?.lessonAt));
+  const lessonSessionPhase = $derived(
+    lessonApi.lesson?.id === lessonId ? getLiveSessionPhase(lessonApi.lesson, $liveSessionClock) : null
+  );
+  let observedSessionPhase: { lessonId: string; phase: LiveSessionPhase | null } | null = null;
+
+  $effect(() => {
+    const phase = lessonSessionPhase;
+    const previous = observedSessionPhase;
+    observedSessionPhase = { lessonId, phase };
+    const sessionJustEnded =
+      phase === 'ended' && previous?.lessonId === lessonId && previous.phase !== null && previous.phase !== 'ended';
+    if (!sessionJustEnded || !$isStudentExperience) return;
+
+    void lessonApi.get(courseId, lessonId);
+  });
 
   function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
     const params = new SvelteURLSearchParams($page.url.searchParams);
     params.set('mode', value);
     goto(resolve(`${$page.url.pathname}?${params.toString()}`, {}), { replaceState: false });
   }
+  /** Closing drops the selected version too, so both params move in one navigation. */
+  function setHistoryQueryParam(isOpen: boolean) {
+    const params = new SvelteURLSearchParams($page.url.searchParams);
+
+    if (isOpen) {
+      params.set(HISTORY_PARAM, 'open');
+    } else {
+      params.delete(HISTORY_PARAM);
+      params.delete(VERSION_PARAM);
+    }
+
+    const query = params.toString();
+    return goto(resolve(query ? `${$page.url.pathname}?${query}` : $page.url.pathname, {}), { replaceState: false });
+  }
+
   function setTabQueryParam(value: string) {
     const params = new SvelteURLSearchParams($page.url.searchParams);
     params.set('tab', value);
@@ -144,14 +184,15 @@
     if (mode === MODES.edit && lessonApi.isDirty) {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = undefined;
-      saveLesson();
+      queueSave('manual');
     }
-    hasUnsavedChanges = false;
+    if (!sessionHasUnsavedChanges) hasUnsavedChanges = false;
     setModeQueryParam(mode === MODES.edit ? MODES.view : MODES.edit);
   }
 
   const refetchDataAfterVersionRestore = async () => {
-    isVersionDrawerOpen = false;
+    await setHistoryQueryParam(false);
+
     if (courseId && browser) {
       setModeQueryParam('view');
 
@@ -176,7 +217,7 @@
     const ordered = orderedTabs(materialTabs, courseApi.course?.metadata?.lessonTabsOrder);
     const content = lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '';
 
-    const slideUrl = lessonApi.lesson?.slideUrl || '';
+    const slides = resolveLessonSlides(lessonApi.lesson?.slides, lessonApi.lesson?.slideUrl);
     const videos = lessonApi.lesson?.videos || [];
     const documents = lessonApi.lesson?.documents || [];
 
@@ -184,7 +225,7 @@
       if (tab.value === 1) {
         tab.badgeValue = isHtmlValueEmpty(content) ? 0 : 1;
       } else if (tab.value === 2) {
-        tab.badgeValue = slideUrl ? 1 : 0;
+        tab.badgeValue = slides.length;
       } else if (tab.value === 3) {
         tab.badgeValue = !isEmpty(videos) ? videos.length : 0;
       } else if (tab.value === 4) {
@@ -215,6 +256,16 @@
 
   let timeoutId: NodeJS.Timeout | undefined;
 
+  // Saves run one at a time: clearing the debounce only cancels a save that has
+  // not started, so an in-flight autosave could still land after a manual one.
+  let saveQueue: Promise<unknown> = Promise.resolve();
+
+  function queueSave(versionIntent: TLessonVersionIntentRequest) {
+    saveQueue = saveQueue.catch(() => undefined).then(() => saveLesson(versionIntent));
+
+    return saveQueue;
+  }
+
   let isLoading = writable(false);
 
   function callAI(_type = '') {}
@@ -224,13 +275,17 @@
     return tabValue;
   };
 
-  async function saveOrUpdateTranslation(locale: TLocale, lessonId: string) {
+  async function saveOrUpdateTranslation(
+    locale: TLocale,
+    lessonId: string,
+    versionIntent: TLessonVersionIntentRequest
+  ) {
     const content = lessonApi.translations[lessonId]?.[locale] || '';
 
     if (!courseApi.course?.id) return;
 
     // Use API to upsert lesson language (creates if doesn't exist, updates if exists)
-    await lessonApi.upsertLanguage(courseApi.course.id, lessonId, locale, content);
+    await lessonApi.upsertLanguage(courseApi.course.id, lessonId, locale, content, versionIntent);
   }
 
   function hasLessonNoteContent(targetLessonId: string) {
@@ -245,19 +300,21 @@
   function patchLessonListItemLocally() {
     if (!lessonApi.lesson) return;
 
+    const title = lessonApi.lesson.title;
     courseApi.updateContentItem(lessonApi.lesson.id, ContentType.Lesson, {
-      title: lessonApi.lesson.title ?? '',
+      ...(title ? { title } : {}),
       isUnlocked: lessonApi.lesson.isUnlocked ?? null,
       hasNoteContent: hasLessonNoteContent(lessonApi.lesson.id),
-      hasSlideContent: Boolean(lessonApi.lesson.slideUrl?.trim()),
+      hasSlideContent: resolveLessonSlides(lessonApi.lesson.slides, lessonApi.lesson.slideUrl).length > 0,
       videosCount: Array.isArray(lessonApi.lesson.videos) ? lessonApi.lesson.videos.length : 0,
       documentsCount: Array.isArray(lessonApi.lesson.documents) ? lessonApi.lesson.documents.length : 0
     });
   }
 
-  async function saveLesson() {
+  async function saveLesson(versionIntent: TLessonVersionIntentRequest = 'auto') {
     if (!lessonApi.lesson) return false;
 
+    const revisionAtSave = lessonApi.revision;
     const [isLessonUpdated] = await Promise.all([
       lessonApi.update(courseApi.course?.id || '', lessonId, {
         title: lessonApi.lesson.title || undefined,
@@ -266,17 +323,20 @@
         videoWatchThreshold: lessonApi.lesson.videoWatchThreshold ?? undefined,
         commentsEnabled: lessonApi.lesson.commentsEnabled ?? true,
         slideUrl: lessonApi.lesson.slideUrl || undefined,
+        slides: lessonApi.lesson.slides || [],
         videos: lessonApi.lesson.videos || [],
         documents: lessonApi.lesson.documents || [],
         slug: isPublicCourse && lessonApi.lesson.slug ? lessonApi.lesson.slug : undefined
       }),
-      saveOrUpdateTranslation(lessonApi.currentLocale, lessonId)
+      saveOrUpdateTranslation(lessonApi.currentLocale, lessonId, versionIntent)
     ]);
 
-    if (isLessonUpdated) {
+    if (isLessonUpdated && revisionAtSave === lessonApi.revision) {
       patchLessonListItemLocally();
       clearDraft(lessonId, lessonApi.currentLocale);
       lessonApi.isDirty = false;
+    } else if (revisionAtSave !== lessonApi.revision) {
+      autoSave();
     }
   }
 
@@ -312,7 +372,7 @@
       if (prevMode === MODES.edit) {
         if (timeoutId) clearTimeout(timeoutId);
         timeoutId = undefined;
-        saveLesson();
+        queueSave('manual');
       }
     });
   }
@@ -324,8 +384,8 @@
     if (timeoutId) clearTimeout(timeoutId);
 
     untrack(() => {
-      timeoutId = setTimeout(async () => {
-        await saveLesson();
+      timeoutId = setTimeout(() => {
+        void queueSave('auto');
       }, 2000);
     });
   }
@@ -359,7 +419,7 @@
         lessonApi.translations[lessonId] = {} as Record<TLocale, string>;
       }
       lessonApi.translations[lessonId][lessonApi.currentLocale] = draft.content;
-      lessonApi.isDirty = true;
+      lessonApi.markDirty();
     } else {
       clearDraft(lessonId, lessonApi.currentLocale);
     }
@@ -425,7 +485,7 @@
   <Page.HeaderContent>
     <LessonPageEditHeader
       {mode}
-      title={lessonTitle}
+      title={mode === MODES.edit ? (lessonApi.lesson?.title ?? '') : lessonTitle}
       isUnlocked={lessonApi.lesson?.isUnlocked ?? false}
       {isDeletingLesson}
       onTitleChange={handleLessonTitleChange}
@@ -445,14 +505,6 @@
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <div class="flex flex-row items-center gap-2 lg:flex">
-          <!--
-          {#if mode === MODES.edit && window.innerWidth >= 1024}
-            <IconButton onclick={() => (isVersionDrawerOpen = true)}>
-              <HistoryIcon size={20} />
-            </IconButton>
-          {/if}
-          -->
-
           {#if mode === MODES.edit}
             <span class="ui:text-muted-foreground text-sm" aria-live="polite">
               {#if lessonApi.isSaving}
@@ -471,7 +523,17 @@
           </IconButton>
         </div>
 
-        <RefreshPageData onRefresh={() => lessonApi.get(courseId, lessonId)} />
+        <IconButton
+          class="inline-flex"
+          onclick={() => setHistoryQueryParam(true)}
+          aria-label={$t('course.navItem.lessons.version_history.title')}
+          tooltip={$t('course.navItem.lessons.version_history.title')}
+          tooltipSide="bottom"
+        >
+          <HistoryIcon size={20} />
+        </IconButton>
+
+        <RefreshPageData class="hidden lg:inline-flex" onRefresh={() => lessonApi.get(courseId, lessonId)} />
       </RoleBasedSecurity>
 
       <LanguageSelector />
@@ -489,6 +551,8 @@
             callUrl={lessonApi.lesson?.callUrl ?? ''}
             lessonAt={lessonApi.lesson?.lessonAt ?? ''}
             timezone={courseApi.course?.metadata?.sessionTimezone}
+            durationMinutes={lessonApi.lesson?.sessionDurationMinutes}
+            recordingUrl={lessonApi.lesson?.recordingUrl}
           />
         </div>
       {/if}
@@ -579,7 +643,7 @@
 
           <!-- Settings Tab (fixed, not part of lessonTabsOrder) -->
           <UnderlineTabs.Content value={SETTINGS_TAB_VALUE}>
-            <LessonSettingsTab />
+            <LessonSettingsTab bind:hasUnsavedSessionChanges={sessionHasUnsavedChanges} />
           </UnderlineTabs.Content>
           <!-- End Settings Tab -->
         </UnderlineTabs.Root>
@@ -625,10 +689,10 @@
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-{#if isVersionDrawerOpen && window.innerWidth >= 1024}
+{#if isVersionDrawerOpen}
   <LessonVersionHistory
     open={isVersionDrawerOpen}
-    on:close={() => (isVersionDrawerOpen = false)}
+    on:close={() => setHistoryQueryParam(false)}
     on:restore={refetchDataAfterVersionRestore}
   />
 {/if}

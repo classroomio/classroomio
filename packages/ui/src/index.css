@@ -19,13 +19,12 @@
  *                             desktop sidebar rail, the side panel.
  *   z-app-bar-elevated (150) A sidebar (mobile sheet or desktop) that must render above other
  *                             z-app-bar content while open, e.g. the course content sidebar.
- *   z-modal             (200) Blocking dialogs/drawers.
+ *   z-modal             (200) Blocking dialogs, sheets, and drawers.
  *   z-menu-elevated     (250) Dropdown/select/popover content that must escape a z-app-bar,
  *                             z-app-bar-elevated, or z-modal ancestor.
  *
- * Anything not listed (dropdowns, sheets, drawers) uses Tailwind's default `z-50`,
- * which already sits above normal page content. Tooltips use `z-menu-elevated` so they
- * remain visible over `z-app-bar` chrome such as the transcript side panel.
+ * Tooltips use `z-menu-elevated` so they remain visible over `z-app-bar` chrome such as
+ * the transcript side panel.
  */
 @utility z-app-bar {
   z-index: 100;
@@ -54,6 +53,21 @@
 @source inline('ui:z-app-bar-elevated{,!}');
 @source inline('ui:z-modal{,!}');
 @source inline('ui:z-menu-elevated{,!}');
+
+/* Masks clip box-shadow: put any shadow on a wrapper with `drop-shadow` instead. */
+@utility notch-cutout {
+  -webkit-mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 11' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H46 Q41.6 0 40.4 2.6 L38 8.4 Q36.9 11 34.2 11 H11.8 Q9.1 11 8 8.4 L5.6 2.6 Q4.4 0 0 0 Z'/%3E%3C/svg%3E")
+      var(--notch-x, 2.5rem) 0 / var(--notch-w, 46px) var(--notch-h, 11px) no-repeat,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 11' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H46 Q41.6 0 40.4 2.6 L38 8.4 Q36.9 11 34.2 11 H11.8 Q9.1 11 8 8.4 L5.6 2.6 Q4.4 0 0 0 Z'/%3E%3C/svg%3E")
+      var(--notch-x, 2.5rem) 0 / var(--notch-w, 46px) var(--notch-h, 11px) no-repeat exclude,
+    linear-gradient(#000 0 0);
+}
+
+@source inline('ui:notch-cutout');
 
 :root {
   --spacing: var(--ui-spacing);
@@ -89,6 +103,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --success: oklch(0.623 0.214 142.495);
 }
 
 .dark {
@@ -123,6 +138,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --success: oklch(0.708 0.195 142.495);
 }
 
 @theme inline {
@@ -164,6 +180,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-success: var(--success);
 
   /* Course-app style animations (marketing / landing) */
   --animate-meteor: meteor 5s linear infinite;

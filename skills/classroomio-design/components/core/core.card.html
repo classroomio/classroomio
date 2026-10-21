@@ -1,0 +1,19 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Core (marketing)" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--page)}.lbl{font-family:var(--font-mono);font-size:10px;color:var(--ink-500);letter-spacing:.08em}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ClassroomIODesignSystem || window[Object.keys(window).find(k => { try { return window[k] && window[k].NotchCard && window[k].Button; } catch (e) { return false; } })] || {};
+const { CTAButton: Button, Eyebrow, Tag, Pill, Icon, Logo } = NS;
+const Row = ({ l, children }) => <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}><span className="lbl" style={{ width: 70 }}>{l}</span>{children}</div>;
+ReactDOM.createRoot(document.getElementById('root')).render(<div>
+<Row l="BUTTONS"><Button>Start your academy</Button><Button variant="secondary">Book a demo</Button><Button size="sm">Get started</Button><Button variant="link" icon>Explore</Button><Button disabled>Disabled</Button></Row>
+<Row l="ON BLUE"><div style={{ background: 'var(--blue-700)', padding: 12, borderRadius: 10, display: 'flex', gap: 10 }}><Button variant="inverse">Start free</Button><Button variant="outlineOnBlue">Talk to us</Button></div></Row>
+<Row l="LABELS"><Eyebrow>Custom branding</Eyebrow><Eyebrow tone="accent" size="sm">FAQ</Eyebrow><Tag>PATH</Tag><Tag variant="new">NEW</Tag><Tag variant="agent">agent · drafting</Tag></Row>
+<Row l="PILL"><Pill icon={<Icon name="github" size={18} color="var(--ink-900)" strokeWidth={1.6}/>}>Open source · 3.2k on GitHub</Pill><Logo/></Row>
+<Row l="ICONS">{['sparkle','users','palette','bolt','chat','search','lock','plus','arrowRight','chevronDown','github','close'].map(n => <Icon key={n} name={n} color="var(--blue-700)"/>)}</Row>
+</div>);
+</script></body></html>

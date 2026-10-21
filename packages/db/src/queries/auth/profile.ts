@@ -95,6 +95,27 @@ export const getProfileById = async (id: string) => {
   return profile;
 };
 
+export async function markWelcomeEmailPending(userId: string) {
+  const [updatedProfile] = await db
+    .update(schema.profile)
+    .set({ welcomeEmailPending: true })
+    .where(eq(schema.profile.id, userId))
+    .returning({ id: schema.profile.id });
+
+  return updatedProfile ?? null;
+}
+
+export async function clearWelcomeEmailPending(userId: string) {
+  await db.update(schema.profile).set({ welcomeEmailPending: false }).where(eq(schema.profile.id, userId));
+}
+
+export async function markWelcomeEmailSent(userId: string) {
+  await db
+    .update(schema.profile)
+    .set({ welcomeEmailPending: false, welcomeEmailSentAt: new Date().toISOString() })
+    .where(eq(schema.profile.id, userId));
+}
+
 export const getProfileByEmail = async (email: string) => {
   const [profile] = await db.select().from(schema.profile).where(eq(schema.profile.email, email)).limit(1);
 
@@ -107,11 +128,15 @@ export async function getProfilesByEmails(emails: string[]) {
   return db.select().from(schema.profile).where(inArray(schema.profile.email, emails));
 }
 
-export const updateProfile = async (id: string, data: Partial<Omit<TProfile, 'id' | 'createdAt' | 'updatedAt'>>) => {
+export const updateProfile = async (
+  id: string,
+  data: Partial<Omit<TProfile, 'id' | 'createdAt' | 'updatedAt'>>,
+  dbClient: DbOrTxClient = db
+) => {
   let setData = { ...data };
 
   if (data.settings !== undefined) {
-    const [existing] = await db
+    const [existing] = await dbClient
       .select({ settings: schema.profile.settings })
       .from(schema.profile)
       .where(eq(schema.profile.id, id))
@@ -144,7 +169,11 @@ export const updateProfile = async (id: string, data: Partial<Omit<TProfile, 'id
     setData = { ...setData, settings: mergedSettings as TProfile['settings'] };
   }
 
-  const [updatedProfile] = await db.update(schema.profile).set(setData).where(eq(schema.profile.id, id)).returning();
+  const [updatedProfile] = await dbClient
+    .update(schema.profile)
+    .set(setData)
+    .where(eq(schema.profile.id, id))
+    .returning();
 
   return updatedProfile;
 };

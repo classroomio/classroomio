@@ -6,6 +6,7 @@
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
+  import FlagIcon from '@lucide/svelte/icons/flag';
 
   interface Props {
     avatarUrl?: string | null;
@@ -18,8 +19,11 @@
     onEdit?: () => void;
     canDelete?: boolean;
     onDelete?: () => void;
+    canReport?: boolean;
+    onReport?: () => void;
     editLabel?: string;
     deleteLabel?: string;
+    reportLabel?: string;
     class?: string;
     actions?: Snippet;
   }
@@ -35,8 +39,11 @@
     onEdit,
     canDelete = false,
     onDelete,
+    canReport = false,
+    onReport,
     editLabel = 'Edit',
     deleteLabel = 'Delete',
+    reportLabel = 'Report',
     class: className = '',
     actions
   }: Props = $props();
@@ -44,7 +51,9 @@
   const displayDate = $derived(
     dateLabel || (createdAt && !isNaN(Date.parse(createdAt)) ? new Date(createdAt).toLocaleDateString() : '')
   );
-  const hasActions = $derived((canEdit && Boolean(onEdit)) || (canDelete && Boolean(onDelete)));
+  const hasActions = $derived(
+    (canEdit && Boolean(onEdit)) || (canDelete && Boolean(onDelete)) || (canReport && Boolean(onReport))
+  );
 </script>
 
 <div class="ui:flex ui:w-full ui:items-center ui:justify-between {className}">
@@ -83,6 +92,15 @@
           <DropdownMenu.Item class="ui:text-destructive ui:focus:text-destructive" onclick={onDelete}>
             <Trash2Icon class="ui:mr-2 ui:size-3.5" />
             <span>{deleteLabel}</span>
+          </DropdownMenu.Item>
+        {/if}
+        {#if canReport && onReport}
+          {#if (canEdit && onEdit) || (canDelete && onDelete)}
+            <DropdownMenu.Separator />
+          {/if}
+          <DropdownMenu.Item onclick={onReport}>
+            <FlagIcon class="ui:mr-2 ui:size-3.5" />
+            <span>{reportLabel}</span>
           </DropdownMenu.Item>
         {/if}
       </DropdownMenu.Content>

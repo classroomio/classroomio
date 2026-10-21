@@ -1,7 +1,8 @@
-import type { AccountOrg } from '$features/app/types';
+import type { PublicOrg } from '$features/app/types';
 import { t } from '$lib/utils/functions/translations';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE } from '@cio/utils/constants';
+import type { LandingNavAuthAction } from '@cio/ui/custom/org-landing-page';
 
 type OrganizationMembership = {
   id: string;
@@ -12,15 +13,9 @@ type OrganizationMembership = {
 interface OrgLandingAuthActionOptions {
   isLoggedIn: boolean;
   isInitialized: boolean;
-  org: AccountOrg;
+  org: PublicOrg;
   organizations?: OrganizationMembership[];
   hasPendingInvite?: boolean;
-}
-
-export interface OrgLandingAuthAction {
-  label: string;
-  href: string;
-  loading?: boolean;
 }
 
 /**
@@ -33,7 +28,7 @@ export function getOrgLandingAuthAction({
   org,
   organizations = [],
   hasPendingInvite = false
-}: OrgLandingAuthActionOptions): OrgLandingAuthAction | undefined {
+}: OrgLandingAuthActionOptions): LandingNavAuthAction | undefined {
   if (!isLoggedIn) {
     return { label: t.get('navigation.login'), href: '/login' };
   }
@@ -52,7 +47,7 @@ export function getOrgLandingAuthAction({
       return { label: t.get('navigation.goto_dashboard'), href: `/org/${membership.siteName}` };
     }
 
-    return { label: t.get('navigation.goto_lms'), href: '/lms' };
+    return { label: t.get('landing.learner_menu.continue_learning'), href: '/lms' };
   }
 
   if (PUBLIC_IS_SELFHOSTED === 'true') {
@@ -75,4 +70,58 @@ export function getOrgLandingAuthAction({
   }
 
   return { label: t.get('navigation.join_academy'), href: '/join-academy' };
+}
+
+export interface ResolveOrgLandingAuthActionOptions {
+  org?: AccountOrg | null;
+  locals?: {
+    user?: { id?: string; name?: string | null; email?: string | null } | null;
+    organizations?: OrganizationMembership[] | null;
+  } | null;
+  user: { isLoggedIn?: boolean };
+  appInitApi: {
+    isInitializedAndReady: boolean;
+    data?: { success?: boolean; organizations?: OrganizationMembership[] } | null;
+    pendingOrgInvite?: unknown;
+  };
+}
+
+export function resolveOrgLandingAuthAction({
+  org,
+  locals,
+  user,
+  appInitApi
+}: ResolveOrgLandingAuthActionOptions): LandingNavAuthAction | undefined {
+  if (!org) {
+    return undefined;
+  }
+
+  const isLoggedIn = !!(locals?.user || user.isLoggedIn);
+  const isInitialized = appInitApi.isInitializedAndReady;
+  const organizations = appInitApi.data?.success
+    ? (appInitApi.data.organizations ?? locals?.organizations ?? [])
+    : (locals?.organizations ?? []);
+  const hasPendingInvite = !!appInitApi.pendingOrgInvite;
+
+  return getOrgLandingAuthAction({
+    isLoggedIn,
+    isInitialized,
+    org,
+    organizations,
+    hasPendingInvite
+  });
+}
+
+export function getPreviewOrgLandingAuthAction(isLoggedIn: boolean): LandingNavAuthAction {
+  return isLoggedIn
+    ? {
+        label: t.get('landing.learner_menu.continue_learning'),
+        href: '#',
+        disabled: true
+      }
+    : {
+        label: t.get('navigation.login'),
+        href: '#',
+        disabled: true
+      };
 }

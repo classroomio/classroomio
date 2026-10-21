@@ -81,13 +81,19 @@ function filterPublicApiSpec(spec: Record<string, unknown>) {
     Object.entries(paths).filter(([path]) => path.startsWith('/public-api/v1/'))
   );
 
+  const usedTags = new Set(
+    Object.values(publicApiPaths).flatMap((pathItem) =>
+      Object.values(pathItem as Record<string, { tags?: string[] }>).flatMap((operation) => operation?.tags ?? [])
+    )
+  );
+
   const tags = Array.isArray(spec.tags)
     ? spec.tags.filter((tag) => {
         if (!tag || typeof tag !== 'object' || !('name' in tag)) {
           return false;
         }
 
-        return typeof tag.name === 'string' && tag.name.startsWith('Public API');
+        return typeof tag.name === 'string' && usedTags.has(tag.name);
       })
     : undefined;
 

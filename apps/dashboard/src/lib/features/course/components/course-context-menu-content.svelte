@@ -3,7 +3,13 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { copyCourseModal, deleteCourseModal } from '$features/course/utils/store';
+  import {
+    copyCourseModal,
+    copyCourseModalInitialState,
+    deleteCourseModal,
+    saveTemplateModal
+  } from '$features/course/utils/store';
+  import { isOrgAdmin, currentOrgPath } from '$lib/utils/store/org';
   import { copyPublicCoursePageUrl, openCoursePreview } from '$features/course/utils/course-preview';
   import { currentOrgDomain } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -26,6 +32,8 @@
     includeOpen?: boolean;
     /** Hide org management actions (clone, share, invite, delete) */
     hideOrgActions?: boolean;
+    isTemplate?: boolean;
+    studentCount?: number;
   }
 
   let {
@@ -39,7 +47,9 @@
     includeViewAsStudent = false,
     onViewAsStudent,
     includeOpen = false,
-    hideOrgActions = false
+    hideOrgActions = false,
+    isTemplate = false,
+    studentCount = 0
   }: Props = $props();
 
   const showPublicCourseLinks = $derived(isPublished && courseType === 'PUBLIC' && slug.trim().length > 0);
@@ -78,20 +88,31 @@
 
     const isOnOrgCoursesList = /\/org\/[^/]+\/courses\/?$/.test(page.url.pathname);
     if (isOnOrgCoursesList) {
-      $deleteCourseModal.open = true;
-      $deleteCourseModal.id = id;
-      $deleteCourseModal.title = title;
+      deleteCourseModal.set({ open: true, id, title, isDeleting: false });
       return;
     }
 
     redirect(`/courses/${id}/settings#delete`);
   }
 
+  function handleSaveAsTemplate() {
+    saveTemplateModal.set({
+      open: true,
+      id,
+      title,
+      name: title,
+      mode: 'copy',
+      isPublished,
+      studentCount
+    });
+  }
+
+  function handleCreateFromTemplate() {
+    goto(`${$currentOrgPath}/courses/templates?preview=${id}`);
+  }
+
   function handleCloneCourse() {
-    $copyCourseModal.open = true;
-    $copyCourseModal.id = id;
-    $copyCourseModal.title = title;
-    $copyCourseModal.description = description;
+    copyCourseModal.set({ ...copyCourseModalInitialState, open: true, id, title, description });
   }
 
   function handleOpenCourse() {
@@ -138,7 +159,7 @@
     {#if !hideOrgActions || includeOpen}
       <DropdownMenu.Separator />
     {/if}
-  {:else}
+  {:else if !isTemplate}
     <DropdownMenu.Item onclick={handlePublishCourse}>
       {$t('courses.course_card.context_menu.publish_course')}
     </DropdownMenu.Item>
@@ -154,18 +175,34 @@
   {/if}
 
   {#if !hideOrgActions}
-    <DropdownMenu.Item onclick={handleCloneCourse}>
-      {$t('courses.course_card.context_menu.clone')}
-    </DropdownMenu.Item>
+    {#if isTemplate && $isOrgAdmin}
+      <DropdownMenu.Item onclick={handleCreateFromTemplate}>
+        {$t('course_templates.menu.create_course')}
+      </DropdownMenu.Item>
+    {/if}
+    {#if !isTemplate}
+      <DropdownMenu.Item onclick={handleCloneCourse}>
+        {$t('courses.course_card.context_menu.clone')}
+      </DropdownMenu.Item>
+    {/if}
+    {#if !isTemplate && $isOrgAdmin}
+      <DropdownMenu.Item onclick={handleSaveAsTemplate}>
+        {$t('course_templates.menu.save')}
+      </DropdownMenu.Item>
+    {/if}
     <DropdownMenu.Item onclick={handleShareCourse}>
       {$t('courses.course_card.context_menu.share')}
     </DropdownMenu.Item>
-    <DropdownMenu.Item onclick={handleInvite}>
-      {$t('courses.course_card.context_menu.invite')}
-    </DropdownMenu.Item>
-    <DropdownMenu.Separator />
-    <DropdownMenu.Item class="text-red-600" onclick={handleDeleteCourse}>
-      {$t('courses.course_card.context_menu.delete')}
-    </DropdownMenu.Item>
+    {#if !isTemplate}
+      <DropdownMenu.Item onclick={handleInvite}>
+        {$t('courses.course_card.context_menu.invite')}
+      </DropdownMenu.Item>
+    {/if}
+    {#if !isTemplate || $isOrgAdmin}
+      <DropdownMenu.Separator />
+      <DropdownMenu.Item class="text-red-600" onclick={handleDeleteCourse}>
+        {$t('courses.course_card.context_menu.delete')}
+      </DropdownMenu.Item>
+    {/if}
   {/if}
 {/if}

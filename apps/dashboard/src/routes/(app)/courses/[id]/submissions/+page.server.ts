@@ -10,7 +10,8 @@ export const load = async ({ params, cookies }) => {
     return {
       courseId: '',
       sections: [],
-      submissionIdData: {}
+      submissionIdData: {},
+      gradingAccess: 'allowed' as const
     };
   }
 
@@ -27,13 +28,24 @@ export const load = async ({ params, cookies }) => {
     return {
       courseId,
       sections: result.body.data.sections || [],
-      submissionIdData: result.body.data.submissionIdData || {}
+      submissionIdData: result.body.data.submissionIdData || {},
+      gradingAccess: 'allowed' as const
+    };
+  }
+
+  if (!result.ok && result.status === 403) {
+    return {
+      courseId,
+      sections: [],
+      submissionIdData: {},
+      gradingAccess: 'denied' as const
     };
   }
 
   return {
     courseId,
     sections: [],
-    submissionIdData: {}
+    submissionIdData: {},
+    gradingAccess: 'allowed' as const
   };
 };

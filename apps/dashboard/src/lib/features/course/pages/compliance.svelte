@@ -190,34 +190,27 @@
     return 'outline';
   }
 
-  function toggleLearner(profileId: string) {
-    if (selectedLearnerIds.has(profileId)) {
-      selectedLearnerIds.delete(profileId);
+  function setLearnerSelected(profileId: string, selected: boolean) {
+    if (selected) {
+      selectedLearnerIds.add(profileId);
       return;
     }
 
-    selectedLearnerIds.add(profileId);
+    selectedLearnerIds.delete(profileId);
   }
 
-  function toggleAllVisibleLearners() {
-    if (allVisibleSelected) {
-      for (const learner of learnerRows) {
-        if (!learner.profileId) {
-          continue;
-        }
-
-        selectedLearnerIds.delete(learner.profileId);
-      }
-
-      return;
-    }
-
+  function setAllVisibleLearnersSelected(selected: boolean) {
     for (const learner of learnerRows) {
       if (!learner.profileId) {
         continue;
       }
 
-      selectedLearnerIds.add(learner.profileId);
+      if (selected) {
+        selectedLearnerIds.add(learner.profileId);
+        continue;
+      }
+
+      selectedLearnerIds.delete(learner.profileId);
     }
   }
 
@@ -492,7 +485,7 @@
             <Checkbox
               checked={allVisibleSelected}
               indeterminate={someVisibleSelected && !allVisibleSelected}
-              onclick={toggleAllVisibleLearners}
+              onCheckedChange={(checked) => setAllVisibleLearnersSelected(checked === true)}
             />
             <span class="text-sm font-medium">{$t('course.navItem.compliance.bulk_actions.select_all')}</span>
           </div>
@@ -546,13 +539,13 @@
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {#each learnerRows as learner}
+            {#each learnerRows as learner (learner.profileId)}
               <Table.Row>
                 <Table.Cell>
                   {#if learner.profileId}
                     <Checkbox
                       checked={selectedLearnerIds.has(learner.profileId)}
-                      onclick={() => toggleLearner(learner.profileId!)}
+                      onCheckedChange={(checked) => setLearnerSelected(learner.profileId!, checked === true)}
                     />
                   {/if}
                 </Table.Cell>

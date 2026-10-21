@@ -1,8 +1,10 @@
 import * as schema from '@db/schema';
 
-import { asc, db, eq, inArray } from '@db/drizzle';
+import { and, asc, db, eq, inArray } from '@db/drizzle';
 import type { DbOrTxClient } from '@db/drizzle';
 import type { TNewExerciseSection } from '@db/types';
+import { stampContentUpdatedAt } from '@db/queries/course/content-timestamp';
+import { touchExercisesUpdatedAt } from './exercise';
 
 export async function getExerciseSectionsByExerciseId(exerciseId: string, dbClient: DbOrTxClient = db) {
   try {
@@ -21,6 +23,28 @@ export async function getExerciseSectionsByExerciseId(exerciseId: string, dbClie
   }
 }
 
+/** Locks one section of the exercise until the transaction ends, so no question can be moved into it meanwhile. */
+export async function lockExerciseSectionForUpdate(
+  exerciseId: string,
+  exerciseSectionId: string,
+  dbClient: DbOrTxClient
+): Promise<{ id: string } | null> {
+  try {
+    const [section] = await dbClient
+      .select({ id: schema.exerciseSection.id })
+      .from(schema.exerciseSection)
+      .where(and(eq(schema.exerciseSection.id, exerciseSectionId), eq(schema.exerciseSection.exerciseId, exerciseId)))
+      .for('update');
+
+    return section ?? null;
+  } catch (error) {
+    console.error('lockExerciseSectionForUpdate error:', error);
+    throw new Error(
+      `Failed to lock exercise section "${exerciseSectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function getExerciseSectionsByExerciseIds(exerciseIds: string[], dbClient: DbOrTxClient = db) {
   if (exerciseIds.length === 0) return [];
 
@@ -32,6 +56,20 @@ export async function getExerciseSectionsByExerciseIds(exerciseIds: string[], db
       .orderBy(asc(schema.exerciseSection.exerciseId), asc(schema.exerciseSection.order));
   } catch (error) {
     console.error('getExerciseSectionsByExerciseIds error:', error);
+    throw new Error(`Failed to get exercise sections: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function getExerciseSectionOwnersByIds(ids: string[], dbClient: DbOrTxClient = db) {
+  if (ids.length === 0) return [];
+
+  try {
+    return dbClient
+      .select({ id: schema.exerciseSection.id, exerciseId: schema.exerciseSection.exerciseId })
+      .from(schema.exerciseSection)
+      .where(inArray(schema.exerciseSection.id, ids));
+  } catch (error) {
+    console.error('getExerciseSectionOwnersByIds error:', error);
     throw new Error(`Failed to get exercise sections: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -105,9 +143,13 @@ export async function moveQuestionToSection(
   try {
     const [updated] = await dbClient
       .update(schema.question)
-      .set({ exerciseSectionId })
+      .set(stampContentUpdatedAt({ exerciseSectionId }))
       .where(eq(schema.question.id, questionId))
       .returning();
+
+    if (updated) {
+      await touchExercisesUpdatedAt([updated.exerciseId], dbClient);
+    }
 
     return updated || null;
   } catch (error) {
@@ -124,11 +166,16 @@ export async function bulkMoveQuestionsToSection(
   if (questionIds.length === 0) return [];
 
   try {
-    return dbClient
+    const updated = await dbClient
       .update(schema.question)
-      .set({ exerciseSectionId })
+      .set(stampContentUpdatedAt({ exerciseSectionId }))
       .where(inArray(schema.question.id, questionIds))
       .returning();
+    await touchExercisesUpdatedAt(
+      updated.map((question) => question.exerciseId),
+      dbClient
+    );
+    return updated;
   } catch (error) {
     console.error('bulkMoveQuestionsToSection error:', error);
     throw new Error(`Failed to move questions to section: ${error instanceof Error ? error.message : 'Unknown error'}`);

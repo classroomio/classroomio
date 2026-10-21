@@ -12,19 +12,36 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { UploadImage } from '$features/ui';
 
-  let { reviews = $bindable([]), review = $bindable({}), errors = {}, onExpand = () => {} } = $props();
+  interface Props {
+    reviews?: any[];
+    review?: any;
+    errors?: Record<string, string>;
+    onExpand?: (id: number) => void;
+    onChange?: () => void;
+  }
+
+  let {
+    reviews = $bindable([]),
+    review = $bindable({}),
+    errors = {},
+    onExpand = () => {},
+    onChange = () => {}
+  }: Props = $props();
 
   let avatar = $state<File | undefined>();
 
   // function to delete review
   function deleteReviewData() {
     reviews = reviews.filter((r) => r.id !== review.id);
+    onChange();
   }
 
   async function onAvatarChange(_avatar: File | undefined) {
     if (!_avatar) return;
 
     review.avatar_url = await uploadImage(_avatar);
+    delete errors.avatar_url;
+    onChange();
   }
 
   $effect(() => {
@@ -48,6 +65,10 @@
     placeholder=""
     type="text"
     bind:value={review.name}
+    onInput={() => {
+      delete errors.name;
+      onChange();
+    }}
     errorMessage={errors.name}
   />
 
@@ -59,6 +80,10 @@
     labelClassName="font-normal"
     placeholder=""
     bind:value={review.description}
+    oninput={() => {
+      delete errors.description;
+      onChange();
+    }}
     errorMessage={errors.description}
     isAIEnabled={true}
     initAIPrompt="Generate a 20 word review from a student saying good things about me teaching"
@@ -75,12 +100,16 @@
       min={1}
       max={5}
       bind:value={review.rating}
+      onInput={() => {
+        delete errors.rating;
+        onChange();
+      }}
       errorMessage={errors.rating}
     />
 
     <!-- Toggle -->
     <div class="flex w-24 flex-col items-center gap-2 space-x-2">
-      <Switch bind:checked={review.hide} />
+      <Switch bind:checked={review.hide} onCheckedChange={onChange} />
 
       <Label class="text-sm">
         {review.hide ? $t('settings.landing_page.show_section') : $t('settings.landing_page.hide_section')}

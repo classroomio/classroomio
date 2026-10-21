@@ -7,6 +7,7 @@ export interface ImagePlaceholderOptions {
   onDrop: (files: File[], editor: Editor) => void;
   onDropRejected?: (files: File[], editor: Editor) => void;
   onEmbed: (url: string, editor: Editor) => void;
+  onOpenModal?: (editor: Editor) => void;
   allowedMimeTypes?: Record<string, string[]>;
   maxFiles?: number;
   maxSize?: number;
@@ -31,7 +32,8 @@ export const ImagePlaceholder = (component: Component<NodeViewProps>): Node<Imag
         HTMLAttributes: {},
         onDrop: () => {},
         onDropRejected: () => {},
-        onEmbed: () => {}
+        onEmbed: () => {},
+        onOpenModal: () => {}
       };
     },
     parseHTML() {

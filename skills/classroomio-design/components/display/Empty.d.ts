@@ -1,0 +1,2 @@
+export interface EmptyProps { icon?: React.ReactNode; title?: React.ReactNode; description?: React.ReactNode; children?: React.ReactNode; dashed?: boolean; style?: React.CSSProperties; }
+export declare function Empty(props: EmptyProps): JSX.Element;

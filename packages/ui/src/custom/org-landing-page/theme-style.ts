@@ -10,6 +10,7 @@ import { vars as corporateVars } from './corporate/vars';
 import { vars as terminalVars } from './terminal/vars';
 import { vars as editorialVars } from './editorial/vars';
 import { vars as vibrantVars } from './vibrant/vars';
+import { vars as quartzVars } from './quartz/vars';
 
 export type { LandingThemeVarName, LandingThemeVars } from './theme-vars-base';
 
@@ -23,7 +24,8 @@ export const LANDING_THEME_VARS: Record<OrgLandingPageTheme, LandingThemeVars> =
   corporate: corporateVars,
   vibrant: vibrantVars,
   terminal: terminalVars,
-  editorial: editorialVars
+  editorial: editorialVars,
+  quartz: quartzVars
 };
 
 export function themeStyle(theme: OrgLandingPageTheme): string {

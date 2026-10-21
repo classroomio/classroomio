@@ -9,14 +9,20 @@
   import { ROLE } from '@cio/utils/constants';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
-  import { currentOrg, isStudentLimitReached } from '$lib/utils/store/org';
+  import { currentOrg, isOrgAdmin, isStudentLimitReached } from '$lib/utils/store/org';
   import { peopleApi } from '$features/course/api';
   import { orgApi } from '$features/org/api/org.svelte';
   import { DEFAULT_ORG_AUDIENCE_QUERY } from '$features/org/utils/audience-query-utils';
   import { profile } from '$lib/utils/store/user';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import type { OrgStudent, Tutor } from '$features/people/utils/types';
-  import { TutorSelectSection, ExistingStudentsSection, BulkEmailSection } from '$features/people/components';
+  import { buildResourceInviteLink } from '$features/people/utils/invite-link-utils';
+  import {
+    TutorSelectSection,
+    ExistingStudentsSection,
+    BulkEmailSection,
+    InviteLinkSection
+  } from '$features/people/components';
   import { UpgradeBanner } from '$features/ui';
 
   interface Props {
@@ -36,8 +42,9 @@
   const INVITE_MODAL = 'course.navItem.people.invite_modal';
 
   let isLoadingStudents = $state(false);
-  let activeTab = $state<'tutors' | 'students'>('students');
+  let activeTab = $state<'tutors' | 'students' | 'link'>('students');
   const availableStudents = $derived.by(() => getAvailableStudents(orgApi.audience, courseApi.group.people));
+  const inviteLink = $derived(buildResourceInviteLink(peopleApi.inviteLink?.token, $currentOrg));
 
   function getTutors(team: OrgTeamMember[]) {
     const existingTutors = courseApi?.group?.tutors || [];
@@ -69,7 +76,7 @@
   }
 
   function setTutors(orgId: string | undefined) {
-    if (!orgId) return;
+    if (!orgId || !$isOrgAdmin) return;
     untrack(async () => {
       await orgApi.getOrgTeam();
       if (orgApi.error) {
@@ -81,7 +88,7 @@
   }
 
   function loadStudents(orgId: string | undefined) {
-    if (!orgId) return;
+    if (!orgId || !$isOrgAdmin) return;
 
     untrack(async () => {
       isLoadingStudents = true;
@@ -95,7 +102,7 @@
 
   async function handleStudentSearch(value: string) {
     const orgId = $currentOrg.id;
-    if (!orgId) {
+    if (!orgId || !$isOrgAdmin) {
       return;
     }
 
@@ -145,6 +152,14 @@
     onMembersChanged?.();
   }
 
+  async function generateInviteLink() {
+    await peopleApi.generateInviteLink(courseId);
+  }
+
+  async function toggleInviteLink(isRevoked: boolean) {
+    await peopleApi.toggleInviteLink(courseId, isRevoked);
+  }
+
   async function onSubmit() {
     if (!selectedTutors.length) {
       goto(resolve(page.url.pathname, {}));
@@ -176,6 +191,7 @@
     untrack(() => {
       activeTab = 'students';
       void loadStudents($currentOrg.id);
+      void peopleApi.getInviteLink(courseId);
     });
   });
 </script>
@@ -193,45 +209,72 @@
 
     <UnderlineTabs.Root bind:value={activeTab}>
       <UnderlineTabs.List class="flex flex-wrap">
-        <UnderlineTabs.Trigger value="tutors">
-          {$t(`${INVITE_MODAL}.invite`)}
-        </UnderlineTabs.Trigger>
+        {#if $isOrgAdmin}
+          <UnderlineTabs.Trigger value="tutors">
+            {$t(`${INVITE_MODAL}.invite`)}
+          </UnderlineTabs.Trigger>
+        {/if}
         <UnderlineTabs.Trigger value="students">
           {$t(`${INVITE_MODAL}.invite_students`)}
         </UnderlineTabs.Trigger>
+        <UnderlineTabs.Trigger value="link">
+          {$t('invite_link.tab_label')}
+        </UnderlineTabs.Trigger>
       </UnderlineTabs.List>
 
-      <UnderlineTabs.Content value="tutors">
-        <div class="space-y-3">
-          <TutorSelectSection
-            {tutors}
-            bind:selectedIds
-            isLoading={orgApi.isLoading}
-            helperHref={`/org/${$currentOrg.siteName}/settings/teams`}
-          />
+      {#if $isOrgAdmin}
+        <UnderlineTabs.Content value="tutors">
+          <div class="space-y-3">
+            <TutorSelectSection
+              {tutors}
+              bind:selectedIds
+              isLoading={orgApi.isLoading}
+              helperHref={`/org/${$currentOrg.siteName}/settings/teams`}
+            />
 
-          <div class="mt-5 flex flex-row-reverse items-center gap-2">
-            <Button variant="secondary" type="button" onclick={onSubmit} loading={peopleApi.isLoading}>
-              {$t(`${INVITE_MODAL}.finish`)}
-            </Button>
+            <div class="mt-5 flex flex-row-reverse items-center gap-2">
+              <Button variant="secondary" type="button" onclick={onSubmit} loading={peopleApi.isLoading}>
+                {$t(`${INVITE_MODAL}.finish`)}
+              </Button>
+            </div>
           </div>
-        </div>
-      </UnderlineTabs.Content>
+        </UnderlineTabs.Content>
+      {/if}
 
       <UnderlineTabs.Content value="students">
         <div class="space-y-6">
-          <ExistingStudentsSection
-            students={availableStudents}
-            isLoading={isLoadingStudents}
-            onSearchValueChange={handleStudentSearch}
-            onAssign={assignExistingStudents}
-          />
+          {#if $isOrgAdmin}
+            <ExistingStudentsSection
+              students={availableStudents}
+              isLoading={isLoadingStudents}
+              onSearchValueChange={handleStudentSearch}
+              onAssign={assignExistingStudents}
+            />
+          {/if}
 
           {#if $isStudentLimitReached}
             <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
           {/if}
 
           <BulkEmailSection onInvite={inviteNewStudents} disabled={$isStudentLimitReached} />
+        </div>
+      </UnderlineTabs.Content>
+
+      <UnderlineTabs.Content value="link">
+        <div class="space-y-6">
+          <InviteLinkSection
+            link={inviteLink}
+            isRevoked={peopleApi.inviteLink?.isRevoked ?? false}
+            isLoading={peopleApi.isLoading}
+            joinCount={peopleApi.inviteLink?.joinCount}
+            descriptionKey="invite_link.course_description"
+            onGenerate={generateInviteLink}
+            onToggle={toggleInviteLink}
+          />
+
+          {#if $isStudentLimitReached}
+            <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
+          {/if}
         </div>
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>

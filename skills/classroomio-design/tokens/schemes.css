@@ -1,0 +1,23 @@
+/* Brand colour schemes — every marketing surface uses exactly one. See guidelines/schemes.html. */
+:root {
+  /* paper: default page */
+  --scheme-paper-bg:#FAFAFA; --scheme-paper-fg:#17140F; --scheme-paper-body:#2A251D; --scheme-paper-muted:#6B6152; --scheme-paper-accent:#0233BD; --scheme-paper-on-accent:#FFFFFF; --scheme-paper-mark:#ADC3FF; --scheme-paper-rule:#E3DACA; --scheme-paper-card:#F1EEE7;
+  /* sand: warm secondary band */
+  --scheme-sand-bg:#F1EEE7; --scheme-sand-fg:#17140F; --scheme-sand-body:#2A251D; --scheme-sand-muted:#6B6152; --scheme-sand-accent:#0233BD; --scheme-sand-on-accent:#FFFFFF; --scheme-sand-mark:#ADC3FF; --scheme-sand-rule:#CFC5B3; --scheme-sand-card:#FDFBF7;
+  /* blue: CTA / founder / one per page */
+  --scheme-blue-bg:#0233BD; --scheme-blue-fg:#FFFFFF; --scheme-blue-body:#D6DEFF; --scheme-blue-muted:#ADC3FF; --scheme-blue-accent:#FFFFFF; --scheme-blue-on-accent:#0233BD; --scheme-blue-mark:#2F5BE0; --scheme-blue-rule:rgba(255,255,255,0.18); --scheme-blue-card:#2F5BE0;
+  /* ink: technical / API / developer */
+  --scheme-ink-bg:#17140F; --scheme-ink-fg:#FDFBF7; --scheme-ink-body:#E3DACA; --scheme-ink-muted:#8C8272; --scheme-ink-accent:#ADC3FF; --scheme-ink-on-accent:#17140F; --scheme-ink-mark:#0233BD; --scheme-ink-rule:rgba(253,251,247,0.14); --scheme-ink-card:#2A251D;
+  /* sky: highlight / announcement */
+  --scheme-sky-bg:#ADC3FF; --scheme-sky-fg:#17140F; --scheme-sky-body:#17140F; --scheme-sky-muted:#2A251D; --scheme-sky-accent:#0233BD; --scheme-sky-on-accent:#FFFFFF; --scheme-sky-mark:#FDFBF7; --scheme-sky-rule:rgba(23,20,15,0.18); --scheme-sky-card:#D6DEFF;
+  /* tint: soft product / about */
+  --scheme-tint-bg:#EEF2FF; --scheme-tint-fg:#0B1A4A; --scheme-tint-body:#2A251D; --scheme-tint-muted:#4A5578; --scheme-tint-accent:#0233BD; --scheme-tint-on-accent:#FFFFFF; --scheme-tint-mark:#ADC3FF; --scheme-tint-rule:#D6DEFF; --scheme-tint-card:#FFFFFF;
+}
+@keyframes cio-ld-drop { 0%,4% { transform: translateY(-90px); opacity: 0; animation-timing-function: cubic-bezier(.55,0,.9,.45); } 12% { transform: none; opacity: 1; animation-timing-function: ease-out; } 14% { transform: translateY(-5px); } 16%,84% { transform: none; opacity: 1; } 94%,100% { transform: translateY(-8px); opacity: 0; } }
+@keyframes cio-ld-drop-sm { 0%,4% { transform: translateY(-46px); opacity: 0; animation-timing-function: cubic-bezier(.55,0,.9,.45); } 16% { transform: none; opacity: 1; animation-timing-function: ease-out; } 20% { transform: translateY(-3px); } 24%,80% { transform: none; opacity: 1; } 92%,100% { transform: translateY(-6px); opacity: 0; } }
+@keyframes cio-ld-drop-xs { 0%,4% { transform: translateY(-12px); opacity: 0; animation-timing-function: cubic-bezier(.55,0,.9,.45); } 16% { transform: none; opacity: 1; animation-timing-function: ease-out; } 22%,80% { transform: none; opacity: 1; } 92%,100% { opacity: 0; } }
+@keyframes cio-ld-bar { 0% { transform: scaleX(0); } 70%,90% { transform: scaleX(1); } 100% { transform: scaleX(1); opacity: 0; } }
+@keyframes cio-ld-shim { 50% { opacity: .4; } }
+@keyframes cio-ld-rise { 0%,40% { opacity: 0; transform: translateY(8px); } 50%,88% { opacity: 1; transform: none; } 96%,100% { opacity: 0; } }
+@keyframes cio-caret { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { [data-cio-anim] { animation: none !important; opacity: 1 !important; transform: none !important; } }

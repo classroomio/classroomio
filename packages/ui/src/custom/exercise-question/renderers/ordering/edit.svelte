@@ -70,8 +70,19 @@
     const signature = getItemsSignature(nextItems);
     if (signature === lastSyncedSignature) return;
 
-    items = nextItems;
-    lastSyncedSignature = signature;
+    const merged = nextItems.map((nextItem) => {
+      const current = items.find((item) => item.id === nextItem.id);
+      if (!current) return nextItem;
+      if (current.label.trim() === nextItem.label || current.label === '') return current;
+
+      return nextItem;
+    });
+
+    const mergedSignature = getItemsSignature(merged);
+    if (mergedSignature === getItemsSignature(items)) return;
+
+    items = merged;
+    lastSyncedSignature = mergedSignature;
   }
 
   function handleDndConsider(event: CustomEvent<{ items: OrderingRenderItem[] }>) {
@@ -163,7 +174,7 @@
             value={item.label}
             {disabled}
             placeholder={formatStepPlaceholder(index)}
-            onchange={(event) => updateItemLabel(item.id, event.currentTarget.value)}
+            oninput={(event) => updateItemLabel(item.id, event.currentTarget.value)}
           />
           <IconButton
             type="button"

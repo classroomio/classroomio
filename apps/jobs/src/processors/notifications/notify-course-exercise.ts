@@ -2,6 +2,7 @@ import { getCourseMembers } from '@cio/db/queries/course/people';
 import { EmailPreferenceLookupCache } from '@cio/db/queries/notifications';
 import { ZNotifyCourseExercisePayload, enqueueEmailSend } from '@cio/jobs';
 import { ROLE } from '@cio/utils/constants';
+import { getStudentEmailDeliveryLocale } from '@cio/core/services/email/localization';
 
 import { log } from '../../utils/logger';
 
@@ -29,6 +30,7 @@ export async function processNotifyCourseExercise(rawPayload: unknown, jobId: st
 
   let notified = 0;
   const preferenceCache = new EmailPreferenceLookupCache();
+  const locale = await getStudentEmailDeliveryLocale(payload.organizationId, 'quizAssigned');
 
   for (const recipient of recipients) {
     try {
@@ -55,7 +57,9 @@ export async function processNotifyCourseExercise(rawPayload: unknown, jobId: st
             quizUrl: payload.quizUrl,
             branding: payload.branding
           },
-          from: payload.fromName
+          from: payload.fromName,
+          organizationId: payload.organizationId,
+          locale
         },
         // Vary by the notify job id so re-running the nudge re-sends.
         { idempotencyKey: `quiz-assigned:${jobId}:${recipient.email}` }

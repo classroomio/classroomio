@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Product tours · Loopwise Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="landing-theme.css" />
+    <link rel="stylesheet" href="video-landing.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .theme-fab { position: fixed; bottom: 18px; right: 18px; width: 38px; height: 38px; border-radius: 999px; display: grid; place-items: center; background: var(--landing-card); border: 1px solid var(--landing-border); color: var(--landing-fg-muted); cursor: pointer; z-index: 50; }
+      .theme-fab svg { width: 17px; height: 17px; stroke-width: 2; }
+      .page-title { font-size: 34px; font-weight: var(--landing-heading-weight); letter-spacing: -0.03em; margin: 0 0 8px; }
+      .page-lead { font-size: 16px; color: var(--landing-fg-muted); margin: 0 0 30px; max-width: 62ch; }
+      .statebar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 42px; padding-top: 20px; border-top: var(--landing-divider); font-size: 13px; color: var(--landing-fg-faint); }
+      .statebar button { background: var(--landing-card); border: 1px solid var(--landing-border); border-radius: var(--landing-radius-pill); padding: 5px 12px; font-size: 12.5px; color: var(--landing-fg-muted); cursor: pointer; }
+      .applied { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; font-size: 13px; color: var(--landing-fg-muted); }
+    </style>
+  </head>
+  <body>
+    <div class="lp-nav-outer">
+      <nav class="lp-nav">
+        <a class="lp-nav-brand" href="landing-with-videos.html"><span class="lp-nav-logo">L</span>Loopwise Academy</a>
+        <div class="lp-nav-links">
+          <a href="landing-with-videos.html#courses">Courses</a>
+          <a class="active" href="public-videos-index.html">Product tours</a>
+          <a href="#">Help centre</a>
+          <a href="#">Community</a>
+        </div>
+        <a class="lp-nav-auth" href="#">Sign in</a>
+      </nav>
+    </div>
+
+    <main class="lp-section">
+      <div class="lp-wrap">
+        <p class="lp-eyebrow">Product tours</p>
+        <h1 class="page-title">Video library</h1>
+        <p class="page-lead">Every walkthrough, release-notes rundown and webinar replay we have published. Free to watch, no account needed.</p>
+
+        <div class="lp-vlayout">
+          <aside>
+            <div class="lp-facet">
+              <h4>Topic</h4>
+              <label class="lp-check"><input type="checkbox" checked />Release notes<span class="n">4</span></label>
+              <label class="lp-check"><input type="checkbox" />Admin<span class="n">6</span></label>
+              <label class="lp-check"><input type="checkbox" />Integrations<span class="n">3</span></label>
+              <label class="lp-check"><input type="checkbox" />Reporting<span class="n">2</span></label>
+            </div>
+            <div class="lp-facet">
+              <h4>Format</h4>
+              <label class="lp-check"><input type="checkbox" />Getting started<span class="n">7</span></label>
+              <label class="lp-check"><input type="checkbox" />Webinar<span class="n">5</span></label>
+              <label class="lp-check"><input type="checkbox" />Deep dive<span class="n">4</span></label>
+            </div>
+            <div class="lp-facet" style="font-size: 12.5px; color: var(--landing-fg-faint); line-height: 1.6">
+              Only tag groups an admin marked <b style="color: var(--landing-fg-muted)">public</b> appear here — the same rule the course catalog uses.
+            </div>
+          </aside>
+
+          <div>
+            <div class="lp-searchbar">
+              <div class="lp-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input class="lp-input" placeholder="Search videos…" />
+              </div>
+              <select class="lp-select"><option>Newest first</option><option>Most viewed</option></select>
+            </div>
+
+            <div class="applied">
+              <span>Filtered by</span>
+              <span class="lp-vtag on">Release notes ✕</span>
+              <a href="#" style="color: var(--landing-accent)">Clear filters</a>
+              <span style="margin-left: auto" class="tnum">4 videos</span>
+            </div>
+
+            <div class="lp-vgrid" id="results">
+              <a class="lp-vcard" href="public-video-watch.html">
+                <div class="lp-vthumb" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))"><span class="play"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="dur">4:12</span></div>
+                <div class="lp-vbody">
+                  <h3 class="lp-vtitle">What's new in Loopwise 4.2</h3>
+                  <p class="lp-vdesc">Smart segments, saved views and the new bulk editor.</p>
+                  <div class="lp-vtags"><span class="lp-vtag">Release notes</span></div>
+                  <div class="lp-vmeta"><span class="m tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>1,204</span><span class="m">14 Mar 2026</span></div>
+                </div>
+              </a>
+              <a class="lp-vcard" href="public-video-watch.html">
+                <div class="lp-vthumb" style="background: linear-gradient(135deg, oklch(0.5 0.2 300), oklch(0.6 0.18 315))"><span class="play"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="dur">5:02</span></div>
+                <div class="lp-vbody">
+                  <h3 class="lp-vtitle">What's new in Loopwise 4.1</h3>
+                  <p class="lp-vdesc">Scheduled exports, the audit trail, and faster search.</p>
+                  <div class="lp-vtags"><span class="lp-vtag">Release notes</span></div>
+                  <div class="lp-vmeta"><span class="m tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>968</span><span class="m">6 Jan 2026</span></div>
+                </div>
+              </a>
+              <a class="lp-vcard" href="public-video-watch.html">
+                <div class="lp-vthumb" style="background: linear-gradient(135deg, oklch(0.45 0.12 200), oklch(0.58 0.13 210))"><span class="play"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="dur">3:30</span></div>
+                <div class="lp-vbody">
+                  <h3 class="lp-vtitle">What's new in Loopwise 4.0</h3>
+                  <p class="lp-vdesc">The workspace rebuild, in three and a half minutes.</p>
+                  <div class="lp-vtags"><span class="lp-vtag">Release notes</span></div>
+                  <div class="lp-vmeta"><span class="m tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>2,311</span><span class="m">14 Oct 2025</span></div>
+                </div>
+              </a>
+              <a class="lp-vcard" href="public-video-watch.html">
+                <div class="lp-vthumb" style="background: linear-gradient(135deg, oklch(0.62 0.16 40), oklch(0.7 0.15 55))"><span class="play"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="dur">7:14</span></div>
+                <div class="lp-vbody">
+                  <h3 class="lp-vtitle">2025 in review — everything we shipped</h3>
+                  <p class="lp-vdesc">A fast tour of the year's features, grouped by team.</p>
+                  <div class="lp-vtags"><span class="lp-vtag">Release notes</span><span class="lp-vtag">Deep dive</span></div>
+                  <div class="lp-vmeta"><span class="m tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>1,530</span><span class="m">20 Dec 2025</span></div>
+                </div>
+              </a>
+            </div>
+
+            <div class="lp-pager"><a class="on" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">Next</a></div>
+          </div>
+        </div>
+
+        <div class="statebar">
+          <span>States:</span>
+          <button id="s-noresults">No results for search</button>
+          <button id="s-empty">Org has no published videos</button>
+          <button id="s-loading">Loading</button>
+          <a href="landing-with-videos.html" style="color: var(--landing-accent)">← landing page</a>
+          <a href="index.html" style="color: var(--landing-accent)">← map</a>
+        </div>
+      </div>
+    </main>
+
+    <button class="theme-fab" id="theme" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+      const results = document.getElementById('results');
+      const pager = document.querySelector('.lp-pager');
+      const applied = document.querySelector('.applied');
+      document.getElementById('s-noresults').onclick = () => {
+        pager.hidden = true;
+        results.outerHTML =
+          '<div class="lp-empty" id="results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><h3>No videos match "webhooks"</h3><p>Try a different search, or clear the Release notes filter to widen the results.</p><p style="margin-top:14px"><a href="#" style="color: var(--landing-accent)">Clear all filters</a></p></div>';
+      };
+      document.getElementById('s-empty').onclick = () => {
+        pager.hidden = true;
+        applied.hidden = true;
+        document.querySelector('.lp-vlayout > aside').hidden = true;
+        document.querySelector('.lp-searchbar').hidden = true;
+        document.querySelector('.lp-vlayout').style.gridTemplateColumns = '1fr';
+        document.getElementById('results').outerHTML =
+          '<div class="lp-empty" id="results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 9 5 3-5 3z"/></svg><h3>No videos yet</h3><p>Nothing has been published to this library. In practice a visitor never lands here — the nav entry only renders once at least one video is published.</p></div>';
+      };
+      document.getElementById('s-loading').onclick = () => {
+        [...results.children].forEach((c) => {
+          c.querySelector('.lp-vbody').innerHTML =
+            '<div style="height:14px;width:78%;background:var(--landing-card-soft);border-radius:4px"></div><div style="height:12px;width:94%;background:var(--landing-card-soft);border-radius:4px"></div><div style="height:12px;width:52%;background:var(--landing-card-soft);border-radius:4px"></div>';
+          c.querySelector('.lp-vthumb').style.background = 'var(--landing-card-soft)';
+          c.querySelector('.lp-vthumb').innerHTML = '';
+        });
+      };
+    </script>
+  </body>
+</html>

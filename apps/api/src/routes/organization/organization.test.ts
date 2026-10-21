@@ -1,0 +1,236 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Context, Next } from 'hono';
+import { Hono } from '@api/utils/hono';
+import { ROLE } from '@cio/utils/constants';
+
+const serviceMocks = vi.hoisted(() => ({
+  getOrgAudience: vi.fn(),
+  getOrgTeam: vi.fn(),
+  updateTeamMemberRole: vi.fn()
+}));
+
+const inviteMocks = vi.hoisted(() => ({ inviteTeamMembers: vi.fn() }));
+
+const audienceMocks = vi.hoisted(() => ({
+  assignAudienceToCourses: vi.fn(),
+  importAudienceMembers: vi.fn()
+}));
+
+const audienceExportMocks = vi.hoisted(() => ({
+  getAudienceExportRows: vi.fn()
+}));
+
+vi.mock('@api/middlewares/auth', () => ({
+  authMiddleware: async (context: Context, next: Next) => {
+    const roleId = Number(context.req.header('x-test-role'));
+    const orgId = context.req.header('cio-org-id')!;
+    context.set('user', { id: 'profile-1' });
+    context.set('orgRoles', { [orgId]: roleId });
+    await next();
+  }
+}));
+vi.mock('@api/middlewares/auth-or-api-key', () => ({
+  authOrApiKeyMiddleware: async (_context: Context, next: Next) => next()
+}));
+vi.mock('@api/middlewares/auth-or-automation-key', () => ({
+  authOrAutomationKeyMiddleware: () => async (_context: Context, next: Next) => next()
+}));
+vi.mock('@api/middlewares/org-member-or-automation-key', () => ({
+  orgMemberOrAutomationKeyMiddleware: () => async (_context: Context, next: Next) => next()
+}));
+vi.mock('@api/services/organization', () => serviceMocks);
+vi.mock('@api/services/organization/audience', () => audienceMocks);
+vi.mock('@api/services/organization/audience-export', () => audienceExportMocks);
+vi.mock('@api/services/organization/automation-usage', () => ({}));
+vi.mock('@api/services/organization/auto-join', () => ({}));
+vi.mock('@api/services/organization/invite', () => inviteMocks);
+vi.mock('@api/services/exercise', () => ({}));
+vi.mock('@api/routes/organization/assets', () => ({ assetsRouter: new Hono() }));
+vi.mock('@api/routes/organization/ai-tutor', () => ({ organizationAiTutorRouter: new Hono() }));
+vi.mock('@api/routes/organization/automation', () => ({ automationRouter: new Hono() }));
+vi.mock('@api/routes/organization/course-import', () => ({ courseImportRouter: new Hono() }));
+vi.mock('@api/routes/organization/member-email-notifications', () => ({
+  organizationMemberEmailNotificationsRouter: new Hono()
+}));
+vi.mock('@api/routes/organization/quiz', () => ({ quizRouter: new Hono() }));
+vi.mock('@api/routes/organization/search', () => ({ searchRouter: new Hono() }));
+vi.mock('@api/routes/organization/tags', () => ({ tagsRouter: new Hono() }));
+vi.mock('@api/routes/organization/widgets', () => ({ widgetsRouter: new Hono() }));
+
+import { organizationRouter } from './organization';
+
+const orgId = 'org-1';
+const profileId = '11111111-1111-4111-8111-111111111111';
+const courseId = '22222222-2222-4222-8222-222222222222';
+
+function rosterRequest(path: string, roleId: number, init: { method?: string; body?: string } = {}) {
+  return organizationRouter.request(path, {
+    ...init,
+    headers: {
+      'cio-org-id': orgId,
+      'x-test-role': roleId.toString(),
+      'content-type': 'application/json'
+    }
+  });
+}
+
+const audienceMutationRequests = [
+  {
+    path: '/audience/assign-courses',
+    body: JSON.stringify({ profileIds: [profileId], courseIds: [courseId] }),
+    adminStatus: 200
+  },
+  {
+    path: '/audience/import',
+    body: JSON.stringify({ recipients: [{ email: 'ada@example.com' }] }),
+    adminStatus: 201
+  }
+];
+
+describe('organization roster authorization', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    serviceMocks.getOrgTeam.mockResolvedValue([]);
+    serviceMocks.updateTeamMemberRole.mockResolvedValue({
+      id: 15,
+      email: 'tutor@example.com',
+      verified: true,
+      roleId: ROLE.TUTOR,
+      profileId: 'profile-2'
+    });
+    serviceMocks.getOrgAudience.mockResolvedValue({ items: [], pagination: {}, query: {} });
+    audienceExportMocks.getAudienceExportRows.mockResolvedValue([]);
+    audienceMocks.assignAudienceToCourses.mockResolvedValue({ enrolled: 1 });
+    audienceMocks.importAudienceMembers.mockResolvedValue({ imported: 1 });
+  });
+
+  it.each(['/team', '/audience'])('rejects tutors from GET %s', async (path) => {
+    const response = await rosterRequest(path, ROLE.TUTOR);
+
+    expect(response.status).toBe(403);
+  });
+
+  it.each(['/team', '/audience'])('allows admins to GET %s', async (path) => {
+    const response = await rosterRequest(path, ROLE.ADMIN);
+
+    expect(response.status).toBe(200);
+  });
+
+  it('rejects tutors from GET /audience/export', async () => {
+    const response = await rosterRequest('/audience/export', ROLE.TUTOR);
+
+    expect(response.status).toBe(403);
+  });
+
+  it('allows admins to GET /audience/export', async () => {
+    const response = await rosterRequest('/audience/export', ROLE.ADMIN);
+
+    expect(response.status).toBe(200);
+  });
+
+  it.each(audienceMutationRequests)('rejects tutors from POST $path', async ({ path, body }) => {
+    const response = await rosterRequest(path, ROLE.TUTOR, { method: 'POST', body });
+
+    expect(response.status).toBe(403);
+  });
+
+  it.each(audienceMutationRequests)('allows admins to POST $path', async ({ path, body, adminStatus }) => {
+    const response = await rosterRequest(path, ROLE.ADMIN, { method: 'POST', body });
+
+    expect(response.status).toBe(adminStatus);
+  });
+
+  it('rejects tutors from changing a team member role', async () => {
+    const response = await rosterRequest('/team/15', ROLE.TUTOR, {
+      method: 'PATCH',
+      body: JSON.stringify({ roleId: ROLE.ADMIN })
+    });
+
+    expect(response.status).toBe(403);
+    expect(serviceMocks.updateTeamMemberRole).not.toHaveBeenCalled();
+  });
+
+  it('lets an admin change a team member role', async () => {
+    const response = await rosterRequest('/team/15', ROLE.ADMIN, {
+      method: 'PATCH',
+      body: JSON.stringify({ roleId: ROLE.TUTOR })
+    });
+
+    expect(response.status).toBe(200);
+    expect(serviceMocks.updateTeamMemberRole).toHaveBeenCalledWith(orgId, 15, ROLE.TUTOR, 'profile-1');
+  });
+
+  it('rejects a student role for a team member', async () => {
+    const response = await rosterRequest('/team/15', ROLE.ADMIN, {
+      method: 'PATCH',
+      body: JSON.stringify({ roleId: ROLE.STUDENT })
+    });
+
+    expect(response.status).toBe(400);
+    expect(serviceMocks.updateTeamMemberRole).not.toHaveBeenCalled();
+  });
+});
+
+describe('student team invite confirmation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    inviteMocks.inviteTeamMembers.mockResolvedValue({
+      requiresConfirmation: false,
+      studentEmails: ['student@example.com'],
+      existingTeamMembers: [],
+      queuedCount: 1,
+      failedEmails: []
+    });
+  });
+
+  it.each([ROLE.STUDENT, ROLE.TUTOR])('prevents role %s from confirming promotions', async (roleId) => {
+    const body = JSON.stringify({
+      emails: ['student@example.com'],
+      roleId: ROLE.ADMIN,
+      confirmedStudentEmails: ['student@example.com']
+    });
+    const response = await rosterRequest('/team/invite', roleId, { method: 'POST', body });
+
+    expect(response.status).toBe(403);
+    expect(inviteMocks.inviteTeamMembers).not.toHaveBeenCalled();
+  });
+
+  it('returns confirmation without claiming an invitation was created', async () => {
+    inviteMocks.inviteTeamMembers.mockResolvedValue({
+      requiresConfirmation: true,
+      studentEmails: ['student@example.com'],
+      existingTeamMembers: [],
+      queuedCount: 0,
+      failedEmails: []
+    });
+    const body = JSON.stringify({ emails: ['student@example.com'], roleId: ROLE.ADMIN });
+    const response = await rosterRequest('/team/invite', ROLE.ADMIN, { method: 'POST', body });
+
+    expect(response.status).toBe(200);
+    expect(inviteMocks.inviteTeamMembers).toHaveBeenCalledWith(
+      orgId,
+      ['student@example.com'],
+      ROLE.ADMIN,
+      'profile-1',
+      []
+    );
+  });
+
+  it('passes the confirmed student addresses to the service', async () => {
+    const body = JSON.stringify({
+      emails: ['student@example.com'],
+      roleId: ROLE.ADMIN,
+      confirmedStudentEmails: ['student@example.com']
+    });
+    const response = await rosterRequest('/team/invite', ROLE.ADMIN, { method: 'POST', body });
+
+    expect(response.status).toBe(201);
+    expect(inviteMocks.inviteTeamMembers).toHaveBeenCalledWith(
+      orgId,
+      ['student@example.com'],
+      ROLE.ADMIN,
+      'profile-1',
+      ['student@example.com']
+    );
+  });
+});

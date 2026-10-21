@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Embed &amp; identity · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Instrument+Serif&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="academy.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      body { margin: 0; }
+      .ed { display: flex; flex-direction: column; height: 100dvh; background: var(--background); color: var(--foreground); }
+      .ed-top { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+      .ed-top .nm { font-size: 14.5px; font-weight: 600; }
+      .ed-top .sp { flex: 1; }
+      .ed-main { display: flex; flex: 1; min-height: 0; }
+      .rail { width: 56px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--secondary); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 0; }
+      .rail .ib { width: 34px; height: 34px; border-radius: var(--radius-md); border: 0; background: transparent; color: var(--muted-foreground); display: grid; place-items: center; cursor: pointer; }
+      .rail .ib:hover { background: var(--accent); color: var(--foreground); }
+      .rail .ib.on { background: var(--primary); color: var(--primary-foreground); }
+      .rail .ib svg { width: 16px; height: 16px; stroke-width: 2; }
+      .doc { flex: 1; overflow-y: auto; padding: 30px 34px 70px; }
+      .doc-inner { max-width: 720px; }
+      h1.dt { font-size: 21px; font-weight: 650; margin: 0 0 5px; }
+      p.ds { font-size: 13.5px; color: var(--muted-foreground); margin: 0 0 26px; line-height: 1.6; }
+      .step { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); padding: 18px 20px; margin-bottom: 14px; box-shadow: var(--shadow-2xs); }
+      .step-head { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+      .step-head .n { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: var(--primary-foreground); display: grid; place-items: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+      .step-head .t { font-size: 14.5px; font-weight: 600; }
+      .step-head .st { margin-left: auto; }
+      pre { background: color-mix(in oklab, var(--foreground) 5%, transparent); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 13px 15px; overflow-x: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.2px; line-height: 1.65; margin: 0; }
+      pre .k { color: #b45309; } .dark pre .k { color: #f0b060; }
+      pre .s { color: #2f6f4e; } .dark pre .s { color: #7fc9a0; }
+      pre .c { color: var(--muted-foreground); }
+      .copy { float: right; margin: -2px 0 8px; }
+      .note { font-size: 12.5px; color: var(--muted-foreground); line-height: 1.6; margin: 11px 0 0; }
+    </style>
+  </head>
+  <body>
+    <div class="ed">
+      <header class="ed-top">
+        <a class="btn btn-sm btn-ghost" href="admin-academies.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Academies</a>
+        <span class="nm">Northwind Learn</span>
+        <span class="badge badge-success">Published · v7</span>
+        <span class="sp"></span>
+        <a class="btn btn-sm btn-ghost" href="admin-analytics.html">Analytics</a>
+        <button class="btn btn-sm btn-primary">Publish</button>
+      </header>
+
+      <div class="ed-main">
+        <nav class="rail">
+          <button class="ib" title="Sections" onclick="location.href='admin-editor.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="6" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="14" y="13" width="7" height="8" rx="1"/></svg></button>
+          <button class="ib" title="Design"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><path d="M12 2a10 10 0 1 0 0 20 2 2 0 0 0 0-4 2 2 0 0 1 0-4h3a5 5 0 0 0 5-5c0-4-4-7-8-7z"/></svg></button>
+          <button class="ib on" title="Embed and identity"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
+        </nav>
+
+        <div class="doc">
+          <div class="doc-inner">
+            <h1 class="dt">Embed &amp; identity</h1>
+            <p class="ds">Drop this academy into your product. Step 1 gets it rendering; steps 2 and 3 make it personal to each learner.</p>
+
+            <div class="step">
+              <div class="step-head"><span class="n">1</span><span class="t">Add the embed</span><span class="st"><span class="badge badge-success">Ready</span></span></div>
+              <button class="btn btn-sm btn-outline copy">Copy</button>
+              <pre><span class="c">&lt;!-- where the academy should render --&gt;</span>
+&lt;<span class="k">div</span> <span class="k">data-cio-widget</span>=<span class="s">"academy"</span> <span class="k">data-widget-key</span>=<span class="s">"wgt_7Kq2mBx9"</span>&gt;&lt;/<span class="k">div</span>&gt;
+&lt;<span class="k">script</span> async type=<span class="s">"module"</span> src=<span class="s">"https://embeds.classroomio.com/embeds/academy/academy.js"</span>&gt;&lt;/<span class="k">script</span>&gt;</pre>
+              <p class="note">The loader is 3 kB. Course detail and the lesson player load only when a learner opens one.</p>
+            </div>
+
+            <div class="step">
+              <div class="step-head"><span class="n">2</span><span class="t">Sign a learner token on your server</span><span class="st"><span class="badge badge-success">Token auth active</span></span></div>
+              <button class="btn btn-sm btn-outline copy">Copy</button>
+              <pre><span class="c">// server-side, per request — never in the browser</span>
+<span class="k">const</span> token = <span class="k">await new</span> SignJWT({ sub: user.id, email: user.email, name: user.name })
+  .setProtectedHeader({ alg: <span class="s">'HS256'</span> })
+  .setIssuedAt()
+  .setExpirationTime(<span class="s">'2m'</span>)
+  .sign(<span class="k">new</span> TextEncoder().encode(process.env.CIO_TOKEN_AUTH_SECRET));</pre>
+              <p class="note">Uses your organization's existing token-auth signing secret. Manage or rotate it in <a class="text-primary" href="#">Settings → Auth → Token auth</a>.</p>
+            </div>
+
+            <div class="step">
+              <div class="step-head"><span class="n">3</span><span class="t">Hand the token to the embed</span></div>
+              <button class="btn btn-sm btn-outline copy">Copy</button>
+              <pre>&lt;<span class="k">div</span> <span class="k">data-cio-widget</span>=<span class="s">"academy"</span>
+     <span class="k">data-widget-key</span>=<span class="s">"wgt_7Kq2mBx9"</span>
+     <span class="k">data-cio-token</span>=<span class="s">"&lt;%= token %&gt;"</span>&gt;&lt;/<span class="k">div</span>&gt;</pre>
+              <p class="note">The embed exchanges this for a short-lived access token held in memory. Nothing is written to cookies or local storage, so the academy works in browsers that block third-party cookies.</p>
+            </div>
+
+            <div class="step">
+              <div class="step-head"><span class="n">4</span><span class="t">Routing</span></div>
+              <div class="field">
+                <label class="label">History mode</label>
+                <select class="select" onchange="setRouter(this.value)">
+                  <option value="memory">In the embed only (default)</option>
+                  <option value="query">Sync to the page URL (?cio=…)</option>
+                  <option value="custom">My app owns routing</option>
+                </select>
+                <p class="hint" id="router-hint">Zero conflict with your router. Refreshing returns to the academy index.</p>
+              </div>
+              <pre id="router-code">&lt;<span class="k">div</span> <span class="k">data-cio-widget</span>=<span class="s">"academy"</span> <span class="k">data-widget-key</span>=<span class="s">"wgt_7Kq2mBx9"</span>&gt;&lt;/<span class="k">div</span>&gt;</pre>
+            </div>
+
+            <div class="step">
+              <div class="step-head"><span class="n">5</span><span class="t">Allowed origins</span></div>
+              <div class="field">
+                <label class="label">Only mount this academy on</label>
+                <input class="input" value="https://app.northwind.com, https://staging.northwind.com" />
+                <p class="hint">A leaked widget key cannot be re-hosted anywhere else. Leave blank to allow any origin.</p>
+              </div>
+            </div>
+
+            <div class="step" id="locked-step" style="display: none; border-color: color-mix(in oklab, var(--primary) 35%, transparent)">
+              <div class="step-head"><span class="n">!</span><span class="t">Personalization needs Enterprise</span></div>
+              <p class="note" style="margin-top: 0">Token auth is an Enterprise feature. Without it the academy still renders for everyone — it just cannot show progress, <b>Jump back in</b>, or <b>For you</b>, and learners enrol on the academy rather than in place.</p>
+              <button class="btn btn-sm btn-primary" style="margin-top: 12px">See Enterprise</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proto-bar">
+      <span class="lbl">State</span>
+      <button class="on" onclick="setIdentity(true, this)">Identity active</button>
+      <button onclick="setIdentity(false, this)">Not configured</button>
+      <button onclick="toggleTheme(this)">Dark</button>
+      <a class="btn btn-sm btn-ghost" href="index.html">Map</a>
+    </div>
+
+    <script>
+      const ROUTER = {
+        memory: { hint: 'Zero conflict with your router. Refreshing returns to the academy index.', code: '&lt;<span class="k">div</span> <span class="k">data-cio-widget</span>=<span class="s">"academy"</span> <span class="k">data-widget-key</span>=<span class="s">"wgt_7Kq2mBx9"</span>&gt;&lt;/<span class="k">div</span>&gt;' },
+        query: { hint: 'Writes ?cio=course/automations to your page URL. Back button and shared links work.', code: '&lt;<span class="k">div</span> <span class="k">data-cio-widget</span>=<span class="s">"academy"</span> <span class="k">data-widget-key</span>=<span class="s">"wgt_7Kq2mBx9"</span>\n     <span class="k">data-cio-router</span>=<span class="s">"query"</span>&gt;&lt;/<span class="k">div</span>&gt;' },
+        custom: { hint: 'Wire the academy into your own router with navigate() and onNavigate().', code: 'window.CIO.learn.navigate(<span class="s">\'course/automations\'</span>);\nwindow.CIO.learn.onNavigate((route) =&gt; myRouter.push(<span class="s">\'/learn/\'</span> + route));' }
+      };
+      function setRouter(mode) {
+        document.getElementById('router-hint').textContent = ROUTER[mode].hint;
+        document.getElementById('router-code').innerHTML = ROUTER[mode].code;
+      }
+      function setIdentity(active, el) {
+        el.parentElement.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+        el.classList.add('on');
+        document.querySelectorAll('.step')[1].style.display = active ? 'block' : 'none';
+        document.querySelectorAll('.step')[2].style.display = active ? 'block' : 'none';
+        document.getElementById('locked-step').style.display = active ? 'none' : 'block';
+      }
+      function toggleTheme(el) {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        el.textContent = dark ? 'Light' : 'Dark';
+      }
+    </script>
+  </body>
+</html>

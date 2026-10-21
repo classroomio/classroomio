@@ -5,7 +5,22 @@ import GraduationCapIcon from '@lucide/svelte/icons/graduation-cap';
 import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
 import UserIcon from '@lucide/svelte/icons/user';
 
+import { DEFAULT_COURSE_BANNER_IMAGE } from '../course-card/constants';
 import type { CourseItem } from './types';
+
+export function getCourseCoverImage(course: CourseItem): string {
+  const bannerImage = course.bannerImage?.trim();
+  if (bannerImage) {
+    return bannerImage;
+  }
+
+  const image = course.image?.trim();
+  if (image) {
+    return image;
+  }
+
+  return DEFAULT_COURSE_BANNER_IMAGE;
+}
 
 export function getPrimaryCourseTag(course: CourseItem) {
   return course.tags?.[0];
@@ -42,7 +57,7 @@ export function getCourseTypeLandingMeta(
   };
 
   if (known[raw]) {
-    return known[raw];
+    return { ...known[raw], label: course.typeLabel ?? known[raw].label };
   }
 
   const label = raw
@@ -83,6 +98,10 @@ export function defaultExercisesLabel(count: number): string {
 
 export function defaultEnrolledLabel(count: number): string {
   return `${count.toLocaleString()} enrolled`;
+}
+
+export function defaultLearningPathCourseCountLabel(count: number): string {
+  return count === 1 ? '1 course' : `${count.toLocaleString()} courses`;
 }
 
 export type EmbedIframeDimensions = {

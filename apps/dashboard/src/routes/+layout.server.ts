@@ -1,4 +1,4 @@
-import type { AccountOrg } from '$features/app/types';
+import type { PublicOrg } from '$features/app/types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import type { UploadLimits } from '$lib/utils/config/upload-limits';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
@@ -15,7 +15,7 @@ interface LoadOutput {
   orgSiteName: string;
   isOrgSite: boolean;
   skipAuth: boolean;
-  org: AccountOrg | null;
+  org: PublicOrg | null;
   baseMetaTags: MetaTagsProps;
   serverLang: string;
   localeCookie: string;

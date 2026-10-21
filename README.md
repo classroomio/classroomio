@@ -2,50 +2,54 @@
   <img alt="ClassroomIO is a no-code tool that allows you build and scale your online bootcamp with ease." src="https://raw.githubusercontent.com/classroomio/classroomio/main/apps/website/static/classroomio-opengraph-image.jpg" />
   <h1 align="center">ClassroomIO.com</h1>
   <p align="center">
-    The Open Source Learning Management System for Companies
+  The Customer Training Platform Built for Business Growth.
     <br />
     <a href="https://classroomio.com">Website</a>  |  <a href="https://dub.sh/ciodiscord">Join Discord community</a>
   </p>
 </a>
 
-## ✨ About ClassroomIO.com
+## ✨ About ClassroomIO
 
-<img alt="ClassroomIO Courses page" src="https://assets.cdn.clsrio.com/www/home/ai-course-builder.jpeg" />
+<img alt="image" src="https://assets.cdn.clsrio.com/www/home/dashboard-home.png" />
 
-ClassroomIO is an open source LMS for companies. Run compliance/employee training, customer education, and partner certification cohorts — all from one platform. Self-host it on your own infrastructure or use the cloud version.
 
-### Who It's For
+ClassroomIO is an intelligent customer training platform that helps SaaS companies use education to grow their business. Create high-quality learning experiences faster, deliver them across your customer journey, and use AI to scale customer education.
 
-| Use Case | What You Get |
+## Who It's For
+
+| Use Case | What You Can Do |
 |---|---|
-| **Compliance Training** | Deadline tracking, renewals & retake intervals, grace periods, waivers, certificates with custom IDs |
-| **Customer Education** | Branded academy portal, cohorts (cohorts with goals), AI lesson tutor, multilingual content |
-| **Partner Training** | Partner workspaces, branded certificates, custom domains, embeddable widgets, multilingual support |
+| **Customer Education** | Help customers understand your product, learn key features, complete onboarding, and get more value from your platform. |
+| **Partner Training** | Train resellers, implementation partners, and distributors on your products, processes, and standards. |
+| **Employee Training** | Onboard employees, deliver internal training, and manage compliance and certification programs. |
 
 ### Key Features
 
-**Course & Content**
-- **Course management** — unlimited courses, lessons, exercises, grading, and certificates
-- **Cohorts** — group courses into cohorts with goals, team management, and progress tracking
-- **AI Course Builder** — generate outlines, lesson content, and assignments (Gemini, GPT-4o, Claude)
-- **AI Lesson Tutor** — in-lesson AI assistant that helps learners as they study
+### 1. Create
 
-**Compliance & Certification**
-- **Compliance tracking** — status, deadlines, grace periods, renewals, and waivers
-- **Certificates** — issue branded certificates with custom IDs
+- **Build Courses:** Create courses faster with AI-powered course creation tools.
+- **Cohorts:** Group learners into organized learning groups and track their progress through training programs.
+- **Certifications:** Issue branded certificates to recognize learners who complete courses or meet training requirements.
+- **Team Collaboration:** Add team members to your academy and work together to manage learners, assign courses, and coordinate training.
+- **Multiple Languages:** Deliver learning experiences in 10+ languages for learners globally.
 
-**Learner & Org Experience**
-- **Multi-org & multi-teacher** — invite teachers, assign courses, manage multiple organizations
-- **Student dashboard** — learners access all courses, assignments, and progress in one place
-- **Multilingual** — deliver content in 10+ languages
+### 2. Distribute
 
-**Integrations & Developer Tools**
-- **REST API + Webhooks** — enroll users, trigger automations, receive events (`certificate.issued`, `enrollment.completed`, and more)
-- **MCP server** — `@classroomio/mcp` on npm for AI-native integrations
-- **Embeddable widget** — embed your course catalog on any website
+- **Branded Customer Academies:** Launch branded learning academies on custom domains.
+- **Manage Organizations:** Manage multiple organizations and their learning environments.
+- **Learner Dashboard:** Give learners one place to access courses, assignments, and track progress.
+- **Learning Paths:** Guide learners through structured learning experiences.
+- **Embedded Learning:** Embed videos, slides, and documents directly into your courses to give learners a seamless learning experience.
+- **REST API & Webhooks:** Connect ClassroomIO to your existing systems, access learning data, and trigger workflows across your tools.
+- **Zapier Integration (Coming Soon):** Connect ClassroomIO with your favourite tools and automate workflows across your existing apps.
 
-**Platform**
-- **Fully open source** — self-host the entire stack on your own servers
+  ### 3. Intelligence
+
+**AI Lesson Tutor:** Learners get access to an AI assistant that explains concepts, answers questions, and summarizes course material to help them learn with confidence.
+
+**MCP Server:** Connect ClassroomIO with your favourite AI tools and coding agents to create courses and interact with your learning platform.
+
+**AI-Powered Workflows:** Use AI integrations to streamline course creation and learning operations.
 
 For what's coming next, see the [public roadmap](https://classroomio.com/roadmap).
 
@@ -187,21 +191,20 @@ The repository also contains shared packages under `packages/` (for example `pac
    - Connect with `REDIS_URL=redis://localhost:6379`
    - `db:setup:seed` creates the schema and seeds demo data once Postgres is up. The db scripts run with their own working directory, so they read `DATABASE_URL` from `packages/db/.env` (not `apps/api/.env`).
 
-7. (Optional) Start MinIO locally for object storage (media/documents):
+7. (Optional) Start the bundled S3-compatible storage (SeaweedFS) locally for media/documents:
 
    ```bash
-   docker compose -f docker-compose.yaml --profile minio up -d minio minio-init
+   docker compose -f docker-compose.yaml --profile storage up -d storage storage-init
    ```
 
-   - Console Web UI: http://localhost:9001 (user/pass default `minioadmin` / `minioadmin`). Open in browser and select **Object Browser** to view buckets and uploaded files.
-   - S3 endpoint: http://localhost:9000
-   - Buckets created by `minio-init`: `videos`, `documents`, `media`
-   - Browser presigned uploads work out of the box: Compose passes `MINIO_API_CORS_ALLOW_ORIGIN` (default `*`) from the **root `.env`** to the MinIO container — set it there if you need to restrict origins.
-   - Add to `apps/api/.env` when using MinIO locally:
+   - S3 endpoint: http://localhost:9000 (there is no web console; browse buckets with any S3 client such as `rclone` or the AWS CLI)
+   - Buckets created by `storage-init`: `videos`, `documents`, `media` (`media` is public-read)
+   - Browser presigned uploads work out of the box: the store allows all CORS origins.
+   - Add to `apps/api/.env` when using it locally:
      - `OBJECT_STORAGE_ENDPOINT=http://localhost:9000`
      - `OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000`
-     - `OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin`
-     - `OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin`
+     - `OBJECT_STORAGE_ACCESS_KEY_ID=classroomio`
+     - `OBJECT_STORAGE_SECRET_ACCESS_KEY=classroomio-local-dev-secret`
      - `OBJECT_STORAGE_FORCE_PATH_STYLE=true`
      - `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media`
 
@@ -216,6 +219,7 @@ The repository also contains shared packages under `packages/` (for example `pac
    ```
 
    - If you see `Failed to resolve entry for package "@cio/..."`, the shared workspace packages haven't been built yet (their `dist/` is missing). Build them once with `pnpm build`, then re-run the dev commands.
+   - To test over HTTPS (e.g. from a mobile device on your local network), run `pnpm dashboard:dev:https` (or `pnpm dashboard:dev:https:fresh`). This provisions local certificates and automatically binds to `0.0.0.0` (on seperate mobile or LAN devices, bypass the browser's certificate warning if you have the option).
 
 9. Default local URLs:
 
@@ -225,7 +229,33 @@ The repository also contains shared packages under `packages/` (for example `pac
 10. Optional: run other apps:
 
    - **website**: `pnpm website:dev`
-   - **docs**: `pnpm dev --filter=@cio/docs`
+   - **docs**: `CHOKIDAR_USEPOLLING=true pnpm dev --filter=@cio/docs`
+     (Requires Node ≥ 22.12: `nvm use 22.12` first. The polling flag prevents
+     an `EMFILE` error on macOS when other dev servers are already consuming
+     file descriptors.)
+
+     On Windows, `nvm` (nvm-windows) switches the Node version globally
+     rather than per-shell, so run this from a separate terminal window than
+     the one running `api`/`dashboard` — switching versions there won't
+     affect processes already started in other terminals.
+
+     The docs' API reference is built from a static OpenAPI spec fetched at
+     dev-server startup from the deployed production API
+     (`apps/docs/scripts/fetch-openapi.mjs`), not from your local `api`. If
+     you're working on public API routes and want to preview unmerged
+     changes in the docs before they're deployed, generate the spec from
+     your local code instead:
+
+     ```bash
+     # from apps/api, with local Redis running (same as normal api dev setup)
+     OPENAPI_SKIP_CDN_PURGE=1 npx tsx scripts/upload-openapi-spec.ts
+     cp dist/openapi/public-api/openapi.json ../docs/openapi/public-api.json
+     ```
+
+     Then start the docs server with `pnpm exec blume dev` from `apps/docs`
+     instead of `pnpm dev --filter=@cio/docs` — the latter re-runs
+     `fetch-openapi.mjs` as a prestep on every start and will overwrite your
+     local copy with the stale remote spec again.
 
 11. Login into `dashboard`:
 

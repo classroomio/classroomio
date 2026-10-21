@@ -6,7 +6,8 @@ import postgres, { type Sql } from 'postgres';
 
 // import * as schema from './schema';
 
-const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
+const pgbouncerUrl = process.env.PGBOUNCER_DATABASE_URL?.trim() || undefined;
+const connectionString = pgbouncerUrl ?? process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
 
 type DatabaseClient = ReturnType<typeof drizzle>;
 
@@ -20,7 +21,9 @@ function createDatabaseClient() {
     max: Number.parseInt(process.env.DATABASE_POOL_MAX ?? '10', 10) || 5,
     idle_timeout: 20,
     connect_timeout: 10,
-    max_lifetime: 60 * 30
+    max_lifetime: 60 * 30,
+    // PgBouncer transaction pooling cannot keep named prepared statements on a backend.
+    prepare: !pgbouncerUrl
   });
 }
 

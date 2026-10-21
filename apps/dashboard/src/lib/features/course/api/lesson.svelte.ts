@@ -15,20 +15,21 @@ import type {
   GetLessonHistoryRequest,
   GetLessonLanguageRequest,
   GetLessonRequest,
+  GetLessonVideoStatusRequest,
+  LessonVideoHlsStatuses,
   Lesson,
   LessonComments,
   PromoteUngroupedSectionRequest,
   ReorderCourseSectionsRequest,
-  ReorderLessonsRequest,
   UpdateCourseSectionRequest,
   UpdateLessonCommentRequest,
   UpdateLessonCompletionRequest,
   UpdateLessonRequest,
   UpdateLessonWatchProgressRequest,
   GetLessonWatchProgressRequest,
-  type LessonWatchProgress,
-  type LessonWatchProgressUpdate
+  CreateCourseSectionData
 } from '../utils/types';
+import type { LessonWatchProgress, LessonWatchProgressUpdate } from '../utils/types';
 import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
 import type {
   TCourseSectionCreate,
@@ -36,20 +37,15 @@ import type {
   TCourseSectionReorder,
   TCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
-import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
+import type { TLessonCreate, TLessonUpdate } from '@cio/utils/validation/lesson';
+import type { TLessonVersionIntentRequest } from '@cio/utils/validation/lesson';
 import {
   ZCourseSectionCreate,
   ZCourseSectionPromoteUngrouped,
   ZCourseSectionReorder,
   ZCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
-import {
-  ZLessonCommentCreate,
-  ZLessonCommentUpdate,
-  ZLessonCreate,
-  ZLessonReorder,
-  ZLessonUpdate
-} from '@cio/utils/validation/lesson';
+import { ZLessonCommentCreate, ZLessonCommentUpdate, ZLessonCreate, ZLessonUpdate } from '@cio/utils/validation/lesson';
 
 import type { TLocale } from '@cio/db/types';
 import { get } from 'svelte/store';
@@ -63,6 +59,7 @@ import { snackbar } from '$features/ui/snackbar/store';
  */
 export class LessonApi extends BaseApiWithErrors {
   lesson = $state<Lesson | null>(null);
+  videoHlsStatuses = $state<LessonVideoHlsStatuses>({});
   sections = $state<CourseSectionWithLessons[]>([]);
   commentsByLessonId = $state<
     Record<
@@ -79,11 +76,40 @@ export class LessonApi extends BaseApiWithErrors {
   currentLocale = $state<TLocale>('en');
   isSaving = $state(false);
   isDirty = $state(false);
+  revision = 0;
   isCommenting = $state(false);
   isUpdatingComment = $state(false);
 
+  markDirty() {
+    this.isDirty = true;
+    this.revision += 1;
+  }
+
   translations = $state<Record<string, Record<TLocale, string>>>({});
   note = $state('');
+
+  /**
+   * Encoding state of this lesson's uploaded videos, keyed by asset id.
+   *
+   * Served by its own endpoint rather than read off `lesson.videos`, because
+   * the editor writes that array back on save — a status folded into it would
+   * be frozen at page load — and because polling must not refetch the lesson
+   * underneath unsaved edits.
+   */
+  async getVideoStatuses(courseId: string, lessonId: string) {
+    return this.execute<GetLessonVideoStatusRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId']['video-status'].$get({
+          param: { courseId, lessonId }
+        }),
+      logContext: 'fetching lesson video status',
+      onSuccess: (response) => {
+        if (response.data) {
+          this.videoHlsStatuses = response.data.statuses;
+        }
+      }
+    });
+  }
 
   /**
    * Gets a lesson by ID
@@ -109,13 +135,21 @@ export class LessonApi extends BaseApiWithErrors {
 
   /**
    * Creates a new lesson
+   * @returns The created lesson, or undefined when validation or the request fails.
    */
-  async create(courseId: string, fields: TLessonCreate) {
+  async create(
+    courseId: string,
+    fields: TLessonCreate,
+    options: { silent?: boolean } = {}
+  ): Promise<Lesson | undefined> {
     const result = ZLessonCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
+
+    const silent = options.silent ?? false;
+    let createdLesson: Lesson | undefined;
 
     await this.execute<CreateLessonRequest>({
       requestFn: () =>
@@ -126,12 +160,15 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'creating lesson',
       onSuccess: (response) => {
         if (response.data) {
-          const createdLesson = response.data as Lesson;
+          const createdLessonData = response.data as Lesson;
           this.lesson = {
-            ...createdLesson,
-            lessonLanguages: createdLesson.lessonLanguages ?? []
+            ...createdLessonData,
+            lessonLanguages: createdLessonData.lessonLanguages ?? []
           };
-          snackbar.success('snackbar.lessons.lesson_created');
+          createdLesson = this.lesson;
+          if (!silent) {
+            snackbar.success('snackbar.lessons.lesson_created');
+          }
           this.success = true;
           this.errors = {};
         }
@@ -150,6 +187,8 @@ export class LessonApi extends BaseApiWithErrors {
         }
       }
     });
+
+    return createdLesson;
   }
 
   /**
@@ -163,6 +202,7 @@ export class LessonApi extends BaseApiWithErrors {
     }
 
     this.isSaving = true;
+    const revisionAtRequest = this.revision;
 
     const response = await this.execute<UpdateLessonRequest>({
       requestFn: () =>
@@ -173,6 +213,12 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'updating lesson',
       onSuccess: () => {
         this.errors = {};
+
+        if (this.revision !== revisionAtRequest) return;
+
+        if (this.lesson?.id === lessonId) {
+          this.lesson = { ...this.lesson, ...result.data } as Lesson;
+        }
       },
       onError: (result) => {
         if (typeof result === 'string') {
@@ -225,13 +271,21 @@ export class LessonApi extends BaseApiWithErrors {
 
   /**
    * Creates a course section
+   * @returns The created section, or undefined when validation or the request fails.
    */
-  async createSection(courseId: string, fields: TCourseSectionCreate) {
+  async createSection(
+    courseId: string,
+    fields: TCourseSectionCreate,
+    options: { silent?: boolean } = {}
+  ): Promise<CreateCourseSectionData | undefined> {
     const result = ZCourseSectionCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
+
+    const silent = options.silent ?? false;
+    let createdSection: CreateCourseSectionData | undefined;
 
     await this.execute<CreateCourseSectionRequest>({
       requestFn: () =>
@@ -242,7 +296,10 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'creating course section',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('snackbar.lessons.section_created');
+          createdSection = response.data;
+          if (!silent) {
+            snackbar.success('snackbar.lessons.section_created');
+          }
           this.success = true;
           this.errors = {};
         }
@@ -258,6 +315,8 @@ export class LessonApi extends BaseApiWithErrors {
         }
       }
     });
+
+    return createdSection;
   }
 
   /**
@@ -372,38 +431,6 @@ export class LessonApi extends BaseApiWithErrors {
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('snackbar.lessons.sections_reorder_failed');
-        }
-      }
-    });
-  }
-
-  /**
-   * Reorders lessons
-   */
-  async reorderLessons(courseId: string, lessons: TLessonReorder['lessons']) {
-    const result = ZLessonReorder.safeParse({ lessons });
-    if (!result.success) {
-      this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
-      return;
-    }
-
-    await this.execute<ReorderLessonsRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].lesson.reorder.$post({
-          param: { courseId },
-          json: result.data
-        }),
-      logContext: 'reordering lessons',
-      onSuccess: (response) => {
-        if (response.data) {
-          snackbar.success('snackbar.lessons.lessons_reordered');
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.lessons_reorder_failed');
         }
       }
     });
@@ -789,18 +816,18 @@ export class LessonApi extends BaseApiWithErrors {
       ...this.lesson,
       videos: videos.filter((_v, i) => i !== videoIndex)
     };
-    this.isDirty = true;
+    this.markDirty();
   }
 
   /**
    * Updates the thumbnail URL on a lesson video's metadata so the card preview
    * reflects the asset's new thumbnail without waiting for a reload.
    */
-  updateLessonVideoThumbnail(videoIndex: number, thumbnailUrl: string) {
-    this.updateLessonVideoMetadata(videoIndex, { thumbnailUrl });
+  updateLessonVideoThumbnail(videoIndex: number, thumbnailUrl: string, options: { markDirty?: boolean } = {}) {
+    this.updateLessonVideoMetadata(videoIndex, { thumbnailUrl }, options);
   }
 
-  updateLessonVideoMetadata(videoIndex: number, patch: Record<string, unknown>) {
+  updateLessonVideoMetadata(videoIndex: number, patch: Record<string, unknown>, options: { markDirty?: boolean } = {}) {
     if (!this.lesson) return;
 
     const videos = Array.isArray(this.lesson.videos) ? [...this.lesson.videos] : [];
@@ -812,13 +839,29 @@ export class LessonApi extends BaseApiWithErrors {
         ? (target.metadata as Record<string, unknown>)
         : {};
 
+    const isPlaceholderFileName =
+      !target.fileName ||
+      target.fileName === target.link ||
+      target.fileName === 'Vimeo' ||
+      target.fileName === 'Vimeo video' ||
+      target.fileName === 'YouTube' ||
+      target.fileName === 'YouTube video' ||
+      target.fileName === 'Embedded video';
+
+    const updatedFileName =
+      patch.title && typeof patch.title === 'string' && isPlaceholderFileName ? patch.title : target.fileName;
+
     videos[videoIndex] = {
       ...target,
+      ...(updatedFileName ? { fileName: updatedFileName } : {}),
       metadata: { ...metadata, ...patch }
     };
 
     this.lesson = { ...this.lesson, videos };
-    this.isDirty = true;
+
+    if (options.markDirty ?? true) {
+      this.markDirty();
+    }
   }
 
   /**
@@ -843,7 +886,7 @@ export class LessonApi extends BaseApiWithErrors {
       ...this.lesson,
       documents: documents.filter((_d, i) => i !== documentIndex)
     };
-    this.isDirty = true;
+    this.markDirty();
   }
 
   /**
@@ -875,23 +918,19 @@ export class LessonApi extends BaseApiWithErrors {
         [field]: value as Lesson[K]
       };
     }
-    this.isDirty = true;
+    this.markDirty();
   }
 
   /**
-   * Gets lesson version history for a lesson and locale
-   * @param courseId Course ID
-   * @param lessonId Lesson ID
-   * @param locale Locale
-   * @param endRange End range for pagination (0-indexed, inclusive)
-   * @returns Lesson history data or null on error
+   * Gets one page of lesson version history, newest first.
+   * @param cursor `nextCursor` from the previous page; omit for the first page.
    */
-  async getHistory(courseId: string, lessonId: string, locale: TLocale, endRange: number) {
+  async getHistory(courseId: string, lessonId: string, locale: TLocale, limit: number, cursor?: string) {
     return this.execute<GetLessonHistoryRequest>({
       requestFn: () =>
         classroomio.course[':courseId']['lesson'][':lessonId']['history'].$get({
           param: { courseId, lessonId },
-          query: { locale, endRange: endRange.toString() }
+          query: { locale, limit: limit.toString(), ...(cursor ? { cursor } : {}) }
         }),
       logContext: 'fetching lesson history'
     });
@@ -903,13 +942,22 @@ export class LessonApi extends BaseApiWithErrors {
    * @param lessonId Lesson ID
    * @param locale Locale
    * @param content Translation content
+   * @param versionIntent How the write should appear in version history. `auto`
+   *   (the default) folds into the author's open editing session; `manual` cuts
+   *   a checkpoint that retention keeps forever.
    */
-  async upsertLanguage(courseId: string, lessonId: string, locale: TLocale, content: string) {
+  async upsertLanguage(
+    courseId: string,
+    lessonId: string,
+    locale: TLocale,
+    content: string,
+    versionIntent: TLessonVersionIntentRequest = 'auto'
+  ) {
     return this.execute<GetLessonLanguageRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].language.$post({
           param: { courseId, lessonId },
-          json: { locale, content }
+          json: { locale, content, versionIntent }
         }),
       logContext: 'upserting lesson language',
       onSuccess: () => {
@@ -935,7 +983,8 @@ export class LessonApi extends BaseApiWithErrors {
 
     await Promise.all([
       this.update(courseId, lessonId, {
-        slideUrl: this.lesson.slideUrl || undefined,
+        slideUrl: this.lesson.slideUrl || '',
+        slides: this.lesson.slides || [],
         videos: this.lesson.videos || [],
         documents: this.lesson.documents || []
       }),

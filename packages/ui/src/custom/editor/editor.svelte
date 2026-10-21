@@ -1,15 +1,20 @@
 <script lang="ts">
-  import type { HTMLContent, Content, Editor } from '@tiptap/core';
+  import type { HTMLContent, Editor } from '@tiptap/core';
   import type { Transaction } from '@tiptap/pm/state';
+  import type { UnsplashPhoto } from './types';
+  import type { Snippet } from 'svelte';
   import { EdraEditor, EdraToolBar, EdraBubbleMenu, EdraDragHandleExtended } from './ui';
   import { slide } from 'svelte/transition';
   import { cn } from '$src/tools';
+  import * as Sheet from '../../base/sheet';
 
   interface Props {
     // Content of the editor
     content?: HTMLContent;
     // Whether the toolbar should be visible
     showToolBar?: boolean;
+    toolbarPreset?: 'default' | 'email';
+    toolbarTrailing?: Snippet<[]>;
     // Whether the editor is editable
     editable?: boolean;
     // Whether to enable localStorage persistence
@@ -28,11 +33,21 @@
     onContentChange?: (content: HTMLContent) => void;
     onEditorReady?: (editor: Editor) => void;
     onEditorDestroy?: () => void;
+    onImageUpload?: (file: File) => Promise<string>;
+    onSearchUnsplash?: (query: string) => Promise<UnsplashPhoto[]>;
+    showDragHandle?: boolean;
+    /** Enables a large editor sheet, opened by setting `expanded`; both editors stay in sync. */
+    expandable?: boolean;
+    expanded?: boolean;
+    expandedTitle?: string;
+    expandedDescription?: string;
   }
 
   let {
     content = $bindable(''),
     showToolBar = true,
+    toolbarPreset = 'default',
+    toolbarTrailing,
     editable = true,
     enablePersistence = false,
     contentStorageKey = 'edra-content',
@@ -41,10 +56,17 @@
     editorClass = '',
     placeholder,
     onContentChange,
-    onEditorReady
+    onEditorReady,
+    onImageUpload,
+    onSearchUnsplash,
+    showDragHandle = true,
+    expandable = false,
+    expanded = $bindable(false),
+    expandedTitle = '',
+    expandedDescription = ''
   }: Props = $props();
 
-  let editor = $state<Editor>();
+  const editors = $state<{ inline?: Editor; expanded?: Editor }>({});
 
   // Browser detection
   const browser = typeof window !== 'undefined';
@@ -96,21 +118,23 @@
   let isEditorReady = $state(false);
   // Handle editor ready
   $effect(() => {
-    if (editor && !isEditorReady) {
+    if (editors.inline && !isEditorReady) {
       isEditorReady = true;
-      onEditorReady?.(editor);
+      onEditorReady?.(editors.inline);
     }
   });
 
   $effect(() => {
-    if (!editor || editor.isDestroyed) return;
-
     const nextContent = normalizeEditorContent(content);
-    const currentContent = normalizeEditorContent(editor.getHTML());
 
-    if (currentContent === nextContent) return;
+    for (const editor of [editors.inline, editors.expanded]) {
+      if (!editor || editor.isDestroyed) continue;
 
-    editor.commands.setContent(nextContent, false);
+      const currentContent = normalizeEditorContent(editor.getHTML());
+      if (currentContent === nextContent) continue;
+
+      editor.commands.setContent(nextContent, { emitUpdate: false });
+    }
   });
 
   function onUpdate(props: { editor: Editor; transaction: Transaction }) {
@@ -120,37 +144,82 @@
       onContentChange?.(newContent);
     }
   }
+
+  function handleExpandedChange(isOpen: boolean) {
+    const expandedEditor = editors.expanded;
+
+    if (!isOpen && expandedEditor && !expandedEditor.isDestroyed) {
+      expandedEditor.view.dom.blur();
+    }
+
+    expanded = isOpen;
+  }
 </script>
 
-{#if browser}
+{#snippet editorSurface(surface: 'inline' | 'expanded', wrapperClass: string, contentClass: string)}
+  {@const editor = editors[surface]}
   <div
     class={cn(
       'ui:relative ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
-      className
+      wrapperClass
     )}
   >
     {#if editor && !editor.isDestroyed}
       {#if showToolBar}
         <div transition:slide>
           <EdraToolBar
-            class="ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:overflow-x-auto ui:border-b ui:border-dashed ui:p-0.5"
+            class={cn(
+              'ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:border-b ui:border-dashed ui:p-0.5',
+              toolbarPreset === 'email' ? 'ui:flex-wrap ui:overflow-x-hidden' : 'ui:flex-nowrap ui:overflow-x-auto'
+            )}
             {editor}
+            preset={toolbarPreset}
+            trailingContent={toolbarTrailing}
           />
         </div>
       {/if}
-      <EdraBubbleMenu {editor} />
+      {#if toolbarPreset !== 'email'}
+        <EdraBubbleMenu {editor} />
+      {/if}
 
-      {#if editable}
+      {#if editable && showDragHandle && toolbarPreset !== 'email'}
         <EdraDragHandleExtended {editor} />
       {/if}
     {/if}
-    <EdraEditor
-      class={cn('ui:relative ui:h-128 ui:overflow-auto ui:p-4', editorClass)}
-      bind:editor
-      {editable}
-      {content}
-      {onUpdate}
-      {placeholder}
-    />
+    <div class="ui:flex ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:flex-col">
+      <EdraEditor
+        class={cn('ui:relative ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:overflow-auto ui:p-4', contentClass)}
+        bind:editor={editors[surface]}
+        {editable}
+        emailSafe={toolbarPreset === 'email'}
+        {content}
+        {onUpdate}
+        {placeholder}
+        {onImageUpload}
+        {onSearchUnsplash}
+      />
+    </div>
   </div>
+{/snippet}
+
+{#if browser}
+  {@render editorSurface('inline', className, editorClass)}
+
+  {#if expandable}
+    <Sheet.Root open={expanded} onOpenChange={handleExpandedChange}>
+      <Sheet.Content side="right" class="ui:w-full ui:gap-0 ui:sm:max-w-3xl">
+        <Sheet.Header class="ui:pr-12">
+          <Sheet.Title>{expandedTitle}</Sheet.Title>
+          {#if expandedDescription}
+            <Sheet.Description>{expandedDescription}</Sheet.Description>
+          {/if}
+        </Sheet.Header>
+        <div class="ui:flex ui:min-h-0 ui:flex-1 ui:flex-col ui:px-4 ui:pb-4">
+          {#if expanded}
+            {@render editorSurface('expanded', 'ui:min-h-0 ui:flex-1', 'ui:min-h-0 ui:flex-1')}
+          {/if}
+        </div>
+      </Sheet.Content>
+    </Sheet.Root>
+  {/if}
 {/if}

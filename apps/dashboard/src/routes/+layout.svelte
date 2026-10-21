@@ -4,7 +4,7 @@
 
   import { Snackbar } from '$features/ui';
   import { appInitApi } from '$features/app/init.svelte';
-  import PendingInviteModal from '$features/lms/components/pending-invite-modal.svelte';
+  import PendingInviteModal from '$features/invite/components/pending-invite-modal.svelte';
   import { resolveAppOrgParams } from '$features/app/resolve-app-org-params';
   import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
@@ -12,6 +12,7 @@
   import { get } from 'svelte/store';
   import { user } from '$lib/utils/store/user';
   import { setTheme } from '$lib/utils/functions/theme';
+  import { activateLocale, ensureTranslations } from '$lib/utils/functions/translations';
   import { authClient } from '$lib/utils/services/auth/client';
   import merge from 'lodash/merge';
   import { MetaTags } from 'svelte-meta-tags';
@@ -30,8 +31,6 @@
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
 
   onMount(() => {
-    console.log('Layout', data);
-
     const sessionUser = data?.locals?.user;
     setupCloudAnalytics(
       sessionUser ? { id: sessionUser.id, email: sessionUser.email, name: sessionUser.name } : undefined,
@@ -48,10 +47,22 @@
   });
 
   $effect(() => {
+    let isCurrent = true;
+    const isOrgSiteRoute = data.isOrgSite && page.url.pathname.length > 0;
+
     if (!data.isOrgSite || !data.org) {
       $globalStore.isOrgSite = false;
       $globalStore.orgSiteName = '';
-      return;
+      return () => {
+        isCurrent = false;
+      };
+    }
+
+    const enforcedLocale = data.org.settings?.language?.enforced ? data.org.settings.language.locale : undefined;
+    if (isOrgSiteRoute && enforcedLocale) {
+      void ensureTranslations(enforcedLocale, () => isCurrent).then(() => {
+        if (isCurrent) activateLocale(enforcedLocale);
+      });
     }
 
     $globalStore.orgSiteName = data.orgSiteName || '';
@@ -66,6 +77,10 @@
     }
 
     setTheme(data.org.theme || 'blue');
+
+    return () => {
+      isCurrent = false;
+    };
   });
 
   const session = authClient.useSession();

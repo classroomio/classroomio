@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Button } from '@cio/ui/base/button';
   import * as Select from '@cio/ui/base/select';
   import * as Tabs from '@cio/ui/base/tabs';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -11,7 +10,8 @@
   import { ASSET_KIND_OPTIONS, ASSET_STATUS_OPTIONS } from '$features/media/utils';
 
   interface Props {
-    search?: string;
+    searchDraft?: string;
+    onSearchInput?: (value: string) => void;
     kind?: AssetKindFilter;
     status?: AssetStatusFilter;
     isRefreshing?: boolean;
@@ -20,7 +20,8 @@
   }
 
   let {
-    search = $bindable(''),
+    searchDraft = '',
+    onSearchInput = () => {},
     kind = $bindable('all' as AssetKindFilter),
     status = $bindable('all' as AssetStatusFilter),
     isRefreshing = false,
@@ -29,6 +30,10 @@
   }: Props = $props();
 
   function handleKindChange() {
+    onApply();
+  }
+
+  function handleStatusChange() {
     onApply();
   }
 </script>
@@ -47,9 +52,10 @@
   <Search
     class="w-full sm:w-[120px]"
     placeholder={$t('media_manager.filters.search_placeholder')}
-    bind:value={search}
+    value={searchDraft}
+    onValueChange={onSearchInput}
   />
-  <Select.Root type="single" bind:value={status}>
+  <Select.Root type="single" bind:value={status} onValueChange={handleStatusChange}>
     <Select.Trigger class="min-w-[100px]">
       <p>{$t(`media_manager.filters.status_options.${status}`)}</p>
     </Select.Trigger>
@@ -61,9 +67,6 @@
       {/each}
     </Select.Content>
   </Select.Root>
-  <Button onclick={onApply} loading={isRefreshing} disabled={isRefreshing}>
-    {$t('media_manager.filters.apply')}
-  </Button>
   <IconButton
     onclick={onRefresh}
     disabled={isRefreshing}

@@ -1,9 +1,11 @@
 import * as z from 'zod';
 
+import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { toFiniteNumber } from '../../functions/number';
-import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
+import { ALLOWED_CONTENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
 import { ZCourseType } from './course-type';
+import { ZLiveSessionReminderOffsets } from './live-session-reminder';
 
 export const ZGetRecommendedCourses = z.object({
   limit: z.string().transform(Number).pipe(z.number().min(1).max(50)).optional(),
@@ -74,7 +76,7 @@ export const ZCertificateDesign = z.object({
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, { message: 'Accent must be a 6-digit hex color' }),
   subtitle: z.string().max(120).optional(),
   descriptionOverride: z.string().max(500).optional(),
-  signatories: z.tuple([ZCertificateSignatory, ZCertificateSignatory]),
+  signatories: z.tuple([ZCertificateSignatory, ZCertificateSignatory]).optional(),
   idFormat: z.string().max(40).optional()
 });
 export type TCertificateDesign = z.infer<typeof ZCertificateDesign>;
@@ -136,8 +138,9 @@ export type TCoursePresignUrlUpload = z.infer<typeof ZCoursePresignUrlUpload>;
 
 export const ZCourseDocumentPresignUrlUpload = z.object({
   fileName: z.string().min(1),
-  fileType: z.enum(ALLOWED_DOCUMENT_TYPES),
-  fileSize: z.number().int().min(0).optional()
+  fileType: z.string(),
+  fileSize: z.number().int().min(0).optional(),
+  acceptedTypes: z.array(z.string()).optional()
 });
 export type TCourseDocumentPresignUrlUpload = z.infer<typeof ZCourseDocumentPresignUrlUpload>;
 
@@ -150,7 +153,7 @@ export const ZCourseContentUpdateItem = z.object({
   id: z.string().min(1),
   type: z.enum(['LESSON', 'EXERCISE']),
   isUnlocked: z.boolean().optional(),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1).optional(),
   sectionId: z.string().nullable().optional()
 });
 export type TCourseContentUpdateItem = z.infer<typeof ZCourseContentUpdateItem>;
@@ -162,7 +165,7 @@ export type TCourseContentUpdate = z.infer<typeof ZCourseContentUpdate>;
 
 export const ZCourseContentReorderSection = z.object({
   id: z.string().min(1),
-  order: z.number().int().min(0)
+  order: z.number().int().min(1)
 });
 export type TCourseContentReorderSection = z.infer<typeof ZCourseContentReorderSection>;
 
@@ -200,6 +203,7 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
   });
 
   const itemKeys = new Set<string>();
+  const itemsBySection = new Map<string, { orders: number[]; total: number; withOrder: number }>();
   data.items?.forEach((item, index) => {
     if (item.order === undefined && item.sectionId === undefined) {
       ctx.addIssue({
@@ -207,6 +211,17 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
         path: ['items', index],
         message: 'Each item must provide order or sectionId'
       });
+    }
+
+    if (item.sectionId !== undefined) {
+      const sectionId = item.sectionId ?? '__unsectioned__';
+      const entry = itemsBySection.get(sectionId) ?? { orders: [], total: 0, withOrder: 0 };
+      entry.total += 1;
+      if (item.order !== undefined) {
+        entry.orders.push(item.order);
+        entry.withOrder += 1;
+      }
+      itemsBySection.set(sectionId, entry);
     }
 
     const itemKey = `${item.type}:${item.id}`;
@@ -220,6 +235,23 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
 
     itemKeys.add(itemKey);
   });
+
+  const rootOrders = [...(data.sections?.map((section) => section.order) ?? [])];
+  for (const [sectionId, entry] of itemsBySection) {
+    if (entry.withOrder !== entry.total) continue;
+
+    if (sectionId === '__unsectioned__') {
+      rootOrders.push(...entry.orders);
+      continue;
+    }
+
+    if (new Set(entry.orders).size !== entry.orders.length) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['items'], message: 'Sibling orders must be unique' });
+    }
+  }
+  if (new Set(rootOrders).size !== rootOrders.length) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['items'], message: 'Top-level orders must be unique' });
+  }
 });
 export type TCourseContentReorder = z.infer<typeof ZCourseContentReorder>;
 
@@ -265,8 +297,7 @@ export const ZComplianceSettings = z.object({
   reminderDaysBefore: z.array(z.number().int().min(1).max(365)).max(10).optional().default([30, 7, 1]),
   isMandatory: z.boolean().optional().default(true),
   framework: z.enum(['HIPAA', 'OSHA', 'SOX', 'GDPR', 'PCI_DSS', 'FERPA', 'ISO', 'CUSTOM']).nullable().optional(),
-  maxRetakeAttempts: z.number().int().min(1).nullable().optional(),
-  passingScore: z.number().int().min(0).max(100).optional().default(80)
+  maxRetakeAttempts: z.number().int().min(1).nullable().optional()
 });
 export type TComplianceSettings = z.infer<typeof ZComplianceSettings>;
 
@@ -366,6 +397,7 @@ const ZCourseMetadataFields = z.object({
   videoUrl: z.string().optional(),
   showDiscount: z.boolean().optional(),
   discount: z.number().optional(),
+  paymentEnabled: z.boolean().optional(),
   paymentLink: z.string().optional(),
   reward: ZCourseReward.optional(),
   instructor: ZCourseInstructor.optional(),
@@ -379,11 +411,13 @@ const ZCourseMetadataFields = z.object({
   allowSelfEnrollment: z.boolean().optional(),
   /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. */
   allowNewStudent: z.boolean().optional(),
+  allowMarkdownExport: z.boolean().optional(),
   welcomeEmailMessage: z.string().max(20000).nullish(),
   sessionTimezone: z.string().max(64).nullish(),
+  liveSessionReminderOffsetsMinutes: ZLiveSessionReminderOffsets.optional(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
   isContentGroupingEnabled: z.boolean().optional(),
-  progressionMode: z.enum(['free', 'sequential']).optional(),
+  progressionMode: z.enum(COURSE_PROGRESSION_MODES).optional(),
   commentsEnabled: z.boolean().optional()
 });
 
@@ -411,17 +445,83 @@ export const ZCertificationSettings = z.object({
   design: ZCertificateDesign.optional(),
   /** ISO 8601 datetime string or null to clear */
   deadline: z.union([z.string().min(1), z.null()]).optional(),
-  threshold: z.number().int().min(0).max(100).optional(),
-  requiredExerciseId: z.union([z.string().uuid(), z.null()]).optional(),
-  exerciseMinScorePercent: z.number().int().min(0).max(100).nullable().optional(),
   emailMessage: z.string().max(5000).nullable().optional()
 });
 export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;
+
+export const ZPaymentLink = z.url({ protocol: /^https?$/ });
+
+type TPaidCoursePayload = {
+  cost?: number | null;
+  metadata?: { paymentEnabled?: boolean; paymentLink?: string | null } | null;
+};
+
+export type TPaidCourseIssue = {
+  message: string;
+  path: ('cost' | 'metadata' | 'paymentLink')[];
+};
+
+/**
+ * Whether a course is paid. An explicit `paymentEnabled` flag wins; otherwise
+ * a course is paid once it has a positive cost. Kept as a single shared helper
+ * so the dashboard/API/widget all compute "is paid" the same way.
+ */
+export function isCoursePaid(cost: number | null | undefined, metadata: TPaidCoursePayload['metadata']): boolean {
+  const paidFlag = metadata?.paymentEnabled;
+  return typeof paidFlag === 'boolean' ? paidFlag : typeof cost === 'number' && cost > 0;
+}
+
+/**
+ * Validates the payment state of a single course, so callers can check the
+ * final merged state (persisted course + pending update) and not just a
+ * partial request payload.
+ */
+export function validatePaidCourseState(
+  cost: number | null | undefined,
+  metadata: TPaidCoursePayload['metadata']
+): TPaidCourseIssue[] {
+  const issues: TPaidCourseIssue[] = [];
+
+  if (!isCoursePaid(cost, metadata)) return issues;
+
+  const paymentLink = typeof metadata?.paymentLink === 'string' ? metadata.paymentLink.trim() : '';
+  if (!paymentLink) {
+    issues.push({
+      message: 'A payment link is required for paid courses',
+      path: ['metadata', 'paymentLink']
+    });
+  } else if (!ZPaymentLink.safeParse(paymentLink).success) {
+    issues.push({
+      message: 'Payment link must be a valid http(s) URL',
+      path: ['metadata', 'paymentLink']
+    });
+  }
+
+  if (cost === undefined || cost === null || cost <= 0) {
+    issues.push({
+      message: 'Paid courses must have a cost greater than 0',
+      path: ['cost']
+    });
+  }
+
+  return issues;
+}
+
+export function superRefinePaidCourse(data: TPaidCoursePayload, ctx: z.RefinementCtx) {
+  for (const issue of validatePaidCourseState(data.cost, data.metadata)) {
+    ctx.addIssue({
+      code: 'custom',
+      message: issue.message,
+      path: issue.path
+    });
+  }
+}
 
 export const ZCourseUpdateBase = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
   type: ZCourseType.optional(),
+  bannerImage: z.string().optional(),
   logo: z.string().optional(),
   slug: z.string().optional(),
   isPublished: z.boolean().optional(),
@@ -442,7 +542,7 @@ export const ZCourseUpdate = ZCourseUpdateBase.refine(
     message: 'Compliance settings are required when changing a course to COMPLIANCE',
     path: ['compliance']
   }
-);
+).superRefine(superRefinePaidCourse);
 export type TCourseUpdate = z.infer<typeof ZCourseUpdate>;
 
 export const ZCourseUpdateParam = z.object({
@@ -462,6 +562,8 @@ export const ZCourseLandingPageUpdate = z.object({
   metadata: ZCourseLandingPageMetadataUpdate.optional()
 });
 export type TCourseLandingPageUpdate = z.infer<typeof ZCourseLandingPageUpdate>;
+
+export const ZCourseLandingPageUpdateValidated = ZCourseLandingPageUpdate.superRefine(superRefinePaidCourse);
 
 export const ZCourseDeleteParam = z.object({
   courseId: z.string().min(1)

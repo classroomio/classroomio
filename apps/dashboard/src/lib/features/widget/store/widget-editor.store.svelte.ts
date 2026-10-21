@@ -161,6 +161,11 @@ class WidgetEditorStore {
   resetDraft() {
     if (!this.detail) return;
     this.applyDetail(this.detail);
+    widgetApi.resetErrors();
+  }
+
+  clearError(path: string) {
+    widgetApi.clearError(path);
   }
 
   clearFilters() {
@@ -241,10 +246,10 @@ class WidgetEditorStore {
     }
   }
 
-  async deleteWidget() {
+  async archiveWidget() {
     if (!this.detail) return;
 
-    await widgetApi.deleteWidget(this.detail.widget.id);
+    await widgetApi.archiveWidget(this.detail.widget.id);
     goto(resolve(`${get(currentOrgPath)}/widgets`, {}));
   }
 }

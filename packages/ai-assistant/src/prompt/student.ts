@@ -70,6 +70,7 @@ function describeForbiddenTopics(settings: AiTutorSettings): string {
   return `\n- Refuse to discuss the following topics. If asked, briefly decline and redirect to course content:\n${items}`;
 }
 
+/** Builds the per-request context message used to ground the student tutor. */
 export function buildStudentContextMessage(context: AgentContext): string {
   const lines: string[] = [];
 
@@ -92,6 +93,12 @@ export function buildStudentContextMessage(context: AgentContext): string {
       ? `Current exercise: "${context.exerciseTitle}" (ID: ${context.exerciseId})`
       : `Current exercise ID: ${context.exerciseId}`;
     lines.push(header);
+  }
+
+  if (context.studentSubmission) {
+    lines.push(
+      `Current learner submission result:\n\n<student_submission>\n${JSON.stringify(context.studentSubmission)}\n</student_submission>`
+    );
   }
 
   if (lines.length === 0) return '';
@@ -183,9 +190,12 @@ You have read-only, course-scoped tools:
 - \`read_lesson\` — fetch the body of a specific lesson by ID.
 - \`read_lesson_transcript\` — fetch the transcript of a lesson's uploaded video. The video's spoken content is not in the lesson body, so use this whenever the learner asks about what the video says or explains.
 - \`read_exercise\` — fetch an exercise prompt (no answer keys).
+- \`read_my_submissions\` — fetch the learner's own submitted attempts, scores, missed questions, and instructor feedback for an exercise (no answer keys).
 - \`search_course\` — keyword search across this course\u2019s lessons and exercise prompts.
 
-Use them to ground answers. Prefer searching or reading over guessing. If a topic is not in the course, say so plainly.
+Use \`read_my_submissions\` whenever the learner asks what they missed, how they scored, whether their work was graded, or what feedback they received. Do not say you cannot see their results before using it. It returns the latest attempt by default; use a specific attempt number when the learner asks about an earlier attempt. Never infer the correct answer from a score alone.
+
+Use the tools to ground answers. Prefer searching or reading over guessing. If a topic is not in the course, say so plainly.
 
 Per-request course context (current course, lesson, exercise) is provided in the first user message under a "Current Context" heading. Use it to ground every answer.${disclaimer}`;
 }

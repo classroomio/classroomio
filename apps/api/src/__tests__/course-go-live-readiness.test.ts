@@ -1,4 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+// `vi.mock` factories are hoisted above imports, so this has to be a `var` to
+// be initialised by the time the factory runs.
+// eslint-disable-next-line no-var
+var TX = { __transaction: true };
 import { ContentType } from '@cio/utils/constants';
 import { getCourseById } from '@cio/db/queries/course';
 import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
@@ -6,6 +11,7 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { getOrganizationById } from '@cio/db/queries/organization';
 import { updateCourse } from '@cio/core/services/course/course';
 import { ensureCourseSlug, generateUniqueCourseSlug } from '@cio/core/services/course/landing-page';
+import { sealLessonVersionsOnPublish } from '@cio/core/services/lesson-version';
 import {
   evaluateCourseGoLiveReadiness,
   getCourseGoLiveReadiness,
@@ -37,6 +43,16 @@ vi.mock('@cio/core/services/course/landing-page', () => ({
   generateUniqueCourseSlug: vi.fn()
 }));
 
+vi.mock('@cio/core/services/lesson-version', () => ({
+  sealLessonVersionsOnPublish: vi.fn()
+}));
+
+vi.mock('@cio/db/drizzle', () => ({
+  // Publishing and version sealing share one transaction; run the callback
+  // directly and hand it a marker the assertions can recognise.
+  db: { transaction: (run: (client: unknown) => unknown) => run(TX) }
+}));
+
 vi.mock('@cio/core/config/dashboard-url', () => ({
   getDashboardBaseUrl: vi.fn(() => 'https://school.example.com')
 }));
@@ -48,6 +64,7 @@ const mockedGetOrganizationById = vi.mocked(getOrganizationById);
 const mockedUpdateCourse = vi.mocked(updateCourse);
 const mockedEnsureCourseSlug = vi.mocked(ensureCourseSlug);
 const mockedGenerateUniqueCourseSlug = vi.mocked(generateUniqueCourseSlug);
+const mockedSealLessonVersionsOnPublish = vi.mocked(sealLessonVersionsOnPublish);
 
 function buildCourse(overrides: Record<string, unknown> = {}) {
   return {
@@ -56,8 +73,7 @@ function buildCourse(overrides: Record<string, unknown> = {}) {
     description: 'A practical course for safer day-to-day workplace decisions.',
     overview: 'Learn the policies, habits, and reporting steps that keep teams safe.',
     slug: 'workplace-safety-essentials',
-    logo: 'https://example.com/banner.jpg',
-    bannerImage: null,
+    bannerImage: 'https://example.com/banner.jpg',
     metadata: {
       description: 'A public-facing overview of the safety course.',
       goals: 'Identify hazards, report incidents, and follow safe operating procedures.',
@@ -100,6 +116,8 @@ function buildContentItem(overrides: Partial<CourseContentItemRow> = {}): Course
     isComplete: false,
     lessonAt: null,
     callUrl: null,
+    sessionDurationMinutes: null,
+    recordingUrl: null,
     hasNoteContent: true,
     hasSlideContent: false,
     videosCount: 0,
@@ -118,7 +136,7 @@ describe('evaluateCourseGoLiveReadiness', () => {
         description: '',
         overview: 'Welcome to this amazing course',
         slug: null,
-        logo: '',
+        bannerImage: null,
         metadata: { allowNewStudent: true }
       }) as never,
       contentItems: [],
@@ -254,19 +272,35 @@ describe('course go-live service', () => {
     mockedGetCourseContentItems.mockResolvedValue([buildContentItem()] as never);
     mockedEnsureCourseSlug.mockResolvedValue('workplace-safety-essentials');
     mockedUpdateCourse.mockResolvedValue({
-      ...course,
-      slug: 'workplace-safety-essentials',
-      isPublished: true
+      course: {
+        ...course,
+        slug: 'workplace-safety-essentials',
+        isPublished: true
+      },
+      conversionOffenders: null
     } as never);
 
     const result = await publishCourseWhenReady('course-1');
 
     expect(mockedEnsureCourseSlug).toHaveBeenCalledWith('course-1', course.title);
-    expect(mockedUpdateCourse).toHaveBeenCalledWith('course-1', {
-      slug: 'workplace-safety-essentials',
-      isPublished: true
-    });
+    // Both writes must run against the same transaction client.
+    expect(mockedUpdateCourse).toHaveBeenCalledWith(
+      'course-1',
+      { slug: 'workplace-safety-essentials', isPublished: true },
+      TX
+    );
     expect(result.course.isPublished).toBe(true);
     expect(result.readiness.ready).toBe(true);
+    // Publishing is a version-history boundary: the snapshot students were
+    // served is sealed so the next edit starts a fresh editing session.
+    expect(mockedSealLessonVersionsOnPublish).toHaveBeenCalledWith('course-1', TX);
+  });
+
+  it('does not seal lesson versions when the course is not ready to publish', async () => {
+    mockedGetCourseById.mockResolvedValue([buildCourse({ description: null, overview: null })] as never);
+    mockedGetCourseContentItems.mockResolvedValue([] as never);
+
+    await expect(publishCourseWhenReady('course-1')).rejects.toThrow();
+    expect(mockedSealLessonVersionsOnPublish).not.toHaveBeenCalled();
   });
 });

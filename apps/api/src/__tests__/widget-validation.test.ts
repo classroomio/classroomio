@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ZCreateWidget,
+  ZListWidgetsQuery,
   ZUpdateWidget,
   ZWidgetConfig,
   ZWidgetPayload,
@@ -200,6 +201,110 @@ describe('Widget Validation Schemas', () => {
   });
 });
 
+describe('ZListWidgetsQuery', () => {
+  it('should default to the first page at 20 per page', () => {
+    const result = ZListWidgetsQuery.safeParse({});
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page).toBe(1);
+      expect(result.data.limit).toBe(20);
+      expect(result.data.search).toBeUndefined();
+      expect(result.data.status).toBeUndefined();
+      expect(result.data.layoutType).toBeUndefined();
+      expect(result.data.selectionMode).toBeUndefined();
+    }
+  });
+
+  it('should coerce numeric strings from the query string', () => {
+    const result = ZListWidgetsQuery.safeParse({ page: '3', limit: '50' });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page).toBe(3);
+      expect(result.data.limit).toBe(50);
+    }
+  });
+
+  it('should reject a page below one and a limit above the cap', () => {
+    expect(ZListWidgetsQuery.safeParse({ page: '0' }).success).toBe(false);
+    expect(ZListWidgetsQuery.safeParse({ limit: '101' }).success).toBe(false);
+  });
+
+  it('should trim search and drop it when blank', () => {
+    const trimmed = ZListWidgetsQuery.safeParse({ search: '  promo  ' });
+    expect(trimmed.success).toBe(true);
+    if (trimmed.success) {
+      expect(trimmed.data.search).toBe('promo');
+    }
+
+    const blank = ZListWidgetsQuery.safeParse({ search: '   ' });
+    expect(blank.success).toBe(true);
+    if (blank.success) {
+      expect(blank.data.search).toBe('');
+    }
+  });
+
+  it('should reject ARCHIVED as a status filter', () => {
+    expect(ZListWidgetsQuery.safeParse({ status: 'ARCHIVED' }).success).toBe(false);
+    expect(ZListWidgetsQuery.safeParse({ status: 'DRAFT,ARCHIVED' }).success).toBe(false);
+  });
+
+  it('should split comma-separated filters into lists', () => {
+    const many = ZListWidgetsQuery.safeParse({
+      status: 'DRAFT,PUBLISHED',
+      layoutType: 'carousel,card_grid',
+      selectionMode: 'manual,published'
+    });
+
+    expect(many.success).toBe(true);
+    if (many.success) {
+      expect(many.data.status).toEqual(['DRAFT', 'PUBLISHED']);
+      expect(many.data.layoutType).toEqual(['carousel', 'card_grid']);
+      expect(many.data.selectionMode).toEqual(['manual', 'published']);
+    }
+  });
+
+  it('should accept a single value without a separator', () => {
+    const single = ZListWidgetsQuery.safeParse({ status: 'DRAFT', layoutType: 'carousel' });
+
+    expect(single.success).toBe(true);
+    if (single.success) {
+      expect(single.data.status).toEqual(['DRAFT']);
+      expect(single.data.layoutType).toEqual(['carousel']);
+    }
+  });
+
+  it('should drop empty segments rather than reject the whole filter', () => {
+    const result = ZListWidgetsQuery.safeParse({ layoutType: 'carousel,,card_grid,' });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.layoutType).toEqual(['carousel', 'card_grid']);
+    }
+  });
+
+  it('should treat an all-empty filter as no filter at all', () => {
+    const result = ZListWidgetsQuery.safeParse({ status: ' , ' });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.status).toEqual([]);
+    }
+  });
+
+  it('should reject the whole filter when any value is unknown', () => {
+    expect(ZListWidgetsQuery.safeParse({ layoutType: 'carousel,masonry' }).success).toBe(false);
+    expect(ZListWidgetsQuery.safeParse({ selectionMode: 'curated' }).success).toBe(false);
+  });
+
+  it('should accept every declared layout type', () => {
+    for (const layoutType of WIDGET_LAYOUT_TYPE_VALUES) {
+      expect(ZListWidgetsQuery.safeParse({ layoutType }).success).toBe(true);
+    }
+  });
+});
+
 describe('getDefaultWidgetConfig', () => {
   it('should return valid config', () => {
     const config = getDefaultWidgetConfig();
@@ -361,6 +466,85 @@ describe('normalizeWidgetConfig', () => {
       PLAN.EARLY_ADOPTER
     );
     expect(config.colors.primaryColor).toBe('#ff0000');
+  });
+
+  it('should reset typography and borderRadius to defaults for free plan while preserving non-gated content', () => {
+    const config = normalizeWidgetConfig(
+      {
+        typography: {
+          fontFamily: 'Custom Font, sans-serif',
+          fontSizeScale: 1.3
+        },
+        content: {
+          borderRadius: 28,
+          showRating: false,
+          showPrice: false
+        }
+      } as Partial<TWidgetConfig>,
+      PLAN.BASIC
+    );
+    const defaultConfig = getDefaultWidgetConfig();
+    expect(config.typography).toEqual(defaultConfig.typography);
+    expect(config.content.borderRadius).toBe(defaultConfig.content.borderRadius);
+    expect(config.content.showRating).toBe(false);
+    expect(config.content.showPrice).toBe(false);
+  });
+
+  it('should preserve typography and borderRadius for paid plan', () => {
+    const config = normalizeWidgetConfig(
+      {
+        typography: {
+          fontFamily: 'Custom Font, sans-serif',
+          fontSizeScale: 1.3
+        },
+        content: {
+          borderRadius: 28,
+          showRating: false,
+          showPrice: false
+        }
+      } as Partial<TWidgetConfig>,
+      PLAN.EARLY_ADOPTER
+    );
+    expect(config.typography.fontFamily).toBe('Custom Font, sans-serif');
+    expect(config.typography.fontSizeScale).toBe(1.3);
+    expect(config.content.borderRadius).toBe(28);
+    expect(config.content.showRating).toBe(false);
+    expect(config.content.showPrice).toBe(false);
+  });
+
+  it('should normalize themePreset in normalizeWidgetConfig', () => {
+    const freeConfig = normalizeWidgetConfig({ themePreset: 'spruce' }, PLAN.BASIC);
+    expect(freeConfig.themePreset).toBe('classroomio');
+
+    const paidConfig = normalizeWidgetConfig({ themePreset: 'spruce' }, PLAN.EARLY_ADOPTER);
+    expect(paidConfig.themePreset).toBe('spruce');
+  });
+
+  it('should treat missing or null planName as free plan', () => {
+    const config = normalizeWidgetConfig(
+      {
+        colors: {
+          primaryColor: '#ff0000',
+          backgroundColor: '#ffffff',
+          textColor: '#111827',
+          badgeColor: '#e2e8f0',
+          borderColor: '#e5e7eb',
+          highlightColor: '#dbeafe'
+        },
+        typography: {
+          fontFamily: 'Custom Font, sans-serif',
+          fontSizeScale: 1.3
+        },
+        advanced: {
+          customCss: '.foo { color: red; }'
+        }
+      } as Partial<TWidgetConfig>,
+      null
+    );
+    const defaultConfig = getDefaultWidgetConfig();
+    expect(config.colors).toEqual(defaultConfig.colors);
+    expect(config.typography).toEqual(defaultConfig.typography);
+    expect(config.advanced.customCss).toBe('');
   });
 
   it('should handle null/undefined config input', () => {
