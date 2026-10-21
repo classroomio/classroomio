@@ -4,7 +4,7 @@ export const KEEPALIVE_BYTE_LIMIT = 64 * 1024;
 const PENDING_SAVE_KEY = 'cio:scorm:pending-exit-saves';
 const PENDING_SAVE_MAX = 4;
 
-type PendingExitSave = { url: string; body: string };
+type PendingExitSave = { id: string; url: string; body: string };
 
 function beaconBodyBytes(data: BodyInit | null | undefined): number | null {
   if (data === null || data === undefined) return 0;
@@ -42,10 +42,16 @@ function readPendingSaves(): PendingExitSave[] {
     return parsed.flatMap((entry) => {
       if (typeof entry !== 'object' || entry === null) return [];
 
-      const { url, body } = entry as { url?: unknown; body?: unknown };
+      const { id, url, body } = entry as { id?: unknown; url?: unknown; body?: unknown };
       if (typeof url !== 'string' || typeof body !== 'string') return [];
 
-      return [{ url, body }];
+      return [
+        {
+          id: typeof id === 'string' && id ? id : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          url,
+          body
+        }
+      ];
     });
   } catch {
     return [];
@@ -72,7 +78,8 @@ function queuePendingSave(url: string, body: string): boolean {
   if (!pendingStore()) return false;
 
   const entries = readPendingSaves();
-  entries.push({ url, body });
+  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  entries.push({ id, url, body });
   writePendingSaves(entries);
 
   return true;
@@ -107,15 +114,6 @@ function queueOversizedSave(url: string, data: BodyInit | null | undefined): boo
 
   if (text !== null) return queuePendingSave(url, text);
 
-  if (data instanceof Blob) {
-    void data
-      .text()
-      .then((body) => queuePendingSave(url, body))
-      .catch(() => {});
-
-    return true;
-  }
-
   return false;
 }
 
@@ -123,7 +121,7 @@ async function flushPendingSaves(): Promise<void> {
   const entries = readPendingSaves();
   if (entries.length === 0) return;
 
-  const remaining: PendingExitSave[] = [];
+  const deliveredIds = new Set<string>();
 
   for (const entry of entries) {
     try {
@@ -134,14 +132,17 @@ async function flushPendingSaves(): Promise<void> {
         headers: { 'Content-Type': 'text/plain' }
       });
 
-      if (response.status >= 500) remaining.push(entry);
+      if (response.status < 500) {
+        deliveredIds.add(entry.id);
+      }
     } catch {
-      remaining.push(entry);
+      // transient failure; keep in store
     }
   }
 
-  const appended = readPendingSaves().slice(entries.length);
-  writePendingSaves([...remaining, ...appended]);
+  const latest = readPendingSaves();
+  const remaining = latest.filter((entry) => !deliveredIds.has(entry.id));
+  writePendingSaves(remaining);
 }
 
 /**

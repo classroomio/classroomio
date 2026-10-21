@@ -1,7 +1,9 @@
 import {
   DeleteObjectCommand,
+  DeleteObjectsCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
   NotFound,
   PutObjectCommand
 } from '@aws-sdk/client-s3';
@@ -118,6 +120,44 @@ export async function uploadStreamToBucket(
 
 export async function deleteObjectFromBucket(bucket: string, key: string): Promise<void> {
   await getS3Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+}
+
+export async function deletePackageStoragePrefix(bucket: string, contentPrefix: string): Promise<void> {
+  if (!contentPrefix) return;
+
+  try {
+    let continuationToken: string | undefined;
+    do {
+      const page = await getS3Client().send(
+        new ListObjectsV2Command({
+          Bucket: bucket,
+          Prefix: `${contentPrefix}/`,
+          ContinuationToken: continuationToken
+        })
+      );
+      const keys = (page.Contents ?? []).map((entry) => entry.Key).filter((key): key is string => Boolean(key));
+      if (keys.length > 0) {
+        await getS3Client().send(
+          new DeleteObjectsCommand({
+            Bucket: bucket,
+            Delete: { Objects: keys.map((Key) => ({ Key })), Quiet: true }
+          })
+        );
+      }
+      continuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
+    } while (continuationToken);
+
+    await getS3Client()
+      .send(
+        new DeleteObjectCommand({
+          Bucket: bucket,
+          Key: `${contentPrefix}.index.json`
+        })
+      )
+      .catch(() => {});
+  } catch {
+    // best-effort cleanup of storage prefix
+  }
 }
 
 export async function safeUnlink(filePath: string | undefined | null): Promise<void> {

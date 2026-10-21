@@ -6,6 +6,7 @@ import { getPackageVersionById, recordDeadLetterJob, updateMediaJob, updatePacka
 import { JOB_NAMES, QUEUE_NAMES, createRedisConnection } from '@cio/jobs';
 
 import { JobCanceledError, errorMessage } from '../utils/cancel';
+import { deletePackageStoragePrefix, scormBucket } from '../utils/storage';
 import { env } from '../config/env';
 import { log } from '../utils/logger';
 import { processScormPackage } from '../processors/activity-package/process-scorm';
@@ -54,6 +55,10 @@ worker.on('failed', async (job, err) => {
         error: canceledError,
         processedAt
       });
+      const version = await getPackageVersionById(data.packageVersionId);
+      if (version?.contentPrefix) {
+        await deletePackageStoragePrefix(scormBucket(), version.contentPrefix);
+      }
     }
 
     return;

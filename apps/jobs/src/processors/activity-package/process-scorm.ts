@@ -40,6 +40,7 @@ import { getS3Client } from '../../config/storage';
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import {
   deleteObjectFromBucket,
+  deletePackageStoragePrefix,
   downloadObjectToTempFile,
   safeUnlink,
   scormBucket,
@@ -545,6 +546,10 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
       extractedBytes
     };
   } catch (error) {
+    if (version?.contentPrefix) {
+      await deletePackageStoragePrefix(bucket, version.contentPrefix);
+    }
+
     if (error instanceof PackageError) {
       log.error('activity-package-rejected', { mediaJobId, code: error.code });
       await failVersion(mediaJobId, version.id, error.code, error.message);
