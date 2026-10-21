@@ -4823,6 +4823,7 @@ export const scormAttempt = pgTable(
       .on(table.activityId, table.profileId)
       .where(sql`${table.closedAt} is null`),
     index('idx_scorm_attempt_activity_id').on(table.activityId),
+    index('idx_scorm_attempt_package_version_id').on(table.packageVersionId),
     index('scorm_attempt_profile_id_idx').on(table.profileId),
     check('scorm_attempt_close_reason_check', sql`(${table.closedAt} IS NULL) = (${table.closeReason} IS NULL)`)
   ]
@@ -4859,7 +4860,8 @@ export const scormScoAttempt = pgTable(
     uniqueIndex('scorm_sco_attempt_open_key')
       .on(table.attemptId, table.unitId)
       .where(sql`${table.status} in ('active', 'suspended')`),
-    index('idx_scorm_sco_attempt_attempt_id').on(table.attemptId, table.unitId, table.startedAt)
+    index('idx_scorm_sco_attempt_attempt_id').on(table.attemptId, table.unitId, table.startedAt),
+    index('idx_scorm_sco_attempt_unit_id').on(table.unitId)
   ]
 );
 
