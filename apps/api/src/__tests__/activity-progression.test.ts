@@ -355,7 +355,7 @@ describe.skipIf(!hasDatabase)('compliance follows activity-driven certification'
         type: 'COMPLIANCE' as never,
         status: 'ACTIVE',
         isPublished: true,
-        certificate: { threshold: 100, deadline: '2027-12-31T23:59:00.000Z', isDownloadable: false },
+        certificate: { deadline: '2027-12-31T23:59:00.000Z', isDownloadable: false },
         compliance: { retakeIntervalMonths: 12 }
       })
       .returning();

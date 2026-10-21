@@ -5,12 +5,6 @@ vi.mock('@cio/db/queries/course/course', () => ({
   getCourseCertificationRow: vi.fn()
 }));
 
-vi.mock('@cio/db/queries/course/certification-exercise', () => ({
-  exerciseBelongsToCourse: vi.fn(),
-  getExerciseTitleAndMaxPoints: vi.fn(),
-  getStudentSubmissionsForExercise: vi.fn()
-}));
-
 vi.mock('@cio/db/queries/activity/activity', () => ({
   getActivitiesByCourseId: vi.fn(),
   getActivityCompletionsByProfile: vi.fn()
@@ -44,7 +38,6 @@ vi.mock('@api/utils/course-completion', async (importOriginal) => {
 
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
 import { getCourseCertificationRow, getCourseProgress } from '@cio/db/queries/course/course';
-import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
 import { getActivitiesByCourseId, getActivityCompletionsByProfile } from '@cio/db/queries/activity/activity';
 import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
 import { orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
@@ -68,7 +61,7 @@ function courseRow(overrides: Record<string, unknown> = {}) {
   return {
     type: 'SELF_PACED',
     compliance: null,
-    certificate: { threshold: 100 },
+    certificate: {},
     title: 'Course',
     orgId: 'org-1',
     orgSiteName: null,
@@ -120,7 +113,6 @@ describe('evaluateCourseCertification with activities', () => {
     vi.clearAllMocks();
     vi.mocked(getCourseProgress).mockResolvedValue(progress() as never);
     vi.mocked(getCourseCertificationRow).mockResolvedValue(courseRow() as never);
-    vi.mocked(exerciseBelongsToCourse).mockResolvedValue(false);
     vi.mocked(getActivitiesByCourseId).mockResolvedValue([]);
     vi.mocked(getActivityCompletionsByProfile).mockResolvedValue([]);
     vi.mocked(orgHasCertificatesEnabled).mockResolvedValue(true);
