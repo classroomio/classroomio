@@ -1,74 +1,41 @@
 ---
-title: Invite Students
-description: Learn how to invite students to your courses using email invitations and how enrollment works for free and paid courses.
+title: 'Invite students by email'
+description: 'Invite new students to your organization and pre-assign them to a course.'
+last_reviewed: '2026-10-21'
 ---
 
-Course invitations in ClassroomIO let you add students to a course by sending them a secure enrollment link by email. Each invite is unique and can have its own expiry and usage limits.
+Open a course’s **People** page, select **Add → Add Students**, and enter email addresses under **Invite new students**. New students accept the invitation to join your organization and access the course.
 
-For a full overview of enrollment paths (public enroll, invites, admin assignment, and paid access), see [How Course Enrollment Works](/manage-students/course-enrollment).
+![Course invitation dialog with the Add Students tab and email invitation form](./images/invite-students/overview.webp)
 
-## How course invitations work
+## Before you invite
 
-- **Email-based invites:** You enter one or more email addresses (or paste a list). ClassroomIO creates a unique invite per recipient and can send the enrollment link by email.
-- **Enrollment link:** Each invite link points to an **enrollment page** on your academy (not `app.classroomio.com`). The path is `/course/your-course-slug/enroll?invite_token=...` on either `https://<siteName>.myclassroomio.com` (e.g. `https://ciodevs.myclassroomio.com/...`) or your verified custom domain (e.g. `https://learn.yourcompany.com/...`). When a student opens the link, they see the course details and a **Join course** button.
-- **One link per invite:** Invite links are tied to the course and (for paid or restricted courses) to the invite's rules (expiry, max uses, allowed emails). Students sign in or sign up when they click **Join course**, then they're enrolled and redirected to the learning dashboard.
+Administrators and tutors with course access can invite students. Organization administrators can also browse existing organization students; tutors invite by email without browsing the full audience.
 
-## Free vs paid courses
+Check available student seats and [signup policies](/manage-students/enrollment-access-control). **Block all new signups** prevents new account creation even for invited students. Publish the course before students need to open its content.
 
-- **Free courses:** Students can enroll without an invite. From the course landing page they click **Enroll** and are taken to the same enrollment page (`/course/:slug/enroll`) with no token; they sign in or sign up and are enrolled immediately.
-- **Paid or invite-only courses:** Students need either to pay (if you've set up payment) or to use a valid invite link. If they open the enrollment page without a valid invite or payment, they'll see a message that they need to pay or be invited.
+:::warning[Invitations grant access]
+For a paid course, confirm payment first. An invitation grants access without collecting the course price.
+:::
 
-## Sending email invites
+## Send invitations
 
-### 1. Open the course and go to People
+### 1. Open the invitation form
 
-From the dashboard, open the **Courses** page and select the course. In the course sidebar, click **People**.
+Open the course, select **People**, then **Add**. Select **Add Students** and find **Invite new students**. Administrators may need to scroll past the existing-student picker.
 
-### 2. Open the invite modal
+### 2. Enter recipients
 
-Click **Add people** (or the equivalent action that opens the invite flow). In the modal, switch to the **Invite Students** tab, then choose the **Direct email** (or **Email**) option.
+Enter the students' email addresses in **Email Addresses**, separated by commas, newlines, or semicolons. Check the spelling and use the addresses students will sign in with.
 
-### 3. Configure invite settings
+Keep **Send invitation email to imported users** selected if students should receive an invitation now. If you turn it off, ClassroomIO does not send the invitation email; arrange the student's join instructions separately.
 
-Set how the invite should behave:
+### 3. Invite and review
 
-- **Expiry:** How long the link is valid (e.g. 24 hours, 7 days, 30 days, or custom).
-- **Max uses:** How many times the link can be used (e.g. one-time or multiple uses).
+Select **Invite Students**. Review the result for skipped addresses, seat limits, or email failures. A successful import and a successfully sent email are separate outcomes.
 
-These apply to each generated invite when you send emails.
+New students accept their invitation and create an account if needed. Existing organization students can receive course access directly. [Manage pending invitations](/manage-learners/manage-pending-invitations) from **Audience** when a student has not joined.
 
-### 4. Add recipients and send
+## Invite a larger list
 
-Enter one or more email addresses, or paste a list (comma-, space-, or newline-separated). Optionally enable **Send invite emails** so ClassroomIO emails the enrollment link to each recipient. Click the button to create the invites (and send the emails, if enabled).
-
-Each recipient gets a unique link to the course enrollment page with their invite token.
-
-## What students see
-
-1. **Email:** If you sent invite emails, the student receives an email containing the course name, your organization name, and a link to the enrollment page.
-2. **Enrollment page:** Opening the link takes them to `/course/[course-slug]/enroll?invite_token=...`. They see the course title and description and a **Join course** button.
-3. **Sign in or sign up:** If they're not signed in, clicking **Join course** sends them to sign in or create an account. After that, they're returned to the enrollment page (the redirect is preserved).
-4. **Enrolled:** Once they're signed in and click **Join course**, they're enrolled in the course and redirected to the learning dashboard (e.g. **LMS** or **Home**).
-
-## Managing invites
-
-From the same **People** > **Invite** flow, use the **Existing invites** (or **History**) tab to:
-
-- See invites you've created, their expiry and usage.
-- **Revoke** an invite so its link can no longer be used.
-
-Revoking does not remove students who have already joined; it only invalidates the invite link for future use.
-
-## Tips
-
-- **Free courses:** You don't need to create invites for free courses; students can enroll directly from the course landing page.
-- **Paid courses:** Use email invites (or payment) so only the right people can enroll.
-- **Expiry and uses:** Use short expiry and one-time use for sensitive or limited spots; use longer expiry and multiple uses for open cohorts or self-paced courses.
-- **Redirect after login:** If a student follows an invite link while logged out, they're sent to sign in or sign up and then back to the same enrollment page so they can complete joining.
-
-## Related guides
-
-- [How Course Enrollment Works](/manage-students/course-enrollment) — enrollment paths, self-enrollment, and Explore visibility
-- [Roles and Permissions](/organization-and-team/roles-and-permissions) — who can manage courses vs learn in the LMS
-- [Set Up a Custom Domain](/publish-and-brand/custom-domain) — which host appears in invite links
-- [Student Dashboard](/reference/student-dashboard) — where students land after joining
+Use [CSV import](/manage-learners/import-learners-from-a-csv-file) when you need row-by-row validation or want to assign multiple courses or cohorts. To share one link yourself, use [a reusable invite link](/manage-learners/invite-learners-with-a-reusable-link).
