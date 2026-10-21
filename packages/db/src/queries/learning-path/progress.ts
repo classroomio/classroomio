@@ -1,9 +1,11 @@
-import { and, count, eq, isNull } from 'drizzle-orm';
+import { and, count, eq, isNull, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 import * as schema from '../../schema';
+import { complianceCycleIsCompleteSql, courseIsCompleteSql } from '../course/learner-progress';
 import { isExerciseCompletedSql } from '../course/progression';
+import { pathCourseIsActiveSql, pathCoursePositionSql } from './learning-path-course';
 
 export interface TCourseCompletionStats {
   totalLessons: number;
@@ -16,8 +18,13 @@ export interface TCourseCompletionStats {
 /**
  * Checks whether a student has completed a course for learning path purposes.
  * Single source of truth for exercise completion is `isExerciseCompletedSql`.
- * A course is complete if all lessons are completed AND all exercises are completed.
- * If a course has 0 lessons or 0 exercises, that portion is considered met.
+ * Totals are read live from `lesson_completion` and `submission` for progress
+ * display, but `isComplete` is what completion evaluation recorded
+ * (`courseIsCompleteSql` over the member's `completed_at` and their current
+ * compliance cycle), so the cache, the journey and the enrolled feed agree.
+ * A course with no lessons and no exercises counts as done: the
+ * certification rule requires content, so it could never record completion
+ * and would otherwise brick every path holding one.
  */
 export async function getCourseCompletionStatsForProfile(
   courseId: string,
@@ -52,20 +59,32 @@ export async function getCourseCompletionStatsForProfile(
       .from(schema.exercise)
       .where(and(eq(schema.exercise.courseId, courseId), isExerciseCompletedSql('exercise', { profileId })));
 
+    const [recordedRow] = await dbClient.execute<{ is_complete: boolean }>(sql`
+      SELECT ${courseIsCompleteSql({
+        courseType: sql`(SELECT type::text FROM ${schema.course} WHERE id = ${courseId})`,
+        memberCompletedAt: sql`(SELECT gm.completed_at FROM ${schema.groupmember} gm
+          JOIN ${schema.course} c ON c.group_id = gm.group_id
+          WHERE c.id = ${courseId} AND gm.profile_id = ${profileId})`,
+        complianceCycleComplete: sql`(SELECT ${complianceCycleIsCompleteSql(sql`ccr`)}
+          FROM ${schema.courseCompletionRecord} ccr
+          WHERE ccr.course_id = ${courseId} AND ccr.profile_id = ${profileId}
+          ORDER BY ccr.cycle_number DESC LIMIT 1)`
+      })} AS is_complete
+    `);
+
     const totalLessons = Number(lessonsTotalRow?.count ?? 0);
     const completedLessons = Number(lessonsCompletedRow?.count ?? 0);
     const totalExercises = Number(exercisesTotalRow?.count ?? 0);
     const completedExercises = Number(exercisesCompletedRow?.count ?? 0);
 
-    const lessonsComplete = totalLessons === 0 || completedLessons >= totalLessons;
-    const exercisesComplete = totalExercises === 0 || completedExercises >= totalExercises;
+    const recordedComplete = recordedRow?.is_complete ?? false;
 
     return {
       totalLessons,
       completedLessons,
       totalExercises,
       completedExercises,
-      isComplete: lessonsComplete && exercisesComplete
+      isComplete: recordedComplete || totalLessons + totalExercises === 0
     };
   } catch (error) {
     console.error('getCourseCompletionStatsForProfile error:', error);
@@ -100,7 +119,7 @@ export async function getPathCourseFunnelStats(
         learningPathCourseId: schema.learningPathCourse.id,
         courseId: schema.learningPathCourse.courseId,
         title: schema.course.title,
-        order: schema.learningPathCourse.order,
+        order: sql<number>`${pathCoursePositionSql()}`,
         completedCount: count(schema.learningPathMember.id)
       })
       .from(schema.learningPathCourse)
@@ -119,9 +138,7 @@ export async function getPathCourseFunnelStats(
           isNull(schema.learningPathMember.removedAt)
         )
       )
-      .where(
-        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
-      )
+      .where(and(eq(schema.learningPathCourse.learningPathId, learningPathId), pathCourseIsActiveSql()))
       .groupBy(
         schema.learningPathCourse.id,
         schema.learningPathCourse.courseId,

@@ -11,6 +11,7 @@
   import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
   import { getPublicPathPageUrl } from '$features/learning-path/utils/path-preview';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
+  import { isPathPaid } from '@cio/utils/validation/learning-path';
   import pluralize from 'pluralize';
 
   export interface PathPreviewItem {
@@ -23,6 +24,7 @@
     cost?: number | null;
     currency?: string | null;
     selfEnrollment?: boolean | null;
+    paymentEnabled?: boolean | null;
     href: string;
     enrolled: boolean;
   }
@@ -35,7 +37,9 @@
   let { path, open = $bindable(false) }: Props = $props();
 
   const cost = $derived(path.cost ?? 0);
-  const isFree = $derived(cost <= 0);
+  const paid = $derived(isPathPaid(path.cost, { paymentEnabled: path.paymentEnabled ?? undefined }));
+  const isFree = $derived(!paid);
+  const displayCost = $derived(paid ? cost : 0);
   const selfEnrollmentAllowed = $derived(path.selfEnrollment !== false);
   const publicSiteUrl = $derived(path.slug ? getPublicPathPageUrl(path.slug) : '');
   const formatter = $derived(getCurrencyFormatter(path.currency ?? 'USD'));
@@ -141,7 +145,7 @@
       <div>
         {#if selfEnrollmentAllowed}
           <p class="text-lg font-bold">
-            {formatter.format(cost)}
+            {formatter.format(displayCost)}
             {#if isFree}
               <span class="text-sm font-normal">
                 ({$t('course.navItem.landing_page.pricing_section.free')})

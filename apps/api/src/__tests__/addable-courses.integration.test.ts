@@ -75,6 +75,22 @@ describeDb('getAddableOrgCourses (database)', () => {
     });
   });
 
+  it('returns PUBLIC courses with their type so path pickers can disable them', async () => {
+    await withRollback(async (tx) => {
+      const orgId = await insertOrganization(tx, 'addable-public-org');
+      const { pathId } = await insertPath(tx, orgId, 'Path');
+      await insertCourse(tx, orgId, 'A public', { lessons: 0, type: 'PUBLIC' });
+      await insertCourse(tx, orgId, 'B self paced', { lessons: 0 });
+
+      const result = await getAddableOrgCourses({ orgId, excludeLearningPathId: pathId, page: 1, limit: 20 }, tx);
+
+      expect(result.items).toEqual([
+        expect.objectContaining({ title: 'A public', type: 'PUBLIC' }),
+        expect.objectContaining({ title: 'B self paced', type: 'SELF_PACED' })
+      ]);
+    });
+  });
+
   it('limits a non-admin to courses they belong to', async () => {
     await withRollback(async (tx) => {
       const orgId = await insertOrganization(tx, 'addable-member-org');

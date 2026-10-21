@@ -1637,7 +1637,25 @@ async function seedPersonaAccounts(
   return resolvedGroupMemberIds;
 }
 
-/** Backfills lesson completions and exercise submissions for a persona's progress plan. */
+/**
+ * Whether the persona's plan meets the course's certification rule. Seeded
+ * courses keep the default rule (every lesson and exercise, no deadline or
+ * final exercise), so covering the whole course is a completion that
+ * `evaluateCourseCertification` would have recorded.
+ */
+function personaCompletesCourse(persona: PersonaSeed, courseKey: CourseKey): boolean {
+  const plan = persona.progress[courseKey];
+  const lessonsTotal = COURSE_LESSON_IDS[courseKey].length;
+  const exercisesTotal = COURSE_EXERCISE_IDS[courseKey].length;
+  if (!plan || lessonsTotal + exercisesTotal === 0) return false;
+
+  return plan.lessonsCompleted >= lessonsTotal && plan.exercisesCompleted >= exercisesTotal;
+}
+
+/**
+ * Backfills lesson completions and exercise submissions for a persona's
+ * progress plan, and records completion for every course the plan finishes.
+ */
 async function seedPersonaProgress(persona: PersonaSeed, now: Date) {
   const lessonCompletionsToInsert: Array<{
     lessonId: string;
@@ -1739,6 +1757,13 @@ async function seedPersonaProgress(persona: PersonaSeed, now: Date) {
           )
         )
       );
+  }
+
+  for (const courseKey of ALL_PATH_COURSE_KEYS) {
+    const groupMemberId = persona.groupMemberIds[courseKey];
+    if (!groupMemberId || !personaCompletesCourse(persona, courseKey)) continue;
+
+    await db.update(groupmember).set({ completedAt: activityIso }).where(eq(groupmember.id, groupMemberId));
   }
 }
 

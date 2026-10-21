@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { Badge, type BadgeVariant } from '../../base/badge';
   import { Button } from '../../base/button';
   import LearningPathBadge from './learning-path-badge.svelte';
   import LearningPathProgress from './learning-path-progress.svelte';
@@ -99,16 +98,16 @@
 
   const done = $derived(certificateEarned || (coursesCompleted === courseCount && courseCount > 0));
 
-  const showCertificateBadge = $derived((surface === 'lms' || surface === 'certificate') && done);
+  const offersCertificate = $derived(surface === 'certificate' || (surface === 'lms' && done && certificateEarned));
+  const showCertificateBadge = $derived(offersCertificate && certificateEarned);
   const showProgress = $derived(surface === 'lms');
-  const showStatusBadge = $derived(surface === 'admin');
   const showEarnedAt = $derived(surface === 'certificate' && !!certificateEarnedAt);
 
   const isExploreClickable = $derived(surface === 'explore' && !!onExploreClick);
 
   const ctaVariant = 'outline';
 
-  const ctaHref = $derived(surface === 'lms' && done ? '/lms/certificates' : href);
+  const ctaHref = $derived(surface === 'lms' && certificateEarned ? '/lms/certificates' : href);
 
   const ctaLabelText = $derived(
     ctaLabel ??
@@ -116,24 +115,19 @@
         ? status === 'DRAFT'
           ? labels.adminContinueSetup
           : labels.adminManage
-        : surface === 'certificate' || (surface === 'lms' && done)
+        : offersCertificate
           ? labels.viewCertificate
           : surface === 'explore' || surface === 'landing'
             ? labels.viewPath
-            : coursesCompleted === 0
-              ? labels.startLearning
-              : labels.continueLearning)
+            : done
+              ? labels.viewPath
+              : coursesCompleted === 0
+                ? labels.startLearning
+                : labels.continueLearning)
   );
 
   const showCtaArrow = $derived(surface !== 'lms');
-
-  const statusBadgeLabel = $derived(
-    status === 'DRAFT' ? labels.statusDraft : status === 'ACTIVE' ? labels.statusActive : labels.statusArchived
-  );
-
-  const statusBadgeVariant = $derived<BadgeVariant>(
-    status === 'ACTIVE' ? 'success' : status === 'DRAFT' ? 'warning' : 'secondary'
-  );
+  const showCta = $derived(!offersCertificate || certificateEarned);
 
   function handleCardClick(event: MouseEvent) {
     if (!isExploreClickable) return;
@@ -259,27 +253,12 @@
         </div>
       {/if}
 
+      {#if footer}
+        <div class="ui:relative ui:z-10 ui:mt-2">{@render footer()}</div>
+      {/if}
+
       <div class="ui:relative ui:z-10 ui:mt-1 ui:flex ui:flex-1 ui:items-end">
-        {#if showStatusBadge}
-          <div class="ui:flex ui:w-full ui:items-center ui:justify-between ui:gap-2">
-            <Badge variant={statusBadgeVariant} class="ui:shrink-0">{statusBadgeLabel}</Badge>
-            <Button
-              href={isExploreClickable ? undefined : ctaHref}
-              variant={ctaVariant}
-              size="sm"
-              onclick={isExploreClickable
-                ? (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onExploreClick?.();
-                  }
-                : undefined}
-            >
-              {ctaLabelText}
-              {#if showCtaArrow}<ArrowRightIcon class="ui:size-4" />{/if}
-            </Button>
-          </div>
-        {:else}
+        {#if showCta}
           <Button
             href={isExploreClickable ? undefined : ctaHref}
             variant={ctaVariant}
@@ -298,9 +277,6 @@
           </Button>
         {/if}
       </div>
-      {#if footer}
-        <div class="ui:relative ui:z-10 ui:mt-2">{@render footer()}</div>
-      {/if}
     </div>
   </div>
 </div>

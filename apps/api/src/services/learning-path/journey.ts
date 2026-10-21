@@ -1,6 +1,6 @@
 import { AppError, ErrorCodes, throwAsInternal } from '@api/utils/errors';
 import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
-import { getMemberByPathAndProfile, getPathJourney } from '@cio/db/queries/learning-path';
+import { getLearningPathCertificate, getMemberByPathAndProfile, getPathJourney } from '@cio/db/queries/learning-path';
 import type { TLearningPath, TLearningPathMember } from '@cio/db/types';
 
 type TPathJourneyStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
@@ -53,9 +53,9 @@ export function summarizeJourney(courses: TJourneyCourseLike[]): TJourneySummary
 
 /**
  * A learner's path hub and in-course stepper: the path, every course in order
- * with live progress and lock state, the course to continue, and the
- * certificate when it can be downloaded. Progress is read live, like the
- * enrolled feed, so the hub and My Learning always agree; nothing is written.
+ * with live progress and lock state, the course to continue, and whether the
+ * certificate can be downloaded. Progress is read live, like the enrolled feed,
+ * so the hub and My Learning always agree; nothing is written.
  *
  * `member` is the membership the route middleware resolved. Org admins pass
  * through that middleware without one, so an admin who is also enrolled is
@@ -75,7 +75,6 @@ export async function getPathJourneyService(
 
     const journey = await getPathJourney({
       pathId: path.id,
-      memberId: activeMember.id,
       profileId,
       sequentialUnlock: path.sequentialUnlock
     });
@@ -92,7 +91,7 @@ export async function getPathJourneyService(
     } = summarizeJourney(journey.courses);
 
     const certificateEnabled = await isPathCertificateEnabled(path);
-    const certificate = certificateEnabled && activeMember.status === 'COMPLETED' ? journey.certificate : null;
+    const certificateAvailable = certificateEnabled && (await hasIssuedPathCertificate(activeMember));
 
     return {
       path: {
@@ -115,11 +114,25 @@ export async function getPathJourneyService(
       lastProgressAt: journey.lastProgressAt,
       courses: journey.courses,
       certificateEnabled,
-      certificate
+      certificateAvailable
     };
   } catch (error) {
     throwAsInternal(error, 'Failed to get learning path journey');
   }
+}
+
+/**
+ * Whether the member can download the path certificate now, by the download
+ * guard's rule: a `COMPLETED` membership holding an issued certificate. A path
+ * completed before the plan included certificates has none until progress
+ * sync issues it.
+ */
+async function hasIssuedPathCertificate(member: TLearningPathMember): Promise<boolean> {
+  if (member.status !== 'COMPLETED') return false;
+
+  const issued = await getLearningPathCertificate(member.id);
+
+  return !!issued;
 }
 
 /**

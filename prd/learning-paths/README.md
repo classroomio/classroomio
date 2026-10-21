@@ -351,7 +351,7 @@ learning_path
   visitorAccess is inside landingPage; no relational IDs inside the jsonb (per repo rule)
   courseOrderSetAt timestamptz nullable   -- only setup-checklist step not derivable from data
   createdByProfileId FK(profile) · createdAt / updatedAt
-  unique(publicId) · unique(organizationId, slug) · index(organizationId) · index(organizationId, isPublished)
+  unique(publicId) · unique(slug) · index(organizationId) · index(organizationId, isPublished)
 
 learning_path_course
   id uuid PK · learningPathId FK(learning_path, cascade) · courseId FK(course, cascade)

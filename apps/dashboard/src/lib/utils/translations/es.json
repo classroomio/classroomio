@@ -1369,6 +1369,7 @@
         "last_login_at": "Último inicio de sesión",
         "enrolled_at": "Inscrito el",
         "certificate_earned": "Certificado obtenido",
+        "completed": "Completado",
         "not_started": "No iniciado",
         "role": "Rol",
         "action": "Acción",
@@ -6128,6 +6129,7 @@
         "no_courses": "No hay cursos disponibles para añadir.",
         "no_matches": "No se encontraron cursos que coincidan con su búsqueda.",
         "pagination_status": "Página {page} de {totalPages}",
+        "public_course_disabled": "Los cursos públicos no se pueden añadir a una ruta de aprendizaje",
         "retry": "Reintentar",
         "search_placeholder": "Buscar cursos…",
         "select_courses": "Seleccionar cursos",
@@ -6270,7 +6272,8 @@
         "name_placeholder": "Ej. Desarrollo web fullstack",
         "name_required": "El nombre de la ruta es obligatorio",
         "open_link": "Abrir enlace en una pestaña nueva",
-        "setup_landing_for_link": "Configura la página de aterrizaje para obtener el enlace de la ruta"
+        "setup_landing_for_link": "Configura la página de aterrizaje para obtener el enlace de la ruta",
+        "slug_taken": "Ese enlace ya lo utiliza otra ruta de aprendizaje."
       },
       "progression": {
         "desc": "Controla si los estudiantes pueden acceder a todos los cursos o deben completarlos en orden.",
@@ -6344,7 +6347,8 @@
       "reordered": "Orden del curso actualizado",
       "settings_saved": "Configuración de la ruta de aprendizaje actualizada",
       "tutor_removed": "Tutor eliminado de la ruta",
-      "updated": "Ruta de aprendizaje actualizada"
+      "updated": "Ruta de aprendizaje actualizada",
+      "setup_open_failed": "No se pudo abrir la configuración. Inténtalo de nuevo."
     },
     "status": {
       "active": "Activo",

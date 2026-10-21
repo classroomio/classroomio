@@ -10,21 +10,20 @@
   import { t } from '$lib/utils/functions/translations';
   import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
   import { learnerPathStore } from '../api/learning-path.svelte';
-  import type { LearningPathCourseProgress } from '../utils/types';
+  import type { PathJourneyCourse } from '$features/lms/utils/types';
   import BookIcon from '@lucide/svelte/icons/book-open';
   import CheckIcon from '@lucide/svelte/icons/check';
   import LockIcon from '@lucide/svelte/icons/lock';
-  import ClockIcon from '@lucide/svelte/icons/clock';
   import CertificateIcon from '@lucide/svelte/icons/badge-check';
   import PlayIcon from '@lucide/svelte/icons/play';
 
   interface Props {
-    courses: LearningPathCourseProgress[];
-    courseHref?: (order: number) => string;
+    courses: PathJourneyCourse[];
+    courseHref?: (position: number) => string;
     publicId?: string | null;
     certificateEnabled: boolean;
     certificateTitle: string;
-    certificateEarned: boolean;
+    certificateAvailable: boolean;
   }
 
   let {
@@ -32,23 +31,22 @@
     courseHref,
     certificateEnabled,
     certificateTitle,
-    certificateEarned,
+    certificateAvailable,
     publicId = null
   }: Props = $props();
 
-  const resolveCourseHref = (course: LearningPathCourseProgress) => {
-    if (courseHref) return courseHref(course.order);
+  const resolveCourseHref = (course: PathJourneyCourse) => {
+    if (courseHref) return courseHref(course.position);
     return getStudentCourseContinuePath(course.courseId, publicId);
   };
 
-  const isCompleted = (course: LearningPathCourseProgress) => course.state === 'COMPLETED';
-  const isLocked = (course: LearningPathCourseProgress) => course.state === 'LOCKED';
-  const isCurrent = (course: LearningPathCourseProgress) =>
-    course.state === 'IN_PROGRESS' || course.state === 'NOT_STARTED';
-  const lessonsLabel = (course: LearningPathCourseProgress) =>
-    `${course.lessonsCompleted} / ${course.lessonCount} ${$t('learningPath.detail.lessons')}`;
-  const exercisesLabel = (course: LearningPathCourseProgress) =>
-    `${course.exercisesCompleted} / ${course.exerciseCount} ${$t('learningPath.detail.exercises')}`;
+  const isCompleted = (course: PathJourneyCourse) => course.status === 'COMPLETED';
+  const isLocked = (course: PathJourneyCourse) => course.status === 'LOCKED';
+  const isCurrent = (course: PathJourneyCourse) => course.status === 'IN_PROGRESS' || course.status === 'NOT_STARTED';
+  const lessonsLabel = (course: PathJourneyCourse) =>
+    `${course.lessonsCompleted} / ${course.lessonsTotal} ${$t('learningPath.detail.lessons')}`;
+  const exercisesLabel = (course: PathJourneyCourse) =>
+    `${course.exercisesCompleted} / ${course.exercisesTotal} ${$t('learningPath.detail.exercises')}`;
 </script>
 
 <ol class="relative space-y-3">
@@ -106,9 +104,9 @@
             loading="lazy"
             class="absolute inset-0 h-full w-full object-cover"
           />
-          {#if course.coverImage}
+          {#if course.coverImage || course.logo}
             <img
-              src={course.coverImage}
+              src={course.coverImage || course.logo}
               alt={course.title}
               loading="lazy"
               class="absolute inset-0 h-full w-full object-cover"
@@ -139,7 +137,7 @@
                 <LockIcon class="size-3" />
                 {$t('learningPath.enrollment.locked')}
               </Badge>
-            {:else if course.progressPercent > 0}
+            {:else if course.progress > 0}
               <Badge variant="outline" class="ui:border-primary/30 ui:bg-primary/10 ui:text-primary gap-1">
                 <PlayIcon class="size-3" />
                 {$t('learningPath.enrollment.in_progress')}
@@ -161,32 +159,26 @@
             {#if isLocked(course)}
               <span class="inline-flex items-center gap-1">
                 <BookIcon class="size-3.5" />
-                {course.lessonCount}
+                {course.lessonsTotal}
                 {$t('learningPath.enrollment.lessons_label')}
               </span>
               <span class="inline-flex items-center gap-1">
                 <LockIcon class="size-3.5" />
                 {$t('learningPath.detail.unlocks_after')}
-                {String(course.order - 1)}
-                {course.order - 1 === 1 ? $t('learningPath.card.course') : $t('learningPath.card.courses')}
+                {String(course.position - 1)}
+                {course.position - 1 === 1 ? $t('learningPath.card.course') : $t('learningPath.card.courses')}
               </span>
             {:else}
-              {#if course.lessonCount > 0}
+              {#if course.lessonsTotal > 0}
                 <span class="inline-flex items-center gap-1">
                   <BookIcon class="size-3.5" />
                   {lessonsLabel(course)}
                 </span>
               {/if}
-              {#if course.exerciseCount > 0}
+              {#if course.exercisesTotal > 0}
                 <span class="inline-flex items-center gap-1">
                   <CheckIcon class="size-3.5" />
                   {exercisesLabel(course)}
-                </span>
-              {/if}
-              {#if course.durationHours > 0}
-                <span class="inline-flex items-center gap-1">
-                  <ClockIcon class="size-3.5" />
-                  ~{course.durationHours}h
                 </span>
               {/if}
             {/if}
@@ -194,8 +186,8 @@
 
           {#if !isLocked(course)}
             <div class="mt-3 flex items-center gap-2">
-              <Progress value={course.progressPercent} class="h-1.5 flex-1 rounded-full" />
-              <span class="tnum w-8 shrink-0 text-right text-xs font-semibold">{course.progressPercent}%</span>
+              <Progress value={course.progress} class="h-1.5 flex-1 rounded-full" />
+              <span class="tnum w-8 shrink-0 text-right text-xs font-semibold">{course.progress}%</span>
             </div>
           {/if}
         </div>
@@ -203,9 +195,7 @@
         <div class="relative z-10 flex shrink-0 flex-col items-end justify-between py-0.5">
           {#if isCurrent(course)}
             <Button href={resolveCourseHref(course)} variant="default" size="sm">
-              {course.progressPercent > 0
-                ? $t('learningPath.hero.continue_learning')
-                : $t('learningPath.hero.start_learning')}
+              {course.progress > 0 ? $t('learningPath.hero.continue_learning') : $t('learningPath.hero.start_learning')}
             </Button>
           {:else if isCompleted(course)}
             <Button href={`/courses/${course.courseId}/certificates`} variant="outline" size="sm">
@@ -228,7 +218,7 @@
         <div
           class={cn(
             'flex size-9 shrink-0 items-center justify-center rounded-full border',
-            certificateEarned
+            certificateAvailable
               ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
               : 'ui:border-border ui:bg-muted ui:text-muted-foreground'
           )}
@@ -240,7 +230,7 @@
       <div
         class={cn(
           'mb-1 flex flex-1 items-center gap-4 rounded-xl border border-dashed p-4',
-          certificateEarned ? 'border-emerald-500/30 bg-emerald-500/5' : 'ui:border-muted'
+          certificateAvailable ? 'border-emerald-500/30 bg-emerald-500/5' : 'ui:border-muted'
         )}
       >
         <div class="ui:bg-muted ui:text-muted-foreground flex size-11 shrink-0 items-center justify-center rounded-lg">
@@ -249,12 +239,12 @@
         <div class="flex-1">
           <p class="text-sm font-semibold">{certificateTitle}</p>
           <p class="ui:text-muted-foreground text-xs">
-            {certificateEarned
+            {certificateAvailable
               ? $t('learningPath.detail.certificate_earned')
               : $t('learningPath.detail.certificate_hint', { count: String(courses.length) })}
           </p>
         </div>
-        {#if certificateEarned}
+        {#if certificateAvailable}
           <ComboButton
             label={$t('course.navItem.certificates.download_certificate')}
             menuLabel={$t('course.navItem.certificates.download_certificate')}

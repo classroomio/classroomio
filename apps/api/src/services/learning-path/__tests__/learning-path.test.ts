@@ -31,7 +31,6 @@ const mocks = vi.hoisted(() => ({
   listPublicLearningPaths: vi.fn(),
   countIssuedCertificates: vi.fn(),
   countActivePathMembers: vi.fn(),
-  countActivePathMembers: vi.fn(),
   getCourseGroupIds: vi.fn(),
   getGroupMemberIdByGroupAndProfile: vi.fn(),
   insertGroupMembersOnConflictDoNothing: vi.fn(),
@@ -72,7 +71,6 @@ vi.mock('@cio/core/config/env', () => ({
 
 vi.mock('@cio/db/queries/learning-path', () => ({
   countIssuedCertificates: mocks.countIssuedCertificates,
-  countActivePathMembers: mocks.countActivePathMembers,
   countActivePathMembers: mocks.countActivePathMembers,
   getLearningPathById: mocks.getLearningPathById,
   getLearningPathByPublicId: mocks.getLearningPathByPublicId,
@@ -1392,6 +1390,28 @@ describe('learning-path services', () => {
         )
       ).rejects.toMatchObject({ code: ErrorCodes.UPGRADE_REQUIRED, statusCode: 403 });
       expect(mocks.updateLearningPath).not.toHaveBeenCalled();
+    });
+
+    it('returns a slug conflict when the update hits the slug unique constraint', async () => {
+      mocks.getLearningPathById.mockResolvedValue({ ...testPath, slug: 'old-slug' });
+      const postgresError = Object.assign(
+        new Error('duplicate key value violates unique constraint "learning_path_slug_key"'),
+        {
+          code: '23505',
+          constraint_name: 'learning_path_slug_key'
+        }
+      );
+      mocks.updateLearningPath.mockRejectedValue(Object.assign(new Error('Failed query'), { cause: postgresError }));
+
+      await expect(
+        updateLearningPathService(testPath.id, 'user-1', { slug: 'taken-slug' }, { 'org-1': ROLE.ADMIN })
+      ).rejects.toMatchObject({
+        message: 'A learning path with this URL slug already exists',
+        code: ErrorCodes.LEARNING_PATH_SLUG_TAKEN,
+        statusCode: 409
+      });
+
+      expect(mocks.updateLearningPath).toHaveBeenCalled();
     });
 
     it('skips the plan check when the update does not touch the certificate', async () => {

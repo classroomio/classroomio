@@ -50,7 +50,9 @@
     const next = [...faqs, newItem];
     faqs = next;
     expandedIndex = next.length - 1;
-    onChange({ faqs: next });
+    // Added questions are meant to be seen; the toggle stays available to hide them.
+    if (!showFaqs) showFaqs = true;
+    onChange({ faqs: next, showFaqs: true });
   }
 
   function handleRemove(index: number) {

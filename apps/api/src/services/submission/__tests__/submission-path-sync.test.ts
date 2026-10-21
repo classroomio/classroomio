@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   deleteSubmission: vi.fn(),
   getProfileByGroupMemberId: vi.fn(),
   syncComplianceProgressFromSubmission: vi.fn(),
+  evaluateAndRecordCourseCompletion: vi.fn(),
   syncCourseProgressInLearningPaths: vi.fn()
 }));
 
@@ -31,6 +32,10 @@ vi.mock('@cio/db/queries/course/people', () => ({
 
 vi.mock('@api/services/course/compliance', () => ({
   syncComplianceProgressFromSubmission: mocks.syncComplianceProgressFromSubmission
+}));
+
+vi.mock('@api/services/course/completion', () => ({
+  evaluateAndRecordCourseCompletion: mocks.evaluateAndRecordCourseCompletion
 }));
 
 vi.mock('@api/services/learning-path', () => ({
@@ -58,15 +63,17 @@ describe('learning-path progress sync after a submission change', () => {
     vi.clearAllMocks();
     mocks.getSubmissionById.mockResolvedValue(graded);
     mocks.getProfileByGroupMemberId.mockResolvedValue({ id: 'profile-1' });
+    mocks.evaluateAndRecordCourseCompletion.mockResolvedValue({ completedAt: null });
     mocks.syncCourseProgressInLearningPaths.mockResolvedValue(undefined);
   });
 
-  it('syncs after a teacher grades, without recording learner activity', async () => {
+  it('evaluates certification before syncing after a teacher grades, without recording learner activity', async () => {
     mocks.updateSubmissionGrades.mockResolvedValue(graded);
 
     await updateSubmissionGradesBatch('submission-1', { answers: [], total: 8 } as never);
 
     await vi.waitFor(() => {
+      expect(mocks.evaluateAndRecordCourseCompletion).toHaveBeenCalledWith('course-1', 'profile-1');
       expect(mocks.syncCourseProgressInLearningPaths).toHaveBeenCalledWith('course-1', 'profile-1', undefined, {
         recordActivity: false
       });

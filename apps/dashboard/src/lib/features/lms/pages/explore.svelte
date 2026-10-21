@@ -60,7 +60,8 @@
       courseCount: path.courseCount ?? 0,
       cost: path.cost ?? 0,
       currency: path.currency ?? undefined,
-      selfEnrollment: path.selfEnrollment ?? undefined
+      selfEnrollment: path.selfEnrollment ?? undefined,
+      paymentEnabled: path.landingPage?.paymentEnabled ?? undefined
     }))
   );
 
@@ -183,6 +184,7 @@
       cost: path.cost,
       currency: path.currency ?? null,
       selfEnrollment: path.selfEnrollment ?? null,
+      paymentEnabled: path.paymentEnabled ?? null,
       href: path.href,
       enrolled: false
     };

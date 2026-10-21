@@ -1,5 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
+import { isPathPaid } from '@cio/utils/validation/learning-path';
 import { db } from '@cio/db/drizzle';
 import { getCourseIdsInPath, getMemberByPathAndProfile } from '@cio/db/queries/learning-path';
 import { getOrganizationById, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
@@ -30,7 +31,7 @@ export async function enrollInLearningPath(pathId: string, profileId: string): P
       throw new AppError('Self-enrollment is disabled for this learning path', ErrorCodes.FORBIDDEN, 403);
     }
 
-    if (path.cost > 0) {
+    if (isPathPaid(path.cost, path.landingPage)) {
       throw new AppError('Paid learning paths require an invite or payment', ErrorCodes.VALIDATION_ERROR, 400);
     }
 

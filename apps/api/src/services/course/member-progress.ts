@@ -1,19 +1,22 @@
 import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
 import { getLastSeenForUserIds } from '@cio/db/queries/analytics';
-import { getCourseById } from '@cio/db/queries/course/course';
+import { getCourseById, getOrgIdByCourseId } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
 import {
   getBatchCompletedExerciseIdsForMembers,
+  getBatchCourseIsComplete,
   getBatchLessonCompletionsForCourse,
   getBatchStudentCourseMembership,
   getCourseTrackableContentCounts
 } from '@cio/db/queries/course/member-progress';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
+import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
 import { buildCourseContent, type CourseContentItem } from './utils';
 
 export type CourseMemberStage =
   | { kind: 'not_started' }
+  | { kind: 'completed' }
   | { kind: 'certificate_earned' }
   | {
       kind: 'content';
@@ -86,12 +89,13 @@ function buildStudentTrackableItems(
 }
 
 export function deriveCourseMemberStage(params: {
+  isComplete: boolean;
+  certificateAvailable: boolean;
   progressPercent: number;
-  certificateEarnedAt: string | null;
   contentItems: TrackableContentItem[];
 }): CourseMemberStage {
-  if (params.certificateEarnedAt || params.progressPercent >= 100) {
-    return { kind: 'certificate_earned' };
+  if (params.isComplete) {
+    return params.certificateAvailable ? { kind: 'certificate_earned' } : { kind: 'completed' };
   }
 
   if (params.progressPercent === 0) {
@@ -100,7 +104,18 @@ export function deriveCourseMemberStage(params: {
 
   const firstIncomplete = params.contentItems.find((item) => !item.isComplete);
   if (!firstIncomplete) {
-    return { kind: 'certificate_earned' };
+    const lastItem = params.contentItems[params.contentItems.length - 1];
+
+    if (!lastItem) {
+      return { kind: 'not_started' };
+    }
+
+    return {
+      kind: 'content',
+      position: params.contentItems.length,
+      title: lastItem.title,
+      contentType: lastItem.type === ContentType.Exercise ? 'exercise' : 'lesson'
+    };
   }
 
   const position = params.contentItems.findIndex((item) => item.id === firstIncomplete.id) + 1;
@@ -141,17 +156,23 @@ export async function getCourseMemberProgressSummaries(
     contentCounts,
     membershipByProfileId,
     lessonCompletionsByProfileId,
-    lastSeenByProfileId
+    lastSeenByProfileId,
+    isCompleteByProfileId,
+    orgId
   ] = await Promise.all([
     getCourseById(courseId),
     getCourseContentItems(courseId),
     getCourseTrackableContentCounts(courseId),
     getBatchStudentCourseMembership(courseId, profileIds),
     getBatchLessonCompletionsForCourse(courseId, profileIds),
-    getLastSeenForUserIds(profileIds)
+    getLastSeenForUserIds(profileIds),
+    getBatchCourseIsComplete(courseId, profileIds),
+    getOrgIdByCourseId(courseId)
   ]);
 
   const course = courseRows[0];
+  const certificatesEnabled = orgId ? await orgHasCertificatesEnabled(orgId) : false;
+  const certificateAvailable = certificatesEnabled && !!course?.certificate?.isDownloadable;
   const isContentGroupingEnabled = course?.metadata?.isContentGroupingEnabled ?? true;
   const trackableSkeleton = buildOrderedTrackableItems(contentRows, isContentGroupingEnabled);
 
@@ -183,11 +204,12 @@ export async function getCourseMemberProgressSummaries(
     });
 
     const contentItems = buildStudentTrackableItems(trackableSkeleton, completedLessonIds, completedExerciseIds);
-    const certificateEarnedAt = membership?.certificateEarnedAt ?? null;
+    const isComplete = isCompleteByProfileId.get(student.profileId) ?? false;
 
     const stage = deriveCourseMemberStage({
+      isComplete,
+      certificateAvailable,
       progressPercent,
-      certificateEarnedAt,
       contentItems
     });
 

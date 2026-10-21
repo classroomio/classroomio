@@ -12,6 +12,7 @@ import {
   lesson,
   organizationmember,
   profile,
+  sql,
   user
 } from '@db/drizzle';
 
@@ -748,4 +749,25 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
   } else {
     console.log('   ✓ course_completion_record rows already exist, skipping');
   }
+
+  await recordCompletedCycleCompletions();
+}
+
+/**
+ * Records `groupmember.completed_at` from each seeded learner's first
+ * completed cycle. A real cycle only completes once `evaluateCourseCertification`
+ * finds the learner eligible, which records the course completion first.
+ */
+async function recordCompletedCycleCompletions() {
+  await db.execute(sql`
+    UPDATE ${groupmember} gm
+    SET completed_at = first_cycle.completed_at
+    FROM (
+      SELECT group_member_id, MIN(completed_at) AS completed_at
+      FROM ${courseCompletionRecord}
+      WHERE course_id IN (${HIPAA_COURSE_ID}, ${SOC2_COURSE_ID}) AND completed_at IS NOT NULL
+      GROUP BY group_member_id
+    ) first_cycle
+    WHERE gm.id = first_cycle.group_member_id AND gm.completed_at IS NULL
+  `);
 }

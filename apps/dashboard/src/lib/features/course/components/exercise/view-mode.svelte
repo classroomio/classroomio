@@ -188,7 +188,7 @@
 
         const certRes = await courseApi.getCertificationEvaluation(courseApi.course.id);
         if (certRes?.data) {
-          const hasCompletedCourse = Boolean(certRes.data.eligibleForCertificate || certRes.data.certificateEarnedAt);
+          const hasCompletedCourse = Boolean(certRes.data.completedAt);
           updateCourseCompletionModal(
             courseApi.course.id,
             hasCompletedCourse ? 'eligible' : 'not-eligible',

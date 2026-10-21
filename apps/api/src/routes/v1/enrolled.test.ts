@@ -29,11 +29,14 @@ describe('GET /v1/enrolled', () => {
     mocks.listEnrolledService.mockResolvedValue({
       data: [{ kind: 'course', data: { id: 'course-1' } }],
       pagination: { page: 1, limit: 20, total: 25, totalPages: 2 },
-      counts: { inProgress: 20, completed: 5 }
+      counts: {
+        byStatus: { notStarted: 5, inProgress: 20 },
+        byKind: { course: 20, learningPath: 5 }
+      }
     });
   });
 
-  it('returns the key creator feed envelope with pagination and counts', async () => {
+  it('returns the key creator feed envelope with pagination', async () => {
     const response = await createTestApp().request('/');
     const body = await response.json();
 
@@ -41,35 +44,46 @@ describe('GET /v1/enrolled', () => {
     expect(mocks.listEnrolledService).toHaveBeenCalledWith('org-1', ACTOR_ID, {
       page: 1,
       limit: 20,
-      status: 'all'
+      status: 'all',
+      kind: 'all'
     });
     expect(body).toEqual({
       success: true,
       data: [{ kind: 'course', data: { id: 'course-1' } }],
       pagination: { page: 1, limit: 20, total: 25, totalPages: 2 },
-      counts: { inProgress: 20, completed: 5 }
+      counts: {
+        byStatus: { notStarted: 5, inProgress: 20 },
+        byKind: { course: 20, learningPath: 5 }
+      }
     });
   });
 
-  it('passes page, limit, status and a trimmed search through', async () => {
-    const response = await createTestApp().request('/?page=3&limit=10&status=completed&search=%20excel%20');
+  it('passes page, limit, status, kind and a trimmed search through', async () => {
+    const response = await createTestApp().request(
+      '/?page=3&limit=10&status=not_started&kind=learning_path&search=%20excel%20'
+    );
 
     expect(response.status).toBe(200);
     expect(mocks.listEnrolledService).toHaveBeenCalledWith('org-1', ACTOR_ID, {
       page: 3,
       limit: 10,
-      status: 'completed',
+      status: 'not_started',
+      kind: 'learning_path',
       search: 'excel'
     });
   });
 
-  it.each(['/?limit=101', '/?limit=0', '/?page=0', '/?status=archived', `/?search=${'x'.repeat(201)}`])(
-    'rejects %s',
-    async (path) => {
-      const response = await createTestApp().request(path);
+  it.each([
+    '/?limit=101',
+    '/?limit=0',
+    '/?page=0',
+    '/?status=completed',
+    '/?kind=cohort',
+    `/?search=${'x'.repeat(201)}`
+  ])('rejects %s', async (path) => {
+    const response = await createTestApp().request(path);
 
-      expect(response.status).toBe(400);
-      expect(mocks.listEnrolledService).not.toHaveBeenCalled();
-    }
-  );
+    expect(response.status).toBe(400);
+    expect(mocks.listEnrolledService).not.toHaveBeenCalled();
+  });
 });

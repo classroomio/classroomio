@@ -9,7 +9,7 @@
   import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
   import { currentOrg } from '$lib/utils/store/org';
   import { learnerPathStore } from '../api/learning-path.svelte';
-  import type { LearningPathCourseProgress } from '../utils/types';
+  import type { PathJourneyCourse } from '$features/lms/utils/types';
   import LearningPathHead from '../components/learning-path-head.svelte';
   import PathStepper from '../components/path-stepper.svelte';
 
@@ -41,34 +41,17 @@
       : (learnerPathStore.catalogPaths.find((item) => item.id === authPathId || item.publicId === authPathId) ?? null)
   );
 
-  const courses = $derived<LearningPathCourseProgress[]>(
-    (journey?.courses ?? []).map((course, index) => ({
-      courseId: course.courseId,
-      courseIndex: index,
-      order: course.position || index + 1,
-      title: course.title,
-      state: course.status,
-      progressPercent: course.progress,
-      lessonCount: course.lessonsTotal,
-      exerciseCount: course.exercisesTotal,
-      lessonsCompleted: course.lessonsCompleted,
-      exercisesCompleted: course.exercisesCompleted,
-      durationHours: 0,
-      slug: course.slug ?? undefined,
-      coverImage: course.coverImage || course.logo || undefined
-    }))
-  );
+  const courses = $derived<PathJourneyCourse[]>(journey?.courses ?? []);
   const coursesCompleted = $derived(journey?.completedCourses ?? 0);
   const courseCount = $derived(journey?.totalCourses ?? 0);
   const progressPercent = $derived(journey?.progress ?? 0);
   const currentCourse = $derived(
     courses.find((course) => course.courseId === journey?.currentCourseId) ??
-      courses.find((course) => course.state === 'IN_PROGRESS') ??
-      courses.find((course) => course.state === 'NOT_STARTED') ??
+      courses.find((course) => course.status === 'IN_PROGRESS') ??
+      courses.find((course) => course.status === 'NOT_STARTED') ??
       courses[0] ??
       null
   );
-  const certificateEarned = $derived(journey?.certificate != null);
 
   const headCtaHref = $derived.by(() => {
     if (courseCount > 0 && coursesCompleted === courseCount) {
@@ -80,8 +63,8 @@
     return `/lms/paths/${authPathId}`;
   });
 
-  function courseHref(order: number) {
-    const course = courses.find((c) => c.order === order);
+  function courseHref(position: number) {
+    const course = courses.find((c) => c.position === position);
     if (!course) return '/lms/mylearning';
 
     return getStudentCourseContinuePath(course.courseId, journey?.path.publicId ?? authPathId);
@@ -146,6 +129,7 @@
     totalHours={0}
     sequentialUnlock={path.sequentialUnlock}
     certificateEnabled={journey.certificateEnabled}
+    certificateAvailable={journey.certificateAvailable}
     {progressPercent}
     {coursesCompleted}
     nextCourseTitle={currentCourse?.title}
@@ -170,7 +154,7 @@
     {courseHref}
     publicId={journey?.path.publicId ?? authPathId}
     certificateEnabled={journey.certificateEnabled}
+    certificateAvailable={journey.certificateAvailable}
     certificateTitle={path.name}
-    {certificateEarned}
   />
 {/if}

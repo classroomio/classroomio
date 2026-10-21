@@ -1,5 +1,3 @@
-export type LearningPathCourseState = 'LOCKED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
-
 export type VisitorAccess = 'teaser' | 'syllabus' | 'preview';
 
 export type PathDifficulty = 'Beginner' | 'Intermediate' | 'Advanced';
@@ -50,24 +48,6 @@ export interface LearningPathExerciseOutlineItem {
   title: string;
   isPreview: boolean;
 }
-
-export type LearningPathCourseProgress = {
-  courseId: string;
-  courseIndex: number;
-  order: number;
-  title: string;
-  state: LearningPathCourseState;
-  progressPercent: number;
-  lessonCount: number;
-  exerciseCount: number;
-  lessonsCompleted: number;
-  exercisesCompleted: number;
-  durationHours: number;
-  slug?: string;
-  coverGradient?: string;
-  coverImage?: string;
-  courseType?: string;
-};
 
 export interface FilterOption {
   value: string;

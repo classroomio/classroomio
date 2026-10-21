@@ -25,6 +25,7 @@ import {
   insertPath,
   insertProfile,
   joinPath,
+  recordCourseCompletion,
   withRollback
 } from './fixtures/learner-db';
 
@@ -82,10 +83,11 @@ describeDb('getLearnerPathSummaries', () => {
       const memberA = await joinPath(tx, pathA, studentId, AT);
       const memberB = await joinPath(tx, pathB, studentId, AT);
 
-      for (const course of [shared, onlyA, onlyB]) {
-        await insertMember(tx, course.groupId, studentId);
-      }
+      const sharedMemberId = await insertMember(tx, shared.groupId, studentId);
+      await insertMember(tx, onlyA.groupId, studentId);
+      await insertMember(tx, onlyB.groupId, studentId);
       await completeLessons(tx, shared.lessonIds, studentId, AT);
+      await recordCourseCompletion(tx, sharedMemberId, AT);
 
       const summaries = await getLearnerPathSummaries({ orgId, profileId: studentId, limit: 10 }, tx);
 
@@ -94,7 +96,7 @@ describeDb('getLearnerPathSummaries', () => {
         [pathB, memberB]
       ]) {
         const summary = summaries.find((entry) => entry.pathId === pathId)!;
-        const journey = await getPathJourney({ pathId, memberId, profileId: studentId, sequentialUnlock: true }, tx);
+        const journey = await getPathJourney({ pathId, profileId: studentId, sequentialUnlock: true }, tx);
 
         // The shared course appears once per path, not once per path that holds it.
         expect(summary.courses.map((course) => course.courseId)).toEqual(

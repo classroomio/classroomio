@@ -3562,6 +3562,7 @@
         "last_login_at": "Last Login At",
         "enrolled_at": "Enrolled At",
         "certificate_earned": "Certificate earned",
+        "completed": "Completed",
         "not_started": "Not started",
         "role": "Role",
         "action": "Action",
@@ -6130,6 +6131,7 @@
         "no_courses": "No available courses to add.",
         "no_matches": "No courses match your search.",
         "load_failed": "Failed to load courses.",
+        "public_course_disabled": "Public courses can't be added to a learning path",
         "retry": "Retry",
         "cancel": "Cancel",
         "submit": "Add {count} {count, plural, =1 {Course} other {Courses}}",
@@ -6137,6 +6139,7 @@
       }
     },
     "snackbar": {
+      "setup_open_failed": "Couldn't open setup. Try again.",
       "created": "Learning path created",
       "updated": "Learning path updated",
       "deleted": "Learning path deleted",
@@ -6417,6 +6420,7 @@
         "description_placeholder": "Write your path description here",
         "description_required": "Description is required",
         "link": "Path Link",
+        "slug_taken": "That link is already used by another learning path.",
         "generate_link": "Generate new link",
         "open_link": "Open link in new tab",
         "copy_link": "Copy link",

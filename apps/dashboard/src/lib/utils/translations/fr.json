@@ -1369,6 +1369,7 @@
         "last_login_at": "Dernière connexion",
         "enrolled_at": "Inscrit le",
         "certificate_earned": "Certificat obtenu",
+        "completed": "Terminé",
         "not_started": "Pas commencé",
         "role": "Rôle",
         "action": "Action",
@@ -6128,6 +6129,7 @@
         "no_courses": "Aucun cours disponible.",
         "no_matches": "Aucun cours ne correspond à votre recherche.",
         "pagination_status": "Page {page} sur {totalPages}",
+        "public_course_disabled": "Les cours publics ne peuvent pas être ajoutés à un parcours d'apprentissage",
         "retry": "Réessayer",
         "search_placeholder": "Rechercher des cours…",
         "select_courses": "Sélectionner des cours",
@@ -6270,7 +6272,8 @@
         "name_placeholder": "ex. Développement Web Fullstack",
         "name_required": "Le nom du parcours est requis",
         "open_link": "Ouvrir le lien dans un nouvel onglet",
-        "setup_landing_for_link": "Configurez la page d’accueil pour obtenir le lien du parcours"
+        "setup_landing_for_link": "Configurez la page d’accueil pour obtenir le lien du parcours",
+        "slug_taken": "Ce lien est déjà utilisé par un autre parcours d'apprentissage."
       },
       "progression": {
         "desc": "Contrôlez si les étudiants peuvent accéder à tous les cours ou doivent les terminer dans l'ordre.",
@@ -6344,7 +6347,8 @@
       "reordered": "Ordre des cours mis à jour",
       "settings_saved": "Paramètres du parcours mis à jour",
       "tutor_removed": "Tuteur retiré du parcours",
-      "updated": "Parcours d'apprentissage mis à jour"
+      "updated": "Parcours d'apprentissage mis à jour",
+      "setup_open_failed": "Impossible d'ouvrir la configuration. Veuillez réessayer."
     },
     "status": {
       "active": "Actif",

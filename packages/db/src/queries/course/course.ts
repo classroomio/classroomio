@@ -61,6 +61,8 @@ export interface TStudentCourse extends TBaseCourse {
   progressRate: number;
   exercisesCompleted: number;
   certificateEarnedAt: string | null;
+  /** Recorded course completion from `groupmember.completed_at`. Null until evaluation records it. */
+  completedAt: string | null;
   complianceStatus: string | null;
   complianceCycleNumber: number | null;
   complianceDueDate: string | null;
@@ -657,6 +659,7 @@ export async function getCourseProgress(
   roleId: number | null;
   certificateEarnedAt: string | null;
   certificationEmailSentAt: string | null;
+  completedAt: string | null;
 }> {
   try {
     // Get the groupmember ID for this profile in the course
@@ -665,7 +668,8 @@ export async function getCourseProgress(
         id: schema.groupmember.id,
         roleId: schema.groupmember.roleId,
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
-        certificationEmailSentAt: schema.groupmember.certificationEmailSentAt
+        certificationEmailSentAt: schema.groupmember.certificationEmailSentAt,
+        completedAt: schema.groupmember.completedAt
       })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
@@ -682,7 +686,8 @@ export async function getCourseProgress(
         groupMemberId: null,
         roleId: null,
         certificateEarnedAt: null,
-        certificationEmailSentAt: null
+        certificationEmailSentAt: null,
+        completedAt: null
       };
     }
 
@@ -690,6 +695,7 @@ export async function getCourseProgress(
     const roleId = groupMemberResult[0].roleId;
     const certificateEarnedAt = groupMemberResult[0].certificateEarnedAt ?? null;
     const certificationEmailSentAt = groupMemberResult[0].certificationEmailSentAt ?? null;
+    const completedAt = groupMemberResult[0].completedAt ?? null;
 
     const [lessons, completedLessons, exercises, [completedRow]] = await Promise.all([
       db.select({ id: schema.lesson.id }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId)),
@@ -734,7 +740,8 @@ export async function getCourseProgress(
       groupMemberId,
       roleId,
       certificateEarnedAt,
-      certificationEmailSentAt
+      certificationEmailSentAt,
+      completedAt
     };
   } catch (error) {
     console.error('getCourseProgress error:', error);
@@ -1125,6 +1132,7 @@ export const getEnrolledCourses = async ({
           )}
         )`.as('exercises_completed'),
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
+        completedAt: schema.groupmember.completedAt,
         complianceStatus: schema.courseCompletionRecord.status,
         complianceCycleNumber: schema.courseCompletionRecord.cycleNumber,
         complianceDueDate: schema.courseCompletionRecord.dueDate,
@@ -1194,6 +1202,7 @@ export const getEnrolledCourses = async ({
       exerciseCount: Number(row.exerciseCount),
       exercisesCompleted: Number(row.exercisesCompleted),
       certificateEarnedAt: row.certificateEarnedAt ?? null,
+      completedAt: row.completedAt ?? null,
       complianceStatus: row.complianceStatus ?? null,
       complianceCycleNumber: row.complianceCycleNumber ?? null,
       complianceDueDate: row.complianceDueDate ?? null,
@@ -1667,18 +1676,19 @@ export async function updateCourseSlug(courseId: string, slug: string): Promise<
 }
 
 /**
- * Returns basic course organization ownership info (id, groupId, organizationId).
+ * Returns basic course organization ownership info (id, groupId, organizationId, type).
  */
 export async function getCourseOrgInfo(
   courseId: string,
   dbClient: DbOrTxClient = db
-): Promise<{ id: string; groupId: string | null; organizationId: string | null } | null> {
+): Promise<{ id: string; groupId: string | null; organizationId: string | null; type: TCourse['type'] } | null> {
   try {
     const [row] = await dbClient
       .select({
         id: schema.course.id,
         groupId: schema.course.groupId,
-        organizationId: schema.group.organizationId
+        organizationId: schema.group.organizationId,
+        type: schema.course.type
       })
       .from(schema.course)
       .leftJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -1708,7 +1718,7 @@ export interface GetAddableOrgCoursesOptions {
   limit: number;
 }
 
-export type TAddableOrgCourse = { id: string; title: string; description: string };
+export type TAddableOrgCourse = { id: string; title: string; description: string; type: TCourse['type'] };
 
 /**
  * Pages the ACTIVE org courses a cohort or learning path can still add.
@@ -1779,7 +1789,12 @@ export async function getAddableOrgCourses(
 
     const [items, [countRow]] = await Promise.all([
       dbClient
-        .select({ id: schema.course.id, title: schema.course.title, description: schema.course.description })
+        .select({
+          id: schema.course.id,
+          title: schema.course.title,
+          description: schema.course.description,
+          type: schema.course.type
+        })
         .from(schema.course)
         .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
         .where(whereClause)
