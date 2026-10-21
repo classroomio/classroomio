@@ -1,0 +1,53 @@
+{
+  "name": "@classroomio/plugin-sdk",
+  "version": "1.0.0",
+  "description": "Public developer SDK and runtime bridge for ClassroomIO plugins",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./host": {
+      "types": "./dist/host/index.d.ts",
+      "default": "./dist/host/index.js"
+    },
+    "./protocol": {
+      "types": "./dist/bridge/protocol.d.ts",
+      "default": "./dist/bridge/protocol.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "default": "./dist/server/index.js"
+    }
+  },
+  "bin": {
+    "cio-plugin": "./bin/cio-plugin.mjs"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@cio/tsconfig": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "rimraf": "^5.0.5",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.5.2",
+    "vitest": "^1.2.2"
+  }
+}

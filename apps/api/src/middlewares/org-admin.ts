@@ -51,6 +51,8 @@ export const orgAdminMiddleware = async (c: Context, next: Next) => {
       );
     }
 
+    c.set('orgId', orgId);
+
     await next();
   } catch (error) {
     console.error('Error in orgAdminMiddleware:', error);

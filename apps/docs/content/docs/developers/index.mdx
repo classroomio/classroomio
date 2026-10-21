@@ -25,11 +25,14 @@ const { data } = await res.json();
 
 Full endpoint reference, request/response schemas, and how to get a key: [API](/api).
 
-## Connect
+## Connect & Extend
 
-Bring an agent client or an existing sign-in flow into ClassroomIO instead of calling the REST API directly.
+Integrate external apps, agent clients, and custom UI plugins into ClassroomIO.
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
+  <Card title="Plugins" href="/developers/plugins" icon="puzzle">
+    Build custom UI slots, tools, and background integrations using the Plugin SDK.
+  </Card>
   <Card title="MCP" href="/developers/mcp" icon="plug">
     Connect Claude Code, Codex, Cursor, or other MCP clients for course authoring.
   </Card>

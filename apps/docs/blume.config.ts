@@ -218,6 +218,20 @@ export default defineConfig({
         items: ['/developers/mcp', '/developers/webhooks', '/developers/token-auth']
       },
       {
+        label: 'Plugins',
+        display: 'group',
+        collapsed: false,
+        items: [
+          '/developers/plugins',
+          '/developers/plugins/manifest',
+          '/developers/plugins/client-sdk',
+          '/developers/plugins/server-sdk',
+          '/developers/plugins/storage',
+          '/developers/plugins/slots-and-surfaces',
+          '/developers/plugins/packaging-and-publishing'
+        ]
+      },
+      {
         label: 'Self-hosting',
         root: '/self-hosted',
         items: [

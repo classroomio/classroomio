@@ -1,0 +1,35 @@
+name: Plugin SDK compatibility
+
+on:
+  pull_request:
+    paths:
+      - 'packages/plugin-sdk/**'
+      - 'packages/plugin-design/**'
+      - 'packages/certificate-kit/**'
+      - 'package.json'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/plugin-sdk/**'
+      - 'packages/plugin-design/**'
+      - 'packages/certificate-kit/**'
+      - 'package.json'
+  workflow_dispatch:
+
+jobs:
+  sdk:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.19.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @classroomio/plugin-sdk build
+      - run: pnpm --filter @classroomio/plugin-sdk test

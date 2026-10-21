@@ -94,6 +94,14 @@ export const publicApiFailedAuthKeyGenerator = (c: Context): string => {
   return `public_api_failed_auth:${extractClientIp(c)}`;
 };
 
+export const pluginApiKeyGenerator = (c: Context): string => {
+  const claims = c.get('pluginApiClaims') as { installationId?: string } | undefined;
+
+  return claims?.installationId
+    ? `plugin_installation:${claims.installationId}`
+    : `plugin_api_ip:${extractClientIp(c)}`;
+};
+
 /**
  * Generate rate limit key based on IP only
  */

@@ -2,6 +2,7 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import LmsHeader from '$features/ui/navigation/lms-header.svelte';
   import { LMSSidebar } from '$features/ui/sidebar/lms-sidebar';
+  import { PluginSlotRenderer } from '$features/plugins/components';
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -17,6 +18,7 @@
     <LmsHeader />
 
     <div class="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 px-4">
+      <PluginSlotRenderer target="lms.banner" className="w-full" />
       {@render children?.()}
     </div>
   </Sidebar.Inset>

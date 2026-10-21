@@ -8,7 +8,7 @@ import type {
   TNewQuestion,
   TQuestionType
 } from '@db/types';
-import { and, asc, db, eq, inArray, isNull, or, sql } from '@db/drizzle';
+import { and, asc, db, desc, eq, gt, inArray, isNull, lt, or, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
 import { contentWriteBumpsTimestamp, stampContentUpdatedAt } from '@db/queries/course/content-timestamp';
@@ -652,4 +652,217 @@ export async function syncQuestionTypeIdSequence(dbClient: DbOrTxClient = db): P
       )
     `
   );
+}
+
+export interface PluginExerciseMetadata {
+  id: string;
+  courseId: string;
+  lessonId: string | null;
+  title: string;
+  description: string | null;
+  order: number;
+  allowMultipleAttempts: boolean;
+  completionPolicy: string;
+  passThreshold: number | null;
+  questionCount: number;
+  totalPoints: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+function parseExerciseCursor(cursor?: string | null): { order: number; id: string } | null {
+  if (!cursor) return null;
+  try {
+    const decoded = Buffer.from(cursor, 'base64url').toString('utf8');
+    const [orderStr, id] = decoded.split('|');
+    const order = Number(orderStr);
+    if (!Number.isNaN(order) && id) return { order, id };
+  } catch {}
+  const [orderStr, id] = cursor.split('|');
+  const order = Number(orderStr);
+  if (!Number.isNaN(order) && id) return { order, id };
+  return null;
+}
+
+function encodeExerciseCursor(order: number, id: string): string {
+  return Buffer.from(`${order}|${id}`).toString('base64url');
+}
+
+export async function getPluginExercisesList(
+  organizationId: string,
+  courseId: string,
+  actorId: string,
+  canReadAll: boolean,
+  options?: { limit?: number; cursor?: string | null; lessonId?: string }
+): Promise<{ items: PluginExerciseMetadata[]; nextCursor: string | null }> {
+  const limit = Math.max(1, Math.min(Number(options?.limit) || 20, 100));
+
+  const accessCondition =
+    !actorId || canReadAll
+      ? undefined
+      : or(
+          and(
+            eq(schema.course.status, 'ACTIVE'),
+            eq(schema.course.isPublished, true),
+            eq(schema.course.publicForAll, true)
+          ),
+          sql<boolean>`exists (
+            select 1 from ${schema.groupmember}
+            where ${schema.groupmember.groupId} = ${schema.course.groupId}
+              and ${schema.groupmember.profileId} = ${actorId}
+          )`
+        );
+
+  const [courseExists] = await db
+    .select({ id: schema.course.id })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(
+      and(
+        eq(schema.course.id, courseId),
+        eq(schema.group.organizationId, organizationId),
+        eq(schema.course.isTemplate, false),
+        accessCondition
+      )
+    )
+    .limit(1);
+
+  if (!courseExists) {
+    return { items: [], nextCursor: null };
+  }
+
+  const conditions = [eq(schema.exercise.courseId, courseId)];
+  if (options?.lessonId) {
+    conditions.push(eq(schema.exercise.lessonId, options.lessonId));
+  }
+
+  const parsedCursor = parseExerciseCursor(options?.cursor);
+  if (parsedCursor) {
+    conditions.push(
+      or(
+        gt(schema.exercise.order, parsedCursor.order),
+        and(eq(schema.exercise.order, parsedCursor.order), gt(schema.exercise.id, parsedCursor.id))
+      )!
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: schema.exercise.id,
+      courseId: schema.exercise.courseId,
+      lessonId: schema.exercise.lessonId,
+      title: schema.exercise.title,
+      description: schema.exercise.description,
+      order: schema.exercise.order,
+      allowMultipleAttempts: schema.exercise.allowMultipleAttempts,
+      completionPolicy: schema.exercise.completionPolicy,
+      passThreshold: schema.exercise.passThreshold,
+      createdAt: schema.exercise.createdAt,
+      updatedAt: schema.exercise.updatedAt,
+      questionCount: sql<number>`coalesce(count(${schema.question.id}), 0)::int`,
+      totalPoints: sql<number>`coalesce(sum(${schema.question.points}), 0)::float`
+    })
+    .from(schema.exercise)
+    .leftJoin(schema.question, eq(schema.question.exerciseId, schema.exercise.id))
+    .where(and(...conditions))
+    .groupBy(schema.exercise.id)
+    .orderBy(asc(schema.exercise.order), asc(schema.exercise.id))
+    .limit(limit + 1);
+
+  const hasMore = rows.length > limit;
+  const pageRows = hasMore ? rows.slice(0, limit) : rows;
+  const lastRow = pageRows[pageRows.length - 1];
+  const nextCursor = hasMore && lastRow ? encodeExerciseCursor(Number(lastRow.order), lastRow.id) : null;
+
+  const items: PluginExerciseMetadata[] = pageRows
+    .filter((row): row is typeof row & { courseId: string } => Boolean(row.courseId))
+    .map((row) => ({
+      id: row.id,
+      courseId: row.courseId,
+      lessonId: row.lessonId ?? null,
+      title: row.title,
+      description: row.description ?? null,
+      order: Number(row.order),
+      allowMultipleAttempts: Boolean(row.allowMultipleAttempts),
+      completionPolicy: row.completionPolicy,
+      passThreshold: row.passThreshold !== null ? Number(row.passThreshold) : null,
+      questionCount: Number(row.questionCount) || 0,
+      totalPoints: Number(row.totalPoints) || 0,
+      createdAt: row.createdAt ?? new Date().toISOString(),
+      updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
+    }));
+
+  return { items, nextCursor };
+}
+
+export async function getPluginExerciseById(
+  organizationId: string,
+  exerciseId: string,
+  actorId: string,
+  canReadAll: boolean
+): Promise<PluginExerciseMetadata | null> {
+  const accessCondition =
+    !actorId || canReadAll
+      ? undefined
+      : or(
+          and(
+            eq(schema.course.status, 'ACTIVE'),
+            eq(schema.course.isPublished, true),
+            eq(schema.course.publicForAll, true)
+          ),
+          sql<boolean>`exists (
+            select 1 from ${schema.groupmember}
+            where ${schema.groupmember.groupId} = ${schema.course.groupId}
+              and ${schema.groupmember.profileId} = ${actorId}
+          )`
+        );
+
+  const [row] = await db
+    .select({
+      id: schema.exercise.id,
+      courseId: schema.exercise.courseId,
+      lessonId: schema.exercise.lessonId,
+      title: schema.exercise.title,
+      description: schema.exercise.description,
+      order: schema.exercise.order,
+      allowMultipleAttempts: schema.exercise.allowMultipleAttempts,
+      completionPolicy: schema.exercise.completionPolicy,
+      passThreshold: schema.exercise.passThreshold,
+      createdAt: schema.exercise.createdAt,
+      updatedAt: schema.exercise.updatedAt,
+      questionCount: sql<number>`coalesce(count(${schema.question.id}), 0)::int`,
+      totalPoints: sql<number>`coalesce(sum(${schema.question.points}), 0)::float`
+    })
+    .from(schema.exercise)
+    .innerJoin(schema.course, eq(schema.exercise.courseId, schema.course.id))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .leftJoin(schema.question, eq(schema.question.exerciseId, schema.exercise.id))
+    .where(
+      and(
+        eq(schema.exercise.id, exerciseId),
+        eq(schema.group.organizationId, organizationId),
+        eq(schema.course.isTemplate, false),
+        accessCondition
+      )
+    )
+    .groupBy(schema.exercise.id)
+    .limit(1);
+
+  if (!row || !row.courseId) return null;
+
+  return {
+    id: row.id,
+    courseId: row.courseId,
+    lessonId: row.lessonId ?? null,
+    title: row.title,
+    description: row.description ?? null,
+    order: Number(row.order),
+    allowMultipleAttempts: Boolean(row.allowMultipleAttempts),
+    completionPolicy: row.completionPolicy,
+    passThreshold: row.passThreshold !== null ? Number(row.passThreshold) : null,
+    questionCount: Number(row.questionCount) || 0,
+    totalPoints: Number(row.totalPoints) || 0,
+    createdAt: row.createdAt ?? new Date().toISOString(),
+    updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
+  };
 }

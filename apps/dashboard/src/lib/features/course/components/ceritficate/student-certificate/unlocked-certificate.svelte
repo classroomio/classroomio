@@ -12,6 +12,7 @@
   import { courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import { classroomio } from '$lib/utils/services/api';
+  import { PluginActionRenderer } from '$features/plugins/components';
   import type { CertificationEvaluationData } from '$features/course/utils/types';
   import { normalizeCertificateIssuedAt, formatBlockerMessage } from '$features/course/utils/certificate-utils';
   import { updateCourseCompletionModal } from '$features/course/store/course-completion-modal';
@@ -159,6 +160,9 @@
           <ImageIcon size={16} />
           {$t('course.navItem.certificates.download_image')}
         </Button>
+        {#if isCourseComplete}
+          <PluginActionRenderer target="certificate.actions" />
+        {/if}
       </div>
     {/if}
   </Empty>

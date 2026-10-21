@@ -1,0 +1,225 @@
+---
+title: Slots and UI Surfaces
+description: Mounting points and contribution targets across the ClassroomIO dashboard and learner interface.
+---
+
+ClassroomIO uses a **slot-based contribution system**. Instead of injecting arbitrary scripts into the page, plugins declare which specific UI slots they contribute to in their `plugin.json` manifest.
+
+When a student or teacher opens a view containing a slot, the ClassroomIO dashboard resolves active plugin contributions and mounts your sandboxed interface via `<PluginSlotRenderer>`.
+
+---
+
+## Supported Slot Targets
+
+| Slot Target | Location | Context Resource | Primary Use Cases |
+| :--- | :--- | :--- | :--- |
+| `lms.banner` | Top of the LMS learner layout | `organization` | Academy notices, urgency timers, maintenance banners. |
+| `lesson.after` | Directly below lesson reader content | `lesson` | AI tutoring, discussion forums, reading estimators, quiz widgets. |
+| `certificate.templates` | Certificate Studio template gallery | `course` | Custom certificate SVG layouts, dynamic credentials. |
+| `organization.settings` | Academy Settings sidebar | `organization` | Plugin administration screens, API key configuration. |
+| `plugin.page` | Full-page standalone route | `organization` | Complete dashboards, analytics suites, report builders. |
+
+---
+
+## 1. `lms.banner`
+
+Renders an edge-to-edge banner at the very top of the student's LMS view.
+
+```json
+"contributes": {
+  "slots": [
+    {
+      "id": "announcement-banner",
+      "target": "lms.banner",
+      "entrypoint": "banner",
+      "title": "Welcome Announcement"
+    }
+  ]
+}
+```
+
+### Context & Design Guidelines
+- **Available Resource**: `{ type: 'organization', id: 'org-uuid' }`
+- **Height**: Banners should be compact (typically 40px – 80px high). Call `client.ui.resize()` immediately on load.
+- **Styling**: Use a transparent or subtle background color that contrasts cleanly with the student navbar.
+
+### Implementation Pattern: Dismissable New Course Banner
+
+This is the exact pattern used by the official ClassroomIO Announcement Banner. It pulls the latest published course on mount, remembers when the student dismisses it (or clicks the CTA), and stays hidden until a *new* course is published.
+
+```typescript
+import { createClassroomIOClient } from '@classroomio/plugin-sdk/client';
+
+const client = createClassroomIOClient();
+
+async function initBanner() {
+  // 1. Check whether the student previously dismissed this announcement
+  const dismissed = await client.preferences.get<boolean>('dismissed_banner', 'announcements');
+  if (dismissed) {
+    await client.ui.resize(0); // Nothing to show
+    return;
+  }
+
+  // 4. Render the announcement banner UI
+  const banner = document.getElementById('banner')!;
+  banner.style.display = 'flex';
+  banner.innerHTML = `
+    <div class="banner-content">
+      <span>🎉 New Course Available: <strong>${latestCourse.title}</strong></span>
+      <div class="banner-actions">
+        <button id="cta-btn" class="primary-btn">View Course</button>
+        <button id="dismiss-btn" class="close-btn" aria-label="Dismiss">✕</button>
+      </div>
+    </div>
+  `;
+
+  // 5. Expand the iframe to fit the banner
+  await client.ui.resize(document.documentElement.scrollHeight);
+
+  // Helper: dismiss banner and remember course ID
+  const dismiss = async () => {
+    banner.style.display = 'none';
+    await client.ui.resize(0); // Shrinks iframe so it takes zero vertical space
+
+    // Persist dismissed course ID in user storage
+    await client.storage.set('dismissed_course_id', latestCourse.id, 'banner', 'user');
+  };
+
+  // Close/Cancel button
+  document.getElementById('dismiss-btn')?.addEventListener('click', dismiss);
+
+  // CTA button: navigate to course and dismiss
+  document.getElementById('cta-btn')?.addEventListener('click', async () => {
+    await dismiss();
+    await client.navigation.open(`/courses/${latestCourse.slug || latestCourse.id}`);
+  });
+}
+
+initBanner().catch(console.error);
+```
+
+#### Why This Pattern Is Powerful
+- **No Developer Server Required**: The host manages course publishing and storage.
+- **Smart Re-activation**: If an instructor publishes a new course tomorrow (`latestCourse.id` changes), `dismissedCourseId === latestCourse.id` evaluates to `false`, and the banner automatically reappears for the student!
+- **Clean Collapse**: Calling `client.ui.resize(0)` smoothly collapses the iframe so it leaves zero empty margin in the LMS header.
+
+---
+
+## 2. `lesson.after`
+
+Mounted directly beneath the content of an individual lesson in the course reader.
+
+```json
+"contributes": {
+  "slots": [
+    {
+      "id": "lesson-discussion",
+      "target": "lesson.after",
+      "entrypoint": "discussionBox",
+      "title": "Lesson Discussions"
+    }
+  ]
+}
+```
+
+### Context & Design Guidelines
+- **Available Resource**: `{ type: 'lesson', id: 'lesson-uuid' }`
+- **Dynamic Content**: Because widgets expand dynamically, use `new ResizeObserver()` to call `client.ui.resize()` whenever children render.
+- **Accessing Lesson Data**: Query lesson details or student progress via your backend using the **[Server SDK](/docs/developers/plugins/server-sdk)** with a scoped launch token from `client.auth.requestLaunchCode()`.
+
+---
+
+## 3. `certificate.templates`
+
+Mounted inside ClassroomIO's visual **Certificate Studio** template picker panel.
+
+```json
+"contributes": {
+  "slots": [
+    {
+      "id": "minimal-dark-template",
+      "target": "certificate.templates",
+      "entrypoint": "templatePreview",
+      "title": "Minimal Dark Certificate"
+    }
+  ]
+}
+```
+
+### Context & Capabilities
+- **Available Resource**: `{ type: 'course', id: 'course-uuid' }`
+- Allows designers to preview custom SVG certificate layouts.
+- When the user selects your template, dispatch an RPC or call `client.certificateTemplates.apply()` to save the template to the course.
+
+---
+
+## 4. `plugin.page` (Standalone Full-Page Views)
+
+Renders a complete, dedicated full-page application inside the academy at:
+```text
+https://app.classroomio.com/org/:slug/plugins/:pluginId
+```
+
+```json
+"contributes": {
+  "pages": [
+    {
+      "id": "analytics-dashboard",
+      "entrypoint": "dashboardApp",
+      "title": "Advanced Academy Analytics"
+    }
+  ],
+  "navigation": [
+    {
+      "id": "nav-analytics",
+      "title": "Analytics Pro",
+      "location": "organization.settings",
+      "page": "analytics-dashboard",
+      "icon": { "resource": "dist/analytics-icon.svg" },
+      "visibility": "admin"
+    }
+  ]
+}
+```
+
+### Context & Capabilities
+- **Available Resource**: `{ type: 'organization', id: 'org-uuid' }`
+- Takes over the full content viewport (`height: calc(100vh - 3.5rem)`).
+- Great for complex data tables, multi-tab settings, and custom visualization suites.
+
+---
+
+## Action Targets (`contributes.actions`)
+
+In addition to embedded slots, plugins can inject menu buttons and actions into context menus:
+
+```json
+"contributes": {
+  "actions": [
+    {
+      "id": "share-linkedin",
+      "target": "certificate.actions",
+      "label": "Share to LinkedIn",
+      "icon": { "resource": "dist/linkedin.svg" },
+      "actionType": "openUrl",
+      "urlTemplate": "https://www.linkedin.com/sharing/share-offsite/?url={certificateUrl}"
+    }
+  ]
+}
+```
+
+### Action Types
+
+| Action Type | Description |
+| :--- | :--- |
+| `openUrl` | Interpolates template variables (e.g. `{certificateUrl}`, `{courseTitle}`) and opens an external URL in a new browser tab. |
+| `command` | Dispatches a command RPC to your running iframe or opens a custom modal. |
+| `dialog` | Opens a modal dialog with a custom entrypoint specified in the action. |
+
+---
+
+## Best Practices for Slot UI Development
+
+1. **Adopt Host Theme Variables**: Always style using `--cio-bg-canvas`, `--cio-text-primary`, and `--cio-primary`. Hardcoded `#ffffff` backgrounds will clash when the student toggles dark mode.
+2. **Never Hardcode Iframe Heights**: Always use `ResizeObserver` with `client.ui.resize(height)` so inline widgets grow and shrink naturally.
+3. **Keep Assets Lightweight**: Because plugins render dynamically, keep your production bundle under 300KB for fast initial rendering.

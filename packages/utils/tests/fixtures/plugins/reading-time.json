@@ -1,0 +1,43 @@
+{
+  "$schema": "https://classroomio.com/schemas/plugin.v1.json",
+  "manifestVersion": 1,
+  "id": "com.classroomio.reading-time",
+  "name": "Reading Time Estimator",
+  "version": "1.0.0",
+  "description": "Shows learners an estimated reading time and word count for the current lesson.",
+  "publisher": "classroomio",
+  "icon": { "resource": "assets/reading-time.svg" },
+  "license": "MIT",
+  "engines": {
+    "classroomio": ">=2.0.0",
+    "pluginApi": "2026-10-08"
+  },
+  "runtime": {
+    "ui": {
+      "entrypoints": {
+        "lessonWidget": {
+          "renderMode": "custom",
+          "resource": "dist/index.html"
+        }
+      }
+    }
+  },
+  "permissions": {
+    "required": ["lesson.metadata:read"]
+  },
+  "contributes": {
+    "slots": [
+      {
+        "id": "reading-time-lesson-widget",
+        "target": "lesson.after",
+        "renderMode": "custom",
+        "entrypoint": "lessonWidget",
+        "title": "Lesson reading time"
+      }
+    ]
+  },
+  "dataPolicy": {
+    "storesCustomerData": false,
+    "retentionAfterUninstallDays": 0
+  }
+}

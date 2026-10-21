@@ -27,4 +27,14 @@ describe('ZCreateOrganizationApiKey scopes', () => {
     expect(ZCreateOrganizationApiKey.safeParse({ type: 'api', scopes: ['public_api:*'] }).success).toBe(true);
     expect(ZCreateOrganizationApiKey.safeParse({ type: 'zapier', scopes: ['public_api:*'] }).success).toBe(true);
   });
+
+  it('allows plugin:development on an API key', () => {
+    expect(ZCreateOrganizationApiKey.safeParse({ type: 'api', scopes: ['plugin:development'] }).success).toBe(true);
+  });
+
+  it('rejects removed plugin:publish scope', () => {
+    const result = ZCreateOrganizationApiKey.safeParse({ type: 'api', scopes: ['plugin:publish'] });
+
+    expect(result.success).toBe(false);
+  });
 });

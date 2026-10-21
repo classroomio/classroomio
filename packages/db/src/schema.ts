@@ -28,6 +28,7 @@ import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
 import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
+import type { TPluginManifest } from '@cio/utils/validation/plugin';
 import {
   LIVE_SESSION_REMINDER_STATUS_VALUES,
   type TLiveSessionReminderSkipReason
@@ -82,6 +83,25 @@ export const organizationInviteEventType = pgEnum('ORGANIZATION_INVITE_EVENT_TYP
   'ABUSE_BLOCKED'
 ]);
 export const organizationInviteType = pgEnum('ORGANIZATION_INVITE_TYPE', ['EMAIL', 'LINK']);
+export const pluginPublisherClass = pgEnum('PLUGIN_PUBLISHER_CLASS', [
+  'first-party',
+  'verified-third-party',
+  'community'
+]);
+export const pluginOrgApprovalStatus = pgEnum('PLUGIN_ORG_APPROVAL_STATUS', ['approved', 'pending', 'rejected']);
+export const pluginStatus = pgEnum('PLUGIN_STATUS', ['draft', 'published', 'deprecated', 'revoked']);
+export const pluginDistribution = pgEnum('PLUGIN_DISTRIBUTION', ['public', 'private', 'unlisted', 'development']);
+export const pluginReviewStatus = pgEnum('PLUGIN_REVIEW_STATUS', ['pending', 'approved', 'rejected']);
+export const pluginOwnerType = pgEnum('PLUGIN_OWNER_TYPE', ['organization', 'user']);
+export const pluginInstallationStatus = pgEnum('PLUGIN_INSTALLATION_STATUS', [
+  'active',
+  'disabled',
+  'revoked',
+  'uninstalled'
+]);
+export const pluginStorageScopeType = pgEnum('PLUGIN_STORAGE_SCOPE_TYPE', ['organization', 'user', 'global']);
+export const pluginAuditOutcome = pgEnum('PLUGIN_AUDIT_OUTCOME', ['success', 'denied', 'error']);
+export const pluginBackendClientStatus = pgEnum('PLUGIN_BACKEND_CLIENT_STATUS', ['active', 'revoked']);
 
 /**
  * Lifecycle state of an organization membership. Orthogonal to `verified`,
@@ -4367,6 +4387,385 @@ export const contentReport = pgTable(
     uniqueIndex('content_report_reporter_target_open_unique')
       .on(table.organizationId, table.reporterId, table.targetType, table.targetId)
       .where(sql`${table.reporterId} IS NOT NULL AND ${table.status} IN ('open', 'in_review')`)
+  ]
+);
+
+// ─── Plugin Architecture ────────────────────────────────────────
+
+export const pluginPublisher = pgTable(
+  'plugin_publisher',
+  {
+    id: varchar('id', { length: 64 }).primaryKey().notNull(),
+    name: varchar('name', { length: 128 }).notNull(),
+    publisherClass: pluginPublisherClass('publisher_class').default('community').notNull(),
+    verified: boolean('verified').default(false).notNull(),
+    domain: varchar('domain', { length: 255 }),
+    securityContact: varchar('security_contact', { length: 255 }),
+    supportContact: varchar('support_contact', { length: 255 }),
+    status: varchar('status', { length: 32 }).default('active').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [index('idx_plugin_publisher_class').on(table.publisherClass)]
+);
+
+export const plugin = pgTable(
+  'plugin',
+  {
+    id: varchar('id', { length: 128 }).primaryKey().notNull(),
+    slug: varchar('slug', { length: 128 }).notNull(),
+    publisherId: varchar('publisher_id', { length: 64 }).references(() => pluginPublisher.id, {
+      onDelete: 'set null'
+    }),
+    name: varchar('name', { length: 128 }).notNull(),
+    description: text('description'),
+    publisher: varchar('publisher', { length: 128 }).notNull(),
+    status: pluginStatus('status').default('published').notNull(),
+    distribution: pluginDistribution('distribution').default('public').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('idx_plugin_slug_unique').on(table.slug),
+    index('idx_plugin_publisher').on(table.publisher),
+    index('idx_plugin_publisher_id').on(table.publisherId),
+    index('idx_plugin_status').on(table.status)
+  ]
+);
+
+export const pluginVersion = pgTable(
+  'plugin_version',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    pluginId: varchar('plugin_id', { length: 128 })
+      .notNull()
+      .references(() => plugin.id, { onDelete: 'cascade' }),
+    version: varchar('version', { length: 64 }).notNull(),
+    manifest: jsonb('manifest').notNull().$type<TPluginManifest>(),
+    artifactDigest: varchar('artifact_digest', { length: 128 }),
+    signature: text('signature'),
+    sourceCommit: varchar('source_commit', { length: 40 }),
+    releaseRunUrl: text('release_run_url'),
+    releasedBy: varchar('released_by', { length: 64 }).default('legacy').notNull(),
+    releaseMetadata: jsonb('release_metadata'),
+    reviewStatus: pluginReviewStatus('review_status').default('approved').notNull(),
+    publishedAt: timestamp('published_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('idx_plugin_version_plugin_ver_unique').on(table.pluginId, table.version),
+    index('idx_plugin_version_plugin_id').on(table.pluginId),
+    check(
+      'plugin_version_ci_provenance_check',
+      sql`${table.releasedBy} <> 'github-actions' OR (${table.sourceCommit} IS NOT NULL AND ${table.releaseRunUrl} IS NOT NULL AND ${table.artifactDigest} IS NOT NULL)`
+    )
+  ]
+);
+
+export const pluginInstallation = pgTable(
+  'plugin_installation',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    pluginId: varchar('plugin_id', { length: 128 })
+      .notNull()
+      .references(() => plugin.id, { onDelete: 'cascade' }),
+    pluginVersionId: uuid('plugin_version_id')
+      .notNull()
+      .references(() => pluginVersion.id),
+    ownerType: pluginOwnerType('owner_type').notNull(),
+    organizationId: uuid('organization_id').references(() => organization.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').references(() => profile.id, { onDelete: 'cascade' }),
+    status: pluginInstallationStatus('status').default('active').notNull(),
+    orgApprovalStatus: pluginOrgApprovalStatus('org_approval_status').default('approved').notNull(),
+    settings: jsonb('settings').default({}).notNull().$type<Record<string, unknown>>(),
+    installedByProfileId: uuid('installed_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    installedAt: timestamp('installed_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    disabledAt: timestamp('disabled_at', { withTimezone: true, mode: 'string' }),
+    uninstalledAt: timestamp('uninstalled_at', { withTimezone: true, mode: 'string' }),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    index('idx_plugin_installation_org_id').on(table.organizationId),
+    index('idx_plugin_installation_user_id').on(table.userId),
+    index('idx_plugin_installation_plugin_id').on(table.pluginId),
+    index('idx_plugin_installation_status').on(table.status),
+    index('idx_plugin_installation_org_approval').on(table.orgApprovalStatus),
+    uniqueIndex('idx_plugin_installation_owner_org_unique')
+      .on(table.pluginId, table.organizationId)
+      .where(sql`${table.organizationId} IS NOT NULL AND ${table.ownerType} = 'organization'`),
+    uniqueIndex('idx_plugin_installation_owner_user_unique')
+      .on(table.pluginId, table.userId)
+      .where(sql`${table.userId} IS NOT NULL AND ${table.ownerType} = 'user'`)
+  ]
+);
+
+export const pluginGrant = pgTable(
+  'plugin_grant',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    installationId: uuid('installation_id')
+      .notNull()
+      .references(() => pluginInstallation.id, { onDelete: 'cascade' }),
+    scope: varchar('scope', { length: 128 }).notNull(),
+    grantedByProfileId: uuid('granted_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    grantedAt: timestamp('granted_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('idx_plugin_grant_inst_scope_unique').on(table.installationId, table.scope),
+    index('idx_plugin_grant_installation_id').on(table.installationId)
+  ]
+);
+
+export const pluginCredential = pgTable(
+  'plugin_credential',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    installationId: uuid('installation_id')
+      .notNull()
+      .references(() => pluginInstallation.id, { onDelete: 'cascade' }),
+    label: varchar('label', { length: 120 }),
+    secretPrefix: varchar('secret_prefix', { length: 32 }).notNull(),
+    secretHash: text('secret_hash').notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('idx_plugin_credential_hash_unique').on(table.secretHash),
+    index('idx_plugin_credential_installation_id').on(table.installationId)
+  ]
+);
+
+export const pluginBackendClient = pgTable(
+  'plugin_backend_client',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    pluginId: varchar('plugin_id', { length: 128 })
+      .notNull()
+      .references(() => plugin.id, { onDelete: 'cascade' }),
+    clientId: varchar('client_id', { length: 128 }).notNull(),
+    label: varchar('label', { length: 120 }),
+    secretPrefix: varchar('secret_prefix', { length: 32 }).notNull(),
+    secretHash: text('secret_hash').notNull(),
+    status: pluginBackendClientStatus('status').default('active').notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('idx_plugin_backend_client_client_id_unique').on(table.clientId),
+    uniqueIndex('idx_plugin_backend_client_secret_hash_unique').on(table.secretHash),
+    index('idx_plugin_backend_client_plugin_id').on(table.pluginId),
+    index('idx_plugin_backend_client_status').on(table.status)
+  ]
+);
+
+export const pluginStorage = pgTable(
+  'plugin_storage',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    installationId: uuid('installation_id')
+      .notNull()
+      .references(() => pluginInstallation.id, { onDelete: 'cascade' }),
+    scopeType: pluginStorageScopeType('scope_type').notNull(),
+    scopeId: uuid('scope_id').notNull(),
+    namespace: varchar('namespace', { length: 128 }).default('default').notNull(),
+    key: varchar('key', { length: 255 }).notNull(),
+    value: jsonb('value').default({}).notNull().$type<unknown>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('idx_plugin_storage_inst_scope_ns_key_unique').on(
+      table.installationId,
+      table.scopeType,
+      table.scopeId,
+      table.namespace,
+      table.key
+    ),
+    index('idx_plugin_storage_lookup').on(table.installationId, table.namespace)
+  ]
+);
+
+export const pluginAuditEvent = pgTable(
+  'plugin_audit_event',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    installationId: uuid('installation_id').references(() => pluginInstallation.id, { onDelete: 'cascade' }),
+    organizationId: uuid('organization_id').references(() => organization.id, { onDelete: 'cascade' }),
+    actorProfileId: uuid('actor_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    action: varchar('action', { length: 120 }).notNull(),
+    resource: varchar('resource', { length: 255 }),
+    outcome: pluginAuditOutcome('outcome').default('success').notNull(),
+    metadata: jsonb('metadata').default({}).notNull().$type<Record<string, unknown>>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    index('idx_plugin_audit_installation_created').on(table.installationId, table.createdAt),
+    index('idx_plugin_audit_org_created').on(table.organizationId, table.createdAt)
+  ]
+);
+
+export const pluginLaunchCode = pgTable(
+  'plugin_launch_code',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    installationId: uuid('installation_id')
+      .notNull()
+      .references(() => pluginInstallation.id, { onDelete: 'cascade' }),
+    codeHash: text('code_hash').notNull(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => profile.id, { onDelete: 'cascade' }),
+    organizationId: uuid('organization_id').references(() => organization.id, { onDelete: 'cascade' }),
+    contributionTarget: varchar('contribution_target', { length: 64 }),
+    resourceType: varchar('resource_type', { length: 32 }),
+    resourceId: uuid('resource_id'),
+    audience: varchar('audience', { length: 255 }),
+    handshakeNonce: varchar('handshake_nonce', { length: 128 }),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    usedAt: timestamp('used_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('idx_plugin_launch_code_hash_unique').on(table.codeHash),
+    index('idx_plugin_launch_code_installation_id').on(table.installationId)
+  ]
+);
+
+export const pluginEventSubscription = pgTable(
+  'plugin_event_subscription',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    installationId: uuid('installation_id')
+      .notNull()
+      .references(() => pluginInstallation.id, { onDelete: 'cascade' }),
+    eventType: varchar('event_type', { length: 128 }).notNull(),
+    endpoint: varchar('endpoint', { length: 512 }).notNull(),
+    status: varchar('status', { length: 32 }).default('active').notNull(),
+    failureCount: integer('failure_count').default(0).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('idx_plugin_sub_inst_event_unique').on(table.installationId, table.eventType),
+    index('idx_plugin_sub_event_type').on(table.eventType),
+    index('idx_plugin_sub_status').on(table.status)
+  ]
+);
+
+export const pluginEventOutbox = pgTable(
+  'plugin_event_outbox',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    eventType: varchar('event_type', { length: 128 }).notNull(),
+    organizationId: uuid('organization_id').references(() => organization.id, { onDelete: 'cascade' }),
+    payload: jsonb('payload').notNull().$type<Record<string, unknown>>(),
+    status: varchar('status', { length: 32 }).default('pending').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    processedAt: timestamp('processed_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    index('idx_plugin_outbox_status_created').on(table.status, table.createdAt),
+    index('idx_plugin_outbox_org_id').on(table.organizationId)
+  ]
+);
+
+export const pluginEventDelivery = pgTable(
+  'plugin_event_delivery',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    outboxEventId: uuid('outbox_event_id')
+      .notNull()
+      .references(() => pluginEventOutbox.id, { onDelete: 'cascade' }),
+    subscriptionId: uuid('subscription_id')
+      .notNull()
+      .references(() => pluginEventSubscription.id, { onDelete: 'cascade' }),
+    status: varchar('status', { length: 32 }).default('pending').notNull(),
+    attemptCount: integer('attempt_count').default(0).notNull(),
+    nextRetryAt: timestamp('next_retry_at', { withTimezone: true, mode: 'string' }),
+    responseStatus: integer('response_status'),
+    errorMessage: text('error_message'),
+    deliveredAt: timestamp('delivered_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    index('idx_plugin_delivery_status_retry').on(table.status, table.nextRetryAt),
+    index('idx_plugin_delivery_sub_id').on(table.subscriptionId),
+    index('idx_plugin_delivery_outbox_id').on(table.outboxEventId)
   ]
 );
 

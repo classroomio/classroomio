@@ -1,0 +1,187 @@
+---
+title: Packaging and contributing
+description: Build, develop, test locally, and contribute a ClassroomIO plugin.
+---
+
+ClassroomIO uses a pull-request-driven, source-controlled release pipeline for all catalog plugins.
+Contributors build and test plugins locally with the `cio-plugin` CLI, then submit a pull request
+to the official `classroomio-plugins` repository. Releases are built and published exclusively by
+trusted release CI upon merge to `main`.
+
+`cio-plugin` has three core commands for developers.
+
+| Command | Purpose |
+| --- | --- |
+| `cio-plugin create <directory>` | Create a Vite-based plugin starter. |
+| `cio-plugin build [path] [--registry <path>]` | Validate, compile, and produce deterministic archives. `npm run pack` is the scaffolded alias. |
+| `cio-plugin dev [path] --org <organization-id>` | Build and install a development release into one local organization. `npm run seed` is the scaffolded alias. |
+
+## Create a plugin
+
+```bash
+npx cio-plugin create reading-timer \
+  --id com.example.reading-timer \
+  --name "Reading timer" \
+  --publisher "Example"
+cd reading-timer
+npm install
+```
+
+The generated project has conventional Vite `npm run dev` and `npm run build` scripts. Use the
+`cio-plugin` CLI explicitly when you need to install a packaged development release or create an
+immutable artifact. The generated `pack` and `seed` scripts reserve those names for ClassroomIO
+workflows without taking over npm's standard `build` and `dev` scripts.
+
+## Local development
+
+Start the ClassroomIO API locally, then configure local development credentials:
+
+```bash
+export CLASSROOMIO_API_URL=http://localhost:3002
+export CLASSROOMIO_DEV_TOKEN=<organization-api-key-with-plugin-development-scope>
+export CLASSROOMIO_ORG_ID=<organization-id>
+npm run dev
+```
+
+`npm run dev` starts the plugin's Vite server for standalone UI development. It does not install the
+plugin into ClassroomIO.
+
+To validate, package, and install the development release in your local development organization, stop the
+Vite server and run:
+
+```bash
+npm run seed -- --org "$CLASSROOMIO_ORG_ID"
+```
+
+The local API validates the archive, unpacks files under `PLUGIN_ARTIFACTS_PATH`, and registers a private
+development version for the named organization. This local development flow is disabled in production
+environments.
+
+## Build and package
+
+```bash
+npm run build
+npm run pack
+```
+
+`npm run build` compiles the UI into `dist/`. `npm run pack` invokes `cio-plugin build`, which validates `plugin.json`,
+checks generated assets, and creates a deterministic archive beneath `.plugin-artifacts/`. The SHA-256 digest
+uniquely identifies the archive contents.
+
+## Contributing to the catalog
+
+All public and catalog plugins are source-maintained in the `classroomio-plugins` repository.
+
+### Contribution workflow
+
+1. **Scaffold & Build**: Create your plugin and verify that `npm run build` and `npm run pack` succeed locally.
+2. **Test in Local ClassroomIO**: Use `npm run seed` to test iframe loading, theme sync, RPC methods, and permissions in your local ClassroomIO instance.
+3. **Fork `classroomio-plugins`**: Fork the [classroomio-plugins](https://github.com/classroomio/classroomio-plugins) repository.
+4. **Register Plugin**: Add your plugin directory to the repository and register it in `registry/plugins.json`:
+   ```json
+   {
+     "id": "com.example.reading-timer",
+     "path": "reading-timer",
+     "kind": "community",
+     "release": true
+   }
+   ```
+5. **Open a Pull Request**: Submit a pull request against `classroomio-plugins` `main`.
+6. **PR CI Validation**: Untrusted pull request CI runs build, test, packing, isolation checks, and determinism verification in a sandbox without cloud secrets.
+7. **Maintainer Review**: Maintainers review the source code, requested permissions, network allowlists (`networkAccess.allowedDomains`), and runtime behavior.
+8. **Merge & Automated Release**: Once merged to `main`, trusted GitHub Actions release CI builds the canonical package, uploads immutable files to R2, and registers the release with the ClassroomIO API.
+
+### Versioning and immutability
+
+Every published `(pluginId, version)` is immutable. If code or manifest settings change, bump the SemVer version in `plugin.json` and submit a new pull request. The release pipeline will reject any attempt to overwrite an existing version with a different artifact digest.
+
+## Release registration API (Internal)
+
+ClassroomIO exposes an internal endpoint for trusted CI to register releases after merge:
+
+```text
+POST /internal/plugin-releases
+```
+
+### Authentication
+
+Calls to this endpoint require a dedicated bearer token in the `Authorization` header:
+
+```bash
+Authorization: Bearer $PLUGIN_RELEASE_DEPLOY_TOKEN
+```
+
+`PLUGIN_RELEASE_DEPLOY_TOKEN` is configured on the ClassroomIO API host and stored in the protected
+`plugin-production` GitHub Environment. Contributor PRs and local developers do not have access to this token.
+
+### Payload
+
+```json
+{
+  "sourceCommit": "40-character-git-sha",
+  "workflowRunUrl": "https://github.com/classroomio/classroomio-plugins/actions/runs/123456",
+  "releases": [
+    {
+      "pluginId": "com.example.reading-timer",
+      "version": "1.2.0",
+      "artifactDigest": "sha256-...",
+      "kind": "community"
+    }
+  ]
+}
+```
+
+The API derives the immutable storage key from the plugin ID, version, and digest rather than trusting a
+caller-supplied path. It verifies that the archive exists, confirms the digest and manifest, records
+provenance metadata (`source_commit`, `release_run_url`, `released_by`), and registers the catalog version.
+Re-registering an already released version with the exact same digest is idempotent.
+
+## Production storage setup
+
+Production plugin assets are served exclusively via CDN:
+
+| Location | API access | Browser access |
+| --- | --- | --- |
+| `PLUGIN_ASSET_BUCKET` | Read/verify by release registration API | None (private storage) |
+| `PLUGIN_ASSET_ORIGIN` | None | Public CDN read-only under digest-qualified paths |
+
+The production key layout is immutable:
+
+```text
+{pluginId}/{version}/{artifactDigest}/{assetPath}
+{pluginId}/{version}/{artifactDigest}/package.tar.gz
+```
+
+The application API never serves production artifact files directly; clients fetch assets from `PLUGIN_ASSET_ORIGIN`.
+
+## Environment variables
+
+### CLI & local development
+
+| Variable | Required by | Meaning |
+| --- | --- | --- |
+| `CLASSROOMIO_API_URL` | `dev`/`seed` | API origin; defaults to `http://localhost:3002`. |
+| `CLASSROOMIO_DEV_TOKEN` | `dev`/`seed` | Organization API key with `plugin:development`; its creator must still be an administrator of the target organization. |
+| `CLASSROOMIO_ORG_ID` | `dev`/`seed` | Local target organization; `--org` overrides it. |
+
+### API host
+
+| Variable | Environment | Meaning |
+| --- | --- | --- |
+| `PLUGIN_RELEASE_DEPLOY_TOKEN` | production & release CI | Secret token for trusted CI release registration via `POST /internal/plugin-releases`. |
+| `PLUGIN_ARTIFACTS_PATH` | local | Filesystem root for local development artifacts. |
+| `PLUGIN_API_TOKEN_SECRET` | production | Secret (at least 32 characters) used to sign plugin backend access tokens. |
+| `PLUGIN_ASSET_BUCKET` | production | Storage bucket containing released plugin assets. |
+| `PLUGIN_ASSET_ORIGIN` | production | CDN origin serving released plugin assets. |
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+| --- | --- | --- |
+| `Local development requires --org` | `dev`/`seed` has no target organization | Set `CLASSROOMIO_ORG_ID` or pass `--org`. |
+| `Local development requires --token` | No development token provided | Set `CLASSROOMIO_DEV_TOKEN` or pass `--token`. |
+| `Development releases are unavailable in production` | `POST /plugins/development/releases` was called on a production host | Use the PR-first contribution flow for production releases. |
+| `Duplicate plugin ID in release request` | A release request contained duplicate IDs | Ensure each plugin ID in `releases` is unique. |
+| `Version already exists with a different digest` | An existing version was re-registered with changed code | Bump the SemVer version in `plugin.json` for new changes. |
+| `Archive not found in storage` | Release CI called the API before uploading the archive | Upload the archive to R2 before calling `/internal/plugin-releases`. |
+| `Approved plugin assets fail to load` | CDN origin, bucket policy, or response headers are incorrect | Verify the digest-qualified production key and CDN response headers. |

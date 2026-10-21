@@ -55,6 +55,7 @@
     LessonSettingsTab,
     LessonMaterialActions
   } from '$features/course/components/lesson';
+  import { PluginSlotRenderer } from '$features/plugins/components';
 
   import type { TLessonVersionIntentRequest } from '@cio/utils/validation/lesson';
   import type { TLocale } from '@cio/db/types';
@@ -657,6 +658,8 @@
             {#each viewModeComponents as Component, index (index)}
               <Component {mode} {lessonId} {courseId} />
             {/each}
+
+            <PluginSlotRenderer target="lesson.after" resource={{ type: 'lesson', id: lessonId }} className="my-4" />
 
             {#if showLessonComments}
               <hr class="my-2" />

@@ -2,15 +2,17 @@
   import { CERTIFICATE_TEMPLATES, type CertificateTemplateId } from '@cio/certificates';
   import { t } from '$lib/utils/functions/translations';
   import { cn } from '@cio/ui/tools';
+  import { PluginSlotRenderer } from '$features/plugins/components';
   import TemplateThumb from './template-thumb.svelte';
 
   interface Props {
+    courseId?: string;
     value: CertificateTemplateId;
     onSelect: (id: CertificateTemplateId) => void;
     disabled?: boolean;
   }
 
-  let { value, onSelect, disabled = false }: Props = $props();
+  let { courseId = '', value, onSelect, disabled = false }: Props = $props();
 </script>
 
 <div class="grid grid-cols-2 gap-3">
@@ -44,3 +46,9 @@
 <p class="ui:text-muted-foreground mt-4 text-xs">
   {$t('course.navItem.certificates.editor.templates_hint')}
 </p>
+
+{#if courseId}
+  <div class="ui:border-border mt-6 border-t pt-4">
+    <PluginSlotRenderer target="certificate.templates" resource={{ type: 'course', id: courseId }} />
+  </div>
+{/if}
