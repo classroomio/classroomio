@@ -3027,7 +3027,7 @@
             "peek_same_file": "Diese Datei ist identisch mit der aktuellen Version. Es ändert sich nichts.",
             "peek_unknown": "Der Paketinhalt konnte nicht gelesen werden und wurde daher nicht mit dem aktuellen Paket verglichen.",
             "sequencing_ordered": "Dieses Paket legt eine Modulreihenfolge fest: Jedes Modul wird erst freigeschaltet, wenn das vorherige abgeschlossen ist. Andere Regeln zur Abfolge, wie Vortests und Rollup, werden ignoriert.",
-            "sequencing_unordered": "Dieses Paket legt eine Modulreihenfolge fest, doch derzeit können Lernende die Module in beliebiger Reihenfolge öffnen. Stellen Sie die Modulreihenfolge in den Einstellungen auf „Der Reihe nach“ (In sequence) ein, um diese Vorgabe zu erzwingen. Andere Regeln zur Abfolge, wie Vortests und Rollup, werden ignoriert.",
+            "sequencing_unordered": "Dieses Paket legt eine Modulreihenfolge fest, doch derzeit können Lernende die Module in beliebiger Reihenfolge öffnen. Stellen Sie die Modulreihenfolge in den Einstellungen auf „Der Reihe nach“ ein, um diese Vorgabe zu erzwingen. Andere Regeln zur Abfolge, wie Vortests und Rollup, werden ignoriert.",
             "empty_title": "Kein Paket hochgeladen",
             "empty_description": "Laden Sie ein SCORM-Paket hoch, um es anzuzeigen und zu testen.",
             "upload_package": "Paket hochladen",

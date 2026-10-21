@@ -137,6 +137,7 @@ export class ActivityApi extends BaseApiWithErrors {
    * Gets an activity by ID
    */
   async get(courseId: string, activityId: string) {
+    ++this.updateReqId;
     const reqId = ++this.activityReqId;
     return this.execute<GetActivityRequest>({
       requestFn: () =>
@@ -219,7 +220,7 @@ export class ActivityApi extends BaseApiWithErrors {
         }),
       logContext: 'updating activity',
       onSuccess: (response) => {
-        if (reqId !== this.updateReqId) return;
+        if (reqId !== this.updateReqId || (this.activity && this.activity.id !== activityId)) return;
 
         if (response.data) {
           this.activity = response.data;
@@ -228,7 +229,7 @@ export class ActivityApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (reqId !== this.updateReqId) return;
+        if (reqId !== this.updateReqId || (this.activity && this.activity.id !== activityId)) return;
 
         this.success = false;
         if (typeof result === 'string') {

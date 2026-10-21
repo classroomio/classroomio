@@ -3027,7 +3027,7 @@
             "peek_same_file": "Ten plik jest identyczny z obecną wersją. Nic się nie zmieni.",
             "peek_unknown": "Nie można odczytać zawartości pakietu, więc nie został on porównany z obecnym pakietem.",
             "sequencing_ordered": "Ten pakiet określa kolejność modułów: każdy moduł zostaje odblokowany po ukończeniu poprzedniego. Inne zasady sekwencjonowania, takie jak testy wstępne czy agregacja wyników (rollup), są ignorowane.",
-            "sequencing_unordered": "Ten pakiet określa kolejność modułów, jednak obecnie uczestnicy mogą otwierać je w dowolnej kolejności. Aby wymusić określoną kolejność, w ustawieniach należy wybrać opcję „Sekwencyjnie” (In sequence). Inne zasady sekwencjonowania, takie jak testy wstępne czy agregacja wyników (rollup), są ignorowane.",
+            "sequencing_unordered": "Ten pakiet określa kolejność modułów, jednak obecnie uczestnicy mogą otwierać je w dowolnej kolejności. Aby wymusić określoną kolejność, w ustawieniach należy wybrać opcję „Sekwencyjnie”. Inne zasady sekwencjonowania, takie jak testy wstępne czy agregacja wyników (rollup), są ignorowane.",
             "empty_title": "Nie przesłano żadnego pakietu",
             "empty_description": "Prześlij pakiet SCORM, aby rozpocząć jego przeglądanie i testowanie.",
             "upload_package": "Prześlij pakiet",

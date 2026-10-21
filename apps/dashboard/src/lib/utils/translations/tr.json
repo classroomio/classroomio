@@ -3802,7 +3802,7 @@
             "peek_same_file": "Bu dosya mevcut sürümle aynıdır. Hiçbir şey değişmeyecek.",
             "peek_unknown": "Paket içeriği okunamadığı için mevcut paketle karşılaştırılmadı.",
             "sequencing_ordered": "Bu paket bir modül sırası belirler: her bir modül, bir önceki tamamlandığında açılır. Ön testler ve toplu sonuç hesaplama (rollup) gibi diğer sıralama kuralları dikkate alınmaz.",
-            "sequencing_unordered": "Bu paket bir modül sırası belirler, ancak öğrenciler şu anda modülleri istedikleri sırayla açabilirler. Bu sıralamayı zorunlu kılmak için Ayarlar bölümünde Modül sırasını “Sırayla” (In sequence) olarak ayarlayın. Ön testler ve toplu sonuç hesaplama (rollup) gibi diğer sıralama kuralları dikkate alınmaz.",
+            "sequencing_unordered": "Bu paket bir modül sırası belirler, ancak öğrenciler şu anda modülleri istedikleri sırayla açabilirler. Bu sıralamayı zorunlu kılmak için Ayarlar bölümünde Modül sırasını “Sırayla” olarak ayarlayın. Ön testler ve toplu sonuç hesaplama (rollup) gibi diğer sıralama kuralları dikkate alınmaz.",
             "empty_title": "Paket yüklenmedi",
             "empty_description": "Görüntülemeye ve test etmeye başlamak için bir SCORM paketi yükleyin.",
             "upload_package": "Paket yükle",

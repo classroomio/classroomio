@@ -3027,7 +3027,7 @@
             "peek_same_file": "Tệp này giống hệt với phiên bản hiện tại. Không có gì thay đổi.",
             "peek_unknown": "Không thể đọc nội dung gói hàng, vì vậy nó không được so sánh với gói hàng hiện tại.",
             "sequencing_ordered": "Gói này xác định thứ tự các mô-đun: mỗi mô-đun sẽ được mở khóa khi mô-đun trước đó hoàn tất. Các quy tắc trình tự khác, chẳng hạn như bài kiểm tra đầu vào và quy tắc tổng hợp kết quả (rollup), sẽ bị bỏ qua.",
-            "sequencing_unordered": "Gói này xác định thứ tự các mô-đun, nhưng hiện tại người học có thể mở các mô-đun theo bất kỳ thứ tự nào. Hãy đặt tùy chọn Thứ tự mô-đun (Module order) thành \"Theo trình tự\" (In sequence) trong phần Cài đặt để áp dụng quy tắc này. Các quy tắc trình tự khác, chẳng hạn như bài kiểm tra đầu vào và quy tắc tổng hợp kết quả, sẽ bị bỏ qua.",
+            "sequencing_unordered": "Gói này xác định thứ tự các mô-đun, nhưng hiện tại người học có thể mở các mô-đun theo bất kỳ thứ tự nào. Hãy đặt tùy chọn Thứ tự mô-đun thành \"Theo trình tự\" trong phần Cài đặt để áp dụng quy tắc này. Các quy tắc trình tự khác, chẳng hạn như bài kiểm tra đầu vào và quy tắc tổng hợp kết quả, sẽ bị bỏ qua.",
             "empty_title": "Chưa có gói nào được tải lên",
             "empty_description": "Tải lên gói SCORM để bắt đầu xem và kiểm tra.",
             "upload_package": "Tải lên gói",
