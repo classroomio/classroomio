@@ -282,13 +282,9 @@
   }
 
   async function saveAll() {
-    const promises: Promise<unknown>[] = [];
-    if (titleDirty && !savingTitle) promises.push(saveTitle());
-    if (instructionsDirty && !savingInstructions) promises.push(saveInstructions());
-    if (settingsDirty && settingsPanel) promises.push(settingsPanel.save());
-    if (promises.length > 0) {
-      await Promise.all(promises);
-    }
+    if (titleDirty && !savingTitle) await saveTitle();
+    if (instructionsDirty && !savingInstructions) await saveInstructions();
+    if (settingsDirty && settingsPanel) await settingsPanel.save();
   }
 
   function handleTitleChange(value: string) {
