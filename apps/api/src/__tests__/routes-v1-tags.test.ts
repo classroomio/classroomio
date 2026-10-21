@@ -101,6 +101,29 @@ describe('v1 tag routes', () => {
     });
   });
 
+  it.each([
+    ['POST', '/groups', { name: '   ' }],
+    ['POST', '', { name: '   ', groupId: GROUP_ID, color: '#EF4444' }],
+    ['PUT', `/${TAG_ID}`, { name: '   ' }],
+    ['PUT', `/groups/${GROUP_ID}`, { name: '   ' }]
+  ])('refuses a blank name on %s %s with 400', async (method, path, body) => {
+    const response = await send(method, path, body);
+
+    expect(response.status).toBe(400);
+    expect(createPublicApiTagGroupService).not.toHaveBeenCalled();
+    expect(createPublicApiTagService).not.toHaveBeenCalled();
+    expect(updatePublicApiTagService).not.toHaveBeenCalled();
+    expect(updatePublicApiTagGroupService).not.toHaveBeenCalled();
+  });
+
+  it('trims the name before it reaches the service', async () => {
+    vi.mocked(createPublicApiTagGroupService).mockResolvedValue({ id: GROUP_ID } as never);
+
+    await send('POST', '/groups', { name: '  Topics  ' });
+
+    expect(createPublicApiTagGroupService).toHaveBeenCalledWith('org-1', 'actor-1', { name: 'Topics' });
+  });
+
   it('routes /groups/:groupId to the group update, not the tag update', async () => {
     vi.mocked(updatePublicApiTagGroupService).mockResolvedValue({ id: GROUP_ID } as never);
 

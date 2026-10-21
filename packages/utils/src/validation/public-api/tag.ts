@@ -3,7 +3,7 @@ import * as z from 'zod';
 import { ZTagColor } from '../tag/tag';
 import { ZPublicApiPaginationQuery } from './pagination';
 
-const name = z.string().min(1).max(80);
+const name = z.string().trim().min(1).max(80);
 const description = z.string().max(240);
 const atLeastOneField = (value: object) => Object.keys(value).length > 0;
 

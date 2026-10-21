@@ -6,6 +6,7 @@ import type {
 } from '@cio/utils/validation/tag';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import { pickTagColor } from '@cio/utils/validation/tag';
+import { ErrorCodes } from '@cio/utils/constants';
 import type {
   TCourseImportCourseParam,
   TCourseImportDraftCreate,
@@ -371,7 +372,7 @@ export class ClassroomIoApiClient {
     });
   }
 
-  /** Matches tags by slug, creating missing ones (and their group) before setting each course's tagIds. */
+  /** Matches tags by name, creating missing ones (and their group) before tagging each course. */
   async tagCourses(payload: TAutomationCourseTagAssignment) {
     const groupName = payload.groupName?.trim() || 'Automation';
     const groups = await this.listAllTagGroups();
@@ -475,13 +476,47 @@ export class ClassroomIoApiClient {
         continue;
       }
 
-      groupId ??= (await this.createTagGroup({ name: groupName })).id;
-      const created = await this.createTag({ name, groupId, color: pickTagColor(name) });
-      tagsByName.set(nameKey(name), created.id);
-      tagIds.add(created.id);
+      groupId ??= await this.createOrReuse(
+        () => this.createTagGroup({ name: groupName }),
+        ErrorCodes.TAG_GROUP_ALREADY_EXISTS,
+        async () => (await this.listAllTagGroups()).find((group) => nameKey(group.name) === nameKey(groupName))?.id
+      );
+      const tagGroupId = groupId;
+      const createdId = await this.createOrReuse(
+        () => this.createTag({ name, groupId: tagGroupId, color: pickTagColor(name) }),
+        ErrorCodes.TAG_ALREADY_EXISTS,
+        async () =>
+          (await this.listAllTagGroups())
+            .flatMap((group) => group.tags)
+            .find((tag) => nameKey(tag.name) === nameKey(name))?.id
+      );
+      tagsByName.set(nameKey(name), createdId);
+      tagIds.add(createdId);
     }
 
     return [...tagIds];
+  }
+
+  // Another call can create the same name between our list and our create; use the one it made.
+  private async createOrReuse(
+    create: () => Promise<{ id: string }>,
+    conflictCode: string,
+    find: () => Promise<string | undefined>
+  ) {
+    try {
+      return (await create()).id;
+    } catch (error) {
+      if (!(error instanceof ClassroomIoApiError) || error.status !== 409 || error.code !== conflictCode) {
+        throw error;
+      }
+
+      const id = await find();
+      if (!id) {
+        throw error;
+      }
+
+      return id;
+    }
   }
 
   async getCourseCertificate(courseId: string) {
