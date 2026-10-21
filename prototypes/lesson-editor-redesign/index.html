@@ -373,8 +373,8 @@
     transition: opacity .12s, transform .12s;
   }
   [data-tip]:hover::after, [data-tip]:focus-visible::after { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .block-type { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
-  .block-type svg { width: 13px; height: 13px; stroke-width: 2.2; }
+  .block-type { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 500; color: var(--muted-foreground); }
+  .block-type svg { width: 11px; height: 11px; stroke-width: 2.2; }
   .block-head .sp { flex: 1; }
   /* hover insertion line: sits between every pair of blocks, and after the last one, in place of a persistent add-content button */
   .block-gap { display: flex; align-items: center; gap: 8px; height: 20px; margin: 10px 0; position: relative; }
@@ -403,33 +403,73 @@
   .modern-canvas .block-gap:hover .gap-line,
   .modern-canvas .block-gap.gap-popover-open .gap-line { background: var(--primary); height: 2px; }
 
-  /* Anchored popover, radial: the types fan out in an arc around the "+" rather than sitting in
-     a row — every target is the same short reach from the cursor, pinned to the exact point
-     clicked. Arcs upward by default and flips to arc downward when there isn't room above in the
-     viewport. The rest of the canvas dims back so the fan (and the gap it belongs to) hold the
-     eye without a layout shift. */
+  /* Anchored popover: a compact version of the empty-state card, a 5x2 grid of small tiles with
+     Ask AI along the bottom, opening right at the "+" and sized to the column it lives in. */
   .gap-popover {
-    position: absolute; left: 50%; top: 50%; width: 0; height: 0; z-index: 30;
+    position: absolute; left: 50%; top: 50%; z-index: 30;
+    width: min(440px, calc(100cqw - 16px)); margin-left: calc(min(440px, 100cqw - 16px) / -2);
   }
-  .gap-radial-node {
-    position: absolute; left: 0; top: 0; width: 46px; height: 46px; margin: -23px 0 0 -23px;
-    border-radius: 999px; border: 1px solid var(--border); background: var(--popover); color: var(--muted-foreground);
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-    cursor: pointer; padding: 0; box-shadow: var(--shadow-md);
-    opacity: 0; pointer-events: none; transform: translate(0, 0) scale(.4);
-    transition: transform .26s cubic-bezier(.34,1.56,.64,1), opacity .16s, border-color .12s, color .12s;
+  .block-gap { container-type: inline-size; }
+  .gap-popover.gap-grid {
+    bottom: calc(50% + 20px); top: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;
+    background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+    opacity: 0; transform: translateY(6px) scale(.97); transform-origin: bottom center; transition: opacity .14s, transform .18s cubic-bezier(.2,.9,.3,1.2);
   }
-  .gap-radial-node svg { width: 16px; height: 16px; stroke-width: 2; }
-  .gap-radial-node .lb {
-    position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%);
-    font-size: 9.5px; font-weight: 600; white-space: nowrap; color: var(--muted-foreground);
+  .gap-popover.gap-grid.is-open { opacity: 1; transform: none; }
+  .gap-popover.gap-grid.below { bottom: auto; top: calc(50% + 20px); transform-origin: top center; transform: translateY(-6px) scale(.97); }
+  .gap-popover.gap-grid.below.is-open { transform: none; }
+  .gap-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  @container (max-width: 380px) { .gap-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .gap-tile {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 58px; padding: 8px 2px;
+    border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--foreground);
+    font: inherit; font-size: 10.5px; font-weight: 500; cursor: pointer; text-align: center; line-height: 1.15;
+    transition: border-color .12s, background .12s, color .12s;
   }
-  .gap-popover.is-open .gap-radial-node { opacity: 1; pointer-events: auto; transform: translate(var(--x), var(--y)) scale(1); }
-  .gap-radial-node:hover, .gap-radial-node:focus-visible { border-color: var(--primary); color: var(--primary); outline: none; }
-  .gap-radial-node:hover .lb, .gap-radial-node:focus-visible .lb { color: var(--primary); }
-  .gap-radial-node.ai { color: var(--primary); border-color: color-mix(in oklab, var(--primary) 35%, var(--border)); }
+  .gap-tile svg { width: 16px; height: 16px; stroke-width: 1.9; color: var(--primary); }
+  .gap-tile:hover, .gap-tile:focus-visible { border-color: var(--primary); background: color-mix(in oklab, var(--primary) 8%, var(--card)); outline: none; }
+  .gap-ai {
+    display: flex; align-items: center; justify-content: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); background: var(--card); color: var(--foreground); font: inherit; font-size: 12px; font-weight: 500; cursor: pointer;
+  }
+  .gap-ai svg { width: 14px; height: 14px; color: var(--primary); }
+  .gap-ai kbd { font: inherit; font-size: 10.5px; color: var(--muted-foreground); }
+  .gap-ai:hover, .gap-ai:focus-visible { border-color: var(--primary); outline: none; }
   .canvas.popover-dim > .content-section { opacity: .4; transition: opacity .16s; }
 
+
+  /* Ask AI chat panel: docks to the right edge like the production assistant and pushes the
+     lesson over instead of covering it, so a drafted block can be inserted while it stays in view. */
+  .ai-panel {
+    position: fixed; top: 49px; right: 0; bottom: 0; width: 380px; z-index: 40; display: flex; flex-direction: column;
+    background: var(--background); border-left: 1px solid var(--border); box-shadow: var(--shadow-lg);
+    transform: translateX(100%); visibility: hidden; transition: transform .24s cubic-bezier(.2,.8,.2,1), visibility 0s .24s;
+  }
+  body.ai-open .ai-panel { transform: none; visibility: visible; transition: transform .24s cubic-bezier(.2,.8,.2,1); }
+  body.ai-open { padding-right: 380px; transition: padding-right .24s cubic-bezier(.2,.8,.2,1); }
+  body { transition: padding-right .24s cubic-bezier(.2,.8,.2,1); }
+  body.ai-open .floating-nav-wrap { left: calc(236px + (100vw - 236px - 380px) / 2); max-width: calc(100vw - 236px - 380px - 48px); }
+  .floating-nav-wrap { transition: left .24s cubic-bezier(.2,.8,.2,1); }
+  .ai-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; }
+  .ai-head #aiHeadIcon svg { width: 16px; height: 16px; color: var(--primary); }
+  .ai-head .sp { flex: 1; }
+  .ai-x { width: 28px; height: 28px; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--muted-foreground); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .ai-x:hover { background: var(--accent); color: var(--foreground); }
+  .ai-x svg { width: 15px; height: 15px; color: inherit; }
+  .ai-log { flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 12px; }
+  .ai-msg { max-width: 92%; font-size: 13.5px; line-height: 1.5; padding: 9px 12px; border-radius: var(--radius-xl); }
+  .ai-msg.user { align-self: flex-end; background: var(--primary); color: var(--primary-foreground); }
+  .ai-msg.bot { align-self: flex-start; background: var(--muted); color: var(--foreground); }
+  .ai-msg.bot h3 { font-size: 13.5px; margin: 0 0 4px; }
+  .ai-msg.bot p { margin: 0 0 6px; }
+  .ai-insert { margin-top: 6px; }
+  .ai-suggest { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+  .ai-suggest button { text-align: left; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--foreground); font: inherit; font-size: 12.5px; cursor: pointer; }
+  .ai-suggest button:hover { border-color: var(--primary); }
+  .ai-compose { padding: 12px 14px; border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-end; }
+  .ai-compose textarea { flex: 1; resize: none; min-height: 38px; max-height: 120px; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--foreground); font: inherit; font-size: 13.5px; }
+  .ai-compose textarea:focus { outline: none; border-color: var(--ring); }
+  @media (max-width: 780px) { body.ai-open { padding-right: 0; } .ai-panel { width: 100%; } }
 
   /* shared pill styling: the same look is used by the floating in-editor nav and by the
      "Add content" dialog, so there is one visual language for "add content" everywhere. */
@@ -450,7 +490,7 @@
      the empty canvas already has its own centered "Add content" prompt. */
   .floating-nav-wrap {
     position: fixed; bottom: 22px; left: calc(236px + (100vw - 236px) / 2); transform: translateX(-50%);
-    z-index: 15; display: none;
+    z-index: 15; display: none; width: max-content; max-width: calc(100vw - 236px - 48px);
   }
   .floating-nav-wrap.is-visible { display: block; }
   .floating-nav {
@@ -572,6 +612,424 @@
 
 
 
+  /* ===== interactive blocks: chart · flashcards · tabs · multiple choice · process =====
+     Edit mode already frames every top-level block as a card, so these blocks never add a second
+     outer card there — their structure comes from inner surfaces (plot, deck, option rows, stepper).
+     Preview strips the card off, so the blocks that need a visible boundary there get a frame back
+     (see the .mode-preview rule at the end of this section). */
+
+  @keyframes cb-grow { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+  @keyframes cb-reveal { from { clip-path: inset(-8px 100% -8px 0); } to { clip-path: inset(-8px -2px -8px -2px); } }
+  @keyframes cb-fade { from { opacity: 0; transform: translateY(4px) scale(.6); } to { opacity: 1; transform: none; } }
+  @keyframes cb-pop { from { opacity: 0; transform: scale(.88); } to { opacity: 1; transform: none; } }
+  @keyframes pane-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  @keyframes quiz-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+  /* ---------- Chart ---------- */
+  .chart-block { display: flex; flex-direction: column; gap: 22px; container-type: inline-size; }
+  .cb-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .cb-titles { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 4px; }
+  .chart-title-input {
+    font: inherit; font-size: 19px; font-weight: 700; letter-spacing: -.02em; color: var(--foreground);
+    border: none; background: transparent; outline: none; border-radius: var(--radius-sm);
+    padding: 3px 8px; margin: -3px -8px; width: calc(100% + 16px); box-sizing: border-box;
+  }
+  .chart-title-input:hover, .chart-title-input:focus { background: var(--accent); }
+  .chart-title-input::placeholder { color: var(--muted-foreground); font-weight: 600; }
+  .chart-title-display { font-size: 19px; font-weight: 700; margin: 0; letter-spacing: -.02em; }
+  .cb-sub { margin: 0; font-size: 12.5px; color: var(--muted-foreground); }
+  .cb-sub b { font-weight: 600; color: var(--foreground); }
+  .chart-type-tabs { display: flex; gap: 2px; background: var(--muted); border-radius: var(--radius-lg); padding: 3px; flex-shrink: 0; }
+  .chart-type-tabs button {
+    width: 36px; height: 30px; display: grid; place-items: center; padding: 0; border: none; background: transparent;
+    color: var(--muted-foreground); border-radius: var(--radius-md); cursor: pointer; transition: background .12s, color .12s;
+  }
+  .chart-type-tabs button svg { width: 16px; height: 16px; stroke-width: 2; }
+  .chart-type-tabs button:hover { color: var(--foreground); }
+  .chart-type-tabs button.active { background: var(--card); color: var(--primary); box-shadow: var(--shadow-sm); }
+
+  .chart-canvas { width: 100%; }
+  .cb-chart { --cb-height: 224px; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; padding-top: 22px; }
+  .cb-yaxis { position: relative; height: var(--cb-height); width: calc(var(--yw, 2) * 1ch + 2px); font-size: 11.5px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+  .cb-yaxis span { position: absolute; right: 0; bottom: calc(var(--p) * 1%); transform: translateY(50%); line-height: 1; }
+  .cb-plot { position: relative; height: var(--cb-height); }
+  .cb-gridlines { position: absolute; inset: 0; pointer-events: none; }
+  .cb-gridlines i { position: absolute; left: 0; right: 0; bottom: calc(var(--p) * 1%); border-top: 1px dashed color-mix(in oklab, var(--border), var(--foreground) 7%); }
+  .cb-gridlines i:first-child { border-top: 1px solid color-mix(in oklab, var(--border), var(--foreground) 14%); }
+  .cb-xlabels { grid-column: 2; display: flex; margin-top: 12px; }
+  .cb-xlabels span { flex: 1; min-width: 0; padding: 0 4px; text-align: center; font-size: 12.5px; font-weight: 500; color: var(--muted-foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .cb-cols { position: absolute; inset: 0; display: flex; }
+  .cb-col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; cursor: default; }
+  .cb-val { font-size: 12.5px; font-weight: 700; margin-bottom: 7px; color: var(--foreground); font-variant-numeric: tabular-nums; transition: transform .15s; }
+  .cb-bar {
+    width: min(58%, 60px); height: calc(var(--v) * 1%); min-height: 4px; border-radius: 9px 9px 3px 3px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 72%, white) 0%, var(--primary) 100%);
+    transform-origin: bottom; transition: filter .15s, width .15s;
+    animation: cb-grow .75s cubic-bezier(.22,.61,.36,1) backwards; animation-delay: calc(var(--i) * 70ms);
+  }
+  .cb-cols:hover .cb-col:not(:hover) .cb-bar { filter: saturate(.5) brightness(1.15); }
+  .cb-col:hover .cb-bar { width: min(66%, 68px); }
+  .cb-col:hover .cb-val { transform: translateY(-2px); }
+
+  .cb-line-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; animation: cb-reveal 1s cubic-bezier(.4,.1,.2,1) backwards; }
+  .cb-line-path { fill: none; stroke: var(--primary); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .cb-dot {
+    position: absolute; width: 12px; height: 12px; border-radius: 999px; background: var(--card); border: 3px solid var(--primary);
+    transform: translate(-50%, 50%); box-sizing: border-box; transition: transform .15s, box-shadow .15s;
+    animation: cb-fade .4s ease backwards; animation-delay: calc(.5s + var(--i) * 70ms);
+  }
+  .cb-dot em { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--foreground); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .cb-dot:hover { transform: translate(-50%, 50%) scale(1.25); box-shadow: 0 0 0 5px color-mix(in oklab, var(--primary) 18%, transparent); }
+  .cb-chart.no-anim .cb-bar, .cb-chart.no-anim .cb-line-svg, .cb-chart.no-anim .cb-dot, .cb-radial.no-anim .cb-slice { animation: none; }
+
+  .cb-radial { display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; padding: 4px 0; }
+  .cb-pie { position: relative; width: 208px; height: 208px; flex-shrink: 0; }
+  .cb-pie svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .cb-slice { stroke: var(--card); stroke-width: 1.4; stroke-linejoin: round; transition: opacity .15s, transform .2s; transform-box: view-box; transform-origin: 50% 50%; animation: cb-pop .55s cubic-bezier(.22,.61,.36,1) backwards; animation-delay: calc(var(--i) * 80ms); cursor: default; }
+  .cb-slice:hover { transform: scale(1.035); }
+  .cb-slice.cb-dim { opacity: .3; }
+  .cb-pie-empty { fill: none; stroke: var(--border); stroke-width: 10; }
+  .cb-pie-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+  .cb-pie-center strong { font-size: 26px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .cb-pie-center span { font-size: 12px; color: var(--muted-foreground); font-weight: 500; }
+  .cb-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 200px; max-width: 340px; }
+  .cb-legend li { display: flex; align-items: center; gap: 11px; padding: 8px 12px; border-radius: var(--radius-md); font-size: 14px; transition: background .12s, opacity .15s; }
+  .cb-legend li:hover { background: var(--accent); }
+  .cb-legend li.cb-dim { opacity: .45; }
+  .cb-sw { width: 11px; height: 11px; border-radius: 4px; background: var(--c); flex-shrink: 0; }
+  .cb-legend .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .cb-legend .vl { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .cb-legend .pc { width: 40px; text-align: right; color: var(--muted-foreground); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+
+  .cb-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .cb-footer .hint { font-size: 12.5px; color: var(--muted-foreground); }
+  .cb-data-toggle svg:last-child { transition: transform .15s; }
+  .cb-data-toggle.on svg:last-child { transform: rotate(180deg); }
+  .cb-data { display: none; flex-direction: column; gap: 8px; margin-top: -8px; padding: 14px; background: var(--muted); border-radius: var(--radius-lg); }
+  .cb-data.open { display: flex; }
+  .cb-data-row { display: grid; grid-template-columns: 12px minmax(0, 1fr) 104px 30px; gap: 10px; align-items: center; }
+  .cb-data-row.head { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-foreground); padding-bottom: 2px; }
+  .cb-data-row .input { height: 34px; background: var(--card); }
+  .cb-data-row .icon-btn { width: 30px; height: 30px; border: none; background: transparent; box-shadow: none; }
+  .cb-data-row .icon-btn:hover { background: var(--card); color: var(--destructive); }
+  .cb-data-row .icon-btn:disabled { opacity: .35; pointer-events: none; }
+  .cb-data .ghost-add-tile { background: transparent; }
+  @container (max-width: 460px) {
+    .cb-radial { gap: 14px; flex-direction: column; }
+    .cb-legend { max-width: none; width: 100%; }
+    .cb-chart { --cb-height: 188px; }
+    .cb-footer .hint { display: none; }
+  }
+
+  /* ---------- Flashcards ---------- */
+  .fc-block { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .fc-deck { position: relative; width: 100%; max-width: 580px; margin-bottom: 14px; }
+  .fc-deck::before, .fc-deck::after {
+    content: ''; position: absolute; inset: 0; border-radius: var(--radius-xl); background: var(--card);
+    border: 1px solid var(--border); box-shadow: var(--shadow-sm); z-index: 0;
+  }
+  .fc-deck::before { transform: translateY(14px) scale(.93); opacity: .55; }
+  .fc-deck::after { transform: translateY(7px) scale(.965); opacity: .85; }
+  .fc-card { position: relative; z-index: 1; perspective: 1500px; aspect-ratio: 16 / 10; min-height: 232px; cursor: default; outline: none; }
+  .screen.mode-preview .fc-card { cursor: pointer; }
+  .fc-card:focus-visible .fc-face { box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 60%, transparent); }
+  .fc-card-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .65s cubic-bezier(.45,.15,.2,1); }
+  .fc-card.flipped .fc-card-inner { transform: rotateY(180deg); }
+  .fc-face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-sizing: border-box;
+    border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 14px; padding: 40px 48px 44px; text-align: center; box-shadow: var(--shadow-lg);
+  }
+  .fc-front {
+    background: linear-gradient(160deg, var(--card) 30%, color-mix(in oklab, var(--primary) 9%, var(--card)) 100%);
+    border: 1px solid color-mix(in oklab, var(--primary) 20%, var(--border));
+  }
+  .fc-back {
+    transform: rotateY(180deg); color: var(--primary-foreground);
+    background: linear-gradient(150deg, color-mix(in oklab, var(--primary) 88%, white) 0%, var(--primary) 45%, color-mix(in oklab, var(--primary) 72%, black) 100%);
+  }
+  .fc-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--primary); }
+  .fc-tag::before { content: ''; width: 16px; height: 2px; border-radius: 2px; background: currentColor; opacity: .6; }
+  .fc-tag::after { content: ''; width: 16px; height: 2px; border-radius: 2px; background: currentColor; opacity: .6; }
+  .fc-back .fc-tag { color: color-mix(in oklab, var(--primary-foreground) 78%, transparent); }
+  .fc-text {
+    width: 100%; max-height: 100%; overflow-y: auto; outline: none; border-radius: var(--radius-sm); box-sizing: border-box;
+    font-size: clamp(18px, 2.6vw, 25px); font-weight: 650; line-height: 1.38; letter-spacing: -.015em; padding: 4px 8px; scrollbar-width: none;
+  }
+  .fc-back .fc-text { font-weight: 500; font-size: clamp(16px, 2.2vw, 21px); line-height: 1.5; }
+  .screen:not(.mode-preview) .fc-text:hover { background: color-mix(in oklab, currentColor 6%, transparent); }
+  .screen:not(.mode-preview) .fc-text:focus { background: color-mix(in oklab, currentColor 8%, transparent); }
+  .fc-text:empty::before { content: attr(data-ph); opacity: .45; }
+  .fc-flipbtn {
+    position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; padding: 0; border-radius: 999px; border: none; cursor: pointer;
+    display: grid; place-items: center; color: var(--muted-foreground); background: color-mix(in oklab, var(--foreground) 5%, transparent);
+    transition: background .12s, color .12s, transform .3s;
+  }
+  .fc-flipbtn:hover { background: color-mix(in oklab, var(--primary) 14%, transparent); color: var(--primary); transform: rotate(180deg); }
+  .fc-back .fc-flipbtn { color: color-mix(in oklab, var(--primary-foreground) 85%, transparent); background: rgb(255 255 255 / .14); }
+  .fc-back .fc-flipbtn:hover { background: rgb(255 255 255 / .28); color: var(--primary-foreground); }
+  .fc-flipbtn svg { width: 15px; height: 15px; stroke-width: 2.2; }
+  .fc-hint { position: absolute; bottom: 14px; left: 0; right: 0; font-size: 11.5px; font-weight: 500; color: var(--muted-foreground); opacity: .85; pointer-events: none; }
+  .fc-back .fc-hint { color: color-mix(in oklab, var(--primary-foreground) 65%, transparent); }
+  .fc-nav { display: flex; align-items: center; gap: 16px; width: 100%; max-width: 580px; }
+  .fc-arrow {
+    width: 38px; height: 38px; padding: 0; flex-shrink: 0; border-radius: 999px; border: 1px solid var(--input); background: var(--background);
+    color: var(--foreground); display: grid; place-items: center; cursor: pointer; box-shadow: var(--shadow-2xs); transition: background .12s, border-color .12s, color .12s;
+  }
+  .fc-arrow:hover:not(:disabled) { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+  .fc-arrow:disabled { opacity: .4; cursor: not-allowed; }
+  .fc-arrow svg { width: 17px; height: 17px; stroke-width: 2.3; }
+  .fc-progress { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
+  .fc-count { font-size: 12.5px; font-weight: 600; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+  .fc-count b { color: var(--foreground); font-weight: 700; }
+  .fc-bar { width: 100%; height: 4px; border-radius: 999px; background: var(--muted); overflow: hidden; }
+  .fc-bar i { display: block; height: 100%; width: calc(var(--p) * 1%); background: var(--primary); border-radius: inherit; transition: width .35s cubic-bezier(.22,.61,.36,1); }
+  .fc-edit { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 18px; border-top: 1px solid var(--border); }
+  .fc-thumbs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .fc-thumb {
+    min-width: 32px; height: 32px; padding: 0 8px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--card);
+    color: var(--muted-foreground); font-size: 12.5px; font-weight: 600; cursor: pointer; display: grid; place-items: center; transition: border-color .12s, color .12s, background .12s;
+  }
+  .fc-thumb:hover { border-color: var(--primary); color: var(--primary); }
+  .fc-thumb.on { border-color: var(--primary); color: var(--primary); background: color-mix(in oklab, var(--primary) 9%, var(--card)); }
+  .fc-thumb.add { border-style: dashed; }
+  .fc-thumb.add svg { width: 14px; height: 14px; stroke-width: 2.4; }
+  .fc-edit-hint { display: inline-flex; align-items: center; gap: 7px; align-self: center; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--primary); background: color-mix(in oklab, var(--primary) 9%, var(--card)); border: 1px solid color-mix(in oklab, var(--primary) 25%, var(--border)); }
+  .fc-edit-hint svg { width: 14px; height: 14px; stroke-width: 2.2; }
+  .screen:not(.mode-preview) .fc-text { outline: 1.5px dashed color-mix(in oklab, currentColor 38%, transparent); outline-offset: 2px; background: color-mix(in oklab, currentColor 4%, transparent); cursor: text; min-width: 60%; }
+  .screen:not(.mode-preview) .fc-text:hover { outline-color: var(--primary); }
+  .screen:not(.mode-preview) .fc-back .fc-text:hover { outline-color: currentColor; }
+  .screen:not(.mode-preview) .fc-text:focus { outline-style: solid; outline-color: var(--primary); }
+  .screen:not(.mode-preview) .fc-back .fc-text:focus { outline-color: currentColor; }
+  .screen:not(.mode-preview) .fc-hint { display: none; }
+  @media (max-width: 560px) { .fc-face { padding: 30px 22px 34px; } .fc-card { min-height: 250px; aspect-ratio: auto; } }
+
+
+  /* ---------- Tabs ---------- */
+  .tabs-block { display: flex; flex-direction: column; gap: 20px; }
+  .tabs-pill-row { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; padding: 4px; background: var(--muted); border-radius: var(--radius-xl); align-self: flex-start; max-width: 100%; box-sizing: border-box; }
+  .tabs-pill { position: relative; display: inline-flex; align-items: center; border-radius: calc(var(--radius-xl) - 4px); transition: background .15s, box-shadow .15s; }
+  .tabs-pill.active { background: var(--card); box-shadow: var(--shadow-sm), 0 0 0 1px color-mix(in oklab, var(--border) 70%, transparent); }
+  .tabs-pill-input {
+    field-sizing: content; min-width: 56px; max-width: 240px; font: inherit; font-size: 14px; font-weight: 500; color: var(--muted-foreground);
+    border: none; background: transparent; padding: 8px 16px; border-radius: inherit; outline: none; text-align: center; cursor: pointer; text-overflow: ellipsis;
+  }
+  .tabs-pill:not(.active):hover .tabs-pill-input { color: var(--foreground); }
+  .tabs-pill.active .tabs-pill-input { color: var(--foreground); font-weight: 650; cursor: text; }
+  .screen.mode-preview .tabs-pill.active .tabs-pill-input { cursor: default; }
+  .tabs-pill-input:focus-visible { box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 45%, transparent); }
+  .tabs-pill-remove { width: 22px; height: 22px; margin-right: 6px; margin-left: -8px; flex-shrink: 0; border-radius: 999px; border: none; background: transparent; color: var(--muted-foreground); cursor: pointer; display: none; place-items: center; padding: 0; }
+  .tabs-pill.active .tabs-pill-remove.edit-only { display: grid; }
+  .tabs-pill-remove:hover { background: color-mix(in oklab, var(--destructive) 12%, transparent); color: var(--destructive); }
+  .tabs-pill-remove svg { width: 12px; height: 12px; stroke-width: 2.4; }
+  .tabs-add-btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; margin-left: 2px; border: none; background: transparent; color: var(--muted-foreground); font-size: 13px; font-weight: 500; border-radius: calc(var(--radius-xl) - 4px); cursor: pointer; transition: background .12s, color .12s; }
+  .tabs-add-btn:hover { background: color-mix(in oklab, var(--card) 70%, transparent); color: var(--primary); }
+  .tabs-add-btn svg { width: 14px; height: 14px; stroke-width: 2.4; }
+  .tab-note { position: relative; padding: 18px 0 6px; display: flex; flex-direction: column; gap: 8px; }
+  .tab-note[data-align="left"] { text-align: left; align-items: stretch; }
+  .tab-note[data-align="center"] { text-align: center; }
+  .tab-note[data-align="right"] { text-align: right; }
+  .tab-note-text { font-size: 15px; line-height: 1.65; color: var(--foreground); outline: none; border-radius: var(--radius-md); padding: 8px 12px; margin: 0 -12px; min-height: 1.65em; transition: background .12s, box-shadow .12s; }
+  .tab-note[data-align="center"] .tab-note-text { max-width: 560px; margin-left: auto; margin-right: auto; }
+  .tab-note[data-align="right"] .tab-note-text { max-width: 560px; margin-left: auto; }
+  .screen:not(.mode-preview) .tab-note-text:hover { background: color-mix(in oklab, var(--card) 70%, transparent); }
+  .screen:not(.mode-preview) .tab-note-text:focus { background: var(--card); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 40%, transparent); }
+  .tab-note-text:empty::before { content: attr(data-placeholder); color: var(--muted-foreground); pointer-events: none; }
+  .tab-note-bar { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted-foreground); opacity: 0; transition: opacity .15s; }
+  .tab-note:hover .tab-note-bar, .tab-note:focus-within .tab-note-bar { opacity: 1; }
+  .tab-note[data-align="center"] .tab-note-bar { justify-content: center; }
+  .tab-note[data-align="right"] .tab-note-bar { justify-content: flex-end; }
+  .tab-note-align { display: inline-flex; padding: 2px; gap: 2px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; box-shadow: var(--shadow-2xs); }
+  .tab-note-align button { width: 26px; height: 24px; border: none; border-radius: 999px; background: transparent; color: var(--muted-foreground); display: grid; place-items: center; cursor: pointer; padding: 0; }
+  .tab-note-align button:hover { color: var(--foreground); }
+  .tab-note-align button.on { background: var(--primary); color: var(--primary-foreground, #fff); }
+  .tab-note-align svg { width: 14px; height: 14px; stroke-width: 2; }
+  /* Tabs: centered segmented control */
+  .tabs-block { align-items: stretch; }
+  .tabs-pill-row { align-self: center; flex-wrap: nowrap; gap: 0; padding: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; box-shadow: var(--shadow-xs, var(--shadow-sm)); overflow-x: auto; scrollbar-width: none; }
+  .tabs-pill-row::-webkit-scrollbar { display: none; }
+  .tabs-pill { flex-shrink: 0; border-radius: 999px; }
+  .tabs-pill.active { background: var(--primary); box-shadow: none; }
+  .tabs-pill-input { padding: 9px 20px; font-size: 13.5px; font-weight: 600; }
+  .tabs-pill.active .tabs-pill-input, .tabs-pill.active .tabs-pill-edit { color: var(--primary-foreground, #fff); }
+  .tabs-pill.active .tabs-pill-input:focus-visible { box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary-foreground, #fff) 70%, transparent); }
+  .tabs-pill.active .tabs-pill-remove { color: color-mix(in oklab, var(--primary-foreground, #fff) 85%, transparent); }
+  .tabs-pill.active .tabs-pill-remove:hover { background: rgb(255 255 255 / .22); color: var(--primary-foreground, #fff); }
+  .tabs-add-btn { flex-shrink: 0; border-radius: 999px; height: 36px; white-space: nowrap; }
+  .tabs-block[data-align="left"] { text-align: left; }
+  .tabs-block[data-align="center"] { text-align: center; }
+  .tabs-block[data-align="right"] { text-align: right; }
+  .tabs-block[data-align="left"] .tabs-pill-row { align-self: flex-start; }
+  .tabs-block[data-align="center"] .tabs-pill-row { align-self: center; }
+  .tabs-block[data-align="right"] .tabs-pill-row { align-self: flex-end; }
+  .tabs-block .tabs-pill-row { max-width: 100%; }
+  .tabs-block .tab-note { align-items: stretch; }
+  .tabs-block[data-align="center"] .tab-note-text { max-width: 520px; margin-left: auto; margin-right: auto; }
+  .tabs-block[data-align="right"] .tab-note-text { max-width: 520px; margin-left: auto; margin-right: 0; }
+  .tabs-block[data-align="left"] .tab-note-text { max-width: 520px; margin-left: 0; margin-right: 0; }
+  .tabs-block[data-align="center"] .tabs-pane .canvas { align-items: stretch; }
+  .tabs-toolbar { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted-foreground); }
+  .tabs-block[data-align="center"] .tabs-toolbar { justify-content: center; }
+  .tabs-block[data-align="right"] .tabs-toolbar { justify-content: flex-end; }
+  .tabs-pill-remove, .tabs-pill-edit { transition: opacity .15s; }
+  .screen:not(.mode-preview) .tabs-pill-input { padding-right: 6px; }
+  .screen:not(.mode-preview) .tabs-pill.active .tabs-pill-input { padding-right: 4px; }
+  .screen:not(.mode-preview) .tabs-pill:not(.active) .tabs-pill-input { padding-right: 20px; }
+  .tabs-pill-remove { margin-left: 0; margin-right: 8px; }
+  .tabs-pill-edit, .screen:not(.mode-preview) .tabs-pill.active .tabs-pill-edit { display: none !important; }
+  .tabs-add-btn { margin-left: 6px; }
+  .screen:not(.mode-preview) .tabs-pill.active .tabs-pill-remove { margin-left: 0; margin-right: 8px; }
+  .screen:not(.mode-preview) .tabs-pill .tabs-pill-remove.edit-only { display: grid; visibility: hidden; width: 24px; height: 24px; margin: 0 8px 0 0; }
+  .screen:not(.mode-preview) .tabs-pill.active .tabs-pill-remove.edit-only { visibility: visible; }
+  .screen:not(.mode-preview) .tabs-pill .tabs-pill-input, .screen:not(.mode-preview) .tabs-pill:not(.active) .tabs-pill-input, .screen:not(.mode-preview) .tabs-pill.active .tabs-pill-input { padding-right: 4px; }
+  .tabs-add-btn { margin-left: 8px; }
+  .tabs-pill.active .tabs-pill-input { font-weight: 600; }
+  .tabs-pane .canvas { zoom: .86; }
+  .tabs-pane .canvas .content-section h1, .tabs-pane .canvas .content-section h2 { font-size: .92em; }
+  .tabs-pane:not([hidden]) { display: flex; flex-direction: column; }
+  .tabs-pane .tab-note { order: 0; }
+  .tabs-pane .canvas { order: 1; }
+  .tabs-block[data-note="below"] .tab-note { order: 2; padding: 6px 0 18px; }
+  .tabs-toolbar { flex-wrap: wrap; row-gap: 8px; column-gap: 14px; }
+  .tabs-toolbar .tb-group { display: inline-flex; align-items: center; gap: 8px; }
+  .tab-empty-plus { width: 44px; height: 44px; border-radius: 999px; border: 1.5px dashed color-mix(in oklab, var(--primary) 45%, var(--border)); background: var(--card); color: var(--primary); display: grid; place-items: center; cursor: pointer; padding: 0; box-shadow: var(--shadow-2xs); transition: transform .18s, background .15s, border-color .15s, color .15s; }
+  .tab-empty-plus:hover { background: color-mix(in oklab, var(--primary) 10%, var(--card)); border-style: solid; }
+  .tab-empty-plus svg { width: 20px; height: 20px; stroke-width: 2.2; transition: transform .2s; }
+  .tabs-pane .empty-page.open .tab-empty-plus { background: var(--primary); color: var(--primary-foreground, #fff); border-style: solid; border-color: transparent; }
+  .tabs-pane .empty-page.open .tab-empty-plus svg { transform: rotate(45deg); }
+  .tabs-pane .empty-page .empty-pill-row { display: none; }
+  .tabs-pane .empty-page.open .empty-pill-row { display: flex; animation: pane-in .2s ease-out; }
+  .tabs-pane .empty-page.open .tab-empty-hint { display: none; }
+  @media (max-width: 560px) {
+    .tabs-pill-row { align-self: stretch !important; }
+    .tabs-pill-input { padding: 8px 14px; font-size: 13px; }
+    .tabs-add-btn { width: 36px; padding: 0; justify-content: center; font-size: 0; gap: 0; }
+    .tabs-add-btn svg { width: 16px; height: 16px; }
+    .tabs-block .tabs-toolbar { justify-content: center; }
+  }
+  .tabs-pill-edit { width: 14px; height: 14px; margin-right: 12px; margin-left: -8px; color: var(--muted-foreground); display: none; pointer-events: none; flex-shrink: 0; }
+  .tabs-pill-edit svg { width: 14px; height: 14px; }
+  .screen:not(.mode-preview) .tabs-pill.active .tabs-pill-edit { display: block; }
+  .screen:not(.mode-preview) .tabs-pill.active:has(.tabs-pill-input:focus) .tabs-pill-edit { display: none; }
+  .tabs-pane[hidden] { display: none; }
+  .tabs-pane { animation: pane-in .24s ease-out; }
+  .tabs-pane .canvas { padding: 0; }
+  .screen .tabs-pane .modern-canvas > .content-section { background: none; border: none; border-radius: 0; padding: 14px 0 18px; }
+  .screen:not(.mode-preview) .tabs-pane .modern-canvas > .content-section { background: none; border: none; border-radius: 0; padding: 14px 0 18px; }
+  .screen .tabs-pane .modern-canvas > .block-gap, .screen:not(.mode-preview) .tabs-pane .modern-canvas > .block-gap { margin: 10px 0; }
+  .screen:not(.mode-preview) .tabs-pane { background: color-mix(in oklab, var(--muted) 55%, transparent); border-radius: var(--radius-lg); padding: 4px 20px; }
+  .screen:not(.mode-preview) .tabs-pane[hidden] { display: none; }
+  .tabs-pane .empty-page {
+    max-width: none; margin: 0; padding: 34px 20px; gap: 8px; border: 1.5px dashed var(--border); border-radius: var(--radius-lg);
+    background: color-mix(in oklab, var(--muted) 45%, transparent);
+  }
+  .tabs-pane .empty-page .ic { width: 34px; height: 34px; background: var(--card); box-shadow: var(--shadow-2xs); color: var(--muted-foreground); }
+  .tabs-pane .empty-page .ic svg { width: 17px; height: 17px; }
+  .tabs-pane .empty-page strong { font-size: 14px; font-weight: 600; }
+  .tabs-pane .empty-page p { font-size: 12.5px; }
+
+  /* ---------- Multiple choice ---------- */
+  .quiz-block { display: flex; flex-direction: column; gap: 18px; }
+  .quiz-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .quiz-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--primary); background: color-mix(in oklab, var(--primary) 9%, transparent); padding: 5px 11px; border-radius: 999px; }
+  .quiz-tag svg { width: 13px; height: 13px; stroke-width: 2.3; }
+  .quiz-media img { width: 100%; max-height: 280px; object-fit: cover; border-radius: var(--radius-xl); display: block; }
+  .quiz-question { font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1.35; outline: none; border-radius: var(--radius-sm); padding: 3px 8px; margin: -3px -8px; }
+  .screen:not(.mode-preview) .quiz-question:hover, .quiz-question:focus { background: var(--accent); }
+  .quiz-hint { margin: -8px 0 0; font-size: 13px; color: var(--muted-foreground); }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-option {
+    display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+    background: var(--card); position: relative; transition: border-color .14s, background .14s, box-shadow .14s;
+  }
+  .screen.mode-preview .quiz-option { cursor: pointer; }
+  .screen.mode-preview .quiz-block:not(.is-done) .quiz-option:hover { border-color: color-mix(in oklab, var(--primary) 55%, var(--border)); background: color-mix(in oklab, var(--primary) 4%, var(--card)); }
+  .quiz-mark {
+    position: relative; width: 32px; height: 32px; flex-shrink: 0; border-radius: 999px; border: 1.5px solid var(--input); background: var(--background);
+    color: var(--muted-foreground); font-size: 13px; font-weight: 700; display: grid; place-items: center; padding: 0; cursor: pointer;
+    transition: background .14s, color .14s, border-color .14s, transform .14s;
+  }
+  .screen.mode-preview .quiz-mark { cursor: pointer; pointer-events: none; }
+  .screen:not(.mode-preview) .quiz-mark:hover { border-color: var(--success); color: var(--success); transform: scale(1.06); }
+  .quiz-mark svg { width: 15px; height: 15px; stroke-width: 3; display: none; grid-area: 1 / 1; }
+  .quiz-mark .lt { grid-area: 1 / 1; }
+  .screen:not(.mode-preview) .quiz-option.is-correct { border-color: var(--success); background: var(--success-soft); }
+  .screen:not(.mode-preview) .quiz-option.is-correct .quiz-mark { background: var(--success); border-color: var(--success); color: var(--success-foreground); }
+  .screen:not(.mode-preview) .quiz-option.is-correct .quiz-mark .lt, .quiz-option.submitted-correct .quiz-mark .lt, .quiz-option.submitted-wrong .quiz-mark .lt { display: none; }
+  .screen:not(.mode-preview) .quiz-option.is-correct .quiz-mark .ck, .quiz-option.submitted-correct .quiz-mark .ck, .quiz-option.submitted-wrong .quiz-mark .cx { display: block; }
+  .quiz-option.selected { border-color: var(--primary); background: color-mix(in oklab, var(--primary) 7%, var(--card)); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 14%, transparent); }
+  .quiz-option.selected .quiz-mark { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+  .quiz-option.submitted-correct { border-color: var(--success); background: var(--success-soft); box-shadow: none; }
+  .quiz-option.submitted-correct .quiz-mark { background: var(--success); border-color: var(--success); color: var(--success-foreground); }
+  .quiz-option.submitted-wrong { border-color: var(--destructive); background: color-mix(in oklab, var(--destructive) 8%, var(--card)); box-shadow: none; animation: quiz-shake .3s ease; }
+  .quiz-option.submitted-wrong .quiz-mark { background: var(--destructive); border-color: var(--destructive); color: #fff; }
+  .quiz-block.is-done .quiz-option:not(.submitted-correct):not(.submitted-wrong) { opacity: .55; }
+  .quiz-block.is-done .quiz-option { cursor: default; }
+  .quiz-option-text { font-size: 15.5px; font-weight: 500; outline: none; flex: 1; min-width: 0; border-radius: var(--radius-sm); padding: 2px 6px; margin: -2px -6px; line-height: 1.45; }
+  .screen:not(.mode-preview) .quiz-option-text:hover, .quiz-option-text:focus { background: color-mix(in oklab, var(--foreground) 6%, transparent); }
+  .quiz-option-badge { display: none; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: var(--success); flex-shrink: 0; }
+  .quiz-option-badge svg { width: 13px; height: 13px; stroke-width: 3; }
+  .quiz-option.is-correct .quiz-option-badge { display: inline-flex; }
+  .quiz-option-remove { width: 26px; height: 26px; border-radius: 999px; border: none; background: transparent; color: var(--muted-foreground); display: grid; place-items: center; cursor: pointer; flex-shrink: 0; padding: 0; opacity: 0; transition: opacity .12s, background .12s; }
+  .quiz-option:hover .quiz-option-remove, .quiz-option-remove:focus-visible { opacity: 1; }
+  .quiz-option-remove:hover { background: color-mix(in oklab, var(--destructive) 12%, transparent); color: var(--destructive); }
+  .quiz-option-remove svg { width: 13px; height: 13px; stroke-width: 2.4; }
+  .quiz-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .quiz-feedback { display: none; align-items: center; gap: 10px; flex: 1; min-width: 0; font-size: 14px; font-weight: 600; padding: 10px 14px; border-radius: var(--radius-lg); }
+  .quiz-feedback svg { width: 18px; height: 18px; stroke-width: 2.4; flex-shrink: 0; }
+  .quiz-feedback.ok { display: flex; background: var(--success-soft); color: var(--success); }
+  .quiz-feedback.bad { display: flex; background: color-mix(in oklab, var(--destructive) 10%, transparent); color: var(--destructive); }
+  .quiz-submit { margin-left: auto; min-width: 132px; }
+
+  /* ---------- Process ---------- */
+  .process-block { display: flex; flex-direction: column; gap: 24px; container-type: inline-size; }
+  .process-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 30px; }
+  .process-eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--primary); background: color-mix(in oklab, var(--primary) 9%, transparent); padding: 5px 11px; border-radius: 999px; }
+  .process-eyebrow svg { width: 13px; height: 13px; stroke-width: 2.3; }
+  .process-stepper { display: flex; align-items: flex-start; }
+  .ps-item { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 9px; cursor: pointer; }
+  .ps-item:last-child { flex: 0 1 auto; max-width: 40%; }
+  .ps-row { display: flex; align-items: center; }
+  .ps-node {
+    width: 32px; height: 32px; flex-shrink: 0; border-radius: 999px; border: 2px solid var(--border); background: var(--card); color: var(--muted-foreground);
+    font-size: 13px; font-weight: 700; display: grid; place-items: center; padding: 0; cursor: pointer; transition: background .15s, border-color .15s, color .15s, box-shadow .15s;
+  }
+  .ps-node svg { width: 15px; height: 15px; stroke-width: 3; }
+  .ps-item:hover .ps-node { border-color: color-mix(in oklab, var(--primary) 60%, var(--border)); }
+  .ps-item.done .ps-node { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+  .ps-item.on .ps-node { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 0 5px color-mix(in oklab, var(--primary) 15%, transparent); }
+  .ps-line { flex: 1; height: 3px; margin: 0 10px; border-radius: 3px; background: var(--border); transition: background .2s; }
+  .ps-item.done .ps-line { background: var(--primary); }
+  .ps-label { font-size: 12.5px; font-weight: 500; line-height: 1.3; color: var(--muted-foreground); padding-right: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color .15s; }
+  .ps-item.on .ps-label { color: var(--foreground); font-weight: 650; }
+  .process-step { display: grid; grid-template-columns: minmax(0, 1fr); gap: 26px; align-items: center; }
+  .process-step.has-media { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+  .process-media { position: relative; }
+  .process-media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-xl); display: block; }
+  .process-media-remove { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; padding: 0; border-radius: 999px; border: none; background: rgb(0 0 0 / .6); color: #fff; display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity .12s; }
+  .process-media:hover .process-media-remove, .process-media-remove:focus-visible { opacity: 1; }
+  .process-media-remove svg { width: 13px; height: 13px; stroke-width: 2.4; }
+  .process-copy { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .process-step:not(.has-media) .process-copy { max-width: 64ch; }
+  .process-heading { font-size: 26px; font-weight: 700; letter-spacing: -.025em; line-height: 1.22; outline: none; margin: 0; border-radius: var(--radius-sm); padding: 3px 8px; margin: -3px -8px; }
+  .process-body { font-size: 15.5px; line-height: 1.72; color: color-mix(in oklab, var(--foreground) 84%, transparent); outline: none; margin: 0; border-radius: var(--radius-sm); padding: 3px 8px; margin: -3px -8px; }
+  .screen:not(.mode-preview) .process-heading:hover, .screen:not(.mode-preview) .process-body:hover, .process-heading:focus, .process-body:focus { background: var(--accent); }
+  .process-btnrow { display: flex; align-items: center; gap: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .process-btnrow .btn svg { width: 14px; height: 14px; stroke-width: 2.4; }
+  .process-progress { flex: 1; height: 4px; border-radius: 999px; background: var(--muted); overflow: hidden; }
+  .process-progress i { display: block; height: 100%; width: calc(var(--p) * 1%); background: var(--primary); border-radius: inherit; transition: width .35s cubic-bezier(.22,.61,.36,1); }
+  @container (max-width: 560px) {
+    .process-step.has-media { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+    .ps-label { display: none; }
+    .ps-item:last-child { max-width: none; }
+    .process-heading { font-size: 22px; }
+  }
+
+  .mode-preview .chart-block, .mode-preview .quiz-block, .mode-preview .process-block {
+    border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 26px;
+  }
+  .mode-preview .chart-block { background: var(--card); }
   .ghost-add-tile {
     margin-top: 6px; border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 10px;
     display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; box-sizing: border-box;
@@ -704,8 +1162,31 @@
      copy of the same pill row — one click to the first block, instead of a button into a dialog. */
   .empty-pill-row {
     display: flex; align-items: stretch; gap: 1px; background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 6px 8px; margin-top: 4px; max-width: 100%; overflow-x: auto;
+    border-radius: var(--radius-lg); padding: 6px 8px; margin-top: 4px; max-width: 100%; flex-wrap: wrap; justify-content: center;
   }
+  .empty-pill-row .nav-pill-div { display: none; }
+
+  .empty-page.empty-slash { container-type: inline-size; max-width: 640px; margin-top: 56px; padding: 36px 24px 28px; gap: 6px; border: 1px solid var(--border); background: color-mix(in oklab, var(--card) 60%, transparent); }
+  .empty-page.empty-slash h2 { font-size: 17px; }
+  .empty-page.empty-slash p { max-width: none; margin-bottom: 18px; }
+  .empty-ai { display: inline-flex; align-items: center; gap: 12px; padding: 8px 10px 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--card); box-shadow: var(--shadow-md); font: inherit; font-size: 15px; font-weight: 600; color: var(--foreground); cursor: pointer; transition: border-color .15s; }
+  .empty-ai:hover { border-color: color-mix(in oklab, var(--primary) 45%, var(--border)); }
+  .empty-ai .ai-ic { width: 16px; height: 16px; color: var(--primary); display: grid; place-items: center; }
+  .empty-ai .ai-ic svg { width: 16px; height: 16px; stroke-width: 2; }
+  .empty-ai .ai-div { width: 1px; align-self: stretch; background: var(--border); }
+  .empty-ai .keys { display: flex; gap: 4px; }
+  .empty-ai kbd { display: inline-grid; place-items: center; min-width: 24px; height: 24px; padding: 0 5px; border-radius: 6px; background: var(--muted); color: var(--muted-foreground); font: 600 12px ui-sans-serif, system-ui, sans-serif; }
+  .empty-ai-inline { margin-top: 14px; }
+  .floating-ai { display: none; }
+  .floating-nav-wrap.is-empty .floating-nav { display: none; }
+  .floating-nav-wrap.is-empty .floating-ai { display: inline-flex; }
+  .type-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; width: 100%; }
+  @container (max-width: 480px) { .type-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .type-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 14px 6px; min-height: 88px; font: inherit; color: var(--foreground); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-2xs); cursor: pointer; transition: border-color .12s, background .12s, transform .12s; }
+  .type-tile:hover, .type-tile:focus-visible { border-color: color-mix(in oklab, var(--primary) 55%, var(--border)); background: color-mix(in oklab, var(--primary) 5%, var(--card)); }
+  .type-tile:active { transform: scale(.98); }
+  .type-tile svg { width: 20px; height: 20px; stroke-width: 1.9; color: var(--primary); }
+  .type-tile .tile-lb { font-size: 12px; font-weight: 600; line-height: 1.2; text-align: center; }
 
   /* settings slider */
   .slider-overlay { position: fixed; inset: 0; background: rgb(0 0 0 / .5); z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
@@ -1014,12 +1495,7 @@
             <div class="gap-line"></div>
           </div>
 
-          <div class="empty-page edit-only" id="canvasEmptyState" hidden>
-            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></span>
-            <h2>This lesson doesn't have any content yet</h2>
-            <p>Add a video, note, slide deck, or document to start building what your learners will see.</p>
-            <div class="empty-pill-row" role="toolbar" aria-label="Add content" id="emptyPills-canvas"></div>
-          </div>
+          <div class="empty-page empty-slash edit-only" id="canvasEmptyState" data-canvas="canvas" hidden></div>
         </div>
       </main>
     </div>
@@ -1107,12 +1583,7 @@
       </div>
       <main class="canvas-wrap">
         <div class="canvas modern-canvas" id="emptyCanvas">
-          <div class="empty-page edit-only" id="emptyState">
-            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
-            <h2>This lesson doesn't have any content yet</h2>
-            <p>Add a video, note, slide deck, or document to start building what your learners will see.</p>
-            <div class="empty-pill-row" role="toolbar" aria-label="Add content" id="emptyPills-emptyCanvas"></div>
-          </div>
+          <div class="empty-page empty-slash edit-only" id="emptyState" data-canvas="emptyCanvas"></div>
         </div>
       </main>
     </div>
@@ -1202,12 +1673,7 @@
               <div class="gap-line"></div>
             </div>
 
-            <div class="empty-page edit-only" id="mobileCanvasEmptyState" hidden>
-              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></span>
-              <h2>This lesson doesn't have any content yet</h2>
-              <p>Add a video, note, slide deck, or document to start building what your learners will see.</p>
-              <div class="empty-pill-row" role="toolbar" aria-label="Add content" id="emptyPills-mobileCanvas"></div>
-            </div>
+            <div class="empty-page empty-slash edit-only" id="mobileCanvasEmptyState" data-canvas="mobileCanvas" hidden></div>
           </div>
         </main>
         <div class="slider-overlay" style="position:absolute" onclick="closeSettings('Mobile')"></div>
@@ -1239,6 +1705,14 @@
   </div>
 </section>
 
+<aside class="ai-panel" id="aiPanel" aria-label="Ask AI assistant">
+  <div class="ai-head"><span id="aiHeadIcon" style="display:flex"></span><span>Ask AI</span><span class="sp"></span><button type="button" class="ai-x" aria-label="Close assistant" onclick="closeAiAssistant()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <div class="ai-log" id="aiLog"></div>
+  <form class="ai-compose" onsubmit="sendAiMessage(event)">
+    <textarea id="aiPrompt" rows="1" placeholder="Describe what to add to this lesson" onkeydown="if (event.key === 'Enter' &amp;&amp; !event.shiftKey) { sendAiMessage(event); }"></textarea>
+    <button type="submit" class="btn btn-primary btn-sm">Send</button>
+  </form>
+</aside>
 <div class="scrim" id="scrim" onclick="if (event.target === this) closeDialog()"><div class="dialog dialog-lg" id="dialogBox" style="max-width:480px"></div></div>
 
 <script>
@@ -1309,6 +1783,12 @@
       const isPreview = btn.dataset.mode === 'preview';
       screenEl.classList.toggle('mode-preview', isPreview);
       if (isPreview && screenId === 'screen-desktop') setLessonHeaderHeightVar();
+      screenEl.querySelectorAll('.tabs-pill-input').forEach((input) => (input.readOnly = isPreview));
+      screenEl
+        .querySelectorAll('.fc-text, .quiz-question, .quiz-option-text, .process-heading, .process-body, .tab-note-text')
+        .forEach((el) => (el.contentEditable = String(!isPreview)));
+      screenEl.querySelectorAll('.quiz-block').forEach(resetQuizBlock);
+      screenEl.querySelectorAll('.fc-card').forEach((tile) => tile.classList.remove('flipped'));
     });
   }
   wireModeToggle('modeToggle', 'screen-desktop');
@@ -1576,13 +2056,16 @@
 
   function updateEmptyState(canvasId) {
     const canvas = document.getElementById(canvasId);
-    const hasBlocks = canvas.querySelectorAll('.content-section').length > 0;
-    const empty = canvas.querySelector('.empty-page');
+    const hasBlocks = canvas.querySelectorAll(':scope > .content-section').length > 0;
+    const empty = canvas.querySelector(':scope > .empty-page');
     if (empty) empty.hidden = hasBlocks;
-    // The floating nav only shows once there's content — the empty canvas already has its own
-    // centered prompt.
+    // The empty canvas docks just the Ask AI pill where the floating nav sits; the full nav takes
+    // its place once there's content.
     const floatingNav = document.getElementById('floatingNav-' + canvasId);
-    if (floatingNav) floatingNav.classList.toggle('is-visible', hasBlocks);
+    if (floatingNav) {
+      floatingNav.classList.add('is-visible');
+      floatingNav.classList.toggle('is-empty', !hasBlocks);
+    }
   }
 
   // ---- Unified canvas: block markup generators (one independent block per add) ----
@@ -1602,6 +2085,17 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
   const ICON_IMAGE =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
+  const ICON_CHART =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>';
+  const ICON_FLASHCARDS =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="14" height="10" rx="2" transform="rotate(-6 10 13)"/><rect x="7" y="5" width="14" height="10" rx="2"/></svg>';
+  const ICON_TABS =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18"/><path d="M3 5h18v14H3z"/><path d="M9 9v10"/></svg>';
+  const ICON_QUIZ =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
+  const ICON_CHECK_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>';
+  const ICON_CLOSE_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+  const ICON_PROCESS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
   const ICON_SETTINGS =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="4" x2="20" y1="6" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" x2="20" y1="12" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" x2="20" y1="18" y2="18"/><circle cx="7" cy="18" r="2"/></svg>';
   const ICON_CHEVRON_DOWN_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
@@ -1992,21 +2486,54 @@
     gapEl.classList.add('gap-active');
   }
 
-  function openAiAssistant() {
-    document.getElementById('dialogBox').style.maxWidth = '480px';
-    document.getElementById('dialogBox').innerHTML = `
-      <div class="dialog-head"><h2 class="dialog-title">Ask AI assistant</h2><p class="dialog-desc">Describe what this part of the lesson should cover — a draft note is added for you to edit.</p></div>
-      <div class="dialog-body">
-        <div class="field"><label class="label" for="aiPrompt">Prompt</label><textarea class="textarea" id="aiPrompt" placeholder="e.g. Summarize the difference between props and state" oninput="onAiPromptInput()"></textarea></div>
-      </div>
-      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="aiGenerateBtn" disabled onclick="confirmAiGenerate()">Generate</button></div>`;
-    document.body.classList.add('dialog-open');
+  const AI_SUGGESTIONS = [
+    'Summarize the difference between props and state',
+    'Write an intro for this lesson',
+    'Explain this with a real-world example'
+  ];
+  const aiDrafts = [];
+
+  function renderAiLog() {
+    const log = document.getElementById('aiLog');
+    if (log.children.length) return;
+    const chips = AI_SUGGESTIONS.map((text) => `<button type="button" onclick="useAiSuggestion(this)">${escapeHtml(text)}</button>`).join('');
+    log.innerHTML = `<div class="ai-msg bot">What should this part of the lesson cover? I'll draft a note you can insert and edit.<div class="ai-suggest">${chips}</div></div>`;
   }
 
-  function onAiPromptInput() {
-    const btn = document.getElementById('aiGenerateBtn');
+  function openAiAssistant() {
+    document.getElementById('aiHeadIcon').innerHTML = ICON_AI;
+    renderAiLog();
+    document.body.classList.add('ai-open');
+    setTimeout(() => document.getElementById('aiPrompt').focus(), 250);
+  }
+
+  function closeAiAssistant() {
+    document.body.classList.remove('ai-open');
+  }
+
+  function useAiSuggestion(btn) {
+    document.getElementById('aiPrompt').value = btn.textContent;
+    sendAiMessage();
+  }
+
+  function sendAiMessage(event) {
+    if (event) event.preventDefault();
     const input = document.getElementById('aiPrompt');
-    if (btn && input) btn.disabled = input.value.trim().length === 0;
+    const prompt = input.value.trim();
+    if (!prompt) return;
+    input.value = '';
+    const log = document.getElementById('aiLog');
+    log.insertAdjacentHTML('beforeend', `<div class="ai-msg user">${escapeHtml(prompt)}</div>`);
+    const draftIndex = aiDrafts.push(prompt) - 1;
+    log.insertAdjacentHTML('beforeend', '<div class="ai-msg bot" data-pending>Drafting…</div>');
+    log.scrollTop = log.scrollHeight;
+    setTimeout(() => {
+      const pending = log.querySelector('[data-pending]');
+      if (!pending) return;
+      pending.removeAttribute('data-pending');
+      pending.innerHTML = `${buildAiNoteBody(prompt)}<button type="button" class="btn btn-primary btn-sm ai-insert" onclick="insertAiDraft(${draftIndex})">Insert into lesson</button>`;
+      log.scrollTop = log.scrollHeight;
+    }, 700);
   }
 
   function buildAiNoteBody(prompt) {
@@ -2017,12 +2544,8 @@
       <p>Explain the core idea first in plain language, then walk through one concrete example students have already seen earlier in this course. Close with a short question they can answer in their own words to check the idea landed.</p>`;
   }
 
-  function confirmAiGenerate() {
-    const promptEl = document.getElementById('aiPrompt');
-    const prompt = promptEl ? promptEl.value : '';
-    if (!prompt.trim()) return;
-    closeDialog();
-    insertBlock(activeCanvasId, buildNoteBlock(buildAiNoteBody(prompt)));
+  function insertAiDraft(draftIndex) {
+    insertBlock(activeCanvasId, buildNoteBlock(buildAiNoteBody(aiDrafts[draftIndex])));
     simulateSave();
   }
 
@@ -2034,7 +2557,7 @@
     const referenceGap =
       activeGapEl && activeGapEl.isConnected && activeGapEl.closest('.canvas') === canvas ? activeGapEl : null;
     if (referenceGap) referenceGap.insertAdjacentElement('afterend', block);
-    else canvas.querySelector('.empty-page').insertAdjacentElement('beforebegin', block);
+    else canvas.querySelector(':scope > .empty-page').insertAdjacentElement('beforebegin', block);
     const gapWrapper = document.createElement('div');
     gapWrapper.innerHTML = blockGap().trim();
     const newGap = gapWrapper.firstElementChild;
@@ -2116,6 +2639,967 @@
     else window.scrollBy({ top: delta, behavior: travel });
   }
 
+  // ---- Chart: bar / line / pie / donut. Bars, axes and labels are HTML (crisp at any width); only the
+  // line and the pie arcs are SVG. Data lives on the section as {title,type,labels,values}. ----
+  const CHART_COLORS = [
+    'var(--primary)',
+    'oklch(0.68 0.16 295)',
+    'oklch(0.72 0.13 195)',
+    'oklch(0.8 0.15 85)',
+    'oklch(0.7 0.17 20)',
+    'oklch(0.74 0.15 150)'
+  ];
+  const CHART_MAX_POINTS = 12;
+  const ICON_CT_BAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M8 17v-5M13 17V7M18 17v-3"/></svg>';
+  const ICON_CT_LINE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-6"/></svg>';
+  const ICON_CT_PIE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>';
+  const ICON_CT_DONUT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>';
+  const ICON_TABLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>';
+  const CHART_TYPES = [
+    ['bar', 'Bar chart', ICON_CT_BAR],
+    ['line', 'Line chart', ICON_CT_LINE],
+    ['pie', 'Pie chart', ICON_CT_PIE],
+    ['donut', 'Donut chart', ICON_CT_DONUT]
+  ];
+  let chartGradientCounter = 0;
+
+  function chartFormat(value) {
+    return Number(value).toLocaleString('en-US', { maximumFractionDigits: 2 });
+  }
+
+  function chartColorFor(type, index) {
+    return type === 'pie' || type === 'donut' ? CHART_COLORS[index % CHART_COLORS.length] : 'var(--primary)';
+  }
+
+  function chartScale(values) {
+    const max = Math.max(...values, 0);
+    if (max <= 0) return { top: 4, step: 1 };
+    const raw = max / 4;
+    const exponent = Math.pow(10, Math.floor(Math.log10(raw)));
+    const fraction = raw / exponent;
+    const nice = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 2.5 ? 2.5 : fraction <= 5 ? 5 : 10;
+    const step = nice * exponent;
+    return { top: step * 4, step };
+  }
+
+  function chartAxisHtml(scale) {
+    const ticks = [0, 1, 2, 3, 4].map((i) => ({ percent: i * 25, label: chartFormat(scale.step * i) }));
+    return {
+      width: Math.max(...ticks.map((t) => t.label.length)),
+      labels: ticks.map((t) => `<span style="--p:${t.percent}">${t.label}</span>`).join(''),
+      lines: ticks.map((t) => `<i style="--p:${t.percent}"></i>`).join('')
+    };
+  }
+
+  function chartXLabelsHtml(data) {
+    return data.values.map((_, i) => `<span title="${escapeHtml(data.labels[i] || '')}">${escapeHtml(data.labels[i] || '')}</span>`).join('');
+  }
+
+  function buildBarChartHtml(data, animate) {
+    const scale = chartScale(data.values);
+    const axis = chartAxisHtml(scale);
+    const columns = data.values
+      .map((v, i) => `<div class="cb-col" style="--v:${((v / scale.top) * 100).toFixed(2)};--i:${i}"><span class="cb-val">${chartFormat(v)}</span><div class="cb-bar"></div></div>`)
+      .join('');
+    return `
+      <div class="cb-chart${animate ? '' : ' no-anim'}" style="--yw:${axis.width}">
+        <div class="cb-yaxis">${axis.labels}</div>
+        <div class="cb-plot"><div class="cb-gridlines">${axis.lines}</div><div class="cb-cols">${columns}</div></div>
+        <div class="cb-xlabels">${chartXLabelsHtml(data)}</div>
+      </div>`;
+  }
+
+  function buildLineChartHtml(data, animate) {
+    const scale = chartScale(data.values);
+    const axis = chartAxisHtml(scale);
+    const count = data.values.length;
+    const points = data.values.map((v, i) => ({ x: ((i + 0.5) / count) * 100, y: 100 - (v / scale.top) * 100 }));
+    let path = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      const midX = (points[i - 1].x + points[i].x) / 2;
+      path += ` C ${midX} ${points[i - 1].y}, ${midX} ${points[i].y}, ${points[i].x} ${points[i].y}`;
+    }
+    const area = `${path} L ${points[count - 1].x} 100 L ${points[0].x} 100 Z`;
+    chartGradientCounter += 1;
+    const gradientId = 'cbg' + chartGradientCounter;
+    const dots = points
+      .map((p, i) => `<span class="cb-dot" style="left:${p.x}%;bottom:${100 - p.y}%;--i:${i}"><em>${chartFormat(data.values[i])}</em></span>`)
+      .join('');
+    return `
+      <div class="cb-chart${animate ? '' : ' no-anim'}" style="--yw:${axis.width}">
+        <div class="cb-yaxis">${axis.labels}</div>
+        <div class="cb-plot">
+          <div class="cb-gridlines">${axis.lines}</div>
+          <svg class="cb-line-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="${gradientId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--primary);stop-opacity:.24"/><stop offset="1" style="stop-color:var(--primary);stop-opacity:0"/></linearGradient></defs>
+            <path d="${area}" fill="url(#${gradientId})"/>
+            <path class="cb-line-path" d="${path}"/>
+          </svg>
+          ${dots}
+        </div>
+        <div class="cb-xlabels">${chartXLabelsHtml(data)}</div>
+      </div>`;
+  }
+
+  function buildRadialChartHtml(data, donut, animate) {
+    const total = data.values.reduce((a, b) => a + b, 0);
+    const center = 50;
+    const outer = 46;
+    const inner = donut ? 28 : 0;
+    const polar = (radius, angle) => ({ x: center + radius * Math.cos(angle), y: center + radius * Math.sin(angle) });
+    let angle = -Math.PI / 2;
+    let slices = '';
+    if (total <= 0) {
+      slices = `<circle class="cb-pie-empty" cx="${center}" cy="${center}" r="${donut ? (outer + inner) / 2 : outer / 2}" style="stroke-width:${donut ? outer - inner : outer}"/>`;
+    } else {
+      data.values.forEach((v, i) => {
+        if (v <= 0) return;
+        const sweep = Math.min((v / total) * Math.PI * 2, Math.PI * 2 - 0.0005);
+        const end = angle + sweep;
+        const a1 = polar(outer, angle);
+        const a2 = polar(outer, end);
+        const large = sweep > Math.PI ? 1 : 0;
+        let d;
+        if (donut) {
+          const b1 = polar(inner, end);
+          const b2 = polar(inner, angle);
+          d = `M ${a1.x} ${a1.y} A ${outer} ${outer} 0 ${large} 1 ${a2.x} ${a2.y} L ${b1.x} ${b1.y} A ${inner} ${inner} 0 ${large} 0 ${b2.x} ${b2.y} Z`;
+        } else {
+          d = `M ${center} ${center} L ${a1.x} ${a1.y} A ${outer} ${outer} 0 ${large} 1 ${a2.x} ${a2.y} Z`;
+        }
+        slices += `<path class="cb-slice" data-i="${i}" style="fill:${chartColorFor(data.type, i)};--i:${i}" d="${d}" onmouseenter="chartHighlight(this,${i})" onmouseleave="chartHighlight(this,null)"/>`;
+        angle = end;
+      });
+    }
+    const legend = data.values
+      .map((v, i) => {
+        const percent = total > 0 ? Math.round((v / total) * 100) : 0;
+        return `<li data-i="${i}" onmouseenter="chartHighlight(this,${i})" onmouseleave="chartHighlight(this,null)"><span class="cb-sw" style="--c:${chartColorFor(data.type, i)}"></span><span class="nm">${escapeHtml(data.labels[i] || '')}</span><span class="vl">${chartFormat(v)}</span><span class="pc">${percent}%</span></li>`;
+      })
+      .join('');
+    const centerLabel = donut ? `<div class="cb-pie-center"><strong>${chartFormat(total)}</strong><span>Total</span></div>` : '';
+    return `
+      <div class="cb-radial${animate ? '' : ' no-anim'}">
+        <div class="cb-pie"><svg viewBox="0 0 100 100" aria-hidden="true">${slices}</svg>${centerLabel}</div>
+        <ul class="cb-legend">${legend}</ul>
+      </div>`;
+  }
+
+  function chartHighlight(el, index) {
+    const root = el.closest('.cb-radial');
+    root.querySelectorAll('[data-i]').forEach((node) => node.classList.toggle('cb-dim', index !== null && Number(node.dataset.i) !== index));
+  }
+
+  function renderChartBody(data, animate) {
+    if (data.type === 'line') return buildLineChartHtml(data, animate);
+    if (data.type === 'pie') return buildRadialChartHtml(data, false, animate);
+    if (data.type === 'donut') return buildRadialChartHtml(data, true, animate);
+    return buildBarChartHtml(data, animate);
+  }
+
+  function chartSubtitle(data) {
+    const count = data.values.length;
+    const noun = count === 1 ? 'data point' : 'data points';
+    if (data.type === 'pie' || data.type === 'donut') {
+      const total = data.values.reduce((a, b) => a + b, 0);
+      return `${count} ${noun} · Total <b>${chartFormat(total)}</b>`;
+    }
+    const max = Math.max(...data.values);
+    if (max <= 0) return `${count} ${noun}`;
+    const peak = data.values.indexOf(max);
+    return `${count} ${noun} · Highest <b>${escapeHtml(data.labels[peak] || '')}</b> (${chartFormat(max)})`;
+  }
+
+  function buildChartBlockHtml(data) {
+    const typeButtons = CHART_TYPES.map(
+      ([type, label, icon]) => `<button type="button" data-ctype="${type}" data-tip="${label}" aria-label="${label}" class="${data.type === type ? 'active' : ''}" onclick="setChartType(this,'${type}')">${icon}</button>`
+    ).join('');
+    return `
+      <section class="content-section" data-type="chart" data-chart='${escapeHtml(JSON.stringify(data))}'>
+        ${blockHead('Chart', ICON_CHART)}
+        <div class="chart-block" data-ctype="${data.type}">
+          <div class="cb-head">
+            <div class="cb-titles">
+              <input class="chart-title-input edit-only" value="${escapeHtml(data.title)}" placeholder="Chart title" aria-label="Chart title" oninput="onChartTitleInput(this)" />
+              <h3 class="chart-title-display preview-only">${escapeHtml(data.title)}</h3>
+              <p class="cb-sub">${chartSubtitle(data)}</p>
+            </div>
+            <div class="chart-type-tabs edit-only" role="group" aria-label="Chart type">${typeButtons}</div>
+          </div>
+          <div class="chart-canvas">${renderChartBody(data, true)}</div>
+          <div class="cb-footer edit-only">
+            <button type="button" class="btn btn-outline btn-sm cb-data-toggle" aria-expanded="false" onclick="toggleChartData(this)">${ICON_TABLE}Edit data${ICON_CHEVRON_DOWN_SMALL}</button>
+            <span class="hint">Changes update the chart live.</span>
+          </div>
+          <div class="cb-data edit-only"></div>
+        </div>
+      </section>`;
+  }
+
+  function buildChartBlockSample() {
+    return buildChartBlockHtml({ title: 'Quarterly revenue', type: 'bar', labels: ['Q1', 'Q2', 'Q3', 'Q4'], values: [30, 55, 40, 70] });
+  }
+
+  function renderChart(section, animate) {
+    const data = JSON.parse(section.dataset.chart);
+    section.querySelector('.chart-block').dataset.ctype = data.type;
+    section.querySelector('.chart-canvas').innerHTML = renderChartBody(data, animate);
+    section.querySelector('.cb-sub').innerHTML = chartSubtitle(data);
+    section.querySelectorAll('.chart-type-tabs button').forEach((btn) => btn.classList.toggle('active', btn.dataset.ctype === data.type));
+  }
+
+  function setChartType(btn, type) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.chart);
+    data.type = type;
+    section.dataset.chart = JSON.stringify(data);
+    renderChart(section, true);
+    if (section.querySelector('.cb-data.open')) renderChartDataPanel(section);
+    simulateSave();
+  }
+
+  function onChartTitleInput(input) {
+    const section = input.closest('.content-section');
+    const data = JSON.parse(section.dataset.chart);
+    data.title = input.value;
+    section.dataset.chart = JSON.stringify(data);
+    section.querySelector('.chart-title-display').textContent = input.value;
+    simulateSave();
+  }
+
+  function buildChartDataRowHtml(label, value, color, canRemove) {
+    return `
+      <div class="cb-data-row">
+        <span class="cb-sw" style="--c:${color}"></span>
+        <input class="input chart-row-label" value="${escapeHtml(label)}" placeholder="Label" aria-label="Label" oninput="syncChartFromPanel(this)" />
+        <input class="input chart-row-value" type="number" min="0" step="any" value="${value}" placeholder="0" aria-label="Value" oninput="syncChartFromPanel(this)" />
+        <button type="button" class="icon-btn" aria-label="Remove data point" ${canRemove ? '' : 'disabled'} onclick="removeChartDataRow(this)">${ICON_TRASH}</button>
+      </div>`;
+  }
+
+  function renderChartDataPanel(section) {
+    const data = JSON.parse(section.dataset.chart);
+    const canRemove = data.values.length > 1;
+    const rows = data.values.map((v, i) => buildChartDataRowHtml(data.labels[i] || '', v, chartColorFor(data.type, i), canRemove)).join('');
+    const canAdd = data.values.length < CHART_MAX_POINTS;
+    section.querySelector('.cb-data').innerHTML = `
+      <div class="cb-data-row head"><span></span><span>Label</span><span>Value</span><span></span></div>
+      ${rows}
+      ${canAdd ? `<button type="button" class="ghost-add-tile" onclick="addChartDataRow(this)">${ICON_PLUS}Add data point</button>` : ''}`;
+  }
+
+  function toggleChartData(btn) {
+    const section = btn.closest('.content-section');
+    const panel = section.querySelector('.cb-data');
+    const willOpen = !panel.classList.contains('open');
+    if (willOpen) renderChartDataPanel(section);
+    panel.classList.toggle('open', willOpen);
+    btn.classList.toggle('on', willOpen);
+    btn.setAttribute('aria-expanded', String(willOpen));
+  }
+
+  function syncChartFromPanel(el) {
+    const section = el.closest('.content-section');
+    const rows = [...section.querySelectorAll('.cb-data .cb-data-row:not(.head)')];
+    const data = JSON.parse(section.dataset.chart);
+    data.labels = rows.map((row) => row.querySelector('.chart-row-label').value);
+    data.values = rows.map((row) => Math.max(0, Number(row.querySelector('.chart-row-value').value) || 0));
+    section.dataset.chart = JSON.stringify(data);
+    renderChart(section, false);
+    simulateSave();
+  }
+
+  function addChartDataRow(btn) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.chart);
+    if (data.values.length >= CHART_MAX_POINTS) return;
+    data.labels.push('New');
+    data.values.push(0);
+    section.dataset.chart = JSON.stringify(data);
+    renderChart(section, false);
+    renderChartDataPanel(section);
+    const labelInputs = section.querySelectorAll('.cb-data .chart-row-label');
+    const last = labelInputs[labelInputs.length - 1];
+    last.focus();
+    last.select();
+    simulateSave();
+  }
+
+  function removeChartDataRow(btn) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.chart);
+    if (data.values.length <= 1) return;
+    const rows = [...section.querySelectorAll('.cb-data .cb-data-row:not(.head)')];
+    const index = rows.indexOf(btn.closest('.cb-data-row'));
+    data.labels.splice(index, 1);
+    data.values.splice(index, 1);
+    section.dataset.chart = JSON.stringify(data);
+    renderChart(section, false);
+    renderChartDataPanel(section);
+    simulateSave();
+  }
+
+  // ---- Flashcards: one card at a time on a stacked deck, flip to reveal, step through with arrows.
+  // Edit writes straight onto the card faces; a thumbnail strip adds, selects, reorders and deletes. ----
+  const ICON_FLIP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>';
+  const ICON_CHEVRON_LEFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg>';
+  const ICON_CHEVRON_RIGHT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg>';
+
+  function buildFlashcardFaceHtml(side, tag, placeholder) {
+    return `
+      <div class="fc-face ${side === 'q' ? 'fc-front' : 'fc-back'}">
+        <button type="button" class="fc-flipbtn" aria-label="Flip card" onclick="event.stopPropagation(); flipFlashcard(this)">${ICON_FLIP}</button>
+        <span class="fc-tag">${tag}</span>
+        <div class="fc-text" contenteditable="true" data-side="${side}" data-ph="${placeholder}" oninput="onFlashcardInput(this)"></div>
+        ${side === 'q' ? '<span class="fc-hint">Click the card to flip</span>' : ''}
+      </div>`;
+  }
+
+  function buildFlashcardsBlockHtml(data) {
+    return `
+      <section class="content-section" data-type="flashcards" data-flashcards='${escapeHtml(JSON.stringify(data))}' data-fc-index="0">
+        ${blockHead('Flashcards', ICON_FLASHCARDS)}
+        <div class="fc-block" onkeydown="onFlashcardKey(event, this)">
+          <div class="fc-edit-hint edit-only">${ICON_EDIT} Click any text on the card to edit it · use the flip button to edit the answer side</div>
+          <div class="fc-deck">
+            <div class="fc-card" tabindex="0" aria-label="Flashcard. Press space to flip." onclick="onFlashcardClick(this)">
+              <div class="fc-card-inner">
+                ${buildFlashcardFaceHtml('q', 'Question', 'Type the question')}
+                ${buildFlashcardFaceHtml('a', 'Answer', 'Type the answer')}
+              </div>
+            </div>
+          </div>
+          <div class="fc-nav">
+            <button type="button" class="fc-arrow fc-prev" aria-label="Previous card" onclick="navFlashcard(this,-1)">${ICON_CHEVRON_LEFT}</button>
+            <div class="fc-progress"><span class="fc-count"></span><div class="fc-bar"><i></i></div></div>
+            <button type="button" class="fc-arrow fc-next" aria-label="Next card" onclick="navFlashcard(this,1)">${ICON_CHEVRON_RIGHT}</button>
+          </div>
+          <div class="fc-edit edit-only">
+            <div class="fc-thumbs"></div>
+            <div class="toolbar-group">
+              <button type="button" class="icobtn" data-tip="Flip card" aria-label="Flip card" onclick="flipFlashcard(this)">${ICON_FLIP}</button>
+              <span class="tgdiv"></span>
+              <button type="button" class="icobtn" data-tip="Move earlier" aria-label="Move card earlier" onclick="moveFlashcard(this,-1)">${ICON_CHEVRON_LEFT}</button>
+              <button type="button" class="icobtn" data-tip="Move later" aria-label="Move card later" onclick="moveFlashcard(this,1)">${ICON_CHEVRON_RIGHT}</button>
+              <span class="tgdiv"></span>
+              <button type="button" class="icobtn" data-tip="Delete card" aria-label="Delete card" onclick="removeFlashcard(this)">${ICON_TRASH}</button>
+            </div>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function buildFlashcardsBlockSample() {
+    const section = document.createElement('div');
+    section.innerHTML = buildFlashcardsBlockHtml({
+      cards: [
+        { q: 'What is customer retention?', a: 'The ability of a business to keep its customers over time.' },
+        { q: 'Why does retention matter more than acquisition?', a: "It's typically 5–7× cheaper to keep an existing customer than to win a new one." },
+        { q: 'What is a simple way to measure it?', a: 'Compare how many customers you had at the start of a period to how many remain at the end.' }
+      ]
+    });
+    renderFlashcards(section.firstElementChild);
+    return section.innerHTML;
+  }
+
+  function renderFlashcards(section, keepFlip) {
+    const data = JSON.parse(section.dataset.flashcards);
+    const total = data.cards.length;
+    const index = Math.max(0, Math.min(parseInt(section.dataset.fcIndex || '0', 10), total - 1));
+    section.dataset.fcIndex = index;
+    const card = data.cards[index];
+    const cardEl = section.querySelector('.fc-card');
+    if (!keepFlip) cardEl.classList.remove('flipped');
+    section.querySelector('.fc-text[data-side="q"]').textContent = card.q;
+    section.querySelector('.fc-text[data-side="a"]').textContent = card.a;
+    section.querySelector('.fc-count').innerHTML = `<b>${index + 1}</b> / ${total}`;
+    section.querySelector('.fc-bar i').style.setProperty('--p', ((index + 1) / total) * 100);
+    section.querySelector('.fc-prev').disabled = index === 0;
+    section.querySelector('.fc-next').disabled = index === total - 1;
+    section.querySelector('.fc-thumbs').innerHTML =
+      data.cards.map((_, i) => `<button type="button" class="fc-thumb${i === index ? ' on' : ''}" aria-label="Card ${i + 1}" onclick="jumpFlashcard(this,${i})">${i + 1}</button>`).join('') +
+      `<button type="button" class="fc-thumb add" aria-label="Add card" data-tip="Add card" onclick="addFlashcard(this)">${ICON_PLUS}</button>`;
+  }
+
+  function flipFlashcard(el) {
+    const card = el.closest('.fc-block').querySelector('.fc-card');
+    card.classList.toggle('flipped');
+  }
+
+  function onFlashcardClick(cardEl) {
+    if (cardEl.closest('.screen.mode-preview')) cardEl.classList.toggle('flipped');
+  }
+
+  function onFlashcardKey(event, block) {
+    if (event.target.isContentEditable || event.target.tagName === 'INPUT') return;
+    const section = block.closest('.content-section');
+    if (event.key === 'ArrowLeft') navFlashcard(block, -1);
+    else if (event.key === 'ArrowRight') navFlashcard(block, 1);
+    else if ((event.key === ' ' || event.key === 'Enter') && event.target.classList.contains('fc-card')) {
+      event.preventDefault();
+      block.querySelector('.fc-card').classList.toggle('flipped');
+    } else return;
+    if (section) event.stopPropagation();
+  }
+
+  function navFlashcard(el, dir) {
+    const section = el.closest('.content-section');
+    const data = JSON.parse(section.dataset.flashcards);
+    const next = parseInt(section.dataset.fcIndex || '0', 10) + dir;
+    if (next < 0 || next >= data.cards.length) return;
+    section.dataset.fcIndex = next;
+    renderFlashcards(section);
+  }
+
+  function jumpFlashcard(el, index) {
+    const section = el.closest('.content-section');
+    section.dataset.fcIndex = index;
+    renderFlashcards(section);
+  }
+
+  function onFlashcardInput(el) {
+    const section = el.closest('.content-section');
+    const data = JSON.parse(section.dataset.flashcards);
+    data.cards[parseInt(section.dataset.fcIndex || '0', 10)][el.dataset.side] = el.textContent;
+    section.dataset.flashcards = JSON.stringify(data);
+    simulateSave();
+  }
+
+  function addFlashcard(el) {
+    const section = el.closest('.content-section');
+    const data = JSON.parse(section.dataset.flashcards);
+    data.cards.push({ q: '', a: '' });
+    section.dataset.flashcards = JSON.stringify(data);
+    section.dataset.fcIndex = data.cards.length - 1;
+    renderFlashcards(section);
+    section.querySelector('.fc-text[data-side="q"]').focus();
+    simulateSave();
+  }
+
+  function removeFlashcard(el) {
+    const section = el.closest('.content-section');
+    const data = JSON.parse(section.dataset.flashcards);
+    if (data.cards.length <= 1) return;
+    const index = parseInt(section.dataset.fcIndex || '0', 10);
+    data.cards.splice(index, 1);
+    section.dataset.flashcards = JSON.stringify(data);
+    section.dataset.fcIndex = Math.max(0, index - 1);
+    renderFlashcards(section);
+    simulateSave();
+  }
+
+  function moveFlashcard(el, dir) {
+    const section = el.closest('.content-section');
+    const data = JSON.parse(section.dataset.flashcards);
+    const index = parseInt(section.dataset.fcIndex || '0', 10);
+    const target = index + dir;
+    if (target < 0 || target >= data.cards.length) return;
+    [data.cards[index], data.cards[target]] = [data.cards[target], data.cards[index]];
+    section.dataset.flashcards = JSON.stringify(data);
+    section.dataset.fcIndex = target;
+    renderFlashcards(section, true);
+    simulateSave();
+  }
+
+  // ---- Tabs: each pane is its own nested canvas, so it holds any other content type ----
+  let tabsInstanceCounter = 0;
+
+  const ICON_ALIGN_LEFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h10M4 18h14"/></svg>';
+  const ICON_ALIGN_CENTER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M7 12h10M5 18h14"/></svg>';
+  const ICON_ALIGN_RIGHT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M10 12h10M6 18h14"/></svg>';
+  const DEFAULT_TAB_NOTE = 'Write a short note for this tab.';
+
+  function buildTabNoteHtml(text) {
+    return `
+      <div class="tab-note">
+        <div class="tab-note-text" contenteditable="true" data-placeholder="Write a note for this tab…" oninput="simulateSave()">${escapeHtml(text)}</div>
+      </div>`;
+  }
+
+  function buildTabsAlignBarHtml(align) {
+    const buttons = [['left', ICON_ALIGN_LEFT], ['center', ICON_ALIGN_CENTER], ['right', ICON_ALIGN_RIGHT]]
+      .map(([value, icon]) => `<button type="button" class="${value === align ? 'on' : ''}" data-align="${value}" onclick="setTabsAlign(this)" aria-label="Align tabs ${value}" title="Align tabs ${value}">${icon}</button>`)
+      .join('');
+    return `<div class="tabs-toolbar edit-only">
+      <div class="tb-group"><span>Tabs position</span><div class="tab-note-align tabs-align-pos" role="group" aria-label="Tabs position">${buttons}</div></div>
+    </div>`;
+  }
+
+  function toggleTabEmpty(btn) {
+    btn.closest('.empty-page').classList.toggle('open');
+  }
+
+  function setTabsAlign(btn) {
+    const block = btn.closest('.tabs-block');
+    block.dataset.align = btn.dataset.align;
+    block.querySelectorAll('.tabs-align-pos button').forEach((b) => b.classList.toggle('on', b === btn));
+    simulateSave();
+  }
+
+  function buildTabPaneCanvasHtml(canvasId, seedHtml, noteText) {
+    const hasContent = !!seedHtml;
+    return `
+      ${buildTabNoteHtml(noteText === undefined ? DEFAULT_TAB_NOTE : noteText)}
+      <div class="canvas modern-canvas" id="${canvasId}">
+        ${seedHtml || ''}
+        ${hasContent ? blockGap() : ''}
+        <div class="empty-page edit-only" ${hasContent ? 'hidden' : ''}>
+          <button type="button" class="tab-empty-plus" onclick="toggleTabEmpty(this)" aria-label="Add content to this tab">${ICON_PLUS}</button>
+          <strong>This tab is empty</strong>
+          <p class="tab-empty-hint">Click + to add a video, note, image, quiz and more.</p>
+          <div class="empty-pill-row" role="toolbar" aria-label="Add content">${buildNavPillsHtml('dock', canvasId)}</div>
+        </div>
+      </div>`;
+  }
+
+  function buildTabPillHtml(tab, isActive) {
+    return `
+      <span class="tabs-pill${isActive ? ' active' : ''}" data-tab-id="${tab.id}">
+        <input class="tabs-pill-input" size="${Math.max(tab.label.length + 1, 5)}" value="${escapeHtml(tab.label)}" aria-label="Tab name" onfocus="selectTabFromInput(this)" onclick="this.select()" oninput="renameTab(this)" />
+        <span class="tabs-pill-edit edit-only">${ICON_EDIT}</span>
+        <button type="button" class="tabs-pill-remove edit-only" onclick="removeTab(this)" aria-label="Remove tab">${ICON_CLOSE_SMALL}</button>
+      </span>`;
+  }
+
+  function buildTabsBlockHtml(tabs, seedByTabId) {
+    tabsInstanceCounter += 1;
+    const instanceId = 'tabs' + tabsInstanceCounter;
+    seedByTabId = seedByTabId || {};
+    const pills = tabs.map((t, i) => buildTabPillHtml(t, i === 0)).join('');
+    const panes = tabs
+      .map(
+        (t, i) => `
+      <div class="tabs-pane${i === 0 ? ' active' : ''}" data-tab-id="${t.id}" ${i === 0 ? '' : 'hidden'}>
+        ${buildTabPaneCanvasHtml(instanceId + '-' + t.id, seedByTabId[t.id], t.note)}
+      </div>`
+      )
+      .join('');
+    return `
+      <section class="content-section" data-type="tabs">
+        ${blockHead('Tabs', ICON_TABS)}
+        <div class="tabs-block" data-align="center" data-note="above">
+          ${buildTabsAlignBarHtml('center')}
+          <div class="tabs-pill-row" role="tablist">
+            ${pills}
+            <button type="button" class="tabs-add-btn edit-only" onclick="addTab(this)" aria-label="Add tab">${ICON_PLUS}Add tab</button>
+          </div>
+          <div class="tabs-panes">${panes}</div>
+        </div>
+      </section>`;
+  }
+
+  function buildTabsBlockSample() {
+    const tabs = [
+      { id: 'a', label: 'Overview', note: 'A quick overview of what this section covers.' },
+      { id: 'b', label: 'Setup', note: 'What learners need in place before they start.' },
+      { id: 'c', label: 'Advanced', note: 'Go deeper once the basics are comfortable.' }
+    ];
+    return buildTabsBlockHtml(tabs, {});
+  }
+
+  function selectTabFromInput(input) {
+    const pill = input.closest('.tabs-pill');
+    const block = pill.closest('.tabs-block');
+    const tabId = pill.dataset.tabId;
+    block.querySelectorAll('.tabs-pill').forEach((p) => p.classList.toggle('active', p === pill));
+    block.querySelectorAll('.tabs-pane').forEach((pane) => {
+      const isActive = pane.dataset.tabId === tabId;
+      pane.classList.toggle('active', isActive);
+      pane.hidden = !isActive;
+    });
+    const paneCanvas = block.querySelector(`.tabs-pane[data-tab-id="${CSS.escape(tabId)}"] .canvas`);
+    if (paneCanvas) activeCanvasId = paneCanvas.id;
+    pill.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+  }
+
+  function renameTab(input) {
+    input.size = Math.max(input.value.length + 1, 5);
+    simulateSave();
+  }
+
+  function addTab(btn) {
+    const section = btn.closest('.content-section');
+    const block = btn.closest('.tabs-block');
+    const instanceId = section.querySelector('.tabs-pane .canvas').id.split('-')[0];
+    const newId = 't' + Date.now().toString(36);
+    btn.insertAdjacentHTML('beforebegin', buildTabPillHtml({ id: newId, label: 'New tab' }, false));
+    block.querySelector('.tabs-panes').insertAdjacentHTML('beforeend', `<div class="tabs-pane" data-tab-id="${newId}" hidden>${buildTabPaneCanvasHtml(instanceId + '-' + newId)}</div>`);
+    const newInput = block.querySelector(`.tabs-pill[data-tab-id="${CSS.escape(newId)}"] .tabs-pill-input`);
+    newInput.focus();
+    newInput.select();
+    simulateSave();
+  }
+
+  function removeTab(btn) {
+    const pill = btn.closest('.tabs-pill');
+    const block = pill.closest('.tabs-block');
+    const allPills = block.querySelectorAll('.tabs-pill');
+    if (allPills.length <= 1) return;
+    const tabId = pill.dataset.tabId;
+    const wasActive = pill.classList.contains('active');
+    const pane = block.querySelector(`.tabs-pane[data-tab-id="${CSS.escape(tabId)}"]`);
+    const remaining = [...allPills].filter((p) => p !== pill);
+    pill.remove();
+    if (pane) pane.remove();
+    if (wasActive && remaining.length) remaining[0].querySelector('.tabs-pill-input').focus();
+    simulateSave();
+  }
+
+  // ---- Multiple Choice: direct-edit question and options; the letter badge marks the correct answer
+  // in Edit, and in Preview the learner picks, checks, and sees graded feedback. ----
+  let quizInstanceCounter = 0;
+  const QUIZ_MARK_CHECK = ICON_CHECK_SMALL.replace('<svg ', '<svg class="ck" ');
+  const QUIZ_MARK_CROSS = ICON_CLOSE_SMALL.replace('<svg ', '<svg class="cx" ');
+  const ICON_CHECK_CIRCLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>';
+  const ICON_X_CIRCLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/></svg>';
+
+  function quizLetter(index) {
+    return String.fromCharCode(65 + (index % 26));
+  }
+
+  function buildQuizOptionHtml(option, index) {
+    return `
+      <div class="quiz-option${option.correct ? ' is-correct' : ''}" role="radio" aria-checked="false" onclick="onQuizOptionClick(this, event)">
+        <button type="button" class="quiz-mark" data-tip="Mark as correct" aria-label="Mark as correct answer"><span class="lt">${quizLetter(index)}</span>${QUIZ_MARK_CHECK}${QUIZ_MARK_CROSS}</button>
+        <span class="quiz-option-text" contenteditable="true" oninput="simulateSave()">${escapeHtml(option.text)}</span>
+        <span class="quiz-option-badge edit-only">${ICON_CHECK_SMALL}Correct answer</span>
+        <button type="button" class="quiz-option-remove edit-only" onclick="removeQuizOption(this)" aria-label="Remove option">${ICON_CLOSE_SMALL}</button>
+      </div>`;
+  }
+
+  function buildQuizBlockHtml(data) {
+    quizInstanceCounter += 1;
+    const optionsHtml = data.options.map((o, i) => buildQuizOptionHtml(o, i)).join('');
+    return `
+      <section class="content-section" data-type="quiz">
+        ${blockHead('Multiple Choice', ICON_QUIZ)}
+        <div class="quiz-block">
+          <div class="quiz-top">
+            <span class="quiz-tag">${ICON_QUIZ}Multiple choice</span>
+            <div class="quiz-toolbar edit-only">
+              <input type="file" accept="image/*" hidden class="quiz-image-input" onchange="onQuizImageChosen(this)" />
+              <div class="toolbar-group">
+                <div class="dd-menu">
+                  <button type="button" class="icobtn" data-tip="Add media" aria-label="Add media" onclick="toggleBlockMenu(this)">${ICON_IMAGE}</button>
+                  <div class="dd-menu-panel">
+                    <button type="button" class="dd-menu-item" onclick="triggerQuizImageUpload(this)">${ICON_IMAGE}Image</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="quiz-question" contenteditable="true" oninput="simulateSave()">${escapeHtml(data.question)}</div>
+          <p class="quiz-hint"><span class="edit-only">Click a letter to mark the correct answer.</span><span class="preview-only">Choose one answer.</span></p>
+          <div class="quiz-options" role="radiogroup">
+            ${optionsHtml}
+            <button type="button" class="ghost-add-tile edit-only" onclick="addQuizOption(this)">${ICON_PLUS}Add option</button>
+          </div>
+          <div class="quiz-foot preview-only">
+            <div class="quiz-feedback" role="status"></div>
+            <button type="button" class="btn btn-primary quiz-submit" disabled onclick="submitQuiz(this)">Check answer</button>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function buildQuizBlockSample() {
+    return buildQuizBlockHtml({
+      question: 'What is the capital city of Italy?',
+      options: [
+        { text: 'Rome', correct: true },
+        { text: 'Athens', correct: false },
+        { text: 'Lisbon', correct: false }
+      ]
+    });
+  }
+
+  function triggerQuizImageUpload(btn) {
+    const block = btn.closest('.quiz-block');
+    block.querySelector('.quiz-image-input').click();
+    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+  }
+
+  function onQuizImageChosen(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const block = input.closest('.quiz-block');
+    const objectUrl = URL.createObjectURL(file);
+    let mediaEl = block.querySelector('.quiz-media');
+    if (!mediaEl) {
+      mediaEl = document.createElement('div');
+      mediaEl.className = 'quiz-media';
+      block.querySelector('.quiz-question').insertAdjacentElement('beforebegin', mediaEl);
+    }
+    mediaEl.innerHTML = `<img src="${objectUrl}" alt="" />`;
+    simulateSave();
+  }
+
+  function relabelQuizOptions(block) {
+    block.querySelectorAll('.quiz-option').forEach((option, i) => {
+      option.querySelector('.lt').textContent = quizLetter(i);
+    });
+  }
+
+  function resetQuizBlock(block) {
+    block.classList.remove('is-done');
+    block.querySelectorAll('.quiz-option').forEach((option) => {
+      option.classList.remove('selected', 'submitted-correct', 'submitted-wrong');
+      option.setAttribute('aria-checked', 'false');
+    });
+    const feedback = block.querySelector('.quiz-feedback');
+    if (feedback) {
+      feedback.className = 'quiz-feedback';
+      feedback.innerHTML = '';
+    }
+    const submitBtn = block.querySelector('.quiz-submit');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.className = 'btn btn-primary quiz-submit';
+      submitBtn.textContent = 'Check answer';
+    }
+  }
+
+  function onQuizOptionClick(optionEl, event) {
+    const block = optionEl.closest('.quiz-block');
+    const isPreview = !!block.closest('.screen.mode-preview');
+    if (!isPreview) {
+      if (!event.target.closest('.quiz-mark')) return;
+      block.querySelectorAll('.quiz-option').forEach((opt) => opt.classList.remove('is-correct'));
+      optionEl.classList.add('is-correct');
+      simulateSave();
+      return;
+    }
+    if (block.classList.contains('is-done')) return;
+    block.querySelectorAll('.quiz-option').forEach((opt) => {
+      opt.classList.toggle('selected', opt === optionEl);
+      opt.setAttribute('aria-checked', String(opt === optionEl));
+    });
+    block.querySelector('.quiz-submit').disabled = false;
+  }
+
+  function addQuizOption(btn) {
+    const optionsEl = btn.closest('.quiz-options');
+    const index = optionsEl.querySelectorAll('.quiz-option').length;
+    btn.insertAdjacentHTML('beforebegin', buildQuizOptionHtml({ text: 'New option', correct: false }, index));
+    const textEl = btn.previousElementSibling.querySelector('.quiz-option-text');
+    textEl.focus();
+    document.getSelection().selectAllChildren(textEl);
+    simulateSave();
+  }
+
+  function removeQuizOption(btn) {
+    const block = btn.closest('.quiz-block');
+    const options = btn.closest('.quiz-options');
+    if (options.querySelectorAll('.quiz-option').length <= 2) return;
+    btn.closest('.quiz-option').remove();
+    relabelQuizOptions(block);
+    simulateSave();
+  }
+
+  function submitQuiz(btn) {
+    const block = btn.closest('.quiz-block');
+    if (block.classList.contains('is-done')) {
+      resetQuizBlock(block);
+      return;
+    }
+    const selected = block.querySelector('.quiz-option.selected');
+    if (!selected) return;
+    const wasCorrect = selected.classList.contains('is-correct');
+    block.querySelectorAll('.quiz-option').forEach((opt) => {
+      opt.classList.remove('selected');
+      if (opt.classList.contains('is-correct')) opt.classList.add('submitted-correct');
+      else if (opt === selected) opt.classList.add('submitted-wrong');
+    });
+    block.classList.add('is-done');
+    const feedback = block.querySelector('.quiz-feedback');
+    feedback.className = 'quiz-feedback ' + (wasCorrect ? 'ok' : 'bad');
+    feedback.innerHTML = wasCorrect ? `${ICON_CHECK_CIRCLE}Correct — well done!` : `${ICON_X_CIRCLE}Not quite. The correct answer is highlighted.`;
+    btn.disabled = false;
+    btn.className = 'btn btn-outline quiz-submit';
+    btn.textContent = 'Try again';
+  }
+
+  // ---- Process: a step-by-step flow with a labelled stepper; each step has an optional image,
+  // a heading and a body. Edit rewrites the current step in place. ----
+  const ICON_RESTART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 2.64-6.36"/><path d="M3 3v6h6"/></svg>';
+
+  function buildProcessStepperHtml(steps, current) {
+    return steps
+      .map((step, i) => {
+        const state = i < current ? 'done' : i === current ? 'on' : 'todo';
+        const isLast = i === steps.length - 1;
+        const node = i < current ? ICON_CHECK_SMALL : String(i + 1);
+        return `
+        <div class="ps-item ${state}" onclick="jumpProcessStep(this,${i})">
+          <div class="ps-row"><button type="button" class="ps-node" aria-label="Go to step ${i + 1}"${i === current ? ' aria-current="step"' : ''}>${node}</button>${isLast ? '' : '<span class="ps-line"></span>'}</div>
+          <span class="ps-label">${escapeHtml(step.heading || 'Untitled step')}</span>
+        </div>`;
+      })
+      .join('');
+  }
+
+  function buildProcessMediaHtml(image) {
+    if (!image) return '';
+    return `<img src="${escapeHtml(image)}" alt="" /><button type="button" class="process-media-remove edit-only" aria-label="Remove image" onclick="removeProcessImage(this)">${ICON_CLOSE_SMALL}</button>`;
+  }
+
+  function buildProcessBlockHtml(data) {
+    return `
+      <section class="content-section" data-type="process" data-process='${escapeHtml(JSON.stringify(data))}' data-current-step="0">
+        ${blockHead('Process', ICON_PROCESS)}
+        <div class="process-block">
+          <div class="process-bar">
+            <span class="process-eyebrow">${ICON_PROCESS}<span class="process-eyebrow-text"></span></span>
+            <div class="process-toolbar edit-only">
+              <input type="file" accept="image/*" hidden class="process-image-input" onchange="onProcessImageChosen(this)" />
+              <div class="toolbar-group">
+                <div class="dd-menu">
+                  <button type="button" class="icobtn" data-tip="Add media" aria-label="Add media" onclick="toggleBlockMenu(this)">${ICON_IMAGE}</button>
+                  <div class="dd-menu-panel">
+                    <button type="button" class="dd-menu-item" onclick="triggerProcessImageUpload(this)">${ICON_IMAGE}Image</button>
+                  </div>
+                </div>
+                <span class="tgdiv"></span>
+                <button type="button" class="icobtn" data-tip="Delete this step" onclick="removeProcessStep(this)" aria-label="Delete this step">${ICON_TRASH}</button>
+              </div>
+            </div>
+          </div>
+          <div class="process-stepper"></div>
+          <div class="process-step">
+            <div class="process-media"></div>
+            <div class="process-copy">
+              <h3 class="process-heading" contenteditable="true" oninput="onProcessFieldInput(this,'heading')"></h3>
+              <p class="process-body" contenteditable="true" oninput="onProcessFieldInput(this,'body')"></p>
+            </div>
+          </div>
+          <div class="process-btnrow">
+            <button type="button" class="btn btn-outline btn-sm process-back" onclick="navProcessStep(this,-1)" aria-label="Previous step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg>Back</button>
+            <div class="process-progress"><i></i></div>
+            <button type="button" class="btn btn-primary btn-sm process-advance" onclick="advanceProcessStep(this)"></button>
+          </div>
+          <button type="button" class="ghost-add-tile edit-only" onclick="addProcessStep(this)">${ICON_PLUS}Add step</button>
+        </div>
+      </section>`;
+  }
+
+  function buildProcessBlockSample() {
+    const holder = document.createElement('div');
+    holder.innerHTML = buildProcessBlockHtml({
+      steps: [
+        {
+          heading: 'Introduction',
+          body: 'Artificial intelligence, or AI, has become one of the most transformative and rapidly evolving fields in technology. It involves the creation of intelligent machines that can perform tasks typically associated with human intelligence, such as learning, problem-solving, and decision-making.',
+          image: null
+        },
+        { heading: 'How it works', body: 'Describe what happens in this step of the process.', image: null },
+        { heading: 'Putting it to use', body: 'Show how learners apply what they have just seen.', image: null }
+      ]
+    });
+    renderProcess(holder.firstElementChild);
+    return holder.innerHTML;
+  }
+
+  function renderProcess(section) {
+    const data = JSON.parse(section.dataset.process);
+    const total = data.steps.length;
+    let current = parseInt(section.dataset.currentStep || '0', 10);
+    current = Math.max(0, Math.min(current, total - 1));
+    section.dataset.currentStep = current;
+    const step = data.steps[current];
+    const isLast = current === total - 1;
+    section.querySelector('.process-stepper').innerHTML = buildProcessStepperHtml(data.steps, current);
+    section.querySelector('.process-eyebrow-text').textContent = `Step ${current + 1} of ${total}`;
+    section.querySelector('.process-heading').textContent = step.heading;
+    section.querySelector('.process-body').textContent = step.body;
+    section.querySelector('.process-media').innerHTML = buildProcessMediaHtml(step.image);
+    section.querySelector('.process-step').classList.toggle('has-media', !!step.image);
+    section.querySelector('.process-progress i').style.setProperty('--p', ((current + 1) / total) * 100);
+    section.querySelector('.process-back').disabled = current === 0;
+    section.querySelector('.process-advance').innerHTML = isLast ? `${ICON_RESTART}Start over` : `Next${ICON_CHEVRON_RIGHT}`;
+  }
+
+  function navProcessStep(btn, dir) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    const next = parseInt(section.dataset.currentStep || '0', 10) + dir;
+    if (next < 0 || next >= data.steps.length) return;
+    section.dataset.currentStep = next;
+    renderProcess(section);
+  }
+
+  function jumpProcessStep(el, index) {
+    const section = el.closest('.content-section');
+    section.dataset.currentStep = index;
+    renderProcess(section);
+  }
+
+  function advanceProcessStep(btn) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    const current = parseInt(section.dataset.currentStep || '0', 10);
+    section.dataset.currentStep = current >= data.steps.length - 1 ? 0 : current + 1;
+    renderProcess(section);
+  }
+
+  function onProcessFieldInput(el, field) {
+    const section = el.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    const current = parseInt(section.dataset.currentStep || '0', 10);
+    data.steps[current][field] = el.textContent;
+    section.dataset.process = JSON.stringify(data);
+    if (field === 'heading') section.querySelectorAll('.ps-label')[current].textContent = el.textContent || 'Untitled step';
+    simulateSave();
+  }
+
+  function triggerProcessImageUpload(btn) {
+    const block = btn.closest('.process-block');
+    block.querySelector('.process-image-input').click();
+    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+  }
+
+  function onProcessImageChosen(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const section = input.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    const current = parseInt(section.dataset.currentStep || '0', 10);
+    data.steps[current].image = URL.createObjectURL(file);
+    section.dataset.process = JSON.stringify(data);
+    renderProcess(section);
+    simulateSave();
+  }
+
+  function removeProcessImage(btn) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    data.steps[parseInt(section.dataset.currentStep || '0', 10)].image = null;
+    section.dataset.process = JSON.stringify(data);
+    renderProcess(section);
+    simulateSave();
+  }
+
+  function addProcessStep(btn) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    data.steps.push({ heading: 'New step', body: 'Describe this step.', image: null });
+    section.dataset.process = JSON.stringify(data);
+    section.dataset.currentStep = data.steps.length - 1;
+    renderProcess(section);
+    simulateSave();
+  }
+
+  function removeProcessStep(btn) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    if (data.steps.length <= 1) return;
+    const current = parseInt(section.dataset.currentStep || '0', 10);
+    data.steps.splice(current, 1);
+    section.dataset.process = JSON.stringify(data);
+    section.dataset.currentStep = Math.max(0, current - 1);
+    renderProcess(section);
+    simulateSave();
+  }
+
   let activePopoverGapEl = null;
 
   function closeGapPopover() {
@@ -2129,36 +3613,13 @@
     activePopoverGapEl = null;
   }
 
-  // Radius and node size match the concept exactly; RADIAL_RADIUS is the full-size target and
-  // only shrinks (see openAddContentMenu) when the canvas column it opens in is too narrow to
-  // fit it at full size — a mobile frame, a resized window, a nested Tabs pane.
-  const RADIAL_RADIUS = 118;
-  const RADIAL_MIN_RADIUS = 64;
-  const RADIAL_NODE_SIZE = 46;
-  const RADIAL_START_DEG = -175;
-  const RADIAL_END_DEG = -5;
-
-  // Reach needed from the gap's center to clear the fan's arc + node radius + its label, used to
-  // decide whether there's room to fan upward before falling back to downward.
-  function radialReach(radius) {
-    return radius + RADIAL_NODE_SIZE / 2 + 24;
-  }
-
-  function buildGapRadialHtml(direction, radius) {
-    const items = [['ai', 'AI', ICON_AI, true], ...NAV_PILL_TYPES.map(([type, label, icon]) => [type, label, icon, false])];
-    const step = (RADIAL_END_DEG - RADIAL_START_DEG) / (items.length - 1);
-    const nodes = items
-      .map(([type, label, icon, isAi], i) => {
-        const angle = ((RADIAL_START_DEG + step * i) * Math.PI) / 180;
-        const x = Math.round(Math.cos(angle) * radius);
-        const yUp = Math.round(Math.sin(angle) * radius);
-        const y = direction === 'down' ? -yUp : yUp;
-        const onclick = isAi ? 'closeGapPopover(); openAiAssistant()' : `chooseContentType('${type}')`;
-        const label2 = isAi ? 'Ask AI assistant' : `Add ${label.toLowerCase()}`;
-        return `<button type="button" class="gap-radial-node${isAi ? ' ai' : ''}" style="--x:${x}px;--y:${y}px;transition-delay:${i * 18}ms" aria-label="${label2}" onclick="${onclick}">${icon}<span class="lb">${label}</span></button>`;
-      })
-      .join('');
-    return `<div class="gap-popover">${nodes}</div>`;
+  function buildGapGridHtml(direction) {
+    const tiles = NAV_PILL_TYPES.map(
+      ([type, label, icon]) =>
+        `<button type="button" class="gap-tile" role="menuitem" aria-label="Add ${label.toLowerCase()}" onclick="chooseContentType('${type}')">${icon}<span>${label}</span></button>`
+    ).join('');
+    const ai = `<button type="button" class="gap-ai" aria-label="Ask AI assistant" onclick="closeGapPopover(); openAiAssistant()">${ICON_AI}Ask AI instead<kbd>&#8984; I</kbd></button>`;
+    return `<div class="gap-popover gap-grid${direction === 'down' ? ' below' : ''}" role="menu"><div class="gap-tiles">${tiles}</div>${ai}</div>`;
   }
 
   // Anchored to one gap at a time: opening another, pressing Escape, or clicking outside closes it.
@@ -2175,19 +3636,10 @@
     activePopoverGapEl = gapEl;
     gapEl.classList.add('gap-popover-open');
 
-    // Responsive radius: full size by default, shrinking only as far as it needs to so the arc's
-    // widest points (the AI and Image nodes, at the ends of the sweep) stay inside the column it
-    // opened in — the mobile frame, a narrowed desktop window, a nested Tabs pane.
     const canvasEl = gapEl.closest('.canvas');
-    const columnWidth = canvasEl ? canvasEl.clientWidth : window.innerWidth;
-    const radiusForWidth = columnWidth / 2 - RADIAL_NODE_SIZE / 2 - 16;
-    const radius = Math.max(RADIAL_MIN_RADIUS, Math.min(RADIAL_RADIUS, radiusForWidth));
-
-    // Fan upward by default; fall back to downward when the viewport doesn't have room above
-    // the gap for the arc.
     const gapRect = gapEl.getBoundingClientRect();
-    const direction = gapRect.top < radialReach(radius) ? 'down' : 'up';
-    gapEl.insertAdjacentHTML('beforeend', buildGapRadialHtml(direction, radius));
+    const direction = gapRect.top < 260 ? 'down' : 'up';
+    gapEl.insertAdjacentHTML('beforeend', buildGapGridHtml(direction));
 
     if (canvasEl) canvasEl.classList.add('popover-dim');
 
@@ -2204,7 +3656,12 @@
     video: buildVideoBlockSample,
     slide: buildSlideBlockSample,
     document: buildDocumentBlockSample,
-    image: buildImageBlockSample
+    image: buildImageBlockSample,
+    chart: buildChartBlockSample,
+    flashcards: buildFlashcardsBlockSample,
+    tabs: buildTabsBlockSample,
+    quiz: buildQuizBlockSample,
+    process: buildProcessBlockSample
   };
 
   function chooseContentType(type) {
@@ -2227,11 +3684,56 @@
     ['video', 'Video', ICON_VIDEO],
     ['slide', 'Slides', ICON_SLIDE],
     ['document', 'Document', ICON_DOCUMENT],
-    ['image', 'Image', ICON_IMAGE]
+    ['image', 'Image', ICON_IMAGE],
+    ['chart', 'Chart', ICON_CHART],
+    ['flashcards', 'Flashcards', ICON_FLASHCARDS],
+    ['tabs', 'Tabs', ICON_TABS],
+    ['quiz', 'Multiple Choice', ICON_QUIZ],
+    ['process', 'Process', ICON_PROCESS]
   ];
 
   // Used by the floating in-editor nav and each empty state's pill row — the one-click row for
   // adding at the end of a canvas. Precise mid-lesson insertion lives in the per-gap radial fan.
+  const AI_PILL_INNER = () =>
+    `<span class="ai-ic">${ICON_AI}</span>Ask AI<span class="ai-div"></span><span class="keys"><kbd>&#8984;</kbd><kbd>I</kbd></span>`;
+
+  function buildEmptyStateHtml(canvasId) {
+    const tiles = NAV_PILL_TYPES.map(
+      ([type, label, icon]) =>
+        `<button type="button" class="type-tile" data-type="${type}" aria-label="Add ${label.toLowerCase()}">${icon}<span class="tile-lb">${label}</span></button>`
+    ).join('');
+    const inlineAi =
+      canvasId === 'mobileCanvas'
+        ? `<button type="button" class="empty-ai empty-ai-inline" data-type="ai" aria-label="Ask AI assistant">${AI_PILL_INNER()}</button>`
+        : '';
+    return `<h2>What goes in this lesson?</h2>
+      <p>Pick a block to begin. You can add more at any time.</p>
+      <div class="type-grid" role="toolbar" aria-label="Add content">${tiles}</div>${inlineAi}`;
+  }
+
+  function initEmptyStates() {
+    document.querySelectorAll('.empty-slash').forEach((root) => {
+      const canvasId = root.dataset.canvas;
+      root.innerHTML = buildEmptyStateHtml(canvasId);
+      root.addEventListener('click', (event) => {
+        const target = event.target.closest('.type-tile, .empty-ai');
+        if (!target) return;
+        if (target.dataset.type === 'ai') openAiAssistantFromDock(canvasId);
+        else addContentFromDock(canvasId, target.dataset.type);
+      });
+    });
+    document.querySelectorAll('.floating-nav-wrap').forEach((wrap) => {
+      const canvasId = wrap.id.replace('floatingNav-', '');
+      const pill = document.createElement('button');
+      pill.type = 'button';
+      pill.className = 'empty-ai floating-ai';
+      pill.setAttribute('aria-label', 'Ask AI assistant');
+      pill.innerHTML = AI_PILL_INNER();
+      pill.addEventListener('click', () => openAiAssistantFromDock(canvasId));
+      wrap.prepend(pill);
+    });
+  }
+
   function buildNavPillsHtml(mode, canvasId) {
     const aiOnclick = `openAiAssistantFromDock('${canvasId}')`;
     const typeOnclick = (type) => `addContentFromDock('${canvasId}','${type}')`;
@@ -2622,7 +4124,8 @@
   // screen keeps the phone's own scrolling, since a device frame simulating a real phone should
   // scroll like one, not grow a second floating indicator inside its small frame. ----
   const DOT_TIP_MIN_ROOM = 170; // px of clear space the tooltip needs on its default (left) side
-  const DOT_TYPE_ICONS = { video: ICON_VIDEO, note: ICON_NOTE, slide: ICON_SLIDE, document: ICON_DOCUMENT, image: ICON_IMAGE };
+  const DOT_TYPE_ICONS = { video: ICON_VIDEO, note: ICON_NOTE, slide: ICON_SLIDE, document: ICON_DOCUMENT, image: ICON_IMAGE,
+    chart: ICON_CHART, flashcards: ICON_FLASHCARDS, tabs: ICON_TABS, quiz: ICON_QUIZ, process: ICON_PROCESS };
   const DOTS_IDLE_MS = 900;
 
   function initScrollDots(canvasId, screenId) {
@@ -2665,7 +4168,12 @@
       note: 'Untitled note',
       slide: 'Untitled slide',
       document: 'Untitled document',
-      image: 'Untitled image'
+      image: 'Untitled image',
+      chart: 'Untitled chart',
+      flashcards: 'Flashcards',
+      tabs: 'Tabs',
+      quiz: 'Multiple choice question',
+      process: 'Process'
     };
 
     // Reads each block's own displayed title straight from its rendered content — never
@@ -2689,6 +4197,26 @@
         const body = section.querySelector('.note-content');
         const text = body && body.textContent.replace(/\s+/g, ' ').trim();
         return text ? (text.length > 60 ? text.slice(0, 60).trim() + '…' : text) : fallback;
+      }
+      if (type === 'chart') {
+        const input = section.querySelector('.chart-title-input');
+        return (input && input.value.trim()) || fallback;
+      }
+      if (type === 'quiz') {
+        const question = section.querySelector('.quiz-question');
+        return (question && question.textContent.trim()) || fallback;
+      }
+      if (type === 'flashcards') {
+        const firstCard = JSON.parse(section.dataset.flashcards).cards[0];
+        return (firstCard && firstCard.q.trim()) || fallback;
+      }
+      if (type === 'tabs') {
+        const labels = [...section.querySelectorAll('.tabs-pill-input')].map((input) => input.value.trim()).filter(Boolean);
+        return labels.length ? 'Tabs: ' + labels.join(' / ') : fallback;
+      }
+      if (type === 'process') {
+        const heading = section.querySelector('.process-heading');
+        return (heading && heading.textContent.trim()) || fallback;
       }
       return fallback;
     }
@@ -2921,22 +4449,21 @@
     e.preventDefault();
     const gap = dragging.nextElementSibling && dragging.nextElementSibling.classList.contains('block-gap') ? dragging.nextElementSibling : null;
     const after = getDragAfterElement(canvas, e.clientY);
-    canvas.insertBefore(dragging, after || canvas.querySelector('.empty-page'));
+    canvas.insertBefore(dragging, after || canvas.querySelector(':scope > .empty-page'));
     if (gap) dragging.insertAdjacentElement('afterend', gap);
   });
 
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (document.body.classList.contains('dialog-open')) closeDialog();
+    else if (document.body.classList.contains('ai-open')) closeAiAssistant();
     else if (activePopoverGapEl) closeGapPopover();
     else document.querySelectorAll('.settings-open').forEach((el) => el.classList.remove('settings-open'));
   });
 
   document.getElementById('floatingNavBar-canvas').innerHTML = buildNavPillsHtml('dock', 'canvas');
   document.getElementById('floatingNavBar-emptyCanvas').innerHTML = buildNavPillsHtml('dock', 'emptyCanvas');
-  ['canvas', 'emptyCanvas', 'mobileCanvas'].forEach((id) => {
-    document.getElementById('emptyPills-' + id).innerHTML = buildNavPillsHtml('dock', id);
-  });
+  initEmptyStates();
 </script>
   </body>
 </html>
