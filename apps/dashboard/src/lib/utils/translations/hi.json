@@ -6129,6 +6129,7 @@
         "no_courses": "जोड़ने के लिए कोई पाठ्यक्रम उपलब्ध नहीं है।",
         "no_matches": "आपकी खोज से कोई पाठ्यक्रम मेल नहीं खाता।",
         "pagination_status": "{totalPages} का पेज {page}",
+        "public_course_disabled": "सार्वजनिक पाठ्यक्रमों को लर्निंग पाथ में नहीं जोड़ा जा सकता",
         "retry": "पुनः प्रयास करें",
         "search_placeholder": "पाठ्यक्रम खोजें…",
         "select_courses": "पाठ्यक्रम चुनें",

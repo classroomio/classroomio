@@ -6131,6 +6131,7 @@
         "no_courses": "No available courses to add.",
         "no_matches": "No courses match your search.",
         "load_failed": "Failed to load courses.",
+        "public_course_disabled": "Public courses can't be added to a learning path",
         "retry": "Retry",
         "cancel": "Cancel",
         "submit": "Add {count} {count, plural, =1 {Course} other {Courses}}",

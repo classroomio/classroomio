@@ -6129,6 +6129,7 @@
         "no_courses": "Ingen tilgængelige kurser at tilføje.",
         "no_matches": "Ingen kurser matcher din søgning.",
         "pagination_status": "Side {page} af {totalPages}",
+        "public_course_disabled": "Offentlige kurser kan ikke føjes til en læringssti",
         "retry": "Prøv igen",
         "search_placeholder": "Søg efter kurser…",
         "select_courses": "Vælg kurser",

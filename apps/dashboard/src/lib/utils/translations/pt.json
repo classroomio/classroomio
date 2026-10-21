@@ -6129,6 +6129,7 @@
         "no_courses": "Nenhum curso disponível para adicionar.",
         "no_matches": "Nenhum curso corresponde à sua pesquisa.",
         "pagination_status": "Página {page} de {totalPages}",
+        "public_course_disabled": "Cursos públicos não podem ser adicionados a um caminho de aprendizagem",
         "retry": "Tentar novamente",
         "search_placeholder": "Pesquisar cursos…",
         "select_courses": "Selecione os cursos",

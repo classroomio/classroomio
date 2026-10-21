@@ -6129,6 +6129,7 @@
         "no_courses": "Aucun cours disponible.",
         "no_matches": "Aucun cours ne correspond à votre recherche.",
         "pagination_status": "Page {page} sur {totalPages}",
+        "public_course_disabled": "Les cours publics ne peuvent pas être ajoutés à un parcours d'apprentissage",
         "retry": "Réessayer",
         "search_placeholder": "Rechercher des cours…",
         "select_courses": "Sélectionner des cours",

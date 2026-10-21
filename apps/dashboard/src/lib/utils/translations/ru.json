@@ -6129,6 +6129,7 @@
         "no_courses": "Нет доступных курсов для добавления.",
         "no_matches": "Нет курсов, соответствующих вашему поиску.",
         "pagination_status": "Страница {page} из {totalPages}",
+        "public_course_disabled": "Публичные курсы нельзя добавить в учебный путь",
         "retry": "Повторить попытку",
         "search_placeholder": "Поиск курсов…",
         "select_courses": "Выберите курсы",

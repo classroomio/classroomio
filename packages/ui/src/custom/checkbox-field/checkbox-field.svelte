@@ -35,8 +35,8 @@
 
   const rowClass = $derived(
     cn(
-      'group ui:inline-flex ui:w-full ui:items-center ui:hover:bg-muted ui:rounded-md ui:p-2 ui:text-left',
-      disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+      'group ui:inline-flex ui:w-full ui:items-center ui:rounded-md ui:p-2 ui:text-left',
+      disabled ? 'cursor-not-allowed' : 'cursor-pointer ui:hover:bg-muted',
       className
     )
   );

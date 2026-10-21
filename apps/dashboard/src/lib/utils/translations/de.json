@@ -6129,6 +6129,7 @@
         "no_courses": "Keine Kurse zum Hinzufügen verfügbar.",
         "no_matches": "Ihre Suche ergab keine Treffer.",
         "pagination_status": "Seite {page} von {totalPages}",
+        "public_course_disabled": "Öffentliche Kurse können keinem Lernpfad hinzugefügt werden",
         "retry": "Versuchen Sie es noch einmal",
         "search_placeholder": "Kurse suchen…",
         "select_courses": "Kurse auswählen",

@@ -6129,6 +6129,7 @@
         "no_courses": "Không có khóa học nào để thêm.",
         "no_matches": "Không có khóa học nào phù hợp với tìm kiếm của bạn.",
         "pagination_status": "Trang {page} trong tổng số {totalPages}",
+        "public_course_disabled": "Không thể thêm khóa học công khai vào lộ trình học tập",
         "retry": "Thử lại",
         "search_placeholder": "Tìm kiếm khóa học…",
         "select_courses": "Chọn khóa học",

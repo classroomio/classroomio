@@ -6129,6 +6129,7 @@
         "no_courses": "Brak dostępnych kursów do dodania.",
         "no_matches": "Brak kursów pasujących do wyszukiwania.",
         "pagination_status": "Strona {page} z {totalPages}",
+        "public_course_disabled": "Publicznych kursów nie można dodawać do ścieżki nauki",
         "retry": "Spróbuj ponownie",
         "search_placeholder": "Szukaj kursów…",
         "select_courses": "Wybierz kursy",
