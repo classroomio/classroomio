@@ -69,7 +69,7 @@
     "ky": "^1.10.0",
     "lodash": "^4.17.21",
     "marked": "^7.0.5",
-    "mediabunny": "^1.45.2",
+    "mediabunny": "^1.62.0",
     "openai-edge": "^1.2.2",
     "papaparse": "^5.4.1",
     "pluralize": "^8.0.0",
