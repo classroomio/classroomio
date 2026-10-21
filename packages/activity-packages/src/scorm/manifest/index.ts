@@ -159,7 +159,9 @@ function attrTrue(node: unknown, name: string): boolean {
     return raw;
   }
 
-  return textOf(raw).toLowerCase() === 'true';
+  const value = textOf(raw).toLowerCase();
+
+  return value === 'true' || value === '1';
 }
 
 function attrFalse(node: unknown, name: string): boolean {
@@ -461,8 +463,7 @@ function collectUnits(
       const parameters = readAttrText(item, 'parameters') || null;
       const launchData = readSubtreeText(resource, 'datafromlms') ?? readSubtreeText(item, 'datafromlms');
       const title = textOf(item['title']) || identifier || identifierref;
-      const visibleRaw = readAttr(item, 'isvisible');
-      const isVisible = typeof visibleRaw === 'boolean' ? visibleRaw : textOf(visibleRaw).toLowerCase() !== 'false';
+      const isVisible = !attrFalse(item, 'isvisible');
 
       collector.units.push({
         identifier: identifier || identifierref,

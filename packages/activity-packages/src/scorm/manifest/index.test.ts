@@ -280,6 +280,12 @@ describe('parseScormManifest structure', () => {
     );
     expect(parseScormManifest(noSatisfy, ['sco.html']).units[0].passingScoreScaled).toBeNull();
 
+    const numericTrue = manifestWith(
+      '<schemaversion>2004 4th Edition</schemaversion>',
+      '<imsss:objectives xmlns:imsss="http://www.imsglobal.org/xsd/imsss"><imsss:primaryObjective satisfiedByMeasure="1"><imsss:minNormalizedMeasure>0.8</imsss:minNormalizedMeasure></imsss:primaryObjective></imsss:objectives>'
+    );
+    expect(parseScormManifest(numericTrue, ['sco.html']).units[0].passingScoreScaled).toBe(0.8);
+
     const withRest = manifestWith(
       '<schemaversion>2004 4th Edition</schemaversion>',
       '<adlcp:completionThreshold>0.6</adlcp:completionThreshold><imsss:maxTimeAllowed xmlns:imsss="http://www.imsglobal.org/xsd/imsss">PT45M</imsss:maxTimeAllowed><imsss:sequencing xmlns:imsss="http://www.imsglobal.org/xsd/imsss"><imsss:controlMode choice="false"/></imsss:sequencing>'
@@ -293,6 +299,20 @@ describe('parseScormManifest structure', () => {
       timeLimitAction: null
     });
     expect(parsed.warnings).toContain('has_sequencing');
+  });
+
+  it('reads numeric visibility booleans', () => {
+    const hidden = manifestWith('<schemaversion>1.2</schemaversion>').replace(
+      '<item identifier="ITEM-1"',
+      '<item isvisible="0" identifier="ITEM-1"'
+    );
+    const visible = manifestWith('<schemaversion>1.2</schemaversion>').replace(
+      '<item identifier="ITEM-1"',
+      '<item isvisible="1" identifier="ITEM-1"'
+    );
+
+    expect(parseScormManifest(hidden, ['sco.html']).units[0].isVisible).toBe(false);
+    expect(parseScormManifest(visible, ['sco.html']).units[0].isVisible).toBe(true);
   });
 
   it('treats out-of-range pass marks as absent', () => {

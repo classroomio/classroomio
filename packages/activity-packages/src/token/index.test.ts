@@ -26,7 +26,7 @@ describe('signToken', () => {
       `${body}.x${signature.slice(1)}`,
       tamperedBody,
       'nope',
-      await signToken({ org: 'o1' }, 'other')
+      await signToken({ org: 'o1' }, 'other-secret-'.repeat(3))
     ]) {
       try {
         await verifyToken(bad, SECRET);
@@ -34,6 +34,15 @@ describe('signToken', () => {
       } catch (error) {
         expect((error as PackageError).code).toBe('invalid_token');
       }
+    }
+  });
+
+  it('rejects weak secrets', async () => {
+    try {
+      await signToken({ org: 'o1' }, 'short');
+      expect.unreachable();
+    } catch (error) {
+      expect((error as PackageError).code).toBe('invalid_token');
     }
   });
 });

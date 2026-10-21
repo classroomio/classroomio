@@ -2,7 +2,7 @@
 
 Automated coverage: `compatibility-matrix.test.ts` in this folder. Run it with `pnpm --filter @cio/activity-packages test test/compatibility`.
 
-Browser coverage: manual for now. Every in-git fixture can be booted against the stub content origin in each target browser; browser automation is not part of this change.
+Browser coverage: manual for now. Every launchable in-git fixture can be booted against the stub content origin in each target browser; rejection fixtures are covered by import-failure checks instead. Browser automation is not part of this change.
 
 ## Axes
 

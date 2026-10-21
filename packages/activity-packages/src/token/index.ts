@@ -35,7 +35,13 @@ function getSubtle(): SubtleCrypto {
   return subtle;
 }
 
+const MIN_SECRET_LENGTH = 32;
+
 async function importSecret(secret: string): Promise<CryptoKey> {
+  if (typeof secret !== 'string' || secret.length < MIN_SECRET_LENGTH) {
+    throw new PackageError('invalid_token', { reason: 'weak_secret' });
+  }
+
   return getSubtle().importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, [
     'sign',
     'verify'
