@@ -747,7 +747,7 @@
       "kpi_team_tutors": "{count, plural, one {# преподаватель в команде курса} other {# преподавателей в команде курса}}",
       "kpi_lessons_exercises": "{count, plural, one {# упражнение} other {# упражнений}} сопоставлено с уроками",
       "kpi_progress_grade": "{grade} % средняя оценка за упражнения среди зачисленных учащихся",
-      "kpi_packages": "{count, plural, one {# упаковка} few {# упаковки} other {# упаковок}}",
+      "kpi_packages": "{count, plural, one {# пакет} few {# пакета} other {# пакетов}}",
       "kpi_activity_completion": "{rate}% — доля студентов, полностью завершивших программу"
     },
     "exercises_completed": "Выполненные упражнения",
@@ -2988,7 +2988,7 @@
             "move_stale_confirm_title": "Перевести всех на эту версию?",
             "move_stale_confirm_body": "{count, plural, one {# учащийся} other {# учащихся}} прошли часть курса. Они начнут курс заново с самого начала, используя текущую версию.",
             "upload_new_version": "Загрузить новую версию",
-            "swap_package": "Пакет подкачки",
+            "swap_package": "Заменить пакет",
             "swap_confirm_title": "Перейти на другой пакет?",
             "swap_confirm_body": "Учащиеся начнут работу с новым пакетом с самого начала. Текущий пакет останется в Media Manager.",
             "swap_confirm_body_with_count": "{count, plural, one {# учащийся находится} other {# учащихся находятся}} в процессе прохождения. Они начнут новый пакет с самого начала. Статус завершения у тех, кто уже прошел этот пакет, сохранится.",
@@ -3580,7 +3580,7 @@
       "updated_at": "Обновлено {date}",
       "lessons_count": "{count, plural, one {# урок} few {# урока} many {# уроков} other {# уроков}}",
       "exercises_count": "{count, plural, one {# упражнение} few {# упражнения} many {# упражнений} other {# упражнений}}",
-      "activities_count": "{count, plural, one {# упаковка} few {# упаковки} other {# упаковок}}",
+      "activities_count": "{count, plural, one {# пакет} few {# пакета} other {# пакетов}}",
       "scorm_modules": "SCORM · {count, plural, one {# модуль} other {# модулей}}",
       "scorm": "СКОРМ",
       "scorm_course": "SCORM-курс"
