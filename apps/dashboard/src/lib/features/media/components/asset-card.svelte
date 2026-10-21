@@ -124,7 +124,7 @@
           </div>
         </Tooltip.Trigger>
         <Tooltip.Content side="top" sideOffset={4}>
-          {asset.title}
+          {getAssetDisplayName(asset)}
         </Tooltip.Content>
       </Tooltip.Root>
     </Tooltip.Provider>
