@@ -21,7 +21,7 @@ interface SentRequest {
 let sent: SentRequest[] = [];
 let nextResponse: { status: number; body: string } = { status: 200, body: '{"result":true,"errorCode":0}' };
 let throwOnSend = false;
-let beacons: Array<{ url: string; body: Blob }> = [];
+let beacons: Array<{ url: string; body: string }> = [];
 
 class FakeXhr {
   status = 0;
@@ -48,8 +48,8 @@ class FakeXhr {
   }
 }
 
-async function beaconBody(index: number): Promise<Record<string, unknown>> {
-  return JSON.parse(await beacons[index].body.text()) as Record<string, unknown>;
+function beaconBody(index: number): Record<string, unknown> {
+  return JSON.parse(beacons[index].body) as Record<string, unknown>;
 }
 
 beforeEach(() => {
@@ -74,7 +74,7 @@ beforeEach(() => {
     } as Response;
   });
   vi.stubGlobal('navigator', {
-    sendBeacon: vi.fn((url: string, body: Blob) => {
+    sendBeacon: vi.fn((url: string, body: string) => {
       beacons.push({ url, body });
       return true;
     })
@@ -295,8 +295,7 @@ describe('createRuntimeHttpService', () => {
 
     expect(result).toEqual({ result: true, errorCode: 0 });
     expect(sent).toHaveLength(0);
-    expect(beacons[0].body.type).toBe('text/plain;charset=utf-8');
-    expect(await beaconBody(0)).toEqual({ cmi: { core: { exit: 'suspend' } }, commitSequence: 4, terminate: true });
+    expect(beaconBody(0)).toEqual({ cmi: { core: { exit: 'suspend' } }, commitSequence: 4, terminate: true });
   });
 
   it('falls back to a beacon when the browser blocks the synchronous exit save', () => {

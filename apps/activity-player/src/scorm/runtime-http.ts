@@ -15,7 +15,6 @@ export interface RuntimeHttpHooks {
   initialCmi?: unknown;
 }
 
-const BEACON_CONTENT_TYPE = 'text/plain;charset=UTF-8';
 const COMMIT_FAILED = 101;
 
 let pageUnloading = false;
@@ -125,9 +124,7 @@ function isSuccess(result: CommitResult): boolean {
 }
 
 function sendBeacon(url: string, body: string): CommitResult {
-  const delivered =
-    typeof navigator.sendBeacon === 'function' &&
-    navigator.sendBeacon(url, new Blob([body], { type: BEACON_CONTENT_TYPE }));
+  const delivered = typeof navigator.sendBeacon === 'function' && navigator.sendBeacon(url, body);
 
   return delivered ? { result: true, errorCode: 0 } : { result: false, errorCode: COMMIT_FAILED };
 }
