@@ -36,7 +36,7 @@ isProject: false
 
 ## Status
 
-- Draft (prototyped, ready for engineering review)
+- Implemented (backend, dashboard, public API, MCP); see the release checklist
 
 ## Date
 
@@ -280,7 +280,7 @@ Data comes from `lesson_video_checkpoint_answer`. Aggregation happens in a query
 
 ### Data model
 
-Do **not** generate files under `packages/db/src/migrations`. Edit `packages/db/src/schema.ts` only (repo convention). CI `db push` applies it.
+Schema lives in `packages/db/src/schema.ts` with one hand-trimmed migration, `packages/db/src/migrations/0039_video_checkpoints.sql`, whose journal `when` is later than every migration on `main`. `drizzle-kit generate` produced unrelated drift on current `main`, so the file contains only the checkpoint tables.
 
 ```ts
 export const lessonVideoCheckpoint = pgTable(
@@ -311,7 +311,7 @@ export const lessonVideoCheckpoint = pgTable(
 export const lessonVideoCheckpointOption = pgTable(
   'lesson_video_checkpoint_option',
   {
-    id: uuid().default(sql`gen_random_uuid()`).primaryKey().notNull(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     checkpointId: uuid('checkpoint_id').notNull(),
     label: text().notNull(),
     value: text(),
@@ -434,7 +434,9 @@ Mount on the existing lesson router (`apps/api/src/routes/course/lesson.ts`). Do
 | `GET` | `/course/:courseId/lesson/:lessonId/checkpoints/results` | staff | per-checkpoint stats (answered, correct %, common wrong option) and per-student answers; `?format=csv` is a separate export route if a single-shape response is required | |
 | `POST` | `/course/:courseId/lesson/:lessonId/checkpoints/:checkpointId/answer` | enrolled student (or learner-view staff) | `{ answerData }` (`AnswerData` from `@cio/question-types`) | returns `{ isCorrect, satisfied, didJustComplete }` |
 
-Also include `checkpoints` + `checkpointAnswers` on `GET /course/:courseId/lesson/:lessonId` so the player does not wait on a second round-trip. Shape the student payload so options never leak the key.
+The player loads checkpoints from `GET .../checkpoints`, which returns `answeredCheckpointIds` and `satisfiedCheckpointIds` alongside the checkpoints. The lesson payload itself is unchanged so no answer key can ride along on it. Student payloads never contain `isCorrect`, numeric/star `correctValue`, fill-blank `acceptedAnswers` or the ordering key; word-bank words are merged with distractors and ordering options are shuffled.
+
+Implementation notes that differ from the first draft: option ids are numeric (`bigint` identity) because `@cio/question-types` answer payloads and scoring compare numeric option ids; editing a question clears its earlier answers in the same transaction; deleting a checkpoint is not plan-gated so a downgraded org can remove a question that blocks its learners; course clone copies checkpoints and remaps `assetId` through the asset-copy map; `app.ts` mounts the public API router after the typed RPC chain because the combined route type otherwise exceeds what TypeScript can serialize.
 
 Validation lives in `packages/utils/src/validation/lesson/` (new `checkpoint.ts`, re-exported from `lesson/index` if present, else `validation/lesson/lesson.ts` neighbor). Queries in `packages/db/src/queries/lesson/checkpoints.ts`. Services in `packages/core/src/services/lesson/` (or `apps/api/src/services` only if the work is HTTP-only — prefer core next to watch progress). Routes call services; no Drizzle in routes.
 
