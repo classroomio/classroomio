@@ -9,6 +9,7 @@ import {
   ZPackageCreate,
   ZPackageMakeCurrent,
   ZPackageParam,
+  ZPackageVersionCreate,
   ZPackageVersionParam
 } from '@cio/utils/validation/activity/package';
 
@@ -50,6 +51,8 @@ describe('activity package validation', () => {
     expect(ZPackageCreate.safeParse({ fileName: 'course.pdf', fileSize: 1024 }).success).toBe(false);
     expect(ZPackageCreate.safeParse({ fileName: 'course.zip', fileSize: 0 }).success).toBe(false);
     expect(ZPackageCreate.safeParse({ fileName: '', fileSize: 1024 }).success).toBe(false);
+    expect(ZPackageCreate.safeParse({ fileName: 'course.zip', fileSize: true }).success).toBe(false);
+    expect(ZPackageVersionCreate.safeParse({ fileSize: true }).success).toBe(false);
   });
 
   it('validates package route params', () => {
