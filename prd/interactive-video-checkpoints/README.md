@@ -17,6 +17,15 @@ todos:
   - id: completion-gating
     content: Extend video_watch and manual completion so unanswered checkpoints block lesson complete, clone, and reset-progress
     status: pending
+  - id: plan-gating
+    content: Gate checkpoint authoring and results behind the same plan entitlement as video upload, enforced in services for dashboard, public API and MCP
+    status: pending
+  - id: results
+    content: Results drawer on the Video tab (per-question stats, per-student answers, CSV export) plus a staff-only results route
+    status: pending
+  - id: public-api-mcp
+    content: Expose checkpoint CRUD and results through the public API (routes/v1) and MCP tools, with OpenAPI, scopes, docs sidebar entries and tests
+    status: pending
   - id: public-practice
     content: Public course preview can show overlays in-memory only; no persisted answers
     status: pending
@@ -89,6 +98,10 @@ The trigger is a typical LMS buyer who needs LearnWorlds-style “questions that
 10. **Public org-site lessons** may show overlays for an unlocked public video, but answers stay in memory (same as today’s public Exercise practice). Authenticated LMS is the source of truth.
 11. **Teacher authoring is on the existing Video tab**, under the uploaded player: a timestamp timeline + “Add question” at the current playhead. Not a new lesson tab, not Settings, not the Exercise editor.
 12. **No programmer-facing concepts in the UI.** Copy is “Add a question at this time,” “Resume when they answer,” “Require the correct answer.” Never “cue,” “action,” or “resume video” as a hidden dropdown.
+13. **Native uploads only, by design.** YouTube, Vimeo, Drive and generic embeds stay blocked with an upload CTA. The feature is a reason to upload.
+14. **Plan-gated.** Checkpoints are available on the same plans that unlock video upload (`FEATURES.EA_VIDEO_UPLOAD` in `packages/utils/src/plans/constants.ts`: Early Adopter and Enterprise). Free orgs see the timeline and the upgrade prompt but cannot save checkpoints. The gate is enforced in the service layer, not only hidden in the dashboard.
+15. **Authoring and results are drawers, not modals.** The add/edit form and the Results view use `@cio/ui/base/sheet`, following `apps/dashboard/src/lib/features/automation/components/webhook-form-sheet.svelte`.
+16. **Public API and MCP are part of v1.** Everything a teacher can do on the Video tab (create, edit, delete, list checkpoints, read results) must also be reachable through the public API and MCP. See "Public API and MCP".
 
 ## Current-State Audit
 
@@ -121,15 +134,15 @@ The trigger is a typical LMS buyer who needs LearnWorlds-style “questions that
 
 ## Non-Goals (v1)
 
-- YouTube IFrame API / Vimeo / Google Drive interactive cues.
+- YouTube IFrame API / Vimeo / Google Drive interactive cues (deferred; native uploads only).
 - Scoring checkpoints into the exam or the certificate.
 - Branching (jump to timestamp, open URL, skip remaining video).
 - Manual-graded, survey, or disabled question types inside the player (`TEXTAREA`, `SHORT_ANSWER`, `FILE_UPLOAD`, `LINK`, `VIDEO_RECORDING`, `THUMBS`, `MATCHING`, `HOTSPOT`).
 - Checkpoints as Exercise rows, hidden or otherwise.
 - A new completion policy value.
 - In-player comments, polls, or discussion.
-- AI/MCP authoring of checkpoints.
-- Public-API / webhook events for checkpoint answers.
+- AI-generated question suggestions from transcripts (follow-up; the public API and MCP tools in this PRD are what it will build on).
+- Webhook event for checkpoint answers (follow-up; results are readable through the API).
 - Mobile native app (dashboard + public web only).
 - Requiring a correct answer by default (that is an opt-in per question).
 
@@ -178,15 +191,15 @@ Shown only when the selected video is an enforceable upload (has `assetId`, `typ
 
 Badge on the Video tab = video count, unchanged. Checkpoint count lives on the marker list, not a new tab.
 
-### 3. Teacher — add/edit dialog (`teacher-add-checkpoint.html`)
+### 3. Teacher — add/edit drawer (`teacher-add-checkpoint.html`)
 
-Dialog (not a new route). Fields:
+Right-side drawer (`@cio/ui/base/sheet`, same pattern as the webhook form sheet), not a dialog and not a new route. Reset state in `onOpenChange` / close handler. The video stays visible beside the drawer so the timestamp can be set from the playhead. Fields:
 
 - Timestamp (mm:ss), prefilled from playhead, editable.
 - Type: the existing exercise `question-type-select`, **auto-gradable group only** (hide the manual-grading section). Premium `ORDERING` / `STAR` use the same free-plan upgrade chip as the exercise editor.
 - Prompt (`title`) plus the matching **edit renderer** from `@cio/ui/custom/exercise-question` (options, numeric key, fill-blank template, word-bank blanks, ordering items, star max + correct value).
 - Resume: radio **Continue after they answer** (default) vs **Require the correct answer**.
-- Save / Cancel. Validation errors inline (`Field.Error`). Reuse the same option/settings rules as exercise create (`QUESTION_VALIDATION_RULES` in `packages/utils/src/validation/exercise/exercise.ts`).
+- Save / Cancel in the sheet footer. Validation errors inline (`Field.Error`). Reuse the same option/settings rules as exercise create (`QUESTION_VALIDATION_RULES` in `packages/utils/src/validation/exercise/exercise.ts`).
 
 No points field. No “section.” Option images are allowed when the existing RADIO/CHECKBOX renderer already supports them; the overlay scrolls rather than growing the player chrome.
 
@@ -233,6 +246,33 @@ If the public lesson’s first video is an upload with checkpoints, overlays may
 - **Clone course:** after `createLessons`, copy checkpoint + option rows onto new `lessonId`s; keep `assetId` (clone already reuses the same video assets via jsonb).
 - **Reset student progress:** delete `lesson_video_checkpoint_answer` for that profile on the course’s lessons, in the same transaction as video progress.
 - **Delete lesson / video:** FK cascade from lesson; deleting one video’s `assetId` from `lesson.videos` must also delete checkpoints for that pair in the lesson-update service.
+
+### 9. Results — what creators see
+
+Results live on the lesson's Video tab as a **Results drawer** opened from a button next to the timeline. No new page, tab or sidebar item. Staff only; students never see it.
+
+**Level 1 — video summary (top of drawer)**
+
+- Learners who started the video, learners who answered every checkpoint, overall % correct.
+
+**Level 2 — one row per checkpoint, in timeline order**
+
+| Column | Meaning |
+| --- | --- |
+| Time | `timestampSeconds` as mm:ss, links to that moment in the player |
+| Question | Prompt snippet and type chip |
+| Answered | `answered / enrolled learners` |
+| Correct | % of answers with `isCorrect` |
+| Common wrong answer | Most-chosen incorrect option (option-backed types) with its share |
+
+Low-correct rows are visually flagged so the creator can see which minute of the video confuses people.
+
+**Level 3 — per-student list (second level inside the drawer)**
+
+- Opens from a row. Name, answer, Correct / Answered / Not yet; answered students first. Excel-friendly **CSV export** of all checkpoints for the lesson (learner, checkpoint, answer, correct, answered at).
+- Formative only: never written to submissions, never feeds grading or the certificate.
+
+Data comes from `lesson_video_checkpoint_answer`. Aggregation happens in a query function; the dashboard never computes stats from a client-side roster.
 
 ---
 
@@ -327,6 +367,33 @@ Limits (service-enforced, not DB CHECKs):
 
 Student GET must **omit answer keys** (`options.isCorrect`, numeric/star `settings.correctValue`, fill-blank / word-bank accepted answers) until after that checkpoint is answered (and only then if we decide to reveal — v1 `any` never reveals; `correct` reveals by forcing retry). Teacher GET includes the key.
 
+### Plan gating
+
+- Reuse the entitlement that gates video upload (`FEATURES.EA_VIDEO_UPLOAD`, `PLANS_BY_FEATURE`). Do not add a new plan tier or a second flag.
+- One shared guard in the service layer is called by every write path: dashboard routes, public API v1 routes, MCP tools, clone and any import path. Create, update, delete, reorder and results export are all gated; a guard on only one operation is not enough.
+- Reads for existing checkpoints stay allowed after a downgrade so learners keep seeing questions already published; new authoring and results are blocked with the standard plan-limit `AppError`.
+- Dashboard: free orgs see the timeline and an upgrade prompt instead of the save action. Dashboard hiding is a product rule, not security.
+- Tests: allowed plan, disallowed plan, plan changed after an API key was created, every route that creates or mutates a checkpoint.
+
+### Public API and MCP
+
+Follow [`skills/public-api-review/SKILL.md`](../../skills/public-api-review/SKILL.md) before implementing and again at review. Parity boundary: everything a teacher does on the Video tab and in the Results drawer is available through the API; the interactive overlay and the drag-to-move interaction are UI-only (the API takes a `timestampSeconds` instead).
+
+| Capability | Public API (v1) | MCP tool |
+| --- | --- | --- |
+| List checkpoints for a lesson video | `GET` lessons checkpoints | `list_lesson_video_checkpoints` (read-only) |
+| Create / update / delete a checkpoint | `POST`, `PATCH`/`PUT`, `DELETE` | `create_`, `update_`, `delete_lesson_video_checkpoint` (write / destructive) |
+| Read results and per-learner answers | `GET` results, plus CSV export | `get_lesson_video_checkpoint_results` (read-only) |
+
+- Mount under `apps/api/src/routes/v1/` in a lessons/checkpoints domain folder with a matching `services/v1/` module, aggregated at the v1 root. Do not add a new `app.ts` mount.
+- Define **public** request and response schemas separately from the dashboard schemas; the success `data` shape is declared exactly (no bare `{ type: "object" }`). Validate timestamps, enum `questionType`, UUIDs, and that `assetId` and option ids belong to that lesson and org.
+- Actor comes from the API-key owner. Check organization ownership and course-staff access on every call; students' answers are never writable through the staff API.
+- Narrow, domain-specific scope(s) (do not widen `public_api:*`); audit every existing route a new scope unlocks; scope migrations must not widen custom-scope keys.
+- Rate-limit mutating and results/export routes; fail closed if the limiter cannot decide. Add audit events for create/update/delete.
+- MCP: mark read tools read-only and mutations write/destructive; keep tool names, paths and scopes consistent; one-sentence descriptions; bump and publish the `@cio/mcp` package so installed clients get the new tools.
+- Docs: add tags to `OPERATION_TAGS` and `OPERATION_SUMMARIES` in `packages/utils/src/openapi/public-api.ts`, place them in `API_SECTIONS` in `apps/docs/blume.config.ts`, regenerate the published spec (`pnpm --filter @cio/api run upload:openapi`), and put the sidebar section → group → operation tree in the PR description.
+- Tests: role matrix, cross-org IDs, scope, plan gating, invalid / omitted / `null` payloads, concurrent updates, rate limit and limiter failure, OpenAPI contract, MCP tool tests.
+
 ### Core logic (pseudocode)
 
 ```
@@ -364,6 +431,7 @@ Mount on the existing lesson router (`apps/api/src/routes/course/lesson.ts`). Do
 | `POST` | `/course/:courseId/lesson/:lessonId/checkpoints` | staff | create | `assetId`, `timestampSeconds`, `questionType`, `title`, `settings`, `resumePolicy`, `options[]` |
 | `PUT` | `/course/:courseId/lesson/:lessonId/checkpoints/:checkpointId` | staff | update | same fields |
 | `DELETE` | `/course/:courseId/lesson/:lessonId/checkpoints/:checkpointId` | staff | delete | |
+| `GET` | `/course/:courseId/lesson/:lessonId/checkpoints/results` | staff | per-checkpoint stats (answered, correct %, common wrong option) and per-student answers; `?format=csv` is a separate export route if a single-shape response is required | |
 | `POST` | `/course/:courseId/lesson/:lessonId/checkpoints/:checkpointId/answer` | enrolled student (or learner-view staff) | `{ answerData }` (`AnswerData` from `@cio/question-types`) | returns `{ isCorrect, satisfied, didJustComplete }` |
 
 Also include `checkpoints` + `checkpointAnswers` on `GET /course/:courseId/lesson/:lessonId` so the player does not wait on a second round-trip. Shape the student payload so options never leak the key.
@@ -407,10 +475,12 @@ See [`implementation-plan.md`](./implementation-plan.md) for ticket-level breakd
 1. **Schema + validation + queries** (no UI). `pnpm --filter @cio/utils build` / `@cio/db` types.
 2. **Services + lesson routes** including GET lesson payload. `pnpm --filter @cio/api^... build && pnpm --filter @cio/api build`.
 3. **Media player overlay slot + cue engine** on authenticated lesson (hard-coded fixture ok for a spike, then API). Storybook story in the same change as the UI component.
-4. **Teacher timeline + dialog** on Video tab; YouTube blocked state.
+4. **Teacher timeline + drawer** on Video tab; YouTube blocked state; plan gate and upgrade prompt.
 5. **Completion gating + seek ceiling + clone + reset.**
-6. **Public in-memory overlay.**
-7. **Translations** (`cd apps/dashboard && pnpm translate`), `pnpm format:changed`, `pnpm format:check`, dashboard build.
+6. **Results drawer + results route + CSV export.**
+7. **Public API v1 + MCP tools** (can start as soon as phase 2 services exist).
+8. **Public in-memory overlay.**
+9. **Translations** (`cd apps/dashboard && pnpm translate`), `pnpm format:changed`, `pnpm format:check`, dashboard build.
 
 Node 20:
 
@@ -436,6 +506,23 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
 12. All user-facing copy uses translation keys; `{placeholders}` survive `pnpm translate`.
 13. New `@cio/ui` component ships with a Storybook story and passes `pnpm --filter @cio/ui prefix:check`.
 14. `pnpm format:check` and the API + dashboard builds for touched packages pass.
+15. Add/edit and Results both open as drawers (`@cio/ui/base/sheet`), never modals.
+16. A free-plan org cannot create, update or delete a checkpoint from the dashboard, the public API or MCP, and cannot read results; an Early Adopter org can.
+17. Results drawer shows per-question answered count, % correct and common wrong answer, a per-student list, and CSV export; none of it appears in submissions or grading.
+18. Public API v1 and MCP expose list / create / update / delete / results with documented scopes, plan guard, rate limits, audit events, OpenAPI sidebar entries and tests.
+
+## Release checklist
+
+- [ ] Schema, validation, queries, services and dashboard routes shipped (Phases A, B).
+- [ ] Plan guard shared by dashboard, public API and MCP; allowed and disallowed plans tested.
+- [ ] Add/edit and Results are drawers matching the webhook sheet pattern.
+- [ ] Results drawer, results route and CSV export shipped.
+- [ ] Public API v1 routes for checkpoint list, create, update, delete and results shipped, with public schemas, scopes, rate limits, audit events and contract tests.
+- [ ] MCP tools for the same operations shipped; `@cio/mcp` version bumped and published.
+- [ ] OpenAPI tags registered, `API_SECTIONS` updated, published spec regenerated, and the sidebar tree is in the PR description.
+- [ ] Parity gaps (overlay and drag interaction are UI-only) named in the public docs and the PR description.
+- [ ] Storybook stories for every new `@cio/ui` component; `pnpm --filter @cio/ui prefix:check` passes.
+- [ ] Translations generated and placeholders verified; `pnpm format:check` passes; API and dashboard builds pass.
 
 ## Risks and Mitigations
 
@@ -443,7 +530,8 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
 | --- | --- |
 | Overlay outside Plyr fullscreen is invisible | Mount overlay in the same relative wrapper as `plyr-player.svelte` loading overlay; verify fullscreen in the Storybook story and in the lesson page |
 | `timeupdate` granularity skips a short cue | Fire when `seconds >= timestamp` and unanswered, not only on an equality window; ceiling seek so the playhead cannot jump over it |
-| Teachers expect YouTube (the Reddit user’s likely source) | Blocked state with upload CTA; PRD is explicit that IFrame API is a later player upgrade, not v1 |
+| Teachers expect YouTube (the Reddit user’s likely source) | Blocked state with upload CTA; native uploads only is deliberate because upload is the paid feature this drives |
+| Plan gate only hidden in the UI | Shared service-layer guard on every write path including public API and MCP |
 | Using Exercise rows “to save time” | Forbidden in Confirmed Decisions; it would spam submissions and the contents tree |
 | Continue-on-select vs Continue button | Prototype uses an explicit Continue after a complete answer so mis-taps don’t burn a `correct` attempt; if engineering prefers RADIO’s native select-to-submit, update the prototype — prototype currently wins |
 | Tall types in a 16:9 player | Overlay card scrolls inside the player wrapper; do not push the question onto a new route |
