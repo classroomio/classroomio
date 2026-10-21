@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { ContentType } from '@cio/utils/constants';
 import { applyCourseContentBulkUpdates } from '@cio/db/queries/course/content-batch';
@@ -45,12 +45,20 @@ describe('applyCourseContentBulkUpdates unknown types', () => {
   });
 
   it('routes activities to the activity update instead of the unknown-type guard', async () => {
-    const result = await applyCourseContentBulkUpdates(
-      {} as never,
-      [{ id: 'activity-1', type: ContentType.Activity, order: 1 }] as never
-    ).catch((error: Error) => error);
+    const returning = vi.fn().mockResolvedValue([{ id: 'activity-1' }]);
+    const where = vi.fn(() => ({ returning }));
+    const set = vi.fn(() => ({ where }));
+    const tx = { update: vi.fn(() => ({ set })) };
 
-    expect((result as Error).message).not.toContain('Unexpected value');
+    const result = await applyCourseContentBulkUpdates(
+      tx as never,
+      [{ id: 'activity-1', type: ContentType.Activity, order: 1 }] as never
+    );
+
+    expect(tx.update).toHaveBeenCalledTimes(1);
+    expect(result.updatedActivities).toBe(1);
+    expect(result.updatedLessons).toBe(0);
+    expect(result.updatedExercises).toBe(0);
   });
 });
 
