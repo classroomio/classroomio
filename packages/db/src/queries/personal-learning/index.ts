@@ -2,6 +2,8 @@ import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { and, eq } from 'drizzle-orm';
 
+import type { PersonalLearningMessage, PersonalLearningOfferPayload } from '@db/schema';
+
 export type CreateJourneyFromOfferInput = {
   ownerUserId: string;
   offerId: string;
@@ -116,4 +118,101 @@ export async function reserveSession(journeyId: string, sessionIndex: number, db
     .limit(1);
 
   return existingSession ?? null;
+}
+
+export async function savePersonalLearningConversation(input: {
+  ownerUserId: string;
+  conversationId?: string;
+  userMessage: string;
+  assistantMessage: string;
+  offerId?: string;
+  offerPayload?: PersonalLearningOfferPayload;
+}) {
+  const [existingConversation] = input.conversationId
+    ? await db
+        .select()
+        .from(schema.personalLearningConversation)
+        .where(
+          and(
+            eq(schema.personalLearningConversation.id, input.conversationId),
+            eq(schema.personalLearningConversation.ownerUserId, input.ownerUserId)
+          )
+        )
+        .limit(1)
+    : [];
+
+  if (input.conversationId && !existingConversation) return null;
+
+  const messages: PersonalLearningMessage[] = [
+    ...(existingConversation?.messages ?? []),
+    { role: 'user', content: input.userMessage },
+    { role: 'assistant', content: input.assistantMessage }
+  ];
+  const offerStatus = input.offerId ? 'offered' : 'active';
+
+  if (existingConversation) {
+    const [updatedConversation] = await db
+      .update(schema.personalLearningConversation)
+      .set({
+        messages,
+        offerId: input.offerId ?? null,
+        offerPayload: input.offerPayload ?? null,
+        offerStatus
+      })
+      .where(
+        and(
+          eq(schema.personalLearningConversation.id, existingConversation.id),
+          eq(schema.personalLearningConversation.ownerUserId, input.ownerUserId)
+        )
+      )
+      .returning();
+
+    return updatedConversation ?? null;
+  }
+
+  const [conversation] = await db
+    .insert(schema.personalLearningConversation)
+    .values({
+      ownerUserId: input.ownerUserId,
+      messages,
+      offerId: input.offerId ?? null,
+      offerPayload: input.offerPayload ?? null,
+      offerStatus
+    })
+    .returning();
+
+  return conversation ?? null;
+}
+
+export async function getPersonalLearningConversationForOwner(ownerUserId: string, conversationId: string) {
+  const [conversation] = await db
+    .select()
+    .from(schema.personalLearningConversation)
+    .where(
+      and(
+        eq(schema.personalLearningConversation.id, conversationId),
+        eq(schema.personalLearningConversation.ownerUserId, ownerUserId)
+      )
+    )
+    .limit(1);
+
+  return conversation ?? null;
+}
+
+export async function dismissPersonalLearningOffer(ownerUserId: string, offerId: string) {
+  const [conversation] = await db
+    .update(schema.personalLearningConversation)
+    .set({ offerStatus: 'dismissed' })
+    .where(
+      and(
+        eq(schema.personalLearningConversation.ownerUserId, ownerUserId),
+        eq(schema.personalLearningConversation.offerId, offerId)
+      )
+    )
+    .returning({
+      id: schema.personalLearningConversation.id,
+      offerStatus: schema.personalLearningConversation.offerStatus
+    });
+
+  return conversation ?? null;
 }

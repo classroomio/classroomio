@@ -25,6 +25,7 @@ import { internalRouter } from '@api/routes/internal';
 import { inviteRouter } from '@api/routes/invite';
 import { jobsRouter } from '@api/routes/jobs';
 import { licenseRouter } from '@api/routes/license';
+import { learningRouter } from '@api/routes/learning';
 import { logger } from 'hono/logger';
 // ROUTES
 import { hlsRouter } from '@api/routes/hls';
@@ -242,6 +243,7 @@ export const app = new Hono()
   .route('/media', mediaRouter)
   .route('/jobs', jobsRouter)
   .route('/license', licenseRouter)
+  .route('/learning', learningRouter)
   .route('/organization', organizationRouter)
   .route('/organization/sso', organizationSsoRouter)
   .route('/organization/token-auth', organizationTokenAuthRouter)
