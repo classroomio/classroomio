@@ -383,35 +383,62 @@ export function buildCourseLandingPageProps(
     },
     curriculum: {
       grouped: course.content?.grouped ?? false,
-      sections: sections.map((section) => ({
-        id: section.id,
-        title: section.title ?? t.get('course.navItem.landing_page.lessons'),
-        lessons: section.lessons.map((lesson) => ({
-          id: lesson.id,
-          title: lesson.title ?? t.get('common.restricted_page.untitled_lesson')
-        })),
-        exerciseCount: section.exerciseCount,
-        items: section.items.map((item) => ({
-          id: item.id,
-          title: item.title ?? t.get('common.restricted_page.untitled_lesson'),
-          kind: item.kind,
-          modules: item.modules?.map((module) => ({
-            id: module.id,
-            title: module.title ?? t.get('common.restricted_page.untitled_lesson')
-          }))
-        })),
-        activities: section.activities.map((activity) => ({
-          id: activity.id,
-          title: activity.title ?? t.get('common.restricted_page.untitled_lesson'),
-          activityKind: activity.activityKind ?? undefined,
-          modules: (activity.modules ?? []).map((module) => ({
-            id: module.id,
-            title: module.title ?? t.get('common.restricted_page.untitled_lesson')
-          }))
-        })),
-        activityCount: section.activityCount,
-        standalone: section.standalone
-      }))
+      sections: sections.map((section) => {
+        const title = section.title ?? t.get('course.navItem.landing_page.lessons');
+        const lessons = section.lessons.map((lesson) => {
+          const lessonTitle = lesson.title ?? t.get('common.restricted_page.untitled_lesson');
+          return {
+            id: lesson.id,
+            title: lessonTitle
+          };
+        });
+        const items = section.items.map((item) => {
+          const itemTitle = item.title ?? t.get('common.restricted_page.untitled_lesson');
+          const modules = item.modules?.map((module) => {
+            const moduleTitle = module.title ?? t.get('common.restricted_page.untitled_lesson');
+            return {
+              id: module.id,
+              title: moduleTitle
+            };
+          });
+
+          return {
+            id: item.id,
+            title: itemTitle,
+            kind: item.kind,
+            modules
+          };
+        });
+        const activities = section.activities.map((activity) => {
+          const activityTitle = activity.title ?? t.get('common.restricted_page.untitled_lesson');
+          const activityKind = activity.activityKind ?? undefined;
+          const modules = (activity.modules ?? []).map((module) => {
+            const moduleTitle = module.title ?? t.get('common.restricted_page.untitled_lesson');
+            return {
+              id: module.id,
+              title: moduleTitle
+            };
+          });
+
+          return {
+            id: activity.id,
+            title: activityTitle,
+            activityKind,
+            modules
+          };
+        });
+
+        return {
+          id: section.id,
+          title,
+          lessons,
+          exerciseCount: section.exerciseCount,
+          items,
+          activities,
+          activityCount: section.activityCount,
+          standalone: section.standalone
+        };
+      })
     },
     chips: {
       skills: metadata?.skills ?? undefined,
