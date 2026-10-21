@@ -148,14 +148,14 @@ function sectionOrderEntries(graph: SyncGraph, sectionId: string | null) {
 }
 
 async function claimSectionLessonOrder(
-  templateLessons: TLesson[],
+  templateGraph: SyncGraph,
   courseGraph: SyncGraph,
   lesson: TLesson,
   parentId: string,
   courseId: string,
   client: DbOrTxClient
 ) {
-  const templateSiblings = templateLessons.filter((sibling) => sibling.sectionId === lesson.sectionId);
+  const templateSiblings = sectionOrderEntries(templateGraph, lesson.sectionId);
   const sectionEntries = sectionOrderEntries(courseGraph, parentId);
   const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(sectionEntries), sectionEntries);
   await shiftLessonOrders(courseId, parentId, order, client);
@@ -167,14 +167,14 @@ async function claimSectionLessonOrder(
 }
 
 async function claimSectionActivityOrder(
-  templateActivities: TCourseActivity[],
+  templateGraph: SyncGraph,
   courseGraph: SyncGraph,
   activity: TCourseActivity,
   parentId: string,
   courseId: string,
   client: DbOrTxClient
 ) {
-  const templateSiblings = templateActivities.filter((sibling) => sibling.sectionId === activity.sectionId);
+  const templateSiblings = sectionOrderEntries(templateGraph, activity.sectionId);
   const sectionEntries = sectionOrderEntries(courseGraph, parentId);
   const order = insertionOrder(templateSiblings, activity.id, sourceOrders(sectionEntries), sectionEntries);
   await shiftLessonOrders(courseId, parentId, order, client);
@@ -186,18 +186,16 @@ async function claimSectionActivityOrder(
 }
 
 async function claimNestedExerciseOrder(
-  templateExercises: TExercise[],
+  templateGraph: SyncGraph,
   courseGraph: SyncGraph,
   exercise: TExercise,
   parent: { sectionId: string | null; lessonId: string | null },
   courseId: string,
   client: DbOrTxClient
 ) {
-  const templateSiblings = templateExercises.filter((sibling) =>
-    exercise.sectionId
-      ? sibling.sectionId === exercise.sectionId
-      : sibling.lessonId === exercise.lessonId && !sibling.sectionId
-  );
+  const templateSiblings = parent.lessonId
+    ? templateGraph.exercises.filter((sibling) => sibling.lessonId === exercise.lessonId && !sibling.sectionId)
+    : sectionOrderEntries(templateGraph, exercise.sectionId);
   const placed = courseGraph.exercises.filter((sibling) =>
     parent.sectionId
       ? sibling.sectionId === parent.sectionId
@@ -851,7 +849,7 @@ export async function pullCourseTemplateUpdates(
         }
 
         const order = parentId
-          ? await claimSectionLessonOrder(templateLessons, courseGraph, lesson, parentId, course.id, tx)
+          ? await claimSectionLessonOrder(templateGraph, courseGraph, lesson, parentId, course.id, tx)
           : await claimRootOrder(templateGraph, courseGraph, lesson.id, course.id, tx);
         const createdLessons = await createLessons(
           [
@@ -943,7 +941,7 @@ export async function pullCourseTemplateUpdates(
         const order =
           parentSectionId || parentLessonId
             ? await claimNestedExerciseOrder(
-                templateExercises,
+                templateGraph,
                 courseGraph,
                 exercise,
                 { sectionId: parentSectionId, lessonId: parentLessonId },
@@ -1020,7 +1018,7 @@ export async function pullCourseTemplateUpdates(
         }
 
         const order = parentId
-          ? await claimSectionActivityOrder(templateActivities, courseGraph, activity, parentId, course.id, tx)
+          ? await claimSectionActivityOrder(templateGraph, courseGraph, activity, parentId, course.id, tx)
           : await claimRootOrder(templateGraph, courseGraph, activity.id, course.id, tx);
         const createdActivities = await createActivities(
           [

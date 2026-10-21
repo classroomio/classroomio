@@ -407,4 +407,15 @@ describe('insertionOrder', () => {
 
     expect(order).toBe(5);
   });
+
+  it('places an earlier item before a later copied sibling when no preceding sibling was copied', () => {
+    const siblings = [
+      { id: 'activity-a', order: 0 },
+      { id: 'lesson-l', order: 1 },
+      { id: 'activity-b', order: 2 }
+    ];
+    const order = insertionOrder(siblings, 'activity-a', new Map([['lesson-l', { order: 4 }]]), [{ order: 4 }]);
+
+    expect(order).toBe(4);
+  });
 });

@@ -720,6 +720,11 @@ export function insertionOrder(
     if (copy) return copy.order + 1;
   }
 
+  for (let siblingIndex = index + 1; siblingIndex < sorted.length; siblingIndex += 1) {
+    const copy = copiesBySourceId.get(sorted[siblingIndex].id);
+    if (copy) return copy.order;
+  }
+
   if (placedCopies.length === 0) return 0;
 
   return Math.max(...placedCopies.map((copy) => copy.order)) + 1;
