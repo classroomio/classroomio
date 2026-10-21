@@ -1,5 +1,7 @@
 import {
   account,
+  activityCompletion,
+  activityScorm,
   analyticsLoginEvents,
   appsPoll,
   appsPollOption,
@@ -8,7 +10,10 @@ import {
   assetUsage,
   communityAnswer,
   communityQuestion,
+  contentPackageUnit,
+  contentPackageVersion,
   course,
+  courseActivity,
   courseNewsfeed,
   courseNewsfeedComment,
   courseSection,
@@ -21,6 +26,7 @@ import {
   lessonCompletion,
   lessonLanguage,
   lessonLanguageHistory,
+  mediaJob,
   option,
   organization,
   organizationContacts,
@@ -34,6 +40,9 @@ import {
   quiz,
   quizPlay,
   role,
+  scormAttempt,
+  scormScoAttempt,
+  scormSessionEvent,
   session,
   ssoProvider,
   submission,
@@ -90,7 +99,8 @@ export const courseSectionRelations = relations(courseSection, ({ one, many }) =
     fields: [courseSection.courseId],
     references: [course.id]
   }),
-  lessons: many(lesson)
+  lessons: many(lesson),
+  activities: many(courseActivity)
 }));
 
 export const courseRelations = relations(course, ({ one, many }) => ({
@@ -103,6 +113,7 @@ export const courseRelations = relations(course, ({ one, many }) => ({
   }),
   appsPolls: many(appsPoll),
   lessons: many(lesson),
+  activities: many(courseActivity),
   communityQuestions: many(communityQuestion),
   courseNewsfeeds: many(courseNewsfeed),
   tagAssignments: many(tagAssignment)
@@ -233,6 +244,8 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
   lessons: many(lesson),
   groupmembers: many(groupmember),
   lessonCompletions: many(lessonCompletion),
+  activityCompletions: many(activityCompletion),
+  createdPackageVersions: many(contentPackageVersion),
   communityAnswers: many(communityAnswer),
   communityQuestions: many(communityQuestion),
   organizationmembers: many(organizationmember)
@@ -319,7 +332,9 @@ export const assetRelations = relations(asset, ({ one, many }) => ({
     fields: [asset.createdByProfileId],
     references: [profile.id]
   }),
-  usages: many(assetUsage)
+  usages: many(assetUsage),
+  packageVersions: many(contentPackageVersion),
+  scormActivities: many(activityScorm)
 }));
 
 export const assetUsageRelations = relations(assetUsage, ({ one }) => ({
@@ -413,6 +428,108 @@ export const lessonCompletionRelations = relations(lessonCompletion, ({ one }) =
   profile: one(profile, {
     fields: [lessonCompletion.profileId],
     references: [profile.id]
+  })
+}));
+
+export const courseActivityRelations = relations(courseActivity, ({ one, many }) => ({
+  course: one(course, {
+    fields: [courseActivity.courseId],
+    references: [course.id]
+  }),
+  courseSection: one(courseSection, {
+    fields: [courseActivity.sectionId],
+    references: [courseSection.id]
+  }),
+  createdByProfile: one(profile, {
+    fields: [courseActivity.createdByProfileId],
+    references: [profile.id]
+  }),
+  activityCompletions: many(activityCompletion),
+  scormDetails: one(activityScorm, {
+    fields: [courseActivity.id],
+    references: [activityScorm.activityId]
+  }),
+  scormAttempts: many(scormAttempt)
+}));
+
+export const activityCompletionRelations = relations(activityCompletion, ({ one }) => ({
+  activity: one(courseActivity, {
+    fields: [activityCompletion.activityId],
+    references: [courseActivity.id]
+  }),
+  profile: one(profile, {
+    fields: [activityCompletion.profileId],
+    references: [profile.id]
+  })
+}));
+
+export const contentPackageVersionRelations = relations(contentPackageVersion, ({ one, many }) => ({
+  asset: one(asset, {
+    fields: [contentPackageVersion.assetId],
+    references: [asset.id]
+  }),
+  processingJob: one(mediaJob, {
+    fields: [contentPackageVersion.processingJobId],
+    references: [mediaJob.id]
+  }),
+  createdByProfile: one(profile, {
+    fields: [contentPackageVersion.createdByProfileId],
+    references: [profile.id]
+  }),
+  units: many(contentPackageUnit)
+}));
+
+export const contentPackageUnitRelations = relations(contentPackageUnit, ({ one, many }) => ({
+  packageVersion: one(contentPackageVersion, {
+    fields: [contentPackageUnit.packageVersionId],
+    references: [contentPackageVersion.id]
+  }),
+  scoAttempts: many(scormScoAttempt)
+}));
+
+export const activityScormRelations = relations(activityScorm, ({ one }) => ({
+  activity: one(courseActivity, {
+    fields: [activityScorm.activityId],
+    references: [courseActivity.id]
+  }),
+  asset: one(asset, {
+    fields: [activityScorm.assetId],
+    references: [asset.id]
+  })
+}));
+
+export const scormAttemptRelations = relations(scormAttempt, ({ one, many }) => ({
+  activity: one(courseActivity, {
+    fields: [scormAttempt.activityId],
+    references: [courseActivity.id]
+  }),
+  profile: one(profile, {
+    fields: [scormAttempt.profileId],
+    references: [profile.id]
+  }),
+  packageVersion: one(contentPackageVersion, {
+    fields: [scormAttempt.packageVersionId],
+    references: [contentPackageVersion.id]
+  }),
+  scoAttempts: many(scormScoAttempt)
+}));
+
+export const scormScoAttemptRelations = relations(scormScoAttempt, ({ one, many }) => ({
+  attempt: one(scormAttempt, {
+    fields: [scormScoAttempt.attemptId],
+    references: [scormAttempt.id]
+  }),
+  unit: one(contentPackageUnit, {
+    fields: [scormScoAttempt.unitId],
+    references: [contentPackageUnit.id]
+  }),
+  sessionEvents: many(scormSessionEvent)
+}));
+
+export const scormSessionEventRelations = relations(scormSessionEvent, ({ one }) => ({
+  scoAttempt: one(scormScoAttempt, {
+    fields: [scormSessionEvent.scoAttemptId],
+    references: [scormScoAttempt.id]
   })
 }));
 

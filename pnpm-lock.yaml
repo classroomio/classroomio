@@ -1244,6 +1244,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.388.0
+        version: 3.958.0
       '@better-auth/sso':
         specifier: ^1.4.18
         version: 1.4.18(@better-auth/utils@0.3.0)(better-auth@1.4.18(580416afa390431d1b420885cab09137))
@@ -1277,6 +1280,9 @@ importers:
       jose:
         specifier: ^6.1.3
         version: 6.1.3
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
       postgres:
         specifier: ^3.4.7
         version: 3.4.7
