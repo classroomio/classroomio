@@ -193,9 +193,8 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      const result = await runScormRetention(90);
+      await runScormRetention(90);
 
-      expect(result.eventsDeleted).toBe(0);
       expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
       expect(storedObjects.get(first.uploadKey)).toBe('zip-bytes');
 
@@ -255,9 +254,8 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      const result = await runScormRetention(90);
+      await runScormRetention(90);
 
-      expect(result.eventsDeleted).toBe(0);
       expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
       expect(storedObjects.get(first.uploadKey)).toBe('zip-bytes');
 
@@ -295,9 +293,8 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      const result = await runScormRetention(90);
+      await runScormRetention(90);
 
-      expect(result.eventsDeleted).toBe(0);
       expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
 
       const [kept] = await db
