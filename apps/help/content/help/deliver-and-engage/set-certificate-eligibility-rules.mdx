@@ -1,10 +1,10 @@
 ---
 title: Set certificate eligibility rules
-description: Require course progress, an optional final exercise score, and an optional deadline before issuing a certificate.
+description: Complete every lesson and exercise, meet any exercise passing rules, and finish before the optional deadline.
 last_reviewed: '2026-10-21'
 ---
 
-Certificate eligibility is set on each course. A student must meet the configured course completion threshold and any final exercise or deadline requirement before ClassroomIO issues the certificate record.
+ClassroomIO issues a certificate after a student completes every lesson and exercise in the course, provided any course completion deadline has not passed. An exercise with a **Passed** completion rule also requires a passing grade.
 
 ![Course Certificates Settings tab with eligibility rules](./images/set-certificate-eligibility-rules/overview.webp)
 
@@ -14,14 +14,14 @@ Certificate controls are visible but disabled on the Free plan.
 
 ## Set the requirements
 
-1. Open the course's **Settings** tab and find the certificate rules near **Course type**.
-2. Set **Minimum completion (%)**. It counts lesson and exercise progress together and defaults to 100%.
-3. If a final assessment is required, choose **Final exercise (optional)** and set **Minimum score on final exercise (%)**. The student's best attempt counts, and this exercise allows unlimited attempts.
+1. Open the course's **Settings** tab and find **Completion rules**.
+2. Choose **Free** or **Sequential** under **Student progression**. Both modes require every lesson and exercise to be complete for certification.
+3. To require a passing grade, open the exercise's **Settings**, choose the **Passed** completion rule, and set its **Pass threshold (%)**. Review **Allow multiple attempts** there if students should be able to retry.
 4. If completion must happen by a certain time, set **Course Completion Deadline**. The student's local time is used; finishing exactly at the deadline qualifies.
 5. Save changes and test the rules with a demo student.
 
 :::warning[Check existing students before changing the rules]
-Changing the threshold, final exercise, or deadline can change who qualifies next. Review current progress and submissions before saving stricter requirements.
+Changing an exercise completion rule or the deadline can change who qualifies next. Review current progress and submissions before saving stricter requirements.
 :::
 
 The separate **Certificates → Settings** sub-tab controls whether an eligible student can download the certificate. Turning off download does not stop the student from earning the certificate record.
@@ -30,4 +30,4 @@ The separate **Certificates → Settings** sub-tab controls whether an eligible 
 
 - [Create certificates](/create-and-deliver/certificates) — see every certificate setting in context
 - [Design a course certificate](/deliver-and-engage/design-a-course-certificate) — prepare the issued document
-- [Set exercise completion rules](/deliver-and-engage/set-exercise-completion-rules) — configure the final exercise
+- [Set exercise completion rules](/deliver-and-engage/set-exercise-completion-rules) — require a passing grade for an exercise

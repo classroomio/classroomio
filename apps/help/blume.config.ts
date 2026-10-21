@@ -649,16 +649,12 @@ export default defineConfig({
                 root: '/publish-and-brand/choose-which-lms-navigation-tabs-learners-see'
               },
               {
-                label: 'Customize the student dashboard banner',
+                label: 'Understand the student dashboard banner settings',
                 root: '/publish-and-brand/customize-the-learner-dashboard-banner'
               },
               {
                 label: 'Show course newsfeeds and grading',
                 root: '/publish-and-brand/show-course-news-feeds-and-grading'
-              },
-              {
-                label: 'Configure polls and live comments',
-                root: '/publish-and-brand/configure-polls-and-live-comments'
               },
               {
                 label: 'Customize the sign-in background',
