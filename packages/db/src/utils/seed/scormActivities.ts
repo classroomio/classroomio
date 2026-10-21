@@ -134,9 +134,9 @@ async function ensureActivityAttachment(activityId: string, assetId: string) {
  */
 export async function seedScormActivities() {
   const hipaaCourses = await db.select({ id: course.id }).from(course).where(eq(course.id, HIPAA_COURSE_ID));
-  if (hipaaCourses.length === 0) {
-    console.log('   ⏭️  Skipping SCORM seed: HIPAA Awareness 2026 is not seeded');
-    return;
+  const hasHipaaCourse = hipaaCourses.length > 0;
+  if (!hasHipaaCourse) {
+    console.log('   ⏭️  Skipping HIPAA SCORM seed: HIPAA Awareness 2026 is not seeded');
   }
 
   const storage = resolveSeedScormStorage();
@@ -146,24 +146,28 @@ export async function seedScormActivities() {
     return;
   }
 
-  await ensurePackageAsset(
-    HIPAA_ASSET_ID,
-    'Protecting patient information',
-    'Seeded SCORM package for HIPAA Awareness 2026.'
-  );
+  if (hasHipaaCourse) {
+    await ensurePackageAsset(
+      HIPAA_ASSET_ID,
+      'Protecting patient information',
+      'Seeded SCORM package for HIPAA Awareness 2026.'
+    );
+  }
   await ensurePackageAsset(
     SCORM_COURSE_ASSET_ID,
     'Workplace safety library',
     'Seeded SCORM package for the demo SCORM course.'
   );
 
-  await ensurePackageVersion(
-    HIPAA_VERSION_ID,
-    HIPAA_ASSET_ID,
-    'Protecting patient information',
-    ['Privacy rule essentials', 'Breach notification walkthrough'],
-    storage
-  );
+  if (hasHipaaCourse) {
+    await ensurePackageVersion(
+      HIPAA_VERSION_ID,
+      HIPAA_ASSET_ID,
+      'Protecting patient information',
+      ['Privacy rule essentials', 'Breach notification walkthrough'],
+      storage
+    );
+  }
   await ensurePackageVersion(
     SCORM_COURSE_VERSION_ID,
     SCORM_COURSE_ASSET_ID,
@@ -172,27 +176,29 @@ export async function seedScormActivities() {
     storage
   );
 
-  const hipaaActivities = await db
-    .select({ id: courseActivity.id })
-    .from(courseActivity)
-    .where(eq(courseActivity.id, HIPAA_ACTIVITY_ID));
-  if (hipaaActivities.length === 0) {
-    await db.insert(courseActivity).values({
-      id: HIPAA_ACTIVITY_ID,
-      courseId: HIPAA_COURSE_ID,
-      sectionId: HIPAA_SECTION_ID,
-      kind: 'scorm',
-      title: 'Protecting patient information',
-      slug: 'protecting-patient-information',
-      order: 3,
-      isUnlocked: true,
-      createdByProfileId: ENTERPRISE_ADMIN_USER_ID
-    });
-    console.log('   ✓ Inserted HIPAA SCORM activity');
-  } else {
-    console.log('   ✓ HIPAA SCORM activity already exists, skipping');
+  if (hasHipaaCourse) {
+    const hipaaActivities = await db
+      .select({ id: courseActivity.id })
+      .from(courseActivity)
+      .where(eq(courseActivity.id, HIPAA_ACTIVITY_ID));
+    if (hipaaActivities.length === 0) {
+      await db.insert(courseActivity).values({
+        id: HIPAA_ACTIVITY_ID,
+        courseId: HIPAA_COURSE_ID,
+        sectionId: HIPAA_SECTION_ID,
+        kind: 'scorm',
+        title: 'Protecting patient information',
+        slug: 'protecting-patient-information',
+        order: 3,
+        isUnlocked: true,
+        createdByProfileId: ENTERPRISE_ADMIN_USER_ID
+      });
+      console.log('   ✓ Inserted HIPAA SCORM activity');
+    } else {
+      console.log('   ✓ HIPAA SCORM activity already exists, skipping');
+    }
+    await ensureActivityAttachment(HIPAA_ACTIVITY_ID, HIPAA_ASSET_ID);
   }
-  await ensureActivityAttachment(HIPAA_ACTIVITY_ID, HIPAA_ASSET_ID);
 
   const scormGroups = await db.select({ id: group.id }).from(group).where(eq(group.id, SCORM_COURSE_GROUP_ID));
   if (scormGroups.length === 0) {
