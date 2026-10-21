@@ -24,7 +24,11 @@ export async function openCourseCompletionIfDone(courseId: string): Promise<void
     const hasCompletedCourse = Boolean(
       certificationEvaluation.data.eligibleForCertificate || certificationEvaluation.data.certificateEarnedAt
     );
-    updateCourseCompletionModal(courseId, hasCompletedCourse ? 'eligible' : 'not-eligible', certificationEvaluation.data);
+    updateCourseCompletionModal(
+      courseId,
+      hasCompletedCourse ? 'eligible' : 'not-eligible',
+      certificationEvaluation.data
+    );
   } else {
     closeCourseCompletionModal();
   }
