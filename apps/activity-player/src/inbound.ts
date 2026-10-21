@@ -88,6 +88,12 @@ function readText(value: unknown): string | null {
   return value.slice(0, MAX_TEXT);
 }
 
+function readIdentifier(value: unknown): string | null {
+  if (typeof value !== 'string' || value.length === 0) return null;
+
+  return value;
+}
+
 function readUnits(value: unknown): PlayerUiUnit[] | null {
   if (!Array.isArray(value) || value.length > MAX_UNITS) return null;
 
@@ -97,7 +103,7 @@ function readUnits(value: unknown): PlayerUiUnit[] | null {
     if (typeof entry !== 'object' || entry === null) return null;
 
     const record = entry as Record<string, unknown>;
-    const identifier = readText(record['identifier']);
+    const identifier = readIdentifier(record['identifier']);
     const title = readText(record['title']);
 
     if (!identifier || title === null) return null;
@@ -148,7 +154,7 @@ function readUi(value: unknown): PlayerUiState | null {
   const units = readUnits(record['units']);
   if (!units) return null;
 
-  const currentIdentifier = readText(record['currentIdentifier']);
+  const currentIdentifier = readIdentifier(record['currentIdentifier']);
   const timeLimit = readText(record['timeLimit']);
 
   return {

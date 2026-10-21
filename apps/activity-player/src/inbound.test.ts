@@ -80,6 +80,20 @@ describe('parseDashboardMessage', () => {
     ).toBeNull();
   });
 
+  it('keeps long module identifiers intact', () => {
+    const identifier = 'm'.repeat(900);
+    const message = parseDashboardMessage({
+      type: 'player-ui',
+      ui: {
+        units: [{ identifier, title: 'Long module', completed: false, locked: false }],
+        currentIdentifier: identifier
+      }
+    });
+
+    expect(message?.type === 'player-ui' && message.ui.units[0]?.identifier).toBe(identifier);
+    expect(message?.type === 'player-ui' && message.ui.currentIdentifier).toBe(identifier);
+  });
+
   it('rejects malformed modules', () => {
     expect(parseDashboardMessage({ type: 'player-ui', ui: { units: [{ title: 'No id' }] } })).toBeNull();
     expect(parseDashboardMessage({ type: 'player-ui', ui: { units: 'm1' } })).toBeNull();
