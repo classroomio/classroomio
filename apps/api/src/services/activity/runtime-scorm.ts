@@ -55,7 +55,10 @@ import {
 import { getActivitySigningSecret, orgIdFromContentKey } from '@cio/core/config/activity-content';
 import { getComplianceSnapshot } from '@cio/core/services/activity/providers/scorm/results';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
-import { runActivityCompletionSideEffects } from '@api/services/activity/activity-completion';
+import {
+  runActivityCompletionSideEffects,
+  scheduleActivityCompletionSideEffectsRetry
+} from '@api/services/activity/activity-completion';
 
 export interface ScormRuntimeState {
   format: 'scorm12' | 'scorm2004';
@@ -558,11 +561,14 @@ export async function commitScormAttempt(
         shouldRecord
       };
 
+    const isAlreadyFinished = chain.attempt.closeReason === 'finished';
     const units = await listPackageUnitsByVersion(version.id, tx);
     const latest = await listLatestScoAttemptsByAttempt(chain.attempt.id, tx);
     const triesByUnit = new Map(latest.map((row) => [row.unitId, row]));
     const outcomes = attemptModuleOutcomes(units, triesByUnit, format);
-    if (!isScormRuleMet(toRuleSettings(details), outcomes)) {
+    const ruleMetNow = isScormRuleMet(toRuleSettings(details), outcomes);
+
+    if (!ruleMetNow && !isAlreadyFinished) {
       return {
         saved: true,
         completedActivity: false,
@@ -624,6 +630,7 @@ export async function commitScormAttempt(
       await runActivityCompletionSideEffects(result.activityId, result.profileId, snapshot?.minutes);
     } catch (error) {
       console.error('runActivityCompletionSideEffects error:', error);
+      scheduleActivityCompletionSideEffectsRetry(result.activityId, result.profileId);
     }
   }
 
@@ -648,6 +655,7 @@ export async function commitScormAttempt(
         }
       } catch (error) {
         console.error('runActivityCompletionSideEffects on stale sequence retry error:', error);
+        scheduleActivityCompletionSideEffectsRetry(result.activityId, result.profileId);
       }
     }
 

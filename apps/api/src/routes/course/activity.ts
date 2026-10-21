@@ -16,7 +16,10 @@ import { getCourseMembers } from '@cio/db/queries/course/people';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { attachScormPackage, detachScormPackage } from '@cio/core/services/activity/providers';
 import { getComplianceSnapshot } from '@cio/core/services/activity/providers/scorm/results';
-import { runActivityCompletionSideEffects } from '@api/services/activity/activity-completion';
+import {
+  runActivityCompletionSideEffects,
+  scheduleActivityCompletionSideEffectsRetry
+} from '@api/services/activity/activity-completion';
 import {
   createActivity,
   deleteActivityService,
@@ -253,6 +256,7 @@ export const activityRouter = new Hono()
                 await runActivityCompletionSideEffects(activityId, user.id, snapshot?.minutes);
               } catch (err) {
                 console.error('Failed to reconcile activity completion side effects on progress fetch:', err);
+                scheduleActivityCompletionSideEffectsRetry(activityId, user.id);
               }
             })();
           }

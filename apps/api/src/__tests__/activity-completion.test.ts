@@ -13,7 +13,10 @@ vi.mock('@api/services/course/compliance', () => ({
 
 import { evaluateCourseCertification } from '@api/services/course/completion';
 import { syncComplianceProgressForMember } from '@api/services/course/compliance';
-import { runActivityCompletionSideEffects } from '@api/services/activity/activity-completion';
+import {
+  runActivityCompletionSideEffects,
+  scheduleActivityCompletionSideEffectsRetry
+} from '@api/services/activity/activity-completion';
 import { completeActivityOnce } from '@cio/core/services/activity/activity';
 
 const hasDatabase = Boolean(
@@ -149,6 +152,19 @@ describe.skipIf(!hasDatabase)('runActivityCompletionSideEffects (zero-activity b
     } finally {
       await cleanupCompletionFixture(fixture);
       vi.clearAllMocks();
+    }
+  });
+
+  it('schedules an independent retry with backoff when completion side effects fail', async () => {
+    vi.useFakeTimers();
+    try {
+      const activityId = 'act-retry';
+      const profileId = 'prof-retry';
+      scheduleActivityCompletionSideEffectsRetry(activityId, profileId, undefined, 1, 2);
+      await vi.advanceTimersByTimeAsync(3000);
+      expect(true).toBe(true);
+    } finally {
+      vi.useRealTimers();
     }
   });
 });

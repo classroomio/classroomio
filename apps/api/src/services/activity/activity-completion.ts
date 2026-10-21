@@ -52,3 +52,28 @@ export async function runActivityCompletionSideEffects(
     throw certError;
   }
 }
+
+/**
+ * Schedules an independent retry of completion side effects when an attempt
+ * fails, decoupling recovery from learner-initiated requests.
+ */
+export function scheduleActivityCompletionSideEffectsRetry(
+  activityId: string,
+  profileId: string,
+  timeSpentMinutes?: number,
+  attempt = 1,
+  maxAttempts = 3
+): void {
+  const delayMs = Math.min(1000 * Math.pow(3, attempt), 30000);
+  const timer = setTimeout(async () => {
+    try {
+      await runActivityCompletionSideEffects(activityId, profileId, timeSpentMinutes);
+    } catch (err) {
+      console.error(`Completion side effects retry ${attempt}/${maxAttempts} failed:`, err);
+      if (attempt < maxAttempts) {
+        scheduleActivityCompletionSideEffectsRetry(activityId, profileId, timeSpentMinutes, attempt + 1, maxAttempts);
+      }
+    }
+  }, delayMs);
+  timer.unref?.();
+}
