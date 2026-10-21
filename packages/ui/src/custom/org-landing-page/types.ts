@@ -200,6 +200,10 @@ export interface OrgLandingPageLabels {
   exercisesLabel?: (count: number) => string;
   /** Plural-aware package-count label. Default: `${count} packages` / `1 package`. */
   activitiesLabel?: (count: number) => string;
+  /** Single-package SCORM summary when the package has no modules yet. Default: "SCORM course". */
+  scormCourseLabel?: string;
+  /** Plural-aware module count for single-package SCORM courses. Default: "SCORM · N modules". */
+  scormModulesLabel?: (count: number) => string;
   /** Plural-aware enrolled-students label. Default: `${count} enrolled`. */
   enrolledLabel?: (count: number) => string;
   /** Eyebrow for the Resources/Links section. Default per template (typically "Resources"). */

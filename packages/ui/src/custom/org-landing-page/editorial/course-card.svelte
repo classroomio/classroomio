@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { CourseItem, OrgLandingPageLabels } from '../types';
-  import { defaultEnrolledLabel, defaultLessonsLabel, getCourseTypeLandingMeta } from '../landing-page-utils';
+  import {
+    defaultEnrolledLabel,
+    defaultLessonsLabel,
+    getCourseTypeLandingMeta,
+    getScormCourseSummary
+  } from '../landing-page-utils';
 
   interface Props {
     course: CourseItem;
@@ -22,6 +27,7 @@
   ];
 
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
+  const scormSummary = $derived(getScormCourseSummary(course, labels));
   const resolvedLessonsLabel = $derived(labels?.lessonsLabel ?? defaultLessonsLabel);
   const resolvedActivitiesLabel = $derived(
     labels?.activitiesLabel ?? ((count: number) => `${count} ${count === 1 ? 'package' : 'packages'}`)
@@ -87,27 +93,31 @@
       {course.description}
     </p>
 
-    {#if course.lessonCount || course.activityCount || course.totalStudents || course.level}
+    {#if scormSummary || course.lessonCount || course.activityCount || course.totalStudents || course.level}
       <div
         class="ui:flex ui:flex-wrap ui:items-center ui:gap-x-3 ui:gap-y-1 ui:text-[12.5px] ui:mb-4 ui:text-[var(--landing-fg-muted)]"
       >
-        {#if course.lessonCount}
-          <span>{resolvedLessonsLabel(course.lessonCount)}</span>
-        {/if}
-        {#if course.activityCount}
+        {#if scormSummary}
+          <span>{scormSummary}</span>
+        {:else}
           {#if course.lessonCount}
-            <span aria-hidden="true">·</span>
+            <span>{resolvedLessonsLabel(course.lessonCount)}</span>
           {/if}
-          <span>{resolvedActivitiesLabel(course.activityCount)}</span>
+          {#if course.activityCount}
+            {#if course.lessonCount}
+              <span aria-hidden="true">·</span>
+            {/if}
+            <span>{resolvedActivitiesLabel(course.activityCount)}</span>
+          {/if}
         {/if}
         {#if course.level}
-          {#if course.lessonCount}
+          {#if scormSummary || course.lessonCount}
             <span aria-hidden="true">·</span>
           {/if}
           <span>{course.level}</span>
         {/if}
         {#if course.totalStudents}
-          {#if course.lessonCount || course.level}
+          {#if scormSummary || course.lessonCount || course.level}
             <span aria-hidden="true">·</span>
           {/if}
           <span>{resolvedEnrolledLabel(course.totalStudents)}</span>

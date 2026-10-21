@@ -767,6 +767,8 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
     lessonsLabel: (count) => t.get('courses.course_card.lessons_count', { count }),
     exercisesLabel: (count) => t.get('courses.course_card.exercises_count', { count }),
     activitiesLabel: (count) => t.get('courses.course_card.activities_count', { count }),
+    scormCourseLabel: t.get('courses.course_card.scorm_course'),
+    scormModulesLabel: (count) => t.get('courses.course_card.scorm_modules', { count }),
     enrolledLabel: (count) => t.get('audience.learner_count', { count }),
     resourcesEyebrow: t.get('settings.landing_page.editor.sections.links'),
     embedEyebrow: t.get('settings.landing_page.editor.sections.embed'),

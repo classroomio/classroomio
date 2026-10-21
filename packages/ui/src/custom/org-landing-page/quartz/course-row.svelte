@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { CourseItem, OrgLandingPageLabels } from '../types';
-  import { getCourseCoverImage, getCourseTypeLandingMeta, getPrimaryCourseTag } from '../landing-page-utils';
+  import {
+    getCourseCoverImage,
+    getCourseTypeLandingMeta,
+    getPrimaryCourseTag,
+    getScormCourseSummary
+  } from '../landing-page-utils';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
   interface Props {
@@ -14,6 +19,7 @@
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
   const primaryTag = $derived(getPrimaryCourseTag(course));
   const cover = $derived(getCourseCoverImage(course));
+  const scormSummary = $derived(getScormCourseSummary(course, labels));
 
   const href = $derived.by(() => {
     if (disableCourseLinks) return undefined;
@@ -93,9 +99,13 @@
 
     <div class="ui:mt-auto ui:pt-8 ui:flex ui:flex-wrap ui:items-center ui:justify-between ui:gap-4">
       <span class="ui:flex ui:flex-wrap ui:gap-x-4 ui:gap-y-1 ui:text-[13px] ui:text-[var(--landing-fg-faint)]">
-        {#if lessonsLabel}<span>{lessonsLabel}</span>{/if}
-        {#if exercisesLabel}<span>{exercisesLabel}</span>{/if}
-        {#if activitiesLabel}<span>{activitiesLabel}</span>{/if}
+        {#if scormSummary}
+          <span>{scormSummary}</span>
+        {:else}
+          {#if lessonsLabel}<span>{lessonsLabel}</span>{/if}
+          {#if exercisesLabel}<span>{exercisesLabel}</span>{/if}
+          {#if activitiesLabel}<span>{activitiesLabel}</span>{/if}
+        {/if}
         {#if courseTypeMeta}<span>{courseTypeMeta.label}</span>{/if}
       </span>
       <span class="ui:flex ui:items-center ui:gap-5">
