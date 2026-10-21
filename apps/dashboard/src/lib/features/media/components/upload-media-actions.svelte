@@ -30,16 +30,14 @@
     $lessonDocUpload.isModalOpen = true;
   }
 
-  function handleVideoModalClose() {
-    if ($lessonVideoUpload.isUploading) return;
+  let wasModalOpen = false;
 
-    $lessonVideoUpload.isModalOpen = false;
-    onUploaded();
-  }
+  $effect(() => {
+    const isModalOpen = $lessonVideoUpload.isModalOpen || $lessonDocUpload.isModalOpen;
+    if (wasModalOpen && !isModalOpen) onUploaded();
 
-  function handleDocumentModalClose() {
-    onUploaded();
-  }
+    wasModalOpen = isModalOpen;
+  });
 </script>
 
 <ComboButton
@@ -53,6 +51,6 @@
   onSelect={openVideoModal}
 />
 
-<AddVideoModal onClose={handleVideoModalClose} />
+<AddVideoModal />
 
-<AddDocumentModal onClose={handleDocumentModalClose} />
+<AddDocumentModal />
