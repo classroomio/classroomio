@@ -1,0 +1,95 @@
+import { isIP } from 'node:net';
+
+import type { PersonalLearningSource } from '@cio/db/schema';
+import { AppError } from '@api/utils/errors';
+import { z } from 'zod';
+
+const LOCAL_HOST_SUFFIXES = ['.localhost', '.local', '.internal', '.test'];
+
+const LearningSessionDraft = z.object({
+  title: z.string().trim().min(1).max(160),
+  objectives: z.array(z.string().trim().min(1).max(500)).min(1).max(8),
+  activities: z
+    .array(
+      z.object({
+        type: z.enum(['reading', 'explanation', 'practice', 'reflection']),
+        estimatedMinutes: z.number().int().positive(),
+        content: z.string().trim().min(1).max(12000)
+      })
+    )
+    .min(1)
+    .max(8),
+  checkQuestions: z.array(z.string().trim().min(1).max(1000)).min(1).max(8),
+  citations: z
+    .array(
+      z.object({
+        url: z.string().url(),
+        title: z.string().trim().min(1).max(200),
+        claimIds: z.array(z.string().trim().min(1).max(80)).min(1).max(8)
+      })
+    )
+    .min(1)
+    .max(8),
+  whyThisSession: z.string().trim().min(1).max(1000)
+});
+
+export type LearningSessionDraft = z.infer<typeof LearningSessionDraft>;
+
+export function validateSourceUrl(rawUrl: string): URL {
+  let parsedUrl: URL;
+
+  try {
+    parsedUrl = new URL(rawUrl);
+  } catch {
+    throw new AppError('Source URL is invalid', 'INVALID_SOURCE_URL', 400);
+  }
+
+  const hostname = parsedUrl.hostname.replace(/^\[|\]$/g, '').toLowerCase();
+  const isLocalHostname =
+    hostname === 'localhost' ||
+    LOCAL_HOST_SUFFIXES.some((suffix) => hostname.endsWith(suffix)) ||
+    hostname.endsWith('.invalid');
+
+  if (
+    (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') ||
+    parsedUrl.username !== '' ||
+    parsedUrl.password !== '' ||
+    isIP(hostname) !== 0 ||
+    isLocalHostname
+  ) {
+    throw new AppError('Source URL host or scheme is not allowed', 'INVALID_SOURCE_URL', 400);
+  }
+
+  parsedUrl.hash = '';
+  return parsedUrl;
+}
+
+export function validateSessionDraft(
+  draft: unknown,
+  sourceManifest: PersonalLearningSource[],
+  dailyMinutes: number
+): LearningSessionDraft {
+  if (sourceManifest.length === 0)
+    throw new AppError('No verifiable learning sources found', 'NO_VERIFIABLE_SOURCE', 422);
+
+  const parsedDraft = LearningSessionDraft.safeParse(draft);
+  if (!parsedDraft.success) throw new AppError('Generated learning session is invalid', 'INVALID_SESSION_DRAFT', 502);
+
+  const manifestUrls = new Set(sourceManifest.map(({ url }) => validateSourceUrl(url).href));
+
+  for (const citation of parsedDraft.data.citations) {
+    if (!manifestUrls.has(validateSourceUrl(citation.url).href)) {
+      throw new AppError('Session citation is not in the verified source manifest', 'UNKNOWN_CITATION', 502);
+    }
+  }
+
+  const estimatedMinutes = parsedDraft.data.activities.reduce(
+    (total, activity) => total + activity.estimatedMinutes,
+    0
+  );
+  if (estimatedMinutes > dailyMinutes) {
+    throw new AppError('Session activities exceed the selected daily study time', 'DAILY_BUDGET_EXCEEDED', 502);
+  }
+
+  return parsedDraft.data;
+}

@@ -4545,6 +4545,7 @@ export type PersonalLearningSource = {
   url: string;
   title: string;
   accessedAt: string;
+  content?: string;
 };
 
 export type PersonalLearningGenerationMeta = {
