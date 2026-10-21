@@ -1186,7 +1186,7 @@
           "question_count_singular": "{count} Frage",
           "question_count_plural": "{count} Fragen",
           "exercise_count_singular": "{count} Übung",
-          "exercise_count_plural": "{count} Übungen",
+          "exercise_count_plural": "{count, plural, one {# Übung} other {# Übungen}}",
           "exercises_fixed": "{resolved}/{total} gelöst",
           "questions_left_singular": "gelöst · {count} Frage übrig",
           "questions_left_plural": "gelöst · {count} Fragen übrig"
@@ -1941,7 +1941,7 @@
                 "no": "Es wurde keine Antwort gegeben",
                 "student_avatar": "Schüler",
                 "answers_for": "{name}s Antworten",
-                "attempts_count": "{count} Versuche",
+                "attempts_count": "{count, plural, one {# Versuch} other {# Versuche}}",
                 "attempt_label": "Versuch {number}",
                 "date_unknown": "Datum unbekannt",
                 "status_awaiting_manual": "Wartet auf manuelle Bewertung",
@@ -3125,7 +3125,7 @@
               "attempt": "Versuch {number}",
               "version": "Paketversion {number}",
               "rule_met": "Regel erfüllt",
-              "interactions": "{count} Antworten gemeldet",
+              "interactions": "{count, plural, one {# Antwort gemeldet} other {# Antworten gemeldet}}",
               "no_attempts_title": "Noch keine Versuche",
               "no_attempts_description": "Versuche erscheinen hier, sobald der Lernende das Paket öffnet.",
               "reset": "Für diesen Lernenden zurücksetzen",
@@ -3373,9 +3373,9 @@
     "sidebar": {
       "back_to_course": "Zurück zum Kurs",
       "content_count": {
-        "lessons": "{count} Lektionen",
-        "exercises": "{count} Übungen",
-        "activities": "{count} Aktivitäten"
+        "lessons": "{count, plural, one {# Lektion} other {# Lektionen}}",
+        "exercises": "{count, plural, one {# Übung} other {# Übungen}}",
+        "activities": "{count, plural, one {# Aktivität} other {# Aktivitäten}}"
       },
       "compliance": {
         "title": "Compliance",
@@ -4723,7 +4723,7 @@
       },
       "invite": {
         "confirm_title": "Studierende ins Team einladen?",
-        "confirm_description": "Diese Personen sind bereits Studierende in dieser Organisation: {emails}. Möchtest du sie als {role} einladen? Ihre Rolle ändert sich erst, wenn sie die Einladung annehmen.",
+        "confirm_description": "{count, plural, =1 {Diese Person ist bereits Studierende in dieser Organisation: {emails}. Möchtest du sie als {role} einladen? Ihre Rolle ändert sich erst, wenn sie die Einladung annimmt.} other {Diese Personen sind bereits Studierende in dieser Organisation: {emails}. Möchtest du sie als {role} einladen? Ihre Rollen ändern sich erst, wenn sie die Einladung annehmen.}}",
         "existing": "Bereits im Team: {members}. Ändere ihre Rolle über die Rollenauswahl unter Teammitglieder."
       }
     },

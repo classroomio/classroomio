@@ -169,22 +169,21 @@ export function formatTimeLimit(raw: string | null | undefined): string | null {
 export function describeUserAgent(userAgent: string | null | undefined): string | null {
   if (!userAgent) return null;
 
-  const os =
-    /iPhone|iPad|iPod/.test(userAgent) && /Mobile/.test(userAgent)
+  const os = /iPad/.test(userAgent)
+    ? 'iPad'
+    : /iPhone|iPod/.test(userAgent)
       ? 'iPhone'
-      : /iPad/.test(userAgent)
-        ? 'iPad'
-        : /Android/.test(userAgent)
-          ? 'Android'
-          : /Windows NT/.test(userAgent)
-            ? 'Windows'
-            : /Mac OS X/.test(userAgent)
-              ? 'macOS'
-              : /Linux/.test(userAgent)
-                ? 'Linux'
-                : /CrOS/.test(userAgent)
-                  ? 'ChromeOS'
-                  : null;
+      : /Android/.test(userAgent)
+        ? 'Android'
+        : /Windows NT/.test(userAgent)
+          ? 'Windows'
+          : /Mac OS X/.test(userAgent)
+            ? 'macOS'
+            : /Linux/.test(userAgent)
+              ? 'Linux'
+              : /CrOS/.test(userAgent)
+                ? 'ChromeOS'
+                : null;
 
   const browser = /Edg\//.test(userAgent)
     ? 'Edge'
