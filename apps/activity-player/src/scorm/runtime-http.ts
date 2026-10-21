@@ -136,13 +136,15 @@ async function sendAsynchronously(
   url: string,
   buildBody: () => string,
   hooks: RuntimeHttpHooks,
-  onAcknowledged?: () => void
+  onAcknowledged?: () => void,
+  keepalive = false
 ): Promise<void> {
   if (typeof fetch === 'function') {
     await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: buildBody()
+      body: buildBody(),
+      keepalive
     })
       .then(async (response) => {
         const text = await response.text();
@@ -238,7 +240,8 @@ export function createRuntimeHttpService(hooks: RuntimeHttpHooks = {}): RuntimeH
                 return JSON.stringify({ ...pending, cmi: pendingChanges });
               },
               hooks,
-              () => acknowledge(pending.cmi, commitSequence)
+              () => acknowledge(pending.cmi, commitSequence),
+              unloading()
             )
           )
           .catch(() => {});

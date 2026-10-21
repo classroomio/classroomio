@@ -15,6 +15,7 @@ interface SentRequest {
   async: boolean;
   contentType: string | null;
   body: Record<string, unknown>;
+  keepalive?: boolean;
 }
 
 let sent: SentRequest[] = [];
@@ -64,7 +65,8 @@ beforeEach(() => {
       url,
       async: true,
       contentType: headers?.['Content-Type'] ?? null,
-      body: JSON.parse(bodyStr)
+      body: JSON.parse(bodyStr),
+      keepalive: init?.keepalive === true
     });
     return {
       status: nextResponse.status,
@@ -173,6 +175,16 @@ describe('createRuntimeHttpService', () => {
     expect(sent[1].body).toEqual({ cmi: { core: { lesson_status: 'passed' } }, commitSequence: 2 });
     expect(sent[1].async).toBe(true);
     expect(sent[1].contentType).toBe('application/json');
+  });
+
+  it('keeps quick saves alive while the page is hiding', async () => {
+    const service = createRuntimeHttpService({ isPageUnloading: () => true });
+
+    service.processHttpRequest('/commit', commit({ core: { lesson_location: 'page-1' } }, 1), false, vi.fn(), vi.fn());
+    await flushMicrotasks();
+
+    expect(sent).toHaveLength(1);
+    expect(sent[0].keepalive).toBe(true);
   });
 
   it('queues quick saves so each diff starts from the last acknowledged state', async () => {
