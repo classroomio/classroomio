@@ -5063,8 +5063,8 @@
         "organization": "Organizzazione",
         "course": "Corsi",
         "learning": "Progressi di apprendimento",
-        "cohort": "Cohorts",
-        "compliance": "Compliance"
+        "cohort": "Coorti",
+        "compliance": "Conformità"
       },
       "events": {
         "organization_invite_created": "Viene inviato un invito al team",
@@ -5081,17 +5081,17 @@
         "course_submission_status_changed": "Lo stato di una consegna cambia, ad esempio quando viene valutata",
         "lesson_completion_updated": "Una lezione viene segnata come completata o reimpostata",
         "exercise_completion_updated": "Un esercizio viene completato o reimpostato",
-        "compliance_record_status_changed": "A student's compliance status changes",
-        "compliance_record_waived": "A student's compliance requirement is waived",
-        "organization_member_added": "A person joins the organization",
-        "organization_member_removed": "A person is removed from the organization",
-        "organization_member_updated": "A person's role or status changes",
-        "course_published": "A course is published",
-        "course_unpublished": "A course is unpublished",
-        "cohort_member_added": "A person is added to a cohort",
-        "cohort_member_removed": "A person is removed from a cohort",
-        "lesson_session_scheduled": "A live session is scheduled or moved",
-        "course_payment_request_created": "A student requests to pay for a course"
+        "compliance_record_status_changed": "Lo stato di conformità di uno studente cambia",
+        "compliance_record_waived": "Un requisito di conformità di uno studente viene derogato",
+        "organization_member_added": "Una persona si unisce all'organizzazione",
+        "organization_member_removed": "Una persona viene rimossa dall'organizzazione",
+        "organization_member_updated": "Il ruolo o lo stato di una persona cambia",
+        "course_published": "Un corso viene pubblicato",
+        "course_unpublished": "Un corso viene rimosso dalla pubblicazione",
+        "cohort_member_added": "Una persona viene aggiunta a una coorte",
+        "cohort_member_removed": "Una persona viene rimossa da una coorte",
+        "lesson_session_scheduled": "Una sessione dal vivo viene pianificata o spostata",
+        "course_payment_request_created": "Uno studente richiede di pagare un corso"
       },
       "deliveries": {
         "title": "Consegne",

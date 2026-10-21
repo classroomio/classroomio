@@ -1,4 +1,5 @@
-import { emitCohortMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import type { TOrganizationmember } from '@cio/db/types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type TCreateCohort,
@@ -127,14 +128,19 @@ async function enrollCohortStudentsInGroups(
   );
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+  let createdOrganizationMembers: TOrganizationmember[] = [];
 
   await db.transaction(async (tx) => {
     studentMilestoneNotification = await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size, tx, {
       deferNotification: true
     });
-    await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
+    createdOrganizationMembers = await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
     await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
   });
+
+  for (const createdMember of createdOrganizationMembers) {
+    await emitOrganizationMemberWebhookEvent('organization.member.added', organizationId, createdMember);
+  }
 
   if (studentMilestoneNotification) {
     notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
@@ -386,6 +392,7 @@ export async function addCohortMembersSettled(
 
         const transactionResult = await db.transaction(async (tx) => {
           let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+          let createdOrgMembers: TOrganizationmember[] = [];
           const member = await addCohortMember(
             {
               cohortId,
@@ -410,7 +417,7 @@ export async function addCohortMembersSettled(
               });
             }
 
-            await insertOrganizationMembersOnConflictDoNothing(
+            createdOrgMembers = await insertOrganizationMembersOnConflictDoNothing(
               [
                 {
                   organizationId: cohort.organizationId,
@@ -451,13 +458,22 @@ export async function addCohortMembersSettled(
             );
           }
 
-          return { member, studentMilestoneNotification };
+          return { member, studentMilestoneNotification, createdOrgMembers };
         });
 
         if (transactionResult.studentMilestoneNotification) {
           notifyStudentMilestone(transactionResult.studentMilestoneNotification).catch((error) => {
             console.error('notifyStudentMilestone error:', error);
           });
+        }
+
+        for (const createdOrgMember of transactionResult.createdOrgMembers) {
+          await emitOrganizationMemberWebhookEvent(
+            'organization.member.added',
+            cohort.organizationId,
+            createdOrgMember,
+            actorProfileId
+          );
         }
 
         if (transactionResult.member) {

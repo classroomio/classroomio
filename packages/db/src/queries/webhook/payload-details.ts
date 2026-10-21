@@ -39,6 +39,7 @@ export type TWebhookExerciseDetails = {
 export type TWebhookSubmissionDetails = {
   overallStatus: string;
   gradingState: string;
+  gradedBy: string | null;
   submittedAt: string | null;
   updatedAt: string | null;
   attemptNumber: number;
@@ -242,6 +243,7 @@ export async function getWebhookSubmissionDetails(
       .select({
         overallStatus: schema.submission.overallStatus,
         gradingState: schema.submission.gradingState,
+        gradedBy: schema.submission.gradedBy,
         submittedAt: schema.submission.createdAt,
         updatedAt: schema.submission.updatedAt,
         exerciseId: schema.submission.exerciseId,
@@ -267,6 +269,7 @@ export async function getWebhookSubmissionDetails(
     return {
       overallStatus: row.overallStatus,
       gradingState: row.gradingState,
+      gradedBy: row.gradedBy,
       submittedAt: row.submittedAt,
       updatedAt: row.updatedAt,
       attemptNumber: Math.max(1, attemptRow?.attempts ?? 1)

@@ -110,7 +110,11 @@ export const lessonRouter = new Hono()
       const courseId = c.req.param('courseId')!;
       const data = c.req.valid('json');
 
-      const createdLesson = await createLesson(courseId, { ...data, courseId });
+      const createdLesson = await createLesson(
+        courseId,
+        { ...data, courseId },
+        { actorProfileId: c.get('user')?.id ?? null }
+      );
       const [lesson] = await hideLessonRecordingsFromLearners(courseId, user.id, [createdLesson]);
 
       return c.json({ success: true, data: lesson }, 201);

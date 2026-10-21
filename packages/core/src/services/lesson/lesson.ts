@@ -41,7 +41,11 @@ import { emitCourseWebhookEvent } from '../webhook/emit';
  * @param data Lesson creation data
  * @returns Created lesson
  */
-export async function createLesson(courseId: string, data: TLessonCreate): Promise<TLesson> {
+export async function createLesson(
+  courseId: string,
+  data: TLessonCreate,
+  options: { actorProfileId?: string | null } = {}
+): Promise<TLesson> {
   try {
     const slug = await resolveItemSlug({
       courseId,
@@ -65,6 +69,16 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
     }
 
     await touchCourseUpdatedAt(courseId);
+
+    if (data.lessonAt) {
+      await emitCourseWebhookEvent(courseId, 'lesson.session.scheduled', {
+        lessonId: lesson.id,
+        startsAt: lesson.lessonAt,
+        previousStartsAt: null,
+        callUrl: lesson.callUrl,
+        actorProfileId: options.actorProfileId ?? null
+      });
+    }
 
     return lesson;
   } catch (error) {

@@ -5073,7 +5073,7 @@
         "organization": "Kuruluş",
         "course": "Kurslar",
         "learning": "Öğrenme ilerlemesi",
-        "cohort": "Cohorts",
+        "cohort": "Gruplar",
         "compliance": "Compliance"
       },
       "events": {
@@ -5091,17 +5091,17 @@
         "course_submission_status_changed": "Bir gönderimin durumu değiştiğinde, örneğin notlandırıldığında",
         "lesson_completion_updated": "Bir ders tamamlandı olarak işaretlendiğinde veya sıfırlandığında",
         "exercise_completion_updated": "Bir alıştırma tamamlandığında veya sıfırlandığında",
-        "compliance_record_status_changed": "A student's compliance status changes",
-        "compliance_record_waived": "A student's compliance requirement is waived",
-        "organization_member_added": "A person joins the organization",
-        "organization_member_removed": "A person is removed from the organization",
-        "organization_member_updated": "A person's role or status changes",
-        "course_published": "A course is published",
-        "course_unpublished": "A course is unpublished",
-        "cohort_member_added": "A person is added to a cohort",
-        "cohort_member_removed": "A person is removed from a cohort",
-        "lesson_session_scheduled": "A live session is scheduled or moved",
-        "course_payment_request_created": "A student requests to pay for a course"
+        "compliance_record_status_changed": "Bir öğrencinin uyumluluk durumu değiştiğinde",
+        "compliance_record_waived": "Bir öğrencinin uyumluluk şartından muaf tutulduğunda",
+        "organization_member_added": "Bir kişi kuruluşa katıldığında",
+        "organization_member_removed": "Bir kişi kuruluştan çıkarıldığında",
+        "organization_member_updated": "Bir kişinin rolü veya durumu değiştiğinde",
+        "course_published": "Bir kurs yayınlandığında",
+        "course_unpublished": "Bir kursun yayını kaldırıldığında",
+        "cohort_member_added": "Bir kişi gruba eklendiğinde",
+        "cohort_member_removed": "Bir kişi gruptan çıkarıldığında",
+        "lesson_session_scheduled": "Bir canlı oturum planlandığında veya taşındığında",
+        "course_payment_request_created": "Bir öğrenci bir kursun ödemesini yapmak istediğinde"
       },
       "deliveries": {
         "title": "Teslimatlar",

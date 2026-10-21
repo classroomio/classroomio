@@ -126,4 +126,28 @@ describe('evaluateCourseCertification webhooks', () => {
     expect(mocks.emitWebhookEvent).not.toHaveBeenCalled();
     expect(mocks.claimMemberCompleted).not.toHaveBeenCalled();
   });
+
+  it('announces a completion made after the certificate deadline without issuing a certificate', async () => {
+    mocks.getCourseCertificationRow.mockResolvedValue({
+      orgId: 'org-1',
+      type: 'SELF_PACED',
+      certificate: { deadline: '2020-01-01T00:00:00.000Z' }
+    });
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
+
+    await evaluateCourseCertification('course-1', 'ada');
+
+    const emittedTypes = mocks.emitWebhookEvent.mock.calls.map(([, type]) => type);
+    expect(emittedTypes).toEqual(['course.completed']);
+    expect(mocks.claimMemberCertificateEarned).not.toHaveBeenCalled();
+  });
+
+  it('leaves the completion of a compliance course to the compliance cycle', async () => {
+    mocks.getCourseCertificationRow.mockResolvedValue({ orgId: 'org-1', type: 'COMPLIANCE', certificate: {} });
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
+
+    await evaluateCourseCertification('course-1', 'ada');
+
+    expect(mocks.emitWebhookEvent).not.toHaveBeenCalled();
+  });
 });

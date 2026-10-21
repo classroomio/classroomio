@@ -425,7 +425,7 @@ A member is removed from a course. `progressAtRemoval` is the student's progress
 
 #### `course.completed`
 
-A student completes a course. Sent once per student, whether or not certificates are enabled for the organization.
+A student completes a course, including after any certificate deadline has passed. Sent once per student, whether or not certificates are enabled for the organization. For compliance courses it is sent once per compliance cycle, when the cycle is completed.
 
 ```json
 {
@@ -546,7 +546,7 @@ An exercise submission is created.
   "memberId": "000000d1-0000-4000-8000-0000000000d1",
   "profileId": "000000b1-0000-4000-8000-0000000000b1",
   "statusId": 1,
-  "status": "graded",
+  "status": "Submitted",
   "gradingState": "queued",
   "total": null,
   "course": {
@@ -575,17 +575,18 @@ An exercise submission is created.
     "email": "student@example.com",
     "externalId": "EMP-10482"
   },
-  "percentage": 80,
-  "passed": true,
-  "attemptNumber": 2,
-  "overallStatus": "passed",
+  "percentage": null,
+  "passed": null,
+  "attemptNumber": 1,
+  "overallStatus": "manual_required",
   "submittedAt": "2026-10-13T11:58:02.000Z",
   "gradedAt": null,
   "isLate": false,
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/submissions?id=000000f1-0000-4000-8000-0000000000f1",
     "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
-  }
+  },
+  "reviewer": null
 }
 ```
 
@@ -603,11 +604,11 @@ A submission status or grading state changes, for example when it is graded.
   "memberId": "000000d1-0000-4000-8000-0000000000d1",
   "profileId": "000000b1-0000-4000-8000-0000000000b1",
   "statusId": 3,
-  "status": "graded",
+  "status": "Graded",
   "gradingState": "completed",
   "total": 8,
   "previousStatusId": 2,
-  "previousStatus": "in_progress",
+  "previousStatus": "In Progress",
   "previousGradingState": "awaiting_manual",
   "course": {
     "id": "000000c1-0000-4000-8000-0000000000c1",
@@ -652,11 +653,17 @@ A submission status or grading state changes, for example when it is graded.
     "name": "Sam Rivera",
     "email": "sam@example.com",
     "externalId": null
+  },
+  "reviewer": {
+    "id": "000000b2-0000-4000-8000-0000000000b2",
+    "name": "Sam Rivera",
+    "email": "sam@example.com",
+    "externalId": null
   }
 }
 ```
 
-`statusId` and `gradingState` are the new values. `status` and `previousStatus` are the readable names of `statusId` and `previousStatusId`. `percentage` is `total` out of `exercise.maxScore`, and `passed` compares it with `exercise.passThreshold`; both are `null` when the exercise has no points or no threshold. `submittedAt` is when the submission was made, `gradedAt` is when it was last updated once grading finished, and `isLate` compares `submittedAt` with `exercise.dueBy`. `attemptNumber` counts this student's submissions for the exercise. `actor` is the person who graded it, or `null` when it was graded automatically.
+`statusId` and `gradingState` are the new values. `status` and `previousStatus` are the readable names of `statusId` and `previousStatusId`. `percentage` is `total` out of `exercise.maxScore`, and `passed` compares it with `exercise.passThreshold`; both are `null` when the exercise has no points or no threshold. `submittedAt` is when the submission was made, `gradedAt` is when it was last updated once grading finished, and `isLate` compares `submittedAt` with `exercise.dueBy`. `attemptNumber` counts this student's submissions for the exercise. `actor` is the person whose request caused the change. `reviewer` is the last admin or tutor who graded the submission, and is `null` when it was graded automatically or not yet graded.
 
 ### Progress
 
@@ -1039,7 +1046,7 @@ A course is unpublished.
 
 #### `course.payment_request.created`
 
-A student asks to pay for a paid course. The student may not have an account yet.
+A student asks to pay for a paid course. `student.id` is set only when the requester is already a member of your organization, otherwise it is `null`.
 
 ```json
 {
@@ -1249,7 +1256,7 @@ If a Standard Webhooks receiver rejects the signature for a webhook created befo
 - Every event carries `links` with a staff `dashboard` URL and a `student` URL where the event has a page.
 - Person details (`student`, `actor`) include `externalId`: the person's id in your identity provider when they signed in through your organization's SSO, otherwise `null`.
 - `course` details include `type`, `isPublished`, `cost`, `currency` and `tags`.
-- Submission events include `status`, `percentage`, `passed`, `attemptNumber`, `overallStatus`, `submittedAt`, `gradedAt` and `isLate`, and `exercise` includes `maxScore`, `passThreshold`, `dueBy` and `allowMultipleAttempts`. `course.submission.status_changed` also includes `previousStatus` and `actor`.
+- Submission events include `status`, `reviewer`, `percentage`, `passed`, `attemptNumber`, `overallStatus`, `submittedAt`, `gradedAt` and `isLate`, and `exercise` includes `maxScore`, `passThreshold`, `dueBy` and `allowMultipleAttempts`. `course.submission.status_changed` also includes `previousStatus` and `actor`.
 - `course.member.added` includes `enrolledAt`, `source` and `actor`. `course.member.removed` includes `enrolledAt`, `actor`, `reason` and `progressAtRemoval`.
 - `course.completed` and `course.certificate.issued` include `enrolledAt`, `startedAt`, `score`, `attempts`, `timeSpentMinutes`, `progress` and `compliance`. `course.certificate.issued` includes a `certificate` object and is now sent for compliance courses too.
 - `lesson.completion.updated` and `exercise.completion.updated` include `courseProgress` and the `section`. Lesson events include `memberId`, and exercise events include `score` and `passed`.

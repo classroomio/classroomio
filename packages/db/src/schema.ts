@@ -643,6 +643,7 @@ export const submission = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     exerciseId: uuid('exercise_id').notNull(),
     submittedBy: uuid('submitted_by'),
+    gradedBy: uuid('graded_by'),
     courseId: uuid('course_id'),
     feedback: text()
   },

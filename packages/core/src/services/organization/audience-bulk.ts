@@ -189,10 +189,14 @@ export async function applyAudienceBulkActionToMembers(
     }
 
     if (input.action === 'delete') {
-      return { members, outcome: await deleteMembers(orgId, members, input, actorProfileId, tx) };
+      const deleteOutcome = await deleteMembers(orgId, members, input, actorProfileId, tx);
+
+      return { members, outcome: deleteOutcome };
     }
 
-    return { members, outcome: await changeStatus(orgId, members, input, actorProfileId, tx) };
+    const statusOutcome = await changeStatus(orgId, members, input, actorProfileId, tx);
+
+    return { members, outcome: statusOutcome };
   });
 
   await emitBulkOutcomeWebhookEvents(orgId, members, outcome, input.action, actorProfileId);

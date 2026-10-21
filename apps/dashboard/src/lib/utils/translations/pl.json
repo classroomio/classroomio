@@ -5164,8 +5164,8 @@
         "organization": "Organizacja",
         "course": "Kursy",
         "learning": "Postępy w nauce",
-        "cohort": "Cohorts",
-        "compliance": "Compliance"
+        "cohort": "Kohorty",
+        "compliance": "Zgodność"
       },
       "events": {
         "organization_invite_created": "Wysłano zaproszenie do zespołu",
@@ -5182,17 +5182,17 @@
         "course_submission_status_changed": "Zmienia się status zgłoszenia, na przykład po jego ocenieniu",
         "lesson_completion_updated": "Lekcja została oznaczona jako ukończona lub zresetowana",
         "exercise_completion_updated": "Ćwiczenie zostało ukończone lub zresetowane",
-        "compliance_record_status_changed": "A student's compliance status changes",
-        "compliance_record_waived": "A student's compliance requirement is waived",
-        "organization_member_added": "A person joins the organization",
-        "organization_member_removed": "A person is removed from the organization",
-        "organization_member_updated": "A person's role or status changes",
-        "course_published": "A course is published",
-        "course_unpublished": "A course is unpublished",
-        "cohort_member_added": "A person is added to a cohort",
-        "cohort_member_removed": "A person is removed from a cohort",
-        "lesson_session_scheduled": "A live session is scheduled or moved",
-        "course_payment_request_created": "A student requests to pay for a course"
+        "compliance_record_status_changed": "Zmienia się status zgodności studenta",
+        "compliance_record_waived": "Wymóg zgodności studenta zostaje uchylony",
+        "organization_member_added": "Osoba dołącza do organizacji",
+        "organization_member_removed": "Osoba zostaje usunięta z organizacji",
+        "organization_member_updated": "Zmienia się rola lub status osoby",
+        "course_published": "Kurs zostaje opublikowany",
+        "course_unpublished": "Publikacja kursu zostaje wycofana",
+        "cohort_member_added": "Osoba zostaje dodana do kohorty",
+        "cohort_member_removed": "Osoba zostaje usunięta z kohorty",
+        "lesson_session_scheduled": "Sesja na żywo zostaje zaplanowana lub przesunięta",
+        "course_payment_request_created": "Student prosi o możliwość opłacenia kursu"
       },
       "deliveries": {
         "title": "Dostarczenia",

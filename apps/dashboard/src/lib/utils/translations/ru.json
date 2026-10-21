@@ -5164,8 +5164,8 @@
         "organization": "Организация",
         "course": "Курсы",
         "learning": "Прогресс обучения",
-        "cohort": "Cohorts",
-        "compliance": "Compliance"
+        "cohort": "Когорты",
+        "compliance": "Соответствие требованиям"
       },
       "events": {
         "organization_invite_created": "Отправлено приглашение в команду",
@@ -5182,17 +5182,17 @@
         "course_submission_status_changed": "Меняется статус отправки, например при оценивании",
         "lesson_completion_updated": "Урок отмечен как пройденный или сброшен",
         "exercise_completion_updated": "Упражнение завершено или сброшено",
-        "compliance_record_status_changed": "A student's compliance status changes",
-        "compliance_record_waived": "A student's compliance requirement is waived",
-        "organization_member_added": "A person joins the organization",
-        "organization_member_removed": "A person is removed from the organization",
-        "organization_member_updated": "A person's role or status changes",
-        "course_published": "A course is published",
-        "course_unpublished": "A course is unpublished",
-        "cohort_member_added": "A person is added to a cohort",
-        "cohort_member_removed": "A person is removed from a cohort",
-        "lesson_session_scheduled": "A live session is scheduled or moved",
-        "course_payment_request_created": "A student requests to pay for a course"
+        "compliance_record_status_changed": "Меняется статус соответствия требованиям у студента",
+        "compliance_record_waived": "Требование соответствия для студента отменяется",
+        "organization_member_added": "Человек присоединяется к организации",
+        "organization_member_removed": "Человек удаляется из организации",
+        "organization_member_updated": "Меняется роль или статус человека",
+        "course_published": "Курс публикуется",
+        "course_unpublished": "Курс снимается с публикации",
+        "cohort_member_added": "Человек добавляется в когорту",
+        "cohort_member_removed": "Человек удаляется из когорты",
+        "lesson_session_scheduled": "Живая сессия назначается или переносится",
+        "course_payment_request_created": "Студент запрашивает оплату курса"
       },
       "deliveries": {
         "title": "Доставки",

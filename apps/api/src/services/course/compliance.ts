@@ -138,21 +138,32 @@ async function emitComplianceCompletionWebhookEvents(params: {
 
   const courseRow = await getCourseCertificationRow(courseId);
 
-  if (!courseRow || !(await orgHasCertificatesEnabled(courseRow.orgId))) return;
+  if (!courseRow) return;
+
+  await emitWebhookEvent(courseRow.orgId, 'course.completed', {
+    courseId,
+    memberId: groupMemberId,
+    profileId,
+    completedAt
+  });
+
+  if (!(await orgHasCertificatesEnabled(courseRow.orgId))) return;
 
   const issuedAt = certificateIssue?.issuedAt ?? completedAt;
+  const stored = certificateIssue ?? {
+    id: null,
+    cycleNumber: record.cycleNumber,
+    expiresAt: validUntil,
+    status: 'valid'
+  };
+  const certificate = buildCertificateWebhookInput({ courseRow, profileId, issuedAt, stored });
 
   await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', {
     courseId,
     memberId: groupMemberId,
     profileId,
     completedAt: issuedAt,
-    certificate: buildCertificateWebhookInput({
-      courseRow,
-      profileId,
-      issuedAt,
-      stored: certificateIssue ?? { id: null, cycleNumber: record.cycleNumber, expiresAt: validUntil, status: 'valid' }
-    })
+    certificate
   });
 }
 
@@ -270,8 +281,10 @@ async function ensureComplianceEnrollmentRecordForLearner(
   courseId: string,
   groupMemberId: string,
   profileId: string,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient = db,
+  options: { emitEnrollmentEvent?: boolean } = {}
 ) {
+  const emitEnrollmentEvent = options.emitEnrollmentEvent ?? dbClient === db;
   const course = await getComplianceCourseOrThrow(courseId, dbClient);
   const dueDate = getComplianceInitialDueDate(course);
 
@@ -299,30 +312,45 @@ async function ensureComplianceEnrollmentRecordForLearner(
     dbClient
   );
 
-  if (created) {
-    await emitComplianceStatusChanged(created, {
-      status: 'not_started',
-      previousStatus: null,
-      trigger: 'enrollment'
-    });
+  if (created && emitEnrollmentEvent) {
+    await emitComplianceEnrollmentEvents([created]);
   }
 
   return created;
 }
 
+/**
+ * Announces new compliance records. Call it after the transaction that created them commits.
+ */
+export async function emitComplianceEnrollmentEvents(records: TCourseCompletionRecord[]) {
+  for (const record of records) {
+    await emitComplianceStatusChanged(record, {
+      status: 'not_started',
+      previousStatus: null,
+      trigger: 'enrollment'
+    });
+  }
+}
+
+/**
+ * Creates the missing compliance records. With a transaction client it announces nothing; the caller emits
+ * `createdRecords` through `emitComplianceEnrollmentEvents` once the transaction commits.
+ */
 export async function ensureComplianceEnrollmentRecordsForProfiles(
   courseIds: string[],
   profileIds: string[],
   dbClient: DbOrTxClient = db
 ) {
+  const createdRecords: TCourseCompletionRecord[] = [];
+
   if (courseIds.length === 0 || profileIds.length === 0) {
     return {
-      createdCount: 0
+      createdCount: 0,
+      createdRecords
     };
   }
 
   let createdCount = 0;
-
   for (const courseId of courseIds) {
     const [course] = await getCourseById(courseId, dbClient);
 
@@ -347,13 +375,22 @@ export async function ensureComplianceEnrollmentRecordsForProfiles(
         continue;
       }
 
-      await ensureComplianceEnrollmentRecordForLearner(courseId, learner.member.id, profileId, dbClient);
+      const created = await ensureComplianceEnrollmentRecordForLearner(
+        courseId,
+        learner.member.id,
+        profileId,
+        dbClient
+      );
+      if (created) {
+        createdRecords.push(created);
+      }
       createdCount += 1;
     }
   }
 
   return {
-    createdCount
+    createdCount,
+    createdRecords
   };
 }
 

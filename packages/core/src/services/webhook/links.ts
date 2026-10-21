@@ -68,7 +68,10 @@ export function buildWebhookLinks(
   }
 
   if (cohortId) {
-    return { dashboard: `${appBaseUrl}/cohorts/${cohortId}`, student: `${learnerBaseUrl}/cohorts/${cohortId}` };
+    return {
+      dashboard: `${appBaseUrl}/cohorts/${cohortId}/courses`,
+      student: `${learnerBaseUrl}/cohorts/${cohortId}/courses`
+    };
   }
 
   if (org?.siteName) {

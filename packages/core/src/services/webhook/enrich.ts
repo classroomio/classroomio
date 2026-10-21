@@ -226,6 +226,15 @@ function toPersonRef(
   };
 }
 
+/**
+ * Same rule as exercise completion: the percentage is rounded to a whole number before it meets the threshold.
+ */
+function resolvePassed(percentage: number | null, passThreshold: number | null): boolean | null {
+  if (percentage === null || passThreshold === null) return null;
+
+  return Math.round(percentage) >= passThreshold;
+}
+
 function roundPercent(value: number): number {
   return Math.round(value * 100) / 100;
 }
@@ -272,17 +281,28 @@ function applyCompletionDetails(enriched: Record<string, unknown>, details: TDet
   enriched.attempts = record?.attempts ?? null;
   enriched.timeSpentMinutes = record?.timeSpentMinutes ?? null;
   enriched.progress = details.progress;
-  enriched.compliance = record
-    ? {
-        cycleNumber: record.cycleNumber,
-        dueDate: toIsoOrNull(record.dueDate),
-        validUntil: toIsoOrNull(record.validUntil),
-        completedLate: completedAt ? new Date(completedAt).getTime() > new Date(record.dueDate).getTime() : null
-      }
-    : null;
+
+  if (!record) {
+    enriched.compliance = null;
+
+    return;
+  }
+
+  const completedLate = completedAt ? new Date(completedAt).getTime() > new Date(record.dueDate).getTime() : null;
+
+  enriched.compliance = {
+    cycleNumber: record.cycleNumber,
+    dueDate: toIsoOrNull(record.dueDate),
+    validUntil: toIsoOrNull(record.validUntil),
+    completedLate
+  };
 }
 
-function applySubmissionDetails(enriched: Record<string, unknown>, details: TDetails) {
+function applySubmissionDetails(
+  enriched: Record<string, unknown>,
+  details: TDetails,
+  profiles: TWebhookEventContext['profiles']
+) {
   const exercise = details.exercise;
   const submission = details.submission;
   const total = typeof enriched.total === 'number' ? enriched.total : null;
@@ -310,8 +330,11 @@ function applySubmissionDetails(enriched: Record<string, unknown>, details: TDet
     };
   }
 
+  const gradedBy = submission?.gradedBy ?? null;
+
+  enriched.reviewer = gradedBy ? toPersonRef(gradedBy, null, profiles) : null;
   enriched.percentage = percentage;
-  enriched.passed = percentage !== null && passThreshold !== null ? percentage >= passThreshold : null;
+  enriched.passed = resolvePassed(percentage, passThreshold);
   enriched.attemptNumber = submission?.attemptNumber ?? null;
   enriched.overallStatus = submission?.overallStatus ?? null;
   enriched.submittedAt = submittedAt;
@@ -347,7 +370,7 @@ function applyLessonOrExerciseDetails(
   const passThreshold = details.exercise?.passThreshold ?? null;
 
   enriched.score = details.latestScore;
-  enriched.passed = percentage !== null && passThreshold !== null ? percentage >= passThreshold : null;
+  enriched.passed = resolvePassed(percentage, passThreshold);
 }
 
 /**
@@ -372,7 +395,10 @@ export async function enrichWebhookEventData(
       return EMPTY_DETAILS;
     })
   ]);
-  const context = await loadContext(organizationId, data, [details.invite?.acceptedByProfileId ?? null]);
+  const context = await loadContext(organizationId, data, [
+    details.invite?.acceptedByProfileId ?? null,
+    details.submission?.gradedBy ?? null
+  ]);
   const enriched: Record<string, unknown> = { ...data };
   const courseId = readString(data, 'courseId');
   const exerciseId = readString(data, 'exerciseId');
@@ -455,14 +481,13 @@ export async function enrichWebhookEventData(
   }
 
   if (eventType === 'course.certificate.issued' && courseId && typeof data.certificate === 'object') {
-    enriched.certificate = {
-      ...(data.certificate as Record<string, unknown>),
-      downloadUrl: buildCertificateDownloadUrl(courseId, organization)
-    };
+    const downloadUrl = buildCertificateDownloadUrl(courseId, organization);
+
+    enriched.certificate = { ...(data.certificate as Record<string, unknown>), downloadUrl };
   }
 
   if (eventType.startsWith('course.submission.')) {
-    applySubmissionDetails(enriched, details);
+    applySubmissionDetails(enriched, details, context.profiles);
   }
 
   if (eventType === 'lesson.completion.updated' || eventType === 'exercise.completion.updated') {

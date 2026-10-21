@@ -28,6 +28,7 @@ export type CertificationBlocker = {
 
 export type CourseCompletionEvaluation = {
   progressPercent: number;
+  hasCompletedAllContent: boolean;
   eligibleForCertificate: boolean;
   certificateEarnedAt: string | null;
   blockers: CertificationBlocker[];
@@ -75,6 +76,7 @@ async function buildCertificationEvaluation(
 
   return {
     progressPercent,
+    hasCompletedAllContent,
     eligibleForCertificate,
     certificateEarnedAt: progress.certificateEarnedAt,
     blockers
@@ -93,10 +95,11 @@ export function buildCertificateWebhookInput(params: {
 }): TWebhookEventInput<'course.certificate.issued'>['certificate'] {
   const { courseRow, profileId, issuedAt, stored } = params;
   const design = resolveCertificateDesign(courseRow.certificate);
+  const displayId = formatCertificateId(design.idFormat, profileId, new Date(issuedAt));
 
   return {
     id: stored?.id ?? null,
-    displayId: formatCertificateId(design.idFormat, profileId, new Date(issuedAt)),
+    displayId,
     issuedAt,
     expiresAt: stored?.expiresAt ?? null,
     cycleNumber: stored?.cycleNumber ?? null,
@@ -126,7 +129,7 @@ export async function evaluateCourseCertification(
   let certificateEarnedAt = evaluation.certificateEarnedAt;
   let isNewCompletion = false;
 
-  if (!evaluation.eligibleForCertificate || !progress.groupMemberId) {
+  if (!evaluation.hasCompletedAllContent || !progress.groupMemberId) {
     return { ...evaluation, certificateEarnedAt, isNewCompletion };
   }
 
@@ -139,7 +142,10 @@ export async function evaluateCourseCertification(
 
     if (didClaimCompletion) {
       await invalidateOrgStats(courseRow.orgId);
-      await emitWebhookEvent(courseRow.orgId, 'course.completed', { courseId, ...completionEventData, completedAt });
+
+      if (courseRow.type !== 'COMPLIANCE') {
+        await emitWebhookEvent(courseRow.orgId, 'course.completed', { courseId, ...completionEventData, completedAt });
+      }
 
       trackServerEvent({
         eventType: SERVER_EVENTS.COURSE_COMPLETED,
@@ -150,7 +156,9 @@ export async function evaluateCourseCertification(
     }
   }
 
-  if (!certificateEarnedAt && (await orgHasCertificatesEnabled(courseRow.orgId))) {
+  const canIssueCertificate = evaluation.eligibleForCertificate && !certificateEarnedAt;
+
+  if (canIssueCertificate && (await orgHasCertificatesEnabled(courseRow.orgId))) {
     const earnedAt = new Date().toISOString();
     const didClaimCertificate = await claimMemberCertificateEarned(groupMemberId, earnedAt);
     certificateEarnedAt = earnedAt;
@@ -159,11 +167,13 @@ export async function evaluateCourseCertification(
       isNewCompletion = true;
 
       if (courseRow.type !== 'COMPLIANCE') {
+        const certificate = buildCertificateWebhookInput({ courseRow, profileId, issuedAt: earnedAt });
+
         await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', {
           courseId,
           ...completionEventData,
           completedAt: earnedAt,
-          certificate: buildCertificateWebhookInput({ courseRow, profileId, issuedAt: earnedAt })
+          certificate
         });
       }
 

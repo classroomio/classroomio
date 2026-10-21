@@ -350,6 +350,7 @@ const submissionDetails = {
   submittedAt: z.string().nullable(),
   gradedAt: z.string().nullable(),
   isLate: z.boolean().nullable(),
+  reviewer: personRef.nullable(),
   links: linksRef
 };
 

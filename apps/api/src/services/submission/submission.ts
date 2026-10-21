@@ -973,6 +973,9 @@ export async function updateSubmissionService(
       updatePayload.gradingState = requestedGradingState;
       updatePayload.statusId = projectLegacyStatusId(requestedGradingState);
     }
+    if (requestedGradingState === 'completed' && options.actorProfileId) {
+      updatePayload.gradedBy = options.actorProfileId;
+    }
 
     const nextLegacyStatusId = Number(updatePayload.statusId ?? previousLegacyStatusId);
     const statusChanged = nextLegacyStatusId !== previousLegacyStatusId;
@@ -1096,7 +1099,8 @@ export async function updateSubmissionGradesBatch(
       total: data.total,
       feedback: data.feedback,
       statusId: targetStatusId,
-      gradingState: targetGradingState
+      gradingState: targetGradingState,
+      gradedBy: options.actorProfileId ?? null
     });
 
     if (!updated) {

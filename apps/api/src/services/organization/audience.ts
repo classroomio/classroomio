@@ -1,4 +1,4 @@
-import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type AudienceImportResult,
@@ -259,7 +259,7 @@ async function enrollAudienceStudentProfilesInCohorts(
   const alreadyEnrolled = pairs.length - toInsert.length;
 
   if (toInsert.length > 0) {
-    await Promise.all(
+    const addedCohortMembers = await Promise.all(
       toInsert.map((pair) =>
         addCohortMember({
           cohortId: pair.cohortId,
@@ -269,6 +269,10 @@ async function enrollAudienceStudentProfilesInCohorts(
         })
       )
     );
+
+    for (const cohortMember of addedCohortMembers) {
+      await emitCohortMemberWebhookEvent('cohort.member.added', orgId, cohortMember.cohortId, cohortMember);
+    }
   }
 
   // Enrols every assigned profile, not only new memberships, so re-running repairs

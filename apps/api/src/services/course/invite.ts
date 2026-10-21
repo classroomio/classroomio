@@ -1,3 +1,4 @@
+import type { TOrganizationmember } from '@cio/db/types';
 import {
   countInviteDistinctPreviewIps,
   createCourseInvite,
@@ -36,7 +37,8 @@ import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import {
   buildMemberSource,
   emitCourseMemberAddedWebhookEvent,
-  emitCourseWebhookEvent
+  emitCourseWebhookEvent,
+  emitOrganizationMemberWebhookEvent
 } from '@cio/core/services/webhook/emit';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
@@ -746,21 +748,29 @@ export async function enrollInCourse(
   if (!orgMemberId) {
     await assertStudentCapacityOrThrow(org.id, 1);
 
-    await createOrganizationMember({
+    const createdOrgMember = await createOrganizationMember({
       organizationId: org.id,
       roleId: ROLE.STUDENT,
       profileId: user.id,
       email: normalizedEmail,
       verified: true
     });
+    await emitOrganizationMemberWebhookEvent('organization.member.added', org.id, createdOrgMember, user.id);
   }
 
-  await addGroupMember({
+  const [selfEnrolledMember] = await addGroupMember({
     groupId,
     roleId: ROLE.STUDENT,
     profileId: user.id,
     email: normalizedEmail
   });
+
+  if (selfEnrolledMember) {
+    await emitCourseMemberAddedWebhookEvent(courseId, selfEnrolledMember, {
+      source: buildMemberSource('self_enroll'),
+      actorProfileId: user.id
+    });
+  }
 
   await invalidateOrgStats(org.id);
 
@@ -1061,6 +1071,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         alreadyJoined: true,
         inviteId: invite.id,
         enrolledMember: null,
+        createdOrgMember: null,
         courseId: course.id,
         courseName: course.title,
         orgName: organization.name,
@@ -1105,13 +1116,14 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
 
     const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(organization.id, user.id, tx);
     let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+    let createdOrgMember: TOrganizationmember | null = null;
 
     if (!orgMemberId) {
       studentMilestoneNotification = await assertStudentCapacityOrThrow(organization.id, 1, tx, {
         deferNotification: true
       });
 
-      await createOrganizationMember(
+      createdOrgMember = await createOrganizationMember(
         {
           organizationId: organization.id,
           roleId: ROLE.STUDENT,
@@ -1154,6 +1166,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       alreadyJoined: false,
       inviteId: invite.id,
       enrolledMember: enrolledMember ?? null,
+      createdOrgMember,
       courseId: course.id,
       courseName: course.title,
       orgName: organization.name,
@@ -1173,6 +1186,15 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     actorProfileId: user.id,
     targetEmail: normalizedEmail
   });
+
+  if (result.createdOrgMember) {
+    await emitOrganizationMemberWebhookEvent(
+      'organization.member.added',
+      result.organizationId,
+      result.createdOrgMember,
+      user.id
+    );
+  }
 
   if (result.enrolledMember) {
     await emitCourseMemberAddedWebhookEvent(result.courseId, result.enrolledMember, {

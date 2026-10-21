@@ -290,6 +290,7 @@ function stubDetails() {
   mocks.getWebhookSubmissionDetails.mockResolvedValue({
     overallStatus: 'passed',
     gradingState: 'completed',
+    gradedBy: ids.actor,
     submittedAt: '2026-10-13T11:58:02.000Z',
     updatedAt: '2026-10-13T12:10:44.000Z',
     attemptNumber: 2
@@ -386,6 +387,49 @@ describe('webhook event enrichment', () => {
       isLate: false,
       gradedAt: '2026-10-13T12:10:44.000Z'
     });
+  });
+
+  it('names the reviewer who graded the submission', async () => {
+    const enriched = await enrichWebhookEventData(
+      ids.org,
+      'course.submission.created',
+      inputs['course.submission.created']
+    );
+
+    expect(enriched.reviewer).toEqual({
+      id: ids.actor,
+      name: 'Sam Rivera',
+      email: 'sam@example.com',
+      externalId: null
+    });
+  });
+
+  it('sets the reviewer to null when nobody graded the submission', async () => {
+    mocks.getWebhookSubmissionDetails.mockResolvedValue({
+      overallStatus: 'manual_required',
+      gradingState: 'queued',
+      gradedBy: null,
+      submittedAt: '2026-10-13T11:58:02.000Z',
+      updatedAt: '2026-10-13T11:58:02.000Z',
+      attemptNumber: 1
+    });
+    const enriched = await enrichWebhookEventData(
+      ids.org,
+      'course.submission.created',
+      inputs['course.submission.created']
+    );
+
+    expect(enriched).toMatchObject({ reviewer: null, gradedAt: null });
+  });
+
+  it('rounds the percentage to a whole number before comparing it with the threshold', async () => {
+    mocks.getWebhookExerciseDetails.mockResolvedValue({ ...exerciseDetails, maxScore: 1000 });
+    const enriched = await enrichWebhookEventData(ids.org, 'course.submission.created', {
+      ...inputs['course.submission.created'],
+      total: 696
+    });
+
+    expect(enriched).toMatchObject({ percentage: 69.6, passed: true });
   });
 
   it('adds the exercise grading settings to a submission', async () => {
