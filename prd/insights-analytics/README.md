@@ -105,7 +105,7 @@ The section-by-section scorecard has one row per `course_section`, ordered by `o
 - User-built widgets and dashboards (Phase 2).
 - Custom formula metrics (Phase 3).
 - A simulation or practice-case feature. It is a separate product feature, not part of analytics.
-- Replacing the existing course analytics and compliance pages. They migrate onto presets later.
+- Replacing the compliance pages. They stay as they are. The course analytics page is replaced (see Placement and What It Replaces).
 
 ## Concepts
 
@@ -170,6 +170,22 @@ Each section below needs data the product does not collect today. A ticket track
 | Organization: peak concurrent learners | #1299 | The same heartbeat, counted per time bucket |
 | Reminders that copy a supervisor | #1302 | A supervisor relationship for each learner |
 
+## Placement and What It Replaces
+
+| Scope | Where it lives | What happens to what exists today |
+| --- | --- | --- |
+| Cohort | A new "Analytics" tab at `/cohorts/[id]/analytics`, beside newsfeed, people, courses and settings | Nothing exists today, so nothing is replaced |
+| Course | `/courses/[id]/analytics`, the existing "Analytics" item in the course sidebar | **Replaced.** Same route and nav item, new content. The new course dashboard covers what the page shows today: course KPIs and the per-student table, with filters and export |
+| Organization | `/org/[slug]/analytics`, labelled "Analytics" in the org navigation | The page at that path today shows landing-page and marketing stats (views, enrollments, funnel, countries, top courses). It is **renamed "Marketing"** and moves to `/org/[slug]/marketing`. The new learner dashboard takes the "Analytics" name and path |
+
+Unchanged: the course and organization compliance pages, course marks, course attendance, and the per-user analytics in the audience page. The audience page links into the new learner list.
+
+Notes for the change:
+
+- **API stays.** `GET /course/:courseId/analytics` and the `v1/analytics` routes keep serving the public API and MCP. Only the dashboard page is replaced, and the page moves onto `/insights`.
+- **Navigation and copy.** The org navigation (`org-navigation.ts`) gets a new "Marketing" item for the renamed page and keeps "Analytics" for the new one. The `org_navigation` translation keys change in `en.json`, so every other dashboard locale needs updating (see the translation rule in `CLAUDE.md`).
+- **Order.** The rename ships first and on its own (Phase 0), so the Analytics path is free before the new dashboard arrives. Anyone with a bookmark to the old marketing page lands on the new Analytics page after Phase 1, so release notes should say so.
+
 ## Architecture
 
 Follows the layering in `CLAUDE.md`:
@@ -208,6 +224,11 @@ Phase 2 adds an `insights_dashboard` table (`org_id`, `scope_type`, `definition 
 
 ## Implementation Plan
 
+### Phase 0: rename the marketing page
+
+- [ ] Rename the org "Analytics" page to "Marketing": route `/org/[slug]/marketing`, org navigation item and `org_navigation` translation keys, and all dashboard locales.
+- [ ] Rename the `features/analytics` folder to `features/marketing` so it is not confused with the new learner analytics.
+
 ### Phase 1: cohort scope, then course and org
 
 - [ ] Spec, result and dashboard Zod schemas.
@@ -219,6 +240,7 @@ Phase 2 adds an `insights_dashboard` table (`org_id`, `scope_type`, `definition 
 - [ ] Cohort dashboard: KPIs, course picker, courses table (all courses), scores by exercise, progress distribution, learner score progression, section-by-section scorecard, needs attention, hardest questions, logged in per day, learner matrix with search, filters, sort and CSV export.
 - [ ] Last-updated indicator and 30 second auto-refresh.
 - [ ] Course dashboard and organization dashboard from the same widgets.
+- [ ] Placement: new `/cohorts/[id]/analytics` tab, new `/org/[slug]/analytics` page, and the course analytics page at `/courses/[id]/analytics` replaced (remove its old components and export utils once the new page ships).
 - [ ] Rollback-sensitive and cache tests, and a seeded 5,000-learner performance check.
 
 <!--
