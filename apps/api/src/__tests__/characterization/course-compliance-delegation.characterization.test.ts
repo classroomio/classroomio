@@ -32,11 +32,6 @@ vi.mock('@cio/db/queries/course/compliance', () => ({
   updateCourseCompletionRecord: vi.fn()
 }));
 
-vi.mock('@cio/db/queries/course/certification-exercise', () => ({
-  getExerciseTitleAndMaxPoints: vi.fn(),
-  getStudentSubmissionsForExercise: vi.fn()
-}));
-
 vi.mock('@cio/db/drizzle', () => ({
   db: { transaction: vi.fn(async (callback: (tx: unknown) => unknown) => callback({})) }
 }));

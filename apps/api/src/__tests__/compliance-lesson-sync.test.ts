@@ -33,11 +33,6 @@ vi.mock('@cio/db/queries/course/compliance', () => ({
   updateCourseCompletionRecord: vi.fn()
 }));
 
-vi.mock('@cio/db/queries/course/certification-exercise', () => ({
-  getExerciseTitleAndMaxPoints: vi.fn(),
-  getStudentSubmissionsForExercise: vi.fn()
-}));
-
 vi.mock('@cio/db/queries/activity/activity', () => ({
   getActivitiesByCourseId: vi.fn().mockResolvedValue([]),
   deleteActivityCompletions: vi.fn().mockResolvedValue(0)

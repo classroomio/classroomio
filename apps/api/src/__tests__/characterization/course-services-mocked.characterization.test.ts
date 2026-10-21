@@ -5,12 +5,6 @@ vi.mock('@cio/db/queries/course/course', () => ({
   getCourseCertificationRow: vi.fn()
 }));
 
-vi.mock('@cio/db/queries/course/certification-exercise', () => ({
-  exerciseBelongsToCourse: vi.fn(),
-  getExerciseTitleAndMaxPoints: vi.fn(),
-  getStudentSubmissionsForExercise: vi.fn()
-}));
-
 vi.mock('@cio/db/queries/activity/activity', () => ({
   getActivitiesByCourseId: vi.fn().mockResolvedValue([]),
   getActivityCompletionsByProfile: vi.fn().mockResolvedValue([])
@@ -43,7 +37,6 @@ vi.mock('@api/utils/course-completion', async (importOriginal) => {
 });
 
 import { getCourseCertificationRow, getCourseProgress } from '@cio/db/queries/course/course';
-import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
 import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
 import { orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
 import { evaluateCourseCertification } from '@api/services/course/completion';
@@ -66,7 +59,7 @@ function courseRow(overrides: Record<string, unknown> = {}) {
   return {
     type: 'SELF_PACED',
     compliance: null,
-    certificate: { threshold: 100 },
+    certificate: {},
     title: 'Course',
     orgId: 'org-1',
     orgSiteName: null,
@@ -84,7 +77,6 @@ describe('characterization: evaluateCourseCertification (zero activities)', () =
     vi.clearAllMocks();
     vi.mocked(getCourseProgress).mockResolvedValue(progress() as never);
     vi.mocked(getCourseCertificationRow).mockResolvedValue(courseRow() as never);
-    vi.mocked(exerciseBelongsToCourse).mockResolvedValue(false);
     vi.mocked(orgHasCertificatesEnabled).mockResolvedValue(true);
     vi.mocked(claimMemberCertificateEarned).mockResolvedValue(true);
   });
@@ -105,10 +97,7 @@ describe('characterization: evaluateCourseCertification (zero activities)', () =
 
     expect(evaluation).toMatchObject({
       progressPercent: 100,
-      certificationThreshold: 100,
-      meetsThreshold: true,
       eligibleForCertificate: true,
-      meetsFinalExerciseRule: true,
       isNewCompletion: true
     });
     expect(evaluation.blockers).toEqual([]);
@@ -128,31 +117,13 @@ describe('characterization: evaluateCourseCertification (zero activities)', () =
 
   it('blocks on a past certificate deadline', async () => {
     vi.mocked(getCourseCertificationRow).mockResolvedValue(
-      courseRow({ certificate: { threshold: 100, deadline: '2020-01-01T00:00:00.000Z' } }) as never
+      courseRow({ certificate: { deadline: '2020-01-01T00:00:00.000Z' } }) as never
     );
 
     const evaluation = await evaluateCourseCertification('course-1', 'profile-1');
 
     expect(evaluation.eligibleForCertificate).toBe(false);
     expect(evaluation.blockers.map((blocker) => blocker.code)).toContain('CERT_DEADLINE_PASSED');
-  });
-
-  it('requires the final exercise submission when configured', async () => {
-    vi.mocked(getCourseCertificationRow).mockResolvedValue(
-      courseRow({ certificate: { threshold: 100, requiredExerciseId: 'exercise-1' } }) as never
-    );
-    vi.mocked(exerciseBelongsToCourse).mockResolvedValue(true);
-    const { getExerciseTitleAndMaxPoints, getStudentSubmissionsForExercise } = await import(
-      '@cio/db/queries/course/certification-exercise'
-    );
-    vi.mocked(getExerciseTitleAndMaxPoints).mockResolvedValue({ title: 'Final quiz', maxPoints: 100 } as never);
-    vi.mocked(getStudentSubmissionsForExercise).mockResolvedValue([]);
-
-    const evaluation = await evaluateCourseCertification('course-1', 'profile-1');
-
-    expect(evaluation.meetsFinalExerciseRule).toBe(false);
-    expect(evaluation.eligibleForCertificate).toBe(false);
-    expect(evaluation.blockers.map((blocker) => blocker.code)).toContain('CERT_FINAL_EXERCISE_NOT_SUBMITTED');
   });
 
   it('throws 404 for an unknown course', async () => {
