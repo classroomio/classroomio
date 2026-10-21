@@ -202,20 +202,24 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
       zipBytes: 1000,
       extractedBytes: 5000
     });
-    await createVersion(fixture, 2, current, { isCurrent: true, replacedAt: null });
+    const second = await createVersion(fixture, 2, current, { isCurrent: true, replacedAt: null });
 
     storedObjects.clear();
     storedObjects.set(`${first.contentPrefix}/sco.html`, '<html>v1</html>');
     storedObjects.set(`${first.contentPrefix}/index.json`, '[]');
     storedObjects.set(`${first.contentPrefix}.index.json`, '[]');
     storedObjects.set(first.uploadKey, 'zip-bytes');
+    storedObjects.set(`${second.contentPrefix}/sco.html`, '<html>v2</html>');
+    storedObjects.set(`${first.contentPrefix}0/sco.html`, 'near-miss');
 
     try {
       const result = await runScormRetention(90);
 
       expect(storedObjects.has(`${first.contentPrefix}/sco.html`)).toBe(false);
       expect(storedObjects.has(first.uploadKey)).toBe(false);
-      expect(storedObjects.size).toBe(0);
+      expect([...storedObjects.keys()].sort()).toEqual(
+        [`${first.contentPrefix}0/sco.html`, `${second.contentPrefix}/sco.html`].sort()
+      );
       expect(result.versionsDeleted).toBe(1);
 
       const remaining = await db
