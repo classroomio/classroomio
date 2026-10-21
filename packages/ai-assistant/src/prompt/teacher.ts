@@ -1,6 +1,7 @@
 import { PREMIUM_QUESTION_TYPE_KEYS, QUESTION_TYPE_REGISTRY } from '@cio/question-types';
 import type { AgentContext } from '../types';
 import { DEPTH_TIERS, describeDepthTier, type CourseTemplate, type DepthTierId } from '../templates';
+import { escapeActivityInstructions } from './context-utils';
 
 export type BuildTeacherSystemPromptOptions = {
   /**
@@ -452,8 +453,9 @@ export function buildTeacherContextMessage(
     contextLines.push(activityInfo);
 
     if (context.activityInstructions) {
+      const instructions = escapeActivityInstructions(context.activityInstructions);
       contextLines.push(
-        `Current activity instructions:\n\n<activity_instructions>\n${context.activityInstructions}\n</activity_instructions>`
+        `Current activity instructions:\n\n<activity_instructions>\n${instructions}\n</activity_instructions>`
       );
     } else {
       contextLines.push('This activity has no instructions yet.');

@@ -1,5 +1,6 @@
 import type { AgentContext } from '../types';
 import { defaultAiTutorSettings, type AiTutorSettings } from '../tutor-config';
+import { escapeActivityInstructions } from './context-utils';
 
 const PERSONA_PROMPTS: Record<string, string> = {
   friendly:
@@ -102,8 +103,9 @@ export function buildStudentContextMessage(context: AgentContext): string {
     lines.push(header);
 
     if (context.activityInstructions) {
+      const instructions = escapeActivityInstructions(context.activityInstructions);
       lines.push(
-        `Current activity instructions:\n\n<activity_instructions>\n${context.activityInstructions}\n</activity_instructions>`
+        `Current activity instructions:\n\n<activity_instructions>\n${instructions}\n</activity_instructions>`
       );
     }
   }
