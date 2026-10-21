@@ -73,6 +73,36 @@ describe('installLargeBeaconFetchFallback', () => {
     expect(queued[0]?.body).toBe(body);
   });
 
+  it('keeps pending save if keepalive fetch fails', () => {
+    const sendBeacon = vi.fn(() => true);
+    const fetchSpy = vi.fn(() => Promise.reject(new Error('QuotaExceededError')));
+    const store = new Map<string, string>();
+    vi.stubGlobal('navigator', { sendBeacon });
+    vi.stubGlobal('fetch', fetchSpy);
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => {
+        store.set(key, value);
+      },
+      removeItem: (key: string) => {
+        store.delete(key);
+      }
+    });
+    installLargeBeaconFetchFallback();
+
+    const body = 'x'.repeat(BEACON_BYTE_LIMIT + 1);
+    const ok = navigator.sendBeacon('/activity/scorm/runtime/token/commit', body);
+
+    expect(ok).toBe(true);
+    const queued = JSON.parse(store.get('cio:scorm:pending-exit-saves') ?? '[]') as Array<{
+      url: string;
+      body: string;
+    }>;
+    expect(queued).toHaveLength(1);
+    expect(queued[0]?.url).toBe('/activity/scorm/runtime/token/commit');
+    expect(queued[0]?.body).toBe(body);
+  });
+
   it('leaves non-runtime beacons alone', () => {
     const sendBeacon = vi.fn(() => true);
     vi.stubGlobal('navigator', { sendBeacon });

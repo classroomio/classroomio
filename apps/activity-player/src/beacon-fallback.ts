@@ -90,6 +90,18 @@ function dataAsText(data: BodyInit | null | undefined): string | null {
   return null;
 }
 
+function removePendingSave(url: string, data: BodyInit | null | undefined): void {
+  const text = dataAsText(data);
+  if (text === null) return;
+
+  const entries = readPendingSaves();
+  const index = entries.findLastIndex((entry) => entry.url === url && entry.body === text);
+  if (index !== -1) {
+    entries.splice(index, 1);
+    writePendingSaves(entries);
+  }
+}
+
 function queueOversizedSave(url: string, data: BodyInit | null | undefined): boolean {
   const text = dataAsText(data);
 
@@ -160,10 +172,16 @@ export function installLargeBeaconFetchFallback(limit: number = BEACON_BYTE_LIMI
       return queueOversizedSave(target, data ?? null);
     }
 
+    queueOversizedSave(target, data ?? null);
+
     try {
-      void fetch(target, { method: 'POST', body: data ?? null, keepalive: true, credentials: 'include' }).catch(
-        () => {}
-      );
+      void fetch(target, { method: 'POST', body: data ?? null, keepalive: true, credentials: 'include' })
+        .then((response) => {
+          if (response.ok) {
+            removePendingSave(target, data ?? null);
+          }
+        })
+        .catch(() => {});
 
       return true;
     } catch {

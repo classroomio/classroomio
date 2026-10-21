@@ -31,13 +31,31 @@ const worker = new Worker(
 worker.on('failed', async (job, err) => {
   if (!job) return;
 
+  const data = job.data as {
+    mediaJobId?: string;
+    assetId?: string;
+    packageVersionId?: string;
+    actorContext?: { organizationId?: string };
+  };
+
   if (err instanceof JobCanceledError) {
     log.warn('activity-package-job-canceled', { jobName: job.name, bullmqJobId: job.id });
+    const canceledError = { code: 'CANCELED', message: 'Run canceled by user' };
     await updateMediaJob(err.mediaJobId, {
       status: 'canceled',
       stage: 'canceled',
-      error: { code: 'CANCELED', message: 'Run canceled by user' }
+      error: canceledError
     });
+
+    if (data?.packageVersionId) {
+      const processedAt = new Date().toISOString();
+      await updatePackageVersion(data.packageVersionId, {
+        status: 'failed',
+        error: canceledError,
+        processedAt
+      });
+    }
+
     return;
   }
 
@@ -52,12 +70,6 @@ worker.on('failed', async (job, err) => {
   const isFinalAttempt = isUnrecoverable || job.attemptsMade >= (job.opts.attempts ?? 1);
   if (!isFinalAttempt) return;
 
-  const data = job.data as {
-    mediaJobId?: string;
-    assetId?: string;
-    packageVersionId?: string;
-    actorContext?: { organizationId?: string };
-  };
   const recordedVersion = data?.packageVersionId ? await getPackageVersionById(data.packageVersionId) : null;
   const recordedError = recordedVersion?.status === 'failed' ? recordedVersion.error : null;
   const finalError = recordedError ?? { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err) };
