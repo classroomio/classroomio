@@ -29,6 +29,7 @@ vi.mock('@cio/db/queries/course/people', () => ({
 }));
 
 vi.mock('@cio/db/queries/group/group', () => ({
+  getGroupMemberIdByCourseAndProfile: vi.fn(),
   getUserCourseRole: vi.fn()
 }));
 
@@ -47,6 +48,7 @@ import { getCourseById } from '@cio/db/queries/course';
 import { getLatestComplianceRecordsByProfiles, updateCourseCompletionRecord } from '@cio/db/queries/course/compliance';
 import { getExerciseMaxPoints, getStudentExerciseSubmissions } from '@cio/db/queries/course/exercise-results';
 import { getProfileByGroupMemberId } from '@cio/db/queries/course/people';
+import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group/group';
 import { evaluateCourseCertification } from '@api/services/course/completion';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 
@@ -72,6 +74,7 @@ describe('syncComplianceProgressFromSubmission', () => {
     vi.mocked(getProfileByGroupMemberId).mockResolvedValue({
       id: PROFILE_ID
     } as unknown as Awaited<ReturnType<typeof getProfileByGroupMemberId>>);
+    vi.mocked(getGroupMemberIdByCourseAndProfile).mockResolvedValue(GROUP_MEMBER_ID);
 
     vi.mocked(getLatestComplianceRecordsByProfiles).mockResolvedValue([
       {

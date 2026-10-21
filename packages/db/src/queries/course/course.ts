@@ -791,6 +791,7 @@ export async function getCourseProgress(
 
 /** Course + org fields needed for certification email and completion rules */
 export type TCourseCertificationRow = {
+  type: TCourse['type'];
   certificate: {
     isDownloadable?: boolean;
     theme?: string;
@@ -811,6 +812,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   try {
     const [row] = await db
       .select({
+        type: schema.course.type,
         certificate: schema.course.certificate,
         title: schema.course.title,
         orgId: schema.organization.id,
