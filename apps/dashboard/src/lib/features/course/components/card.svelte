@@ -191,7 +191,7 @@
       return {
         label: $t('courses.course_card.scorm_course'),
         icon: PackageIcon,
-        iconClass: 'custom ui:text-primary'
+        iconClass: 'custom text-amber-600 dark:text-amber-400'
       };
     }
 
