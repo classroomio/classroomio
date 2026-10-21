@@ -74,14 +74,18 @@ export async function startActivityPackageJob(input: StartActivityPackageJobInpu
   } catch (error) {
     const errMessage = error instanceof Error ? error.message : 'Failed to enqueue activity package job';
     console.error('startActivityPackageJob enqueue failed:', error);
-    await updateMediaJob(job.id, {
-      status: 'failed',
-      stage: 'failed',
-      error: {
-        code: 'ENQUEUE_FAILED',
-        message: errMessage
-      }
-    });
+    try {
+      await updateMediaJob(job.id, {
+        status: 'failed',
+        stage: 'failed',
+        error: {
+          code: 'ENQUEUE_FAILED',
+          message: errMessage
+        }
+      });
+    } catch (updateError) {
+      console.error('Failed to mark media job failed after enqueue failure:', updateError);
+    }
     await resetPackageVersionForRetry(input.packageVersionId, error);
 
     throw new AppError(
