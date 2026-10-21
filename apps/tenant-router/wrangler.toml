@@ -10,7 +10,8 @@ routes = [
   { pattern = "*.myclassroomio.com/*", zone_name = "myclassroomio.com" },
   { pattern = "myclassroomio.com/*", zone_name = "myclassroomio.com" },
   { pattern = "app.classroomio.com/*", zone_name = "classroomio.com" },
-  { pattern = "embed.classroomio.com/*", zone_name = "classroomio.com" }
+  { pattern = "embed.classroomio.com/*", zone_name = "classroomio.com" },
+  { pattern = "*.classroomio-content.com/*", zone_name = "classroomio-content.com" }
 ]
 
 # Override per environment. Both values are the `.onrender.com` hostnames
@@ -23,6 +24,7 @@ API_UPSTREAM_HOST = "cio-api-vymh.onrender.com"
 APEX_REDIRECT_TARGET = "https://classroomio.com"
 EMBED_HOST = "embed.classroomio.com"
 API_URL = "https://api.classroomio.com"
+SCORM_CONTENT_DOMAIN = "classroomio-content.com"
 
 # R2 bucket binding so /hls/* can stream segments directly from Cloudflare,
 # bypassing Render. The bucket name matches the storage config in
@@ -36,9 +38,22 @@ bucket_name = "videos"
 binding = "ASSETS_BUCKET"
 bucket_name = "assets"
 
+# Private SCORM package files (extracted per version under `{prefix}/...`).
+# Created by the activity-package worker. The bucket stays private;
+# the Worker reads it after verifying the per-version content token.
+# The deploy script overrides this default with OBJECT_STORAGE_BUCKET_SCORM.
+# Pass the same value used by the API and jobs services when deploying.
+[[r2_buckets]]
+binding = "SCORM_BUCKET"
+bucket_name = "scorm"
+
 # HLS_SIGNING_SECRET is set via `wrangler secret put HLS_SIGNING_SECRET` —
 # never commit it. The same value must be set as HLS_SIGNING_SECRET on the
 # API (Render env) so the cookie minted by the API verifies on the Worker.
+
+# ACTIVITY_SIGNING_SECRET is set via `wrangler secret put ACTIVITY_SIGNING_SECRET` —
+# never commit it. The same value must be set as ACTIVITY_SIGNING_SECRET on the
+# API so content tokens minted by the API verify on the Worker.
 
 [observability]
 enabled = true

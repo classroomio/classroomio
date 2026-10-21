@@ -3,6 +3,7 @@ import './bootstrap';
 import './workers/media';
 import './workers/media-transcribe';
 import './workers/media-hls';
+import './workers/activity-package';
 import './workers/youtube-captions';
 import './workers/emails';
 import './workers/notifications';
@@ -17,6 +18,7 @@ log.info('all-workers-running', {
     'media',
     'media-transcribe',
     'media-hls',
+    'activity-package',
     'youtube-captions',
     'emails',
     'notifications',

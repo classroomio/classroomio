@@ -15,6 +15,7 @@ const envSchema = z.object({
   OBJECT_STORAGE_BUCKET_VIDEOS: z.string().optional(),
   OBJECT_STORAGE_BUCKET_DOCUMENTS: z.string().optional(),
   OBJECT_STORAGE_BUCKET_MEDIA: z.string().optional(),
+  OBJECT_STORAGE_BUCKET_SCORM: z.string().optional(),
   OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL: z.string().optional(),
   OBJECT_STORAGE_PUBLIC_ENDPOINT: z.string().optional(),
 
@@ -26,6 +27,7 @@ const envSchema = z.object({
 
   /** Concurrency tuning per worker process. */
   MEDIA_WORKER_CONCURRENCY: z.string().optional(),
+  ACTIVITY_PACKAGE_WORKER_CONCURRENCY: z.string().optional(),
   TRANSCRIBE_WORKER_CONCURRENCY: z.string().optional(),
   EMAIL_WORKER_CONCURRENCY: z.string().optional(),
   WEBHOOK_WORKER_CONCURRENCY: z.string().optional(),
