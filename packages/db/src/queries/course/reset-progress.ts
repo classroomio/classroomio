@@ -3,6 +3,7 @@ import * as schema from '@db/schema';
 import { and, count, eq, inArray, sql } from '@db/drizzle';
 import type { DbOrTxClient } from '@db/drizzle';
 import { db } from '@db/drizzle';
+import { deleteLessonVideoCheckpointAnswersForProfile } from '@db/queries/lesson/video-checkpoint';
 
 export type StudentCourseProgressImpactCounts = {
   completedLessons: number;
@@ -259,6 +260,8 @@ export async function deleteStudentCourseProgress(
           )
           .returning({ id: schema.lessonVideoProgress.id })
       : [];
+
+  await deleteLessonVideoCheckpointAnswersForProfile(profileId, lessonIds, tx);
 
   const deletedAttendance = await tx
     .delete(schema.groupAttendance)

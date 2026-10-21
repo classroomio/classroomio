@@ -121,6 +121,12 @@ export type TNewLessonCompletion = typeof schema.lessonCompletion.$inferInsert;
 
 export type TLessonVideoProgress = typeof schema.lessonVideoProgress.$inferSelect;
 export type TNewLessonVideoProgress = typeof schema.lessonVideoProgress.$inferInsert;
+export type TLessonVideoCheckpoint = typeof schema.lessonVideoCheckpoint.$inferSelect;
+export type TNewLessonVideoCheckpoint = typeof schema.lessonVideoCheckpoint.$inferInsert;
+export type TLessonVideoCheckpointOption = typeof schema.lessonVideoCheckpointOption.$inferSelect;
+export type TNewLessonVideoCheckpointOption = typeof schema.lessonVideoCheckpointOption.$inferInsert;
+export type TLessonVideoCheckpointAnswer = typeof schema.lessonVideoCheckpointAnswer.$inferSelect;
+export type TNewLessonVideoCheckpointAnswer = typeof schema.lessonVideoCheckpointAnswer.$inferInsert;
 
 export type TCommunityAnswer = typeof schema.communityAnswer.$inferSelect;
 export type TNewCommunityAnswer = typeof schema.communityAnswer.$inferInsert;
