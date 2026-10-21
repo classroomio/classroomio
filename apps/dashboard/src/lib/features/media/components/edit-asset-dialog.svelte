@@ -187,12 +187,19 @@
           <div class="group relative w-fit rounded-md border p-3">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger
-                class="absolute top-3 right-3 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 data-[state=open]:opacity-100"
+                class="absolute top-3 right-3 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100"
                 onclick={(event) => event.stopPropagation()}
               >
-                <Button variant="outline" size="sm">
-                  <EllipsisVerticalIcon size={16} />
-                </Button>
+                {#snippet child({ props })}
+                  <Button
+                    {...props}
+                    variant="secondary"
+                    size="sm"
+                    aria-label={$t('media_manager.form.thumbnail_upload')}
+                  >
+                    <EllipsisVerticalIcon size={16} />
+                  </Button>
+                {/snippet}
               </DropdownMenu.Trigger>
               <DropdownMenu.Content align="end" onclick={(event) => event.stopPropagation()}>
                 <DropdownMenu.Item disabled={isThumbnailUploading} onclick={openThumbnailFilePicker}>

@@ -123,7 +123,11 @@
             </Item.Title>
           </div>
         </Tooltip.Trigger>
-        <Tooltip.Content side="top" sideOffset={4}>
+        <Tooltip.Content
+          side="top"
+          sideOffset={4}
+          class="max-w-[min(24rem,calc(100vw_-_2rem))] text-wrap! wrap-anywhere"
+        >
           {getAssetDisplayName(asset)}
         </Tooltip.Content>
       </Tooltip.Root>
