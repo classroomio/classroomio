@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 
@@ -9,7 +9,7 @@ import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
  * Requires authMiddleware to be applied first
  * Extracts courseId from request params, query, or body
  */
-export const courseMemberMiddleware = async (c: Context, next: Next) => {
+export const courseMemberMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   try {
     const user = c.get('user');
     if (!user) {

@@ -1,13 +1,13 @@
 import { Context, Next } from 'hono';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { isOrgAdminByCohortId, isCohortMember } from '@cio/db/queries/cohort';
 
 /**
  * Middleware to check if the authenticated user is a member of the cohort
  * or an org admin for the cohort's organization.
  */
-export const cohortMemberMiddleware = async (c: Context, next: Next) => {
+export const cohortMemberMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   try {
     const user = c.get('user');
     if (!user) {

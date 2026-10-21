@@ -1,10 +1,10 @@
 import { Context, Next } from 'hono';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { env } from '@cio/core/config/env';
 import { isUserOrgAdmin } from '@cio/db/queries/organization';
 
-export const orgAdminOrApiKeyMiddleware = async (c: Context, next: Next) => {
+export const orgAdminOrApiKeyMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   try {
     const orgId = c.req.header('cio-org-id');
 

@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { getCohortMemberRole, isOrgAdminByCohortId } from '@cio/db/queries/cohort';
 import { ROLE } from '@cio/utils/constants';
 
@@ -8,7 +8,7 @@ import { ROLE } from '@cio/utils/constants';
  * Middleware to check if the authenticated user is a cohort teacher or org admin.
  * Mirrors the course-team-member pattern for cohort routes.
  */
-export const cohortTeamMemberMiddleware = async (c: Context, next: Next) => {
+export const cohortTeamMemberMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   try {
     const user = c.get('user');
     if (!user) {
