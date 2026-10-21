@@ -58,7 +58,7 @@ function errorMessage(error: unknown): string {
 }
 
 function boot(): void {
-  installLargeBeaconFetchFallback();
+  const pendingSavesFlushed = installLargeBeaconFetchFallback();
   watchPageUnload();
 
   const frame = requireElement<HTMLIFrameElement>('package-frame');
@@ -73,7 +73,7 @@ function boot(): void {
   let hostMode: HostImmersiveMode = null;
   let hostExitWaiters: (() => void)[] = [];
   let videoHintShown = false;
-  let sessionQueue: Promise<void> = Promise.resolve();
+  let sessionQueue: Promise<void> = pendingSavesFlushed;
 
   const labels = (): PlayerUiLabels => ui?.labels ?? DEFAULT_LABELS;
   const isPlayerFullscreen = () => fullscreenElementOf(document) !== null;
