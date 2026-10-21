@@ -12,6 +12,6 @@ Organization administrators with public API access manage credentials under **Au
 2. Copy the revealed secret immediately into a server-side secret manager. The key list later shows only a masked prefix, status, creation date, and last-use date.
 3. Use it to [authenticate an API request](/integrations-and-automation/authenticate-an-api-request) and verify the application works.
 
-Keep separate keys for separate applications. To rotate one, use its action menu, copy the new secret, update the application, and test it. Rotation replaces the old secret. To stop access, choose **Revoke** and confirm; calls using that key then fail. A lost secret cannot be retrieved, so rotate it.
+Keep separate keys for separate applications. For a planned replacement, create a new key, update the application, test requests with the new key, and then revoke the old key. **Rotate** replaces the existing key's secret immediately, so use it when immediate invalidation is required; requests using the old secret fail until the application is updated. To stop access, choose **Revoke** and confirm. A lost secret cannot be retrieved, so replace or rotate it.
 
 API keys are tied to the organization that issued them. Do not embed one in browser code, public repositories, screenshots, or support messages. Review the [API reference](https://classroomio.com/docs/api) for supported endpoints and request schemas.

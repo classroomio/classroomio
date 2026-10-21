@@ -9,8 +9,8 @@ Create an organization key in **Automation → API** and store it as a server-si
 ![API Quick start example with a Bearer token placeholder](./images/authenticate-an-api-request/overview.webp)
 
 ```bash
-curl https://api.classroomio.com/public-api/v1/courses \
-  -H "Authorization: Bearer ${CLASSROOMIO_API_KEY}"
+printf 'Authorization: Bearer %s\n' "$CLASSROOMIO_API_KEY" |
+  curl -H @- https://api.classroomio.com/public-api/v1/courses
 ```
 
 The header must contain the full key, including its `cio_api_` prefix. A successful response returns course data for the key's organization according to the endpoint's permissions. The [API reference](https://classroomio.com/docs/api) documents response shapes and other routes.
