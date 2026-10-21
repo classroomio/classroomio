@@ -163,6 +163,7 @@ describe('content tokens', () => {
     const token = await mintContentToken(input, SECRET, yearEnd);
 
     expect(await verifyContentToken(token, SECRET, { org: 'o1', prefix: 'p' }, newYear)).toBeTruthy();
+    expect(await verifyContentToken(token, SECRET, { org: 'o1', prefix: 'p' }, Date.UTC(2027, 0, 5, 12))).toBeTruthy();
 
     try {
       await verifyContentToken(token, SECRET, { org: 'o1', prefix: 'p' }, Date.UTC(2027, 0, 12, 12));

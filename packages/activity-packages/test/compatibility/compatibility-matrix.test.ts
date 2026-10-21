@@ -102,9 +102,7 @@ describe('compatibility matrix: hand-written fixtures', () => {
     for (const exit of ['', 'suspend', 'logout']) {
       const suspended = statusAfterTerminate({ core: { lesson_status: 'incomplete', exit } }, 'scorm12');
 
-      expect(suspended).toBe(
-        exit === 'suspend' ? 'suspended' : exit === '' || exit === 'logout' ? 'suspended' : 'closed'
-      );
+      expect(suspended).toBe('suspended');
     }
 
     for (const status of ['passed', 'completed', 'failed']) {
