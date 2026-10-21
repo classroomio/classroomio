@@ -1400,6 +1400,7 @@ export const groupmember = pgTable(
     email: varchar(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     assignedStudentId: varchar('assigned_student_id'),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
     certificateEarnedAt: timestamp('certificate_earned_at', { withTimezone: true, mode: 'string' }),
     certificationEmailSentAt: timestamp('certification_email_sent_at', { withTimezone: true, mode: 'string' })
   },

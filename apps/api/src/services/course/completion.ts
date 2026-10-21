@@ -11,7 +11,7 @@ import {
   getCourseProgress as getCourseProgressQuery,
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
-import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
+import { claimMemberCertificateEarned, claimMemberCompleted } from '@cio/db/queries/course/people';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
@@ -100,46 +100,59 @@ export async function evaluateCourseCertification(
   let certificateEarnedAt = evaluation.certificateEarnedAt;
   let isNewCompletion = false;
 
-  if (evaluation.eligibleForCertificate && !certificateEarnedAt && progress.groupMemberId) {
-    const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
+  if (!evaluation.eligibleForCertificate || !progress.groupMemberId) {
+    return { ...evaluation, certificateEarnedAt, isNewCompletion };
+  }
 
-    if (certificatesEnabled) {
-      const earnedAt = new Date().toISOString();
-      const didClaimCertificate = await claimMemberCertificateEarned(progress.groupMemberId, earnedAt);
-      certificateEarnedAt = earnedAt;
+  const groupMemberId = progress.groupMemberId;
+  const completionEventData = { profileId, memberId: groupMemberId };
 
-      if (didClaimCertificate) {
-        isNewCompletion = true;
+  if (!progress.completedAt) {
+    const completedAt = new Date().toISOString();
+    const didClaimCompletion = await claimMemberCompleted(groupMemberId, completedAt);
 
-        await invalidateOrgStats(courseRow.orgId);
+    if (didClaimCompletion) {
+      await invalidateOrgStats(courseRow.orgId);
+      await emitWebhookEvent(courseRow.orgId, 'course.completed', { courseId, ...completionEventData, completedAt });
 
-        const completionEventData = { profileId, memberId: progress.groupMemberId, completedAt: earnedAt };
-        await emitWebhookEvent(courseRow.orgId, 'course.completed', { courseId, ...completionEventData });
-        await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', { courseId, ...completionEventData });
+      trackServerEvent({
+        eventType: SERVER_EVENTS.COURSE_COMPLETED,
+        userId: profileId,
+        courseId,
+        props: { path: 'standard', earnedAt: completedAt }
+      });
+    }
+  }
 
-        scheduleCertificationCompletionWork({
-          courseId,
-          profileId,
-          groupMemberId: progress.groupMemberId,
-          courseRow,
-          earnedAt
-        });
+  if (!certificateEarnedAt && (await orgHasCertificatesEnabled(courseRow.orgId))) {
+    const earnedAt = new Date().toISOString();
+    const didClaimCertificate = await claimMemberCertificateEarned(groupMemberId, earnedAt);
+    certificateEarnedAt = earnedAt;
 
+    if (didClaimCertificate) {
+      isNewCompletion = true;
+
+      await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', {
+        courseId,
+        ...completionEventData,
+        completedAt: earnedAt
+      });
+
+      scheduleCertificationCompletionWork({
+        courseId,
+        profileId,
+        groupMemberId,
+        courseRow,
+        earnedAt
+      });
+
+      if (courseRow.certificate?.isDownloadable) {
         trackServerEvent({
-          eventType: SERVER_EVENTS.COURSE_COMPLETED,
+          eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
           userId: profileId,
           courseId,
           props: { path: 'standard', earnedAt }
         });
-
-        if (courseRow.certificate?.isDownloadable) {
-          trackServerEvent({
-            eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
-            userId: profileId,
-            courseId,
-            props: { path: 'standard', earnedAt }
-          });
-        }
       }
     }
   }

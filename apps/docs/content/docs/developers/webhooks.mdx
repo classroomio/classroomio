@@ -31,7 +31,7 @@ Leave the secret blank to have ClassroomIO generate one. Every delivery is signe
 | `course.invite.revoked` | A student invite is revoked |
 | `course.member.added` | A member is added to a course |
 | `course.member.removed` | A member is removed from a course |
-| `course.completed` | A student completes a course and earns its certificate. Requires certificates to be enabled for the organization |
+| `course.completed` | A student completes a course. Sent whether or not certificates are enabled for the organization |
 | `course.certificate.issued` | A certificate is earned |
 | `course.submission.created` | An exercise submission is created |
 | `course.submission.status_changed` | A submission status changes, for example when it is graded |
@@ -273,7 +273,7 @@ A member is removed from a course.
 
 #### `course.completed`
 
-A student completes a course and earns its certificate. Requires certificates to be enabled for the organization.
+A student completes a course. Sent once per student, whether or not certificates are enabled for the organization.
 
 ```json
 {
@@ -296,7 +296,7 @@ A student completes a course and earns its certificate. Requires certificates to
 
 #### `course.certificate.issued`
 
-A certificate is earned. Sent together with `course.completed`.
+A certificate is earned. Sent right after `course.completed`, and only when certificates are enabled for the organization.
 
 ```json
 {

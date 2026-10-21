@@ -644,6 +644,24 @@ export async function claimMemberCertificateEarned(memberId: string, earnedAt: s
 }
 
 /**
+ * Atomically marks the member's course completion as announced.
+ * Returns true when this caller won the claim, so `course.completed` fires exactly once.
+ */
+export async function claimMemberCompleted(memberId: string, completedAt: string): Promise<boolean> {
+  try {
+    const updated = await db
+      .update(schema.groupmember)
+      .set({ completedAt })
+      .where(and(eq(schema.groupmember.id, memberId), isNull(schema.groupmember.completedAt)))
+      .returning({ id: schema.groupmember.id });
+    return updated.length > 0;
+  } catch (error) {
+    console.error('claimMemberCompleted error:', error);
+    throw new Error(`Failed to claim course completion: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
  * Records that the certification congratulations email was sent.
  */
 export async function setMemberCertificationEmailSent(memberId: string, sentAt: string): Promise<TGroupmember | null> {
