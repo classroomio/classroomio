@@ -43,31 +43,49 @@
         Engineering spec: <code>prd/interactive-video-checkpoints/README.md</code>.
       </p>
 
-      <div class="sec">1 · Teacher — authoring</div>
+      <div class="sec">1 · Teacher — lesson canvas (block editor)</div>
       <div class="grid">
         <a class="shot" href="course-contents.html">
           <div class="cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
           </div>
-          <div class="b"><span class="n">Course · Contents</span><span class="t">Six lessons + final exam</span><span class="d">No new content type. Question-count chips on lessons that have checkpoints.</span></div>
+          <div class="b"><span class="n">Course · Contents</span><span class="t">Six lessons + final exam</span><span class="d">No new content type. Question-count chips on lessons that have questions.</span></div>
         </a>
         <a class="shot" href="teacher-video-tab.html">
           <div class="cover" style="background: linear-gradient(135deg, oklch(0.546 0.245 262.881), oklch(0.809 0.105 251.813))">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l6 3-6 3z"/></svg>
           </div>
-          <div class="b"><span class="n">Lesson · Video tab</span><span class="t">Timeline on an uploaded video</span><span class="d">Markers on the scrubber, list under the player, Add question at the playhead.</span></div>
+          <div class="b"><span class="n">Edit mode · Video block</span><span class="t">Questions live in the block</span><span class="d">Marker dots on the scrubber, a compact strip under the player with Results and Add question, and the block menu. Same canvas as the lesson editor redesign.</span></div>
         </a>
         <a class="shot" href="teacher-add-checkpoint.html">
           <div class="cover" style="background: linear-gradient(135deg, oklch(0.424 0.199 265.638), oklch(0.546 0.245 262.881))">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
           </div>
-          <div class="b"><span class="n">Dialog</span><span class="t">Add a question</span><span class="d">Any auto-gradable type, timestamp, resume any vs require correct. Premium types keep the usual plan gate.</span></div>
+          <div class="b"><span class="n">Drawer</span><span class="t">Add a question</span><span class="d">Right-side drawer, not a modal. Any auto-gradable type, time, resume any vs require correct.</span></div>
+        </a>
+        <a class="shot" href="teacher-results.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>
+          </div>
+          <div class="b"><span class="n">Drawer</span><span class="t">Results</span><span class="d">Per-question answered, % correct and common wrong answer; click a row for the learner list; Export CSV.</span></div>
+        </a>
+        <a class="shot" href="teacher-preview.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="b"><span class="n">Preview mode</span><span class="t">Learner experience</span><span class="d">Blocks without editor chrome. Questions pause the video, but Preview answers are not recorded.</span></div>
+        </a>
+        <a class="shot" href="teacher-free-plan.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.769 0.188 70.08), oklch(0.666 0.179 58.318))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </div>
+          <div class="b"><span class="n">Free plan</span><span class="t">Upgrade state</span><span class="d">Timeline stays visible; Add question and Results are locked behind the upgrade prompt.</span></div>
         </a>
         <a class="shot" href="teacher-youtube-blocked.html">
           <div class="cover" style="background: linear-gradient(135deg, oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216))">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>
           </div>
-          <div class="b"><span class="n">YouTube embed</span><span class="t">Blocked state</span><span class="d">No fake timeline. Upload a video if you want in-player questions.</span></div>
+          <div class="b"><span class="n">YouTube block</span><span class="t">Upload to add questions</span><span class="d">No fake timeline on an embed. The block offers “Upload a video instead”.</span></div>
         </a>
       </div>
 
@@ -77,19 +95,13 @@
           <div class="cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
           </div>
-          <div class="b"><span class="n">LMS · Lesson</span><span class="t">Click-through player</span><span class="d">Play, hit a marker, answer, resume. This is the working end-to-end demo.</span></div>
+          <div class="b"><span class="n">LMS · Lesson</span><span class="t">Click-through player</span><span class="d">Play, hit a marker, get it wrong and retry, try to skip ahead, finish and complete the lesson.</span></div>
         </a>
         <a class="shot" href="student-checkpoint.html">
           <div class="cover" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08))">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 12h8M8 16h5"/></svg>
           </div>
-          <div class="b"><span class="n">Overlay</span><span class="t">Question on the video</span><span class="d">Paused at 0:45. Switch types to see radio, checkbox, numeric, blanks, ordering, and stars.</span></div>
-        </a>
-        <a class="shot" href="student-resume.html">
-          <div class="cover" style="background: linear-gradient(135deg, oklch(0.696 0.17 162.48), oklch(0.83 0.12 165))">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </div>
-          <div class="b"><span class="n">After answer</span><span class="t">Video continues</span><span class="d">Same timestamp. Marker is spent. Next lesson stays locked until this one completes.</span></div>
+          <div class="b"><span class="n">Overlay</span><span class="t">Question types on the player</span><span class="d">Switch between every auto-gradable type as it appears in the overlay card.</span></div>
         </a>
       </div>
 
@@ -117,9 +129,12 @@
 
       <div class="foot">
         <b>Decisions baked into these prototypes:</b><br />
-        · Checkpoints are <b>on the lesson video</b>, never extra rows in the contents tree.<br />
+        · Questions are <b>part of a Video block</b> on the lesson canvas, never extra rows in the contents tree.<br />
+        · Adding and editing, and Results, open as <b>right-side drawers</b>, not modals.<br />
+        · Authoring and Results are <b>plan-gated</b> with video upload; learners always see existing questions.<br />
+        · <b>Preview</b> answers are never recorded or counted.<br />
         · Teachers can add <b>every auto-gradable question type</b> (premium types stay plan-gated). Manual types stay on the exam.<br />
-        · Only <b>uploaded</b> videos get a timeline. YouTube is an honest blocked state.<br />
+        · Only <b>uploaded</b> videos get questions. YouTube, Vimeo and Drive show an upload prompt.<br />
         · Default resume is <b>any answer</b>; require-correct is opt-in per question.<br />
         · The overlay has an explicit <b>Continue</b> after selecting an option.<br />
         · The <b>final exam Exercise</b> is still what issues the certificate.

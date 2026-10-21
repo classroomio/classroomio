@@ -60,15 +60,19 @@ The prototypes are built on the real design tokens: `app-theme.css` mirrors `pac
 | --- | --- |
 | Entry | `index.html` |
 | Teacher — course outline | `course-contents.html` |
-| Teacher — Video tab + timeline | `teacher-video-tab.html` |
-| Teacher — add/edit checkpoint | `teacher-add-checkpoint.html` |
-| Teacher — YouTube blocked | `teacher-youtube-blocked.html` |
-| Learner — playing | `student-playing.html` |
-| Learner — overlay | `student-checkpoint.html` |
-| Learner — resume | `student-resume.html` |
+| Teacher — Video block on the lesson canvas (Edit mode) | `teacher-video-tab.html` |
+| Teacher — add/edit question drawer | `teacher-add-checkpoint.html` |
+| Teacher — Results drawer | `teacher-results.html` |
+| Teacher — Preview mode | `teacher-preview.html` |
+| Teacher — free-plan state | `teacher-free-plan.html` |
+| Teacher — YouTube block | `teacher-youtube-blocked.html` |
+| Learner — play, answer, retry, skip attempt, complete | `student-playing.html` |
+| Learner — overlay for every question type | `student-checkpoint.html` |
 | Learner — final exam | `student-exam.html` |
 | Learner — certificate | `student-certificate.html` |
 | Public org-site preview | `public-preview.html` |
+
+The teacher pages use the block-based lesson canvas from [`prd/lesson-editor-redesign`](../lesson-editor-redesign/README.md): an ordered list of blocks, an Edit/Preview toggle, a per-block menu. Questions belong to a Video block; there is no separate Video tab.
 
 ## Purpose
 
@@ -178,9 +182,9 @@ No new content type. The teacher still builds:
 
 The contents list may show a **small question-count badge** on a lesson that has checkpoints (e.g. “4 questions”). It must not gain extra rows.
 
-### 2. Teacher — Video tab timeline (`teacher-video-tab.html`)
+### 2. Teacher — questions inside a Video block (`teacher-video-tab.html`)
 
-Shown only when the selected video is an enforceable upload (has `assetId`, `type === 'upload'`).
+Shown only inside a Video block whose video is an enforceable upload (has `assetId`, `type === 'upload'`). The block header shows a "N questions" pill, and the block menu gains **Add question at playhead** and **View results**. The strip is Edit-mode chrome: Preview and the learner view do not render it.
 
 - Player as today, plus a **marker rail** under the progress bar (or a sibling timeline using duration from `assets.durationSeconds` / `metadata.duration`).
 - **Add question** primary button uses the current playhead. Disabled until metadata duration is known.
@@ -236,6 +240,10 @@ Wire into:
 ### 6. Final exam and certificate
 
 Unchanged. After the last lesson completes, Next goes to the Exercise. Passing that exercise + progress threshold issues the certificate. Checkpoints never appear on `/courses/{id}/submissions`.
+
+### 7a. Preview mode
+
+Preview is the in-app learner experience (`prd/lesson-editor-redesign`). Questions pause playback exactly as for learners, but answers given in Preview are **not recorded**, never appear in Results, and never gate the previewing teacher's own completion. The banner says so. The same applies to staff using the existing learner view.
 
 ### 7. Public preview (`public-preview.html`)
 
@@ -533,6 +541,8 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
 | Overlay outside Plyr fullscreen is invisible | Mount overlay in the same relative wrapper as `plyr-player.svelte` loading overlay; verify fullscreen in the Storybook story and in the lesson page |
 | `timeupdate` granularity skips a short cue | Fire when `seconds >= timestamp` and unanswered, not only on an equality window; ceiling seek so the playhead cannot jump over it |
 | Teachers expect YouTube (the Reddit user’s likely source) | Blocked state with upload CTA; native uploads only is deliberate because upload is the paid feature this drives |
+| Lesson canvas replaces `lesson.videos` with an ordered block list | The service reads `lesson.videos` to validate the asset, drop questions when a video is removed, and resolve watch enforcement. Move those three reads to the block list when the redesign lands; questions stay keyed by `(lessonId, assetId)`, so two blocks holding the same upload share one set of questions |
+| Staff answers in Preview or learner view skew Results | Do not record answers from staff previewing; until then, exclude staff profiles from Results |
 | Plan gate only hidden in the UI | Shared service-layer guard on every write path including public API and MCP |
 | Using Exercise rows “to save time” | Forbidden in Confirmed Decisions; it would spam submissions and the contents tree |
 | Continue-on-select vs Continue button | Prototype uses an explicit Continue after a complete answer so mis-taps don’t burn a `correct` attempt; if engineering prefers RADIO’s native select-to-submit, update the prototype — prototype currently wins |
