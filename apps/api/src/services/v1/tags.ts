@@ -7,8 +7,13 @@ import type {
   TPublicApiUpdateTag,
   TPublicApiUpdateTagGroup
 } from '@cio/utils/validation/public-api';
-import { slugifyTagValue } from '@cio/utils/validation/tag';
-import { findTagBySlug, findTagGroupBySlug, getCourseTagsForOrganization } from '@cio/db/queries/tag';
+import { db } from '@cio/db/drizzle';
+import {
+  findTagByName,
+  findTagGroupByName,
+  getCourseTagsForOrganization,
+  lockOrganizationTags
+} from '@cio/db/queries/tag';
 import {
   createOrganizationTag,
   createOrganizationTagGroup,
@@ -50,11 +55,16 @@ export async function createPublicApiTagGroupService(
 ) {
   await assertOrgAdmin(orgId, actorId);
 
-  if (await findTagGroupBySlug(orgId, slugifyTagValue(payload.name))) {
-    throw new AppError('A tag group with this name already exists', ErrorCodes.TAG_GROUP_ALREADY_EXISTS, 409, 'name');
-  }
+  // Names are compared, not slugs: names without a-z or 0-9 all slugify to "tag".
+  return db.transaction(async (tx) => {
+    await lockOrganizationTags(orgId, tx);
 
-  return createOrganizationTagGroup(orgId, payload);
+    if (await findTagGroupByName(orgId, payload.name, tx)) {
+      throw new AppError('A tag group with this name already exists', ErrorCodes.TAG_GROUP_ALREADY_EXISTS, 409, 'name');
+    }
+
+    return createOrganizationTagGroup(orgId, payload, tx);
+  });
 }
 
 export async function updatePublicApiTagGroupService(
@@ -71,11 +81,15 @@ export async function updatePublicApiTagGroupService(
 export async function createPublicApiTagService(orgId: string, actorId: string | null, payload: TPublicApiCreateTag) {
   await assertOrgAdmin(orgId, actorId);
 
-  if (await findTagBySlug(orgId, slugifyTagValue(payload.name))) {
-    throw new AppError('A tag with this name already exists', ErrorCodes.TAG_ALREADY_EXISTS, 409, 'name');
-  }
+  return db.transaction(async (tx) => {
+    await lockOrganizationTags(orgId, tx);
 
-  return createOrganizationTag(orgId, payload);
+    if (await findTagByName(orgId, payload.name, tx)) {
+      throw new AppError('A tag with this name already exists', ErrorCodes.TAG_ALREADY_EXISTS, 409, 'name');
+    }
+
+    return createOrganizationTag(orgId, payload, tx);
+  });
 }
 
 export async function updatePublicApiTagService(

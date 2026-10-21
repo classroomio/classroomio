@@ -142,17 +142,20 @@ export async function getPublicOrganizationTagGroups(siteName: string) {
   }
 }
 
-export async function createOrganizationTagGroup(orgId: string, data: TTagGroupCreate) {
+export async function createOrganizationTagGroup(orgId: string, data: TTagGroupCreate, dbClient?: DbOrTxClient) {
   try {
-    const slug = await generateUniqueTagGroupSlug(orgId, data.name);
+    const slug = await generateUniqueTagGroupSlug(orgId, data.name, dbClient);
 
-    return createTagGroup({
-      organizationId: orgId,
-      name: data.name.trim(),
-      slug,
-      description: normalizeOptionalText(data.description),
-      order: data.order ?? 0
-    });
+    return createTagGroup(
+      {
+        organizationId: orgId,
+        name: data.name.trim(),
+        slug,
+        description: normalizeOptionalText(data.description),
+        order: data.order ?? 0
+      },
+      dbClient
+    );
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -202,24 +205,27 @@ export async function updateOrganizationTagGroup(orgId: string, groupId: string,
   }
 }
 
-export async function createOrganizationTag(orgId: string, data: TTagCreate) {
+export async function createOrganizationTag(orgId: string, data: TTagCreate, dbClient?: DbOrTxClient) {
   try {
-    const group = await getTagGroupById(orgId, data.groupId);
+    const group = await getTagGroupById(orgId, data.groupId, dbClient);
 
     if (!group) {
       throw new AppError('Tag group not found', ErrorCodes.TAG_GROUP_NOT_FOUND, 404, 'groupId');
     }
 
-    const slug = await generateUniqueTagSlug(orgId, data.name);
+    const slug = await generateUniqueTagSlug(orgId, data.name, dbClient);
 
-    return createTag({
-      organizationId: orgId,
-      groupId: data.groupId,
-      name: data.name.trim(),
-      slug,
-      description: normalizeOptionalText(data.description),
-      color: data.color
-    });
+    return createTag(
+      {
+        organizationId: orgId,
+        groupId: data.groupId,
+        name: data.name.trim(),
+        slug,
+        description: normalizeOptionalText(data.description),
+        color: data.color
+      },
+      dbClient
+    );
   } catch (error) {
     if (error instanceof AppError) {
       throw error;

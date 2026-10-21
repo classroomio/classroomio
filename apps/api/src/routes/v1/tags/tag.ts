@@ -63,7 +63,7 @@ export const v1TagRouter = new Hono()
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.write,
         404: { description: 'Tag group not found' },
-        409: { description: 'A tag with the same name (slug) already exists' },
+        409: { description: 'A tag with the same name, ignoring case, already exists' },
         429: mcpRateLimitResponse
       }
     }),

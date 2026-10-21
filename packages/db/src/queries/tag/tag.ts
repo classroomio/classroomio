@@ -58,12 +58,16 @@ async function ensureUniqueSlug(baseSlug: string, exists: (slug: string) => Prom
   return candidate;
 }
 
-export async function generateUniqueTagGroupSlug(orgId: string, name: string): Promise<string> {
+export async function generateUniqueTagGroupSlug(
+  orgId: string,
+  name: string,
+  dbClient: DbOrTxClient = db
+): Promise<string> {
   try {
     const baseSlug = slugifyTagValue(name);
 
     return ensureUniqueSlug(baseSlug, async (slug) => {
-      const existing = await findTagGroupBySlug(orgId, slug);
+      const existing = await findTagGroupBySlug(orgId, slug, dbClient);
       return Boolean(existing);
     });
   } catch (error) {
@@ -72,12 +76,12 @@ export async function generateUniqueTagGroupSlug(orgId: string, name: string): P
   }
 }
 
-export async function generateUniqueTagSlug(orgId: string, name: string): Promise<string> {
+export async function generateUniqueTagSlug(orgId: string, name: string, dbClient: DbOrTxClient = db): Promise<string> {
   try {
     const baseSlug = slugifyTagValue(name);
 
     return ensureUniqueSlug(baseSlug, async (slug) => {
-      const existing = await findTagBySlug(orgId, slug);
+      const existing = await findTagBySlug(orgId, slug, dbClient);
       return Boolean(existing);
     });
   } catch (error) {
@@ -86,9 +90,13 @@ export async function generateUniqueTagSlug(orgId: string, name: string): Promis
   }
 }
 
-export async function findTagGroupBySlug(orgId: string, slug: string): Promise<TTagGroup | null> {
+export async function findTagGroupBySlug(
+  orgId: string,
+  slug: string,
+  dbClient: DbOrTxClient = db
+): Promise<TTagGroup | null> {
   try {
-    const [result] = await db
+    const [result] = await dbClient
       .select()
       .from(schema.tagGroup)
       .where(and(eq(schema.tagGroup.organizationId, orgId), eq(schema.tagGroup.slug, slug)))
@@ -101,9 +109,9 @@ export async function findTagGroupBySlug(orgId: string, slug: string): Promise<T
   }
 }
 
-export async function findTagBySlug(orgId: string, slug: string): Promise<TTag | null> {
+export async function findTagBySlug(orgId: string, slug: string, dbClient: DbOrTxClient = db): Promise<TTag | null> {
   try {
-    const [result] = await db
+    const [result] = await dbClient
       .select()
       .from(schema.tag)
       .where(and(eq(schema.tag.organizationId, orgId), eq(schema.tag.slug, slug)))
@@ -116,9 +124,54 @@ export async function findTagBySlug(orgId: string, slug: string): Promise<TTag |
   }
 }
 
-export async function getTagGroupById(orgId: string, groupId: string): Promise<TTagGroup | null> {
+export async function findTagGroupByName(
+  orgId: string,
+  name: string,
+  dbClient: DbOrTxClient = db
+): Promise<TTagGroup | null> {
   try {
-    const [result] = await db
+    const [result] = await dbClient
+      .select()
+      .from(schema.tagGroup)
+      .where(
+        and(eq(schema.tagGroup.organizationId, orgId), sql`lower(${schema.tagGroup.name}) = lower(${name.trim()})`)
+      )
+      .limit(1);
+
+    return result ?? null;
+  } catch (error) {
+    console.error('findTagGroupByName error:', error);
+    throw new Error('Failed to find tag group by name');
+  }
+}
+
+export async function findTagByName(orgId: string, name: string, dbClient: DbOrTxClient = db): Promise<TTag | null> {
+  try {
+    const [result] = await dbClient
+      .select()
+      .from(schema.tag)
+      .where(and(eq(schema.tag.organizationId, orgId), sql`lower(${schema.tag.name}) = lower(${name.trim()})`))
+      .limit(1);
+
+    return result ?? null;
+  } catch (error) {
+    console.error('findTagByName error:', error);
+    throw new Error('Failed to find tag by name');
+  }
+}
+
+// Serializes tag and tag group creation within an organization until the transaction ends.
+export async function lockOrganizationTags(orgId: string, dbClient: DbOrTxClient) {
+  await dbClient.execute(sql`select pg_advisory_xact_lock(hashtext(${`tags:${orgId}`}))`);
+}
+
+export async function getTagGroupById(
+  orgId: string,
+  groupId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TTagGroup | null> {
+  try {
+    const [result] = await dbClient
       .select()
       .from(schema.tagGroup)
       .where(and(eq(schema.tagGroup.organizationId, orgId), eq(schema.tagGroup.id, groupId)))
@@ -203,9 +256,9 @@ export async function searchOrgTagsAndGroups(orgId: string, search: string, limi
   }
 }
 
-export async function createTagGroup(data: TNewTagGroup): Promise<TTagGroup> {
+export async function createTagGroup(data: TNewTagGroup, dbClient: DbOrTxClient = db): Promise<TTagGroup> {
   try {
-    const [result] = await db.insert(schema.tagGroup).values(data).returning();
+    const [result] = await dbClient.insert(schema.tagGroup).values(data).returning();
 
     return result;
   } catch (error) {
@@ -233,9 +286,9 @@ export async function updateTagGroup(
   }
 }
 
-export async function createTag(data: TNewTag): Promise<TTag> {
+export async function createTag(data: TNewTag, dbClient: DbOrTxClient = db): Promise<TTag> {
   try {
-    const [result] = await db.insert(schema.tag).values(data).returning();
+    const [result] = await dbClient.insert(schema.tag).values(data).returning();
 
     return result;
   } catch (error) {

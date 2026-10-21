@@ -1,10 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const TX = { tx: true };
+
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
+}));
+
 vi.mock('@cio/db/queries/tag', () => ({
-  findTagBySlug: vi.fn(),
-  findTagGroupBySlug: vi.fn(),
+  findTagByName: vi.fn(),
+  findTagGroupByName: vi.fn(),
   getCourseOrganizationId: vi.fn(),
-  getCourseTagsForOrganization: vi.fn()
+  getCourseTagsForOrganization: vi.fn(),
+  lockOrganizationTags: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/organization', () => ({
@@ -20,10 +27,11 @@ vi.mock('@api/services/tag', () => ({
 }));
 
 import {
-  findTagBySlug,
-  findTagGroupBySlug,
+  findTagByName,
+  findTagGroupByName,
   getCourseOrganizationId,
-  getCourseTagsForOrganization
+  getCourseTagsForOrganization,
+  lockOrganizationTags
 } from '@cio/db/queries/tag';
 import { getOrganizationMemberRoleId } from '@cio/db/queries/organization';
 import {
@@ -104,23 +112,32 @@ describe('v1 tags service', () => {
   });
 
   describe('writes', () => {
-    it('creates a tag group and tag through the dashboard services', async () => {
+    it('creates a tag group and tag through the dashboard services, under the org tag lock', async () => {
       await createPublicApiTagGroupService(ORG_ID, ACTOR_ID, { name: 'Topics' });
       await createPublicApiTagService(ORG_ID, ACTOR_ID, { name: 'Safety', groupId: GROUP_ID, color: '#EF4444' });
 
-      expect(findTagGroupBySlug).toHaveBeenCalledWith(ORG_ID, 'topics');
-      expect(createOrganizationTagGroup).toHaveBeenCalledWith(ORG_ID, { name: 'Topics' });
-      expect(findTagBySlug).toHaveBeenCalledWith(ORG_ID, 'safety');
-      expect(createOrganizationTag).toHaveBeenCalledWith(ORG_ID, {
-        name: 'Safety',
-        groupId: GROUP_ID,
-        color: '#EF4444'
-      });
+      expect(lockOrganizationTags).toHaveBeenCalledTimes(2);
+      expect(lockOrganizationTags).toHaveBeenCalledWith(ORG_ID, TX);
+      expect(findTagGroupByName).toHaveBeenCalledWith(ORG_ID, 'Topics', TX);
+      expect(createOrganizationTagGroup).toHaveBeenCalledWith(ORG_ID, { name: 'Topics' }, TX);
+      expect(findTagByName).toHaveBeenCalledWith(ORG_ID, 'Safety', TX);
+      expect(createOrganizationTag).toHaveBeenCalledWith(
+        ORG_ID,
+        { name: 'Safety', groupId: GROUP_ID, color: '#EF4444' },
+        TX
+      );
     });
 
-    it('returns 409 instead of creating a second tag or group with the same slug', async () => {
-      vi.mocked(findTagGroupBySlug).mockResolvedValue({ id: 'g1' } as never);
-      vi.mocked(findTagBySlug).mockResolvedValue({ id: 'safety' } as never);
+    it('creates tags whose names share the fallback slug, since only names are compared', async () => {
+      await createPublicApiTagService(ORG_ID, ACTOR_ID, { name: '物理', groupId: GROUP_ID, color: '#EF4444' });
+
+      expect(findTagByName).toHaveBeenCalledWith(ORG_ID, '物理', TX);
+      expect(createOrganizationTag).toHaveBeenCalled();
+    });
+
+    it('returns 409 instead of creating a second tag or group with the same name', async () => {
+      vi.mocked(findTagGroupByName).mockResolvedValue({ id: 'g1' } as never);
+      vi.mocked(findTagByName).mockResolvedValue({ id: 'safety' } as never);
 
       await expect(createPublicApiTagGroupService(ORG_ID, ACTOR_ID, { name: 'Topics' })).rejects.toMatchObject({
         statusCode: 409,

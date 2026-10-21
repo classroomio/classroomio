@@ -5,7 +5,7 @@ import type {
   TAutomationDraftTagParam
 } from '@cio/utils/validation/tag';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
-import { pickTagColor, slugifyTagValue } from '@cio/utils/validation/tag';
+import { pickTagColor } from '@cio/utils/validation/tag';
 import type {
   TCourseImportCourseParam,
   TCourseImportDraftCreate,
@@ -117,7 +117,7 @@ type PaginatedResponse<T> = {
 };
 
 type TCourseTag = { id: string; name: string; slug: string; color: string };
-type TTagGroup = { id: string; slug: string; tags: TCourseTag[] };
+type TTagGroup = { id: string; name: string; slug: string; tags: TCourseTag[] };
 
 type RequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -376,16 +376,33 @@ export class ClassroomIoApiClient {
     const groupName = payload.groupName?.trim() || 'Automation';
     const groups = await this.listAllTagGroups();
     const tagIds = await this.ensureTagIds(groups, payload.tagNames, groupName);
+    const courseIds = [...new Set(payload.courseIds)];
     const results: Array<{ courseId: string; tags: TCourseTag[] }> = [];
 
-    for (const courseId of new Set(payload.courseIds)) {
-      const existingIds =
-        payload.mode === 'merge'
-          ? (await this.listAllTagGroups(courseId)).flatMap((group) => group.tags.map((tag) => tag.id))
-          : [];
-      const course = await this.setCourseTags(courseId, [...new Set([...existingIds, ...tagIds])]);
+    for (const courseId of courseIds) {
+      try {
+        const existingIds =
+          payload.mode === 'merge'
+            ? (await this.listAllTagGroups(courseId)).flatMap((group) => group.tags.map((tag) => tag.id))
+            : [];
+        const course = await this.setCourseTags(courseId, [...new Set([...existingIds, ...tagIds])]);
 
-      results.push({ courseId, tags: course.tags });
+        results.push({ courseId, tags: course.tags });
+      } catch (error) {
+        if (!(error instanceof ClassroomIoApiError)) {
+          throw error;
+        }
+
+        // Earlier courses keep their new tags, so say which ones are done before failing.
+        const tagged = results.map((result) => result.courseId);
+        const notTagged = courseIds.slice(tagged.length);
+        throw new ClassroomIoApiError(
+          `${error.message} (course ${courseId}). Tagged: [${tagged.join(', ')}]. Not tagged: [${notTagged.join(', ')}].`,
+          error.status,
+          error.code,
+          error.field
+        );
+      }
     }
 
     return results;
@@ -436,14 +453,17 @@ export class ClassroomIoApiClient {
   }
 
   private async ensureTagIds(groups: TTagGroup[], tagNames: string[], groupName: string) {
-    const tagsBySlug = new Map(groups.flatMap((group) => group.tags.map((tag) => [tag.slug, tag.id] as const)));
-    let groupId = groups.find((group) => group.slug === slugifyTagValue(groupName))?.id;
+    // Match by name like POST /tags does; names without a-z or 0-9 all share the slug "tag".
+    const nameKey = (name: string) => name.trim().toLowerCase();
+    const tagsByName = new Map(
+      groups.flatMap((group) => group.tags.map((tag) => [nameKey(tag.name), tag.id] as const))
+    );
+    let groupId = groups.find((group) => nameKey(group.name) === nameKey(groupName))?.id;
     const tagIds = new Set<string>();
 
     for (const rawName of tagNames) {
       const name = rawName.trim();
-      const slug = slugifyTagValue(name);
-      const existingId = tagsBySlug.get(slug);
+      const existingId = tagsByName.get(nameKey(name));
       if (existingId) {
         tagIds.add(existingId);
         continue;
@@ -451,7 +471,7 @@ export class ClassroomIoApiClient {
 
       groupId ??= (await this.createTagGroup({ name: groupName })).id;
       const created = await this.createTag({ name, groupId, color: pickTagColor(name) });
-      tagsBySlug.set(slug, created.id);
+      tagsByName.set(nameKey(name), created.id);
       tagIds.add(created.id);
     }
 

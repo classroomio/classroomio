@@ -8,9 +8,9 @@ const description = z.string().max(240);
 const atLeastOneField = (value: object) => Object.keys(value).length > 0;
 
 const tagName = name.describe(
-  "Tag name, unique in the organization. Its slug, made from the name, is what the course list's tags filter matches."
+  "Tag name, unique in the organization ignoring case. Its slug, made from the name, is what the course list's tags filter matches."
 );
-const groupName = name.describe('Tag group name, unique in the organization');
+const groupName = name.describe('Tag group name, unique in the organization ignoring case');
 const groupOrder = z.number().int().min(0).describe('Position in GET /tags, lowest first; ties sort by name');
 const groupId = z.string().uuid().describe('Tag group id from GET /tags');
 const color = ZTagColor.describe('One of the dashboard tag palette colours');

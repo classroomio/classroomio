@@ -60,7 +60,7 @@ exports[`public tag contract > ZPublicApiCreateTag 1`] = `
       "type": "string",
     },
     "name": {
-      "description": "Tag name, unique in the organization. Its slug, made from the name, is what the course list's tags filter matches.",
+      "description": "Tag name, unique in the organization ignoring case. Its slug, made from the name, is what the course list's tags filter matches.",
       "maxLength": 80,
       "minLength": 1,
       "type": "string",
@@ -84,7 +84,7 @@ exports[`public tag contract > ZPublicApiCreateTagGroup 1`] = `
       "type": "string",
     },
     "name": {
-      "description": "Tag group name, unique in the organization",
+      "description": "Tag group name, unique in the organization ignoring case",
       "maxLength": 80,
       "minLength": 1,
       "type": "string",
@@ -1071,7 +1071,7 @@ exports[`public tag contract > ZPublicApiUpdateTag 1`] = `
       "type": "string",
     },
     "name": {
-      "description": "Tag name, unique in the organization. Its slug, made from the name, is what the course list's tags filter matches.",
+      "description": "Tag name, unique in the organization ignoring case. Its slug, made from the name, is what the course list's tags filter matches.",
       "maxLength": 80,
       "minLength": 1,
       "type": "string",
@@ -1091,7 +1091,7 @@ exports[`public tag contract > ZPublicApiUpdateTagGroup 1`] = `
       "type": "string",
     },
     "name": {
-      "description": "Tag group name, unique in the organization",
+      "description": "Tag group name, unique in the organization ignoring case",
       "maxLength": 80,
       "minLength": 1,
       "type": "string",
