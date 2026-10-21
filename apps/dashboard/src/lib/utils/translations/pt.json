@@ -6459,5 +6459,54 @@
     "new_badge": "Novo",
     "read_full": "Ler o changelog completo",
     "close": "Fechar"
+  },
+  "personalLearning": {
+    "title": "Aprendizagem pessoal",
+    "subtitle": "Faça uma pergunta, explore um plano de aprendizagem e crie um curso privado quando estiver pronto.",
+    "chat": {
+      "heading": "O que você gostaria de aprender?",
+      "description": "Receba uma resposta útil primeiro. O curso é sempre opcional.",
+      "placeholder": "Faça uma pergunta ou descreva uma habilidade que deseja aprender…",
+      "send": "Enviar",
+      "thinking": "Preparando uma resposta…"
+    },
+    "offer": {
+      "heading": "Um plano de aprendizagem para seu objetivo",
+      "days_label": "Quantos dias de estudo?",
+      "days_unit": "dias",
+      "minutes_label": "Tempo de estudo por dia",
+      "minutes_unit": "min/dia",
+      "consent": "Concordo em criar um curso privado e gerar a primeira aula com fontes verificadas para este objetivo.",
+      "disclaimer": "A duração é uma meta de planejamento, não uma promessa de domínio. As próximas aulas só serão criadas quando você pedir.",
+      "accept": "Concordar e criar meu curso privado",
+      "dismiss": "Talvez depois"
+    },
+    "course": {
+      "private_label": "Curso privado",
+      "plan_summary": "{days} dias de estudo · {minutes} minutos por dia"
+    },
+    "session": {
+      "loading": "Carregando seu plano de aprendizagem…",
+      "title": "Aula {number}",
+      "status": {
+        "queued": "Aguardando início",
+        "generating": "Preparando aula",
+        "ready": "Pronta para aprender",
+        "failed": "Precisa de atenção"
+      },
+      "progress": "Buscando fontes verificadas e preparando a primeira aula…",
+      "failed_copy": "Não foi possível verificar fontes suficientes. Adicione uma URL pública para tentar novamente.",
+      "ready_copy": "A primeira aula está pronta. Seu curso ainda contém somente esta aula.",
+      "source_url_label": "URL pública da fonte de aprendizagem",
+      "source_url_placeholder": "https://university.edu/learning-resource",
+      "retry": "Tentar novamente com esta fonte",
+      "open_lesson": "Abrir aula 1"
+    },
+    "tutor": {
+      "placeholder": "Faça uma pergunta sobre a primeira aula…"
+    },
+    "errors": {
+      "request": "A solicitação não foi concluída. Tente novamente."
+    }
   }
 }

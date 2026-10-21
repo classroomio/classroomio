@@ -29,6 +29,7 @@ import {
   ZMemberActivityReconcilePayload,
   ZPersonalLearningRecoveryScanPayload,
   enqueuePersonalLearningSession,
+  getPersonalLearningSessionJobId,
   ZRetentionCompactPayload,
   ZWebhookRetentionPayload,
   createRedisConnection,
@@ -199,7 +200,13 @@ const worker = new Worker(
     if (job.name === JOB_NAMES.maintenance.personalLearningRecovery) {
       const data = ZPersonalLearningRecoveryScanPayload.parse(job.data ?? {});
       const sessions = await recoverPersonalLearningSessions(data.staleAfterMinutes, data.limit);
-      await Promise.all(sessions.map((session) => enqueuePersonalLearningSession(session)));
+      await Promise.all(
+        sessions.map(({ attempt, ...session }) =>
+          enqueuePersonalLearningSession(session, {
+            jobId: getPersonalLearningSessionJobId(session.journeyId, attempt)
+          })
+        )
+      );
       log.info('personal-learning-recovery-scan-done', { queued: sessions.length });
       return { queued: sessions.length };
     }

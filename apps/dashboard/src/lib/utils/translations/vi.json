@@ -6459,5 +6459,54 @@
     "new_badge": "Mới",
     "read_full": "Đọc toàn bộ nhật ký thay đổi",
     "close": "Đóng"
+  },
+  "personalLearning": {
+    "title": "Học tập cá nhân",
+    "subtitle": "Đặt câu hỏi, xem gợi ý lộ trình và tạo khóa học riêng khi bạn sẵn sàng.",
+    "chat": {
+      "heading": "Bạn muốn học điều gì?",
+      "description": "AI trả lời hữu ích trước. Tạo khóa học luôn là tùy chọn.",
+      "placeholder": "Đặt câu hỏi hoặc mô tả kỹ năng bạn muốn học…",
+      "send": "Gửi",
+      "thinking": "Đang chuẩn bị câu trả lời…"
+    },
+    "offer": {
+      "heading": "Lộ trình phù hợp với mục tiêu của bạn",
+      "days_label": "Bạn muốn học trong bao nhiêu ngày?",
+      "days_unit": "ngày",
+      "minutes_label": "Thời gian học mỗi ngày",
+      "minutes_unit": "phút/ngày",
+      "consent": "Tôi đồng ý tạo khóa học riêng và tạo buổi học đầu tiên từ các nguồn đã kiểm chứng cho mục tiêu này.",
+      "disclaimer": "Thời lượng là mục tiêu lập kế hoạch, không phải lời hứa thành thạo. Các buổi sau chỉ được tạo khi bạn yêu cầu.",
+      "accept": "Đồng ý và tạo khóa học riêng",
+      "dismiss": "Để sau"
+    },
+    "course": {
+      "private_label": "Khóa học riêng",
+      "plan_summary": "{days} ngày học · {minutes} phút mỗi ngày"
+    },
+    "session": {
+      "loading": "Đang tải lộ trình học…",
+      "title": "Buổi {number}",
+      "status": {
+        "queued": "Đang chờ bắt đầu",
+        "generating": "Đang chuẩn bị buổi học",
+        "ready": "Sẵn sàng học",
+        "failed": "Cần xử lý"
+      },
+      "progress": "Đang tìm nguồn kiểm chứng và chuẩn bị buổi 1…",
+      "failed_copy": "Chưa thể kiểm chứng đủ tài liệu. Hãy thêm URL công khai để thử lại.",
+      "ready_copy": "Buổi 1 đã sẵn sàng. Khóa học hiện vẫn chỉ có buổi này.",
+      "source_url_label": "URL nguồn học công khai",
+      "source_url_placeholder": "https://university.edu/learning-resource",
+      "retry": "Thử lại với nguồn này",
+      "open_lesson": "Mở buổi 1"
+    },
+    "tutor": {
+      "placeholder": "Đặt câu hỏi về buổi 1…"
+    },
+    "errors": {
+      "request": "Yêu cầu chưa hoàn tất. Vui lòng thử lại."
+    }
   }
 }

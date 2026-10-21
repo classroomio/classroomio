@@ -6429,5 +6429,54 @@
     "new_badge": "New",
     "read_full": "Read the full changelog",
     "close": "Close"
+  },
+  "personalLearning": {
+    "title": "Personal learning",
+    "subtitle": "Ask a question, explore a learning plan, and create a private course when you are ready.",
+    "chat": {
+      "heading": "What would you like to learn?",
+      "description": "Get a helpful answer first. A course is always optional.",
+      "placeholder": "Ask a question or describe a skill you want to learn…",
+      "send": "Send",
+      "thinking": "Preparing an answer…"
+    },
+    "offer": {
+      "heading": "A learning plan that fits your goal",
+      "days_label": "How many learning days?",
+      "days_unit": "days",
+      "minutes_label": "Study time each day",
+      "minutes_unit": "min/day",
+      "consent": "I agree to create a private course and generate its first lesson using verified sources for this goal.",
+      "disclaimer": "The duration is a planning target, not a promise of mastery. Later lessons are created only when you ask.",
+      "accept": "Agree and create my private course",
+      "dismiss": "Maybe later"
+    },
+    "course": {
+      "private_label": "Private course",
+      "plan_summary": "{days} learning days · {minutes} minutes per day"
+    },
+    "session": {
+      "loading": "Loading your learning plan…",
+      "title": "Lesson {number}",
+      "status": {
+        "queued": "Waiting to start",
+        "generating": "Preparing lesson",
+        "ready": "Ready to learn",
+        "failed": "Needs attention"
+      },
+      "progress": "Finding verified sources and preparing lesson 1…",
+      "failed_copy": "We could not verify enough source material. Add a public URL to try again.",
+      "ready_copy": "Lesson 1 is ready. Your course still contains only this lesson.",
+      "source_url_label": "Public learning source URL",
+      "source_url_placeholder": "https://university.edu/learning-resource",
+      "retry": "Retry with this source",
+      "open_lesson": "Open lesson 1"
+    },
+    "tutor": {
+      "placeholder": "Ask a question about lesson 1…"
+    },
+    "errors": {
+      "request": "That request did not finish. Please try again."
+    }
   }
 }

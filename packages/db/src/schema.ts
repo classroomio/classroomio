@@ -4598,6 +4598,7 @@ export const personalLearningJourney = pgTable(
     language: varchar({ length: 16 }).notNull(),
     targetStudyDays: integer('target_study_days').notNull(),
     dailyMinutes: integer('daily_minutes').notNull(),
+    sourceUrls: jsonb('source_urls').default([]).notNull().$type<string[]>(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
   (table) => [

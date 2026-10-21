@@ -6,7 +6,7 @@ import { AppError } from '@api/utils/errors';
 const DAILY_GENERATION_LIMIT = 3;
 const QUOTA_TTL_SECONDS = 25 * 60 * 60;
 
-async function reserveGenerationQuota(ownerUserId: string): Promise<void> {
+export async function reserveLearningGenerationQuota(ownerUserId: string): Promise<void> {
   if (!redis.isReady) throw new AppError('Learning generation quota is unavailable', 'LEARNING_QUOTA_UNAVAILABLE', 503);
 
   const utcDay = new Date().toISOString().slice(0, 10);
@@ -25,9 +25,10 @@ async function reserveGenerationQuota(ownerUserId: string): Promise<void> {
   }
 }
 
-async function enqueueSession(sessionId: string, journeyId: string): Promise<void> {
+export async function enqueueLearningSession(sessionId: string, journeyId: string, attempt = 0): Promise<void> {
   try {
-    await enqueuePersonalLearningSession({ sessionId, journeyId });
+    const jobId = attempt > 0 ? `personal-session-${journeyId}-1-retry-${attempt}` : undefined;
+    await enqueuePersonalLearningSession({ sessionId, journeyId }, jobId ? { jobId } : undefined);
   } catch {
     // The maintenance scanner recovers committed queued rows if Redis is unavailable.
     console.warn('personal-learning-enqueue-deferred', { sessionId, journeyId, status: 'queued' });
@@ -44,14 +45,14 @@ export async function acceptLearningOffer(input: {
 }) {
   const existing = await getPersonalLearningJourneyForOffer(input.ownerUserId, input.offerId);
   if (existing) {
-    await enqueueSession(existing.session.id, existing.journey.id);
+    await enqueueLearningSession(existing.session.id, existing.journey.id);
     return { journey: existing.journey, session: existing.session };
   }
 
-  await reserveGenerationQuota(input.ownerUserId);
+  await reserveLearningGenerationQuota(input.ownerUserId);
   const accepted = await acceptPersonalLearningOffer(input);
   if (!accepted) throw new AppError('Learning offer not found', 'LEARNING_NOT_FOUND', 404);
 
-  await enqueueSession(accepted.session.id, accepted.journey.id);
+  await enqueueLearningSession(accepted.session.id, accepted.journey.id);
   return accepted;
 }

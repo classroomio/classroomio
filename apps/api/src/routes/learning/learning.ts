@@ -1,5 +1,10 @@
 import { answerLearningQuestion, dismissLearningOffer } from '@api/services/learning/conversation';
 import { acceptLearningOffer } from '@api/services/learning/accept-offer';
+import {
+  answerPersonalLearningJourneyQuestion,
+  getPersonalLearningJourneyStatus,
+  retryPersonalLearningJourney
+} from '@api/services/learning/journey';
 import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
@@ -12,6 +17,13 @@ const ZLearningChatBody = z.object({
 });
 
 const ZLearningOfferParams = z.object({ offerId: z.string().uuid() });
+const ZPersonalLearningJourneyParams = z.object({ journeyId: z.string().uuid() });
+const ZPersonalLearningJourneyChatBody = z.object({
+  message: z.string().trim().min(1).max(4000)
+});
+const ZPersonalLearningRetryBody = z.object({
+  sourceUrls: z.array(z.string().url().max(2048)).min(1).max(5)
+});
 const ZAcceptLearningOfferBody = z.object({
   consent: z.literal(true),
   goal: z.string().trim().min(1).max(2000),
@@ -21,6 +33,55 @@ const ZAcceptLearningOfferBody = z.object({
 });
 
 export const learningRouter = new Hono()
+  .get('/journeys/:journeyId', authMiddleware, zValidator('param', ZPersonalLearningJourneyParams), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const { journeyId } = c.req.valid('param');
+      const result = await getPersonalLearningJourneyStatus(user.id, journeyId);
+
+      return c.json({ success: true, ...result });
+    } catch (error) {
+      return handleError(c, error, 'Failed to load personal learning journey');
+    }
+  })
+  .post(
+    '/journeys/:journeyId/chat',
+    authMiddleware,
+    zValidator('param', ZPersonalLearningJourneyParams),
+    zValidator('json', ZPersonalLearningJourneyChatBody),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { journeyId } = c.req.valid('param');
+        const result = await answerPersonalLearningJourneyQuestion({
+          ownerUserId: user.id,
+          journeyId,
+          ...c.req.valid('json')
+        });
+
+        return c.json({ success: true, ...result });
+      } catch (error) {
+        return handleError(c, error, 'Failed to answer personal learning question');
+      }
+    }
+  )
+  .post(
+    '/journeys/:journeyId/retry',
+    authMiddleware,
+    zValidator('param', ZPersonalLearningJourneyParams),
+    zValidator('json', ZPersonalLearningRetryBody),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { journeyId } = c.req.valid('param');
+        const result = await retryPersonalLearningJourney({ ownerUserId: user.id, journeyId, ...c.req.valid('json') });
+
+        return c.json({ success: true, ...result }, 202);
+      } catch (error) {
+        return handleError(c, error, 'Failed to retry personal learning session');
+      }
+    }
+  )
   .post('/chat', authMiddleware, zValidator('json', ZLearningChatBody), async (c) => {
     try {
       const user = c.get('user')!;

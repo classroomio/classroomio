@@ -133,6 +133,7 @@ describe('personal learning session generation', () => {
     expect(session).toMatchObject({ status: 'ready', sessionIndex: 1 });
     expect(session.sourceManifest).toEqual(sources);
     expect(lessons).toHaveLength(1);
+    expect(lessons[0]?.slug).toBe('exposure-triangle-1');
     expect(languageRows[0]?.content).toContain('University photography guide');
     expect(languageRows[0]?.content).toContain('https://example.edu/photography');
     expect(discoverLearningSources).toHaveBeenCalledTimes(1);
@@ -177,7 +178,11 @@ describe('personal learning session generation', () => {
 
     const result = await generatePersonalLearningSession({ sessionId: sessionIds[2], attempt: 2 });
 
-    expect(recoveredSessions).toContainEqual({ sessionId: sessionIds[2], journeyId: journeyIds[2] });
+    expect(recoveredSessions).toContainEqual({
+      sessionId: sessionIds[2],
+      journeyId: journeyIds[2],
+      attempt: 0
+    });
     expect(sessionAfterRecovery.status).toBe('queued');
     expect(result.status).toBe('ready');
     expect(await db.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseIds[2]))).toHaveLength(1);

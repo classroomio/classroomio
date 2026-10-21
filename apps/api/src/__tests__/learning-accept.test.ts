@@ -253,7 +253,11 @@ describe('personal learning offer acceptance', () => {
 
     expect(response.status).toBe(202);
     expect(result.session.status).toBe('queued');
-    expect(recoverableSessions).toContainEqual({ sessionId: result.session.id, journeyId: result.journey.id });
+    expect(recoverableSessions).toContainEqual({
+      sessionId: result.session.id,
+      journeyId: result.journey.id,
+      attempt: 0
+    });
   });
 
   it('keeps the legacy organization course-creation route behind org-admin authorization', async () => {

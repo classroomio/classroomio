@@ -6459,5 +6459,54 @@
     "new_badge": "Neu",
     "read_full": "Vollständiges Änderungsprotokoll lesen",
     "close": "Schließen"
+  },
+  "personalLearning": {
+    "title": "Persönliches Lernen",
+    "subtitle": "Stelle eine Frage, entdecke einen Lernplan und erstelle einen privaten Kurs, wenn du bereit bist.",
+    "chat": {
+      "heading": "Was möchtest du lernen?",
+      "description": "Du erhältst zuerst eine hilfreiche Antwort. Ein Kurs ist immer optional.",
+      "placeholder": "Stelle eine Frage oder beschreibe eine Fähigkeit, die du lernen möchtest…",
+      "send": "Senden",
+      "thinking": "Antwort wird vorbereitet…"
+    },
+    "offer": {
+      "heading": "Ein Lernplan, der zu deinem Ziel passt",
+      "days_label": "Wie viele Lerntage?",
+      "days_unit": "Tage",
+      "minutes_label": "Lernzeit pro Tag",
+      "minutes_unit": "Min./Tag",
+      "consent": "Ich stimme zu, einen privaten Kurs zu erstellen und die erste Lektion mit geprüften Quellen für dieses Ziel zu generieren.",
+      "disclaimer": "Die Dauer ist ein Planungsziel und kein Versprechen, das Thema zu meistern. Weitere Lektionen werden nur erstellt, wenn du danach fragst.",
+      "accept": "Zustimmen und privaten Kurs erstellen",
+      "dismiss": "Vielleicht später"
+    },
+    "course": {
+      "private_label": "Privater Kurs",
+      "plan_summary": "{days} Lerntage · {minutes} Minuten pro Tag"
+    },
+    "session": {
+      "loading": "Dein Lernplan wird geladen…",
+      "title": "Lektion {number}",
+      "status": {
+        "queued": "Wartet auf den Start",
+        "generating": "Lektion wird vorbereitet",
+        "ready": "Bereit zum Lernen",
+        "failed": "Aktion erforderlich"
+      },
+      "progress": "Geprüfte Quellen werden gesucht und Lektion 1 wird vorbereitet…",
+      "failed_copy": "Es konnten nicht genügend Quellen geprüft werden. Füge eine öffentliche URL hinzu, um es erneut zu versuchen.",
+      "ready_copy": "Lektion 1 ist bereit. Dein Kurs enthält weiterhin nur diese Lektion.",
+      "source_url_label": "Öffentliche URL zur Lernquelle",
+      "source_url_placeholder": "https://university.edu/learning-resource",
+      "retry": "Mit dieser Quelle erneut versuchen",
+      "open_lesson": "Lektion 1 öffnen"
+    },
+    "tutor": {
+      "placeholder": "Stelle eine Frage zu Lektion 1…"
+    },
+    "errors": {
+      "request": "Die Anfrage wurde nicht abgeschlossen. Bitte versuche es erneut."
+    }
   }
 }

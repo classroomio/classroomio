@@ -6459,5 +6459,54 @@
     "new_badge": "Ny",
     "read_full": "Læs hele ændringsloggen",
     "close": "Luk"
+  },
+  "personalLearning": {
+    "title": "Personlig læring",
+    "subtitle": "Stil et spørgsmål, udforsk en læringsplan, og opret et privat kursus, når du er klar.",
+    "chat": {
+      "heading": "Hvad vil du gerne lære?",
+      "description": "Få først et nyttigt svar. Et kursus er altid valgfrit.",
+      "placeholder": "Stil et spørgsmål, eller beskriv en færdighed, du vil lære…",
+      "send": "Send",
+      "thinking": "Forbereder et svar…"
+    },
+    "offer": {
+      "heading": "En læringsplan, der passer til dit mål",
+      "days_label": "Hvor mange læringsdage?",
+      "days_unit": "dage",
+      "minutes_label": "Studietid pr. dag",
+      "minutes_unit": "min./dag",
+      "consent": "Jeg accepterer at oprette et privat kursus og generere den første lektion med verificerede kilder til dette mål.",
+      "disclaimer": "Varigheden er et planlægningsmål, ikke et løfte om at mestre emnet. Senere lektioner oprettes kun, når du beder om det.",
+      "accept": "Accepter og opret mit private kursus",
+      "dismiss": "Måske senere"
+    },
+    "course": {
+      "private_label": "Privat kursus",
+      "plan_summary": "{days} læringsdage · {minutes} minutter om dagen"
+    },
+    "session": {
+      "loading": "Indlæser din læringsplan…",
+      "title": "Lektion {number}",
+      "status": {
+        "queued": "Venter på at starte",
+        "generating": "Forbereder lektionen",
+        "ready": "Klar til at lære",
+        "failed": "Kræver opmærksomhed"
+      },
+      "progress": "Finder verificerede kilder og forbereder lektion 1…",
+      "failed_copy": "Vi kunne ikke verificere nok kildemateriale. Tilføj en offentlig URL for at prøve igen.",
+      "ready_copy": "Lektion 1 er klar. Dit kursus indeholder stadig kun denne lektion.",
+      "source_url_label": "Offentlig URL til læringskilde",
+      "source_url_placeholder": "https://university.edu/learning-resource",
+      "retry": "Prøv igen med denne kilde",
+      "open_lesson": "Åbn lektion 1"
+    },
+    "tutor": {
+      "placeholder": "Stil et spørgsmål om lektion 1…"
+    },
+    "errors": {
+      "request": "Anmodningen blev ikke gennemført. Prøv igen."
+    }
   }
 }

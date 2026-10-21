@@ -67,6 +67,7 @@ export { BlockLoader } from './custom/block-loader';
 export type { BlockLoaderBlock, BlockLoaderTone } from './custom/block-loader';
 export { CompactLoader } from './custom/compact-loader';
 export { IconButton } from './custom/icon-button';
+export { ScrollToTop } from './custom/scroll-to-top';
 export { TextareaField } from './custom/textarea-field';
 export { CheckboxField } from './custom/checkbox-field';
 export { RadioItem } from './custom/radio-item';

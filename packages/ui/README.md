@@ -702,6 +702,22 @@ When adding a new component to this package, follow these steps:
    - See `packages/storybook/README.md` for detailed instructions on how to create stories
    - Stories help document component usage and enable visual testing
 
+### ScrollToTop
+
+Use `ScrollToTop` on long-reading pages whose main column can overflow the viewport. It stays hidden until the
+reader scrolls about one viewport and returns the active scroll container to its top when clicked.
+
+```svelte
+<script lang="ts">
+  import { ScrollToTop } from '@cio/ui/custom/scroll-to-top';
+</script>
+
+<ScrollToTop label="Back to top" />
+```
+
+Pass `target` when the page uses a nested scrolling element. `clearance` accepts `default`, `mobile-nav`, or `ask-ai`
+to keep the button above fixed bottom controls. The host owns the translated `label`.
+
 ## Development
 
 ### Scripts

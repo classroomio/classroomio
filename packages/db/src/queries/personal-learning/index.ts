@@ -1,6 +1,7 @@
 import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { ROLE } from '@cio/utils/constants';
+import { generateSlug } from '@cio/utils/functions/slug';
 import { and, eq, lt, sql } from 'drizzle-orm';
 
 import type { PersonalLearningMessage, PersonalLearningOfferPayload } from '@db/schema';
@@ -144,6 +145,209 @@ export async function getPersonalLearningSessionContext(sessionId: string) {
   return context ?? null;
 }
 
+export async function getPersonalLearningJourneyStatusForOwner(ownerUserId: string, journeyId: string) {
+  const [result] = await db
+    .select({
+      journey: schema.personalLearningJourney,
+      session: schema.personalLearningSession,
+      messages: schema.personalLearningConversation.messages
+    })
+    .from(schema.personalLearningJourney)
+    .innerJoin(
+      schema.personalLearningSession,
+      and(
+        eq(schema.personalLearningSession.journeyId, schema.personalLearningJourney.id),
+        eq(schema.personalLearningSession.sessionIndex, 1)
+      )
+    )
+    .innerJoin(
+      schema.personalLearningConversation,
+      eq(schema.personalLearningConversation.id, schema.personalLearningJourney.conversationId)
+    )
+    .where(
+      and(eq(schema.personalLearningJourney.ownerUserId, ownerUserId), eq(schema.personalLearningJourney.id, journeyId))
+    )
+    .limit(1);
+
+  if (!result) return null;
+
+  return {
+    journey: {
+      id: result.journey.id,
+      courseId: result.journey.courseId,
+      conversationId: result.journey.conversationId,
+      goal: result.journey.goal,
+      language: result.journey.language,
+      targetStudyDays: result.journey.targetStudyDays,
+      dailyMinutes: result.journey.dailyMinutes
+    },
+    messages: result.messages,
+    session: {
+      sessionIndex: result.session.sessionIndex,
+      status: result.session.status,
+      lessonId: result.session.lessonId,
+      failureCode: result.session.failureCode,
+      sources: result.session.sourceManifest.map(({ url, title, accessedAt }) => ({ url, title, accessedAt }))
+    }
+  };
+}
+
+export async function getPersonalLearningTutorContextForOwner(ownerUserId: string, journeyId: string) {
+  const [result] = await db
+    .select({
+      journey: schema.personalLearningJourney,
+      session: schema.personalLearningSession,
+      courseTitle: schema.course.title,
+      messages: schema.personalLearningConversation.messages,
+      lesson: schema.lesson
+    })
+    .from(schema.personalLearningJourney)
+    .innerJoin(
+      schema.personalLearningSession,
+      and(
+        eq(schema.personalLearningSession.journeyId, schema.personalLearningJourney.id),
+        eq(schema.personalLearningSession.sessionIndex, 1)
+      )
+    )
+    .innerJoin(
+      schema.personalLearningConversation,
+      eq(schema.personalLearningConversation.id, schema.personalLearningJourney.conversationId)
+    )
+    .innerJoin(schema.course, eq(schema.course.id, schema.personalLearningJourney.courseId))
+    .innerJoin(schema.lesson, eq(schema.lesson.id, schema.personalLearningSession.lessonId))
+    .where(
+      and(
+        eq(schema.personalLearningJourney.ownerUserId, ownerUserId),
+        eq(schema.personalLearningJourney.id, journeyId),
+        eq(schema.personalLearningSession.status, 'ready')
+      )
+    )
+    .limit(1);
+
+  if (!result) return null;
+
+  const lessonLanguages = await db
+    .select({ locale: schema.lessonLanguage.locale, content: schema.lessonLanguage.content })
+    .from(schema.lessonLanguage)
+    .where(eq(schema.lessonLanguage.lessonId, result.lesson.id));
+  const lessonLocale = result.journey.language.slice(0, 2);
+  const lessonContent =
+    lessonLanguages.find(({ locale }) => locale === lessonLocale)?.content ??
+    lessonLanguages.find(({ locale }) => locale === 'en')?.content;
+
+  if (!lessonContent) return null;
+
+  return {
+    journey: {
+      id: result.journey.id,
+      goal: result.journey.goal,
+      language: result.journey.language,
+      dailyMinutes: result.journey.dailyMinutes
+    },
+    messages: result.messages,
+    session: {
+      sessionIndex: result.session.sessionIndex,
+      sourceManifest: result.session.sourceManifest
+    },
+    courseTitle: result.courseTitle,
+    lesson: { id: result.lesson.id, title: result.lesson.title, content: lessonContent }
+  };
+}
+
+export async function appendPersonalLearningJourneyMessages(
+  ownerUserId: string,
+  journeyId: string,
+  userMessage: string,
+  assistantMessage: string
+) {
+  return db.transaction(async (tx) => {
+    const [conversation] = await tx
+      .select({ id: schema.personalLearningConversation.id, messages: schema.personalLearningConversation.messages })
+      .from(schema.personalLearningConversation)
+      .innerJoin(
+        schema.personalLearningJourney,
+        eq(schema.personalLearningJourney.conversationId, schema.personalLearningConversation.id)
+      )
+      .where(
+        and(
+          eq(schema.personalLearningConversation.ownerUserId, ownerUserId),
+          eq(schema.personalLearningJourney.id, journeyId)
+        )
+      )
+      .for('update')
+      .limit(1);
+
+    if (!conversation) return null;
+
+    const messages = [
+      ...conversation.messages,
+      { role: 'user' as const, content: userMessage },
+      { role: 'assistant' as const, content: assistantMessage }
+    ].slice(-50);
+    const [updatedConversation] = await tx
+      .update(schema.personalLearningConversation)
+      .set({ messages })
+      .where(eq(schema.personalLearningConversation.id, conversation.id))
+      .returning();
+
+    return updatedConversation?.messages ?? null;
+  });
+}
+
+export async function retryPersonalLearningSessionForOwner(
+  ownerUserId: string,
+  journeyId: string,
+  sourceUrls: string[]
+) {
+  return db.transaction(async (tx) => {
+    const [result] = await tx
+      .select({ journey: schema.personalLearningJourney, session: schema.personalLearningSession })
+      .from(schema.personalLearningJourney)
+      .innerJoin(
+        schema.personalLearningSession,
+        and(
+          eq(schema.personalLearningSession.journeyId, schema.personalLearningJourney.id),
+          eq(schema.personalLearningSession.sessionIndex, 1)
+        )
+      )
+      .where(
+        and(
+          eq(schema.personalLearningJourney.ownerUserId, ownerUserId),
+          eq(schema.personalLearningJourney.id, journeyId)
+        )
+      )
+      .for('update')
+      .limit(1);
+
+    if (!result || result.session.status !== 'failed') return null;
+
+    const [journey] = await tx
+      .update(schema.personalLearningJourney)
+      .set({ sourceUrls })
+      .where(eq(schema.personalLearningJourney.id, journeyId))
+      .returning();
+    const [session] = await tx
+      .update(schema.personalLearningSession)
+      .set({
+        status: 'queued',
+        failureCode: null,
+        attempt: sql`${schema.personalLearningSession.attempt} + 1`,
+        updatedAt: new Date().toISOString()
+      })
+      .where(
+        and(
+          eq(schema.personalLearningSession.id, result.session.id),
+          eq(schema.personalLearningSession.status, 'failed')
+        )
+      )
+      .returning();
+
+    if (!session) return null;
+
+    return { journey, session };
+  });
+}
+
 export async function claimPersonalLearningSession(sessionId: string) {
   const [session] = await db
     .update(schema.personalLearningSession)
@@ -203,7 +407,13 @@ export async function completePersonalLearningSession(input: {
 
     const [lesson] = await tx
       .insert(schema.lesson)
-      .values({ courseId: journey.courseId, title: input.title, order: session.sessionIndex, isUnlocked: true })
+      .values({
+        courseId: journey.courseId,
+        title: input.title,
+        slug: `${generateSlug(input.title)}-${session.sessionIndex}`,
+        order: session.sessionIndex,
+        isUnlocked: true
+      })
       .returning();
     await tx.insert(schema.lessonLanguage).values({
       lessonId: lesson.id,
@@ -241,7 +451,11 @@ export async function recoverPersonalLearningSessions(staleAfterMinutes: number,
     );
 
   return db
-    .select({ sessionId: schema.personalLearningSession.id, journeyId: schema.personalLearningSession.journeyId })
+    .select({
+      sessionId: schema.personalLearningSession.id,
+      journeyId: schema.personalLearningSession.journeyId,
+      attempt: schema.personalLearningSession.attempt
+    })
     .from(schema.personalLearningSession)
     .where(eq(schema.personalLearningSession.status, 'queued'))
     .limit(limit);

@@ -6459,5 +6459,54 @@
     "new_badge": "Nuevo",
     "read_full": "Leer el registro de cambios completo",
     "close": "Cerrar"
+  },
+  "personalLearning": {
+    "title": "Aprendizaje personal",
+    "subtitle": "Haz una pregunta, explora un plan de aprendizaje y crea un curso privado cuando estés listo.",
+    "chat": {
+      "heading": "¿Qué quieres aprender?",
+      "description": "Primero recibirás una respuesta útil. El curso siempre es opcional.",
+      "placeholder": "Haz una pregunta o describe una habilidad que quieras aprender…",
+      "send": "Enviar",
+      "thinking": "Preparando una respuesta…"
+    },
+    "offer": {
+      "heading": "Un plan de aprendizaje para tu objetivo",
+      "days_label": "¿Cuántos días de aprendizaje?",
+      "days_unit": "días",
+      "minutes_label": "Tiempo de estudio diario",
+      "minutes_unit": "min/día",
+      "consent": "Acepto crear un curso privado y generar su primera lección con fuentes verificadas para este objetivo.",
+      "disclaimer": "La duración es una meta de planificación, no una promesa de dominio. Las lecciones posteriores solo se crearán cuando las solicites.",
+      "accept": "Aceptar y crear mi curso privado",
+      "dismiss": "Quizás más tarde"
+    },
+    "course": {
+      "private_label": "Curso privado",
+      "plan_summary": "{days} días de aprendizaje · {minutes} minutos al día"
+    },
+    "session": {
+      "loading": "Cargando tu plan de aprendizaje…",
+      "title": "Lección {number}",
+      "status": {
+        "queued": "En espera",
+        "generating": "Preparando la lección",
+        "ready": "Lista para aprender",
+        "failed": "Requiere atención"
+      },
+      "progress": "Buscando fuentes verificadas y preparando la lección 1…",
+      "failed_copy": "No pudimos verificar suficientes fuentes. Añade una URL pública para volver a intentarlo.",
+      "ready_copy": "La lección 1 está lista. Tu curso todavía contiene solo esta lección.",
+      "source_url_label": "URL pública de una fuente de aprendizaje",
+      "source_url_placeholder": "https://university.edu/learning-resource",
+      "retry": "Reintentar con esta fuente",
+      "open_lesson": "Abrir la lección 1"
+    },
+    "tutor": {
+      "placeholder": "Haz una pregunta sobre la lección 1…"
+    },
+    "errors": {
+      "request": "La solicitud no se completó. Inténtalo de nuevo."
+    }
   }
 }

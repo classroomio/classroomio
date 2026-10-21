@@ -53,7 +53,8 @@ export async function generatePersonalLearningSession(input: { sessionId: string
     const sources = await discoverLearningSources({
       ownerUserId: context.journey.ownerUserId,
       query: context.journey.goal,
-      language: context.journey.language
+      language: context.journey.language,
+      userUrls: context.journey.sourceUrls
     });
     const providerConfig = pickAnyConfiguredProvider();
     if (!providerConfig) throw new AppError('AI assistant is not configured', 'AI_NOT_CONFIGURED', 503);

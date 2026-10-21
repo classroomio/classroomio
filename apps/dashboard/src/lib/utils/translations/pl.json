@@ -6459,5 +6459,54 @@
     "new_badge": "Nowość",
     "read_full": "Przeczytaj pełny dziennik zmian",
     "close": "Zamknij"
+  },
+  "personalLearning": {
+    "title": "Nauka indywidualna",
+    "subtitle": "Zadaj pytanie, poznaj plan nauki i utwórz prywatny kurs, gdy będziesz gotowy.",
+    "chat": {
+      "heading": "Czego chcesz się nauczyć?",
+      "description": "Najpierw otrzymasz pomocną odpowiedź. Kurs jest opcjonalny.",
+      "placeholder": "Zadaj pytanie lub opisz umiejętność, której chcesz się nauczyć…",
+      "send": "Wyślij",
+      "thinking": "Przygotowuję odpowiedź…"
+    },
+    "offer": {
+      "heading": "Plan nauki dopasowany do celu",
+      "days_label": "Ile dni nauki?",
+      "days_unit": "dni",
+      "minutes_label": "Czas nauki każdego dnia",
+      "minutes_unit": "min/dzień",
+      "consent": "Zgadzam się na utworzenie prywatnego kursu i wygenerowanie pierwszej lekcji na podstawie sprawdzonych źródeł dla tego celu.",
+      "disclaimer": "Czas jest celem planu, a nie obietnicą opanowania tematu. Kolejne lekcje powstaną tylko na Twoją prośbę.",
+      "accept": "Zgadzam się i utwórz prywatny kurs",
+      "dismiss": "Może później"
+    },
+    "course": {
+      "private_label": "Kurs prywatny",
+      "plan_summary": "{days} dni nauki · {minutes} minut dziennie"
+    },
+    "session": {
+      "loading": "Wczytywanie planu nauki…",
+      "title": "Lekcja {number}",
+      "status": {
+        "queued": "Oczekuje na rozpoczęcie",
+        "generating": "Przygotowywanie lekcji",
+        "ready": "Gotowa do nauki",
+        "failed": "Wymaga uwagi"
+      },
+      "progress": "Wyszukiwanie sprawdzonych źródeł i przygotowywanie pierwszej lekcji…",
+      "failed_copy": "Nie udało się zweryfikować wystarczającej liczby źródeł. Dodaj publiczny adres URL, aby spróbować ponownie.",
+      "ready_copy": "Pierwsza lekcja jest gotowa. Kurs nadal zawiera tylko tę lekcję.",
+      "source_url_label": "Publiczny adres URL źródła nauki",
+      "source_url_placeholder": "https://university.edu/learning-resource",
+      "retry": "Ponów próbę z tym źródłem",
+      "open_lesson": "Otwórz lekcję 1"
+    },
+    "tutor": {
+      "placeholder": "Zadaj pytanie o pierwszą lekcję…"
+    },
+    "errors": {
+      "request": "Nie udało się wykonać tego żądania. Spróbuj ponownie."
+    }
   }
 }

@@ -20,6 +20,7 @@ CREATE TABLE "personal_learning_journey" (
 	"language" varchar(16) NOT NULL,
 	"target_study_days" integer NOT NULL,
 	"daily_minutes" integer NOT NULL,
+	"source_urls" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "personal_learning_journey_course_id_unique" UNIQUE("course_id"),
 	CONSTRAINT "personal_learning_journey_conversation_id_unique" UNIQUE("conversation_id"),

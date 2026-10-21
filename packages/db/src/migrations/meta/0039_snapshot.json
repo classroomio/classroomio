@@ -1,6 +1,6 @@
 {
-  "id": "018112b5-e19a-4cd5-8f1c-bb34402d1028",
-  "prevId": "4cf839f5-e1e2-4f73-97ab-3442062abcc1",
+  "id": "5a8701d7-6507-4196-9f98-d39f1c963f2b",
+  "prevId": "0935ce6c-6316-4b8d-9489-678619ec49d3",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -2530,6 +2530,13 @@
           "notNull": true,
           "default": "'active'"
         },
+        "hls_status": {
+          "name": "hls_status",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'none'"
+        },
         "metadata": {
           "name": "metadata",
           "type": "jsonb",
@@ -3876,6 +3883,286 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.content_report": {
+      "name": "content_report",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reporter_id": {
+          "name": "reporter_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "target_type": {
+          "name": "target_type",
+          "type": "CONTENT_REPORT_TARGET_TYPE",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_id": {
+          "name": "target_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_author_id": {
+          "name": "target_author_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "CONTENT_REPORT_REASON",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "CONTENT_REPORT_STATUS",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'open'"
+        },
+        "priority": {
+          "name": "priority",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 2
+        },
+        "content_snapshot": {
+          "name": "content_snapshot",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assigned_to": {
+          "name": "assigned_to",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resolution_code": {
+          "name": "resolution_code",
+          "type": "CONTENT_REPORT_RESOLUTION_CODE",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resolution_note": {
+          "name": "resolution_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_by": {
+          "name": "reviewed_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "resolved_at": {
+          "name": "resolved_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_content_report_status_priority_created": {
+          "name": "idx_content_report_status_priority_created",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "priority",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_content_report_org_created": {
+          "name": "idx_content_report_org_created",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_content_report_target": {
+          "name": "idx_content_report_target",
+          "columns": [
+            {
+              "expression": "target_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "target_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "content_report_reporter_target_open_unique": {
+          "name": "content_report_reporter_target_open_unique",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "reporter_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "target_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "target_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"content_report\".\"reporter_id\" IS NOT NULL AND \"content_report\".\"status\" IN ('open', 'in_review')",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "content_report_organization_id_fkey": {
+          "name": "content_report_organization_id_fkey",
+          "tableFrom": "content_report",
+          "tableTo": "organization",
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "content_report_reporter_id_fkey": {
+          "name": "content_report_reporter_id_fkey",
+          "tableFrom": "content_report",
+          "tableTo": "profile",
+          "columnsFrom": ["reporter_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "content_report_target_author_id_fkey": {
+          "name": "content_report_target_author_id_fkey",
+          "tableFrom": "content_report",
+          "tableTo": "profile",
+          "columnsFrom": ["target_author_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "content_report_assigned_to_fkey": {
+          "name": "content_report_assigned_to_fkey",
+          "tableFrom": "content_report",
+          "tableTo": "profile",
+          "columnsFrom": ["assigned_to"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "content_report_reviewed_by_fkey": {
+          "name": "content_report_reviewed_by_fkey",
+          "tableFrom": "content_report",
+          "tableTo": "profile",
+          "columnsFrom": ["reviewed_by"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.course": {
       "name": "course",
       "schema": "",
@@ -3930,8 +4217,27 @@
           "name": "is_template",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": true
+          "notNull": true,
+          "default": false
+        },
+        "template_id": {
+          "name": "template_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "public_for_all": {
+          "name": "public_for_all",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "seed_key": {
+          "name": "seed_key",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         },
         "logo": {
           "name": "logo",
@@ -4036,9 +4342,50 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "course_template_id_idx": {
+          "name": "course_template_id_idx",
+          "columns": [
+            {
+              "expression": "template_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"course\".\"template_id\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_seed_key_unique": {
+          "name": "course_seed_key_unique",
+          "columns": [
+            {
+              "expression": "seed_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"course\".\"seed_key\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
+        "course_template_id_course_id_fk": {
+          "name": "course_template_id_course_id_fk",
+          "tableFrom": "course",
+          "tableTo": "course",
+          "columnsFrom": ["template_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
         "course_group_id_fkey": {
           "name": "course_group_id_fkey",
           "tableFrom": "course",
@@ -5361,17 +5708,45 @@
           "name": "order",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'0'"
+          "notNull": true
         },
         "course_id": {
           "name": "course_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
+        },
+        "source_id": {
+          "name": "source_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_synced_at": {
+          "name": "source_synced_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "course_section_source_id_idx": {
+          "name": "course_section_source_id_idx",
+          "columns": [
+            {
+              "expression": "source_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"course_section\".\"source_id\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "course_section_course_id_course_id_fk": {
           "name": "course_section_course_id_course_id_fk",
@@ -5381,9 +5756,64 @@
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
+        },
+        "course_section_source_id_course_section_id_fk": {
+          "name": "course_section_source_id_course_section_id_fk",
+          "tableFrom": "course_section",
+          "tableTo": "course_section",
+          "columnsFrom": ["source_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.course_template_setting_sync": {
+      "name": "course_template_setting_sync",
+      "schema": "",
+      "columns": {
+        "course_id": {
+          "name": "course_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "setting_key": {
+          "name": "setting_key",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "synced_at": {
+          "name": "synced_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "course_template_setting_sync_course_id_course_id_fk": {
+          "name": "course_template_setting_sync_course_id_course_id_fk",
+          "tableFrom": "course_template_setting_sync",
+          "tableTo": "course",
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "course_template_setting_sync_course_id_setting_key_pk": {
+          "name": "course_template_setting_sync_course_id_setting_key_pk",
+          "columns": ["course_id", "setting_key"]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -5563,6 +5993,176 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.early_adopter_claim": {
+      "name": "early_adopter_claim",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "early_adopter_claim_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "9223372036854775807",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "polar_subscription_id": {
+          "name": "polar_subscription_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "polar_customer_id": {
+          "name": "polar_customer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "polar_checkout_id": {
+          "name": "polar_checkout_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "EARLY_ADOPTER_CLAIM_STATUS",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "claimed_org_id": {
+          "name": "claimed_org_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "claimed_by_profile_id": {
+          "name": "claimed_by_profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reminder_sent_at": {
+          "name": "reminder_sent_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payload": {
+          "name": "payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "claimed_at": {
+          "name": "claimed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_early_adopter_claim_status_created_at": {
+          "name": "idx_early_adopter_claim_status_created_at",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "early_adopter_claim_claimed_org_id_fkey": {
+          "name": "early_adopter_claim_claimed_org_id_fkey",
+          "tableFrom": "early_adopter_claim",
+          "tableTo": "organization",
+          "columnsFrom": ["claimed_org_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "early_adopter_claim_claimed_by_profile_id_fkey": {
+          "name": "early_adopter_claim_claimed_by_profile_id_fkey",
+          "tableFrom": "early_adopter_claim",
+          "tableTo": "profile",
+          "columnsFrom": ["claimed_by_profile_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "early_adopter_claim_token_hash_key": {
+          "name": "early_adopter_claim_token_hash_key",
+          "nullsNotDistinct": false,
+          "columns": ["token_hash"]
+        },
+        "early_adopter_claim_polar_subscription_id_key": {
+          "name": "early_adopter_claim_polar_subscription_id_key",
+          "nullsNotDistinct": false,
+          "columns": ["polar_subscription_id"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.exercise": {
       "name": "exercise",
       "schema": "",
@@ -5601,7 +6201,7 @@
           "name": "order",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -5668,6 +6268,18 @@
           "name": "slug",
           "type": "varchar",
           "primaryKey": false,
+          "notNull": true
+        },
+        "source_id": {
+          "name": "source_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_synced_at": {
+          "name": "source_synced_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
           "notNull": false
         }
       },
@@ -5692,9 +6304,34 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "exercise_source_id_idx": {
+          "name": "exercise_source_id_idx",
+          "columns": [
+            {
+              "expression": "source_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"exercise\".\"source_id\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
+        "exercise_source_id_exercise_id_fk": {
+          "name": "exercise_source_id_exercise_id_fk",
+          "tableFrom": "exercise",
+          "tableTo": "exercise",
+          "columnsFrom": ["source_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
         "exercise_lesson_id_fkey": {
           "name": "exercise_lesson_id_fkey",
           "tableFrom": "exercise",
@@ -6170,6 +6807,57 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.instance": {
+      "name": "instance",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "singleton": {
+          "name": "singleton",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "first_reported_at": {
+          "name": "first_reported_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "instance_singleton_key": {
+          "name": "instance_singleton_key",
+          "nullsNotDistinct": false,
+          "columns": ["singleton"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "instance_singleton_check": {
+          "name": "instance_singleton_check",
+          "value": "\"instance\".\"singleton\""
+        }
+      },
+      "isRLSEnabled": false
+    },
     "public.invite_link": {
       "name": "invite_link",
       "schema": "",
@@ -6512,6 +7200,13 @@
           "primaryKey": false,
           "notNull": false
         },
+        "slides": {
+          "name": "slides",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
         "course_id": {
           "name": "course_id",
           "type": "uuid",
@@ -6578,11 +7273,23 @@
           "primaryKey": false,
           "notNull": false
         },
+        "session_duration_minutes": {
+          "name": "session_duration_minutes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recording_url": {
+          "name": "recording_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "order": {
           "name": "order",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "is_unlocked": {
           "name": "is_unlocked",
@@ -6636,6 +7343,18 @@
           "name": "slug",
           "type": "varchar",
           "primaryKey": false,
+          "notNull": true
+        },
+        "source_id": {
+          "name": "source_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_synced_at": {
+          "name": "source_synced_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
           "notNull": false
         }
       },
@@ -6660,6 +7379,22 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "lesson_source_id_idx": {
+          "name": "lesson_source_id_idx",
+          "columns": [
+            {
+              "expression": "source_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"lesson\".\"source_id\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -6671,6 +7406,15 @@
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
+        },
+        "lesson_source_id_lesson_id_fk": {
+          "name": "lesson_source_id_lesson_id_fk",
+          "tableFrom": "lesson",
+          "tableTo": "lesson",
+          "columnsFrom": ["source_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
         },
         "lesson_course_id_fkey": {
           "name": "lesson_course_id_fkey",
@@ -6907,6 +7651,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'en'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -7160,6 +7911,264 @@
           "columns": ["lesson_id", "profile_id", "asset_id"]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.live_session_reminder_delivery": {
+      "name": "live_session_reminder_delivery",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "course_id": {
+          "name": "course_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lesson_id": {
+          "name": "lesson_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offset_minutes": {
+          "name": "offset_minutes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lesson_at": {
+          "name": "lesson_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "LIVE_SESSION_REMINDER_STATUS",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "skip_reason": {
+          "name": "skip_reason",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bullmq_job_id": {
+          "name": "bullmq_job_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_error": {
+          "name": "last_error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attempt_count": {
+          "name": "attempt_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "queued_at": {
+          "name": "queued_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sent_at": {
+          "name": "sent_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "live_session_reminder_delivery_lesson_profile_offset_unique": {
+          "name": "live_session_reminder_delivery_lesson_profile_offset_unique",
+          "columns": [
+            {
+              "expression": "lesson_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "profile_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "offset_minutes",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_live_session_reminder_delivery_organization_id": {
+          "name": "idx_live_session_reminder_delivery_organization_id",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_live_session_reminder_delivery_course_lesson_at": {
+          "name": "idx_live_session_reminder_delivery_course_lesson_at",
+          "columns": [
+            {
+              "expression": "course_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "lesson_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_live_session_reminder_delivery_profile_id": {
+          "name": "idx_live_session_reminder_delivery_profile_id",
+          "columns": [
+            {
+              "expression": "profile_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_live_session_reminder_delivery_status_lesson_at": {
+          "name": "idx_live_session_reminder_delivery_status_lesson_at",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "lesson_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "live_session_reminder_delivery_organization_id_fkey": {
+          "name": "live_session_reminder_delivery_organization_id_fkey",
+          "tableFrom": "live_session_reminder_delivery",
+          "tableTo": "organization",
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "live_session_reminder_delivery_course_id_fkey": {
+          "name": "live_session_reminder_delivery_course_id_fkey",
+          "tableFrom": "live_session_reminder_delivery",
+          "tableTo": "course",
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "live_session_reminder_delivery_lesson_id_fkey": {
+          "name": "live_session_reminder_delivery_lesson_id_fkey",
+          "tableFrom": "live_session_reminder_delivery",
+          "tableTo": "lesson",
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "live_session_reminder_delivery_profile_id_fkey": {
+          "name": "live_session_reminder_delivery_profile_id_fkey",
+          "tableFrom": "live_session_reminder_delivery",
+          "tableTo": "profile",
+          "columnsFrom": ["profile_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -9275,6 +10284,72 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.organization_student_email_template": {
+      "name": "organization_student_email_template",
+      "schema": "",
+      "columns": {
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_id": {
+          "name": "email_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subject": {
+          "name": "subject",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "locale": {
+          "name": "locale",
+          "type": "LOCALE",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "organization_student_email_template_organization_id_fkey": {
+          "name": "organization_student_email_template_organization_id_fkey",
+          "tableFrom": "organization_student_email_template",
+          "tableTo": "organization",
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "organization_student_email_template_organization_id_email_id_locale_pk": {
+          "name": "organization_student_email_template_organization_id_email_id_locale_pk",
+          "columns": ["organization_id", "email_id", "locale"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.organization_token_auth": {
       "name": "organization_token_auth",
       "schema": "",
@@ -9914,6 +10989,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "source_urls": {
+          "name": "source_urls",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -10206,9 +11288,70 @@
           "primaryKey": false,
           "notNull": false
         },
+        "use_cases": {
+          "name": "use_cases",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "use_case_other": {
+          "name": "use_case_other",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "learning_method": {
+          "name": "learning_method",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "learning_method_other": {
+          "name": "learning_method_other",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "company_size": {
+          "name": "company_size",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "job_role": {
+          "name": "job_role",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "job_role_other": {
+          "name": "job_role_other",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "source": {
           "name": "source",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_other": {
+          "name": "source_other",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ai_provider": {
+          "name": "ai_provider",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ai_provider_other": {
+          "name": "ai_provider_other",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -12348,6 +13491,76 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.template_highlight": {
+      "name": "template_highlight",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "course_id": {
+          "name": "course_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "template_highlight_course_id_idx": {
+          "name": "template_highlight_course_id_idx",
+          "columns": [
+            {
+              "expression": "course_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "template_highlight_course_id_course_id_fk": {
+          "name": "template_highlight_course_id_course_id_fk",
+          "tableFrom": "template_highlight",
+          "tableTo": "course",
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.test_tenant": {
       "name": "test_tenant",
       "schema": "",
@@ -12626,6 +13839,507 @@
           "name": "constraint_name",
           "nullsNotDistinct": false,
           "columns": ["email"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.webhook_delivery": {
+      "name": "webhook_delivery",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "webhook_id": {
+          "name": "webhook_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attempt": {
+          "name": "attempt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "status": {
+          "name": "status",
+          "type": "WEBHOOK_DELIVERY_STATUS",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "is_test": {
+          "name": "is_test",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "next_attempt_at": {
+          "name": "next_attempt_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "request_headers": {
+          "name": "request_headers",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "response_status": {
+          "name": "response_status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "response_body": {
+          "name": "response_body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration_ms": {
+          "name": "duration_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "delivered_at": {
+          "name": "delivered_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_webhook_delivery_webhook_created_at": {
+          "name": "idx_webhook_delivery_webhook_created_at",
+          "columns": [
+            {
+              "expression": "webhook_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_webhook_delivery_status_next_attempt": {
+          "name": "idx_webhook_delivery_status_next_attempt",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "next_attempt_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_webhook_delivery_event_id": {
+          "name": "idx_webhook_delivery_event_id",
+          "columns": [
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "webhook_delivery_webhook_id_webhook_endpoint_id_fk": {
+          "name": "webhook_delivery_webhook_id_webhook_endpoint_id_fk",
+          "tableFrom": "webhook_delivery",
+          "tableTo": "webhook_endpoint",
+          "columnsFrom": ["webhook_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "webhook_delivery_event_id_webhook_event_id_fk": {
+          "name": "webhook_delivery_event_id_webhook_event_id_fk",
+          "tableFrom": "webhook_delivery",
+          "tableTo": "webhook_event",
+          "columnsFrom": ["event_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.webhook_endpoint": {
+      "name": "webhook_endpoint",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payload_url": {
+          "name": "payload_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "secret_ciphertext": {
+          "name": "secret_ciphertext",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secret_last4": {
+          "name": "secret_last4",
+          "type": "varchar(4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verify_ssl": {
+          "name": "verify_ssl",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "event_mode": {
+          "name": "event_mode",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'selected'"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "consecutive_failures": {
+          "name": "consecutive_failures",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "auto_disabled_at": {
+          "name": "auto_disabled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_delivery_status": {
+          "name": "last_delivery_status",
+          "type": "WEBHOOK_DELIVERY_STATUS",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_delivery_at": {
+          "name": "last_delivery_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by_profile_id": {
+          "name": "created_by_profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by_profile_id": {
+          "name": "updated_by_profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_webhook_endpoint_org_id": {
+          "name": "idx_webhook_endpoint_org_id",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "webhook_endpoint_organization_id_organization_id_fk": {
+          "name": "webhook_endpoint_organization_id_organization_id_fk",
+          "tableFrom": "webhook_endpoint",
+          "tableTo": "organization",
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "webhook_endpoint_created_by_profile_id_profile_id_fk": {
+          "name": "webhook_endpoint_created_by_profile_id_profile_id_fk",
+          "tableFrom": "webhook_endpoint",
+          "tableTo": "profile",
+          "columnsFrom": ["created_by_profile_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "webhook_endpoint_updated_by_profile_id_profile_id_fk": {
+          "name": "webhook_endpoint_updated_by_profile_id_profile_id_fk",
+          "tableFrom": "webhook_endpoint",
+          "tableTo": "profile",
+          "columnsFrom": ["updated_by_profile_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.webhook_event": {
+      "name": "webhook_event",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_type": {
+          "name": "event_type",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payload": {
+          "name": "payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_webhook_event_created_at": {
+          "name": "idx_webhook_event_created_at",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_webhook_event_org_created_at": {
+          "name": "idx_webhook_event_org_created_at",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "webhook_event_organization_id_organization_id_fk": {
+          "name": "webhook_event_organization_id_organization_id_fk",
+          "tableFrom": "webhook_event",
+          "tableTo": "organization",
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.webhook_subscription": {
+      "name": "webhook_subscription",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "webhook_id": {
+          "name": "webhook_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_type": {
+          "name": "event_type",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idx_webhook_subscription_event_type": {
+          "name": "idx_webhook_subscription_event_type",
+          "columns": [
+            {
+              "expression": "event_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "webhook_subscription_webhook_id_webhook_endpoint_id_fk": {
+          "name": "webhook_subscription_webhook_id_webhook_endpoint_id_fk",
+          "tableFrom": "webhook_subscription",
+          "tableTo": "webhook_endpoint",
+          "columnsFrom": ["webhook_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "webhook_subscription_webhook_event_key": {
+          "name": "webhook_subscription_webhook_event_key",
+          "nullsNotDistinct": false,
+          "columns": ["webhook_id", "event_type"]
         }
       },
       "policies": {},
@@ -13204,6 +14918,44 @@
       "schema": "public",
       "values": ["ACTIVE", "INACTIVE", "ARCHIVED"]
     },
+    "public.CONTENT_REPORT_REASON": {
+      "name": "CONTENT_REPORT_REASON",
+      "schema": "public",
+      "values": [
+        "spam",
+        "harassment",
+        "hate_speech",
+        "sexual_content",
+        "violence",
+        "misinformation",
+        "privacy",
+        "other"
+      ]
+    },
+    "public.CONTENT_REPORT_RESOLUTION_CODE": {
+      "name": "CONTENT_REPORT_RESOLUTION_CODE",
+      "schema": "public",
+      "values": ["removed", "warned", "restricted", "no_action", "duplicate"]
+    },
+    "public.CONTENT_REPORT_STATUS": {
+      "name": "CONTENT_REPORT_STATUS",
+      "schema": "public",
+      "values": ["open", "in_review", "actioned", "dismissed"]
+    },
+    "public.CONTENT_REPORT_TARGET_TYPE": {
+      "name": "CONTENT_REPORT_TARGET_TYPE",
+      "schema": "public",
+      "values": [
+        "course_newsfeed_post",
+        "course_newsfeed_comment",
+        "cohort_newsfeed_post",
+        "cohort_newsfeed_comment",
+        "community_question",
+        "community_answer",
+        "lesson_comment",
+        "profile"
+      ]
+    },
     "public.COURSE_IMPORT_DRAFT_STATUS": {
       "name": "COURSE_IMPORT_DRAFT_STATUS",
       "schema": "public",
@@ -13224,6 +14976,11 @@
       "schema": "public",
       "values": ["SELF_PACED", "LIVE_CLASS", "COMPLIANCE", "PUBLIC"]
     },
+    "public.EARLY_ADOPTER_CLAIM_STATUS": {
+      "name": "EARLY_ADOPTER_CLAIM_STATUS",
+      "schema": "public",
+      "values": ["pending", "claimed", "canceled"]
+    },
     "public.INVITE_LINK_RESOURCE_TYPE": {
       "name": "INVITE_LINK_RESOURCE_TYPE",
       "schema": "public",
@@ -13239,10 +14996,15 @@
       "schema": "public",
       "values": ["auto", "manual", "publish"]
     },
+    "public.LIVE_SESSION_REMINDER_STATUS": {
+      "name": "LIVE_SESSION_REMINDER_STATUS",
+      "schema": "public",
+      "values": ["pending", "queued", "sent", "failed", "skipped"]
+    },
     "public.LOCALE": {
       "name": "LOCALE",
       "schema": "public",
-      "values": ["en", "hi", "fr", "pt", "de", "vi", "ru", "es", "pl", "da"]
+      "values": ["en", "hi", "fr", "pt", "de", "vi", "ru", "es", "pl", "da", "tr", "it"]
     },
     "public.ORGANIZATION_API_KEY_TYPE": {
       "name": "ORGANIZATION_API_KEY_TYPE",
@@ -13303,6 +15065,11 @@
       "name": "PROGRAM_STATUS",
       "schema": "public",
       "values": ["ACTIVE", "INACTIVE", "ARCHIVED"]
+    },
+    "public.WEBHOOK_DELIVERY_STATUS": {
+      "name": "WEBHOOK_DELIVERY_STATUS",
+      "schema": "public",
+      "values": ["PENDING", "SUCCESS", "FAILED", "GAVE_UP"]
     },
     "public.WIDGET_LAYOUT_TYPE": {
       "name": "WIDGET_LAYOUT_TYPE",
