@@ -150,12 +150,42 @@ describe('v1 tags service', () => {
       expect(createOrganizationTag).not.toHaveBeenCalled();
     });
 
-    it('updates a tag group and tag scoped to the org', async () => {
+    it('updates a tag group and tag scoped to the org, under the org tag lock', async () => {
       await updatePublicApiTagGroupService(ORG_ID, ACTOR_ID, { groupId: GROUP_ID }, { order: 2 });
       await updatePublicApiTagService(ORG_ID, ACTOR_ID, { tagId: 'tag-1' }, { color: '#F97316' });
 
-      expect(updateOrganizationTagGroup).toHaveBeenCalledWith(ORG_ID, GROUP_ID, { order: 2 });
-      expect(updateOrganizationTag).toHaveBeenCalledWith(ORG_ID, 'tag-1', { color: '#F97316' });
+      expect(lockOrganizationTags).toHaveBeenCalledTimes(2);
+      expect(findTagGroupByName).not.toHaveBeenCalled();
+      expect(findTagByName).not.toHaveBeenCalled();
+      expect(updateOrganizationTagGroup).toHaveBeenCalledWith(ORG_ID, GROUP_ID, { order: 2 }, TX);
+      expect(updateOrganizationTag).toHaveBeenCalledWith(ORG_ID, 'tag-1', { color: '#F97316' }, TX);
+    });
+
+    it('checks a new name against the other tags and groups, leaving out the one being renamed', async () => {
+      vi.mocked(findTagGroupByName).mockResolvedValue(null);
+      vi.mocked(findTagByName).mockResolvedValue(null);
+
+      await updatePublicApiTagGroupService(ORG_ID, ACTOR_ID, { groupId: GROUP_ID }, { name: 'Topics' });
+      await updatePublicApiTagService(ORG_ID, ACTOR_ID, { tagId: 'tag-1' }, { name: 'Safety' });
+
+      expect(findTagGroupByName).toHaveBeenCalledWith(ORG_ID, 'Topics', TX, GROUP_ID);
+      expect(findTagByName).toHaveBeenCalledWith(ORG_ID, 'Safety', TX, 'tag-1');
+      expect(updateOrganizationTagGroup).toHaveBeenCalledWith(ORG_ID, GROUP_ID, { name: 'Topics' }, TX);
+      expect(updateOrganizationTag).toHaveBeenCalledWith(ORG_ID, 'tag-1', { name: 'Safety' }, TX);
+    });
+
+    it('returns 409 when renaming to a name another tag or group already has', async () => {
+      vi.mocked(findTagGroupByName).mockResolvedValue({ id: 'g2' } as never);
+      vi.mocked(findTagByName).mockResolvedValue({ id: 'tag-2' } as never);
+
+      await expect(
+        updatePublicApiTagGroupService(ORG_ID, ACTOR_ID, { groupId: GROUP_ID }, { name: 'levels' })
+      ).rejects.toMatchObject({ statusCode: 409, code: 'TAG_GROUP_ALREADY_EXISTS' });
+      await expect(
+        updatePublicApiTagService(ORG_ID, ACTOR_ID, { tagId: 'tag-1' }, { name: 'FIRE' })
+      ).rejects.toMatchObject({ statusCode: 409, code: 'TAG_ALREADY_EXISTS' });
+      expect(updateOrganizationTagGroup).not.toHaveBeenCalled();
+      expect(updateOrganizationTag).not.toHaveBeenCalled();
     });
 
     it.each([ROLE.TUTOR, ROLE.STUDENT, null])(

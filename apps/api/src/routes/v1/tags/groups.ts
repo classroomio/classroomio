@@ -55,6 +55,7 @@ export const v1TagGroupsRouter = new Hono()
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.write,
         404: { description: 'Tag group not found' },
+        409: { description: 'Another tag group already has this name, ignoring case' },
         429: mcpRateLimitResponse
       }
     }),

@@ -75,7 +75,15 @@ export async function updatePublicApiTagGroupService(
 ) {
   await assertOrgAdmin(orgId, actorId);
 
-  return updateOrganizationTagGroup(orgId, params.groupId, payload);
+  return db.transaction(async (tx) => {
+    await lockOrganizationTags(orgId, tx);
+
+    if (payload.name !== undefined && (await findTagGroupByName(orgId, payload.name, tx, params.groupId))) {
+      throw new AppError('A tag group with this name already exists', ErrorCodes.TAG_GROUP_ALREADY_EXISTS, 409, 'name');
+    }
+
+    return updateOrganizationTagGroup(orgId, params.groupId, payload, tx);
+  });
 }
 
 export async function createPublicApiTagService(orgId: string, actorId: string | null, payload: TPublicApiCreateTag) {
@@ -100,5 +108,13 @@ export async function updatePublicApiTagService(
 ) {
   await assertOrgAdmin(orgId, actorId);
 
-  return updateOrganizationTag(orgId, params.tagId, payload);
+  return db.transaction(async (tx) => {
+    await lockOrganizationTags(orgId, tx);
+
+    if (payload.name !== undefined && (await findTagByName(orgId, payload.name, tx, params.tagId))) {
+      throw new AppError('A tag with this name already exists', ErrorCodes.TAG_ALREADY_EXISTS, 409, 'name');
+    }
+
+    return updateOrganizationTag(orgId, params.tagId, payload, tx);
+  });
 }

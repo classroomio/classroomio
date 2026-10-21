@@ -169,23 +169,34 @@ export async function createOrganizationTagGroup(orgId: string, data: TTagGroupC
   }
 }
 
-export async function updateOrganizationTagGroup(orgId: string, groupId: string, data: TTagGroupUpdate) {
+export async function updateOrganizationTagGroup(
+  orgId: string,
+  groupId: string,
+  data: TTagGroupUpdate,
+  dbClient?: DbOrTxClient
+) {
   try {
-    const existing = await getTagGroupById(orgId, groupId);
+    const existing = await getTagGroupById(orgId, groupId, dbClient);
 
     if (!existing) {
       throw new AppError('Tag group not found', ErrorCodes.TAG_GROUP_NOT_FOUND, 404);
     }
 
     const nextName = data.name?.trim();
-    const slug = nextName && nextName !== existing.name ? await generateUniqueTagGroupSlug(orgId, nextName) : undefined;
+    const slug =
+      nextName && nextName !== existing.name ? await generateUniqueTagGroupSlug(orgId, nextName, dbClient) : undefined;
 
-    const updated = await updateTagGroup(orgId, groupId, {
-      ...(nextName ? { name: nextName } : {}),
-      ...(slug ? { slug } : {}),
-      ...(data.description !== undefined ? { description: normalizeOptionalText(data.description) } : {}),
-      ...(data.order !== undefined ? { order: data.order } : {})
-    });
+    const updated = await updateTagGroup(
+      orgId,
+      groupId,
+      {
+        ...(nextName ? { name: nextName } : {}),
+        ...(slug ? { slug } : {}),
+        ...(data.description !== undefined ? { description: normalizeOptionalText(data.description) } : {}),
+        ...(data.order !== undefined ? { order: data.order } : {})
+      },
+      dbClient
+    );
 
     if (!updated) {
       throw new AppError('Tag group not found', ErrorCodes.TAG_GROUP_NOT_FOUND, 404);
@@ -239,31 +250,37 @@ export async function createOrganizationTag(orgId: string, data: TTagCreate, dbC
   }
 }
 
-export async function updateOrganizationTag(orgId: string, tagId: string, data: TTagUpdate) {
+export async function updateOrganizationTag(orgId: string, tagId: string, data: TTagUpdate, dbClient?: DbOrTxClient) {
   try {
-    const existing = await getTagById(orgId, tagId);
+    const existing = await getTagById(orgId, tagId, dbClient);
 
     if (!existing) {
       throw new AppError('Tag not found', ErrorCodes.TAG_NOT_FOUND, 404);
     }
 
     if (data.groupId) {
-      const group = await getTagGroupById(orgId, data.groupId);
+      const group = await getTagGroupById(orgId, data.groupId, dbClient);
       if (!group) {
         throw new AppError('Tag group not found', ErrorCodes.TAG_GROUP_NOT_FOUND, 404, 'groupId');
       }
     }
 
     const nextName = data.name?.trim();
-    const slug = nextName && nextName !== existing.name ? await generateUniqueTagSlug(orgId, nextName) : undefined;
+    const slug =
+      nextName && nextName !== existing.name ? await generateUniqueTagSlug(orgId, nextName, dbClient) : undefined;
 
-    const updated = await updateTag(orgId, tagId, {
-      ...(nextName ? { name: nextName } : {}),
-      ...(slug ? { slug } : {}),
-      ...(data.description !== undefined ? { description: normalizeOptionalText(data.description) } : {}),
-      ...(data.groupId ? { groupId: data.groupId } : {}),
-      ...(data.color ? { color: data.color } : {})
-    });
+    const updated = await updateTag(
+      orgId,
+      tagId,
+      {
+        ...(nextName ? { name: nextName } : {}),
+        ...(slug ? { slug } : {}),
+        ...(data.description !== undefined ? { description: normalizeOptionalText(data.description) } : {}),
+        ...(data.groupId ? { groupId: data.groupId } : {}),
+        ...(data.color ? { color: data.color } : {})
+      },
+      dbClient
+    );
 
     if (!updated) {
       throw new AppError('Tag not found', ErrorCodes.TAG_NOT_FOUND, 404);

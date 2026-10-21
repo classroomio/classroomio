@@ -1,5 +1,5 @@
 import type { TNewTag, TNewTagGroup, TTag, TTagAssignment, TTagGroup } from '@db/types';
-import { and, asc, count, eq, ilike, inArray, sql } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, inArray, ne, sql } from 'drizzle-orm';
 
 import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -127,14 +127,19 @@ export async function findTagBySlug(orgId: string, slug: string, dbClient: DbOrT
 export async function findTagGroupByName(
   orgId: string,
   name: string,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient = db,
+  excludeId?: string
 ): Promise<TTagGroup | null> {
   try {
     const [result] = await dbClient
       .select()
       .from(schema.tagGroup)
       .where(
-        and(eq(schema.tagGroup.organizationId, orgId), sql`lower(${schema.tagGroup.name}) = lower(${name.trim()})`)
+        and(
+          eq(schema.tagGroup.organizationId, orgId),
+          sql`lower(${schema.tagGroup.name}) = lower(${name.trim()})`,
+          excludeId ? ne(schema.tagGroup.id, excludeId) : undefined
+        )
       )
       .limit(1);
 
@@ -145,12 +150,23 @@ export async function findTagGroupByName(
   }
 }
 
-export async function findTagByName(orgId: string, name: string, dbClient: DbOrTxClient = db): Promise<TTag | null> {
+export async function findTagByName(
+  orgId: string,
+  name: string,
+  dbClient: DbOrTxClient = db,
+  excludeId?: string
+): Promise<TTag | null> {
   try {
     const [result] = await dbClient
       .select()
       .from(schema.tag)
-      .where(and(eq(schema.tag.organizationId, orgId), sql`lower(${schema.tag.name}) = lower(${name.trim()})`))
+      .where(
+        and(
+          eq(schema.tag.organizationId, orgId),
+          sql`lower(${schema.tag.name}) = lower(${name.trim()})`,
+          excludeId ? ne(schema.tag.id, excludeId) : undefined
+        )
+      )
       .limit(1);
 
     return result ?? null;
@@ -160,7 +176,7 @@ export async function findTagByName(orgId: string, name: string, dbClient: DbOrT
   }
 }
 
-// Serializes tag and tag group creation within an organization until the transaction ends.
+// Serializes tag and tag group creates and renames within an organization until the transaction ends.
 export async function lockOrganizationTags(orgId: string, dbClient: DbOrTxClient) {
   await dbClient.execute(sql`select pg_advisory_xact_lock(hashtext(${`tags:${orgId}`}))`);
 }
@@ -184,9 +200,9 @@ export async function getTagGroupById(
   }
 }
 
-export async function getTagById(orgId: string, tagId: string): Promise<TTag | null> {
+export async function getTagById(orgId: string, tagId: string, dbClient: DbOrTxClient = db): Promise<TTag | null> {
   try {
-    const [result] = await db
+    const [result] = await dbClient
       .select()
       .from(schema.tag)
       .where(and(eq(schema.tag.organizationId, orgId), eq(schema.tag.id, tagId)))
@@ -270,10 +286,11 @@ export async function createTagGroup(data: TNewTagGroup, dbClient: DbOrTxClient 
 export async function updateTagGroup(
   orgId: string,
   groupId: string,
-  data: Partial<TTagGroup>
+  data: Partial<TTagGroup>,
+  dbClient: DbOrTxClient = db
 ): Promise<TTagGroup | null> {
   try {
-    const [result] = await db
+    const [result] = await dbClient
       .update(schema.tagGroup)
       .set({ ...data, updatedAt: new Date().toISOString() })
       .where(and(eq(schema.tagGroup.organizationId, orgId), eq(schema.tagGroup.id, groupId)))
@@ -297,9 +314,14 @@ export async function createTag(data: TNewTag, dbClient: DbOrTxClient = db): Pro
   }
 }
 
-export async function updateTag(orgId: string, tagId: string, data: Partial<TTag>): Promise<TTag | null> {
+export async function updateTag(
+  orgId: string,
+  tagId: string,
+  data: Partial<TTag>,
+  dbClient: DbOrTxClient = db
+): Promise<TTag | null> {
   try {
-    const [result] = await db
+    const [result] = await dbClient
       .update(schema.tag)
       .set({ ...data, updatedAt: new Date().toISOString() })
       .where(and(eq(schema.tag.organizationId, orgId), eq(schema.tag.id, tagId)))
