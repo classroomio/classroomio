@@ -2621,8 +2621,7 @@
   // ---- Scroll dots: one per window-scrolled screen (desktop canvas, empty lesson). The mobile
   // screen keeps the phone's own scrolling, since a device frame simulating a real phone should
   // scroll like one, not grow a second floating indicator inside its small frame. ----
-  const DOTS_INSET = 20; // distance from the canvas column's left edge to the dots' center
-  const DOT_TIP_MIN_ROOM = 170; // px of clear space the tooltip needs on its default (right) side
+  const DOT_TIP_MIN_ROOM = 170; // px of clear space the tooltip needs on its default (left) side
   const DOT_TYPE_ICONS = { video: ICON_VIDEO, note: ICON_NOTE, slide: ICON_SLIDE, document: ICON_DOCUMENT, image: ICON_IMAGE };
   const DOTS_IDLE_MS = 900;
 
@@ -2658,7 +2657,7 @@
     // column's own left padding, so they move with it as the window resizes.
     function positionDots() {
       const rect = canvasWrap.getBoundingClientRect();
-      dots.style.left = Math.round(rect.left + DOTS_INSET) + 'px';
+      dots.style.left = Math.round(rect.left) + 'px';
     }
 
     const UNTITLED_LABEL = {
