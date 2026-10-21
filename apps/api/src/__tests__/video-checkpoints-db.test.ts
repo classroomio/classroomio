@@ -266,6 +266,32 @@ describe.skipIf(!hasDatabase)('lesson video checkpoints against the database', (
     expect(csv.split('\n')[1].startsWith(`"'=HYPERLINK(""x"")"`)).toBe(true);
   });
 
+  it('keeps answers when only the time changes', async () => {
+    const { updateVideoCheckpointService, listVideoCheckpointsForViewer } = await import(
+      '@cio/core/services/lesson/video-checkpoint'
+    );
+
+    const before = await listVideoCheckpointsForViewer(lessonId, studentId, true);
+    const checkpoint = before.checkpoints[0];
+    expect(before.answeredCheckpointIds).toContain(checkpoint.id);
+
+    await updateVideoCheckpointService(lessonId, checkpoint.id, {
+      timestampSeconds: checkpoint.timestampSeconds + 5,
+      questionType: 'RADIO',
+      title: checkpoint.question.title,
+      settings: (checkpoint.question.settings ?? {}) as Record<string, unknown>,
+      resumePolicy: 'any',
+      options: checkpoint.question.options!.map((option) => ({
+        label: option.label,
+        value: option.value ?? null,
+        isCorrect: option.isCorrect ?? false
+      }))
+    });
+
+    const after = await listVideoCheckpointsForViewer(lessonId, studentId, true);
+    expect(after.answeredCheckpointIds).toContain(checkpoint.id);
+  });
+
   it('clears earlier answers when a question is edited', async () => {
     const { updateVideoCheckpointService, listVideoCheckpointsForViewer } = await import(
       '@cio/core/services/lesson/video-checkpoint'

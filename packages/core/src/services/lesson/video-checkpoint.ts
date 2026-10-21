@@ -343,9 +343,34 @@ async function requireCheckpoint(lessonId: string, checkpointId: string) {
   return checkpoint;
 }
 
+function hasQuestionContentChanged(
+  existing: LessonVideoCheckpointWithOptions,
+  next: Pick<TVideoCheckpointUpdate, 'questionType' | 'title' | 'settings' | 'resumePolicy' | 'options'>
+): boolean {
+  const toComparable = (
+    questionType: string,
+    title: string,
+    settings: unknown,
+    resumePolicy: string,
+    options: Array<{ label: string; value?: string | null; isCorrect?: boolean | null }>
+  ) =>
+    JSON.stringify({
+      questionType,
+      title,
+      settings: settings ?? {},
+      resumePolicy,
+      options: options.map((option) => [option.label, option.value ?? null, option.isCorrect ?? false])
+    });
+
+  return (
+    toComparable(existing.questionType, existing.title, existing.settings, existing.resumePolicy, existing.options) !==
+    toComparable(next.questionType, next.title, next.settings, next.resumePolicy, next.options)
+  );
+}
+
 /**
- * Editing a question rewrites its options, which invalidates earlier answers, so those answers are cleared in the
- * same transaction.
+ * Editing a question's content rewrites its options and invalidates earlier answers, so they are cleared in the
+ * same transaction. Moving the marker in time keeps them.
  */
 export async function updateVideoCheckpointService(
   lessonId: string,
@@ -383,7 +408,9 @@ export async function updateVideoCheckpointService(
       throw new AppError('Question not found', ErrorCodes.VIDEO_CHECKPOINT_NOT_FOUND, 404);
     }
 
-    await deleteLessonVideoCheckpointAnswers(checkpointId, tx);
+    if (hasQuestionContentChanged(existing, data)) {
+      await deleteLessonVideoCheckpointAnswers(checkpointId, tx);
+    }
 
     return updated;
   });
