@@ -6,6 +6,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import * as Select from '@cio/ui/base/select';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
 
   import type { TAssetUpdate } from '@cio/utils/validation/assets';
   import type { OrganizationAsset } from '$features/media/utils';
@@ -13,6 +14,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
+  import { EllipsisVerticalIcon, Upload } from '@lucide/svelte';
 
   interface Props {
     open?: boolean;
@@ -29,6 +31,7 @@
   let { open = $bindable(false), asset = null, isSaving = false, onSave = async () => {} }: Props = $props();
 
   let isThumbnailUploading = $state(false);
+  let thumbnailFileInput = $state<HTMLInputElement>();
   let title = $state('');
   let description = $state('');
   let thumbnailUrl = $state('');
@@ -95,6 +98,36 @@
 
     snackbar.error('snackbar.media_manager.thumbnail_invalid');
   }
+
+  function openThumbnailFilePicker() {
+    if (isThumbnailUploading) {
+      return;
+    }
+
+    thumbnailFileInput?.click();
+  }
+
+  function handleThumbnailFileSelected(event: Event) {
+    const input = event.currentTarget as HTMLInputElement;
+    const selectedFile = input.files?.[0];
+    input.value = '';
+
+    if (!selectedFile) {
+      return;
+    }
+
+    if (selectedFile.size > thumbnailMaxSize) {
+      handleThumbnailRejected({ reason: 'Maximum file size exceeded' });
+      return;
+    }
+
+    if (!selectedFile.type.startsWith('image/')) {
+      handleThumbnailRejected({ reason: 'File type not allowed' });
+      return;
+    }
+
+    void handleThumbnailFilesUpload([selectedFile]);
+  }
 </script>
 
 <Dialog.Root
@@ -106,6 +139,14 @@
   }}
 >
   <Dialog.Content class="max-h-[60vh] w-[95%] max-w-2xl overflow-y-auto">
+    <input
+      bind:this={thumbnailFileInput}
+      type="file"
+      accept={FileDropZone.ACCEPT_IMAGE}
+      class="hidden"
+      onchange={handleThumbnailFileSelected}
+    />
+
     <Dialog.Header>
       <Dialog.Title>{$t('media_manager.edit.title')}</Dialog.Title>
       <Dialog.Description>{$t('media_manager.edit.description')}</Dialog.Description>
@@ -123,25 +164,45 @@
 
         <div class="space-y-2">
           <p class="text-sm font-medium">{$t('media_manager.form.thumbnail_upload')}</p>
-          <div class={isThumbnailUploading ? 'pointer-events-none opacity-50' : ''}>
-            <FileDropZone.Root
-              accept={FileDropZone.ACCEPT_IMAGE}
-              maxFiles={1}
-              fileCount={0}
-              maxFileSize={thumbnailMaxSize}
-              onUpload={handleThumbnailFilesUpload}
-              onFileRejected={handleThumbnailRejected}
-            >
-              <FileDropZone.Trigger
-                label={$t('media_manager.form.thumbnail_drop_label')}
-                formatMaxSize={() => $t('media_manager.form.thumbnail_drop_size')}
-              />
-            </FileDropZone.Root>
-          </div>
+          {#if !thumbnailUrl}
+            <div class={isThumbnailUploading ? 'pointer-events-none opacity-50' : ''}>
+              <FileDropZone.Root
+                accept={FileDropZone.ACCEPT_IMAGE}
+                maxFiles={1}
+                fileCount={0}
+                maxFileSize={thumbnailMaxSize}
+                onUpload={handleThumbnailFilesUpload}
+                onFileRejected={handleThumbnailRejected}
+              >
+                <FileDropZone.Trigger
+                  label={$t('media_manager.form.thumbnail_drop_label')}
+                  formatMaxSize={() => $t('media_manager.form.thumbnail_drop_size')}
+                />
+              </FileDropZone.Root>
+            </div>
+          {/if}
         </div>
 
         {#if thumbnailUrl}
-          <div class="rounded-md border p-3">
+          <div class="group relative w-fit rounded-md border p-3">
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger
+                class="absolute top-3 right-3 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 data-[state=open]:opacity-100"
+                onclick={(event) => event.stopPropagation()}
+              >
+                <Button variant="outline" size="sm">
+                  <EllipsisVerticalIcon size={16} />
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end" onclick={(event) => event.stopPropagation()}>
+                <DropdownMenu.Item disabled={isThumbnailUploading} onclick={openThumbnailFilePicker}>
+                  <span class="flex items-center gap-2">
+                    <Upload size={14} />
+                    {$t('media_manager.provider.upload')}
+                  </span>
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
             <p class="ui:text-muted-foreground mb-2 text-xs">{$t('media_manager.form.thumbnail_preview')}</p>
             <img
               src={thumbnailUrl}
