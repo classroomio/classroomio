@@ -13,7 +13,13 @@ import { getActivityProgress, launchActivity } from '@cio/core/services/activity
 import { makeScormPackageVersionCurrent } from '@cio/core/services/activity/packages';
 import { attachScormPackage } from '@cio/core/services/activity/providers';
 import { createCoursesFromPackages } from '@cio/core/services/activity/courses';
-import { commitScormAttempt, getScormRuntimeState } from '@api/services/activity/runtime-scorm';
+import {
+  SAVE_REPLAY_WINDOW_MS,
+  commitScormAttempt,
+  getScormRuntimeState,
+  replayScormCommit
+} from '@api/services/activity/runtime-scorm';
+import { mintLaunchToken, verifyToken, type ActivityLaunchClaims } from '@cio/activity-packages';
 import { ZScormCommit, ZScormSettings } from '@cio/utils/validation/activity/scorm';
 import { AppError } from '@api/utils/errors';
 
@@ -239,6 +245,83 @@ describe('activity commit validation', () => {
     expect(ZScormSettings.parse({}).moduleOrder).toBe('free');
     expect(ZScormSettings.parse({ moduleOrder: 'sequential' }).moduleOrder).toBe('sequential');
     expect(ZScormSettings.safeParse({ moduleOrder: 'random' }).success).toBe(false);
+  });
+});
+
+const RUNTIME_TEST_SECRET = 'test-activity-signing-secret-0123456789';
+
+async function remintedToken(token: string, overrides: Partial<ActivityLaunchClaims>, mintedAtMs: number) {
+  const claims = { ...(await verifyToken<ActivityLaunchClaims>(token, RUNTIME_TEST_SECRET)), ...overrides };
+
+  return mintLaunchToken(claims, RUNTIME_TEST_SECRET, mintedAtMs);
+}
+
+describe.skipIf(!hasDatabase)('stored exit save replay', () => {
+  it('applies a save whose own token expired when the learner launches again', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+      const token = launchTokenOf(launched.playerUrl);
+      const expired = await remintedToken(token, {}, Date.now() - 2 * 86_400_000);
+      await expect(
+        commitScormAttempt(expired, { commitSequence: 1, cmi: { 'core.lesson_status': 'completed' } })
+      ).rejects.toMatchObject({ statusCode: 401 });
+
+      const current = await verifyToken<ActivityLaunchClaims>(token, RUNTIME_TEST_SECRET);
+      const result = await replayScormCommit(current, expired, {
+        commitSequence: 1,
+        cmi: { 'core.lesson_status': 'completed', 'core.session_time': '00:01:00' },
+        terminate: true
+      });
+
+      expect(result).toMatchObject({ saved: true, progressChanged: true, rejected: false });
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it("refuses a stored save under another learner's launch", async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+      const token = launchTokenOf(launched.playerUrl);
+      const current = await verifyToken<ActivityLaunchClaims>(token, RUNTIME_TEST_SECRET);
+
+      await expect(
+        replayScormCommit({ ...current, sub: crypto.randomUUID() }, token, { commitSequence: 1, cmi: {} })
+      ).rejects.toMatchObject({ statusCode: 403 });
+      await expect(
+        replayScormCommit({ ...current, org: 'other-org' }, token, { commitSequence: 1, cmi: {} })
+      ).rejects.toMatchObject({ statusCode: 403 });
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('refuses a stored save past the replay window or with a forged token', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+      const token = launchTokenOf(launched.playerUrl);
+      const current = await verifyToken<ActivityLaunchClaims>(token, RUNTIME_TEST_SECRET);
+      const tooOld = await remintedToken(token, {}, Date.now() - SAVE_REPLAY_WINDOW_MS - 13 * 3_600_000);
+      const forged = `${token.split('.')[0]}.AAAA`;
+
+      await expect(replayScormCommit(current, tooOld, { commitSequence: 1, cmi: {} })).rejects.toMatchObject({
+        statusCode: 401
+      });
+      await expect(replayScormCommit(current, forged, { commitSequence: 1, cmi: {} })).rejects.toMatchObject({
+        statusCode: 401
+      });
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
   });
 });
 

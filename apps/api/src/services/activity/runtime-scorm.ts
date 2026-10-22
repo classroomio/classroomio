@@ -53,6 +53,9 @@ import { getActivitySigningSecret, orgIdFromContentKey } from '@cio/core/config/
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { deliverActivityCompletionSideEffects } from '@api/services/activity/activity-completion';
 
+/** How long after its launch token expires a stored exit save may still be replayed. */
+export const SAVE_REPLAY_WINDOW_MS = 30 * 86_400_000;
+
 export interface ScormRuntimeState {
   format: 'scorm12' | 'scorm2004';
   cmi: ScormCmi;
@@ -430,6 +433,55 @@ export async function commitScormAttempt(
 ): Promise<ScormCommitResult> {
   const { claims } = await resolveClaims(launchToken);
 
+  return commitWithClaims(claims, rawBody, viaBeacon, userAgent);
+}
+
+/**
+ * Verifies a stored exit save's launch token by signature, accepting it up to
+ * `SAVE_REPLAY_WINDOW_MS` past expiry. Throws 401 when it is invalid or older.
+ */
+async function resolveReplayClaims(originalToken: string): Promise<ActivityLaunchClaims> {
+  const secret = getActivitySigningSecret();
+  if (!secret) throw new AppError('Activity run-time not configured', ErrorCodes.INTERNAL_ERROR, 503);
+
+  try {
+    return await verifyLaunchToken(originalToken, secret, Date.now(), SAVE_REPLAY_WINDOW_MS);
+  } catch (error) {
+    if (error instanceof PackageError && error.code === 'expired_token') {
+      throw new AppError('Launch token expired', ErrorCodes.UNAUTHORIZED, 401);
+    }
+
+    throw new AppError('Invalid launch token', ErrorCodes.UNAUTHORIZED, 401);
+  }
+}
+
+/**
+ * Applies an exit save the player stored because it could not be sent during
+ * unload. The learner's current launch authorizes it, and the stored save's
+ * own token, which may have expired, only names the module try it belongs
+ * to. Throws 403 when the two launches are for different learners or orgs.
+ */
+export async function replayScormCommit(
+  current: ActivityLaunchClaims,
+  originalToken: string,
+  rawBody: unknown,
+  userAgent: string | null = null
+): Promise<ScormCommitResult> {
+  const original = await resolveReplayClaims(originalToken);
+
+  if (original.sub !== current.sub || original.org !== current.org) {
+    throw new AppError('Stored save belongs to another learner', ErrorCodes.UNAUTHORIZED, 403);
+  }
+
+  return commitWithClaims(original, rawBody, true, userAgent);
+}
+
+async function commitWithClaims(
+  claims: ActivityLaunchClaims,
+  rawBody: unknown,
+  viaBeacon: boolean,
+  userAgent: string | null
+): Promise<ScormCommitResult> {
   if (claims.mode !== 'normal' || !claims.att)
     return { saved: false, completedActivity: false, progressChanged: false, rejected: false };
 

@@ -7,6 +7,7 @@ const PENDING_SAVE_KEY = 'cio:scorm:pending-exit-saves';
 const PENDING_SAVE_MAX = 4;
 
 export const GZIP_BODY_HEADER = 'X-Cio-Body-Encoding';
+export const SAVE_REPLAY_WINDOW_MS = 30 * 86_400_000;
 
 type PendingExitSave = { id: string; url: string; body: string };
 
@@ -156,31 +157,86 @@ function sendOversizedSave(url: string, data: BodyInit | null, bytes: number): b
   return sent || pending !== null;
 }
 
-async function flushPendingSaves(): Promise<void> {
+function tokenFromCommitUrl(url: string): string | null {
+  const match = url.match(/\/activity\/scorm\/runtime\/([^/]+)\/commit/);
+  if (!match) return null;
+
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return null;
+  }
+}
+
+function readTokenClaims(token: string): { sub?: unknown; exp?: unknown } | null {
+  const [body] = token.split('.');
+  if (!body) return null;
+
+  try {
+    const json = atob(body.replace(/-/g, '+').replace(/_/g, '/'));
+    const bytes = Uint8Array.from(json, (char) => char.charCodeAt(0));
+    const claims: unknown = JSON.parse(new TextDecoder().decode(bytes));
+
+    return typeof claims === 'object' && claims !== null ? (claims as { sub?: unknown; exp?: unknown }) : null;
+  } catch {
+    return null;
+  }
+}
+
+function isPastReplayWindow(claims: { exp?: unknown }, nowMs: number): boolean {
+  return typeof claims.exp !== 'number' || claims.exp * 1000 + SAVE_REPLAY_WINDOW_MS <= nowMs;
+}
+
+/**
+ * Sends the exit saves stored on this device under the current launch, which
+ * the server needs because a stored save's own launch token may have expired.
+ * Saves of another learner on the same device stay stored for them. Saves past
+ * the replay window, malformed saves and saves the server answered are removed;
+ * network errors, rate limits and server errors keep them for the next launch.
+ */
+export async function replayPendingSaves(launchToken: string, nowMs: number = Date.now()): Promise<void> {
   const entries = readPendingSaves();
   if (entries.length === 0) return;
 
-  const deliveredIds = new Set<string>();
+  const currentSub = readTokenClaims(launchToken)?.sub;
+  const settledIds = new Set<string>();
 
   for (const entry of entries) {
+    const originalToken = tokenFromCommitUrl(entry.url);
+    const claims = originalToken ? readTokenClaims(originalToken) : null;
+
+    if (!originalToken || !claims || isPastReplayWindow(claims, nowMs)) {
+      settledIds.add(entry.id);
+      continue;
+    }
+
+    if (currentSub === undefined || claims.sub !== currentSub) continue;
+
+    let commit: unknown;
     try {
-      const response = await fetch(entry.url, {
+      commit = JSON.parse(entry.body);
+    } catch {
+      settledIds.add(entry.id);
+      continue;
+    }
+
+    try {
+      const response = await fetch(`/activity/scorm/runtime/${encodeURIComponent(launchToken)}/replay`, {
         method: 'POST',
-        body: entry.body,
+        body: JSON.stringify({ originalToken, commit }),
         credentials: 'include',
-        headers: { 'Content-Type': 'text/plain' }
+        headers: { 'Content-Type': 'application/json' }
       });
 
-      if (response.status < 500) {
-        deliveredIds.add(entry.id);
-      }
+      if (response.status < 500 && response.status !== 429) settledIds.add(entry.id);
     } catch {
-      // transient failure; keep in store
+      continue;
     }
   }
 
-  const latest = readPendingSaves();
-  const remaining = latest.filter((entry) => !deliveredIds.has(entry.id));
+  if (settledIds.size === 0) return;
+
+  const remaining = readPendingSaves().filter((entry) => !settledIds.has(entry.id));
   writePendingSaves(remaining);
 }
 
@@ -188,10 +244,11 @@ async function flushPendingSaves(): Promise<void> {
  * Routes run-time saves around sendBeacon's drop limit. Payloads at or under
  * the limit keep native beacon delivery; larger ones are stored for replay and
  * sent gzipped as a keepalive fetch. Browsers cap unload requests at 64 KiB,
- * so a save still larger once compressed waits for the next launch.
+ * so a save still larger once compressed waits for `replayPendingSaves` on
+ * the next launch.
  */
-export function installLargeBeaconFetchFallback(limit: number = BEACON_BYTE_LIMIT): Promise<void> {
-  if (typeof navigator === 'undefined' || typeof navigator.sendBeacon !== 'function') return Promise.resolve();
+export function installLargeBeaconFetchFallback(limit: number = BEACON_BYTE_LIMIT): void {
+  if (typeof navigator === 'undefined' || typeof navigator.sendBeacon !== 'function') return;
 
   const nativeSendBeacon = navigator.sendBeacon.bind(navigator);
 
@@ -210,6 +267,4 @@ export function installLargeBeaconFetchFallback(limit: number = BEACON_BYTE_LIMI
 
     return sendOversizedSave(target, data ?? null, bytes);
   };
-
-  return flushPendingSaves().catch(() => {});
 }

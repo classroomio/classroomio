@@ -1,4 +1,4 @@
-import { installLargeBeaconFetchFallback } from './beacon-fallback';
+import { installLargeBeaconFetchFallback, replayPendingSaves } from './beacon-fallback';
 import {
   notifyBootError,
   notifyFullscreenUnavailable,
@@ -57,9 +57,18 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'unknown error';
 }
 
+function replayStoredSaves(): Promise<void> {
+  try {
+    return replayPendingSaves(parseLaunchToken(window.location.pathname)).catch(() => {});
+  } catch {
+    return Promise.resolve();
+  }
+}
+
 function boot(): void {
-  const pendingSavesFlushed = installLargeBeaconFetchFallback();
+  installLargeBeaconFetchFallback();
   watchPageUnload();
+  const pendingSavesFlushed = replayStoredSaves();
 
   const frame = requireElement<HTMLIFrameElement>('package-frame');
   const loading = requireElement<HTMLElement>('loading');

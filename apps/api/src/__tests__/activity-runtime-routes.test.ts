@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 vi.mock('@api/services/activity/runtime-scorm', () => ({
   getScormRuntimeState: vi.fn(),
   commitScormAttempt: vi.fn(),
+  replayScormCommit: vi.fn(),
   reportScormRuntimeEvent: vi.fn()
 }));
 
@@ -12,6 +13,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   commitScormAttempt,
   getScormRuntimeState,
+  replayScormCommit,
   reportScormRuntimeEvent
 } from '@api/services/activity/runtime-scorm';
 import { runtimeScormRouter } from '@api/routes/activity/runtime-scorm';
@@ -107,6 +109,49 @@ describe('runtime-scorm routes', () => {
       completedActivity: false,
       progressChanged: false
     });
+  });
+
+  it('replays a stored save under the current launch token', async () => {
+    vi.mocked(replayScormCommit).mockResolvedValue({ saved: true, completedActivity: true, progressChanged: true });
+    const launchToken = await testToken();
+
+    const response = await app().request(`/activity/scorm/runtime/${launchToken}/replay`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ originalToken: 'stored-token', commit: { commitSequence: 3, cmi: { suspend_data: 'x' } } })
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      result: true,
+      errorCode: 0,
+      completedActivity: true,
+      progressChanged: true
+    });
+    expect(replayScormCommit).toHaveBeenCalledWith(
+      expect.objectContaining({ sub: 'profile-id', org: 'org-key' }),
+      'stored-token',
+      expect.objectContaining({ commitSequence: 3 }),
+      null
+    );
+  });
+
+  it('rejects a replay without the stored token or with an invalid current token', async () => {
+    const launchToken = await testToken();
+
+    const missing = await app().request(`/activity/scorm/runtime/${launchToken}/replay`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commit: { commitSequence: 3, cmi: {} } })
+    });
+    expect(missing.status).toBe(400);
+
+    const forged = await app().request('/activity/scorm/runtime/forged-token/replay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ originalToken: 'stored-token', commit: { commitSequence: 3, cmi: {} } })
+    });
+    expect(forged.status).toBe(401);
   });
 
   it('passes non-beacon commits without the beacon flag', async () => {

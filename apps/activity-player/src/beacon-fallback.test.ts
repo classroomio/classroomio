@@ -4,7 +4,9 @@ import {
   BEACON_BYTE_LIMIT,
   GZIP_BODY_HEADER,
   KEEPALIVE_BYTE_LIMIT,
-  installLargeBeaconFetchFallback
+  SAVE_REPLAY_WINDOW_MS,
+  installLargeBeaconFetchFallback,
+  replayPendingSaves
 } from './beacon-fallback';
 
 const RUNTIME_URL = '/activity/scorm/runtime/token/commit';
@@ -195,21 +197,6 @@ describe('installLargeBeaconFetchFallback', () => {
     expect(queuedSaves(store).map((entry) => entry.body)).toEqual([bodies[1], bodies[2]]);
   });
 
-  it('replays stored saves on install and clears the delivered ones', async () => {
-    const store = stubStore();
-    store.set(PENDING_KEY, JSON.stringify([{ id: 'a', url: RUNTIME_URL, body: '{"seq":1}' }]));
-    const fetchSpy = vi.fn(() => Promise.resolve(new Response('{}', { status: 200 })));
-    vi.stubGlobal('navigator', { sendBeacon: vi.fn(() => true) });
-    vi.stubGlobal('fetch', fetchSpy);
-
-    await installLargeBeaconFetchFallback();
-
-    const [url, init] = fetchSpy.mock.calls[0] as unknown as FetchCall;
-    expect(url).toBe(RUNTIME_URL);
-    expect(init.body).toBe('{"seq":1}');
-    expect(store.has(PENDING_KEY)).toBe(false);
-  });
-
   it('leaves non-runtime beacons alone', () => {
     const sendBeacon = vi.fn(() => true);
     vi.stubGlobal('navigator', { sendBeacon });
@@ -218,5 +205,108 @@ describe('installLargeBeaconFetchFallback', () => {
     navigator.sendBeacon('/other/endpoint', new Blob(['x'.repeat(BEACON_BYTE_LIMIT + 1)]));
 
     expect(sendBeacon).toHaveBeenCalledTimes(1);
+  });
+});
+
+const NOW_MS = Date.parse('2026-10-22T12:00:00.000Z');
+
+function fakeToken(claims: { sub: string; exp: number }): string {
+  const body = btoa(JSON.stringify(claims)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+  return `${body}.signature`;
+}
+
+function storedSave(id: string, token: string, body = '{"commitSequence":3,"cmi":{"suspend_data":"x"}}') {
+  return { id, url: `/activity/scorm/runtime/${encodeURIComponent(token)}/commit`, body };
+}
+
+describe('replayPendingSaves', () => {
+  const currentToken = fakeToken({ sub: 'learner-1', exp: NOW_MS / 1000 + 3600 });
+  const expiredToken = fakeToken({ sub: 'learner-1', exp: NOW_MS / 1000 - 86_400 });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('replays a save whose own token expired under the current launch', async () => {
+    const store = stubStore();
+    store.set(PENDING_KEY, JSON.stringify([storedSave('a', expiredToken)]));
+    const fetchSpy = vi.fn(() => Promise.resolve(new Response('{}', { status: 200 })));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await replayPendingSaves(currentToken, NOW_MS);
+
+    const [url, init] = fetchSpy.mock.calls[0] as unknown as FetchCall;
+    expect(url).toBe(`/activity/scorm/runtime/${encodeURIComponent(currentToken)}/replay`);
+    expect(JSON.parse(String(init.body))).toEqual({
+      originalToken: expiredToken,
+      commit: { commitSequence: 3, cmi: { suspend_data: 'x' } }
+    });
+    expect(store.has(PENDING_KEY)).toBe(false);
+  });
+
+  it("keeps another learner's saves stored on a shared device", async () => {
+    const store = stubStore();
+    const otherLearner = fakeToken({ sub: 'learner-2', exp: NOW_MS / 1000 - 60 });
+    store.set(PENDING_KEY, JSON.stringify([storedSave('b', otherLearner)]));
+    const fetchSpy = vi.fn(() => Promise.resolve(new Response('{}', { status: 200 })));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await replayPendingSaves(currentToken, NOW_MS);
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(queuedSaves(store).map((entry) => entry.id)).toEqual(['b']);
+  });
+
+  it('drops saves past the replay window and malformed saves without sending them', async () => {
+    const store = stubStore();
+    const tooOld = fakeToken({ sub: 'learner-1', exp: (NOW_MS - SAVE_REPLAY_WINDOW_MS) / 1000 - 1 });
+    store.set(
+      PENDING_KEY,
+      JSON.stringify([storedSave('old', tooOld), storedSave('bad', expiredToken, 'not json'), storedSave('c', 'x')])
+    );
+    const fetchSpy = vi.fn(() => Promise.resolve(new Response('{}', { status: 200 })));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await replayPendingSaves(currentToken, NOW_MS);
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(store.has(PENDING_KEY)).toBe(false);
+  });
+
+  it('keeps saves for the next launch on network errors, rate limits and server errors', async () => {
+    const store = stubStore();
+    store.set(
+      PENDING_KEY,
+      JSON.stringify([
+        storedSave('net', expiredToken),
+        storedSave('rate', expiredToken),
+        storedSave('5xx', expiredToken)
+      ])
+    );
+    const fetchSpy = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('offline'))
+      .mockResolvedValueOnce(new Response('{}', { status: 429 }))
+      .mockResolvedValueOnce(new Response('{}', { status: 503 }));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await replayPendingSaves(currentToken, NOW_MS);
+
+    expect(queuedSaves(store).map((entry) => entry.id)).toEqual(['net', 'rate', '5xx']);
+  });
+
+  it('removes a save the server refused, such as one for another org', async () => {
+    const store = stubStore();
+    store.set(PENDING_KEY, JSON.stringify([storedSave('a', expiredToken)]));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve(new Response('{}', { status: 403 })))
+    );
+
+    await replayPendingSaves(currentToken, NOW_MS);
+
+    expect(store.has(PENDING_KEY)).toBe(false);
   });
 });
