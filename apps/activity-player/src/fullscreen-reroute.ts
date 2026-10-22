@@ -45,6 +45,13 @@ export function installFullscreenReroute(packageWindow: Window, options: Reroute
   const target = packageWindow as PackageWindow;
   const settleMs = options.settleMs ?? REROUTE_SETTLE_MS;
   const afterLeaving = () => options.leaveFullscreen().then(() => settle(settleMs));
+  const reroute = (action: () => void) => {
+    void afterLeaving()
+      .then(action)
+      .catch((error) => {
+        console.error('fullscreen reroute failed:', error);
+      });
+  };
   const elementPrototype = target.Element?.prototype;
   const videoPrototype = target.HTMLVideoElement?.prototype;
 
@@ -62,7 +69,7 @@ export function installFullscreenReroute(packageWindow: Window, options: Reroute
     elementPrototype.webkitRequestFullscreen = function (this: Element) {
       if (!options.shouldReroute()) return originalWebkitRequest.call(this);
 
-      void afterLeaving().then(() => originalWebkitRequest.call(this));
+      reroute(() => originalWebkitRequest.call(this));
     };
   }
 
@@ -71,7 +78,7 @@ export function installFullscreenReroute(packageWindow: Window, options: Reroute
     videoPrototype.webkitEnterFullscreen = function (this: HTMLVideoElement) {
       if (!options.shouldReroute()) return originalEnterVideo.call(this);
 
-      void afterLeaving().then(() => originalEnterVideo.call(this));
+      reroute(() => originalEnterVideo.call(this));
     };
   }
 }

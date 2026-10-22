@@ -380,7 +380,7 @@ export async function markPackageVersionArchived(
     const now = new Date().toISOString();
     const [archived] = await dbClient
       .update(schema.contentPackageVersion)
-      .set({ status: 'archived', archivedAt: now, updatedAt: now })
+      .set({ status: 'archived', archivedAt: now, updatedAt: now, extractedBytes: 0 })
       .where(
         and(
           eq(schema.contentPackageVersion.id, versionId),

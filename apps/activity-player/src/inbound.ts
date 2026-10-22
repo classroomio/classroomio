@@ -75,7 +75,8 @@ export const DEFAULT_LABELS: PlayerUiLabels = {
   dismiss: 'Dismiss'
 };
 
-const MAX_UNITS = 500;
+// Matches the archive entry ceiling enforced while a package is uploaded.
+const MAX_UNITS = 10_000;
 const MAX_TEXT = 500;
 const MAX_THEME_VALUE = 120;
 const LAUNCH_TOKEN_PATTERN = /^[A-Za-z0-9._~-]{1,4096}$/;
