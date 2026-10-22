@@ -11,7 +11,8 @@ import {
 } from '@cio/db/queries/scorm/attempt';
 import { createScoAttempt, getOpenScoAttempt, listLatestScoAttemptsByAttempt } from '@cio/db/queries/scorm/sco-attempt';
 import { getCourseById } from '@cio/db/queries/course/course';
-import { getLatestComplianceRecordsByProfiles } from '@cio/db/queries/course/compliance';
+import { getComplianceCycleStartIso, getLatestComplianceRecordsByProfiles } from '@cio/db/queries/course/compliance';
+import { getActivityById } from '@cio/db/queries/activity/activity';
 import { getOrganizationById } from '@cio/db/queries/organization/organization';
 import {
   LAUNCH_TOKEN_TTL_SECONDS,
@@ -602,8 +603,9 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
 /**
  * Returns the learner's module menu as it stands, for refreshing ticks and
  * locks while a module is still running. Reads the open attempt, else the
- * latest one, and never creates, closes or replaces anything. Previews and
- * learners without an attempt see every module untouched.
+ * latest one, and never creates, closes or replaces anything. Attempts from
+ * an earlier compliance cycle are ignored. Previews and learners without an
+ * attempt in the current cycle see every module untouched.
  */
 export async function getScormModuleProgress(context: ActivityProgressContext): Promise<ScormLaunchModule[]> {
   const details = await getActivityScormByActivityId(context.activityId);
@@ -612,8 +614,17 @@ export async function getScormModuleProgress(context: ActivityProgressContext): 
   const current = await getCurrentPackageVersion(details.assetId);
   if (!current || current.status !== 'ready') return [];
 
-  const open = context.isPreview ? null : await getOpenScormAttempt(context.activityId, context.profileId);
-  const attempt = context.isPreview || open ? open : await getLatestScormAttempt(context.activityId, context.profileId);
+  const activity = context.isPreview ? null : await getActivityById(context.activityId);
+  const cycleStart = activity ? await getComplianceCycleStartIso(activity.courseId, context.profileId) : null;
+  const inCurrentCycle = (row: TScormAttempt | null) =>
+    row !== null && (cycleStart === null || row.startedAt >= cycleStart) ? row : null;
+  const open = context.isPreview
+    ? null
+    : inCurrentCycle(await getOpenScormAttempt(context.activityId, context.profileId));
+  const attempt =
+    context.isPreview || open
+      ? open
+      : inCurrentCycle(await getLatestScormAttempt(context.activityId, context.profileId));
   const pinned =
     attempt && attempt.packageVersionId !== current.id
       ? await getPackageVersionById(attempt.packageVersionId)
