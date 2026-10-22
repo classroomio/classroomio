@@ -295,6 +295,27 @@ describe.skipIf(!hasDatabase)('activity completion side-effect outbox', () => {
     }
   });
 
+  it('runs each effect once when two deliveries race for the same row', async () => {
+    const fixture = await createCompletionFixture(`${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`);
+    try {
+      vi.mocked(evaluateCourseCertification).mockResolvedValue({ eligibleForCertificate: false } as never);
+      vi.mocked(syncComplianceProgressForMember).mockResolvedValue(null);
+
+      await enqueueActivityCompletionSideEffects(fixture.activityId, [fixture.profileId]);
+      await Promise.all([
+        deliverActivityCompletionSideEffects(fixture.activityId, fixture.profileId),
+        deliverActivityCompletionSideEffects(fixture.activityId, fixture.profileId),
+        sweepActivityCompletionSideEffects()
+      ]);
+
+      expect(evaluateCourseCertification).toHaveBeenCalledTimes(1);
+      expect(syncComplianceProgressForMember).toHaveBeenCalledTimes(1);
+      expect(await readOutboxRow(fixture.activityId, fixture.profileId)).toBeNull();
+    } finally {
+      await cleanupCompletionFixture(fixture);
+    }
+  });
+
   it('keeps a row that was re-enqueued while a run was in flight', async () => {
     const fixture = await createCompletionFixture(`${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`);
     try {

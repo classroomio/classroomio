@@ -121,3 +121,30 @@ export async function settleActivityCompletionSideEffect(
     );
   }
 }
+
+/**
+ * Drops pending completion work for a learner whose activity progress is being
+ * reset, so a later sweep never certifies or syncs a completion that is gone.
+ */
+export async function deleteActivityCompletionSideEffects(
+  activityIds: string[],
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  if (activityIds.length === 0) return 0;
+
+  try {
+    const table = schema.activityCompletionSideEffect;
+    const deleted = await dbClient
+      .delete(table)
+      .where(and(inArray(table.activityId, activityIds), eq(table.profileId, profileId)))
+      .returning({ id: table.id });
+
+    return deleted.length;
+  } catch (error) {
+    console.error('deleteActivityCompletionSideEffects error:', error);
+    throw new Error(
+      `Failed to delete completion side effects for profile "${profileId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}

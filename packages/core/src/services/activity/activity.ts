@@ -5,6 +5,7 @@ import {
   countActivitiesInCourse,
   createActivities,
   deleteActivity,
+  deleteActivityCompletionSideEffects,
   deleteActivityCompletions,
   enqueueActivityCompletionSideEffects,
   getActivitiesByCourseId,
@@ -283,6 +284,7 @@ export async function resetActivityLearner(
   return db.transaction(async (tx) => {
     const attempts = provider ? await provider.resetLearner([activityId], profileId, tx) : 0;
     const completions = await deleteActivityCompletions([activityId], profileId, tx);
+    await deleteActivityCompletionSideEffects([activityId], profileId, tx);
 
     return { attempts, completions };
   });

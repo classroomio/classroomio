@@ -136,6 +136,8 @@ describe.skipIf(!hasDatabase)('activity reset and lifecycle', () => {
         '@db/queries/course/reset-progress'
       );
       const { resetActivityLearnerState } = await import('@cio/core/services/activity/providers');
+      const { enqueueActivityCompletionSideEffects } = await import('@cio/db/queries/activity/completion-side-effect');
+      await enqueueActivityCompletionSideEffects(ids.activityId, [ids.profileId]);
 
       const before = await getStudentCourseProgressImpactCounts({
         courseId: ids.courseId,
@@ -165,6 +167,13 @@ describe.skipIf(!hasDatabase)('activity reset and lifecycle', () => {
         );
 
       expect(remaining).toHaveLength(0);
+
+      const pendingWork = await db
+        .select()
+        .from(schema.activityCompletionSideEffect)
+        .where(eq(schema.activityCompletionSideEffect.profileId, ids.profileId));
+
+      expect(pendingWork).toHaveLength(0);
 
       const activities = await db
         .select()
