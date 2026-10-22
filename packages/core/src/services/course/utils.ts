@@ -24,11 +24,21 @@ export type CourseContentItem = {
   documentsCount: number | null;
   questionCount: number | null;
   dueBy: string | null;
+  slug: string | null;
+  activityKind: string | null;
+  activityStatus: string | null;
+  modules?: ActivityModuleSummary[] | null;
   accessible?: boolean;
   lockReason?: 'teacher_locked' | 'progression_blocked' | null;
   completionPolicy?: string | null;
   videoWatchThreshold?: number | null;
   passThreshold?: number | null;
+};
+
+export type ActivityModuleSummary = {
+  identifier: string;
+  title: string;
+  position: number;
 };
 
 export type CourseContentSection = {
@@ -49,7 +59,8 @@ export type CourseOutlineRef = { kind: 'section'; id: string } | { kind: 'item';
 const CONTENT_TYPE_PRIORITY: Record<ContentType, number> = {
   [ContentType.Section]: -1,
   [ContentType.Lesson]: 0,
-  [ContentType.Exercise]: 1
+  [ContentType.Exercise]: 1,
+  [ContentType.Activity]: 2
 };
 
 function sortContentItems(items: CourseContentItem[]): CourseContentItem[] {
@@ -92,7 +103,11 @@ function mapCourseContentItems(rows: CourseContentItemRow[]): CourseContentItem[
     videosCount: row.videosCount ?? null,
     documentsCount: row.documentsCount ?? null,
     questionCount: row.questionCount ?? null,
-    dueBy: row.dueBy ?? null
+    dueBy: row.dueBy ?? null,
+    slug: row.slug ?? null,
+    activityKind: row.activityKind ?? null,
+    activityStatus: row.activityStatus ?? null,
+    modules: null
   }));
 }
 

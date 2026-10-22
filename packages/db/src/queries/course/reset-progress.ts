@@ -7,6 +7,9 @@ import { db } from '@db/drizzle';
 export type StudentCourseProgressImpactCounts = {
   completedLessons: number;
   totalLessons: number;
+  completedActivities: number;
+  totalActivities: number;
+  activityAttempts: number;
   exerciseSubmissions: number;
   lessonComments: number;
   courseNewsfeedActivity: number;
@@ -17,6 +20,8 @@ export type StudentCourseProgressImpactCounts = {
 
 export type ResetStudentCourseProgressSummary = {
   lessonCompletion: number;
+  activityCompletions: number;
+  activityAttempts: number;
   lessonVideoProgress: number;
   submissions: number;
   groupAttendance: number;
@@ -28,6 +33,12 @@ export type ResetStudentCourseProgressSummary = {
   aiChatConversations: number;
 };
 
+/**
+ * Deletes kind-specific learner state for a reset (SCORM attempts today,
+ * more kinds later). Runs inside the caller's reset transaction.
+ */
+export type ResetActivityLearnerState = (activityIds: string[], profileId: string, tx: DbOrTxClient) => Promise<number>;
+
 async function getCourseLessonIds(tx: DbOrTxClient, courseId: string): Promise<string[]> {
   const lessons = await tx
     .select({ id: schema.lesson.id })
@@ -35,6 +46,15 @@ async function getCourseLessonIds(tx: DbOrTxClient, courseId: string): Promise<s
     .where(eq(schema.lesson.courseId, courseId));
 
   return lessons.map((lesson) => lesson.id);
+}
+
+async function getCourseActivityIds(tx: DbOrTxClient, courseId: string): Promise<string[]> {
+  const activities = await tx
+    .select({ id: schema.courseActivity.id })
+    .from(schema.courseActivity)
+    .where(eq(schema.courseActivity.courseId, courseId));
+
+  return activities.map((activity) => activity.id);
 }
 
 async function getCourseNewsfeedIds(tx: DbOrTxClient, courseId: string): Promise<string[]> {
@@ -71,11 +91,20 @@ export async function getStudentCourseProgressImpactCounts(input: {
 
   try {
     const lessonIds = await getCourseLessonIds(db, courseId);
+    const activityIds = await getCourseActivityIds(db, courseId);
     const newsfeedIds = await getCourseNewsfeedIds(db, courseId);
 
     const lessonScope =
       lessonIds.length > 0
         ? and(eq(schema.lessonCompletion.profileId, profileId), inArray(schema.lessonCompletion.lessonId, lessonIds))
+        : sql`false`;
+
+    const activityScope =
+      activityIds.length > 0
+        ? and(
+            eq(schema.activityCompletion.profileId, profileId),
+            inArray(schema.activityCompletion.activityId, activityIds)
+          )
         : sql`false`;
 
     const [completedLessonsResult, totalLessonsResult] = await Promise.all([
@@ -84,6 +113,22 @@ export async function getStudentCourseProgressImpactCounts(input: {
         .from(schema.lessonCompletion)
         .where(and(lessonScope, eq(schema.lessonCompletion.isComplete, true))),
       db.select({ total: count() }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId))
+    ]);
+
+    const [completedActivitiesResult, totalActivitiesResult, activityAttemptsResult] = await Promise.all([
+      db
+        .select({ total: count() })
+        .from(schema.activityCompletion)
+        .where(and(activityScope, eq(schema.activityCompletion.isComplete, true))),
+      db.select({ total: count() }).from(schema.courseActivity).where(eq(schema.courseActivity.courseId, courseId)),
+      activityIds.length > 0
+        ? db
+            .select({ total: count() })
+            .from(schema.scormAttempt)
+            .where(
+              and(eq(schema.scormAttempt.profileId, profileId), inArray(schema.scormAttempt.activityId, activityIds))
+            )
+        : Promise.resolve([{ total: 0 }])
     ]);
 
     const [exerciseSubmissionsResult, lessonCommentsResult, newsfeedPostsResult, newsfeedCommentsResult] =
@@ -166,6 +211,9 @@ export async function getStudentCourseProgressImpactCounts(input: {
     return {
       completedLessons: completedLessonsResult[0]?.total ?? 0,
       totalLessons: totalLessonsResult[0]?.total ?? 0,
+      completedActivities: completedActivitiesResult[0]?.total ?? 0,
+      totalActivities: totalActivitiesResult[0]?.total ?? 0,
+      activityAttempts: activityAttemptsResult[0]?.total ?? 0,
       exerciseSubmissions: exerciseSubmissionsResult[0]?.total ?? 0,
       lessonComments: lessonCommentsResult[0]?.total ?? 0,
       courseNewsfeedActivity,
@@ -193,16 +241,22 @@ export type DeletedStudentCourseProgress = {
   resetExerciseIds: string[];
 };
 
+export type ResetStudentCourseProgressHooks = {
+  resetActivityLearnerState?: ResetActivityLearnerState;
+};
+
 /**
  * Deletes every progress row a student owns in one course using the given transaction client.
  */
 export async function deleteStudentCourseProgress(
   tx: DbOrTxClient,
-  input: StudentCourseProgressInput
+  input: StudentCourseProgressInput,
+  hooks: ResetStudentCourseProgressHooks = {}
 ): Promise<DeletedStudentCourseProgress> {
   const { courseId, groupMemberId, profileId } = input;
 
   const lessonIds = await getCourseLessonIds(tx, courseId);
+  const activityIds = await getCourseActivityIds(tx, courseId);
   const newsfeedIds = await getCourseNewsfeedIds(tx, courseId);
   const studentNewsfeedPostIds = await getStudentCourseNewsfeedPostIds(tx, courseId, groupMemberId);
 
@@ -260,6 +314,24 @@ export async function deleteStudentCourseProgress(
           .returning({ id: schema.lessonVideoProgress.id })
       : [];
 
+  const deletedActivityCompletions =
+    activityIds.length > 0
+      ? await tx
+          .delete(schema.activityCompletion)
+          .where(
+            and(
+              eq(schema.activityCompletion.profileId, profileId),
+              inArray(schema.activityCompletion.activityId, activityIds)
+            )
+          )
+          .returning({ id: schema.activityCompletion.id })
+      : [];
+
+  const deletedActivityAttempts =
+    activityIds.length > 0 && hooks.resetActivityLearnerState
+      ? await hooks.resetActivityLearnerState(activityIds, profileId, tx)
+      : 0;
+
   const deletedAttendance = await tx
     .delete(schema.groupAttendance)
     .where(and(eq(schema.groupAttendance.courseId, courseId), eq(schema.groupAttendance.studentId, groupMemberId)))
@@ -299,6 +371,8 @@ export async function deleteStudentCourseProgress(
 
   const summary = {
     lessonCompletion: deletedLessonCompletions.length,
+    activityCompletions: deletedActivityCompletions.length,
+    activityAttempts: deletedActivityAttempts,
     lessonVideoProgress: deletedVideoProgress.length,
     submissions: deletedSubmissions.length,
     groupAttendance: deletedAttendance.length,
@@ -322,11 +396,12 @@ export async function deleteStudentCourseProgress(
  * Clears all learner progress for one student in one course inside a single transaction.
  */
 export async function resetStudentCourseProgress(
-  input: StudentCourseProgressInput
+  input: StudentCourseProgressInput,
+  hooks: ResetStudentCourseProgressHooks = {}
 ): Promise<DeletedStudentCourseProgress> {
   try {
     return await db.transaction(async (tx) => {
-      const deleted = await deleteStudentCourseProgress(tx, input);
+      const deleted = await deleteStudentCourseProgress(tx, input, hooks);
 
       await tx
         .update(schema.groupmember)

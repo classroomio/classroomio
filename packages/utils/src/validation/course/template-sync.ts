@@ -34,7 +34,7 @@ export const ZPullTemplateUpdates = z.object({
   settingKeys: z.array(z.enum(SYNCABLE_SETTING_KEYS)).default([])
 });
 
-export type TemplateUnitKind = 'section' | 'lesson' | 'exercise';
+export type TemplateUnitKind = 'section' | 'lesson' | 'exercise' | 'activity';
 
 export type SyncSection = {
   id: string;
@@ -70,6 +70,19 @@ export type SyncExercise = {
   sourceSyncedAt: string | null;
   childUpdatedAt: (string | null)[];
   submissionCount: number;
+};
+
+export type SyncActivity = {
+  id: string;
+  title: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+  order: number;
+  sectionId: string | null;
+  sourceId: string | null;
+  sourceSyncedAt: string | null;
+  packageVersionId?: string | null;
+  packageUpdatedAt?: string | null;
 };
 
 export type SettingMetadata = {
@@ -146,6 +159,7 @@ type CopyRef = {
   title: string;
   locales: string[];
   submissionCount: number;
+  packageUpdatedAt?: string | null;
 };
 
 function time(value: string | null | undefined) {
@@ -195,7 +209,12 @@ function parentOfExercise(exercise: SyncExercise) {
   return { parentId: null, parentKind: null };
 }
 
-function indexCopies(sections: SyncSection[], lessons: SyncLesson[], exercises: SyncExercise[]) {
+function indexCopies(
+  sections: SyncSection[],
+  lessons: SyncLesson[],
+  exercises: SyncExercise[],
+  activities: SyncActivity[] = []
+) {
   const copies = new Map<string, CopyRef>();
 
   for (const section of sections) {
@@ -237,6 +256,21 @@ function indexCopies(sections: SyncSection[], lessons: SyncLesson[], exercises: 
       title: exercise.title,
       locales: [],
       submissionCount: exercise.submissionCount
+    });
+  }
+
+  for (const activity of activities) {
+    if (!activity.sourceId) continue;
+
+    copies.set(activity.sourceId, {
+      id: activity.id,
+      changedAt: activity.updatedAt,
+      sourceSyncedAt: activity.sourceSyncedAt,
+      order: activity.order,
+      title: activity.title,
+      locales: [],
+      submissionCount: 0,
+      packageUpdatedAt: activity.packageUpdatedAt ?? null
     });
   }
 
@@ -292,11 +326,15 @@ export function detectTemplateContentChanges(input: {
   templateSections: SyncSection[];
   templateLessons: SyncLesson[];
   templateExercises: SyncExercise[];
+  templateActivities?: SyncActivity[];
   courseSections: SyncSection[];
   courseLessons: SyncLesson[];
   courseExercises: SyncExercise[];
+  courseActivities?: SyncActivity[];
 }): DetectedTemplateUnit[] {
-  const copies = indexCopies(input.courseSections, input.courseLessons, input.courseExercises);
+  const templateActivities = input.templateActivities ?? [];
+  const courseActivities = input.courseActivities ?? [];
+  const copies = indexCopies(input.courseSections, input.courseLessons, input.courseExercises, courseActivities);
   const sectionTitle = new Map(input.templateSections.map((section) => [section.id, section.title ?? '']));
   const lessonTitle = new Map(input.templateLessons.map((lesson) => [lesson.id, lesson.title]));
   const units: DetectedTemplateUnit[] = [];
@@ -362,6 +400,56 @@ export function detectTemplateContentChanges(input: {
       parentTitle
     );
     if (detected) units.push(detected);
+  }
+
+  for (const activity of templateActivities) {
+    const copy = copies.get(activity.id);
+    const detected = classifyUnit(
+      {
+        id: activity.id,
+        kind: 'activity',
+        title: activity.title,
+        order: activity.order,
+        createdAt: activity.createdAt,
+        changedAt: maxStamp([activity.updatedAt, activity.packageUpdatedAt]),
+        parentId: activity.sectionId,
+        locales: []
+      },
+      copy,
+      input.courseCreatedAt,
+      activity.sectionId ? (sectionTitle.get(activity.sectionId) ?? null) : null
+    );
+    if (detected) {
+      units.push(detected);
+      continue;
+    }
+
+    if (
+      copy &&
+      activity.packageUpdatedAt &&
+      later(activity.packageUpdatedAt, copy.packageUpdatedAt) &&
+      later(activity.packageUpdatedAt, copy.sourceSyncedAt)
+    ) {
+      const editedLocally = Boolean(copy && later(copy.changedAt, copy.sourceSyncedAt));
+
+      units.push({
+        id: activity.id,
+        kind: 'activity',
+        change: 'updated',
+        title: activity.title,
+        order: activity.order,
+        parentId: activity.sectionId,
+        parentTitle: activity.sectionId ? (sectionTitle.get(activity.sectionId) ?? null) : null,
+        editedLocally,
+        editedAt: editedLocally ? (copy?.changedAt ?? null) : null,
+        removedLocally: false,
+        locked: false,
+        submissionCount: copy?.submissionCount ?? 0,
+        titleChanged: false,
+        contentChanged: true,
+        localesAdded: []
+      });
+    }
   }
 
   return units;
@@ -630,6 +718,11 @@ export function insertionOrder(
   for (let siblingIndex = index - 1; siblingIndex >= 0; siblingIndex -= 1) {
     const copy = copiesBySourceId.get(sorted[siblingIndex].id);
     if (copy) return copy.order + 1;
+  }
+
+  for (let siblingIndex = index + 1; siblingIndex < sorted.length; siblingIndex += 1) {
+    const copy = copiesBySourceId.get(sorted[siblingIndex].id);
+    if (copy) return copy.order;
   }
 
   if (placedCopies.length === 0) return 0;

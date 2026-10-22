@@ -3,6 +3,7 @@ import * as schema from '@db/schema';
 import { and, asc, count, desc, eq, ilike, inArray, ne, or, sql } from 'drizzle-orm';
 import type { SQL } from 'drizzle-orm';
 
+import { isActivityCompletedSql } from '@db/queries/course/progression';
 import { AUDIENCE_ACTIVITY_WINDOW_DAYS } from '@cio/utils/validation/organization';
 import { ROLE } from '@cio/utils/constants';
 import { type DbOrTxClient, db } from '@db/drizzle';
@@ -46,10 +47,10 @@ const lastLoginAtSql = sql<string | null>`(
 /**
  * Per-learner enrolment and progress across this org's courses.
  *
- * A course's work is its lessons **and** its exercises, matching
- * `calcCourseProgress` in the dashboard — the definition the course card and
- * LMS dashboard already show. Counting lessons alone reported a learner who
- * had watched everything and submitted nothing as 100% complete.
+ * A course's work is its lessons, its exercises **and** its activities,
+ * matching `calcCourseProgress` in the dashboard — the definition the course
+ * card and LMS dashboard already show. Counting lessons alone reported a
+ * learner who had watched everything and submitted nothing as 100% complete.
  *
  * Not `course_completion_record`, which only exists for compliance courses.
  * The `total_items > 0` guard stops an empty course counting as completed.
@@ -80,7 +81,8 @@ const enrolmentSummaryLateral = (orgId: string): SQL => sql`(
           FROM exercise e
           LEFT JOIN lesson el ON el.id = e.lesson_id
           WHERE e.course_id = c.id OR el.course_id = c.id
-        ) AS total_items,
+        )
+        + (SELECT COUNT(*) FROM course_activity ca WHERE ca.course_id = c.id) AS total_items,
       (
         SELECT COUNT(*)
         FROM lesson l
@@ -97,6 +99,12 @@ const enrolmentSummaryLateral = (orgId: string): SQL => sql`(
           LEFT JOIN lesson el ON el.id = e.lesson_id
           WHERE (e.course_id = c.id OR el.course_id = c.id)
             AND s.submitted_by = gm.id
+        )
+        + (
+          SELECT COUNT(*)
+          FROM course_activity ca
+          WHERE ca.course_id = c.id
+            AND ${isActivityCompletedSql('ca', sql`${schema.profile.id}`)}
         ) AS completed_items
     FROM groupmember gm
     JOIN "group" g ON g.id = gm.group_id AND g.organization_id = ${orgId}

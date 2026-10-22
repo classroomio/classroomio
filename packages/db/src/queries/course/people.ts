@@ -14,8 +14,8 @@ import {
   type TCoursePeopleSortOrder
 } from '@cio/utils/validation/course';
 import { db } from '@db/drizzle';
-import { isExerciseCompletedSql } from '@db/queries/course/progression';
-import { deleteStudentCourseProgress } from '@db/queries/course/reset-progress';
+import { isActivityCompletedSql, isExerciseCompletedSql } from '@db/queries/course/progression';
+import { deleteStudentCourseProgress, type ResetStudentCourseProgressHooks } from '@db/queries/course/reset-progress';
 
 export type CourseMemberWithProfile = TGroupmember & {
   profile: {
@@ -100,7 +100,7 @@ export async function getCourseMembers(courseId: string): Promise<CourseMemberWi
 }
 
 /**
- * Course work is its lessons and its exercises, matching `calcCourseProgress`.
+ * Course work is its lessons, its exercises and its activities, matching `calcCourseProgress`.
  * An exercise belongs to the course directly or through its lesson, and an
  * exercise submission is keyed by groupmember rather than profile.
  */
@@ -112,7 +112,8 @@ function progressSummaryLateral(courseId: string): SQL {
       FROM exercise ex
       LEFT JOIN lesson el ON el.id = ex.lesson_id
       WHERE ex.course_id = ${courseId} OR el.course_id = ${courseId}
-    )
+    ) +
+    (SELECT COUNT(*) FROM course_activity ca WHERE ca.course_id = ${courseId})
   )::int`;
 
   const completedItems = sql<number>`(
@@ -131,6 +132,12 @@ function progressSummaryLateral(courseId: string): SQL {
       LEFT JOIN lesson el ON el.id = ex.lesson_id
       WHERE (ex.course_id = ${courseId} OR el.course_id = ${courseId})
         AND ${isExerciseCompletedSql('ex', { groupMemberId: sql`${schema.groupmember.id}` })}
+    ) +
+    (
+      SELECT COUNT(*)
+      FROM course_activity ca
+      WHERE ca.course_id = ${courseId}
+        AND ${isActivityCompletedSql('ca', sql`${schema.groupmember.profileId}`)}
     )
   )::int`;
 
@@ -539,7 +546,11 @@ export async function updateCourseMember(
  * @param memberId Member ID
  * @returns Deleted member or null if not found
  */
-export async function deleteCourseMember(courseId: string, memberId: string): Promise<TGroupmember | null> {
+export async function deleteCourseMember(
+  courseId: string,
+  memberId: string,
+  hooks: ResetStudentCourseProgressHooks = {}
+): Promise<TGroupmember | null> {
   try {
     // Verify member belongs to course
     const member = await getCourseMember(courseId, memberId);
@@ -549,7 +560,11 @@ export async function deleteCourseMember(courseId: string, memberId: string): Pr
 
     return await db.transaction(async (tx) => {
       if (member.roleId === ROLE.STUDENT && member.profileId) {
-        await deleteStudentCourseProgress(tx, { courseId, groupMemberId: memberId, profileId: member.profileId });
+        await deleteStudentCourseProgress(
+          tx,
+          { courseId, groupMemberId: memberId, profileId: member.profileId },
+          hooks
+        );
       }
 
       await tx.delete(schema.questionAnswer).where(eq(schema.questionAnswer.groupMemberId, memberId));

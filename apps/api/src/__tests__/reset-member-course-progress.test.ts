@@ -35,6 +35,7 @@ vi.mock('@cio/core/services/webhook/emit', () => ({
 
 import { AppError } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
+import { resetActivityLearnerState } from '@cio/core/services/activity/providers';
 import { getCourseMember } from '@cio/db/queries/course/people';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
@@ -89,7 +90,9 @@ describe('resetMemberCourseProgress', () => {
       courseNewsfeedComments: 0,
       courseCertificateIssues: 0,
       courseCompletionRecords: 0,
-      aiChatConversations: 0
+      aiChatConversations: 0,
+      activityCompletions: 0,
+      activityAttempts: 0
     };
 
     vi.mocked(getCourseMember).mockResolvedValue({
@@ -106,11 +109,14 @@ describe('resetMemberCourseProgress', () => {
 
     const result = await resetMemberCourseProgress('course-1', 'member-1', 'actor-1');
 
-    expect(resetStudentCourseProgress).toHaveBeenCalledWith({
-      courseId: 'course-1',
-      groupMemberId: 'member-1',
-      profileId: 'profile-1'
-    });
+    expect(resetStudentCourseProgress).toHaveBeenCalledWith(
+      {
+        courseId: 'course-1',
+        groupMemberId: 'member-1',
+        profileId: 'profile-1'
+      },
+      { resetActivityLearnerState }
+    );
     expect(result).toEqual(summary);
     expect(invalidateOrgStats).toHaveBeenCalledWith('org-1');
     expect(emitCourseWebhookEvent).toHaveBeenCalledWith('course-1', 'lesson.completion.updated', {

@@ -1135,9 +1135,13 @@ export async function getAssetStorageSummaryByOrg(
       bytesByKind[row.kind || 'unknown'] = Number(row.bytes ?? 0);
     }
 
+    const scormVersionBytes = await getScormVersionBytesByOrg(orgId, options, db);
+    const scormAssetBytes = bytesByKind['scorm'] ?? 0;
+    bytesByKind['scorm'] = scormVersionBytes;
+
     return {
-      totalBytes: Number(totalRow?.totalBytes ?? 0),
-      internalBytes: Number(totalRow?.internalBytes ?? 0),
+      totalBytes: Number(totalRow?.totalBytes ?? 0) - scormAssetBytes + scormVersionBytes,
+      internalBytes: Number(totalRow?.internalBytes ?? 0) - scormAssetBytes + scormVersionBytes,
       externalAssetCount: Number(totalRow?.externalAssetCount ?? 0),
       bytesByKind
     };
@@ -1145,6 +1149,39 @@ export async function getAssetStorageSummaryByOrg(
     console.error('getAssetStorageSummaryByOrg error:', error);
     throw new Error(`Failed to get asset storage summary: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
+}
+
+/**
+ * SCORM assets keep `byte_size` unused; their storage is the ZIP plus the
+ * extracted files recorded on each package version row.
+ */
+async function getScormVersionBytesByOrg(
+  orgId: string,
+  options: { includeArchived?: boolean; includeExternal?: boolean },
+  dbClient: DbOrTxClient
+): Promise<number> {
+  const conditions: SQL[] = [eq(schema.asset.organizationId, orgId), eq(schema.asset.kind, 'scorm')];
+
+  if (!options.includeArchived) {
+    conditions.push(ne(schema.asset.status, 'archived'));
+  }
+
+  if (!options.includeExternal) {
+    conditions.push(eq(schema.asset.isExternal, false));
+  }
+
+  const [row] = await dbClient
+    .select({
+      bytes:
+        sql<number>`coalesce(sum(coalesce(${schema.contentPackageVersion.zipBytes}, 0) + coalesce(${schema.contentPackageVersion.extractedBytes}, 0)), 0)::bigint`.as(
+          'bytes'
+        )
+    })
+    .from(schema.contentPackageVersion)
+    .innerJoin(schema.asset, eq(schema.asset.id, schema.contentPackageVersion.assetId))
+    .where(and(...conditions));
+
+  return Number(row?.bytes ?? 0);
 }
 
 export type AssetRow = InferSelectModel<typeof schema.asset>;

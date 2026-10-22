@@ -43,10 +43,18 @@ vi.mock('@cio/core/config/storage', async (importOriginal) => {
     ...original,
     getS3Client: () => storage.client,
     getStorageConfig: () => ({
-      ...original.getStorageConfig(),
+      endpoint: 'http://localhost:9000',
+      region: 'us-east-1',
+      accessKeyId: 'test',
+      secretAccessKey: 'test',
+      forcePathStyle: true,
       bucketVideos: 'videos',
       bucketDocuments: 'documents',
-      bucketMedia: 'media'
+      bucketMedia: 'media',
+      bucketScorm: 'scorm',
+      mediaPublicBaseUrl: null,
+      presignUploadExpiresSeconds: 3600,
+      presignDownloadExpiresSeconds: 3600
     })
   };
 });
@@ -71,8 +79,13 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
     const rollback = new Error('rollback');
     try {
       await db.transaction(async (tx) => {
-        const [profile] = await tx.select({ id: schema.profile.id }).from(schema.profile).limit(1);
-        if (!profile) throw rollback;
+        const profileId = crypto.randomUUID();
+        const email = `transfer-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
+        await tx.insert(schema.user).values({ id: profileId, name: 'Transfer', email });
+        const [profile] = await tx
+          .insert(schema.profile)
+          .values({ id: profileId, fullname: 'Transfer', username: `transfer-${Date.now()}`, email })
+          .returning({ id: schema.profile.id });
 
         const templateOrg = await createOrganization({ name: `transfer-source-${Date.now()}` }, tx);
         const courseOrg = await createOrganization({ name: `transfer-target-${Date.now()}` }, tx);
@@ -161,7 +174,13 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
     await expect(
       withAssetStorageRollback(() =>
         db.transaction(async (tx) => {
-          const [profile] = await tx.select({ id: schema.profile.id }).from(schema.profile).limit(1);
+          const profileId = crypto.randomUUID();
+          const email = `transfer-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
+          await tx.insert(schema.user).values({ id: profileId, name: 'Transfer', email });
+          const [profile] = await tx
+            .insert(schema.profile)
+            .values({ id: profileId, fullname: 'Transfer', username: `transfer-${Date.now()}`, email })
+            .returning({ id: schema.profile.id });
           const sourceOrg = await createOrganization({ name: `transfer-fail-source-${Date.now()}` }, tx);
           const targetOrg = await createOrganization({ name: `transfer-fail-target-${Date.now()}` }, tx);
           const [video] = await tx
@@ -188,5 +207,150 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
 
     expect([...storage.objects].sort()).toEqual(sourceObjects.sort());
     expect(copiedAssetId).not.toBe('');
+  });
+
+  it('copies a SCORM package with its current version, units and storage prefix', async () => {
+    const { withAssetStorageRollback, transferScormPackageAsset } = await import(
+      '@cio/core/services/assets/asset-transfer'
+    );
+    const { db } = await import('@db/drizzle');
+    const { createOrganization } = await import('@db/queries/organization');
+    const schema = await import('@db/schema');
+
+    const rollback = new Error('rollback');
+    try {
+      await withAssetStorageRollback(() =>
+        db.transaction(async (tx) => {
+          const profileId = crypto.randomUUID();
+          const email = `transfer-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
+          await tx.insert(schema.user).values({ id: profileId, name: 'Transfer', email });
+          const [profile] = await tx
+            .insert(schema.profile)
+            .values({ id: profileId, fullname: 'Transfer', username: `transfer-${Date.now()}`, email })
+            .returning({ id: schema.profile.id });
+
+          const sourceOrg = await createOrganization({ name: `scorm-source-${Date.now()}` }, tx);
+          const targetOrg = await createOrganization({ name: `scorm-target-${Date.now()}` }, tx);
+          const [source] = await tx
+            .insert(schema.asset)
+            .values({
+              organizationId: sourceOrg.id,
+              kind: 'scorm',
+              provider: 'upload',
+              storageKey: `scorm/source-placeholder`,
+              title: 'Safety library'
+            })
+            .returning();
+          await tx
+            .update(schema.asset)
+            .set({ storageKey: `scorm/${source.id}` })
+            .where(eq(schema.asset.id, source.id));
+
+          const [first] = await tx
+            .insert(schema.contentPackageVersion)
+            .values({
+              assetId: source.id,
+              versionNumber: 1,
+              isCurrent: false,
+              status: 'ready',
+              format: 'scorm12',
+              title: 'Safety library',
+              uploadKey: `scorm/${source.id}/v1.zip`,
+              contentPrefix: `scorm/${source.id}/v1`
+            })
+            .returning();
+          const [second] = await tx
+            .insert(schema.contentPackageVersion)
+            .values({
+              assetId: source.id,
+              versionNumber: 2,
+              isCurrent: true,
+              status: 'ready',
+              format: 'scorm2004_4',
+              title: 'Safety library',
+              uploadKey: `scorm/${source.id}/v2.zip`,
+              contentPrefix: `scorm/${source.id}/v2`
+            })
+            .returning();
+          await tx.insert(schema.contentPackageUnit).values([
+            {
+              packageVersionId: first.id,
+              identifier: 'sco-1',
+              title: 'Old module',
+              position: 1,
+              unitType: 'sco',
+              href: 'sco.html',
+              masteryScoreRaw: '10'
+            },
+            {
+              packageVersionId: second.id,
+              identifier: 'sco-1',
+              title: 'New module',
+              position: 1,
+              unitType: 'sco',
+              href: 'sco.html',
+              masteryScoreRaw: '70',
+              passingScoreScaled: '0.8',
+              completionThreshold: '0.6',
+              formatDetails: { format: 'scorm2004', maxTimeAllowed: 'PT45M', timeLimitAction: null }
+            }
+          ]);
+          storage.objects.add(`scorm:scorm/${source.id}/v1.zip`);
+          storage.objects.add(`scorm:scorm/${source.id}/v1/sco.html`);
+          storage.objects.add(`scorm:scorm/${source.id}/v2.zip`);
+          storage.objects.add(`scorm:scorm/${source.id}/v2/sco.html`);
+          storage.objects.add(`scorm:scorm/${source.id}/v2.index.json`);
+
+          const transfer = await transferScormPackageAsset(source, targetOrg.id, profile.id, tx);
+
+          expect(transfer.asset.id).not.toBe(source.id);
+          expect(transfer.replacements).toContainEqual([source.id, transfer.asset.id]);
+          expect(transfer.asset).toMatchObject({
+            organizationId: targetOrg.id,
+            kind: 'scorm',
+            storageKey: `scorm/${transfer.asset.id}`
+          });
+
+          const versions = await tx
+            .select()
+            .from(schema.contentPackageVersion)
+            .where(eq(schema.contentPackageVersion.assetId, transfer.asset.id));
+          expect(versions.map((version) => [version.versionNumber, version.isCurrent, version.status])).toEqual([
+            [1, true, 'ready']
+          ]);
+          expect(versions[0]?.format).toBe('scorm2004_4');
+
+          const units = await tx
+            .select({
+              identifier: schema.contentPackageUnit.identifier,
+              title: schema.contentPackageUnit.title,
+              masteryScoreRaw: schema.contentPackageUnit.masteryScoreRaw,
+              passingScoreScaled: schema.contentPackageUnit.passingScoreScaled,
+              completionThreshold: schema.contentPackageUnit.completionThreshold,
+              formatDetails: schema.contentPackageUnit.formatDetails
+            })
+            .from(schema.contentPackageUnit)
+            .innerJoin(
+              schema.contentPackageVersion,
+              eq(schema.contentPackageUnit.packageVersionId, schema.contentPackageVersion.id)
+            )
+            .where(eq(schema.contentPackageVersion.assetId, transfer.asset.id));
+          expect(units).toHaveLength(1);
+          expect(units[0]).toMatchObject({ identifier: 'sco-1', title: 'New module' });
+          expect(Number(units[0]?.masteryScoreRaw)).toBe(70);
+          expect(Number(units[0]?.passingScoreScaled)).toBeCloseTo(0.8);
+          expect(Number(units[0]?.completionThreshold)).toBeCloseTo(0.6);
+          expect(units[0]?.formatDetails).toMatchObject({ format: 'scorm2004', maxTimeAllowed: 'PT45M' });
+
+          expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v1.zip`)).toBe(true);
+          expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v1/sco.html`)).toBe(true);
+          expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v1.index.json`)).toBe(true);
+
+          throw rollback;
+        })
+      );
+    } catch (error) {
+      if (error !== rollback) throw error;
+    }
   });
 });

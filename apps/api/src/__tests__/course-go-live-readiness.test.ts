@@ -7,6 +7,7 @@ var TX = { __transaction: true };
 import { ContentType } from '@cio/utils/constants';
 import { getCourseById } from '@cio/db/queries/course';
 import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
+import { getActivitiesByCourseId } from '@cio/db/queries/activity';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { getOrganizationById } from '@cio/db/queries/organization';
 import { updateCourse } from '@cio/core/services/course/course';
@@ -18,6 +19,8 @@ import {
   publishCourseWhenReady
 } from '@cio/core/services/course/go-live-readiness';
 
+import { ACTIVITY_PROVIDERS } from '@cio/core/services/activity/providers';
+
 vi.mock('@cio/db/queries/course', () => ({
   getCourseById: vi.fn()
 }));
@@ -28,6 +31,20 @@ vi.mock('@cio/db/queries/course/content', () => ({
 
 vi.mock('@cio/db/queries/tag', () => ({
   getCourseOrganizationId: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/activity', () => ({
+  getActivitiesByCourseId: vi.fn()
+}));
+
+vi.mock('@cio/core/services/activity/providers', () => ({
+  ACTIVITY_PROVIDERS: {
+    scorm: {
+      goLiveBlockers: vi.fn().mockResolvedValue([])
+    }
+  },
+  attachScormPackage: vi.fn().mockResolvedValue(undefined),
+  detachScormPackage: vi.fn().mockResolvedValue(undefined)
 }));
 
 vi.mock('@cio/db/queries/organization', () => ({
@@ -59,6 +76,10 @@ vi.mock('@cio/core/config/dashboard-url', () => ({
 
 const mockedGetCourseById = vi.mocked(getCourseById);
 const mockedGetCourseContentItems = vi.mocked(getCourseContentItems);
+const mockedGetActivitiesByCourseId = vi.mocked(getActivitiesByCourseId);
+const mockedScormBlockers = vi.mocked(
+  (ACTIVITY_PROVIDERS as unknown as { scorm: { goLiveBlockers: () => Promise<unknown[]> } }).scorm.goLiveBlockers
+);
 const mockedGetCourseOrganizationId = vi.mocked(getCourseOrganizationId);
 const mockedGetOrganizationById = vi.mocked(getOrganizationById);
 const mockedUpdateCourse = vi.mocked(updateCourse);
@@ -124,6 +145,9 @@ function buildContentItem(overrides: Partial<CourseContentItemRow> = {}): Course
     documentsCount: 0,
     questionCount: null,
     dueBy: null,
+    slug: null,
+    activityKind: null,
+    activityStatus: null,
     ...overrides
   };
 }
@@ -244,6 +268,7 @@ describe('course go-live service', () => {
       siteName: 'school'
     } as never);
     mockedGenerateUniqueCourseSlug.mockResolvedValue('workplace-safety-essentials');
+    mockedGetActivitiesByCourseId.mockResolvedValue([]);
   });
 
   it('suggests a unique slug when a ready course has no slug', async () => {
@@ -256,6 +281,26 @@ describe('course go-live service', () => {
     expect(readiness.suggestedFixes.slug).toBe('workplace-safety-essentials');
     expect(readiness.courseUrl).toBe('https://school.example.com/course/workplace-safety-essentials');
     expect(mockedGenerateUniqueCourseSlug).toHaveBeenCalledWith('workplace-safety-essentials');
+  });
+
+  it('blocks going live while a SCORM activity has no ready package', async () => {
+    mockedGetCourseById.mockResolvedValue([buildCourse()] as never);
+    mockedGetCourseContentItems.mockResolvedValue([
+      buildContentItem({ id: 'act-1', type: ContentType.Activity, title: 'Package' })
+    ] as never);
+    mockedGetActivitiesByCourseId.mockResolvedValue([{ id: 'act-1', kind: 'scorm' }] as never);
+    mockedScormBlockers.mockResolvedValueOnce([
+      {
+        code: 'ACTIVITY_NOT_READY',
+        message: 'Add a SCORM package before going live.',
+        target: 'activity:act-1'
+      }
+    ]);
+
+    const readiness = await getCourseGoLiveReadiness('course-1');
+
+    expect(readiness.ready).toBe(false);
+    expect(readiness.blockers.map((blocker) => blocker.code)).toContain('ACTIVITY_NOT_READY');
   });
 
   it('does not publish when readiness blockers remain', async () => {

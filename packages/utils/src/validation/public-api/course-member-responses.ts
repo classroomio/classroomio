@@ -43,7 +43,7 @@ export const ZPublicApiCourseMemberListItemResponse = ZPublicApiCourseMemberDeta
         kind: z.literal('content'),
         position: z.number(),
         title: z.string(),
-        contentType: z.enum(['lesson', 'exercise'])
+        contentType: z.enum(['lesson', 'exercise', 'activity'])
       })
     ])
     .optional()
@@ -54,6 +54,8 @@ export const ZPublicApiCourseMemberListItemResponse = ZPublicApiCourseMemberDeta
 
 export const ZPublicApiCourseMemberProgressResetResponse = z.object({
   lessonCompletion: z.number(),
+  activityCompletions: z.number(),
+  activityAttempts: z.number(),
   lessonVideoProgress: z.number(),
   submissions: z.number(),
   groupAttendance: z.number(),
@@ -95,6 +97,9 @@ export const ZPublicApiCourseMemberAnalyticsResponse = z.object({
     .object({
       completedLessons: z.number(),
       totalLessons: z.number(),
+      completedActivities: z.number(),
+      totalActivities: z.number(),
+      activityAttempts: z.number(),
       exerciseSubmissions: z.number(),
       lessonComments: z.number(),
       courseNewsfeedActivity: z.number(),

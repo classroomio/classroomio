@@ -15,6 +15,7 @@ import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
 import type { PaginatedCourseMember, PaginatedCourseMembersOptions } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { resetActivityLearnerState } from '@cio/core/services/activity/providers';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { emitCourseMemberWebhookEvent, emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
@@ -397,7 +398,7 @@ export async function updateMember(courseId: string, memberId: string, data: Par
  */
 export async function deleteMember(courseId: string, memberId: string) {
   try {
-    const deleted = await deleteCourseMember(courseId, memberId);
+    const deleted = await deleteCourseMember(courseId, memberId, { resetActivityLearnerState });
     if (!deleted) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }
@@ -436,11 +437,14 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
       throw new AppError('Only student progress can be reset', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    const { summary, resetLessonIds, resetExerciseIds } = await resetStudentCourseProgress({
-      courseId,
-      groupMemberId: memberId,
-      profileId: member.profileId
-    });
+    const { summary, resetLessonIds, resetExerciseIds } = await resetStudentCourseProgress(
+      {
+        courseId,
+        groupMemberId: memberId,
+        profileId: member.profileId
+      },
+      { resetActivityLearnerState }
+    );
 
     console.info('resetMemberCourseProgress', {
       actorProfileId,

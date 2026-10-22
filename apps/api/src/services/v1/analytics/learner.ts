@@ -14,6 +14,8 @@ async function loadLearnerAnalytics(orgId: string, profileId: string) {
     lessonsCompleted: course.lessons_completed,
     exercisesCount: course.exercises_count,
     exercisesCompleted: course.exercises_completed,
+    activitiesCount: course.activities_count ?? 0,
+    activitiesCompleted: course.activities_completed ?? 0,
     progressPercentage: course.progress_percentage,
     progressFailed: course.progress_failed,
     averageGrade: course.average_grade,

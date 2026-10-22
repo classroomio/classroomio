@@ -222,8 +222,9 @@ export async function recordOrganizationMemberAudit(
 }
 
 /**
- * Recomputes `last_active_at` from page events and lesson completions, which
- * ingest alone misses — completions never flow through page events.
+ * Recomputes `last_active_at` from page events, lesson and activity
+ * completions, and SCORM commits, which ingest alone misses — completions
+ * and commits never flow through page events.
  *
  * Only moves timestamps forward, so re-running is always safe.
  */
@@ -254,9 +255,38 @@ export async function reconcileMemberLastActive(lookbackDays: number, dbClient: 
           AND lc.updated_at >= now() - make_interval(days => ${lookbackDays})
         GROUP BY 1, 2
       ),
+      activity_activity AS (
+        SELECT g.organization_id AS org_id,
+               ac.profile_id AS user_id,
+               MAX(ac.updated_at) AS last_at
+        FROM activity_completion ac
+        JOIN course_activity a ON a.id = ac.activity_id
+        JOIN course c ON c.id = a.course_id
+        JOIN "group" g ON g.id = c.group_id
+        WHERE ac.profile_id IS NOT NULL
+          AND g.organization_id IS NOT NULL
+          AND ac.updated_at IS NOT NULL
+          AND ac.updated_at >= now() - make_interval(days => ${lookbackDays})
+        GROUP BY 1, 2
+      ),
+      scorm_activity AS (
+        SELECT g.organization_id AS org_id,
+               sa.profile_id AS user_id,
+               MAX(st.last_commit_at) AS last_at
+        FROM scorm_sco_attempt st
+        JOIN scorm_attempt sa ON sa.id = st.attempt_id
+        JOIN course_activity a ON a.id = sa.activity_id
+        JOIN course c ON c.id = a.course_id
+        JOIN "group" g ON g.id = c.group_id
+        WHERE sa.profile_id IS NOT NULL
+          AND g.organization_id IS NOT NULL
+          AND st.last_commit_at IS NOT NULL
+          AND st.last_commit_at >= now() - make_interval(days => ${lookbackDays})
+        GROUP BY 1, 2
+      ),
       combined AS (
         SELECT org_id, user_id, MAX(last_at) AS last_at
-        FROM (SELECT * FROM page_activity UNION ALL SELECT * FROM lesson_activity) signals
+        FROM (SELECT * FROM page_activity UNION ALL SELECT * FROM lesson_activity UNION ALL SELECT * FROM activity_activity UNION ALL SELECT * FROM scorm_activity) signals
         GROUP BY 1, 2
       )
       UPDATE organizationmember om

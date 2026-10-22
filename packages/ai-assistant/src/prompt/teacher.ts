@@ -1,6 +1,7 @@
 import { PREMIUM_QUESTION_TYPE_KEYS, QUESTION_TYPE_REGISTRY } from '@cio/question-types';
 import type { AgentContext } from '../types';
 import { DEPTH_TIERS, describeDepthTier, type CourseTemplate, type DepthTierId } from '../templates';
+import { escapeActivityInstructions } from './context-utils';
 
 export type BuildTeacherSystemPromptOptions = {
   /**
@@ -444,6 +445,21 @@ export function buildTeacherContextMessage(
       ? `The teacher is currently viewing exercise "${context.exerciseTitle}" (ID: ${context.exerciseId})`
       : `The teacher is currently viewing exercise ID: ${context.exerciseId}`;
     contextLines.push(exerciseInfo);
+  }
+  if (context.activityId) {
+    const activityInfo = context.activityTitle
+      ? `The teacher is currently viewing activity "${context.activityTitle}" (ID: ${context.activityId})`
+      : `The teacher is currently viewing activity ID: ${context.activityId}`;
+    contextLines.push(activityInfo);
+
+    if (context.activityInstructions) {
+      const instructions = escapeActivityInstructions(context.activityInstructions);
+      contextLines.push(
+        `Current activity instructions:\n\n<activity_instructions>\n${instructions}\n</activity_instructions>`
+      );
+    } else {
+      contextLines.push('This activity has no instructions yet.');
+    }
   }
   if (context.documentText) {
     const docAssets = context.documentAssets ?? [];
