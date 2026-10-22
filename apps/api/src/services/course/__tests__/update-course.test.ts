@@ -4,7 +4,16 @@ import type { NonAutoGradableQuestionOffender } from '@cio/utils/validation/cour
 const mocks = vi.hoisted(() => ({
   transaction: vi.fn(),
   updateCourse: vi.fn(),
-  replaceCourseTags: vi.fn()
+  replaceCourseTags: vi.fn(),
+  getCourseByIdForUpdate: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/course', () => ({
+  getCourseByIdForUpdate: mocks.getCourseByIdForUpdate
+}));
+
+vi.mock('@cio/db/queries/tag', () => ({
+  getCourseTagsForOrganization: vi.fn()
 }));
 
 vi.mock('@cio/db/drizzle', () => ({
@@ -32,6 +41,7 @@ describe('updateCourseWithTags', () => {
       conversionOffenders: null
     });
     mocks.replaceCourseTags.mockResolvedValue([{ id: 'tag-1' }]);
+    mocks.getCourseByIdForUpdate.mockResolvedValue([{ id: 'course-1', title: 'Course' }]);
   });
 
   it('updates the course and tags on the same transaction client', async () => {

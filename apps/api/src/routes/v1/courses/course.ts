@@ -12,6 +12,7 @@ import {
   ZPublicApiPaginationQuery,
   ZPublicApiUpdateCourse,
   ZPublicApiUpdateCourseEnvelope,
+  ZPublicApiUpdateCourseResponse,
   ZPublicApiUpdateCourseStructure,
   ZPublicApiUpdateCourseStructureResponse
 } from '@cio/utils/validation/public-api';
@@ -27,10 +28,11 @@ import {
 } from '@api/services/v1/courses/course';
 
 import { Hono } from '@api/utils/hono';
-import { handlePublicApiError } from '@api/utils/errors';
+import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { ANY_KEY_RULE } from './docs';
+import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
+import { ANY_KEY_RULE, mcpRateLimitResponse } from './docs';
 
 const CoursesListEnvelope = z.object({ query: ZPublicApiCoursesQuery });
 
@@ -278,17 +280,24 @@ export const v1CourseRouter = new Hono()
   .put(
     '/:courseId',
     describeRoute({
-      description: `Update a course; ${ANY_KEY_RULE}.`,
+      description: `Update a course; ${ANY_KEY_RULE}, and a key with only course:tag:write may send just tagIds or addTagIds.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
-          'Course updated successfully',
-          itemResponse(ZPublicApiCourseResponse, ZPublicApiUpdateCourseEnvelope)
+          'Course updated successfully; tags lists the tags on the course after the update',
+          itemResponse(ZPublicApiUpdateCourseResponse, ZPublicApiUpdateCourseEnvelope)
         ),
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
-        404: { description: 'Course not found' }
+        400: {
+          description:
+            'Invalid request body, tagIds and addTagIds sent together, or a tag id that is not a tag in this organization'
+        },
+        401: errorResponses.unauthorized,
+        403: {
+          description:
+            'The key lacks public_api:*, or it only holds course:tag:write and the body has fields other than tagIds or addTagIds, or tags were sent and the key creator is not an org admin'
+        },
+        404: { description: 'Course not found' },
+        429: mcpRateLimitResponse
       }
     }),
     validator('param', ZPublicApiCourseParam),
@@ -296,9 +305,21 @@ export const v1CourseRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const { course, conversionOffenders } = await updatePublicApiCourseService(orgId, params, payload);
+
+        const fields = Object.keys(payload);
+        const tagsOnly = fields.length > 0 && fields.every((field) => field === 'tagIds' || field === 'addTagIds');
+        const keyScopes = c.get('automationKey')?.scopes ?? [];
+        if (!tagsOnly && !organizationApiKeyHasScopes(keyScopes, ['public_api:*'])) {
+          return c.json(
+            { success: false, error: 'Automation key is missing required scopes', code: ErrorCodes.FORBIDDEN },
+            403
+          );
+        }
+
+        const { course, conversionOffenders } = await updatePublicApiCourseService(orgId, actorId, params, payload);
 
         return c.json(
           {

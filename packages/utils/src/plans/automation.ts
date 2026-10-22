@@ -127,7 +127,13 @@ export const MCP_TOOL_CREDIT_COST = {
   remove_audience_member: 1,
   list_team_members: 0,
   get_team_member: 0,
-  update_team_member: 1
+  update_team_member: 1,
+  list_tags: 0,
+  create_tag: 1,
+  update_tag: 1,
+  create_tag_group: 1,
+  update_tag_group: 1,
+  set_course_tags: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -243,7 +249,8 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'list_audience_members' ||
     toolName === 'get_audience_member' ||
     toolName === 'list_team_members' ||
-    toolName === 'get_team_member'
+    toolName === 'get_team_member' ||
+    toolName === 'list_tags'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

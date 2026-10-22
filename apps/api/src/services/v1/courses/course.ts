@@ -23,8 +23,11 @@ import {
 import { getOrganizationCourses } from '@api/services/organization';
 import { listPaginatedCourseMembers } from '@api/services/course/people';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { assertCourseBelongsToOrganization } from '@api/services/v1/shared';
+import { assertAutomationActor, assertCourseBelongsToOrganization } from '@api/services/v1/shared';
 import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
+import { updateCourseWithTags } from '@api/services/course/update-course';
+import { getCourseTagsForOrganization } from '@cio/db/queries/tag';
+import type { TTag } from '@cio/db/types';
 
 export async function listCoursesService(orgId: string, query: TPublicApiCoursesQuery) {
   return getOrganizationCourses(orgId, '', ROLE.ADMIN, query);
@@ -74,15 +77,37 @@ export async function createPublicApiCourseService(
   });
 }
 
+const toCourseTag = ({ id, name, slug, color }: TTag) => ({ id, name, slug, color });
+
 export async function updatePublicApiCourseService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCourseParam,
   payload: TPublicApiUpdateCourse
 ) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCertificateChangeAllowed(params.courseId, payload.certificate);
 
-  return updateCourseService(params.courseId, payload);
+  const { tagIds, addTagIds, ...courseData } = payload;
+
+  if (tagIds === undefined && addTagIds === undefined) {
+    const { course, conversionOffenders } = await updateCourseService(params.courseId, courseData);
+    const tags = await getCourseTagsForOrganization(orgId, params.courseId);
+
+    return { course: { ...course, tags: tags.map(toCourseTag) }, conversionOffenders };
+  }
+
+  assertAutomationActor(actorId);
+
+  const { course, conversionOffenders, tags } = await updateCourseWithTags({
+    courseId: params.courseId,
+    courseData,
+    orgId,
+    updatedByUserId: actorId,
+    ...(addTagIds ? { addTagIds } : { tagIds: tagIds! })
+  });
+
+  return { course: { ...course, tags: tags.map(toCourseTag) }, conversionOffenders };
 }
 
 export async function deletePublicApiCourseService(orgId: string, params: TPublicApiCourseParam) {

@@ -15,6 +15,8 @@ const AUDIENCE_PATH = /^(?:\/public-api\/v1)?\/audience(?:\/|$)/;
 const TEAM_PATH = /^(?:\/public-api\/v1)?\/team(?:\/|$)/;
 const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
+const TAG_PATH = /^(?:\/public-api\/v1)?\/tags(?:\/|$)/;
+const COURSE_ITEM_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/?$/;
 
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
   const isRead = method === 'GET' || method === 'HEAD';
@@ -63,6 +65,15 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (COURSE_SUBMISSION_PATH.test(path)) {
     return method === 'GET' || method === 'HEAD' ? 'course:submission:read' : 'course:submission:write';
+  }
+
+  if (TAG_PATH.test(path)) {
+    return isRead ? 'course:read' : 'course:tag:write';
+  }
+
+  // The handler limits these keys to a tagIds- or addTagIds-only body; every other course field still needs public_api:*.
+  if (COURSE_ITEM_PATH.test(path) && method === 'PUT') {
+    return 'course:tag:write';
   }
 
   return null;

@@ -24,7 +24,7 @@ interface TagPlacement {
 }
 
 const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
-  { label: 'Organization', tags: [{ tag: 'Audience' }, { tag: 'Team' }] },
+  { label: 'Organization', tags: [{ tag: 'Audience' }, { tag: 'Team' }, { tag: 'Tags' }] },
   {
     label: 'Courses',
     tags: [

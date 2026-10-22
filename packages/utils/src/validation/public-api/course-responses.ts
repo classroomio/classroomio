@@ -3,6 +3,7 @@ import * as z from 'zod';
 import { COURSE_TYPE_VALUES } from '../../constants/course-type';
 import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { ZCourseImportDraftPayload } from '../course-import/course-import';
+import { ZPublicApiCourseTagResponse } from './tag-responses';
 
 // Response shapes for OpenAPI docs only; handlers don't validate against them. Timestamps are Postgres text, not strict ISO.
 const nullableTimestamp = z.string().nullable();
@@ -258,6 +259,10 @@ export const ZPublicApiCourseConversionOffenderResponse = z.object({
   exerciseId: z.string(),
   exerciseTitle: z.string(),
   typeId: z.number()
+});
+
+export const ZPublicApiUpdateCourseResponse = ZPublicApiCourseResponse.extend({
+  tags: z.array(ZPublicApiCourseTagResponse).describe('The tags on the course after the update')
 });
 
 export const ZPublicApiUpdateCourseEnvelope = z.object({

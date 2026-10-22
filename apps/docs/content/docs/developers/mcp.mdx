@@ -143,6 +143,12 @@ Current tools:
 - `publish_course_draft_to_existing_course`
 - `tag_course_draft`
 - `tag_courses`
+- `list_tags`
+- `create_tag`
+- `update_tag`
+- `create_tag_group`
+- `update_tag_group`
+- `set_course_tags`
 
 Course certificate tools:
 
@@ -609,7 +615,9 @@ Tagging tools use:
 - `mode: "merge" | "replace"`
 - `groupName` optional, defaults to `Automation`
 
-The API creates missing tags automatically when needed.
+Missing tags are created automatically. `tag_course_draft` stores the names on the draft, and publishing creates the tags. `tag_courses` uses the public API: it reads tags from `/public-api/v1/tags`, matches them by name ignoring case, creates any that are missing, then calls `PUT /public-api/v1/courses/{courseId}` for each course: with `addTagIds` in merge mode, so the server adds them and calls on the same course cannot drop each other's tags, or with `tagIds` in replace mode. It needs `course:read` and `course:tag:write`, which MCP keys have by default, and the key creator must be an org admin. Each course it tags costs one credit, plus one for each tag or group it has to create. Each course is a separate write, so if one fails (for example on the rate limit), the courses before it keep their tags and the error lists which courses were tagged and which were not.
+
+The other tag tools map one-to-one to the public tag endpoints: `list_tags` (free, needs `course:read` and an org-member key creator), and `create_tag`, `update_tag`, `create_tag_group`, `update_tag_group` and `set_course_tags` (one credit each, need `course:tag:write` and an org-admin key creator). `set_course_tags` replaces a course's tags with the ids you send, so `[]` removes them all.
 
 Exercise tools use the live course directly:
 

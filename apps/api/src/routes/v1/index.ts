@@ -17,6 +17,7 @@ import { v1CoursesRouter } from './courses';
 import { v1MediaRouter } from './media';
 import { v1ExerciseTemplatesRouter } from './exercise-templates';
 import { v1TeamRouter } from './team';
+import { v1TagsRouter } from './tags';
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
@@ -45,4 +46,5 @@ export const v1Router = new Hono()
   .route('/courses', v1CoursesRouter)
   .route('/cohorts', v1CohortsRouter)
   .route('/assets', v1MediaRouter)
-  .route('/exercise-templates', v1ExerciseTemplatesRouter);
+  .route('/exercise-templates', v1ExerciseTemplatesRouter)
+  .route('/tags', v1TagsRouter);

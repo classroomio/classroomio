@@ -19,6 +19,7 @@ import { registerCourseSectionTools } from './tools/course-sections';
 import { registerCourseExerciseTools } from './tools/course-exercises';
 import { registerCourseSubmissionTools } from './tools/course-submissions';
 import { registerTeamTools } from './tools/team';
+import { registerTagTools } from './tools/tags';
 
 async function main() {
   const config = getConfig();
@@ -44,6 +45,7 @@ async function main() {
   registerAnalyticsTools(server, apiClient);
   registerAudienceTools(server, apiClient);
   registerTeamTools(server, apiClient);
+  registerTagTools(server, apiClient);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
