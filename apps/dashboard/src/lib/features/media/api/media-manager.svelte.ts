@@ -78,7 +78,7 @@ export class MediaApi extends BaseApiWithErrors {
     return Math.max(0, Math.round(value));
   }
 
-  async listAssets(query: Partial<TAssetListQuery> = {}, options: { abortPrevious?: boolean } = {}) {
+  async listAssets(query: Partial<TAssetListQuery> = {}, options: { abortPrevious?: boolean; append?: boolean } = {}) {
     const parsed = ZAssetListQuery.partial().safeParse(query);
     if (!parsed.success) {
       this.errors = mapZodErrorsToTranslations(parsed.error);
@@ -107,7 +107,15 @@ export class MediaApi extends BaseApiWithErrors {
       requestFn: () => classroomio.organization.assets.$get({ query: rpcQuery }, { init: { signal: requestSignal } }),
       logContext: 'listing organization assets',
       onSuccess: (response) => {
-        this.assets = response.data;
+        if (!options.append) {
+          this.assets = response.data;
+        } else {
+          const existingAssetIds = new Set(this.assets.map((asset) => asset.id));
+          const newAssets = response.data.filter((asset) => !existingAssetIds.has(asset.id));
+
+          this.assets = [...this.assets, ...newAssets];
+        }
+
         this.pagination = response.pagination;
       },
       onError: () => {
