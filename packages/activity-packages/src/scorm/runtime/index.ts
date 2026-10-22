@@ -259,7 +259,7 @@ export function summarizeInteractions(cmi: ScormCmi): ScormInteractionSummary[] 
     return Object.keys(raw)
       .filter((key) => /^\d+$/.test(key))
       .sort((left, right) => Number(left) - Number(right))
-      .map((key, position) => interactionSummaryOf((raw as ScormCmi)[key], position));
+      .map((key) => interactionSummaryOf((raw as ScormCmi)[key], Number(key)));
   }
 
   return [];

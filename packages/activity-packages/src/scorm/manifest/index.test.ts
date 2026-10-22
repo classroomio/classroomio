@@ -87,6 +87,45 @@ describe('parseScormManifest fixtures', () => {
     expect(parsed.units[0].launchData).toBe('0012');
   });
 
+  it('does not leak child item settings to a parent item', () => {
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="NESTED" version="1.2"
+  xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2">
+  <metadata><schema>ADL SCORM</schema><schemaversion>1.2</schemaversion></metadata>
+  <organizations default="B1">
+    <organization identifier="B1">
+      <title>Parent Course</title>
+      <item identifier="PARENT" identifierref="RES_PARENT">
+        <title>Parent Item</title>
+        <item identifier="CHILD" identifierref="RES_CHILD">
+          <title>Child Quiz</title>
+          <adlcp:masteryscore>80</adlcp:masteryscore>
+          <adlcp:datafromlms>child-data</adlcp:datafromlms>
+          <adlcp:maxtimeallowed>00:30:00</adlcp:maxtimeallowed>
+        </item>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="RES_PARENT" type="webcontent" adlcp:scormtype="sco" href="parent.html" />
+    <resource identifier="RES_CHILD" type="webcontent" adlcp:scormtype="sco" href="child.html" />
+  </resources>
+</manifest>`;
+
+    const parsed = parseScormManifest(xml, ['parent.html', 'child.html']);
+    expect(parsed.units).toHaveLength(2);
+    expect(parsed.units[0].identifier).toBe('PARENT');
+    expect(parsed.units[0].masteryScoreRaw).toBeNull();
+    expect(parsed.units[0].launchData).toBeNull();
+    expect(parsed.units[0].formatDetails.maxTimeAllowed).toBeUndefined();
+
+    expect(parsed.units[1].identifier).toBe('CHILD');
+    expect(parsed.units[1].masteryScoreRaw).toBe(80);
+    expect(parsed.units[1].launchData).toBe('child-data');
+    expect(parsed.units[1].formatDetails.maxTimeAllowed).toBe('00:30:00');
+  });
+
   it('parses a SCO with outbound references without warnings', () => {
     const parsed = parseScormManifest(readSource('scorm12-external-refs'), ['sco.html']);
 

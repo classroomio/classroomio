@@ -616,6 +616,27 @@ describe('summarizeInteractions', () => {
     ]);
   });
 
+  it('preserves question indices for sparse keyed-object forms', () => {
+    const summarized = summarizeInteractions({
+      interactions: {
+        '2': {
+          id: 'Q3',
+          type: 'choice',
+          student_response: 'c',
+          result: 'correct'
+        },
+        '5': {
+          id: 'Q6',
+          type: 'choice',
+          student_response: 'a',
+          result: 'wrong'
+        }
+      }
+    });
+
+    expect(summarized.map((item) => item.index)).toEqual([2, 5]);
+  });
+
   it('reads 2004 questions with descriptions and correct patterns', () => {
     const summarized = summarizeInteractions({
       completion_status: 'completed',

@@ -111,8 +111,9 @@ function readAttrText(node: unknown, name: string): string {
   return textOf(readAttr(node, name));
 }
 
-function findDescendants(node: unknown, name: string): unknown[] {
+function findDescendants(node: unknown, name: string, options?: { stopAtTag?: string }): unknown[] {
   const target = name.toLowerCase();
+  const stopAt = options?.stopAtTag?.toLowerCase();
   const found: unknown[] = [];
 
   const visit = (current: unknown): void => {
@@ -122,6 +123,10 @@ function findDescendants(node: unknown, name: string): unknown[] {
 
     for (const [key, value] of Object.entries(current as Record<string, unknown>)) {
       if (key.startsWith('@_') || key === '#text') {
+        continue;
+      }
+
+      if (stopAt !== undefined && localName(key) === stopAt) {
         continue;
       }
 
@@ -305,7 +310,7 @@ function readScormType(resource: unknown): ScormUnitType {
 
 function readMasteryScoreRaw(resource: unknown, item: unknown): number | null {
   for (const node of [resource, item]) {
-    const candidates = findDescendants(node, 'masteryscore');
+    const candidates = findDescendants(node, 'masteryscore', { stopAtTag: 'item' });
     for (const candidate of candidates) {
       const parsed = parseScoreNumber(textOf(candidate));
       if (parsed !== null && parsed >= 0 && parsed <= 100) {
@@ -318,12 +323,12 @@ function readMasteryScoreRaw(resource: unknown, item: unknown): number | null {
 }
 
 function readPassingScoreScaled(item: unknown): number | null {
-  for (const objective of findDescendants(item, 'primaryobjective')) {
+  for (const objective of findDescendants(item, 'primaryobjective', { stopAtTag: 'item' })) {
     if (!attrTrue(objective, 'satisfiedbymeasure')) {
       continue;
     }
 
-    for (const measure of findDescendants(objective, 'minnormalizedmeasure')) {
+    for (const measure of findDescendants(objective, 'minnormalizedmeasure', { stopAtTag: 'item' })) {
       const parsed = parseScoreNumber(textOf(measure));
       if (parsed !== null && parsed >= -1 && parsed <= 1) {
         return parsed;
@@ -335,7 +340,7 @@ function readPassingScoreScaled(item: unknown): number | null {
 }
 
 function readCompletionThreshold(item: unknown): number | null {
-  for (const threshold of findDescendants(item, 'completionthreshold')) {
+  for (const threshold of findDescendants(item, 'completionthreshold', { stopAtTag: 'item' })) {
     if (attrFalse(threshold, 'completedbymeasure')) {
       return null;
     }
@@ -365,12 +370,12 @@ function readCompletionThreshold(item: unknown): number | null {
 
 function readFormatDetails(item: unknown, format: ScormPackageFormat): ScormUnitFormatDetails {
   let maxTimeAllowed =
-    findDescendants(item, 'maxtimeallowed')
+    findDescendants(item, 'maxtimeallowed', { stopAtTag: 'item' })
       .map((node) => textOf(node))
       .find((text) => text !== '') ?? null;
 
   if (!maxTimeAllowed) {
-    for (const limitCond of findDescendants(item, 'limitconditions')) {
+    for (const limitCond of findDescendants(item, 'limitconditions', { stopAtTag: 'item' })) {
       const duration = textOf(readAttr(limitCond, 'attemptabsolutedurationlimit')).trim();
       if (duration) {
         maxTimeAllowed = duration;
@@ -380,7 +385,7 @@ function readFormatDetails(item: unknown, format: ScormPackageFormat): ScormUnit
   }
 
   const timeLimitAction =
-    findDescendants(item, 'timelimitaction')
+    findDescendants(item, 'timelimitaction', { stopAtTag: 'item' })
       .map((node) => textOf(node))
       .find((text) => text !== '') ?? null;
 
@@ -396,7 +401,7 @@ function readFormatDetails(item: unknown, format: ScormPackageFormat): ScormUnit
 }
 
 function readSubtreeText(root: unknown, name: string): string | null {
-  const found = findDescendants(root, name)
+  const found = findDescendants(root, name, { stopAtTag: 'item' })
     .map((node) => textOf(node))
     .find((text) => text !== '');
 
