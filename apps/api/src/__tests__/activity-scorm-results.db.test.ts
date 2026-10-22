@@ -1,11 +1,34 @@
 import 'dotenv/config';
 
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { and, eq } from 'drizzle-orm';
 
 const hasDatabase = Boolean(
   process.env.DATABASE_URL || process.env.PRIVATE_DATABASE_URL || process.env.PGBOUNCER_DATABASE_URL
 );
+
+beforeAll(async () => {
+  if (!hasDatabase) return;
+  const { db } = await import('@db/drizzle');
+  const { sql } = await import('drizzle-orm');
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS "activity_completion_side_effect" (
+      "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+      "activity_id" uuid NOT NULL,
+      "profile_id" uuid NOT NULL,
+      "certification_pending" boolean DEFAULT false NOT NULL,
+      "compliance_pending" boolean DEFAULT false NOT NULL,
+      "generation" integer DEFAULT 0 NOT NULL,
+      "attempts" integer DEFAULT 0 NOT NULL,
+      "next_attempt_at" timestamp with time zone DEFAULT now() NOT NULL,
+      "last_error" text,
+      "created_at" timestamp with time zone DEFAULT now() NOT NULL,
+      "updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+      CONSTRAINT "activity_completion_side_effect_activity_profile_key" UNIQUE("activity_id","profile_id")
+    );
+    CREATE INDEX IF NOT EXISTS "activity_completion_side_effect_next_attempt_at_idx" ON "activity_completion_side_effect" ("next_attempt_at");
+  `);
+});
 
 type ResultsFixture = {
   orgId: string;
@@ -1424,6 +1447,91 @@ describe.skipIf(!hasDatabase)('scorm settings recompute completions', () => {
       const { db } = await import('@db/drizzle');
       const schema = await import('@db/schema');
       await db.delete(schema.courseCompletionRecord).where(eq(schema.courseCompletionRecord.courseId, ids.courseId));
+      await cleanupResultsFixture(ids);
+    }
+  });
+
+  it('excludes replaced attempts from results cards, summary, table, and stats, and restores them on version reopen', async () => {
+    const ids = await createResultsFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const {
+        getScormResultsSummary,
+        listScormLearnerResults,
+        getScormActivityStatsForProfile,
+        getScormLearnerAttempts
+      } = await import('@cio/db/queries/scorm/report');
+      const { reopenReplacedAttemptsForVersion } = await import('@cio/db/queries/scorm/attempt');
+
+      const settings = { rule: 'score', minScorePercent: 70, completionModules: 'all' as const };
+      const paging = { page: 1, limit: 20, sort: 'name' as const, direction: 'asc' as const };
+
+      const [attempt] = await db
+        .insert(schema.scormAttempt)
+        .values({
+          activityId: ids.activityId,
+          profileId: ids.profileId,
+          packageVersionId: ids.versionId,
+          attemptNumber: 1,
+          closedAt: new Date().toISOString(),
+          closeReason: 'replaced'
+        })
+        .returning();
+
+      await db.insert(schema.scormScoAttempt).values({
+        attemptId: attempt!.id,
+        unitId: ids.unitIds[0],
+        status: 'closed',
+        cmi: { core: { lesson_status: 'completed', score: { raw: '85', max: '100' } } },
+        timeSpentSeconds: 120
+      });
+
+      // 1. Results summary should show started = 0, averageScore = null
+      const summaryAfterReplace = await getScormResultsSummary(ids.activityId, [ids.profileId], settings);
+      expect(summaryAfterReplace.enrolled).toBe(1);
+      expect(summaryAfterReplace.started).toBe(0);
+      expect(summaryAfterReplace.completed).toBe(0);
+      expect(summaryAfterReplace.averageScore).toBeNull();
+
+      // 2. Results table should show learner with 0 attempts and null score
+      const listAfterReplace = await listScormLearnerResults(ids.activityId, [ids.profileId], settings, paging);
+      expect(listAfterReplace.rows[0]?.attempts).toBe(0);
+      expect(listAfterReplace.rows[0]?.scorePercent).toBeNull();
+      expect(listAfterReplace.rows[0]?.bestScorePercent).toBeNull();
+
+      // 3. Stats for profile should show 0 attempts, null score, 0 time
+      const statsAfterReplace = await getScormActivityStatsForProfile([ids.activityId], ids.profileId);
+      expect(statsAfterReplace[0]?.attempts).toBe(0);
+      expect(statsAfterReplace[0]?.scorePercent).toBeNull();
+      expect(statsAfterReplace[0]?.timeSpentSeconds).toBe(0);
+
+      // 4. Learner sheet audit trail still shows the attempt as replaced (one row per unit)
+      const attemptsAudit = await getScormLearnerAttempts(ids.activityId, ids.profileId);
+      expect(attemptsAudit.length).toBe(2);
+      expect(attemptsAudit[0]?.attemptCloseReason).toBe('replaced');
+      expect(attemptsAudit[1]?.attemptCloseReason).toBe('replaced');
+
+      // 5. Restore the version / reopen replaced attempt
+      const reopened = await reopenReplacedAttemptsForVersion(ids.versionId, ids.activityId);
+      expect(reopened).toEqual([attempt!.id]);
+
+      // 6. Results summary now shows started = 1, averageScore = 85
+      const summaryAfterRestore = await getScormResultsSummary(ids.activityId, [ids.profileId], settings);
+      expect(summaryAfterRestore.started).toBe(1);
+      expect(summaryAfterRestore.averageScore).toBe(85);
+
+      // 7. Results table now shows learner with 1 attempt and 85 score
+      const listAfterRestore = await listScormLearnerResults(ids.activityId, [ids.profileId], settings, paging);
+      expect(listAfterRestore.rows[0]?.attempts).toBe(1);
+      expect(listAfterRestore.rows[0]?.scorePercent).toBe(85);
+
+      // 8. Stats for profile now shows 1 attempt, 85 score, 120s
+      const statsAfterRestore = await getScormActivityStatsForProfile([ids.activityId], ids.profileId);
+      expect(statsAfterRestore[0]?.attempts).toBe(1);
+      expect(statsAfterRestore[0]?.scorePercent).toBe(85);
+      expect(statsAfterRestore[0]?.timeSpentSeconds).toBe(120);
+    } finally {
       await cleanupResultsFixture(ids);
     }
   });

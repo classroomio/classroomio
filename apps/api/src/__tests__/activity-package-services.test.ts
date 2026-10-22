@@ -33,7 +33,8 @@ vi.mock('@cio/db/queries/activity', () => ({
 
 vi.mock('@cio/db/queries/scorm/attempt', () => ({
   closeSupersededAttempts: vi.fn(),
-  closeSupersededAttemptsForActivity: vi.fn()
+  closeSupersededAttemptsForActivity: vi.fn(),
+  reopenReplacedAttemptsForVersion: vi.fn(() => Promise.resolve([]))
 }));
 
 vi.mock('@cio/db/queries/scorm/activity-scorm', () => ({
@@ -76,7 +77,11 @@ import {
 } from '@cio/db/queries/activity/package-version';
 import { getPackageVersionUnitSummaries, listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
 import { getActivityById } from '@cio/db/queries/activity';
-import { closeSupersededAttempts, closeSupersededAttemptsForActivity } from '@cio/db/queries/scorm/attempt';
+import {
+  closeSupersededAttempts,
+  closeSupersededAttemptsForActivity,
+  reopenReplacedAttemptsForVersion
+} from '@cio/db/queries/scorm/attempt';
 import { getActivityScormByActivityId, listActivityScormByAssetId } from '@cio/db/queries/scorm/activity-scorm';
 import { hasActiveMediaJobForAsset } from '@cio/db/queries';
 import { generateScormUploadPresignedUrl, headS3ObjectSize } from '@cio/core/utils/s3';
@@ -256,25 +261,31 @@ describe('activity package services', () => {
   it('makes a ready version current and optionally closes old attempts', async () => {
     vi.mocked(getPackageVersionById).mockResolvedValue({ ...versionFixture, status: 'ready' } as never);
     vi.mocked(closeSupersededAttempts).mockResolvedValue(3);
+    vi.mocked(reopenReplacedAttemptsForVersion).mockResolvedValue(['attempt-1']);
 
     const kept = await makeScormPackageVersionCurrent(ORG_ID, 'asset-1', 'version-1', { closeOpenAttempts: false });
     expect(kept.closedAttempts).toBe(0);
+    expect(kept.reopenedAttempts).toBe(1);
     expect(vi.mocked(closeSupersededAttempts)).not.toHaveBeenCalled();
+    expect(vi.mocked(reopenReplacedAttemptsForVersion)).toHaveBeenCalledWith('version-1', undefined, expect.anything());
 
     const closed = await makeScormPackageVersionCurrent(ORG_ID, 'asset-1', 'version-1', { closeOpenAttempts: true });
     expect(closed.closedAttempts).toBe(3);
+    expect(closed.reopenedAttempts).toBe(1);
     expect(vi.mocked(closeSupersededAttempts)).toHaveBeenCalledWith(
       'asset-1',
       'version-1',
       'replaced',
       expect.anything()
     );
+    expect(vi.mocked(reopenReplacedAttemptsForVersion)).toHaveBeenCalledWith('version-1', undefined, expect.anything());
   });
 
   it('closes only the supplied activity attempts when an activity is given', async () => {
     vi.mocked(getPackageVersionById).mockResolvedValue({ ...versionFixture, status: 'ready' } as never);
     vi.mocked(getActivityScormByActivityId).mockResolvedValue({ assetId: 'asset-1' } as never);
     vi.mocked(closeSupersededAttemptsForActivity).mockResolvedValue(2);
+    vi.mocked(reopenReplacedAttemptsForVersion).mockResolvedValue(['attempt-2']);
 
     const closed = await makeScormPackageVersionCurrent(ORG_ID, 'asset-1', 'version-1', {
       closeOpenAttempts: true,
@@ -282,6 +293,7 @@ describe('activity package services', () => {
     });
 
     expect(closed.closedAttempts).toBe(2);
+    expect(closed.reopenedAttempts).toBe(1);
     expect(vi.mocked(closeSupersededAttemptsForActivity)).toHaveBeenCalledWith(
       'activity-1',
       'version-1',
@@ -289,6 +301,11 @@ describe('activity package services', () => {
       expect.anything()
     );
     expect(vi.mocked(closeSupersededAttempts)).not.toHaveBeenCalled();
+    expect(vi.mocked(reopenReplacedAttemptsForVersion)).toHaveBeenCalledWith(
+      'version-1',
+      'activity-1',
+      expect.anything()
+    );
   });
 
   it('refuses to close attempts for an activity that does not use the package', async () => {

@@ -15,7 +15,11 @@ import {
 } from '@cio/db/queries/activity/package-version';
 import { listPackageUnitsByVersion, getPackageVersionUnitSummaries } from '@cio/db/queries/activity/package-unit';
 import { getActivityById } from '@cio/db/queries/activity';
-import { closeSupersededAttempts, closeSupersededAttemptsForActivity } from '@cio/db/queries/scorm/attempt';
+import {
+  closeSupersededAttempts,
+  closeSupersededAttemptsForActivity,
+  reopenReplacedAttemptsForVersion
+} from '@cio/db/queries/scorm/attempt';
 import { getActivityScormByActivityId, listActivityScormByAssetId } from '@cio/db/queries/scorm/activity-scorm';
 import { hasActiveMediaJobForAsset } from '@cio/db/queries';
 import type {
@@ -236,6 +240,7 @@ export async function processScormPackageVersion(
 export interface ScormMakeCurrentPayload {
   version: TContentPackageVersion;
   closedAttempts: number;
+  reopenedAttempts?: number;
 }
 
 /**
@@ -279,10 +284,16 @@ export async function makeScormPackageVersionCurrent(
         : await closeSupersededAttempts(asset.id, version.id, 'replaced', tx);
     }
 
-    return { current, closedAttempts };
+    const reopenedAttempts = await reopenReplacedAttemptsForVersion(version.id, input.activityId, tx);
+
+    return { current, closedAttempts, reopenedAttempts: reopenedAttempts.length };
   });
 
-  return { version: result.current, closedAttempts: result.closedAttempts };
+  return {
+    version: result.current,
+    closedAttempts: result.closedAttempts,
+    reopenedAttempts: result.reopenedAttempts
+  };
 }
 
 export interface ScormPackageUsage {
