@@ -1,10 +1,19 @@
 ---
 title: 'Configure SSO access policies'
-description: 'This ClassroomIO Help Center guide is still being worked on.'
+description: 'Set SSO enforcement, domain auto-join, and recovery access.'
+last_reviewed: '2026-10-21'
 ---
 
-For now, use [the related ClassroomIO guide](/integrations/enterprise-sso-setup) for the available instructions.
+After [setting up enterprise SSO](/integrations/enterprise-sso-setup), open **Settings → Authentication → SSO** to review its access policies. Organization administrator access and an active SSO connection are required.
 
-:::info[More guidance is coming]
-We are preparing a focused, step-by-step version of this guide.
-:::
+![SSO access policy settings for an organization](./images/configure-sso-access-policies/overview.webp)
+
+- **Force SSO** directs eligible users to the organization's identity provider for sign-in. Test provider login before enabling it.
+- **Auto-join SSO domains** lets eligible users from your configured domain join through SSO. Confirm the domain and the role they will receive.
+- **Break-glass access** provides a recovery path when enforced SSO is unavailable. Restrict and test that path before you need it.
+
+Change one policy at a time, save it, and test with a non-admin account in a separate browser session. Keep an administrator session open until you have verified the new sign-in path. If SSO login fails, check the provider configuration and domain in the same tab before tightening enforcement.
+
+## Related guides
+
+- [Choose allowed sign-in methods](/account-team-security/choose-allowed-sign-in-methods)
