@@ -449,6 +449,10 @@ describe('buildPlayerUiState', () => {
     expect(ui.labels.previous).toBe(`${prefix}.prev_module`);
     expect(ui.labels.videoFullscreenHint).toBe(`${prefix}.fullscreen_video_hint`);
     expect(ui.labels.dismiss).toBe(`${prefix}.dismiss`);
+    expect(ui.labels.escToExit).toBe(`${prefix}.fullscreen_esc_hint`);
+    expect(ui.labels.backToExit).toBe(`${prefix}.fullscreen_back_hint`);
+    expect(ui.labels.leftFullscreen).toBe(`${prefix}.fullscreen_left`);
+    expect(ui.labels.returnToFullscreen).toBe(`${prefix}.fullscreen_return_activity`);
   });
 
   it('leaves position and time limit empty when no module is open', () => {

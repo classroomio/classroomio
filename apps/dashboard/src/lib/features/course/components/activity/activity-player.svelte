@@ -333,8 +333,10 @@
   }
 
   function onFullscreenChange() {
-    if (document.fullscreenElement === frameWrap) setHostMode('fullscreen');
-    else if (hostMode === 'fullscreen') setHostMode(null);
+    const element = document.fullscreenElement;
+
+    if (element === frameWrap) setHostMode('fullscreen');
+    else if (hostMode === 'fullscreen' && !(element && frameWrap?.contains(element))) setHostMode(null);
   }
 
   function handleImmersiveKeydown(event: KeyboardEvent) {

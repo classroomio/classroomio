@@ -1642,6 +1642,11 @@
     "page_title": "Corsi - ClassroomIO",
     "heading": "Corsi",
     "subtitle": "Sfoglia tutti i corsi pubblicati",
+    "course": "Corso",
+    "modules": "{count, plural, one {# modulo} other {# moduli}}",
+    "modules_label": "Moduli",
+    "activities": "{count, plural, one {# attività} other {# attività}}",
+    "activities_label": "Attività",
     "clear_filters": "Cancella filtri",
     "filters": {
       "title": "Filtro",
@@ -1963,7 +1968,24 @@
       "status": "Stato",
       "all": "Tutto",
       "unpublished": "Inedito",
-      "course_type": "Tipo di corso"
+      "course_type": "Tipo di corso",
+      "course_format": "Formato del corso",
+      "format_standard": "Standard",
+      "format_scorm": "SCORM"
+    },
+    "filters": {
+      "filter": "Filtro",
+      "popover_title": "Filtri",
+      "clear_all": "Cancella tutto",
+      "search_placeholder": "Cerca per nome",
+      "status": "Stato",
+      "layout_type": "Tipo di layout",
+      "selection_mode": "Modalità di selezione",
+      "no_results_title": "Nessun widget corrisponde ai tuoi filtri",
+      "no_results_description": "Prova a utilizzare un termine di ricerca diverso o a cancellare i filtri per visualizzare nuovamente tutti i risultati.",
+      "no_results_page_title": "Niente in questa pagina",
+      "no_results_page_description": "Questi filtri corrispondono a un numero di widget inferiore rispetto a quello iniziale di questa pagina.",
+      "back_to_first_page": "Torna alla prima pagina"
     }
   },
   "setup": {
@@ -2322,7 +2344,8 @@
       "type_selector_title": "Che tipo di corso stai guardando?",
       "button": "Fine",
       "back": "Indietro",
-      "next": "Prossimo"
+      "next": "Prossimo",
+      "path_selector_title": "Come vorresti creare questo corso?"
     },
     "copy_course": {
       "title": "Crea un corso",
@@ -3712,7 +3735,13 @@
             "completion_modules_all": "Tutti i moduli",
             "completion_modules_graded_only": "Solo moduli con valutazione",
             "completion_modules_helper": "L'opzione \"Solo moduli con valutazione\" consente ai partecipanti di saltare sondaggi e glossari facoltativi. Il completamento è determinato esclusivamente dai moduli che prevedono una soglia di superamento o un punteggio registrato.",
-            "completion_modules_single_note": "Questo pacchetto contiene un unico modulo; pertanto, l'ambito di completamento non è applicabile."
+            "completion_modules_single_note": "Questo pacchetto contiene un unico modulo; pertanto, l'ambito di completamento non è applicabile.",
+            "no_package_hint": "Allega un pacchetto per visualizzarne il punteggio di approvazione e monitorarne il completamento.",
+            "no_package_score_hint": "Gli studenti completeranno questa attività ottenendo un punteggio di almeno {score}%.",
+            "completion_modules_no_package_note": "Non è ancora stato allegato alcun pacchetto. Le regole multi-modulo si applicano una volta caricato un pacchetto.",
+            "rule_auto_no_package_hint": "Utilizza il segno di superamento del pacchetto, se presente, oppure lo contrassegna come completato al termine dell'operazione.",
+            "rule_completed_hint": "Gli studenti completano questa attività semplicemente terminando il contenuto, indipendentemente dal punteggio.",
+            "rule_score_hint": "Gli studenti completano questa attività terminando il contenuto e ottenendo un punteggio di almeno {score}%."
           },
           "instructions": {
             "label": "Istruzioni per gli studenti",
@@ -3840,7 +3869,8 @@
             "package": "Pacchetto",
             "instructions": "Istruzioni",
             "results": "Risultati",
-            "settings": "Impostazioni"
+            "settings": "Impostazioni",
+            "preview": "Anteprima"
           },
           "player": {
             "modules_complete": "{complete} di {total} moduli completati",
@@ -3881,7 +3911,11 @@
             "loading": "Caricamento del pacchetto in corso…",
             "module_complete_title": "Modulo completato",
             "dismiss": "Chiudi",
-            "fullscreen_video_hint": "Qui i video non possono essere visualizzati a schermo intero mentre l'attività è a schermo intero."
+            "fullscreen_video_hint": "Qui i video non possono essere visualizzati a schermo intero mentre l'attività è a schermo intero.",
+            "fullscreen_esc_hint": "Premi Esc per uscire dalla modalità a schermo intero.",
+            "fullscreen_back_hint": "Utilizza il gesto o il pulsante Indietro del tuo dispositivo per uscire dalla modalità a schermo intero.",
+            "fullscreen_left": "Hai lasciato la modalità a schermo intero.",
+            "fullscreen_return_activity": "Riporta l'attività a schermo intero"
           },
           "results": {
             "sheet": {
@@ -3965,7 +3999,9 @@
           "single_activity_empty_title": "Nessun pacchetto aggiunto",
           "single_activity_empty_description": "Carica un pacchetto SCORM per renderlo disponibile agli studenti di questo corso.",
           "single_activity_empty_student_desc": "Questo corso non contiene ancora alcun contenuto.",
-          "add_package_button": "Aggiungi pacchetto"
+          "add_package_button": "Aggiungi pacchetto",
+          "lock_action": "Pacchetto di serrature",
+          "unlock_action": "Sblocca il pacchetto"
         },
         "add_content_created_activity": "Il pacchetto SCORM è stato creato correttamente!",
         "add_content_create_another_activity": "Crea un altro pacchetto",

@@ -1642,6 +1642,11 @@
     "page_title": "Courses - ClassroomIO",
     "heading": "Courses",
     "subtitle": "Browse all published courses",
+    "course": "Course",
+    "modules": "{count, plural, one {# module} other {# modules}}",
+    "modules_label": "Modules",
+    "activities": "{count, plural, one {# activity} other {# activities}}",
+    "activities_label": "Activities",
     "clear_filters": "Clear Filters",
     "filters": {
       "title": "Filter",
@@ -1963,7 +1968,10 @@
       "status": "Status",
       "all": "All",
       "unpublished": "Unpublished",
-      "course_type": "Course Type"
+      "course_type": "Course Type",
+      "course_format": "Course Format",
+      "format_standard": "Standard",
+      "format_scorm": "SCORM"
     },
     "filters": {
       "filter": "Filter",
@@ -2334,6 +2342,7 @@
       "short_description": "Short Description",
       "short_description_placeholder": "A little description about this course",
       "type_selector_title": "What type of course are you looking at?",
+      "path_selector_title": "How would you like to create this course?",
       "button": "Finish",
       "back": "Back",
       "next": "Next"
@@ -3703,9 +3712,12 @@
           "not_available_title": "Package not available yet",
           "not_available_description": "This SCORM package is still being set up. Please check back soon.",
           "header_locked": "Locked",
+          "lock_action": "Lock package",
+          "unlock_action": "Unlock package",
           "delete_confirm_title": "Delete this package item?",
           "delete_confirm_body": "Learners' results for this item are deleted. The package stays in the Media Manager.",
           "tabs": {
+            "preview": "Preview",
             "package": "Package",
             "instructions": "Instructions",
             "results": "Results",
@@ -3920,6 +3932,9 @@
             "rule_score": "Minimum score",
             "graded_hint": "This package has a pass mark of {score}%, so students must pass it.",
             "ungraded_hint": "This package has no pass mark, so students complete it by finishing it.",
+            "rule_auto_no_package_hint": "Uses the package's pass mark if it has one, or marks complete once finished.",
+            "rule_completed_hint": "Students complete this activity simply by finishing the content, regardless of score.",
+            "rule_score_hint": "Students complete this activity by finishing the content and scoring at least {score}%.",
             "passed_warning": "A module that never reports passed keeps the item from completing.",
             "min_score": "Minimum score (%)",
             "retakes": "Allow retakes",
@@ -3933,6 +3948,7 @@
             "completion_modules_graded_only": "Graded modules only",
             "completion_modules_helper": "Graded modules only lets learners skip optional surveys and glossaries. Only modules with a pass mark or a reported score gate completion.",
             "completion_modules_single_note": "This package has a single module, so completion scope does not apply.",
+            "completion_modules_no_package_note": "No package is attached yet. Multi-module rules apply once a package is uploaded.",
             "custom_threshold_hint": "This package sets no pass mark. Learners complete it by finishing every module and averaging at least {score}%."
           },
           "player": {
@@ -3968,6 +3984,10 @@
             "module_position": "Module {current} of {total}",
             "exit_fullscreen": "Exit full screen",
             "fullscreen_video_hint": "Videos here can't go full screen while the activity is full screen.",
+            "fullscreen_esc_hint": "Press Esc to exit full screen.",
+            "fullscreen_back_hint": "Use your device's back gesture or button to exit full screen.",
+            "fullscreen_left": "You left full screen.",
+            "fullscreen_return_activity": "Return activity to full screen",
             "dismiss": "Dismiss",
             "status_preview": "Preview",
             "preview_title": "Preview mode",

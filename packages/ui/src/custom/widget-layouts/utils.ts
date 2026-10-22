@@ -59,8 +59,11 @@ export function getCourseExcerpt(course: TWidgetPayloadCourse, maxLength = 160):
 export function formatLessonsLine(course: TWidgetPayloadCourse, showLessonsCount?: boolean): string {
   if (showLessonsCount === false) return '';
   const parts: string[] = [];
-  if (course.lessonCount) parts.push(`${course.lessonCount} lessons`);
-  if (course.exerciseCount) parts.push(`${course.exerciseCount} exercises`);
+  if (course.lessonCount) parts.push(`${course.lessonCount} ${course.lessonCount === 1 ? 'lesson' : 'lessons'}`);
+  if (course.exerciseCount)
+    parts.push(`${course.exerciseCount} ${course.exerciseCount === 1 ? 'exercise' : 'exercises'}`);
+  if (course.activityCount)
+    parts.push(`${course.activityCount} ${course.activityCount === 1 ? 'package' : 'packages'}`);
   return parts.join(' · ');
 }
 

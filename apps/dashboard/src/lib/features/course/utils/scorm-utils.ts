@@ -596,6 +596,10 @@ export type PlayerUiLabels = {
   didNotConnect: string;
   loadFailed: string;
   videoFullscreenHint: string;
+  escToExit: string;
+  backToExit: string;
+  leftFullscreen: string;
+  returnToFullscreen: string;
   dismiss: string;
 };
 
@@ -646,6 +650,10 @@ export function buildPlayerUiState(
   const didNotConnectLabel = label('no_connection_title');
   const loadFailedLabel = label('load_failed_title');
   const videoFullscreenHintLabel = label('fullscreen_video_hint');
+  const escToExitLabel = label('fullscreen_esc_hint');
+  const backToExitLabel = label('fullscreen_back_hint');
+  const leftFullscreenLabel = label('fullscreen_left');
+  const returnToFullscreenLabel = label('fullscreen_return_activity');
   const dismissLabel = label('dismiss');
 
   const labels: PlayerUiLabels = {
@@ -661,6 +669,10 @@ export function buildPlayerUiState(
     didNotConnect: didNotConnectLabel,
     loadFailed: loadFailedLabel,
     videoFullscreenHint: videoFullscreenHintLabel,
+    escToExit: escToExitLabel,
+    backToExit: backToExitLabel,
+    leftFullscreen: leftFullscreenLabel,
+    returnToFullscreen: returnToFullscreenLabel,
     dismiss: dismissLabel
   };
 

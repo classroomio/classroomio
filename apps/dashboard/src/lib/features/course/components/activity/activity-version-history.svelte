@@ -213,6 +213,8 @@
   const selectedModuleCount = $derived(
     isSelectedCurrent ? displayUnits.length : (selectedStats?.unitCount ?? displayUnits.length)
   );
+
+  const selectedVersionTitle = $derived(selectedVersion?.title?.trim() || packageDetails.asset.title);
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -240,7 +242,7 @@
               {selectedVersion ? formatTimestamp(new Date(selectedVersion.createdAt)) : packageDetails.asset.title}
             </p>
             {#if selectedVersion}
-              <p class="ui:text-muted-foreground truncate text-xs">{packageDetails.asset.title}</p>
+              <p class="ui:text-muted-foreground truncate text-xs">{selectedVersionTitle}</p>
             {/if}
           </div>
         </div>
@@ -275,14 +277,8 @@
                     </Badge>
                   {/if}
                 </div>
-                <p class="ui:text-muted-foreground mt-1 text-sm">{packageDetails.asset.title}</p>
+                <p class="ui:text-muted-foreground mt-1 text-sm">{selectedVersionTitle}</p>
               </div>
-
-              {#if selectedVersion.id !== currentVersion?.id && selectedVersion.status === 'ready'}
-                <Button variant="default" size="sm" onclick={() => onRevert?.(selectedVersion)}>
-                  {$t('course.navItem.lessons.version_history.restore_version')}
-                </Button>
-              {/if}
             </div>
 
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">

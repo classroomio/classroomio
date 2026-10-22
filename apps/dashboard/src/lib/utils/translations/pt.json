@@ -2947,7 +2947,13 @@
             "completion_modules_all": "Todos os módulos",
             "completion_modules_graded_only": "Apenas módulos com avaliação",
             "completion_modules_helper": "A opção \"Apenas módulos com avaliação\" permite que os alunos ignorem pesquisas e glossários opcionais. Apenas módulos com nota mínima de aprovação ou pontuação registrada determinam a conclusão.",
-            "completion_modules_single_note": "Este pacote contém apenas um módulo; portanto, o escopo de conclusão não se aplica."
+            "completion_modules_single_note": "Este pacote contém apenas um módulo; portanto, o escopo de conclusão não se aplica.",
+            "no_package_hint": "Anexe um pacote para visualizar sua nota de aprovação e acompanhar a conclusão.",
+            "no_package_score_hint": "Os alunos concluirão esta atividade obtendo uma pontuação mínima de {score}%.",
+            "completion_modules_no_package_note": "Nenhum pacote foi anexado ainda. As regras de múltiplos módulos se aplicam assim que um pacote for carregado.",
+            "rule_auto_no_package_hint": "Utiliza a marca de aprovação do pacote, se houver, ou marca como concluído assim que finalizado.",
+            "rule_completed_hint": "Os alunos concluem esta atividade simplesmente terminando o conteúdo, independentemente da pontuação.",
+            "rule_score_hint": "Os alunos concluem esta atividade terminando o conteúdo e obtendo uma pontuação mínima de {score}%."
           },
           "instructions": {
             "label": "Instruções para os alunos",
@@ -3075,7 +3081,8 @@
             "package": "Pacote",
             "instructions": "Instruções",
             "results": "Resultados",
-            "settings": "Configurações"
+            "settings": "Configurações",
+            "preview": "Pré-visualização"
           },
           "player": {
             "modules_complete": "{complete} de {total} módulos concluídos",
@@ -3116,7 +3123,11 @@
             "loading": "Carregando pacote…",
             "module_complete_title": "Módulo concluído",
             "dismiss": "Fechar",
-            "fullscreen_video_hint": "Os vídeos aqui não podem ser exibidos em tela cheia enquanto a atividade estiver em tela cheia."
+            "fullscreen_video_hint": "Os vídeos aqui não podem ser exibidos em tela cheia enquanto a atividade estiver em tela cheia.",
+            "fullscreen_esc_hint": "Pressione Esc para sair do modo de tela cheia.",
+            "fullscreen_back_hint": "Use o gesto ou botão Voltar do seu dispositivo para sair do modo de tela cheia.",
+            "fullscreen_left": "Você saiu do modo tela cheia.",
+            "fullscreen_return_activity": "Retornar atividade para tela cheia"
           },
           "results": {
             "sheet": {
@@ -3200,7 +3211,9 @@
           "single_activity_empty_title": "Nenhum pacote adicionado ainda",
           "single_activity_empty_description": "Faça o upload de um pacote SCORM para disponibilizá-lo aos alunos deste curso.",
           "single_activity_empty_student_desc": "Este curso ainda não possui conteúdo.",
-          "add_package_button": "Adicionar pacote"
+          "add_package_button": "Adicionar pacote",
+          "lock_action": "Pacote de fechadura",
+          "unlock_action": "Desbloquear pacote"
         },
         "add_content_created_activity": "O pacote SCORM foi criado com sucesso!",
         "add_content_create_another_activity": "Criar outro pacote",
@@ -3537,7 +3550,8 @@
       "type_selector_title": "Que tipo de curso você está procurando?",
       "button": "Concluir",
       "back": "Voltar",
-      "next": "Próximo"
+      "next": "Próximo",
+      "path_selector_title": "Como você gostaria de criar este curso?"
     },
     "course_card": {
       "empty_title": "Nenhum curso criado",
@@ -5237,6 +5251,11 @@
     "page_title": "Cursos - ClassroomIO",
     "heading": "Cursos",
     "subtitle": "Navegue por todos os cursos publicados",
+    "course": "Curso",
+    "modules": "{count, plural, one {# módulo} other {# módulos}}",
+    "modules_label": "Módulos",
+    "activities": "{count, plural, one {# atividade} other {# atividades}}",
+    "activities_label": "Atividades",
     "clear_filters": "Limpar filtros",
     "empty": {
       "title": "Nenhum curso encontrado",
@@ -5808,7 +5827,10 @@
       "status": "Status",
       "all": "Todos",
       "unpublished": "Não publicado",
-      "course_type": "Tipo de curso"
+      "course_type": "Tipo de curso",
+      "course_format": "Formato do curso",
+      "format_standard": "Padrão",
+      "format_scorm": "SCORM"
     },
     "notifications": {
       "created": "Widget criado",

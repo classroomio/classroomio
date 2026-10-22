@@ -20,6 +20,7 @@
     DEFAULT_COURSE_LIST_NEXT,
     mergeCourseListSearchParams,
     parseCourseListFilters,
+    type CourseFormatFilter,
     type CourseListFilters,
     type PublishedStatusFilter
   } from '$features/course/utils/course-list-filters';
@@ -39,6 +40,7 @@
   let selectedOrder = $state<CourseSortOrder>(DEFAULT_SORT_ORDER);
   let selectedTags = $state<string[]>([]);
   let courseType = $state<string>('all');
+  let courseFormat = $state<CourseFormatFilter>('all');
   let publishedStatus = $state<PublishedStatusFilter>('all');
 
   const courseTypeOptions = $derived([
@@ -48,6 +50,11 @@
     { value: 'PUBLIC', label: $t('new_course_modal.public_label') }
   ]);
 
+  const courseFormatOptions = $derived([
+    { value: 'standard' as const, label: $t('widgets.filter.format_standard') },
+    { value: 'single_activity' as const, label: $t('widgets.filter.format_scorm') }
+  ]);
+
   let hasInitializedFilters = $state(false);
   let isFiltering = $state(false);
   let isLoadingMore = $state(false);
@@ -55,7 +62,11 @@
 
   const filtersFromUrl = $derived(parseCourseListFilters(page.url.searchParams));
   const listIsUnfiltered = $derived(
-    !searchValue.trim() && selectedTags.length === 0 && courseType === 'all' && publishedStatus === 'all'
+    !searchValue.trim() &&
+      selectedTags.length === 0 &&
+      courseType === 'all' &&
+      courseFormat === 'all' &&
+      publishedStatus === 'all'
   );
   const hasMoreCourses = $derived(data.pagination?.hasMore ?? false);
 
@@ -71,6 +82,7 @@
     selectedOrder = filters.order;
     selectedTags = filters.tags;
     courseType = filters.courseType;
+    courseFormat = filters.courseFormat;
     publishedStatus = filters.publishedStatus;
   }
 
@@ -138,9 +150,10 @@
     const tagsChanged = selectedTags.join(',') !== urlFilters.tags.join(',');
     const sortChanged = sortKey !== urlFilters.sortKey || selectedOrder !== urlFilters.order;
     const typeChanged = courseType !== urlFilters.courseType;
+    const formatChanged = courseFormat !== urlFilters.courseFormat;
     const statusChanged = publishedStatus !== urlFilters.publishedStatus;
 
-    if (!tagsChanged && !sortChanged && !typeChanged && !statusChanged) {
+    if (!tagsChanged && !sortChanged && !typeChanged && !formatChanged && !statusChanged) {
       return;
     }
 
@@ -152,6 +165,7 @@
       sortKey,
       order: selectedOrder,
       courseType,
+      courseFormat,
       publishedStatus
     });
   });
@@ -264,8 +278,10 @@
               bind:sortKey
               bind:selectedOrder
               bind:courseType
+              bind:courseFormat
               bind:publishedStatus
               {courseTypeOptions}
+              {courseFormatOptions}
               {selectedTags}
               tagGroups={data.tagGroups}
               {isFiltering}

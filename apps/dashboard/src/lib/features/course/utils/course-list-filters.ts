@@ -1,3 +1,4 @@
+import { COURSE_FORMAT_VALUES, type TCourseFormat } from '@cio/utils/constants/course-format';
 import {
   DEFAULT_COURSE_SORT,
   DEFAULT_SORT_ORDER,
@@ -8,6 +9,7 @@ import {
 } from './constants';
 
 export type PublishedStatusFilter = 'all' | 'published' | 'unpublished';
+export type CourseFormatFilter = 'all' | TCourseFormat;
 
 export interface CourseListFilters {
   search: string;
@@ -15,10 +17,20 @@ export interface CourseListFilters {
   sortKey: CourseSortByType;
   order: CourseSortOrderType;
   courseType: string;
+  courseFormat: CourseFormatFilter;
   publishedStatus: PublishedStatusFilter;
 }
 
-export const COURSE_LIST_FILTER_PARAM_KEYS = ['search', 'tags', 'sort', 'order', 'type', 'status', 'next'] as const;
+export const COURSE_LIST_FILTER_PARAM_KEYS = [
+  'search',
+  'tags',
+  'sort',
+  'order',
+  'type',
+  'format',
+  'status',
+  'next'
+] as const;
 
 export const DEFAULT_COURSE_LIST_FILTERS: CourseListFilters = {
   search: '',
@@ -26,6 +38,7 @@ export const DEFAULT_COURSE_LIST_FILTERS: CourseListFilters = {
   sortKey: DEFAULT_COURSE_SORT,
   order: DEFAULT_SORT_ORDER,
   courseType: 'all',
+  courseFormat: 'all',
   publishedStatus: 'all'
 };
 
@@ -34,10 +47,19 @@ export const DEFAULT_COURSE_LIST_NEXT = 1;
 export const MAX_COURSE_LIST_NEXT = 50;
 
 const VALID_COURSE_TYPES = new Set(['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE', 'PUBLIC']);
+const VALID_COURSE_FORMATS = new Set<string>(COURSE_FORMAT_VALUES);
 
 export function parsePublishedStatusFilter(value: string | null | undefined): PublishedStatusFilter {
   if (value === 'published' || value === 'unpublished') {
     return value;
+  }
+
+  return 'all';
+}
+
+export function parseCourseFormatFilter(value: string | null | undefined): CourseFormatFilter {
+  if (value && VALID_COURSE_FORMATS.has(value)) {
+    return value as TCourseFormat;
   }
 
   return 'all';
@@ -71,6 +93,7 @@ export function parseCourseListFilters(params: URLSearchParams): CourseListFilte
     sortKey: parseCourseSortValue(params.get('sort')),
     order: parseCourseSortOrder(params.get('order')),
     courseType,
+    courseFormat: parseCourseFormatFilter(params.get('format')),
     publishedStatus: parsePublishedStatusFilter(params.get('status'))
   };
 }
@@ -99,6 +122,10 @@ export function buildCourseListSearchParams(
 
   if (filters.courseType !== 'all') {
     params.set('type', filters.courseType);
+  }
+
+  if (filters.courseFormat !== 'all') {
+    params.set('format', filters.courseFormat);
   }
 
   if (filters.publishedStatus === 'published' || filters.publishedStatus === 'unpublished') {

@@ -18,6 +18,7 @@ function toOrganizationCoursesApiQuery(filters: CourseListFilters, page: number)
   const tags = filters.tags.length > 0 ? filters.tags.join(',') : undefined;
   const search = filters.search || undefined;
   const type = filters.courseType !== 'all' ? filters.courseType : undefined;
+  const format = filters.courseFormat !== 'all' ? filters.courseFormat : undefined;
   const status = filters.publishedStatus === 'all' ? undefined : filters.publishedStatus;
   const sort = filters.sortKey;
   const order = filters.order;
@@ -28,6 +29,7 @@ function toOrganizationCoursesApiQuery(filters: CourseListFilters, page: number)
     search,
     tags,
     type,
+    format,
     status,
     sort,
     order

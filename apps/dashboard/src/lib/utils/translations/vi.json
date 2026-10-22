@@ -2947,7 +2947,13 @@
             "completion_modules_all": "Tất cả các mô-đun",
             "completion_modules_graded_only": "Chỉ các mô-đun có chấm điểm",
             "completion_modules_helper": "Tùy chọn \"Chỉ các mô-đun có chấm điểm\" cho phép người học bỏ qua các bài khảo sát và bảng thuật ngữ không bắt buộc. Chỉ những mô-đun có yêu cầu điểm đạt hoặc điểm số mới quyết định việc hoàn thành khóa học.",
-            "completion_modules_single_note": "Gói này chỉ có một mô-đun duy nhất, do đó phạm vi hoàn thành không áp dụng."
+            "completion_modules_single_note": "Gói này chỉ có một mô-đun duy nhất, do đó phạm vi hoàn thành không áp dụng.",
+            "no_package_hint": "Đính kèm gói hàng để xem điểm đạt và theo dõi tiến độ hoàn thành.",
+            "no_package_score_hint": "Người học sẽ hoàn thành hoạt động này bằng cách đạt được ít nhất {score}%.",
+            "completion_modules_no_package_note": "Chưa có gói nào được đính kèm. Các quy tắc đa mô-đun sẽ được áp dụng sau khi gói được tải lên.",
+            "rule_auto_no_package_hint": "Sử dụng điểm đạt yêu cầu của gói phần mềm nếu có, hoặc đánh dấu là hoàn thành khi kết thúc.",
+            "rule_completed_hint": "Học sinh hoàn thành hoạt động này chỉ bằng cách đọc hết nội dung, bất kể điểm số.",
+            "rule_score_hint": "Học sinh hoàn thành hoạt động này bằng cách đọc hết nội dung và đạt ít nhất {score}%."
           },
           "instructions": {
             "label": "Hướng dẫn dành cho người học",
@@ -3027,7 +3033,7 @@
             "peek_same_file": "Tệp này giống hệt với phiên bản hiện tại. Không có gì thay đổi.",
             "peek_unknown": "Không thể đọc nội dung gói hàng, vì vậy nó không được so sánh với gói hàng hiện tại.",
             "sequencing_ordered": "Gói này xác định thứ tự các mô-đun: mỗi mô-đun sẽ được mở khóa khi mô-đun trước đó hoàn tất. Các quy tắc trình tự khác, chẳng hạn như bài kiểm tra đầu vào và quy tắc tổng hợp kết quả (rollup), sẽ bị bỏ qua.",
-            "sequencing_unordered": "Gói này xác định thứ tự các mô-đun, nhưng hiện tại người học có thể mở các mô-đun theo bất kỳ thứ tự nào. Hãy đặt tùy chọn Thứ tự mô-đun thành \"Theo trình tự\" trong phần Cài đặt để áp dụng quy tắc này. Các quy tắc trình tự khác, chẳng hạn như bài kiểm tra đầu vào và quy tắc tổng hợp kết quả, sẽ bị bỏ qua.",
+            "sequencing_unordered": "Gói này xác định thứ tự các mô-đun, nhưng hiện tại người học có thể mở các mô-đun theo bất kỳ thứ tự nào. Hãy đặt tùy chọn Thứ tự mô-đun (Module order) thành \"Theo trình tự\" (In sequence) trong phần Cài đặt để áp dụng quy tắc này. Các quy tắc trình tự khác, chẳng hạn như bài kiểm tra đầu vào và quy tắc tổng hợp kết quả, sẽ bị bỏ qua.",
             "empty_title": "Chưa có gói nào được tải lên",
             "empty_description": "Tải lên gói SCORM để bắt đầu xem và kiểm tra.",
             "upload_package": "Tải lên gói",
@@ -3075,7 +3081,8 @@
             "package": "Gói",
             "instructions": "Hướng dẫn",
             "results": "Kết quả",
-            "settings": "Cài đặt"
+            "settings": "Cài đặt",
+            "preview": "Xem trước"
           },
           "player": {
             "modules_complete": "{complete} trong tổng số {total} mô-đun đã hoàn thành",
@@ -3116,7 +3123,11 @@
             "loading": "Đang tải gói hàng…",
             "module_complete_title": "Mô-đun đã hoàn thành",
             "dismiss": "Đóng",
-            "fullscreen_video_hint": "Video ở đây không thể hiển thị toàn màn hình khi hoạt động đang ở chế độ toàn màn hình."
+            "fullscreen_video_hint": "Video ở đây không thể hiển thị toàn màn hình khi hoạt động đang ở chế độ toàn màn hình.",
+            "fullscreen_esc_hint": "Nhấn phím Esc để thoát khỏi chế độ toàn màn hình.",
+            "fullscreen_back_hint": "Sử dụng cử chỉ quay lại hoặc nút quay lại trên thiết bị của bạn để thoát khỏi chế độ toàn màn hình.",
+            "fullscreen_left": "Bạn đã thoát khỏi chế độ toàn màn hình.",
+            "fullscreen_return_activity": "Khôi phục hoạt động về chế độ toàn màn hình"
           },
           "results": {
             "sheet": {
@@ -3200,7 +3211,9 @@
           "single_activity_empty_title": "Chưa có gói nào được thêm",
           "single_activity_empty_description": "Tải lên gói SCORM để người học có thể sử dụng khóa học này.",
           "single_activity_empty_student_desc": "Khóa học này chưa có nội dung nào.",
-          "add_package_button": "Thêm gói"
+          "add_package_button": "Thêm gói",
+          "lock_action": "Gói khóa",
+          "unlock_action": "Gói mở khóa"
         },
         "add_content_created_activity": "Gói SCORM đã được tạo thành công!",
         "add_content_create_another_activity": "Tạo gói khác",
@@ -3537,7 +3550,8 @@
       "type_selector_title": "Bạn đang xem loại khóa học nào?",
       "button": "Kết thúc",
       "back": "Quay lại",
-      "next": "Tiếp theo"
+      "next": "Tiếp theo",
+      "path_selector_title": "Bạn muốn tạo khóa học này như thế nào?"
     },
     "course_card": {
       "empty_title": "Không có khóa học nào được tạo",
@@ -5237,6 +5251,11 @@
     "page_title": "Khóa học - ClassroomIO",
     "heading": "Khóa học",
     "subtitle": "Duyệt tất cả các khóa học được xuất bản",
+    "course": "Khóa học",
+    "modules": "{count, plural, one {# mô-đun} other {# mô-đun}}",
+    "modules_label": "Mô-đun",
+    "activities": "{count, plural, one {# hoạt động} other {# hoạt động}}",
+    "activities_label": "Hoạt động",
     "clear_filters": "Xóa bộ lọc",
     "empty": {
       "title": "Không tìm thấy khóa học nào",
@@ -5808,7 +5827,10 @@
       "status": "Trạng thái",
       "all": "Tất cả",
       "unpublished": "Chưa được xuất bản",
-      "course_type": "Loại khóa học"
+      "course_type": "Loại khóa học",
+      "course_format": "Định dạng khóa học",
+      "format_standard": "Tiêu chuẩn",
+      "format_scorm": "SCORM"
     },
     "notifications": {
       "created": "Đã tạo tiện ích",

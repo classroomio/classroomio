@@ -1652,6 +1652,11 @@
     "page_title": "Kurslar - SınıfIO",
     "heading": "Kurslar",
     "subtitle": "Yayınlanan tüm kurslara göz atın",
+    "course": "Kurs",
+    "modules": "{count, plural, one {# modül} other {# modül}}",
+    "modules_label": "Modüller",
+    "activities": "{count, plural, one {# etkinlik} other {# etkinlik}}",
+    "activities_label": "Etkinlikler",
     "clear_filters": "Filtreleri Temizle",
     "filters": {
       "title": "Filter",
@@ -1973,7 +1978,24 @@
       "status": "Durum",
       "all": "Tüm",
       "unpublished": "Yayınlanmamış",
-      "course_type": "Ders Türü"
+      "course_type": "Ders Türü",
+      "course_format": "Ders Formatı",
+      "format_standard": "Standart",
+      "format_scorm": "SCORM"
+    },
+    "filters": {
+      "filter": "Filtrele",
+      "popover_title": "Filtreler",
+      "clear_all": "Tümünü temizle",
+      "search_placeholder": "İsimle ara",
+      "status": "Durum",
+      "layout_type": "Yerleşim türü",
+      "selection_mode": "Seçim modu",
+      "no_results_title": "Filtrelerinize uyan hiçbir widget bulunamadı.",
+      "no_results_description": "Farklı bir arama terimi deneyin veya filtrelerinizi temizleyerek her şeyi tekrar görüntüleyin.",
+      "no_results_page_title": "Bu sayfada hiçbir şey yok.",
+      "no_results_page_description": "Bu filtreler, bu sayfanın başlangıcındaki değerlerden daha az sayıda widget ile eşleşiyor.",
+      "back_to_first_page": "İlk sayfaya geri dön"
     }
   },
   "setup": {
@@ -2332,7 +2354,8 @@
       "type_selector_title": "Ne tür bir kurs arıyorsunuz",
       "button": "Finish",
       "back": "Geri",
-      "next": "Sonraki"
+      "next": "Sonraki",
+      "path_selector_title": "Bu kursu nasıl oluşturmak istersiniz?"
     },
     "copy_course": {
       "title": "Kurs Oluştur",
@@ -3722,7 +3745,13 @@
             "completion_modules_all": "Tüm modüller",
             "completion_modules_graded_only": "Yalnızca notlandırılan modüller",
             "completion_modules_helper": "\"Yalnızca notlandırılan modüller\" seçeneği, öğrencilerin isteğe bağlı anketleri ve terim sözlüklerini atlamasına olanak tanır. Tamamlama koşulunu yalnızca geçer notu veya raporlanan bir puanı olan modüller belirler.",
-            "completion_modules_single_note": "Bu paket tek bir modülden oluşmaktadır; bu nedenle tamamlama kapsamı geçerli değildir."
+            "completion_modules_single_note": "Bu paket tek bir modülden oluşmaktadır; bu nedenle tamamlama kapsamı geçerli değildir.",
+            "no_package_hint": "Paketin geçme notunu görmek ve tamamlanma durumunu takip etmek için paket ekleyin.",
+            "no_package_score_hint": "Öğrenciler bu etkinliği en az {score}% puan alarak tamamlayacaklardır.",
+            "completion_modules_no_package_note": "Henüz hiçbir paket eklenmedi. Bir paket yüklendikten sonra çok modüllü kurallar geçerli olur.",
+            "rule_auto_no_package_hint": "Paket üzerinde varsa geçme işaretini kullanır, tamamlandığında ise tamamlandı olarak işaretler.",
+            "rule_completed_hint": "Öğrenciler, puandan bağımsız olarak, içeriği tamamlayarak bu etkinliği bitirmiş sayılırlar.",
+            "rule_score_hint": "Öğrenciler, içeriği tamamlayarak ve en az {score}% puan alarak bu etkinliği bitirirler."
           },
           "instructions": {
             "label": "Öğrenciler için talimatlar",
@@ -3802,7 +3831,7 @@
             "peek_same_file": "Bu dosya mevcut sürümle aynıdır. Hiçbir şey değişmeyecek.",
             "peek_unknown": "Paket içeriği okunamadığı için mevcut paketle karşılaştırılmadı.",
             "sequencing_ordered": "Bu paket bir modül sırası belirler: her bir modül, bir önceki tamamlandığında açılır. Ön testler ve toplu sonuç hesaplama (rollup) gibi diğer sıralama kuralları dikkate alınmaz.",
-            "sequencing_unordered": "Bu paket bir modül sırası belirler, ancak öğrenciler şu anda modülleri istedikleri sırayla açabilirler. Bu sıralamayı zorunlu kılmak için Ayarlar bölümünde Modül sırasını “Sırayla” olarak ayarlayın. Ön testler ve toplu sonuç hesaplama (rollup) gibi diğer sıralama kuralları dikkate alınmaz.",
+            "sequencing_unordered": "Bu paket bir modül sırası belirler, ancak öğrenciler şu anda modülleri istedikleri sırayla açabilirler. Bu sıralamayı zorunlu kılmak için Ayarlar bölümünde Modül sırasını “Sırayla” (In sequence) olarak ayarlayın. Ön testler ve toplu sonuç hesaplama (rollup) gibi diğer sıralama kuralları dikkate alınmaz.",
             "empty_title": "Paket yüklenmedi",
             "empty_description": "Görüntülemeye ve test etmeye başlamak için bir SCORM paketi yükleyin.",
             "upload_package": "Paket yükle",
@@ -3850,7 +3879,8 @@
             "package": "Paket",
             "instructions": "Talimatlar",
             "results": "Sonuçlar",
-            "settings": "Ayarlar"
+            "settings": "Ayarlar",
+            "preview": "Önizleme"
           },
           "player": {
             "modules_complete": "{total} modülün {complete}'i tamamlandı",
@@ -3891,7 +3921,11 @@
             "loading": "Paket yükleniyor…",
             "module_complete_title": "Modül tamamlandı",
             "dismiss": "Kapat",
-            "fullscreen_video_hint": "Buradaki videolar, etkinlik tam ekran modundayken tam ekran moduna geçemez."
+            "fullscreen_video_hint": "Buradaki videolar, etkinlik tam ekran modundayken tam ekran moduna geçemez.",
+            "fullscreen_esc_hint": "Tam ekrandan çıkmak için Esc tuşuna basın.",
+            "fullscreen_back_hint": "Tam ekrandan çıkmak için cihazınızın geri hareketini veya düğmesini kullanın.",
+            "fullscreen_left": "Tam ekran modundan çıktınız.",
+            "fullscreen_return_activity": "Etkinliği tam ekrana döndür"
           },
           "results": {
             "sheet": {
@@ -3975,7 +4009,9 @@
           "single_activity_empty_title": "Henüz paket eklenmedi",
           "single_activity_empty_description": "Bu kurstaki öğrencilerin kullanımına sunmak için bir SCORM paketi yükleyin.",
           "single_activity_empty_student_desc": "Bu kursun henüz içeriği yok.",
-          "add_package_button": "Paket ekle"
+          "add_package_button": "Paket ekle",
+          "lock_action": "Kilit paketi",
+          "unlock_action": "Paketi aç"
         },
         "add_content_created_activity": "SCORM paketi başarıyla oluşturuldu!",
         "add_content_create_another_activity": "Başka bir paket oluştur",

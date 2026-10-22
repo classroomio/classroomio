@@ -289,7 +289,7 @@
         {/each}
       {/if}
 
-      {#if profileId}
+      {#if profileId && attempts.length > 0}
         <div class="flex justify-end">
           <Button
             variant={confirmingReset ? 'destructive' : 'outline'}

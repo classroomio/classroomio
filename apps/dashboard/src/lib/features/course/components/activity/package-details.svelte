@@ -33,6 +33,7 @@
   }: Props = $props();
 
   const current = $derived(details.currentVersion);
+  const packageTitle = $derived(current?.title?.trim() || details.asset.title);
   const units = $derived(details.units ?? []);
   const launchable = $derived(units.filter((unit) => unit.unitType === 'sco'));
   const displayUnits = $derived(launchable.length > 0 ? launchable : units);
@@ -79,7 +80,7 @@
       </div>
       <div class="min-w-0 flex-1">
         <h2 class="ui:text-foreground text-[17px] leading-snug font-semibold">
-          {details.asset.title}
+          {packageTitle}
         </h2>
         <div class="ui:text-muted-foreground mt-0.5 text-xs">
           {formatScormVersion(current?.format)}

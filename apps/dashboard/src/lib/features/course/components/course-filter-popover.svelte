@@ -6,6 +6,7 @@
     type CourseSortBy,
     type CourseSortOrder
   } from '../utils/constants';
+  import type { CourseFormatFilter } from '../utils/course-list-filters';
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Button } from '@cio/ui/base/button';
   import { SortPopover } from '$features/ui';
@@ -39,10 +40,13 @@
     publishedStatus?: 'all' | 'published' | 'unpublished';
     courseType?: string;
     courseTypeOptions?: { value: string; label: string }[];
+    courseFormat?: CourseFormatFilter;
+    courseFormatOptions?: { value: Exclude<CourseFormatFilter, 'all'>; label: string }[];
     onToggleTag?: (tagSlug: string, checked: boolean) => void;
     onClearFilters?: () => void | Promise<void>;
     onPublishedStatusChange?: (status: 'all' | 'published' | 'unpublished') => void;
     onCourseTypeChange?: (type: string) => void;
+    onCourseFormatChange?: (format: CourseFormatFilter) => void;
   }
 
   let {
@@ -56,10 +60,13 @@
     publishedStatus = $bindable('all'),
     courseType = $bindable('all'),
     courseTypeOptions = [],
+    courseFormat = $bindable('all' as CourseFormatFilter),
+    courseFormatOptions = [],
     onToggleTag = () => {},
     onClearFilters = () => {},
     onPublishedStatusChange,
-    onCourseTypeChange
+    onCourseTypeChange,
+    onCourseFormatChange
   }: Props = $props();
 
   const translatedSortOptions = $derived(
@@ -73,7 +80,8 @@
           selectedOrder !== DEFAULT_SORT_ORDER ||
           selectedTags.length > 0 ||
           publishedStatus !== 'all' ||
-          courseType !== 'all'
+          courseType !== 'all' ||
+          courseFormat !== 'all'
   );
 
   function isTagSelected(tagSlug: string) {
@@ -88,6 +96,11 @@
   function setCourseType(type: string) {
     courseType = type;
     onCourseTypeChange?.(type);
+  }
+
+  function setCourseFormat(format: CourseFormatFilter) {
+    courseFormat = format;
+    onCourseFormatChange?.(format);
   }
 </script>
 
@@ -143,6 +156,30 @@
                 size="sm"
                 variant={courseType === opt.value ? 'secondary' : 'outline'}
                 onclick={() => setCourseType(opt.value)}>{opt.label}</Button
+              >
+            {/each}
+          </div>
+        </div>
+      {/if}
+
+      {#if courseFormatOptions.length > 0}
+        <div class="space-y-2">
+          <p class="ui:text-muted-foreground text-xs font-semibold uppercase">
+            {$t('widgets.filter.course_format')}
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant={courseFormat === 'all' ? 'secondary' : 'outline'}
+              onclick={() => setCourseFormat('all')}>{$t('widgets.filter.all')}</Button
+            >
+            {#each courseFormatOptions as opt (opt.value)}
+              <Button
+                type="button"
+                size="sm"
+                variant={courseFormat === opt.value ? 'secondary' : 'outline'}
+                onclick={() => setCourseFormat(opt.value)}>{opt.label}</Button
               >
             {/each}
           </div>

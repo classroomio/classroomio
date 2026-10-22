@@ -6,20 +6,26 @@
   import { onDestroy, untrack } from 'svelte';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import * as ButtonGroup from '@cio/ui/base/button-group';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Alert from '@cio/ui/base/alert';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as Page from '@cio/ui/base/page';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { Empty } from '@cio/ui/custom/empty';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
-  import { IconButton } from '@cio/ui/custom/icon-button';
-  import { RefreshPageData, RoleBasedSecurity, UnsavedChanges } from '$features/ui';
+  import { RoleBasedSecurity, UnsavedChanges } from '$features/ui';
+  import EyeIcon from '@lucide/svelte/icons/eye';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
+  import MoreHorizontalIcon from '@lucide/svelte/icons/more-horizontal';
   import PackageIcon from '@lucide/svelte/icons/package';
-  import FileTextIcon from '@lucide/svelte/icons/file-text';
   import AwardIcon from '@lucide/svelte/icons/award';
   import SettingsIcon from '@lucide/svelte/icons/settings';
-  import Pencil from '@lucide/svelte/icons/pencil';
-  import Save from '@lucide/svelte/icons/save';
+  import HistoryIcon from '@lucide/svelte/icons/history';
+  import LockIcon from '@lucide/svelte/icons/lock';
+  import UnlockIcon from '@lucide/svelte/icons/lock-open';
+  import TrashIcon from '@lucide/svelte/icons/trash';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
   import { activityApi, courseApi, packageApi } from '$features/course/api';
   import ActivityResultsPanel from '$features/course/components/activity/activity-results-panel.svelte';
@@ -28,17 +34,18 @@
   import PackageSettings from '$features/course/components/activity/package-settings.svelte';
   import AddPackageModal from '$features/course/components/activity/add-package-modal.svelte';
   import ActivityPlayer from '$features/course/components/activity/activity-player.svelte';
-  import ActivityPageEditHeader from '$features/course/components/activity/activity-page-edit-header.svelte';
   import ActivityVersionHistory from '$features/course/components/activity/activity-version-history.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
-  import HistoryIcon from '@lucide/svelte/icons/history';
   import { getActivityStatusPill, unitPassMark } from '$features/course/utils/scorm-utils';
   import { getOrderedNavigableContent, getCourseProgress } from '$features/course/utils/content';
   import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
-  import type { PackageFingerprint, PackageDetails as PackageDetailsType } from '$features/course/utils/types';
+  import type {
+    ActivityTab,
+    PackageFingerprint,
+    PackageDetails as PackageDetailsType
+  } from '$features/course/utils/types';
   import { ContentType } from '@cio/utils/constants/content';
-  import MODES from '$lib/utils/constants/mode';
   import { currentOrg } from '$lib/utils/store/org';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
@@ -54,7 +61,15 @@
 
   let { courseId, activityId }: Props = $props();
 
-  const mode = $derived(page.url.searchParams.get('mode') === 'edit' ? MODES.edit : MODES.view);
+  function normalizeActivityTab(tabParam: string | null): ActivityTab {
+    if (tabParam === 'results' || tabParam === 'analytics' || tabParam === 'submissions') {
+      return 'results';
+    }
+    if (tabParam === 'settings') {
+      return 'settings';
+    }
+    return 'package';
+  }
 
   const showMobileBottomNav = $derived(
     isCourseMobileBottomNavVisible({
@@ -65,11 +80,11 @@
     })
   );
 
-  let currentTab = $state('package');
+  let preview = $state(page.url.searchParams.get('tab') === 'player' || page.url.searchParams.get('tab') === 'preview');
+  let currentTab = $state<ActivityTab>(normalizeActivityTab(page.url.searchParams.get('tab')));
   let addPackageModalOpen = $state(false);
   let addPackageModalMode = $state<'attach' | 'upgrade' | 'swap'>('attach');
   let settingsDirty = $state(false);
-  let settingsSaving = $state(false);
   let settingsPanel = $state<PackageSettings | null>(null);
   let deleteOpen = $state(false);
   let deleting = $state(false);
@@ -157,7 +172,8 @@
       moveStaleOpen = false;
       revertOpen = false;
       revertTargetVersion = null;
-      currentTab = 'package';
+      preview = false;
+      currentTab = normalizeActivityTab(page.url.searchParams.get('tab'));
       const navItem = currentNavigableItem;
       title = navItem?.id === activityId ? (navItem.title ?? '') : '';
       instructions = '';
@@ -169,6 +185,32 @@
       title = currentActivity.title ?? '';
       instructions = (currentActivity.instructions as string | null) ?? '';
     }
+  });
+
+  $effect(() => {
+    const nextTab = normalizeActivityTab(page.url.searchParams.get('tab'));
+    if (nextTab === untrack(() => currentTab)) return;
+    currentTab = nextTab;
+  });
+
+  $effect(() => {
+    const activeTab = normalizeActivityTab(page.url.searchParams.get('tab'));
+    if (activeTab === currentTab) return;
+
+    untrack(() => {
+      const url = new URL(page.url);
+      if (currentTab === 'package') {
+        url.searchParams.delete('tab');
+      } else {
+        url.searchParams.set('tab', currentTab);
+      }
+
+      void goto(`${url.pathname}${url.search}`, {
+        replaceState: true,
+        keepFocus: true,
+        noScroll: true
+      });
+    });
   });
 
   const attemptCounts = $derived(
@@ -220,7 +262,7 @@
   );
 
   $effect(() => {
-    hasUnsavedChanges = (titleDirty || instructionsDirty || settingsDirty) && mode === MODES.edit;
+    hasUnsavedChanges = titleDirty || instructionsDirty || (currentTab === 'settings' && settingsDirty);
   });
 
   let saveDebounceTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -235,7 +277,6 @@
   onDestroy(clearAutoSave);
 
   function triggerAutoSave() {
-    if (mode === MODES.view) return;
     if (!titleDirty && !instructionsDirty) return;
 
     clearAutoSave();
@@ -287,7 +328,6 @@
   async function saveAll() {
     if (titleDirty && !savingTitle) await saveTitle();
     if (instructionsDirty && !savingInstructions) await saveInstructions();
-    if (settingsDirty && settingsPanel) await settingsPanel.save();
   }
 
   function handleTitleChange(value: string) {
@@ -298,13 +338,6 @@
   function handleInstructionsChange(value: string) {
     instructions = value;
     triggerAutoSave();
-  }
-
-  function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
-    const params = new SvelteURLSearchParams(page.url.searchParams);
-    params.set('mode', value);
-    hasUnsavedChanges = false;
-    void goto(resolve(`${page.url.pathname}?${params.toString()}`, {}), { replaceState: false });
   }
 
   async function setHistoryQueryParam(isOpen: boolean) {
@@ -320,23 +353,12 @@
     const query = params.toString();
     hasUnsavedChanges = false;
     await goto(resolve(query ? `${page.url.pathname}?${query}` : page.url.pathname, {}), { replaceState: false });
-    hasUnsavedChanges = mode === MODES.edit && (titleDirty || instructionsDirty || settingsDirty);
+    hasUnsavedChanges = titleDirty || instructionsDirty || (currentTab === 'settings' && settingsDirty);
   }
 
-  function toggleMode() {
-    if (mode === MODES.edit && hasUnsavedChanges) {
-      clearAutoSave();
-      void saveAll();
-    }
-    setModeQueryParam(mode === MODES.edit ? MODES.view : MODES.edit);
-  }
-
-  function saveSettings() {
-    void settingsPanel?.save();
-  }
-
-  function discardSettings() {
-    settingsPanel?.discard();
+  function togglePreviewMode() {
+    preview = !preview;
+    currentTab = 'package';
   }
 
   function abandonPendingEdits() {
@@ -373,6 +395,7 @@
   }
 
   async function refreshEditor() {
+    resultsRefreshKey += 1;
     await activityApi.get(courseId, activityId);
     addPackageModalOpen = false;
     const currentActivity = activityApi.activity;
@@ -507,19 +530,13 @@
 
 <Page.Header>
   <Page.HeaderContent>
-    <ActivityPageEditHeader
-      {mode}
-      title={mode === MODES.edit ? title : displayTitle}
-      isUnlocked={activityApi.activity?.isUnlocked ?? true}
-      isDeletingActivity={deleting}
-      onTitleChange={handleTitleChange}
-      onToggleLock={handleToggleLock}
-      onRequestDelete={() => (deleteOpen = true)}
-    />
+    <Page.Title class="flex flex-col gap-2">
+      <span>{displayTitle}</span>
+    </Page.Title>
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
-      {#if mode === MODES.view && $isCourseLearnerView}
+      {#if $isCourseLearnerView && courseApi.course?.id && activityId && !showMobileBottomNav}
         {#if statusPill}
           <Badge variant={statusPill.variant}>{$t(statusPill.label)}</Badge>
         {/if}
@@ -527,43 +544,68 @@
       {/if}
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <div class="flex flex-row items-center gap-2 lg:flex">
-          {#if mode === MODES.edit}
-            <span class="ui:text-muted-foreground text-sm" aria-live="polite">
-              {#if savingTitle || savingInstructions}
-                {$t('course.navItem.lessons.saving')}
-              {:else if !titleDirty && !instructionsDirty && !settingsDirty}
-                {$t('course.navItem.lessons.saved')}
-              {/if}
-            </span>
-          {/if}
-          <IconButton
-            onclick={toggleMode}
-            disabled={savingTitle || savingInstructions}
-            aria-label={mode === MODES.edit ? $t('course.navItem.lessons.view') : $t('course.navItem.lessons.edit')}
-          >
-            {#if mode === MODES.edit}
-              <Save size={20} />
-            {:else}
-              <Pencil size={20} />
-            {/if}
-          </IconButton>
-        </div>
+        {#if currentTab === 'package'}
+          <div class="right-0 flex w-full items-center justify-end">
+            <div class="flex flex-wrap items-center justify-end gap-2">
+              <ButtonGroup.Root>
+                <Button variant="outline" size="sm" onclick={togglePreviewMode}>
+                  {#if preview}
+                    <PencilIcon size={16} />
+                    {$t('course.navItem.lessons.exercises.all_exercises.view_mode.edit')}
+                  {:else}
+                    <EyeIcon size={16} />
+                    {$t('course.navItem.lessons.exercises.all_exercises.preview')}
+                  {/if}
+                </Button>
+              </ButtonGroup.Root>
 
-        <IconButton
-          class="inline-flex"
-          onclick={() => setHistoryQueryParam(true)}
-          aria-label={$t('course.navItem.lessons.version_history.title')}
-          tooltip={$t('course.navItem.lessons.version_history.title')}
-          tooltipSide="bottom"
-          disabled={!attachedPackage}
-        >
-          <HistoryIcon size={20} />
-        </IconButton>
-
-        <span class="hidden lg:inline-flex">
-          <RefreshPageData onRefresh={refreshEditor} />
-        </span>
+              <ButtonGroup.Root>
+                <Button size="sm" onclick={saveAll} loading={savingTitle || savingInstructions}>
+                  {$t('course.navItem.lessons.exercises.all_exercises.save')}
+                </Button>
+                <ButtonGroup.Separator />
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger>
+                    {#snippet child({ props })}
+                      <Button
+                        {...props}
+                        type="button"
+                        variant="default"
+                        size="icon-sm"
+                        aria-label={$t('course.navItem.lessons.exercises.all_exercises.more')}
+                      >
+                        <MoreHorizontalIcon class="h-4 w-4" />
+                      </Button>
+                    {/snippet}
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content align="end">
+                    <DropdownMenu.Item disabled={!attachedPackage} onclick={() => setHistoryQueryParam(true)}>
+                      <HistoryIcon class="mr-2 h-4 w-4" />
+                      {$t('course.navItem.lessons.version_history.title')}
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item onclick={handleToggleLock}>
+                      {#if activityApi.activity?.isUnlocked ?? true}
+                        <LockIcon class="mr-2 h-4 w-4" />
+                        {$t('course.navItem.lessons.activities.lock_action')}
+                      {:else}
+                        <UnlockIcon class="mr-2 h-4 w-4" />
+                        {$t('course.navItem.lessons.activities.unlock_action')}
+                      {/if}
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item
+                      class="text-red-600 focus:text-red-600 dark:text-red-400"
+                      onclick={() => (deleteOpen = true)}
+                    >
+                      <TrashIcon class="mr-2 h-4 w-4" />
+                      {$t('course.navItem.lessons.activities.menu_delete')}
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              </ButtonGroup.Root>
+            </div>
+          </div>
+        {/if}
       </RoleBasedSecurity>
     </div>
   </Page.Action>
@@ -571,32 +613,11 @@
 
 <Page.Body>
   {#snippet child()}
-    <div class={`overflow-x-hidden pb-4 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full'}`}>
+    <div class={`overflow-x-hidden pb-4 ${currentTab === 'results' ? 'mx-auto w-full' : 'lg:w-full xl:w-11/12'}`}>
       {#if $isCourseLearnerView}
         <ActivityPlayer {courseId} {activityId} />
-      {:else if mode === MODES.view}
-        {#if attachedPackage}
-          <ActivityPlayer {courseId} {activityId} />
-        {:else}
-          <Empty
-            title={$t('course.navItem.lessons.activities.package.empty_title')}
-            description={$t('course.navItem.lessons.materials.body_content') +
-              ' ' +
-              $t('course.navItem.lessons.materials.get_started') +
-              ' ' +
-              $t('course.navItem.lessons.materials.button') +
-              '.'}
-            icon={PackageIcon}
-            variant="page"
-            class="text-center"
-          >
-            <Button onclick={toggleMode}>
-              {$t('course.navItem.lessons.materials.get_started')}
-            </Button>
-          </Empty>
-        {/if}
       {:else}
-        {#if !hasScormAccess}
+        {#if !hasScormAccess && (currentTab === 'package' || currentTab === 'settings')}
           <Alert.Root variant="warning" class="mt-4">
             <Alert.Title>{$t('course.navItem.lessons.activities.gating.title')}</Alert.Title>
             <Alert.Description>
@@ -622,74 +643,87 @@
               <PackageIcon class="custom size-4 shrink-0" />
               {$t('course.navItem.lessons.activities.tabs.package')}
             </UnderlineTabs.Trigger>
-            <UnderlineTabs.Trigger value="instructions">
-              <FileTextIcon class="custom size-4 shrink-0" />
-              {$t('course.navItem.lessons.activities.tabs.instructions')}
+            <UnderlineTabs.Trigger value="settings">
+              <SettingsIcon class="custom size-4 shrink-0" />
+              {$t('course.navItem.lessons.activities.tabs.settings')}
             </UnderlineTabs.Trigger>
             <UnderlineTabs.Trigger value="results">
               <AwardIcon class="custom size-4 shrink-0" />
               {$t('course.navItem.lessons.activities.tabs.results')}
             </UnderlineTabs.Trigger>
-            <UnderlineTabs.Trigger value="settings">
-              <SettingsIcon class="custom size-4 shrink-0" />
-              {$t('course.navItem.lessons.activities.tabs.settings')}
-            </UnderlineTabs.Trigger>
           </UnderlineTabs.List>
 
           <UnderlineTabs.Content value="package">
             <div class="py-4">
-              {#if !scormEditor}
-                <Empty
-                  title={$t('course.navItem.lessons.activities.not_available_title')}
-                  description={$t('course.navItem.lessons.activities.not_available_description')}
-                  icon={PackageIcon}
-                  variant="page"
-                />
-              {:else if !attachedPackage}
-                <Button onclick={() => openAddPackageModal('attach')} class="float-end my-4" disabled={!hasScormAccess}>
-                  {$t('course.navItem.lessons.activities.package.upload_package')}
-                </Button>
+              {#if !preview}
+                <div class="mb-6 space-y-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">
+                  <InputField
+                    label={$t('course.navItem.lessons.add_content_options.activity_scorm_title_label')}
+                    placeholder={$t('course.navItem.lessons.add_content_options.activity_scorm_title_placeholder')}
+                    value={title}
+                    onInput={(e) => handleTitleChange(e.currentTarget.value)}
+                  />
+                  <TextareaField
+                    label={$t('course.navItem.lessons.activities.instructions.label')}
+                    value={instructions}
+                    rows={4}
+                    placeholder={$t('course.navItem.lessons.activities.instructions.placeholder')}
+                    oninput={(e) => handleInstructionsChange(e.currentTarget.value)}
+                  />
+                </div>
 
+                {#if !scormEditor}
+                  <Empty
+                    title={$t('course.navItem.lessons.activities.not_available_title')}
+                    description={$t('course.navItem.lessons.activities.not_available_description')}
+                    icon={PackageIcon}
+                    variant="page"
+                    class="max-w-none text-center"
+                  />
+                {:else if !attachedPackage}
+                  <Empty
+                    title={$t('course.navItem.lessons.activities.package.empty_title')}
+                    description={$t('course.navItem.lessons.activities.package.empty_description')}
+                    icon={PackageIcon}
+                    variant="page"
+                    class="max-w-none text-center"
+                  >
+                    <Button onclick={() => openAddPackageModal('attach')} disabled={!hasScormAccess}>
+                      {$t('course.navItem.lessons.activities.package.upload_package')}
+                    </Button>
+                  </Empty>
+                {:else}
+                  <PackageDetails
+                    details={attachedPackage}
+                    moduleOrder={editorSettings?.moduleOrder ?? null}
+                    {staleCount}
+                    {staleVersionNumber}
+                    onUpgrade={handleUpgradeRequest}
+                    onSwap={() => (swapOpen = true)}
+                    onRemove={handleRemoveRequest}
+                    onMoveStale={() => (moveStaleOpen = true)}
+                  />
+                {/if}
+              {:else if attachedPackage}
+                <ActivityPlayer {courseId} {activityId} />
+              {:else}
                 <Empty
                   title={$t('course.navItem.lessons.activities.package.empty_title')}
-                  description={$t('course.navItem.lessons.activities.package.empty_description')}
+                  description={$t('course.navItem.lessons.materials.body_content') +
+                    ' ' +
+                    $t('course.navItem.lessons.materials.get_started') +
+                    ' ' +
+                    $t('course.navItem.lessons.materials.button') +
+                    '.'}
                   icon={PackageIcon}
-                />
-              {:else}
-                <PackageDetails
-                  details={attachedPackage}
-                  moduleOrder={editorSettings?.moduleOrder ?? null}
-                  {staleCount}
-                  {staleVersionNumber}
-                  onUpgrade={handleUpgradeRequest}
-                  onSwap={() => (swapOpen = true)}
-                  onRemove={handleRemoveRequest}
-                  onMoveStale={() => (moveStaleOpen = true)}
-                />
+                  variant="page"
+                  class="max-w-none text-center"
+                >
+                  <Button onclick={() => (preview = false)}>
+                    {$t('course.navItem.lessons.materials.get_started')}
+                  </Button>
+                </Empty>
               {/if}
-            </div>
-          </UnderlineTabs.Content>
-
-          <UnderlineTabs.Content value="instructions">
-            <div class="space-y-4 py-4">
-              <TextareaField
-                label={$t('course.navItem.lessons.activities.instructions.label')}
-                value={instructions}
-                rows={6}
-                placeholder={$t('course.navItem.lessons.activities.instructions.placeholder')}
-                oninput={(e) => handleInstructionsChange(e.currentTarget.value)}
-              />
-            </div>
-          </UnderlineTabs.Content>
-
-          <UnderlineTabs.Content value="results">
-            <div class="py-4">
-              <ActivityResultsPanel
-                {courseId}
-                {activityId}
-                refreshKey={resultsRefreshKey}
-                onSelectLearner={openLearnerSheet}
-              />
             </div>
           </UnderlineTabs.Content>
 
@@ -703,13 +737,24 @@
                   {hasPassMark}
                   {passMark}
                   moduleCount={(attachedPackage?.units ?? []).length}
+                  hasPackage={attachedPackage !== null}
                   disabled={!hasScormAccess}
                   bind:dirty={settingsDirty}
-                  bind:saving={settingsSaving}
                   bind:this={settingsPanel}
                   onSaved={refreshEditor}
                 />
               {/if}
+            </div>
+          </UnderlineTabs.Content>
+
+          <UnderlineTabs.Content value="results">
+            <div class="py-4">
+              <ActivityResultsPanel
+                {courseId}
+                {activityId}
+                refreshKey={resultsRefreshKey}
+                onSelectLearner={openLearnerSheet}
+              />
             </div>
           </UnderlineTabs.Content>
         </UnderlineTabs.Root>
@@ -815,7 +860,7 @@
         </Dialog.Root>
 
         <Dialog.Root open={revertOpen} onOpenChange={handleRevertOpenChange}>
-          <Dialog.Content class="w-96 p-6">
+          <Dialog.Content class="ui:z-dialog-elevated! w-96 p-6" overlayClass="ui:z-dialog-elevated!">
             <Dialog.Header class="p-2">
               <Dialog.Title>
                 {$t('course.navItem.lessons.activities.package.revert_confirm_title', {
@@ -918,18 +963,6 @@
 </Page.Body>
 
 <UnsavedChanges bind:hasUnsavedChanges onAbandon={abandonPendingEdits} />
-
-{#if !$isCourseLearnerView && mode === MODES.edit && currentTab === 'settings'}
-  <Page.SettingsActions
-    hasChanges={settingsDirty}
-    loading={settingsSaving}
-    statusLabel={$t('common.unsaved_changes.label')}
-    discardLabel={$t('common.discard')}
-    saveLabel={$t('common.save_changes')}
-    onSave={saveSettings}
-    onDiscard={discardSettings}
-  />
-{/if}
 
 {#if isVersionDrawerOpen && attachedPackage}
   <ActivityVersionHistory

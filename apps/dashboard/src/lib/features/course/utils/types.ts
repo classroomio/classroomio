@@ -336,6 +336,8 @@ export type AttachedPackageDetails = Omit<PackageDetails, 'usedBy'>;
 export type GetPackageDownloadRequest = (typeof classroomio.activity.packages)[':assetId']['download']['$get'];
 export type GetPackageDownloadResponse = InferResponseType<GetPackageDownloadRequest>;
 export type GetPackageDownloadSuccess = Extract<GetPackageDownloadResponse, { success: true }>;
+export type ActivityTab = 'package' | 'settings' | 'results';
+
 export type PackageDownloadData = GetPackageDownloadSuccess['data'];
 
 export interface PackageFingerprint {

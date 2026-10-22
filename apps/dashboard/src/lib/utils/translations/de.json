@@ -2947,7 +2947,13 @@
             "completion_modules_all": "Alle Module",
             "completion_modules_graded_only": "Nur benotete Module",
             "completion_modules_helper": "Bei der Einstellung „Nur benotete Module“ können Lernende optionale Umfragen und Glossare überspringen. Nur Module mit einer Bestehensgrenze oder einer Ergebnisbewertung sind für den Abschluss ausschlaggebend.",
-            "completion_modules_single_note": "Dieses Paket enthält nur ein einziges Modul; daher ist der Umfang des Abschlusses hier nicht relevant."
+            "completion_modules_single_note": "Dieses Paket enthält nur ein einziges Modul; daher ist der Umfang des Abschlusses hier nicht relevant.",
+            "no_package_hint": "Fügen Sie ein Paket hinzu, um dessen Bestehensnote anzuzeigen und den Bearbeitungsstatus zu verfolgen.",
+            "no_package_score_hint": "Die Lernenden werden diese Aufgabe abschließen, indem sie mindestens {score}% erreichen.",
+            "completion_modules_no_package_note": "Es ist noch kein Paket angehängt. Die Regeln für mehrere Module gelten, sobald ein Paket hochgeladen wurde.",
+            "rule_auto_no_package_hint": "Verwendet das im Paket vorhandene Prüfzeichen, falls vorhanden, oder markiert es nach Fertigstellung als abgeschlossen.",
+            "rule_completed_hint": "Die Schüler schließen diese Aufgabe ab, indem sie einfach den Inhalt fertigstellen, unabhängig von der erreichten Punktzahl.",
+            "rule_score_hint": "Die Schüler schließen diese Aufgabe ab, indem sie den Inhalt vollständig bearbeiten und mindestens {score}% erreichen."
           },
           "instructions": {
             "label": "Anleitung für Lernende",
@@ -3027,7 +3033,7 @@
             "peek_same_file": "Diese Datei ist identisch mit der aktuellen Version. Es ändert sich nichts.",
             "peek_unknown": "Der Paketinhalt konnte nicht gelesen werden und wurde daher nicht mit dem aktuellen Paket verglichen.",
             "sequencing_ordered": "Dieses Paket legt eine Modulreihenfolge fest: Jedes Modul wird erst freigeschaltet, wenn das vorherige abgeschlossen ist. Andere Regeln zur Abfolge, wie Vortests und Rollup, werden ignoriert.",
-            "sequencing_unordered": "Dieses Paket legt eine Modulreihenfolge fest, doch derzeit können Lernende die Module in beliebiger Reihenfolge öffnen. Stellen Sie die Modulreihenfolge in den Einstellungen auf „Der Reihe nach“ ein, um diese Vorgabe zu erzwingen. Andere Regeln zur Abfolge, wie Vortests und Rollup, werden ignoriert.",
+            "sequencing_unordered": "Dieses Paket legt eine Modulreihenfolge fest, doch derzeit können Lernende die Module in beliebiger Reihenfolge öffnen. Stellen Sie die Modulreihenfolge in den Einstellungen auf „Der Reihe nach“ (In sequence) ein, um diese Vorgabe zu erzwingen. Andere Regeln zur Abfolge, wie Vortests und Rollup, werden ignoriert.",
             "empty_title": "Kein Paket hochgeladen",
             "empty_description": "Laden Sie ein SCORM-Paket hoch, um es anzuzeigen und zu testen.",
             "upload_package": "Paket hochladen",
@@ -3075,7 +3081,8 @@
             "package": "Paket",
             "instructions": "Anleitung",
             "results": "Ergebnisse",
-            "settings": "Einstellungen"
+            "settings": "Einstellungen",
+            "preview": "Vorschau"
           },
           "player": {
             "modules_complete": "{complete} von {total} Modulen abgeschlossen",
@@ -3116,7 +3123,11 @@
             "loading": "Paket wird geladen…",
             "module_complete_title": "Modul abgeschlossen",
             "dismiss": "Schließen",
-            "fullscreen_video_hint": "Videos können hier nicht im Vollbildmodus angezeigt werden, während die Aktivität im Vollbildmodus ist."
+            "fullscreen_video_hint": "Videos können hier nicht im Vollbildmodus angezeigt werden, während die Aktivität im Vollbildmodus ist.",
+            "fullscreen_esc_hint": "Drücken Sie Esc, um den Vollbildmodus zu beenden.",
+            "fullscreen_back_hint": "Verwenden Sie die Zurück-Geste oder die Zurück-Taste Ihres Geräts, um den Vollbildmodus zu verlassen.",
+            "fullscreen_left": "Du hast den Vollbildmodus verlassen.",
+            "fullscreen_return_activity": "Aktivität wieder im Vollbildmodus anzeigen"
           },
           "results": {
             "sheet": {
@@ -3200,7 +3211,9 @@
           "single_activity_empty_title": "Noch kein Paket hinzugefügt",
           "single_activity_empty_description": "Laden Sie ein SCORM-Paket hoch, um es den Lernenden dieses Kurses zur Verfügung zu stellen.",
           "single_activity_empty_student_desc": "Dieser Kurs enthält noch keine Inhalte.",
-          "add_package_button": "Paket hinzufügen"
+          "add_package_button": "Paket hinzufügen",
+          "lock_action": "Schlosspaket",
+          "unlock_action": "Paket freischalten"
         },
         "add_content_created_activity": "SCORM-Paket wurde erfolgreich erstellt!",
         "add_content_create_another_activity": "Weiteres Paket erstellen",
@@ -3537,7 +3550,8 @@
       "type_selector_title": "Welche Art von Kurs suchen Sie?",
       "button": "Fertig",
       "back": "Zurück",
-      "next": "Als nächstes"
+      "next": "Als nächstes",
+      "path_selector_title": "Wie möchten Sie diesen Kurs gestalten?"
     },
     "course_card": {
       "empty_title": "Keine Kurse erstellt",
@@ -5237,6 +5251,11 @@
     "page_title": "Kurse - ClassroomIO",
     "heading": "Kurse",
     "subtitle": "Durchsuchen Sie alle veröffentlichten Kurse",
+    "course": "Kurs",
+    "modules": "{count, plural, one {# Modul} other {# Module}}",
+    "modules_label": "Module",
+    "activities": "{count, plural, one {# Aktivität} other {# Aktivitäten}}",
+    "activities_label": "Aktivitäten",
     "clear_filters": "Filter löschen",
     "empty": {
       "title": "Keine Kurse gefunden",
@@ -5808,7 +5827,10 @@
       "status": "Status",
       "all": "Alle",
       "unpublished": "Unveröffentlicht",
-      "course_type": "Kurstyp"
+      "course_type": "Kurstyp",
+      "course_format": "Kursformat",
+      "format_standard": "Standard",
+      "format_scorm": "SCORM"
     },
     "notifications": {
       "created": "Widget erstellt",

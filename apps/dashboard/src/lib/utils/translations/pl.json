@@ -2947,7 +2947,13 @@
             "completion_modules_all": "Wszystkie moduły",
             "completion_modules_graded_only": "Tylko moduły oceniane",
             "completion_modules_helper": "Opcja „Tylko moduły oceniane” pozwala uczestnikom pominąć opcjonalne ankiety i glosariusze. O ukończeniu decydują wyłącznie moduły, w których wymagane jest uzyskanie progu zaliczenia lub wyniku punktowego.",
-            "completion_modules_single_note": "Ten pakiet zawiera tylko jeden moduł, więc zakres ukończenia nie ma tu zastosowania."
+            "completion_modules_single_note": "Ten pakiet zawiera tylko jeden moduł, więc zakres ukończenia nie ma tu zastosowania.",
+            "no_package_hint": "Dołącz pakiet, aby zobaczyć próg zaliczenia i ukończenie ścieżki.",
+            "no_package_score_hint": "Uczniowie ukończą tę aktywność, uzyskując co najmniej {score}%.",
+            "completion_modules_no_package_note": "Żaden pakiet nie został jeszcze dołączony. Zasady dotyczące wielu modułów obowiązują po przesłaniu pakietu.",
+            "rule_auto_no_package_hint": "Używa znaku zaliczenia pakietu, jeśli takowy istnieje, lub oznacza go jako ukończony po jego zakończeniu.",
+            "rule_completed_hint": "Uczniowie kończą tę aktywność po prostu kończąc treść, bez względu na wynik.",
+            "rule_score_hint": "Uczniowie kończą tę aktywność, kończąc treść i zdobywając co najmniej {score}%."
           },
           "instructions": {
             "label": "Instrukcje dla uczestników",
@@ -3027,7 +3033,7 @@
             "peek_same_file": "Ten plik jest identyczny z obecną wersją. Nic się nie zmieni.",
             "peek_unknown": "Nie można odczytać zawartości pakietu, więc nie został on porównany z obecnym pakietem.",
             "sequencing_ordered": "Ten pakiet określa kolejność modułów: każdy moduł zostaje odblokowany po ukończeniu poprzedniego. Inne zasady sekwencjonowania, takie jak testy wstępne czy agregacja wyników (rollup), są ignorowane.",
-            "sequencing_unordered": "Ten pakiet określa kolejność modułów, jednak obecnie uczestnicy mogą otwierać je w dowolnej kolejności. Aby wymusić określoną kolejność, w ustawieniach należy wybrać opcję „Sekwencyjnie”. Inne zasady sekwencjonowania, takie jak testy wstępne czy agregacja wyników (rollup), są ignorowane.",
+            "sequencing_unordered": "Ten pakiet określa kolejność modułów, jednak obecnie uczestnicy mogą otwierać je w dowolnej kolejności. Aby wymusić określoną kolejność, w ustawieniach należy wybrać opcję „Sekwencyjnie” (In sequence). Inne zasady sekwencjonowania, takie jak testy wstępne czy agregacja wyników (rollup), są ignorowane.",
             "empty_title": "Nie przesłano żadnego pakietu",
             "empty_description": "Prześlij pakiet SCORM, aby rozpocząć jego przeglądanie i testowanie.",
             "upload_package": "Prześlij pakiet",
@@ -3075,7 +3081,8 @@
             "package": "Pakiet",
             "instructions": "Instrukcje",
             "results": "Wyniki",
-            "settings": "Ustawienia"
+            "settings": "Ustawienia",
+            "preview": "Zapowiedź"
           },
           "player": {
             "modules_complete": "Ukończono {complete} z {total} modułów",
@@ -3116,7 +3123,11 @@
             "loading": "Ładowanie pakietu…",
             "module_complete_title": "Moduł ukończony",
             "dismiss": "Zamknij",
-            "fullscreen_video_hint": "Filmów nie można wyświetlać w trybie pełnoekranowym, gdy aktywność jest w tym trybie."
+            "fullscreen_video_hint": "Filmów nie można wyświetlać w trybie pełnoekranowym, gdy aktywność jest w tym trybie.",
+            "fullscreen_esc_hint": "Naciśnij Esc, aby wyjść z trybu pełnoekranowego.",
+            "fullscreen_back_hint": "Aby wyjść z trybu pełnoekranowego, użyj gestu lub przycisku Wstecz na urządzeniu.",
+            "fullscreen_left": "Opuściłeś pełny ekran.",
+            "fullscreen_return_activity": "Przywróć aktywność do pełnego ekranu"
           },
           "results": {
             "sheet": {
@@ -3200,7 +3211,9 @@
           "single_activity_empty_title": "Nie dodano jeszcze żadnego pakietu",
           "single_activity_empty_description": "Prześlij pakiet SCORM, aby udostępnić go uczestnikom tego kursu.",
           "single_activity_empty_student_desc": "Ten kurs nie zawiera jeszcze żadnych treści.",
-          "add_package_button": "Dodaj pakiet"
+          "add_package_button": "Dodaj pakiet",
+          "lock_action": "Pakiet blokady",
+          "unlock_action": "Odblokuj pakiet"
         },
         "add_content_created_activity": "Pakiet SCORM został pomyślnie utworzony!",
         "add_content_create_another_activity": "Utwórz kolejny pakiet",
@@ -3537,7 +3550,8 @@
       "type_selector_title": "O jakim typie kursu myślisz?",
       "button": "Zakończ",
       "back": "Powrót",
-      "next": "Następny"
+      "next": "Następny",
+      "path_selector_title": "W jaki sposób chcesz utworzyć ten kurs?"
     },
     "course_card": {
       "empty_title": "Nie utworzono żadnych kursów",
@@ -5237,6 +5251,11 @@
     "page_title": "Kursy — ClassroomIO",
     "heading": "Kursy",
     "subtitle": "Przeglądaj wszystkie opublikowane kursy",
+    "course": "Kurs",
+    "modules": "{count, plural, one {# moduł} other {# moduły}}",
+    "modules_label": "Moduły",
+    "activities": "{count, plural, one {# aktywność} other {# aktywności}}",
+    "activities_label": "Aktywności",
     "clear_filters": "Wyczyść filtry",
     "empty": {
       "title": "Nie znaleziono kursów",
@@ -5808,7 +5827,10 @@
       "status": "Status",
       "all": "Wszystko",
       "unpublished": "Niepublikowane",
-      "course_type": "Typ kursu"
+      "course_type": "Typ kursu",
+      "course_format": "Format kursu",
+      "format_standard": "Standard",
+      "format_scorm": "SCORM"
     },
     "notifications": {
       "created": "Widżet został utworzony",

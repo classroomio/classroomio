@@ -54,7 +54,7 @@
           </ResourceListRow.Lead>
           <ResourceListRow.Main class="ui:gap-1">
             <a
-              href={`/courses/${courseId}/activities/${activity.id}`}
+              href={`/courses/${courseId}/activities/${activity.id}?tab=results`}
               class="line-clamp-1 text-sm font-semibold hover:underline"
             >
               {activity.title}

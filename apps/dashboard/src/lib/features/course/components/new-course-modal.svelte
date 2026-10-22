@@ -131,7 +131,7 @@
 </script>
 
 {#snippet course_path_selector()}
-  <Field.Description>{$t('courses.new_course_modal.type_selector_title')}</Field.Description>
+  <Field.Description>{$t('courses.new_course_modal.path_selector_title')}</Field.Description>
 
   <RadioOptionCardGroup options={pathOptions} bind:value={path} class="grid-cols-1 md:grid-cols-2">
     {#snippet titleSuffix(option)}

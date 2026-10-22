@@ -2947,7 +2947,13 @@
             "completion_modules_all": "Alle moduler",
             "completion_modules_graded_only": "Kun moduler med bedømmelse",
             "completion_modules_helper": "\"Kun moduler med bedømmelse\" giver kursister mulighed for at springe valgfrie spørgeskemaer og ordlister over. Kun moduler, der kræver beståelse eller en registreret score, er afgørende for gennemførelsen.",
-            "completion_modules_single_note": "Denne pakke indeholder kun ét modul, så indstillingen for omfang af gennemførelse er ikke relevant."
+            "completion_modules_single_note": "Denne pakke indeholder kun ét modul, så indstillingen for omfang af gennemførelse er ikke relevant.",
+            "no_package_hint": "Vedhæft en pakke for at se dens beståelseskrav og spore færdiggørelse.",
+            "no_package_score_hint": "Eleverne vil gennemføre denne aktivitet ved at opnå mindst {score}%.",
+            "completion_modules_no_package_note": "Der er endnu ikke tilknyttet nogen pakke. Regler for flere moduler gælder, når en pakke er uploadet.",
+            "rule_auto_no_package_hint": "Bruger pakkens beståelsesmærke, hvis den har et, eller markerer som fuldført, når det er færdigt.",
+            "rule_completed_hint": "Eleverne gennemfører denne aktivitet ved blot at færdiggøre indholdet, uanset resultatet.",
+            "rule_score_hint": "Eleverne gennemfører denne aktivitet ved at færdiggøre indholdet og opnå mindst {score}%."
           },
           "instructions": {
             "label": "Instruktioner til elever",
@@ -3075,7 +3081,8 @@
             "package": "Pakke",
             "instructions": "Instruktioner",
             "results": "Resultater",
-            "settings": "Indstillinger"
+            "settings": "Indstillinger",
+            "preview": "Forhåndsvisning"
           },
           "player": {
             "modules_complete": "{complete} af {total} moduler fuldført",
@@ -3116,7 +3123,11 @@
             "loading": "Indlæser pakke…",
             "module_complete_title": "Modul færdigt",
             "dismiss": "Luk",
-            "fullscreen_video_hint": "Videoer her kan ikke vises i fuld skærm, mens aktiviteten er i fuld skærm."
+            "fullscreen_video_hint": "Videoer her kan ikke vises i fuld skærm, mens aktiviteten er i fuld skærm.",
+            "fullscreen_esc_hint": "Tryk på Esc for at afslutte fuldskærmsvisning.",
+            "fullscreen_back_hint": "Brug din enheds tilbagebevægelse eller -knap til at afslutte fuldskærmsvisning.",
+            "fullscreen_left": "Du forlod fuldskærmsvisningen.",
+            "fullscreen_return_activity": "Sæt aktiviteten tilbage i fuld skærm"
           },
           "results": {
             "sheet": {
@@ -3200,7 +3211,9 @@
           "single_activity_empty_title": "Ingen pakke tilføjet endnu",
           "single_activity_empty_description": "Upload en SCORM-pakke for at gøre den tilgængelig for elever i dette kursus.",
           "single_activity_empty_student_desc": "Dette kursus har endnu ikke noget indhold.",
-          "add_package_button": "Tilføj pakke"
+          "add_package_button": "Tilføj pakke",
+          "lock_action": "Lås pakke",
+          "unlock_action": "Lås pakken op"
         },
         "add_content_created_activity": "SCORM-pakken er blevet oprettet!",
         "add_content_create_another_activity": "Opret en anden pakke",
@@ -3537,7 +3550,8 @@
       "type_selector_title": "Hvilken type kursus kigger du på?",
       "button": "Afslut",
       "back": "Tilbage",
-      "next": "Næste"
+      "next": "Næste",
+      "path_selector_title": "Hvordan vil du gerne oprette dette kursus?"
     },
     "course_card": {
       "empty_title": "Ingen kurser oprettet",
@@ -5237,6 +5251,11 @@
     "page_title": "Kurser - ClassroomIO",
     "heading": "Kurser",
     "subtitle": "Gennemse alle offentliggjorte kurser",
+    "course": "Kursus",
+    "modules": "{count, plural, one {# modul} other {# moduler}}",
+    "modules_label": "Moduler",
+    "activities": "{count, plural, one {# aktivitet} other {# aktiviteter}}",
+    "activities_label": "Aktiviteter",
     "clear_filters": "Ryd filtre",
     "empty": {
       "title": "Ingen kurser fundet",
@@ -5808,7 +5827,10 @@
       "status": "Status",
       "all": "Alle",
       "unpublished": "Upubliceret",
-      "course_type": "Kursustype"
+      "course_type": "Kursustype",
+      "course_format": "Kursusformat",
+      "format_standard": "Standard",
+      "format_scorm": "SCORM"
     },
     "notifications": {
       "created": "Widget oprettet",
