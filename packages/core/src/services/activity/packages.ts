@@ -203,8 +203,10 @@ export async function processScormPackageVersion(
   const asset = await getOrgScormAsset(organizationId, assetId);
   const version = await getAssetPackageVersion(asset.id, versionId);
 
-  if (version.status !== 'uploading')
+  const canProcess = version.status === 'uploading' || (version.status === 'processing' && !version.processingJobId);
+  if (!canProcess) {
     throw new AppError('Package version is already being processed', ErrorCodes.CONFLICT, 409);
+  }
 
   const bucket = getStorageConfig().bucketScorm;
   const uploadedBytes = await headS3ObjectSize(bucket, version.uploadKey);

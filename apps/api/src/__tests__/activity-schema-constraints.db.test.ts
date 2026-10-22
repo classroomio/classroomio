@@ -66,7 +66,14 @@ async function createConstraintFixture(suffix: string): Promise<ConstraintFixtur
   });
   const [activity] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, sectionId: null, kind: 'scorm' as never, title: 'Package', order: 1 })
+    .values({
+      courseId: course.id,
+      sectionId: null,
+      kind: 'scorm' as never,
+      title: 'Package',
+      slug: 'package',
+      order: 1
+    })
     .returning();
   const [asset] = await db
     .insert(schema.asset)
@@ -122,6 +129,9 @@ async function cleanupConstraintFixture(fixture: ConstraintFixture) {
   }
   await db.delete(schema.scormAttempt).where(eq(schema.scormAttempt.activityId, fixture.activityId));
   await db.delete(schema.activityScorm).where(eq(schema.activityScorm.activityId, fixture.activityId));
+  await db
+    .delete(schema.activityCompletionSideEffect)
+    .where(eq(schema.activityCompletionSideEffect.profileId, fixture.profileId));
   await db.delete(schema.activityCompletion).where(eq(schema.activityCompletion.profileId, fixture.profileId));
   await db.delete(schema.contentPackageUnit).where(eq(schema.contentPackageUnit.packageVersionId, fixture.versionId));
   await db.delete(schema.contentPackageVersion).where(eq(schema.contentPackageVersion.id, fixture.versionId));
@@ -322,6 +332,7 @@ describe.skipIf(!hasDatabase)('activity schema constraints', () => {
           sectionId: null,
           kind: 'cmi5' as never,
           title: 'Unknown kind',
+          slug: 'unknown-kind',
           order: 99
         })
       ).rejects.toThrow();

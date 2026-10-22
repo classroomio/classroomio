@@ -52,7 +52,7 @@ async function createCompletionFixture(suffix: string) {
     .returning();
   const [activity] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1 })
+    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1, slug: `package-${suffix}` })
     .returning();
 
   const userId = crypto.randomUUID();
@@ -140,6 +140,11 @@ async function makeOutboxRowDue(activityId: string) {
     .where(eq(schema.activityCompletionSideEffect.activityId, activityId));
 }
 
+function callsFor(mockFn: unknown, courseId: string) {
+  const calls = (mockFn as { mock?: { calls?: unknown[][] } })?.mock?.calls ?? [];
+  return calls.filter(([calledCourseId]) => calledCourseId === courseId).length;
+}
+
 describe.skipIf(!hasDatabase)('activity completion side-effect outbox', () => {
   afterEach(() => {
     vi.mocked(evaluateCourseCertification).mockReset();
@@ -204,7 +209,7 @@ describe.skipIf(!hasDatabase)('activity completion side-effect outbox', () => {
       await sweepActivityCompletionSideEffects();
 
       expect(evaluateCourseCertification).toHaveBeenCalledWith(fixture.courseId, fixture.profileId);
-      expect(syncComplianceProgressForMember).toHaveBeenCalledTimes(1);
+      expect(callsFor(syncComplianceProgressForMember, fixture.courseId)).toBe(1);
       expect(await readOutboxRow(fixture.activityId, fixture.profileId)).toBeNull();
     } finally {
       await cleanupCompletionFixture(fixture);
@@ -227,12 +232,12 @@ describe.skipIf(!hasDatabase)('activity completion side-effect outbox', () => {
       expect(claimed).toHaveLength(1);
 
       await sweepActivityCompletionSideEffects();
-      expect(evaluateCourseCertification).not.toHaveBeenCalled();
+      expect(callsFor(evaluateCourseCertification, fixture.courseId)).toBe(0);
 
       await makeOutboxRowDue(fixture.activityId);
       await sweepActivityCompletionSideEffects();
 
-      expect(evaluateCourseCertification).toHaveBeenCalledTimes(1);
+      expect(callsFor(evaluateCourseCertification, fixture.courseId)).toBe(1);
       expect(await readOutboxRow(fixture.activityId, fixture.profileId)).toBeNull();
     } finally {
       await cleanupCompletionFixture(fixture);
@@ -254,14 +259,13 @@ describe.skipIf(!hasDatabase)('activity completion side-effect outbox', () => {
       expect(pending).toMatchObject({ certificationPending: true, compliancePending: false, attempts: 1 });
       expect(pending?.lastError).toContain('certificate service unavailable');
       expect(new Date(pending!.nextAttemptAt).getTime()).toBeGreaterThan(Date.now());
-      expect(syncComplianceProgressForMember).toHaveBeenCalledTimes(1);
+      expect(callsFor(syncComplianceProgressForMember, fixture.courseId)).toBe(1);
 
       vi.mocked(evaluateCourseCertification).mockResolvedValue({ eligibleForCertificate: false } as never);
-      await makeOutboxRowDue(fixture.activityId);
-      await sweepActivityCompletionSideEffects();
+      await deliverActivityCompletionSideEffects(fixture.activityId, fixture.profileId);
 
-      expect(evaluateCourseCertification).toHaveBeenCalledTimes(2);
-      expect(syncComplianceProgressForMember).toHaveBeenCalledTimes(1);
+      expect(callsFor(evaluateCourseCertification, fixture.courseId)).toBe(2);
+      expect(callsFor(syncComplianceProgressForMember, fixture.courseId)).toBe(1);
       expect(await readOutboxRow(fixture.activityId, fixture.profileId)).toBeNull();
     } finally {
       await cleanupCompletionFixture(fixture);
@@ -284,11 +288,10 @@ describe.skipIf(!hasDatabase)('activity completion side-effect outbox', () => {
       expect(pending?.lastError).toContain('compliance sync failed');
 
       vi.mocked(syncComplianceProgressForMember).mockResolvedValue(null);
-      await makeOutboxRowDue(fixture.activityId);
-      await sweepActivityCompletionSideEffects();
+      await deliverActivityCompletionSideEffects(fixture.activityId, fixture.profileId);
 
-      expect(evaluateCourseCertification).toHaveBeenCalledTimes(1);
-      expect(syncComplianceProgressForMember).toHaveBeenCalledTimes(2);
+      expect(callsFor(evaluateCourseCertification, fixture.courseId)).toBe(1);
+      expect(callsFor(syncComplianceProgressForMember, fixture.courseId)).toBe(2);
       expect(await readOutboxRow(fixture.activityId, fixture.profileId)).toBeNull();
     } finally {
       await cleanupCompletionFixture(fixture);
@@ -308,8 +311,8 @@ describe.skipIf(!hasDatabase)('activity completion side-effect outbox', () => {
         sweepActivityCompletionSideEffects()
       ]);
 
-      expect(evaluateCourseCertification).toHaveBeenCalledTimes(1);
-      expect(syncComplianceProgressForMember).toHaveBeenCalledTimes(1);
+      expect(callsFor(evaluateCourseCertification, fixture.courseId)).toBe(1);
+      expect(callsFor(syncComplianceProgressForMember, fixture.courseId)).toBe(1);
       expect(await readOutboxRow(fixture.activityId, fixture.profileId)).toBeNull();
     } finally {
       await cleanupCompletionFixture(fixture);

@@ -94,7 +94,7 @@ async function createRetentionFixture(suffix: string): Promise<RetentionFixture>
   });
   const [activity] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1 })
+    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1, slug: 'package' })
     .returning();
   const [asset] = await db
     .insert(schema.asset)
@@ -157,6 +157,9 @@ async function cleanupRetentionFixture(fixture: RetentionFixture) {
   }
   await db.delete(schema.scormAttempt).where(eq(schema.scormAttempt.activityId, fixture.activityId));
   await db.delete(schema.activityScorm).where(eq(schema.activityScorm.activityId, fixture.activityId));
+  await db
+    .delete(schema.activityCompletionSideEffect)
+    .where(eq(schema.activityCompletionSideEffect.profileId, fixture.profileId));
   await db.delete(schema.activityCompletion).where(eq(schema.activityCompletion.profileId, fixture.profileId));
   await db.delete(schema.courseActivity).where(eq(schema.courseActivity.courseId, fixture.courseId));
   await db.delete(schema.course).where(eq(schema.course.id, fixture.courseId));

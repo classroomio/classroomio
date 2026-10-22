@@ -279,12 +279,12 @@ describe.skipIf(!hasDatabase)('activity content structure (database)', () => {
       expect(slugs.has(`package-${suffix}`)).toBe(true);
 
       const [ungrouped] = await queries.createActivities([
-        { courseId: fixture.courseId, sectionId: null, kind: 'scorm', title: 'Loose', order: 1 }
+        { courseId: fixture.courseId, sectionId: null, kind: 'scorm', title: 'Loose', slug: 'loose', order: 1 }
       ]);
       expect(await queries.updateActivitiesSectionId(fixture.courseId, fixture.sectionId)).toBeGreaterThanOrEqual(1);
 
       const [second] = await queries.createActivities([
-        { courseId: fixture.courseId, sectionId: null, kind: 'scorm', title: 'Loose two', order: 1 }
+        { courseId: fixture.courseId, sectionId: null, kind: 'scorm', title: 'Loose two', slug: 'loose-two', order: 1 }
       ]);
       const promoted = await promoteUngroupedSection(fixture.courseId, { title: 'Second' });
 
@@ -317,7 +317,14 @@ describe.skipIf(!hasDatabase)('activity content structure (database)', () => {
         .values({ title: 'Solo', order: 2, courseId: fixture.courseId })
         .returning();
       const [solo] = await queries.createActivities([
-        { courseId: fixture.courseId, sectionId: soloSection.id, kind: 'scorm', title: 'Solo', order: 1 }
+        {
+          courseId: fixture.courseId,
+          sectionId: soloSection.id,
+          kind: 'scorm',
+          title: 'Solo',
+          slug: 'solo',
+          order: 1
+        }
       ]);
 
       await expect(deleteCourseSectionService(soloSection.id)).rejects.toMatchObject({

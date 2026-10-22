@@ -185,7 +185,14 @@ describe.skipIf(!hasDatabase)('activity platform schema (dark)', () => {
       expect(await queries.getActivityById(crypto.randomUUID())).toBeNull();
 
       const [activity] = await queries.createActivities([
-        { courseId: fixture.courseId, sectionId: fixture.sectionId, kind: 'scorm', title: 'Package', order: 1 }
+        {
+          courseId: fixture.courseId,
+          sectionId: fixture.sectionId,
+          kind: 'scorm',
+          title: 'Package',
+          slug: 'package',
+          order: 1
+        }
       ]);
       expect(activity.title).toBe('Package');
       expect(activity.isUnlocked).toBe(true);

@@ -47,7 +47,14 @@ async function createActivityFixture(suffix: string): Promise<FixtureIds> {
     .returning();
   const [activity] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, sectionId: section.id, kind: 'scorm', title: 'Package item', order: 1 })
+    .values({
+      courseId: course.id,
+      sectionId: section.id,
+      kind: 'scorm',
+      title: 'Package item',
+      slug: 'package-item',
+      order: 1
+    })
     .returning();
   const [lesson] = await db
     .insert(schema.lesson)
@@ -111,6 +118,9 @@ async function cleanupActivityFixture(ids: FixtureIds) {
   const { db } = await import('@db/drizzle');
   const schema = await import('@db/schema');
 
+  await db
+    .delete(schema.activityCompletionSideEffect)
+    .where(eq(schema.activityCompletionSideEffect.profileId, ids.profileId));
   await db.delete(schema.activityCompletion).where(eq(schema.activityCompletion.profileId, ids.profileId));
   await db.delete(schema.lessonCompletion).where(eq(schema.lessonCompletion.profileId, ids.profileId));
   await db.delete(schema.courseActivity).where(eq(schema.courseActivity.courseId, ids.courseId));

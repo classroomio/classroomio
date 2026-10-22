@@ -1,34 +1,11 @@
 import 'dotenv/config';
 
-import { beforeAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { and, eq } from 'drizzle-orm';
 
 const hasDatabase = Boolean(
   process.env.DATABASE_URL || process.env.PRIVATE_DATABASE_URL || process.env.PGBOUNCER_DATABASE_URL
 );
-
-beforeAll(async () => {
-  if (!hasDatabase) return;
-  const { db } = await import('@db/drizzle');
-  const { sql } = await import('drizzle-orm');
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS "activity_completion_side_effect" (
-      "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-      "activity_id" uuid NOT NULL,
-      "profile_id" uuid NOT NULL,
-      "certification_pending" boolean DEFAULT false NOT NULL,
-      "compliance_pending" boolean DEFAULT false NOT NULL,
-      "generation" integer DEFAULT 0 NOT NULL,
-      "attempts" integer DEFAULT 0 NOT NULL,
-      "next_attempt_at" timestamp with time zone DEFAULT now() NOT NULL,
-      "last_error" text,
-      "created_at" timestamp with time zone DEFAULT now() NOT NULL,
-      "updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-      CONSTRAINT "activity_completion_side_effect_activity_profile_key" UNIQUE("activity_id","profile_id")
-    );
-    CREATE INDEX IF NOT EXISTS "activity_completion_side_effect_next_attempt_at_idx" ON "activity_completion_side_effect" ("next_attempt_at");
-  `);
-});
 
 type ResultsFixture = {
   orgId: string;
@@ -66,7 +43,7 @@ async function createResultsFixture(suffix: string): Promise<ResultsFixture> {
     .returning();
   const [activity] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1 })
+    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1, slug: 'package' })
     .returning();
   await db.insert(schema.activityScorm).values({ activityId: activity.id });
   const [asset] = await db
@@ -139,6 +116,9 @@ async function cleanupResultsFixture(ids: ResultsFixture) {
   const { db } = await import('@db/drizzle');
   const schema = await import('@db/schema');
 
+  await db
+    .delete(schema.activityCompletionSideEffect)
+    .where(eq(schema.activityCompletionSideEffect.profileId, ids.profileId));
   await db.delete(schema.activityCompletion).where(eq(schema.activityCompletion.profileId, ids.profileId));
   await db.delete(schema.courseActivity).where(eq(schema.courseActivity.courseId, ids.courseId));
   await db.delete(schema.asset).where(eq(schema.asset.organizationId, ids.orgId));
@@ -196,7 +176,7 @@ async function createTypedFixture(
     .returning();
   const [activity] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1 })
+    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1, slug: 'package' })
     .returning();
   await db.insert(schema.activityScorm).values({ activityId: activity.id });
   const [asset] = await db

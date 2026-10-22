@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { mintLaunchToken } from '@cio/activity-packages';
 
@@ -14,6 +16,9 @@ import { activityPlayerRouter } from '@api/routes/activity/player';
 import { Hono } from '@api/utils/hono';
 
 const SECRET = 'test-activity-secret-01234567890';
+const playerBuilt =
+  existsSync(resolve(process.cwd(), 'apps/activity-player/dist/index.html')) ||
+  existsSync(resolve(process.cwd(), '../../apps/activity-player/dist/index.html'));
 
 function buildApp() {
   return new Hono().route('/activity', activityPlayerRouter);
@@ -54,18 +59,13 @@ describe('activity player', () => {
     expect(response.status).toBe(401);
   });
 
-  it('serves player HTML without caching and without X-Frame-Options', async () => {
+  it.skipIf(!playerBuilt)('serves player HTML without caching and without X-Frame-Options', async () => {
     const app = buildApp();
     const token = await mintToken();
 
     const response = await app.request(`/activity/player/${token}`, {
       headers: { host: 'content.localhost' }
     });
-
-    if (response.status === 503) {
-      expect(await response.text()).toContain('not built');
-      return;
-    }
 
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Type')).toContain('text/html');
@@ -74,14 +74,12 @@ describe('activity player', () => {
     expect(response.headers.get('Content-Security-Policy')).toContain('https://app.test');
   });
 
-  it('serves hashed assets as immutable', async () => {
+  it.skipIf(!playerBuilt)('serves hashed assets as immutable', async () => {
     const app = buildApp();
 
     const response = await app.request('/activity/player-assets/index.html', {
       headers: { host: 'content.localhost' }
     });
-
-    if (response.status === 404) return;
 
     expect(response.status).toBe(200);
     expect(response.headers.get('Cache-Control')).toBe('no-store');

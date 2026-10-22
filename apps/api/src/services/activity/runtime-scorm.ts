@@ -595,14 +595,15 @@ export async function commitScormAttempt(
       await upsertActivityCompletion({ activityId, profileId, isComplete: true }, tx);
     }
 
-    if (attemptInCurrentCycle) {
+    const shouldEnqueue = attemptInCurrentCycle && (!isAlreadyFinished || completedActivity);
+    if (shouldEnqueue) {
       await enqueueActivityCompletionSideEffects(activityId, [profileId], tx);
     }
 
     return {
       saved: true,
       completedActivity,
-      ruleMet: attemptInCurrentCycle,
+      ruleMet: shouldEnqueue,
       progressChanged,
       activityId,
       profileId,

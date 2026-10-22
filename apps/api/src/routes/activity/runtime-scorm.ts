@@ -34,10 +34,53 @@ async function verifyRuntimeLaunchToken(c: Context, next: Next) {
   }
 }
 
-function rejectOversizedBody(c: Context): Response | null {
+async function readBoundedText(c: Context, maxBytes: number, errorMessage: string): Promise<string> {
+  const bodyStream = c.req.raw.body;
+  if (!bodyStream) {
+    const text = await c.req.text();
+    if (new TextEncoder().encode(text).length > maxBytes) {
+      throw new AppError(errorMessage, ErrorCodes.VALIDATION_ERROR, 413);
+    }
+
+    return text;
+  }
+
+  const reader = bodyStream.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) {
+        totalBytes += value.byteLength;
+        if (totalBytes > maxBytes) {
+          await reader.cancel();
+          throw new AppError(errorMessage, ErrorCodes.VALIDATION_ERROR, 413);
+        }
+
+        chunks.push(value);
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const combined = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    combined.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  return new TextDecoder().decode(combined);
+}
+
+function rejectOversizedBody(c: Context, errorMessage: string): Response | null {
   const declared = c.req.header('content-length');
   if (declared && Number(declared) > RUNTIME_BODY_MAX_BYTES) {
-    return c.json({ success: false, error: 'Commit payload too large', code: ErrorCodes.VALIDATION_ERROR }, 413);
+    return c.json({ success: false, error: errorMessage, code: ErrorCodes.VALIDATION_ERROR }, 413);
   }
 
   return null;
@@ -74,12 +117,10 @@ export const runtimeScormRouter = new Hono()
     async (c) => {
       try {
         const { launchToken } = c.req.valid('param');
-        const oversized = rejectOversizedBody(c);
+        const oversized = rejectOversizedBody(c, 'Commit payload too large');
         if (oversized) return oversized;
-        const text = await c.req.text();
-        if (new TextEncoder().encode(text).length > RUNTIME_BODY_MAX_BYTES) {
-          throw new AppError('Commit payload too large', ErrorCodes.VALIDATION_ERROR, 413);
-        }
+
+        const text = await readBoundedText(c, RUNTIME_BODY_MAX_BYTES, 'Commit payload too large');
         let body: unknown;
         try {
           body = JSON.parse(text);
@@ -131,12 +172,10 @@ export const runtimeScormRouter = new Hono()
     async (c) => {
       try {
         const { launchToken } = c.req.valid('param');
-        const oversized = rejectOversizedBody(c);
+        const oversized = rejectOversizedBody(c, 'Event payload too large');
         if (oversized) return oversized;
-        const text = await c.req.text();
-        if (new TextEncoder().encode(text).length > RUNTIME_BODY_MAX_BYTES) {
-          throw new AppError('Event payload too large', ErrorCodes.VALIDATION_ERROR, 413);
-        }
+
+        const text = await readBoundedText(c, RUNTIME_BODY_MAX_BYTES, 'Event payload too large');
         let body: unknown;
         try {
           body = JSON.parse(text);

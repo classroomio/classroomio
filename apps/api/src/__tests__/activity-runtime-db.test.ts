@@ -123,7 +123,7 @@ async function createRuntimeFixture(suffix: string, options: FixtureOptions = {}
   }
   const [activity] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1, isUnlocked: true })
+    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1, isUnlocked: true, slug: 'package' })
     .returning();
   const [asset] = await db
     .insert(schema.asset)
@@ -181,6 +181,9 @@ async function cleanupRuntimeFixture(fixture: RuntimeFixture) {
   const { db } = await import('@db/drizzle');
   const schema = await import('@db/schema');
 
+  await db
+    .delete(schema.activityCompletionSideEffect)
+    .where(eq(schema.activityCompletionSideEffect.profileId, fixture.studentId));
   await db.delete(schema.activityCompletion).where(eq(schema.activityCompletion.profileId, fixture.studentId));
   await db.delete(schema.courseActivity).where(eq(schema.courseActivity.courseId, fixture.courseId));
   await db.delete(schema.courseSection).where(eq(schema.courseSection.courseId, fixture.courseId));

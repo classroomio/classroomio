@@ -58,7 +58,14 @@ async function createMixedFixture(suffix: string): Promise<MixedFixture> {
     .returning();
   const [activityOne] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, sectionId: section.id, kind: 'scorm', title: 'Package one', order: 2 })
+    .values({
+      courseId: course.id,
+      sectionId: section.id,
+      kind: 'scorm',
+      title: 'Package one',
+      slug: 'package-one',
+      order: 2
+    })
     .returning();
   const [lessonTwo] = await db
     .insert(schema.lesson)
@@ -71,6 +78,7 @@ async function createMixedFixture(suffix: string): Promise<MixedFixture> {
       sectionId: section.id,
       kind: 'scorm',
       title: 'Locked package',
+      slug: 'locked-package',
       order: 4,
       isUnlocked: false
     })
@@ -365,7 +373,7 @@ describe.skipIf(!hasDatabase)('compliance follows activity-driven certification'
       .returning();
     const [activity] = await db
       .insert(schema.courseActivity)
-      .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 2 })
+      .values({ courseId: course.id, kind: 'scorm', title: 'Package', slug: 'package', order: 2 })
       .returning();
 
     const userId = crypto.randomUUID();

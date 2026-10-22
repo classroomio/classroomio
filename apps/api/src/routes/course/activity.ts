@@ -160,8 +160,7 @@ export const activityRouter = new Hono()
       try {
         const courseId = c.req.param('courseId')!;
         const { activityId } = c.req.valid('param');
-        const existing = await getActivity(courseId, activityId);
-        await assertScormAuthoringAllowed(courseId, existing.kind);
+        await getActivity(courseId, activityId);
         await detachScormPackage(activityId);
 
         return c.json({ success: true, data: { activityId } }, 200);
