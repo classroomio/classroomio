@@ -4,7 +4,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import VideoIcon from '@lucide/svelte/icons/video';
-  import { replaceState } from '$app/navigation';
+  import { goto, replaceState } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
 
@@ -57,16 +57,45 @@
   const searchBox = new DebouncedSearch({
     initial: initialFilters.search,
     onApply: () => {
-      updateMediaQuery(DEFAULT_MEDIA_LIST_NEXT);
-      void loadAssetPages(DEFAULT_MEDIA_LIST_NEXT);
+      void applyMediaFilters();
     }
+  });
+
+  let lastUrlSearch = page.url.search;
+
+  $effect(() => {
+    const nextUrlSearch = page.url.search;
+
+    if (nextUrlSearch === lastUrlSearch) return;
+
+    lastUrlSearch = nextUrlSearch;
+    const filters = parseMediaListFilters(page.url.searchParams);
+    kind = filters.kind;
+    status = filters.status;
+    searchBox.sync(filters.search);
   });
 
   onDestroy(() => {
     searchBox.destroy();
   });
 
-  function updateMediaQuery(nextPage: number) {
+  async function applyMediaFilters() {
+    const filters = {
+      search: searchBox.applied,
+      kind,
+      status
+    };
+    const nextParams = mergeMediaListSearchParams(page.url.searchParams, filters, DEFAULT_MEDIA_LIST_NEXT);
+    const nextSearch = nextParams.toString();
+
+    if (nextSearch === page.url.searchParams.toString()) return;
+
+    mediaApi.cancelListAssetsRequest();
+    const nextUrl = `${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}${page.url.hash}`;
+    await goto(resolve(nextUrl, {}), { replaceState: true, keepFocus: true, noScroll: true });
+  }
+
+  function updateLoadedPagesQuery(nextPage: number) {
     const filters = {
       search: searchBox.applied,
       kind,
@@ -111,8 +140,7 @@
   }
 
   function handleFiltersApply() {
-    updateMediaQuery(DEFAULT_MEDIA_LIST_NEXT);
-    void loadAssetPages(DEFAULT_MEDIA_LIST_NEXT);
+    void applyMediaFilters();
   }
 
   async function loadMoreAssets() {
@@ -124,7 +152,7 @@
       await mediaApi.listAssets(buildAssetsQuery(nextPage), { abortPrevious: true, append: true });
 
       if (mediaApi.pagination?.page === nextPage) {
-        updateMediaQuery(nextPage);
+        updateLoadedPagesQuery(nextPage);
       }
     } finally {
       isLoadingMore = false;

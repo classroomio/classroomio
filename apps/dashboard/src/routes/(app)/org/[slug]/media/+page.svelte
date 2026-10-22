@@ -3,11 +3,10 @@
   import { MediaPage } from '$features/media';
   import { mediaApi } from '$features/media/api';
   import { t } from '$lib/utils/functions/translations';
-  import { onMount } from 'svelte';
 
   let { data } = $props();
 
-  onMount(() => {
+  $effect(() => {
     mediaApi.assets = data.assets ?? [];
     mediaApi.storageSummary = data.storageSummary ?? null;
     mediaApi.pagination = data.pagination ?? null;
