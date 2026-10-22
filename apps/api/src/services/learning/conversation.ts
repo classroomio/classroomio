@@ -41,7 +41,11 @@ export async function answerLearningQuestion(input: { ownerUserId: string; conve
       'When the learner expresses a concrete learning goal, include a suggestedStudyDays value of 1, 7, or 30 and a short reason.',
       'Choose 1 for a narrow, quick goal; 7 for a focused topic that needs practice; 30 for a broad topic or a sustained skill.',
       'If a course plan is not useful yet, set suggestedStudyDays and reason to null.',
-      'A suggested duration is a planning choice, not a promise of mastery.'
+      'A suggested duration is a planning choice, not a promise of mastery.',
+      'Return only a valid JSON object with exactly these keys: answer, suggestedStudyDays, reason.',
+      'suggestedStudyDays must be 1, 7, or 30, or null; reason must be a short string or null.',
+      'Do not use Markdown fences or write any other text.',
+      'Example: {"answer":"A derivative measures rate of change.","suggestedStudyDays":7,"reason":"A focused week leaves time to learn and practice."}'
     ].join(' '),
     prompt: [conversationHistory, `user: ${input.message.slice(0, 4000)}`].filter(Boolean).join('\n'),
     maxRetries: 0

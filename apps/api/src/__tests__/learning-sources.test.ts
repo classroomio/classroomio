@@ -72,6 +72,131 @@ describe('personal learning sources', () => {
     });
   });
 
+  it('rejects source pages that do not return HTTP 200', async () => {
+    vi.stubEnv('JINA_API_KEY', '');
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ detail: 'Source returned HTTP 404' }), { status: 422 })
+    );
+
+    await expect(
+      discoverLearningSources({
+        ownerUserId,
+        query: 'manual source',
+        language: 'en',
+        userUrls: ['https://example.com/missing']
+      })
+    ).rejects.toMatchObject({ code: 'NO_VERIFIABLE_SOURCE' });
+
+    expect(fetchMock.mock.calls[0][1]?.headers).toMatchObject({ 'X-Assert-Status-Code': '200' });
+  });
+
+  it('skips an unavailable source and continues with the next verified source', async () => {
+    vi.stubEnv('JINA_API_KEY', '');
+    fetchMock
+      .mockResolvedValueOnce(new Response(JSON.stringify({ detail: 'Source returned HTTP 404' }), { status: 422 }))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            data: {
+              url: 'https://available.example/lesson',
+              title: 'Available lesson',
+              content: '# Available lesson\nThis page has useful source content.'
+            }
+          }),
+          { status: 200 }
+        )
+      );
+
+    const sources = await discoverLearningSources({
+      ownerUserId,
+      query: 'manual source',
+      language: 'en',
+      userUrls: ['https://missing.example/lesson', 'https://available.example/lesson']
+    });
+
+    expect(sources).toHaveLength(1);
+    expect(sources[0]?.url).toBe('https://available.example/lesson');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects soft-404 pages that return HTTP 200', async () => {
+    vi.stubEnv('JINA_API_KEY', '');
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          data: {
+            url: 'https://example.com/missing',
+            title: 'Page Not Found',
+            content: '# Page Not Found\nThe requested page could not be found.'
+          }
+        }),
+        { status: 200 }
+      )
+    );
+
+    await expect(
+      discoverLearningSources({
+        ownerUserId,
+        query: 'manual source',
+        language: 'en',
+        userUrls: ['https://example.com/missing']
+      })
+    ).rejects.toMatchObject({ code: 'NO_VERIFIABLE_SOURCE' });
+  });
+
+  it('stores a safe final URL after the source redirects', async () => {
+    vi.stubEnv('JINA_API_KEY', '');
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          data: {
+            url: 'https://docs.example.com/current-guide',
+            title: 'Current guide',
+            content: '# Current guide\nVerified source content after redirect.'
+          }
+        }),
+        { status: 200 }
+      )
+    );
+
+    const sources = await discoverLearningSources({
+      ownerUserId,
+      query: 'manual source',
+      language: 'en',
+      userUrls: ['https://docs.example.com/old-guide']
+    });
+
+    expect(sources[0]).toMatchObject({
+      url: 'https://docs.example.com/current-guide',
+      title: 'Current guide'
+    });
+  });
+
+  it('does not store a redirect whose final URL points to a private host', async () => {
+    vi.stubEnv('JINA_API_KEY', '');
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          data: {
+            url: 'http://127.0.0.1/admin',
+            title: 'Private page',
+            content: '# Private page\nThis content must not become a source.'
+          }
+        }),
+        { status: 200 }
+      )
+    );
+
+    await expect(
+      discoverLearningSources({
+        ownerUserId,
+        query: 'manual source',
+        language: 'en',
+        userUrls: ['https://example.com/guide']
+      })
+    ).rejects.toMatchObject({ code: 'NO_VERIFIABLE_SOURCE' });
+  });
+
   it('accepts a public URL and blocks private IPs before making requests', async () => {
     expect(validateSourceUrl('https://example.com/lesson').href).toBe('https://example.com/lesson');
     expect(() => validateSourceUrl('http://10.2.3.4/secret')).toThrowError(

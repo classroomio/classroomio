@@ -16,11 +16,15 @@ vi.mock('@cio/ai-assistant/providers', () => ({
 }));
 
 import { generatePersonalLearningSession } from '@cio/core/services/personal-learning/generate-session';
+import { getCourseWithRelations } from '@cio/db/queries/course/course';
 import { recoverPersonalLearningSessions } from '@cio/db/queries/personal-learning';
 import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
+import { ROLE } from '@cio/utils/constants';
+import { getCourse } from '@cio/core/services/course/course';
 
 const ownerUserId = randomUUID();
+const otherUserId = randomUUID();
 const sessionIds = [randomUUID(), randomUUID(), randomUUID()];
 const journeyIds = [randomUUID(), randomUUID(), randomUUID()];
 const courseIds = [randomUUID(), randomUUID(), randomUUID()];
@@ -52,6 +56,15 @@ describe('personal learning session generation', () => {
       id: ownerUserId,
       fullname: 'Generation test',
       username: `pg_${ownerUserId.replaceAll('-', '')}`,
+      welcomeEmailPending: false
+    });
+    await db
+      .insert(schema.user)
+      .values({ id: otherUserId, name: 'Other student', email: `${otherUserId}@example.test` });
+    await db.insert(schema.profile).values({
+      id: otherUserId,
+      fullname: 'Other student',
+      username: `pg_${otherUserId.replaceAll('-', '')}`,
       welcomeEmailPending: false
     });
     for (const [index, journeyId] of journeyIds.entries()) {
@@ -88,6 +101,10 @@ describe('personal learning session generation', () => {
         status: 'queued'
       });
     }
+    await db.insert(schema.groupmember).values([
+      { groupId: groupIds[0], profileId: ownerUserId, roleId: ROLE.STUDENT },
+      { groupId: groupIds[0], profileId: otherUserId, roleId: ROLE.STUDENT }
+    ]);
   });
 
   afterAll(async () => {
@@ -99,6 +116,7 @@ describe('personal learning session generation', () => {
     if (lessonIds.length)
       await db.delete(schema.lessonLanguage).where(inArray(schema.lessonLanguage.lessonId, lessonIds));
     if (lessonIds.length) await db.delete(schema.lesson).where(inArray(schema.lesson.id, lessonIds));
+    await db.delete(schema.groupmember).where(eq(schema.groupmember.groupId, groupIds[0]));
     await db.delete(schema.personalLearningJourney).where(eq(schema.personalLearningJourney.ownerUserId, ownerUserId));
     await db.delete(schema.course).where(eq(schema.course.id, courseIds[0]));
     await db.delete(schema.course).where(eq(schema.course.id, courseIds[1]));
@@ -110,7 +128,9 @@ describe('personal learning session generation', () => {
       .delete(schema.personalLearningConversation)
       .where(eq(schema.personalLearningConversation.ownerUserId, ownerUserId));
     await db.delete(schema.profile).where(eq(schema.profile.id, ownerUserId));
+    await db.delete(schema.profile).where(eq(schema.profile.id, otherUserId));
     await db.delete(schema.user).where(eq(schema.user.id, ownerUserId));
+    await db.delete(schema.user).where(eq(schema.user.id, otherUserId));
   });
 
   it('stores one verified lesson atomically and remains idempotent on a retry', async () => {
@@ -146,12 +166,12 @@ describe('personal learning session generation', () => {
     ).toHaveLength(1);
   });
 
-  it('records a terminal verified-source failure without creating a lesson', async () => {
+  it('fails immediately when verified-source discovery cannot proceed without a source', async () => {
     discoverLearningSources.mockRejectedValueOnce(
       Object.assign(new Error('No source'), { code: 'NO_VERIFIABLE_SOURCE' })
     );
 
-    await expect(generatePersonalLearningSession({ sessionId: sessionIds[1], attempt: 3 })).rejects.toMatchObject({
+    await expect(generatePersonalLearningSession({ sessionId: sessionIds[1], attempt: 1 })).rejects.toMatchObject({
       code: 'NO_VERIFIABLE_SOURCE'
     });
     const [session] = await db
@@ -161,6 +181,24 @@ describe('personal learning session generation', () => {
 
     expect(session).toMatchObject({ status: 'failed', failureCode: 'NO_VERIFIABLE_SOURCE' });
     expect(await db.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseIds[1]))).toHaveLength(0);
+  });
+
+  it('loads a private course group without an organization for the journey owner', async () => {
+    const courseWithRelations = await getCourseWithRelations(courseIds[0], undefined, ownerUserId);
+
+    expect(courseWithRelations?.group).toMatchObject({
+      id: groupIds[0],
+      organizationId: null,
+      members: expect.arrayContaining([expect.objectContaining({ profileId: ownerUserId, roleId: ROLE.STUDENT })])
+    });
+    await expect(getCourse(courseIds[0], undefined, ownerUserId)).resolves.toMatchObject({ id: courseIds[0] });
+  });
+
+  it('keeps an unpublished personal course hidden from students other than its owner', async () => {
+    await expect(getCourse(courseIds[0], undefined, otherUserId)).rejects.toMatchObject({
+      code: 'COURSE_NOT_FOUND',
+      statusCode: 404
+    });
   });
 
   it('requeues a stale generating session so the same first lesson can finish', async () => {

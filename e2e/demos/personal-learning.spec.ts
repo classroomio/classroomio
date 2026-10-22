@@ -101,10 +101,9 @@ for (const { studyDays, dailyMinutes } of personalLearningCases) {
 
     await page.route('**/api/auth/get-session*', (route) => route.fulfill({ json: null }));
     await page.goto('/personal-learning', { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle');
 
     await page.getByTestId('personal-learning-question').fill('Explain derivatives');
-    await expect(page.getByTestId('personal-learning-send')).toBeEnabled();
+    await expect(page.getByTestId('personal-learning-send')).toBeEnabled({ timeout: 30_000 });
     await page.getByTestId('personal-learning-send').click();
     await expect(page.getByText('A derivative measures how quickly a value changes.')).toBeVisible();
     await expect(page.getByTestId('personal-learning-offer')).toBeVisible();

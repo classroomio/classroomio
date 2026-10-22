@@ -28,6 +28,7 @@ import {
 } from '@cio/db/queries/analytics/analytics';
 import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/reset-progress';
 import { getCourseGroupId } from '@cio/db/queries/course/people';
+import { isPersonalLearningCourseOwner } from '@cio/db/queries/personal-learning';
 
 import { ContentType, ROLE, resolveLiveSessionReminderOffsets } from '@cio/utils/constants';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
@@ -220,8 +221,9 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
       ? (course.group?.members?.find((member) => member.profileId === profileId)?.roleId ?? null)
       : null;
 
-    if (roleId === ROLE.STUDENT && !course.isPublished) {
-      throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    if (profileId && roleId === ROLE.STUDENT && !course.isPublished) {
+      const isPersonalLearningOwner = await isPersonalLearningCourseOwner(course.id, profileId);
+      if (!isPersonalLearningOwner) throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
 
     const content = profileId

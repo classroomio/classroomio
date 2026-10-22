@@ -58,3 +58,17 @@ Requires dashboard preview + API (see root `README.md`). Then:
 pnpm exec playwright install chromium
 DEMO_BASE_URL=http://localhost:4173 pnpm demo:playwright
 ```
+
+## Live personal-learning model E2E
+
+The opt-in live spec exercises the real API and model without intercepting `/learning/**`. Configure the API process in `apps/api/.env` with `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `OPENAI_MODEL`. For the local model endpoint used during development, the selected model is `kr/claude-sonnet-4.5` and the base URL is `http://localhost:20128/v1`.
+
+Start Postgres, Redis, the API plus jobs worker, and the dashboard preview first. Then run this in PowerShell:
+
+```powershell
+$env:PERSONAL_LEARNING_LIVE_E2E = 'true'
+$env:DEMO_BASE_URL = 'http://127.0.0.1:4173'
+pnpm demo:playwright --grep 'personal learning creates one private'
+```
+
+The scenario checks the live answer and 1/7/30-day choices, consent before acceptance, a private course with only session 1, and a verified-source link in the lesson. If source discovery is not configured, it supplies a public source through the recovery flow. The API key stays in the ignored local `.env` file and must not be committed.

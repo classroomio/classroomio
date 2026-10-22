@@ -2,6 +2,7 @@ import { ContentType, ROLE } from '@cio/utils/constants';
 import { assertStudentCanAccessContent } from '@cio/core/services/course/progression';
 import { getCourseById, getCourseProgress } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
+import { isPersonalLearningCourseOwner } from '@cio/db/queries/personal-learning';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 const DEFAULT_CONTENT_GROUPING = true;
@@ -24,7 +25,8 @@ export async function assertEnrolledStudentCourseAccess(params: {
   if (!course) return;
 
   if (progress.roleId === ROLE.STUDENT && !course.isPublished) {
-    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    const isPersonalLearningOwner = await isPersonalLearningCourseOwner(params.courseId, params.profileId);
+    if (!isPersonalLearningOwner) throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 }
 
@@ -44,7 +46,8 @@ export async function assertEnrolledStudentContentAccess(params: {
   if (!course) return;
 
   if (progress.roleId === ROLE.STUDENT && !course.isPublished) {
-    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    const isPersonalLearningOwner = await isPersonalLearningCourseOwner(params.courseId, params.profileId);
+    if (!isPersonalLearningOwner) throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 
   const isContentGroupingEnabled = course.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;

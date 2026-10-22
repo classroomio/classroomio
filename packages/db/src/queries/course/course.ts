@@ -506,7 +506,7 @@ export async function getCourseWithRelations(
             }
           })
           .from(schema.group)
-          .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+          .leftJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
           .leftJoin(schema.groupmember, eq(schema.group.id, schema.groupmember.groupId))
           .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
           .where(eq(schema.group.id, course.groupId))

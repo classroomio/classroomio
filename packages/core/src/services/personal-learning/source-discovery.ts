@@ -95,7 +95,12 @@ function isTimeoutError(error: unknown): boolean {
   );
 }
 
-async function fetchJinaJson(url: string, init: RequestInit, failureCode: string): Promise<unknown> {
+async function fetchJinaJson(
+  url: string,
+  init: RequestInit,
+  failureCode: string,
+  statusMismatchCode?: string
+): Promise<unknown> {
   let response: Response;
 
   try {
@@ -116,6 +121,9 @@ async function fetchJinaJson(url: string, init: RequestInit, failureCode: string
 
   if (response.status === 429)
     throw new AppError('Learning source provider quota exceeded', 'LEARNING_SOURCE_QUOTA_EXCEEDED', 429);
+  if (response.status === 422 && statusMismatchCode) {
+    throw new AppError('Learning source page did not return HTTP 200', statusMismatchCode, 422);
+  }
   if (!response.ok) throw new AppError('Learning source provider request failed', failureCode, 502);
 
   try {
@@ -160,6 +168,17 @@ function sourceTitleFromContent(content: string, sourceUrl: URL): string {
     .trim();
 
   return firstHeading?.slice(0, 200) || sourceUrl.hostname;
+}
+
+function isNotFoundPage(title: string, content: string): boolean {
+  const firstHeading = content
+    .split('\n')
+    .find((line) => line.trim().startsWith('#'))
+    ?.replace(/^#+\s*/, '')
+    .trim();
+  const notFoundTitle = /^(?:404\s+not\s+found|page\s+not\s+found|not\s+found|error\s+404)(?:\s*[|:–-].*)?$/i;
+
+  return [title, firstHeading ?? ''].some((candidate) => notFoundTitle.test(candidate.trim()));
 }
 
 export async function discoverLearningSources(input: {
@@ -215,20 +234,30 @@ export async function discoverLearningSources(input: {
     await assertPublicSourceHost(candidate.url);
     await reserveSourceQuota(input.ownerUserId);
 
-    const readerPayload = await fetchJinaJson(
-      JINA_READER_URL,
-      {
-        method: 'POST',
-        headers: {
-          ...(jinaApiKey ? { Authorization: `Bearer ${jinaApiKey}` } : {}),
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'X-Max-Tokens': '4000'
+    let readerPayload: unknown;
+
+    try {
+      readerPayload = await fetchJinaJson(
+        JINA_READER_URL,
+        {
+          method: 'POST',
+          headers: {
+            ...(jinaApiKey ? { Authorization: `Bearer ${jinaApiKey}` } : {}),
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-Max-Tokens': '4000',
+            'X-Assert-Status-Code': '200'
+          },
+          body: JSON.stringify({ url: candidate.url.href })
         },
-        body: JSON.stringify({ url: candidate.url.href })
-      },
-      'LEARNING_SOURCE_FETCH_FAILED'
-    );
+        'LEARNING_SOURCE_FETCH_FAILED',
+        'SOURCE_URL_UNAVAILABLE'
+      );
+    } catch (error) {
+      if (error instanceof AppError && error.code === 'SOURCE_URL_UNAVAILABLE') continue;
+
+      throw error;
+    }
     const readerData =
       readerPayload && typeof readerPayload === 'object' && 'data' in readerPayload && readerPayload.data
         ? readerPayload.data
@@ -242,20 +271,29 @@ export async function discoverLearningSources(input: {
         ? readerData.url
         : candidate.url.href;
 
-    if (validateSourceUrl(reportedUrl).href !== candidate.url.href) {
-      throw new AppError('Learning source redirected to another URL', 'UNSAFE_SOURCE_REDIRECT', 502);
+    let verifiedUrl: URL;
+
+    try {
+      verifiedUrl = validateSourceUrl(reportedUrl);
+      await assertPublicSourceHost(verifiedUrl);
+    } catch (error) {
+      if (error instanceof AppError && ['INVALID_SOURCE_URL', 'UNSAFE_SOURCE_HOST'].includes(error.code)) continue;
+
+      throw error;
     }
-    if (!content)
-      throw new AppError('Learning source did not contain usable text', 'LEARNING_SOURCE_FETCH_FAILED', 502);
 
     const readerTitle =
       readerData && typeof readerData === 'object' && 'title' in readerData && typeof readerData.title === 'string'
         ? readerData.title.trim()
         : '';
+    if (!content || isNotFoundPage(readerTitle, content)) continue;
 
     sourceManifest.push({
-      url: candidate.url.href,
-      title: candidate.title || readerTitle || sourceTitleFromContent(content, candidate.url),
+      url: verifiedUrl.href,
+      title:
+        readerTitle ||
+        (verifiedUrl.href === candidate.url.href ? candidate.title : '') ||
+        sourceTitleFromContent(content, verifiedUrl),
       accessedAt: new Date().toISOString(),
       content
     });

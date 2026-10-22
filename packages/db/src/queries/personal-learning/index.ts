@@ -192,6 +192,21 @@ export async function getPersonalLearningJourneyStatusForOwner(ownerUserId: stri
   };
 }
 
+export async function isPersonalLearningCourseOwner(courseId: string, ownerUserId: string): Promise<boolean> {
+  const [journey] = await db
+    .select({ id: schema.personalLearningJourney.id })
+    .from(schema.personalLearningJourney)
+    .where(
+      and(
+        eq(schema.personalLearningJourney.courseId, courseId),
+        eq(schema.personalLearningJourney.ownerUserId, ownerUserId)
+      )
+    )
+    .limit(1);
+
+  return Boolean(journey);
+}
+
 export async function getPersonalLearningTutorContextForOwner(ownerUserId: string, journeyId: string) {
   const [result] = await db
     .select({

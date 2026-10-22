@@ -24,11 +24,15 @@ const PROVIDER_API_KEY_ENV: Record<AIProvider, string> = {
  * Normalizes OpenAI, Anthropic, and Google into a single interface for streamText().
  */
 export function createModel(config: AIProviderConfig): LanguageModel {
-  const modelName = config.model || DEFAULT_MODELS[config.provider];
+  const openAIBaseUrl = process.env.OPENAI_BASE_URL?.trim();
+  const configuredOpenAIModel = config.provider === AIProvider.OPENAI ? process.env.OPENAI_MODEL?.trim() : undefined;
+  const modelName = config.model || configuredOpenAIModel || DEFAULT_MODELS[config.provider];
 
   switch (config.provider) {
     case AIProvider.OPENAI: {
-      const openai = createOpenAI({ apiKey: config.apiKey });
+      const openai = createOpenAI({ apiKey: config.apiKey, ...(openAIBaseUrl ? { baseURL: openAIBaseUrl } : {}) });
+      if (openAIBaseUrl) return openai.chat(modelName);
+
       return openai(modelName);
     }
     case AIProvider.ANTHROPIC: {
@@ -64,7 +68,9 @@ export function getProviderConfigForProvider(provider: AIProvider): AIProviderCo
  * Used by routes that don't take an explicit model (status check, title generation).
  */
 export function pickAnyConfiguredProvider(): AIProviderConfig | null {
-  const order: AIProvider[] = [AIProvider.GOOGLE, AIProvider.OPENAI, AIProvider.ANTHROPIC];
+  const order: AIProvider[] = process.env.OPENAI_BASE_URL?.trim()
+    ? [AIProvider.OPENAI, AIProvider.GOOGLE, AIProvider.ANTHROPIC]
+    : [AIProvider.GOOGLE, AIProvider.OPENAI, AIProvider.ANTHROPIC];
 
   for (const provider of order) {
     const config = getProviderConfigForProvider(provider);

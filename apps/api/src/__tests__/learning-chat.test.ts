@@ -88,6 +88,10 @@ describe('personal learning chat API', () => {
     expect(chatBody.offer).toMatchObject({ suggestedStudyDays: 7 });
     expect(chatBody.offer.choices).toEqual([1, 7, 30]);
 
+    const [generationInput] = generateObject.mock.calls[0] as [{ system: string }];
+    expect(generationInput.system).toContain('Return only a valid JSON object with exactly these keys');
+    expect(generationInput.system).toContain('Do not use Markdown fences or write any other text.');
+
     const [conversation] = await db
       .select()
       .from(schema.personalLearningConversation)
