@@ -441,7 +441,11 @@ Read-only `InputGroup` that shows a value with an inline Copy button. Focusing t
   import { CopyInput } from '@cio/ui/custom/copy-input';
 </script>
 
-<CopyInput value={secret} copyLabel={$t('automation.keys.reveal.copy')} copiedLabel={$t('automation.keys.reveal.copied')} />
+<CopyInput
+  value={secret}
+  copyLabel={$t('automation.keys.reveal.copy')}
+  copiedLabel={$t('automation.keys.reveal.copied')}
+/>
 ```
 
 ### Hooks (`src/hooks/`)

@@ -2,7 +2,12 @@
   import type { CourseItem, OrgLandingPageLabels } from '../types';
   import * as Item from '../../../base/item';
   import { CourseCard } from '../../course-card';
-  import { calcCourseDiscount, formatExerciseCountLabel, getCourseTypeLandingMeta } from '../landing-page-utils';
+  import {
+    calcCourseDiscount,
+    formatExerciseCountLabel,
+    getCourseTypeLandingMeta,
+    getSingleActivityCourseSummary
+  } from '../landing-page-utils';
   import { cn } from '../../../tools';
 
   interface Props {
@@ -14,6 +19,7 @@
   let { course, disableCourseLinks = false, labels }: Props = $props();
 
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
+  const singleActivitySummary = $derived(getSingleActivityCourseSummary(course, labels));
   const pricingData = $derived({
     cost: course.cost ?? 0,
     discount: course.metadata?.discount ?? 0,
@@ -71,12 +77,23 @@
     <div class="ui:flex ui:justify-between ui:w-full">
       <div class="ui:w-[80%]">
         <p class="ui:text-xs ui:pl-2 ui:dark:text-white">
-          <span>{labels?.lessonsLabel?.(course.lessonCount || 0) ?? `${course.lessonCount || 0} lessons`}</span>
-          &
-          <span
-            >{labels?.exercisesLabel?.(course.exerciseCount ?? 0) ??
-              formatExerciseCountLabel(course.exerciseCount ?? 0)}</span
-          >
+          {#if singleActivitySummary}
+            <span>{singleActivitySummary}</span>
+          {:else}
+            <span>{labels?.lessonsLabel?.(course.lessonCount || 0) ?? `${course.lessonCount || 0} lessons`}</span>
+            &
+            <span
+              >{labels?.exercisesLabel?.(course.exerciseCount ?? 0) ??
+                formatExerciseCountLabel(course.exerciseCount ?? 0)}</span
+            >
+            {#if course.activityCount}
+              &
+              <span
+                >{labels?.activitiesLabel?.(course.activityCount) ??
+                  `${course.activityCount} ${course.activityCount === 1 ? 'activity' : 'activities'}`}</span
+              >
+            {/if}
+          {/if}
         </p>
         <div class="ui:py-2 ui:text-xs">
           {#if course.price != null && String(course.price).length > 0}

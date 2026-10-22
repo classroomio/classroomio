@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { CourseItem, OrgLandingPageLabels } from '../types';
-  import { getCourseCoverImage, getCourseTypeLandingMeta, getPrimaryCourseTag } from '../landing-page-utils';
+  import {
+    getCourseCoverImage,
+    getCourseTypeLandingMeta,
+    getPrimaryCourseTag,
+    getSingleActivityCourseSummary
+  } from '../landing-page-utils';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
   interface Props {
@@ -14,6 +19,7 @@
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
   const primaryTag = $derived(getPrimaryCourseTag(course));
   const cover = $derived(getCourseCoverImage(course));
+  const singleActivitySummary = $derived(getSingleActivityCourseSummary(course, labels));
 
   const href = $derived.by(() => {
     if (disableCourseLinks) return undefined;
@@ -44,6 +50,13 @@
     if (labels?.exercisesLabel) return labels.exercisesLabel(course.exerciseCount);
 
     return course.exerciseCount === 1 ? '1 exercise' : `${course.exerciseCount} exercises`;
+  });
+
+  const activitiesLabel = $derived.by(() => {
+    if (!course.activityCount) return undefined;
+    if (labels?.activitiesLabel) return labels.activitiesLabel(course.activityCount);
+
+    return course.activityCount === 1 ? '1 activity' : `${course.activityCount} activities`;
   });
 </script>
 
@@ -86,8 +99,13 @@
 
     <div class="ui:mt-auto ui:pt-8 ui:flex ui:flex-wrap ui:items-center ui:justify-between ui:gap-4">
       <span class="ui:flex ui:flex-wrap ui:gap-x-4 ui:gap-y-1 ui:text-[13px] ui:text-[var(--landing-fg-faint)]">
-        {#if lessonsLabel}<span>{lessonsLabel}</span>{/if}
-        {#if exercisesLabel}<span>{exercisesLabel}</span>{/if}
+        {#if singleActivitySummary}
+          <span>{singleActivitySummary}</span>
+        {:else}
+          {#if lessonsLabel}<span>{lessonsLabel}</span>{/if}
+          {#if exercisesLabel}<span>{exercisesLabel}</span>{/if}
+          {#if activitiesLabel}<span>{activitiesLabel}</span>{/if}
+        {/if}
         {#if courseTypeMeta}<span>{courseTypeMeta.label}</span>{/if}
       </span>
       <span class="ui:flex ui:items-center ui:gap-5">

@@ -1,11 +1,18 @@
 <script lang="ts">
-  import type { CourseCurriculum, CourseCurriculumLesson, CourseLandingPageLabels, OrgLandingPageTheme } from './types';
+  import type {
+    CourseCurriculum,
+    CourseCurriculumLesson,
+    CourseCurriculumSection,
+    CourseLandingPageLabels,
+    OrgLandingPageTheme
+  } from './types';
   import { courseLandingTokens } from './course-landing-page.tokens';
   import EditableLandingSection from './editable-section.svelte';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
   import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
   import ListChecksIcon from '@lucide/svelte/icons/list-checks';
+  import PackageIcon from '@lucide/svelte/icons/package';
 
   interface Props {
     variant: OrgLandingPageTheme;
@@ -49,10 +56,43 @@
     return labels?.exercisesLabel?.(count) ?? `${count} ${count === 1 ? 'exercise' : 'exercises'}`;
   }
 
-  function standaloneLabel(kind: 'lesson' | 'exercise'): string {
-    if (kind === 'exercise') return labels?.standaloneExerciseLabel ?? 'Exercise';
+  function modulesLabel(count: number): string {
+    return labels?.singleActivityModulesLabel?.(count) ?? `${count} ${count === 1 ? 'module' : 'modules'}`;
+  }
+
+  function sectionModuleCount(section: CourseCurriculumSection): number {
+    return section.activities?.reduce((total, activity) => total + (activity.modules?.length ?? 0), 0) ?? 0;
+  }
+
+  function standaloneLabel(section: CourseCurriculumSection): string {
+    if (section.standalone === 'exercise') return labels?.standaloneExerciseLabel ?? 'Exercise';
+    if (section.standalone === 'activity') {
+      const modules = sectionModuleCount(section);
+      if (modules > 0) return modulesLabel(modules);
+
+      return labels?.activitiesLabel?.(1) ?? 'Activity';
+    }
 
     return labels?.standaloneLessonLabel ?? 'Lesson';
+  }
+
+  function activitiesLabel(count: number): string {
+    return labels?.activitiesLabel?.(count) ?? `${count} ${count === 1 ? 'activity' : 'activities'}`;
+  }
+
+  function sectionMeta(section: CourseCurriculumSection): string {
+    const lessons = section.lessons.length;
+    const exercises = section.exerciseCount ?? 0;
+    const activities = section.activityCount ?? section.activities?.length ?? 0;
+    const modules = sectionModuleCount(section);
+    const onlyActivityCourse = lessons === 0 && exercises === 0 && activities === 1;
+    const parts: string[] = [];
+    if (lessons > 0) parts.push(lessonsLabel(lessons));
+    if (exercises) parts.push(exercisesLabel(exercises));
+    if (onlyActivityCourse) parts.push(modules > 0 ? modulesLabel(modules) : activitiesLabel(1));
+    else if (activities) parts.push(activitiesLabel(activities));
+
+    return parts.join(' · ');
   }
 
   const firstSectionId = $derived(curriculum.sections.find((section) => !section.standalone)?.id);
@@ -77,6 +117,8 @@
     <span class={t.curriculumLessonPrefix}>{lecturePrefix(itemIdx)}</span>
     {#if item.kind === 'exercise'}
       <ListChecksIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
+    {:else if item.kind === 'activity'}
+      <PackageIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
     {:else}
       <CircleCheckIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
     {/if}
@@ -87,6 +129,25 @@
       </span>
     {/if}
   </div>
+  {#if item.kind === 'activity'}
+    {#each item.modules ?? [] as module, moduleIdx (module.id)}
+      <div class={t.curriculumLessonRow}>
+        <span class={t.curriculumLessonPrefix}>{lecturePrefix(moduleIdx)}</span>
+        <span class={t.curriculumLessonTitle}>{module.title}</span>
+      </div>
+    {/each}
+  {/if}
+{/snippet}
+
+{#snippet standaloneModules(section: CourseCurriculumSection)}
+  {#each section.activities ?? [] as activity (activity.id)}
+    {#each activity.modules ?? [] as module, moduleIdx (module.id)}
+      <div class={t.curriculumLessonRow}>
+        <span class={t.curriculumLessonPrefix}>{lecturePrefix(moduleIdx)}</span>
+        <span class={t.curriculumLessonTitle}>{module.title}</span>
+      </div>
+    {/each}
+  {/each}
 {/snippet}
 
 <EditableLandingSection sectionKey="curriculum">
@@ -108,8 +169,9 @@
                     <span class="ui:size-4 ui:shrink-0" aria-hidden="true"></span>
                     <span class={t.curriculumModuleTitle}>{section.title}</span>
                   </span>
-                  <span class={t.curriculumModuleMeta}>{standaloneLabel(section.standalone)}</span>
+                  <span class={t.curriculumModuleMeta}>{standaloneLabel(section)}</span>
                 </div>
+                {@render standaloneModules(section)}
               {:else}
                 <button
                   type="button"
@@ -126,9 +188,7 @@
                     <span class={t.curriculumModuleTitle}>{section.title}</span>
                   </span>
                   <span class={t.curriculumModuleMeta}>
-                    {lessonsLabel(section.lessons.length)}{section.exerciseCount
-                      ? ` · ${exercisesLabel(section.exerciseCount)}`
-                      : ''}
+                    {sectionMeta(section)}
                   </span>
                 </button>
                 {#if expanded[section.id]}
@@ -160,15 +220,15 @@
                 </div>
                 <span class={t.curriculumModuleMeta}>
                   {#if section.standalone}
-                    {standaloneLabel(section.standalone)}
+                    {standaloneLabel(section)}
                   {:else}
-                    {lessonsLabel(section.lessons.length)}{section.exerciseCount
-                      ? ` · ${exercisesLabel(section.exerciseCount)}`
-                      : ''}
+                    {sectionMeta(section)}
                   {/if}
                 </span>
               </div>
-              {#if !section.standalone}
+              {#if section.standalone}
+                {@render standaloneModules(section)}
+              {:else}
                 <div class="ui:flex ui:flex-col">
                   {#each section.items ?? section.lessons as item, itemIdx (item.id)}
                     {@render itemRow(item, itemIdx)}

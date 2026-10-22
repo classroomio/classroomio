@@ -19,6 +19,22 @@
   const exerciseCount = $derived(
     curriculum.sections.reduce((total, section) => total + (section.exerciseCount ?? 0), 0)
   );
+  const activityCount = $derived(
+    curriculum.sections.reduce(
+      (total, section) => total + (section.activityCount ?? section.activities?.length ?? 0),
+      0
+    )
+  );
+  const moduleCount = $derived(
+    curriculum.sections.reduce(
+      (total, section) =>
+        total +
+        (section.activities?.reduce((sectionTotal, activity) => sectionTotal + (activity.modules?.length ?? 0), 0) ??
+          0),
+      0
+    )
+  );
+  const singleActivityCourse = $derived(lessonCount === 0 && exerciseCount === 0 && activityCount === 1);
 
   function lessonsLabel(count: number): string {
     return labels?.lessonsLabel?.(count) ?? `${count} ${count === 1 ? 'lesson' : 'lessons'}`;
@@ -28,11 +44,30 @@
     return labels?.exercisesLabel?.(count) ?? `${count} ${count === 1 ? 'exercise' : 'exercises'}`;
   }
 
+  function activitiesLabel(count: number): string {
+    return labels?.activitiesLabel?.(count) ?? `${count} ${count === 1 ? 'activity' : 'activities'}`;
+  }
+
+  function modulesLabel(count: number): string {
+    return labels?.singleActivityModulesLabel?.(count) ?? `${count} ${count === 1 ? 'module' : 'modules'}`;
+  }
+
+  function courseLabel(): string {
+    return labels?.singleActivityCourseLabel ?? 'Course';
+  }
+
   /** A single hairline row rather than a stat grid — the meta reads as a sentence. */
   const meta = $derived(
     [
       lessonCount > 0 ? lessonsLabel(lessonCount) : null,
       exerciseCount > 0 ? exercisesLabel(exerciseCount) : null,
+      singleActivityCourse
+        ? moduleCount > 0
+          ? modulesLabel(moduleCount)
+          : courseLabel()
+        : activityCount > 0
+          ? activitiesLabel(activityCount)
+          : null,
       socialProof.type ?? null,
       socialProof.hasCertificate ? (labels?.socialProofCertificateLabel ?? 'Certificate') : null
     ].filter((entry) => entry !== null)
