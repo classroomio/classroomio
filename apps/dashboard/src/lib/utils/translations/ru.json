@@ -3255,7 +3255,9 @@
       "date_created": "Дата создания",
       "last_updated_at": "Последнее обновление",
       "published": "Опубликовано",
-      "lessons": "Уроки"
+      "lessons": "Уроки",
+      "name": "Название",
+      "price": "Цена"
     },
     "tag_filters": {
       "filter": "Фильтр",

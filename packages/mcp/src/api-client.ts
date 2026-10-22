@@ -57,6 +57,8 @@ import type {
   TPublicApiCreateAsset,
   TPublicApiCreateAudience,
   TPublicApiCreateCohort,
+  TPublicApiCohortMembersQuery,
+  TPublicApiCohortsQuery,
   TPublicApiCreateCohortGoal,
   TPublicApiCreateCohortNewsfeed,
   TPublicApiCreateCohortNewsfeedComment,
@@ -123,7 +125,7 @@ const toPageQuerySuffix = (query: Partial<TPublicApiPaginationQuery>) => {
   return searchParams.toString() ? `?${searchParams.toString()}` : '';
 };
 
-const toQuerySuffix = (query: Record<string, string | number | undefined>) => {
+const toQuerySuffix = (query: Record<string, string | number | boolean | undefined>) => {
   const searchParams = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) {
     if (value !== undefined && value !== '') searchParams.set(key, String(value));
@@ -190,11 +192,7 @@ export class ClassroomIoApiClient {
   }
 
   async listOrganizationCourses(query: Partial<TGetOrganizationCoursesQuery> = {}) {
-    const searchParams = new URLSearchParams();
-    if (query.tags) searchParams.set('tags', query.tags);
-
-    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/organization/courses${querySuffix}`, {
+    return this.request(`/organization/courses${toQuerySuffix(query)}`, {
       method: 'GET'
     });
   }
@@ -594,14 +592,9 @@ export class ClassroomIoApiClient {
   // ─── Course Members (public API) ────────────────────────────────────────
 
   async listCourseMembers(courseId: string, query: Partial<TPublicApiCourseMembersQuery> = {}) {
-    const searchParams = new URLSearchParams();
-    if (query.page) searchParams.set('page', String(query.page));
-    if (query.limit) searchParams.set('limit', String(query.limit));
-    if (query.search) searchParams.set('search', query.search);
-    if (query.roleId) searchParams.set('roleId', String(query.roleId));
-
-    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.requestPaginated(`/public-api/v1/courses/${courseId}/members${querySuffix}`, { method: 'GET' });
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/members${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
   }
 
   async addCourseMember(courseId: string, payload: TPublicApiAddCourseMember) {
@@ -672,8 +665,8 @@ export class ClassroomIoApiClient {
 
   // ─── Cohorts (public API) ────────────────────────────────────────────────
 
-  async listCohorts(query: Partial<TPublicApiPaginationQuery> = {}) {
-    return this.requestPaginated(`/public-api/v1/cohorts${toPageQuerySuffix(query)}`, { method: 'GET' });
+  async listCohorts(query: Partial<TPublicApiCohortsQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts${toQuerySuffix(query)}`, { method: 'GET' });
   }
 
   async createCohort(payload: TPublicApiCreateCohort) {
@@ -698,8 +691,8 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/cohorts/${cohortId}`, { method: 'DELETE' });
   }
 
-  async listCohortMembers(cohortId: string, query: Partial<TPublicApiPaginationQuery> = {}) {
-    return this.requestPaginated(`/public-api/v1/cohorts/${cohortId}/members${toPageQuerySuffix(query)}`, {
+  async listCohortMembers(cohortId: string, query: Partial<TPublicApiCohortMembersQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts/${cohortId}/members${toQuerySuffix(query)}`, {
       method: 'GET'
     });
   }

@@ -13,7 +13,6 @@ import {
 import {
   addCourseToCohort,
   addCohortMember,
-  countCohortMembers,
   countCohortNewsfeedComments,
   countCohortsByOrgForProfile,
   countCoursesByCohort,
@@ -48,6 +47,7 @@ import {
   updateCohortNewsfeedReaction,
   getPaginatedCohortPeople,
   type PaginatedCohortPeopleOptions,
+  type TCohortListFilters,
   type TCohortListPage
 } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
@@ -236,10 +236,15 @@ export async function listOrgCohorts(organizationId: string, profileId: string) 
   }
 }
 
-export async function listOrgCohortsPage(organizationId: string, profileId: string, page: TCohortListPage) {
+export async function listOrgCohortsPage(
+  organizationId: string,
+  profileId: string,
+  query: TCohortListPage & TCohortListFilters
+) {
+  const { page, limit, ...filters } = query;
   const [items, total] = await Promise.all([
-    getCohortsByOrgForProfile(organizationId, profileId, page),
-    countCohortsByOrgForProfile(organizationId, profileId)
+    getCohortsByOrgForProfile(organizationId, profileId, { page, limit }, filters),
+    countCohortsByOrgForProfile(organizationId, profileId, filters)
   ]);
 
   return { items, total };
@@ -316,12 +321,6 @@ export async function listPaginatedCohortPeople(cohortId: string, query: Paginat
       500
     );
   }
-}
-
-export async function listCohortMembersPage(cohortId: string, page: TCohortListPage) {
-  const [items, total] = await Promise.all([getCohortMembers(cohortId, page), countCohortMembers(cohortId)]);
-
-  return { items, total };
 }
 
 export async function addCohortMembers(cohortId: string, data: TAddCohortMembers) {

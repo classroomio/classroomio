@@ -3255,7 +3255,9 @@
       "date_created": "Erstellungsdatum",
       "last_updated_at": "Zuletzt aktualisiert",
       "published": "Veröffentlicht",
-      "lessons": "Lektionen"
+      "lessons": "Lektionen",
+      "name": "Name",
+      "price": "Preis"
     },
     "tag_filters": {
       "filter": "Filter",
