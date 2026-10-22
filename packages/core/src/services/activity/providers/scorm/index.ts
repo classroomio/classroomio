@@ -24,6 +24,7 @@ import {
   getLatestScormAttempt,
   listAttemptProfileIdsByActivity,
   listScormAttemptsForProfile,
+  reopenReplacedAttemptsForVersion,
   updateScormAttempt
 } from '@cio/db/queries/scorm/attempt';
 import { listLatestScoAttemptsByAttempt } from '@cio/db/queries/scorm/sco-attempt';
@@ -111,6 +112,7 @@ export async function attachScormPackage(
     if (previous?.assetId && previous.assetId !== asset.id) {
       await closeOpenAttemptsForActivity(activityId, 'replaced', tx);
     }
+    await reopenReplacedAttemptsForVersion(current.id, activityId, tx);
     await deleteAssetUsagesByTarget('activity', activityId, tx);
     await createAssetUsage(
       {
@@ -198,6 +200,8 @@ async function recomputeActivityCompletions(
     let anyAttemptMetRule = false;
 
     for (const attempt of cycleAttempts) {
+      if (attempt.closeReason === 'replaced') continue;
+
       const version = await getPackageVersionById(attempt.packageVersionId, tx);
       if (!version) continue;
 
@@ -214,7 +218,7 @@ async function recomputeActivityCompletions(
       }
     }
 
-    const latest = cycleAttempts[0];
+    const latest = cycleAttempts.find((a) => a.closeReason !== 'replaced') ?? cycleAttempts[0];
 
     if (!anyAttemptMetRule) {
       await clearActivityCompletions([activityId], profileId, tx);

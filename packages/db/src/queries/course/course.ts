@@ -14,6 +14,7 @@ import {
 import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
+import type { TCourseFormat } from '@cio/utils/constants/course-format';
 import type { TCourseType } from '@cio/utils/constants/course-type';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { contentWriteBumpsTimestamp } from './content-timestamp';
@@ -47,7 +48,7 @@ export interface TBaseCourse extends TCourse {
  * Launchable SCORM modules in the current package versions of a course's
  * activities. Zero for courses without packages.
  */
-function scormModuleCountSql() {
+function scormModuleCountExpression() {
   return sql<number>`(
     SELECT COUNT(*)::bigint
     FROM ${schema.contentPackageUnit} AS cpu
@@ -57,7 +58,11 @@ function scormModuleCountSql() {
     WHERE ${eq(sql`ca2.course_id`, schema.course.id)}
     AND cpv.is_current = true
     AND cpu.unit_type = 'sco'
-  )`.as('module_count');
+  )`;
+}
+
+function scormModuleCountSql() {
+  return scormModuleCountExpression().as('module_count');
 }
 
 /**
@@ -852,6 +857,7 @@ interface GetOrgCoursesOptions {
   /** Optional search query against the course title */
   search?: string;
   type?: TCourseType;
+  format?: TCourseFormat;
   publishedStatus?: OrgCoursePublishedStatus;
   sortKey?: OrgCourseSortKey;
   order?: OrgCourseSortOrder;
@@ -874,8 +880,9 @@ function orgCourseListConditions({
   courseIds,
   search,
   type,
+  format,
   publishedStatus
-}: Pick<GetOrgCoursesOptions, 'orgId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'>) {
+}: Pick<GetOrgCoursesOptions, 'orgId' | 'courseIds' | 'search' | 'type' | 'format' | 'publishedStatus'>) {
   const conditions = [
     eq(schema.group.organizationId, orgId),
     eq(schema.course.status, 'ACTIVE'),
@@ -894,6 +901,10 @@ function orgCourseListConditions({
     conditions.push(eq(schema.course.type, type));
   }
 
+  if (format) {
+    conditions.push(eq(schema.course.format, format));
+  }
+
   if (publishedStatus === 'published') {
     conditions.push(eq(schema.course.isPublished, true));
   }
@@ -909,18 +920,24 @@ function orgCourseListOrderBy(sortKey?: OrgCourseSortKey, order?: OrgCourseSortO
   const direction = order === 'asc' ? asc : desc;
 
   if (sortKey === 'last_updated_at') {
-    return direction(sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`);
+    return [direction(sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`)];
   }
 
   if (sortKey === 'published') {
-    return direction(schema.course.isPublished);
+    return [direction(schema.course.isPublished)];
   }
 
   if (sortKey === 'lessons') {
-    return direction(sql`COUNT(DISTINCT ${schema.lesson.id})`);
+    const moduleCount = scormModuleCountExpression();
+    const lessonAndModuleCount = sql`COUNT(DISTINCT ${schema.lesson.id}) + CASE
+      WHEN ${schema.course.format} = 'single_activity' THEN ${moduleCount}
+      ELSE 0
+    END`;
+
+    return [direction(lessonAndModuleCount)];
   }
 
-  return direction(schema.course.createdAt);
+  return [direction(schema.course.createdAt)];
 }
 
 export async function countOrgCourses({
@@ -929,17 +946,18 @@ export async function countOrgCourses({
   courseIds,
   search,
   type,
+  format,
   publishedStatus
 }: Pick<
   GetOrgCoursesOptions,
-  'orgId' | 'profileId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'
+  'orgId' | 'profileId' | 'courseIds' | 'search' | 'type' | 'format' | 'publishedStatus'
 >): Promise<number> {
   try {
     if (courseIds && courseIds.length === 0) {
       return 0;
     }
 
-    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, publishedStatus });
+    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, format, publishedStatus });
 
     const totalQuery = profileId
       ? db
@@ -978,6 +996,7 @@ export const getOrgCourses = async ({
   courseIds,
   search,
   type,
+  format,
   publishedStatus,
   sortKey,
   order,
@@ -995,8 +1014,8 @@ export const getOrgCourses = async ({
       };
     }
 
-    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, publishedStatus });
-    const total = await countOrgCourses({ orgId, profileId, courseIds, search, type, publishedStatus });
+    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, format, publishedStatus });
+    const total = await countOrgCourses({ orgId, profileId, courseIds, search, type, format, publishedStatus });
 
     const baseQuery = db
       .select({
@@ -1035,7 +1054,7 @@ export const getOrgCourses = async ({
 
     const result = await itemsQuery
       .groupBy(schema.course.id)
-      .orderBy(orgCourseListOrderBy(sortKey, order))
+      .orderBy(...orgCourseListOrderBy(sortKey, order))
       .limit(limit)
       .offset((page - 1) * limit);
 
