@@ -44,7 +44,6 @@ async function verifyRuntimeLaunchToken(c: Context, next: Next) {
   }
 }
 
-<<<<<<< HEAD
 async function readBoundedText(c: Context, maxBytes: number, errorMessage: string): Promise<string> {
   const bodyStream = c.req.raw.body;
   if (!bodyStream) {

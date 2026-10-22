@@ -68,8 +68,8 @@ A lapsed license, or the license server being unreachable for an hour (failures 
 ## Storage and limits
 
 - Package files live in the private `scorm` bucket in the object storage the app already uses (bundled SeaweedFS by default, or R2 or S3). The bucket is never public.
-- `UPLOAD_MAX_SCORM_MB` defaults to 500. The worker checks the real object size; the browser's figure is advisory only. Set the same value on both `api` and `dashboard`, and raise your reverse-proxy body-size limit to match.
-- Package versions remain stored so historical learner attempts stay intact and can be reviewed. Diagnostic events are retained for auditing. The original ZIP of each version is kept for reprocessing.
+- `UPLOAD_MAX_SCORM_MB` defaults to 500. The worker checks the real object size; the browser's figure is advisory only. Set the same value across `api`, `dashboard`, and `jobs`, and raise your reverse-proxy body-size limit to match.
+- Package versions remain stored so historical learner attempts stay intact and can be reviewed. Diagnostic events are retained for auditing. The original ZIP of each version is kept for reprocessing. Retention limits and cleanup sweeps run in the `jobs` container.
 - Storage cards include SCORM packages: all versions' ZIPs plus extracted files.
 
 ## Compatibility

@@ -377,7 +377,7 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
     };
   }
 
-  await updatePackageVersion(version.id, { status: 'processing', error: null });
+  await updatePackageVersion(version.id, { status: 'processing', error: null, extractedBytes: 0 });
   await deletePackageUnitsByVersion(version.id);
 
   const bucket = scormBucket();

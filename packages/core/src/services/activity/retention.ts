@@ -57,20 +57,24 @@ async function cleanupFailedVersions(nowMs: number): Promise<number> {
   let cleaned = 0;
 
   for (const candidate of candidates) {
-    const removed = await db.transaction(async (tx) => {
-      await lockPackageVersionRow(candidate.id, tx);
-      const [version] = await listFailedVersionsWithStoredContent(cutoff, tx, candidate.id);
-      if (!version) return false;
+    try {
+      const removed = await db.transaction(async (tx) => {
+        await lockPackageVersionRow(candidate.id, tx);
+        const [version] = await listFailedVersionsWithStoredContent(cutoff, tx, candidate.id);
+        if (!version) return false;
 
-      const bucket = getStorageConfig().bucketScorm;
-      await deleteContentPrefix(bucket, version.contentPrefix);
-      await deleteKeys(bucket, [`${version.contentPrefix}.index.json`]);
-      await markPackageVersionContentRemoved(version.id, tx);
+        const bucket = getStorageConfig().bucketScorm;
+        await deleteContentPrefix(bucket, version.contentPrefix);
+        await deleteKeys(bucket, [`${version.contentPrefix}.index.json`]);
+        await markPackageVersionContentRemoved(version.id, tx);
 
-      return true;
-    });
+        return true;
+      });
 
-    if (removed) cleaned += 1;
+      if (removed) cleaned += 1;
+    } catch (error) {
+      console.error(`cleanupFailedVersions: failed to clean up candidate "${candidate.id}":`, error);
+    }
   }
 
   return cleaned;
@@ -93,28 +97,33 @@ export async function runScormRetention(
   let versionsArchived = 0;
 
   for (const candidate of candidates) {
-    const outcome = await db.transaction(async (tx) => {
-      await lockAssetRow(candidate.assetId, tx);
-      await lockPackageVersionRow(candidate.id, tx);
-      const [version] = await listVersionsDueForRetention(versionCutoff, tx, candidate.id);
-      if (!version || version.hasOpenAttempts) return;
+    try {
+      const outcome = await db.transaction(async (tx) => {
+        await lockAssetRow(candidate.assetId, tx);
+        await lockPackageVersionRow(candidate.id, tx);
+        const [version] = await listVersionsDueForRetention(versionCutoff, tx, candidate.id);
+        if (!version || version.hasOpenAttempts) return;
 
-      const bucket = getStorageConfig().bucketScorm;
-      await deleteContentPrefix(bucket, version.contentPrefix);
-      const keys = [`${version.contentPrefix}.index.json`];
-      if (!version.hasAttempts) keys.push(version.uploadKey);
-      await deleteKeys(bucket, keys);
+        const bucket = getStorageConfig().bucketScorm;
+        await deleteContentPrefix(bucket, version.contentPrefix);
+        const keys = [`${version.contentPrefix}.index.json`];
+        if (!version.hasAttempts) keys.push(version.uploadKey);
+        await deleteKeys(bucket, keys);
 
-      if (version.hasAttempts) {
-        await markPackageVersionArchived(version.id, tx);
-        return 'archived';
-      }
+        if (version.hasAttempts) {
+          await markPackageVersionArchived(version.id, tx);
+          return 'archived';
+        }
 
-      await deletePackageVersionsByIds([version.id], tx);
-      return 'deleted';
-    });
-    if (outcome === 'deleted') versionsDeleted += 1;
-    if (outcome === 'archived') versionsArchived += 1;
+        await deletePackageVersionsByIds([version.id], tx);
+        return 'deleted';
+      });
+
+      if (outcome === 'deleted') versionsDeleted += 1;
+      if (outcome === 'archived') versionsArchived += 1;
+    } catch (error) {
+      console.error(`runScormRetention: failed to process version "${candidate.id}":`, error);
+    }
   }
 
   const failedVersionsCleaned = await cleanupFailedVersions(nowMs);

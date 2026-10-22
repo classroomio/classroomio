@@ -32,80 +32,88 @@ const worker = new Worker(
 worker.on('failed', async (job, err) => {
   if (!job) return;
 
-  const data = job.data as {
-    mediaJobId?: string;
-    assetId?: string;
-    packageVersionId?: string;
-    actorContext?: { organizationId?: string };
-  };
+  try {
+    const data = job.data as {
+      mediaJobId?: string;
+      assetId?: string;
+      packageVersionId?: string;
+      actorContext?: { organizationId?: string };
+    };
 
-  if (err instanceof JobCanceledError) {
-    log.warn('activity-package-job-canceled', { jobName: job.name, bullmqJobId: job.id });
-    const canceledError = { code: 'CANCELED', message: 'Run canceled by user' };
-    await updateMediaJob(err.mediaJobId, {
-      status: 'canceled',
-      stage: 'canceled',
-      error: canceledError
+    if (err instanceof JobCanceledError) {
+      log.warn('activity-package-job-canceled', { jobName: job.name, bullmqJobId: job.id });
+      const canceledError = { code: 'CANCELED', message: 'Run canceled by user' };
+      await updateMediaJob(err.mediaJobId, {
+        status: 'canceled',
+        stage: 'canceled',
+        error: canceledError
+      });
+
+      if (data?.packageVersionId) {
+        const processedAt = new Date().toISOString();
+        await updatePackageVersion(data.packageVersionId, {
+          status: 'failed',
+          error: canceledError,
+          processedAt
+        });
+        const version = await getPackageVersionById(data.packageVersionId);
+        if (version?.contentPrefix) {
+          await cleanupPackageVersionStorage(version);
+        }
+      }
+
+      return;
+    }
+
+    log.error('activity-package-job-failed', {
+      jobName: job.name,
+      bullmqJobId: job.id,
+      attempt: job.attemptsMade,
+      error: errorMessage(err)
     });
 
-    if (data?.packageVersionId) {
+    const isUnrecoverable = err instanceof UnrecoverableError;
+    const isFinalAttempt = isUnrecoverable || job.attemptsMade >= (job.opts.attempts ?? 1);
+    if (!isFinalAttempt) return;
+
+    const recordedVersion = data?.packageVersionId ? await getPackageVersionById(data.packageVersionId) : null;
+    const recordedError = recordedVersion?.status === 'failed' ? recordedVersion.error : null;
+    const finalError = recordedError ?? { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err) };
+    if (data?.mediaJobId) {
+      await updateMediaJob(data.mediaJobId, {
+        status: 'failed',
+        stage: 'failed',
+        error: finalError
+      });
+    }
+
+    if (data?.packageVersionId && data?.mediaJobId && !recordedError) {
       const processedAt = new Date().toISOString();
       await updatePackageVersion(data.packageVersionId, {
         status: 'failed',
-        error: canceledError,
+        error: finalError,
         processedAt
       });
-      const version = await getPackageVersionById(data.packageVersionId);
-      if (version?.contentPrefix) {
-        await cleanupPackageVersionStorage(version);
-      }
     }
 
-    return;
-  }
-
-  log.error('activity-package-job-failed', {
-    jobName: job.name,
-    bullmqJobId: job.id,
-    attempt: job.attemptsMade,
-    error: errorMessage(err)
-  });
-
-  const isUnrecoverable = err instanceof UnrecoverableError;
-  const isFinalAttempt = isUnrecoverable || job.attemptsMade >= (job.opts.attempts ?? 1);
-  if (!isFinalAttempt) return;
-
-  const recordedVersion = data?.packageVersionId ? await getPackageVersionById(data.packageVersionId) : null;
-  const recordedError = recordedVersion?.status === 'failed' ? recordedVersion.error : null;
-  const finalError = recordedError ?? { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err) };
-  if (data?.mediaJobId) {
-    await updateMediaJob(data.mediaJobId, {
-      status: 'failed',
-      stage: 'failed',
-      error: finalError
+    await recordDeadLetterJob({
+      organizationId: data?.actorContext?.organizationId ?? null,
+      domain: 'activity-package',
+      runId: data?.mediaJobId ?? null,
+      queueName: QUEUE_NAMES.activityPackage,
+      jobName: job.name,
+      bullmqJobId: job.id ?? null,
+      payload: job.data as Record<string, unknown>,
+      error: { ...finalError, stack: err.stack },
+      attempts: job.attemptsMade
+    });
+  } catch (handlerError) {
+    log.error('activity-package-worker-failure-handler-error', {
+      jobName: job.name,
+      bullmqJobId: job.id,
+      error: errorMessage(handlerError)
     });
   }
-
-  if (data?.packageVersionId && data?.mediaJobId && !recordedError) {
-    const processedAt = new Date().toISOString();
-    await updatePackageVersion(data.packageVersionId, {
-      status: 'failed',
-      error: finalError,
-      processedAt
-    });
-  }
-
-  await recordDeadLetterJob({
-    organizationId: data?.actorContext?.organizationId ?? null,
-    domain: 'activity-package',
-    runId: data?.mediaJobId ?? null,
-    queueName: QUEUE_NAMES.activityPackage,
-    jobName: job.name,
-    bullmqJobId: job.id ?? null,
-    payload: job.data as Record<string, unknown>,
-    error: { ...finalError, stack: err.stack },
-    attempts: job.attemptsMade
-  });
 });
 
 worker.on('ready', () =>

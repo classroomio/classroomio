@@ -407,9 +407,10 @@ export async function listFailedVersionsWithStoredContent(
  */
 export async function markPackageVersionContentRemoved(versionId: string, dbClient: DbOrTxClient = db): Promise<void> {
   try {
+    const updatedAt = new Date().toISOString();
     await dbClient
       .update(schema.contentPackageVersion)
-      .set({ extractedBytes: 0, updatedAt: new Date().toISOString() })
+      .set({ extractedBytes: 0, updatedAt })
       .where(eq(schema.contentPackageVersion.id, versionId));
   } catch (error) {
     console.error('markPackageVersionContentRemoved error:', error);
