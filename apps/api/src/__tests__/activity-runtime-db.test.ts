@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { describe, expect, it, vi } from 'vitest';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 
 vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
   const original = await importOriginal<typeof import('@cio/core/config/activity-content')>();
@@ -217,6 +217,7 @@ async function listAttempts(activityId: string, profileId: string) {
     .select()
     .from(schema.scormAttempt)
     .where(eq(schema.scormAttempt.activityId, activityId))
+    .orderBy(asc(schema.scormAttempt.attemptNumber))
     .then((rows) => rows.filter((row) => row.profileId === profileId));
 }
 
