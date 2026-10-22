@@ -50,6 +50,8 @@ Current tools:
 - `update_course_draft`
 - `tag_course_draft`
 - `tag_courses`
+- `clone_course`
+- `set_featured_courses`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
 - `list_course_members`
@@ -155,6 +157,13 @@ They call `/public-api/v1/courses/:id/{sections,lessons,content}` with the key's
 - `reorder_course_content`, `set_course_content_unlocked` and `delete_course_content` are all or nothing: one id outside the course fails the whole call with 404.
 - Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
 - Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`. Restoring a lesson version is not covered.
+
+Course copy and landing page tools:
+
+- `clone_course` calls `POST /public-api/v1/courses/:id/clone`. The key creator must be an org admin or tutor and becomes the copy's tutor. The copy keeps the source's published state, and its exercise due dates are set to the time of copying. Templates are refused.
+- `set_featured_courses` calls `PUT /public-api/v1/courses/featured`. The key creator must be an org admin. It sets the published courses (at most 4) shown first, in the order given, on the landing page and public course list. Other published courses still show after them, newest first. It replaces the current list; an empty list clears it.
+
+Both use the `course:write` scope, which MCP keys have by default.
 
 Course exercise tools:
 

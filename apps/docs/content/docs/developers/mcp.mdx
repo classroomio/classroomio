@@ -143,6 +143,8 @@ Current tools:
 - `publish_course_draft_to_existing_course`
 - `tag_course_draft`
 - `tag_courses`
+- `clone_course`
+- `set_featured_courses`
 
 Course certificate tools:
 
@@ -251,6 +253,13 @@ These call the public API with the key's `course:read` (reads) and `course:write
 - `reorder_course_content`, `set_course_content_unlocked` and `delete_course_content` are all or nothing: one id outside the course fails the whole call with 404.
 - Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
 - Not covered here: creating and editing lessons, uploads, and restoring a lesson version.
+
+Course copy and landing page tools:
+
+- `clone_course` copies a course with its sections, lessons and exercises. The key creator must be an org admin or tutor and becomes the copy's tutor. The copy keeps the source's published state, and its exercise due dates are set to the time of copying. Templates are refused.
+- `set_featured_courses` sets the published courses (at most 4) shown first, in the order given, on the landing page and public course list. Other published courses still show after them, newest first. It replaces the current list; an empty list clears it. The key creator must be an org admin.
+
+Both use the `course:write` scope, which MCP keys have by default.
 
 Cohort tools:
 

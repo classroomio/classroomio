@@ -50,6 +50,8 @@ import type {
   TPublicApiDeleteCourseContent,
   TPublicApiLessonLocale,
   TPublicApiReorderCourseContent,
+  TPublicApiCloneCourse,
+  TPublicApiSetFeaturedCourses,
   TPublicApiSetCourseLessonTranslation,
   TPublicApiUpdateCourseContentLock,
   TPublicApiUpdateCourseLessonComment,
@@ -529,6 +531,14 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/comments/${commentId}`, {
       method: 'DELETE'
     });
+  }
+
+  async cloneCourse(courseId: string, payload: TPublicApiCloneCourse) {
+    return this.request(`/public-api/v1/courses/${courseId}/clone`, { method: 'POST', body: payload });
+  }
+
+  async setFeaturedCourses(payload: TPublicApiSetFeaturedCourses) {
+    return this.request('/public-api/v1/courses/featured', { method: 'PUT', body: payload });
   }
 
   async reorderCourseContent(courseId: string, payload: TPublicApiReorderCourseContent) {

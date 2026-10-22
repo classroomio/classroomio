@@ -156,6 +156,8 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
   'PUT /public-api/v1/courses/{courseId}': 'Update a course',
   'DELETE /public-api/v1/courses/{courseId}': 'Delete a course',
+  'POST /public-api/v1/courses/{courseId}/clone': 'Clone a course',
+  'PUT /public-api/v1/courses/featured': 'Set featured courses',
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
@@ -270,7 +272,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
 const OPERATION_TAGS = [
   { name: 'Audience', description: 'Manage people in your organization.' },
   { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
-  { name: 'Courses', description: 'Create, update, and delete courses.' },
+  { name: 'Courses', description: 'Create, update, delete, clone, and feature courses.' },
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
   { name: 'Course Members', description: 'Manage the people in a course and their progress.' },
   { name: 'Course Invites', description: 'Invite people to a course.' },

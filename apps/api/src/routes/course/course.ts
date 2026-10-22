@@ -68,6 +68,7 @@ import { membersRouter } from '@api/routes/course/people';
 import { newsfeedRouter } from '@api/routes/course/newsfeed';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
+import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { paymentRequestRouter } from '@api/routes/course/payment-request';
 import { presignRouter } from '@api/routes/course/presign';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
@@ -617,7 +618,7 @@ export const courseRouter = new Hono()
   .post(
     '/:courseId/clone',
     authMiddleware,
-    orgMemberMiddleware,
+    orgTeamMemberMiddleware,
     zValidator('param', ZCourseCloneParam),
     zValidator('json', ZCourseClone),
     async (c) => {
@@ -625,11 +626,17 @@ export const courseRouter = new Hono()
         const { courseId } = c.req.valid('param');
         const validatedData = c.req.valid('json');
         const { title, description, slug, organizationId } = validatedData;
-        const orgId = c.get('orgId') as string;
+        const orgId = c.req.header('cio-org-id')!;
         const user = c.get('user')!;
         const [sourceCourse] = await getCourseById(courseId);
         const sourceOrgId = await getCourseOrganizationId(courseId);
-        if (!sourceCourse || !sourceOrgId || sourceOrgId !== orgId || (organizationId && organizationId !== orgId)) {
+        if (
+          !sourceCourse ||
+          sourceCourse.status === 'DELETED' ||
+          !sourceOrgId ||
+          sourceOrgId !== orgId ||
+          (organizationId && organizationId !== orgId)
+        ) {
           throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
         }
 
