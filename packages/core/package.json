@@ -63,7 +63,7 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
-    "@types/node": "^20.19.0",
+    "@types/node": "^24.10.1",
     "@types/pdf-parse": "^1.1.5",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.7.1",
