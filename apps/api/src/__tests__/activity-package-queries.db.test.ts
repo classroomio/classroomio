@@ -211,4 +211,97 @@ describe.skipIf(!hasDatabase)('package queries', () => {
       await cleanupPackageFixture(fixture);
     }
   });
+
+  it('reopens replaced attempts when restoring an older package version', async () => {
+    const fixture = await createPackageFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const { reopenReplacedAttemptsForVersion } = await import('@db/queries/scorm/attempt');
+
+      const [replacedAttempt] = await db
+        .insert(schema.scormAttempt)
+        .values({
+          activityId: fixture.activityId,
+          profileId: fixture.profileId,
+          packageVersionId: fixture.version1Id,
+          attemptNumber: 1,
+          closedAt: new Date().toISOString(),
+          closeReason: 'replaced'
+        })
+        .returning();
+
+      const reopened = await reopenReplacedAttemptsForVersion(fixture.version1Id, fixture.activityId);
+      expect(reopened).toEqual([replacedAttempt.id]);
+
+      const [restored] = await db
+        .select()
+        .from(schema.scormAttempt)
+        .where(eq(schema.scormAttempt.id, replacedAttempt.id));
+      expect(restored?.closedAt).toBeNull();
+      expect(restored?.closeReason).toBeNull();
+
+      const secondRun = await reopenReplacedAttemptsForVersion(fixture.version1Id, fixture.activityId);
+      expect(secondRun).toEqual([]);
+    } finally {
+      await cleanupPackageFixture(fixture);
+    }
+  });
+
+  it('does not reopen replaced attempts if learner is completed or has an open attempt', async () => {
+    const fixture = await createPackageFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const { reopenReplacedAttemptsForVersion } = await import('@db/queries/scorm/attempt');
+
+      await db.insert(schema.scormAttempt).values({
+        activityId: fixture.activityId,
+        profileId: fixture.profileId,
+        packageVersionId: fixture.version1Id,
+        attemptNumber: 1,
+        closedAt: new Date().toISOString(),
+        closeReason: 'replaced'
+      });
+      await db.insert(schema.scormAttempt).values({
+        activityId: fixture.activityId,
+        profileId: fixture.profileId,
+        packageVersionId: fixture.version2Id,
+        attemptNumber: 2
+      });
+
+      const reopened = await reopenReplacedAttemptsForVersion(fixture.version1Id, fixture.activityId);
+      expect(reopened).toEqual([]);
+
+      const user2Suffix = suffix();
+      const userId2 = crypto.randomUUID();
+      await db.insert(schema.user).values({ id: userId2, name: 'Learner 2', email: `l2-${user2Suffix}@example.com` });
+      await db.insert(schema.profile).values({
+        id: userId2,
+        fullname: 'Learner 2',
+        username: `l2-${user2Suffix}`,
+        email: `l2-${user2Suffix}@example.com`
+      });
+
+      await db.insert(schema.scormAttempt).values({
+        activityId: fixture.activityId,
+        profileId: userId2,
+        packageVersionId: fixture.version1Id,
+        attemptNumber: 1,
+        closedAt: new Date().toISOString(),
+        closeReason: 'replaced'
+      });
+      await db.insert(schema.activityCompletion).values({
+        activityId: fixture.activityId,
+        profileId: userId2,
+        isComplete: true,
+        completedAt: new Date().toISOString()
+      });
+
+      const reopenedForCompleted = await reopenReplacedAttemptsForVersion(fixture.version1Id, fixture.activityId);
+      expect(reopenedForCompleted).toEqual([]);
+    } finally {
+      await cleanupPackageFixture(fixture);
+    }
+  });
 });

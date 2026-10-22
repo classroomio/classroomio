@@ -257,7 +257,12 @@ export async function getLatestScormAttempt(
       .select()
       .from(schema.scormAttempt)
       .where(and(eq(schema.scormAttempt.activityId, activityId), eq(schema.scormAttempt.profileId, profileId)))
-      .orderBy(desc(schema.scormAttempt.attemptNumber))
+      .orderBy(
+        sql`(${schema.scormAttempt.closedAt} IS NULL) DESC`,
+        sql`COALESCE(${schema.scormAttempt.closedAt}, ${schema.scormAttempt.startedAt}) DESC`,
+        sql`(${schema.scormAttempt.closeReason} IS DISTINCT FROM 'replaced') DESC`,
+        desc(schema.scormAttempt.attemptNumber)
+      )
       .limit(1);
 
     return row ?? null;
@@ -265,6 +270,28 @@ export async function getLatestScormAttempt(
     console.error('getLatestScormAttempt error:', error);
     throw new Error(
       `Failed to get latest SCORM attempt for activity "${activityId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function getNextScormAttemptNumber(
+  activityId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const [row] = await dbClient
+      .select({
+        maxNumber: sql<number>`COALESCE(MAX(${schema.scormAttempt.attemptNumber}), 0)::int`
+      })
+      .from(schema.scormAttempt)
+      .where(and(eq(schema.scormAttempt.activityId, activityId), eq(schema.scormAttempt.profileId, profileId)));
+
+    return (row?.maxNumber ?? 0) + 1;
+  } catch (error) {
+    console.error('getNextScormAttemptNumber error:', error);
+    throw new Error(
+      `Failed to get next SCORM attempt number for activity "${activityId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -384,7 +411,8 @@ export async function updateScormAttempt(
 }
 
 /**
- * Lists all attempts for a given activity and learner, ordered by attempt number descending.
+ * Lists all attempts for a given activity and learner, ordered with the open
+ * attempt first, then by recency and attempt number descending.
  */
 export async function listScormAttemptsForProfile(
   activityId: string,
@@ -396,7 +424,12 @@ export async function listScormAttemptsForProfile(
       .select()
       .from(schema.scormAttempt)
       .where(and(eq(schema.scormAttempt.activityId, activityId), eq(schema.scormAttempt.profileId, profileId)))
-      .orderBy(desc(schema.scormAttempt.attemptNumber));
+      .orderBy(
+        sql`(${schema.scormAttempt.closedAt} IS NULL) DESC`,
+        sql`(${schema.scormAttempt.closeReason} IS DISTINCT FROM 'replaced') DESC`,
+        sql`COALESCE(${schema.scormAttempt.closedAt}, ${schema.scormAttempt.startedAt}) DESC`,
+        desc(schema.scormAttempt.attemptNumber)
+      );
   } catch (error) {
     console.error('listScormAttemptsForProfile error:', error);
     throw new Error(
@@ -446,6 +479,80 @@ export async function reopenScormAttempt(
     console.error('reopenScormAttempt error:', error);
     throw new Error(
       `Failed to reopen SCORM attempt "${attemptId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Reopens the latest superseded ('replaced') attempt on a package version for
+ * learners who have no currently open attempt on the activity, have not
+ * completed the activity, and whose attempt belongs to the active compliance cycle.
+ * Returns the IDs of the reopened attempts.
+ */
+export async function reopenReplacedAttemptsForVersion(
+  packageVersionId: string,
+  activityId?: string,
+  dbClient: DbOrTxClient = db
+): Promise<string[]> {
+  try {
+    const activityFilter = activityId
+      ? sql`AND a.activity_id = ${activityId}::uuid`
+      : sql`AND NOT EXISTS (
+          SELECT 1
+          FROM activity_scorm as_cfg
+          JOIN content_package_version cpv ON cpv.id = a.package_version_id
+          WHERE as_cfg.activity_id = a.activity_id
+            AND as_cfg.asset_id IS DISTINCT FROM cpv.asset_id
+        )`;
+
+    const result = await dbClient.execute(sql`
+      WITH candidates AS (
+        SELECT a.id,
+               ROW_NUMBER() OVER (
+                 PARTITION BY a.activity_id, a.profile_id
+                 ORDER BY COALESCE(a.closed_at, a.started_at) DESC, a.attempt_number DESC
+               ) AS rn
+        FROM scorm_attempt a
+        WHERE a.package_version_id = ${packageVersionId}::uuid
+          AND a.close_reason = 'replaced'
+          ${activityFilter}
+          AND NOT EXISTS (
+            SELECT 1
+            FROM scorm_attempt oa
+            WHERE oa.activity_id = a.activity_id
+              AND oa.profile_id = a.profile_id
+              AND oa.closed_at IS NULL
+          )
+          AND NOT EXISTS (
+            SELECT 1
+            FROM activity_completion ac
+            WHERE ac.activity_id = a.activity_id
+              AND ac.profile_id = a.profile_id
+              AND ac.is_complete IS TRUE
+          )
+          AND NOT EXISTS (
+            SELECT 1
+            FROM course_completion_record ccr
+            JOIN course_activity ca ON ca.id = a.activity_id
+            WHERE ccr.course_id = ca.course_id
+              AND ccr.profile_id = a.profile_id
+              AND COALESCE(ccr.cycle_number, 1) > 1
+              AND ccr.created_at > a.started_at
+          )
+      )
+      UPDATE scorm_attempt
+      SET closed_at = NULL, close_reason = NULL
+      WHERE id IN (SELECT id FROM candidates WHERE rn = 1)
+      RETURNING id`);
+
+    const rows = result as unknown as Array<{ id: string }>;
+    return rows.map((r) => String(r.id));
+  } catch (error) {
+    console.error('reopenReplacedAttemptsForVersion error:', error);
+    throw new Error(
+      `Failed to reopen replaced attempts for package version "${packageVersionId}": ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
     );
   }
 }

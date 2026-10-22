@@ -105,10 +105,14 @@ function attemptRollupCte(activityId: string, profileIds: string[], settings: Sc
     learners AS (${profileList(profileIds)}),
     learner_attempts AS (
       SELECT a.id, a.profile_id, a.attempt_number, a.package_version_id, a.started_at, a.closed_at,
-             ROW_NUMBER() OVER (PARTITION BY a.profile_id ORDER BY a.attempt_number DESC) AS recency
+             ROW_NUMBER() OVER (
+               PARTITION BY a.profile_id
+               ORDER BY (a.closed_at IS NULL) DESC, COALESCE(a.closed_at, a.started_at) DESC, a.attempt_number DESC
+             ) AS recency
       FROM scorm_attempt a
       JOIN learners l ON l.profile_id = a.profile_id
       WHERE a.activity_id = ${activityId}
+        AND a.close_reason IS DISTINCT FROM 'replaced'
     ),
     ranked_tries AS (
       SELECT t.*,
@@ -309,7 +313,7 @@ export async function getScormResultsSummary(
       WITH ${attemptRollupCte(activityId, profileIds, settings)},
       learner_marks AS (
         SELECT l.profile_id,
-               (lt.attempts IS NOT NULL) AS started,
+               (lt.attempts IS NOT NULL OR ac.is_complete IS TRUE) AS started,
                (ac.is_complete IS TRUE) AS completed,
                (COALESCE(latest.rule_met, FALSE)
                  AND (${settings.rule} IN ('passed', 'score') OR COALESCE(latest.any_passed, FALSE))) AS passed,
@@ -390,10 +394,14 @@ export async function getScormActivityStatsForProfile(
       )}]) AS activity_id),
       learner_attempts AS (
         SELECT a.activity_id, a.id, a.attempt_number, a.package_version_id, a.started_at,
-               ROW_NUMBER() OVER (PARTITION BY a.activity_id ORDER BY a.attempt_number DESC) AS recency
+               ROW_NUMBER() OVER (
+                 PARTITION BY a.activity_id
+                 ORDER BY (a.closed_at IS NULL) DESC, COALESCE(a.closed_at, a.started_at) DESC, a.attempt_number DESC
+               ) AS recency
         FROM scorm_attempt a
         JOIN activities act ON act.activity_id = a.activity_id
-        WHERE a.profile_id = ${profileId} ${sinceClause}
+        WHERE a.profile_id = ${profileId}
+          AND a.close_reason IS DISTINCT FROM 'replaced' ${sinceClause}
       ),
       ranked_tries AS (
         SELECT t.*,
@@ -419,7 +427,9 @@ export async function getScormActivityStatsForProfile(
                (SELECT COALESCE(SUM(t.time_spent_seconds), 0)::int
                 FROM scorm_sco_attempt t
                 JOIN scorm_attempt a2 ON a2.id = t.attempt_id
-                WHERE a2.activity_id = act.activity_id AND a2.profile_id = ${profileId} ${sinceJoinClause}) AS total_seconds
+                WHERE a2.activity_id = act.activity_id
+                  AND a2.profile_id = ${profileId}
+                  AND a2.close_reason IS DISTINCT FROM 'replaced' ${sinceJoinClause}) AS total_seconds
         FROM activities act
         LEFT JOIN attempt_scores s ON s.activity_id = act.activity_id
         GROUP BY act.activity_id
