@@ -32,7 +32,7 @@ Enter the title and short description. Creating the course makes the course and 
 
 ### 3. Add or upload the package
 
-On the Package page, choose **Upload package** to open the package modal. Upload a new ZIP on the **Upload** tab or pick an existing package from your organisation's **Library**, and wait while ClassroomIO checks and unpacks it. Large packages can take a few minutes, and you can leave the page. When it is ready, review the modules, the pass mark, and the completion rule, then publish. See [Add a SCORM package](/build-courses/add-a-scorm-package) for the Package, Instructions, and Settings tabs.
+On the Package page, choose **Upload package** to open the package modal. Upload a new ZIP on the **Upload** tab or pick an existing package from your organisation's **Library**, and wait while ClassroomIO checks and unpacks it. Large packages can take a few minutes, and you can leave the page. When it is ready, review the modules, the pass mark, and the completion rule, then publish. See [Add a SCORM package](/build-courses/add-a-scorm-package) for the Package, Settings, and Results tabs.
 
 ## Create several courses at once
 
@@ -44,11 +44,11 @@ You can also open **Create course from package** on a single package card. It sh
 
 ## What a SCORM course looks like
 
-- **Admin navigation:** **Package** sits where Content sits, with the package icon, and opens the package editor with its Package, Instructions, Results, and Settings tabs. Submissions, Marks, Attendance, and Compliance are hidden. Everything else — News Feed, Certificates, Analytics, Landing Page, People, AI Tutor, Settings — stays.
+- **Admin navigation:** **Package** sits where Content sits, with the package icon, and opens the package editor with its Package, Settings, and Results tabs. Submissions, Marks, Attendance, and Compliance are hidden. Everything else — News Feed, Certificates, Analytics, Landing Page, People, AI Tutor, Settings — stays.
 - **Learner navigation:** News Feed (when the organization shows it), **Package**, and Certificates. Package is a plain nav item: click to enter, nothing to expand. The module menu lives on the package page. The footer's Previous and Next buttons are hidden; the progress ring stays.
 - **Entry:** the course page, **Continue** buttons on learner home, and `?next=true` all go straight to the package.
-- **Landing page:** the curriculum shows the package with its title, module count, and module titles.
-- **Course cards and rows:** show **SCORM · N modules** instead of lesson and exercise counts.
+- **Landing page:** the curriculum shows the package with its title, an **N modules** count, and the module titles.
+- **Course cards and rows:** the admin Courses list shows **SCORM · N modules** instead of lesson and exercise counts; use **Filter → Course Format → SCORM** to show only SCORM courses. On the public catalog, a SCORM course shows **N modules**, and a standard course with SCORM activities shows an **Activities** count.
 
 Course progress and certificates need no special case: the course has one item, and it is the package. The SCORM package reports its own score, as with every SCORM platform. For recurring compliance training or high-stakes certification, build a standard course and add a ClassroomIO exercise as a separate graded step alongside the package.
 
@@ -58,7 +58,7 @@ To add lessons, exercises, or multiple sections later, open **Settings** in the 
 
 This sets the course format back to standard, keeps the SCORM package in place as an activity item in the content outline, and restores full course outline editing with sections, lessons, exercises, and other content types. Confirm the dialog — this conversion cannot be undone (a standard course cannot be converted back into a single-activity course).
 
-While the course remains a single-activity SCORM course, its sole package activity cannot be deleted. You can use **Upload new version** to upload a newer export of the same package, **Swap package** to attach a different package, or **Remove** to detach the package. The course itself can be deleted as usual.
+While the course remains a single-activity SCORM course, its sole package activity cannot be deleted. You can use **Upload new version** to upload a newer export of the same package, **Swap package** to attach a different package, or **Remove package** to detach the package. Open **Actions → Version history** to restore an earlier version. The course itself can be deleted as usual.
 
 ## What happens when a plan or license lapses
 

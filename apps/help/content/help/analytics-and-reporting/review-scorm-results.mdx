@@ -19,14 +19,14 @@ Scores come from the package itself, as with every SCORM platform. For high-stak
 The tab is modelled on the compliance records table:
 
 - **Summary:** four summary cards report enrolled, in progress, completed, and average score (for graded packages) or not started (for ungraded packages). Score is the attempt score: the average of the modules that report one.
-- **Table:** student, status, pass or fail, score, best score, time spent, attempts, last launched. Attempts counts attempts, not module tries. The table is sortable and paginated, with CSV export. Use the export menu to download the rows you see.
+- **Table:** student, status, pass or fail, score, best score, time spent, attempts, last launched. Attempts counts attempts, not module tries; attempts replaced when the package version changed are left out of this table. The table is sortable and paginated, with CSV export. Use the export menu to download the rows you see.
 - **Empty state:** when nobody has launched yet, the tab explains that scores, attempts, and time appear once learners open the package.
 
 Status values are **Not started**, **In progress**, **Not passed yet**, and **Completed**. With the default settings — **All modules** and **Free** order — a package with several modules completes only when every module meets the rule, in any order; the table stays in progress until the last module does. **Graded modules only** can complete while ungraded modules remain incomplete, and **In sequence** requires learners to finish modules in order.
 
 ## Open a learner's attempts
 
-Select a row to open the student sheet. It shows every attempt, and inside it every module try with its status, score, time, location and exit, the answers the package reported, and diagnostic events. It has **Reset for this student**, which deletes that learner's attempts and completion for this item.
+Select a row to open the student sheet. It shows every attempt and the **Package version N** each one ran against, and inside it every module try with its status, score, time, location and exit, the answers the package reported, and diagnostic events. When the learner has attempts, it has **Reset for this student**, which deletes that learner's attempts and completion for this item.
 
 ![Student sheet with attempts and module tries](./images/review-scorm-results/learner-attempts.webp)
 

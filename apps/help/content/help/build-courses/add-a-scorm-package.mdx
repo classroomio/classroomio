@@ -22,7 +22,7 @@ SCORM packages cannot be added to `PUBLIC` courses, because those are taken with
 
 ### 1. Create the SCORM item
 
-Open the course, choose **Add content → SCORM package**, and enter a package title such as `Workplace safety induction`. The item opens in the package editor with four tabs: **Package**, **Instructions**, **Results**, and **Settings**. SCORM items use a single language rather than the multi-language tabs of standard lessons; package versions are tracked on the Package tab.
+Open the course, choose **Add content → SCORM package**, and enter a package title such as `Workplace safety induction`. The item opens in the package editor with three tabs: **Package**, **Settings**, and **Results**. The **Package** tab holds the title, learner instructions, the package, and its details. SCORM items use a single language rather than the multi-language tabs of standard lessons.
 
 ![Add content menu with SCORM package highlighted](./images/add-a-scorm-package/add-content-option.webp)
 
@@ -41,16 +41,16 @@ Uploading shows a progress bar with **Cancel upload**. If you leave the page whi
 
 ### 3. Review the package details
 
-When processing finishes, the tab shows the title, SCORM version, file count, size, the pass mark when the manifest sets one, and the list of modules.
+When processing finishes, the package card shows the current version's title, SCORM version, and modules. The **Details** panel lists the version, pass mark, file count, and size. The **Package title** field above the card names the item in the course and stays the same when you upload a new version. **Version history** shows the title of the version you select, while the library keeps the package's original name.
 
 ![Ready package with version, modules, and actions](./images/add-a-scorm-package/package-ready.webp)
 
-- **This package has N modules** lists every launchable module in manifest order. Learners pick them from a menu above the package, in any order. The completion rule applies to each module.
+- The **Modules** section lists every launchable module in manifest order and says whether learners take them in any order or in package order. Learners pick them from a menu above the package. The completion rule applies to each module.
 - A SCORM 2004 package with sequencing rules shows which parts apply: with **Module order** set to **In sequence** (the default for such packages), each module unlocks as the previous one completes. Pre-tests, rollup rules, and attempt limits are still ignored.
 - Modules of type asset appear in the menu but never count toward completion, because assets never talk to the SCORM API.
 - **Some file names differ only in letter case** appears when a package built on Windows references files in the wrong case. ClassroomIO resolves them, but re-export with matching case when you can.
 
-Switch the page to view mode to play the package as a learner would — nothing is recorded. The buttons below the details hold **Upload new version** for a revised export of the same course and **Swap package** for a different course (either from a new ZIP or from your organisation's library); **Remove** detaches the package from the item and the header deletes the item. The file stays in the Media Manager.
+Select **Preview** in the header to play the package as a learner would — nothing is recorded; select **Edit** to return. The details panel holds **Upload new version** for a revised export of the same course and **Swap package** for a different course (either from a new ZIP or from your organisation's library); **Remove package** detaches the package from the item. **Actions** in the header opens **Version history**, **Lock package** or **Unlock package**, and **Delete activity**. The file stays in the Media Manager.
 
 If processing fails, the tab shows a specific reason — no `imsmanifest.xml`, an xAPI or cmi5 package, an unsupported version, a file that is too large, unsafe paths, a missing launch file, a module that launches from another website, or a package where nothing reports progress — with a **Try another file** action.
 
@@ -77,15 +77,15 @@ Why the Passed rule matters: with **Automatic**, a package that has no pass mark
 - **Allow retakes:** with retakes on, a completed package reopens with a **Start a new attempt** button and ClassroomIO keeps the best score.
 - **Module order:** choose **Free** (default) to let learners take modules in any order, or **In sequence** to unlock each module only after the previous one meets the completion rule.
 
-Remember to click **Save changes** on the bar at the bottom to apply your settings.
+Select **Save settings** at the bottom of the tab to apply your changes. The button stays disabled until you change something.
 
 ### 5. Add instructions and publish
 
-Use the **Instructions** tab for optional rich text shown to learners above the player, such as what to know before opening the package. Then publish the course as usual. You can move, lock, and reorder a SCORM package like a lesson, and it follows the course's sequential progression setting.
+Use the **Instructions for learners** field on the **Package** tab for optional text shown above the player, such as what to know before opening the package. Changes to the title and instructions save automatically after a short pause; select **Save** in the header to save immediately. Then publish the course as usual. You can move, lock, and reorder a SCORM package like a lesson, and it follows the course's sequential progression setting.
 
 ## What learners see
 
-The package opens in a large frame with a full-screen button. Packages with several modules show a module bar above the frame — **Previous**, **Module N of M · title**, **Next** — opening a menu with a tick on each finished module and **N of M modules complete**. In full screen the navigation bar stays docked at the top. The page opens on the first module that has not met the rule.
+The package opens in a large frame with a full-screen button. Packages with several modules show a module bar above the frame — **Previous**, **Module N of M · title**, **Next** — opening a menu with a tick on each finished module and **N of M modules complete**. In full screen the navigation bar stays docked at the top. If a video inside the package takes over full screen, press **Esc** or use your device's back gesture to return. If that also leaves the activity full screen, a notice offers **Return activity to full screen**. The page opens on the first module that has not met the rule.
 
 Progress saves automatically. When the package reports that the learner finished or passed, the item is marked complete and the course moves on. Learners never see a **Mark as complete** button on SCORM packages.
 
@@ -103,6 +103,8 @@ Progress saves automatically. When the package reports that the learner finished
 When learners are still on an older version after an upgrade, the Package tab states how many and offers **Move them to this version** — the dialog states how many learners it affects.
 
 Previous package versions remain stored in your storage so historical learner attempts stay intact and can be reviewed. The original ZIP of each version is kept for reprocessing.
+
+To switch back to an earlier version, open **Actions → Version history**, select the version, and select **Restore this version**. Confirm with **Revert to this version**. If learners are part-way through, choose whether they finish their current version or restart on the restored version; results already recorded stay. Cancel leaves the history open. The restored version becomes current, and its title appears on the package card.
 
 ## Packages that stream content from elsewhere
 
