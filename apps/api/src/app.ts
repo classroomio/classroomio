@@ -251,7 +251,6 @@ export const app = new Hono()
   .route('/invite', inviteRouter)
   .route('/org-site/course', publicCourseRouter)
   .route('/org-site/og', orgSiteOgRouter)
-  .route('/public-api/v1', v1Router)
   .route('/cohort', cohortRouter)
   .route('/unsplash', unsplashRouter)
   .route('/widgets', publicWidgetsRouter)
@@ -274,3 +273,8 @@ export const app = new Hono()
 // Dev-only BullMQ dashboard at /admin/queues. Mounted after the typed RPC
 // chain so it doesn't pollute the client type.
 mountQueueDashboard(app);
+
+// The public API is consumed over plain HTTP and OpenAPI, never through the dashboard's RPC client. Mounting it after
+// the typed chain keeps its large route types out of `typeof app`, which would otherwise exceed what the compiler
+// can serialize into declarations.
+app.route('/public-api/v1', v1Router);

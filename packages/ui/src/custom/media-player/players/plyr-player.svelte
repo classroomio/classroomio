@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, untrack } from 'svelte';
   import 'plyr/dist/plyr.css';
   import CaptionsIcon from '@lucide/svelte/icons/captions';
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
@@ -24,6 +24,7 @@
   }
 
   let { src, poster, hls = false, options = {}, tracks = [] }: Props = $props();
+  const playerShellId = $props.id();
 
   let hlsInstance = $state<import('hls.js').default | null>(null);
 
@@ -57,7 +58,51 @@
    * progress-bar `seek` listener (set at Plyr construction) and the playback
    * tracker in `attachSeekEnforcement`, which advances it as the user watches.
    */
-  let seekLockFurthestSeconds = options.seekPolicy?.initialFurthestSeconds ?? 0;
+  let seekLockFurthestSeconds = untrack(() => options.seekPolicy?.initialFurthestSeconds ?? 0);
+
+  function syncCheckpointMarkers(player: Plyr): void {
+    const progress = player.elements?.progress;
+    if (!progress) return;
+
+    progress.querySelectorAll('[data-cio-checkpoint-marker]').forEach((node) => node.remove());
+
+    const markers = options.checkpointMarkers ?? [];
+    for (const marker of markers) {
+      const percent = Math.min(100, Math.max(0, marker.percent));
+      const markerEl = document.createElement('span');
+      markerEl.setAttribute('data-cio-checkpoint-marker', marker.id);
+      markerEl.style.left = `${percent}%`;
+      progress.appendChild(markerEl);
+    }
+  }
+
+  /**
+   * Furthest position a viewer may seek to: the must-watch lock (while it is active) and the next unanswered
+   * checkpoint, whichever is nearer. `Infinity` means seeking is free.
+   */
+  function seekLimitSeconds(): number {
+    const lockLimit = options.seekPolicy?.mode === 'locked_until_complete' ? seekLockFurthestSeconds : Infinity;
+    const ceilingSeconds = options.seekCeiling?.getSeconds();
+
+    return Math.min(lockLimit, ceilingSeconds ?? Infinity);
+  }
+
+  function notifySeekBlocked(): void {
+    const now = Date.now();
+    if (now - seekBlockLastNotifiedAt < SEEK_BLOCK_COOLDOWN_MS) return;
+
+    seekBlockLastNotifiedAt = now;
+    const policy = options.seekPolicy;
+    if (
+      policy?.mode === 'locked_until_complete' &&
+      seekLockFurthestSeconds <= (options.seekCeiling?.getSeconds() ?? Infinity)
+    ) {
+      policy.onSeekBlocked?.();
+      return;
+    }
+
+    options.seekCeiling?.onSeekBlocked?.();
+  }
 
   /**
    * Plyr progress-bar seek handler. Returning `false` skips Plyr's default
@@ -66,8 +111,8 @@
    * MP4). Rewinding and re-seeking up to the watched point stay allowed.
    */
   function handleSeekAttempt(event: Event): boolean | void {
-    const policy = options.seekPolicy;
-    if (policy?.mode !== 'locked_until_complete') return;
+    const limitSeconds = seekLimitSeconds();
+    if (!Number.isFinite(limitSeconds)) return;
 
     const input = event.currentTarget as HTMLInputElement | null;
     const duration = playerInstance?.duration;
@@ -77,12 +122,8 @@
     const raw = input.getAttribute('seek-value') ?? input.value;
     const targetSeconds = (Number(raw) / max) * duration;
 
-    if (targetSeconds > seekLockFurthestSeconds + SEEK_TOLERANCE_SECONDS) {
-      const now = Date.now();
-      if (now - seekBlockLastNotifiedAt >= SEEK_BLOCK_COOLDOWN_MS) {
-        seekBlockLastNotifiedAt = now;
-        policy.onSeekBlocked?.();
-      }
+    if (targetSeconds > limitSeconds + SEEK_TOLERANCE_SECONDS) {
+      notifySeekBlocked();
       return false;
     }
   }
@@ -104,7 +145,7 @@
 
   function attachTimeUpdates(player: Plyr, element: HTMLVideoElement): () => void {
     const policy = options.seekPolicy;
-    if (policy?.mode === 'locked_until_complete') {
+    if (policy?.mode === 'locked_until_complete' || options.seekCeiling) {
       return attachSeekEnforcement(player, element, policy);
     }
 
@@ -118,9 +159,10 @@
   function attachSeekEnforcement(
     player: Plyr,
     element: HTMLVideoElement,
-    policy: NonNullable<MediaPlayerOptions['seekPolicy']>
+    policy: MediaPlayerOptions['seekPolicy']
   ): () => void {
-    seekLockFurthestSeconds = policy.initialFurthestSeconds ?? 0;
+    const isLocked = policy?.mode === 'locked_until_complete';
+    seekLockFurthestSeconds = policy?.initialFurthestSeconds ?? 0;
     let playedSeconds = 0;
     let lastValidTime = element.currentTime;
     let isSeeking = false;
@@ -129,6 +171,8 @@
     const heartbeatIntervalMs = 15_000;
 
     const flushProgress = (force = false) => {
+      if (!policy) return;
+
       const durationSeconds = element.duration;
       if (!durationSeconds || !Number.isFinite(durationSeconds)) return;
 
@@ -144,15 +188,7 @@
       playedSeconds = 0;
     };
 
-    const isAheadOfLimit = () => player.currentTime > seekLockFurthestSeconds + SEEK_TOLERANCE_SECONDS;
-
-    const notifySeekBlocked = () => {
-      const now = Date.now();
-      if (now - seekBlockLastNotifiedAt < SEEK_BLOCK_COOLDOWN_MS) return;
-
-      seekBlockLastNotifiedAt = now;
-      policy.onSeekBlocked?.();
-    };
+    const isAheadOfLimit = () => player.currentTime > seekLimitSeconds() + SEEK_TOLERANCE_SECONDS;
 
     // Backstop for seeks that bypass the progress-bar listener (keyboard
     // shortcuts, programmatic). The progress bar itself is blocked up-front
@@ -163,7 +199,7 @@
 
       if (isAheadOfLimit()) {
         notifySeekBlocked();
-        player.currentTime = seekLockFurthestSeconds;
+        player.currentTime = seekLimitSeconds();
       }
     };
 
@@ -178,7 +214,7 @@
       if (isAheadOfLimit()) {
         isReclamping = true;
         notifySeekBlocked();
-        player.currentTime = seekLockFurthestSeconds;
+        player.currentTime = seekLimitSeconds();
         return;
       }
 
@@ -203,7 +239,7 @@
     };
 
     const onRateChange = () => {
-      if (player.speed !== 1) {
+      if (isLocked && player.speed !== 1) {
         player.speed = 1;
       }
     };
@@ -362,6 +398,10 @@
     };
   }
 
+  function clearElementChildren(host: HTMLElement): void {
+    host.replaceChildren();
+  }
+
   function teardownPlyrInstance(): void {
     timeupdateCleanup?.();
     firstPlayCleanup?.();
@@ -410,7 +450,12 @@
         ratio: '16:9',
         iconUrl: '/plyr.svg',
         iconPrefix: 'plyr',
-        ...(options.seekPolicy?.mode === 'locked_until_complete' ? { listeners: { seek: handleSeekAttempt } } : {}),
+        ...(options.checkpointOverlay
+          ? { fullscreen: { container: `[data-cio-player-shell="${playerShellId}"]` } }
+          : {}),
+        ...(options.seekPolicy?.mode === 'locked_until_complete' || options.seekCeiling
+          ? { listeners: { seek: handleSeekAttempt } }
+          : {}),
         ...(qualityConfig
           ? {
               quality: qualityConfig,
@@ -423,6 +468,7 @@
       plyrErrorCleanup = attachPlyrErrorHandler(playerInstance);
       playerInstance.on('ready', () => {
         isPlayerReady = true;
+        if (playerInstance) syncCheckpointMarkers(playerInstance);
       });
       options.onPlayerReady?.(playerInstance);
     } finally {
@@ -531,6 +577,15 @@
       // Plyr may not have finished its setup yet — caller can retry.
     }
   }
+
+  $effect(() => {
+    const player = playerInstance;
+    const markers = options.checkpointMarkers ?? [];
+    if (!player || !isPlayerReady) return;
+
+    void markers;
+    syncCheckpointMarkers(player);
+  });
 
   $effect(() => {
     const element = videoElement;
@@ -705,8 +760,9 @@
 
     teardownPlyrInstance();
 
-    if (isYouTube && containerElement) {
-      containerElement.replaceChildren();
+    const youtubeHost = containerElement;
+    if (isYouTube && youtubeHost) {
+      clearElementChildren(youtubeHost);
     }
   });
 </script>
@@ -716,6 +772,7 @@
 
 <div
   class="ui:relative ui:aspect-video ui:w-full ui:overflow-hidden ui:rounded-md"
+  data-cio-player-shell={playerShellId}
   style="max-height: {maxHeight}; min-height: {options.minHeight}; height: {options.height};"
 >
   {#if isYouTube && youtubeVideoId}
@@ -797,6 +854,10 @@
       <span class="plyr__tooltip" role="tooltip">{options.transcriptPanelControl.label}</span>
     </button>
   {/if}
+
+  {#if options.checkpointOverlay}
+    {@render options.checkpointOverlay()}
+  {/if}
 </div>
 
 <style>
@@ -813,5 +874,20 @@
     height: 18px;
     fill: none;
     stroke: currentColor;
+  }
+  :global(.plyr__progress) {
+    position: relative;
+  }
+  :global(.plyr__progress [data-cio-checkpoint-marker]) {
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--primary);
+    box-shadow: 0 0 0 2px var(--background);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 3;
   }
 </style>

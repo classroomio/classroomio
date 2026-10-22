@@ -1,4 +1,5 @@
 import type Plyr from 'plyr';
+import type { Snippet } from 'svelte';
 
 export type VideoType = 'youtube' | 'vimeo' | 'generic' | 'upload' | 'muse' | 'google_drive';
 
@@ -93,4 +94,15 @@ export interface MediaPlayerOptions {
     onProgress?: (payload: { positionSeconds: number; playedDeltaSeconds: number; durationSeconds: number }) => void;
     onSeekBlocked?: () => void;
   };
+  /**
+   * Hard ceiling for forward seeking, read live so it can move as checkpoints are answered. `getSeconds` returns
+   * `undefined` when nothing is pending. Shares the interceptor behind `seekPolicy`; the nearer limit wins.
+   */
+  seekCeiling?: {
+    getSeconds: () => number | undefined;
+    onSeekBlocked?: () => void;
+  };
+  /** Dots on the HTML5 progress bar. `percent` is 0–100. Color is org `--primary`. */
+  checkpointMarkers?: Array<{ id: string; percent: number }>;
+  checkpointOverlay?: Snippet;
 }

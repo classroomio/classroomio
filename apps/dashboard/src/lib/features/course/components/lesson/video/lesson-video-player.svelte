@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, untrack } from 'svelte';
+  import type Plyr from 'plyr';
   import { MediaPlayer } from '@cio/ui/custom/media-player';
+  import { ExerciseQuestion, VideoCheckpoint } from '@cio/ui';
   import { presignApi } from '$features/course/api/presign.svelte';
   import { mediaApi } from '$features/media/api';
   import { jobsApi, JobPoller, type MediaJobEnvelope } from '$features/jobs';
@@ -9,13 +11,25 @@
   import { classroomio, isAuthError } from '$lib/utils/services/api';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { lessonApi } from '$features/course/api';
+  import { lessonApi, videoCheckpointApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { AssetTranscriptPayload } from '$features/media/utils/types';
   import { isCourseLearnerView } from '$lib/utils/store/app';
-  import { resolveWatchEnforcedAssetIds, type LessonVideo } from './video-card-utils';
+  import type { AnswerData } from '@cio/question-types';
+  import { getExerciseQuestionLabels } from '$features/course/components/exercise/question-labels';
+  import { getExerciseEditorQuestionTypeLabel } from '$features/course/components/exercise/question-type-utils';
+  import { QUESTION_TYPES } from '$features/ui/question/constants';
+  import { resolveWatchEnforcedAssetIds, getVideoDurationSeconds, type LessonVideo } from './video-card-utils';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
+  import type { VideoCheckpoint as VideoCheckpointData } from '$features/course/utils/types';
+  import { getNextUnansweredCheckpoint, getSeekCeilingSeconds } from './checkpoint-engine';
+  import {
+    checkpointPercent,
+    formatCheckpointTimestamp,
+    isCheckpointAnswerComplete,
+    toOverlayCheckpointQuestion
+  } from './checkpoint-utils';
 
   /**
    * HLS playback flag — set by the upload flow when the asset was encoded
@@ -99,19 +113,20 @@
     courseId: string;
     lessonId: string;
     videoIndex: number;
+    enableCheckpoints?: boolean;
   }
 
-  let { video, courseId, lessonId, videoIndex }: Props = $props();
+  let { video, courseId, lessonId, videoIndex, enableCheckpoints = true }: Props = $props();
 
   let localTranscript = $state<AssetTranscriptPayload | null>(null);
   let localTranscriptLoading = $state(false);
 
-  // The parent keys this component on the upload assetId / link, so each
-  // mount maps to a single asset; lifecycle is plain onMount/onDestroy.
-  const uploadAssetId =
-    video.type === 'upload' ? ((video as LessonVideo & { assetId?: string }).assetId ?? null) : null;
-  const uploadStorageKey =
-    video.type === 'upload' && typeof video.key === 'string' && video.key.length > 0 ? video.key : null;
+  const uploadAssetId = $derived(
+    video.type === 'upload' ? ((video as LessonVideo & { assetId?: string }).assetId ?? null) : null
+  );
+  const uploadStorageKey = $derived(
+    video.type === 'upload' && typeof video.key === 'string' && video.key.length > 0 ? video.key : null
+  );
 
   // YouTube assets also register on the transcript bus so the side panel
   // can display their captions once fetched.
@@ -126,7 +141,7 @@
 
   let isMounted = true;
   const isHls = $derived(isHlsVideo(video));
-  let playbackUrl = $state(isHlsVideo(video) ? resolveHlsUrl(video.link) : video.link);
+  let playbackUrl = $state(untrack(() => (isHlsVideo(video) ? resolveHlsUrl(video.link) : video.link)));
   let playbackUrlIssuedAt = $state(Date.now());
   let playbackRefreshTimer: ReturnType<typeof setTimeout> | null = null;
   let vttRefetchTimer: ReturnType<typeof setTimeout> | null = null;
@@ -225,6 +240,101 @@
   }
 
   let pendingResumeSeconds: number | null = null;
+  let plyrPlayer: Plyr | null = null;
+  let overlayCheckpoint = $state<VideoCheckpointData | null>(null);
+  let overlayAnswer = $state<AnswerData | null>(null);
+  let overlayError = $state('');
+
+  const questionLabels = $derived(getExerciseQuestionLabels());
+  const CHECKPOINT_T = 'course.navItem.lessons.materials.tabs.video.checkpoints';
+  const checkpoints = $derived(videoCheckpointApi.forAsset(uploadAssetId));
+  const checkpointDurationSeconds = $derived(lessonVideoBus.durationSeconds || getVideoDurationSeconds(video) || 0);
+  const checkpointMarkers = $derived(
+    checkpointDurationSeconds > 0
+      ? checkpoints.map((checkpoint) => ({
+          id: checkpoint.id,
+          percent: checkpointPercent(checkpoint.timestampSeconds, checkpointDurationSeconds)
+        }))
+      : []
+  );
+  const overlayContinueDisabled = $derived(!isCheckpointAnswerComplete(overlayAnswer));
+  const overlayQuestion = $derived(overlayCheckpoint ? toOverlayCheckpointQuestion(overlayCheckpoint.question) : null);
+  const overlayTypeLabel = $derived.by(() => {
+    if (!overlayCheckpoint) return '';
+
+    const { questionType } = overlayCheckpoint.question;
+    const typeEntry = QUESTION_TYPES.find((entry) => entry.key === questionType);
+
+    return getExerciseEditorQuestionTypeLabel(typeEntry);
+  });
+  const overlayKicker = $derived.by(() => {
+    if (!overlayCheckpoint) return '';
+
+    return t.get('course.navItem.lessons.materials.tabs.video.checkpoints.kicker', {
+      time: formatCheckpointTimestamp(overlayCheckpoint.timestampSeconds),
+      type: overlayTypeLabel
+    });
+  });
+
+  const seekCeilingOption = $derived(
+    enableCheckpoints && uploadAssetId
+      ? {
+          getSeconds: () => getSeekCeilingSeconds(checkpoints, videoCheckpointApi.satisfiedIds),
+          onSeekBlocked: () => snackbar.error('snackbar.lesson_video.checkpoint_seek_blocked')
+        }
+      : undefined
+  );
+
+  function syncPlayerDuration(player: Plyr) {
+    if (!ownsPlaybackBus()) return;
+
+    const duration = player.duration;
+    if (Number.isFinite(duration) && duration > 0) {
+      lessonVideoBus.durationSeconds = duration;
+    }
+  }
+
+  function handleCheckpointCue(seconds: number) {
+    if (!enableCheckpoints || overlayCheckpoint) return;
+
+    const nextCheckpoint = getNextUnansweredCheckpoint(checkpoints, videoCheckpointApi.satisfiedIds, seconds);
+    if (!nextCheckpoint) return;
+
+    overlayCheckpoint = nextCheckpoint;
+    overlayAnswer = null;
+    overlayError = '';
+    plyrPlayer?.pause();
+
+    if (seconds > nextCheckpoint.timestampSeconds + 0.35 && plyrPlayer) {
+      plyrPlayer.currentTime = nextCheckpoint.timestampSeconds;
+    }
+  }
+
+  function handleOverlayAnswerChange(nextAnswer: AnswerData | null) {
+    overlayAnswer = nextAnswer;
+    overlayError = '';
+  }
+
+  async function handleCheckpointContinue() {
+    const activeCheckpoint = overlayCheckpoint;
+    if (!activeCheckpoint || !overlayAnswer || overlayContinueDisabled || videoCheckpointApi.isAnswering) return;
+
+    const result = await videoCheckpointApi.answer(courseId, lessonId, activeCheckpoint.id, overlayAnswer);
+    if (!result) {
+      overlayError = t.get(`${CHECKPOINT_T}.answer_failed`);
+      return;
+    }
+
+    if (!result.satisfied) {
+      overlayError = t.get(`${CHECKPOINT_T}.try_again`);
+      return;
+    }
+
+    overlayCheckpoint = null;
+    overlayAnswer = null;
+    overlayError = '';
+    void plyrPlayer?.play();
+  }
 
   function handleSourceLoaded(element: HTMLVideoElement) {
     if (pendingResumeSeconds == null || pendingResumeSeconds <= 0) return;
@@ -444,6 +554,7 @@
     if (uploadAssetId && ownsPlaybackBus()) {
       lessonVideoBus.assetId = null;
       lessonVideoBus.currentTimeSeconds = 0;
+      lessonVideoBus.durationSeconds = 0;
       lessonVideoBus.hasPlayed = false;
       lessonVideoBus.setSeekFn(() => {});
     }
@@ -486,6 +597,32 @@
 </script>
 
 <div class="w-full">
+  {#snippet checkpointOverlay()}
+    {#if overlayCheckpoint && overlayQuestion}
+      <VideoCheckpoint.Overlay
+        kicker={overlayKicker}
+        continueLabel={$t('course.navItem.lessons.materials.tabs.video.checkpoints.continue')}
+        continueDisabled={overlayContinueDisabled}
+        continueLoading={videoCheckpointApi.isAnswering}
+        errorMessage={overlayError}
+        onContinue={handleCheckpointContinue}
+      >
+        {#snippet questionBody()}
+          <ExerciseQuestion.QuestionRenderer
+            showContainer={false}
+            contract={{
+              mode: 'take',
+              question: overlayQuestion,
+              answer: overlayAnswer,
+              labels: questionLabels
+            }}
+            onAnswerChange={handleOverlayAnswerChange}
+          />
+        {/snippet}
+      </VideoCheckpoint.Overlay>
+    {/if}
+  {/snippet}
+
   <MediaPlayer
     source={{
       type: video.type,
@@ -499,6 +636,8 @@
       width: '100%',
       controls: true,
       playsinline: true,
+      checkpointMarkers,
+      checkpointOverlay,
       isLearnerView: $isCourseLearnerView,
       vimeoPrivacyErrorTitle: $t('course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_title'),
       vimeoPrivacyErrorDescription: $t(
@@ -529,8 +668,15 @@
         if (ownsPlaybackBus()) {
           lessonVideoBus.currentTimeSeconds = seconds;
         }
+
+        if (plyrPlayer) {
+          syncPlayerDuration(plyrPlayer);
+        }
+
+        handleCheckpointCue(seconds);
       },
       onPlayerReady: (player) => {
+        plyrPlayer = player;
         localSeekFn = (seconds) => {
           player.currentTime = seconds;
         };
@@ -538,6 +684,13 @@
         if (ownsPlaybackBus()) {
           lessonVideoBus.setSeekFn(localSeekFn);
         }
+
+        syncPlayerDuration(player);
+        player.on('play', () => {
+          if (overlayCheckpoint) {
+            player.pause();
+          }
+        });
       },
       onFirstPlay: handleFirstPlay,
       onSourceLoaded: handleSourceLoaded,
@@ -550,7 +703,8 @@
       playbackAuthErrorLabel: $t('course.navItem.lessons.materials.tabs.video.playback_auth_error'),
       playbackAuthActionLabel: $t('course.navItem.lessons.materials.tabs.video.playback_auth_action'),
       onPlaybackAuthRequired: () => goto(resolve('/login', {})),
-      seekPolicy
+      seekPolicy,
+      seekCeiling: seekCeilingOption
     }}
   />
 </div>

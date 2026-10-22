@@ -31,6 +31,7 @@ import {
 } from '@db/queries';
 
 import { ROLE } from '@cio/utils/constants';
+import { copyVideoCheckpointsForClone } from '@cio/core/services/lesson/video-checkpoint';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { transferUploadedAsset, withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
 
@@ -385,6 +386,8 @@ async function cloneCourseWithClient(
   if (targetOrgId) {
     await syncLessonAssetUsages(newLessons, targetOrgId, options.userId, tx);
   }
+
+  await copyVideoCheckpointsForClone(lessonMap, assetIds, tx);
 
   const languageCopies = replaceAssetIds(oldLessonLanguages, assetIds);
   if (languageCopies.length > 0) {

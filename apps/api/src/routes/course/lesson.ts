@@ -10,8 +10,22 @@ import {
   ZLessonHistoryQuery,
   ZLessonListQuery,
   ZLessonUpdate,
-  ZUpdateLessonWatchProgress
+  ZUpdateLessonWatchProgress,
+  ZVideoCheckpointAnswer,
+  ZVideoCheckpointCreate,
+  ZVideoCheckpointParam,
+  ZVideoCheckpointUpdate
 } from '@cio/utils/validation/lesson';
+import {
+  answerVideoCheckpointService,
+  buildVideoCheckpointResultsCsv,
+  createVideoCheckpointService,
+  deleteVideoCheckpointService,
+  getVideoCheckpointResultsService,
+  listVideoCheckpointsForViewer,
+  updateVideoCheckpointService
+} from '@cio/core/services/lesson/video-checkpoint';
+import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import {
   createLesson,
   createLessonCommentService,
@@ -357,6 +371,158 @@ export const lessonRouter = new Hono()
         return c.json({ success: true, data: watchProgress }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update lesson watch progress');
+      }
+    }
+  )
+  .get(
+    '/:lessonId/checkpoints',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZLessonGetParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const courseId = c.req.param('courseId')!;
+        const { lessonId } = c.req.valid('param');
+
+        const isStaff = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
+        if (!isStaff) {
+          await assertEnrolledStudentContentAccess({
+            courseId,
+            profileId: user.id,
+            contentId: lessonId,
+            type: ContentType.Lesson
+          });
+        }
+
+        const data = await listVideoCheckpointsForViewer(lessonId, user.id, isStaff);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to list video checkpoints');
+      }
+    }
+  )
+  .post(
+    '/:lessonId/checkpoints',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZLessonGetParam),
+    zValidator('json', ZVideoCheckpointCreate),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const data = c.req.valid('json');
+
+        const checkpoint = await createVideoCheckpointService(lessonId, data);
+
+        return c.json({ success: true, data: checkpoint }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create video checkpoint');
+      }
+    }
+  )
+  .get(
+    '/:lessonId/checkpoints/results',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZLessonGetParam),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const results = await getVideoCheckpointResultsService(lessonId);
+
+        return c.json({ success: true, data: results }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to get video checkpoint results');
+      }
+    }
+  )
+  .get(
+    '/:lessonId/checkpoints/results/csv',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZLessonGetParam),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const results = await getVideoCheckpointResultsService(lessonId);
+
+        c.header('Content-Type', 'text/csv; charset=utf-8');
+        c.header('Content-Disposition', 'attachment; filename="video-question-results.csv"');
+
+        return c.body(buildVideoCheckpointResultsCsv(results), 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to export video checkpoint results');
+      }
+    }
+  )
+  .put(
+    '/:lessonId/checkpoints/:checkpointId',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZVideoCheckpointParam),
+    zValidator('json', ZVideoCheckpointUpdate),
+    async (c) => {
+      try {
+        const { lessonId, checkpointId } = c.req.valid('param');
+        const data = c.req.valid('json');
+
+        const checkpoint = await updateVideoCheckpointService(lessonId, checkpointId, data);
+
+        return c.json({ success: true, data: checkpoint }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update video checkpoint');
+      }
+    }
+  )
+  .delete(
+    '/:lessonId/checkpoints/:checkpointId',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZVideoCheckpointParam),
+    async (c) => {
+      try {
+        const { lessonId, checkpointId } = c.req.valid('param');
+        const deleted = await deleteVideoCheckpointService(lessonId, checkpointId);
+
+        return c.json({ success: true, data: deleted }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to delete video checkpoint');
+      }
+    }
+  )
+  .post(
+    '/:lessonId/checkpoints/:checkpointId/answer',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZVideoCheckpointParam),
+    zValidator('json', ZVideoCheckpointAnswer),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const courseId = c.req.param('courseId')!;
+        const { lessonId, checkpointId } = c.req.valid('param');
+        const { answerData } = c.req.valid('json');
+
+        await assertEnrolledStudentContentAccess({
+          courseId,
+          profileId: user.id,
+          contentId: lessonId,
+          type: ContentType.Lesson
+        });
+
+        const result = await answerVideoCheckpointService(lessonId, checkpointId, user.id, answerData);
+
+        if (result.didJustComplete) {
+          void evaluateCourseCertification(courseId, user.id).catch((certError) => {
+            console.error('Failed to evaluate course certification after video question:', certError);
+          });
+        }
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to answer video checkpoint');
       }
     }
   )

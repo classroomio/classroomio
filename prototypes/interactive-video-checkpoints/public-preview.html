@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Public preview — Interactive Video Checkpoints</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="checkpoints.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div style="border-bottom:1px solid var(--border);padding:12px 28px;display:flex;align-items:center;gap:12px;">
+      <div style="width:28px;height:28px;border-radius:8px;background:var(--primary);color:var(--primary-foreground);display:grid;place-items:center;font-weight:700;font-size:12px;">UT</div>
+      <strong>Udemy Test</strong>
+      <span class="badge badge-outline">Public course</span>
+      <a href="index.html" class="text-muted" style="margin-left:auto;font-size:13px;">Back to prototypes</a>
+    </div>
+    <div class="course-body">
+      <div class="course-col">
+        <p class="text-muted" style="font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;">Infection Control Basics</p>
+        <h1 style="font-size:22px;margin:4px 0 16px;">Why hand hygiene matters</h1>
+        <div class="player">
+          <div class="player-stage"><div class="player-meta">Public preview · first video only</div></div>
+          <div class="overlay">
+            <div class="overlay-card">
+              <div class="overlay-kicker">Practice question · not saved</div>
+              <h2>When must you wash your hands?</h2>
+              <label class="option"><input type="radio" name="p" /><span class="option-label">Before and after every patient contact</span></label>
+              <label class="option"><input type="radio" name="p" /><span class="option-label">Only at the start of a shift</span></label>
+              <div class="overlay-actions"><button class="btn btn-primary" type="button">Continue</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:18px;">
+          <h3>Answers stay in this browser tab</h3>
+          <p>
+            Public org-site lessons already skip watch progress and submissions. Checkpoints follow that rule: the overlay can still pause the uploaded preview, but nothing is written to <code>lesson_video_checkpoint_answer</code>. Refresh and it is gone. Sign in to take the course for real.
+          </p>
+        </div>
+      </div>
+    </div>
+    <button class="icon-btn theme-fab" id="theme" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+    </button>
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

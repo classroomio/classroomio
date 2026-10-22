@@ -8,6 +8,7 @@ const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
 const COURSE_STUDENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/members\/[^/]+\/(?:lessons|exercises)(?:\/|$)/;
 const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|invites)(?:\/|$)/;
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
+const COURSE_VIDEO_CHECKPOINT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/lessons\/[^/]+\/checkpoints(?:\/|$)/;
 const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content)(?:\/|$)/;
 const COURSE_EXERCISE_PATH = /^(?:\/public-api\/v1)?\/(?:courses\/[^/]+\/exercises|exercise-templates)(?:\/|$)/;
 const COURSE_SUBMISSION_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:submissions|marks)(?:\/|$)/;
@@ -45,6 +46,10 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (COURSE_CERTIFICATE_PATH.test(path)) {
     return method === 'GET' || method === 'HEAD' ? 'course:certificate:read' : 'course:certificate:write';
+  }
+
+  if (COURSE_VIDEO_CHECKPOINT_PATH.test(path)) {
+    return isRead ? 'course:video_checkpoint:read' : 'course:video_checkpoint:write';
   }
 
   if (COURSE_CONTENT_PATH.test(path)) {

@@ -7,6 +7,7 @@ import {
   createLessons,
   deleteLesson,
   deleteLessonComment,
+  deleteLessonVideoCheckpointsExceptAssets,
   getLessonById,
   getLessonCommentsAvailability,
   getLessonCommentsAvailabilityByCommentId,
@@ -34,6 +35,7 @@ import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforceme
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
 import { emitCourseWebhookEvent } from '../webhook/emit';
+import { areLessonCheckpointsSatisfied, assertCheckpointsSatisfiedMessage } from './video-checkpoint';
 
 /**
  * Creates a new lesson
@@ -155,6 +157,13 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
       : await updateLesson(lessonId, payload);
     if (!updated) {
       throw new AppError('Failed to update lesson', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    if (payload.videos !== undefined) {
+      await deleteLessonVideoCheckpointsExceptAssets(
+        lessonId,
+        (updated.videos ?? []).flatMap((video) => (video.assetId ? [video.assetId] : []))
+      );
     }
 
     if (updated.courseId) {
@@ -474,6 +483,14 @@ export async function upsertLessonCompletionService(lessonId: string, profileId:
       );
     }
 
+    if (
+      isComplete &&
+      lesson.completionPolicy === 'manual' &&
+      !(await areLessonCheckpointsSatisfied(lessonId, profileId))
+    ) {
+      throw assertCheckpointsSatisfiedMessage();
+    }
+
     const completionData: TNewLessonCompletion = {
       lessonId,
       profileId,
@@ -693,7 +710,8 @@ export async function updateLessonWatchProgressService(
 
     const allRows = await getLessonVideoProgressForLesson(lessonId, profileId);
     const aggregate = buildAggregateWatchProgress(allRows, requiredAssetIds);
-    const didJustComplete = (aggregate?.isComplete ?? false) && !wasLessonComplete;
+    const checkpointsSatisfied = await areLessonCheckpointsSatisfied(lessonId, profileId);
+    const didJustComplete = (aggregate?.isComplete ?? false) && !wasLessonComplete && checkpointsSatisfied;
 
     if (didJustComplete) {
       await upsertLessonCompletion({

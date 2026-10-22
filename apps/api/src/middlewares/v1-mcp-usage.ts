@@ -55,6 +55,17 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     PUT: 'update_course_lesson_comment',
     DELETE: 'delete_course_lesson_comment'
   },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/checkpoints': {
+    GET: 'list_lesson_video_checkpoints',
+    POST: 'create_lesson_video_checkpoint'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/checkpoints/results': {
+    GET: 'get_lesson_video_checkpoint_results'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/checkpoints/:checkpointId': {
+    PUT: 'update_lesson_video_checkpoint',
+    DELETE: 'delete_lesson_video_checkpoint'
+  },
   '/public-api/v1/courses/:courseId/content/reorder': { PUT: 'reorder_course_content' },
   '/public-api/v1/courses/:courseId/content': {
     PATCH: 'set_course_content_unlocked',

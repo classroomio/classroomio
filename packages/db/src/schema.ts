@@ -1716,6 +1716,89 @@ export const lessonVideoProgress = pgTable(
   ]
 );
 
+export const lessonVideoCheckpoint = pgTable(
+  'lesson_video_checkpoint',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    lessonId: uuid('lesson_id').notNull(),
+    assetId: text('asset_id').notNull(),
+    timestampSeconds: integer('timestamp_seconds').notNull(),
+    questionType: varchar('question_type').notNull(),
+    title: text().notNull(),
+    settings: jsonb().default({}),
+    resumePolicy: varchar('resume_policy').default('any').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'lesson_video_checkpoint_lesson_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_lesson_video_checkpoint_lesson_asset').on(table.lessonId, table.assetId)
+  ]
+);
+
+export const lessonVideoCheckpointOption = pgTable(
+  'lesson_video_checkpoint_option',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'lesson_video_checkpoint_option_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    checkpointId: uuid('checkpoint_id').notNull(),
+    label: text().notNull(),
+    value: text(),
+    isCorrect: boolean('is_correct').default(false).notNull(),
+    settings: jsonb().default({}),
+    order: integer().default(0).notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.checkpointId],
+      foreignColumns: [lessonVideoCheckpoint.id],
+      name: 'lesson_video_checkpoint_option_checkpoint_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_lesson_video_checkpoint_option_checkpoint').on(table.checkpointId)
+  ]
+);
+
+export const lessonVideoCheckpointAnswer = pgTable(
+  'lesson_video_checkpoint_answer',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    checkpointId: uuid('checkpoint_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    answerData: jsonb('answer_data').notNull(),
+    isCorrect: boolean('is_correct').notNull(),
+    answeredAt: timestamp('answered_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.checkpointId],
+      foreignColumns: [lessonVideoCheckpoint.id],
+      name: 'lesson_video_checkpoint_answer_checkpoint_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'lesson_video_checkpoint_answer_profile_id_fkey'
+    }).onDelete('cascade'),
+    unique('lesson_video_checkpoint_answer_checkpoint_profile_unique').on(table.checkpointId, table.profileId)
+  ]
+);
+
 export const lessonCompletion = pgTable(
   'lesson_completion',
   {

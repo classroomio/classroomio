@@ -38,6 +38,8 @@ import type {
   TPublicApiCertificateFileFormat,
   TPublicApiCohortNewsfeedQuery,
   TPublicApiCourseInvitesQuery,
+  TPublicApiCreateVideoCheckpoint,
+  TPublicApiUpdateVideoCheckpoint,
   TPublicApiCourseLessonCommentsQuery,
   TPublicApiCourseLessonHistoryQuery,
   TPublicApiCourseLessonsQuery,
@@ -473,6 +475,41 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/translations/${locale}`, {
       method: 'PUT',
       body: payload
+    });
+  }
+
+  async listLessonVideoCheckpoints(courseId: string, lessonId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/checkpoints`, { method: 'GET' });
+  }
+
+  async createLessonVideoCheckpoint(courseId: string, lessonId: string, payload: TPublicApiCreateVideoCheckpoint) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/checkpoints`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateLessonVideoCheckpoint(
+    courseId: string,
+    lessonId: string,
+    checkpointId: string,
+    payload: TPublicApiUpdateVideoCheckpoint
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/checkpoints/${checkpointId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async deleteLessonVideoCheckpoint(courseId: string, lessonId: string, checkpointId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/checkpoints/${checkpointId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async getLessonVideoCheckpointResults(courseId: string, lessonId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/checkpoints/results`, {
+      method: 'GET'
     });
   }
 

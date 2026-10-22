@@ -156,6 +156,20 @@ They call `/public-api/v1/courses/:id/{sections,lessons,content}` with the key's
 - Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
 - Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`. Restoring a lesson version is not covered.
 
+Lesson video question tools:
+
+- `list_lesson_video_checkpoints`, `create_lesson_video_checkpoint`, `update_lesson_video_checkpoint`, `delete_lesson_video_checkpoint`
+- `get_lesson_video_checkpoint_results`
+
+They call `/public-api/v1/courses/:id/lessons/:lessonId/checkpoints` with the key's `course:video_checkpoint:read` (list and results) and `course:video_checkpoint:write` (create, update, delete) scopes, which MCP keys have by default. Existing MCP keys that still have the default scope set were given them too; a key created with a narrower scope list is left unchanged, so create a new key to use these tools. These scopes open only the video question endpoints. Every tool needs the key creator to be a course tutor/admin or an org admin.
+
+- A video question pauses an uploaded lesson video at a time and asks an auto-graded question: `RADIO`, `CHECKBOX`, `TRUE_FALSE`, `NUMERIC`, `FILL_BLANK`, `WORD_BANK`, `ORDERING` or `STAR`. Take `assetId` from the lesson's uploaded videos; YouTube, Vimeo and Drive videos are not supported.
+- `timestampSeconds` is whole seconds, at least 2 seconds from another question on the same video, with at most 20 questions per video. `resumePolicy` is `any` (resume after any complete answer) or `correct` (stay until the answer is right).
+- Like the dashboard, creating, editing and reading results need a paid plan: on the Basic (free) plan they fail with 403 `UPGRADE_REQUIRED`. Deleting a question stays allowed.
+- `update_lesson_video_checkpoint` replaces the whole question, including its options, and clears the answers learners already gave. A CSV export of the results is available on the REST endpoint `/checkpoints/results/csv`.
+- Answers are formative: they never appear as exercise submissions or affect the certificate exam.
+- Not covered, on purpose: the in-player overlay and dragging a marker, which are UI concerns.
+
 Course exercise tools:
 
 - `list_course_exercises`
@@ -225,7 +239,7 @@ Course member and invite tools call the public API (`/public-api/v1/courses/:id/
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, and team routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course section, lesson, video question and content, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, and team routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 

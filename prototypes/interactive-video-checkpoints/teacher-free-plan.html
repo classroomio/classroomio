@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Free plan · Video block — Interactive Video Checkpoints</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="checkpoints.css" />
+    <link rel="stylesheet" href="canvas.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body class="">
+    <div class="cv-shell">
+      <aside class="cv-side">
+        <a class="back-link" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg> Prototypes</a>
+        <div class="org"><div class="mark">IC</div><div><div class="nm">Infection Control Basics</div><div class="rl">Edit mode</div></div></div>
+        <div class="cv-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> News Feed</div>
+        <a class="cv-nav active" href="course-contents.html" style="background:transparent;font-weight:600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg> Content</a>
+        <div class="cv-label">Module 1</div>
+        <a class="cv-nav sub active" href="teacher-video-tab.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="12" x="2" y="6" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg><span>Why hand hygiene matters</span><span class="qcount">4</span></a>
+        <div class="cv-nav sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="12" x="2" y="6" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg><span>The 5 moments</span></div>
+        <a class="cv-nav sub" href="teacher-youtube-blocked.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="12" x="2" y="6" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg><span>PPE sequence</span></a>
+        <a class="cv-nav sub" href="student-exam.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Final exam</span></a>
+        <div class="cv-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.9 17 22l-5-3-5 3 1.5-8.1"/></svg> Certificates</div>
+        <div class="cv-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg> Analytics</div>
+        <div class="cv-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg> People</div>
+        <div class="cv-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg> Settings</div>
+      </aside>
+      <div class="cv-main">
+        <div class="cv-top"><button class="icon-btn" aria-label="Toggle sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button><span class="divider"></span><span>Content</span><span class="badge badge-success-soft">Published</span><span class="sp"></span><a class="btn btn-outline btn-sm" href="#">View course site</a></div>
+        <div class="cv-head"><div class="cv-head-row">
+          <div><h1 class="cv-title">Why hand hygiene matters</h1><div class="cv-meta"><svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg><span>Unlocked</span><span>·</span><span class="slug">/why-hand-hygiene-matters</span></div></div>
+          <div class="cv-actions"><span class="saved">Saved</span><button class="icon-btn" aria-label="Lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg></button><button class="icon-btn" aria-label="History"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l4 2"/></svg></button><button class="icon-btn" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+            <div class="seg-toggle"><a href="teacher-video-tab.html"><button class="on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Edit</button></a><a href="teacher-preview.html"><button class="" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg> Preview</button></a></div>
+          </div>
+        </div></div>
+        <div class="cv-wrap edit">
+          <div class="cv-canvas">
+          <div class="cv-tip"><svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg><span><b>Tip:</b> Grab the handle on any block and drag it to reorder your lesson content.</span></div>
+          <section class="cv-block" id="vblock">
+            <div class="cv-block-head"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span><span class="type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="12" x="2" y="6" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg> Video</span><span class="pill">4 questions</span><span class="sp"></span><button class="icon-btn" type="button" id="menubtn" aria-label="Block menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></div>
+            <div class="cv-menu" id="blockmenu" hidden>
+              <button type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="12" x="2" y="6" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg> Change video</button>
+              <a href="teacher-add-checkpoint.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Add question at playhead</a>
+              <a href="teacher-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg> View results</a>
+              <div class="sep"></div>
+              <button type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7M12 19V5"/></svg> Move up</button>
+              <button type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg> Move down</button>
+              <div class="sep"></div>
+              <button type="button" class="danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg> Remove block</button>
+            </div>
+            <div class="player">
+              <div class="player-stage"><div class="player-meta">hand-hygiene.mp4 · 6:12</div><div class="play-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></div></div>
+              <div class="player-controls">
+                <div class="scrub"><div class="fill" style="width:12.1%"></div><span class="marker" style="left:12.1%" title="0:45"></span><span class="marker" style="left:36.0%" title="2:14"></span><span class="marker" style="left:59.1%" title="3:40"></span><span class="marker" style="left:77.4%" title="4:48"></span></div>
+                <div class="scrub-row"><button type="button" aria-label="Play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button><span>0:45 / 6:12</span></div>
+              </div>
+            </div>
+            <div class="cv-caption"><div class="t">Hand hygiene in 6 minutes</div><div class="s">Infection Control · Uploaded · 6:12</div></div>
+            <div class="vq">
+              <div class="vq-top">
+                <span class="vq-title">Questions on this video <span class="n">4</span></span><span class="sp"></span>
+                <button class="btn btn-secondary btn-sm" type="button" disabled>Results</button>
+                <button class="btn btn-secondary btn-sm" type="button" disabled>Add question at 0:45</button>
+              </div>
+              <a class="upgrade" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg><span>Upgrade to add questions to your videos and see how learners answer.</span><span class="sp"></span><svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a>
+              <div class="vq-track"><i style="left:12.1%" title="0:45"></i><i style="left:36.0%" title="2:14"></i><i style="left:59.1%" title="3:40"></i><i style="left:77.4%" title="4:48"></i><span class="ph" style="left:12.1%"></span></div>
+              <div class="vq-list">
+              <div class="vq-row">
+                <time>0:45</time>
+                <div><div class="p">When must you wash your hands?</div><div class="m"><span class="pill">Single answer</span><span class="pill">Require the correct answer</span></div></div>
+                <div class="acts"><a class="icon-btn" href="teacher-add-checkpoint.html" aria-label="Edit question" aria-disabled="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a><button class="icon-btn" type="button" aria-label="Delete question" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>
+              </div>
+              <div class="vq-row">
+                <time>2:14</time>
+                <div><div class="p">Alcohol rub replaces soap and water when hands are visibly soiled.</div><div class="m"><span class="pill">True / false</span><span class="pill">Continue after they answer</span></div></div>
+                <div class="acts"><a class="icon-btn" href="teacher-add-checkpoint.html" aria-label="Edit question" aria-disabled="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a><button class="icon-btn" type="button" aria-label="Delete question" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>
+              </div>
+              <div class="vq-row">
+                <time>3:40</time>
+                <div><div class="p">Wash your hands ___ touching a patient and ___ a clean procedure.</div><div class="m"><span class="pill">Fill in the blank</span><span class="pill">Continue after they answer</span></div></div>
+                <div class="acts"><a class="icon-btn" href="teacher-add-checkpoint.html" aria-label="Edit question" aria-disabled="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a><button class="icon-btn" type="button" aria-label="Delete question" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>
+              </div>
+              <div class="vq-row">
+                <time>4:48</time>
+                <div><div class="p">Put the WHO 5 moments in order.</div><div class="m"><span class="pill">Ordering</span><span class="pill">Continue after they answer</span></div></div>
+                <div class="acts"><a class="icon-btn" href="teacher-add-checkpoint.html" aria-label="Edit question" aria-disabled="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a><button class="icon-btn" type="button" aria-label="Delete question" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>
+              </div>
+              </div>
+            </div>
+          </section>
+          <div class="cv-gap"><button type="button" aria-label="Add content here"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
+          <section class="cv-block cv-note">
+            <div class="cv-block-head"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span><span class="type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg> Note</span><span class="sp"></span><button class="icon-btn" type="button" aria-label="Block menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></div>
+            <h3>The WHO 5 moments</h3>
+            <p>Hand hygiene is the single most effective way to prevent healthcare-associated infection. Watch the video, answer the questions as they appear, then use this note as a quick reference.</p>
+          </section>
+          </div>
+          <p class="cv-proto-note">Prototype of the lesson canvas from <code>prd/lesson-editor-redesign</code> with video questions added. Edit mode shows the block chrome; <a href="teacher-preview.html">Preview</a> hides it.</p>
+        </div>
+      <div class="cv-dock edit-only"><button type="button" class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>AI</button><button type="button" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Note</button><button type="button" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="12" x="2" y="6" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg>Video</button><button type="button" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h20v14H2zM8 21h8M12 17v4"/></svg>Slides</button><button type="button" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5Z"/><path d="M14 2v6h6"/></svg>Document</button><button type="button" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>Image</button></div>
+      </div>
+    </div>
+    <button class="icon-btn theme-fab" id="theme" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+    </button>
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+      const menu = document.getElementById('blockmenu');
+      const btn = document.getElementById('menubtn');
+      if (btn && menu) {
+        btn.onclick = (e) => { e.stopPropagation(); menu.hidden = !menu.hidden; };
+        document.addEventListener('click', () => { menu.hidden = true; });
+      }
+      const more = document.getElementById('vqmore');
+      if (more) {
+        more.onclick = () => {
+          const hidden = document.querySelectorAll('[data-more]');
+          const open = more.dataset.open === '1';
+          hidden.forEach((el) => { el.hidden = open; });
+          more.dataset.open = open ? '0' : '1';
+          more.textContent = open ? 'Show all 4 questions' : 'Show fewer';
+        };
+      }
+    </script>
+  </body>
+</html>

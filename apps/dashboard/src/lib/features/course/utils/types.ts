@@ -26,6 +26,42 @@ export type GetLessonVideoStatusSuccess = Extract<InferResponseType<GetLessonVid
 export type LessonVideoHlsStatuses = GetLessonVideoStatusSuccess['data']['statuses'];
 export type LessonVideoHlsStatus = LessonVideoHlsStatuses[string];
 
+// Video checkpoint types
+export type ListVideoCheckpointsRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['checkpoints']['$get'];
+export type ListVideoCheckpointsSuccess = Extract<InferResponseType<ListVideoCheckpointsRequest>, { success: true }>;
+export type VideoCheckpointsData = ListVideoCheckpointsSuccess['data'];
+export type VideoCheckpoint = VideoCheckpointsData['checkpoints'][number];
+
+export type CreateVideoCheckpointRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['checkpoints']['$post'];
+export type CreateVideoCheckpointSuccess = Extract<InferResponseType<CreateVideoCheckpointRequest>, { success: true }>;
+
+export type UpdateVideoCheckpointRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['checkpoints'][':checkpointId']['$put'];
+export type UpdateVideoCheckpointSuccess = Extract<InferResponseType<UpdateVideoCheckpointRequest>, { success: true }>;
+
+export type DeleteVideoCheckpointRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['checkpoints'][':checkpointId']['$delete'];
+
+export type AnswerVideoCheckpointRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['checkpoints'][':checkpointId']['answer']['$post'];
+export type AnswerVideoCheckpointSuccess = Extract<InferResponseType<AnswerVideoCheckpointRequest>, { success: true }>;
+export type VideoCheckpointAnswerResult = AnswerVideoCheckpointSuccess['data'];
+
+export type GetVideoCheckpointResultsRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['checkpoints']['results']['$get'];
+export type GetVideoCheckpointResultsSuccess = Extract<
+  InferResponseType<GetVideoCheckpointResultsRequest>,
+  { success: true }
+>;
+export type VideoCheckpointResults = GetVideoCheckpointResultsSuccess['data'];
+export type VideoCheckpointResultRow = VideoCheckpointResults['checkpoints'][number];
+export type VideoCheckpointResultAnswer = VideoCheckpointResults['answers'][number];
+
+export type ExportVideoCheckpointResultsRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['checkpoints']['results']['csv']['$get'];
+
 export type GetLessonSuccess = Extract<InferResponseType<GetLessonRequest>, { success: true }>;
 export type Lesson = GetLessonSuccess['data'];
 

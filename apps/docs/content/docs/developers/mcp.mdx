@@ -171,6 +171,20 @@ What the tools cover compared with the dashboard:
 - Not covered yet: compliance certificate history. For compliance courses, the dashboard also shows each learner's cycle-by-cycle completion and recertification history. That belongs to a separate compliance API and is not part of these tools.
 - Not covered because the dashboard does not have it: manual issuance. Certificates are issued automatically when a student meets the course's completion rules.
 
+Lesson video question tools:
+
+- `list_lesson_video_checkpoints`, `create_lesson_video_checkpoint`, `update_lesson_video_checkpoint`, `delete_lesson_video_checkpoint`
+- `get_lesson_video_checkpoint_results`
+
+They call `/public-api/v1/courses/:id/lessons/:lessonId/checkpoints` with the key's `course:video_checkpoint:read` (list and results) and `course:video_checkpoint:write` (create, update, delete) scopes, which MCP keys have by default. Existing MCP keys that still have the default scope set were given them too; a key created with a narrower scope list is left unchanged, so create a new key to use these tools. These scopes open only the video question endpoints. Every tool needs the key creator to be a course tutor/admin or an org admin.
+
+- A video question pauses an uploaded lesson video at a time and asks an auto-graded question: `RADIO`, `CHECKBOX`, `TRUE_FALSE`, `NUMERIC`, `FILL_BLANK`, `WORD_BANK`, `ORDERING` or `STAR`. Take `assetId` from the lesson's uploaded videos; YouTube, Vimeo and Drive videos are not supported.
+- `timestampSeconds` is whole seconds, at least 2 seconds from another question on the same video, with at most 20 questions per video. `resumePolicy` is `any` (resume after any complete answer) or `correct` (stay until the answer is right).
+- Like the dashboard, creating, editing and reading results need a paid plan: on the Basic (free) plan they fail with 403 `UPGRADE_REQUIRED`. Deleting a question stays allowed.
+- `update_lesson_video_checkpoint` replaces the whole question, including its options, and clears the answers learners already gave. A CSV export of the results is available on the REST endpoint `/checkpoints/results/csv`.
+- Answers are formative: they never appear as exercise submissions or affect the certificate exam.
+- Not covered, on purpose: the in-player overlay and dragging a marker, which are UI concerns.
+
 Course exercise tools:
 
 - `list_course_exercises`
@@ -291,7 +305,7 @@ Cohort tools:
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
 
-Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these, the course member, invite, certificate, section, lesson and content tools, and the analytics, audience, and team tools (below), MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
+Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these, the course member, invite, certificate, section, lesson, video question and content tools, and the analytics, audience, and team tools (below), MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
 
 - Reading a cohort needs them to be a member of the cohort or an org admin.
 - Changing a cohort, its members, courses, posts, or goals, inviting students, managing the join link, and re-evaluating goals need them to be a cohort tutor/admin or an org admin.

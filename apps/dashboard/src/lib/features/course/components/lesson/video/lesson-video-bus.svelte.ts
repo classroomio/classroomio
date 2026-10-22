@@ -17,6 +17,8 @@ class LessonVideoBus {
   assetId = $state<string | null>(null);
   /** Last reported playback time in seconds for the active player asset. */
   currentTimeSeconds = $state(0);
+  /** Known media duration in seconds for the active player asset. */
+  durationSeconds = $state(0);
   /** True after the user (or autoplay) has started playback at least once for the current asset. */
   hasPlayed = $state(false);
   /** Latest transcript payload for the active transcript source. */
@@ -172,6 +174,7 @@ class LessonVideoBus {
     }
 
     this.currentTimeSeconds = 0;
+    this.durationSeconds = 0;
     this.hasPlayed = false;
     this.transcript = null;
     this.transcriptLoading = false;

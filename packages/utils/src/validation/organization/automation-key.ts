@@ -28,6 +28,8 @@ export const ZOrganizationApiKeyScope = z.enum([
   'audience:write',
   'team:read',
   'team:write',
+  'course:video_checkpoint:read',
+  'course:video_checkpoint:write',
   'public_api:*'
 ]);
 export type TOrganizationApiKeyScope = z.infer<typeof ZOrganizationApiKeyScope>;

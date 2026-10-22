@@ -185,6 +185,16 @@ Learner and author UIs for exercise questions (take, preview, review, submission
 
 **Types with heavier or distinct UIs** (textarea editor, file upload, matching/hotspot authoring, link lists) intentionally keep separate `take` / `preview` implementations until a second consumer (for example a dedicated `review` mode) justifies extracting more shared fragments.
 
+### Video checkpoint overlay (`src/custom/video-checkpoint/`)
+
+In-player chrome for lesson video checkpoints. The overlay sits `absolute inset-0` inside the same relative player wrapper as the video (fullscreen-safe). Copy (`kicker`, `continueLabel`, `errorMessage`) is passed in by the host; `continueLoading` shows the Continue spinner while the answer is being saved. The question body is a `questionBody` snippet — production and Storybook both mount `ExerciseQuestion.QuestionRenderer` there (`mode: 'take'` for learners, `mode: 'edit'` in the teacher sheet). Do not invent a second option editor.
+
+- **`Overlay`** — dimmed backdrop, card (`max-width: 520px`, `max-height: min(78%, 32.5rem)`), kicker, scrollable question slot, optional try-again error, **Continue** pinned to the card footer (disabled until the host says the take renderer has a complete answer). Backdrop blur is skipped when `prefers-reduced-motion` is set.
+- `MediaPlayerOptions.seekCeiling` (`getSeconds`, `onSeekBlocked`) caps forward seeking at the next unanswered checkpoint. It shares the seek interceptor with `seekPolicy`, and the nearer limit wins.
+- Player checkpoint dots (`MediaPlayerOptions.checkpointMarkers`) use the org theme `--primary` token (the same color as `--plyr-color-main`). Do not invent a second marker color.
+
+See `Molecules/VideoCheckpoint` in Storybook.
+
 ### Image lightbox (`src/custom/image-lightbox/`)
 
 Full-screen image viewer for screenshots and other detailed images. `ZoomableImage` renders an image uncropped (`object-contain`) as a button with a hover "enlarge" hint. `ImageLightbox` opens one image or a gallery: click or `+`/`-` to zoom (up to 300%), arrow keys or the side buttons to move between images, Esc or a click on the backdrop to close. Both `open` and `index` are bindable. Copy is passed via `labels: ImageLightboxLabels` (`close`, `zoomIn`, `zoomOut`, `previous`, `next`). Exercise question and option images use both in every non-edit mode. See `Molecules/ImageLightbox` in Storybook.
