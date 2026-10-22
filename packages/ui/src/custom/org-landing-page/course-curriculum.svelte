@@ -56,21 +56,42 @@
     return labels?.exercisesLabel?.(count) ?? `${count} ${count === 1 ? 'exercise' : 'exercises'}`;
   }
 
-  function standaloneLabel(kind: 'lesson' | 'exercise' | 'activity'): string {
-    if (kind === 'exercise') return labels?.standaloneExerciseLabel ?? 'Exercise';
-    if (kind === 'activity') return labels?.activitiesLabel?.(1) ?? 'Package';
+  function modulesLabel(count: number): string {
+    return labels?.singleActivityModulesLabel?.(count) ?? `${count} ${count === 1 ? 'module' : 'modules'}`;
+  }
+
+  function sectionModuleCount(section: CourseCurriculumSection): number {
+    return section.activities?.reduce((total, activity) => total + (activity.modules?.length ?? 0), 0) ?? 0;
+  }
+
+  function standaloneLabel(section: CourseCurriculumSection): string {
+    if (section.standalone === 'exercise') return labels?.standaloneExerciseLabel ?? 'Exercise';
+    if (section.standalone === 'activity') {
+      const modules = sectionModuleCount(section);
+      if (modules > 0) return modulesLabel(modules);
+
+      return labels?.activitiesLabel?.(1) ?? 'Activity';
+    }
 
     return labels?.standaloneLessonLabel ?? 'Lesson';
   }
 
   function activitiesLabel(count: number): string {
-    return labels?.activitiesLabel?.(count) ?? `${count} ${count === 1 ? 'package' : 'packages'}`;
+    return labels?.activitiesLabel?.(count) ?? `${count} ${count === 1 ? 'activity' : 'activities'}`;
   }
 
-  function sectionMeta(lessons: number, exercises?: number, activities?: number): string {
-    const parts = [lessonsLabel(lessons)];
+  function sectionMeta(section: CourseCurriculumSection): string {
+    const lessons = section.lessons.length;
+    const exercises = section.exerciseCount ?? 0;
+    const activities = section.activityCount ?? section.activities?.length ?? 0;
+    const modules = sectionModuleCount(section);
+    const onlyActivityCourse = lessons === 0 && exercises === 0 && activities === 1;
+    const parts: string[] = [];
+    if (lessons > 0) parts.push(lessonsLabel(lessons));
     if (exercises) parts.push(exercisesLabel(exercises));
-    if (activities) parts.push(activitiesLabel(activities));
+    if (onlyActivityCourse) parts.push(modules > 0 ? modulesLabel(modules) : activitiesLabel(1));
+    else if (activities) parts.push(activitiesLabel(activities));
+
     return parts.join(' · ');
   }
 
@@ -148,7 +169,7 @@
                     <span class="ui:size-4 ui:shrink-0" aria-hidden="true"></span>
                     <span class={t.curriculumModuleTitle}>{section.title}</span>
                   </span>
-                  <span class={t.curriculumModuleMeta}>{standaloneLabel(section.standalone)}</span>
+                  <span class={t.curriculumModuleMeta}>{standaloneLabel(section)}</span>
                 </div>
                 {@render standaloneModules(section)}
               {:else}
@@ -167,11 +188,7 @@
                     <span class={t.curriculumModuleTitle}>{section.title}</span>
                   </span>
                   <span class={t.curriculumModuleMeta}>
-                    {sectionMeta(
-                      section.lessons.length,
-                      section.exerciseCount,
-                      section.activityCount ?? section.activities?.length
-                    )}
+                    {sectionMeta(section)}
                   </span>
                 </button>
                 {#if expanded[section.id]}
@@ -203,13 +220,9 @@
                 </div>
                 <span class={t.curriculumModuleMeta}>
                   {#if section.standalone}
-                    {standaloneLabel(section.standalone)}
+                    {standaloneLabel(section)}
                   {:else}
-                    {sectionMeta(
-                      section.lessons.length,
-                      section.exerciseCount,
-                      section.activityCount ?? section.activities?.length
-                    )}
+                    {sectionMeta(section)}
                   {/if}
                 </span>
               </div>

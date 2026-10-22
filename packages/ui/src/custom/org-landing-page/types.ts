@@ -198,12 +198,12 @@ export interface OrgLandingPageLabels {
   lessonsLabel?: (count: number) => string;
   /** Plural-aware exercise-count label. Default: `${count} exercises` / `1 exercise`. */
   exercisesLabel?: (count: number) => string;
-  /** Plural-aware package-count label. Default: `${count} packages` / `1 package`. */
+  /** Plural-aware activity-count label. Default: `${count} activities` / `1 activity`. */
   activitiesLabel?: (count: number) => string;
-  /** Single-package SCORM summary when the package has no modules yet. Default: "SCORM course". */
-  scormCourseLabel?: string;
-  /** Plural-aware module count for single-package SCORM courses. Default: "SCORM · N modules". */
-  scormModulesLabel?: (count: number) => string;
+  /** Summary for a single-activity course before its module count is known. Default: "Course". */
+  singleActivityCourseLabel?: string;
+  /** Plural-aware module count for single-activity courses. Default: `${count} modules` / `1 module`. */
+  singleActivityModulesLabel?: (count: number) => string;
   /** Plural-aware enrolled-students label. Default: `${count} enrolled`. */
   enrolledLabel?: (count: number) => string;
   /** Eyebrow for the Resources/Links section. Default per template (typically "Resources"). */
@@ -364,6 +364,10 @@ export interface CourseLandingPageLabels {
   /** Type label on a module that is a single exercise outside any section. Default: "Exercise". */
   standaloneExerciseLabel?: string;
   activitiesLabel?: (count: number) => string;
+  /** Plural-aware module count for a course whose only content is one activity. Default: `${count} modules` / `1 module`. */
+  singleActivityModulesLabel?: (count: number) => string;
+  /** Label for a single-activity course when its module count is unknown. Default: "Course". */
+  singleActivityCourseLabel?: string;
   lecturePrefix?: (index: number) => string;
   infoRequirementsHeading?: string;
   infoRequirementsEyebrow?: string;
@@ -400,8 +404,10 @@ export interface CourseLandingPageLabels {
   lessonDurationLabel?: (minutes: number) => string;
   /** Row label for the exercise count in a facts table. Default: "Exercises". */
   factExercisesLabel?: string;
-  /** Row label for the package count in a facts table. Default: "Packages". */
-  factPackagesLabel?: string;
+  /** Row label for the activity count in a facts table. Default: "Activities". */
+  factActivitiesLabel?: string;
+  /** Row label for the module count in a facts table. Default: "Modules". */
+  factModulesLabel?: string;
   /** Value shown when a course includes a certificate. Default: "Included". */
   factIncludedLabel?: string;
 }

@@ -6,7 +6,7 @@
     calcCourseDiscount,
     formatExerciseCountLabel,
     getCourseTypeLandingMeta,
-    getScormCourseSummary
+    getSingleActivityCourseSummary
   } from '../landing-page-utils';
   import { cn } from '../../../tools';
 
@@ -19,7 +19,7 @@
   let { course, disableCourseLinks = false, labels }: Props = $props();
 
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
-  const scormSummary = $derived(getScormCourseSummary(course, labels));
+  const singleActivitySummary = $derived(getSingleActivityCourseSummary(course, labels));
   const pricingData = $derived({
     cost: course.cost ?? 0,
     discount: course.metadata?.discount ?? 0,
@@ -77,8 +77,8 @@
     <div class="ui:flex ui:justify-between ui:w-full">
       <div class="ui:w-[80%]">
         <p class="ui:text-xs ui:pl-2 ui:dark:text-white">
-          {#if scormSummary}
-            <span>{scormSummary}</span>
+          {#if singleActivitySummary}
+            <span>{singleActivitySummary}</span>
           {:else}
             <span>{labels?.lessonsLabel?.(course.lessonCount || 0) ?? `${course.lessonCount || 0} lessons`}</span>
             &
@@ -90,7 +90,7 @@
               &
               <span
                 >{labels?.activitiesLabel?.(course.activityCount) ??
-                  `${course.activityCount} ${course.activityCount === 1 ? 'package' : 'packages'}`}</span
+                  `${course.activityCount} ${course.activityCount === 1 ? 'activity' : 'activities'}`}</span
               >
             {/if}
           {/if}

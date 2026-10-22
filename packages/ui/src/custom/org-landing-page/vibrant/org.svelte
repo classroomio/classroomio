@@ -12,7 +12,12 @@
   import EditableLandingSection from '../editable-section.svelte';
   import LandingThemeScope from '../landing-theme-scope.svelte';
   import { Button } from '../../../base/button';
-  import { getCourseTypeLandingMeta, defaultLessonsLabel, defaultExercisesLabel } from '../landing-page-utils';
+  import {
+    getCourseTypeLandingMeta,
+    defaultLessonsLabel,
+    defaultExercisesLabel,
+    getSingleActivityCourseSummary
+  } from '../landing-page-utils';
 
   let {
     orgName,
@@ -35,13 +40,14 @@
   }: OrgLandingPageProps = $props();
 
   const featured = $derived(courses[0]);
+  const featuredSummary = $derived(featured ? getSingleActivityCourseSummary(featured, labels) : undefined);
   const featuredTypeMeta = $derived(featured ? getCourseTypeLandingMeta(featured) : undefined);
   const remainingCourses = $derived(courses.slice(1));
 
   const resolvedLessonsLabel = $derived(labels?.lessonsLabel ?? defaultLessonsLabel);
   const resolvedExercisesLabel = $derived(labels?.exercisesLabel ?? defaultExercisesLabel);
   const resolvedActivitiesLabel = $derived(
-    labels?.activitiesLabel ?? ((count: number) => `${count} ${count === 1 ? 'package' : 'packages'}`)
+    labels?.activitiesLabel ?? ((count: number) => `${count} ${count === 1 ? 'activity' : 'activities'}`)
   );
 
   function formatCost(cost?: number, currency = 'USD'): string {
@@ -131,16 +137,20 @@
                   <div
                     class="ui:flex ui:flex-wrap ui:items-center ui:gap-x-5 ui:gap-y-2 ui:text-[14.5px] ui:mb-8 ui:opacity-85"
                   >
-                    {#if featured.lessonCount}
-                      <span>{resolvedLessonsLabel(featured.lessonCount)}</span>
-                    {/if}
-                    {#if featured.exerciseCount}
-                      <span aria-hidden="true">·</span>
-                      <span>{resolvedExercisesLabel(featured.exerciseCount)}</span>
-                    {/if}
-                    {#if featured.activityCount}
-                      <span aria-hidden="true">·</span>
-                      <span>{resolvedActivitiesLabel(featured.activityCount)}</span>
+                    {#if featuredSummary}
+                      <span>{featuredSummary}</span>
+                    {:else}
+                      {#if featured.lessonCount}
+                        <span>{resolvedLessonsLabel(featured.lessonCount)}</span>
+                      {/if}
+                      {#if featured.exerciseCount}
+                        <span aria-hidden="true">·</span>
+                        <span>{resolvedExercisesLabel(featured.exerciseCount)}</span>
+                      {/if}
+                      {#if featured.activityCount}
+                        <span aria-hidden="true">·</span>
+                        <span>{resolvedActivitiesLabel(featured.activityCount)}</span>
+                      {/if}
                     {/if}
                     {#if featured.duration}
                       <span aria-hidden="true">·</span>

@@ -4,7 +4,7 @@
     defaultEnrolledLabel,
     defaultLessonsLabel,
     getCourseTypeLandingMeta,
-    getScormCourseSummary
+    getSingleActivityCourseSummary
   } from '../landing-page-utils';
 
   interface Props {
@@ -27,10 +27,10 @@
   ];
 
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
-  const scormSummary = $derived(getScormCourseSummary(course, labels));
+  const singleActivitySummary = $derived(getSingleActivityCourseSummary(course, labels));
   const resolvedLessonsLabel = $derived(labels?.lessonsLabel ?? defaultLessonsLabel);
   const resolvedActivitiesLabel = $derived(
-    labels?.activitiesLabel ?? ((count: number) => `${count} ${count === 1 ? 'package' : 'packages'}`)
+    labels?.activitiesLabel ?? ((count: number) => `${count} ${count === 1 ? 'activity' : 'activities'}`)
   );
   const resolvedEnrolledLabel = $derived(labels?.enrolledLabel ?? defaultEnrolledLabel);
 
@@ -93,12 +93,12 @@
       {course.description}
     </p>
 
-    {#if scormSummary || course.lessonCount || course.activityCount || course.totalStudents || course.level}
+    {#if singleActivitySummary || course.lessonCount || course.activityCount || course.totalStudents || course.level}
       <div
         class="ui:flex ui:flex-wrap ui:items-center ui:gap-x-3 ui:gap-y-1 ui:text-[12.5px] ui:mb-4 ui:text-[var(--landing-fg-muted)]"
       >
-        {#if scormSummary}
-          <span>{scormSummary}</span>
+        {#if singleActivitySummary}
+          <span>{singleActivitySummary}</span>
         {:else}
           {#if course.lessonCount}
             <span>{resolvedLessonsLabel(course.lessonCount)}</span>
@@ -111,13 +111,13 @@
           {/if}
         {/if}
         {#if course.level}
-          {#if scormSummary || course.lessonCount}
+          {#if singleActivitySummary || course.lessonCount}
             <span aria-hidden="true">·</span>
           {/if}
           <span>{course.level}</span>
         {/if}
         {#if course.totalStudents}
-          {#if scormSummary || course.lessonCount || course.level}
+          {#if singleActivitySummary || course.lessonCount || course.level}
             <span aria-hidden="true">·</span>
           {/if}
           <span>{resolvedEnrolledLabel(course.totalStudents)}</span>

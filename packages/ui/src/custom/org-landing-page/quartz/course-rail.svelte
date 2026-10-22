@@ -42,13 +42,29 @@
       0
     )
   );
+  const moduleCount = $derived(
+    curriculum.sections.reduce(
+      (total, section) =>
+        total +
+        (section.activities?.reduce((sectionTotal, activity) => sectionTotal + (activity.modules?.length ?? 0), 0) ??
+          0),
+      0
+    )
+  );
+  const singleActivityCourse = $derived(lessonCount === 0 && exerciseCount === 0 && activityCount === 1);
 
   /** Rows are only rendered when the underlying prop exists, so a sparse course shows a short table. */
   const facts = $derived(
     [
       lessonCount > 0 ? { label: labels?.socialProofLessonsLabel ?? 'Lessons', value: String(lessonCount) } : null,
       exerciseCount > 0 ? { label: labels?.factExercisesLabel ?? 'Exercises', value: String(exerciseCount) } : null,
-      activityCount > 0 ? { label: labels?.factPackagesLabel ?? 'Packages', value: String(activityCount) } : null,
+      singleActivityCourse
+        ? moduleCount > 0
+          ? { label: labels?.factModulesLabel ?? 'Modules', value: String(moduleCount) }
+          : null
+        : activityCount > 0
+          ? { label: labels?.factActivitiesLabel ?? 'Activities', value: String(activityCount) }
+          : null,
       socialProof.type ? { label: labels?.socialProofTypeLabel ?? 'Format', value: socialProof.type } : null,
       socialProof.rating
         ? { label: labels?.socialProofRatingLabel ?? 'Rating', value: String(socialProof.rating) }

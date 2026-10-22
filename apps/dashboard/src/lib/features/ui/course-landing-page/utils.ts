@@ -479,7 +479,9 @@ export function buildCourseLandingPageProps(
       exercisesLabel: (count) => t.get('courses.course_card.exercises_count', { count }),
       standaloneLessonLabel: t.get('course.navItem.lessons.add_content_options.lesson_title'),
       standaloneExerciseLabel: t.get('course.navItem.lessons.add_content_options.exercise_title'),
-      activitiesLabel: (count) => t.get('courses.course_card.activities_count', { count }),
+      activitiesLabel: (count) => t.get('public_courses.activities', { count }),
+      singleActivityModulesLabel: (count) => t.get('public_courses.modules', { count }),
+      singleActivityCourseLabel: t.get('public_courses.course'),
       infoRequirementsHeading: t.get('course.navItem.landing_page.requirement'),
       infoDescriptionHeading: t.get('course.navItem.landing_page.description'),
       infoGoalsHeading: t.get('course.navItem.landing_page.learn'),
@@ -497,7 +499,8 @@ export function buildCourseLandingPageProps(
       navReviewsLabel: t.get('course.navItem.landing_page.editor.title.reviews'),
       navPricingLabel: t.get('course.navItem.landing_page.editor.title.pricing'),
       factExercisesLabel: t.get('course.navItem.landing_page.exercises'),
-      factPackagesLabel: t.get('course.navItem.landing_page.packages'),
+      factActivitiesLabel: t.get('public_courses.activities_label'),
+      factModulesLabel: t.get('public_courses.modules_label'),
       factIncludedLabel: t.get('common.restricted_page.included')
     }
   };

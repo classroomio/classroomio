@@ -27,26 +27,50 @@
     return `${lessons} across ${moduleTotal} ${moduleTotal === 1 ? 'module' : 'modules'}`;
   });
 
-  function sectionMeta(lessonCount: number, exerciseCount?: number, activityCount?: number): string {
-    const lessons = labels?.lessonsLabel?.(lessonCount) ?? `${lessonCount} ${lessonCount === 1 ? 'lesson' : 'lessons'}`;
-    const parts = [lessons];
+  function modulesLabel(count: number): string {
+    return labels?.singleActivityModulesLabel?.(count) ?? `${count} ${count === 1 ? 'module' : 'modules'}`;
+  }
+
+  function sectionModuleCount(section: CourseCurriculumSection): number {
+    return section.activities?.reduce((total, activity) => total + (activity.modules?.length ?? 0), 0) ?? 0;
+  }
+
+  function sectionMeta(section: CourseCurriculumSection): string {
+    const lessonCount = section.lessons.length;
+    const exerciseCount = section.exerciseCount ?? 0;
+    const activityCount = section.activityCount ?? section.activities?.length ?? 0;
+    const moduleCount = sectionModuleCount(section);
+    const onlyActivityCourse = lessonCount === 0 && exerciseCount === 0 && activityCount === 1;
+    const parts: string[] = [];
+    if (lessonCount > 0) {
+      parts.push(labels?.lessonsLabel?.(lessonCount) ?? `${lessonCount} ${lessonCount === 1 ? 'lesson' : 'lessons'}`);
+    }
     if (exerciseCount) {
       parts.push(
         labels?.exercisesLabel?.(exerciseCount) ?? `${exerciseCount} ${exerciseCount === 1 ? 'exercise' : 'exercises'}`
       );
     }
-    if (activityCount) {
-      parts.push(
-        labels?.activitiesLabel?.(activityCount) ?? `${activityCount} ${activityCount === 1 ? 'package' : 'packages'}`
-      );
+    if (onlyActivityCourse) {
+      parts.push(moduleCount > 0 ? modulesLabel(moduleCount) : activitiesLabel(activityCount));
+    } else if (activityCount) {
+      parts.push(activitiesLabel(activityCount));
     }
 
     return parts.join(' · ');
   }
 
-  function standaloneLabel(kind: 'lesson' | 'exercise' | 'activity'): string {
-    if (kind === 'exercise') return labels?.standaloneExerciseLabel ?? 'Exercise';
-    if (kind === 'activity') return labels?.activitiesLabel?.(1) ?? 'Package';
+  function activitiesLabel(count: number): string {
+    return labels?.activitiesLabel?.(count) ?? `${count} ${count === 1 ? 'activity' : 'activities'}`;
+  }
+
+  function standaloneLabel(section: CourseCurriculumSection): string {
+    if (section.standalone === 'exercise') return labels?.standaloneExerciseLabel ?? 'Exercise';
+    if (section.standalone === 'activity') {
+      const moduleCount = sectionModuleCount(section);
+      if (moduleCount > 0) return modulesLabel(moduleCount);
+
+      return labels?.activitiesLabel?.(1) ?? 'Activity';
+    }
 
     return labels?.standaloneLessonLabel ?? 'Lesson';
   }
@@ -90,8 +114,7 @@
               >
                 {section.title}
               </span>
-              <span class="ui:text-[13px] ui:text-[var(--landing-fg-faint)]">{standaloneLabel(section.standalone)}</span
-              >
+              <span class="ui:text-[13px] ui:text-[var(--landing-fg-faint)]">{standaloneLabel(section)}</span>
               <span class="ui:size-4 ui:shrink-0" aria-hidden="true"></span>
             </div>
             {@render standaloneModules(section)}
@@ -111,11 +134,7 @@
                 {section.title}
               </span>
               <span class="ui:text-[13px] ui:text-[var(--landing-fg-faint)]">
-                {sectionMeta(
-                  section.lessons.length,
-                  section.exerciseCount,
-                  section.activityCount ?? section.activities?.length
-                )}
+                {sectionMeta(section)}
               </span>
               <ChevronDownIcon
                 class="ui:size-4 ui:shrink-0 ui:text-[var(--landing-fg-faint)] ui:transition-transform ui:group-open:rotate-180"

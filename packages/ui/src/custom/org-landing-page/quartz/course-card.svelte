@@ -4,7 +4,7 @@
     getCourseCoverImage,
     getCourseTypeLandingMeta,
     getPrimaryCourseTag,
-    getScormCourseSummary
+    getSingleActivityCourseSummary
   } from '../landing-page-utils';
 
   interface Props {
@@ -18,7 +18,7 @@
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
   const primaryTag = $derived(getPrimaryCourseTag(course));
   const cover = $derived(getCourseCoverImage(course));
-  const scormSummary = $derived(getScormCourseSummary(course, labels));
+  const singleActivitySummary = $derived(getSingleActivityCourseSummary(course, labels));
 
   const href = $derived.by(() => {
     if (disableCourseLinks) return undefined;
@@ -48,7 +48,7 @@
     if (!course.activityCount) return undefined;
     if (labels?.activitiesLabel) return labels.activitiesLabel(course.activityCount);
 
-    return course.activityCount === 1 ? '1 package' : `${course.activityCount} packages`;
+    return course.activityCount === 1 ? '1 activity' : `${course.activityCount} activities`;
   });
 </script>
 
@@ -93,8 +93,8 @@
 
     <div class="ui:mt-auto ui:pt-6 ui:flex ui:items-center ui:justify-between ui:gap-4">
       <span class="ui:flex ui:flex-wrap ui:gap-x-3 ui:gap-y-1 ui:text-[13px] ui:text-[var(--landing-fg-faint)]">
-        {#if scormSummary}
-          <span>{scormSummary}</span>
+        {#if singleActivitySummary}
+          <span>{singleActivitySummary}</span>
         {:else}
           {#if lessonsLabel}<span>{lessonsLabel}</span>{/if}
           {#if activitiesLabel}<span>{activitiesLabel}</span>{/if}

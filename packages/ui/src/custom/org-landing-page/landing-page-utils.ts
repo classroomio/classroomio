@@ -26,17 +26,17 @@ export function getPrimaryCourseTag(course: CourseItem) {
   return course.tags?.[0];
 }
 
-/** Summary shown instead of lesson and exercise counts on single-package SCORM courses. */
-export function getScormCourseSummary(course: CourseItem, labels?: OrgLandingPageLabels): string | undefined {
+/** Summary shown instead of lesson and exercise counts on single-activity courses. */
+export function getSingleActivityCourseSummary(course: CourseItem, labels?: OrgLandingPageLabels): string | undefined {
   if (course.format !== 'single_activity') return undefined;
 
   if (course.moduleCount != null) {
-    const fallback = `SCORM · ${course.moduleCount} ${course.moduleCount === 1 ? 'module' : 'modules'}`;
+    const fallback = `${course.moduleCount} ${course.moduleCount === 1 ? 'module' : 'modules'}`;
 
-    return labels?.scormModulesLabel?.(course.moduleCount) ?? fallback;
+    return labels?.singleActivityModulesLabel?.(course.moduleCount) ?? fallback;
   }
 
-  return labels?.scormCourseLabel ?? 'SCORM course';
+  return labels?.singleActivityCourseLabel ?? 'Course';
 }
 
 /** Label + icon for course `type` (COURSE_TYPE enum) on org landing cards. */
