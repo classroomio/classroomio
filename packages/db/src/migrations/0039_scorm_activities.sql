@@ -107,7 +107,7 @@ CREATE TABLE "course_activity" (
 	"kind" "ACTIVITY_KIND" NOT NULL,
 	"title" varchar NOT NULL,
 	"instructions" text,
-	"slug" varchar DEFAULT '' NOT NULL,
+	"slug" varchar NOT NULL,
 	"order" bigint NOT NULL,
 	"is_unlocked" boolean DEFAULT true NOT NULL,
 	"source_id" uuid,

@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, eq, inArray, max, ne, sql } from '@db/drizzle';
-import { db, type DbOrTxClient } from '@db/drizzle';
+import { and, asc, count, eq, inArray, isNotNull, isNull, max, ne, notExists, sql } from '@db/drizzle';
+import { db, type DbOrTxClient, type TxClient } from '@db/drizzle';
 import type { TContentPackageVersion, TNewContentPackageVersion } from '@db/types';
 
 export async function createPackageVersion(
@@ -161,9 +161,9 @@ export async function claimPackageVersionForProcessing(
  */
 export async function setCurrentPackageVersion(
   versionId: string,
-  dbClient?: DbOrTxClient
+  dbClient?: TxClient
 ): Promise<TContentPackageVersion> {
-  const run = async (client: DbOrTxClient): Promise<TContentPackageVersion> => {
+  const run = async (client: TxClient): Promise<TContentPackageVersion> => {
     const version = await getPackageVersionById(versionId, client);
     if (!version) throw new Error(`Package version "${versionId}" not found`);
     await lockAssetRow(version.assetId, client);
@@ -250,12 +250,13 @@ export async function listCurrentPackageVersionsForActivities(
 
     return await dbClient
       .select({
-        activityId: schema.activityScorm.activityId,
+        activityId: schema.courseActivity.id,
         assetId: schema.activityScorm.assetId,
         versionId: schema.contentPackageVersion.id,
         versionUpdatedAt: schema.contentPackageVersion.updatedAt
       })
-      .from(schema.activityScorm)
+      .from(schema.courseActivity)
+      .leftJoin(schema.activityScorm, eq(schema.activityScorm.activityId, schema.courseActivity.id))
       .leftJoin(
         schema.contentPackageVersion,
         and(
@@ -263,7 +264,7 @@ export async function listCurrentPackageVersionsForActivities(
           eq(schema.contentPackageVersion.isCurrent, true)
         )
       )
-      .where(inArray(schema.activityScorm.activityId, activityIds));
+      .where(inArray(schema.courseActivity.id, activityIds));
   } catch (error) {
     console.error('listCurrentPackageVersionsForActivities error:', error);
     throw new Error(
@@ -350,7 +351,24 @@ export async function markPackageVersionArchived(
     const [archived] = await dbClient
       .update(schema.contentPackageVersion)
       .set({ status: 'archived', archivedAt: now, updatedAt: now })
-      .where(eq(schema.contentPackageVersion.id, versionId))
+      .where(
+        and(
+          eq(schema.contentPackageVersion.id, versionId),
+          eq(schema.contentPackageVersion.isCurrent, false),
+          isNotNull(schema.contentPackageVersion.replacedAt),
+          notExists(
+            dbClient
+              .select({ id: schema.scormAttempt.id })
+              .from(schema.scormAttempt)
+              .where(
+                and(
+                  eq(schema.scormAttempt.packageVersionId, schema.contentPackageVersion.id),
+                  isNull(schema.scormAttempt.closedAt)
+                )
+              )
+          )
+        )
+      )
       .returning();
 
     return archived ?? null;

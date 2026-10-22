@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { lt, sql } from '@db/drizzle';
+import { sql } from '@db/drizzle';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TScormSessionEvent } from '@db/types';
 import {
@@ -119,12 +119,14 @@ export async function deleteScormSessionEventsOlderThan(
   dbClient: DbOrTxClient = db
 ): Promise<number> {
   try {
-    const deleted = await dbClient
-      .delete(schema.scormSessionEvent)
-      .where(lt(schema.scormSessionEvent.createdAt, cutoffIso))
-      .returning({ id: schema.scormSessionEvent.id });
+    const result = await dbClient.execute(sql`
+      WITH deleted AS (
+        DELETE FROM scorm_session_event WHERE created_at < ${cutoffIso} RETURNING 1
+      )
+      SELECT COUNT(*)::int AS count FROM deleted`);
 
-    return deleted.length;
+    const row = (result as unknown as Array<Record<string, unknown>>)[0];
+    return Number(row?.['count'] ?? 0);
   } catch (error) {
     console.error('deleteScormSessionEventsOlderThan error:', error);
     throw new Error(

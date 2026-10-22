@@ -1787,7 +1787,7 @@ export const courseActivity = pgTable(
     kind: activityKind().notNull(),
     title: varchar().notNull(),
     instructions: text(),
-    slug: varchar(),
+    slug: varchar().notNull(),
     order: bigint({ mode: 'number' }).notNull(),
     isUnlocked: boolean('is_unlocked').default(true).notNull(),
     sourceId: uuid('source_id'),

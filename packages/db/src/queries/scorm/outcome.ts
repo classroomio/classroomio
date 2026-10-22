@@ -18,7 +18,7 @@ export interface ScormTryOutcomeColumns {
 function safeNumericText(value: SQL): SQL<number | null> {
   return sql<
     number | null
-  >`CASE WHEN TRIM(${value}) ~ '^-?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][+-]?[0-9]+)?$' THEN TRIM(${value})::numeric ELSE NULL END`;
+  >`CASE WHEN TRIM(${value}) ~ '^[+-]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][+-]?[0-9]+)?$' THEN TRIM(${value})::numeric ELSE NULL END`;
 }
 
 /**

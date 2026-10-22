@@ -48,7 +48,7 @@ async function createScormFixture(suffix: string): Promise<ScormFixture> {
   });
   const [activity] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1 })
+    .values({ courseId: course.id, kind: 'scorm', title: 'Package', slug: 'package', order: 1 })
     .returning();
   const [asset] = await db
     .insert(schema.asset)
