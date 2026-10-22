@@ -1,5 +1,5 @@
 import type { TCourse, TCourseActivity, TCourseSection, TExercise, TLesson, TLessonLanguage } from '@db/types';
-import type { DbOrTxClient } from '@db/drizzle';
+import type { DbOrTxClient, TxClient } from '@db/drizzle';
 import { db } from '@db/drizzle';
 import {
   closeOpenAttemptsForActivity,
@@ -603,7 +603,7 @@ async function pullActivityDetails(
   templateOrgId: string | null,
   courseOrgId: string | null,
   userId: string,
-  client: DbOrTxClient
+  client: TxClient
 ): Promise<string[]> {
   const templateDetails = await getActivityScormByActivityId(templateActivityId, client);
   const courseDetails = await getActivityScormByActivityId(courseActivityId, client);
@@ -1008,6 +1008,10 @@ export async function pullCourseTemplateUpdates(
           }
           stamped.activityIds.push(existing.id);
           continue;
+        }
+
+        if (course.type === 'PUBLIC') {
+          throw new AppError('Activities cannot be added to Public courses', ErrorCodes.VALIDATION_ERROR, 400);
         }
 
         const parentId = activity.sectionId

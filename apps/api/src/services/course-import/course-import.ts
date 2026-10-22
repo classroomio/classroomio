@@ -1367,6 +1367,156 @@ export async function publishCourseImportDraftToExistingCourseService(
       return nextOrder;
     };
 
+    const sectionOrderMap = new Map<string, number>();
+
+    if (isMerge) {
+      type MergeItem = { key: string; draftOrder: number; kindPriority: number; id: string };
+      const mergeItemsBySection = new Map<string, MergeItem[]>();
+      const addMergeItem = (sectionId: string, item: MergeItem) => {
+        const list = mergeItemsBySection.get(sectionId) ?? [];
+        list.push(item);
+        mergeItemsBySection.set(sectionId, list);
+      };
+
+      for (const lesson of draft.lessons) {
+        if (!lesson.sectionExternalId) continue;
+        const sectionId = sectionIdMap.get(lesson.sectionExternalId);
+        if (!sectionId) continue;
+
+        const isNew = !existingLessonIds.has(lesson.externalId);
+        const originalLesson = existingLessons.find((el) => el.id === lesson.externalId);
+        const sectionChanged = Boolean(originalLesson && (originalLesson.sectionId ?? undefined) !== sectionId);
+
+        if (isNew || sectionChanged) {
+          addMergeItem(sectionId, {
+            key: `lesson:${lesson.externalId}`,
+            draftOrder: Number(lesson.order) || 0,
+            kindPriority: 0,
+            id: lesson.externalId
+          });
+        }
+      }
+
+      for (const reference of draft.activities ?? []) {
+        const sectionId = sectionIdMap.get(reference.sectionExternalId);
+        if (!sectionId) continue;
+
+        const current = activityById.get(reference.existingActivityId);
+        if (current && current.sectionId !== sectionId) {
+          addMergeItem(sectionId, {
+            key: `activity:${reference.existingActivityId}`,
+            draftOrder: Number(reference.order) || 0,
+            kindPriority: 1,
+            id: reference.existingActivityId
+          });
+        }
+      }
+
+      for (const exercise of draft.exercises ?? []) {
+        if (!exercise.sectionExternalId || exercise.lessonExternalId) continue;
+        const sectionId = sectionIdMap.get(exercise.sectionExternalId);
+        if (!sectionId) continue;
+
+        const isNew = !existingExerciseIds.has(exercise.externalId);
+        const originalExercise = existingExercises.find((ee) => ee.id === exercise.externalId);
+        const originalGroupKey = originalExercise?.lessonId ?? originalExercise?.sectionId;
+        const groupChanged = originalGroupKey !== sectionId;
+
+        if (isNew || groupChanged) {
+          addMergeItem(sectionId, {
+            key: `exercise:${exercise.externalId}`,
+            draftOrder: Number(exercise.order) || 0,
+            kindPriority: 2,
+            id: exercise.externalId
+          });
+        }
+      }
+
+      for (const [sectionId, items] of mergeItemsBySection) {
+        items.sort(
+          (a, b) => a.draftOrder - b.draftOrder || a.kindPriority - b.kindPriority || a.id.localeCompare(b.id)
+        );
+        for (const item of items) {
+          const nextOrder = (maxOrderBySection.get(sectionId) ?? 0) + 1;
+          maxOrderBySection.set(sectionId, nextOrder);
+          sectionOrderMap.set(item.key, nextOrder);
+        }
+      }
+    } else {
+      type ReplaceItem = {
+        key: string;
+        order: number;
+        kindPriority: number;
+        id: string;
+        isPreservedActivity?: boolean;
+      };
+      const replaceItemsBySection = new Map<string, ReplaceItem[]>();
+      const addReplaceItem = (sectionId: string, item: ReplaceItem) => {
+        const list = replaceItemsBySection.get(sectionId) ?? [];
+        list.push(item);
+        replaceItemsBySection.set(sectionId, list);
+      };
+
+      for (const activity of placedActivities) {
+        if (activity.sectionId && !draftExistingActivityIds.has(activity.id)) {
+          addReplaceItem(activity.sectionId, {
+            key: `preserved_activity:${activity.id}`,
+            order: Number(activity.order) || 0,
+            kindPriority: 0,
+            id: activity.id,
+            isPreservedActivity: true
+          });
+        }
+      }
+
+      for (const reference of draft.activities ?? []) {
+        const sectionId = sectionIdMap.get(reference.sectionExternalId);
+        if (!sectionId) continue;
+        addReplaceItem(sectionId, {
+          key: `activity:${reference.existingActivityId}`,
+          order: Number(reference.order) || 0,
+          kindPriority: 1,
+          id: reference.existingActivityId
+        });
+      }
+
+      for (const lesson of draft.lessons) {
+        if (!lesson.sectionExternalId) continue;
+        const sectionId = sectionIdMap.get(lesson.sectionExternalId);
+        if (!sectionId) continue;
+        addReplaceItem(sectionId, {
+          key: `lesson:${lesson.externalId}`,
+          order: Number(lesson.order) || 0,
+          kindPriority: 2,
+          id: lesson.externalId
+        });
+      }
+
+      for (const exercise of draft.exercises ?? []) {
+        if (!exercise.sectionExternalId || exercise.lessonExternalId) continue;
+        const sectionId = sectionIdMap.get(exercise.sectionExternalId);
+        if (!sectionId) continue;
+        addReplaceItem(sectionId, {
+          key: `exercise:${exercise.externalId}`,
+          order: Number(exercise.order) || 0,
+          kindPriority: 3,
+          id: exercise.externalId
+        });
+      }
+
+      for (const [sectionId, items] of replaceItemsBySection) {
+        items.sort((a, b) => a.order - b.order || a.kindPriority - b.kindPriority || a.id.localeCompare(b.id));
+        for (let index = 0; index < items.length; index += 1) {
+          const item = items[index]!;
+          const finalOrder = index + 1;
+          sectionOrderMap.set(item.key, finalOrder);
+          if (item.isPreservedActivity && item.order !== finalOrder) {
+            await updateActivity(item.id, { order: finalOrder });
+          }
+        }
+      }
+    }
+
     for (const lesson of [...draft.lessons].sort((a, b) => a.order - b.order)) {
       const sectionId = lesson.sectionExternalId ? sectionIdMap.get(lesson.sectionExternalId) : undefined;
       if (lesson.sectionExternalId && !sectionId) {
@@ -1381,12 +1531,22 @@ export async function publishCourseImportDraftToExistingCourseService(
         const sectionChanged = Boolean(originalLesson && (originalLesson.sectionId ?? undefined) !== sectionId);
 
         let mergedOrder: number | undefined;
-        if (isMerge) {
-          if (sectionChanged) {
-            mergedOrder = claimNextSectionOrder(sectionId, lesson.externalId);
+        if (sectionId) {
+          if (isMerge) {
+            if (sectionChanged) {
+              mergedOrder = sectionOrderMap.get(`lesson:${lesson.externalId}`);
+            }
+          } else {
+            mergedOrder = sectionOrderMap.get(`lesson:${lesson.externalId}`) ?? draftOrder;
           }
         } else {
-          mergedOrder = draftOrder;
+          if (isMerge) {
+            if (sectionChanged) {
+              mergedOrder = claimNextSectionOrder(sectionId, lesson.externalId);
+            }
+          } else {
+            mergedOrder = draftOrder;
+          }
         }
 
         const updatedLesson = await updateLessonService(lesson.externalId, {
@@ -1408,13 +1568,18 @@ export async function publishCourseImportDraftToExistingCourseService(
         continue;
       }
 
-      const nextLessonOrder = claimNextSectionOrder(sectionId, lesson.externalId);
+      const lessonOrder = sectionId
+        ? (sectionOrderMap.get(`lesson:${lesson.externalId}`) ??
+          (isMerge ? claimNextSectionOrder(sectionId, lesson.externalId) : draftOrder))
+        : isMerge
+          ? claimNextSectionOrder(sectionId, lesson.externalId)
+          : draftOrder;
       const createdLesson = await createLesson(course.id, {
         courseId: course.id,
         title: lesson.title,
         note,
         sectionId,
-        order: isMerge ? nextLessonOrder : draftOrder,
+        order: lessonOrder,
         isUnlocked: lesson.isUnlocked,
         public: lesson.public,
         videos: lesson.videos
@@ -1443,11 +1608,7 @@ export async function publishCourseImportDraftToExistingCourseService(
         );
       }
 
-      let order: number | undefined;
-      if (!isMerge || current.sectionId !== sectionId) {
-        order = isMerge ? (maxOrderBySection.get(sectionId) ?? 0) + 1 : reference.order;
-        maxOrderBySection.set(sectionId, order);
-      }
+      const order = sectionOrderMap.get(`activity:${reference.existingActivityId}`);
 
       await updateActivity(reference.existingActivityId, {
         sectionId,
@@ -1548,7 +1709,15 @@ export async function publishCourseImportDraftToExistingCourseService(
         const groupChanged = destGroupKey !== originalGroupKey;
 
         let exerciseOrder: number | undefined;
-        if (isMerge) {
+        if (payload.sectionId && !payload.lessonId) {
+          if (isMerge) {
+            if (groupChanged) {
+              exerciseOrder = sectionOrderMap.get(`exercise:${exercise.externalId}`);
+            }
+          } else {
+            exerciseOrder = sectionOrderMap.get(`exercise:${exercise.externalId}`) ?? payload.order;
+          }
+        } else if (isMerge) {
           if (groupChanged) {
             exerciseOrder = claimNextExerciseOrder(payload.lessonId, payload.sectionId, exercise.externalId);
           }
@@ -1572,9 +1741,15 @@ export async function publishCourseImportDraftToExistingCourseService(
         continue;
       }
 
-      const exerciseOrder = isMerge
-        ? claimNextExerciseOrder(payload.lessonId, payload.sectionId, exercise.externalId)
-        : payload.order;
+      const exerciseOrder =
+        payload.sectionId && !payload.lessonId
+          ? (sectionOrderMap.get(`exercise:${exercise.externalId}`) ??
+            (isMerge
+              ? claimNextExerciseOrder(payload.lessonId, payload.sectionId, exercise.externalId)
+              : payload.order))
+          : isMerge
+            ? claimNextExerciseOrder(payload.lessonId, payload.sectionId, exercise.externalId)
+            : payload.order;
 
       const createdExercise = await createExercise({
         courseId: course.id,

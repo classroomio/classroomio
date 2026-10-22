@@ -80,6 +80,7 @@ async function createImportCourse(
         sectionId: sections[placement.section]!.id,
         kind: 'scorm',
         title: 'Package item',
+        slug: 'package-item',
         order: placement.order
       })
       .returning();
@@ -162,7 +163,7 @@ describe.skipIf(!hasDatabase)('course import activities', () => {
       const schema = await import('@db/schema');
       const [activity] = await db
         .insert(schema.courseActivity)
-        .values({ courseId: ids.courseId, kind: 'scorm', title: 'Package', order: 1 })
+        .values({ courseId: ids.courseId, kind: 'scorm', title: 'Package', slug: 'package', order: 1 })
         .returning();
       const [lesson] = await db
         .insert(schema.lesson)

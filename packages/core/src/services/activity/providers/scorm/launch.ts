@@ -307,14 +307,26 @@ async function resolveAttempt(
   }
 
   const restartedAfterReplace = !cycleReset && (latest?.closeReason === 'replaced' || Boolean(open));
+  const latestPinned =
+    latest?.packageVersionId === current.id
+      ? current
+      : latest
+        ? await getPackageVersionById(latest.packageVersionId, tx)
+        : null;
+  const packageSwapped = Boolean(latest && (!latestPinned || latestPinned.assetId !== current.assetId));
 
-  const shouldCreate = !latest || cycleReset || latest.closeReason === 'replaced' || (startNewAttempt && allowRetakes);
+  const shouldCreate =
+    !latest || cycleReset || latest.closeReason === 'replaced' || packageSwapped || (startNewAttempt && allowRetakes);
 
   if (!shouldCreate && latest) return { attempt: latest, review: true, restartedAfterReplace: false };
 
   const created = await createScormAttempt({ activityId, profileId, packageVersionId: current.id, attemptNumber }, tx);
 
-  return { attempt: created, review: false, restartedAfterReplace: restartedAfterReplace && attemptNumber > 1 };
+  return {
+    attempt: created,
+    review: false,
+    restartedAfterReplace: (restartedAfterReplace || packageSwapped) && attemptNumber > 1
+  };
 }
 
 async function resolveTry(attemptId: string, unitId: string, tx: DbOrTxClient): Promise<TScormScoAttempt> {

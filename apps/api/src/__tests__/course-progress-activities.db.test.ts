@@ -77,15 +77,15 @@ async function createActivityProgressFixture(suffix: string): Promise<ActivityPr
     .returning();
   const [activityOne] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, kind: 'scorm', title: 'Package one', order: 3 })
+    .values({ courseId: course.id, kind: 'scorm', title: 'Package one', slug: 'package-one', order: 3 })
     .returning();
   const [activityTwo] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, kind: 'scorm', title: 'Package two', order: 4 })
+    .values({ courseId: course.id, kind: 'scorm', title: 'Package two', slug: 'package-two', order: 4 })
     .returning();
   await db
     .insert(schema.courseActivity)
-    .values({ courseId: exploreCourse.id, kind: 'scorm', title: 'Explore package', order: 1 });
+    .values({ courseId: exploreCourse.id, kind: 'scorm', title: 'Explore package', slug: 'explore-package', order: 1 });
 
   async function createStudent(tag: string) {
     const userId = crypto.randomUUID();

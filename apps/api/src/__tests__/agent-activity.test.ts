@@ -56,6 +56,7 @@ async function createAgentFixture(suffix: string): Promise<AgentFixture> {
       sectionId: section.id,
       kind: 'scorm',
       title: 'Safety package',
+      slug: 'safety-package',
       instructions: '<p>Finish the package to complete this item.</p>',
       order: 1
     })
@@ -252,6 +253,7 @@ describe.skipIf(!hasDatabase)('agent reorder execution with activities', () => {
           sectionId: fixture.sectionId,
           kind: 'scorm',
           title: 'Second package',
+          slug: 'second-package',
           order: 2
         })
         .returning();

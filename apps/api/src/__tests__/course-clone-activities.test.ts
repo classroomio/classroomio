@@ -105,7 +105,7 @@ async function createCloneFixture(suffix: string, withPackage: boolean): Promise
   });
   const [activity] = await db
     .insert(schema.courseActivity)
-    .values({ courseId: course.id, sectionId: section.id, kind: 'scorm', title: 'Package', order: 1 })
+    .values({ courseId: course.id, sectionId: section.id, kind: 'scorm', title: 'Package', slug: 'package', order: 1 })
     .returning();
 
   let assetId = '';
@@ -441,6 +441,7 @@ describe.skipIf(!hasDatabase)('clone copies activities and format without learne
           sectionId: templateFixture.sectionId,
           kind: 'scorm',
           title: 'Second package',
+          slug: 'second-package',
           order: 2
         })
         .returning();

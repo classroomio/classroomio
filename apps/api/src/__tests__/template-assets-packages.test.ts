@@ -43,7 +43,7 @@ describe.skipIf(!hasDatabase)('assetReferencedByGlobalTemplate includes package 
       .returning();
     const [activity] = await db
       .insert(schema.courseActivity)
-      .values({ courseId: template.id, kind: 'scorm', title: 'Package', order: 1 })
+      .values({ courseId: template.id, kind: 'scorm', title: 'Package', slug: 'package', order: 1 })
       .returning();
     await db.insert(schema.activityScorm).values({ activityId: activity.id, assetId: asset.id });
 
