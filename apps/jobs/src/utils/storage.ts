@@ -122,42 +122,50 @@ export async function deleteObjectFromBucket(bucket: string, key: string): Promi
   await getS3Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
 }
 
+/**
+ * Deletes a package version's extracted files and its generated index.
+ * Throws when any listing or deletion fails, including per-object errors
+ * that a batch delete reports with a successful response.
+ */
 export async function deletePackageStoragePrefix(bucket: string, contentPrefix: string): Promise<void> {
   if (!contentPrefix) return;
 
-  try {
-    let continuationToken: string | undefined;
-    do {
-      const page = await getS3Client().send(
-        new ListObjectsV2Command({
+  let continuationToken: string | undefined;
+  do {
+    const page = await getS3Client().send(
+      new ListObjectsV2Command({
+        Bucket: bucket,
+        Prefix: `${contentPrefix}/`,
+        ContinuationToken: continuationToken
+      })
+    );
+    const keys = (page.Contents ?? []).map((entry) => entry.Key).filter((key): key is string => Boolean(key));
+
+    if (keys.length > 0) {
+      const result = await getS3Client().send(
+        new DeleteObjectsCommand({
           Bucket: bucket,
-          Prefix: `${contentPrefix}/`,
-          ContinuationToken: continuationToken
+          Delete: { Objects: keys.map((Key) => ({ Key })), Quiet: true }
         })
       );
-      const keys = (page.Contents ?? []).map((entry) => entry.Key).filter((key): key is string => Boolean(key));
-      if (keys.length > 0) {
-        await getS3Client().send(
-          new DeleteObjectsCommand({
-            Bucket: bucket,
-            Delete: { Objects: keys.map((Key) => ({ Key })), Quiet: true }
-          })
+      const failures = result.Errors ?? [];
+
+      if (failures.length > 0) {
+        const [first] = failures;
+        throw new Error(
+          `Failed to delete ${failures.length} object(s) under ${contentPrefix}/: ${first.Key} ${first.Code ?? ''} ${first.Message ?? ''}`.trim()
         );
       }
-      continuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
-    } while (continuationToken);
+    }
 
-    await getS3Client()
-      .send(
-        new DeleteObjectCommand({
-          Bucket: bucket,
-          Key: `${contentPrefix}.index.json`
-        })
-      )
-      .catch(() => {});
-  } catch {
-    // best-effort cleanup of storage prefix
-  }
+    if (page.IsTruncated && !page.NextContinuationToken) {
+      throw new Error(`Listing under ${contentPrefix}/ was truncated without a continuation token`);
+    }
+
+    continuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  await getS3Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: `${contentPrefix}.index.json` }));
 }
 
 export async function safeUnlink(filePath: string | undefined | null): Promise<void> {

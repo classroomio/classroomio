@@ -40,7 +40,6 @@ import { getS3Client } from '../../config/storage';
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import {
   deleteObjectFromBucket,
-  deletePackageStoragePrefix,
   downloadObjectToTempFile,
   safeUnlink,
   scormBucket,
@@ -49,6 +48,7 @@ import {
 } from '../../utils/storage';
 import { errorMessage, throwIfCancelRequested } from '../../utils/cancel';
 import { log } from '../../utils/logger';
+import { cleanupPackageVersionStorage } from './cleanup-storage';
 
 const SCORM_CONTENT_CACHE_CONTROL = 'public, max-age=604800, immutable';
 const MANIFEST_MAX_BYTES = 10 * 1024 * 1024;
@@ -547,7 +547,11 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
     };
   } catch (error) {
     if (version?.contentPrefix) {
-      await deletePackageStoragePrefix(bucket, version.contentPrefix);
+      await cleanupPackageVersionStorage({
+        packageVersionId: version.id,
+        contentPrefix: version.contentPrefix,
+        organizationId: payload.actorContext.organizationId
+      });
     }
 
     if (error instanceof PackageError) {
