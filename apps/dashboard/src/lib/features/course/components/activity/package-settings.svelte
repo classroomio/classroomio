@@ -63,7 +63,7 @@
 
   const formDirty = $derived(
     rule !== settings.completionRule ||
-      (minScore ?? null) !== (settings.minScorePercent ?? null) ||
+      (rule === 'score' ? (minScore ?? 100) !== (settings.minScorePercent ?? 100) : false) ||
       allowRetakes !== settings.allowRetakes ||
       moduleOrder !== settings.moduleOrder ||
       completionModules !== settings.completionModules
@@ -80,7 +80,7 @@
     try {
       await activityApi.updateSettings(courseId, activityId, {
         completionRule: rule,
-        minScorePercent: rule === 'score' ? (minScore ?? 80) : null,
+        minScorePercent: rule === 'score' ? (minScore ?? 100) : null,
         allowRetakes,
         moduleOrder,
         completionModules
@@ -133,6 +133,9 @@
         onValueChange={(value) => {
           if (value === 'auto' || value === 'completed' || value === 'passed' || value === 'score') {
             rule = value;
+            if (value !== 'score') {
+              minScore = settings.minScorePercent ?? null;
+            }
           }
         }}
       >
@@ -158,9 +161,9 @@
             max={100}
             isDisabled={disabled}
             label={$t('course.navItem.lessons.activities.settings.min_score')}
-            value={minScore ?? 80}
+            value={minScore ?? 100}
             onValueChange={(next) => {
-              minScore = next ?? 80;
+              minScore = next ?? 100;
             }}
           />
         </div>
@@ -172,7 +175,7 @@
             {$t('course.navItem.lessons.activities.settings.rule_auto_no_package_hint')}
           {:else if hasPassMark}
             {$t('course.navItem.lessons.activities.settings.graded_hint', {
-              score: passMark ?? 80
+              score: passMark ?? 100
             })}
           {:else}
             {$t('course.navItem.lessons.activities.settings.ungraded_hint')}

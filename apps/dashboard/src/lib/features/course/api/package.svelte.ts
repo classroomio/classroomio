@@ -58,7 +58,7 @@ export class PackageApi extends BaseApiWithErrors {
     return created;
   }
 
-  async createVersion(assetId: string, fields: TPackageVersionCreate = {}) {
+  async createVersion(assetId: string, fields: TPackageVersionCreate) {
     let created: CreatePackageVersionData | undefined;
     await this.execute<CreatePackageVersionRequest>({
       requestFn: () => classroomio.activity.packages[':assetId'].versions.$post({ param: { assetId }, json: fields }),

@@ -3070,7 +3070,10 @@
             "tabs": {
               "upload": "Carregar",
               "library": "Biblioteca"
-            }
+            },
+            "scorm_format": "Formato SCORM",
+            "created": "Criado",
+            "manifest_id": "ID do manifesto"
           },
           "gating": {
             "title": "A criação de pacotes SCORM está pausada.",

@@ -3868,7 +3868,10 @@
             "tabs": {
               "upload": "Yüklemek",
               "library": "Kütüphane"
-            }
+            },
+            "scorm_format": "SCORM formatı",
+            "created": "Oluşturuldu",
+            "manifest_id": "Bildirim Kimliği"
           },
           "gating": {
             "title": "SCORM oluşturma işlemi duraklatıldı.",

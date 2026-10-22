@@ -3070,7 +3070,10 @@
             "tabs": {
               "upload": "Tải lên",
               "library": "Thư viện"
-            }
+            },
+            "scorm_format": "Định dạng SCORM",
+            "created": "Tạo",
+            "manifest_id": "Mã định danh bản kê khai"
           },
           "gating": {
             "title": "Tính năng tạo gói SCORM đang bị tạm dừng.",

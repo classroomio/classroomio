@@ -349,18 +349,22 @@
 
             <div class="ui:border-border/80 ui:bg-muted/20 space-y-2 rounded-lg border p-4 text-xs">
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="ui:text-muted-foreground">SCORM Format</span>
+                <span class="ui:text-muted-foreground"
+                  >{$t('course.navItem.lessons.activities.package.scorm_format')}</span
+                >
                 <span class="ui:text-foreground font-medium">{formatScormVersion(selectedVersion.format)}</span>
               </div>
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="ui:text-muted-foreground">Created</span>
+                <span class="ui:text-muted-foreground">{$t('course.navItem.lessons.activities.package.created')}</span>
                 <span class="ui:text-foreground font-medium">
                   {formatTimestamp(new Date(selectedVersion.createdAt))}
                 </span>
               </div>
               {#if selectedVersion.manifestIdentifier}
                 <div class="flex flex-wrap items-center justify-between gap-2">
-                  <span class="ui:text-muted-foreground">Manifest ID</span>
+                  <span class="ui:text-muted-foreground"
+                    >{$t('course.navItem.lessons.activities.package.manifest_id')}</span
+                  >
                   <span class="ui:text-muted-foreground max-w-xs truncate font-mono">
                     {selectedVersion.manifestIdentifier}
                   </span>

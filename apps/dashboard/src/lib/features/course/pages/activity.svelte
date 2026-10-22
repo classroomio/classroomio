@@ -227,17 +227,23 @@
   const affectedCount = $derived(inProgressCount + (attemptCounts?.orphaned ?? 0));
   const staleCount = $derived(attemptCounts?.stale ?? 0);
   const staleVersionNumber = $derived(attemptCounts?.staleVersionNumber ?? null);
-  const currentFingerprint = $derived<PackageFingerprint | null>(
-    attachedPackage
-      ? {
-          contentSha256: attachedPackage.currentVersion?.contentSha256 ?? null,
-          zipBytes: attachedPackage.currentVersion?.zipBytes ?? null,
-          manifestIdentifier: attachedPackage.currentVersion?.manifestIdentifier ?? null,
-          title: attachedPackage.currentVersion?.title ?? null,
-          itemIds: (attachedPackage.units ?? []).map((unit) => unit.identifier).sort()
-        }
-      : null
-  );
+  const currentFingerprint = $derived.by<PackageFingerprint | null>(() => {
+    if (!attachedPackage) return null;
+
+    const contentSha256 = attachedPackage.currentVersion?.contentSha256 ?? null;
+    const zipBytes = attachedPackage.currentVersion?.zipBytes ?? null;
+    const manifestIdentifier = attachedPackage.currentVersion?.manifestIdentifier ?? null;
+    const title = attachedPackage.currentVersion?.title ?? null;
+    const itemIds = (attachedPackage.units ?? []).map((unit) => unit.identifier).sort();
+
+    return {
+      contentSha256,
+      zipBytes,
+      manifestIdentifier,
+      title,
+      itemIds
+    };
+  });
 
   const hasPassMark = $derived.by(() => {
     for (const unit of attachedPackage?.units ?? []) {

@@ -889,37 +889,6 @@
           <UpgradeBanner>{$t('course.certification.completion_rules_upgrade')}</UpgradeBanner>
         {/if}
 
-        <Field.Field id="progression-mode" class="scroll-mt-24">
-          <Field.Label>
-            <a href="#progression-mode" class="hover:underline"
-              >{$t('course.navItem.settings.progression_mode_title')}</a
-            >
-          </Field.Label>
-          <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
-          <RadioGroup.Root
-            value={$settings.progressionMode}
-            onValueChange={(value) => {
-              if (value === 'free' || value === 'sequential') {
-                $settings.progressionMode = value;
-                hasUnsavedChanges = true;
-              }
-            }}
-          >
-            <div class="flex flex-col gap-3">
-              <div class="flex items-center gap-2">
-                <RadioGroup.Item value="free" id="progression-free" />
-                <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
-              </div>
-              <div class="flex items-center gap-2">
-                <RadioGroup.Item value="sequential" id="progression-sequential" />
-                <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
-              </div>
-            </div>
-          </RadioGroup.Root>
-        </Field.Field>
-
-        <SettingsSeparator />
-
         <AttentionHighlight
           id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_DEADLINE}
           trigger={completionDeadlineTrigger}

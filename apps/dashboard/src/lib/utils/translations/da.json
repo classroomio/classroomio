@@ -3070,7 +3070,10 @@
             "tabs": {
               "upload": "Upload",
               "library": "Bibliotek"
-            }
+            },
+            "scorm_format": "SCORM-format",
+            "created": "Oprettet",
+            "manifest_id": "Manifest-ID"
           },
           "gating": {
             "title": "SCORM-redigering er sat på pause.",

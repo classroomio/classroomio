@@ -3070,7 +3070,10 @@
             "tabs": {
               "upload": "अपलोड करें",
               "library": "पुस्तकालय"
-            }
+            },
+            "scorm_format": "SCORM प्रारूप",
+            "created": "बनाया था",
+            "manifest_id": "मैनिफेस्ट आईडी"
           },
           "gating": {
             "title": "SCORM ऑथरिंग रोक दी गई है।",
@@ -3596,7 +3599,7 @@
       "exercises_count": "{count, plural, one {# अभ्यास} other {# अभ्यास}}",
       "activities_count": "{count, plural, one {# पैकेज} other {# पैकेज}}",
       "scorm_modules": "SCORM · {count, plural, one {# मॉड्यूल} other {# मॉड्यूल}}",
-      "scorm": "एससीओआरएम",
+      "scorm": "SCORM",
       "scorm_course": "SCORM कोर्स"
     },
     "course_filter": {

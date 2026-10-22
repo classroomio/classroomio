@@ -3070,7 +3070,10 @@
             "tabs": {
               "upload": "Wgrywać",
               "library": "Biblioteka"
-            }
+            },
+            "scorm_format": "Format SCORM",
+            "created": "Stworzony",
+            "manifest_id": "Identyfikator manifestu"
           },
           "gating": {
             "title": "Tworzenie pakietów SCORM zostało wstrzymane.",

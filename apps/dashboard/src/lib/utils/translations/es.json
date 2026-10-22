@@ -3070,7 +3070,10 @@
             "tabs": {
               "upload": "Subir",
               "library": "Biblioteca"
-            }
+            },
+            "scorm_format": "Formato SCORM",
+            "created": "Creado",
+            "manifest_id": "ID de manifiesto"
           },
           "gating": {
             "title": "La creación de contenido SCORM está en pausa.",

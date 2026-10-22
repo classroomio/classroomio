@@ -3858,7 +3858,10 @@
             "tabs": {
               "upload": "Caricamento",
               "library": "Biblioteca"
-            }
+            },
+            "scorm_format": "Formato SCORM",
+            "created": "Creato",
+            "manifest_id": "ID del manifesto"
           },
           "gating": {
             "title": "La creazione di pacchetti SCORM è in pausa.",

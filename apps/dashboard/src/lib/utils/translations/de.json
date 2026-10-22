@@ -3070,7 +3070,10 @@
             "tabs": {
               "upload": "Hochladen",
               "library": "Bibliothek"
-            }
+            },
+            "scorm_format": "SCORM-Format",
+            "created": "Erstellt",
+            "manifest_id": "Manifest-ID"
           },
           "gating": {
             "title": "Die SCORM-Erstellung ist pausiert.",
