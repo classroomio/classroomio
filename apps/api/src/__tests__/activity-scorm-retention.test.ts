@@ -55,6 +55,10 @@ vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
 
 import { runScormRetention } from '@cio/core/services/activity/retention';
 
+// The sweep is global, so every run uses a clock from before any real data:
+// only fixture rows, backdated from this clock, are old enough to match.
+const RETENTION_NOW_MS = Date.parse('2000-06-01T00:00:00.000Z');
+
 const hasDatabase = Boolean(
   process.env.DATABASE_URL || process.env.PRIVATE_DATABASE_URL || process.env.PGBOUNCER_DATABASE_URL
 );
@@ -197,7 +201,7 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     const schema = await import('@db/schema');
     const current = suffix();
     const fixture = await createRetentionFixture(current);
-    const ancient = new Date(Date.now() - 40 * 86_400_000).toISOString();
+    const ancient = new Date(RETENTION_NOW_MS - 40 * 86_400_000).toISOString();
 
     const first = await createVersion(fixture, 1, current, {
       isCurrent: false,
@@ -216,7 +220,7 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     storedObjects.set(`${first.contentPrefix}0/sco.html`, 'near-miss');
 
     try {
-      const result = await runScormRetention(90);
+      const result = await runScormRetention(90, 30, RETENTION_NOW_MS);
 
       expect(storedObjects.has(`${first.contentPrefix}/sco.html`)).toBe(false);
       expect(storedObjects.has(first.uploadKey)).toBe(false);
@@ -242,7 +246,7 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     const schema = await import('@db/schema');
     const current = suffix();
     const fixture = await createRetentionFixture(current);
-    const ancient = new Date(Date.now() - 40 * 86_400_000).toISOString();
+    const ancient = new Date(RETENTION_NOW_MS - 40 * 86_400_000).toISOString();
 
     const first = await createVersion(fixture, 1, current, {
       isCurrent: false,
@@ -286,7 +290,7 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      const result = await runScormRetention(90);
+      const result = await runScormRetention(90, 30, RETENTION_NOW_MS);
 
       expect(storedObjects.has(`${first.contentPrefix}/sco.html`)).toBe(false);
       expect(storedObjects.get(first.uploadKey)).toBe('zip-bytes');
@@ -312,7 +316,7 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     const schema = await import('@db/schema');
     const current = suffix();
     const fixture = await createRetentionFixture(current);
-    const ancient = new Date(Date.now() - 40 * 86_400_000).toISOString();
+    const ancient = new Date(RETENTION_NOW_MS - 40 * 86_400_000).toISOString();
 
     const first = await createVersion(fixture, 1, current, { isCurrent: false, replacedAt: ancient });
     await createVersion(fixture, 2, current, { isCurrent: true, replacedAt: null });
@@ -329,7 +333,7 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      await runScormRetention(90);
+      await runScormRetention(90, 30, RETENTION_NOW_MS);
 
       expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
 
@@ -349,7 +353,7 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     const { getPackageVersionById } = await import('@cio/db/queries/activity/package-version');
     const current = suffix();
     const fixture = await createRetentionFixture(current);
-    const nowMs = Date.now();
+    const nowMs = RETENTION_NOW_MS;
     const ancient = new Date(nowMs - 40 * 86_400_000).toISOString();
     const versions = [
       await createVersion(fixture, 1, current, { replacedAt: ancient }),
@@ -376,7 +380,7 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     const { getPackageVersionById } = await import('@cio/db/queries/activity/package-version');
     const current = suffix();
     const fixture = await createRetentionFixture(current);
-    const replacedAt = new Date(Date.now() - 40 * 86_400_000).toISOString();
+    const replacedAt = new Date(RETENTION_NOW_MS - 40 * 86_400_000).toISOString();
     const version = await createVersion(fixture, 1, current, { replacedAt });
     for (const key of ['a.html', 'b.html', 'index.json'])
       storedObjects.set(`${version.contentPrefix}/${key}`, 'content');
@@ -386,17 +390,79 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     failDeletes = true;
 
     try {
-      await expect(runScormRetention()).rejects.toThrow('AccessDenied');
+      await expect(runScormRetention(90, 30, RETENTION_NOW_MS)).rejects.toThrow('AccessDenied');
       expect((await getPackageVersionById(version.id))?.status).toBe('ready');
       expect(storedObjects.size).toBe(5);
       failDeletes = false;
-      const result = await runScormRetention();
+      const result = await runScormRetention(90, 30, RETENTION_NOW_MS);
       expect(result.versionsDeleted).toBe(1);
       expect(storedObjects.size).toBe(0);
       expect(await getPackageVersionById(version.id)).toBeNull();
     } finally {
       failDeletes = false;
       listPageSize = 1000;
+      storedObjects.clear();
+      await cleanupRetentionFixture(fixture);
+    }
+  });
+
+  it('removes the extracted files a failed version left behind and keeps its ZIP and row', async () => {
+    const { getPackageVersionById } = await import('@cio/db/queries/activity/package-version');
+    const current = suffix();
+    const fixture = await createRetentionFixture(current);
+    const failedAt = new Date(RETENTION_NOW_MS - 2 * 3_600_000).toISOString();
+    const leftover = await createVersion(fixture, 1, current, { status: 'failed', updatedAt: failedAt });
+    const cleaned = await createVersion(fixture, 2, current, {
+      status: 'failed',
+      extractedBytes: 0,
+      updatedAt: failedAt
+    });
+    const recent = await createVersion(fixture, 3, current, {
+      status: 'failed',
+      updatedAt: new Date(RETENTION_NOW_MS - 60_000).toISOString()
+    });
+    for (const version of [leftover, cleaned, recent]) {
+      storedObjects.set(`${version.contentPrefix}/sco.html`, '<html></html>');
+      storedObjects.set(`${version.contentPrefix}.index.json`, '[]');
+      storedObjects.set(version.uploadKey, 'zip');
+    }
+
+    try {
+      const result = await runScormRetention(90, 30, RETENTION_NOW_MS);
+
+      expect(result.failedVersionsCleaned).toBe(1);
+      expect(storedObjects.has(`${leftover.contentPrefix}/sco.html`)).toBe(false);
+      expect(storedObjects.has(`${leftover.contentPrefix}.index.json`)).toBe(false);
+      expect(storedObjects.get(leftover.uploadKey)).toBe('zip');
+      expect(await getPackageVersionById(leftover.id)).toMatchObject({ status: 'failed', extractedBytes: 0 });
+      expect(storedObjects.has(`${cleaned.contentPrefix}/sco.html`)).toBe(true);
+      expect(storedObjects.has(`${recent.contentPrefix}/sco.html`)).toBe(true);
+    } finally {
+      storedObjects.clear();
+      await cleanupRetentionFixture(fixture);
+    }
+  });
+
+  it('keeps a failed version marked for cleanup when its delete fails', async () => {
+    const { getPackageVersionById } = await import('@cio/db/queries/activity/package-version');
+    const current = suffix();
+    const fixture = await createRetentionFixture(current);
+    const failedAt = new Date(RETENTION_NOW_MS - 2 * 3_600_000).toISOString();
+    const leftover = await createVersion(fixture, 1, current, { status: 'failed', updatedAt: failedAt });
+    storedObjects.set(`${leftover.contentPrefix}/sco.html`, '<html></html>');
+    failDeletes = true;
+
+    try {
+      await expect(runScormRetention(90, 30, RETENTION_NOW_MS)).rejects.toThrow('AccessDenied');
+      expect((await getPackageVersionById(leftover.id))?.extractedBytes).toBeNull();
+
+      failDeletes = false;
+      const result = await runScormRetention(90, 30, RETENTION_NOW_MS);
+
+      expect(result.failedVersionsCleaned).toBe(1);
+      expect(storedObjects.size).toBe(0);
+    } finally {
+      failDeletes = false;
       storedObjects.clear();
       await cleanupRetentionFixture(fixture);
     }
