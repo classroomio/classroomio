@@ -1,22 +1,132 @@
+import { DeleteObjectsCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { db } from '@cio/db/drizzle';
+import {
+  deletePackageVersionsByIds,
+  listFailedVersionsWithStoredContent,
+  listVersionsDueForRetention,
+  lockAssetRow,
+  lockPackageVersionRow,
+  markPackageVersionArchived,
+  markPackageVersionContentRemoved
+} from '@cio/db/queries/activity/package-version';
 import { deleteScormSessionEventsOlderThan } from '@cio/db/queries/scorm/session-event';
+import { getS3Client, getStorageConfig } from '../../config/storage';
 
 export interface ScormRetentionResult {
   eventsDeleted: number;
+  versionsDeleted: number;
+  versionsArchived: number;
+  failedVersionsCleaned: number;
 }
+
+const FAILED_VERSION_GRACE_MS = 3_600_000;
 
 function cutoffIso(days: number, nowMs: number): string {
   return new Date(nowMs - days * 86_400_000).toISOString();
 }
 
+async function deleteKeys(bucket: string, keys: string[]): Promise<void> {
+  if (keys.length === 0) return;
+
+  const result = await getS3Client().send(
+    new DeleteObjectsCommand({ Bucket: bucket, Delete: { Objects: keys.map((Key) => ({ Key })), Quiet: true } })
+  );
+  if (result.Errors?.length) throw new Error(`Failed to delete SCORM objects: ${result.Errors[0].Code}`);
+}
+
+async function deleteContentPrefix(bucket: string, contentPrefix: string): Promise<void> {
+  let continuationToken: string | undefined;
+  do {
+    const page = await getS3Client().send(
+      new ListObjectsV2Command({ Bucket: bucket, Prefix: `${contentPrefix}/`, ContinuationToken: continuationToken })
+    );
+    const keys = (page.Contents ?? []).map((entry) => entry.Key).filter((key): key is string => Boolean(key));
+    await deleteKeys(bucket, keys);
+    if (page.IsTruncated && !page.NextContinuationToken) throw new Error('Missing SCORM listing continuation token');
+    continuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
+  } while (continuationToken);
+}
+
 /**
- * Deletes diagnostic events past their window. Replaced package files stay in
- * storage until an admin deletes the package, matching other asset kinds.
+ * Removes extracted files that a failed or canceled version left behind when
+ * its inline cleanup did not finish. Keeps the ZIP and the row.
+ */
+async function cleanupFailedVersions(nowMs: number): Promise<number> {
+  const cutoff = new Date(nowMs - FAILED_VERSION_GRACE_MS).toISOString();
+  const candidates = await listFailedVersionsWithStoredContent(cutoff);
+  let cleaned = 0;
+
+  for (const candidate of candidates) {
+    try {
+      const removed = await db.transaction(async (tx) => {
+        await lockPackageVersionRow(candidate.id, tx);
+        const [version] = await listFailedVersionsWithStoredContent(cutoff, tx, candidate.id);
+        if (!version) return false;
+
+        const bucket = getStorageConfig().bucketScorm;
+        await deleteContentPrefix(bucket, version.contentPrefix);
+        await deleteKeys(bucket, [`${version.contentPrefix}.index.json`]);
+        await markPackageVersionContentRemoved(version.id, tx);
+
+        return true;
+      });
+
+      if (removed) cleaned += 1;
+    } catch (error) {
+      console.error(`cleanupFailedVersions: failed to clean up candidate "${candidate.id}":`, error);
+    }
+  }
+
+  return cleaned;
+}
+
+/**
+ * Deletes expired events and unused versions; archives versions with only
+ * closed attempts, preserving their ZIPs. Also finishes storage cleanup for
+ * failed or canceled versions.
  */
 export async function runScormRetention(
   eventOlderThanDays = 90,
+  unpinnedVersionDays = 30,
   nowMs: number = Date.now()
 ): Promise<ScormRetentionResult> {
   const eventsDeleted = await deleteScormSessionEventsOlderThan(cutoffIso(eventOlderThanDays, nowMs));
+  const versionCutoff = cutoffIso(unpinnedVersionDays, nowMs);
+  const candidates = await listVersionsDueForRetention(versionCutoff);
+  let versionsDeleted = 0;
+  let versionsArchived = 0;
 
-  return { eventsDeleted };
+  for (const candidate of candidates) {
+    try {
+      const outcome = await db.transaction(async (tx) => {
+        await lockAssetRow(candidate.assetId, tx);
+        await lockPackageVersionRow(candidate.id, tx);
+        const [version] = await listVersionsDueForRetention(versionCutoff, tx, candidate.id);
+        if (!version || version.hasOpenAttempts) return;
+
+        const bucket = getStorageConfig().bucketScorm;
+        await deleteContentPrefix(bucket, version.contentPrefix);
+        const keys = [`${version.contentPrefix}.index.json`];
+        if (!version.hasAttempts) keys.push(version.uploadKey);
+        await deleteKeys(bucket, keys);
+
+        if (version.hasAttempts) {
+          await markPackageVersionArchived(version.id, tx);
+          return 'archived';
+        }
+
+        await deletePackageVersionsByIds([version.id], tx);
+        return 'deleted';
+      });
+
+      if (outcome === 'deleted') versionsDeleted += 1;
+      if (outcome === 'archived') versionsArchived += 1;
+    } catch (error) {
+      console.error(`runScormRetention: failed to process version "${candidate.id}":`, error);
+    }
+  }
+
+  const failedVersionsCleaned = await cleanupFailedVersions(nowMs);
+
+  return { eventsDeleted, versionsDeleted, versionsArchived, failedVersionsCleaned };
 }

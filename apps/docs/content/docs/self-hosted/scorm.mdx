@@ -1,0 +1,104 @@
+---
+title: SCORM packages
+description: Serve ClassroomIO SCORM packages from a separate content hostname with SCORM_CONTENT_ORIGIN.
+last_reviewed: '2026-10-11'
+---
+
+SCORM packages run untrusted course content in the learner's browser. ClassroomIO serves that content from a **separate content origin** — never from the app origin — so a malicious or broken package cannot read the course page, the session, or another organization's content.
+
+On self-hosted, set one hostname under your existing domain plus one DNS record, for example `content.yourdomain.com`, with `SCORM_CONTENT_ORIGIN`. That is one DNS record and no second domain purchase.
+
+## Quick setup
+
+1. Add one DNS record for the content hostname pointing at your stack:
+
+   | Record | Host | Points at |
+   | --- | --- | --- |
+   | A (or CNAME) | `content.yourdomain.com` | your ClassroomIO server or reverse proxy |
+
+2. Route that hostname to the `api` container on its internal port (`3081` in the bundled compose stack). The dashboard listens on `3082`; the content host must reach the API.
+
+3. Set the environment:
+
+```zsh title=".env"
+SCORM_CONTENT_ORIGIN=https://content.yourdomain.com
+ACTIVITY_SIGNING_SECRET=
+OBJECT_STORAGE_BUCKET_SCORM=scorm
+UPLOAD_MAX_SCORM_MB=500
+LICENSE_KEY=<your enterprise license key with scorm>
+```
+
+`ACTIVITY_SIGNING_SECRET` signs activity launch and content tokens. Generate one with `openssl rand -hex 32` and keep it secret — `./classroomio.sh` generates it for Docker installs when it is missing. `OBJECT_STORAGE_BUCKET_SCORM` defaults to `scorm` and holds each version's ZIP plus extracted files in the private bucket. `UPLOAD_MAX_SCORM_MB` defaults to 500.
+
+Using external storage (R2 or S3) instead of the bundled SeaweedFS? Create the private bucket named by `OBJECT_STORAGE_BUCKET_SCORM` before the first upload. The bundled `storage-init` service only creates buckets in SeaweedFS, so nothing creates it for you on external storage and uploads fail until it exists.
+
+4. Restart the stack with `./classroomio.sh restart` (this recreates the `api` container so it picks up the new values).
+
+Without `SCORM_CONTENT_ORIGIN`, the feature stays off and the admin is told why. Package uploads, the player, and content routes refuse with an explanation instead of failing silently.
+
+## What the content host serves
+
+On the content host, only these paths serve. Everything else returns 404:
+
+- `GET /activity/player/:launchToken` — player HTML (never cached)
+- `GET /activity/player-assets/*` — hashed player JS and CSS (immutable)
+- `GET /activity/content/:contentToken/*` — package files with Range and `Cache-Control: public, max-age=604800, immutable`
+- `GET /activity/scorm/runtime/:launchToken/state` — saved run-time state
+- `POST /activity/scorm/runtime/:launchToken/commit` — numbered commits (JSON, or `text/plain` beacons)
+- `POST /activity/scorm/runtime/:launchToken/event` — diagnostic telemetry and player lifecycle events
+
+Package versions are immutable, so file URLs are stable per package version for a week. Any CDN in front of the content hostname can cache them.
+
+## Separate origin, same site
+
+A subdomain such as `content.yourdomain.com` is a **separate origin** from `app.yourdomain.com`, so package code cannot read the app's pages, storage, or responses, and host-only auth cookies are not sent to it.
+
+It is the **same site**, though, so package code could set a cookie for the parent domain (`yourdomain.com`) that the app would receive. With one organization, only your own team uploads packages, so the risk is a malicious vendor package, not another tenant. The guide states this trade-off.
+
+For full isolation, use a **separate registrable domain** for content instead — for example `yourdomain-content.com` with `SCORM_CONTENT_ORIGIN=https://content.yourdomain-content.com`. That follows the same model ClassroomIO Cloud uses (`{orgKey}.classroomio-content.com`, a dedicated registrable domain with one subdomain per organization). It costs one domain and one DNS zone, and removes same-site cookie sharing entirely.
+
+Renaming the auth cookies with the `__Host-` prefix would stop a sibling host from overwriting them. It logs everyone out once, so it ships as its own security ticket, not in this feature.
+
+## License key
+
+SCORM is an Enterprise feature. On self-hosted it needs `LICENSE_KEY` with the `scorm` feature, validated by the license server like SSO and token auth. Only authoring is gated: creating SCORM items and courses, uploading or replacing packages, and changing package settings. Playback, review, results, export, reset, and delete keep working.
+
+A lapsed license, or the license server being unreachable for an hour (failures are cached that long), never blocks learners or hides records. See [Enterprise & licensing](/self-hosted/enterprise).
+
+## Storage and limits
+
+- Package files live in the private `scorm` bucket in the object storage the app already uses (bundled SeaweedFS by default, or R2 or S3). The bucket is never public.
+- `UPLOAD_MAX_SCORM_MB` defaults to 500. The worker checks the real object size; the browser's figure is advisory only. Set the same value across `api`, `dashboard`, and `jobs`, and raise your reverse-proxy body-size limit to match.
+- Package versions remain stored so historical learner attempts stay intact and can be reviewed. Diagnostic events are retained for auditing. The original ZIP of each version is kept for reprocessing. Retention limits and cleanup sweeps run in the `jobs` container.
+- Storage cards include SCORM packages: all versions' ZIPs plus extracted files.
+
+## Compatibility
+
+SCORM 1.2 and SCORM 2004 (2nd to 4th editions) are supported. For multi-module packages, ClassroomIO supports sequential unlocking when **Module order** is set to **In sequence**. Note that advanced SCORM 2004 sequencing rules (such as objective rollups, branching logic, and pre-tests) are ignored — ClassroomIO does not run a full IMS Simple Sequencing engine.
+
+| Source | SCORM 1.2 | SCORM 2004 | Notes |
+| --- | --- | --- | --- |
+| Hand-written fixtures | Yes | Yes | Every API call, errors, resume, exit values |
+| Rustici golf examples (CC BY 3.0) | Yes | 2nd to 4th | Multi-SCO and sequencing samples |
+| Adapt Learning | Yes | 4th | Single-page app with suspend data |
+| Articulate Storyline 360 | Yes | 2nd to 4th | Launch file `index_lms.html` |
+| Articulate Rise 360 | Yes | Yes | Launch file `indexapi.html` |
+| iSpring Suite | Yes | Yes | Slide conversions |
+| Elucidat default export | Yes | 2nd to 4th | Streams content from Elucidat; needs the vendor site reachable |
+| Adobe Captivate | Yes | Check | Quizzes, interactions, mastery score |
+
+Packages that stream content from the vendor (Rustici Dispatch, Elucidat's default export) work, but report only what the vendor passes on and stop working if your licence with the vendor ends. xAPI, cmi5, AICC, LTI, and H5P are not supported yet.
+
+## Troubleshooting
+
+### Uploads stay stuck or fail
+
+The jobs worker processes packages. Without it, uploads stay stuck with no error. Check `./classroomio.sh logs jobs` and confirm the worker is running.
+
+### The player says the session expired
+
+Launch tokens expire 12 hours after launch. Reload to start again where the learner left off.
+
+### The package says it did not connect
+
+The package never called the SCORM API. Re-export it with an LMS or SCORM publishing option. For streamed packages, check that the vendor's site is reachable.

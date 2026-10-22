@@ -1,0 +1,26 @@
+{
+  "name": "@cio/activity-player",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SCORM player page served from the content origin. Phase 0 skeleton: scorm-again adapter running against the stub runtime server.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "stub": "node stub/server.mjs",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "fflate": "0.8.2",
+    "scorm-again": "3.4.6"
+  },
+  "devDependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "typescript": "^5.5.2",
+    "vite": "^7.1.4",
+    "vitest": "^1.6.1"
+  }
+}

@@ -1,11 +1,19 @@
-import { ZRuntimeTokenParam, ZScormCommit, ZScormRuntimeEvent } from '@cio/utils/validation/activity/scorm';
+import {
+  ZRuntimeTokenParam,
+  ZScormCommit,
+  ZScormReplay,
+  ZScormRuntimeEvent
+} from '@cio/utils/validation/activity/scorm';
 import {
   commitScormAttempt,
   getScormRuntimeState,
-  reportScormRuntimeEvent
+  replayScormCommit,
+  reportScormRuntimeEvent,
+  type ScormCommitResult
 } from '@api/services/activity/runtime-scorm';
 
 import type { Context, Next } from 'hono';
+import { gunzipSync } from 'node:zlib';
 import { Hono } from '@api/utils/hono';
 import { activityRuntimeRateLimiter } from '@api/middlewares/rate-limiter';
 import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
@@ -14,6 +22,8 @@ import { verifyLaunchToken } from '@cio/activity-packages';
 import { getActivitySigningSecret } from '@cio/core/config/activity-content';
 
 const RUNTIME_BODY_MAX_BYTES = 524288;
+const GZIP_BODY_HEADER = 'x-cio-body-encoding';
+const REPLAY_BODY_MAX_BYTES = RUNTIME_BODY_MAX_BYTES + 8192;
 
 async function verifyRuntimeLaunchToken(c: Context, next: Next) {
   const launchToken = c.req.param('launchToken');
@@ -77,19 +87,74 @@ async function readBoundedText(c: Context, maxBytes: number, errorMessage: strin
   return new TextDecoder().decode(combined);
 }
 
-function rejectOversizedBody(c: Context, errorMessage: string): Response | null {
+function rejectOversizedBody(
+  c: Context,
+  limitOrMessage: number | string = RUNTIME_BODY_MAX_BYTES,
+  customMessage?: string
+): Response | null {
+  const maxBytes = typeof limitOrMessage === 'number' ? limitOrMessage : RUNTIME_BODY_MAX_BYTES;
+  const errorMessage =
+    typeof limitOrMessage === 'string' ? limitOrMessage : (customMessage ?? 'Commit payload too large');
   const declared = c.req.header('content-length');
-  if (declared && Number(declared) > RUNTIME_BODY_MAX_BYTES) {
+  if (declared && Number(declared) > maxBytes) {
     return c.json({ success: false, error: errorMessage, code: ErrorCodes.VALIDATION_ERROR }, 413);
   }
 
   return null;
 }
 
+/**
+ * Reads a commit body as text. The player gzips exit saves too large for the
+ * browser's unload request limit and marks them with a header. Throws 413 when
+ * the body, before or after decompression, exceeds the commit limit.
+ */
+async function readCommitBody(c: Context, maxBytes = RUNTIME_BODY_MAX_BYTES): Promise<string> {
+  if (c.req.header(GZIP_BODY_HEADER) !== 'gzip') {
+    return readBoundedText(c, maxBytes, 'Commit payload too large');
+  }
+
+  const compressed = Buffer.from(await c.req.arrayBuffer());
+  if (compressed.byteLength > maxBytes) {
+    throw new AppError('Commit payload too large', ErrorCodes.VALIDATION_ERROR, 413);
+  }
+
+  try {
+    return gunzipSync(compressed, { maxOutputLength: maxBytes }).toString('utf8');
+  } catch (error) {
+    if (error instanceof RangeError) throw new AppError('Commit payload too large', ErrorCodes.VALIDATION_ERROR, 413);
+
+    throw new AppError('Invalid commit payload', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+}
+
 function truncateUserAgent(value: string | null): string | null {
   if (!value) return value;
 
   return value.length > 512 ? value.slice(0, 512) : value;
+}
+
+function parseJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+function commitResponse(c: Context, result: ScormCommitResult) {
+  if (result.rejected) {
+    return c.json({ result: false, errorCode: 101, completedActivity: false, progressChanged: false }, 200);
+  }
+
+  return c.json(
+    {
+      result: true,
+      errorCode: 0,
+      completedActivity: result.completedActivity,
+      progressChanged: result.progressChanged
+    },
+    200
+  );
 }
 
 export const runtimeScormRouter = new Hono()
@@ -120,14 +185,8 @@ export const runtimeScormRouter = new Hono()
         const oversized = rejectOversizedBody(c, 'Commit payload too large');
         if (oversized) return oversized;
 
-        const text = await readBoundedText(c, RUNTIME_BODY_MAX_BYTES, 'Commit payload too large');
-        let body: unknown;
-        try {
-          body = JSON.parse(text);
-        } catch {
-          body = null;
-        }
-        const parsed = ZScormCommit.safeParse(body);
+        const text = await readCommitBody(c);
+        const parsed = ZScormCommit.safeParse(parseJson(text));
         if (!parsed.success) throw new AppError('Invalid commit payload', ErrorCodes.VALIDATION_ERROR, 400);
         const contentType = c.req.header('content-type') ?? '';
         const viaBeacon = contentType.includes('text/plain');
@@ -138,29 +197,35 @@ export const runtimeScormRouter = new Hono()
           truncateUserAgent(c.req.header('user-agent') ?? null)
         );
 
-        if (result.rejected) {
-          return c.json(
-            {
-              result: false,
-              errorCode: 101,
-              completedActivity: false,
-              progressChanged: false
-            },
-            200
-          );
-        }
-
-        return c.json(
-          {
-            result: true,
-            errorCode: 0,
-            completedActivity: result.completedActivity,
-            progressChanged: result.progressChanged
-          },
-          200
-        );
+        return commitResponse(c, result);
       } catch (error) {
         return handleError(c, error, 'Failed to save commit');
+      }
+    }
+  )
+  .post(
+    '/:launchToken/replay',
+    zValidator('param', ZRuntimeTokenParam),
+    verifyRuntimeLaunchToken,
+    activityRuntimeRateLimiter,
+    async (c) => {
+      try {
+        const oversized = rejectOversizedBody(c, REPLAY_BODY_MAX_BYTES);
+        if (oversized) return oversized;
+        const text = await readCommitBody(c, REPLAY_BODY_MAX_BYTES);
+        const parsed = ZScormReplay.safeParse(parseJson(text));
+        if (!parsed.success) throw new AppError('Invalid replay payload', ErrorCodes.VALIDATION_ERROR, 400);
+        const current = c.get('runtimeClaims')!;
+        const result = await replayScormCommit(
+          current,
+          parsed.data.originalToken,
+          parsed.data.commit,
+          truncateUserAgent(c.req.header('user-agent') ?? null)
+        );
+
+        return commitResponse(c, result);
+      } catch (error) {
+        return handleError(c, error, 'Failed to replay stored save');
       }
     }
   )

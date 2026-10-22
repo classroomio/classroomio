@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Activity player</title>
+    <style>
+      :root {
+        --background: #ffffff;
+        --foreground: #171717;
+        --popover: #ffffff;
+        --popover-foreground: #171717;
+        --primary: #3b5bdb;
+        --primary-foreground: #f5f7ff;
+        --secondary: #f4f4f5;
+        --secondary-foreground: #27272a;
+        --muted: #f5f5f5;
+        --muted-foreground: #737373;
+        --accent: #f5f5f5;
+        --accent-foreground: #262626;
+        --border: #e5e5e5;
+        --ring: #a3a3a3;
+        --radius: 0.625rem;
+        --toolbar-height: 2.5rem;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--background);
+        color: var(--foreground);
+      }
+      body {
+        font:
+          13px/1.4 system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      #toolbar {
+        box-sizing: border-box;
+        flex: none;
+        height: var(--toolbar-height);
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0 0.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--background);
+        position: relative;
+        z-index: 20;
+      }
+      #module-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .menu-anchor {
+        position: relative;
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .btn {
+        appearance: none;
+        box-sizing: border-box;
+        border: 0;
+        border-radius: calc(var(--radius) - 2px);
+        background: var(--secondary);
+        color: var(--secondary-foreground);
+        height: 1.875rem;
+        min-width: 1.875rem;
+        padding: 0 0.625rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+        font: inherit;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .btn:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--secondary), var(--foreground) 8%);
+      }
+      .btn:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn.icon {
+        width: 1.875rem;
+        padding: 0;
+        flex: none;
+      }
+      svg.i {
+        width: 14px;
+        height: 14px;
+        flex: none;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .menu-trigger {
+        width: 100%;
+      }
+      .menu-trigger-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .menu-panel {
+        position: absolute;
+        top: calc(100% + 0.375rem);
+        left: 50%;
+        transform: translateX(-50%);
+        box-sizing: border-box;
+        width: max(100%, 16rem);
+        max-width: min(24rem, calc(100vw - 1rem));
+        max-height: min(20rem, 60vh);
+        overflow-y: auto;
+        padding: 0.375rem;
+        background: var(--popover);
+        color: var(--popover-foreground);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+        z-index: 30;
+      }
+      .menu-summary {
+        margin: 0;
+        padding: 0.375rem 0.5rem;
+        font-size: 12px;
+        color: var(--muted-foreground);
+      }
+      .menu-item {
+        width: 100%;
+        justify-content: flex-start;
+        background: transparent;
+        color: inherit;
+        font-weight: 400;
+      }
+      .menu-item:hover:not(:disabled) {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      .menu-item[aria-current='true'] {
+        background: var(--secondary);
+        color: var(--secondary-foreground);
+      }
+      .menu-item-mark {
+        width: 14px;
+        flex: none;
+        text-align: center;
+        font-size: 12px;
+        color: var(--muted-foreground);
+        font-variant-numeric: tabular-nums;
+      }
+      .menu-item-mark.done {
+        color: var(--primary);
+      }
+      .menu-item-title {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: left;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        flex: none;
+        height: 1.375rem;
+        padding: 0 0.5rem;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 12px;
+      }
+      .badge svg.i {
+        width: 12px;
+        height: 12px;
+      }
+      #status {
+        flex: 0 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 12px;
+        color: var(--muted-foreground);
+      }
+      #exit-fullscreen {
+        margin-left: auto;
+      }
+      #stage {
+        position: relative;
+        flex: 1;
+        display: flex;
+        min-height: 0;
+      }
+      #package-frame {
+        flex: 1;
+        width: 100%;
+        border: 0;
+        background: #ffffff;
+      }
+      #loading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: var(--background);
+        pointer-events: none;
+      }
+      .loading-card {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .sk {
+        border-radius: 0.5rem;
+        background: linear-gradient(
+          90deg,
+          var(--muted) 25%,
+          color-mix(in srgb, var(--muted), var(--background) 50%) 50%,
+          var(--muted) 75%
+        );
+        background-size: 200% 100%;
+        animation: loading-shimmer 1.4s infinite;
+      }
+      .sk-title {
+        height: 1.5rem;
+        width: 38%;
+      }
+      .sk-hero {
+        aspect-ratio: 16 / 9;
+        width: 100%;
+      }
+      .sk-line {
+        height: 0.85rem;
+        width: 100%;
+      }
+      .sk-line.short {
+        width: 64%;
+      }
+      .loading-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: var(--muted-foreground);
+        font-size: 0.9rem;
+      }
+      .spinner {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        border-top-color: var(--muted-foreground);
+        animation: loading-spin 0.8s linear infinite;
+      }
+      #notice {
+        position: fixed;
+        inset: auto auto 1rem 50%;
+        margin: 0;
+        transform: translateX(-50%);
+        z-index: 40;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        max-width: min(36rem, calc(100vw - 2rem));
+        padding: 0.5rem 0.5rem 0.5rem 0.875rem;
+        background: var(--popover);
+        color: var(--popover-foreground);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: 0 8px 24px rgb(0 0 0 / 0.16);
+      }
+      #notice-text {
+        flex: 1;
+        min-width: 0;
+      }
+      @keyframes loading-shimmer {
+        to {
+          background-position: -200% 0;
+        }
+      }
+      @keyframes loading-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (max-width: 30rem) {
+        .badge {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .sk,
+        .spinner {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header id="toolbar" hidden>
+      <div id="module-nav" hidden>
+        <button
+          type="button"
+          id="nav-previous"
+          class="btn icon"
+          aria-label="Previous module"
+          title="Previous module"
+          disabled
+        >
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+        </button>
+        <div class="menu-anchor">
+          <button
+            type="button"
+            id="nav-menu"
+            class="btn menu-trigger"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="nav-menu-panel"
+          >
+            <span id="nav-menu-label" class="menu-trigger-label"></span>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          <div id="nav-menu-panel" class="menu-panel" hidden>
+            <p id="nav-menu-summary" class="menu-summary"></p>
+            <div id="nav-menu-list" role="group"></div>
+          </div>
+        </div>
+        <button
+          type="button"
+          id="nav-next"
+          class="btn icon"
+          aria-label="Next module"
+          title="Next module"
+          disabled
+        >
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+      </div>
+      <span id="time-limit" class="badge" hidden>
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0" />
+          <path d="M12 6v6l4 2" />
+        </svg>
+        <span id="time-limit-text"></span>
+      </span>
+      <span id="status" role="status"></span>
+      <button
+        type="button"
+        id="exit-fullscreen"
+        class="btn icon"
+        aria-label="Exit full screen"
+        title="Exit full screen"
+        hidden
+      >
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 3v3a2 2 0 0 1-2 2H3" />
+          <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
+          <path d="M3 16h3a2 2 0 0 1 2 2v3" />
+          <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
+        </svg>
+      </button>
+    </header>
+    <div id="stage">
+      <iframe
+        id="package-frame"
+        title="Package content"
+        allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+        allowfullscreen
+      ></iframe>
+      <div id="loading" role="status">
+        <div class="loading-card" aria-hidden="true">
+          <div class="sk sk-title"></div>
+          <div class="sk sk-hero"></div>
+          <div class="sk sk-line"></div>
+          <div class="sk sk-line short"></div>
+        </div>
+        <div class="loading-row"><span class="spinner"></span><span id="loading-text">Loading package…</span></div>
+      </div>
+    </div>
+    <div id="notice" role="status" popover="manual" hidden>
+      <span id="notice-text"></span>
+      <button type="button" id="notice-action" class="btn"></button>
+      <button
+        type="button"
+        id="notice-dismiss"
+        class="btn icon"
+        aria-label="Dismiss notice"
+        title="Dismiss notice"
+      >
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

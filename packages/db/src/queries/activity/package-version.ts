@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, eq, inArray, isNotNull, isNull, max, ne, notExists, or, sql } from '@db/drizzle';
+import { and, asc, count, eq, inArray, isNotNull, isNull, lt, max, ne, notExists, or, sql } from '@db/drizzle';
 import { db, type DbOrTxClient, type TxClient } from '@db/drizzle';
 import type { TContentPackageVersion, TNewContentPackageVersion } from '@db/types';
 
@@ -175,9 +175,11 @@ export async function setCurrentPackageVersion(
   dbClient?: TxClient
 ): Promise<TContentPackageVersion> {
   const run = async (client: TxClient): Promise<TContentPackageVersion> => {
-    const version = await getPackageVersionById(versionId, client);
-    if (!version) throw new Error(`Package version "${versionId}" not found`);
-    await lockAssetRow(version.assetId, client);
+    const candidate = await getPackageVersionById(versionId, client);
+    if (!candidate) throw new Error(`Package version "${versionId}" not found`);
+
+    await lockAssetRow(candidate.assetId, client);
+    const version = candidate;
     if (version.status !== 'ready') throw new Error(`Package version "${versionId}" is not ready`);
 
     const now = new Date().toISOString();
@@ -284,6 +286,21 @@ export async function listCurrentPackageVersionsForActivities(
   }
 }
 
+export async function lockPackageVersionRow(versionId: string, dbClient: DbOrTxClient): Promise<void> {
+  try {
+    await dbClient
+      .select({ id: schema.contentPackageVersion.id })
+      .from(schema.contentPackageVersion)
+      .where(eq(schema.contentPackageVersion.id, versionId))
+      .for('update');
+  } catch (error) {
+    console.error('lockPackageVersionRow error:', error);
+    throw new Error(
+      `Failed to lock package version "${versionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export interface VersionDueForRetention {
   id: string;
   assetId: string;
@@ -303,7 +320,8 @@ export interface VersionDueForRetention {
  */
 export async function listVersionsDueForRetention(
   cutoffIso: string,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient = db,
+  versionId?: string
 ): Promise<VersionDueForRetention[]> {
   try {
     const result = await dbClient.execute(sql`
@@ -315,6 +333,7 @@ export async function listVersionsDueForRetention(
         AND v.replaced_at IS NOT NULL
         AND v.replaced_at < ${cutoffIso}
         AND v.status != 'archived'
+        AND ${versionId ? sql`v.id = ${versionId}` : sql`true`}
       ORDER BY v.replaced_at ASC`);
 
     return (result as unknown as Array<Record<string, unknown>>).map((row) => {
@@ -348,6 +367,59 @@ export async function listVersionsDueForRetention(
   }
 }
 
+export interface FailedVersionWithContent {
+  id: string;
+  assetId: string;
+  contentPrefix: string;
+}
+
+/**
+ * Lists failed or canceled versions whose extracted files were never confirmed
+ * removed (`extracted_bytes` is not 0) and that last changed before the cutoff.
+ * Pass `versionId` to recheck one row inside a lock.
+ */
+export async function listFailedVersionsWithStoredContent(
+  cutoffIso: string,
+  dbClient: DbOrTxClient = db,
+  versionId?: string
+): Promise<FailedVersionWithContent[]> {
+  try {
+    const table = schema.contentPackageVersion;
+    const contentNotRemoved = or(isNull(table.extractedBytes), ne(table.extractedBytes, 0));
+    const versionFilter = versionId ? eq(table.id, versionId) : undefined;
+
+    return await dbClient
+      .select({ id: table.id, assetId: table.assetId, contentPrefix: table.contentPrefix })
+      .from(table)
+      .where(and(eq(table.status, 'failed'), contentNotRemoved, lt(table.updatedAt, cutoffIso), versionFilter))
+      .orderBy(asc(table.updatedAt));
+  } catch (error) {
+    console.error('listFailedVersionsWithStoredContent error:', error);
+    throw new Error(
+      `Failed to list failed package versions with stored content: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Records that a version's extracted files and index are gone from storage,
+ * which takes it out of the failed-version cleanup sweep.
+ */
+export async function markPackageVersionContentRemoved(versionId: string, dbClient: DbOrTxClient = db): Promise<void> {
+  try {
+    const updatedAt = new Date().toISOString();
+    await dbClient
+      .update(schema.contentPackageVersion)
+      .set({ extractedBytes: 0, updatedAt })
+      .where(eq(schema.contentPackageVersion.id, versionId));
+  } catch (error) {
+    console.error('markPackageVersionContentRemoved error:', error);
+    throw new Error(
+      `Failed to mark package version "${versionId}" content removed: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 /**
  * Marks a replaced version archived after its extracted files are deleted.
  * The ZIP and rows stay for audits. Returns the updated row, or null when
@@ -361,7 +433,7 @@ export async function markPackageVersionArchived(
     const now = new Date().toISOString();
     const [archived] = await dbClient
       .update(schema.contentPackageVersion)
-      .set({ status: 'archived', archivedAt: now, updatedAt: now })
+      .set({ status: 'archived', archivedAt: now, updatedAt: now, extractedBytes: 0 })
       .where(
         and(
           eq(schema.contentPackageVersion.id, versionId),

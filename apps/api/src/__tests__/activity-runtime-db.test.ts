@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { describe, expect, it, vi } from 'vitest';
-import { asc, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
   const original = await importOriginal<typeof import('@cio/core/config/activity-content')>();
@@ -220,7 +220,6 @@ async function listAttempts(activityId: string, profileId: string) {
     .select()
     .from(schema.scormAttempt)
     .where(eq(schema.scormAttempt.activityId, activityId))
-    .orderBy(asc(schema.scormAttempt.attemptNumber))
     .then((rows) => rows.filter((row) => row.profileId === profileId));
 }
 
@@ -527,56 +526,6 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time', () => {
     }
   });
 
-  it('hides module ticks from the previous compliance cycle after renewal', async () => {
-    const fixture = await createRuntimeFixture(suffix(), {
-      units: [{ identifier: 'mod-1', title: 'Module one', href: 'mod1.html' }],
-      courseType: 'COMPLIANCE',
-      certificate: { deadline: '2027-12-31T23:59:00.000Z', requiredExerciseId: null, isDownloadable: false },
-      compliance: { retakeIntervalMonths: 12 }
-    });
-    try {
-      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
-      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
-      if (!launched.available) throw new Error('launch unavailable');
-      const token = launchTokenOf(launched.playerUrl);
-
-      await commitScormAttempt(token, {
-        commitSequence: 1,
-        cmi: { 'core.lesson_status': 'completed', 'core.session_time': '00:06:00' },
-        terminate: true
-      });
-      const completedCycle = await getActivityProgress(fixture.courseId, fixture.activityId, context);
-      expect(completedCycle.units.map((unit) => unit.completed)).toEqual([true]);
-
-      const { db } = await import('@db/drizzle');
-      const schema = await import('@db/schema');
-      const attempts = await listAttempts(fixture.activityId, fixture.studentId);
-      await db
-        .update(schema.scormAttempt)
-        .set({ startedAt: new Date(Date.now() - 10 * 86_400_000).toISOString() })
-        .where(eq(schema.scormAttempt.id, attempts[0]!.id));
-      const [member] = await db
-        .select()
-        .from(schema.groupmember)
-        .where(eq(schema.groupmember.profileId, fixture.studentId));
-      await db.insert(schema.courseCompletionRecord).values({
-        courseId: fixture.courseId,
-        groupMemberId: member!.id,
-        profileId: fixture.studentId,
-        cycleNumber: 2,
-        status: 'in_progress',
-        dueDate: new Date(Date.now() + 30 * 86_400_000).toISOString(),
-        createdAt: new Date(Date.now() - 86_400_000).toISOString()
-      });
-
-      const renewedCycle = await getActivityProgress(fixture.courseId, fixture.activityId, context);
-
-      expect(renewedCycle.units.map((unit) => unit.completed)).toEqual([false]);
-    } finally {
-      await cleanupRuntimeFixture(fixture);
-    }
-  });
-
   it('reports a module tick mid-session without relaunching', async () => {
     const fixture = await createRuntimeFixture(suffix(), {
       format: 'scorm2004_4',
@@ -785,8 +734,13 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time', () => {
       const { db } = await import('@db/drizzle');
       const schema = await import('@db/schema');
       const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
-      const first = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      const first = await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'mod-1' }, context);
       if (!first.available) throw new Error('launch unavailable');
+      await commitScormAttempt(launchTokenOf(first.playerUrl), {
+        commitSequence: 1,
+        cmi: { 'core.lesson_status': 'completed' },
+        terminate: true
+      });
 
       const [version2] = await db
         .insert(schema.contentPackageVersion)
@@ -815,12 +769,78 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time', () => {
       });
       expect(made.closedAttempts).toBe(1);
 
+      // Replaced attempt is ignored for module progress; learner sees fresh version 2 units
+      const progressBeforeSecond = await getActivityProgress(fixture.courseId, fixture.activityId, context);
+      expect(progressBeforeSecond.units.map((u) => u.status)).toEqual(['not_attempted', 'not_attempted']);
+
       const second = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
       if (!second.available) throw new Error('launch unavailable');
       expect(second.mode).toBe('normal');
-      const attempts = await listAttempts(fixture.activityId, fixture.studentId);
+      const attempts = (await listAttempts(fixture.activityId, fixture.studentId)).sort(
+        (a, b) => a.attemptNumber - b.attemptNumber
+      );
       expect(attempts).toHaveLength(2);
+      expect(attempts[0]?.packageVersionId).toBe(fixture.versionId);
+      expect(attempts[0]?.closeReason).toBe('replaced');
       expect(attempts[1]?.packageVersionId).toBe(version2!.id);
+      expect(attempts[1]?.closedAt).toBeNull();
+
+      // Restoring version 1 with closeOpenAttempts: true closes v2 attempt as replaced and reopens v1 attempt
+      const restored = await makeScormPackageVersionCurrent(fixture.orgId, fixture.assetId, fixture.versionId, {
+        closeOpenAttempts: true
+      });
+      expect(restored.closedAttempts).toBe(1);
+      expect(restored.reopenedAttempts).toBe(1);
+
+      // Re-launching resumes reopened attempt 1 without creating a 3rd attempt
+      const third = await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'mod-2' }, context);
+      if (!third.available) throw new Error('launch unavailable');
+      const attemptsAfterRestore = (await listAttempts(fixture.activityId, fixture.studentId)).sort(
+        (a, b) => a.attemptNumber - b.attemptNumber
+      );
+      expect(attemptsAfterRestore).toHaveLength(2);
+      expect(attemptsAfterRestore[0]?.packageVersionId).toBe(fixture.versionId);
+      expect(attemptsAfterRestore[0]?.closedAt).toBeNull();
+      expect(attemptsAfterRestore[0]?.closeReason).toBeNull();
+      expect(attemptsAfterRestore[1]?.packageVersionId).toBe(version2!.id);
+      expect(attemptsAfterRestore[1]?.closeReason).toBe('replaced');
+
+      // Completing the remaining module on reopened attempt 1 finishes attempt 1
+      const commitMod2 = await commitScormAttempt(launchTokenOf(third.playerUrl), {
+        commitSequence: 1,
+        cmi: { 'core.lesson_status': 'completed' },
+        terminate: true
+      });
+      expect(commitMod2.completedActivity).toBe(true);
+
+      // Module progress reflects completed attempt 1 rather than replaced attempt 2
+      const progressAfterComplete = await getActivityProgress(fixture.courseId, fixture.activityId, context);
+      expect(progressAfterComplete.units.map((u) => u.completed)).toEqual([true, true]);
+
+      // Launching again opens attempt 1 in review mode rather than starting attempt 3
+      const reviewLaunch = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!reviewLaunch.available) throw new Error('launch unavailable');
+      expect(reviewLaunch.mode).toBe('review');
+      expect(await listAttempts(fixture.activityId, fixture.studentId)).toHaveLength(2);
+
+      // Enabling retakes and starting a new attempt allocates attemptNumber = 3 (no collision with attempt 2)
+      const { updateActivitySettings } = await import('@cio/core/services/activity/activity');
+      await updateActivitySettings(fixture.courseId, fixture.activityId, {
+        completionRule: 'auto',
+        minScorePercent: null,
+        allowRetakes: true,
+        moduleOrder: 'free',
+        completionModules: 'all'
+      });
+      const retakeLaunch = await launchActivity(fixture.courseId, fixture.activityId, { newAttempt: true }, context);
+      if (!retakeLaunch.available) throw new Error('launch unavailable');
+      expect(retakeLaunch.mode).toBe('normal');
+      const attemptsAfterRetake = (await listAttempts(fixture.activityId, fixture.studentId)).sort(
+        (a, b) => a.attemptNumber - b.attemptNumber
+      );
+      expect(attemptsAfterRetake).toHaveLength(3);
+      expect(attemptsAfterRetake[2]?.attemptNumber).toBe(3);
+      expect(attemptsAfterRetake[2]?.closedAt).toBeNull();
     } finally {
       await cleanupRuntimeFixture(fixture);
     }

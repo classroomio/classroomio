@@ -93,3 +93,13 @@ export const ZScormCommit = z
     }
   });
 export type TScormCommit = z.infer<typeof ZScormCommit>;
+
+/**
+ * A stored exit save replayed under the learner's current launch: the save's
+ * own launch token and the commit it carried.
+ */
+export const ZScormReplay = z.object({
+  originalToken: z.string().min(1).max(4096),
+  commit: ZScormCommit
+});
+export type TScormReplay = z.infer<typeof ZScormReplay>;

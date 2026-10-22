@@ -63,6 +63,28 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
+  apps/activity-player:
+    dependencies:
+      fflate:
+        specifier: 0.8.2
+        version: 0.8.2
+      scorm-again:
+        specifier: 3.4.6
+        version: 3.4.6
+    devDependencies:
+      '@cio/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vite:
+        specifier: ^7.1.4
+        version: 7.3.0(@types/node@24.10.4)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)
+      vitest:
+        specifier: ^1.6.1
+        version: 1.6.1(@types/node@24.10.4)(jsdom@29.0.1(@noble/hashes@2.0.1))(lightningcss@1.32.0)(sass@1.97.1)
+
   apps/api:
     dependencies:
       '@aws-sdk/client-s3':
@@ -628,7 +650,7 @@ importers:
     dependencies:
       '@astrojs/mdx':
         specifier: 7.0.3
-        version: 7.0.3(@astrojs/markdown-satteri@0.3.4)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+        version: 7.0.3(@astrojs/markdown-satteri@0.4.1)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -738,7 +760,7 @@ importers:
     dependencies:
       '@astrojs/mdx':
         specifier: 7.0.3
-        version: 7.0.3(@astrojs/markdown-satteri@0.4.1)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+        version: 7.0.3(@astrojs/markdown-satteri@0.3.4)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -791,6 +813,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.675.0
         version: 3.958.0
+      '@cio/activity-packages':
+        specifier: workspace:*
+        version: link:../../packages/activity-packages
       '@cio/analytics':
         specifier: workspace:*
         version: link:../../packages/analytics
@@ -821,10 +846,16 @@ importers:
       openai:
         specifier: ^6.36.0
         version: 6.36.0(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))(zod@4.2.1)
+      yauzl:
+        specifier: 3.4.0
+        version: 3.4.0
     devDependencies:
       '@types/node':
         specifier: ^20.19.0
         version: 20.19.27
+      '@types/yauzl':
+        specifier: 3.4.0
+        version: 3.4.0
       tsc-alias:
         specifier: ^1.8.16
         version: 1.8.16
@@ -834,6 +865,9 @@ importers:
       typescript:
         specifier: 5.9.3
         version: 5.9.3
+      vitest:
+        specifier: ^1.6.1
+        version: 1.6.1(@types/node@20.19.27)(jsdom@29.0.1(@noble/hashes@2.0.1))(lightningcss@1.32.0)(sass@1.97.1)
       zod:
         specifier: 4.2.1
         version: 4.2.1
@@ -846,6 +880,9 @@ importers:
       typescript:
         specifier: 5.9.3
         version: 5.9.3
+      vitest:
+        specifier: ^1.6.1
+        version: 1.6.1(@types/node@24.10.4)(jsdom@29.0.1(@noble/hashes@2.0.1))(lightningcss@1.32.0)(sass@1.97.1)
       wrangler:
         specifier: 4.21.x
         version: 4.21.2(@cloudflare/workers-types@4.20260511.1)(bufferutil@4.1.0)(utf-8-validate@6.0.6)
@@ -8611,6 +8648,9 @@ packages:
   '@types/wrap-ansi@3.0.0':
     resolution: {integrity: sha512-ltIpx+kM7g/MLRZfkbL7EsCEjfzCcScLpkg37eXEtx5kmrAKBkTJwd1GIAjDSL8wTpM6Hzn5YO4pSb91BEwu1g==}
 
+  '@types/yauzl@3.4.0':
+    resolution: {integrity: sha512-NRPn5w6h8dhcnmx3YIRQcqMywY/+nND/uOkJessedcrowO3C0AssHp3tMJpxKAwOhFOo0OV1y9VtsC5hbKKBAw==}
+
   '@typescript-eslint/eslint-plugin@7.0.1':
     resolution: {integrity: sha512-OLvgeBv3vXlnnJGIAgCLYKjgMEU+wBGj07MQ/nxAaON+3mLzX7mJbhRYrVGiVvFiXtwFlkcBa/TtmglHy0UbzQ==}
     engines: {node: ^16.0.0 || >=18.0.0}
@@ -13541,6 +13581,9 @@ packages:
     resolution: {integrity: sha512-XRIRcLgk6ZnUbsHsYXExMw+krrPE81hJ6FQPLdBNhhBefqIQKXu/WeTgNBGSwPrfU0v+UCEwn7AoAUOsVKHFvQ==}
     engines: {node: '>=6.8.1'}
 
+  pend@1.2.0:
+    resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
+
   perfect-debounce@2.1.0:
     resolution: {integrity: sha512-LjgdTytVFXeUgtHZr9WYViYSM/g8MkcTPYDlPa3cDqMirHjKiSZPYd6DoL7pK8AJQr+uWkQvCjHNdiMqsrJs+g==}
 
@@ -14440,6 +14483,10 @@ packages:
 
   schema-dts@1.1.5:
     resolution: {integrity: sha512-RJr9EaCmsLzBX2NDiO5Z3ux2BVosNZN5jo0gWgsyKvxKIUL5R3swNvoorulAeL9kLB0iTSX7V6aokhla2m7xbg==}
+
+  scorm-again@3.4.6:
+    resolution: {integrity: sha512-+dVqku6XSbLTRoC2eMQ2oUkfOSYda6BSvfC7efWKkNT5fqXD6sGjEI4g08GGKBxqMe211iBz/VqzEPFtFzZpKQ==}
+    engines: {node: '>=20.19.0'}
 
   scule@1.3.0:
     resolution: {integrity: sha512-6FtHJEvt+pVMIB9IBY+IcCJ6Z5f1iQnytgyfKMhDKgmzYG+TeH/wx1y3l27rshSbLiSanrR9ffZDrEsmjlQF2g==}
@@ -16460,6 +16507,10 @@ packages:
   yargs@18.1.0:
     resolution: {integrity: sha512-2rAgRKu54VsHkqI0/tYkmluGXHD4KW7yZoycuqDQ15QOTnc2VVfy0nN/1eMhnQLO00A+dwtK20xuCnc1YGeUyg==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=23}
+
+  yauzl@3.4.0:
+    resolution: {integrity: sha512-jIH9yLR9wqr0wOS0TpBvo/g/2UgZH5qePVbjgRliiF0BYvOZyaBknKsF+x9Iht0O6sqgnB93rCICdOZFecJuDw==}
+    engines: {node: '>=12'}
 
   yn@3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
@@ -24156,6 +24207,10 @@ snapshots:
 
   '@types/wrap-ansi@3.0.0': {}
 
+  '@types/yauzl@3.4.0':
+    dependencies:
+      '@types/node': 24.10.4
+
   '@typescript-eslint/eslint-plugin@7.0.1(@typescript-eslint/parser@7.0.1(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
@@ -30280,6 +30335,8 @@ snapshots:
     dependencies:
       node-ensure: 0.0.0
 
+  pend@1.2.0: {}
+
   perfect-debounce@2.1.0: {}
 
   performance-now@2.1.0:
@@ -31362,6 +31419,8 @@ snapshots:
   scheduler@0.28.0: {}
 
   schema-dts@1.1.5: {}
+
+  scorm-again@3.4.6: {}
 
   scule@1.3.0: {}
 
@@ -33731,6 +33790,10 @@ snapshots:
       string-width: 8.2.2
       y18n: 5.0.8
       yargs-parser: 22.0.0
+
+  yauzl@3.4.0:
+    dependencies:
+      pend: 1.2.0
 
   yn@3.1.1: {}
 

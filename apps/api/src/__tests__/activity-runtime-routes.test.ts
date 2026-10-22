@@ -1,8 +1,10 @@
+import { gzipSync } from 'node:zlib';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@api/services/activity/runtime-scorm', () => ({
   getScormRuntimeState: vi.fn(),
   commitScormAttempt: vi.fn(),
+  replayScormCommit: vi.fn(),
   reportScormRuntimeEvent: vi.fn()
 }));
 
@@ -11,6 +13,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   commitScormAttempt,
   getScormRuntimeState,
+  replayScormCommit,
   reportScormRuntimeEvent
 } from '@api/services/activity/runtime-scorm';
 import { runtimeScormRouter } from '@api/routes/activity/runtime-scorm';
@@ -108,6 +111,49 @@ describe('runtime-scorm routes', () => {
     });
   });
 
+  it('replays a stored save under the current launch token', async () => {
+    vi.mocked(replayScormCommit).mockResolvedValue({ saved: true, completedActivity: true, progressChanged: true });
+    const launchToken = await testToken();
+
+    const response = await app().request(`/activity/scorm/runtime/${launchToken}/replay`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ originalToken: 'stored-token', commit: { commitSequence: 3, cmi: { suspend_data: 'x' } } })
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      result: true,
+      errorCode: 0,
+      completedActivity: true,
+      progressChanged: true
+    });
+    expect(replayScormCommit).toHaveBeenCalledWith(
+      expect.objectContaining({ sub: 'profile-id', org: 'org-key' }),
+      'stored-token',
+      expect.objectContaining({ commitSequence: 3 }),
+      null
+    );
+  });
+
+  it('rejects a replay without the stored token or with an invalid current token', async () => {
+    const launchToken = await testToken();
+
+    const missing = await app().request(`/activity/scorm/runtime/${launchToken}/replay`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commit: { commitSequence: 3, cmi: {} } })
+    });
+    expect(missing.status).toBe(400);
+
+    const forged = await app().request('/activity/scorm/runtime/forged-token/replay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ originalToken: 'stored-token', commit: { commitSequence: 3, cmi: {} } })
+    });
+    expect(forged.status).toBe(401);
+  });
+
   it('passes non-beacon commits without the beacon flag', async () => {
     mockedCommit.mockResolvedValue({ saved: true, completedActivity: false, progressChanged: true });
     const launchToken = await testToken();
@@ -120,6 +166,56 @@ describe('runtime-scorm routes', () => {
 
     expect(response.status).toBe(200);
     expect(mockedCommit).toHaveBeenCalledWith(launchToken, expect.objectContaining({ commitSequence: 1 }), false, null);
+  });
+
+  it('decodes a gzipped exit save as a beacon commit', async () => {
+    mockedCommit.mockResolvedValue({ saved: true, completedActivity: true, progressChanged: true });
+    const launchToken = await testToken();
+    const suspendData = 'a'.repeat(200_000);
+    const compressed = gzipSync(
+      JSON.stringify({ commitSequence: 4, terminate: true, cmi: { suspend_data: suspendData } })
+    );
+
+    const response = await app().request(`/activity/scorm/runtime/${launchToken}/commit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain', 'X-Cio-Body-Encoding': 'gzip' },
+      body: compressed
+    });
+
+    expect(response.status).toBe(200);
+    expect(mockedCommit).toHaveBeenLastCalledWith(
+      launchToken,
+      expect.objectContaining({ commitSequence: 4, cmi: { suspend_data: suspendData } }),
+      true,
+      null
+    );
+  });
+
+  it('rejects a gzipped commit that inflates past the commit limit', async () => {
+    mockedCommit.mockClear();
+    const launchToken = await testToken();
+    const compressed = gzipSync(JSON.stringify({ commitSequence: 5, cmi: { suspend_data: 'a'.repeat(600_000) } }));
+
+    const response = await app().request(`/activity/scorm/runtime/${launchToken}/commit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain', 'X-Cio-Body-Encoding': 'gzip' },
+      body: compressed
+    });
+
+    expect(response.status).toBe(413);
+    expect(mockedCommit).not.toHaveBeenCalled();
+  });
+
+  it('rejects a commit marked gzip that is not gzip', async () => {
+    const launchToken = await testToken();
+
+    const response = await app().request(`/activity/scorm/runtime/${launchToken}/commit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain', 'X-Cio-Body-Encoding': 'gzip' },
+      body: '{"commitSequence":6,"cmi":{}}'
+    });
+
+    expect(response.status).toBe(400);
   });
 
   it('rejects malformed commits and expired tokens with status codes', async () => {

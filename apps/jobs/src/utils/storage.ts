@@ -1,4 +1,12 @@
-import { GetObjectCommand, HeadObjectCommand, NotFound, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  NotFound,
+  PutObjectCommand
+} from '@aws-sdk/client-s3';
 import { Readable } from 'node:stream';
 import { createWriteStream } from 'node:fs';
 import { mkdir, readFile, unlink } from 'node:fs/promises';
@@ -86,6 +94,80 @@ export async function uploadBufferToBucket(
   );
 }
 
+/**
+ * Streams a local file to object storage without reading it into memory,
+ * so large extracted package files keep worker memory flat.
+ */
+export async function uploadStreamToBucket(
+  bucket: string,
+  key: string,
+  localPath: string,
+  contentType: string,
+  cacheControl?: string
+): Promise<void> {
+  const { createReadStream } = await import('node:fs');
+
+  await getS3Client().send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: createReadStream(localPath),
+      ContentType: contentType,
+      CacheControl: cacheControl
+    })
+  );
+}
+
+export async function deleteObjectFromBucket(bucket: string, key: string): Promise<void> {
+  await getS3Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+}
+
+/**
+ * Deletes a package version's extracted files and its generated index.
+ * Throws when any listing or deletion fails, including per-object errors
+ * that a batch delete reports with a successful response.
+ */
+export async function deletePackageStoragePrefix(bucket: string, contentPrefix: string): Promise<void> {
+  if (!contentPrefix) return;
+
+  let continuationToken: string | undefined;
+  do {
+    const page = await getS3Client().send(
+      new ListObjectsV2Command({
+        Bucket: bucket,
+        Prefix: `${contentPrefix}/`,
+        ContinuationToken: continuationToken
+      })
+    );
+    const keys = (page.Contents ?? []).map((entry) => entry.Key).filter((key): key is string => Boolean(key));
+
+    if (keys.length > 0) {
+      const result = await getS3Client().send(
+        new DeleteObjectsCommand({
+          Bucket: bucket,
+          Delete: { Objects: keys.map((Key) => ({ Key })), Quiet: true }
+        })
+      );
+      const failures = result.Errors ?? [];
+
+      if (failures.length > 0) {
+        const [first] = failures;
+        throw new Error(
+          `Failed to delete ${failures.length} object(s) under ${contentPrefix}/: ${first.Key} ${first.Code ?? ''} ${first.Message ?? ''}`.trim()
+        );
+      }
+    }
+
+    if (page.IsTruncated && !page.NextContinuationToken) {
+      throw new Error(`Listing under ${contentPrefix}/ was truncated without a continuation token`);
+    }
+
+    continuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  await getS3Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: `${contentPrefix}.index.json` }));
+}
+
 export async function safeUnlink(filePath: string | undefined | null): Promise<void> {
   if (!filePath) return;
 
@@ -102,4 +184,8 @@ export function videosBucket(): string {
 
 export function mediaBucket(): string {
   return getStorageConfig().bucketMedia;
+}
+
+export function scormBucket(): string {
+  return getStorageConfig().bucketScorm;
 }
