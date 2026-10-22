@@ -18,6 +18,10 @@ export interface PlayerUiLabels {
   didNotConnect: string;
   loadFailed: string;
   videoFullscreenHint: string;
+  escToExit: string;
+  backToExit: string;
+  leftFullscreen: string;
+  returnToFullscreen: string;
   dismiss: string;
 }
 
@@ -72,6 +76,10 @@ export const DEFAULT_LABELS: PlayerUiLabels = {
   didNotConnect: 'The package did not connect',
   loadFailed: 'The package could not be opened',
   videoFullscreenHint: "Videos here can't go full screen while the activity is full screen.",
+  escToExit: 'Press Esc to exit full screen.',
+  backToExit: "Use your device's back gesture or button to exit full screen.",
+  leftFullscreen: 'You left full screen.',
+  returnToFullscreen: 'Return activity to full screen',
   dismiss: 'Dismiss'
 };
 

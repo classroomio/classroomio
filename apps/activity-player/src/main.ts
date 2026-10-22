@@ -15,7 +15,12 @@ import {
   nestsFullscreenNatively,
   onFullscreenChange
 } from './fullscreen';
-import { forEachSameOriginWindow, hasUnreroutableVideo, installFullscreenReroute } from './fullscreen-reroute';
+import {
+  forEachSameOriginWindow,
+  fullscreenHandedToEmbed,
+  hasUnreroutableVideo,
+  installFullscreenReroute
+} from './fullscreen-reroute';
 import {
   DEFAULT_LABELS,
   parseDashboardMessage,
@@ -82,6 +87,9 @@ function boot(): void {
   let hostMode: HostImmersiveMode = null;
   let hostExitWaiters: (() => void)[] = [];
   let videoHintShown = false;
+  let activityFullscreen = false;
+  let embedLeftActivityFullscreen = false;
+  let showingRestoreNotice = false;
   let sessionQueue: Promise<void> = pendingSavesFlushed;
 
   const labels = (): PlayerUiLabels => ui?.labels ?? DEFAULT_LABELS;
@@ -154,10 +162,57 @@ function boot(): void {
     videoHintShown = true;
     notice.show({
       message: copy.videoFullscreenHint,
-      actionLabel: copy.exitFullscreen,
       dismissLabel: copy.dismiss,
-      onAction: exitImmersive
+      action: { label: copy.exitFullscreen, run: exitImmersive }
     });
+  };
+
+  const showEmbedExitNotice = () => {
+    const copy = labels();
+    const hasKeyboard = window.matchMedia?.('(pointer: fine)').matches ?? false;
+
+    notice.show({ message: hasKeyboard ? copy.escToExit : copy.backToExit });
+  };
+
+  const checkEmbedFullscreen = () => {
+    if (!nestsNatively || !(activityFullscreen || hostMode === 'fullscreen')) return;
+
+    const packageWindow = readablePackageWindow(frame);
+    if (!packageWindow || !fullscreenHandedToEmbed(packageWindow.document)) return;
+
+    embedLeftActivityFullscreen = true;
+    showEmbedExitNotice();
+  };
+  const checkEmbedFullscreenSoon = () => setTimeout(checkEmbedFullscreen, 0);
+
+  const showRestoreNotice = () => {
+    const copy = labels();
+
+    showingRestoreNotice = true;
+    notice.show({
+      message: copy.leftFullscreen,
+      dismissLabel: copy.dismiss,
+      action: { label: copy.returnToFullscreen, run: takeFullscreen }
+    });
+  };
+
+  const handleFullscreenEnd = () => {
+    if (embedLeftActivityFullscreen) {
+      embedLeftActivityFullscreen = false;
+      showRestoreNotice();
+      return;
+    }
+
+    if (!showingRestoreNotice) notice.hide();
+  };
+
+  const handleFullscreenStart = () => {
+    if (showingRestoreNotice) {
+      showingRestoreNotice = false;
+      notice.hide();
+    }
+
+    maybeShowVideoHint();
   };
 
   const handleEscape = (event: KeyboardEvent) => {
@@ -179,6 +234,7 @@ function boot(): void {
         });
         toolbar.watchActivity(win.document);
         win.document.addEventListener('keydown', handleEscape);
+        onFullscreenChange(win.document, checkEmbedFullscreenSoon);
       });
     }
 
@@ -210,6 +266,7 @@ function boot(): void {
 
       toolbar.closeMenu();
       toolbar.setStatus(null);
+      showingRestoreNotice = false;
       notice.hide();
       showLoading();
 
@@ -249,8 +306,8 @@ function boot(): void {
         waiters.forEach((resolve) => resolve());
       }
 
-      if (isFullscreenLike()) maybeShowVideoHint();
-      else notice.hide();
+      if (isFullscreenLike()) handleFullscreenStart();
+      else handleFullscreenEnd();
       return;
     }
 
@@ -263,10 +320,16 @@ function boot(): void {
   });
 
   onFullscreenChange(document, () => {
+    const element = fullscreenElementOf(document);
+    if (element === document.documentElement) activityFullscreen = true;
+    else if (!element) activityFullscreen = false;
+
     updateImmersive();
 
-    if (isFullscreenLike()) maybeShowVideoHint();
-    else notice.hide();
+    if (isFullscreenLike()) handleFullscreenStart();
+    else handleFullscreenEnd();
+
+    checkEmbedFullscreenSoon();
   });
   document.addEventListener('keydown', handleEscape);
   frame.addEventListener('load', preparePackageWindow);

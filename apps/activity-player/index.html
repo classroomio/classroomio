@@ -276,8 +276,8 @@
       }
       #notice {
         position: fixed;
-        left: 50%;
-        bottom: 1rem;
+        inset: auto auto 1rem 50%;
+        margin: 0;
         transform: translateX(-50%);
         z-index: 40;
         box-sizing: border-box;
@@ -401,7 +401,7 @@
         <div class="loading-row"><span class="spinner"></span><span id="loading-text">Loading package…</span></div>
       </div>
     </div>
-    <div id="notice" role="status" hidden>
+    <div id="notice" role="status" popover="manual" hidden>
       <span id="notice-text"></span>
       <button type="button" id="notice-action" class="btn"></button>
       <button

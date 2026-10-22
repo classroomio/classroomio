@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   REROUTE_SETTLE_MS,
   forEachSameOriginWindow,
+  fullscreenHandedToEmbed,
   hasUnreroutableVideo,
   installFullscreenReroute,
   isVideoEmbedUrl
@@ -240,5 +241,44 @@ describe('installFullscreenReroute across navigations', () => {
 
     expect(leaveFullscreen).toHaveBeenCalledOnce();
     expect(navigated.requestFullscreen).toHaveBeenCalledOnce();
+  });
+});
+
+describe('fullscreenHandedToEmbed', () => {
+  function docWith(fullscreenElement: unknown): Document {
+    return { fullscreenElement } as unknown as Document;
+  }
+
+  function frameShowing(child: Document | 'cross-origin'): Element {
+    return {
+      tagName: 'IFRAME',
+      get contentWindow() {
+        if (child === 'cross-origin') {
+          return {
+            get document(): Document {
+              throw new Error('cross-origin');
+            }
+          };
+        }
+
+        return { document: child };
+      }
+    } as unknown as Element;
+  }
+
+  it('is true when fullscreen went to a frame the player cannot read', () => {
+    expect(fullscreenHandedToEmbed(docWith(frameShowing('cross-origin')))).toBe(true);
+  });
+
+  it('follows same-origin frames down to the embed', () => {
+    const inner = docWith(frameShowing('cross-origin'));
+
+    expect(fullscreenHandedToEmbed(docWith(frameShowing(inner)))).toBe(true);
+  });
+
+  it('is false for the package own elements', () => {
+    expect(fullscreenHandedToEmbed(docWith({ tagName: 'VIDEO' }))).toBe(false);
+    expect(fullscreenHandedToEmbed(docWith(frameShowing(docWith({ tagName: 'VIDEO' }))))).toBe(false);
+    expect(fullscreenHandedToEmbed(docWith(null))).toBe(false);
   });
 });

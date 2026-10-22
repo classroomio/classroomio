@@ -6,6 +6,7 @@ import {
   closeScormAttempt,
   createScormAttempt,
   getLatestScormAttempt,
+  getNextScormAttemptNumber,
   getOpenScormAttempt,
   lockScormAttemptForUpdate
 } from '@cio/db/queries/scorm/attempt';
@@ -300,7 +301,6 @@ async function resolveAttempt(
   }
 
   const latest = await getLatestScormAttempt(activityId, profileId, tx);
-  const attemptNumber = (latest?.attemptNumber ?? 0) + 1;
   const closedAt = latest?.closedAt ?? null;
 
   if (!open) {
@@ -321,6 +321,7 @@ async function resolveAttempt(
 
   if (!shouldCreate && latest) return { attempt: latest, review: true, restartedAfterReplace: false };
 
+  const attemptNumber = await getNextScormAttemptNumber(activityId, profileId, tx);
   const created = await createScormAttempt({ activityId, profileId, packageVersionId: current.id, attemptNumber }, tx);
 
   return {
@@ -621,10 +622,11 @@ export async function getScormModuleProgress(context: ActivityProgressContext): 
   const open = context.isPreview
     ? null
     : inCurrentCycle(await getOpenScormAttempt(context.activityId, context.profileId));
-  const attempt =
+  const latest =
     context.isPreview || open
-      ? open
+      ? null
       : inCurrentCycle(await getLatestScormAttempt(context.activityId, context.profileId));
+  const attempt = open ?? (latest?.closeReason === 'replaced' ? null : latest);
   const pinned =
     attempt && attempt.packageVersionId !== current.id
       ? await getPackageVersionById(attempt.packageVersionId)

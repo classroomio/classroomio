@@ -2,9 +2,8 @@ export const NOTICE_VISIBLE_MS = 12_000;
 
 export interface NoticeContent {
   message: string;
-  actionLabel: string;
-  dismissLabel: string;
-  onAction: () => void;
+  dismissLabel?: string;
+  action?: { label: string; run: () => void };
 }
 
 export interface Notice {
@@ -12,9 +11,14 @@ export interface Notice {
   hide: () => void;
 }
 
+function isPopover(element: HTMLElement): boolean {
+  return element.hasAttribute('popover') && typeof element.showPopover === 'function';
+}
+
 /**
  * Binds the player's snackbar markup. A shown notice hides itself after a
- * while, on its action and on dismiss.
+ * while, on its action and on dismiss. Where the browser supports popovers,
+ * it shows in the top layer, above any element in fullscreen.
  */
 export function createNotice(doc: Document): Notice {
   const container = doc.getElementById('notice');
@@ -31,6 +35,7 @@ export function createNotice(doc: Document): Notice {
     if (hideTimer) clearTimeout(hideTimer);
     hideTimer = null;
     onAction = null;
+    if (isPopover(container) && container.matches(':popover-open')) container.hidePopover();
     container.hidden = true;
   };
 
@@ -44,11 +49,18 @@ export function createNotice(doc: Document): Notice {
   return {
     show(content) {
       text.textContent = content.message;
-      action.textContent = content.actionLabel;
-      dismiss.setAttribute('aria-label', content.dismissLabel);
-      dismiss.title = content.dismissLabel;
-      onAction = content.onAction;
+      action.textContent = content.action?.label ?? '';
+      action.hidden = !content.action;
+      dismiss.hidden = !content.dismissLabel;
+      dismiss.setAttribute('aria-label', content.dismissLabel ?? '');
+      dismiss.title = content.dismissLabel ?? '';
+      onAction = content.action?.run ?? null;
       container.hidden = false;
+
+      if (isPopover(container)) {
+        if (container.matches(':popover-open')) container.hidePopover();
+        container.showPopover();
+      }
 
       if (hideTimer) clearTimeout(hideTimer);
       hideTimer = setTimeout(hide, NOTICE_VISIBLE_MS);

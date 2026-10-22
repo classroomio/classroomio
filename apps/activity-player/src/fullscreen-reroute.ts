@@ -1,3 +1,5 @@
+import { fullscreenElementOf } from './fullscreen';
+
 // Safari froze the whole tab when a package entered fullscreen right after the player left it; 400 ms and longer were safe.
 export const REROUTE_SETTLE_MS = 500;
 
@@ -172,4 +174,19 @@ export function hasUnreroutableVideo(doc: Document, depth = 0): boolean {
 
     return child ? hasUnreroutableVideo(child.document, depth + 1) : false;
   });
+}
+
+/**
+ * True when a page in the package handed fullscreen to a frame the player
+ * cannot read, such as a video embed. Chromium completes that hand-off only
+ * up to the embed's frame, so the embed itself never enters fullscreen.
+ */
+export function fullscreenHandedToEmbed(doc: Document, depth = 0): boolean {
+  const element = fullscreenElementOf(doc);
+  if (!element || element.tagName !== 'IFRAME') return false;
+
+  const child = sameOriginChildWindow(element as HTMLIFrameElement);
+  if (!child) return true;
+
+  return depth < MAX_FRAME_DEPTH && fullscreenHandedToEmbed(child.document, depth + 1);
 }
