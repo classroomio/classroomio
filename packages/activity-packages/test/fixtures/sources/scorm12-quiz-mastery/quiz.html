@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mastery quiz</title>
+  </head>
+  <body>
+    <h1>Mastery quiz</h1>
+    <p>
+      Reports only a raw score and finishes. It never sets a status: the LMS mastery-score rule decides passed or failed
+      from the manifest pass mark of 80.
+    </p>
+    <button id="pass" type="button">Submit score 90</button>
+    <button id="fail" type="button">Submit score 60</button>
+    <div id="log" aria-live="polite"></div>
+    <script>
+      function findApi(win) {
+        while (win) {
+          if (win.API && win.API.LMSInitialize) return win.API;
+          if (win.parent === win) return null;
+          win = win.parent;
+        }
+        return null;
+      }
+      var api = findApi(window);
+      var logEl = document.getElementById('log');
+      if (api) api.LMSInitialize('');
+      function submit(score) {
+        var passed = score >= 80;
+        api.LMSSetValue('cmi.core.score.raw', String(score));
+        api.LMSSetValue('cmi.core.score.min', '0');
+        api.LMSSetValue('cmi.core.score.max', '100');
+        api.LMSSetValue('cmi.interactions.0.id', 'Q1');
+        api.LMSSetValue('cmi.interactions.0.type', 'choice');
+        api.LMSSetValue('cmi.interactions.0.student_response', passed ? 'a' : 'b');
+        api.LMSSetValue('cmi.interactions.0.result', passed ? 'correct' : 'wrong');
+        api.LMSSetValue('cmi.interactions.0.latency', '00:00:05');
+        api.LMSSetValue('cmi.interactions.0.correct_responses.0.pattern', 'a');
+        api.LMSSetValue('cmi.interactions.1.id', 'Q2');
+        api.LMSSetValue('cmi.interactions.1.type', 'true-false');
+        api.LMSSetValue('cmi.interactions.1.student_response', passed ? 't' : 'f');
+        api.LMSSetValue('cmi.interactions.1.result', passed ? 'correct' : 'wrong');
+        api.LMSSetValue('cmi.interactions.1.latency', '00:00:03');
+        api.LMSSetValue('cmi.interactions.1.correct_responses.0.pattern', 't');
+        api.LMSSetValue('cmi.core.exit', '');
+        api.LMSCommit('');
+        api.LMSFinish('');
+        logEl.textContent = 'submitted ' + score + ' with no status, finished';
+      }
+      document.getElementById('pass').onclick = function () {
+        submit(90);
+      };
+      document.getElementById('fail').onclick = function () {
+        submit(60);
+      };
+    </script>
+  </body>
+</html>

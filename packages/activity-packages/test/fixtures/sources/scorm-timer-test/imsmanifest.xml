@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="CIO-SCORM12-TIMER-TEST" version="1.0"
+  xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+  </metadata>
+  <organizations default="ORG-TIMER-1">
+    <organization identifier="ORG-TIMER-1">
+      <title>ClassroomIO Timed Assessment &amp; Session Tracker</title>
+      <item identifier="ITEM-TIMER-1" identifierref="RES-TIMER-1">
+        <title>Timed Quiz &amp; Live Session Timer Test</title>
+        <adlcp:maxtimeallowed>00:00:10.00</adlcp:maxtimeallowed>
+        <adlcp:timelimitaction>exit,message</adlcp:timelimitaction>
+        <adlcp:datafromlms>timer_duration=10</adlcp:datafromlms>
+        <adlcp:masteryscore>80</adlcp:masteryscore>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="RES-TIMER-1" type="webcontent" adlcp:scormtype="sco" href="index.html">
+      <file href="index.html"/>
+    </resource>
+  </resources>
+</manifest>
