@@ -137,6 +137,8 @@ export type TNewCourseActivity = typeof schema.courseActivity.$inferInsert;
 export type TActivityCompletion = typeof schema.activityCompletion.$inferSelect;
 export type TNewActivityCompletion = typeof schema.activityCompletion.$inferInsert;
 
+export type TActivityCompletionSideEffect = typeof schema.activityCompletionSideEffect.$inferSelect;
+
 export type TContentPackageVersion = typeof schema.contentPackageVersion.$inferSelect;
 export type TNewContentPackageVersion = typeof schema.contentPackageVersion.$inferInsert;
 

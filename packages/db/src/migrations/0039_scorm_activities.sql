@@ -21,6 +21,21 @@ CREATE TABLE "activity_completion" (
 	CONSTRAINT "activity_completion_complete_check" CHECK ("activity_completion"."is_complete" = ("activity_completion"."completed_at" IS NOT NULL))
 );
 --> statement-breakpoint
+CREATE TABLE "activity_completion_side_effect" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"activity_id" uuid NOT NULL,
+	"profile_id" uuid NOT NULL,
+	"certification_pending" boolean DEFAULT true NOT NULL,
+	"compliance_pending" boolean DEFAULT true NOT NULL,
+	"generation" integer DEFAULT 0 NOT NULL,
+	"attempts" integer DEFAULT 0 NOT NULL,
+	"next_attempt_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"last_error" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "activity_completion_side_effect_activity_profile_key" UNIQUE("activity_id","profile_id")
+);
+--> statement-breakpoint
 CREATE TABLE "activity_scorm" (
 	"activity_id" uuid PRIMARY KEY NOT NULL,
 	"asset_id" uuid,
@@ -140,6 +155,8 @@ CREATE TABLE "scorm_session_event" (
 ALTER TABLE "course" ADD COLUMN "format" "COURSE_FORMAT" DEFAULT 'standard' NOT NULL;--> statement-breakpoint
 ALTER TABLE "activity_completion" ADD CONSTRAINT "activity_completion_activity_id_fkey" FOREIGN KEY ("activity_id") REFERENCES "public"."course_activity"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "activity_completion" ADD CONSTRAINT "activity_completion_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "activity_completion_side_effect" ADD CONSTRAINT "activity_completion_side_effect_activity_id_fkey" FOREIGN KEY ("activity_id") REFERENCES "public"."course_activity"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "activity_completion_side_effect" ADD CONSTRAINT "activity_completion_side_effect_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "activity_scorm" ADD CONSTRAINT "activity_scorm_activity_id_fkey" FOREIGN KEY ("activity_id") REFERENCES "public"."course_activity"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "activity_scorm" ADD CONSTRAINT "activity_scorm_asset_id_fkey" FOREIGN KEY ("asset_id") REFERENCES "public"."assets"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "content_package_unit" ADD CONSTRAINT "content_package_unit_package_version_id_fkey" FOREIGN KEY ("package_version_id") REFERENCES "public"."content_package_version"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -167,6 +184,7 @@ CREATE INDEX "idx_scorm_attempt_activity_id" ON "scorm_attempt" USING btree ("ac
 CREATE INDEX "idx_scorm_attempt_package_version_id" ON "scorm_attempt" USING btree ("package_version_id");--> statement-breakpoint
 CREATE INDEX "scorm_attempt_profile_id_idx" ON "scorm_attempt" USING btree ("profile_id");--> statement-breakpoint
 CREATE INDEX "activity_completion_profile_id_idx" ON "activity_completion" USING btree ("profile_id");--> statement-breakpoint
+CREATE INDEX "activity_completion_side_effect_next_attempt_at_idx" ON "activity_completion_side_effect" USING btree ("next_attempt_at");--> statement-breakpoint
 CREATE INDEX "course_activity_section_id_idx" ON "course_activity" USING btree ("section_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "scorm_sco_attempt_open_key" ON "scorm_sco_attempt" USING btree ("attempt_id","unit_id") WHERE "scorm_sco_attempt"."status" in ('active', 'suspended');--> statement-breakpoint
 CREATE INDEX "idx_scorm_sco_attempt_attempt_id" ON "scorm_sco_attempt" USING btree ("attempt_id","unit_id","started_at");--> statement-breakpoint

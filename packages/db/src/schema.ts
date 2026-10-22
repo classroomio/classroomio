@@ -1857,6 +1857,40 @@ export const activityCompletion = pgTable(
   ]
 );
 
+export const activityCompletionSideEffect = pgTable(
+  'activity_completion_side_effect',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    activityId: uuid('activity_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    certificationPending: boolean('certification_pending').default(true).notNull(),
+    compliancePending: boolean('compliance_pending').default(true).notNull(),
+    generation: integer().default(0).notNull(),
+    attempts: integer().default(0).notNull(),
+    nextAttemptAt: timestamp('next_attempt_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    lastError: text('last_error'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.activityId],
+      foreignColumns: [courseActivity.id],
+      name: 'activity_completion_side_effect_activity_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'activity_completion_side_effect_profile_id_fkey'
+    }).onDelete('cascade'),
+    unique('activity_completion_side_effect_activity_profile_key').on(table.activityId, table.profileId),
+    index('activity_completion_side_effect_next_attempt_at_idx').on(table.nextAttemptAt)
+  ]
+);
+
 export const communityAnswer = pgTable(
   'community_answer',
   {
