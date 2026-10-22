@@ -6,6 +6,7 @@ import {
   createActivities,
   deleteActivity,
   deleteActivityCompletions,
+  enqueueActivityCompletionSideEffects,
   getActivitiesByCourseId,
   getActivityById,
   markActivityCompleteOnce,
@@ -155,7 +156,12 @@ export async function updateActivitySettings(
   ];
   if (!provider) throw new AppError('Activity not found', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
 
-  return db.transaction((tx) => provider.updateSettings(activityId, input, tx));
+  return db.transaction(async (tx) => {
+    const update = await provider.updateSettings(activityId, input, tx);
+    await enqueueActivityCompletionSideEffects(activityId, update.newlyCompletedProfileIds, tx);
+
+    return update;
+  });
 }
 
 /**

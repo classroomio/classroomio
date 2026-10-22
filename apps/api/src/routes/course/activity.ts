@@ -9,17 +9,10 @@ import { ZScormResultsProfileParam, ZScormResultsQuery } from '@cio/utils/valida
 import { ZScormSettings } from '@cio/utils/validation/activity/scorm';
 import type { TActivityKind } from '@cio/utils/constants/activity';
 import { ContentType, ROLE } from '@cio/utils/constants';
-import { getActivityCompletionsByProfile } from '@cio/db/queries/activity/activity';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
-import { getComplianceCycleStartIso } from '@cio/db/queries/course/compliance';
 import { getCourseMembers } from '@cio/db/queries/course/people';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { attachScormPackage, detachScormPackage } from '@cio/core/services/activity/providers';
-import { getComplianceSnapshot } from '@cio/core/services/activity/providers/scorm/results';
-import {
-  runActivityCompletionSideEffects,
-  scheduleActivityCompletionSideEffectsRetry
-} from '@api/services/activity/activity-completion';
 import {
   createActivity,
   deleteActivityService,
@@ -245,22 +238,6 @@ export const activityRouter = new Hono()
         });
         const isPreview = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
         const result = await getActivityProgress(courseId, activityId, { profileId: user.id, isPreview });
-
-        if (!isPreview) {
-          const cycleStart = await getComplianceCycleStartIso(courseId, user.id);
-          const completedIds = await getActivityCompletionsByProfile([activityId], user.id, undefined, cycleStart);
-          if (completedIds.length > 0) {
-            void (async () => {
-              try {
-                const snapshot = await getComplianceSnapshot(activityId, user.id);
-                await runActivityCompletionSideEffects(activityId, user.id, snapshot?.minutes);
-              } catch (err) {
-                console.error('Failed to reconcile activity completion side effects on progress fetch:', err);
-                scheduleActivityCompletionSideEffectsRetry(activityId, user.id);
-              }
-            })();
-          }
-        }
 
         return c.json({ success: true, data: result }, 200);
       } catch (error) {

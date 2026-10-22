@@ -49,7 +49,7 @@ vi.mock('@cio/core/services/activity/providers', () => ({
 }));
 
 vi.mock('@api/services/activity/activity-completion', () => ({
-  runActivityCompletionSideEffects: vi.fn().mockResolvedValue(undefined)
+  deliverActivityCompletionSideEffects: vi.fn().mockResolvedValue(undefined)
 }));
 
 vi.mock('@api/services/course/access', () => ({
@@ -71,7 +71,7 @@ import {
 } from '@cio/core/services/activity/activity';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { attachScormPackage, detachScormPackage } from '@cio/core/services/activity/providers';
-import { runActivityCompletionSideEffects } from '@api/services/activity/activity-completion';
+import { deliverActivityCompletionSideEffects } from '@api/services/activity/activity-completion';
 import { runSettingsCompletionSideEffects } from '@api/services/activity/activity-settings';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
 import { assertActivityKindAllowed } from '@api/services/activity/plan';
@@ -191,22 +191,16 @@ describe('course activity routes', () => {
     });
 
     expect(response.status).toBe(200);
-    await vi.waitFor(() => expect(runActivityCompletionSideEffects).toHaveBeenCalledTimes(2));
-    expect(runActivityCompletionSideEffects).toHaveBeenCalledWith('act-1', 'profile-1', 15);
-    expect(runActivityCompletionSideEffects).toHaveBeenCalledWith('act-1', 'profile-2', 15);
+    await vi.waitFor(() => expect(deliverActivityCompletionSideEffects).toHaveBeenCalledTimes(2));
+    expect(deliverActivityCompletionSideEffects).toHaveBeenCalledWith('act-1', 'profile-1');
+    expect(deliverActivityCompletionSideEffects).toHaveBeenCalledWith('act-1', 'profile-2');
   });
 
-  it('settings side effects keep going when one learner fails', async () => {
-    vi.mocked(runActivityCompletionSideEffects)
-      .mockRejectedValueOnce(new Error('certification failed'))
-      .mockResolvedValue(undefined);
-    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-
+  it('settings side effects deliver every learner the new rule completed', async () => {
     await runSettingsCompletionSideEffects('act-1', ['profile-1', 'profile-2', 'profile-3']);
 
-    expect(runActivityCompletionSideEffects).toHaveBeenCalledTimes(3);
-    expect(consoleError).toHaveBeenCalledTimes(1);
-    consoleError.mockRestore();
+    expect(deliverActivityCompletionSideEffects).toHaveBeenCalledTimes(3);
+    expect(deliverActivityCompletionSideEffects).toHaveBeenCalledWith('act-1', 'profile-3');
   });
 
   it('PUT settings returns 403 on an unlicensed server', async () => {

@@ -1,10 +1,7 @@
 import { db } from '@cio/db/drizzle';
-import {
-  getActivityById,
-  getActivityCompletionsByProfile,
-  upsertActivityCompletion
-} from '@cio/db/queries/activity/activity';
+import { getActivityById, upsertActivityCompletion } from '@cio/db/queries/activity/activity';
 import { getComplianceCycleStartIso } from '@cio/db/queries/course/compliance';
+import { enqueueActivityCompletionSideEffects } from '@cio/db/queries/activity/completion-side-effect';
 import { getActivityScormByActivityId } from '@cio/db/queries/scorm';
 import { getPackageVersionById, getCurrentPackageVersion } from '@cio/db/queries/activity/package-version';
 import { getPackageUnitById, listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
@@ -53,12 +50,8 @@ import {
   toRuleSettings
 } from '@cio/core/services/activity/providers/scorm/launch';
 import { getActivitySigningSecret, orgIdFromContentKey } from '@cio/core/config/activity-content';
-import { getComplianceSnapshot } from '@cio/core/services/activity/providers/scorm/results';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
-import {
-  runActivityCompletionSideEffects,
-  scheduleActivityCompletionSideEffectsRetry
-} from '@api/services/activity/activity-completion';
+import { deliverActivityCompletionSideEffects } from '@api/services/activity/activity-completion';
 
 export interface ScormRuntimeState {
   format: 'scorm12' | 'scorm2004';
@@ -602,6 +595,10 @@ export async function commitScormAttempt(
       await upsertActivityCompletion({ activityId, profileId, isComplete: true }, tx);
     }
 
+    if (attemptInCurrentCycle) {
+      await enqueueActivityCompletionSideEffects(activityId, [profileId], tx);
+    }
+
     return {
       saved: true,
       completedActivity,
@@ -625,39 +622,11 @@ export async function commitScormAttempt(
   }
 
   if ('ruleMet' in result && result.ruleMet) {
-    try {
-      const snapshot = await getComplianceSnapshot(result.activityId, result.profileId);
-      await runActivityCompletionSideEffects(result.activityId, result.profileId, snapshot?.minutes);
-    } catch (error) {
-      console.error('runActivityCompletionSideEffects error:', error);
-      scheduleActivityCompletionSideEffectsRetry(result.activityId, result.profileId);
-    }
+    await deliverActivityCompletionSideEffects(result.activityId, result.profileId);
   }
 
   if (!result.saved && 'rejected' in result && result.rejected) {
     await recordRuntimeEventBestEffort(scoAttemptId, 'error', { reason: 'stale_sequence', seq: commit.seq }, userAgent);
-
-    if (result.activityId && result.profileId) {
-      try {
-        const activity = await getActivityById(result.activityId);
-        const cycleStart = activity?.courseId
-          ? await getComplianceCycleStartIso(activity.courseId, result.profileId)
-          : null;
-        const completedIds = await getActivityCompletionsByProfile(
-          [result.activityId],
-          result.profileId,
-          undefined,
-          cycleStart
-        );
-        if (completedIds.length > 0) {
-          const snapshot = await getComplianceSnapshot(result.activityId, result.profileId);
-          await runActivityCompletionSideEffects(result.activityId, result.profileId, snapshot?.minutes);
-        }
-      } catch (error) {
-        console.error('runActivityCompletionSideEffects on stale sequence retry error:', error);
-        scheduleActivityCompletionSideEffectsRetry(result.activityId, result.profileId);
-      }
-    }
 
     return { saved: false, completedActivity: false, progressChanged: false, rejected: true };
   }

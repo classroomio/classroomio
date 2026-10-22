@@ -9,6 +9,7 @@ import { env } from '@cio/core/config/env';
 import { preloadVerifiedCustomDomainOriginsRegistry } from '@api/utils/origins';
 import { registerProcessErrorGuards } from '@api/process-error-guards';
 import { serve } from '@hono/node-server';
+import { startActivityCompletionSideEffectSweeper } from '@api/services/activity/activity-completion';
 import { showRoutes } from 'hono/dev';
 
 registerProcessErrorGuards();
@@ -25,6 +26,7 @@ async function startServer() {
   });
 
   serve({ fetch: app.fetch, port: API_PORT });
+  startActivityCompletionSideEffectSweeper();
 
   if (env.NODE_ENV !== 'production') {
     showRoutes(app, { colorize: true });
