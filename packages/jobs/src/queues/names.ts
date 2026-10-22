@@ -58,8 +58,7 @@ export const JOB_NAMES = {
     bulkAction: 'bulk-action'
   },
   activityPackage: {
-    processPackage: 'process-package',
-    cleanupStorage: 'cleanup-storage'
+    processPackage: 'process-package'
   },
   maintenance: {
     retentionCompact: 'retention-compact',

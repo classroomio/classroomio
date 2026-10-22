@@ -547,11 +547,7 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
     };
   } catch (error) {
     if (version?.contentPrefix) {
-      await cleanupPackageVersionStorage({
-        packageVersionId: version.id,
-        contentPrefix: version.contentPrefix,
-        organizationId: payload.actorContext.organizationId
-      });
+      await cleanupPackageVersionStorage(version);
     }
 
     if (error instanceof PackageError) {

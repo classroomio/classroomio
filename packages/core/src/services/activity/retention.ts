@@ -2,10 +2,12 @@ import { DeleteObjectsCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { db } from '@cio/db/drizzle';
 import {
   deletePackageVersionsByIds,
+  listFailedVersionsWithStoredContent,
   listVersionsDueForRetention,
   lockAssetRow,
   lockPackageVersionRow,
-  markPackageVersionArchived
+  markPackageVersionArchived,
+  markPackageVersionContentRemoved
 } from '@cio/db/queries/activity/package-version';
 import { deleteScormSessionEventsOlderThan } from '@cio/db/queries/scorm/session-event';
 import { getS3Client, getStorageConfig } from '../../config/storage';
@@ -14,7 +16,10 @@ export interface ScormRetentionResult {
   eventsDeleted: number;
   versionsDeleted: number;
   versionsArchived: number;
+  failedVersionsCleaned: number;
 }
+
+const FAILED_VERSION_GRACE_MS = 3_600_000;
 
 function cutoffIso(days: number, nowMs: number): string {
   return new Date(nowMs - days * 86_400_000).toISOString();
@@ -42,7 +47,40 @@ async function deleteContentPrefix(bucket: string, contentPrefix: string): Promi
   } while (continuationToken);
 }
 
-/** Deletes expired events and unused versions; archives versions with only closed attempts, preserving their ZIPs. */
+/**
+ * Removes extracted files that a failed or canceled version left behind when
+ * its inline cleanup did not finish. Keeps the ZIP and the row.
+ */
+async function cleanupFailedVersions(nowMs: number): Promise<number> {
+  const cutoff = new Date(nowMs - FAILED_VERSION_GRACE_MS).toISOString();
+  const candidates = await listFailedVersionsWithStoredContent(cutoff);
+  let cleaned = 0;
+
+  for (const candidate of candidates) {
+    const removed = await db.transaction(async (tx) => {
+      await lockPackageVersionRow(candidate.id, tx);
+      const [version] = await listFailedVersionsWithStoredContent(cutoff, tx, candidate.id);
+      if (!version) return false;
+
+      const bucket = getStorageConfig().bucketScorm;
+      await deleteContentPrefix(bucket, version.contentPrefix);
+      await deleteKeys(bucket, [`${version.contentPrefix}.index.json`]);
+      await markPackageVersionContentRemoved(version.id, tx);
+
+      return true;
+    });
+
+    if (removed) cleaned += 1;
+  }
+
+  return cleaned;
+}
+
+/**
+ * Deletes expired events and unused versions; archives versions with only
+ * closed attempts, preserving their ZIPs. Also finishes storage cleanup for
+ * failed or canceled versions.
+ */
 export async function runScormRetention(
   eventOlderThanDays = 90,
   unpinnedVersionDays = 30,
@@ -79,5 +117,7 @@ export async function runScormRetention(
     if (outcome === 'archived') versionsArchived += 1;
   }
 
-  return { eventsDeleted, versionsDeleted, versionsArchived };
+  const failedVersionsCleaned = await cleanupFailedVersions(nowMs);
+
+  return { eventsDeleted, versionsDeleted, versionsArchived, failedVersionsCleaned };
 }

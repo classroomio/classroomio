@@ -3,8 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const state = vi.hoisted(() => ({
   responses: [] as Array<(input: Record<string, unknown>) => unknown>,
   sent: [] as Array<{ command: string; input: Record<string, unknown> }>,
-  enqueued: [] as Record<string, unknown>[],
-  enqueueFails: false
+  marked: [] as string[],
+  markFails: false
 }));
 
 vi.mock('../../config/storage', () => ({
@@ -28,26 +28,17 @@ vi.mock('../../utils/logger', () => ({
   log: { info: () => {}, warn: () => {}, error: () => {} }
 }));
 
-vi.mock('@cio/jobs', async (importOriginal) => {
-  const original = (await importOriginal()) as Record<string, unknown>;
-  return {
-    ...original,
-    enqueueActivityPackageStorageCleanup: async (input: Record<string, unknown>) => {
-      if (state.enqueueFails) throw new Error('redis down');
-      state.enqueued.push(input);
-      return { jobId: 'job-1' };
-    }
-  };
-});
+vi.mock('@cio/db/queries', () => ({
+  markPackageVersionContentRemoved: async (id: string) => {
+    if (state.markFails) throw new Error('db down');
+    state.marked.push(id);
+  }
+}));
 
 import { deletePackageStoragePrefix } from '../../utils/storage';
-import { cleanupPackageVersionStorage, processPackageStorageCleanup } from './cleanup-storage';
+import { cleanupPackageVersionStorage } from './cleanup-storage';
 
-const cleanupInput = {
-  packageVersionId: '323e4567-e89b-12d3-a456-426614174002',
-  contentPrefix: 'scorm/asset-1/v1',
-  organizationId: '523e4567-e89b-12d3-a456-426614174004'
-};
+const version = { id: '323e4567-e89b-12d3-a456-426614174002', contentPrefix: 'scorm/asset-1/v1' };
 
 const listing = (keys: string[], next?: string) => () => ({
   Contents: keys.map((Key) => ({ Key })),
@@ -58,8 +49,8 @@ const listing = (keys: string[], next?: string) => () => ({
 afterEach(() => {
   state.responses = [];
   state.sent = [];
-  state.enqueued = [];
-  state.enqueueFails = false;
+  state.marked = [];
+  state.markFails = false;
 });
 
 describe('deletePackageStoragePrefix', () => {
@@ -112,40 +103,25 @@ describe('deletePackageStoragePrefix', () => {
 });
 
 describe('cleanupPackageVersionStorage', () => {
-  it('does not schedule a retry when the inline cleanup succeeds', async () => {
-    await cleanupPackageVersionStorage(cleanupInput);
+  it('marks the version content removed when every delete succeeds', async () => {
+    state.responses = [listing(['a']), () => ({}), () => ({})];
 
-    expect(state.enqueued).toEqual([]);
+    await cleanupPackageVersionStorage(version);
+
+    expect(state.marked).toEqual([version.id]);
   });
 
-  it('schedules a retried cleanup job when the inline cleanup fails', async () => {
+  it('leaves the version for the retention sweep when a delete fails', async () => {
     state.responses = [listing(['a']), () => ({ Errors: [{ Key: 'a', Code: 'InternalError' }] })];
 
-    await cleanupPackageVersionStorage(cleanupInput);
+    await expect(cleanupPackageVersionStorage(version)).resolves.toBeUndefined();
 
-    expect(state.enqueued).toEqual([cleanupInput]);
+    expect(state.marked).toEqual([]);
   });
 
-  it('never throws when the retry cannot be scheduled', async () => {
-    state.enqueueFails = true;
-    state.responses = [
-      () => {
-        throw new Error('timeout');
-      }
-    ];
+  it('never throws when recording the cleanup fails', async () => {
+    state.markFails = true;
 
-    await expect(cleanupPackageVersionStorage(cleanupInput)).resolves.toBeUndefined();
-  });
-});
-
-describe('processPackageStorageCleanup', () => {
-  it('throws on a failed delete so the queue retries it', async () => {
-    state.responses = [listing(['a']), () => ({ Errors: [{ Key: 'a', Code: 'SlowDown' }] })];
-
-    await expect(processPackageStorageCleanup(cleanupInput)).rejects.toThrow('SlowDown');
-  });
-
-  it('rejects an invalid payload', async () => {
-    await expect(processPackageStorageCleanup({ contentPrefix: '' })).rejects.toThrow();
+    await expect(cleanupPackageVersionStorage(version)).resolves.toBeUndefined();
   });
 });

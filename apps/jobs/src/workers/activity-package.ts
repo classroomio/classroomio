@@ -1,6 +1,6 @@
 import './../bootstrap';
 
-import { UnrecoverableError, Worker, type Job } from 'bullmq';
+import { UnrecoverableError, Worker } from 'bullmq';
 
 import { getPackageVersionById, recordDeadLetterJob, updateMediaJob, updatePackageVersion } from '@cio/db/queries';
 import { JOB_NAMES, QUEUE_NAMES, createRedisConnection } from '@cio/jobs';
@@ -9,10 +9,7 @@ import { JobCanceledError, errorMessage } from '../utils/cancel';
 import { env } from '../config/env';
 import { log } from '../utils/logger';
 import { processScormPackage } from '../processors/activity-package/process-scorm';
-import {
-  cleanupPackageVersionStorage,
-  processPackageStorageCleanup
-} from '../processors/activity-package/cleanup-storage';
+import { cleanupPackageVersionStorage } from '../processors/activity-package/cleanup-storage';
 
 const concurrency = Number.parseInt(env.ACTIVITY_PACKAGE_WORKER_CONCURRENCY ?? '1', 10) || 1;
 const connection = createRedisConnection();
@@ -25,8 +22,6 @@ const worker = new Worker(
     switch (job.name) {
       case JOB_NAMES.activityPackage.processPackage:
         return processScormPackage(job.data);
-      case JOB_NAMES.activityPackage.cleanupStorage:
-        return processPackageStorageCleanup(job.data);
       default:
         throw new Error(`Unknown activity-package job: ${job.name}`);
     }
@@ -34,39 +29,8 @@ const worker = new Worker(
   { connection, concurrency }
 );
 
-async function recordStorageCleanupFailure(job: Job, err: Error): Promise<void> {
-  const data = job.data as { packageVersionId?: string; contentPrefix?: string; organizationId?: string | null };
-
-  log.error('activity-package-storage-cleanup-failed', {
-    bullmqJobId: job.id,
-    attempt: job.attemptsMade,
-    packageVersionId: data.packageVersionId,
-    contentPrefix: data.contentPrefix,
-    error: errorMessage(err)
-  });
-
-  if (job.attemptsMade < (job.opts.attempts ?? 1)) return;
-
-  await recordDeadLetterJob({
-    organizationId: data.organizationId ?? null,
-    domain: 'activity-package',
-    runId: null,
-    queueName: QUEUE_NAMES.activityPackage,
-    jobName: job.name,
-    bullmqJobId: job.id ?? null,
-    payload: job.data as Record<string, unknown>,
-    error: { code: 'STORAGE_CLEANUP_FAILED', message: errorMessage(err), stack: err.stack },
-    attempts: job.attemptsMade
-  });
-}
-
 worker.on('failed', async (job, err) => {
   if (!job) return;
-
-  if (job.name === JOB_NAMES.activityPackage.cleanupStorage) {
-    await recordStorageCleanupFailure(job, err);
-    return;
-  }
 
   const data = job.data as {
     mediaJobId?: string;
@@ -93,11 +57,7 @@ worker.on('failed', async (job, err) => {
       });
       const version = await getPackageVersionById(data.packageVersionId);
       if (version?.contentPrefix) {
-        await cleanupPackageVersionStorage({
-          packageVersionId: version.id,
-          contentPrefix: version.contentPrefix,
-          organizationId: data.actorContext?.organizationId ?? null
-        });
+        await cleanupPackageVersionStorage(version);
       }
     }
 

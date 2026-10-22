@@ -102,6 +102,9 @@ vi.mock('@cio/db/queries', () => ({
   getCurrentPackageVersion: async () => state.currentVersion,
   getMediaJobById: async (id: string) => state.mediaJobs.get(id) ?? null,
   getPackageVersionById: async (id: string) => state.versions.get(id) ?? null,
+  markPackageVersionContentRemoved: async (id: string) => {
+    state.versions.set(id, { ...(state.versions.get(id) ?? {}), extractedBytes: 0 });
+  },
   setCurrentPackageVersion: async (id: string) => {
     const row = { ...(state.versions.get(id) ?? {}), isCurrent: true };
     state.versions.set(id, row);
