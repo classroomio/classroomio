@@ -43,6 +43,8 @@ vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
 
 import { runScormRetention } from '@cio/core/services/activity/retention';
 
+const SWEEP_BEFORE_ANY_DATA_MS = Date.parse('2000-01-01T00:00:00.000Z');
+
 const hasDatabase = Boolean(
   process.env.DATABASE_URL || process.env.PRIVATE_DATABASE_URL || process.env.PGBOUNCER_DATABASE_URL
 );
@@ -193,7 +195,7 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      await runScormRetention(90);
+      await runScormRetention(90, SWEEP_BEFORE_ANY_DATA_MS);
 
       expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
       expect(storedObjects.get(first.uploadKey)).toBe('zip-bytes');
@@ -254,7 +256,7 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      await runScormRetention(90);
+      await runScormRetention(90, SWEEP_BEFORE_ANY_DATA_MS);
 
       expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
       expect(storedObjects.get(first.uploadKey)).toBe('zip-bytes');
@@ -293,7 +295,7 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      await runScormRetention(90);
+      await runScormRetention(90, SWEEP_BEFORE_ANY_DATA_MS);
 
       expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
 
