@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, eq, inArray, isNotNull, isNull, max, ne, notExists, sql } from '@db/drizzle';
+import { and, asc, count, eq, inArray, isNotNull, isNull, max, ne, notExists, or, sql } from '@db/drizzle';
 import { db, type DbOrTxClient, type TxClient } from '@db/drizzle';
 import type { TContentPackageVersion, TNewContentPackageVersion } from '@db/types';
 
@@ -142,7 +142,18 @@ export async function claimPackageVersionForProcessing(
     const [claimed] = await dbClient
       .update(schema.contentPackageVersion)
       .set({ status: 'processing', updatedAt })
-      .where(and(eq(schema.contentPackageVersion.id, versionId), eq(schema.contentPackageVersion.status, 'uploading')))
+      .where(
+        and(
+          eq(schema.contentPackageVersion.id, versionId),
+          or(
+            eq(schema.contentPackageVersion.status, 'uploading'),
+            and(
+              eq(schema.contentPackageVersion.status, 'processing'),
+              isNull(schema.contentPackageVersion.processingJobId)
+            )
+          )
+        )
+      )
       .returning();
 
     return claimed ?? null;

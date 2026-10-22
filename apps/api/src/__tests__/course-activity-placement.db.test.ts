@@ -80,39 +80,11 @@ async function cleanupPlacementFixture(fixture: PlacementFixture) {
   await db.delete(schema.organization).where(eq(schema.organization.id, fixture.organizationId));
 }
 
-async function createTestActivity(
-  courseId: string,
-  input: { kind: 'scorm'; title: string; sectionId?: string | null }
-) {
-  const { db } = await import('@db/drizzle');
-  const { claimActivityOrder } = await import('@cio/core/services/course/root-order');
-  const { resolveItemSlug } = await import('@cio/core/services/course/slug');
-  const { createActivities } = await import('@db/queries/activity');
-
-  return db.transaction(async (tx) => {
-    const order = await claimActivityOrder(courseId, input.sectionId ?? null, tx);
-    const slug = await resolveItemSlug({ courseId, title: input.title, dbClient: tx });
-    const [created] = await createActivities(
-      [
-        {
-          courseId,
-          sectionId: input.sectionId ?? null,
-          kind: input.kind,
-          title: input.title,
-          slug,
-          order
-        }
-      ],
-      tx
-    );
-    return created;
-  });
-}
-
 describe.skipIf(!hasDatabase)('course activity placement', () => {
   it('shares the top-level order space with sections, lessons and exercises', async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
+    const { createActivity } = await import('@cio/core/services/activity/activity');
     const { claimActivityOrder, claimItemOrder } = await import('@cio/core/services/course/root-order');
     const { getLastCourseRootOrder } = await import('@db/queries/course');
 
@@ -120,10 +92,11 @@ describe.skipIf(!hasDatabase)('course activity placement', () => {
     const fixture = await createPlacementFixture(suffix, true);
 
     try {
-      const activity = await createTestActivity(fixture.courseId, {
-        kind: 'scorm',
-        title: 'Placement package'
-      });
+      const activity = await createActivity(
+        fixture.courseId,
+        { kind: 'scorm', title: 'Placement package' },
+        fixture.profileId
+      );
       expect(activity.order).toBe(2);
 
       const claimedOrder = await db.transaction((tx) =>
@@ -150,6 +123,7 @@ describe.skipIf(!hasDatabase)('course activity placement', () => {
   it('appends to the shared list when grouping is off, even inside a section', async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
+    const { createActivity } = await import('@cio/core/services/activity/activity');
 
     const suffix = `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
     const fixture = await createPlacementFixture(suffix, false);
@@ -176,11 +150,11 @@ describe.skipIf(!hasDatabase)('course activity placement', () => {
         note: '<p>Second.</p>'
       });
 
-      const activity = await createTestActivity(fixture.courseId, {
-        kind: 'scorm',
-        sectionId: fixture.sectionId,
-        title: 'Section package'
-      });
+      const activity = await createActivity(
+        fixture.courseId,
+        { kind: 'scorm', sectionId: fixture.sectionId, title: 'Section package' },
+        fixture.profileId
+      );
       expect(activity.order).toBe(3);
     } finally {
       await cleanupPlacementFixture(fixture);

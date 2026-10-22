@@ -1,4 +1,4 @@
-import type { Context } from 'hono';
+import type { Context, TypedResponse } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { ZodError } from 'zod';
 
@@ -19,6 +19,13 @@ export interface ErrorResponse {
   code: string;
   field?: string;
 }
+
+export type ApiErrorPayload =
+  | ErrorResponse
+  | { success: false; message: string }
+  | { success: false; error: string; message: string };
+
+export type ApiErrorResponse = Response & TypedResponse<ApiErrorPayload, ContentfulStatusCode, 'json'>;
 
 function getZodErrorField(error: ZodError): string | undefined {
   const firstIssue = error.issues[0];
@@ -62,7 +69,7 @@ export const handleError = (
   error: unknown,
   fallbackMessage: string = 'An unexpected error occurred',
   fallbackCode?: string
-) => {
+): ApiErrorResponse => {
   console.error('Error in route:', error);
 
   if (error instanceof AppError) {
@@ -111,7 +118,7 @@ export const handlePublicApiError = (
   error: unknown,
   fallbackMessage: string = 'An unexpected error occurred',
   fallbackCode?: string
-) => {
+): ApiErrorResponse => {
   if (error instanceof ZodError) {
     console.error('Error in route:', error);
 

@@ -1,4 +1,5 @@
 import type { DbOrTxClient } from '@cio/db/drizzle';
+import { deleteActivityCompletionSideEffects } from '@cio/db/queries/activity/completion-side-effect';
 import type { TActivityKind } from '@cio/utils/constants/activity';
 
 import { scormProvider } from './scorm';
@@ -12,8 +13,9 @@ export const ACTIVITY_PROVIDERS: Record<TActivityKind, ActivityProvider> = {
 };
 
 /**
- * Deletes every provider's learner state for these activities, inside the
- * caller's reset transaction. Each provider only touches its own kind.
+ * Deletes every provider's learner state for these activities, and any
+ * pending completion work, inside the caller's reset transaction. Each
+ * provider only touches its own kind.
  */
 export async function resetActivityLearnerState(
   activityIds: string[],
@@ -25,6 +27,8 @@ export async function resetActivityLearnerState(
   for (const provider of Object.values(ACTIVITY_PROVIDERS)) {
     deletedAttempts += await provider.resetLearner(activityIds, profileId, tx);
   }
+
+  await deleteActivityCompletionSideEffects(activityIds, profileId, tx);
 
   return deletedAttempts;
 }

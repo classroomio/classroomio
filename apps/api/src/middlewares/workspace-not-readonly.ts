@@ -2,7 +2,7 @@ import { Context, Next } from 'hono';
 
 import * as schema from '@db/schema';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { db } from '@cio/db/drizzle';
 import { eq } from 'drizzle-orm';
 
@@ -10,7 +10,7 @@ import { eq } from 'drizzle-orm';
  * Blocks mutating requests on workspaces flagged read-only by the
  * multi-workspace downgrade grace job. Read methods always pass through.
  */
-export const workspaceNotReadOnlyMiddleware = async (c: Context, next: Next) => {
+export const workspaceNotReadOnlyMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   const method = c.req.method.toUpperCase();
   if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
     await next();

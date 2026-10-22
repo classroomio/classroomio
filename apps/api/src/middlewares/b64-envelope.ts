@@ -1,4 +1,6 @@
 import type { Context, Next } from 'hono';
+
+import type { ApiErrorResponse } from '@api/utils/errors';
 import { CIO_ENVELOPE_CONTENT_TYPE } from '@cio/utils/constants';
 
 /**
@@ -9,7 +11,7 @@ import { CIO_ENVELOPE_CONTENT_TYPE } from '@cio/utils/constants';
  * payload. This middleware decodes the envelope and restores a plain
  * `application/json` body before zValidator runs.
  */
-export const b64EnvelopeRewrite = async (c: Context, next: Next) => {
+export const b64EnvelopeRewrite = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   const ct = c.req.header('content-type')?.toLowerCase() ?? '';
   if (!ct.startsWith(CIO_ENVELOPE_CONTENT_TYPE)) {
     return next();

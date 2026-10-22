@@ -1,5 +1,7 @@
 import { Context, Next } from 'hono';
 
+import type { ApiErrorResponse } from '@api/utils/errors';
+
 import { apiKeyMiddleware } from './api-key';
 import { authMiddleware } from './auth';
 
@@ -9,7 +11,7 @@ import { authMiddleware } from './auth';
  * 1. Authenticated users (via session cookies)
  * 2. Server-to-server calls (via API key)
  */
-export const authOrApiKeyMiddleware = async (c: Context, next: Next) => {
+export const authOrApiKeyMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   const user = c.get('user');
   const session = c.get('session');
 

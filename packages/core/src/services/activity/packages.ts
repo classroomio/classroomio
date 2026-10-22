@@ -1,0 +1,363 @@
+import { AppError, ErrorCodes } from '@cio/utils/errors';
+import { db } from '@cio/db/drizzle';
+import { getAssetById } from '@cio/db/queries/assets';
+import { createAsset, updateAsset } from '@cio/db/queries/assets';
+import {
+  claimPackageVersionForProcessing,
+  createPackageVersion,
+  getCurrentPackageVersion,
+  getNextPackageVersionNumber,
+  getPackageVersionById,
+  listPackageVersionsByAsset,
+  lockAssetRow,
+  setCurrentPackageVersion,
+  updatePackageVersion
+} from '@cio/db/queries/activity/package-version';
+import { listPackageUnitsByVersion, getPackageVersionUnitSummaries } from '@cio/db/queries/activity/package-unit';
+import { getActivityById } from '@cio/db/queries/activity';
+import {
+  closeSupersededAttempts,
+  closeSupersededAttemptsForActivity,
+  reopenReplacedAttemptsForVersion
+} from '@cio/db/queries/scorm/attempt';
+import { getActivityScormByActivityId, listActivityScormByAssetId } from '@cio/db/queries/scorm/activity-scorm';
+import { hasActiveMediaJobForAsset } from '@cio/db/queries';
+import type {
+  TPackageCreate,
+  TPackageMakeCurrent,
+  TPackageVersionCreate
+} from '@cio/utils/validation/activity/package';
+import type { TAsset, TContentPackageUnit, TContentPackageVersion, TCourseActivity } from '@cio/db/types';
+
+import { getStorageConfig } from '../../config/storage';
+import { getUploadLimits } from '../../config/upload-limits';
+import { generateDownloadPresignedUrls, generateScormUploadPresignedUrl, headS3ObjectSize } from '../../utils/s3';
+import { startActivityPackageJob } from '../jobs/activity-package-jobs';
+import { isRedisConfigured } from '@cio/jobs';
+
+export function scormUploadKey(assetId: string, versionNumber: number): string {
+  return `scorm/${assetId}/v${versionNumber}.zip`;
+}
+
+export function scormContentPrefix(assetId: string, versionNumber: number): string {
+  return `scorm/${assetId}/v${versionNumber}`;
+}
+
+function assertScormSizeWithinLimit(fileSize: number): void {
+  const uploadLimits = getUploadLimits();
+  if (fileSize > uploadLimits.scormBytes) {
+    throw new AppError(`Package exceeds the ${uploadLimits.scormMb} MB upload limit`, ErrorCodes.VALIDATION_ERROR, 400);
+  }
+}
+
+function defaultPackageTitle(fileName: string): string {
+  const trimmed = fileName.trim();
+
+  return trimmed.toLowerCase().endsWith('.zip') ? trimmed.slice(0, -4) : trimmed;
+}
+
+async function getOrgScormAsset(organizationId: string, assetId: string): Promise<TAsset> {
+  const asset = await getAssetById(assetId, organizationId);
+  if (!asset || asset.kind !== 'scorm') throw new AppError('Package not found', ErrorCodes.NOT_FOUND, 404);
+
+  return asset;
+}
+
+async function getAssetPackageVersion(assetId: string, versionId: string): Promise<TContentPackageVersion> {
+  const version = await getPackageVersionById(versionId);
+  if (!version || version.assetId !== assetId)
+    throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
+
+  return version;
+}
+
+export interface ScormPackagePayload {
+  asset: TAsset;
+  version: TContentPackageVersion;
+  uploadUrl: string;
+  uploadKey: string;
+}
+
+/**
+ * Creates a SCORM asset in processing status with its first uploading version.
+ * Returns the asset, the version and a presigned PUT URL for the ZIP.
+ */
+export async function createScormPackage(
+  organizationId: string,
+  profileId: string,
+  input: TPackageCreate
+): Promise<ScormPackagePayload> {
+  assertScormSizeWithinLimit(input.fileSize);
+
+  const created = await db.transaction(async (tx) => {
+    const asset = await createAsset(
+      {
+        organizationId,
+        kind: 'scorm',
+        provider: 'upload',
+        storageProvider: 's3',
+        title: input.title ?? defaultPackageTitle(input.fileName),
+        mimeType: 'application/zip',
+        isExternal: false,
+        status: 'processing',
+        createdByProfileId: profileId
+      },
+      tx
+    );
+
+    const storageKey = `scorm/${asset.id}`;
+    await updateAsset(asset.id, organizationId, { storageKey }, tx);
+
+    const uploadKey = scormUploadKey(asset.id, 1);
+    const contentPrefix = scormContentPrefix(asset.id, 1);
+    const version = await createPackageVersion(
+      {
+        assetId: asset.id,
+        versionNumber: 1,
+        uploadKey,
+        contentPrefix,
+        createdByProfileId: profileId
+      },
+      tx
+    );
+
+    return { asset: { ...asset, storageKey }, version };
+  });
+
+  const uploadUrl = await generateScormUploadPresignedUrl(created.version.uploadKey, input.fileSize);
+
+  return { asset: created.asset, version: created.version, uploadUrl, uploadKey: created.version.uploadKey };
+}
+
+export interface ScormPackageVersionPayload {
+  unchanged: boolean;
+  version: TContentPackageVersion;
+  uploadUrl: string | null;
+  uploadKey: string | null;
+}
+
+/**
+ * Creates the next uploading version for a SCORM asset with a presigned PUT
+ * URL for the ZIP. When the declared `contentSha256` matches the current
+ * version, nothing is created and the current version comes back with
+ * `unchanged: true`. The digest is only a hint: the worker hashes the real
+ * bytes and discards a duplicate whatever the caller declared.
+ */
+export async function createScormPackageVersion(
+  organizationId: string,
+  assetId: string,
+  profileId: string,
+  input: TPackageVersionCreate
+): Promise<ScormPackageVersionPayload> {
+  const asset = await getOrgScormAsset(organizationId, assetId);
+
+  if (input.contentSha256) {
+    const currentVersion = await getCurrentPackageVersion(asset.id);
+    if (currentVersion?.contentSha256 === input.contentSha256) {
+      return { unchanged: true, version: currentVersion, uploadUrl: null, uploadKey: null };
+    }
+  }
+
+  assertScormSizeWithinLimit(input.fileSize);
+
+  const { version, uploadKey } = await db.transaction(async (tx) => {
+    await lockAssetRow(asset.id, tx);
+    const versionNumber = await getNextPackageVersionNumber(asset.id, tx);
+    const uploadKey = scormUploadKey(asset.id, versionNumber);
+    const contentPrefix = scormContentPrefix(asset.id, versionNumber);
+    const createdVersion = await createPackageVersion(
+      {
+        assetId: asset.id,
+        versionNumber,
+        uploadKey,
+        contentPrefix,
+        createdByProfileId: profileId
+      },
+      tx
+    );
+
+    return { version: createdVersion, uploadKey };
+  });
+
+  const uploadUrl = await generateScormUploadPresignedUrl(uploadKey, input.fileSize);
+  return { unchanged: false, version, uploadUrl, uploadKey };
+}
+
+export interface ScormProcessPayload {
+  version: TContentPackageVersion;
+  jobId: string;
+  status: string;
+  stage: string | null;
+}
+
+/**
+ * Verifies the uploaded ZIP exists, marks the version processing and enqueues
+ * the worker. Size enforcement happens in the worker against the real object.
+ */
+export async function processScormPackageVersion(
+  organizationId: string,
+  assetId: string,
+  versionId: string,
+  profileId: string | null
+): Promise<ScormProcessPayload> {
+  const asset = await getOrgScormAsset(organizationId, assetId);
+  const version = await getAssetPackageVersion(asset.id, versionId);
+
+  const canProcess = version.status === 'uploading' || (version.status === 'processing' && !version.processingJobId);
+  if (!canProcess) {
+    throw new AppError('Package version is already being processed', ErrorCodes.CONFLICT, 409);
+  }
+
+  const bucket = getStorageConfig().bucketScorm;
+  const uploadedBytes = await headS3ObjectSize(bucket, version.uploadKey);
+  if (uploadedBytes === null)
+    throw new AppError('Package file has not been uploaded yet', ErrorCodes.VALIDATION_ERROR, 400);
+
+  const hasActive = await hasActiveMediaJobForAsset(asset.id, organizationId);
+  if (hasActive) throw new AppError('A package job is already running for this asset', ErrorCodes.CONFLICT, 409);
+
+  if (!isRedisConfigured())
+    throw new AppError(
+      'Package processing needs a job queue, which is not configured on this server',
+      ErrorCodes.INTERNAL_ERROR,
+      503
+    );
+
+  const claimedVersion = await claimPackageVersionForProcessing(version.id);
+  if (!claimedVersion) {
+    throw new AppError('Package version is already being processed', ErrorCodes.CONFLICT, 409);
+  }
+
+  const job = await startActivityPackageJob({
+    organizationId,
+    assetId: asset.id,
+    packageVersionId: version.id,
+    triggeredByProfileId: profileId
+  });
+
+  const updated = await updatePackageVersion(version.id, { processingJobId: job.id });
+  return { version: updated ?? version, jobId: job.id, status: job.status, stage: job.stage };
+}
+
+export interface ScormMakeCurrentPayload {
+  version: TContentPackageVersion;
+  closedAttempts: number;
+  reopenedAttempts?: number;
+}
+
+/**
+ * Makes a ready version current. Optionally closes open attempts pinned to
+ * older versions with reason `replaced`.
+ */
+export async function makeScormPackageVersionCurrent(
+  organizationId: string,
+  assetId: string,
+  versionId: string,
+  input: TPackageMakeCurrent
+): Promise<ScormMakeCurrentPayload> {
+  const asset = await getOrgScormAsset(organizationId, assetId);
+  const version = await getAssetPackageVersion(asset.id, versionId);
+
+  if (version.status !== 'ready')
+    throw new AppError('Only a ready package version can be made current', ErrorCodes.CONFLICT, 409);
+
+  if (input.activityId) {
+    const activityScorm = await getActivityScormByActivityId(input.activityId);
+    if (!activityScorm || activityScorm.assetId !== asset.id)
+      throw new AppError('Activity does not use this package', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  const result = await db.transaction(async (tx) => {
+    const current = await setCurrentPackageVersion(version.id, tx);
+
+    const totalBytes =
+      version.zipBytes !== null && version.extractedBytes !== null
+        ? version.zipBytes + version.extractedBytes
+        : (version.zipBytes ?? version.extractedBytes);
+
+    if (totalBytes !== null) {
+      await updateAsset(asset.id, organizationId, { byteSize: totalBytes }, tx);
+    }
+
+    let closedAttempts = 0;
+    if (input.closeOpenAttempts) {
+      closedAttempts = input.activityId
+        ? await closeSupersededAttemptsForActivity(input.activityId, version.id, 'replaced', tx)
+        : await closeSupersededAttempts(asset.id, version.id, 'replaced', tx);
+    }
+
+    const reopenedAttempts = await reopenReplacedAttemptsForVersion(version.id, input.activityId, tx);
+
+    return { current, closedAttempts, reopenedAttempts: reopenedAttempts.length };
+  });
+
+  return {
+    version: result.current,
+    closedAttempts: result.closedAttempts,
+    reopenedAttempts: result.reopenedAttempts
+  };
+}
+
+export interface ScormPackageUsage {
+  activityId: string;
+  courseId: string;
+  title: string;
+}
+
+export interface ScormPackageDetails {
+  asset: TAsset;
+  versions: TContentPackageVersion[];
+  currentVersion: TContentPackageVersion | null;
+  units: TContentPackageUnit[];
+  versionStats: Array<{ versionId: string; unitCount: number; firstPassMark: number | null }>;
+  usedBy: ScormPackageUsage[];
+}
+
+/**
+ * Returns a package with its versions, the current version's units and the
+ * activities using it. Throws when the asset is missing or not a package.
+ */
+export async function getScormPackage(organizationId: string, assetId: string): Promise<ScormPackageDetails> {
+  const asset = await getOrgScormAsset(organizationId, assetId);
+
+  const versions = await listPackageVersionsByAsset(asset.id);
+  const currentVersion = await getCurrentPackageVersion(asset.id);
+
+  const units = currentVersion ? await listPackageUnitsByVersion(currentVersion.id) : [];
+  const versionStats = await getPackageVersionUnitSummaries(asset.id);
+
+  const usages = await listActivityScormByAssetId(asset.id);
+  const usedBy = await resolvePackageUsages(usages.map((usage) => usage.activityId));
+
+  return { asset, versions, currentVersion, units, versionStats, usedBy };
+}
+
+async function resolvePackageUsages(activityIds: string[]): Promise<ScormPackageUsage[]> {
+  const resolved: ScormPackageUsage[] = [];
+
+  for (const activityId of activityIds) {
+    const activity: TCourseActivity | null = await getActivityById(activityId);
+    if (!activity) continue;
+
+    resolved.push({ activityId: activity.id, courseId: activity.courseId, title: activity.title });
+  }
+
+  return resolved;
+}
+
+/**
+ * Returns a short-lived download URL for the current version's ZIP. Throws
+ * when the asset is missing or has no ready version yet.
+ */
+export async function getScormPackageDownloadUrl(organizationId: string, assetId: string): Promise<{ url: string }> {
+  const asset = await getOrgScormAsset(organizationId, assetId);
+  const current = await getCurrentPackageVersion(asset.id);
+  if (!current || current.status !== 'ready')
+    throw new AppError('Package has no ready version yet', ErrorCodes.VALIDATION_ERROR, 400);
+
+  const urls = await generateDownloadPresignedUrls([current.uploadKey], getStorageConfig().bucketScorm);
+  const url = urls[current.uploadKey];
+  if (!url) throw new AppError('Package file is not available', ErrorCodes.NOT_FOUND, 404);
+
+  return { url };
+}

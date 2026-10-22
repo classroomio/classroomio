@@ -18,6 +18,7 @@ import type { Hono as HonoBase } from 'hono';
 import type { MergeSchemaPath } from 'hono/types';
 import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
 import { accountRouter } from '@api/routes/account';
+import { activityRouter } from '@api/routes/activity';
 import { agentRouter } from '@api/routes/agent';
 import { auth } from '@cio/db/auth';
 import { communityRouter } from '@api/routes/community';
@@ -45,30 +46,58 @@ import { publicCourseRouter, orgSiteOgRouter } from '@api/routes/org-site';
 import { publicWidgetsRouter } from '@api/routes/widgets';
 import { reportRouter } from '@api/routes/report';
 import rateLimiter from '@api/middlewares/rate-limiter';
+import { activityContentHostGate, isContentHostRequest } from '@api/middlewares/activity-content-host';
 import { secureHeaders } from 'hono/secure-headers';
 import { signupGuard } from '@api/middlewares/signup-guard';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 
+const ACTIVITY_TOKEN_PATH_REGEX = /\/activity\/(?:player|scorm\/runtime|content)\/[A-Za-z0-9_.-]+/g;
+
+function redactTokenInLog(message: string): string {
+  return message.replace(ACTIVITY_TOKEN_PATH_REGEX, (match) => {
+    const segments = match.split('/');
+    segments[segments.length - 1] = '[REDACTED]';
+    return segments.join('/');
+  });
+}
+
 // Create Hono app with chaining for RPC support
 const baseApp = new Hono()
   // Middleware
-  .use('*', logger())
+  .use(
+    '*',
+    logger((message, ...rest) => console.log(redactTokenInLog(message), ...rest))
+  )
   .use('*', prettyJSON())
+  .use('*', activityContentHostGate)
   // `Cross-Origin-Resource-Policy: same-origin` (Hono's default) blocks the
   // dashboard from embedding api-served media (e.g. HLS segments via
   // `<video>`) when the dashboard and api live on different origins in
   // local dev / self-hosted. We're an API server — every response is
   // designed for cross-origin consumption, so the right value is
   // `cross-origin`. CORS still gates which origins can read the bytes.
-  .use('*', secureHeaders({ crossOriginResourcePolicy: 'cross-origin' }))
+  // Content-host responses carry their own header table instead.
   .use('*', async (c, next) => {
+    if (isContentHostRequest(c)) return next();
+
+    return secureHeaders({ crossOriginResourcePolicy: 'cross-origin' })(c, next);
+  })
+  .use('*', async (c, next) => {
+    if (isContentHostRequest(c)) return next();
     if (isPublicCorsPath(c.req.path)) return next();
 
     return sessionCors(c, next);
   })
   .use('*', async (c, next) => {
+    if (isContentHostRequest(c)) {
+      c.set('user', null);
+      c.set('session', null);
+      c.set('orgRoles', {});
+
+      return next();
+    }
     if (isPublicCorsPath(c.req.path)) {
       c.set('user', null);
       c.set('session', null);
@@ -236,6 +265,8 @@ const baseApp = new Hono()
     });
   });
 
+// The chained app's inferred schema is too large for declaration emit.
+// Keep this union in sync with the mounts below so RPC clients retain every route.
 type AppSchemaOf<T> = T extends HonoBase<any, infer S, any> ? (S extends object ? S : never) : never;
 type Mount<Path extends string, Router> = MergeSchemaPath<AppSchemaOf<Router>, Path>;
 
@@ -243,6 +274,7 @@ type AppSchema =
   | AppSchemaOf<typeof baseApp>
   | Mount<'/onboarding', typeof onboardingRouter>
   | Mount<'/account', typeof accountRouter>
+  | Mount<'/activity', typeof activityRouter>
   | Mount<'/course', typeof courseRouter>
   | Mount<'/domain', typeof domainRouter>
   | Mount<'/hls', typeof hlsRouter>
@@ -271,6 +303,7 @@ type AppSchema =
 const routes = baseApp
   .route('/onboarding', onboardingRouter)
   .route('/account', accountRouter)
+  .route('/activity', activityRouter)
   .route('/course', courseRouter)
   .route('/domain', domainRouter)
   .route('/hls', hlsRouter)

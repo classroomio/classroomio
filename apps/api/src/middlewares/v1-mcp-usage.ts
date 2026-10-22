@@ -6,7 +6,7 @@ import {
   releaseMcpAutomationUsage,
   reserveMcpAutomationUsage
 } from '@api/services/organization/automation-usage';
-import { AppError, ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, AppError, ErrorCodes } from '@api/utils/errors';
 import { MCP_TOOL_CREDIT_COST, type TAutomationUsageCategory, type TMcpToolName } from '@cio/utils/plans';
 
 type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -133,7 +133,7 @@ function resolveMcpToolName(method: string, routePath: string): TMcpToolName | u
   return MCP_V1_ROUTE_TOOL_MAP[routePath]?.[method as TRouteMethod];
 }
 
-export const v1McpUsageMiddleware = async (c: Context, next: Next) => {
+export const v1McpUsageMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   const automationKey = c.get('automationKey');
 
   if (automationKey?.type !== 'mcp') {

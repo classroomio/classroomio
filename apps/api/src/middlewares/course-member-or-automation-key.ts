@@ -1,14 +1,14 @@
 import { Context, Next } from 'hono';
 import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { courseMemberMiddleware } from './course-member';
 
 export const courseMemberOrAutomationKeyMiddleware =
   (requiredScopes: readonly TOrganizationApiKeyScope[] = []) =>
-  async (c: Context, next: Next) => {
+  async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
     try {
       const automationKey = c.get('automationKey');
 
