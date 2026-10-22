@@ -1,10 +1,12 @@
 import * as z from 'zod';
 
-const AssetKind = z.enum(['video', 'document', 'image', 'audio', 'other']);
+const AssetKind = z.enum(['video', 'document', 'image', 'audio', 'other', 'scorm']);
 const AssetProvider = z.enum(['upload', 'youtube', 'vimeo', 'generic', 'external_url', 'google_drive']);
 export type TAssetProvider = z.infer<typeof AssetProvider>;
 const AssetStatus = z.enum(['active', 'archived']);
-const AssetTargetType = z.enum(['lesson', 'exercise', 'question']);
+const AssetTargetType = z.enum(['lesson', 'exercise', 'question', 'activity']);
+
+export const ACTIVITY_PACKAGE_SLOT = 'activity_package';
 
 export const ZAssetListQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),

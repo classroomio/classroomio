@@ -48,6 +48,17 @@ export const ZDeadLetterCleanupPayload = z.object({
 export type TDeadLetterCleanupPayload = z.infer<typeof ZDeadLetterCleanupPayload>;
 
 /**
+ * SCORM retention windows. Diagnostic session events age out, and replaced
+ * package versions lose their extracted files plus rows once no attempt
+ * references them. Original ZIPs are always kept for reprocessing.
+ */
+export const ZScormRetentionPayload = z.object({
+  eventOlderThanDays: z.number().int().positive().default(90),
+  unpinnedVersionDays: z.number().int().positive().default(30)
+});
+export type TScormRetentionPayload = z.infer<typeof ZScormRetentionPayload>;
+
+/**
  * Sweep `media_job` rows that are still `queued` / `running` but haven't been
  * touched in `staleAfterMinutes`. Marks them `failed` so the active-job guard
  * stops blocking new runs after a worker crash, server restart, or lost
