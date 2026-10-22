@@ -179,7 +179,7 @@
       {/each}
     </div>
   {:else}
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 {summaryCards.length === 5 ? 'lg:grid-cols-5' : ''}">
       {#each summaryCards as card (card.labelKey)}
         <Card.Root class="ui:py-3">
           <Card.Content class="flex flex-col gap-1">
