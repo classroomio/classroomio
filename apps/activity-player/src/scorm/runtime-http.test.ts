@@ -177,14 +177,48 @@ describe('createRuntimeHttpService', () => {
     expect(sent[1].contentType).toBe('application/json');
   });
 
-  it('keeps quick saves alive while the page is hiding', async () => {
+  it('sends quick saves as beacons while the page is hiding', async () => {
     const service = createRuntimeHttpService({ isPageUnloading: () => true });
 
+    const result = service.processHttpRequest(
+      '/commit',
+      commit({ core: { lesson_location: 'page-1' } }, 1),
+      false,
+      vi.fn(),
+      vi.fn()
+    );
+    await flushMicrotasks();
+
+    expect(result).toEqual({ result: true, errorCode: 0 });
+    expect(sent).toHaveLength(0);
+    expect(beacons).toHaveLength(1);
+    expect(beaconBody(0)).toEqual({ cmi: { core: { lesson_location: 'page-1' } }, commitSequence: 1 });
+  });
+
+  it('sends a queued quick save as a beacon when the page starts hiding before its turn', async () => {
+    let unloading = false;
+    let releaseFirst: (() => void) | undefined;
+    const firstGate = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+
+    vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
+      sent.push({ url, async: true, contentType: null, body: JSON.parse(String(init?.body ?? '{}')) });
+      await firstGate;
+      return { status: 200, text: async () => '{"result":true,"errorCode":0}' } as Response;
+    });
+    const service = createRuntimeHttpService({ isPageUnloading: () => unloading });
+
     service.processHttpRequest('/commit', commit({ core: { lesson_location: 'page-1' } }, 1), false, vi.fn(), vi.fn());
+    service.processHttpRequest('/commit', commit({ core: { lesson_location: 'page-2' } }, 2), false, vi.fn(), vi.fn());
+    await flushMicrotasks();
+    unloading = true;
+    releaseFirst?.();
     await flushMicrotasks();
 
     expect(sent).toHaveLength(1);
-    expect(sent[0].keepalive).toBe(true);
+    expect(beacons).toHaveLength(1);
+    expect(beaconBody(0)).toEqual({ cmi: { core: { lesson_location: 'page-2' } }, commitSequence: 2 });
   });
 
   it('queues quick saves so each diff starts from the last acknowledged state', async () => {

@@ -1,8 +1,12 @@
+import { gzipSync } from 'fflate';
+
 export const BEACON_BYTE_LIMIT = 60 * 1024;
 export const KEEPALIVE_BYTE_LIMIT = 64 * 1024;
 
 const PENDING_SAVE_KEY = 'cio:scorm:pending-exit-saves';
 const PENDING_SAVE_MAX = 4;
+
+export const GZIP_BODY_HEADER = 'X-Cio-Body-Encoding';
 
 type PendingExitSave = { id: string; url: string; body: string };
 
@@ -58,31 +62,42 @@ function readPendingSaves(): PendingExitSave[] {
   }
 }
 
-function writePendingSaves(entries: PendingExitSave[]): void {
+/**
+ * Stores the queue, newest entries last. When storage is full, drops the
+ * oldest entries until the rest fit. Returns false when not even the newest
+ * entry could be stored.
+ */
+function writePendingSaves(entries: PendingExitSave[]): boolean {
   const store = pendingStore();
-  if (!store) return;
+  if (!store) return false;
 
   try {
     if (entries.length === 0) {
       store.removeItem(PENDING_SAVE_KEY);
-      return;
+      return true;
     }
-
-    store.setItem(PENDING_SAVE_KEY, JSON.stringify(entries.slice(-PENDING_SAVE_MAX)));
   } catch {
-    return;
+    return false;
   }
+
+  for (let kept = Math.min(entries.length, PENDING_SAVE_MAX); kept > 0; kept -= 1) {
+    try {
+      store.setItem(PENDING_SAVE_KEY, JSON.stringify(entries.slice(-kept)));
+      return true;
+    } catch {
+      continue;
+    }
+  }
+
+  return false;
 }
 
-function queuePendingSave(url: string, body: string): boolean {
-  if (!pendingStore()) return false;
-
+function queuePendingSave(url: string, body: string): PendingExitSave | null {
   const entries = readPendingSaves();
-  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-  entries.push({ id, url, body });
-  writePendingSaves(entries);
+  const entry = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`, url, body };
+  entries.push(entry);
 
-  return true;
+  return writePendingSaves(entries) ? entry : null;
 }
 
 function dataAsText(data: BodyInit | null | undefined): string | null {
@@ -97,24 +112,48 @@ function dataAsText(data: BodyInit | null | undefined): string | null {
   return null;
 }
 
-function removePendingSave(url: string, data: BodyInit | null | undefined): void {
-  const text = dataAsText(data);
-  if (text === null) return;
-
+function removePendingSave(id: string): void {
   const entries = readPendingSaves();
-  const index = entries.findLastIndex((entry) => entry.url === url && entry.body === text);
-  if (index !== -1) {
-    entries.splice(index, 1);
-    writePendingSaves(entries);
+  const remaining = entries.filter((entry) => entry.id !== id);
+
+  if (remaining.length !== entries.length) writePendingSaves(remaining);
+}
+
+function sendKeepalive(url: string, body: BodyInit, headers: Record<string, string>, pendingId?: string): boolean {
+  try {
+    void fetch(url, { method: 'POST', body, headers, keepalive: true, credentials: 'include' })
+      .then((response) => {
+        if (response.ok && pendingId) removePendingSave(pendingId);
+      })
+      .catch(() => {});
+
+    return true;
+  } catch {
+    return false;
   }
 }
 
-function queueOversizedSave(url: string, data: BodyInit | null | undefined): boolean {
+/**
+ * Delivers a save too large for sendBeacon. Text bodies are gzipped so they
+ * fit the keepalive budget, and stored first so the next launch replays them
+ * if the request never lands. Returns true when the save was sent or stored.
+ */
+function sendOversizedSave(url: string, data: BodyInit | null, bytes: number): boolean {
   const text = dataAsText(data);
 
-  if (text !== null) return queuePendingSave(url, text);
+  if (text === null) {
+    return bytes <= KEEPALIVE_BYTE_LIMIT && data !== null && sendKeepalive(url, data, {});
+  }
 
-  return false;
+  const pending = queuePendingSave(url, text);
+  const compressed = gzipSync(new TextEncoder().encode(text));
+
+  if (compressed.byteLength > KEEPALIVE_BYTE_LIMIT) return pending !== null;
+
+  const headers = { 'Content-Type': 'text/plain', [GZIP_BODY_HEADER]: 'gzip' };
+  const sent = sendKeepalive(url, new Blob([new Uint8Array(compressed)], { type: 'text/plain' }), headers, pending?.id);
+
+  return sent || pending !== null;
 }
 
 async function flushPendingSaves(): Promise<void> {
@@ -147,9 +186,9 @@ async function flushPendingSaves(): Promise<void> {
 
 /**
  * Routes run-time saves around sendBeacon's drop limit. Payloads at or under
- * the limit keep native beacon delivery; larger ones go out as a keepalive
- * fetch. Payloads above the keepalive limit cannot be delivered during unload
- * at all, so they are persisted and replayed on the next launch.
+ * the limit keep native beacon delivery; larger ones are stored for replay and
+ * sent gzipped as a keepalive fetch. Browsers cap unload requests at 64 KiB,
+ * so a save still larger once compressed waits for the next launch.
  */
 export function installLargeBeaconFetchFallback(limit: number = BEACON_BYTE_LIMIT): Promise<void> {
   if (typeof navigator === 'undefined' || typeof navigator.sendBeacon !== 'function') return Promise.resolve();
@@ -169,25 +208,7 @@ export function installLargeBeaconFetchFallback(limit: number = BEACON_BYTE_LIMI
       return data === undefined ? nativeSendBeacon(target) : nativeSendBeacon(target, data);
     }
 
-    if (bytes > KEEPALIVE_BYTE_LIMIT) {
-      return queueOversizedSave(target, data ?? null);
-    }
-
-    queueOversizedSave(target, data ?? null);
-
-    try {
-      void fetch(target, { method: 'POST', body: data ?? null, keepalive: true, credentials: 'include' })
-        .then((response) => {
-          if (response.ok) {
-            removePendingSave(target, data ?? null);
-          }
-        })
-        .catch(() => {});
-
-      return true;
-    } catch {
-      return false;
-    }
+    return sendOversizedSave(target, data ?? null, bytes);
   };
 
   return flushPendingSaves().catch(() => {});

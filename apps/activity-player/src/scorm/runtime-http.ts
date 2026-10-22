@@ -133,15 +133,13 @@ async function sendAsynchronously(
   url: string,
   buildBody: () => string,
   hooks: RuntimeHttpHooks,
-  onAcknowledged?: () => void,
-  keepalive = false
+  onAcknowledged?: () => void
 ): Promise<void> {
   if (typeof fetch === 'function') {
     await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: buildBody(),
-      keepalive
+      body: buildBody()
     })
       .then(async (response) => {
         const text = await response.text();
@@ -189,9 +187,10 @@ function sendSynchronously(url: string, body: string, hooks: RuntimeHttpHooks): 
 
 /**
  * Sends one module's saves to the run-time API. Each save carries only what
- * changed since the last save the server accepted. Saves, including the exit
- * save, go out as synchronous requests so the result reaches the package and
- * the embedder; once the page is unloading they go out as beacons instead.
+ * changed since the last save the server accepted. Exit saves go out as
+ * synchronous requests so the result reaches the package and the embedder.
+ * Once the page is unloading every save goes out as a beacon, which routes
+ * oversized bodies around the browser's unload size limit.
  */
 export function createRuntimeHttpService(hooks: RuntimeHttpHooks = {}): RuntimeHttpService {
   const unloading = hooks.isPageUnloading ?? isPageUnloading;
@@ -224,23 +223,27 @@ export function createRuntimeHttpService(hooks: RuntimeHttpHooks = {}): RuntimeH
       const body = JSON.stringify({ ...fields, cmi: changedCmi });
       const isExit = immediate || fields['terminate'] === true;
 
+      if (!isExit && unloading()) {
+        return sendBeacon(url, body);
+      }
+
       if (!isExit) {
         const commitSequence = fields['commitSequence'];
         const pending: Record<string, unknown> = { ...fields, cmi: cloneCmi(fullCmi) };
+        const buildPendingBody = () => {
+          const pendingChanges = diffCmi(pending.cmi, acknowledged) ?? {};
+          return JSON.stringify({ ...pending, cmi: pendingChanges });
+        };
 
         saveQueue = saveQueue
-          .then(() =>
-            sendAsynchronously(
-              url,
-              () => {
-                const pendingChanges = diffCmi(pending.cmi, acknowledged) ?? {};
-                return JSON.stringify({ ...pending, cmi: pendingChanges });
-              },
-              hooks,
-              () => acknowledge(pending.cmi, commitSequence),
-              unloading()
-            )
-          )
+          .then(() => {
+            if (unloading()) {
+              sendBeacon(url, buildPendingBody());
+              return;
+            }
+
+            return sendAsynchronously(url, buildPendingBody, hooks, () => acknowledge(pending.cmi, commitSequence));
+          })
           .catch(() => {});
 
         return { result: true, errorCode: 0 };

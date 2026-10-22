@@ -6,6 +6,7 @@ import {
 } from '@api/services/activity/runtime-scorm';
 
 import type { Context, Next } from 'hono';
+import { gunzipSync } from 'node:zlib';
 import { Hono } from '@api/utils/hono';
 import { activityRuntimeRateLimiter } from '@api/middlewares/rate-limiter';
 import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
@@ -14,6 +15,7 @@ import { verifyLaunchToken } from '@cio/activity-packages';
 import { getActivitySigningSecret } from '@cio/core/config/activity-content';
 
 const RUNTIME_BODY_MAX_BYTES = 524288;
+const GZIP_BODY_HEADER = 'x-cio-body-encoding';
 
 async function verifyRuntimeLaunchToken(c: Context, next: Next) {
   const launchToken = c.req.param('launchToken');
@@ -86,6 +88,30 @@ function rejectOversizedBody(c: Context, errorMessage: string): Response | null 
   return null;
 }
 
+/**
+ * Reads a commit body as text. The player gzips exit saves too large for the
+ * browser's unload request limit and marks them with a header. Throws 413 when
+ * the body, before or after decompression, exceeds the commit limit.
+ */
+async function readCommitBody(c: Context): Promise<string> {
+  if (c.req.header(GZIP_BODY_HEADER) !== 'gzip') {
+    return readBoundedText(c, RUNTIME_BODY_MAX_BYTES, 'Commit payload too large');
+  }
+
+  const compressed = Buffer.from(await c.req.arrayBuffer());
+  if (compressed.byteLength > RUNTIME_BODY_MAX_BYTES) {
+    throw new AppError('Commit payload too large', ErrorCodes.VALIDATION_ERROR, 413);
+  }
+
+  try {
+    return gunzipSync(compressed, { maxOutputLength: RUNTIME_BODY_MAX_BYTES }).toString('utf8');
+  } catch (error) {
+    if (error instanceof RangeError) throw new AppError('Commit payload too large', ErrorCodes.VALIDATION_ERROR, 413);
+
+    throw new AppError('Invalid commit payload', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+}
+
 function truncateUserAgent(value: string | null): string | null {
   if (!value) return value;
 
@@ -120,7 +146,7 @@ export const runtimeScormRouter = new Hono()
         const oversized = rejectOversizedBody(c, 'Commit payload too large');
         if (oversized) return oversized;
 
-        const text = await readBoundedText(c, RUNTIME_BODY_MAX_BYTES, 'Commit payload too large');
+        const text = await readCommitBody(c);
         let body: unknown;
         try {
           body = JSON.parse(text);
