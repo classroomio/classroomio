@@ -39,16 +39,39 @@ vi.mock('@cio/db/drizzle', () => ({
 }));
 
 vi.mock('@api/services/course/completion', () => ({
-  evaluateCourseCertification: vi.fn()
+  evaluateCourseCertification: vi.fn(),
+  buildCertificateWebhookInput: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/course/course', () => ({
+  getCourseCertificationRow: vi.fn().mockResolvedValue(null)
+}));
+
+vi.mock('@cio/core/services/webhook/emit', () => ({
+  emitCourseWebhookEvent: vi.fn().mockResolvedValue(undefined),
+  emitWebhookEvent: vi.fn().mockResolvedValue(undefined)
+}));
+
+vi.mock('@api/services/course/certificate-plan', () => ({
+  orgHasCertificatesEnabled: vi.fn().mockResolvedValue(false)
 }));
 
 import { db } from '@cio/db/drizzle';
 import { getCourseById } from '@cio/db/queries/course';
-import { getLatestComplianceRecordsByProfiles, updateCourseCompletionRecord } from '@cio/db/queries/course/compliance';
+import {
+  createCourseCompletionRecord,
+  getLatestComplianceRecordsByProfiles,
+  getStudentCourseMembersForCompliance,
+  updateCourseCompletionRecord
+} from '@cio/db/queries/course/compliance';
+import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { getExerciseMaxPoints, getStudentExerciseSubmissions } from '@cio/db/queries/course/exercise-results';
 import { getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 import { evaluateCourseCertification } from '@api/services/course/completion';
-import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
+import {
+  ensureComplianceEnrollmentRecordsForProfiles,
+  syncComplianceProgressFromSubmission
+} from '@api/services/course/compliance';
 
 const COURSE_ID = 'course-1';
 const GROUP_MEMBER_ID = 'member-1';
@@ -117,6 +140,51 @@ describe('syncComplianceProgressFromSubmission', () => {
         attempts: 3
       }),
       expect.anything()
+    );
+  });
+});
+
+describe('ensureComplianceEnrollmentRecordsForProfiles', () => {
+  const createdRecord = {
+    id: RECORD_ID,
+    courseId: COURSE_ID,
+    groupMemberId: GROUP_MEMBER_ID,
+    profileId: PROFILE_ID,
+    cycleNumber: 1,
+    dueDate: '2026-12-31T00:00:00.000Z',
+    validUntil: null
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(getCourseById).mockResolvedValue([
+      { id: COURSE_ID, type: 'COMPLIANCE', compliance: {}, certificate: { deadline: '2026-12-31T00:00:00.000Z' } }
+    ] as unknown as Awaited<ReturnType<typeof getCourseById>>);
+    vi.mocked(getStudentCourseMembersForCompliance).mockResolvedValue([
+      { member: { id: GROUP_MEMBER_ID, profileId: PROFILE_ID } }
+    ] as unknown as Awaited<ReturnType<typeof getStudentCourseMembersForCompliance>>);
+    vi.mocked(getLatestComplianceRecordsByProfiles).mockResolvedValue([]);
+    vi.mocked(createCourseCompletionRecord).mockResolvedValue(
+      createdRecord as unknown as Awaited<ReturnType<typeof createCourseCompletionRecord>>
+    );
+  });
+
+  it('returns the new records without announcing them when the caller owns a transaction', async () => {
+    const transaction = {} as Parameters<typeof ensureComplianceEnrollmentRecordsForProfiles>[2];
+
+    const result = await ensureComplianceEnrollmentRecordsForProfiles([COURSE_ID], [PROFILE_ID], transaction);
+
+    expect(result.createdRecords).toEqual([createdRecord]);
+    expect(emitCourseWebhookEvent).not.toHaveBeenCalled();
+  });
+
+  it('announces the new records straight away when there is no surrounding transaction', async () => {
+    await ensureComplianceEnrollmentRecordsForProfiles([COURSE_ID], [PROFILE_ID]);
+
+    expect(emitCourseWebhookEvent).toHaveBeenCalledWith(
+      COURSE_ID,
+      'compliance.record.status_changed',
+      expect.objectContaining({ recordId: RECORD_ID, trigger: 'enrollment', previousStatus: null })
     );
   });
 });

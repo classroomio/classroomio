@@ -9,6 +9,7 @@ import type { TPublicApiCourseParam } from '@cio/utils/validation/public-api';
 import type { TUpdateCourseMember } from '@cio/utils/validation/course/people';
 
 import { ROLE } from '@cio/utils/constants';
+import { buildMemberSource } from '@cio/core/services/webhook/emit';
 import {
   addMembers,
   deleteMember,
@@ -47,7 +48,8 @@ export async function addCourseMemberService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseParam,
-  payload: TPublicApiAddCourseMember
+  payload: TPublicApiAddCourseMember,
+  apiKeyId: string | null = null
 ) {
   await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
@@ -61,7 +63,10 @@ export async function addCourseMemberService(
     }
   }
 
-  const [addedMember] = await addMembers(params.courseId, [member]);
+  const [addedMember] = await addMembers(params.courseId, [member], {
+    source: buildMemberSource(apiKeyId ? 'api' : 'admin', { apiKeyId }),
+    actorProfileId: actorId
+  });
 
   return addedMember;
 }
@@ -99,7 +104,7 @@ export async function deleteCourseMemberService(
 ) {
   await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
-  return deleteMember(params.courseId, params.memberId);
+  return deleteMember(params.courseId, params.memberId, { actorProfileId: actorId });
 }
 
 export async function resetCourseMemberProgressService(

@@ -5163,7 +5163,9 @@
       "event_groups": {
         "organization": "Organisation",
         "course": "Cours",
-        "learning": "Progression de l'apprentissage"
+        "learning": "Progression de l'apprentissage",
+        "cohort": "Cohortes",
+        "compliance": "Conformité"
       },
       "events": {
         "organization_invite_created": "Une invitation d'équipe est envoyée",
@@ -5179,7 +5181,18 @@
         "course_submission_created": "Une soumission d'exercice est créée",
         "course_submission_status_changed": "Le statut d'une soumission change, par exemple lorsqu'elle est notée",
         "lesson_completion_updated": "Une leçon est marquée comme terminée ou réinitialisée",
-        "exercise_completion_updated": "Un exercice est terminé ou réinitialisé"
+        "exercise_completion_updated": "Un exercice est terminé ou réinitialisé",
+        "compliance_record_status_changed": "Le statut de conformité d'un étudiant change",
+        "compliance_record_waived": "L'exigence de conformité d'un étudiant est levée",
+        "organization_member_added": "Une personne rejoint l'organisation",
+        "organization_member_removed": "Une personne est retirée de l'organisation",
+        "organization_member_updated": "Le rôle ou le statut d'une personne change",
+        "course_published": "Un cours est publié",
+        "course_unpublished": "Un cours est dépublié",
+        "cohort_member_added": "Une personne est ajoutée à une cohorte",
+        "cohort_member_removed": "Une personne est retirée d'une cohorte",
+        "lesson_session_scheduled": "Une session en direct est planifiée ou déplacée",
+        "course_payment_request_created": "Un étudiant demande à payer un cours"
       },
       "deliveries": {
         "title": "Envois",

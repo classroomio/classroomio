@@ -6,7 +6,8 @@ import type {
   TNewOrganizationPlan,
   TNewOrganizationmember,
   TOrganization,
-  TOrganizationPlan
+  TOrganizationPlan,
+  TOrganizationmember
 } from '@db/types';
 import {
   and,
@@ -270,16 +271,19 @@ export const createOrganizationMembers = async (data: TNewOrganizationmember[], 
   return members;
 };
 
+/**
+ * Inserts the members that do not exist yet and returns only the rows it created.
+ */
 export async function insertOrganizationMembersOnConflictDoNothing(
   data: TNewOrganizationmember[],
   dbClient: DbOrTxClient = db
-): Promise<void> {
+): Promise<TOrganizationmember[]> {
   if (data.length === 0) {
-    return;
+    return [];
   }
 
   try {
-    await dbClient.insert(schema.organizationmember).values(data).onConflictDoNothing();
+    return await dbClient.insert(schema.organizationmember).values(data).onConflictDoNothing().returning();
   } catch (error) {
     console.error('insertOrganizationMembersOnConflictDoNothing error:', error);
     throw new Error(
@@ -410,13 +414,17 @@ export const hasOrgMemberByProfileIdOrEmail = async (
  * contains exactly one row. The table lock makes the singleton check and insert
  * atomic with concurrent organization inserts.
  */
+/**
+ * Adds the person as a student of the single self-hosted organization. `ensured` is false when there is no
+ * single organization; `createdMember` is set only when this call created the membership.
+ */
 export async function ensureSelfHostedStudentMembership({
   profileId,
   email
 }: {
   profileId: string;
   email: string | null | undefined;
-}): Promise<boolean> {
+}): Promise<{ ensured: boolean; createdMember: TOrganizationmember | null }> {
   try {
     return await db.transaction(async (tx) => {
       await tx.execute(sql`LOCK TABLE "organization" IN SHARE ROW EXCLUSIVE MODE`);
@@ -428,7 +436,7 @@ export async function ensureSelfHostedStudentMembership({
         .limit(2);
 
       if (organizations.length !== 1) {
-        return false;
+        return { ensured: false, createdMember: null };
       }
 
       const organizationId = organizations[0].id;
@@ -443,18 +451,19 @@ export async function ensureSelfHostedStudentMembership({
         .where(and(eq(schema.organizationmember.organizationId, organizationId), profileOrEmailMatch))
         .limit(1);
 
-      if (!existingMember) {
-        const memberData: TNewOrganizationmember = {
-          organizationId,
-          profileId,
-          roleId: ROLE.STUDENT,
-          verified: true
-        };
-
-        await createOrganizationMember(memberData, tx);
+      if (existingMember) {
+        return { ensured: true, createdMember: null };
       }
 
-      return true;
+      const memberData: TNewOrganizationmember = {
+        organizationId,
+        profileId,
+        roleId: ROLE.STUDENT,
+        verified: true
+      };
+      const createdMember = await createOrganizationMember(memberData, tx);
+
+      return { ensured: true, createdMember };
     });
   } catch (error) {
     console.error('ensureSelfHostedStudentMembership error:', error);

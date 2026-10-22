@@ -1,3 +1,4 @@
+import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type AudienceImportResult,
@@ -258,7 +259,7 @@ async function enrollAudienceStudentProfilesInCohorts(
   const alreadyEnrolled = pairs.length - toInsert.length;
 
   if (toInsert.length > 0) {
-    await Promise.all(
+    const addedCohortMembers = await Promise.all(
       toInsert.map((pair) =>
         addCohortMember({
           cohortId: pair.cohortId,
@@ -268,6 +269,10 @@ async function enrollAudienceStudentProfilesInCohorts(
         })
       )
     );
+
+    for (const cohortMember of addedCohortMembers) {
+      await emitCohortMemberWebhookEvent('cohort.member.added', orgId, cohortMember.cohortId, cohortMember);
+    }
   }
 
   // Enrols every assigned profile, not only new memberships, so re-running repairs
@@ -590,6 +595,10 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
       });
       insertedMembers = await createOrganizationMembers(newMemberRows, tx);
     });
+
+    for (const insertedMember of insertedMembers) {
+      await emitOrganizationMemberWebhookEvent('organization.member.added', orgId, insertedMember, invitedByProfileId);
+    }
 
     if (studentMilestoneNotification) {
       notifyStudentMilestone(studentMilestoneNotification).catch((error) => {

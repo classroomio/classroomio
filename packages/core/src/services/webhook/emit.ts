@@ -112,7 +112,7 @@ export async function recordWebhookEvent<TEvent extends TWebhookEventType>(
 
     if (!(await hasWebhookEntitlement(organizationId))) return;
 
-    const detailedData = await enrichWebhookEventData(data);
+    const detailedData = await enrichWebhookEventData(organizationId, eventType, data);
     const envelope = await buildWebhookEnvelope(organizationId, eventType, detailedData, occurredAt);
     const now = new Date().toISOString();
     const deliveries = await insertWebhookEventWithDeliveries(
@@ -183,15 +183,128 @@ export async function emitCourseWebhookEvent<TEvent extends TCourseWebhookEventT
   scheduleEmit(() => recordCourseWebhookEvent(courseId, eventType, data, occurredAt));
 }
 
-export async function emitCourseMemberWebhookEvent(
-  eventType: 'course.member.added' | 'course.member.removed',
+export type TWebhookMemberSource = TWebhookEventInput<'course.member.added'>['source'];
+
+/**
+ * Builds the `source` of a membership: how the person got into the course. Fields that do not apply are `null`.
+ */
+export function buildMemberSource(
+  method: TWebhookMemberSource['method'],
+  ids: Partial<Omit<TWebhookMemberSource, 'method'>> = {}
+): TWebhookMemberSource {
+  return {
+    method,
+    inviteId: ids.inviteId ?? null,
+    inviteLinkId: ids.inviteLinkId ?? null,
+    cohortId: ids.cohortId ?? null,
+    programId: ids.programId ?? null,
+    apiKeyId: ids.apiKeyId ?? null
+  };
+}
+
+export async function emitCourseMemberAddedWebhookEvent(
   courseId: string,
-  member: TGroupmember
+  member: TGroupmember,
+  context: { source: TWebhookMemberSource; actorProfileId?: string | null }
 ): Promise<void> {
-  await emitCourseWebhookEvent(courseId, eventType, {
+  await emitCourseWebhookEvent(courseId, 'course.member.added', {
     memberId: member.id,
     profileId: member.profileId,
     email: member.email,
-    roleId: member.roleId
+    roleId: member.roleId,
+    enrolledAt: member.createdAt,
+    source: context.source,
+    actorProfileId: context.actorProfileId ?? null
+  });
+}
+
+export async function emitCourseMemberRemovedWebhookEvent(
+  courseId: string,
+  member: TGroupmember,
+  context: {
+    actorProfileId?: string | null;
+    reason?: string | null;
+    progressAtRemoval?: TWebhookEventInput<'course.member.removed'>['progressAtRemoval'];
+  }
+): Promise<void> {
+  await emitCourseWebhookEvent(courseId, 'course.member.removed', {
+    memberId: member.id,
+    profileId: member.profileId,
+    email: member.email,
+    roleId: member.roleId,
+    enrolledAt: member.createdAt,
+    actorProfileId: context.actorProfileId ?? null,
+    reason: context.reason ?? null,
+    progressAtRemoval: context.progressAtRemoval ?? null
+  });
+}
+
+export type TOrganizationMemberWebhookRef = {
+  id: number;
+  profileId: string | null;
+  email: string | null;
+  roleId: number;
+  status?: string | null;
+};
+
+export async function emitOrganizationMemberWebhookEvent(
+  eventType: 'organization.member.added' | 'organization.member.removed',
+  organizationId: string,
+  member: TOrganizationMemberWebhookRef,
+  actorProfileId: string | null = null
+): Promise<void> {
+  await emitWebhookEvent(organizationId, eventType, {
+    memberId: String(member.id),
+    profileId: member.profileId,
+    email: member.email,
+    roleId: member.roleId,
+    status: member.status ?? null,
+    actorProfileId
+  });
+}
+
+export async function emitOrganizationMemberUpdatedWebhookEvent(
+  organizationId: string,
+  member: TOrganizationMemberWebhookRef,
+  changes: TWebhookEventInput<'organization.member.updated'>['changes'],
+  actorProfileId: string | null = null
+): Promise<void> {
+  await emitWebhookEvent(organizationId, 'organization.member.updated', {
+    memberId: String(member.id),
+    profileId: member.profileId,
+    email: member.email,
+    roleId: member.roleId,
+    status: member.status ?? null,
+    actorProfileId,
+    changes
+  });
+}
+
+export async function emitCoursePublishWebhookEvent(
+  courseId: string,
+  publishChange: 'published' | 'unpublished' | null | undefined,
+  actorProfileId: string | null = null
+): Promise<void> {
+  if (!publishChange) return;
+
+  await emitCourseWebhookEvent(courseId, publishChange === 'published' ? 'course.published' : 'course.unpublished', {
+    actorProfileId
+  });
+}
+
+export async function emitCohortMemberWebhookEvent(
+  eventType: 'cohort.member.added' | 'cohort.member.removed',
+  organizationId: string,
+  cohortId: string,
+  member: { id: string; profileId: string | null; email: string | null; roleId: number },
+  actorProfileId: string | null = null
+): Promise<void> {
+  await emitWebhookEvent(organizationId, eventType, {
+    cohortId,
+    memberId: member.id,
+    profileId: member.profileId,
+    email: member.email,
+    roleId: member.roleId,
+    actorProfileId
   });
 }

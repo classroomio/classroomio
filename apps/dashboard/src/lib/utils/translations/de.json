@@ -5163,7 +5163,9 @@
       "event_groups": {
         "organization": "Organisation",
         "course": "Kurse",
-        "learning": "Lernfortschritt"
+        "learning": "Lernfortschritt",
+        "cohort": "Kohorten",
+        "compliance": "Compliance"
       },
       "events": {
         "organization_invite_created": "Eine Team-Einladung wird gesendet",
@@ -5179,7 +5181,18 @@
         "course_submission_created": "Eine Übungseinreichung wird erstellt",
         "course_submission_status_changed": "Der Status einer Einreichung ändert sich, z. B. bei der Bewertung",
         "lesson_completion_updated": "Eine Lektion wird als abgeschlossen markiert oder zurückgesetzt",
-        "exercise_completion_updated": "Eine Übung wird abgeschlossen oder zurückgesetzt"
+        "exercise_completion_updated": "Eine Übung wird abgeschlossen oder zurückgesetzt",
+        "compliance_record_status_changed": "Der Compliance-Status eines Studenten ändert sich",
+        "compliance_record_waived": "Eine Compliance-Anforderung eines Studenten wird erlassen",
+        "organization_member_added": "Eine Person tritt der Organisation bei",
+        "organization_member_removed": "Eine Person wird aus der Organisation entfernt",
+        "organization_member_updated": "Rolle oder Status einer Person ändert sich",
+        "course_published": "Ein Kurs wird veröffentlicht",
+        "course_unpublished": "Die Veröffentlichung eines Kurses wird zurückgenommen",
+        "cohort_member_added": "Eine Person wird zu einer Kohorte hinzugefügt",
+        "cohort_member_removed": "Eine Person wird aus einer Kohorte entfernt",
+        "lesson_session_scheduled": "Eine Live-Sitzung wird geplant oder verschoben",
+        "course_payment_request_created": "Ein Student bittet darum, einen Kurs zu bezahlen"
       },
       "deliveries": {
         "title": "Zustellungen",

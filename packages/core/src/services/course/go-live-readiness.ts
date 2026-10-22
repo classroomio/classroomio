@@ -10,6 +10,7 @@ import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { getDashboardBaseUrl } from '../../config/dashboard-url';
 import { updateCourse } from './course';
+import { emitCoursePublishWebhookEvent } from '../webhook/emit';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
 import { sealLessonVersionsOnPublish } from '../lesson-version';
 import { db } from '@cio/db/drizzle';
@@ -272,7 +273,7 @@ export async function getCourseGoLiveReadiness(courseId: string): Promise<Course
   });
 }
 
-export async function publishCourseWhenReady(courseId: string) {
+export async function publishCourseWhenReady(courseId: string, actorProfileId: string | null = null) {
   const readiness = await getCourseGoLiveReadiness(courseId);
   if (!readiness.ready) {
     const blockerList = readiness.blockers.map((blocker) => blocker.message).join(' ');
@@ -291,12 +292,14 @@ export async function publishCourseWhenReady(courseId: string) {
   const slug = await ensureCourseSlug(courseId, course.title);
 
   // Publishing seals the snapshot students were served, so both writes share one transaction.
-  const { course: publishedCourse } = await db.transaction(async (tx) => {
+  const { course: publishedCourse, publishChange } = await db.transaction(async (tx) => {
     const updated = await updateCourse(courseId, { slug, isPublished: true }, tx);
     await sealLessonVersionsOnPublish(courseId, tx);
 
     return updated;
   });
+
+  await emitCoursePublishWebhookEvent(courseId, publishChange, actorProfileId);
 
   const publishedReadiness = await getCourseGoLiveReadiness(courseId);
 

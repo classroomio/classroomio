@@ -643,6 +643,7 @@ export const submission = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     exerciseId: uuid('exercise_id').notNull(),
     submittedBy: uuid('submitted_by'),
+    gradedBy: uuid('graded_by'),
     courseId: uuid('course_id'),
     feedback: text()
   },
@@ -1400,6 +1401,7 @@ export const groupmember = pgTable(
     email: varchar(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     assignedStudentId: varchar('assigned_student_id'),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
     certificateEarnedAt: timestamp('certificate_earned_at', { withTimezone: true, mode: 'string' }),
     certificationEmailSentAt: timestamp('certification_email_sent_at', { withTimezone: true, mode: 'string' })
   },

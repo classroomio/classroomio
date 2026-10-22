@@ -39,7 +39,9 @@ export const submissionRouter = new Hono()
         const courseId = c.req.param('courseId')!;
         const data = c.req.valid('json');
 
-        const submission = await updateSubmissionService(submissionId, courseId, data);
+        const submission = await updateSubmissionService(submissionId, courseId, data, {
+          actorProfileId: c.get('user')?.id ?? null
+        });
 
         return c.json({ success: true, data: submission }, 200);
       } catch (error) {
@@ -88,7 +90,9 @@ export const submissionRouter = new Hono()
         const courseId = c.req.param('courseId')!;
         const data = c.req.valid('json');
 
-        const submission = await updateSubmissionGradesBatch(submissionId, courseId, data);
+        const submission = await updateSubmissionGradesBatch(submissionId, courseId, data, {
+          actorProfileId: c.get('user')?.id ?? null
+        });
 
         return c.json({ success: true, data: submission }, 200);
       } catch (error) {

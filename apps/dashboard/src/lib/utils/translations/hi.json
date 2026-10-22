@@ -5163,7 +5163,9 @@
       "event_groups": {
         "organization": "संगठन",
         "course": "कोर्स",
-        "learning": "सीखने की प्रगति"
+        "learning": "सीखने की प्रगति",
+        "cohort": "कोहोर्ट",
+        "compliance": "अनुपालन"
       },
       "events": {
         "organization_invite_created": "टीम आमंत्रण भेजा जाता है",
@@ -5179,7 +5181,18 @@
         "course_submission_created": "अभ्यास सबमिशन बनाया जाता है",
         "course_submission_status_changed": "सबमिशन की स्थिति बदलती है, जैसे ग्रेड किए जाने पर",
         "lesson_completion_updated": "पाठ को पूर्ण चिह्नित किया जाता है या रीसेट किया जाता है",
-        "exercise_completion_updated": "अभ्यास पूरा किया जाता है या रीसेट किया जाता है"
+        "exercise_completion_updated": "अभ्यास पूरा किया जाता है या रीसेट किया जाता है",
+        "compliance_record_status_changed": "किसी विद्यार्थी की अनुपालन स्थिति बदलती है",
+        "compliance_record_waived": "किसी विद्यार्थी की अनुपालन आवश्यकता माफ़ की जाती है",
+        "organization_member_added": "कोई व्यक्ति संगठन से जुड़ता है",
+        "organization_member_removed": "किसी व्यक्ति को संगठन से हटाया जाता है",
+        "organization_member_updated": "किसी व्यक्ति की भूमिका या स्थिति बदलती है",
+        "course_published": "कोई कोर्स प्रकाशित किया जाता है",
+        "course_unpublished": "किसी कोर्स का प्रकाशन रद्द किया जाता है",
+        "cohort_member_added": "किसी कोहोर्ट में कोई व्यक्ति जोड़ा जाता है",
+        "cohort_member_removed": "किसी कोहोर्ट से कोई व्यक्ति हटाया जाता है",
+        "lesson_session_scheduled": "कोई लाइव सत्र निर्धारित या स्थानांतरित किया जाता है",
+        "course_payment_request_created": "कोई विद्यार्थी कोर्स का भुगतान करने का अनुरोध करता है"
       },
       "deliveries": {
         "title": "डिलीवरी",

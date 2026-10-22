@@ -13,6 +13,13 @@ import { buildEmailBranding, buildEmailFromName } from '@cio/email';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import type { DbOrTxClient } from '@cio/db/drizzle';
+import type { TCohortMember } from '@cio/db/queries/cohort';
+import type { TGroupmember } from '@cio/db/types';
+import {
+  buildMemberSource,
+  emitCohortMemberWebhookEvent,
+  emitCourseMemberAddedWebhookEvent
+} from '@cio/core/services/webhook/emit';
 import type { TInviteLinkWithContext } from '@cio/db/queries/invite-link';
 import type { TInviteLinkResourceType } from '@cio/utils/validation/invite-link';
 
@@ -28,6 +35,8 @@ export type InviteLinkPreview = {
 
 export type InviteLinkEnrollResult = {
   isFreshJoin: boolean;
+  courseMember?: TGroupmember | null;
+  cohortMember?: TCohortMember | null;
 };
 
 type InviteLinkHandler = {
@@ -138,9 +147,10 @@ const courseHandler: InviteLinkHandler = {
 
     const existingMemberId = await getGroupMemberIdByGroupAndProfile(locked.groupId, profileId, tx);
     const isFreshJoin = !existingMemberId;
+    let courseMember: TGroupmember | null = null;
 
     if (isFreshJoin) {
-      await addGroupMember(
+      const [addedMember] = await addGroupMember(
         {
           groupId: locked.groupId,
           roleId: context.invite.roleId,
@@ -149,13 +159,21 @@ const courseHandler: InviteLinkHandler = {
         },
         tx
       );
+      courseMember = addedMember ?? null;
     }
 
-    return { isFreshJoin };
+    return { isFreshJoin, courseMember };
   },
 
-  async afterCommit(context, profileId) {
+  async afterCommit(context, profileId, _email, { courseMember }) {
     const course = requireCourse(context);
+
+    if (courseMember) {
+      await emitCourseMemberAddedWebhookEvent(course.id, courseMember, {
+        source: buildMemberSource('invite_link', { inviteLinkId: context.invite.id }),
+        actorProfileId: profileId
+      });
+    }
 
     await ensureComplianceEnrollmentRecordsForProfiles([course.id], [profileId]);
     await invalidateOrgStats(context.organization.id);
@@ -214,11 +232,22 @@ const cohortHandler: InviteLinkHandler = {
       await enrollUsersInCourseGroups(groupIds, [{ profileId, email }], roleId, tx);
     }
 
-    return { isFreshJoin };
+    return { isFreshJoin, cohortMember: createdMember };
   },
 
-  async afterCommit(context, profileId, email, { isFreshJoin }) {
+  async afterCommit(context, profileId, email, { isFreshJoin, cohortMember }) {
     const cohort = requireCohort(context);
+
+    if (cohortMember) {
+      await emitCohortMemberWebhookEvent(
+        'cohort.member.added',
+        context.organization.id,
+        cohort.id,
+        cohortMember,
+        profileId
+      );
+    }
+
     const cohortCourseIds = await getCourseIdsByCohortIds([cohort.id]);
 
     if (cohortCourseIds.length > 0) {

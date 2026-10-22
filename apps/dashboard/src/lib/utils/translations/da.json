@@ -5163,7 +5163,9 @@
       "event_groups": {
         "organization": "Organisation",
         "course": "Kurser",
-        "learning": "Læringsfremskridt"
+        "learning": "Læringsfremskridt",
+        "cohort": "Kohorter",
+        "compliance": "Overholdelse"
       },
       "events": {
         "organization_invite_created": "En teaminvitation sendes",
@@ -5179,7 +5181,18 @@
         "course_submission_created": "En opgaveaflevering oprettes",
         "course_submission_status_changed": "Status for en aflevering ændres, f.eks. når den bedømmes",
         "lesson_completion_updated": "En lektion markeres som fuldført eller nulstilles",
-        "exercise_completion_updated": "En opgave fuldføres eller nulstilles"
+        "exercise_completion_updated": "En opgave fuldføres eller nulstilles",
+        "compliance_record_status_changed": "En studerendes overholdelsesstatus ændres",
+        "compliance_record_waived": "En studerendes overholdelseskrav frafaldes",
+        "organization_member_added": "En person tilslutter sig organisationen",
+        "organization_member_removed": "En person fjernes fra organisationen",
+        "organization_member_updated": "En persons rolle eller status ændres",
+        "course_published": "Et kursus udgives",
+        "course_unpublished": "Et kursus afpubliceres",
+        "cohort_member_added": "En person føjes til en kohorte",
+        "cohort_member_removed": "En person fjernes fra en kohorte",
+        "lesson_session_scheduled": "En live-session planlægges eller flyttes",
+        "course_payment_request_created": "En studerende anmoder om at betale for et kursus"
       },
       "deliveries": {
         "title": "Leverancer",

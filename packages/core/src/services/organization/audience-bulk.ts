@@ -11,7 +11,10 @@ import {
   recordOrganizationMemberAudit,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
+import { ROLE } from '@cio/utils/constants';
 import type { TAudienceBulkAction } from '@cio/utils/validation/organization';
+
+import { emitOrganizationMemberUpdatedWebhookEvent, emitOrganizationMemberWebhookEvent } from '../webhook/emit';
 
 /**
  * The applier, shared by the API's synchronous path and the queue worker.
@@ -178,7 +181,7 @@ export async function applyAudienceBulkActionToMembers(
   input: BulkApplyInput,
   actorProfileId: string
 ): Promise<BulkApplyOutcome> {
-  return db.transaction(async (tx) => {
+  const { outcome, members } = await db.transaction(async (tx) => {
     const members = await getBulkAudienceMembersByIds(orgId, memberIds, tx);
 
     if (members.length === 0) {
@@ -186,11 +189,46 @@ export async function applyAudienceBulkActionToMembers(
     }
 
     if (input.action === 'delete') {
-      return deleteMembers(orgId, members, input, actorProfileId, tx);
+      const deleteOutcome = await deleteMembers(orgId, members, input, actorProfileId, tx);
+
+      return { members, outcome: deleteOutcome };
     }
 
-    return changeStatus(orgId, members, input, actorProfileId, tx);
+    const statusOutcome = await changeStatus(orgId, members, input, actorProfileId, tx);
+
+    return { members, outcome: statusOutcome };
   });
+
+  await emitBulkOutcomeWebhookEvents(orgId, members, outcome, input.action, actorProfileId);
+
+  return outcome;
+}
+
+async function emitBulkOutcomeWebhookEvents(
+  orgId: string,
+  members: BulkAudienceMemberRow[],
+  outcome: BulkApplyOutcome,
+  action: TAudienceBulkAction,
+  actorProfileId: string
+) {
+  const changed = members.filter((member) => outcome.changedIds.includes(member.id));
+
+  for (const member of changed) {
+    const memberRef = { id: member.id, profileId: member.profileId, email: member.email, roleId: ROLE.STUDENT };
+
+    if (action === 'delete') {
+      await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, memberRef, actorProfileId);
+
+      continue;
+    }
+
+    await emitOrganizationMemberUpdatedWebhookEvent(
+      orgId,
+      { ...memberRef, status: outcome.appliedStatus ?? null },
+      { status: { from: member.status, to: outcome.appliedStatus ?? null } },
+      actorProfileId
+    );
+  }
 }
 
 /**

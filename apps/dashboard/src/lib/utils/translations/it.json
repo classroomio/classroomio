@@ -5062,7 +5062,9 @@
       "event_groups": {
         "organization": "Organizzazione",
         "course": "Corsi",
-        "learning": "Progressi di apprendimento"
+        "learning": "Progressi di apprendimento",
+        "cohort": "Coorti",
+        "compliance": "Conformità"
       },
       "events": {
         "organization_invite_created": "Viene inviato un invito al team",
@@ -5078,7 +5080,18 @@
         "course_submission_created": "Viene creata la consegna di un esercizio",
         "course_submission_status_changed": "Lo stato di una consegna cambia, ad esempio quando viene valutata",
         "lesson_completion_updated": "Una lezione viene segnata come completata o reimpostata",
-        "exercise_completion_updated": "Un esercizio viene completato o reimpostato"
+        "exercise_completion_updated": "Un esercizio viene completato o reimpostato",
+        "compliance_record_status_changed": "Lo stato di conformità di uno studente cambia",
+        "compliance_record_waived": "Un requisito di conformità di uno studente viene derogato",
+        "organization_member_added": "Una persona si unisce all'organizzazione",
+        "organization_member_removed": "Una persona viene rimossa dall'organizzazione",
+        "organization_member_updated": "Il ruolo o lo stato di una persona cambia",
+        "course_published": "Un corso viene pubblicato",
+        "course_unpublished": "Un corso viene rimosso dalla pubblicazione",
+        "cohort_member_added": "Una persona viene aggiunta a una coorte",
+        "cohort_member_removed": "Una persona viene rimossa da una coorte",
+        "lesson_session_scheduled": "Una sessione dal vivo viene pianificata o spostata",
+        "course_payment_request_created": "Uno studente richiede di pagare un corso"
       },
       "deliveries": {
         "title": "Consegne",

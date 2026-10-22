@@ -1,3 +1,5 @@
+import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import type { TOrganizationmember } from '@cio/db/types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type TCreateCohort,
@@ -126,14 +128,19 @@ async function enrollCohortStudentsInGroups(
   );
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+  let createdOrganizationMembers: TOrganizationmember[] = [];
 
   await db.transaction(async (tx) => {
     studentMilestoneNotification = await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size, tx, {
       deferNotification: true
     });
-    await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
+    createdOrganizationMembers = await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
     await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
   });
+
+  for (const createdMember of createdOrganizationMembers) {
+    await emitOrganizationMemberWebhookEvent('organization.member.added', organizationId, createdMember);
+  }
 
   if (studentMilestoneNotification) {
     notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
@@ -324,8 +331,12 @@ export async function listCohortMembersPage(cohortId: string, page: TCohortListP
   return { items, total };
 }
 
-export async function addCohortMembers(cohortId: string, data: TAddCohortMembers) {
-  const results = await addCohortMembersSettled(cohortId, data);
+export async function addCohortMembers(
+  cohortId: string,
+  data: TAddCohortMembers,
+  actorProfileId: string | null = null
+) {
+  const results = await addCohortMembersSettled(cohortId, data, actorProfileId);
 
   const added = results
     .filter((r) => r.status === 'fulfilled')
@@ -338,7 +349,11 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
 }
 
 /** One settled result per `data.members` entry, in request order. */
-export async function addCohortMembersSettled(cohortId: string, data: TAddCohortMembers) {
+export async function addCohortMembersSettled(
+  cohortId: string,
+  data: TAddCohortMembers,
+  actorProfileId: string | null = null
+) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -377,6 +392,7 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
 
         const transactionResult = await db.transaction(async (tx) => {
           let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+          let createdOrgMembers: TOrganizationmember[] = [];
           const member = await addCohortMember(
             {
               cohortId,
@@ -401,7 +417,7 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
               });
             }
 
-            await insertOrganizationMembersOnConflictDoNothing(
+            createdOrgMembers = await insertOrganizationMembersOnConflictDoNothing(
               [
                 {
                   organizationId: cohort.organizationId,
@@ -442,13 +458,32 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
             );
           }
 
-          return { member, studentMilestoneNotification };
+          return { member, studentMilestoneNotification, createdOrgMembers };
         });
 
         if (transactionResult.studentMilestoneNotification) {
           notifyStudentMilestone(transactionResult.studentMilestoneNotification).catch((error) => {
             console.error('notifyStudentMilestone error:', error);
           });
+        }
+
+        for (const createdOrgMember of transactionResult.createdOrgMembers) {
+          await emitOrganizationMemberWebhookEvent(
+            'organization.member.added',
+            cohort.organizationId,
+            createdOrgMember,
+            actorProfileId
+          );
+        }
+
+        if (transactionResult.member) {
+          await emitCohortMemberWebhookEvent(
+            'cohort.member.added',
+            cohort.organizationId,
+            cohortId,
+            transactionResult.member,
+            actorProfileId
+          );
         }
 
         return transactionResult.member;
@@ -464,11 +499,26 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
   }
 }
 
-export async function removeCohortMemberService(cohortId: string, memberId: string) {
+export async function removeCohortMemberService(
+  cohortId: string,
+  memberId: string,
+  actorProfileId: string | null = null
+) {
   try {
     const deleted = await removeCohortMember(cohortId, memberId);
     if (!deleted) {
       throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
+    }
+
+    const cohort = await getCohortById(cohortId);
+    if (cohort) {
+      await emitCohortMemberWebhookEvent(
+        'cohort.member.removed',
+        cohort.organizationId,
+        cohortId,
+        deleted,
+        actorProfileId
+      );
     }
 
     return deleted;

@@ -5163,7 +5163,9 @@
       "event_groups": {
         "organization": "Организация",
         "course": "Курсы",
-        "learning": "Прогресс обучения"
+        "learning": "Прогресс обучения",
+        "cohort": "Когорты",
+        "compliance": "Соответствие требованиям"
       },
       "events": {
         "organization_invite_created": "Отправлено приглашение в команду",
@@ -5179,7 +5181,18 @@
         "course_submission_created": "Создана отправка упражнения",
         "course_submission_status_changed": "Меняется статус отправки, например при оценивании",
         "lesson_completion_updated": "Урок отмечен как пройденный или сброшен",
-        "exercise_completion_updated": "Упражнение завершено или сброшено"
+        "exercise_completion_updated": "Упражнение завершено или сброшено",
+        "compliance_record_status_changed": "Меняется статус соответствия требованиям у студента",
+        "compliance_record_waived": "Требование соответствия для студента отменяется",
+        "organization_member_added": "Человек присоединяется к организации",
+        "organization_member_removed": "Человек удаляется из организации",
+        "organization_member_updated": "Меняется роль или статус человека",
+        "course_published": "Курс публикуется",
+        "course_unpublished": "Курс снимается с публикации",
+        "cohort_member_added": "Человек добавляется в когорту",
+        "cohort_member_removed": "Человек удаляется из когорты",
+        "lesson_session_scheduled": "Живая сессия назначается или переносится",
+        "course_payment_request_created": "Студент запрашивает оплату курса"
       },
       "deliveries": {
         "title": "Доставки",

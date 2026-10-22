@@ -298,7 +298,12 @@ export const v1CourseRouter = new Hono()
         const orgId = c.get('orgId')!;
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const { course, conversionOffenders } = await updatePublicApiCourseService(orgId, params, payload);
+        const { course, conversionOffenders } = await updatePublicApiCourseService(
+          orgId,
+          params,
+          payload,
+          c.get('actorId')
+        );
 
         return c.json(
           {

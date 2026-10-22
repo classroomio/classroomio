@@ -1,3 +1,5 @@
+import type { TCourseCompletionRecord, TOrganizationmember } from '@cio/db/types';
+import type { TCohortMember } from '@cio/db/queries/cohort';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   claimPendingOrganizationInvite,
@@ -26,7 +28,11 @@ import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
-import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
+import {
+  emitCohortMemberWebhookEvent,
+  emitOrganizationMemberWebhookEvent,
+  emitWebhookEvent
+} from '@cio/core/services/webhook/emit';
 import { addCohortMember, getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
@@ -40,7 +46,7 @@ import { parseCourseIdsFromInviteMetadata, parseCohortIdsFromInviteMetadata } fr
 import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding, buildEmailFromName, sanitizeEmailSubject } from '@cio/email';
-import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
+import { emitComplianceEnrollmentEvents, ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
 type OrganizationInviteStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'ACCEPTED';
 
@@ -133,7 +139,10 @@ async function readInviteAfterOrganizationLock<T extends { invite: { organizatio
 async function syncOrgMemberForOrgInvite(
   tx: DbOrTxClient,
   params: { organizationId: string; roleId: number; normalizedEmail: string; userId: string }
-): Promise<StudentMilestoneNotification | null> {
+): Promise<{
+  studentMilestoneNotification: StudentMilestoneNotification | null;
+  createdMember: TOrganizationmember | null;
+}> {
   const orgMemberByEmail = await selectOrganizationMemberByOrgAndNormalizedEmail(
     tx,
     params.organizationId,
@@ -152,7 +161,7 @@ async function syncOrgMemberForOrgInvite(
       verified: true
     });
 
-    return null;
+    return { studentMilestoneNotification: null, createdMember: null };
   }
 
   const orgMemberByProfile = await selectOrganizationMemberByOrgAndProfile(tx, params.organizationId, params.userId);
@@ -164,7 +173,7 @@ async function syncOrgMemberForOrgInvite(
       verified: true
     });
 
-    return null;
+    return { studentMilestoneNotification: null, createdMember: null };
   }
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
@@ -174,7 +183,7 @@ async function syncOrgMemberForOrgInvite(
     });
   }
 
-  await createOrganizationMember(
+  const createdMember = await createOrganizationMember(
     {
       organizationId: params.organizationId,
       roleId: params.roleId,
@@ -185,7 +194,7 @@ async function syncOrgMemberForOrgInvite(
     tx
   );
 
-  return studentMilestoneNotification;
+  return { studentMilestoneNotification, createdMember };
 }
 
 const ORGANIZATION_INVITE_WEBHOOK_EVENTS: Partial<
@@ -254,6 +263,30 @@ export async function recordOrganizationInviteAudits(rows: TNewOrganizationInvit
   }
 }
 
+type TInviteEnrollment = {
+  enrolledCount: number;
+  complianceRecords: TCourseCompletionRecord[];
+  cohortMembers: TCohortMember[];
+};
+
+async function emitInviteEnrollmentEvents(
+  organizationId: string,
+  actorProfileId: string,
+  enrollment: TInviteEnrollment
+) {
+  await emitComplianceEnrollmentEvents(enrollment.complianceRecords);
+
+  for (const cohortMember of enrollment.cohortMembers) {
+    await emitCohortMemberWebhookEvent(
+      'cohort.member.added',
+      organizationId,
+      cohortMember.cohortId,
+      cohortMember,
+      actorProfileId
+    );
+  }
+}
+
 async function enrollOrganizationInviteUser(
   tx: DbOrTxClient,
   params: {
@@ -263,8 +296,10 @@ async function enrollOrganizationInviteUser(
     email: string;
     roleId: number;
   }
-): Promise<number> {
+): Promise<TInviteEnrollment> {
   let enrolledCount = 0;
+  const complianceRecords: TCourseCompletionRecord[] = [];
+  const cohortMembers: TCohortMember[] = [];
 
   if (params.courseIds.length > 0) {
     const courseGroupMappings = await getCourseGroupIds(params.courseIds, tx);
@@ -276,7 +311,8 @@ async function enrollOrganizationInviteUser(
       params.roleId,
       tx
     );
-    await ensureComplianceEnrollmentRecordsForProfiles(params.courseIds, [params.profileId], tx);
+    const enrollment = await ensureComplianceEnrollmentRecordsForProfiles(params.courseIds, [params.profileId], tx);
+    complianceRecords.push(...enrollment.createdRecords);
   }
 
   if (params.cohortIds.length > 0) {
@@ -289,7 +325,7 @@ async function enrollOrganizationInviteUser(
     );
 
     for (const cohortId of cohortIdsToInsert) {
-      await addCohortMember(
+      const cohortMember = await addCohortMember(
         {
           cohortId,
           roleId: params.roleId,
@@ -298,6 +334,7 @@ async function enrollOrganizationInviteUser(
         },
         tx
       );
+      cohortMembers.push(cohortMember);
     }
 
     const cohortCourseIds = await getCourseIdsByCohortIds(params.cohortIds, tx);
@@ -313,11 +350,12 @@ async function enrollOrganizationInviteUser(
         params.roleId,
         tx
       );
-      await ensureComplianceEnrollmentRecordsForProfiles(courseIdsToEnroll, [params.profileId], tx);
+      const enrollment = await ensureComplianceEnrollmentRecordsForProfiles(courseIdsToEnroll, [params.profileId], tx);
+      complianceRecords.push(...enrollment.createdRecords);
     }
   }
 
-  return enrolledCount;
+  return { enrolledCount, complianceRecords, cohortMembers };
 }
 
 type TeamInviteResult = {
@@ -364,7 +402,11 @@ export async function inviteTeamMembers(
   const newEmails = normalizedEmails.filter((email) => !membersByEmail.has(email));
   if (newEmails.length > 0) {
     const newMembers = newEmails.map((email) => ({ organizationId: orgId, email, roleId, verified: false }));
-    await createOrganizationMembers(newMembers);
+    const createdMembers = await createOrganizationMembers(newMembers);
+
+    for (const createdMember of createdMembers) {
+      await emitOrganizationMemberWebhookEvent('organization.member.added', orgId, createdMember, invitedByProfileId);
+    }
   }
 
   const emailsToInvite = normalizedEmails;
@@ -547,14 +589,15 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 
     const alreadyAccepted = status === 'ACCEPTED';
     let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+    let createdMember: TOrganizationmember | null = null;
 
     if (!alreadyAccepted) {
-      studentMilestoneNotification = await syncOrgMemberForOrgInvite(tx, {
+      ({ studentMilestoneNotification, createdMember } = await syncOrgMemberForOrgInvite(tx, {
         organizationId: row.invite.organizationId,
         roleId: row.invite.roleId,
         normalizedEmail,
         userId: user.id
-      });
+      }));
 
       const acceptedInvite = await claimPendingOrganizationInvite(tx, row.invite.id, user.id);
 
@@ -565,7 +608,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const enrolledCount = await enrollOrganizationInviteUser(tx, {
+    const enrollment = await enrollOrganizationInviteUser(tx, {
       courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
       cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
       profileId: user.id,
@@ -579,9 +622,21 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       roleId: row.invite.roleId,
       alreadyAccepted,
       studentMilestoneNotification,
-      enrolledCount
+      createdMember,
+      enrollment
     };
   });
+
+  if (result.createdMember) {
+    await emitOrganizationMemberWebhookEvent(
+      'organization.member.added',
+      result.organization.id,
+      result.createdMember,
+      user.id
+    );
+  }
+
+  await emitInviteEnrollmentEvents(result.organization.id, user.id, result.enrollment);
 
   // Must run after commit: the reconcile reads the org role outside this transaction.
   if (!result.alreadyAccepted) {
@@ -600,7 +655,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     });
   }
 
-  if (result.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
+  if (result.enrollment.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
     await invalidateOrgStats(result.invite.organizationId);
   }
 
@@ -843,14 +898,15 @@ export async function acceptOrganizationInviteById(
 
     const alreadyAccepted = status === 'ACCEPTED';
     let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+    let createdMember: TOrganizationmember | null = null;
 
     if (!alreadyAccepted) {
-      studentMilestoneNotification = await syncOrgMemberForOrgInvite(tx, {
+      ({ studentMilestoneNotification, createdMember } = await syncOrgMemberForOrgInvite(tx, {
         organizationId: row.invite.organizationId,
         roleId: row.invite.roleId,
         normalizedEmail,
         userId: user.id
-      });
+      }));
 
       const acceptedInvite = await claimPendingOrganizationInvite(tx, row.invite.id, user.id);
 
@@ -861,7 +917,7 @@ export async function acceptOrganizationInviteById(
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const enrolledCount = await enrollOrganizationInviteUser(tx, {
+    const enrollment = await enrollOrganizationInviteUser(tx, {
       courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
       cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
       profileId: user.id,
@@ -875,9 +931,21 @@ export async function acceptOrganizationInviteById(
       roleId: row.invite.roleId,
       alreadyAccepted,
       studentMilestoneNotification,
-      enrolledCount
+      createdMember,
+      enrollment
     };
   });
+
+  if (result.createdMember) {
+    await emitOrganizationMemberWebhookEvent(
+      'organization.member.added',
+      result.invite.organizationId,
+      result.createdMember,
+      user.id
+    );
+  }
+
+  await emitInviteEnrollmentEvents(result.invite.organizationId, user.id, result.enrollment);
 
   if (!result.alreadyAccepted) {
     // Must run after commit: the reconcile reads the org role outside this transaction.
@@ -892,7 +960,7 @@ export async function acceptOrganizationInviteById(
     });
   }
 
-  if (result.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
+  if (result.enrollment.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
     await invalidateOrgStats(result.invite.organizationId);
   }
 
