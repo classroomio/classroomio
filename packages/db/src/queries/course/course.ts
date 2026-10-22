@@ -570,7 +570,10 @@ export async function createCourse(newCourse: TNewCourse, dbClient: DbOrTxClient
     return await dbClient.insert(schema.course).values(newCourse).returning();
   } catch (error) {
     console.error('createCourse error:', error);
-    throw new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw Object.assign(
+      new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`),
+      { cause: error }
+    );
   }
 }
 

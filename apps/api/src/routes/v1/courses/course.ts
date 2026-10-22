@@ -118,7 +118,7 @@ export const v1CourseRouter = new Hono()
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
-          'Featured courses replaced. Other published courses still show after them, newest first. Each course returns its position as displayOrder (null when not featured)',
+          'Featured courses replaced. Other published courses still show after them, newest first. Read the current order from displayOrder on GET /courses (null when not featured)',
           itemResponse(ZPublicApiFeaturedCoursesResponse)
         ),
         400: { description: 'Invalid request body, or a course is not published, is deleted or is a template' },

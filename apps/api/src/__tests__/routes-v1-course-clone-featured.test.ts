@@ -101,6 +101,21 @@ describe('POST /public-api/v1/courses/:courseId/clone', () => {
     expect(noTitle.status).toBe(400);
     expect(clonePublicApiCourseService).not.toHaveBeenCalled();
   });
+
+  it('returns 409 when a concurrent clone takes the slug first', async () => {
+    vi.mocked(clonePublicApiCourseService).mockRejectedValue(
+      Object.assign(new Error('Failed to create course'), { cause: { code: '23505' } })
+    );
+
+    const response = await requestAs(
+      'api',
+      ['public_api:*'],
+      `/courses/${COURSE_ID}/clone`,
+      body('POST', { title: 'Copy', slug: 'copy' })
+    );
+
+    expect(response.status).toBe(409);
+  });
 });
 
 describe('PUT /public-api/v1/courses/featured', () => {
