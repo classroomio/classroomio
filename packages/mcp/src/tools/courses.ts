@@ -21,7 +21,7 @@ const shape = (schema: { shape: unknown }) => schema.shape as unknown as ZodRawS
 export function registerCourseTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'clone_course',
-    'Copy a course with its sections, lessons and exercises, without its students; the API key creator must be an org admin or tutor. The copy keeps the source published state and the key creator becomes its tutor.',
+    'Copy a course with its sections, lessons and exercises, without its students, and add the API key creator as its tutor; the API key creator must be an org admin or tutor.',
     shape(ZCloneCourseToolInput),
     CREATE,
     async (args) => {
@@ -32,7 +32,7 @@ export function registerCourseTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'set_featured_courses',
-    'Set the published courses shown first, in order (at most 4), on the organization landing page and public course list; the API key creator must be an org admin. The list replaces the current one; other published courses still show after them, and an empty list clears it.',
+    'Set the published courses shown first, in order, on the organization landing page and public course list; the API key creator must be an org admin. The list replaces the current one, so include every course to keep; an empty list clears it.',
     shape(ZPublicApiSetFeaturedCourses),
     UPDATE,
     async (args) => {

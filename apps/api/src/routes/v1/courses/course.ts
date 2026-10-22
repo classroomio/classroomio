@@ -34,7 +34,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { ORG_ADMIN_RULE } from '../team/docs';
 import { ANY_KEY_RULE, ORG_TEAM_RULE, courseWriteForbiddenResponses } from './docs';
 
@@ -117,14 +117,11 @@ export const v1CourseRouter = new Hono()
       description: `Set the published courses shown first, in order, on the organization landing page and public course list; ${ORG_ADMIN_RULE}.`,
       tags: ['Courses'],
       responses: {
-        200: jsonResponse(
-          'Featured courses replaced. Other published courses still show after them, newest first. Read the current order from displayOrder on GET /courses (null when not featured)',
-          itemResponse(ZPublicApiFeaturedCoursesResponse)
-        ),
+        200: jsonResponse('Featured courses set successfully', itemResponse(ZPublicApiFeaturedCoursesResponse)),
         400: { description: 'Invalid request body, or a course is not published, is deleted or is a template' },
-        401: { description: 'Unauthorized' },
+        401: errorResponses.unauthorized,
         403: courseWriteForbiddenResponses.featured,
-        404: { description: 'A course was not found in the organization' }
+        404: { description: 'Course not found' }
       }
     }),
     validator('json', ZPublicApiSetFeaturedCourses),
@@ -150,15 +147,15 @@ export const v1CourseRouter = new Hono()
   .post(
     '/:courseId/clone',
     describeRoute({
-      description: `Copy a course with its sections, lessons and exercises, without its students; ${ORG_TEAM_RULE}.`,
+      description: `Copy a course with its sections, lessons and exercises, without its students, and add the key creator as its tutor; ${ORG_TEAM_RULE}.`,
       tags: ['Courses'],
       responses: {
         201: jsonResponse(
-          'Course copied. The copy keeps the source published state, drops its reviews, sets every exercise due date to the time of copying, and adds the key creator as tutor',
+          'Course copied successfully; the copy keeps the source published state and its exercise due dates are set to now',
           itemResponse(ZPublicApiCourseResponse)
         ),
-        400: { description: 'Invalid course id or request body' },
-        401: { description: 'Unauthorized' },
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
         403: courseWriteForbiddenResponses.clone,
         404: { description: 'Course not found' },
         409: { description: 'The slug is already in use (SLUG_IN_USE)' }

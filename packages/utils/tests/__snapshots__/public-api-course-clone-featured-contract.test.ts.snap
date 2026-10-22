@@ -33,7 +33,7 @@ exports[`public API course clone and featured contract > ZPublicApiFeaturedCours
   "additionalProperties": false,
   "properties": {
     "courseIds": {
-      "description": "Featured course ids in display order",
+      "description": "Featured course ids in display order. GET /courses returns each position as displayOrder, null when not featured.",
       "items": {
         "format": "uuid",
         "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
