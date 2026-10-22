@@ -77,6 +77,25 @@ describe('launch tokens', () => {
     }
   });
 
+  it('accepts an expired launch token only within the given grace', async () => {
+    const token = await mintLaunchToken(
+      { org: 'acme', act: 'a1', att: 't1', sub: 'u1', unit: 'sco-1', fmt: 'scorm12', mode: 'normal', anc: [] },
+      SECRET,
+      NOW
+    );
+    const expiredAt = NOW + 12 * 60 * 60 * 1000;
+    const graceMs = 60 * 60 * 1000;
+
+    expect((await verifyLaunchToken(token, SECRET, expiredAt + graceMs - 1, graceMs)).att).toBe('t1');
+
+    try {
+      await verifyLaunchToken(token, SECRET, expiredAt + graceMs, graceMs);
+      expect.unreachable();
+    } catch (error) {
+      expect((error as PackageError).code).toBe('expired_token');
+    }
+  });
+
   it('rejects foreign or missing token types', async () => {
     const foreign = await signToken(
       {

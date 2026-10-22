@@ -171,17 +171,20 @@ export async function mintLaunchToken(
 
 /**
  * Verifies a launch token and returns its claims. Throws `expired_token`
- * past expiry, `invalid_token` otherwise — including a missing or foreign
- * `typ`, so launch tokens can never pass as another token kind.
+ * past expiry plus `expiredGraceMs`, `invalid_token` otherwise — including a
+ * missing or foreign `typ`, so launch tokens can never pass as another token
+ * kind. Only pass a grace where the token identifies data rather than
+ * authorizing the request on its own.
  */
 export async function verifyLaunchToken(
   token: string,
   secret: string,
-  nowMs: number = Date.now()
+  nowMs: number = Date.now(),
+  expiredGraceMs = 0
 ): Promise<ActivityLaunchClaims> {
   const claims = await verifyToken<ActivityLaunchClaims>(token, secret);
 
-  if (typeof claims.exp !== 'number' || claims.exp * 1000 <= nowMs) {
+  if (typeof claims.exp !== 'number' || claims.exp * 1000 + expiredGraceMs <= nowMs) {
     throw new PackageError('expired_token');
   }
 
