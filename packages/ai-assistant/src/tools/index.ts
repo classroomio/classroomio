@@ -7,6 +7,7 @@ import {
   createLessonSchema,
   updateLessonSchema,
   updateLessonContentSchema,
+  getBlockRecipeSchema,
   createExerciseSchema,
   createExerciseSectionSchema,
   updateExerciseSchema,
@@ -34,6 +35,9 @@ export {
   LANDING_PAGE_SECTION_HTML_AGENT_HINT
 } from './landing-page-html-hint';
 
+export { BLOCK_RECIPE_TYPES, buildBlockRecipeManifest, getBlockRecipeMarkup } from './block-recipes';
+export type { BlockRecipeType } from './block-recipes';
+
 export type ToolSchema = {
   description: string;
   parameters: ZodType;
@@ -53,6 +57,7 @@ const teacherTools: ToolRegistry = {
   [ToolName.CREATE_LESSON]: createLessonSchema,
   [ToolName.UPDATE_LESSON]: updateLessonSchema,
   [ToolName.UPDATE_LESSON_CONTENT]: updateLessonContentSchema,
+  [ToolName.GET_BLOCK_RECIPE]: getBlockRecipeSchema,
   [ToolName.CREATE_EXERCISE]: createExerciseSchema,
   [ToolName.CREATE_EXERCISE_SECTION]: createExerciseSectionSchema,
   [ToolName.UPDATE_EXERCISE]: updateExerciseSchema,
@@ -101,6 +106,7 @@ export {
   createLessonSchema,
   updateLessonSchema,
   updateLessonContentSchema,
+  getBlockRecipeSchema,
   createExerciseSchema,
   createExerciseSectionSchema,
   updateExerciseSchema,

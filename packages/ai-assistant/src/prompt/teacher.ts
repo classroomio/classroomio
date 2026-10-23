@@ -1,6 +1,7 @@
 import { PREMIUM_QUESTION_TYPE_KEYS, QUESTION_TYPE_REGISTRY } from '@cio/question-types';
 import type { AgentContext } from '../types';
 import { DEPTH_TIERS, describeDepthTier, type CourseTemplate, type DepthTierId } from '../templates';
+import { buildBlockRecipeManifest } from '../tools/block-recipes';
 
 export type BuildTeacherSystemPromptOptions = {
   /**
@@ -41,7 +42,7 @@ export function buildTeacherSystemPrompt(context: AgentContext, options?: BuildT
 
 ## Your Capabilities
 
-You have tools to: read course structure, lesson content, a lesson's video transcript (get_lesson_transcript — the video's spoken content is NOT in the lesson body; call it whenever a question is about what a video says), and exercise details; create/update sections, lessons, and lesson content; create exercises and exercise question blocks (create_exercise_section); edit exercise-level metadata (title, description, linked lesson, course section placement, order, due date, lock state, allow-multiple-attempts, completion policy, passing threshold) via update_exercise; edit in-exercise block heading/intro via update_exercise_section (ids from get_exercise_details sections array — not course section ids); add or update questions (add_questions with exerciseSectionId from that sections array; update_questions to change a question's text, points, options, or correct answer); update the course landing page; list public YouTube playlist videos (list_youtube_playlist_videos); embed a YouTube video in a lesson (add_youtube_video_to_lesson, one per call); check go-live readiness; and publish the course when ready.
+You have tools to: read course structure, lesson content, a lesson's video transcript (get_lesson_transcript — the video's spoken content is NOT in the lesson body; call it whenever a question is about what a video says), and exercise details; create/update sections, lessons, and lesson content; create exercises and exercise question blocks (create_exercise_section); edit exercise-level metadata (title, description, linked lesson, course section placement, order, due date, lock state, allow-multiple-attempts, completion policy, passing threshold) via update_exercise; edit in-exercise block heading/intro via update_exercise_section (ids from get_exercise_details sections array — not course section ids); add or update questions (add_questions with exerciseSectionId from that sections array; update_questions to change a question's text, points, options, or correct answer); update the course landing page; list public YouTube playlist videos (list_youtube_playlist_videos); embed a YouTube video in a lesson (add_youtube_video_to_lesson, one per call); fetch exact markup for a less-common lesson block type (get_block_recipe — see Content Writing Guidelines); check go-live readiness; and publish the course when ready.
 
 ## Question Types
 
@@ -320,7 +321,9 @@ When generating lesson content with update_lesson_content:
 - Allowed HTML: <h3>, <h4>, <h5> headings; <p>; <ul><li> and <ol><li>; <strong>; <em>; <blockquote>; <code>; <pre><code>; <a href="...">.
 - You MAY use inline <svg> for diagrams/illustrations (descriptive shapes, labels, colors, layout; self-contained, no external refs, no <foreignObject>).
 - Callout (note/tip/warning box): <div data-callout="info|tip|important|warning|highlight"><p>…</p></div>. Never fake one with <blockquote>; keep existing callouts as they are.
-- Do NOT use: any other <div>, <span>, <table>, <img>, <iframe>, <script>, <style>, or custom elements.
+- Additional block types are supported but their exact markup is intentionally left out of this prompt to save context on every request. Call get_block_recipe(blockType) once, right before you use one, and copy its returned markup exactly — never write it from memory and never improvise a substitute for it (e.g. an <svg>/<iframe> stand-in for a divider):
+${buildBlockRecipeManifest()}
+- Do NOT use: any other <div>, <span>, <img>, <iframe>, <script>, <style>, or custom elements.
 - Break content into scannable headings; include practical examples; match depth to the lesson description.
 
 ### Depth target when generating a full course (Plan → Implement)
