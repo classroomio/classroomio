@@ -35,7 +35,7 @@ curl "https://api.classroomio.com/public-api/v1/courses?page=2&limit=50" \
 
 ## Fetch every page
 
-Keep requesting the next page until you reach `totalPages`:
+Keep requesting the next page until you reach `totalPages`. A large export can hit the [rate limit](/api/rate-limits), so wait and retry the same page on a `429`:
 
 ```js
 async function listAll(path) {
@@ -47,7 +47,17 @@ async function listAll(path) {
     const res = await fetch(`https://api.classroomio.com/public-api/v1${path}?page=${page}&limit=100`, {
       headers: { Authorization: `Bearer ${process.env.CLASSROOMIO_API_KEY}` }
     });
+
+    if (res.status === 429) {
+      const seconds = Number(res.headers.get('Retry-After') ?? 60);
+      await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+      continue;
+    }
+
     const body = await res.json();
+    if (!res.ok) {
+      throw new Error(`${res.status} ${body.code}: ${body.error}`);
+    }
 
     items.push(...body.data);
     totalPages = body.pagination.totalPages;
