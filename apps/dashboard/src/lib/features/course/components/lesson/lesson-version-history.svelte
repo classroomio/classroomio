@@ -309,11 +309,7 @@
     <div class="flex min-w-0 flex-1 flex-col">
       <header class="ui:border-border ui:bg-background flex h-16 shrink-0 items-center justify-between border-b px-5">
         <div class="flex min-w-0 items-center gap-3">
-          <IconButton
-            onclick={handleDrawerClose}
-            aria-label={$t('course.navItem.lessons.poll.back')}
-            tooltip={$t('course.navItem.lessons.poll.back')}
-          >
+          <IconButton onclick={handleDrawerClose} aria-label={$t('common.back')} tooltip={$t('common.back')}>
             <ArrowLeftIcon size={18} />
           </IconButton>
           <div class="min-w-0">

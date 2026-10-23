@@ -36,7 +36,8 @@
         "title": "Ouvrir votre académie…",
         "caption": "Préparation de vos cours, étudiants et paramètres."
       }
-    }
+    },
+    "back": "Retour"
   },
   "validations": {
     "generic": {
@@ -393,17 +394,6 @@
       "error_fetching": "La récupération des exercices a échoué, veuillez recharger la page",
       "passed_requires_points": "La validation par réussite nécessite au moins un point disponible.",
       "draft_restored": "Nous avons restauré les modifications non enregistrées que vous aviez laissées"
-    },
-    "poll": {
-      "info": {
-        "not_published": "Le sondage n'est pas encore publié",
-        "vote_once": "Vous ne pouvez voter qu'une seule fois"
-      },
-      "error": {
-        "creating_poll": "Une erreur s'est produite lors de la création du sondage",
-        "updating_poll": "Une erreur s'est produite lors de la mise à jour de l'état du sondage",
-        "submitting_poll": "Une erreur s'est produite lors de la soumission du sondage"
-      }
     },
     "media_manager": {
       "video_added": "Vidéo ajoutée à votre bibliothèque",
@@ -1819,34 +1809,6 @@
             "manual": "Version enregistrée",
             "publish": "Publié"
           }
-        },
-        "poll": {
-          "voted": "A voté",
-          "created_by": "Créé par",
-          "status": "Statut",
-          "draft": "Brouillon",
-          "publish": "Publier",
-          "expiration": "Expiration",
-          "total_voted": "Total des votes",
-          "responses": "Réponses",
-          "expires": "Expire",
-          "today": "Aujourd'hui",
-          "back": "Retour",
-          "result": "Résultat",
-          "delete": "Supprimer",
-          "create_poll": "Créer un sondage",
-          "question": "Question",
-          "options": "Possibilités",
-          "option_label": "Libellé de l'option",
-          "cancel": "Annuler",
-          "poll_question": "Question de sondage"
-        },
-        "polls": {
-          "title": "Sondage",
-          "active_polls": "Sondages actifs",
-          "expired_polls": "Sondages expirés",
-          "loading": "Chargement...",
-          "no_polls": "Aucun sondage à afficher"
         },
         "comments": {
           "title": "Commentaires",
@@ -3370,7 +3332,6 @@
         "save": "Enregistrer les modifications",
         "apps": {
           "title": "Applications",
-          "poll": "Sondage",
           "live_comment": "Commentaires en direct"
         },
         "course": {

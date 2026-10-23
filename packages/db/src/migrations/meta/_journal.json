@@ -274,6 +274,13 @@
       "when": 1792497761466,
       "tag": "0038_remove_final_exercise_and_completion_threshold",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1792741679148,
+      "tag": "0039_remove_poll_feature",
+      "breakpoints": true
     }
   ]
 }

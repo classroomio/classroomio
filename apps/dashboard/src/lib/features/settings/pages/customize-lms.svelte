@@ -248,15 +248,6 @@
     <Field.Legend>{$t('components.settings.customize_lms.apps.title')}</Field.Legend>
     <Field.Group>
       <Field.Field orientation="horizontal">
-        <Field.Label>{$t('components.settings.customize_lms.apps.poll')}</Field.Label>
-        <Switch bind:checked={customization.apps.poll} />
-        <Field.Description class="text-gray-600">
-          {customization.apps.poll
-            ? $t('components.settings.customize_lms.enabled')
-            : $t('components.settings.customize_lms.disabled')}
-        </Field.Description>
-      </Field.Field>
-      <Field.Field orientation="horizontal">
         <Field.Label>{$t('components.settings.customize_lms.apps.live_comment')}</Field.Label>
         <Switch bind:checked={customization.apps.comments} />
         <Field.Description class="text-gray-600">
