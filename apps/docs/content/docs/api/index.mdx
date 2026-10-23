@@ -14,18 +14,18 @@ Base URL: `https://api.classroomio.com/public-api/v1`
 
 1. [Generate an API key](/api/authentication#get-your-api-key) in your organization's dashboard.
 2. Send it in the `Authorization` header as a Bearer token.
-3. Make your first request:
+3. Make your first request from your server, with the key in an environment variable. Never put the key in browser code.
 
 <CodeGroup>
 
 ```bash cURL
 curl https://api.classroomio.com/public-api/v1/courses \
-  -H "Authorization: Bearer cio_api_your_key_here"
+  -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
 ```
 
-```js JavaScript
+```js Node.js
 const res = await fetch('https://api.classroomio.com/public-api/v1/courses', {
-  headers: { Authorization: 'Bearer cio_api_your_key_here' }
+  headers: { Authorization: `Bearer ${process.env.CLASSROOMIO_API_KEY}` }
 });
 const { data } = await res.json();
 ```

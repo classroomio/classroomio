@@ -95,7 +95,7 @@ Status `400`
 
 ### Rate limit exceeded
 
-Status `429`. This body has a different shape. See [Exceeding the limit](/api/rate-limits#exceeding-the-limit).
+Status `429`. The body depends on which limit you hit. The per-key request limit uses its own shape with `retryAfter`. The MCP-key usage limit uses the standard format with `code` `AUTOMATION_RATE_LIMIT_EXCEEDED`. See [Exceeding the limit](/api/rate-limits#exceeding-the-limit).
 
 ## Next steps
 

@@ -40,9 +40,23 @@ Once you go over the limit, requests fail with `429 Too Many Requests` until the
 
 This body is shaped differently from [other errors](/api/errors): it has no `success` or `code` field.
 
+### MCP keys
+
+MCP keys (`cio_mcp_...`) also have per-minute usage limits for each key and for the whole organization. Going over them returns a `429` in the [standard error format](/api/errors#error-format), with no `Retry-After` header and no `retryAfter` field:
+
+```json
+{
+  "success": false,
+  "error": "Automation rate limit exceeded",
+  "code": "AUTOMATION_RATE_LIMIT_EXCEEDED"
+}
+```
+
+Wait until the next minute starts, then retry.
+
 ## Handle a 429
 
-Wait for `Retry-After` seconds, then retry:
+Wait for `Retry-After` seconds, then retry. When the header is missing, as it is for MCP keys, this waits 60 seconds:
 
 ```js
 async function request(url, options) {

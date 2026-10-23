@@ -40,7 +40,7 @@ curl https://api.classroomio.com/public-api/v1/courses \
   -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
 ```
 
-```js JavaScript
+```js Node.js
 const res = await fetch('https://api.classroomio.com/public-api/v1/courses', {
   headers: { Authorization: `Bearer ${process.env.CLASSROOMIO_API_KEY}` }
 });
