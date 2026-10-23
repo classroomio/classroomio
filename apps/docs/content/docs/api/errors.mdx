@@ -1,0 +1,103 @@
+---
+title: Errors
+description: The error response format, HTTP status codes, and how to fix the most common errors.
+last_reviewed: '2026-10-23'
+---
+
+When a request fails, the API returns an HTTP error status and a JSON body that explains what went wrong.
+
+## Error format
+
+```json
+{
+  "success": false,
+  "error": "Human-readable message",
+  "code": "MACHINE_READABLE_CODE",
+  "field": "optional.field.path"
+}
+```
+
+- `error` is meant for people. Don't match on it, since the wording can change.
+- `code` is stable. Use it in your code to decide what to do.
+- `field` is only present on validation errors, and names the input that failed.
+
+## HTTP status codes
+
+| Status | Meaning |
+| --- | --- |
+| `200` / `201` | The request worked |
+| `400` | The request body or query is invalid |
+| `401` | The API key is missing, invalid, or revoked |
+| `403` | The key can't call this endpoint, or your plan doesn't include API access |
+| `404` | The resource doesn't exist, or belongs to another organization |
+| `409` | The request conflicts with the resource's current state |
+| `429` | Too many requests. See [Rate limits](/api/rate-limits) |
+| `500` | Something went wrong on our side |
+
+## Common errors
+
+### Invalid API key
+
+Status `401`
+
+```json
+{
+  "success": false,
+  "error": "Invalid organization API key",
+  "code": "UNAUTHORIZED"
+}
+```
+
+**Fix:** Check that the header is `Authorization: Bearer <key>` and that the key hasn't been rotated or revoked. See [Authentication](/api/authentication).
+
+### Missing scope
+
+Status `403`
+
+```json
+{
+  "success": false,
+  "error": "Automation key is missing required scopes",
+  "code": "FORBIDDEN"
+}
+```
+
+**Fix:** You're using a key that can't call this endpoint, usually an MCP key. Use an API key (`cio_api_...`) instead.
+
+### Resource not found
+
+Status `404`
+
+```json
+{
+  "success": false,
+  "error": "Course not found",
+  "code": "COURSE_NOT_FOUND"
+}
+```
+
+**Fix:** Check the ID, and that the resource belongs to the organization your key is for.
+
+### Invalid parameters
+
+Status `400`
+
+```json
+{
+  "success": false,
+  "error": "email: Invalid email address",
+  "code": "VALIDATION_ERROR",
+  "field": "email"
+}
+```
+
+**Fix:** Correct the input named in `field`. The endpoint's page lists every parameter and its type.
+
+### Rate limit exceeded
+
+Status `429`. The body depends on which limit you hit. The per-key request limit uses its own shape with `retryAfter`. The MCP-key usage limit uses the standard format with `code` `AUTOMATION_RATE_LIMIT_EXCEEDED`. See [Exceeding the limit](/api/rate-limits#exceeding-the-limit).
+
+## Next steps
+
+- [Authentication](/api/authentication): get and manage API keys.
+- [Rate limits](/api/rate-limits): stay under the limit and handle a `429`.

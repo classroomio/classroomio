@@ -43,6 +43,10 @@ ClassroomIO API:
 
 The MCP package never decides permissions.
 
+### API access
+
+MCP keys (`cio_mcp_...`) don't get `public_api:*`. They can call only the audience, team, cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their `audience:*`, `team:*`, `cohort:*`, `course:member:*`, `course:certificate:*`, `course:read`/`course:write`, `course:exercise:*`, `course:submission:*`, `course:student:write`, and `media:write` scopes, plus the analytics GET endpoints (`/analytics/**` and `/courses/{courseId}/analytics/**`) through `analytics:read`. Every other endpoint returns 403 for them.
+
 ## Required Environment Variables
 
 - `CLASSROOMIO_API_URL`

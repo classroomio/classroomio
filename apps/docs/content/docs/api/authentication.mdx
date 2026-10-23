@@ -1,0 +1,78 @@
+---
+title: Authentication
+description: Get an organization API key, send it as a Bearer token, and rotate or revoke it.
+last_reviewed: '2026-10-23'
+---
+
+Every request to the ClassroomIO API is authenticated with an API key that belongs to one organization.
+
+:::info[Plan requirement]
+On ClassroomIO Cloud, API keys are available on the **Early Adopter** and **Enterprise** plans. Self-hosted instances need **Enterprise**.
+:::
+
+## How it works
+
+Send your key in the `Authorization` header of every request:
+
+```http
+Authorization: Bearer cio_api_your_key_here
+```
+
+The key decides which organization the request acts on, so you never pass an organization ID.
+
+## Get your API key
+
+1. Sign in to [ClassroomIO](https://app.classroomio.com) as an **organization admin**.
+2. In the sidebar, open **Automation**, then **API**.
+3. Click **Generate API key** and give the key a name.
+4. Copy the key. It starts with `cio_api_` and is shown only once.
+
+:::warning[Keep your key secret]
+An API key has full access to your organization's data. Keep it on your server, out of browser code and out of version control. Store it in an environment variable or a secrets manager.
+:::
+
+## Example request
+
+<CodeGroup>
+
+```bash cURL
+curl https://api.classroomio.com/public-api/v1/courses \
+  -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
+```
+
+```js Node.js
+const res = await fetch('https://api.classroomio.com/public-api/v1/courses', {
+  headers: { Authorization: `Bearer ${process.env.CLASSROOMIO_API_KEY}` }
+});
+const { data } = await res.json();
+```
+
+</CodeGroup>
+
+To try a request from these docs, open any endpoint page, open **Try it**, and paste your key into the token field.
+
+## Rotate or revoke a key
+
+On the **Automation → API** page, open the menu next to a key:
+
+- **Rotate** replaces the key with a new one. The new key is shown once.
+- **Revoke** turns the key off for good.
+
+:::warning
+Both take effect immediately. Requests that still use the old key fail with `401`, so update your integration as soon as you rotate.
+:::
+
+## Best practices
+
+- Use a separate key for each integration, so you can rotate one without breaking the others.
+- Rotate a key right away if you think it has leaked.
+- Revoke keys you no longer use.
+
+:::note[MCP keys]
+MCP keys (`cio_mcp_...`) can call only some endpoints. See [MCP](/developers/mcp#api-access) for what they can reach.
+:::
+
+## Next steps
+
+- [Rate limits](/api/rate-limits): how many requests a key can make.
+- [Errors](/api/errors): what a failed request looks like and how to fix it.
