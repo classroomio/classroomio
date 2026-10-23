@@ -2,7 +2,7 @@ import { and, eq, ilike, or } from 'drizzle-orm';
 import { tool } from 'ai';
 import { z } from 'zod';
 
-import { db } from '@cio/db';
+import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import type { AiTutorSettings } from '@cio/ai-assistant';
 
