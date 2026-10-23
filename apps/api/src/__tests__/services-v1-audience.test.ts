@@ -116,7 +116,8 @@ describe('services/v1/audience', () => {
           allCohorts: false,
           sendEmail: true
         },
-        ACTOR_ID
+        ACTOR_ID,
+        'public_api'
       );
     });
 
@@ -136,7 +137,8 @@ describe('services/v1/audience', () => {
           allCohorts: false,
           sendEmail: false
         },
-        ACTOR_ID
+        ACTOR_ID,
+        'public_api'
       );
     });
   });

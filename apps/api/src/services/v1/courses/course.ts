@@ -15,6 +15,7 @@ import {
   updateCourse as updateCourseService
 } from '@cio/core/services/course/course';
 import { buildCourseOutline } from '@cio/core/services/course/utils';
+import type { TEventSource } from '@cio/core/services/posthog';
 import {
   createCourseImportDraftService,
   getCourseImportStructureService,
@@ -62,16 +63,21 @@ export async function exportCourseService(orgId: string, params: TPublicApiCours
 export async function createPublicApiCourseService(
   orgId: string,
   actorId: string | null,
-  payload: TPublicApiCreateCourse
+  payload: TPublicApiCreateCourse,
+  source: TEventSource = 'public_api'
 ) {
   if (!actorId) {
     throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
   }
 
-  return createCourseService(actorId, {
-    ...payload,
-    organizationId: orgId
-  });
+  return createCourseService(
+    actorId,
+    {
+      ...payload,
+      organizationId: orgId
+    },
+    source
+  );
 }
 
 export async function updatePublicApiCourseService(

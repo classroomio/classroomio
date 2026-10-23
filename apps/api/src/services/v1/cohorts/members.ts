@@ -1,3 +1,4 @@
+import type { TEventSource } from '@cio/core/services/posthog';
 import type {
   TPublicApiAddCohortMembers,
   TPublicApiCohortMemberParam,
@@ -39,7 +40,8 @@ export async function addPublicApiCohortMembersService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCohortParam,
-  payload: TPublicApiAddCohortMembers
+  payload: TPublicApiAddCohortMembers,
+  source: TEventSource = 'public_api'
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
@@ -47,7 +49,7 @@ export async function addPublicApiCohortMembersService(
   const profileIds = payload.members.flatMap((member) => (member.profileId ? [member.profileId] : []));
   await Promise.all(profileIds.map((profileId) => assertProfileBelongsToOrganization(orgId, profileId)));
 
-  const results = await addCohortMembersSettled(params.cohortId, payload);
+  const results = await addCohortMembersSettled(params.cohortId, payload, source);
 
   const added: unknown[] = [];
   const errors: { index: number; email: string | null; profileId: string | null; code: string; message: string }[] = [];

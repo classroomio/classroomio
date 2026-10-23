@@ -41,6 +41,8 @@ import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding, buildEmailFromName, sanitizeEmailSubject } from '@cio/email';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
+import type { TGroupmember } from '@cio/db/types';
+import { captureLearnersEnrolled } from '@api/services/product-events';
 
 type OrganizationInviteStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'ACCEPTED';
 
@@ -263,19 +265,20 @@ async function enrollOrganizationInviteUser(
     email: string;
     roleId: number;
   }
-): Promise<number> {
-  let enrolledCount = 0;
+): Promise<TGroupmember[]> {
+  const enrolledMembers: TGroupmember[] = [];
 
   if (params.courseIds.length > 0) {
     const courseGroupMappings = await getCourseGroupIds(params.courseIds, tx);
     const courseGroupIds = courseGroupMappings.map((mapping) => mapping.groupId).filter(Boolean) as string[];
 
-    enrolledCount += await enrollUsersInCourseGroups(
+    const courseMembers = await enrollUsersInCourseGroups(
       courseGroupIds,
       [{ profileId: params.profileId, email: params.email }],
       params.roleId,
       tx
     );
+    enrolledMembers.push(...courseMembers);
     await ensureComplianceEnrollmentRecordsForProfiles(params.courseIds, [params.profileId], tx);
   }
 
@@ -307,17 +310,18 @@ async function enrollOrganizationInviteUser(
       const cohortCourseGroups = await getCourseGroupIds(courseIdsToEnroll, tx);
       const cohortGroupIds = cohortCourseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
 
-      enrolledCount += await enrollUsersInCourseGroups(
+      const cohortCourseMembers = await enrollUsersInCourseGroups(
         cohortGroupIds,
         [{ profileId: params.profileId, email: params.email }],
         params.roleId,
         tx
       );
+      enrolledMembers.push(...cohortCourseMembers);
       await ensureComplianceEnrollmentRecordsForProfiles(courseIdsToEnroll, [params.profileId], tx);
     }
   }
 
-  return enrolledCount;
+  return enrolledMembers;
 }
 
 type TeamInviteResult = {
@@ -565,7 +569,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const enrolledCount = await enrollOrganizationInviteUser(tx, {
+    const enrolledMembers = await enrollOrganizationInviteUser(tx, {
       courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
       cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
       profileId: user.id,
@@ -579,7 +583,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       roleId: row.invite.roleId,
       alreadyAccepted,
       studentMilestoneNotification,
-      enrolledCount
+      enrolledMembers
     };
   });
 
@@ -600,8 +604,9 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     });
   }
 
-  if (result.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
+  if (result.enrolledMembers.length > 0 && result.invite.roleId === ROLE.STUDENT) {
     await invalidateOrgStats(result.invite.organizationId);
+    captureLearnersEnrolled(result.enrolledMembers, 'org_invite');
   }
 
   if (result.studentMilestoneNotification) {
@@ -861,7 +866,7 @@ export async function acceptOrganizationInviteById(
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const enrolledCount = await enrollOrganizationInviteUser(tx, {
+    const enrolledMembers = await enrollOrganizationInviteUser(tx, {
       courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
       cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
       profileId: user.id,
@@ -875,7 +880,7 @@ export async function acceptOrganizationInviteById(
       roleId: row.invite.roleId,
       alreadyAccepted,
       studentMilestoneNotification,
-      enrolledCount
+      enrolledMembers
     };
   });
 
@@ -892,8 +897,9 @@ export async function acceptOrganizationInviteById(
     });
   }
 
-  if (result.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
+  if (result.enrolledMembers.length > 0 && result.invite.roleId === ROLE.STUDENT) {
     await invalidateOrgStats(result.invite.organizationId);
+    captureLearnersEnrolled(result.enrolledMembers, 'org_invite');
   }
 
   if (result.studentMilestoneNotification) {

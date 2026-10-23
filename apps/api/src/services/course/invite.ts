@@ -46,6 +46,8 @@ import type { StudentMilestoneNotification } from '../organization/student-limit
 import { getWelcomeSessionIcs } from './session-invite';
 import { db } from '@cio/db/drizzle';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
+import type { TEventSource } from '@cio/core/services/posthog';
+import { captureLearnerInvited, captureLearnersEnrolled } from '@api/services/product-events';
 
 /**
  * Minimal org-url bundle threaded through invite/email paths so every URL
@@ -546,7 +548,12 @@ async function createEmailInviteAndSend(input: {
  * Creates secure student invite tokens for a course.
  * Supports both single-link and direct-email invite creation flows.
  */
-export async function createStudentInvite(courseId: string, createdByProfileId: string, data: TCreateCourseInvite) {
+export async function createStudentInvite(
+  courseId: string,
+  createdByProfileId: string,
+  data: TCreateCourseInvite,
+  source: TEventSource = 'dashboard'
+) {
   const course = await getCourseById(courseId);
   if (!course?.[0]) {
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
@@ -592,6 +599,16 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
       orgUrlInfo
     );
 
+    captureLearnerInvited({
+      profileId: createdByProfileId,
+      orgId: courseOrgData.orgId,
+      target: 'course',
+      inviteType: 'link',
+      count: 1,
+      courseId,
+      source
+    });
+
     return {
       mode: 'single' as const,
       invites: [toInviteResponse(createdInvite)],
@@ -634,6 +651,17 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
   );
 
   const sentCount = inviteResults.filter((result) => result.sent).length;
+
+  captureLearnerInvited({
+    profileId: createdByProfileId,
+    orgId: courseOrgData.orgId,
+    target: 'course',
+    inviteType: 'email',
+    count: inviteResults.length,
+    courseId,
+    source
+  });
+
   const failures = inviteResults
     .filter((result) => !result.sent && result.error)
     .map((result) => ({
@@ -781,6 +809,8 @@ export async function enrollInCourse(
     courseId,
     props: { path: 'free-enrollment' }
   });
+
+  captureLearnersEnrolled([{ groupId, profileId: user.id, roleId: ROLE.STUDENT }], 'self');
 
   return {
     success: true,
@@ -1172,6 +1202,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
 
   if (result.enrolledMember) {
     await emitCourseMemberWebhookEvent('course.member.added', result.courseId, result.enrolledMember);
+    captureLearnersEnrolled([result.enrolledMember], 'invite');
   }
 
   if (!result.alreadyJoined) {

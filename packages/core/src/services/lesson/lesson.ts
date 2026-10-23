@@ -34,6 +34,7 @@ import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforceme
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
 import { emitCourseWebhookEvent } from '../webhook/emit';
+import { captureCourseEvent } from '../posthog';
 
 /**
  * Creates a new lesson
@@ -459,7 +460,25 @@ export async function getLessonCompletionService(lessonId: string, profileId: st
  * @param isComplete Completion status
  * @returns Completion record
  */
-export async function upsertLessonCompletionService(lessonId: string, profileId: string, isComplete: boolean) {
+function captureLessonCompleted(
+  courseId: string,
+  lessonId: string,
+  profileId: string,
+  completionMethod: 'manual' | 'video_watch' | 'admin'
+) {
+  captureCourseEvent(courseId, {
+    event: 'lesson_completed',
+    distinctId: profileId,
+    properties: { lesson_id: lessonId, completion_method: completionMethod }
+  });
+}
+
+export async function upsertLessonCompletionService(
+  lessonId: string,
+  profileId: string,
+  isComplete: boolean,
+  completionMethod: 'manual' | 'admin' = 'manual'
+) {
   try {
     const lesson = await getLessonById(lessonId);
     if (!lesson) {
@@ -480,9 +499,14 @@ export async function upsertLessonCompletionService(lessonId: string, profileId:
       isComplete
     };
 
+    const previous = isComplete ? await getLessonCompletion(lessonId, profileId) : null;
     const completion = await upsertLessonCompletion(completionData);
 
     await emitCourseWebhookEvent(lesson.courseId, 'lesson.completion.updated', { lessonId, profileId, isComplete });
+
+    if (isComplete && !previous?.isComplete) {
+      captureLessonCompleted(lesson.courseId, lessonId, profileId, completionMethod);
+    }
 
     return completion;
   } catch (error) {
@@ -706,6 +730,7 @@ export async function updateLessonWatchProgressService(
         profileId,
         isComplete: true
       });
+      captureLessonCompleted(lesson.courseId, lessonId, profileId, 'video_watch');
     }
 
     if (!aggregate) {
