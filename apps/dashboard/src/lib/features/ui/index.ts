@@ -1,4 +1,6 @@
 export { default as ActivityCard } from './analytics/activity-card.svelte';
+export { default as AnalyticsPanelCard } from './analytics/analytics-panel-card.svelte';
+export { default as KpiCard } from './analytics/kpi-card.svelte';
 export { default as AppHeader } from './navigation/app-header.svelte';
 export { default as AttentionHighlight, triggerAttentionHighlight } from './attention-highlight.svelte';
 export { default as AuthUI } from './auth-ui.svelte';

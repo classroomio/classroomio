@@ -70,6 +70,7 @@
     "db:seed:coursera-students": "tsx src/scripts/seed-coursera-audience-students.ts",
     "db:seed:coursera-grading": "tsx src/scripts/seed-coursera-grading-demo.ts",
     "db:seed:coursera-live-class": "tsx src/scripts/seed-coursera-live-class-demo.ts",
+    "db:seed:insights-load": "tsx src/scripts/seed-insights-load.ts",
     "db:seed:platform-templates": "tsx src/scripts/seed-platform-templates.ts",
     "db:create-org": "tsx src/scripts/create-org-with-admin.ts",
     "db:sync-orphaned-profiles": "tsx src/scripts/sync-orphaned-profiles.ts",

@@ -2359,6 +2359,9 @@ export const organization = pgTable(
         enrollmentWelcome?: boolean;
         courseCompletion?: boolean;
       };
+      insights?: {
+        learnerTarget?: number | null;
+      };
     }>(),
     landingpage: jsonb().default({}).$type<{
       header?: {

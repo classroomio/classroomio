@@ -1,6 +1,6 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type { TCreateCohortGoal, TUpdateCohortGoal } from '@cio/utils/validation/cohort';
-import type { GoalsOverviewRow, MyGoalAssignment, CohortGoal } from '../utils/types';
+import type { GoalsOverviewRow, MyGoalAssignment, CohortGoal, RemindOverdueGoalsRequest } from '../utils/types';
 import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { currentOrg } from '$lib/utils/store/org';
@@ -123,6 +123,36 @@ class CohortGoalApi extends BaseApiWithErrors {
       },
       logContext: 'listGoalsOverview'
     });
+  }
+
+  /**
+   * Emails overdue learners on the cohort's active goals now: everyone, one course's goals, or one learner.
+   * Returns how many reminders were queued.
+   */
+  async remindOverdue(cohortId: string, target: { courseId?: string | null; profileId?: string }): Promise<number> {
+    const toastId = snackbar.loading(t.get('snackbar.insights.reminders_sending'));
+    const courseId = target.courseId ?? undefined;
+
+    const response = await this.execute<RemindOverdueGoalsRequest>({
+      requestFn: () =>
+        classroomio.cohort[':cohortId']['goal-assignments']['remind-overdue'].$post({
+          param: { cohortId },
+          json: { courseId, profileId: target.profileId }
+        }),
+      logContext: 'sending overdue cohort goal reminders',
+      onSuccess: (result) => {
+        const enqueued = result.data.enqueued;
+        if (enqueued === 0) {
+          snackbar.info('snackbar.insights.reminder_not_sent', toastId);
+          return;
+        }
+
+        snackbar.success(t.get('snackbar.insights.reminders_sent', { count: enqueued }), toastId);
+      },
+      onError: () => snackbar.error('snackbar.insights.reminder_failed', toastId)
+    });
+
+    return response?.data.enqueued ?? 0;
   }
 }
 

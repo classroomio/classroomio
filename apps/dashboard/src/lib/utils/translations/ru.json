@@ -535,6 +535,13 @@
       "test_success": "Тестовое событие успешно доставлено.",
       "test_failed": "Тестовое событие не удалось доставить. Откройте журнал доставок, чтобы узнать причину.",
       "redelivered": "Событие поставлено в очередь на повторную доставку."
+    },
+    "insights": {
+      "reminder_sent": "Напоминание отправлено",
+      "reminder_not_sent": "Напоминание не отправлено: оно уже было отправлено сегодня, или учащийся отключил получение этих уведомлений.",
+      "reminder_failed": "Не удалось отправить напоминание.",
+      "reminders_sending": "Отправка напоминаний…",
+      "reminders_sent": "{count, plural, one {# напоминание отправлено} other {# напоминания отправлены}}"
     }
   },
   "explore": {
@@ -598,6 +605,10 @@
     "unlock_field": "Обновите версию, чтобы разблокировать эту настройку.",
     "webhooks_required": "Перейдите на тариф Early Adopter или Enterprise, чтобы использовать вебхуки."
   },
+  "marketing": {
+    "title": "Маркетинг",
+    "subtitle": "Узнайте, как посетители находят ваши курсы и становятся студентами."
+  },
   "analytics": {
     "title": "Аналитика",
     "courses": "Курсы",
@@ -621,38 +632,12 @@
     "assignment_completion": "Выполнение задания",
     "assignment_completion_description": "Процент выполненных заданий",
     "average_grade_description": "Средняя оценка за все выполненные задания",
-    "students": "Студенты",
     "lessons": "Уроки",
     "tutors": "репетиторы",
     "avg_grade": "Средняя оценка",
-    "completion_rate": "Скорость завершения",
-    "student_progress_overview": "Обзор успеваемости учащихся",
-    "student_name": "Имя студента",
     "lessons_completed": "Уроки завершены",
-    "exercises_submitted": "Упражнения отправлены",
     "average_grade": "Средняя оценка",
-    "actions": "Действия",
-    "view_details": "Посмотреть детали",
-    "no_students_found": "Студенты не найдены",
-    "no_students_description": "На этот курс еще не поступило ни одного студента. Студенты появятся здесь, как только присоединятся к курсу.",
-    "showing_students": "Показаны {start} по {end} из {total} учащихся",
-    "no_analytics_data": "Нет данных аналитики",
-    "no_analytics_description": "Невозможно загрузить аналитические данные для этого курса. Повторите попытку позже или обратитесь в службу поддержки, если проблема не исчезнет.",
     "student": "Студент",
-    "student_progress_distribution": "Распределение успеваемости учащихся",
-    "grade_distribution": "Распределение оценок",
-    "progress_80_plus": "80%+ прогресс",
-    "progress_60_79": "60-79% прогресса",
-    "progress_below_60": "Прогресс ниже 60%",
-    "grade_90_plus": "90%+ Оценка",
-    "grade_80_89": "80-89% Оценка",
-    "grade_70_79": "70-79% Оценка",
-    "grade_below_70": "Оценка ниже 70%",
-    "number_of_students": "Количество студентов",
-    "progress_range": "Диапазон прогресса",
-    "grade_range": "Диапазон оценок",
-    "no_progress_data": "Нет данных о прогрессе",
-    "no_grade_data": "Нет данных об оценках",
     "loading_chart": "Загрузка диаграммы...",
     "no_data_default": "Нет доступных данных",
     "no_data_default_description": "В настоящее время нет данных для отображения.",
@@ -723,15 +708,6 @@
       "funnel": "Воронка",
       "geography": "География",
       "course_types": "Типы курсов"
-    },
-    "course_metrics": {
-      "page_subtitle": "Зачисление, завершение уроков, оценки и прогресс каждого учащегося по этому курсу.",
-      "progress_distribution_card_description": "Сколько студентов попадает в каждую группу завершения.",
-      "grade_distribution_card_description": "Сколько учеников попадает в каждую группу классов.",
-      "students_table_description": "Сортируемый обзор со ссылками на профили студентов.",
-      "kpi_team_tutors": "{count, plural, one {# преподаватель в команде курса} other {# преподавателей в команде курса}}",
-      "kpi_lessons_exercises": "{count, plural, one {# упражнение} other {# упражнений}} сопоставлено с уроками",
-      "kpi_progress_grade": "{grade} % средняя оценка за упражнения среди зачисленных учащихся"
     },
     "exercises_completed": "Выполненные упражнения",
     "course_progress": "Прогресс курса",
@@ -3592,6 +3568,7 @@
     "widgets": "Виджеты",
     "stats": "Статистика",
     "analytics": "Аналитика",
+    "marketing": "Маркетинг",
     "compliance": "Соответствие требованиям",
     "cohorts": "Когорты",
     "exit_course": "Выйти из этого курса",
@@ -6032,7 +6009,8 @@
       "newsfeed": "Лента новостей",
       "courses": "Курсы",
       "people": "Люди",
-      "settings": "Настройки"
+      "settings": "Настройки",
+      "analytics": "Аналитика"
     },
     "status": {
       "active": "Активный",
@@ -6445,5 +6423,288 @@
     "new_badge": "Новое",
     "read_full": "Читать полный список изменений",
     "close": "Закрыть"
+  },
+  "insights": {
+    "title": "Аналитика",
+    "subtitle": {
+      "cohort": "{count, plural, one {# учащийся} other {# учащиеся}} в этой группе",
+      "course": "{count, plural, one {# учащийся} other {# учащиеся}} в этом курсе",
+      "org": "{count, plural, one {# обучающийся} other {# обучающиеся}} в вашей организации"
+    },
+    "updated_seconds_ago": "Обновлено {count} секунд назад",
+    "updated_minutes_ago": "{count, plural, one {Обновлено # минуту назад} other {Обновлено # минут назад}}",
+    "retry": "Попробуйте еще раз",
+    "all_courses": "Все курсы",
+    "course_picker": "Курс",
+    "exercise_picker": "Упражнение",
+    "not_in_section": "Не в разделе",
+    "no_cohort": "Нет когорты",
+    "finished": "Завершено",
+    "awaiting_grade": "Ожидание оценки",
+    "awaiting_grade_short": "В ожидании",
+    "pass_required_tag": "Пройдено {mark}%",
+    "required_passed_of": "{passed} из {total} прошел",
+    "of_total": "{count} из {total}",
+    "never": "Никогда",
+    "most_common_wrong_answer": "Наиболее распространённый неправильный ответ: {answer}",
+    "status": {
+      "at_risk": "В группе риска",
+      "lagging": "Отстаёт",
+      "on_track": "На верном пути",
+      "completed": "Завершено"
+    },
+    "flags": {
+      "overdue": "Просрочено"
+    },
+    "overdue_kind": {
+      "goal": "Цель",
+      "compliance": "Согласие",
+      "exercise": "Срок оплаты"
+    },
+    "legend": {
+      "average": "Средний",
+      "middle_half": "Средние 50% учащихся",
+      "cohort_average": "Среднее значение по когорте",
+      "learner": "Учащийся"
+    },
+    "notes": {
+      "scores_by_exercise": "Упражнения выполняются в порядке прохождения курса. Балл начисляется после того, как четверть учащихся выполнили оцененную попытку.",
+      "hardest_questions": "Доля учащихся, ответивших правильно, исходя из лучшей оценки каждого учащегося. Вопросы, на которые было дано менее 5 правильных ответов, исключаются."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–24%",
+        "1": "25–49%",
+        "2": "50–74%",
+        "3": "75–99%",
+        "4": "Сделанный"
+      },
+      "score": {
+        "4": "Менее 50%",
+        "5": "50-е",
+        "6": "60-е",
+        "7": "70-е",
+        "8": "80-е",
+        "9": "90%+",
+        "null": "Нет балла"
+      }
+    },
+    "kpi": {
+      "share_of_learners": "{percent} учащихся",
+      "avg_progress_hint": "Уроки и упражнения завершены.",
+      "avg_score_hint": "Лучший результат по всем выполненным упражнениям (по всем оценкам)",
+      "overdue_hint": "Срок выполнения истек, и работа не выполнена.",
+      "certified": "{count, plural, one {# сертифицирован} other {# сертифицировано}}",
+      "required_pass_hint": "Попытки, прошедшие отбор.",
+      "needs_attention_hint": "Неактивный, с низким баллом или просроченный",
+      "days": "{count, plural, one {# день} other {# дни}}"
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Зашел сегодня"
+      },
+      "kpi_logged_in_week": {
+        "title": "Вход выполнен, последние 7 дней"
+      },
+      "kpi_avg_progress": {
+        "title": "Средний прогресс"
+      },
+      "kpi_avg_score": {
+        "title": "Средний балл"
+      },
+      "kpi_overdue": {
+        "title": "Просрочено"
+      },
+      "kpi_completed": {
+        "title": "Завершенный"
+      },
+      "kpi_enrolled": {
+        "title": "Зачислен"
+      },
+      "kpi_completion_rate": {
+        "title": "Показатель завершения"
+      },
+      "kpi_required_pass_rate": {
+        "title": "Процент успешной сдачи обязательных упражнений"
+      },
+      "kpi_median_days": {
+        "title": "Среднее количество дней до завершения"
+      },
+      "kpi_completions": {
+        "title": "Завершения"
+      },
+      "kpi_needs_attention": {
+        "title": "Требует внимания"
+      },
+      "courses_summary": {
+        "title": "Курсы в этой группе"
+      },
+      "learners_by_status": {
+        "title": "Учащиеся по статусу"
+      },
+      "learner_courses": {
+        "title": "Курсы для обучающихся"
+      },
+      "needs_attention": {
+        "title": "Требует внимания по причине"
+      },
+      "overdue": {
+        "title": "Просрочено"
+      },
+      "learners": {
+        "title": "Учащиеся"
+      },
+      "logins_per_day": {
+        "title": "Количество учащихся, вошедших в систему за день"
+      },
+      "score_distribution": {
+        "title": "Распределение средних баллов"
+      },
+      "scores_by_exercise": {
+        "title": "Результаты по упражнениям"
+      },
+      "progress_distribution": {
+        "title": "Распределение прогресса"
+      },
+      "learner_progression": {
+        "title": "Прогресс оценок обучающегося"
+      },
+      "section_scores": {
+        "title": "Результаты и посещаемость по секциям"
+      },
+      "section_scorecard": {
+        "title": "Пошаговая оценочная таблица"
+      },
+      "hardest_questions": {
+        "title": "Самые сложные вопросы"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Результаты по видам упражнений, по группам."
+      },
+      "exercise_score_distribution": {
+        "title": "Распределение баллов"
+      },
+      "lesson_dropoff": {
+        "title": "сдача материалов по завершении урока"
+      },
+      "hardest_exercises": {
+        "title": "Самые сложные упражнения"
+      },
+      "cohorts_in_course": {
+        "title": "Группы, проходящие этот курс"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Краткий обзор групп"
+      },
+      "hiring_ramp": {
+        "title": "Учащиеся добавили"
+      },
+      "avg_score_by_cohort": {
+        "title": "Средний балл по группам"
+      },
+      "courses_by_completion": {
+        "title": "Курсы по завершении"
+      }
+    },
+    "measures": {
+      "rows__count": "Учащиеся",
+      "progress_pct__avg": "Средний прогресс",
+      "avg_score_pct__avg": "Средний балл",
+      "required_pass__pooled": "Требуемый процент сдачи экзамена",
+      "is_completed__count_if": "Завершенный",
+      "is_completed__rate": "Показатель завершения",
+      "is_inactive__count_if": "Вход в систему не требуется, более 2 дней.",
+      "is_low_score__count_if": "Средний балл ниже 50%",
+      "is_overdue__count_if": "Просрочено",
+      "is_low_video__count_if": "Участие в видеоконференции менее 60%.",
+      "logged_in__count_if": "Учащиеся вошли в систему",
+      "section_score_pct__avg": "Средний балл",
+      "video_pct__avg": "Видеорегистрация",
+      "attendance__pooled": "Посещаемость занятий",
+      "best_score_pct__avg": "Средний балл",
+      "is_complete__rate": "Завершенный",
+      "members_total__value": "Учащиеся"
+    },
+    "columns": {
+      "learner": "Учащийся",
+      "email": "Электронная почта",
+      "course": "Курс",
+      "progress": "Прогресс",
+      "now_at": "Сейчас в",
+      "average_score": "Средний балл",
+      "required_passed": "Обязательные упражнения",
+      "courses_completed": "Пройденные курсы",
+      "video": "Видео",
+      "classroom": "Классная комната",
+      "certificates": "Сертификаты",
+      "last_login": "Последний вход в систему",
+      "status": "Статус",
+      "trend": "Тренд",
+      "overdue_item": "Просроченный товар",
+      "days_overdue": "Просрочено дней",
+      "cohort": "Когорта",
+      "section": "Раздел курса",
+      "exercises_taken": "Выполненные упражнения",
+      "pass_rate": "Процент сдачи",
+      "health": "Здоровье"
+    },
+    "actions": {
+      "send_reminder": "Отправить напоминание",
+      "remind_all_overdue": "Напомнить всем учащимся о просроченных заданиях"
+    },
+    "hints": {
+      "learner_courses": "Выберите учащегося ниже, чтобы посмотреть его курсы.",
+      "learner_progression": "Выберите учащегося ниже, чтобы посмотреть его результаты в таблице.",
+      "exercise_score_distribution": "Выберите упражнение, чтобы посмотреть его результаты."
+    },
+    "learners": {
+      "search": "Поиск по имени или электронной почте",
+      "empty": "Ни один из учащихся не соответствует этим фильтрам.",
+      "show_more": "Показать еще 25",
+      "showing": "Отображение {shown} из {total}",
+      "sort": {
+        "status": "Сначала отстающие",
+        "progress": "Наименьший прогресс",
+        "name": "Имя от А до Я",
+        "low_score": "Наименьший балл"
+      },
+      "clear_filters": "{count, plural, one {Очистить # фильтр} other {Очистить # фильтров}}",
+      "filters": {
+        "status": {
+          "label": "Статус",
+          "any": "Все статусы",
+          "at_risk": "В группе риска",
+          "lagging": "Отстаёт",
+          "on_track": "На верном пути",
+          "completed": "Завершено"
+        },
+        "activity": {
+          "label": "Последний вход в систему",
+          "any": "Любой вход в систему",
+          "today": "Зашел сегодня",
+          "idle": "Вход в систему невозможен более 2 дней."
+        },
+        "score": {
+          "label": "Средний балл",
+          "any": "Любой результат",
+          "lt50": "Менее 50%",
+          "mid": "от 50% до 69%",
+          "gte70": "70% и выше"
+        },
+        "flag": {
+          "label": "Флаги",
+          "any": "Любой флаг",
+          "overdue": "Просрочено",
+          "certified": "Проверенный",
+          "not_certified": "Не сертифицировано"
+        }
+      }
+    },
+    "empty": {
+      "no_data": "Данные пока отсутствуют.",
+      "failed": "Эта диаграмма не загрузилась.",
+      "dashboard_failed": "Аналитика не загрузилась.",
+      "not_permitted": "У вас нет доступа к этим аналитическим данным."
+    }
   }
 }

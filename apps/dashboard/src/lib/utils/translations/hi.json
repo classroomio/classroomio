@@ -535,6 +535,13 @@
       "test_success": "टेस्ट इवेंट सफलतापूर्वक डिलीवर हुआ।",
       "test_failed": "टेस्ट इवेंट विफल रहा। कारण देखने के लिए डिलीवरी लॉग खोलें।",
       "redelivered": "इवेंट दोबारा डिलीवरी के लिए कतार में है।"
+    },
+    "insights": {
+      "reminder_sent": "अनुस्मारक भेजा गया",
+      "reminder_not_sent": "अनुस्मारक नहीं भेजा गया: आज पहले ही भेजा जा चुका है, या शिक्षार्थी ने इन ईमेल सेवाओं को बंद कर दिया है।",
+      "reminder_failed": "रिमाइंडर नहीं भेजा जा सका",
+      "reminders_sending": "अनुस्मारक भेजे जा रहे हैं…",
+      "reminders_sent": "{count, plural, one {# रिमाइंडर भेजा गया} other {# रिमाइंडर भेजा गया}}"
     }
   },
   "explore": {
@@ -621,38 +628,12 @@
     "assignment_completion": "असाइनमेंट पूरा करना",
     "assignment_completion_description": "पूर्ण किये गये कार्यों का प्रतिशत",
     "average_grade_description": "सभी पूर्ण किए गए असाइनमेंट का औसत ग्रेड",
-    "students": "छात्र",
     "lessons": "सबक",
     "tutors": "शिक्षक",
     "avg_grade": "औसत ग्रेड",
-    "completion_rate": "पूर्णता दर",
-    "student_progress_overview": "विद्यार्थी प्रगति अवलोकन",
-    "student_name": "छात्र का नाम",
     "lessons_completed": "पाठ पूरा हुआ",
-    "exercises_submitted": "अभ्यास प्रस्तुत किए गए",
     "average_grade": "औसत ग्रेड",
-    "actions": "क्रियाएँ",
-    "view_details": "विवरण देखें",
-    "no_students_found": "कोई छात्र नहीं मिला",
-    "no_students_description": "इस पाठ्यक्रम में अभी तक कोई भी छात्र नामांकित नहीं है। पाठ्यक्रम में शामिल होने के बाद छात्र यहां उपस्थित होंगे।",
-    "showing_students": "{start} छात्रों को {end} से {total} तक दिखाया जा रहा है",
-    "no_analytics_data": "कोई एनालिटिक्स डेटा नहीं",
-    "no_analytics_description": "इस पाठ्यक्रम के लिए विश्लेषणात्मक डेटा लोड करने में असमर्थ. कृपया बाद में पुनः प्रयास करें या यदि समस्या बनी रहती है तो सहायता से संपर्क करें।",
     "student": "छात्र",
-    "student_progress_distribution": "छात्र प्रगति वितरण",
-    "grade_distribution": "ग्रेड वितरण",
-    "progress_80_plus": "80%+ प्रगति",
-    "progress_60_79": "60-79% प्रगति",
-    "progress_below_60": "60% से कम प्रगति",
-    "grade_90_plus": "90%+ ग्रेड",
-    "grade_80_89": "80-89% ग्रेड",
-    "grade_70_79": "70-79% ग्रेड",
-    "grade_below_70": "70% ग्रेड से नीचे",
-    "number_of_students": "छात्रों की संख्या",
-    "progress_range": "प्रगति रेंज",
-    "grade_range": "ग्रेड रेंज",
-    "no_progress_data": "कोई प्रगति डेटा उपलब्ध नहीं है",
-    "no_grade_data": "कोई ग्रेड डेटा उपलब्ध नहीं है",
     "loading_chart": "चार्ट लोड हो रहा है...",
     "no_data_default": "कोई डेटा उपलब्ध नहीं है",
     "no_data_default_description": "इस समय प्रदर्शित करने के लिए कोई डेटा नहीं है.",
@@ -723,15 +704,6 @@
       "funnel": "फ़नल",
       "geography": "भूगोल",
       "course_types": "पाठ्यक्रम के प्रकार"
-    },
-    "course_metrics": {
-      "page_subtitle": "इस पाठ्यक्रम के लिए नामांकन, पाठ समापन, ग्रेड और प्रति छात्र प्रगति।",
-      "progress_distribution_card_description": "प्रत्येक समापन बैंड में कितने छात्र आते हैं।",
-      "grade_distribution_card_description": "प्रत्येक ग्रेड बैंड में कितने छात्र आते हैं।",
-      "students_table_description": "छात्र प्रोफाइल के लिंक के साथ क्रमबद्ध अवलोकन।",
-      "kpi_team_tutors": "{count, plural, one {पाठ्यक्रम टीम में # शिक्षक} other {पाठ्यक्रम टीम में # शिक्षक}}",
-      "kpi_lessons_exercises": "{count, plural, one {# अभ्यास} other {# अभ्यास}} पाठों के अनुसार मैप किया गया",
-      "kpi_progress_grade": "नामांकित विद्यार्थियों में {grade}% औसत व्यायाम ग्रेड"
     },
     "exercises_completed": "अभ्यास पूरे हुए",
     "course_progress": "पाठ्यक्रम प्रगति",
@@ -3604,7 +3576,8 @@
     "back_to_app": "ऐप पर वापस जाएं",
     "create": "बनाएँ",
     "distribute": "बांटो",
-    "tools": "उपकरण"
+    "tools": "उपकरण",
+    "marketing": "विपणन"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",
@@ -6046,7 +6019,8 @@
       "newsfeed": "न्यूज़फीड",
       "courses": "पाठ्यक्रम",
       "people": "लोग",
-      "settings": "सेटिंग्स"
+      "settings": "सेटिंग्स",
+      "analytics": "विश्लेषिकी"
     },
     "status": {
       "active": "सक्रिय",
@@ -6459,5 +6433,292 @@
     "new_badge": "नया",
     "read_full": "पूरा चेंजलॉग पढ़ें",
     "close": "बंद करें"
+  },
+  "marketing": {
+    "title": "विपणन",
+    "subtitle": "समझें कि आगंतुक आपके पाठ्यक्रमों को कैसे खोजते हैं और छात्रों में परिवर्तित होते हैं।"
+  },
+  "insights": {
+    "title": "एनालिटिक्स",
+    "updated_seconds_ago": "{count} सेकंड पहले अपडेट किया गया",
+    "subtitle": {
+      "cohort": "इस समूह में {count, plural, one {# शिक्षार्थी} other {# शिक्षार्थी}}",
+      "course": "इस पाठ्यक्रम में {count, plural, one {# शिक्षार्थी} other {# शिक्षार्थी}}",
+      "org": "आपके संगठन में {count, plural, one {# शिक्षार्थी} other {# शिक्षार्थी}}"
+    },
+    "updated_minutes_ago": "{count, plural, one {# मिनट पहले अपडेट किया गया} other {# मिनट पहले अपडेट किया गया}}",
+    "retry": "पुनः प्रयास करें",
+    "all_courses": "सभी पाठ्यक्रम",
+    "course_picker": "अवधि",
+    "exercise_picker": "व्यायाम",
+    "not_in_section": "किसी अनुभाग में नहीं",
+    "no_cohort": "कोई समूह नहीं",
+    "finished": "पूर्ण",
+    "awaiting_grade": "मूल्यांकन प्रतीक्षित",
+    "awaiting_grade_short": "प्रतीक्षित",
+    "pass_required_tag": "पास {mark}%",
+    "required_passed_of": "{passed} में से {total} पास हो गया",
+    "of_total": "{count} का {total}",
+    "never": "कभी नहीं",
+    "most_common_wrong_answer": "सबसे आम गलत उत्तर: {answer}",
+    "status": {
+      "at_risk": "जोखिम में",
+      "lagging": "पिछड़ा",
+      "on_track": "ट्रैक पर",
+      "completed": "पूर्ण"
+    },
+    "flags": {
+      "overdue": "अतिदेय"
+    },
+    "overdue_kind": {
+      "goal": "लक्ष्य",
+      "compliance": "अनुपालन",
+      "exercise": "नियत तारीख"
+    },
+    "legend": {
+      "average": "औसत",
+      "middle_half": "मध्य 50% शिक्षार्थी",
+      "cohort_average": "समूह औसत",
+      "learner": "शिक्षार्थी"
+    },
+    "notes": {
+      "scores_by_exercise": "अभ्यास पाठ्यक्रम के क्रम में हैं। एक चौथाई शिक्षार्थियों द्वारा किए गए अभ्यास को ग्रेड दिया जाएगा, जिसके बाद एक अंक दिखाई देगा।",
+      "hardest_questions": "प्रत्येक छात्र के सर्वोत्तम ग्रेड वाले प्रयास में से सही उत्तर देने वाले छात्रों का प्रतिशत। जिन प्रश्नों के 5 से कम उत्तर हैं, उन्हें शामिल नहीं किया गया है।"
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–24%",
+        "1": "25–49%",
+        "2": "50–74%",
+        "3": "75–99%",
+        "4": "हो गया"
+      },
+      "score": {
+        "4": "50% से कम",
+        "5": "50 के दशक",
+        "6": "60",
+        "7": "70 के दशक",
+        "8": "80 के दशक",
+        "9": "90%+",
+        "null": "कोई स्कोर नहीं"
+      }
+    },
+    "kpi": {
+      "share_of_learners": "शिक्षार्थियों का {percent}",
+      "avg_progress_hint": "पाठ और अभ्यास पूर्ण हो गए",
+      "avg_score_hint": "सभी अभ्यासों में सर्वश्रेष्ठ अंक प्राप्त प्रयास।",
+      "overdue_hint": "निर्धारित तिथि बीत जाने के बाद भी काम पूरा नहीं हुआ",
+      "certified": "{count, plural, one {# प्रमाणित} other {# प्रमाणित}}",
+      "required_pass_hint": "उत्तीर्ण होने योग्य प्रयास",
+      "needs_attention_hint": "निष्क्रिय, कम स्कोर या बकाया",
+      "days": "{count, plural, one {# दिन} other {# दिन}}"
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "आज लॉग इन किया"
+      },
+      "kpi_logged_in_week": {
+        "title": "पिछले 7 दिनों में लॉग इन किया गया"
+      },
+      "kpi_avg_progress": {
+        "title": "औसत प्रगति"
+      },
+      "kpi_avg_score": {
+        "title": "औसत स्कोर"
+      },
+      "kpi_overdue": {
+        "title": "अतिदेय"
+      },
+      "kpi_completed": {
+        "title": "पुरा होना।"
+      },
+      "kpi_enrolled": {
+        "title": "दाखिला लिया"
+      },
+      "kpi_completion_rate": {
+        "title": "पूर्णता दर"
+      },
+      "kpi_required_pass_rate": {
+        "title": "आवश्यक अभ्यासों में उत्तीर्ण होने की दर"
+      },
+      "kpi_median_days": {
+        "title": "पूरा करने में लगने वाले औसत दिन"
+      },
+      "kpi_completions": {
+        "title": "प्राप्तियां"
+      },
+      "kpi_needs_attention": {
+        "title": "ध्यान देने की आवश्यकता है"
+      },
+      "courses_summary": {
+        "title": "इस बैच के पाठ्यक्रम"
+      },
+      "learners_by_status": {
+        "title": "शिक्षार्थी, स्थिति के अनुसार"
+      },
+      "learner_courses": {
+        "title": "शिक्षार्थी पाठ्यक्रम"
+      },
+      "needs_attention": {
+        "title": "ध्यान देने की आवश्यकता है, कारणवश"
+      },
+      "overdue": {
+        "title": "अतिदेय"
+      },
+      "learners": {
+        "title": "शिक्षार्थियों"
+      },
+      "logins_per_day": {
+        "title": "प्रतिदिन लॉग इन करने वाले शिक्षार्थी"
+      },
+      "score_distribution": {
+        "title": "औसत स्कोर वितरण"
+      },
+      "scores_by_exercise": {
+        "title": "व्यायाम के आधार पर अंक"
+      },
+      "progress_distribution": {
+        "title": "प्रगति वितरण"
+      },
+      "learner_progression": {
+        "title": "शिक्षार्थी स्कोर प्रगति"
+      },
+      "section_scores": {
+        "title": "अनुभागवार अंक और उपस्थिति"
+      },
+      "section_scorecard": {
+        "title": "अनुभाग-दर-अनुभाग स्कोरकार्ड"
+      },
+      "hardest_questions": {
+        "title": "सबसे कठिन प्रश्न"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "व्यायाम के आधार पर, समूह के आधार पर अंक"
+      },
+      "exercise_score_distribution": {
+        "title": "स्कोर वितरण"
+      },
+      "lesson_dropoff": {
+        "title": "पाठ पूरा होने पर जमा करना"
+      },
+      "hardest_exercises": {
+        "title": "सबसे कठिन व्यायाम"
+      },
+      "cohorts_in_course": {
+        "title": "इस पाठ्यक्रम में भाग लेने वाले समूह"
+      },
+      "cohorts_at_a_glance": {
+        "title": "समूहों पर एक नजर"
+      },
+      "hiring_ramp": {
+        "title": "शिक्षार्थियों ने जोड़ा"
+      },
+      "avg_score_by_cohort": {
+        "title": "समूह के अनुसार औसत स्कोर"
+      },
+      "courses_by_completion": {
+        "title": "पाठ्यक्रम पूर्ण होने पर"
+      }
+    },
+    "measures": {
+      "rows__count": "शिक्षार्थियों",
+      "progress_pct__avg": "औसत प्रगति",
+      "avg_score_pct__avg": "औसत स्कोर",
+      "required_pass__pooled": "आवश्यक उत्तीर्ण दर",
+      "is_completed__count_if": "पुरा होना।",
+      "is_completed__rate": "पूर्णता दर",
+      "is_inactive__count_if": "लॉगिन नहीं किया, 2+ दिन",
+      "is_low_score__count_if": "औसत स्कोर 50% से कम",
+      "is_overdue__count_if": "अतिदेय",
+      "is_low_video__count_if": "वीडियो के माध्यम से उपस्थिति 60% से कम",
+      "logged_in__count_if": "शिक्षार्थी लॉग इन हैं",
+      "section_score_pct__avg": "औसत स्कोर",
+      "video_pct__avg": "वीडियो उपस्थिति",
+      "attendance__pooled": "कक्षा में उपस्थिति",
+      "best_score_pct__avg": "औसत स्कोर",
+      "is_complete__rate": "पुरा होना।",
+      "members_total__value": "शिक्षार्थियों"
+    },
+    "columns": {
+      "learner": "शिक्षार्थी",
+      "email": "ईमेल",
+      "course": "अवधि",
+      "progress": "प्रगति",
+      "now_at": "अब में",
+      "average_score": "औसत स्कोर",
+      "required_passed": "आवश्यक अभ्यास",
+      "courses_completed": "पूर्ण किए गए पाठ्यक्रम",
+      "video": "वीडियो",
+      "classroom": "कक्षा",
+      "certificates": "प्रमाण पत्र",
+      "last_login": "आखरी लॉगइन",
+      "status": "स्थिति",
+      "trend": "रुझान",
+      "overdue_item": "बकाया वस्तु",
+      "days_overdue": "कई दिनों से बकाया",
+      "cohort": "समूह",
+      "section": "पाठ्यक्रम अनुभाग",
+      "exercises_taken": "लिए गए अभ्यास",
+      "pass_rate": "पास दर",
+      "health": "स्वास्थ्य"
+    },
+    "actions": {
+      "send_reminder": "अनुस्मारक भेजें",
+      "remind_all_overdue": "सभी बकाया शिक्षार्थियों को याद दिलाएं"
+    },
+    "hints": {
+      "learner_courses": "नीचे दिए गए शिक्षार्थी का चयन करके उनके पाठ्यक्रम देखें",
+      "learner_progression": "नीचे दिए गए शिक्षार्थी का चयन करके उनके स्कोर का चार्ट देखें",
+      "exercise_score_distribution": "स्कोर देखने के लिए कोई अभ्यास चुनें"
+    },
+    "learners": {
+      "search": "नाम या ईमेल द्वारा खोजें",
+      "empty": "इन फ़िल्टरों से कोई शिक्षार्थी मेल नहीं खाता।",
+      "show_more": "और 25 दिखाएँ",
+      "showing": "{total} में से {shown} दिखाया जा रहा है",
+      "sort": {
+        "status": "पहले पिछड़े",
+        "progress": "सबसे कम प्रगति",
+        "name": "नाम A से Z तक",
+        "low_score": "सबसे कम स्कोर"
+      },
+      "clear_filters": "{count, plural, one {# फ़िल्टर साफ़ करें} other {# फ़िल्टर साफ़ करें}}",
+      "filters": {
+        "status": {
+          "label": "स्थिति",
+          "any": "सभी स्थितियाँ",
+          "at_risk": "जोखिम में",
+          "lagging": "पिछड़ा",
+          "on_track": "ट्रैक पर",
+          "completed": "पूर्ण"
+        },
+        "activity": {
+          "label": "आखरी लॉगइन",
+          "any": "किसी भी लॉगिन",
+          "today": "आज लॉग इन किया",
+          "idle": "2+ दिनों से लॉगिन नहीं हुआ"
+        },
+        "score": {
+          "label": "औसत स्कोर",
+          "any": "कोई भी स्कोर",
+          "lt50": "50% से कम",
+          "mid": "50% से 69%",
+          "gte70": "70% और उससे अधिक"
+        },
+        "flag": {
+          "label": "झंडे",
+          "any": "कोई भी झंडा",
+          "overdue": "अतिदेय",
+          "certified": "प्रमाणित",
+          "not_certified": "प्रमाणित नहीं"
+        }
+      }
+    },
+    "empty": {
+      "no_data": "अभी तक कोई डेटा उपलब्ध नहीं है",
+      "failed": "यह चार्ट लोड नहीं हो सका",
+      "dashboard_failed": "एनालिटिक्स लोड नहीं हो सका",
+      "not_permitted": "आपको इन एनालिटिक्स तक पहुंच नहीं है।"
+    }
   }
 }

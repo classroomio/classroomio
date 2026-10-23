@@ -1673,7 +1673,8 @@
     "upgrade_left": "{count} kaldı",
     "cohorts": "Cohorts",
     "exit_course": "Bu kurstan çık",
-    "exit_cohort": "Bu gruptan çık"
+    "exit_cohort": "Bu gruptan çık",
+    "marketing": "Pazarlama"
   },
   "pricing": {
     "plan_names": {
@@ -1937,6 +1938,20 @@
       "all": "Tüm",
       "unpublished": "Yayınlanmamış",
       "course_type": "Ders Türü"
+    },
+    "filters": {
+      "filter": "Filtrele",
+      "popover_title": "Filtreler",
+      "clear_all": "Tümünü temizle",
+      "search_placeholder": "İsimle ara",
+      "status": "Durum",
+      "layout_type": "Yerleşim türü",
+      "selection_mode": "Seçim modu",
+      "no_results_title": "Filtrelerinize uyan hiçbir widget bulunamadı.",
+      "no_results_description": "Farklı bir arama terimi deneyin veya filtrelerinizi temizleyerek her şeyi tekrar görüntüleyin.",
+      "no_results_page_title": "Bu sayfada hiçbir şey yok.",
+      "no_results_page_description": "Bu filtreler, bu sayfanın başlangıcındaki değerlerden daha az sayıda widget ile eşleşiyor.",
+      "back_to_first_page": "İlk sayfaya geri dön"
     }
   },
   "setup": {
@@ -4760,51 +4775,16 @@
     "assignment_completion": "Ödevin Tamamlanması",
     "assignment_completion_description": "Tamamlanan ödevlerin yüzdesi",
     "average_grade_description": "Tamamlanan tüm ödevlerin ortalama notu",
-    "students": "Öğrenciler",
     "lessons": "LDersler",
     "tutors": "öğretmenler",
     "avg_grade": "Ort not",
-    "completion_rate": "Tamamlanma oranı",
-    "student_progress_overview": "Öğrenci İlerlemesine Genel Bakış",
-    "student_name": "Öğrenci Adı",
     "lessons_completed": "LTamamlanan Dersler",
-    "exercises_submitted": "Gönderilen Alıştırmalar",
     "average_grade": "Ortalama Not",
-    "actions": "Eylemler",
-    "view_details": "Görüntüle Ayrıntılar",
-    "no_students_found": "Öğrenci Bulunamadı",
-    "no_students_description": "Bu kursa henüz kayıtlı öğrenci yok. Öğrenciler kursa katıldıklarında burada görünecekler.",
-    "showing_students": "{total} öğrencilerinden {start} ile {end} arası gösteriliyor",
-    "no_analytics_data": "Analitik Veri Yok",
-    "no_analytics_description": "Bu kurs için analiz verileri yüklenemiyor. Lütfen daha sonra tekrar deneyin veya sorun devam ederse destek ekibiyle iletişime geçin.",
     "student": "Student",
-    "student_progress_distribution": "Öğrenci İlerleme Dağılımı",
-    "grade_distribution": "Not Dağılımı",
-    "progress_80_plus": "%80+ İlerleme",
-    "progress_60_79": "60-79% İlerleme",
-    "progress_below_60": "%60'ın Altında İlerleme",
-    "grade_90_plus": "%90+ Not",
-    "grade_80_89": "80-%89 Not",
-    "grade_70_79": "70-%79 Not",
-    "grade_below_70": "%70'in Altında Not",
-    "number_of_students": "Öğrenci Sayısı",
-    "progress_range": "İlerleme Aralığı",
-    "grade_range": "Not Aralık",
-    "no_progress_data": "İlerleme verisi yok",
-    "no_grade_data": "Not verisi yok",
     "loading_chart": "LYükleme tablosu...",
     "no_data_default": "Mevcut veri yok",
     "no_data_default_description": "Şu anda görüntülenecek veri yok.",
     "subtitle": "Ziyaretçilerin kurslarınızı nasıl keşfettiğini ve öğrencilere nasıl dönüştüğünü anlayın.",
-    "course_metrics": {
-      "page_subtitle": "Bu kursa kayıt, ders tamamlama, notlar ve öğrenci başına ilerleme.",
-      "progress_distribution_card_description": "Her bir tamamlama aralığına kaç öğrenci düşüyor.",
-      "grade_distribution_card_description": "Her bir not aralığına kaç öğrenci düşüyor.",
-      "students_table_description": "Öğrenci profillerine bağlantılar içeren sıralanabilir genel bakış.",
-      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} derslere eşlendi",
-      "kpi_progress_grade": "{grade} kayıtlı öğrenciler arasında ortalama egzersiz notunun yüzdesi"
-    },
     "tabs": {
       "overview": "Overview",
       "funnel": "Funnel",
@@ -5520,6 +5500,13 @@
       "test_success": "Test olayı başarıyla teslim edildi.",
       "test_failed": "Test olayı başarısız oldu. Nedenini görmek için teslimat günlüğünü açın.",
       "redelivered": "Olay yeniden teslim için sıraya alındı."
+    },
+    "insights": {
+      "reminder_sent": "Hatırlatma gönderildi",
+      "reminder_not_sent": "Hatırlatma gönderilmedi: hatırlatma bugün zaten gönderildi veya öğrenci bu e-postaları devre dışı bıraktı.",
+      "reminder_failed": "Hatırlatma gönderilemedi.",
+      "reminders_sending": "Hatırlatma gönderiliyor…",
+      "reminders_sent": "{count, plural, one {# hatırlatma gönderildi} other {# hatırlatma gönderildi}}"
     }
   },
   "specialization": {
@@ -5968,7 +5955,8 @@
       "newsfeed": "Haber Kaynağı",
       "courses": "Kurslar",
       "people": "Kişiler",
-      "settings": "Ayarlar"
+      "settings": "Ayarlar",
+      "analytics": "Analitikler"
     },
     "create_modal": {
       "title": "Grup Oluştur",
@@ -6425,5 +6413,292 @@
     "new_badge": "Yeni",
     "read_full": "Tüm değişiklik günlüğünü oku",
     "close": "Kapat"
+  },
+  "marketing": {
+    "title": "Pazarlama",
+    "subtitle": "Ziyaretçilerin kurslarınızı nasıl keşfettiğini ve öğrenciye nasıl dönüştüğünü anlayın."
+  },
+  "insights": {
+    "title": "Analitik",
+    "subtitle": {
+      "org": "{count, plural, one {# öğrenci} other {# öğrenci}} kuruluşunuz genelinde",
+      "cohort": "Bu gruptaki {count, plural, one {# öğrenci} other {# öğrenciler}}",
+      "course": "Bu kurstaki {count, plural, one {# öğrenci} other {# öğrenciler}}"
+    },
+    "updated_seconds_ago": "{count} saniye önce güncellendi",
+    "updated_minutes_ago": "{count, plural, one {# dakika önce güncellendi} other {# dakika önce güncellendi}}",
+    "retry": "Tekrar deneyin",
+    "all_courses": "Tüm kurslar",
+    "course_picker": "Kurs",
+    "exercise_picker": "Egzersiz yapmak",
+    "not_in_section": "Bir bölümde değil",
+    "no_cohort": "Kohort yok",
+    "finished": "Tamamlandı",
+    "awaiting_grade": "Not bekleniyor",
+    "awaiting_grade_short": "Askıda olması",
+    "pass_required_tag": "Geç {mark}%",
+    "required_passed_of": "{total}'den {passed} geçti",
+    "of_total": "{count} / {total}",
+    "never": "Asla",
+    "most_common_wrong_answer": "En sık verilen yanlış cevap: {answer}",
+    "status": {
+      "at_risk": "Risk altında",
+      "lagging": "Geride",
+      "on_track": "Yolunda",
+      "completed": "Tamamlandı"
+    },
+    "flags": {
+      "overdue": "Gecikmiş"
+    },
+    "overdue_kind": {
+      "goal": "Amaç",
+      "compliance": "Uyumluluk",
+      "exercise": "Bitiş tarihi"
+    },
+    "legend": {
+      "average": "Ortalama",
+      "middle_half": "Öğrencilerin orta %50'si",
+      "cohort_average": "Kohort ortalaması",
+      "learner": "Öğrenci"
+    },
+    "notes": {
+      "scores_by_exercise": "Alıştırmalar ders sırasına göre verilmiştir. Öğrencilerin dörtte biri notlandırılmış bir deneme yaptığında bir puan görünür.",
+      "hardest_questions": "Her öğrencinin en yüksek puanlı denemesinden doğru cevap verenlerin oranı. 5'ten az cevabı olan sorular değerlendirmeye alınmamıştır."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–24%",
+        "1": "%25–49",
+        "2": "%50–74",
+        "3": "%75–99",
+        "4": "Tamamlamak"
+      },
+      "score": {
+        "4": "%50'nin altında",
+        "5": "50'ler",
+        "6": "60'lar",
+        "7": "70'ler",
+        "8": "80'ler",
+        "9": "%90+",
+        "null": "Puan yok"
+      }
+    },
+    "kpi": {
+      "share_of_learners": "{percent} öğrenci",
+      "avg_progress_hint": "Tamamlanan dersler ve alıştırmalar",
+      "avg_score_hint": "Tüm alıştırmalarda en yüksek notu alan deneme.",
+      "overdue_hint": "Son teslim tarihi geçti ve yapılmadı",
+      "certified": "{count, plural, one {# sertifikalı} other {# sertifikalı}}",
+      "required_pass_hint": "Geçme notunu karşılayan denemeler",
+      "needs_attention_hint": "Aktif olmayan, düşük puanlı veya gecikmiş",
+      "days": "{count, plural, one {# gün} other {# gün}}"
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Bugün giriş yaptım"
+      },
+      "kpi_logged_in_week": {
+        "title": "Son 7 gündür oturum açmış durumda."
+      },
+      "kpi_avg_progress": {
+        "title": "Ortalama ilerleme"
+      },
+      "kpi_avg_score": {
+        "title": "Ortalama puan"
+      },
+      "kpi_overdue": {
+        "title": "Gecikmiş"
+      },
+      "kpi_completed": {
+        "title": "Tamamlanmış"
+      },
+      "kpi_enrolled": {
+        "title": "Kayıtlı"
+      },
+      "kpi_completion_rate": {
+        "title": "Tamamlama oranı"
+      },
+      "kpi_required_pass_rate": {
+        "title": "Gerekli egzersizlerin geçme oranı"
+      },
+      "kpi_median_days": {
+        "title": "Ortalama bitirme süresi (gün)"
+      },
+      "kpi_completions": {
+        "title": "Tamamlamalar"
+      },
+      "kpi_needs_attention": {
+        "title": "İlgiye ihtiyaç var"
+      },
+      "courses_summary": {
+        "title": "Bu dönemdeki dersler"
+      },
+      "learners_by_status": {
+        "title": "Öğrenim statüsüne göre öğrenciler"
+      },
+      "learner_courses": {
+        "title": "Öğrenci kursları"
+      },
+      "needs_attention": {
+        "title": "Mantık gereği ilgiye ihtiyaç duyuyor."
+      },
+      "overdue": {
+        "title": "Gecikmiş"
+      },
+      "learners": {
+        "title": "Öğrenenler"
+      },
+      "logins_per_day": {
+        "title": "Günlük giriş yapan öğrenci sayısı"
+      },
+      "score_distribution": {
+        "title": "Ortalama puan dağılımı"
+      },
+      "scores_by_exercise": {
+        "title": "Egzersize göre puanlar"
+      },
+      "progress_distribution": {
+        "title": "İlerleme dağılımı"
+      },
+      "learner_progression": {
+        "title": "Öğrenci puan ilerlemesi"
+      },
+      "section_scores": {
+        "title": "Bölümlere göre puanlar ve katılım"
+      },
+      "section_scorecard": {
+        "title": "Bölüm bölüm değerlendirme tablosu"
+      },
+      "hardest_questions": {
+        "title": "En zor sorular"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Egzersiz türüne ve gruba göre puanlar"
+      },
+      "exercise_score_distribution": {
+        "title": "Puan dağılımı"
+      },
+      "lesson_dropoff": {
+        "title": "Dersin tamamlanmasının ardından bırakma"
+      },
+      "hardest_exercises": {
+        "title": "En zor egzersizler"
+      },
+      "cohorts_in_course": {
+        "title": "Bu dersi alan öğrenci grupları"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Kohortlara genel bakış"
+      },
+      "hiring_ramp": {
+        "title": "Öğrenciler eklendi"
+      },
+      "avg_score_by_cohort": {
+        "title": "Grup bazında ortalama puan"
+      },
+      "courses_by_completion": {
+        "title": "Kurslar tamamlanma sırasına göre"
+      }
+    },
+    "measures": {
+      "rows__count": "Öğrenenler",
+      "progress_pct__avg": "Ortalama ilerleme",
+      "avg_score_pct__avg": "Ortalama puan",
+      "required_pass__pooled": "Gerekli geçme notu",
+      "is_completed__count_if": "Tamamlanmış",
+      "is_completed__rate": "Tamamlama oranı",
+      "is_inactive__count_if": "Giriş yapılmadı, 2 günden fazla",
+      "is_low_score__count_if": "Ortalama puan %50'nin altında",
+      "is_overdue__count_if": "Gecikmiş",
+      "is_low_video__count_if": "Video izleme oranı %60'ın altında",
+      "logged_in__count_if": "Öğrenciler giriş yaptı",
+      "section_score_pct__avg": "Ortalama puan",
+      "video_pct__avg": "Video katılımı",
+      "attendance__pooled": "Sınıf içi devamsızlık",
+      "best_score_pct__avg": "Ortalama puan",
+      "is_complete__rate": "Tamamlandı",
+      "members_total__value": "Öğrenciler"
+    },
+    "columns": {
+      "learner": "Öğrenci",
+      "email": "E-posta",
+      "course": "Kurs",
+      "progress": "İlerlemek",
+      "now_at": "Şimdi",
+      "average_score": "Ortalama puan",
+      "required_passed": "Gerekli egzersizler",
+      "courses_completed": "Tamamlanan dersler",
+      "video": "Video",
+      "classroom": "Sınıf",
+      "certificates": "Sertifikalar",
+      "last_login": "Son giriş",
+      "status": "Durum",
+      "overdue_item": "Gecikmiş ürün",
+      "trend": "Eğilim",
+      "days_overdue": "Gecikmiş günler",
+      "cohort": "Kohort",
+      "section": "Ders bölümü",
+      "exercises_taken": "Yapılan egzersizler",
+      "pass_rate": "Geçme oranı",
+      "health": "Sağlık"
+    },
+    "actions": {
+      "send_reminder": "Hatırlatıcı gönder",
+      "remind_all_overdue": "Tüm gecikmiş öğrencilere hatırlatma yapın."
+    },
+    "hints": {
+      "learner_courses": "Kurslarını görmek için aşağıdaki öğrencilerden birini seçin.",
+      "learner_progression": "Puanlarını grafiklendirmek için aşağıdaki öğrencilerden birini seçin.",
+      "exercise_score_distribution": "Puanlarını görmek için bir egzersiz seçin."
+    },
+    "learners": {
+      "search": "İsim veya e-posta ile arama yapın",
+      "empty": "Bu filtrelerle eşleşen öğrenci bulunamadı.",
+      "show_more": "25 tane daha göster",
+      "showing": "{total}'den {shown} gösteriliyor.",
+      "sort": {
+        "status": "Önce geride kalan",
+        "progress": "En az ilerleme",
+        "name": "A'dan Z'ye İsimler",
+        "low_score": "En düşük puan"
+      },
+      "clear_filters": "{count, plural, one {# filtreyi temizle} other {# filtreleri temizle}}",
+      "filters": {
+        "status": {
+          "label": "Durum",
+          "any": "Tüm durumlar",
+          "at_risk": "Risk altında",
+          "lagging": "Geride",
+          "on_track": "Yolunda",
+          "completed": "Tamamlandı"
+        },
+        "activity": {
+          "label": "Son giriş",
+          "any": "Herhangi bir giriş",
+          "today": "Bugün giriş yaptım.",
+          "idle": "2 günden fazla süredir giriş yapmamışsın."
+        },
+        "score": {
+          "label": "Ortalama puan",
+          "any": "Herhangi bir puan",
+          "lt50": "%50'nin altında",
+          "mid": "%50 ila %69",
+          "gte70": "%70 ve üzeri"
+        },
+        "flag": {
+          "label": "Bayraklar",
+          "any": "Herhangi bir bayrak",
+          "overdue": "Gecikmiş",
+          "certified": "Sertifikalı",
+          "not_certified": "Sertifikalı değil"
+        }
+      }
+    },
+    "empty": {
+      "no_data": "Henüz veri yok.",
+      "failed": "Bu grafik yüklenemedi.",
+      "dashboard_failed": "Analizler yüklenemedi",
+      "not_permitted": "Bu analizlere erişiminiz yok."
+    }
   }
 }

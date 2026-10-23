@@ -1640,6 +1640,7 @@
     "dashboard": "Dashboard",
     "stats": "Stats",
     "analytics": "Analytics",
+    "marketing": "Marketing",
     "compliance": "Compliance",
     "courses": "Courses",
     "tags": "Tags",
@@ -4735,6 +4736,10 @@
       "queued_lost": "We lost track of this run. Reload to see the current state."
     }
   },
+  "marketing": {
+    "title": "Marketing",
+    "subtitle": "Understand how visitors discover your courses and convert into students."
+  },
   "analytics": {
     "title": "Analytics",
     "courses": "Courses",
@@ -4764,51 +4769,16 @@
     "assignment_completion": "Assignment Completion",
     "assignment_completion_description": "Percentage of completed assignments",
     "average_grade_description": "Average grade of all completed assignments",
-    "students": "Students",
     "lessons": "Lessons",
     "tutors": "tutors",
     "avg_grade": "Avg grade",
-    "completion_rate": "Completion rate",
-    "student_progress_overview": "Student Progress Overview",
-    "student_name": "Student Name",
     "lessons_completed": "Lessons Completed",
-    "exercises_submitted": "Exercises Submitted",
     "average_grade": "Average Grade",
-    "actions": "Actions",
-    "view_details": "View Details",
-    "no_students_found": "No Students Found",
-    "no_students_description": "There are no students enrolled in this course yet. Students will appear here once they join the course.",
-    "showing_students": "Showing {start} to {end} of {total} students",
-    "no_analytics_data": "No Analytics Data",
-    "no_analytics_description": "Unable to load analytics data for this course. Please try again later or contact support if the issue persists.",
     "student": "Student",
-    "student_progress_distribution": "Student Progress Distribution",
-    "grade_distribution": "Grade Distribution",
-    "progress_80_plus": "80%+ Progress",
-    "progress_60_79": "60-79% Progress",
-    "progress_below_60": "Below 60% Progress",
-    "grade_90_plus": "90%+ Grade",
-    "grade_80_89": "80-89% Grade",
-    "grade_70_79": "70-79% Grade",
-    "grade_below_70": "Below 70% Grade",
-    "number_of_students": "Number of Students",
-    "progress_range": "Progress Range",
-    "grade_range": "Grade Range",
-    "no_progress_data": "No progress data available",
-    "no_grade_data": "No grade data available",
     "loading_chart": "Loading chart...",
     "no_data_default": "No data available",
     "no_data_default_description": "There is no data to display at this time.",
     "subtitle": "Understand how visitors discover your courses and convert into students.",
-    "course_metrics": {
-      "page_subtitle": "Enrollment, lesson completion, grades, and per-student progress for this course.",
-      "progress_distribution_card_description": "How many students fall into each completion band.",
-      "grade_distribution_card_description": "How many students fall into each grade band.",
-      "students_table_description": "Sortable overview with links to student profiles.",
-      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} mapped to lessons",
-      "kpi_progress_grade": "{grade}% average exercise grade across enrolled students"
-    },
     "tabs": {
       "overview": "Overview",
       "funnel": "Funnel",
@@ -5524,6 +5494,13 @@
           "cohort_newsfeed_comment_not_found": "That comment could not be found."
         }
       }
+    },
+    "insights": {
+      "reminder_sent": "Reminder sent",
+      "reminder_not_sent": "Reminder not sent: already sent today, or the learner turned off these emails",
+      "reminder_failed": "Couldn't send the reminder",
+      "reminders_sending": "Sending reminders…",
+      "reminders_sent": "{count, plural, one {# reminder sent} other {# reminders sent}}"
     }
   },
   "specialization": {
@@ -5972,7 +5949,8 @@
       "newsfeed": "Newsfeed",
       "courses": "Courses",
       "people": "People",
-      "settings": "Settings"
+      "settings": "Settings",
+      "analytics": "Analytics"
     },
     "create_modal": {
       "title": "Create Cohort",
@@ -6429,5 +6407,288 @@
     "new_badge": "New",
     "read_full": "Read the full changelog",
     "close": "Close"
+  },
+  "insights": {
+    "title": "Analytics",
+    "subtitle": {
+      "cohort": "{count, plural, one {# learner} other {# learners}} in this cohort",
+      "course": "{count, plural, one {# learner} other {# learners}} in this course",
+      "org": "{count, plural, one {# learner} other {# learners}} across your organization"
+    },
+    "updated_seconds_ago": "Updated {count}s ago",
+    "updated_minutes_ago": "{count, plural, one {Updated # minute ago} other {Updated # minutes ago}}",
+    "retry": "Try again",
+    "all_courses": "All courses",
+    "course_picker": "Course",
+    "exercise_picker": "Exercise",
+    "not_in_section": "Not in a section",
+    "no_cohort": "No cohort",
+    "finished": "Finished",
+    "awaiting_grade": "Awaiting grade",
+    "awaiting_grade_short": "Pending",
+    "pass_required_tag": "Pass {mark}%",
+    "required_passed_of": "{passed} of {total} passed",
+    "of_total": "{count} of {total}",
+    "never": "Never",
+    "most_common_wrong_answer": "Most common wrong answer: {answer}",
+    "status": {
+      "at_risk": "At risk",
+      "lagging": "Lagging",
+      "on_track": "On track",
+      "completed": "Completed"
+    },
+    "flags": {
+      "overdue": "Overdue"
+    },
+    "overdue_kind": {
+      "goal": "Goal",
+      "compliance": "Compliance",
+      "exercise": "Due date"
+    },
+    "legend": {
+      "average": "Average",
+      "middle_half": "Middle 50% of learners",
+      "cohort_average": "Cohort average",
+      "learner": "Learner"
+    },
+    "notes": {
+      "scores_by_exercise": "Exercises in course order. A point appears once a quarter of learners have a graded attempt.",
+      "hardest_questions": "Share of learners who answered correctly, from each learner's best graded attempt. Questions with fewer than 5 answers are left out."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–24%",
+        "1": "25–49%",
+        "2": "50–74%",
+        "3": "75–99%",
+        "4": "Done"
+      },
+      "score": {
+        "4": "Under 50%",
+        "5": "50s",
+        "6": "60s",
+        "7": "70s",
+        "8": "80s",
+        "9": "90%+",
+        "null": "No score"
+      }
+    },
+    "kpi": {
+      "share_of_learners": "{percent} of learners",
+      "avg_progress_hint": "Lessons and exercises completed",
+      "avg_score_hint": "Best graded attempt, across exercises taken",
+      "overdue_hint": "Past a due date and not done",
+      "certified": "{count, plural, one {# certified} other {# certified}}",
+      "required_pass_hint": "Attempts that met the pass mark",
+      "needs_attention_hint": "Inactive, low score or overdue",
+      "days": "{count, plural, one {# day} other {# days}}"
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Logged in today"
+      },
+      "kpi_logged_in_week": {
+        "title": "Logged in, last 7 days"
+      },
+      "kpi_avg_progress": {
+        "title": "Average progress"
+      },
+      "kpi_avg_score": {
+        "title": "Average score"
+      },
+      "kpi_overdue": {
+        "title": "Overdue"
+      },
+      "kpi_completed": {
+        "title": "Completed"
+      },
+      "kpi_enrolled": {
+        "title": "Enrolled"
+      },
+      "kpi_completion_rate": {
+        "title": "Completion rate"
+      },
+      "kpi_required_pass_rate": {
+        "title": "Required exercises pass rate"
+      },
+      "kpi_median_days": {
+        "title": "Median days to finish"
+      },
+      "kpi_completions": {
+        "title": "Completions"
+      },
+      "kpi_needs_attention": {
+        "title": "Needs attention"
+      },
+      "courses_summary": {
+        "title": "Courses in this cohort"
+      },
+      "learners_by_status": {
+        "title": "Learners by status"
+      },
+      "learner_courses": {
+        "title": "Learner's courses"
+      },
+      "needs_attention": {
+        "title": "Needs attention, by reason"
+      },
+      "overdue": {
+        "title": "Overdue"
+      },
+      "learners": {
+        "title": "Learners"
+      },
+      "logins_per_day": {
+        "title": "Learners logged in per day"
+      },
+      "score_distribution": {
+        "title": "Average score distribution"
+      },
+      "scores_by_exercise": {
+        "title": "Scores by exercise"
+      },
+      "progress_distribution": {
+        "title": "Progress distribution"
+      },
+      "learner_progression": {
+        "title": "Learner score progression"
+      },
+      "section_scores": {
+        "title": "Scores and attendance by section"
+      },
+      "section_scorecard": {
+        "title": "Section-by-section scorecard"
+      },
+      "hardest_questions": {
+        "title": "Hardest questions"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Scores by exercise, by cohort"
+      },
+      "exercise_score_distribution": {
+        "title": "Score distribution"
+      },
+      "lesson_dropoff": {
+        "title": "Lesson completion drop-off"
+      },
+      "hardest_exercises": {
+        "title": "Hardest exercises"
+      },
+      "cohorts_in_course": {
+        "title": "Cohorts taking this course"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Cohorts at a glance"
+      },
+      "hiring_ramp": {
+        "title": "Learners added"
+      },
+      "avg_score_by_cohort": {
+        "title": "Average score by cohort"
+      },
+      "courses_by_completion": {
+        "title": "Courses by completion"
+      }
+    },
+    "measures": {
+      "rows__count": "Learners",
+      "progress_pct__avg": "Average progress",
+      "avg_score_pct__avg": "Average score",
+      "required_pass__pooled": "Required pass rate",
+      "is_completed__count_if": "Completed",
+      "is_completed__rate": "Completion rate",
+      "is_inactive__count_if": "No login, 2+ days",
+      "is_low_score__count_if": "Average score under 50%",
+      "is_overdue__count_if": "Overdue",
+      "is_low_video__count_if": "Video attendance under 60%",
+      "logged_in__count_if": "Learners logged in",
+      "section_score_pct__avg": "Average score",
+      "video_pct__avg": "Video attendance",
+      "attendance__pooled": "Classroom attendance",
+      "best_score_pct__avg": "Average score",
+      "is_complete__rate": "Completed",
+      "members_total__value": "Learners"
+    },
+    "columns": {
+      "learner": "Learner",
+      "email": "Email",
+      "course": "Course",
+      "progress": "Progress",
+      "now_at": "Now at",
+      "average_score": "Average score",
+      "required_passed": "Required exercises",
+      "courses_completed": "Courses completed",
+      "video": "Video",
+      "classroom": "Classroom",
+      "certificates": "Certificates",
+      "last_login": "Last login",
+      "status": "Status",
+      "trend": "Trend",
+      "overdue_item": "Overdue item",
+      "days_overdue": "Days overdue",
+      "cohort": "Cohort",
+      "section": "Course section",
+      "exercises_taken": "Exercises taken",
+      "pass_rate": "Pass rate",
+      "health": "Health"
+    },
+    "actions": {
+      "send_reminder": "Send reminder",
+      "remind_all_overdue": "Remind all overdue learners"
+    },
+    "hints": {
+      "learner_courses": "Select a learner below to see their courses",
+      "learner_progression": "Select a learner below to chart their scores",
+      "exercise_score_distribution": "Pick an exercise to see its scores"
+    },
+    "learners": {
+      "search": "Search by name or email",
+      "empty": "No learners match these filters",
+      "show_more": "Show 25 more",
+      "showing": "Showing {shown} of {total}",
+      "clear_filters": "{count, plural, one {Clear # filter} other {Clear # filters}}",
+      "sort": {
+        "status": "Lagging first",
+        "progress": "Least progress",
+        "name": "Name A to Z",
+        "low_score": "Lowest score"
+      },
+      "filters": {
+        "status": {
+          "label": "Status",
+          "any": "All statuses",
+          "at_risk": "At risk",
+          "lagging": "Lagging",
+          "on_track": "On track",
+          "completed": "Completed"
+        },
+        "activity": {
+          "label": "Last login",
+          "any": "Any login",
+          "today": "Logged in today",
+          "idle": "No login 2+ days"
+        },
+        "score": {
+          "label": "Average score",
+          "any": "Any score",
+          "lt50": "Under 50%",
+          "mid": "50% to 69%",
+          "gte70": "70% and above"
+        },
+        "flag": {
+          "label": "Flags",
+          "any": "Any flag",
+          "overdue": "Overdue",
+          "certified": "Certified",
+          "not_certified": "Not certified"
+        }
+      }
+    },
+    "empty": {
+      "no_data": "No data yet",
+      "failed": "This chart couldn't load",
+      "dashboard_failed": "Analytics couldn't load",
+      "not_permitted": "You don't have access to these analytics"
+    }
   }
 }

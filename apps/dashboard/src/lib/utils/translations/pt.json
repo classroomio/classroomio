@@ -535,6 +535,13 @@
       "test_success": "Evento de teste entregue com sucesso.",
       "test_failed": "O evento de teste falhou. Abra o registro de entregas para ver o motivo.",
       "redelivered": "Evento enfileirado para reenvio."
+    },
+    "insights": {
+      "reminder_sent": "Lembrete enviado",
+      "reminder_not_sent": "Lembrete não enviado: já foi enviado hoje ou o aluno desativou o recebimento desses e-mails.",
+      "reminder_failed": "Não foi possível enviar o lembrete.",
+      "reminders_sending": "Enviando lembretes…",
+      "reminders_sent": "{count, plural, one {# lembrete enviado} other {# lembretes enviados}}"
     }
   },
   "explore": {
@@ -621,38 +628,12 @@
     "assignment_completion": "Conclusão da tarefa",
     "assignment_completion_description": "Porcentagem de tarefas concluídas",
     "average_grade_description": "Nota média de todas as tarefas concluídas",
-    "students": "Alunos",
     "lessons": "Lições",
     "tutors": "tutores",
     "avg_grade": "Nota média",
-    "completion_rate": "Taxa de conclusão",
-    "student_progress_overview": "Visão geral do progresso do aluno",
-    "student_name": "Nome do Aluno",
     "lessons_completed": "Lições concluídas",
-    "exercises_submitted": "Exercícios enviados",
     "average_grade": "Nota Média",
-    "actions": "Ações",
-    "view_details": "Ver detalhes",
-    "no_students_found": "Nenhum aluno encontrado",
-    "no_students_description": "Ainda não há alunos matriculados neste curso. Os alunos aparecerão aqui assim que ingressarem no curso.",
-    "showing_students": "Mostrando {start} a {end} de {total} alunos",
-    "no_analytics_data": "Sem dados analíticos",
-    "no_analytics_description": "Não foi possível carregar dados analíticos para este curso. Tente novamente mais tarde ou entre em contato com o suporte se o problema persistir.",
     "student": "Aluno",
-    "student_progress_distribution": "Distribuição do progresso dos alunos",
-    "grade_distribution": "Distribuição de notas",
-    "progress_80_plus": "80%+ Progresso",
-    "progress_60_79": "60-79% de progresso",
-    "progress_below_60": "Abaixo de 60% de progresso",
-    "grade_90_plus": "90%+ nota",
-    "grade_80_89": "Nota 80-89%",
-    "grade_70_79": "Nota 70-79%",
-    "grade_below_70": "Nota abaixo de 70%",
-    "number_of_students": "Número de alunos",
-    "progress_range": "Faixa de progresso",
-    "grade_range": "Faixa de notas",
-    "no_progress_data": "Não há dados de progresso disponíveis",
-    "no_grade_data": "Não há dados de notas disponíveis",
     "loading_chart": "Carregando gráfico...",
     "no_data_default": "Não há dados disponíveis",
     "no_data_default_description": "Não há dados para exibir neste momento.",
@@ -723,15 +704,6 @@
       "funnel": "Funil",
       "geography": "Geografia",
       "course_types": "Tipos de curso"
-    },
-    "course_metrics": {
-      "page_subtitle": "Inscrição, conclusão da lição, notas e progresso por aluno neste curso.",
-      "progress_distribution_card_description": "Quantos alunos se enquadram em cada faixa de conclusão.",
-      "grade_distribution_card_description": "Quantos alunos se enquadram em cada faixa de série.",
-      "students_table_description": "Visão geral classificável com links para perfis de alunos.",
-      "kpi_team_tutors": "{count, plural, one {# tutor na equipe do curso} other {# tutores na equipe do curso}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercício} other {# exercícios}} mapeados para lições",
-      "kpi_progress_grade": "{grade}% da nota média do exercício entre os alunos matriculados"
     },
     "exercises_completed": "Exercícios Concluídos",
     "course_progress": "Progresso do curso",
@@ -3604,7 +3576,8 @@
     "back_to_app": "Voltar ao aplicativo",
     "create": "Criar",
     "distribute": "Distribuir",
-    "tools": "Ferramentas"
+    "tools": "Ferramentas",
+    "marketing": "Marketing"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -6046,7 +6019,8 @@
       "newsfeed": "Feed de notícias",
       "courses": "Cursos",
       "people": "Pessoas",
-      "settings": "Configurações"
+      "settings": "Configurações",
+      "analytics": "Análises"
     },
     "status": {
       "active": "Ativo",
@@ -6459,5 +6433,292 @@
     "new_badge": "Novo",
     "read_full": "Ler o changelog completo",
     "close": "Fechar"
+  },
+  "marketing": {
+    "title": "Marketing",
+    "subtitle": "Entenda como os visitantes descobrem seus cursos e se tornam alunos."
+  },
+  "insights": {
+    "title": "Análises",
+    "updated_seconds_ago": "Atualizado há {count}s",
+    "subtitle": {
+      "cohort": "{count, plural, one {# aluno} other {# alunos}} nesta turma",
+      "course": "{count, plural, one {# aluno} other {# alunos}} neste curso",
+      "org": "{count, plural, one {# aluno} other {# alunos}} em toda a sua organização"
+    },
+    "updated_minutes_ago": "{count, plural, one {Atualizado há # minuto} other {Atualizado há # minutos}}",
+    "retry": "Tente novamente",
+    "all_courses": "Todos os cursos",
+    "course_picker": "Curso",
+    "exercise_picker": "Exercício",
+    "not_in_section": "Não está em uma seção",
+    "no_cohort": "Sem coorte",
+    "finished": "Finalizado",
+    "awaiting_grade": "Aguardando nota",
+    "awaiting_grade_short": "Pendente",
+    "pass_required_tag": "Passe {mark}%",
+    "required_passed_of": "{passed} de {total} passou",
+    "of_total": "{count} de {total}",
+    "never": "Nunca",
+    "most_common_wrong_answer": "Resposta errada mais comum: {answer}",
+    "status": {
+      "at_risk": "Em risco",
+      "lagging": "Em atraso",
+      "on_track": "No caminho certo",
+      "completed": "Concluído"
+    },
+    "flags": {
+      "overdue": "Atrasado"
+    },
+    "overdue_kind": {
+      "goal": "Meta",
+      "compliance": "Conformidade",
+      "exercise": "Data de vencimento"
+    },
+    "legend": {
+      "average": "Média",
+      "middle_half": "50% dos alunos do meio",
+      "cohort_average": "Média da coorte",
+      "learner": "Aprendiz"
+    },
+    "notes": {
+      "scores_by_exercise": "Exercícios na ordem do curso. Um ponto é concedido quando um quarto dos alunos tiver realizado uma tentativa avaliada.",
+      "hardest_questions": "Proporção de alunos que responderam corretamente, com base na melhor tentativa de cada aluno. Questões com menos de 5 respostas foram excluídas."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–24%",
+        "1": "25–49%",
+        "2": "50–74%",
+        "3": "75–99%",
+        "4": "Feito"
+      },
+      "score": {
+        "4": "Menos de 50%",
+        "5": "anos 50",
+        "6": "anos 60",
+        "7": "anos 70",
+        "8": "anos 80",
+        "9": "90%+",
+        "null": "Sem pontuação"
+      }
+    },
+    "kpi": {
+      "share_of_learners": "{percent} de aprendizes",
+      "avg_progress_hint": "Lições e exercícios concluídos",
+      "avg_score_hint": "Melhor tentativa avaliada, considerando todos os exercícios realizados.",
+      "overdue_hint": "Vencido e não concluído",
+      "certified": "{count, plural, one {# certificado} other {# certificado}}",
+      "required_pass_hint": "Tentativas que atingiram a nota de aprovação",
+      "needs_attention_hint": "Inativo, com pontuação baixa ou em atraso.",
+      "days": "{count, plural, one {# dia} other {# dias}}"
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Entrei hoje"
+      },
+      "kpi_logged_in_week": {
+        "title": "Login efetuado nos últimos 7 dias"
+      },
+      "kpi_avg_progress": {
+        "title": "Progresso médio"
+      },
+      "kpi_avg_score": {
+        "title": "Pontuação média"
+      },
+      "kpi_overdue": {
+        "title": "Atrasado"
+      },
+      "kpi_completed": {
+        "title": "Concluído"
+      },
+      "kpi_enrolled": {
+        "title": "Matriculado"
+      },
+      "kpi_completion_rate": {
+        "title": "Taxa de conclusão"
+      },
+      "kpi_required_pass_rate": {
+        "title": "taxa de aprovação nos exercícios obrigatórios"
+      },
+      "kpi_median_days": {
+        "title": "Mediana de dias para terminar"
+      },
+      "kpi_completions": {
+        "title": "Conclusões"
+      },
+      "kpi_needs_attention": {
+        "title": "Precisa de atenção"
+      },
+      "courses_summary": {
+        "title": "Cursos desta turma"
+      },
+      "learners_by_status": {
+        "title": "Alunos por status"
+      },
+      "learner_courses": {
+        "title": "Cursos para aprendizes"
+      },
+      "needs_attention": {
+        "title": "Precisa de atenção, por algum motivo."
+      },
+      "overdue": {
+        "title": "Atrasado"
+      },
+      "learners": {
+        "title": "Alunos"
+      },
+      "logins_per_day": {
+        "title": "Número de alunos que fizeram login por dia"
+      },
+      "score_distribution": {
+        "title": "Distribuição da pontuação média"
+      },
+      "scores_by_exercise": {
+        "title": "Pontuações por exercício"
+      },
+      "progress_distribution": {
+        "title": "Distribuição do progresso"
+      },
+      "learner_progression": {
+        "title": "Progressão da pontuação do aluno"
+      },
+      "section_scores": {
+        "title": "Pontuações e presença por seção"
+      },
+      "section_scorecard": {
+        "title": "placar seção por seção"
+      },
+      "hardest_questions": {
+        "title": "Perguntas mais difíceis"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Resultados por exercício, por coorte"
+      },
+      "exercise_score_distribution": {
+        "title": "Distribuição de pontuação"
+      },
+      "lesson_dropoff": {
+        "title": "entrega da lição concluída"
+      },
+      "hardest_exercises": {
+        "title": "Exercícios mais difíceis"
+      },
+      "cohorts_in_course": {
+        "title": "Turmas que fazem este curso"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Visão geral das coortes"
+      },
+      "hiring_ramp": {
+        "title": "Alunos adicionados"
+      },
+      "avg_score_by_cohort": {
+        "title": "Pontuação média por coorte"
+      },
+      "courses_by_completion": {
+        "title": "Cursos por conclusão"
+      }
+    },
+    "measures": {
+      "rows__count": "Alunos",
+      "progress_pct__avg": "Progresso médio",
+      "avg_score_pct__avg": "Pontuação média",
+      "required_pass__pooled": "Taxa de aprovação exigida",
+      "is_completed__count_if": "Concluído",
+      "is_completed__rate": "Taxa de conclusão",
+      "is_inactive__count_if": "Sem login, mais de 2 dias",
+      "is_low_score__count_if": "Pontuação média inferior a 50%",
+      "is_overdue__count_if": "Atrasado",
+      "is_low_video__count_if": "Comparecimento por vídeo inferior a 60%",
+      "logged_in__count_if": "Alunos conectados",
+      "section_score_pct__avg": "Pontuação média",
+      "video_pct__avg": "Participação por vídeo",
+      "attendance__pooled": "Frequência às aulas",
+      "best_score_pct__avg": "Pontuação média",
+      "is_complete__rate": "Concluído",
+      "members_total__value": "Alunos"
+    },
+    "columns": {
+      "learner": "Aprendiz",
+      "email": "E-mail",
+      "course": "Curso",
+      "progress": "Progresso",
+      "now_at": "Agora em",
+      "average_score": "Pontuação média",
+      "required_passed": "Exercícios obrigatórios",
+      "courses_completed": "Cursos concluídos",
+      "video": "Vídeo",
+      "classroom": "Sala de aula",
+      "certificates": "Certificados",
+      "last_login": "Último login",
+      "trend": "Tendência",
+      "overdue_item": "Item em atraso",
+      "status": "Status",
+      "days_overdue": "Dias de atraso",
+      "cohort": "Coorte",
+      "section": "Seção do curso",
+      "exercises_taken": "Exercícios realizados",
+      "pass_rate": "Taxa de aprovação",
+      "health": "Saúde"
+    },
+    "actions": {
+      "send_reminder": "Enviar lembrete",
+      "remind_all_overdue": "Lembre a todos os alunos com prazos atrasados"
+    },
+    "hints": {
+      "learner_courses": "Selecione um aluno abaixo para ver os cursos dele.",
+      "learner_progression": "Selecione um aluno abaixo para registrar suas pontuações.",
+      "exercise_score_distribution": "Selecione um exercício para ver sua pontuação."
+    },
+    "learners": {
+      "search": "Pesquisar por nome ou e-mail",
+      "empty": "Nenhum aluno corresponde a esses filtros.",
+      "show_more": "Mostrar mais 25",
+      "showing": "Exibindo {shown} de {total}",
+      "sort": {
+        "status": "Em atraso primeiro",
+        "progress": "Progresso mínimo",
+        "name": "Nome de A a Z",
+        "low_score": "Pontuação mais baixa"
+      },
+      "clear_filters": "{count, plural, one {Limpar # filtro} other {Limpar # filtros}}",
+      "filters": {
+        "status": {
+          "any": "Todos os status",
+          "at_risk": "Em risco",
+          "lagging": "Em atraso",
+          "label": "Status",
+          "on_track": "No caminho certo",
+          "completed": "Concluído"
+        },
+        "activity": {
+          "label": "Último login",
+          "any": "Qualquer login",
+          "today": "Entrei hoje",
+          "idle": "Sem login por mais de 2 dias"
+        },
+        "score": {
+          "label": "Pontuação média",
+          "any": "Qualquer pontuação",
+          "lt50": "Menos de 50%",
+          "mid": "50% a 69%",
+          "gte70": "70% ou mais"
+        },
+        "flag": {
+          "label": "Bandeiras",
+          "any": "Qualquer bandeira",
+          "overdue": "Atrasado",
+          "certified": "Certificado",
+          "not_certified": "Não certificado"
+        }
+      }
+    },
+    "empty": {
+      "no_data": "Ainda não há dados.",
+      "failed": "Não foi possível carregar este gráfico.",
+      "dashboard_failed": "O Analytics não pôde ser carregado.",
+      "not_permitted": "Você não tem acesso a essas análises."
+    }
   }
 }

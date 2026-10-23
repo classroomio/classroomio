@@ -33,6 +33,7 @@ import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
+import { invalidateInsightsCourseStructure } from '../../utils/redis/insights-cache';
 import { emitCourseWebhookEvent } from '../webhook/emit';
 
 /**
@@ -65,6 +66,7 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
     }
 
     await touchCourseUpdatedAt(courseId);
+    void invalidateInsightsCourseStructure(courseId);
 
     return lesson;
   } catch (error) {
@@ -159,6 +161,16 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
 
     if (updated.courseId) {
       await touchCourseUpdatedAt(updated.courseId);
+
+      const hasStructureChange =
+        payload.title !== undefined ||
+        payload.order !== undefined ||
+        payload.sectionId !== undefined ||
+        payload.isUnlocked !== undefined;
+
+      if (hasStructureChange) {
+        void invalidateInsightsCourseStructure(updated.courseId);
+      }
     }
 
     if (existing && hasSessionMoved(existing, updated)) {
@@ -206,6 +218,7 @@ export async function deleteLessonService(lessonId: string): Promise<TLesson> {
 
     if (deleted.courseId) {
       await touchCourseUpdatedAt(deleted.courseId);
+      void invalidateInsightsCourseStructure(deleted.courseId);
     }
 
     return deleted;

@@ -785,7 +785,11 @@ export default defineConfig({
             root: '/analytics-and-reporting/understand-the-organization-dashboard'
           },
           {
-            label: 'Use organization analytics',
+            label: 'Monitor students across your organization',
+            root: '/analytics-and-reporting/monitor-learners-across-your-organization'
+          },
+          {
+            label: 'Use marketing stats',
             display: 'group',
             collapsed: true,
             items: [
@@ -821,6 +825,10 @@ export default defineConfig({
                 root: '/analytics-and-reporting/view-submissions-and-completion-data'
               }
             ]
+          },
+          {
+            label: 'Track a cohort with analytics',
+            root: '/analytics-and-reporting/track-a-cohort-with-analytics'
           },
           {
             label: "View a student's analytics",

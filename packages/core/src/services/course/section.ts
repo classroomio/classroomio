@@ -16,6 +16,7 @@ import type {
 } from '@cio/utils/validation/course/section';
 import { updateUngroupedExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { db } from '@cio/db/drizzle';
+import { invalidateInsightsCourseStructure } from '../../utils/redis/insights-cache';
 import { claimSectionOrder } from './root-order';
 
 /**
@@ -33,6 +34,8 @@ export async function createCourseSection(courseId: string, data: TCourseSection
     if (!section) {
       throw new AppError('Failed to create course section', ErrorCodes.INTERNAL_ERROR, 500);
     }
+
+    void invalidateInsightsCourseStructure(courseId);
 
     return section;
   } catch (error) {
@@ -84,6 +87,8 @@ export async function promoteUngroupedSection(
       if (movedLessons + movedExercises === 0) {
         throw new AppError('No ungrouped content found', ErrorCodes.VALIDATION_ERROR, 400);
       }
+
+      void invalidateInsightsCourseStructure(courseId);
 
       return {
         section,
@@ -158,6 +163,10 @@ export async function updateCourseSectionService(
       throw new AppError('Failed to update course section', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
+    if (courseId) {
+      void invalidateInsightsCourseStructure(courseId);
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {
@@ -187,6 +196,10 @@ export async function deleteCourseSectionService(sectionId: string): Promise<TCo
     const deleted = await deleteCourseSection(sectionId);
     if (!deleted) {
       throw new AppError('Failed to delete course section', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    if (section.courseId) {
+      void invalidateInsightsCourseStructure(section.courseId);
     }
 
     return deleted;

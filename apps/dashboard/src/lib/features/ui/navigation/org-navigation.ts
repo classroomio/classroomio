@@ -118,12 +118,18 @@ export const baseNavConfig: NavItemConfig[] = [
     path: '/stats',
     icon: ChartColumnIcon,
     useHashUrl: true,
-    matchPattern: '^/org/[^/]+/(analytics|compliance)(/.*)?$',
+    matchPattern: '^/org/[^/]+/(analytics|marketing|compliance)(/.*)?$',
     items: [
       {
         titleKey: 'org_navigation.analytics',
         path: '/analytics',
+        requiresAdmin: true,
         matchPattern: '^/org/[^/]+/analytics(/.*)?$'
+      },
+      {
+        titleKey: 'org_navigation.marketing',
+        path: '/marketing',
+        matchPattern: '^/org/[^/]+/marketing(/.*)?$'
       },
       {
         titleKey: 'org_navigation.compliance',

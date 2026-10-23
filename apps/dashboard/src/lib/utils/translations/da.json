@@ -535,6 +535,13 @@
       "test_success": "Testhændelsen blev leveret.",
       "test_failed": "Testhændelsen mislykkedes. Åbn leveringsloggen for at se hvorfor.",
       "redelivered": "Hændelsen er sat i kø til ny levering."
+    },
+    "insights": {
+      "reminder_sent": "Påmindelse sendt",
+      "reminder_not_sent": "Påmindelse ikke sendt: allerede sendt i dag, eller eleven har deaktiveret disse e-mails",
+      "reminder_failed": "Påmindelsen kunne ikke sendes",
+      "reminders_sending": "Sender påmindelser…",
+      "reminders_sent": "{count, plural, one {# påmindelse sendt} other {# påmindelser sendt}}"
     }
   },
   "explore": {
@@ -621,38 +628,12 @@
     "assignment_completion": "Afslutning af opgave",
     "assignment_completion_description": "Procentdel af udførte opgaver",
     "average_grade_description": "Gennemsnitskarakter for alle udførte opgaver",
-    "students": "studerende",
     "lessons": "Lektioner",
     "tutors": "undervisere",
     "avg_grade": "Gns. karakter",
-    "completion_rate": "Gennemførelsesgrad",
-    "student_progress_overview": "Oversigt over studerendes fremskridt",
-    "student_name": "Elevens navn",
     "lessons_completed": "Lektioner gennemført",
-    "exercises_submitted": "Indsendte øvelser",
     "average_grade": "Gennemsnitlig karakter",
-    "actions": "Handlinger",
-    "view_details": "Se detaljer",
-    "no_students_found": "Ingen studerende fundet",
-    "no_students_description": "Der er endnu ingen studerende tilmeldt dette kursus. Studerende vises her, når de tilmelder sig kurset.",
-    "showing_students": "Viser {start} til {end} af {total} elever",
-    "no_analytics_data": "Ingen analysedata",
-    "no_analytics_description": "Kan ikke indlæse analysedata for dette kursus. Prøv igen senere, eller kontakt support, hvis problemet fortsætter.",
     "student": "Studerende",
-    "student_progress_distribution": "Fordeling af studerendes fremskridt",
-    "grade_distribution": "Karakterfordeling",
-    "progress_80_plus": "80 %+ fremskridt",
-    "progress_60_79": "60-79 % fremgang",
-    "progress_below_60": "Under 60 % fremskridt",
-    "grade_90_plus": "90%+ karakter",
-    "grade_80_89": "80-89 % karakter",
-    "grade_70_79": "70-79 % karakter",
-    "grade_below_70": "Under 70 % karakter",
-    "number_of_students": "Antal studerende",
-    "progress_range": "Fremskridtsområde",
-    "grade_range": "Karakterinterval",
-    "no_progress_data": "Ingen statusdata tilgængelige",
-    "no_grade_data": "Ingen karakterdata tilgængelige",
     "loading_chart": "Indlæser diagram...",
     "no_data_default": "Ingen tilgængelige data",
     "no_data_default_description": "Der er ingen data at vise på nuværende tidspunkt.",
@@ -723,15 +704,6 @@
       "funnel": "Tragt",
       "geography": "Geografi",
       "course_types": "Kursustyper"
-    },
-    "course_metrics": {
-      "page_subtitle": "Tilmelding, afslutning af lektioner, karakterer og fremskridt pr. elev for dette kursus.",
-      "progress_distribution_card_description": "Hvor mange elever falder der ind i hvert afslutningsbånd.",
-      "grade_distribution_card_description": "Hvor mange elever falder der ind i hvert klassetrin.",
-      "students_table_description": "Sorterbar oversigt med links til elevprofiler.",
-      "kpi_team_tutors": "{count, plural, one {# underviser på kursusholdet} other {# undervisere på kursusholdet}}",
-      "kpi_lessons_exercises": "{count, plural, one {# øvelse} other {# øvelser}} knyttet til lektioner",
-      "kpi_progress_grade": "{grade} % gennemsnitlig øvelseskarakter på tværs af tilmeldte elever"
     },
     "exercises_completed": "Øvelser fuldført",
     "course_progress": "Kursusstatus",
@@ -3604,7 +3576,8 @@
     "back_to_app": "Tilbage til app",
     "create": "Opret",
     "distribute": "Fordel",
-    "tools": "Værktøjer"
+    "tools": "Værktøjer",
+    "marketing": "Markedsføring"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -6046,7 +6019,8 @@
       "newsfeed": "Nyhedsfeed",
       "courses": "Kurser",
       "people": "Mennesker",
-      "settings": "Indstillinger"
+      "settings": "Indstillinger",
+      "analytics": "Analyse"
     },
     "status": {
       "active": "Aktiv",
@@ -6459,5 +6433,292 @@
     "new_badge": "Ny",
     "read_full": "Læs hele ændringsloggen",
     "close": "Luk"
+  },
+  "marketing": {
+    "title": "Markedsføring",
+    "subtitle": "Forstå, hvordan besøgende opdager dine kurser og konverterer til studerende."
+  },
+  "insights": {
+    "title": "Analyse",
+    "subtitle": {
+      "cohort": "{count, plural, one {# elev} other {# elever}} i denne kohorte",
+      "course": "{count, plural, one {# elev} other {# elever}} i dette kursus",
+      "org": "{count, plural, one {# elev} other {# elever}} på tværs af din organisation"
+    },
+    "updated_seconds_ago": "Opdateret for {count} sekunder siden",
+    "updated_minutes_ago": "{count, plural, one {Opdateret for # minut siden} other {Opdateret for # minutter siden}}",
+    "retry": "Prøv igen",
+    "all_courses": "Alle kurser",
+    "course_picker": "Kursus",
+    "exercise_picker": "Motion",
+    "not_in_section": "Ikke i et afsnit",
+    "no_cohort": "Ingen kohorte",
+    "finished": "Færdig",
+    "awaiting_grade": "Afventer karakter",
+    "awaiting_grade_short": "Afventer",
+    "pass_required_tag": "Bestå {mark}%",
+    "required_passed_of": "{passed} af {total} bestået",
+    "of_total": "{count} af {total}",
+    "never": "Aldrig",
+    "most_common_wrong_answer": "Mest almindeligt forkert svar: {answer}",
+    "status": {
+      "at_risk": "I fare",
+      "lagging": "Forsinket",
+      "on_track": "På sporet",
+      "completed": "Afsluttet"
+    },
+    "flags": {
+      "overdue": "Forfaldne"
+    },
+    "overdue_kind": {
+      "goal": "Mål",
+      "compliance": "Overholdelse",
+      "exercise": "Forfaldsdato"
+    },
+    "legend": {
+      "average": "Gennemsnit",
+      "middle_half": "Mellem 50 % af eleverne",
+      "cohort_average": "Kohorte gennemsnit",
+      "learner": "Lærer"
+    },
+    "notes": {
+      "scores_by_exercise": "Øvelser i kursusrækkefølge. Et point vises en gang hver fjerdedel af eleverne har et bedømt forsøg.",
+      "hardest_questions": "Andel af elever, der svarede rigtigt, fra hver enkelt elevs bedste bedømte forsøg. Spørgsmål med færre end 5 svar udelades."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–24%",
+        "1": "25–49%",
+        "2": "50–74%",
+        "3": "75–99%",
+        "4": "Færdig"
+      },
+      "score": {
+        "4": "Under 50 %",
+        "5": "50'erne",
+        "6": "60'erne",
+        "7": "70'erne",
+        "8": "80'erne",
+        "9": "90%+",
+        "null": "Ingen score"
+      }
+    },
+    "kpi": {
+      "share_of_learners": "{percent} af elever",
+      "avg_progress_hint": "Lektioner og øvelser gennemført",
+      "avg_score_hint": "Bedst bedømte forsøg, på tværs af øvelser taget",
+      "overdue_hint": "Overskredet deadline og ikke færdig",
+      "certified": "{count, plural, one {# certificeret} other {# certificeret}}",
+      "required_pass_hint": "Forsøg, der opfyldte beståelseskravet",
+      "needs_attention_hint": "Inaktiv, lav score eller forsinket",
+      "days": "{count, plural, one {# dag} other {# dage}}"
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Logget ind i dag"
+      },
+      "kpi_logged_in_week": {
+        "title": "Logget ind, sidste 7 dage"
+      },
+      "kpi_avg_progress": {
+        "title": "Gennemsnitlig fremgang"
+      },
+      "kpi_avg_score": {
+        "title": "Gennemsnitlig score"
+      },
+      "kpi_overdue": {
+        "title": "Forfaldne"
+      },
+      "kpi_completed": {
+        "title": "Afsluttet"
+      },
+      "kpi_enrolled": {
+        "title": "Tilmeldt"
+      },
+      "kpi_completion_rate": {
+        "title": "Gennemførelsesgrad"
+      },
+      "kpi_required_pass_rate": {
+        "title": "Påkrævet beståelsesprocent for øvelser"
+      },
+      "kpi_median_days": {
+        "title": "Median dage til slut"
+      },
+      "kpi_completions": {
+        "title": "Færdiggørelser"
+      },
+      "kpi_needs_attention": {
+        "title": "Har brug for opmærksomhed"
+      },
+      "courses_summary": {
+        "title": "Kurser i denne kohorte"
+      },
+      "learners_by_status": {
+        "title": "Elever efter status"
+      },
+      "learner_courses": {
+        "title": "Elevkurser"
+      },
+      "needs_attention": {
+        "title": "Kræver opmærksomhed, af grund"
+      },
+      "overdue": {
+        "title": "Forfaldne"
+      },
+      "learners": {
+        "title": "Elever"
+      },
+      "logins_per_day": {
+        "title": "Elever logget ind pr. dag"
+      },
+      "score_distribution": {
+        "title": "Gennemsnitlig scorefordeling"
+      },
+      "scores_by_exercise": {
+        "title": "Scorer efter træning"
+      },
+      "progress_distribution": {
+        "title": "Fremskridtsfordeling"
+      },
+      "learner_progression": {
+        "title": "Elevens score progression"
+      },
+      "section_scores": {
+        "title": "Resultater og fremmøde efter afsnit"
+      },
+      "section_scorecard": {
+        "title": "Sektion-for-sektion scorekort"
+      },
+      "hardest_questions": {
+        "title": "De sværeste spørgsmål"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Resultater efter øvelse, efter årgang"
+      },
+      "exercise_score_distribution": {
+        "title": "Scorefordeling"
+      },
+      "lesson_dropoff": {
+        "title": "Afslutning af lektion"
+      },
+      "hardest_exercises": {
+        "title": "Hårdeste øvelser"
+      },
+      "cohorts_in_course": {
+        "title": "Kohorter, der tager dette kursus"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Kohorter i korte træk"
+      },
+      "hiring_ramp": {
+        "title": "Elever tilføjet"
+      },
+      "avg_score_by_cohort": {
+        "title": "Gennemsnitlig score efter kohorte"
+      },
+      "courses_by_completion": {
+        "title": "Kurser efter færdiggørelse"
+      }
+    },
+    "measures": {
+      "rows__count": "Lærende",
+      "progress_pct__avg": "Gennemsnitlig fremgang",
+      "avg_score_pct__avg": "Gennemsnitlig score",
+      "required_pass__pooled": "Krævet beståelsesprocent",
+      "is_completed__count_if": "Færdiggjort",
+      "is_completed__rate": "Færdiggørelsesprocent",
+      "is_inactive__count_if": "Ingen login, 2+ dage",
+      "is_low_score__count_if": "Gennemsnitlig score under 50%",
+      "is_overdue__count_if": "Forfaldne",
+      "is_low_video__count_if": "Videodeltagelse under 60 %",
+      "logged_in__count_if": "Eleverne er logget ind",
+      "section_score_pct__avg": "Gennemsnitlig score",
+      "video_pct__avg": "Video fremmøde",
+      "attendance__pooled": "Klassedeltagelse",
+      "best_score_pct__avg": "Gennemsnitlig score",
+      "is_complete__rate": "Færdiggjort",
+      "members_total__value": "Lærende"
+    },
+    "columns": {
+      "learner": "Lærende",
+      "email": "E-mail",
+      "course": "Kursus",
+      "progress": "Fremskridt",
+      "now_at": "Nu kl.",
+      "average_score": "Gennemsnitlig score",
+      "required_passed": "Obligatoriske øvelser",
+      "courses_completed": "Gennemførte kurser",
+      "video": "Video",
+      "classroom": "Klasseværelse",
+      "certificates": "Certifikater",
+      "last_login": "Sidste login",
+      "status": "Status",
+      "trend": "Trend",
+      "overdue_item": "Forfalden vare",
+      "days_overdue": "dage for sent",
+      "cohort": "Kohorte",
+      "section": "Kursusafsnit",
+      "exercises_taken": "Øvelser taget",
+      "pass_rate": "Beståelsesprocent",
+      "health": "Sundhed"
+    },
+    "actions": {
+      "send_reminder": "Send påmindelse",
+      "remind_all_overdue": "Påmind alle forsinkede elever"
+    },
+    "hints": {
+      "learner_courses": "Vælg en elev nedenfor for at se deres kurser",
+      "learner_progression": "Vælg en elev nedenfor for at se deres scores",
+      "exercise_score_distribution": "Vælg en øvelse for at se dens resultater"
+    },
+    "learners": {
+      "search": "Søg efter navn eller e-mail",
+      "empty": "Ingen elever matcher disse filtre",
+      "show_more": "Vis 25 mere",
+      "showing": "Viser {shown} af {total}",
+      "clear_filters": "{count, plural, one {Ryd # filter} other {Ryd # filtre}}",
+      "sort": {
+        "status": "Bagefter først",
+        "progress": "Mindst fremskridt",
+        "name": "Navn fra A til Å",
+        "low_score": "Laveste score"
+      },
+      "filters": {
+        "status": {
+          "label": "Status",
+          "any": "Alle statusser",
+          "at_risk": "I fare",
+          "lagging": "Forsinket",
+          "on_track": "På sporet",
+          "completed": "Afsluttet"
+        },
+        "activity": {
+          "label": "Sidste login",
+          "any": "Ethvert login",
+          "today": "Logget ind i dag",
+          "idle": "Ingen login 2+ dage"
+        },
+        "score": {
+          "label": "Gennemsnitlig score",
+          "any": "Enhver score",
+          "lt50": "Under 50 %",
+          "mid": "50 % til 69 %",
+          "gte70": "70 % og derover"
+        },
+        "flag": {
+          "label": "Flag",
+          "any": "Ethvert flag",
+          "overdue": "Forfaldne",
+          "certified": "Certificeret",
+          "not_certified": "Ikke certificeret"
+        }
+      }
+    },
+    "empty": {
+      "no_data": "Ingen data endnu",
+      "failed": "Dette diagram kunne ikke indlæses",
+      "dashboard_failed": "Analytics kunne ikke indlæses",
+      "not_permitted": "Du har ikke adgang til disse analyser"
+    }
   }
 }

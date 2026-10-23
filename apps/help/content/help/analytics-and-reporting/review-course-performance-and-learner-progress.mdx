@@ -1,29 +1,104 @@
 ---
 title: Review course performance and student progress
-description: Read a course's enrollment, completion, grade, and per-student progress figures.
-last_reviewed: '2026-10-21'
+description: Read a course's enrollment, completion, score, and per-student progress figures.
+last_reviewed: '2026-10-23'
 ---
 
-Open a course and select **Analytics** to see how its students are progressing. The page summarizes lesson and exercise completion, grades, and the progress of each enrolled student.
+Open a course and select **Analytics** in its sidebar to see how its students are progressing. The page summarizes completion and scores, compares cohorts and sections, and lists every enrolled student with their progress.
 
-![Course Analytics page with enrollment, lesson, progress, and exercise cards](./images/review-course-performance-and-learner-progress/overview.webp)
+{/* Screenshot TODO: overview.webp — lead. Course Analytics landing with the page title, learner count, Updated … ago, refresh, the summary cards, and the top of Scores by exercise, by cohort. See prd/insights-analytics/implementation-plan.md §10. */}
 
-## Read the course summary
+## Before you start
 
-The top cards show **Students**, **Lessons**, **Progress**, and **Exercises**. The **Students** card counts enrolled students and notes the number of tutors. **Lessons** shows the number of lessons and exercises. **Progress** is the lesson completion rate, with the average exercise grade below it. **Exercises** shows the exercise completion rate.
+You need to be an administrator or tutor of the course. Students do not see **Analytics**, and template courses do not show it.
 
-The **Student Progress Distribution** and **Grade Distribution** charts group students into progress and grade bands. Use these to see whether a low overall figure is widespread or concentrated among a smaller group.
+The page counts active organization members who are enrolled in the course. Deactivated and archived members are excluded. Students who are not enrolled do not appear; [add students to a course](/manage-learners/add-a-learner-directly-to-a-course) when the list is missing someone.
 
-## Find a student who needs help
+## Read the summary cards
 
-In **Student Progress Overview**, review **Lessons Completed**, **Exercises Submitted**, **Average Grade**, and **Last seen**. The table shows 15 students per page. Select **View Details** beside a student to open their course profile and inspect the work behind the summary.
+The row under the page title summarizes the course.
 
-If the table says **No Students Found**, nobody is enrolled in this course yet. If the page says **No Analytics Data**, try reloading it; contact support if it still fails to load.
+| Card                             | What it shows                                                                                                                                       |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Enrolled**                     | Students enrolled in the course.                                                                                                                    |
+| **Completion rate**              | The share of enrolled students who finished the course.                                                                                             |
+| **Average score**                | The mean of each student's best graded attempt, across the exercises they have taken. It shows – until at least one attempt is graded.              |
+| **Required exercises pass rate** | The share of graded attempts that met the pass mark, across exercises that require one. The card appears only when the course has such an exercise. |
+| **Median days to finish**        | The middle number of days between enrollment and earning the certificate, among students who finished. It shows – until someone finishes.           |
 
-For a shareable file, use **Export** on the course's **Analytics** page. The export includes every student, even though the on-screen table is paginated. Handle the file as student data and share it only with people who need access.
+A student finishes the course by completing every lesson and exercise, or by earning a certificate.
+
+## Compare scores across the course
+
+**Scores by exercise, by cohort** plots the average score for each exercise in course order, with one line per cohort. The average uses each student's best graded attempt. A line has a gap where that cohort has no graded attempt yet. Students who are not in a cohort appear as **No cohort**.
+
+**Scores by exercise** shows the same scores for the course as a whole: the average for each exercise, with a band covering the middle 50% of students. Use it to see how widely scores are spread. A point appears once at least a quarter of the course's students have a graded attempt.
+
+**Score distribution** groups students by the score of one exercise. Choose the exercise in the **Exercise** menu. The bars count students in each band, from **Under 50%** to **90%+**, plus **No score** for students without a graded attempt.
+
+**Lesson completion drop-off** shows the share of students who completed each lesson, in course order. Use it to find the lesson where students stop.
+
+**Hardest exercises** ranks the five exercises with the lowest average score and compares each one with its required pass rate. Exercises with fewer than five graded attempts are left out.
+
+**Hardest questions** ranks the five questions with the lowest share of correct answers, using each student's best graded attempt. Questions with fewer than five answers are left out. A note under a bar shows the most common wrong answer.
+
+{/* Screenshot TODO: charts.webp — Scores by exercise, by cohort and Scores by exercise with their legends, Score distribution with an exercise picked, and Lesson completion drop-off. See implementation-plan.md §10. */}
+
+## Compare sections and cohorts
+
+**Section-by-section scorecard** appears when the course is divided into sections. Each row shows:
+
+- **Exercises taken:** students with a graded attempt on every exercise in the section, out of the students in that section.
+- **Average score** for the section, averaged across students.
+- **Pass rate:** the share of students who passed every exercise in the section that requires a pass mark.
+- **Video** and **Classroom** attendance.
+
+**Cohorts taking this course** compares the cohorts that include the course by **Learners**, **Average progress**, **Average score**, and **Required pass rate**. Students who are not in a cohort are grouped under **No cohort**.
+
+## Review each student
+
+The **Learners** card lists the course's students. Search by name or email, or narrow the list with the filters:
+
+- **All statuses** — **At risk**, **Lagging**, **On track**, or **Completed**
+- **Any login** — **Logged in today** or **No login 2+ days**
+- **Any score** — **Under 50%**, **50% to 69%**, or **70% and above**
+- **Any flag** — **Overdue**, **Certified**, or **Not certified**
+
+**Lagging first** is the default order. You can also sort by **Least progress**, **Name A to Z**, or **Lowest score**. When filters are active, **Clear filters** removes them all.
+
+Each row shows progress, a score column for each exercise in the course (locked exercises nobody has attempted are hidden), **Trend**, **Video** and **Classroom** attendance, **Last login**, and **Status**. **Trend** plots the student's scores across the exercise columns. In a score column:
+
+- – means the student has not attempted the exercise.
+- **Pending** means an attempt is waiting for a grade.
+- A percentage is the student's best graded attempt. A **Pass** tag under the exercise name shows its pass mark, such as **Pass 70%**.
+
+**Last login** shows **Never** for a student without a login event. **Status** uses the same rules as the [cohort page](/analytics-and-reporting/track-a-cohort-with-analytics#understand-status-and-attention-reasons): **Completed** means the course is finished, **At risk** means no login for 2 or more days, an average score under 50%, or overdue work, **Lagging** means an average score under 65% or video attendance under 60%, and everyone else is **On track**. An **Overdue** badge marks a student with a past-due goal, compliance item, or exercise due date.
+
+Select **Show 25 more** to load more students. **Export as CSV** downloads every student that matches the current filters and order, including the exercise scores; the menu beside it offers Excel, PDF, and HTML. The export covers all matching students, not only the rows on screen.
+
+{/* Screenshot TODO: learners.webp — Learners card with search, the four filters, sort, Export as CSV, exercise columns with Pass tags, and status badges. See implementation-plan.md §10. */}
+
+## Open a student's course profile
+
+Select a student's name to open their profile for this course. The profile shows the student's progress in each course they are enrolled in and their exercise scores. Use the back button to return to **Analytics**.
+
+## Keep figures current
+
+The header shows when the figures were last updated. Select the refresh icon (**Refresh**) to request the latest data. While the page stays open and visible, it also refreshes on its own about every 30 seconds.
+
+## Troubleshoot missing figures
+
+- **Analytics couldn't load:** select **Try again**. If the page still fails, reload it.
+- **A chart says there is no data yet:** the course has no matching activity, or no lessons and exercises yet.
+- **Average score shows –:** no exercise attempt has been graded. Scores appear after graded work.
+- **Median days to finish shows –:** no student has finished the course yet.
+- **A student is missing from the list:** confirm that the student is an active organization member and is enrolled in the course.
+- **A score differs from Marks:** **Average score** and the exercise columns use the best graded attempt, while a mark can show another attempt.
 
 ## Related guides
 
-- [View submissions and completion data](/analytics-and-reporting/view-submissions-and-completion-data) — inspect submitted work
-- [View a student's analytics](/analytics-and-reporting/view-a-learners-analytics) — see that student's courses and grades
-- [Exports](/reference/exports) — choose a file format and understand the columns
+- [Track a cohort with analytics](/analytics-and-reporting/track-a-cohort-with-analytics) — review several courses and the students who need attention
+- [View a student's analytics](/analytics-and-reporting/view-a-learners-analytics) — follow one student across courses and grades
+- [Review a student's course progress](/manage-learners/review-a-learners-course-progress) — inspect one student's work in this course
+- [View and export marks](/deliver-and-engage/view-and-export-marks) — compare exercise scores and grades
+- [Exports](/reference/exports) — see formats and fields

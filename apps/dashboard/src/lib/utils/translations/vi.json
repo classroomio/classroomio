@@ -535,6 +535,13 @@
       "test_success": "Đã gửi sự kiện thử nghiệm thành công.",
       "test_failed": "Sự kiện thử nghiệm thất bại. Mở nhật ký gửi để xem lý do.",
       "redelivered": "Sự kiện đã được đưa vào hàng đợi để gửi lại."
+    },
+    "insights": {
+      "reminder_sent": "Đã gửi lời nhắc",
+      "reminder_not_sent": "Thông báo nhắc nhở không được gửi: đã được gửi hôm nay hoặc người học đã tắt chức năng nhận email này.",
+      "reminder_failed": "Không thể gửi lời nhắc",
+      "reminders_sending": "Đang gửi lời nhắc nhở…",
+      "reminders_sent": "{count, plural, one {# lời nhắc đã được gửi} other {# lời nhắc đã được gửi}}"
     }
   },
   "explore": {
@@ -621,38 +628,12 @@
     "assignment_completion": "Hoàn thành bài tập",
     "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
     "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành",
-    "students": "Sinh viên",
     "lessons": "Bài học",
     "tutors": "gia sư",
     "avg_grade": "Điểm trung bình",
-    "completion_rate": "Tỷ lệ hoàn thành",
-    "student_progress_overview": "Tổng quan về tiến bộ của học sinh",
-    "student_name": "Tên sinh viên",
     "lessons_completed": "Bài học đã hoàn thành",
-    "exercises_submitted": "Bài tập đã gửi",
     "average_grade": "Điểm trung bình",
-    "actions": "Hành động",
-    "view_details": "Xem chi tiết",
-    "no_students_found": "Không tìm thấy sinh viên nào",
-    "no_students_description": "Hiện chưa có học viên nào đăng ký khóa học này. Học sinh sẽ xuất hiện ở đây khi họ tham gia khóa học.",
-    "showing_students": "Đang hiển thị {start} cho {end} trong tổng số {total} sinh viên",
-    "no_analytics_data": "Không có dữ liệu phân tích",
-    "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu sự cố vẫn tiếp diễn.",
     "student": "Học viên",
-    "student_progress_distribution": "Phân phối tiến bộ của học sinh",
-    "grade_distribution": "Phân phối lớp",
-    "progress_80_plus": "Tiến độ trên 80%",
-    "progress_60_79": "Tiến độ 60-79%",
-    "progress_below_60": "Tiến độ dưới 60%",
-    "grade_90_plus": "90% + Lớp",
-    "grade_80_89": "Lớp 80-89%",
-    "grade_70_79": "Lớp 70-79%",
-    "grade_below_70": "Dưới 70% lớp",
-    "number_of_students": "Số lượng sinh viên",
-    "progress_range": "Phạm vi tiến độ",
-    "grade_range": "Khoảng điểm",
-    "no_progress_data": "Không có dữ liệu tiến độ",
-    "no_grade_data": "Không có dữ liệu điểm",
     "loading_chart": "Đang tải biểu đồ...",
     "no_data_default": "Không có sẵn dữ liệu",
     "no_data_default_description": "Không có dữ liệu để hiển thị tại thời điểm này.",
@@ -723,15 +704,6 @@
       "funnel": "Kênh",
       "geography": "Địa lý",
       "course_types": "Các loại khóa học"
-    },
-    "course_metrics": {
-      "page_subtitle": "Việc ghi danh, hoàn thành bài học, điểm số và sự tiến bộ của mỗi học sinh đối với khóa học này.",
-      "progress_distribution_card_description": "Có bao nhiêu học sinh rơi vào mỗi mức độ hoàn thành.",
-      "grade_distribution_card_description": "Có bao nhiêu học sinh rơi vào từng nhóm lớp.",
-      "students_table_description": "Tổng quan có thể sắp xếp với các liên kết đến hồ sơ sinh viên.",
-      "kpi_team_tutors": "{count, plural, one {# gia sư trong nhóm khóa học} other {# gia sư trong nhóm khóa học}}",
-      "kpi_lessons_exercises": "{count, plural, one {# bài tập} other {# bài tập}} được ánh xạ tới bài học",
-      "kpi_progress_grade": "{grade}% điểm bài tập trung bình của các học sinh đã đăng ký"
     },
     "exercises_completed": "Bài tập đã hoàn thành",
     "course_progress": "Tiến độ khóa học",
@@ -3604,7 +3576,8 @@
     "back_to_app": "Quay lại ứng dụng",
     "create": "Tạo",
     "distribute": "phân phối",
-    "tools": "Công cụ"
+    "tools": "Công cụ",
+    "marketing": "Tiếp thị"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
@@ -6046,7 +6019,8 @@
       "newsfeed": "Bảng tin",
       "courses": "Khóa học",
       "people": "mọi người",
-      "settings": "Cài đặt"
+      "settings": "Cài đặt",
+      "analytics": "Phân tích"
     },
     "status": {
       "active": "Đang hoạt động",
@@ -6459,5 +6433,292 @@
     "new_badge": "Mới",
     "read_full": "Đọc toàn bộ nhật ký thay đổi",
     "close": "Đóng"
+  },
+  "marketing": {
+    "title": "Tiếp thị",
+    "subtitle": "Hiểu cách khách truy cập tìm thấy các khóa học của bạn và chuyển đổi thành học viên."
+  },
+  "insights": {
+    "title": "Phân tích",
+    "updated_seconds_ago": "Đã cập nhật {count} giây trước",
+    "subtitle": {
+      "cohort": "{count, plural, one {# người học} other {# người học}} trong nhóm này",
+      "course": "{count, plural, one {# người học} other {# người học}} trong khóa học này",
+      "org": "{count, plural, one {# người học} other {# người học}} trong tổ chức của bạn"
+    },
+    "updated_minutes_ago": "{count, plural, one {Đã cập nhật # phút trước} other {Đã cập nhật # phút trước}}",
+    "retry": "Hãy thử lại",
+    "all_courses": "Tất cả các khóa học",
+    "course_picker": "Khóa học",
+    "exercise_picker": "Bài tập",
+    "not_in_section": "Không nằm trong một mục nào cả.",
+    "no_cohort": "Không có nhóm nào",
+    "finished": "Hoàn thành",
+    "awaiting_grade": "Đang chờ điểm",
+    "awaiting_grade_short": "Chưa giải quyết",
+    "pass_required_tag": "Đạt {mark}%",
+    "required_passed_of": "{passed} của {total} đã vượt qua",
+    "of_total": "{count} của {total}",
+    "never": "Không bao giờ",
+    "most_common_wrong_answer": "Câu trả lời sai phổ biến nhất: {answer}",
+    "status": {
+      "at_risk": "Có nguy cơ",
+      "lagging": "Chậm tiến độ",
+      "on_track": "Đúng hướng",
+      "completed": "Hoàn thành"
+    },
+    "flags": {
+      "overdue": "Quá hạn"
+    },
+    "overdue_kind": {
+      "goal": "Mục tiêu",
+      "compliance": "Sự tuân thủ",
+      "exercise": "Ngày đến hạn"
+    },
+    "legend": {
+      "average": "Trung bình",
+      "middle_half": "50% học sinh trung bình",
+      "cohort_average": "Trung bình nhóm",
+      "learner": "Người học"
+    },
+    "notes": {
+      "scores_by_exercise": "Các bài tập được sắp xếp theo thứ tự khóa học. Một điểm được cộng khi có một phần tư số học viên hoàn thành bài kiểm tra có chấm điểm.",
+      "hardest_questions": "Tỷ lệ học sinh trả lời đúng, dựa trên bài làm đạt điểm cao nhất của mỗi học sinh. Những câu hỏi có ít hơn 5 đáp án được loại bỏ."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–24%",
+        "1": "25–49%",
+        "2": "50–74%",
+        "3": "75–99%",
+        "4": "Xong"
+      },
+      "score": {
+        "4": "Dưới 50%",
+        "5": "những năm 50",
+        "6": "những năm 60",
+        "7": "những năm 70",
+        "8": "những năm 80",
+        "9": "90% trở lên",
+        "null": "Không có điểm"
+      }
+    },
+    "kpi": {
+      "share_of_learners": "{percent} của người học",
+      "avg_progress_hint": "Các bài học và bài tập đã hoàn thành",
+      "avg_score_hint": "Điểm số cao nhất trong tất cả các bài tập đã làm",
+      "overdue_hint": "Đã quá hạn và chưa hoàn thành",
+      "certified": "{count, plural, one {# chứng chỉ} other {# chứng chỉ}}",
+      "required_pass_hint": "Những lần làm bài đạt điểm đậu",
+      "needs_attention_hint": "Không hoạt động, điểm thấp hoặc quá hạn",
+      "days": "{count, plural, one {# ngày} other {# ngày}}"
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Đăng nhập hôm nay"
+      },
+      "kpi_logged_in_week": {
+        "title": "Đã đăng nhập trong 7 ngày qua."
+      },
+      "kpi_avg_progress": {
+        "title": "Tiến độ trung bình"
+      },
+      "kpi_avg_score": {
+        "title": "Điểm trung bình"
+      },
+      "kpi_overdue": {
+        "title": "Quá hạn"
+      },
+      "kpi_completed": {
+        "title": "Hoàn thành"
+      },
+      "kpi_enrolled": {
+        "title": "Đã đăng ký"
+      },
+      "kpi_completion_rate": {
+        "title": "Tỷ lệ hoàn thành"
+      },
+      "kpi_required_pass_rate": {
+        "title": "Tỷ lệ đậu các bài tập bắt buộc"
+      },
+      "kpi_median_days": {
+        "title": "Số ngày trung bình để hoàn thành"
+      },
+      "kpi_completions": {
+        "title": "Hoàn thành"
+      },
+      "kpi_needs_attention": {
+        "title": "Cần được chú ý"
+      },
+      "courses_summary": {
+        "title": "Các khóa học trong nhóm này"
+      },
+      "learners_by_status": {
+        "title": "Người học theo trạng thái"
+      },
+      "learner_courses": {
+        "title": "Các khóa học dành cho người học"
+      },
+      "needs_attention": {
+        "title": "Cần được quan tâm, vì lý do đó"
+      },
+      "overdue": {
+        "title": "Quá hạn"
+      },
+      "learners": {
+        "title": "Người học"
+      },
+      "logins_per_day": {
+        "title": "Số lượng học viên đăng nhập mỗi ngày"
+      },
+      "score_distribution": {
+        "title": "Phân bố điểm trung bình"
+      },
+      "scores_by_exercise": {
+        "title": "Điểm số theo từng bài tập"
+      },
+      "progress_distribution": {
+        "title": "Phân phối tiến độ"
+      },
+      "learner_progression": {
+        "title": "Tiến trình điểm số của người học"
+      },
+      "section_scores": {
+        "title": "Điểm số và số người tham dự theo từng phần"
+      },
+      "section_scorecard": {
+        "title": "Bảng điểm từng phần"
+      },
+      "hardest_questions": {
+        "title": "Những câu hỏi khó nhất"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Điểm số theo bài tập, theo nhóm"
+      },
+      "exercise_score_distribution": {
+        "title": "Phân bổ điểm"
+      },
+      "lesson_dropoff": {
+        "title": "giao bài học đã hoàn thành"
+      },
+      "hardest_exercises": {
+        "title": "Bài tập khó nhất"
+      },
+      "cohorts_in_course": {
+        "title": "Các nhóm sinh viên tham gia khóa học này"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Tổng quan về các nhóm"
+      },
+      "hiring_ramp": {
+        "title": "Người học bổ sung"
+      },
+      "avg_score_by_cohort": {
+        "title": "Điểm trung bình theo nhóm"
+      },
+      "courses_by_completion": {
+        "title": "Các khóa học theo tiến độ hoàn thành"
+      }
+    },
+    "measures": {
+      "rows__count": "Người học",
+      "progress_pct__avg": "Tiến độ trung bình",
+      "avg_score_pct__avg": "Điểm trung bình",
+      "required_pass__pooled": "Tỷ lệ đậu yêu cầu",
+      "is_completed__count_if": "Hoàn thành",
+      "is_completed__rate": "Tỷ lệ hoàn thành",
+      "is_inactive__count_if": "Không đăng nhập, hơn 2 ngày",
+      "is_low_score__count_if": "Điểm trung bình dưới 50%",
+      "is_overdue__count_if": "Quá hạn",
+      "is_low_video__count_if": "Tỷ lệ tham dự qua video dưới 60%.",
+      "logged_in__count_if": "Người học đã đăng nhập",
+      "section_score_pct__avg": "Điểm trung bình",
+      "video_pct__avg": "Điểm danh bằng video",
+      "attendance__pooled": "Điểm danh lớp học",
+      "best_score_pct__avg": "Điểm trung bình",
+      "is_complete__rate": "Hoàn thành",
+      "members_total__value": "Người học"
+    },
+    "columns": {
+      "learner": "Người học",
+      "email": "E-mail",
+      "course": "Khóa học",
+      "progress": "Tiến triển",
+      "now_at": "Hiện tại",
+      "average_score": "Điểm trung bình",
+      "required_passed": "Bài tập bắt buộc",
+      "courses_completed": "Các khóa học đã hoàn thành",
+      "video": "Băng hình",
+      "classroom": "Lớp học",
+      "certificates": "Chứng chỉ",
+      "last_login": "Lần đăng nhập cuối cùng",
+      "status": "Trạng thái",
+      "trend": "Xu hướng",
+      "overdue_item": "Mục quá hạn",
+      "days_overdue": "Quá hạn vài ngày",
+      "cohort": "Nhóm",
+      "section": "Phần khóa học",
+      "exercises_taken": "Các bài tập đã thực hiện",
+      "pass_rate": "Tỷ lệ đậu",
+      "health": "Sức khỏe"
+    },
+    "actions": {
+      "send_reminder": "Gửi lời nhắc",
+      "remind_all_overdue": "Nhắc nhở tất cả học sinh quá hạn"
+    },
+    "hints": {
+      "learner_courses": "Chọn một học viên bên dưới để xem các khóa học của họ.",
+      "learner_progression": "Chọn một học viên bên dưới để theo dõi điểm số của họ.",
+      "exercise_score_distribution": "Chọn một bài tập để xem điểm số của nó."
+    },
+    "learners": {
+      "search": "Tìm kiếm theo tên hoặc email",
+      "empty": "Không có học viên nào đáp ứng các tiêu chí lọc này.",
+      "show_more": "Hiển thị thêm 25 mục",
+      "showing": "Hiển thị {shown} trong số {total}",
+      "sort": {
+        "status": "Chậm tiến độ trước",
+        "progress": "Tiến bộ ít nhất",
+        "name": "Tên từ A đến Z",
+        "low_score": "Điểm thấp nhất"
+      },
+      "clear_filters": "{count, plural, one {Xóa # bộ lọc} other {Xóa # bộ lọc}}",
+      "filters": {
+        "status": {
+          "label": "Trạng thái",
+          "any": "Tất cả trạng thái",
+          "at_risk": "Có nguy cơ",
+          "lagging": "Chậm tiến độ",
+          "on_track": "Đúng hướng",
+          "completed": "Hoàn thành"
+        },
+        "activity": {
+          "label": "Lần đăng nhập cuối cùng",
+          "any": "Đăng nhập bất kỳ",
+          "today": "Đăng nhập hôm nay",
+          "idle": "Không đăng nhập trong hơn 2 ngày"
+        },
+        "score": {
+          "label": "Điểm trung bình",
+          "any": "Bất kỳ điểm số nào",
+          "lt50": "Dưới 50%",
+          "mid": "50% đến 69%",
+          "gte70": "70% trở lên"
+        },
+        "flag": {
+          "label": "Cờ",
+          "any": "Bất kỳ lá cờ nào",
+          "overdue": "Quá hạn",
+          "certified": "Được chứng nhận",
+          "not_certified": "Không được chứng nhận"
+        }
+      }
+    },
+    "empty": {
+      "no_data": "Chưa có dữ liệu.",
+      "failed": "Biểu đồ này không thể tải được",
+      "dashboard_failed": "Không thể tải phân tích.",
+      "not_permitted": "Bạn không có quyền truy cập vào các phân tích này."
+    }
   }
 }

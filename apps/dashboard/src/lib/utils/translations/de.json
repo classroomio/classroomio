@@ -535,6 +535,13 @@
       "test_success": "Testereignis erfolgreich zugestellt.",
       "test_failed": "Das Testereignis ist fehlgeschlagen. Öffnen Sie das Zustellungsprotokoll, um den Grund zu sehen.",
       "redelivered": "Ereignis für die erneute Zustellung eingereiht."
+    },
+    "insights": {
+      "reminder_sent": "Erinnerung gesendet",
+      "reminder_not_sent": "Erinnerung nicht gesendet: Wurde bereits heute versendet oder der/die Lernende hat diese E-Mails deaktiviert",
+      "reminder_failed": "Die Erinnerung konnte nicht gesendet werden.",
+      "reminders_sending": "Erinnerungen senden…",
+      "reminders_sent": "{count, plural, one {# Erinnerung gesendet} other {# Erinnerungen gesendet}}"
     }
   },
   "explore": {
@@ -621,38 +628,12 @@
     "assignment_completion": "Abschluss der Aufgabe",
     "assignment_completion_description": "Prozentsatz der abgeschlossenen Aufgaben",
     "average_grade_description": "Durchschnittsnote aller abgeschlossenen Aufgaben",
-    "students": "Studenten",
     "lessons": "Lektionen",
     "tutors": "Nachhilfelehrer",
     "avg_grade": "Durchschnittliche Note",
-    "completion_rate": "Abschlussrate",
-    "student_progress_overview": "Übersicht über den Fortschritt der Studierenden",
-    "student_name": "Name des Studenten",
     "lessons_completed": "Lektionen abgeschlossen",
-    "exercises_submitted": "Übungen eingereicht",
     "average_grade": "Durchschnittsnote",
-    "actions": "Aktionen",
-    "view_details": "Details anzeigen",
-    "no_students_found": "Keine Studenten gefunden",
-    "no_students_description": "Für diesen Kurs sind noch keine Studierenden eingeschrieben. Studierende werden hier angezeigt, sobald sie dem Kurs beitreten.",
-    "showing_students": "Zeigt {start} bis {end} von {total} Schülern",
-    "no_analytics_data": "Keine Analytics-Daten",
-    "no_analytics_description": "Für diesen Kurs können keine Analysedaten geladen werden. Bitte versuchen Sie es später noch einmal oder wenden Sie sich an den Support, wenn das Problem weiterhin besteht.",
     "student": "Schüler",
-    "student_progress_distribution": "Verteilung des Schülerfortschritts",
-    "grade_distribution": "Notenverteilung",
-    "progress_80_plus": "80 %+ Fortschritt",
-    "progress_60_79": "60-79 % Fortschritt",
-    "progress_below_60": "Unter 60 % Fortschritt",
-    "grade_90_plus": "90 %+ Note",
-    "grade_80_89": "80-89 % Note",
-    "grade_70_79": "70-79 % Note",
-    "grade_below_70": "Unter 70 % Grad",
-    "number_of_students": "Anzahl der Studierenden",
-    "progress_range": "Fortschrittsbereich",
-    "grade_range": "Notenbereich",
-    "no_progress_data": "Keine Fortschrittsdaten verfügbar",
-    "no_grade_data": "Keine Notendaten verfügbar",
     "loading_chart": "Diagramm wird geladen...",
     "no_data_default": "Keine Daten verfügbar",
     "no_data_default_description": "Derzeit sind keine Daten zum Anzeigen vorhanden.",
@@ -723,15 +704,6 @@
       "funnel": "Trichter",
       "geography": "Geographie",
       "course_types": "Kurstypen"
-    },
-    "course_metrics": {
-      "page_subtitle": "Anmeldung, Unterrichtsabschluss, Noten und Fortschritt pro Schüler für diesen Kurs.",
-      "progress_distribution_card_description": "Wie viele Schüler fallen in jede Abschlussgruppe?",
-      "grade_distribution_card_description": "Wie viele Schüler fallen in jede Klassenstufe?",
-      "students_table_description": "Sortierbare Übersicht mit Links zu Studierendenprofilen.",
-      "kpi_team_tutors": "{count, plural, one {# Tutor im Kurs-Team} other {# Tutoren im Kurs-Team}}",
-      "kpi_lessons_exercises": "{count, plural, one {# Übung} other {# Übungen}}, zugeordnet zu Lektionen",
-      "kpi_progress_grade": "{grade} % durchschnittliche Übungsnote aller eingeschriebenen Schüler"
     },
     "exercises_completed": "Übungen abgeschlossen",
     "course_progress": "Kursfortschritt",
@@ -3604,7 +3576,8 @@
     "back_to_app": "Zurück zur App",
     "create": "Erstellen",
     "distribute": "Verteilen",
-    "tools": "Werkzeuge"
+    "tools": "Werkzeuge",
+    "marketing": "Marketing"
   },
   "media_manager": {
     "page_title": "Medienverwaltung - ClassroomIO",
@@ -6046,7 +6019,8 @@
       "newsfeed": "Newsfeed",
       "courses": "Kurse",
       "people": "Menschen",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "analytics": "Analysen"
     },
     "status": {
       "active": "Aktiv",
@@ -6459,5 +6433,292 @@
     "new_badge": "Neu",
     "read_full": "Vollständiges Änderungsprotokoll lesen",
     "close": "Schließen"
+  },
+  "marketing": {
+    "title": "Marketing",
+    "subtitle": "Verstehen Sie, wie Besucher Ihre Kurse entdecken und zu Studenten werden."
+  },
+  "insights": {
+    "title": "Analysen",
+    "subtitle": {
+      "cohort": "{count, plural, one {# Lernender} other {# Lernende}} in dieser Kohorte",
+      "course": "{count, plural, one {# Lernender} other {# Lernende}} in diesem Kurs",
+      "org": "{count, plural, one {# Lernender} other {# Lernende}} in Ihrer gesamten Organisation"
+    },
+    "updated_seconds_ago": "Aktualisiert vor {count}s",
+    "updated_minutes_ago": "{count, plural, one {Vor # Minute aktualisiert} other {Vor # Minuten aktualisiert}}",
+    "retry": "Versuchen Sie es erneut",
+    "all_courses": "Alle Kurse",
+    "course_picker": "Kurs",
+    "exercise_picker": "Übung",
+    "not_in_section": "Nicht in einem Abschnitt",
+    "no_cohort": "Keine Kohorte",
+    "finished": "Fertig",
+    "awaiting_grade": "Note ausstehend",
+    "awaiting_grade_short": "Ausstehend",
+    "required_passed_of": "{passed} von {total} bestanden",
+    "of_total": "{count} von {total}",
+    "pass_required_tag": "Bestanden {mark}%",
+    "never": "Niemals",
+    "most_common_wrong_answer": "Häufigste falsche Antwort: {answer}",
+    "status": {
+      "at_risk": "Gefährdet",
+      "lagging": "Verzögert",
+      "on_track": "Auf Kurs",
+      "completed": "Vollendet"
+    },
+    "flags": {
+      "overdue": "Überfällig"
+    },
+    "overdue_kind": {
+      "goal": "Ziel",
+      "compliance": "Einhaltung",
+      "exercise": "Fälligkeitsdatum"
+    },
+    "legend": {
+      "average": "Durchschnitt",
+      "middle_half": "Mittlere 50 % der Lernenden",
+      "cohort_average": "Kohortendurchschnitt",
+      "learner": "Lerner"
+    },
+    "notes": {
+      "scores_by_exercise": "Übungen in Kursreihenfolge. Ein Punkt wird vergeben, sobald ein Viertel der Lernenden einen bewerteten Versuch unternommen hat.",
+      "hardest_questions": "Anteil der Lernenden, die die Frage richtig beantwortet haben, bezogen auf den jeweils besten Antwortversuch. Fragen mit weniger als 5 Antworten werden nicht berücksichtigt."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–24 %",
+        "1": "25–49 %",
+        "2": "50–74 %",
+        "3": "75–99 %",
+        "4": "Erledigt"
+      },
+      "score": {
+        "4": "Unter 50 %",
+        "5": "50er Jahre",
+        "6": "60er Jahre",
+        "7": "70er Jahre",
+        "8": "80er Jahre",
+        "9": "90 %+",
+        "null": "Keine Note"
+      }
+    },
+    "kpi": {
+      "share_of_learners": "{percent} von Lernenden",
+      "avg_progress_hint": "Lektionen und Übungen abgeschlossen",
+      "avg_score_hint": "Beste Versuchsnote über alle absolvierten Übungen hinweg",
+      "overdue_hint": "Fälligkeit überschritten und nicht erledigt",
+      "certified": "{count, plural, one {# zertifiziert} other {# zertifiziert}}",
+      "required_pass_hint": "Versuche, die die Bestehensgrenze erreichten",
+      "needs_attention_hint": "Inaktiv, niedrige Punktzahl oder überfällig",
+      "days": "{count, plural, one {# Tag} other {# Tage}}"
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Heute eingeloggt"
+      },
+      "kpi_logged_in_week": {
+        "title": "Eingeloggt, letzte 7 Tage"
+      },
+      "kpi_avg_progress": {
+        "title": "Durchschnittlicher Fortschritt"
+      },
+      "kpi_avg_score": {
+        "title": "Durchschnittsnote"
+      },
+      "kpi_overdue": {
+        "title": "Überfällig"
+      },
+      "kpi_completed": {
+        "title": "Vollendet"
+      },
+      "kpi_enrolled": {
+        "title": "Eingeschrieben"
+      },
+      "kpi_completion_rate": {
+        "title": "Abschlussrate"
+      },
+      "kpi_required_pass_rate": {
+        "title": "Bestehensquote der Pflichtübungen"
+      },
+      "kpi_median_days": {
+        "title": "Durchschnittliche Anzahl Tage bis zum Abschluss"
+      },
+      "kpi_completions": {
+        "title": "Abschlüsse"
+      },
+      "kpi_needs_attention": {
+        "title": "Aufmerksamkeit erforderlich"
+      },
+      "courses_summary": {
+        "title": "Kurse in dieser Kohorte"
+      },
+      "learners_by_status": {
+        "title": "Lernende nach Status"
+      },
+      "learner_courses": {
+        "title": "Kurse für Lernende"
+      },
+      "needs_attention": {
+        "title": "Benötigt Aufmerksamkeit, aus folgendem Grund"
+      },
+      "overdue": {
+        "title": "Überfällig"
+      },
+      "learners": {
+        "title": "Lernende"
+      },
+      "logins_per_day": {
+        "title": "Anzahl der pro Tag angemeldeten Lernenden"
+      },
+      "score_distribution": {
+        "title": "Durchschnittliche Punkteverteilung"
+      },
+      "scores_by_exercise": {
+        "title": "Ergebnisse nach Übung"
+      },
+      "progress_distribution": {
+        "title": "Fortschrittsverteilung"
+      },
+      "learner_progression": {
+        "title": "Lernfortschritt"
+      },
+      "section_scores": {
+        "title": "Ergebnisse und Anwesenheitszahlen nach Abteilungen"
+      },
+      "section_scorecard": {
+        "title": "Abschnittsweise Ergebnisliste"
+      },
+      "hardest_questions": {
+        "title": "Die schwierigsten Fragen"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Ergebnisse nach Übung, nach Kohorte"
+      },
+      "exercise_score_distribution": {
+        "title": "Punkteverteilung"
+      },
+      "lesson_dropoff": {
+        "title": "Abgabe nach Unterrichtsabschluss"
+      },
+      "hardest_exercises": {
+        "title": "Schwierigste Übungen"
+      },
+      "cohorts_in_course": {
+        "title": "Kohorten, die diesen Kurs belegen"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Kohorten im Überblick"
+      },
+      "hiring_ramp": {
+        "title": "Lernende hinzugefügt"
+      },
+      "avg_score_by_cohort": {
+        "title": "Durchschnittspunktzahl pro Kohorte"
+      },
+      "courses_by_completion": {
+        "title": "Kurse nach Abschluss"
+      }
+    },
+    "measures": {
+      "rows__count": "Lernende",
+      "progress_pct__avg": "Durchschnittlicher Fortschritt",
+      "avg_score_pct__avg": "Durchschnittsnote",
+      "required_pass__pooled": "Erforderliche Bestehensquote",
+      "is_completed__count_if": "Vollendet",
+      "is_completed__rate": "Abschlussrate",
+      "is_inactive__count_if": "Kein Login, 2+ Tage",
+      "is_low_score__count_if": "Durchschnittliche Punktzahl unter 50 %",
+      "is_overdue__count_if": "Überfällig",
+      "is_low_video__count_if": "Videoteilnahme unter 60 %",
+      "logged_in__count_if": "Eingeloggte Lernende",
+      "section_score_pct__avg": "Durchschnittsnote",
+      "video_pct__avg": "Video-Teilnahme",
+      "attendance__pooled": "Anwesenheit im Unterricht",
+      "best_score_pct__avg": "Durchschnittliche Punktzahl",
+      "is_complete__rate": "Abgeschlossen",
+      "members_total__value": "Lernende"
+    },
+    "columns": {
+      "learner": "Lernender",
+      "email": "E-Mail",
+      "course": "Kurs",
+      "progress": "Fortschritt",
+      "now_at": "Jetzt bei",
+      "average_score": "Durchschnittsnote",
+      "required_passed": "Pflichtübungen",
+      "courses_completed": "Abgeschlossene Kurse",
+      "video": "Video",
+      "classroom": "Klassenzimmer",
+      "certificates": "Zertifikate",
+      "last_login": "Letzter Login",
+      "overdue_item": "Überfälliger Artikel",
+      "status": "Status",
+      "trend": "Trend",
+      "days_overdue": "Tage überfällig",
+      "cohort": "Kohorte",
+      "section": "Kursabschnitt",
+      "exercises_taken": "Die durchgeführten Übungen",
+      "pass_rate": "Bestehensquote",
+      "health": "Gesundheit"
+    },
+    "actions": {
+      "send_reminder": "Erinnerung senden",
+      "remind_all_overdue": "Erinnere alle überfälligen Lernenden"
+    },
+    "hints": {
+      "learner_courses": "Wählen Sie unten einen Lernenden aus, um dessen Kurse anzuzeigen.",
+      "learner_progression": "Wählen Sie unten einen Lernenden aus, um dessen Ergebnisse anzuzeigen.",
+      "exercise_score_distribution": "Wähle eine Übung aus, um ihre Ergebnisse anzuzeigen."
+    },
+    "learners": {
+      "search": "Suche nach Name oder E-Mail-Adresse",
+      "empty": "Es gibt keine Lernenden, die diesen Filtern entsprechen.",
+      "show_more": "Zeige 25 weitere",
+      "showing": "Anzeige von {shown} von {total}",
+      "sort": {
+        "status": "Verzögert zuerst",
+        "progress": "Geringster Fortschritt",
+        "name": "Name A bis Z",
+        "low_score": "Niedrigste Punktzahl"
+      },
+      "clear_filters": "{count, plural, one {# Filter löschen} other {# Filter löschen}}",
+      "filters": {
+        "status": {
+          "any": "Alle Status",
+          "at_risk": "Gefährdet",
+          "lagging": "Verzögert",
+          "label": "Status",
+          "on_track": "Auf Kurs",
+          "completed": "Vollendet"
+        },
+        "activity": {
+          "label": "Letzter Login",
+          "any": "Beliebige Anmeldung",
+          "today": "Heute eingeloggt",
+          "idle": "Seit mehr als zwei Tagen kein Login"
+        },
+        "score": {
+          "label": "Durchschnittsnote",
+          "any": "Jede Punktzahl",
+          "lt50": "Unter 50 %",
+          "mid": "50 % bis 69 %",
+          "gte70": "70 % und mehr"
+        },
+        "flag": {
+          "label": "Flaggen",
+          "any": "Jede Flagge",
+          "overdue": "Überfällig",
+          "certified": "Zertifiziert",
+          "not_certified": "Nicht zertifiziert"
+        }
+      }
+    },
+    "empty": {
+      "no_data": "Noch keine Daten.",
+      "failed": "Dieses Diagramm konnte nicht geladen werden.",
+      "dashboard_failed": "Die Analysedaten konnten nicht geladen werden.",
+      "not_permitted": "Sie haben keinen Zugriff auf diese Analysen."
+    }
   }
 }
