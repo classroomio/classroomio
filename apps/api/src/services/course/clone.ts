@@ -32,6 +32,7 @@ import {
 
 import { ROLE } from '@cio/utils/constants';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { captureServerEvent } from '@cio/core/services/posthog';
 import { transferUploadedAsset, withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
 
 const ASSET_ID_PATTERN = /[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/gi;
@@ -223,6 +224,20 @@ export async function cloneCourse(
     db.transaction(async (tx) => cloneCourseWithClient(courseId, options, tx))
   );
   await invalidateOrgStats(created.organizationId);
+
+  if (!created.course.isTemplate) {
+    captureServerEvent({
+      event: 'course_created',
+      distinctId: options.userId,
+      orgId: created.organizationId,
+      properties: {
+        course_id: created.course.id,
+        course_type: created.course.type,
+        is_published: !!created.course.isPublished,
+        source: options.templateId ? 'template' : 'clone'
+      }
+    });
+  }
 
   return created.course;
 }

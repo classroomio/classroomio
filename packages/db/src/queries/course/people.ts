@@ -643,6 +643,17 @@ export async function claimMemberCertificateEarned(memberId: string, earnedAt: s
   }
 }
 
+/** Records the member's course completion once; returns false when it was already recorded. */
+export async function claimMemberCourseCompleted(memberId: string, completedAt: string): Promise<boolean> {
+  const updated = await db
+    .update(schema.groupmember)
+    .set({ completedAt })
+    .where(and(eq(schema.groupmember.id, memberId), isNull(schema.groupmember.completedAt)))
+    .returning({ id: schema.groupmember.id });
+
+  return updated.length > 0;
+}
+
 /**
  * Records that the certification congratulations email was sent.
  */

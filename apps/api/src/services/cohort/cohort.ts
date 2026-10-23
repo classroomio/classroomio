@@ -63,6 +63,9 @@ import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
+import type { TGroupmember } from '@cio/db/types';
+import type { TEventSource } from '@cio/core/services/posthog';
+import { captureLearnersEnrolled } from '@api/services/product-events';
 
 type CohortMemberEnrollment = {
   profileId: string;
@@ -90,7 +93,8 @@ async function listCohortCourseGroups(cohortId: string): Promise<CohortCourseGro
 async function enrollCohortStudentsInGroups(
   organizationId: string,
   groupIds: string[],
-  members: CohortMemberEnrollment[]
+  members: CohortMemberEnrollment[],
+  source: TEventSource
 ) {
   const studentMembers = members.filter((member) => member.profileId && member.roleId === ROLE.STUDENT);
   const uniqueGroupIds = [...new Set(groupIds)];
@@ -127,13 +131,16 @@ async function enrollCohortStudentsInGroups(
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
 
-  await db.transaction(async (tx) => {
+  const enrolledMembers = await db.transaction(async (tx) => {
     studentMilestoneNotification = await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size, tx, {
       deferNotification: true
     });
     await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
-    await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
+
+    return insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
   });
+
+  captureLearnersEnrolled(enrolledMembers, 'cohort', source);
 
   if (studentMilestoneNotification) {
     notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
@@ -338,7 +345,11 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
 }
 
 /** One settled result per `data.members` entry, in request order. */
-export async function addCohortMembersSettled(cohortId: string, data: TAddCohortMembers) {
+export async function addCohortMembersSettled(
+  cohortId: string,
+  data: TAddCohortMembers,
+  source: TEventSource = 'dashboard'
+) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -377,6 +388,7 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
 
         const transactionResult = await db.transaction(async (tx) => {
           let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+          let enrolledMembers: TGroupmember[] = [];
           const member = await addCohortMember(
             {
               cohortId,
@@ -414,7 +426,7 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
               tx
             );
 
-            await insertGroupMembersOnConflictDoNothing(
+            enrolledMembers = await insertGroupMembersOnConflictDoNothing(
               validCourseGroupIds.map((groupId) => ({
                 groupId,
                 roleId: ROLE.STUDENT,
@@ -442,8 +454,10 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
             );
           }
 
-          return { member, studentMilestoneNotification };
+          return { member, studentMilestoneNotification, enrolledMembers };
         });
+
+        captureLearnersEnrolled(transactionResult.enrolledMembers, 'cohort', source);
 
         if (transactionResult.studentMilestoneNotification) {
           notifyStudentMilestone(transactionResult.studentMilestoneNotification).catch((error) => {
@@ -580,7 +594,11 @@ export async function listCohortCourses(cohortId: string, profileId: string) {
   }
 }
 
-export async function addCourseToCohortService(cohortId: string, data: TAddCourseToCohort) {
+export async function addCourseToCohortService(
+  cohortId: string,
+  data: TAddCourseToCohort,
+  source: TEventSource = 'dashboard'
+) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -632,7 +650,7 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
     });
 
     if (students.length > 0 && courseGroupIds.length > 0) {
-      await enrollCohortStudentsInGroups(cohort.organizationId, courseGroupIds, students);
+      await enrollCohortStudentsInGroups(cohort.organizationId, courseGroupIds, students, source);
     }
 
     return result;

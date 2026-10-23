@@ -1,14 +1,6 @@
-import { redirect } from '@sveltejs/kit';
-import { client } from '$lib/utils/posthog';
-import { getDistinctId } from '$lib/utils/posthog/distinct-id';
+import { trackAndRedirect } from '$lib/utils/posthog/track-redirect';
 
 export const prerender = false;
 
-export const load = ({ request }) => {
-  client.capture({
-    distinctId: getDistinctId(request),
-    event: 'selfhost visited'
-  });
-
-  redirect(307, 'https://classroomio.com/docs/self-hosted');
-};
+export const load = ({ request, platform }) =>
+  trackAndRedirect({ request, platform }, 'selfhost visited', 'https://classroomio.com/docs/self-hosted');

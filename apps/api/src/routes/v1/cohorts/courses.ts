@@ -14,6 +14,7 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, cohortForbiddenResponses } from './docs';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
@@ -75,7 +76,7 @@ export const v1CohortCoursesRouter = new Hono()
         const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const result = await addPublicApiCohortCourseService(orgId, actorId, params, payload);
+        const result = await addPublicApiCohortCourseService(orgId, actorId, params, payload, getEventSource(c));
 
         return c.json({ success: true, data: result }, 201);
       } catch (error) {

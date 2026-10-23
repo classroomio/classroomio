@@ -11,7 +11,8 @@ import {
   getCourseProgress as getCourseProgressQuery,
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
-import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
+import { claimMemberCertificateEarned, claimMemberCourseCompleted } from '@cio/db/queries/course/people';
+import { captureServerEvent } from '@cio/core/services/posthog';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
@@ -99,6 +100,11 @@ export async function evaluateCourseCertification(
 
   let certificateEarnedAt = evaluation.certificateEarnedAt;
   let isNewCompletion = false;
+  const didClaimCompletion =
+    evaluation.eligibleForCertificate &&
+    !!progress.groupMemberId &&
+    !progress.completedAt &&
+    (await claimMemberCourseCompleted(progress.groupMemberId, new Date().toISOString()));
 
   if (evaluation.eligibleForCertificate && !certificateEarnedAt && progress.groupMemberId) {
     const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
@@ -125,13 +131,6 @@ export async function evaluateCourseCertification(
           earnedAt
         });
 
-        trackServerEvent({
-          eventType: SERVER_EVENTS.COURSE_COMPLETED,
-          userId: profileId,
-          courseId,
-          props: { path: 'standard', earnedAt }
-        });
-
         if (courseRow.certificate?.isDownloadable) {
           trackServerEvent({
             eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
@@ -142,6 +141,23 @@ export async function evaluateCourseCertification(
         }
       }
     }
+  }
+
+  if (didClaimCompletion) {
+    trackServerEvent({
+      eventType: SERVER_EVENTS.COURSE_COMPLETED,
+      orgId: courseRow.orgId,
+      userId: profileId,
+      courseId,
+      props: { path: 'standard' }
+    });
+
+    captureServerEvent({
+      event: 'course_completed',
+      distinctId: profileId,
+      orgId: courseRow.orgId,
+      properties: { course_id: courseId, course_type: courseRow.type, has_certificate: !!certificateEarnedAt }
+    });
   }
 
   return { ...evaluation, certificateEarnedAt, isNewCompletion };

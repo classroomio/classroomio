@@ -52,6 +52,7 @@ import {
 import { getStudentLimit } from '@cio/utils/plans';
 import { env } from '../../config/env';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
+import { captureCourseEvent, captureServerEvent, type TEventSource } from '../posthog';
 import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, DEFAULT_CONTENT_GROUPING, type CourseContent } from './utils';
 import { getPublicConversionOffenders } from './public-course-guard';
@@ -59,6 +60,8 @@ import { getPublicConversionOffenders } from './public-course-guard';
 export interface UpdateCourseResult {
   course: TCourse;
   conversionOffenders?: NonAutoGradableQuestionOffender[] | null;
+  /** True when this update took the course from unpublished to published. */
+  publishedNow: boolean;
 }
 
 /**
@@ -284,7 +287,8 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
  */
 export async function createCourse(
   profileId: string,
-  data: TCourseCreate
+  data: TCourseCreate,
+  source: TEventSource = 'dashboard'
 ): Promise<{ course: TCourse; groupId: string; memberId: string }> {
   try {
     const description = sanitizeHtml(data.description);
@@ -350,6 +354,18 @@ export async function createCourse(
     });
 
     await invalidateOrgStats(data.organizationId);
+
+    captureServerEvent({
+      event: 'course_created',
+      distinctId: profileId,
+      orgId: data.organizationId,
+      properties: {
+        course_id: result.course.id,
+        course_type: result.course.type,
+        is_published: !!result.course.isPublished,
+        source
+      }
+    });
 
     return result;
   } catch (error) {
@@ -471,7 +487,11 @@ export async function updateCourse(
       await invalidateOrgStats(statsOrgId);
     }
 
-    return { course: updated, conversionOffenders };
+    return {
+      course: updated,
+      conversionOffenders,
+      publishedNow: !currentCourse.isPublished && !!updated.isPublished
+    };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -482,6 +502,18 @@ export async function updateCourse(
       500
     );
   }
+}
+
+export function captureCoursePublished(
+  course: Pick<TCourse, 'id' | 'type' | 'cost'>,
+  profileId: string | null | undefined,
+  source: TEventSource
+): void {
+  captureCourseEvent(course.id, {
+    event: 'course_published',
+    distinctId: profileId,
+    properties: { course_type: course.type, is_paid: Number(course.cost ?? 0) > 0, source }
+  });
 }
 
 /**

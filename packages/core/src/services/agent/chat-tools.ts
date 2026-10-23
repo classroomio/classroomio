@@ -988,7 +988,7 @@ export function buildAgentTools(
       inputSchema: goLiveParam,
       execute: async (args) => {
         return executeAgentTool('go_live_course', { orgId, userId, courseId, args }, async () => {
-          const result = await publishCourseWhenReady(courseId);
+          const result = await publishCourseWhenReady(courseId, userId);
 
           return {
             courseId: result.course.id,

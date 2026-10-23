@@ -3,10 +3,9 @@ import { LICENSE_FEATURE } from '@cio/utils';
 
 import { env } from '../config/env';
 import { getLicenseStatus } from './license';
+import { POSTHOG_CAPTURE_URL, POSTHOG_TIMEOUT_MS } from './posthog';
 
-const POSTHOG_CAPTURE_URL = 'https://eu.i.posthog.com/capture/';
 const POSTHOG_KEY = 'phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov';
-const POSTHOG_TIMEOUT_MS = 10_000;
 
 export type InstanceTelemetryResult =
   | { sent: false; reason: string }

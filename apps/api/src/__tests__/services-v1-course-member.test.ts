@@ -131,7 +131,7 @@ describe('services/v1/courses/members', () => {
     const result = await addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload);
 
     expect(getOrganizationMembersByNormalizedEmails).toHaveBeenCalledWith(ORG_ID, ['a@example.com']);
-    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [{ ...payload, profileId: 'profile-1' }]);
+    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [{ ...payload, profileId: 'profile-1' }], 'public_api');
     expect(result).toEqual({ id: MEMBER_ID });
   });
 
@@ -144,7 +144,7 @@ describe('services/v1/courses/members', () => {
 
     await addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload);
 
-    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [payload]);
+    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [payload], 'public_api');
   });
 
   it('addCourseMemberService returns 404 when the email does not belong to this organization', async () => {
