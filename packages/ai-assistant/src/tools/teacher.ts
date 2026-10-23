@@ -13,6 +13,7 @@ import {
   LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT,
   LANDING_PAGE_SECTION_HTML_AGENT_HINT
 } from './landing-page-html-hint';
+import { BLOCK_RECIPE_TYPES } from './block-recipes';
 
 const ENABLED_QUESTION_TYPE_MAX_ID = Math.max(...ENABLED_QUESTION_TYPE_REGISTRY.map((type) => type.id));
 
@@ -111,6 +112,14 @@ export const updateLessonContentSchema = {
       .describe(
         'The full lesson HTML content. Use only: h2, h3, p, ul, ol, li, strong, em, blockquote, code, pre, a, and callouts as <div data-callout="info|tip|important|warning|highlight"><p>…</p></div>. Never use any other div, or span, table, img, iframe, script, or style.'
       )
+  })
+};
+
+export const getBlockRecipeSchema = {
+  description:
+    'Get the exact markup for a lesson-body block type whose recipe is not spelled out in the system prompt (see the block type list there). Call this once per conversation, right before using that block type in update_lesson_content — never write its markup from memory or improvise a substitute.',
+  parameters: z.object({
+    blockType: z.enum(BLOCK_RECIPE_TYPES).describe('The block type to fetch markup for.')
   })
 };
 
