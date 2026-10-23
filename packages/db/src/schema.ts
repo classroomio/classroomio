@@ -511,7 +511,8 @@ export const courseSection = pgTable(
   (table) => [
     index('course_section_source_id_idx')
       .on(table.sourceId)
-      .where(sql`${table.sourceId} is not null`)
+      .where(sql`${table.sourceId} is not null`),
+    index('idx_course_section_course_id').on(table.courseId)
   ]
 );
 
@@ -820,7 +821,8 @@ export const submission = pgTable(
       foreignColumns: [groupmember.id],
       name: 'submission_submitted_by_fkey'
     }),
-    index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId)
+    index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId),
+    index('idx_submission_exercise_id_submitted_by').on(table.exerciseId, table.submittedBy)
   ]
 );
 
@@ -1445,7 +1447,8 @@ export const exercise = pgTable(
     index('idx_exercise_course_slug').on(table.courseId, table.slug),
     index('exercise_source_id_idx')
       .on(table.sourceId)
-      .where(sql`${table.sourceId} is not null`)
+      .where(sql`${table.sourceId} is not null`),
+    index('idx_exercise_lesson_id').on(table.lessonId)
   ]
 );
 
@@ -2308,7 +2311,8 @@ export const question = pgTable(
       columns: [table.questionTypeId],
       foreignColumns: [questionType.id],
       name: 'question_question_type_id_fkey'
-    })
+    }),
+    index('idx_question_exercise_id').on(table.exerciseId)
   ]
 );
 
