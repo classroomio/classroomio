@@ -405,9 +405,12 @@ export class MediaApi extends BaseApiWithErrors {
     return urls[asset.storageKey] ?? null;
   }
 
-  async registerUploadedLessonVideo(params: {
-    lessonId: string;
-    position: number;
+  /**
+   * Creates the asset for an uploaded video and attaches it to the lesson when `lessonId` is given.
+   */
+  async registerUploadedVideo(params: {
+    lessonId?: string;
+    position?: number;
     fileKey: string;
     videoUrl: string;
     fileName: string;
@@ -438,19 +441,24 @@ export class MediaApi extends BaseApiWithErrors {
       return null;
     }
 
-    await this.attachAsset(asset.id, {
-      targetType: 'lesson',
-      targetId: params.lessonId,
-      slotType: 'lesson_video',
-      position: params.position
-    });
+    if (params.lessonId) {
+      await this.attachAsset(asset.id, {
+        targetType: 'lesson',
+        targetId: params.lessonId,
+        slotType: 'lesson_video',
+        position: params.position
+      });
+    }
 
     return asset;
   }
 
-  async registerUploadedLessonDocument(params: {
-    lessonId: string;
-    position: number;
+  /**
+   * Creates the asset for an uploaded document and attaches it to the lesson when `lessonId` is given.
+   */
+  async registerUploadedDocument(params: {
+    lessonId?: string;
+    position?: number;
     fileKey: string;
     documentUrl: string;
     fileName: string;
@@ -477,12 +485,14 @@ export class MediaApi extends BaseApiWithErrors {
       return null;
     }
 
-    await this.attachAsset(asset.id, {
-      targetType: 'lesson',
-      targetId: params.lessonId,
-      slotType: 'lesson_document',
-      position: params.position
-    });
+    if (params.lessonId) {
+      await this.attachAsset(asset.id, {
+        targetType: 'lesson',
+        targetId: params.lessonId,
+        slotType: 'lesson_document',
+        position: params.position
+      });
+    }
 
     return asset;
   }

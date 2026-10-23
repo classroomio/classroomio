@@ -406,6 +406,7 @@
       }
     },
     "media_manager": {
+      "video_added": "Đã thêm video vào thư viện của bạn",
       "list_failed": "Không tải được nội dung phương tiện",
       "storage_failed": "Không tải được bản tóm tắt bộ nhớ",
       "create_failed": "Không tạo được nội dung truyền thông",
@@ -3712,6 +3713,11 @@
         "other": "Khác"
       },
       "refresh": "Làm cho khỏe lại"
+    },
+    "upload": {
+      "videos": "Tải video lên",
+      "documents": "Tải tài liệu lên",
+      "more_options": "Thêm tùy chọn tải lên"
     },
     "storage": {
       "total_bytes": "Tổng dung lượng lưu trữ",

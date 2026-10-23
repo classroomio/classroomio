@@ -406,6 +406,7 @@
       }
     },
     "media_manager": {
+      "video_added": "Vidéo ajoutée à votre bibliothèque",
       "list_failed": "Échec du chargement des ressources multimédias",
       "storage_failed": "Échec du chargement du résumé du stockage",
       "create_failed": "Échec de la création de l'élément multimédia",
@@ -3712,6 +3713,11 @@
         "other": "Autre"
       },
       "refresh": "Rafraîchir"
+    },
+    "upload": {
+      "videos": "Téléverser des vidéos",
+      "documents": "Téléverser des documents",
+      "more_options": "Plus d'options de téléversement"
     },
     "storage": {
       "total_bytes": "Stockage total",

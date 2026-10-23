@@ -406,6 +406,7 @@
       }
     },
     "media_manager": {
+      "video_added": "Video føjet til dit bibliotek",
       "list_failed": "Kunne ikke indlæse medieaktiver",
       "storage_failed": "Kunne ikke indlæse lageroversigt",
       "create_failed": "Kunne ikke oprette medieaktiv",
@@ -3712,6 +3713,11 @@
         "other": "Andet"
       },
       "refresh": "Opfriske"
+    },
+    "upload": {
+      "videos": "Upload videoer",
+      "documents": "Upload dokumenter",
+      "more_options": "Flere uploadmuligheder"
     },
     "storage": {
       "total_bytes": "Samlet opbevaring",
