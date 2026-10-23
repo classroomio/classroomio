@@ -2,7 +2,7 @@ import * as schema from '@db/schema';
 
 import { and, eq, or, sql, type SQL } from 'drizzle-orm';
 
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 /** A member reference is either a literal id or a column correlated to the outer row. */
 export type ExerciseCompletionMember = { profileId: string | SQL<string> } | { groupMemberId: string | SQL<string> };
@@ -171,9 +171,38 @@ export async function getCompletedExerciseIdsForMember(courseId: string, groupMe
   }
 }
 
-export async function getCompletedLessonIdsForProfile(courseId: string, profileId: string): Promise<Set<string>> {
+/** Returns the exercise IDs one profile has completed in a course, directly by profile id (no group member lookup). */
+export async function getCompletedExerciseIdsForProfile(
+  courseId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<Set<string>> {
   try {
-    const rows = await db
+    const rows = await dbClient
+      .select({ id: schema.exercise.id })
+      .from(schema.exercise)
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .where(
+        and(
+          or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+          isExerciseCompletedSql('exercise', { profileId })
+        )
+      );
+
+    return new Set(rows.map((row) => row.id));
+  } catch (error) {
+    console.error('getCompletedExerciseIdsForProfile error:', error);
+    throw new Error(`Failed to get completed exercises: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function getCompletedLessonIdsForProfile(
+  courseId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<Set<string>> {
+  try {
+    const rows = await dbClient
       .select({ lessonId: schema.lessonCompletion.lessonId })
       .from(schema.lessonCompletion)
       .innerJoin(schema.lesson, eq(schema.lessonCompletion.lessonId, schema.lesson.id))

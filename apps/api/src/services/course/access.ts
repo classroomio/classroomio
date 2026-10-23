@@ -1,8 +1,8 @@
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { assertStudentCanAccessContent } from '@cio/core/services/course/progression';
 import { getCourseById, getCourseProgress } from '@cio/db/queries/course/course';
-import { getCourseContentItems } from '@cio/db/queries/course/content';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { getCachedCourseContentItems } from '@api/utils/redis/course-content-cache';
 
 const DEFAULT_CONTENT_GROUPING = true;
 
@@ -37,7 +37,7 @@ export async function assertEnrolledStudentContentAccess(params: {
   const [courseRow, progress, contentItems] = await Promise.all([
     getCourseById(params.courseId),
     getCourseProgress(params.courseId, params.profileId),
-    getCourseContentItems(params.courseId, params.profileId)
+    getCachedCourseContentItems(params.courseId, params.profileId)
   ]);
 
   const course = courseRow[0];

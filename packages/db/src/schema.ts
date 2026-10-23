@@ -334,7 +334,8 @@ export const courseSection = pgTable(
   (table) => [
     index('course_section_source_id_idx')
       .on(table.sourceId)
-      .where(sql`${table.sourceId} is not null`)
+      .where(sql`${table.sourceId} is not null`),
+    index('idx_course_section_course_id').on(table.courseId)
   ]
 );
 
@@ -667,7 +668,8 @@ export const submission = pgTable(
       foreignColumns: [groupmember.id],
       name: 'submission_submitted_by_fkey'
     }),
-    index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId)
+    index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId),
+    index('idx_submission_exercise_id_submitted_by').on(table.exerciseId, table.submittedBy)
   ]
 );
 
@@ -1143,7 +1145,15 @@ export const lesson = pgTable(
     }),
     slug: varchar().notNull(),
     sourceId: uuid('source_id').references((): AnyPgColumn => lesson.id, { onDelete: 'set null' }),
-    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' }),
+    /**
+     * Whether the lesson has non-empty notes (the `note` column) or a non-empty
+     * `lesson_language` translation. Kept in sync by the note/language write
+     * paths (`packages/db/src/queries/lesson/note-content.ts`) so the course
+     * content query can read this instead of running a regex over HTML on
+     * every request.
+     */
+    hasNoteContent: boolean('has_note_content').default(false).notNull()
   },
   (table) => [
     foreignKey({
@@ -1356,7 +1366,8 @@ export const exercise = pgTable(
     index('idx_exercise_course_slug').on(table.courseId, table.slug),
     index('exercise_source_id_idx')
       .on(table.sourceId)
-      .where(sql`${table.sourceId} is not null`)
+      .where(sql`${table.sourceId} is not null`),
+    index('idx_exercise_lesson_id').on(table.lessonId)
   ]
 );
 
@@ -2028,7 +2039,8 @@ export const lessonLanguage = pgTable(
       name: 'public_lesson_language_lesson_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade')
+      .onDelete('cascade'),
+    index('idx_lesson_language_lesson_id').on(table.lessonId)
   ]
 );
 
@@ -2218,7 +2230,8 @@ export const question = pgTable(
       columns: [table.questionTypeId],
       foreignColumns: [questionType.id],
       name: 'question_question_type_id_fkey'
-    })
+    }),
+    index('idx_question_exercise_id').on(table.exerciseId)
   ]
 );
 

@@ -169,3 +169,15 @@ export function publicApiAnalyticsKey(section: string, ...parts: Array<string | 
 
 export const PUBLIC_API_ANALYTICS_TTL_SECONDS = 600;
 export const PUBLIC_API_LOGIN_ACTIVITY_TTL_SECONDS = 86_400;
+
+/**
+ * Redis key for a course's cached content structure (sections, lessons, exercises; no
+ * per-student completion). `version` is `getCourseContentVersion`'s stamp, so an edit to the
+ * course changes the key instead of waiting on the TTL. Value: `{ data, generatedAt }`.
+ */
+export function courseContentStructureKey(courseId: string, version: string): string {
+  return `course-content:structure:${courseId}:${version}`;
+}
+
+/** Safety-net TTL for the course content structure cache (1h); the version in the key is what actually invalidates it. */
+export const COURSE_CONTENT_STRUCTURE_TTL_SECONDS = 3600;

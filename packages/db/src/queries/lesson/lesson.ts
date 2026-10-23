@@ -14,6 +14,7 @@ import { and, asc, count, db, desc, eq, inArray, lt, ne, sql } from '@db/drizzle
 
 import type { DbOrTxClient } from '@db/drizzle';
 import { contentWriteBumpsTimestamp } from '@db/queries/course/content-timestamp';
+import { hasNoteContentSql, isNonEmptyNote } from './note-content';
 
 // Lesson Queries
 export async function getLessonsByCourseId(courseId: string, dbClient: DbOrTxClient = db) {
@@ -208,7 +209,12 @@ export async function getLessonNavInfoByIds(lessonIds: string[]): Promise<Lesson
 
 export async function createLessons(values: TNewLesson[], dbClient: DbOrTxClient = db) {
   try {
-    return await dbClient.insert(schema.lesson).values(values).returning();
+    const valuesWithNoteContent = values.map((value) => ({
+      ...value,
+      hasNoteContent: isNonEmptyNote(value.note)
+    }));
+
+    return await dbClient.insert(schema.lesson).values(valuesWithNoteContent).returning();
   } catch (error) {
     console.error('createLessons error:', error);
     throw new Error(`Failed to create lessons: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -220,7 +226,14 @@ export async function updateLesson(lessonId: string, data: Partial<TLesson>, dbC
     const fields = { ...data };
     delete fields.updatedAt;
     const fieldNames = Object.keys(fields);
-    const patch = contentWriteBumpsTimestamp(fieldNames) ? { ...fields, updatedAt: new Date().toISOString() } : fields;
+    const patch: Record<string, unknown> = contentWriteBumpsTimestamp(fieldNames)
+      ? { ...fields, updatedAt: new Date().toISOString() }
+      : fields;
+
+    if ('note' in fields) {
+      patch.hasNoteContent = hasNoteContentSql(lessonId, fields.note);
+    }
+
     const [updated] = await dbClient.update(schema.lesson).set(patch).where(eq(schema.lesson.id, lessonId)).returning();
     return updated || null;
   } catch (error) {

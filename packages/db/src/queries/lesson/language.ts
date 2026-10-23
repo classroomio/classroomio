@@ -5,6 +5,14 @@ import { and, eq } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { stampContentUpdatedAt } from '@db/queries/course/content-timestamp';
+import { recomputeHasNoteContentSql } from './note-content';
+
+async function recomputeLessonHasNoteContent(lessonId: string, client: DbOrTxClient): Promise<void> {
+  await client
+    .update(schema.lesson)
+    .set({ hasNoteContent: recomputeHasNoteContentSql(lessonId) })
+    .where(eq(schema.lesson.id, lessonId));
+}
 
 export async function getLessonLanguagesByLessonId(lessonId: string): Promise<TLessonLanguage[]> {
   const languages = await db.select().from(schema.lessonLanguage).where(eq(schema.lessonLanguage.lessonId, lessonId));
@@ -43,6 +51,10 @@ export async function createLessonLanguage(
       throw new Error('Failed to create lesson language');
     }
 
+    if (language.lessonId) {
+      await recomputeLessonHasNoteContent(language.lessonId, client);
+    }
+
     return language;
   };
 
@@ -78,6 +90,8 @@ export async function updateLessonLanguage(
       throw new Error('Failed to update lesson language');
     }
 
+    await recomputeLessonHasNoteContent(lessonId, client);
+
     return language;
   };
 
@@ -85,12 +99,18 @@ export async function updateLessonLanguage(
 }
 
 export async function deleteLessonLanguage(lessonId: string, locale: TLocale): Promise<TLessonLanguage | null> {
-  const [language] = await db
-    .delete(schema.lessonLanguage)
-    .where(and(eq(schema.lessonLanguage.lessonId, lessonId), eq(schema.lessonLanguage.locale, locale)))
-    .returning();
+  return db.transaction(async (tx) => {
+    const [language] = await tx
+      .delete(schema.lessonLanguage)
+      .where(and(eq(schema.lessonLanguage.lessonId, lessonId), eq(schema.lessonLanguage.locale, locale)))
+      .returning();
 
-  return language || null;
+    if (language) {
+      await recomputeLessonHasNoteContent(lessonId, tx);
+    }
+
+    return language || null;
+  });
 }
 
 export async function upsertLessonLanguage(
