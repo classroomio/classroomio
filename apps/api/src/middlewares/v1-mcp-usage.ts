@@ -21,6 +21,8 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   },
   '/public-api/v1/team': { GET: 'list_team_members' },
   '/public-api/v1/team/:memberId': { GET: 'get_team_member', PUT: 'update_team_member' },
+  '/public-api/v1/courses/featured': { PUT: 'set_featured_courses' },
+  '/public-api/v1/courses/:courseId/clone': { POST: 'clone_course' },
   '/public-api/v1/courses/:courseId/members': { GET: 'list_course_members', POST: 'add_course_member' },
   '/public-api/v1/courses/:courseId/members/:memberId': {
     GET: 'get_course_member',

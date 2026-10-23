@@ -143,6 +143,8 @@ Current tools:
 - `publish_course_draft_to_existing_course`
 - `tag_course_draft`
 - `tag_courses`
+- `clone_course`
+- `set_featured_courses`
 
 Course certificate tools:
 
@@ -252,6 +254,13 @@ These call the public API with the key's `course:read` (reads) and `course:write
 - Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
 - Not covered here: creating and editing lessons, uploads, and restoring a lesson version.
 
+Course copy and landing page tools:
+
+- `clone_course` copies a course with its sections, lessons and exercises. The key creator must be an org admin or tutor and becomes the copy's tutor. The copy keeps the source's published state, and its exercise due dates are set to the time of copying. Templates are refused.
+- `set_featured_courses` sets the published courses (at most 4) shown first, in the order given, on the landing page and public course list. Other published courses still show after them, newest first. It replaces the current list; an empty list clears it. The key creator must be an org admin.
+
+Both use the `course:write` scope, which MCP keys have by default.
+
 Cohort tools:
 
 - `list_org_cohorts`
@@ -291,7 +300,7 @@ Cohort tools:
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
 
-Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these, the course member, invite, certificate, section, lesson and content tools, and the analytics, audience, and team tools (below), MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
+Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these, the course member, invite, certificate, section, lesson and content tools, the course clone and featured course tools, and the analytics, audience, and team tools (below), MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
 
 - Reading a cohort needs them to be a member of the cohort or an org admin.
 - Changing a cohort, its members, courses, posts, or goals, inviting students, managing the join link, and re-evaluating goals need them to be a cohort tutor/admin or an org admin.

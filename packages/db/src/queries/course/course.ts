@@ -227,6 +227,8 @@ export const reorderOrgCourses = async (orgId: string, orders: { id: string; ord
     const courseIds = orders.map(({ id }) => id);
 
     await db.transaction(async (tx) => {
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`org_course_order:${orgId}`}))`);
+
       const allOrgCourses = await tx
         .select({ id: schema.course.id })
         .from(schema.course)
@@ -568,7 +570,10 @@ export async function createCourse(newCourse: TNewCourse, dbClient: DbOrTxClient
     return await dbClient.insert(schema.course).values(newCourse).returning();
   } catch (error) {
     console.error('createCourse error:', error);
-    throw new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw Object.assign(
+      new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`),
+      { cause: error }
+    );
   }
 }
 

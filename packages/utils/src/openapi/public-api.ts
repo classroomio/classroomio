@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the audience, team, cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their \`audience:*\`, \`team:*\`, \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:read\`/\`course:write\`, \`course:exercise:*\`, \`course:submission:*\`, \`course:student:write\`, and \`media:write\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the audience, team, cohort, course member and invite, course certificate, course section, lesson and content, course clone and featured course, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their \`audience:*\`, \`team:*\`, \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:read\`/\`course:write\`, \`course:exercise:*\`, \`course:submission:*\`, \`course:student:write\`, and \`media:write\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -156,6 +156,8 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
   'PUT /public-api/v1/courses/{courseId}': 'Update a course',
   'DELETE /public-api/v1/courses/{courseId}': 'Delete a course',
+  'POST /public-api/v1/courses/{courseId}/clone': 'Clone a course',
+  'PUT /public-api/v1/courses/featured': 'Set featured courses',
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
@@ -270,7 +272,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
 const OPERATION_TAGS = [
   { name: 'Audience', description: 'Manage people in your organization.' },
   { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
-  { name: 'Courses', description: 'Create, update, and delete courses.' },
+  { name: 'Courses', description: 'Create, update, delete, clone, and feature courses.' },
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
   { name: 'Course Members', description: 'Manage the people in a course and their progress.' },
   { name: 'Course Invites', description: 'Invite people to a course.' },

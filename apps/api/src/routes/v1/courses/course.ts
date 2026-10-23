@@ -1,5 +1,6 @@
 import * as z from 'zod';
 import {
+  ZPublicApiCloneCourse,
   ZPublicApiCourseDetailResponse,
   ZPublicApiCourseListItemResponse,
   ZPublicApiCourseMemberListItemResponse,
@@ -9,19 +10,23 @@ import {
   ZPublicApiCoursesQuery,
   ZPublicApiCreateCourse,
   ZPublicApiCreateCourseResponse,
+  ZPublicApiFeaturedCoursesResponse,
   ZPublicApiPaginationQuery,
+  ZPublicApiSetFeaturedCourses,
   ZPublicApiUpdateCourse,
   ZPublicApiUpdateCourseEnvelope,
   ZPublicApiUpdateCourseStructure,
   ZPublicApiUpdateCourseStructureResponse
 } from '@cio/utils/validation/public-api';
 import {
+  clonePublicApiCourseService,
   createPublicApiCourseService,
   deletePublicApiCourseService,
   exportCourseService,
   getCourseService,
   listCoursesService,
   listCourseStudentsService,
+  setPublicApiFeaturedCoursesService,
   updatePublicApiCourseService,
   updatePublicApiCourseStructureService
 } from '@api/services/v1/courses/course';
@@ -30,7 +35,8 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { ANY_KEY_RULE } from './docs';
+import { ORG_ADMIN_RULE } from '../team/docs';
+import { ANY_KEY_RULE, ORG_TEAM_RULE, courseWriteForbiddenResponses } from './docs';
 
 const CoursesListEnvelope = z.object({ query: ZPublicApiCoursesQuery });
 
@@ -102,6 +108,81 @@ export const v1CourseRouter = new Hono()
         );
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to create course');
+      }
+    }
+  )
+  .put(
+    '/featured',
+    describeRoute({
+      description: `Set the published courses shown first, in order, on the organization landing page and public course list; ${ORG_ADMIN_RULE}.`,
+      tags: ['Courses'],
+      responses: {
+        200: jsonResponse(
+          'Featured courses replaced. Other published courses still show after them, newest first. Read the current order from displayOrder on GET /courses (null when not featured)',
+          itemResponse(ZPublicApiFeaturedCoursesResponse)
+        ),
+        400: { description: 'Invalid request body, or a course is not published, is deleted or is a template' },
+        401: { description: 'Unauthorized' },
+        403: courseWriteForbiddenResponses.featured,
+        404: { description: 'A course was not found in the organization' }
+      }
+    }),
+    validator('json', ZPublicApiSetFeaturedCourses),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const payload = c.req.valid('json');
+        const result = await setPublicApiFeaturedCoursesService(orgId, actorId, payload);
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to set featured courses');
+      }
+    }
+  )
+  .post(
+    '/:courseId/clone',
+    describeRoute({
+      description: `Copy a course with its sections, lessons and exercises, without its students; ${ORG_TEAM_RULE}.`,
+      tags: ['Courses'],
+      responses: {
+        201: jsonResponse(
+          'Course copied. The copy keeps the source published state, drops its reviews, sets every exercise due date to the time of copying, and adds the key creator as tutor',
+          itemResponse(ZPublicApiCourseResponse)
+        ),
+        400: { description: 'Invalid course id or request body' },
+        401: { description: 'Unauthorized' },
+        403: courseWriteForbiddenResponses.clone,
+        404: { description: 'Course not found' },
+        409: { description: 'The slug is already in use (SLUG_IN_USE)' }
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    validator('json', ZPublicApiCloneCourse),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const params = c.req.valid('param');
+        const payload = c.req.valid('json');
+        const course = await clonePublicApiCourseService(orgId, actorId, params, payload);
+
+        return c.json(
+          {
+            success: true,
+            data: course
+          },
+          201
+        );
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to clone course');
       }
     }
   )
