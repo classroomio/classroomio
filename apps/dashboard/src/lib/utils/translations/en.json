@@ -461,7 +461,8 @@
       "included": "Included",
       "untitled_lesson": "Untitled lesson",
       "format": "Format"
-    }
+    },
+    "back": "Back"
   },
   "compliance": {
     "title": "Compliance",
@@ -2124,7 +2125,6 @@
         },
         "apps": {
           "title": "Apps",
-          "poll": "Poll",
           "live_comment": "Live comments"
         },
         "auth_background": {
@@ -3600,34 +3600,6 @@
           "delete": "Delete",
           "load_more_btn": "Load more",
           "comment_error": "Failed to post comment. Please try again."
-        },
-        "polls": {
-          "title": "Poll",
-          "active_polls": "Active Polls",
-          "expired_polls": "Expired Polls",
-          "loading": "Loading...",
-          "no_polls": "No polls to display"
-        },
-        "poll": {
-          "voted": "Voted",
-          "created_by": "Created by",
-          "status": "Status",
-          "draft": "Draft",
-          "publish": "Publish",
-          "expiration": "Expiration",
-          "total_voted": "Total Votes",
-          "responses": "Responses",
-          "expires": "Expires",
-          "today": "Today",
-          "back": "Back",
-          "result": "Result",
-          "delete": "Delete",
-          "create_poll": "Create poll",
-          "question": "Question",
-          "options": "Options",
-          "option_label": "Option Label",
-          "cancel": "Cancel",
-          "poll_question": "Poll Question"
         },
         "version_history": {
           "title": "Version history",
@@ -5277,17 +5249,6 @@
     "lesson_video": {
       "generate_1080_completed": "1080p rendition added",
       "generate_1080_failed": "Could not generate 1080p rendition"
-    },
-    "poll": {
-      "error": {
-        "creating_poll": "An error occurred while creating poll",
-        "updating_poll": "An error occurred while updating poll status",
-        "submitting_poll": "An error occurred while submitting poll"
-      },
-      "info": {
-        "not_published": "Poll is not published yet",
-        "vote_once": "You can only vote once"
-      }
     },
     "exercise": {
       "validation_errors": "Please fix all validation errors before saving.",

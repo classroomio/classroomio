@@ -36,7 +36,8 @@
         "title": "Mở học viện của bạn…",
         "caption": "Đang chuẩn bị khóa học, học viên và cài đặt của bạn."
       }
-    }
+    },
+    "back": "Quay lại"
   },
   "validations": {
     "generic": {
@@ -393,17 +394,6 @@
       "error_fetching": "Tìm nạp bài tập không thành công, vui lòng tải lại trang",
       "passed_requires_points": "Hoàn thành theo điều kiện đạt yêu cầu cần có ít nhất một điểm khả dụng.",
       "draft_restored": "Chúng tôi đã khôi phục các thay đổi chưa lưu mà bạn để lại"
-    },
-    "poll": {
-      "info": {
-        "not_published": "Cuộc thăm dò chưa được công bố",
-        "vote_once": "Bạn chỉ có thể bỏ phiếu một lần"
-      },
-      "error": {
-        "creating_poll": "Đã xảy ra lỗi khi tạo cuộc thăm dò ý kiến",
-        "updating_poll": "Đã xảy ra lỗi khi cập nhật trạng thái cuộc thăm dò ý kiến",
-        "submitting_poll": "Đã xảy ra lỗi khi gửi cuộc thăm dò ý kiến"
-      }
     },
     "media_manager": {
       "video_added": "Đã thêm video vào thư viện của bạn",
@@ -1819,34 +1809,6 @@
             "manual": "Phiên bản đã lưu",
             "publish": "Đã xuất bản"
           }
-        },
-        "poll": {
-          "voted": "Đã bình chọn",
-          "created_by": "Tạo bởi",
-          "status": "Trạng thái",
-          "draft": "bản nháp",
-          "publish": "Xuất bản",
-          "expiration": "Hết hạn",
-          "total_voted": "Tổng số phiếu bầu",
-          "responses": "Phản hồi",
-          "expires": "Hết hạn",
-          "today": "hôm nay",
-          "back": "Quay lại",
-          "result": "kết quả",
-          "delete": "Xóa",
-          "create_poll": "Tạo cuộc thăm dò",
-          "question": "Câu hỏi",
-          "options": "Tùy chọn",
-          "option_label": "Nhãn lựa chọn",
-          "cancel": "Hủy bỏ",
-          "poll_question": "Câu hỏi thăm dò ý kiến"
-        },
-        "polls": {
-          "title": "Thăm dò ý kiến",
-          "active_polls": "Cuộc thăm dò đang hoạt động",
-          "expired_polls": "Cuộc thăm dò đã hết hạn",
-          "loading": "Đang tải...",
-          "no_polls": "Không có cuộc thăm dò nào để hiển thị"
         },
         "comments": {
           "title": "Bình luận",
@@ -3370,7 +3332,6 @@
         "save": "Lưu thay đổi",
         "apps": {
           "title": "Ứng dụng",
-          "poll": "Thăm dò ý kiến",
           "live_comment": "Bình luận trực tiếp"
         },
         "course": {
