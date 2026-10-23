@@ -148,10 +148,6 @@ class OpenAPISpecGenerator {
             {
               url: 'https://api.classroomio.com',
               description: 'Production environment'
-            },
-            {
-              url: 'http://localhost:3002',
-              description: 'Development environment'
             }
           ]
         }
