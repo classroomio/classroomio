@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Page from '@cio/ui/base/page';
-  import { MediaPage } from '$features/media';
+  import { MediaPage, UploadMediaActions } from '$features/media';
   import { mediaApi } from '$features/media/api';
   import type { AssetKindFilter, AssetStatusFilter } from '$features/media/utils';
   import { t } from '$lib/utils/functions/translations';
@@ -11,6 +11,7 @@
   let search = $state('');
   let kind = $state<AssetKindFilter>('all');
   let status = $state<AssetStatusFilter>('all');
+  let mediaPage = $state<ReturnType<typeof MediaPage>>();
 
   onMount(() => {
     mediaApi.assets = data.assets ?? [];
@@ -29,11 +30,14 @@
       <Page.Title>{$t('media_manager.heading')}</Page.Title>
       <Page.Subtitle>{$t('media_manager.page_subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
+    <Page.Action>
+      <UploadMediaActions onUploaded={() => mediaPage?.refreshMediaData()} />
+    </Page.Action>
   </Page.Header>
 
   <Page.Body class="space-y-4">
     {#snippet child()}
-      <MediaPage bind:search bind:kind bind:status />
+      <MediaPage bind:this={mediaPage} bind:search bind:kind bind:status />
     {/snippet}
   </Page.Body>
 </Page.Root>

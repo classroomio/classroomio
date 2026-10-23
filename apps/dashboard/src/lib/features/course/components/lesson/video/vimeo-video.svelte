@@ -6,17 +6,20 @@
 
   interface Props {
     lessonId?: string;
+    onAdded?: () => void;
   }
 
-  let { lessonId = '' }: Props = $props();
+  let { lessonId = '', onAdded = () => {} }: Props = $props();
 
   async function addVideo(validLinks: string[]) {
-    await addExternalVideosToLesson({
+    const addedCount = await addExternalVideosToLesson({
       links: validLinks,
       type: 'vimeo',
       lessonId,
       fallbackTitle: 'Vimeo'
     });
+
+    if (addedCount > 0) onAdded();
   }
 </script>
 
@@ -30,4 +33,4 @@
   onSubmit={addVideo}
 />
 
-<AddedVideoList type="vimeo" />
+<AddedVideoList type="vimeo" {lessonId} />

@@ -406,6 +406,7 @@
       }
     },
     "media_manager": {
+      "video_added": "Vídeo adicionado à sua biblioteca",
       "list_failed": "Falha ao carregar recursos de mídia",
       "storage_failed": "Falha ao carregar o resumo do armazenamento",
       "create_failed": "Falha ao criar recurso de mídia",
@@ -3712,6 +3713,11 @@
         "other": "Outro"
       },
       "refresh": "Atualizar"
+    },
+    "upload": {
+      "videos": "Enviar vídeos",
+      "documents": "Enviar documentos",
+      "more_options": "Mais opções de envio"
     },
     "storage": {
       "total_bytes": "Armazenamento total",

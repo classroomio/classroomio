@@ -1414,6 +1414,11 @@
     "common": {
       "not_available": "N / A"
     },
+    "upload": {
+      "videos": "Carica video",
+      "documents": "Carica documenti",
+      "more_options": "Altre opzioni di caricamento"
+    },
     "storage": {
       "total_bytes": "Spazio di archiviazione totale",
       "internal_bytes": "Archiviazione interna",
@@ -5212,6 +5217,7 @@
     "update": "Aggiornamento",
     "update_failed": "Aggiornamento non riuscito",
     "media_manager": {
+      "video_added": "Video aggiunto alla tua libreria",
       "list_failed": "Impossibile caricare le risorse multimediali",
       "storage_failed": "Impossibile caricare il riepilogo dello spazio di archiviazione",
       "create_failed": "Impossibile creare la risorsa multimediale",

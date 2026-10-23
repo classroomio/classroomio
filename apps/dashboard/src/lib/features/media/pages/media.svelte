@@ -87,7 +87,7 @@
     await mediaApi.getStorageSummary();
   }
 
-  async function refreshMediaData() {
+  export async function refreshMediaData() {
     await Promise.all([refreshAssets(1), refreshStorageSummary()]);
   }
 
