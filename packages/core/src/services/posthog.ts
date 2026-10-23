@@ -33,10 +33,12 @@ export function isServerEventsEnabled(): boolean {
 }
 
 function toPosthogEvent({ event, distinctId, orgId, properties }: TServerEvent) {
+  const timestamp = new Date().toISOString();
+
   return {
     event,
     distinct_id: distinctId || `org_${orgId}`,
-    timestamp: new Date().toISOString(),
+    timestamp,
     properties: {
       ...properties,
       ...(orgId && { $groups: { organization: orgId } }),

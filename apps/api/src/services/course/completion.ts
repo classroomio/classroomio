@@ -100,11 +100,6 @@ export async function evaluateCourseCertification(
 
   let certificateEarnedAt = evaluation.certificateEarnedAt;
   let isNewCompletion = false;
-  const didClaimCompletion =
-    evaluation.eligibleForCertificate &&
-    !!progress.groupMemberId &&
-    !progress.completedAt &&
-    (await claimMemberCourseCompleted(progress.groupMemberId, new Date().toISOString()));
 
   if (evaluation.eligibleForCertificate && !certificateEarnedAt && progress.groupMemberId) {
     const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
@@ -143,21 +138,33 @@ export async function evaluateCourseCertification(
     }
   }
 
-  if (didClaimCompletion) {
-    trackServerEvent({
-      eventType: SERVER_EVENTS.COURSE_COMPLETED,
-      orgId: courseRow.orgId,
-      userId: profileId,
-      courseId,
-      props: { path: 'standard' }
-    });
+  // Completion ignores the certificate deadline: finishing late still counts as finishing.
+  const hasCompletedContent = !evaluation.blockers.some(
+    (blocker) => blocker.code === 'CERT_PROGRESS' || blocker.code === 'CERT_NO_CONTENT'
+  );
 
-    captureServerEvent({
-      event: 'course_completed',
-      distinctId: profileId,
-      orgId: courseRow.orgId,
-      properties: { course_id: courseId, course_type: courseRow.type, has_certificate: !!certificateEarnedAt }
-    });
+  if (hasCompletedContent && progress.groupMemberId && !progress.completedAt) {
+    const completedAt = new Date().toISOString();
+    const didClaimCompletion = await claimMemberCourseCompleted(progress.groupMemberId, completedAt);
+
+    if (didClaimCompletion) {
+      const hasCertificate = !!certificateEarnedAt;
+
+      trackServerEvent({
+        eventType: SERVER_EVENTS.COURSE_COMPLETED,
+        orgId: courseRow.orgId,
+        userId: profileId,
+        courseId,
+        props: { path: 'standard' }
+      });
+
+      captureServerEvent({
+        event: 'course_completed',
+        distinctId: profileId,
+        orgId: courseRow.orgId,
+        properties: { course_id: courseId, course_type: courseRow.type, has_certificate: hasCertificate }
+      });
+    }
   }
 
   return { ...evaluation, certificateEarnedAt, isNewCompletion };

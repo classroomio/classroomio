@@ -85,13 +85,15 @@ export function captureLearnersEnrolled(
           const course = courseByGroupId.get(student.groupId);
           if (!course) return [];
 
+          const isPaid = Number(course.cost ?? 0) > 0;
+
           return {
             event: 'learner_enrolled',
             distinctId: student.profileId,
             orgId: course.organizationId,
             properties: {
               course_id: course.courseId,
-              is_paid: Number(course.cost ?? 0) > 0,
+              is_paid: isPaid,
               enroll_source: enrollSource,
               source
             }

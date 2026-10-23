@@ -167,6 +167,37 @@ describe('course_completed', () => {
     expect(mocks.captureServerEvent).not.toHaveBeenCalled();
   });
 
+  it('fires when the course is finished after the certificate deadline', async () => {
+    mocks.getCourseProgress.mockResolvedValue(completedProgress);
+    mocks.getCourseCertificationRow.mockResolvedValue({
+      orgId: 'org-1',
+      type: 'SELF_PACED',
+      certificate: { deadline: '2000-01-01T00:00:00.000Z' }
+    });
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
+
+    await evaluateCourseCertification('course-1', 'student-1');
+
+    expect(mocks.claimMemberCertificateEarned).not.toHaveBeenCalled();
+    expect(mocks.captureServerEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: 'course_completed',
+        properties: expect.objectContaining({ has_certificate: false })
+      })
+    );
+  });
+
+  it('leaves the completion unclaimed when the certificate step fails, so a retry still sends it', async () => {
+    mocks.getCourseProgress.mockResolvedValue(completedProgress);
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
+    mocks.claimMemberCertificateEarned.mockRejectedValue(new Error('database unavailable'));
+
+    await expect(evaluateCourseCertification('course-1', 'student-1')).rejects.toThrow('database unavailable');
+
+    expect(mocks.claimMemberCourseCompleted).not.toHaveBeenCalled();
+    expect(mocks.captureServerEvent).not.toHaveBeenCalled();
+  });
+
   it('does not fire while content is still left', async () => {
     mocks.getCourseProgress.mockResolvedValue({ ...completedProgress, lessonsCompleted: 1 });
     mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'BASIC' });

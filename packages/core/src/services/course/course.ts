@@ -509,10 +509,12 @@ export function captureCoursePublished(
   profileId: string | null | undefined,
   source: TEventSource
 ): void {
+  const isPaid = Number(course.cost ?? 0) > 0;
+
   captureCourseEvent(course.id, {
     event: 'course_published',
     distinctId: profileId,
-    properties: { course_type: course.type, is_paid: Number(course.cost ?? 0) > 0, source }
+    properties: { course_type: course.type, is_paid: isPaid, source }
   });
 }
 

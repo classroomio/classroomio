@@ -37,11 +37,9 @@ export const identifyPosthogUser = (id: string, properties?: Record<string, unkn
 const setPosthogOrg = (org: AccountOrg): void => {
   if (!org.id || isTrackingOff()) return;
 
-  posthog.group('organization', org.id, {
-    name: org.name,
-    site_name: org.siteName,
-    plan: getActiveOrgPlan(org.plans)?.planName ?? PLAN.BASIC
-  });
+  const plan = getActiveOrgPlan(org.plans)?.planName ?? PLAN.BASIC;
+
+  posthog.group('organization', org.id, { name: org.name, site_name: org.siteName, plan });
 
   const role = org.roleId ? ROLE_NAMES[org.roleId] : undefined;
   if (role) posthog.setPersonProperties({ role });
