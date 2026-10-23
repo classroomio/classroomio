@@ -60,8 +60,6 @@ const envSchema = z.object({
   CIO_DEPLOYMENT_METHOD: z.string().optional(),
   /** Set to 'true' to stop the self-hosted usage ping. */
   CIO_TELEMETRY_DISABLED: z.string().optional(),
-  /** PostHog project key for product events sent by the API. Set on ClassroomIO cloud only; unset sends nothing. */
-  POSTHOG_SERVER_KEY: z.string().optional(),
   /** Dashboard origin for invite/email links (e.g. https://app.yourdomain.com). When set, all email links point here instead of app.classroomio.com. Required for self-hosted. */
   DASHBOARD_ORIGIN: z.string().optional(),
   /**

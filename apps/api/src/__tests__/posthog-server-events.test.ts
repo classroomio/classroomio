@@ -20,20 +20,20 @@ describe('PostHog server events', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     for (const key of Object.keys(env)) delete env[key];
-    env.POSTHOG_SERVER_KEY = 'phc_test';
+    env.NODE_ENV = 'production';
     fetchMock.mockResolvedValue({ ok: true, status: 200 });
     vi.stubGlobal('fetch', fetchMock);
   });
 
-  it('sends nothing without a key', async () => {
-    env.POSTHOG_SERVER_KEY = undefined;
+  it('sends nothing outside production', async () => {
+    env.NODE_ENV = 'development';
 
     await recordServerEvents([{ event: 'course_created', distinctId: 'user-1', orgId: 'org-1' }]);
 
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('sends nothing from a self-hosted instance, even with a key', async () => {
+  it('sends nothing from a self-hosted instance', async () => {
     env.PUBLIC_IS_SELFHOSTED = 'true';
 
     await recordServerEvents([{ event: 'course_created', distinctId: 'user-1', orgId: 'org-1' }]);
@@ -48,7 +48,7 @@ describe('PostHog server events', () => {
 
     expect(fetchMock.mock.calls[0][0]).toBe('https://eu.i.posthog.com/batch/');
     expect(sentBatch()).toMatchObject({
-      api_key: 'phc_test',
+      api_key: 'phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov',
       batch: [
         {
           event: 'course_created',

@@ -3,9 +3,7 @@ import { LICENSE_FEATURE } from '@cio/utils';
 
 import { env } from '../config/env';
 import { getLicenseStatus } from './license';
-import { POSTHOG_CAPTURE_URL, POSTHOG_TIMEOUT_MS } from './posthog';
-
-const POSTHOG_KEY = 'phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov';
+import { POSTHOG_CAPTURE_URL, POSTHOG_PROJECT_KEY, POSTHOG_TIMEOUT_MS } from './posthog';
 
 export type InstanceTelemetryResult =
   | { sent: false; reason: string }
@@ -49,7 +47,7 @@ export async function sendInstanceTelemetry(): Promise<InstanceTelemetryResult> 
     headers: { 'Content-Type': 'application/json' },
     signal: AbortSignal.timeout(POSTHOG_TIMEOUT_MS),
     body: JSON.stringify({
-      api_key: POSTHOG_KEY,
+      api_key: POSTHOG_PROJECT_KEY,
       event: 'instance_started',
       distinct_id: instance.id,
       properties

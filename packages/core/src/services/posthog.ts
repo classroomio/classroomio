@@ -3,6 +3,7 @@ import { PLAN } from '@cio/utils/plans';
 
 import { env } from '../config/env';
 
+export const POSTHOG_PROJECT_KEY = 'phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov';
 export const POSTHOG_CAPTURE_URL = 'https://eu.i.posthog.com/capture/';
 export const POSTHOG_TIMEOUT_MS = 10_000;
 const POSTHOG_BATCH_URL = 'https://eu.i.posthog.com/batch/';
@@ -28,7 +29,7 @@ export type TServerEvent = {
 };
 
 export function isServerEventsEnabled(): boolean {
-  return !!env.POSTHOG_SERVER_KEY && env.PUBLIC_IS_SELFHOSTED !== 'true';
+  return env.NODE_ENV === 'production' && env.PUBLIC_IS_SELFHOSTED !== 'true';
 }
 
 function toPosthogEvent({ event, distinctId, orgId, properties }: TServerEvent) {
@@ -61,7 +62,7 @@ export async function recordServerEvents(inputs: TServerEvent[]): Promise<void> 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: AbortSignal.timeout(POSTHOG_TIMEOUT_MS),
-        body: JSON.stringify({ api_key: env.POSTHOG_SERVER_KEY, batch })
+        body: JSON.stringify({ api_key: POSTHOG_PROJECT_KEY, batch })
       });
 
       if (!response.ok) {
