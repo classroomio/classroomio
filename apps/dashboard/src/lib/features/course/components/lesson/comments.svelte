@@ -184,7 +184,7 @@
               </Button>
             </div>
           {:else}
-            <article class="prose sm:prose-sm max-w-[300px] text-sm dark:text-white">
+            <article class="prose sm:prose-sm max-w-none text-sm dark:text-white">
               {commentItem.comment}
             </article>
           {/if}

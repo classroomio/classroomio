@@ -38,7 +38,7 @@
   }
 </script>
 
-<Page.Root class="mx-auto w-[90%] px-4 md:max-w-5xl">
+<Page.Root class="mx-auto w-full px-3 sm:w-[90%] sm:px-4 md:max-w-5xl">
   <Page.Header>
     <Page.HeaderContent>
       {#if data.personId}

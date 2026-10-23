@@ -481,7 +481,7 @@
   }}
 />
 
-<Page.Header>
+<Page.Header class="ui:my-2 ui:py-1 ui:md:my-4 ui:md:py-2">
   <Page.HeaderContent>
     <LessonPageEditHeader
       {mode}
@@ -502,6 +502,10 @@
       {#if mode === MODES.view && $isCourseLearnerView}
         <ContentNavigationActions {lessonId} {courseId} showPrevNext={!showMobileBottomNav} />
       {/if}
+
+      <div class="md:hidden">
+        <LanguageSelector />
+      </div>
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <div class="flex flex-row items-center gap-2 lg:flex">
@@ -536,7 +540,9 @@
         <RefreshPageData class="hidden lg:inline-flex" onRefresh={() => lessonApi.get(courseId, lessonId)} />
       </RoleBasedSecurity>
 
-      <LanguageSelector />
+      <div class="hidden md:block">
+        <LanguageSelector />
+      </div>
     </div>
   </Page.Action>
 </Page.Header>
