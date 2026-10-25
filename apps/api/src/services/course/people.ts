@@ -97,6 +97,12 @@ export async function listPaginatedCourseMembers(courseId: string, query: Pagina
 
 export type TMemberWebhookContext = { source?: TWebhookMemberSource; actorProfileId?: string | null };
 
+async function findLastActiveAt(organizationId: string | null, profileId: string) {
+  if (!organizationId) return null;
+
+  return getWebhookLastActiveAt(organizationId, profileId);
+}
+
 async function readProgressAtRemoval(courseId: string, memberId: string) {
   try {
     const member = await getCourseMember(courseId, memberId);
@@ -112,7 +118,7 @@ async function readProgressAtRemoval(courseId: string, memberId: string) {
     });
 
     const organizationId = await getOrgIdByCourseId(courseId);
-    const lastActiveAt = organizationId ? await getWebhookLastActiveAt(organizationId, member.profileId) : null;
+    const lastActiveAt = await findLastActiveAt(organizationId, member.profileId);
 
     return { percent, completed: progress.completedAt !== null, lastActiveAt };
   } catch (error) {

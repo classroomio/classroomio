@@ -159,48 +159,56 @@ export async function evaluateCourseCertification(
 
   const canIssueCertificate = evaluation.eligibleForCertificate && !certificateEarnedAt;
 
-  if (canIssueCertificate && (await orgHasCertificatesEnabled(courseRow.orgId))) {
-    const earnedAt = new Date().toISOString();
-    const didClaimCertificate = await claimMemberCertificateEarned(groupMemberId, earnedAt);
-    certificateEarnedAt = earnedAt;
+  if (!canIssueCertificate) {
+    return { ...evaluation, certificateEarnedAt, isNewCompletion };
+  }
 
-    if (didClaimCertificate) {
-      isNewCompletion = true;
+  const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
 
-      captureServerEvent({
-        event: 'course_completed',
-        distinctId: profileId,
-        orgId: courseRow.orgId,
-        properties: { course_id: courseId, course_type: courseRow.type }
-      });
+  if (!certificatesEnabled) {
+    return { ...evaluation, certificateEarnedAt, isNewCompletion };
+  }
 
-      if (courseRow.type !== 'COMPLIANCE') {
-        const certificate = buildCertificateWebhookInput({ courseRow, profileId, issuedAt: earnedAt });
+  const earnedAt = new Date().toISOString();
+  const didClaimCertificate = await claimMemberCertificateEarned(groupMemberId, earnedAt);
+  certificateEarnedAt = earnedAt;
 
-        await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', {
-          courseId,
-          ...completionEventData,
-          completedAt: earnedAt,
-          certificate
-        });
-      }
+  if (didClaimCertificate) {
+    isNewCompletion = true;
 
-      scheduleCertificationCompletionWork({
+    captureServerEvent({
+      event: 'course_completed',
+      distinctId: profileId,
+      orgId: courseRow.orgId,
+      properties: { course_id: courseId, course_type: courseRow.type }
+    });
+
+    if (courseRow.type !== 'COMPLIANCE') {
+      const certificate = buildCertificateWebhookInput({ courseRow, profileId, issuedAt: earnedAt });
+
+      await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', {
         courseId,
-        profileId,
-        groupMemberId,
-        courseRow,
-        earnedAt
+        ...completionEventData,
+        completedAt: earnedAt,
+        certificate
       });
+    }
 
-      if (courseRow.certificate?.isDownloadable) {
-        trackServerEvent({
-          eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
-          userId: profileId,
-          courseId,
-          props: { path: 'standard', earnedAt }
-        });
-      }
+    scheduleCertificationCompletionWork({
+      courseId,
+      profileId,
+      groupMemberId,
+      courseRow,
+      earnedAt
+    });
+
+    if (courseRow.certificate?.isDownloadable) {
+      trackServerEvent({
+        eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
+        userId: profileId,
+        courseId,
+        props: { path: 'standard', earnedAt }
+      });
     }
   }
 

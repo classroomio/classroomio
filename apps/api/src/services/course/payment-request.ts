@@ -20,6 +20,12 @@ export interface PaymentRequestData {
  * Creates a payment request and sends emails to teacher and student
  * @param data Payment request data
  */
+async function findRequesterMemberId(organizationId: string | null | undefined, profileId: string | undefined) {
+  if (!organizationId || !profileId) return null;
+
+  return getOrganizationMemberIdByOrgAndProfile(organizationId, profileId);
+}
+
 export async function createPaymentRequest(data: PaymentRequestData) {
   try {
     // Get course and organization data
@@ -99,8 +105,7 @@ export async function createPaymentRequest(data: PaymentRequestData) {
     });
 
     const requester = await getProfileByEmail(data.studentEmail.toLowerCase().trim());
-    const requesterMemberId =
-      requester && course.orgId ? await getOrganizationMemberIdByOrgAndProfile(course.orgId, requester.id) : null;
+    const requesterMemberId = await findRequesterMemberId(course.orgId, requester?.id);
     const requesterProfileId = requesterMemberId ? (requester?.id ?? null) : null;
 
     await emitCourseWebhookEvent(data.courseId, 'course.payment_request.created', {

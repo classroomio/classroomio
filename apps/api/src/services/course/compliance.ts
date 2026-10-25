@@ -147,7 +147,9 @@ async function emitComplianceCompletionWebhookEvents(params: {
     completedAt
   });
 
-  if (!(await orgHasCertificatesEnabled(courseRow.orgId))) return;
+  const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
+
+  if (!certificatesEnabled) return;
 
   const issuedAt = certificateIssue?.issuedAt ?? completedAt;
   const stored = certificateIssue ?? {
