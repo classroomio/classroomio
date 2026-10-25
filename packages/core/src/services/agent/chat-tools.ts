@@ -513,7 +513,7 @@ export function buildAgentTools(
 
     get_block_recipe: tool({
       description:
-        'Get the exact markup for a lesson-body block type not spelled out in the system prompt (see the block type list there). Call this once per distinct block type, right before its first use in update_lesson_content — a lesson needing both a table and math needs two separate calls. Never write its markup from memory.',
+        'Get the exact markup for a lesson-body block type not spelled out in the system prompt (see the block type list there). Call this once per distinct block type, right before its first use in update_lesson_content — a lesson needing both a table and math needs two separate calls. Treat the result as a template: replace any placeholder or example content with values that fit the lesson, and emit only the final HTML fragment, never the recipe\'s prose or its "Example:" line. Never write this markup from memory.',
       inputSchema: getBlockRecipeParam,
       execute: async (args) => {
         return executeAgentTool('get_block_recipe', { orgId, userId, courseId, args }, async () => {
@@ -596,7 +596,7 @@ export function buildAgentTools(
 
     update_lesson_content: tool({
       description:
-        'Update the text content of a lesson in this course. Replaces full lesson HTML for the given locale. For lesson HTML, put only the lesson body in the content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content. Write callouts as <div data-callout="tip"><p>…</p></div>, never as a blockquote. For any other block type (see the system prompt list), call get_block_recipe first and use its markup exactly.',
+        'Update the text content of a lesson in this course. Replaces full lesson HTML for the given locale. For lesson HTML, put only the lesson body in the content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content. Write callouts as <div data-callout="tip"><p>…</p></div>, never as a blockquote. For any other block type (see the system prompt list), call get_block_recipe first and use the returned markup as a template, substituting any placeholder or example content for real values — never the recipe\'s prose.',
       inputSchema: updateContentParam,
       execute: async (args) => {
         return executeAgentTool('update_lesson_content', { orgId, userId, courseId, args }, async () => {
