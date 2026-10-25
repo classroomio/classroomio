@@ -26,6 +26,25 @@ async function findRequesterMemberId(organizationId: string | null | undefined, 
   return getOrganizationMemberIdByOrgAndProfile(organizationId, profileId);
 }
 
+/**
+ * Announces the request to the organization's webhooks. A failure is logged and never fails the request.
+ */
+async function emitPaymentRequestWebhookEvent(data: PaymentRequestData, organizationId: string | null | undefined) {
+  try {
+    const requester = await getProfileByEmail(data.studentEmail.toLowerCase().trim());
+    const requesterMemberId = await findRequesterMemberId(organizationId, requester?.id);
+    const requesterProfileId = requesterMemberId ? (requester?.id ?? null) : null;
+
+    await emitCourseWebhookEvent(data.courseId, 'course.payment_request.created', {
+      profileId: requesterProfileId,
+      email: data.studentEmail,
+      studentName: data.studentFullname || null
+    });
+  } catch (error) {
+    console.error('emitPaymentRequestWebhookEvent error:', error);
+  }
+}
+
 export async function createPaymentRequest(data: PaymentRequestData) {
   try {
     // Get course and organization data
@@ -104,15 +123,7 @@ export async function createPaymentRequest(data: PaymentRequestData) {
       props: { path: 'payment-request', orgName }
     });
 
-    const requester = await getProfileByEmail(data.studentEmail.toLowerCase().trim());
-    const requesterMemberId = await findRequesterMemberId(course.orgId, requester?.id);
-    const requesterProfileId = requesterMemberId ? (requester?.id ?? null) : null;
-
-    await emitCourseWebhookEvent(data.courseId, 'course.payment_request.created', {
-      profileId: requesterProfileId,
-      email: data.studentEmail,
-      studentName: data.studentFullname || null
-    });
+    await emitPaymentRequestWebhookEvent(data, course.orgId);
 
     return {
       success: true,
