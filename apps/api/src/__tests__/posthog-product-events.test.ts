@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   getCourseProgress: vi.fn(),
   getActiveOrganizationPlan: vi.fn(),
   claimMemberCertificateEarned: vi.fn(),
+  emitWebhookEvent: vi.fn(),
   getLessonById: vi.fn(),
   getLessonCompletion: vi.fn(),
   upsertLessonCompletion: vi.fn()
@@ -37,7 +38,7 @@ vi.mock('@cio/db/queries/lesson', () => ({
   upsertLessonCompletion: mocks.upsertLessonCompletion
 }));
 vi.mock('@cio/core/services/webhook/emit', () => ({
-  emitWebhookEvent: vi.fn(),
+  emitWebhookEvent: mocks.emitWebhookEvent,
   emitCourseWebhookEvent: vi.fn()
 }));
 vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({ invalidateOrgStats: vi.fn() }));
@@ -145,6 +146,16 @@ describe('course_completed', () => {
     await evaluateCourseCertification('course-1', 'student-1');
 
     expect(mocks.captureServerEvent).not.toHaveBeenCalled();
+  });
+
+  it('still fires when a step after the certificate claim fails', async () => {
+    mocks.getCourseProgress.mockResolvedValue(completedProgress);
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
+    mocks.emitWebhookEvent.mockRejectedValueOnce(new Error('webhook store unavailable'));
+
+    await expect(evaluateCourseCertification('course-1', 'student-1')).rejects.toThrow('webhook store unavailable');
+
+    expect(mocks.captureServerEvent).toHaveBeenCalledWith(expect.objectContaining({ event: 'course_completed' }));
   });
 
   it('does not fire again once the certificate is earned', async () => {

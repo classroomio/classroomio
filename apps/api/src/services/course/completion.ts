@@ -112,6 +112,13 @@ export async function evaluateCourseCertification(
       if (didClaimCertificate) {
         isNewCompletion = true;
 
+        captureServerEvent({
+          event: 'course_completed',
+          distinctId: profileId,
+          orgId: courseRow.orgId,
+          properties: { course_id: courseId, course_type: courseRow.type }
+        });
+
         await invalidateOrgStats(courseRow.orgId);
 
         const completionEventData = { profileId, memberId: progress.groupMemberId, completedAt: earnedAt };
@@ -131,13 +138,6 @@ export async function evaluateCourseCertification(
           userId: profileId,
           courseId,
           props: { path: 'standard', earnedAt }
-        });
-
-        captureServerEvent({
-          event: 'course_completed',
-          distinctId: profileId,
-          orgId: courseRow.orgId,
-          properties: { course_id: courseId, course_type: courseRow.type }
         });
 
         if (courseRow.certificate?.isDownloadable) {
