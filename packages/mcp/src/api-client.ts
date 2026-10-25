@@ -561,7 +561,7 @@ export class ClassroomIoApiClient {
   }
 
   async setFeaturedCourses(payload: TPublicApiSetFeaturedCourses) {
-    return this.request('/public-api/v1/courses/featured', { method: 'PUT', body: payload });
+    return this.request('/public-api/v1/organization/landing-page/featured-courses', { method: 'PUT', body: payload });
   }
 
   async reorderCourseContent(courseId: string, payload: TPublicApiReorderCourseContent) {

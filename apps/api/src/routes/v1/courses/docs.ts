@@ -46,13 +46,10 @@ export const contentForbiddenResponses = {
   )
 };
 
-export const courseWriteForbiddenResponses = {
-  clone: forbidden(
-    'course:write',
-    'the automation actor is not an org admin or tutor, or the course is a template (copy templates with Use template)'
-  ),
-  featured: forbidden('course:write', 'the automation actor is not an org admin')
-};
+export const cloneForbiddenResponse = forbidden(
+  'course:write',
+  'the automation actor is not an org admin or tutor, or the course is a template (copy templates with Use template)'
+);
 
 export const exerciseForbiddenResponses = {
   read: forbidden('course:exercise:read', TEAM_FORBIDDEN),

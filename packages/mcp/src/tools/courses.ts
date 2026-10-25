@@ -1,8 +1,4 @@
-import {
-  ZPublicApiCloneCourse,
-  ZPublicApiCourseParam,
-  ZPublicApiSetFeaturedCourses
-} from '@cio/utils/validation/public-api';
+import { ZPublicApiCloneCourse, ZPublicApiCourseParam } from '@cio/utils/validation/public-api';
 
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -10,7 +6,6 @@ import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 
 const CREATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, idempotentHint: false };
-const UPDATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, idempotentHint: true };
 
 const courseId = ZPublicApiCourseParam.shape.courseId;
 
@@ -27,17 +22,6 @@ export function registerCourseTools(server: McpServer, apiClient: ClassroomIoApi
     async (args) => {
       const { courseId, ...payload } = ZCloneCourseToolInput.parse(args);
       return jsonContent(await apiClient.cloneCourse(courseId, payload));
-    }
-  );
-
-  server.tool(
-    'set_featured_courses',
-    'Set the published courses shown first, in order, on the organization landing page and public course list; the API key creator must be an org admin. The list replaces the current one, so include every course to keep; an empty list clears it.',
-    shape(ZPublicApiSetFeaturedCourses),
-    UPDATE,
-    async (args) => {
-      const payload = ZPublicApiSetFeaturedCourses.parse(args);
-      return jsonContent(await apiClient.setFeaturedCourses(payload));
     }
   );
 }

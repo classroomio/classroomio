@@ -8,15 +8,14 @@ vi.mock('@api/services/course-import/course-import', () => ({}));
 vi.mock('@api/services/course/people', () => ({}));
 vi.mock('@api/services/course/certificate-plan', () => ({}));
 vi.mock('@api/services/course/clone', () => ({ cloneCourse: vi.fn() }));
-vi.mock('@api/services/organization', () => ({ getOrganizationCourses: vi.fn(), reorderOrgCourses: vi.fn() }));
+vi.mock('@api/services/organization', () => ({ getOrganizationCourses: vi.fn() }));
 
 import { ROLE } from '@cio/utils/constants';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { getOrganizationMemberRoleId } from '@cio/db/queries/organization';
 import { getCourseById, isCourseSlugTaken } from '@cio/db/queries/course';
 import { cloneCourse } from '@api/services/course/clone';
-import { reorderOrgCourses } from '@api/services/organization';
-import { clonePublicApiCourseService, setPublicApiFeaturedCoursesService } from '@api/services/v1/courses/course';
+import { clonePublicApiCourseService } from '@api/services/v1/courses/course';
 
 const ORG_ID = 'org-1';
 const ACTOR_ID = 'actor-1';
@@ -109,63 +108,5 @@ describe('clonePublicApiCourseService', () => {
       clonePublicApiCourseService(ORG_ID, ACTOR_ID, { courseId: COURSE_ID }, { title: 'Copy', slug: 'taken' })
     ).rejects.toMatchObject({ statusCode: 409, code: 'SLUG_IN_USE' });
     expect(cloneCourse).not.toHaveBeenCalled();
-  });
-});
-
-describe('setPublicApiFeaturedCoursesService', () => {
-  it('saves the courses in the given order', async () => {
-    const payload = { courseIds: [OTHER_COURSE_ID, COURSE_ID] };
-
-    await expect(setPublicApiFeaturedCoursesService(ORG_ID, ACTOR_ID, payload)).resolves.toEqual(payload);
-    expect(reorderOrgCourses).toHaveBeenCalledWith(ORG_ID, [
-      { id: OTHER_COURSE_ID, order: 0 },
-      { id: COURSE_ID, order: 1 }
-    ]);
-  });
-
-  it('clears the featured courses with an empty list', async () => {
-    await setPublicApiFeaturedCoursesService(ORG_ID, ACTOR_ID, { courseIds: [] });
-
-    expect(reorderOrgCourses).toHaveBeenCalledWith(ORG_ID, []);
-  });
-
-  it.each([
-    ['a tutor', ROLE.TUTOR],
-    ['a student', ROLE.STUDENT]
-  ])('returns 403 for %s', async (_label, role) => {
-    vi.mocked(getOrganizationMemberRoleId).mockResolvedValue(role);
-
-    await expect(
-      setPublicApiFeaturedCoursesService(ORG_ID, ACTOR_ID, { courseIds: [COURSE_ID] })
-    ).rejects.toMatchObject({ statusCode: 403 });
-    expect(reorderOrgCourses).not.toHaveBeenCalled();
-  });
-
-  it('returns 401 without an actor', async () => {
-    await expect(setPublicApiFeaturedCoursesService(ORG_ID, null, { courseIds: [] })).rejects.toMatchObject({
-      statusCode: 401
-    });
-  });
-
-  it("returns 404 for another org's course", async () => {
-    vi.mocked(getCourseOrganizationId).mockResolvedValue('org-2');
-
-    await expect(
-      setPublicApiFeaturedCoursesService(ORG_ID, ACTOR_ID, { courseIds: [COURSE_ID] })
-    ).rejects.toMatchObject({ statusCode: 404 });
-    expect(reorderOrgCourses).not.toHaveBeenCalled();
-  });
-
-  it.each([
-    ['unpublished', { isPublished: false }],
-    ['deleted', { status: 'DELETED' }],
-    ['a template', { isTemplate: true }]
-  ])('returns 400 when a course is %s', async (_label, overrides) => {
-    vi.mocked(getCourseById).mockResolvedValue([course(overrides)]);
-
-    await expect(
-      setPublicApiFeaturedCoursesService(ORG_ID, ACTOR_ID, { courseIds: [COURSE_ID] })
-    ).rejects.toMatchObject({ statusCode: 400 });
-    expect(reorderOrgCourses).not.toHaveBeenCalled();
   });
 });

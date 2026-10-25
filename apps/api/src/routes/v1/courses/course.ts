@@ -10,9 +10,7 @@ import {
   ZPublicApiCoursesQuery,
   ZPublicApiCreateCourse,
   ZPublicApiCreateCourseResponse,
-  ZPublicApiFeaturedCoursesResponse,
   ZPublicApiPaginationQuery,
-  ZPublicApiSetFeaturedCourses,
   ZPublicApiUpdateCourse,
   ZPublicApiUpdateCourseEnvelope,
   ZPublicApiUpdateCourseStructure,
@@ -26,7 +24,6 @@ import {
   getCourseService,
   listCoursesService,
   listCourseStudentsService,
-  setPublicApiFeaturedCoursesService,
   updatePublicApiCourseService,
   updatePublicApiCourseStructureService
 } from '@api/services/v1/courses/course';
@@ -37,8 +34,7 @@ import { getEventSource } from '@api/utils/event-source';
 import { captureCoursePublished } from '@cio/core/services/course/course';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { ORG_ADMIN_RULE } from '../team/docs';
-import { ANY_KEY_RULE, ORG_TEAM_RULE, courseWriteForbiddenResponses } from './docs';
+import { ANY_KEY_RULE, ORG_TEAM_RULE, cloneForbiddenResponse } from './docs';
 
 const CoursesListEnvelope = z.object({ query: ZPublicApiCoursesQuery });
 
@@ -113,39 +109,6 @@ export const v1CourseRouter = new Hono()
       }
     }
   )
-  .put(
-    '/featured',
-    describeRoute({
-      description: `Set the published courses shown first, in order, on the organization landing page and public course list; ${ORG_ADMIN_RULE}.`,
-      tags: ['Courses'],
-      responses: {
-        200: jsonResponse('Featured courses set successfully', itemResponse(ZPublicApiFeaturedCoursesResponse)),
-        400: { description: 'Invalid request body, or a course is not published, is deleted or is a template' },
-        401: errorResponses.unauthorized,
-        403: courseWriteForbiddenResponses.featured,
-        404: { description: 'Course not found' }
-      }
-    }),
-    validator('json', ZPublicApiSetFeaturedCourses),
-    async (c) => {
-      try {
-        const orgId = c.get('orgId')!;
-        const actorId = c.get('actorId');
-        const payload = c.req.valid('json');
-        const result = await setPublicApiFeaturedCoursesService(orgId, actorId, payload);
-
-        return c.json(
-          {
-            success: true,
-            data: result
-          },
-          200
-        );
-      } catch (error) {
-        return handlePublicApiError(c, error, 'Failed to set featured courses');
-      }
-    }
-  )
   .post(
     '/:courseId/clone',
     describeRoute({
@@ -158,7 +121,7 @@ export const v1CourseRouter = new Hono()
         ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: courseWriteForbiddenResponses.clone,
+        403: cloneForbiddenResponse,
         404: { description: 'Course not found' },
         409: { description: 'The slug is already in use (SLUG_IN_USE)' }
       }
