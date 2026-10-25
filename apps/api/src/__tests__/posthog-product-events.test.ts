@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   getCourseProgress: vi.fn(),
   getActiveOrganizationPlan: vi.fn(),
   claimMemberCertificateEarned: vi.fn(),
+  claimMemberCompleted: vi.fn(),
   emitWebhookEvent: vi.fn(),
   getLessonById: vi.fn(),
   getLessonCompletion: vi.fn(),
@@ -29,7 +30,8 @@ vi.mock('@cio/db/queries/course/course', () => ({
   getCourseProgress: mocks.getCourseProgress
 }));
 vi.mock('@cio/db/queries/course/people', () => ({
-  claimMemberCertificateEarned: mocks.claimMemberCertificateEarned
+  claimMemberCertificateEarned: mocks.claimMemberCertificateEarned,
+  claimMemberCompleted: mocks.claimMemberCompleted
 }));
 vi.mock('@cio/db/queries/organization', () => ({ getActiveOrganizationPlan: mocks.getActiveOrganizationPlan }));
 vi.mock('@cio/db/queries/lesson', () => ({
@@ -123,6 +125,7 @@ describe('course_completed', () => {
     vi.clearAllMocks();
     mocks.getCourseCertificationRow.mockResolvedValue({ orgId: 'org-1', type: 'SELF_PACED', certificate: {} });
     mocks.claimMemberCertificateEarned.mockResolvedValue(true);
+    mocks.claimMemberCompleted.mockResolvedValue(true);
   });
 
   it('fires when the certificate is first claimed', async () => {
@@ -151,7 +154,9 @@ describe('course_completed', () => {
   it('still fires when a step after the certificate claim fails', async () => {
     mocks.getCourseProgress.mockResolvedValue(completedProgress);
     mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
-    mocks.emitWebhookEvent.mockRejectedValueOnce(new Error('webhook store unavailable'));
+    mocks.emitWebhookEvent
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error('webhook store unavailable'));
 
     await expect(evaluateCourseCertification('course-1', 'student-1')).rejects.toThrow('webhook store unavailable');
 

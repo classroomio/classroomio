@@ -441,8 +441,8 @@ importers:
         specifier: ^7.0.5
         version: 7.0.5
       mediabunny:
-        specifier: ^1.45.2
-        version: 1.45.2
+        specifier: ^1.62.0
+        version: 1.62.0
       openai-edge:
         specifier: ^1.2.2
         version: 1.2.3
@@ -12718,8 +12718,8 @@ packages:
     resolution: {integrity: sha512-aisnrDP4GNe06UcKFnV5bfMNPBUw4jsLGaWwWfnH3v02GnBuXX2MCVn5RbrWo0j3pczUilYblq7fQ7Nw2t5XKw==}
     engines: {node: '>= 0.8'}
 
-  mediabunny@1.45.2:
-    resolution: {integrity: sha512-lm34wGClgC263x8SEH5+79Z6aeDcHetoCKMSAeqDhn6Qn4a3A24Bs8uJf9Lxt9h0MEa/uJqZ/5soial/V9TSwQ==}
+  mediabunny@1.62.0:
+    resolution: {integrity: sha512-D8E8BDxjCyqyrGj074jLRQNgilDW5izJu8o9pg7THMYMIZBL1Fao5hOtdDPDfA+nSnk68tMa8IaCJmz8hSpJpw==}
 
   medium-zoom@1.1.0:
     resolution: {integrity: sha512-ewyDsp7k4InCUp3jRmwHBRFGyjBimKps/AJLjRSox+2q/2H4p/PNpQf+pwONWlJiOudkBXtbdmVbFjqyybfTmQ==}
@@ -29155,7 +29155,7 @@ snapshots:
 
   media-typer@1.1.0: {}
 
-  mediabunny@1.45.2:
+  mediabunny@1.62.0:
     dependencies:
       '@types/dom-mediacapture-transform': 0.1.11
       '@types/dom-webcodecs': 0.1.13

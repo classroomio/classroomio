@@ -49,7 +49,7 @@ export async function addPublicApiCohortMembersService(
   const profileIds = payload.members.flatMap((member) => (member.profileId ? [member.profileId] : []));
   await Promise.all(profileIds.map((profileId) => assertProfileBelongsToOrganization(orgId, profileId)));
 
-  const results = await addCohortMembersSettled(params.cohortId, payload, source);
+  const results = await addCohortMembersSettled(params.cohortId, payload, source, actorId);
 
   const added: unknown[] = [];
   const errors: { index: number; email: string | null; profileId: string | null; code: string; message: string }[] = [];
@@ -96,5 +96,5 @@ export async function removePublicApiCohortMemberService(
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
-  return removeCohortMemberService(params.cohortId, params.memberId);
+  return removeCohortMemberService(params.cohortId, params.memberId, actorId);
 }

@@ -58,11 +58,18 @@ import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, DEFAULT_CONTENT_GROUPING, type CourseContent } from './utils';
 import { getPublicConversionOffenders } from './public-course-guard';
 
+function resolvePublishChange(before: boolean | null, after: boolean | null): 'published' | 'unpublished' | null {
+  if (Boolean(before) === Boolean(after)) return null;
+
+  return after ? 'published' : 'unpublished';
+}
+
 export interface UpdateCourseResult {
   course: TCourse;
   conversionOffenders?: NonAutoGradableQuestionOffender[] | null;
   /** True when this update took the course from unpublished to published. */
   publishedNow: boolean;
+  publishChange?: 'published' | 'unpublished' | null;
 }
 
 /**
@@ -489,10 +496,13 @@ export async function updateCourse(
       await invalidateOrgStats(statsOrgId);
     }
 
+    const publishChange = resolvePublishChange(currentCourse.isPublished, updated.isPublished);
+
     return {
       course: updated,
       conversionOffenders,
-      publishedNow: !currentCourse.isPublished && !!updated.isPublished
+      publishedNow: !currentCourse.isPublished && !!updated.isPublished,
+      publishChange
     };
   } catch (error) {
     if (error instanceof AppError) {

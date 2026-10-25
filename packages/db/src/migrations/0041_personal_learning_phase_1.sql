@@ -38,6 +38,7 @@ CREATE TABLE "personal_learning_session" (
 	"generation_meta" jsonb DEFAULT '{}'::jsonb NOT NULL,
 	"failure_code" varchar(64),
 	"attempt" integer DEFAULT 0 NOT NULL,
+	"retry_count" integer DEFAULT 0 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "personal_learning_session_journey_index_unique" UNIQUE("journey_id","session_index"),

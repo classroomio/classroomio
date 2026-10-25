@@ -4870,6 +4870,7 @@
     "title": "Automation",
     "subtitle": "Zapier ve genel API'nin aynı kuruluş kapsamlı anahtar sistemini takip etmesiyle MCP istemcilerini şimdi bağlayın.",
     "coming_soon": "Çok yakında",
+    "read_docs": "Dokümanları okuyun",
     "permissions": {
       "disabled_title": "Salt okuma erişimi",
       "disabled_description": "Yalnızca kuruluş yöneticileri şunları oluşturabilir, döndürebilir, veya otomasyon anahtarlarını iptal edin. Öğretmenler kurulum talimatlarını buradan inceleyebilir."
@@ -4948,8 +4949,7 @@
         "codex_description": "ClassroomIO MCP sunucusunu aynı kuruluş kapsamlı anahtarla Codex'e ekler.",
         "cursor_description": "Bunu şuraya yapıştırın: `~/.cursor/mcp.json` veya çalışma alanınız MCP config.",
         "opencode_description": "Bunu proje kökünüzdeki `opencode.json'a veya `~/.config/opencode/opencode.json`a ekleyin."
-      },
-      "view_docs": "Dokümanları Görüntüle"
+      }
     },
     "api": {
       "subtitle": "ClassroomIO genel API'si ile entegre olmak için API anahtarlarını yönetin.",
@@ -4972,8 +4972,7 @@
       "setup": {
         "title": "Hızlı başlangıç",
         "description": "API anahtarınızı her istekte Taşıyıcı belirteci olarak kullanın. Yer tutucuyu yukarıdan bir anahtarla değiştirin veya gizli anahtarı oluşturduktan hemen sonra yapıştırın."
-      },
-      "view_docs": "Belgeleri Görüntüleyin"
+      }
     },
     "zapier": {
       "page_subtitle": "ClassroomIO'yu Zapier aracılığıyla binlerce uygulamayla otomatikleştirin. Çok yakında."
@@ -5049,7 +5048,9 @@
       "event_groups": {
         "organization": "Kuruluş",
         "course": "Kurslar",
-        "learning": "Öğrenme ilerlemesi"
+        "learning": "Öğrenme ilerlemesi",
+        "cohort": "Gruplar",
+        "compliance": "Compliance"
       },
       "events": {
         "organization_invite_created": "Bir ekip daveti gönderildiğinde",
@@ -5065,7 +5066,18 @@
         "course_submission_created": "Bir alıştırma gönderimi oluşturulduğunda",
         "course_submission_status_changed": "Bir gönderimin durumu değiştiğinde, örneğin notlandırıldığında",
         "lesson_completion_updated": "Bir ders tamamlandı olarak işaretlendiğinde veya sıfırlandığında",
-        "exercise_completion_updated": "Bir alıştırma tamamlandığında veya sıfırlandığında"
+        "exercise_completion_updated": "Bir alıştırma tamamlandığında veya sıfırlandığında",
+        "compliance_record_status_changed": "Bir öğrencinin uyumluluk durumu değiştiğinde",
+        "compliance_record_waived": "Bir öğrencinin uyumluluk şartından muaf tutulduğunda",
+        "organization_member_added": "Bir kişi kuruluşa katıldığında",
+        "organization_member_removed": "Bir kişi kuruluştan çıkarıldığında",
+        "organization_member_updated": "Bir kişinin rolü veya durumu değiştiğinde",
+        "course_published": "Bir kurs yayınlandığında",
+        "course_unpublished": "Bir kursun yayını kaldırıldığında",
+        "cohort_member_added": "Bir kişi gruba eklendiğinde",
+        "cohort_member_removed": "Bir kişi gruptan çıkarıldığında",
+        "lesson_session_scheduled": "Bir canlı oturum planlandığında veya taşındığında",
+        "course_payment_request_created": "Bir öğrenci bir kursun ödemesini yapmak istediğinde"
       },
       "deliveries": {
         "title": "Teslimatlar",

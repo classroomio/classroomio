@@ -6,6 +6,10 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrganizationMemberIdByOrgAndProfile: vi.fn()
 }));
 
+vi.mock('@cio/core/services/webhook/emit', () => ({
+  emitOrganizationMemberWebhookEvent: vi.fn().mockResolvedValue(undefined)
+}));
+
 vi.mock('@cio/db/queries/organization/invite', () => ({
   getActivePendingOrgInviteForEmail: vi.fn(),
   selectOrganizationMemberByOrgAndNormalizedEmail: vi.fn(),
@@ -57,6 +61,7 @@ describe('joinOrganization', () => {
     vi.clearAllMocks();
     env.PUBLIC_IS_SELFHOSTED = 'false';
     vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(null);
+    vi.mocked(createOrganizationMember).mockResolvedValue({ id: 1 } as never);
     vi.mocked(getProfileById).mockResolvedValue({ id: USER_ID, email: 'Learner@Example.com' } as never);
     vi.mocked(getActivePendingOrgInviteForEmail).mockResolvedValue(null);
     vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue(null as never);

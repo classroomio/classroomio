@@ -13,6 +13,7 @@ import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/uti
 import { v1AnalyticsRouter } from './analytics';
 import { v1AudienceRouter } from './audience';
 import { v1CohortsRouter } from './cohorts';
+import { v1CourseTemplatesRouter } from './course-templates';
 import { v1CoursesRouter } from './courses';
 import { v1MediaRouter } from './media';
 import { v1ExerciseTemplatesRouter } from './exercise-templates';
@@ -43,6 +44,7 @@ export const v1Router = new Hono()
   .route('/audience', v1AudienceRouter)
   .route('/team', v1TeamRouter)
   .route('/courses', v1CoursesRouter)
+  .route('/course-templates', v1CourseTemplatesRouter)
   .route('/cohorts', v1CohortsRouter)
   .route('/assets', v1MediaRouter)
   .route('/exercise-templates', v1ExerciseTemplatesRouter);

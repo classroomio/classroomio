@@ -6504,6 +6504,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
         "certificate_earned_at": {
           "name": "certificate_earned_at",
           "type": "timestamp with time zone",
@@ -10910,6 +10916,13 @@
           "notNull": true,
           "default": 0
         },
+        "retry_count": {
+          "name": "retry_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -12808,6 +12821,12 @@
         },
         "submitted_by": {
           "name": "submitted_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "graded_by": {
+          "name": "graded_by",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false

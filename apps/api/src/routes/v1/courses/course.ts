@@ -303,7 +303,8 @@ export const v1CourseRouter = new Hono()
         const { course, conversionOffenders, publishedNow } = await updatePublicApiCourseService(
           orgId,
           params,
-          payload
+          payload,
+          c.get('actorId')
         );
 
         if (publishedNow) {

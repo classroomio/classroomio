@@ -42,7 +42,7 @@ export async function assignPublicApiCohortStudentsService(
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
-  return assignExistingStudentsToCohort(params.cohortId, payload, source);
+  return assignExistingStudentsToCohort(params.cohortId, payload, source, actorId);
 }
 
 export async function getPublicApiCohortInviteLinkService(

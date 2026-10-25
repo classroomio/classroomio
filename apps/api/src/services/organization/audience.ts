@@ -1,3 +1,4 @@
+import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type AudienceImportResult,
@@ -234,7 +235,8 @@ async function enrollAudienceStudentProfilesInCohorts(
   profileIds: string[],
   cohortIds: string[],
   shouldSendEmail: boolean,
-  source: TEventSource
+  source: TEventSource,
+  actorProfileId: string | null = null
 ): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
   if (cohortIds.length === 0 || profileIds.length === 0) {
     return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
@@ -263,7 +265,7 @@ async function enrollAudienceStudentProfilesInCohorts(
   const alreadyEnrolled = pairs.length - toInsert.length;
 
   if (toInsert.length > 0) {
-    await Promise.all(
+    const addedCohortMembers = await Promise.all(
       toInsert.map((pair) =>
         addCohortMember({
           cohortId: pair.cohortId,
@@ -273,6 +275,16 @@ async function enrollAudienceStudentProfilesInCohorts(
         })
       )
     );
+
+    for (const cohortMember of addedCohortMembers) {
+      await emitCohortMemberWebhookEvent(
+        'cohort.member.added',
+        orgId,
+        cohortMember.cohortId,
+        cohortMember,
+        actorProfileId
+      );
+    }
   }
 
   // Enrols every assigned profile, not only new memberships, so re-running repairs
@@ -579,7 +591,8 @@ export async function importAudienceMembers(
     existingStudentProfileIds,
     cohortIds,
     data.sendEmail,
-    source
+    source,
+    invitedByProfileId
   );
 
   let imported = 0;
@@ -603,6 +616,10 @@ export async function importAudienceMembers(
       });
       insertedMembers = await createOrganizationMembers(newMemberRows, tx);
     });
+
+    for (const insertedMember of insertedMembers) {
+      await emitOrganizationMemberWebhookEvent('organization.member.added', orgId, insertedMember, invitedByProfileId);
+    }
 
     if (studentMilestoneNotification) {
       notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
@@ -648,7 +665,8 @@ export async function importAudienceMembers(
           profiles.map((profile) => profile.id),
           cohortIds,
           false,
-          source
+          source,
+          invitedByProfileId
         );
       }
     }
@@ -900,7 +918,8 @@ export async function revokeAudiencePendingInvite(
 export async function assignAudienceToCourses(
   orgId: string,
   data: TAssignAudienceCourses,
-  source: TEventSource = 'dashboard'
+  source: TEventSource = 'dashboard',
+  actorProfileId: string | null = null
 ) {
   const organization = await getOrganizationById(orgId);
   if (!organization) {
@@ -941,7 +960,8 @@ export async function assignAudienceToCourses(
       data.profileIds,
       cohortIds,
       data.sendEmail,
-      source
+      source,
+      actorProfileId
     );
   }
 

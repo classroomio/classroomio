@@ -93,6 +93,10 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify/{jobId}': 'Get an exercise notification status',
   'GET /public-api/v1/exercise-templates': 'List exercise templates',
   'GET /public-api/v1/exercise-templates/{templateId}': 'Get an exercise template',
+  'GET /public-api/v1/course-templates': 'List course templates',
+  'GET /public-api/v1/course-templates/{templateId}': 'Get a course template',
+  'POST /public-api/v1/course-templates/{templateId}/courses': 'Create a course from a template',
+  'POST /public-api/v1/courses/{courseId}/template': 'Save a course as a template',
   'GET /public-api/v1/courses/{courseId}/submissions': 'List course submissions',
   'GET /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Get a submission',
   'PUT /public-api/v1/courses/{courseId}/submissions/{submissionId}/grades': 'Grade a submission',
@@ -184,6 +188,11 @@ const OPERATION_TAGS = [
   { name: 'Exercise Templates', description: 'Browse built-in exercise templates.' },
   { name: 'Course Submissions', description: 'Review and grade exercise submissions and read the course gradebook.' },
   { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
+  {
+    name: 'Course Templates',
+    description:
+      'Browse course templates, create courses from them, and save courses as templates. Converting a course into a template in place and pulling template updates are dashboard-only for now.'
+  },
   { name: 'Public API Assets', description: 'Reserve asset uploads for media attached to lessons and exercises.' },
   { name: 'Cohorts', description: 'Create and manage cohorts.' },
   { name: 'Cohort Members', description: 'Manage the people in a cohort.' },

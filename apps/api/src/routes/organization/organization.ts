@@ -1027,7 +1027,7 @@ export const organizationRouter = new Hono()
         const orgId = c.req.header('cio-org-id')!;
         const data = c.req.valid('json');
 
-        const result = await assignAudienceToCourses(orgId, data);
+        const result = await assignAudienceToCourses(orgId, data, 'dashboard', c.get('user')?.id ?? null);
 
         return c.json(
           {

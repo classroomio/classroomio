@@ -6,6 +6,9 @@ import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
+import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
+import { getProfileByEmail } from '@cio/db/queries/auth';
+import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 
 export interface PaymentRequestData {
   courseId: string;
@@ -17,6 +20,31 @@ export interface PaymentRequestData {
  * Creates a payment request and sends emails to teacher and student
  * @param data Payment request data
  */
+async function findRequesterMemberId(organizationId: string | null | undefined, profileId: string | undefined) {
+  if (!organizationId || !profileId) return null;
+
+  return getOrganizationMemberIdByOrgAndProfile(organizationId, profileId);
+}
+
+/**
+ * Announces the request to the organization's webhooks. A failure is logged and never fails the request.
+ */
+async function emitPaymentRequestWebhookEvent(data: PaymentRequestData, organizationId: string | null | undefined) {
+  try {
+    const requester = await getProfileByEmail(data.studentEmail.toLowerCase().trim());
+    const requesterMemberId = await findRequesterMemberId(organizationId, requester?.id);
+    const requesterProfileId = requesterMemberId ? (requester?.id ?? null) : null;
+
+    await emitCourseWebhookEvent(data.courseId, 'course.payment_request.created', {
+      profileId: requesterProfileId,
+      email: data.studentEmail,
+      studentName: data.studentFullname || null
+    });
+  } catch (error) {
+    console.error('emitPaymentRequestWebhookEvent error:', error);
+  }
+}
+
 export async function createPaymentRequest(data: PaymentRequestData) {
   try {
     // Get course and organization data
@@ -94,6 +122,8 @@ export async function createPaymentRequest(data: PaymentRequestData) {
       courseId: data.courseId,
       props: { path: 'payment-request', orgName }
     });
+
+    await emitPaymentRequestWebhookEvent(data, course.orgId);
 
     return {
       success: true,

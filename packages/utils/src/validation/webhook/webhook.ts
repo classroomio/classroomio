@@ -2,7 +2,11 @@ import * as z from 'zod';
 
 import { WEBHOOK_DELIVERY_STATUSES, WEBHOOK_EVENT_MODES, WEBHOOK_EVENT_TYPES } from '../../constants/webhook';
 
-export const ZWebhookEventType = z.enum(WEBHOOK_EVENT_TYPES);
+const webhookEventTypes: readonly string[] = WEBHOOK_EVENT_TYPES;
+
+export const ZWebhookEventType = z
+  .string()
+  .refine((value) => webhookEventTypes.includes(value), { message: 'Invalid webhook event type' });
 
 const ZWebhookPayloadUrl = z
   .string()

@@ -285,8 +285,15 @@
     {
       "idx": 40,
       "version": "7",
-      "when": 1792940262981,
-      "tag": "0040_personal_learning_phase_1",
+      "when": 1792952625947,
+      "tag": "0040_groupmember_completed_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1792960586419,
+      "tag": "0041_personal_learning_phase_1",
       "breakpoints": true
     }
   ]

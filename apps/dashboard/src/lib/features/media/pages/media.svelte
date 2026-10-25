@@ -4,6 +4,9 @@
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import VideoIcon from '@lucide/svelte/icons/video';
+  import { goto, replaceState } from '$app/navigation';
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
 
   import type { TAssetUpdate } from '@cio/utils/validation/assets';
 
@@ -18,24 +21,21 @@
   } from '$features/media/components';
   import { mediaApi } from '$features/media/api';
   import type { AssetKindFilter, AssetStatusFilter, AssetUsageGraph, OrganizationAsset } from '$features/media/utils';
+  import {
+    DEFAULT_MEDIA_LIST_NEXT,
+    MEDIA_PAGE_SIZE,
+    mergeMediaListSearchParams,
+    parseMediaListFilters
+  } from '$features/media/utils/media-list-filters';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
-  import { onDestroy, untrack } from 'svelte';
+  import { onDestroy } from 'svelte';
 
-  interface Props {
-    search?: string;
-    kind?: AssetKindFilter;
-    status?: AssetStatusFilter;
-  }
-
-  let {
-    search = $bindable(''),
-    kind = $bindable('all' as AssetKindFilter),
-    status = $bindable('all' as AssetStatusFilter)
-  }: Props = $props();
+  const initialFilters = parseMediaListFilters(page.url.searchParams);
 
   let isRefreshing = $state(false);
+  let isLoadingMore = $state(false);
   let editOpen = $state(false);
   let usageOpen = $state(false);
   let manageThumbsOpen = $state(false);
@@ -46,6 +46,8 @@
   let downloadingAssetId = $state<string | null>(null);
   let selectedAsset = $state<OrganizationAsset | null>(null);
   let usageData = $state<AssetUsageGraph | null>(null);
+  let kind = $state<AssetKindFilter>(initialFilters.kind);
+  let status = $state<AssetStatusFilter>(initialFilters.status);
 
   const assets = $derived(mediaApi.assets);
   const storageSummary = $derived(mediaApi.storageSummary);
@@ -53,33 +55,107 @@
   let assetsRequestId = 0;
 
   const searchBox = new DebouncedSearch({
-    initial: untrack(() => search),
-    onApply: (nextSearch) => {
-      search = nextSearch;
-      void refreshAssets(1);
+    initial: initialFilters.search,
+    onApply: () => {
+      void applyMediaFilters();
     }
+  });
+
+  let lastUrlSearch = page.url.search;
+
+  $effect(() => {
+    const nextUrlSearch = page.url.search;
+
+    if (nextUrlSearch === lastUrlSearch) return;
+
+    lastUrlSearch = nextUrlSearch;
+    const filters = parseMediaListFilters(page.url.searchParams);
+    kind = filters.kind;
+    status = filters.status;
+    searchBox.sync(filters.search);
   });
 
   onDestroy(() => {
     searchBox.destroy();
   });
 
-  async function refreshAssets(page = 1) {
+  async function applyMediaFilters() {
+    const filters = {
+      search: searchBox.applied,
+      kind,
+      status
+    };
+    const nextParams = mergeMediaListSearchParams(page.url.searchParams, filters, DEFAULT_MEDIA_LIST_NEXT);
+    const nextSearch = nextParams.toString();
+
+    if (nextSearch === page.url.searchParams.toString()) return;
+
+    mediaApi.cancelListAssetsRequest();
+    const nextUrl = `${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}${page.url.hash}`;
+    await goto(resolve(nextUrl, {}), { replaceState: true, keepFocus: true, noScroll: true });
+  }
+
+  function updateLoadedPagesQuery(nextPage: number) {
+    const filters = {
+      search: searchBox.applied,
+      kind,
+      status
+    };
+    const nextParams = mergeMediaListSearchParams(page.url.searchParams, filters, nextPage);
+    const nextSearch = nextParams.toString();
+
+    if (nextSearch === page.url.searchParams.toString()) return;
+
+    const nextUrl = `${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}${page.url.hash}`;
+    replaceState(resolve(nextUrl, {}), page.state);
+  }
+
+  function buildAssetsQuery(pageNumber: number) {
+    return {
+      page: pageNumber,
+      limit: MEDIA_PAGE_SIZE,
+      search: searchBox.applied || undefined,
+      kind: kind === 'all' ? undefined : kind,
+      status: status === 'all' ? undefined : status
+    };
+  }
+
+  async function loadAssetPages(pagesToLoad: number) {
     const requestId = ++assetsRequestId;
     isRefreshing = true;
     try {
-      await mediaApi.listAssets(
-        {
-          page,
-          limit: pagination?.limit ?? 20,
-          search: searchBox.applied || undefined,
-          kind: kind === 'all' ? undefined : kind,
-          status: status === 'all' ? undefined : status
-        },
-        { abortPrevious: true }
-      );
+      for (let pageNumber = 1; pageNumber <= pagesToLoad; pageNumber += 1) {
+        await mediaApi.listAssets(buildAssetsQuery(pageNumber), {
+          abortPrevious: true,
+          append: pageNumber > 1
+        });
+
+        if (requestId !== assetsRequestId) return;
+        if (mediaApi.pagination?.page !== pageNumber) return;
+        if (pageNumber >= (pagination?.totalPages ?? 1)) break;
+      }
     } finally {
       if (requestId === assetsRequestId) isRefreshing = false;
+    }
+  }
+
+  function handleFiltersApply() {
+    void applyMediaFilters();
+  }
+
+  async function loadMoreAssets() {
+    if (!pagination || isLoadingMore || isRefreshing) return;
+
+    const nextPage = pagination.page + 1;
+    isLoadingMore = true;
+    try {
+      await mediaApi.listAssets(buildAssetsQuery(nextPage), { abortPrevious: true, append: true });
+
+      if (mediaApi.pagination?.page === nextPage) {
+        updateLoadedPagesQuery(nextPage);
+      }
+    } finally {
+      isLoadingMore = false;
     }
   }
 
@@ -88,7 +164,8 @@
   }
 
   export async function refreshMediaData() {
-    await Promise.all([refreshAssets(1), refreshStorageSummary()]);
+    const pagesToLoad = Math.max(pagination?.page ?? 1, 1);
+    await Promise.all([loadAssetPages(pagesToLoad), refreshStorageSummary()]);
   }
 
   function openEditAsset(asset: OrganizationAsset) {
@@ -194,8 +271,7 @@
     }
   }
 
-  const prevPage = $derived(Math.max(1, (pagination?.page ?? 1) - 1));
-  const nextPage = $derived((pagination?.page ?? 1) + 1);
+  const hasMore = $derived(Boolean(pagination && pagination.page < pagination.totalPages));
 </script>
 
 <StorageCards {storageSummary} />
@@ -207,7 +283,7 @@
     searchDraft={searchBox.draft}
     onSearchInput={(nextValue) => searchBox.input(nextValue)}
     {isRefreshing}
-    onApply={() => void refreshAssets(1)}
+    onApply={handleFiltersApply}
     onRefresh={refreshMediaData}
   />
 </Page.BodyHeader>
@@ -235,28 +311,10 @@
   </Item.Group>
 {/if}
 
-{#if pagination && pagination.totalPages > 1}
-  <div class="flex items-center justify-end gap-2">
-    <Button
-      variant="outline"
-      size="sm"
-      disabled={isRefreshing || (pagination?.page ?? 1) <= 1}
-      onclick={() => refreshAssets(prevPage)}
-    >
-      {$t('media_manager.pagination.previous')}
-    </Button>
-    <p class="ui:text-muted-foreground text-sm">
-      {$t('media_manager.pagination.page')}
-      {pagination.page}
-      / {pagination.totalPages}
-    </p>
-    <Button
-      variant="outline"
-      size="sm"
-      disabled={isRefreshing || (pagination?.page ?? 1) >= pagination.totalPages}
-      onclick={() => refreshAssets(nextPage)}
-    >
-      {$t('media_manager.pagination.next')}
+{#if hasMore}
+  <div class="flex justify-center">
+    <Button variant="secondary" loading={isLoadingMore} disabled={isRefreshing} onclick={loadMoreAssets}>
+      {$t('courses.load_more')}
     </Button>
   </div>
 {/if}

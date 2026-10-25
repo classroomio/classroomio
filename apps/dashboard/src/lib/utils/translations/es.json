@@ -4951,6 +4951,7 @@
     "title": "Automatización",
     "subtitle": "Conecte los clientes de MCP ahora, con Zapier y la API pública siguiendo el mismo sistema de claves con ámbito de organización.",
     "coming_soon": "Próximamente",
+    "read_docs": "Leer la documentación",
     "mcp": {
       "setup": {
         "title": "Configuración del cliente",
@@ -4983,8 +4984,7 @@
         "rate_limits_description": "Solicitudes de lectura/escritura/publicación permitidas por minuto.",
         "used_label": "Usado:"
       },
-      "page_subtitle": "Conecta herramientas de IA a ClassroomIO con claves con ámbito de organización que puedes rotar en cualquier momento.",
-      "view_docs": "Ver documentación"
+      "page_subtitle": "Conecta herramientas de IA a ClassroomIO con claves con ámbito de organización que puedes rotar en cualquier momento."
     },
     "api": {
       "subtitle": "Administra las claves API para integrarte con la API pública de ClassroomIO.",
@@ -5007,8 +5007,7 @@
       "setup": {
         "title": "Inicio rápido",
         "description": "Usa tu clave API como token Bearer en cada solicitud. Reemplaza el marcador de posición con una clave de arriba, o pega el secreto inmediatamente después de generar una."
-      },
-      "view_docs": "Ver documentación"
+      }
     },
     "keys": {
       "active": "Activo",
@@ -5130,7 +5129,9 @@
       "event_groups": {
         "organization": "Organización",
         "course": "Cursos",
-        "learning": "Progreso de aprendizaje"
+        "learning": "Progreso de aprendizaje",
+        "cohort": "Cohortes",
+        "compliance": "Cumplimiento"
       },
       "events": {
         "organization_invite_created": "Se envía una invitación al equipo",
@@ -5146,7 +5147,18 @@
         "course_submission_created": "Se crea una entrega de ejercicio",
         "course_submission_status_changed": "Cambia el estado de una entrega, por ejemplo al calificarla",
         "lesson_completion_updated": "Una lección se marca como completada o se restablece",
-        "exercise_completion_updated": "Un ejercicio se completa o se restablece"
+        "exercise_completion_updated": "Un ejercicio se completa o se restablece",
+        "compliance_record_status_changed": "Cambia el estado de cumplimiento de un estudiante",
+        "compliance_record_waived": "Se exime a un estudiante de un requisito de cumplimiento",
+        "organization_member_added": "Una persona se une a la organización",
+        "organization_member_removed": "Se elimina a una persona de la organización",
+        "organization_member_updated": "Cambia el rol o el estado de una persona",
+        "course_published": "Se publica un curso",
+        "course_unpublished": "Se despublica un curso",
+        "cohort_member_added": "Se añade una persona a una cohorte",
+        "cohort_member_removed": "Se elimina a una persona de una cohorte",
+        "lesson_session_scheduled": "Se programa o se mueve una sesión en vivo",
+        "course_payment_request_created": "Un estudiante solicita pagar un curso"
       },
       "deliveries": {
         "title": "Envíos",

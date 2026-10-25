@@ -238,7 +238,7 @@ export const cohortRouter = new Hono()
       try {
         const { cohortId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const result = await addCohortMembers(cohortId, data);
+        const result = await addCohortMembers(cohortId, data, c.get('user')?.id ?? null);
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to add cohort members');
@@ -280,7 +280,7 @@ export const cohortRouter = new Hono()
     async (c) => {
       try {
         const { cohortId, memberId } = c.req.valid('param');
-        const member = await removeCohortMemberService(cohortId, memberId);
+        const member = await removeCohortMemberService(cohortId, memberId, c.get('user')?.id ?? null);
         return c.json({ success: true, data: member }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to remove cohort member');
@@ -330,7 +330,7 @@ export const cohortRouter = new Hono()
       try {
         const { cohortId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const result = await assignExistingStudentsToCohort(cohortId, data);
+        const result = await assignExistingStudentsToCohort(cohortId, data, 'dashboard', c.get('user')?.id ?? null);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to assign students to cohort');

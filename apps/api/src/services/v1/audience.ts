@@ -66,7 +66,7 @@ export async function assignAudienceCoursesService(
 ) {
   await assertOrgAdmin(orgId, actorId);
 
-  return assignAudienceToCourses(orgId, payload, source);
+  return assignAudienceToCourses(orgId, payload, source, actorId);
 }
 
 export async function removeAudienceService(orgId: string, memberId: number, actorId: string | null) {
