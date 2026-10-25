@@ -7,6 +7,7 @@ import type {
 } from '@cio/utils/validation/public-api';
 import type { TPublicApiCourseParam } from '@cio/utils/validation/public-api';
 import type { TUpdateCourseMember } from '@cio/utils/validation/course/people';
+import type { TEventSource } from '@cio/core/services/posthog';
 
 import { ROLE } from '@cio/utils/constants';
 import {
@@ -47,7 +48,8 @@ export async function addCourseMemberService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseParam,
-  payload: TPublicApiAddCourseMember
+  payload: TPublicApiAddCourseMember,
+  source: TEventSource = 'public_api'
 ) {
   await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
@@ -61,7 +63,7 @@ export async function addCourseMemberService(
     }
   }
 
-  const [addedMember] = await addMembers(params.courseId, [member]);
+  const [addedMember] = await addMembers(params.courseId, [member], source);
 
   return addedMember;
 }

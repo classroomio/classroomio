@@ -12,6 +12,7 @@ import {
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
 import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
+import { captureServerEvent } from '@cio/core/services/posthog';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
@@ -110,6 +111,13 @@ export async function evaluateCourseCertification(
 
       if (didClaimCertificate) {
         isNewCompletion = true;
+
+        captureServerEvent({
+          event: 'course_completed',
+          distinctId: profileId,
+          orgId: courseRow.orgId,
+          properties: { course_id: courseId, course_type: courseRow.type }
+        });
 
         await invalidateOrgStats(courseRow.orgId);
 

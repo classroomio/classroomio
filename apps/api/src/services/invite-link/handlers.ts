@@ -13,6 +13,8 @@ import { buildEmailBranding, buildEmailFromName } from '@cio/email';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import type { DbOrTxClient } from '@cio/db/drizzle';
+import type { TGroupmember } from '@cio/db/types';
+import { captureLearnersEnrolled } from '@api/services/product-events';
 import type { TInviteLinkWithContext } from '@cio/db/queries/invite-link';
 import type { TInviteLinkResourceType } from '@cio/utils/validation/invite-link';
 
@@ -28,6 +30,7 @@ export type InviteLinkPreview = {
 
 export type InviteLinkEnrollResult = {
   isFreshJoin: boolean;
+  enrolledMembers?: TGroupmember[];
 };
 
 type InviteLinkHandler = {
@@ -139,26 +142,28 @@ const courseHandler: InviteLinkHandler = {
     const existingMemberId = await getGroupMemberIdByGroupAndProfile(locked.groupId, profileId, tx);
     const isFreshJoin = !existingMemberId;
 
-    if (isFreshJoin) {
-      await addGroupMember(
-        {
-          groupId: locked.groupId,
-          roleId: context.invite.roleId,
-          profileId,
-          email
-        },
-        tx
-      );
-    }
+    if (!isFreshJoin) return { isFreshJoin };
 
-    return { isFreshJoin };
+    const enrolledMembers = await addGroupMember(
+      {
+        groupId: locked.groupId,
+        roleId: context.invite.roleId,
+        profileId,
+        email
+      },
+      tx
+    );
+
+    return { isFreshJoin, enrolledMembers };
   },
 
-  async afterCommit(context, profileId) {
+  async afterCommit(context, profileId, _email, { enrolledMembers }) {
     const course = requireCourse(context);
 
     await ensureComplianceEnrollmentRecordsForProfiles([course.id], [profileId]);
     await invalidateOrgStats(context.organization.id);
+
+    captureLearnersEnrolled(enrolledMembers ?? [], 'invite_link');
   },
 
   redirectTo() {
@@ -207,18 +212,19 @@ const cohortHandler: InviteLinkHandler = {
     // Runs for existing members too, so re-opening the link repairs a partial join.
     const cohortCourseIds = await getCourseIdsByCohortIds([cohort.id], tx);
 
-    if (cohortCourseIds.length > 0) {
-      const courseGroups = await getCourseGroupIds(cohortCourseIds, tx);
-      const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
+    if (cohortCourseIds.length === 0) return { isFreshJoin };
 
-      await enrollUsersInCourseGroups(groupIds, [{ profileId, email }], roleId, tx);
-    }
+    const courseGroups = await getCourseGroupIds(cohortCourseIds, tx);
+    const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
+    const enrolledMembers = await enrollUsersInCourseGroups(groupIds, [{ profileId, email }], roleId, tx);
 
-    return { isFreshJoin };
+    return { isFreshJoin, enrolledMembers };
   },
 
-  async afterCommit(context, profileId, email, { isFreshJoin }) {
+  async afterCommit(context, profileId, email, { isFreshJoin, enrolledMembers }) {
     const cohort = requireCohort(context);
+
+    captureLearnersEnrolled(enrolledMembers ?? [], 'invite_link');
     const cohortCourseIds = await getCourseIdsByCohortIds([cohort.id]);
 
     if (cohortCourseIds.length > 0) {

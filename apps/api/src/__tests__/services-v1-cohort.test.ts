@@ -307,7 +307,7 @@ describe('v1 cohort member service', () => {
     await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, payload);
 
     expect(getOrganizationMemberIdByOrgAndProfile).not.toHaveBeenCalled();
-    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload);
+    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload, 'public_api');
   });
 
   it('adds members by profileId when the profile belongs to the organization', async () => {
@@ -317,7 +317,7 @@ describe('v1 cohort member service', () => {
     await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, payload);
 
     expect(getOrganizationMemberIdByOrgAndProfile).toHaveBeenCalledWith(ORG_ID, PROFILE_ID);
-    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload);
+    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload, 'public_api');
   });
 
   it('refuses to add a profileId from another organization', async () => {
@@ -474,7 +474,7 @@ describe('v1 cohort course service', () => {
 
     await addPublicApiCohortCourseService(ORG_ID, ACTOR_ID, cohortParams, { courseId: COURSE_ID });
 
-    expect(addCourseToCohortService).toHaveBeenCalledWith(COHORT_ID, { courseId: COURSE_ID });
+    expect(addCourseToCohortService).toHaveBeenCalledWith(COHORT_ID, { courseId: COURSE_ID }, 'public_api');
   });
 
   it('refuses to add a course when the actor is a student in the cohort', async () => {

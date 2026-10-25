@@ -22,6 +22,7 @@ import {
 import { AUDIENCE_IMPORT_MAX_ROWS } from '@cio/utils/validation/organization';
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { mcpRateLimitResponse } from './courses/docs';
@@ -100,7 +101,7 @@ export const v1AudienceRouter = new Hono()
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
         const payload = c.req.valid('json');
-        const result = await createAudienceService(orgId, actorId, payload);
+        const result = await createAudienceService(orgId, actorId, payload, getEventSource(c));
 
         return c.json(
           {
@@ -136,7 +137,7 @@ export const v1AudienceRouter = new Hono()
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
         const payload = c.req.valid('json');
-        const result = await assignAudienceCoursesService(orgId, actorId, payload);
+        const result = await assignAudienceCoursesService(orgId, actorId, payload, getEventSource(c));
 
         return c.json(
           {
