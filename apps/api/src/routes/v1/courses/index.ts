@@ -1,4 +1,5 @@
 import { Hono } from '@api/utils/hono';
+import { v1CourseSaveTemplateRouter } from '../course-templates/template';
 import { v1CourseAnalyticsRouter } from './analytics';
 import { v1CourseCertificateRouter, v1CourseCertificatesRouter } from './certificates';
 import { v1CourseContentRouter } from './content';
@@ -34,4 +35,5 @@ export const v1CoursesRouter = new Hono()
   .route('/:courseId/exercises/:exerciseId/sections', v1CourseExerciseSectionsRouter)
   .route('/:courseId/exercises', v1CourseExercisesRouter)
   .route('/:courseId/submissions', v1CourseSubmissionsRouter)
-  .route('/:courseId/marks', v1CourseMarksRouter);
+  .route('/:courseId/marks', v1CourseMarksRouter)
+  .route('/:courseId/template', v1CourseSaveTemplateRouter);

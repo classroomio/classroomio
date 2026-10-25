@@ -12,6 +12,7 @@ import {
   updatePendingAudienceMemberEmail
 } from '@api/services/organization/audience';
 import { getOrgAudience, getOrgAudienceMember, removeAudienceMember } from '@api/services/organization';
+import type { TEventSource } from '@cio/core/services/posthog';
 import { updateUser } from '@api/services/account/profile';
 import { assertAutomationActor, assertMemberHasJoined, assertOrgAdmin } from './shared';
 
@@ -21,7 +22,12 @@ export async function listAudienceService(orgId: string, actorId: string | null,
   return getOrgAudience(orgId, query);
 }
 
-export async function createAudienceService(orgId: string, actorId: string | null, payload: TPublicApiCreateAudience) {
+export async function createAudienceService(
+  orgId: string,
+  actorId: string | null,
+  payload: TPublicApiCreateAudience,
+  source: TEventSource = 'public_api'
+) {
   assertAutomationActor(actorId);
   await assertOrgAdmin(orgId, actorId);
 
@@ -37,7 +43,8 @@ export async function createAudienceService(orgId: string, actorId: string | nul
       allCohorts: false,
       sendEmail: payload.sendEmail
     },
-    actorId
+    actorId,
+    source
   );
 }
 
@@ -54,11 +61,12 @@ export async function getAudienceMemberService(
 export async function assignAudienceCoursesService(
   orgId: string,
   actorId: string | null,
-  payload: TPublicApiAssignAudienceCourses
+  payload: TPublicApiAssignAudienceCourses,
+  source: TEventSource = 'public_api'
 ) {
   await assertOrgAdmin(orgId, actorId);
 
-  return assignAudienceToCourses(orgId, payload);
+  return assignAudienceToCourses(orgId, payload, source, actorId);
 }
 
 export async function removeAudienceService(orgId: string, memberId: number, actorId: string | null) {

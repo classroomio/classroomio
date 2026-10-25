@@ -18,6 +18,8 @@ import { registerCourseMemberTools } from './tools/course-members';
 import { registerCourseSectionTools } from './tools/course-sections';
 import { registerCourseExerciseTools } from './tools/course-exercises';
 import { registerCourseSubmissionTools } from './tools/course-submissions';
+import { registerCourseTemplateTools } from './tools/course-templates';
+import { registerEmailTemplateTools } from './tools/email-templates';
 import { registerTeamTools } from './tools/team';
 import { registerTagTools } from './tools/tags';
 
@@ -42,9 +44,11 @@ async function main() {
   registerCourseContentTools(server, apiClient);
   registerCourseExerciseTools(server, apiClient);
   registerCourseSubmissionTools(server, apiClient);
+  registerCourseTemplateTools(server, apiClient);
   registerAnalyticsTools(server, apiClient);
   registerAudienceTools(server, apiClient);
   registerTeamTools(server, apiClient);
+  registerEmailTemplateTools(server, apiClient);
   registerTagTools(server, apiClient);
 
   const transport = new StdioServerTransport();

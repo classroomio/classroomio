@@ -41,7 +41,13 @@ describe('updateCourseWithTags', () => {
 
     expect(updateCourse).not.toHaveBeenCalled();
     expect(replaceCourseTags).toHaveBeenCalledWith('org-1', 'course-1', { tagIds: ['tag-1'] }, replaceOptions);
-    expect(result).toEqual({ course: lockedCourse, conversionOffenders: null, tags: [{ id: 'tag-1' }] });
+    expect(result).toEqual({
+      course: lockedCourse,
+      conversionOffenders: null,
+      publishedNow: false,
+      publishChange: null,
+      tags: [{ id: 'tag-1' }]
+    });
   });
 
   it('adds addTagIds to the tags already on the course, read under the lock', async () => {

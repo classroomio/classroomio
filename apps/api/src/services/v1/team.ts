@@ -82,7 +82,7 @@ export async function updateTeamMemberService(
   });
 
   if (appliedRole) {
-    await reconcileAfterTeamRoleChange(orgId, appliedRole);
+    await reconcileAfterTeamRoleChange(orgId, appliedRole, actorId);
   }
 
   return toPublicTeamMember(await getTeamMember(orgId, params.memberId));

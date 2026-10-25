@@ -1,0 +1,88 @@
+---
+title: Rate limits
+description: How many requests an API key can make, the rate limit headers, and how to handle a 429.
+last_reviewed: '2026-10-23'
+---
+
+The API limits how many requests each API key can make, so one integration can't slow down the others.
+
+## The limit
+
+Each API key can make **100 requests per minute**. Every key has its own budget, so traffic on one key doesn't use up another's.
+
+## Rate limit headers
+
+Every response tells you where you stand:
+
+| Header | Meaning |
+| --- | --- |
+| `X-RateLimit-Limit` | Requests allowed per minute |
+| `X-RateLimit-Remaining` | Requests left in the current minute |
+| `X-RateLimit-Reset` | When the current minute ends, as an ISO 8601 timestamp |
+
+```http
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 87
+X-RateLimit-Reset: 2026-10-23T14:05:00.000Z
+```
+
+## Exceeding the limit
+
+Once you go over the limit, requests fail with `429 Too Many Requests` until the minute resets. The `Retry-After` header and the `retryAfter` field both give the number of seconds to wait.
+
+```json
+{
+  "error": "Too Many Requests",
+  "message": "Rate limit exceeded. Please try again later.",
+  "retryAfter": 42
+}
+```
+
+This body is shaped differently from [other errors](/api/errors): it has no `success` or `code` field.
+
+### MCP keys
+
+MCP keys (`cio_mcp_...`) also have per-minute usage limits for each key and for the whole organization. Going over them returns a `429` in the [standard error format](/api/errors#error-format), with no `Retry-After` header and no `retryAfter` field:
+
+```json
+{
+  "success": false,
+  "error": "Automation rate limit exceeded",
+  "code": "AUTOMATION_RATE_LIMIT_EXCEEDED"
+}
+```
+
+Wait until the next minute starts, then retry.
+
+## Handle a 429
+
+Wait for `Retry-After` seconds, then retry. When the header is missing, as it is for MCP keys, this waits 60 seconds:
+
+```js
+async function request(url, options) {
+  const res = await fetch(url, options);
+
+  if (res.status === 429) {
+    const seconds = Number(res.headers.get('Retry-After') ?? 60);
+    await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+    return request(url, options);
+  }
+
+  return res;
+}
+```
+
+To stay under the limit:
+
+- Watch `X-RateLimit-Remaining` and slow down before it reaches zero.
+- Use the largest page size you need (`limit` up to `100`) instead of many small pages. See [Pagination](/api/pagination).
+- Cache responses that don't change often.
+
+:::note[Self-hosted instances]
+Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, requests go through without a limit.
+:::
+
+## Next steps
+
+- [Errors](/api/errors): the other errors you can get, and how to fix them.
+- [Pagination](/api/pagination): page through list endpoints.

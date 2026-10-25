@@ -1,6 +1,13 @@
 import { dev } from '$app/environment';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { licenseApi } from '$features/license/api/license.svelte';
+import type { AccountOrg } from '$features/app/types';
+import { currentOrg } from '$lib/utils/store/org';
+import { ROLE_LABELS } from '@cio/utils/constants';
+import { getActiveOrgPlan, PLAN } from '@cio/utils/plans';
 import posthog from 'posthog-js';
+
+const DEPLOYMENT = PUBLIC_IS_SELFHOSTED === 'true' ? 'self_hosted' : 'cloud';
 
 const hasNoTracking = () => {
   const noTracking = licenseApi.hasAccess('no-tracking');
@@ -8,16 +15,30 @@ const hasNoTracking = () => {
   return noTracking;
 };
 
+const isTrackingOff = () => dev || hasNoTracking();
+
 export const capturePosthogEvent = (event: string, properties?: Record<string, unknown>): void => {
-  if (dev || hasNoTracking()) return;
+  if (isTrackingOff()) return;
 
   posthog.capture(event, properties);
 };
 
 export const identifyPosthogUser = (id: string, properties?: Record<string, unknown>): void => {
-  if (dev || hasNoTracking()) return;
+  if (isTrackingOff()) return;
 
   posthog.identify(id, properties);
+};
+
+/** Links the user to the org group and records their role in that org. */
+const setPosthogOrg = (org: AccountOrg): void => {
+  if (!org.id || isTrackingOff()) return;
+
+  const plan = getActiveOrgPlan(org.plans)?.planName ?? PLAN.BASIC;
+
+  posthog.group('organization', org.id, { name: org.name, site_name: org.siteName, plan });
+
+  const role = org.roleId ? ROLE_LABELS[org.roleId] : undefined;
+  if (role) posthog.setPersonProperties({ role });
 };
 
 export type PosthogBootstrapUser = {
@@ -35,7 +56,7 @@ export type PosthogBootstrapUser = {
  * autocapture events fire with the user's properties already on the person.
  */
 export const initPosthog = (user?: PosthogBootstrapUser): void => {
-  if (dev || hasNoTracking()) return;
+  if (isTrackingOff()) return;
 
   posthog.init('phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov', {
     // Route PostHog through our own domain via the tenant-router Worker so the
@@ -47,10 +68,14 @@ export const initPosthog = (user?: PosthogBootstrapUser): void => {
     })
   });
 
+  posthog.register({ deployment: DEPLOYMENT });
+
   if (user) {
     posthog.setPersonProperties({
       ...(user.email && { email: user.email }),
       ...(user.name && { name: user.name })
     });
   }
+
+  currentOrg.subscribe(setPosthogOrg);
 };

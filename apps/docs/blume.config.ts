@@ -3,9 +3,13 @@ import { defineConfig } from 'blume';
 import { extractOperations, type ApiDocument } from 'blume/openapi/model.ts';
 import { z } from 'zod';
 
+// Hand-written guides (content/docs/api) live at /api; the generated
+// reference mounts below them, since Blume always appends the full endpoint
+// index to its overview page.
 const API_ROUTE = '/api';
+const API_REFERENCE_ROUTE = '/api/reference';
 const apiSpec = JSON.parse(readFileSync(new URL('./openapi/public-api.json', import.meta.url), 'utf-8')) as ApiDocument;
-const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, API_ROUTE);
+const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, API_REFERENCE_ROUTE);
 
 // Sidebar layout for the API tab. A section is a non-collapsible header; its
 // core resource's CRUD routes sit flat beneath it and every sub-resource gets
@@ -24,7 +28,15 @@ interface TagPlacement {
 }
 
 const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
-  { label: 'Organization', tags: [{ tag: 'Audience' }, { tag: 'Team' }, { tag: 'Tags' }] },
+  {
+    label: 'Organization',
+    tags: [
+      { tag: 'Audience' },
+      { tag: 'Team' },
+      { tag: 'Organization Email Templates', label: 'Email Templates' },
+      { tag: 'Tags' }
+    ]
+  },
   {
     label: 'Courses',
     tags: [
@@ -42,7 +54,8 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
       { tag: 'Exercise Sections', label: 'Exercise Sections' },
       { tag: 'Exercise Templates', label: 'Templates' },
       { tag: 'Course Submissions', label: 'Submissions' },
-      { tag: 'Course Certificates', label: 'Certificates' }
+      { tag: 'Course Certificates', label: 'Certificates' },
+      { tag: 'Course Templates', label: 'Course Templates' }
     ]
   },
   {
@@ -190,7 +203,7 @@ export default defineConfig({
   },
   openapi: {
     enabled: true,
-    route: API_ROUTE,
+    route: API_REFERENCE_ROUTE,
     sources: [{ label: 'API', spec: './openapi/public-api.json' }]
   },
   navigation: {
@@ -283,7 +296,15 @@ export default defineConfig({
       {
         label: 'API',
         root: API_ROUTE,
-        items: [API_ROUTE, ...apiSidebarSections]
+        items: [
+          {
+            label: 'Getting started',
+            display: 'flat',
+            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination']
+          },
+          { label: 'Reference', display: 'flat', items: [API_REFERENCE_ROUTE] },
+          ...apiSidebarSections
+        ]
       }
     ]
   }

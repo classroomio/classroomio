@@ -17,6 +17,7 @@ vi.mock('@api/services/organization', () => ({ getOrganizationCourses: vi.fn() }
 vi.mock('@api/services/course/people', () => ({ listCourseMembers: vi.fn() }));
 vi.mock('@api/services/course/certificate-plan', () => ({ assertCertificateChangeAllowed: vi.fn() }));
 vi.mock('@api/services/course/update-course', () => ({ updateCourseWithTags: vi.fn() }));
+vi.mock('@cio/core/services/webhook/emit', () => ({ emitCoursePublishWebhookEvent: vi.fn() }));
 vi.mock('@cio/db/queries/tag', () => ({
   getCourseOrganizationId: vi.fn(),
   getCourseTagsForOrganization: vi.fn()
@@ -25,6 +26,7 @@ vi.mock('@cio/db/queries/tag', () => ({
 import { updateCourse } from '@cio/core/services/course/course';
 import { getCourseOrganizationId, getCourseTagsForOrganization } from '@cio/db/queries/tag';
 import { updateCourseWithTags } from '@api/services/course/update-course';
+import { emitCoursePublishWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { updatePublicApiCourseService } from '@api/services/v1/courses/course';
 
@@ -88,6 +90,37 @@ describe('updatePublicApiCourseService tags', () => {
       updatedByUserId: ACTOR_ID,
       addTagIds: [TAG_ID]
     });
+  });
+
+  it('sends the publish webhook and reports publishedNow when a tag update also publishes', async () => {
+    vi.mocked(updateCourseWithTags).mockResolvedValue({
+      course: { id: 'course-1' },
+      conversionOffenders: null,
+      publishedNow: true,
+      publishChange: 'published',
+      tags: [fullTag]
+    } as never);
+
+    const result = await updatePublicApiCourseService(ORG_ID, ACTOR_ID, params, {
+      isPublished: true,
+      tagIds: [TAG_ID]
+    });
+
+    expect(emitCoursePublishWebhookEvent).toHaveBeenCalledWith('course-1', 'published', ACTOR_ID);
+    expect(result.publishedNow).toBe(true);
+  });
+
+  it('sends the publish webhook on an update without tags too', async () => {
+    vi.mocked(updateCourse).mockResolvedValue({
+      course: { id: 'course-1' },
+      conversionOffenders: null,
+      publishedNow: false,
+      publishChange: 'unpublished'
+    } as never);
+
+    await updatePublicApiCourseService(ORG_ID, ACTOR_ID, params, { isPublished: false });
+
+    expect(emitCoursePublishWebhookEvent).toHaveBeenCalledWith('course-1', 'unpublished', ACTOR_ID);
   });
 
   it('leaves tags alone without tagIds and still returns them', async () => {

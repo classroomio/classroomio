@@ -1,95 +1,63 @@
 ---
-title: Control Course Progression
-description: Require students to move through a course in order, with lessons and exercises that only complete when your rules are met.
+title: Control progression and completion
+description: Choose how students move through a course and when lessons and exercises count as complete.
+last_reviewed: '2026-10-21'
 ---
 
-By default students can open any unlocked item in any order. With **sequential** progression they must finish each item
-before the next one unlocks, and you decide what "finished" means for every lesson and exercise. This is the backbone of
-a structured training flow: watch the video, pass the quiz, earn the certificate.
+Use **Student progression** to let students open unlocked content freely or require them to complete earlier items first. Set completion rules on each lesson and exercise to define what counts as finished.
 
-## Choose a progression mode
+![Course settings with Free and Sequential student progression options](./images/course-progression/overview.webp)
 
-In the course sidebar, scroll down to **Settings**, then find **Student progression** under **Completion rules** and pick one:
+## Choose the course progression mode
 
-| Mode           | Behavior                                                                           |
-| -------------- | ---------------------------------------------------------------------------------- |
-| **Free**       | Students open any unlocked item in any order and mark lessons complete themselves. |
-| **Sequential** | The next item stays locked until the current (or previous) item is complete.       |
+1. Open the course's **Settings → Completion rules**.
+2. Under **Student progression**, choose **Free — unlocked content is accessible** or **Sequential — complete prior items to unlock next**.
+3. Select **Save changes**.
 
-![Course sidebar with Settings highlighted and the Student progression options outlined in Completion rules](/help/progression-mode.webp)
+Administrators and tutors with course access can change these settings. Free progression allows access in any order; it does not change each lesson's completion rule. Sequential progression uses the saved course outline, so review [lesson and exercise order](/build-courses/create-and-reorder-lessons-and-exercises) before enabling it.
 
-:::info
-If a course is just a video and a quiz, turn off **Content grouping** in the same settings so the content list is a
-flat list instead of grouped sections.
+Content grouping is a separate presentation choice. Showing sections does not itself require students to follow a sequence.
+
+## Set lesson completion
+
+Open the lesson, select **Edit**, and open **Settings**. Choose **Completion rule**:
+
+- **Manual**: the student marks the lesson complete.
+- **Video watch**: completion depends on watching the configured videos to the **Watch threshold (%)**.
+- **None**: the lesson does not block progression.
+
+Save the lesson and check the saved settings.
+
+:::warning[Use uploaded video for watch completion]
+Video-watch tracking only works for uploaded video. External sources such as YouTube and Vimeo cannot meet that tracked requirement. For a lesson using only embeds, choose Manual or upload the required video so students can complete the lesson.
 :::
 
-## Set how a lesson completes
+When video-watch completion is active, skipping ahead is restricted and playback pauses when the student switches tabs. Check your video selection and threshold with a demo student before releasing the lesson.
 
-Open a lesson, go to its **Settings** tab, and choose a **Completion rule**:
+## Set exercise completion
 
-| Rule            | Completes when                                                                              |
-| --------------- | ------------------------------------------------------------------------------------------- |
-| **Manual**      | The student clicks to mark the lesson complete.                                             |
-| **Video watch** | The student watches the selected videos. Set the **Watch threshold (%)** (for example 95%). |
-| **None**        | The lesson never blocks progression.                                                        |
+Open the exercise's **Settings** and choose its **Completion rule**:
 
-![Lesson Completion rule options with Manual, Video watch, and None](/help/progression-completion-rule.webp)
+- **Submitted**: completion follows submission.
+- **Passed**: completion requires the **Pass threshold (%)** you set.
 
-:::warning
-**Video watch** only enforces uploaded videos. YouTube, Vimeo, and other external embeds can't be tracked, so the system
-can't tell when a student has finished watching them — a lesson with only embedded videos will never complete on its own,
-and students can't mark it complete manually either. If your lessons use embedded videos, upload the video to ClassroomIO
-or set the completion rule to **Manual** so students watch, then mark the lesson complete themselves.
+If students must pass, review **Allow multiple attempts** so a failed attempt does not leave them without a route forward. Questions requiring instructor review can leave completion waiting for a grade. Review the warning before saving a passing requirement, especially for an exercise with existing submissions.
 
-While **Video watch** is active the player blocks skipping ahead and pauses when the student switches tabs, so the watch
-percentage reflects real viewing. The lesson completes once the threshold is reached.
-:::
+## Keep availability and certificates separate
 
-## Set how an exercise completes
+A content lock is different from a progression prerequisite. Publishing the course does not unlock every lesson or exercise. Review individual locks in **Content** before diagnosing a student who cannot continue.
 
-Open an exercise, go to its **Settings** tab, and choose a **Completion rule**:
+Certificates require 100% course completion: every lesson and exercise. Review [certificate settings](/create-and-deliver/certificates) separately from content locks and progression.
 
-- **Submitted**: the exercise completes as soon as the student submits any answer.
-- **Passed**: the exercise completes only when the student's score meets the **Pass threshold (%)** you set.
+## Verify as a student
 
-Use **Passed** when an exercise must be cleared before the course can continue or a certificate can be issued.
+Use a separately enrolled demo student to complete the actual sequence. Check the first item, the next-item unlock, a failed exercise attempt, and the final completion result. Administrator access can bypass the restrictions you are trying to test.
 
-## Gate the certificate
-
-Certificates always require 100% completion: every lesson and every exercise in the course. Turn on certificate download
-in the course's **Certificates** settings and set a deadline if you need one. Under sequential progression, students also
-have to watch the videos and finish the exercises in order.
-
-See [Create Certificates](/create-and-deliver/certificates) for templates, signatures, and the certificate ID.
-
-## What students see
-
-### 1. Locked items
-
-Under **Sequential** progression, the next item stays locked until the student completes the one before it. For example, a
-quiz that follows a lesson stays locked until that lesson is complete. In the course content list a locked item is greyed
-out with a lock icon and cannot be opened; it unlocks automatically once the previous required item is done. If a student
-opens a not-yet-available item directly, they see a **Complete previous content first** notice.
-
-![Locked exercise in the content list with a lock icon](/help/progression-locked.webp)
-
-### 2. A video they cannot skip
-
-On a **Video watch** lesson, the progress percentage climbs as they watch. Trying to jump ahead shows a "you cannot skip
-ahead" notice, and the video pauses if they leave the tab.
-
-![Video player showing the "You cannot skip ahead on this video" notice](/help/progression-cant-skip.webp)
-
-### 3. Completion and the certificate
-
-Reaching the watch threshold marks the lesson complete and unlocks the next item. After they finish the final
-requirement, the course is complete and they can view and download their certificate.
-
-![Course requirements complete modal showing congratulations and View certificate button](/help/progression-student-course-complete.webp)
+Public courses use an anonymous learning experience. Test those courses on their signed-out public pages instead of assuming the enrolled-student rules apply identically.
 
 ## Related guides
 
-- [Course Types](/create-and-deliver/course-types): Self-paced, Live class, Compliance, and Public
-- [Create an Exercise](/create-and-deliver/create-exercise): build the quiz that gates progression
-- [Create Certificates](/create-and-deliver/certificates): what students earn at the end
-- [Run a Live Class](/create-and-deliver/live-class): schedule live sessions alongside on-demand content
+- [Create and reorder lessons and exercises](/build-courses/create-and-reorder-lessons-and-exercises) — set the sequence used by progression
+- [Add or upload a video](/build-courses/add-or-upload-a-video) — choose a source suitable for watch tracking
+- [Set answers, points, and automatic grading](/build-courses/set-answers-points-and-automatic-grading) — make passing requirements meaningful
+- [Create certificates](/create-and-deliver/certificates) — configure the completion reward

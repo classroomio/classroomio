@@ -29,6 +29,8 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
+import { captureCoursePublished } from '@cio/core/services/course/course';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
@@ -93,7 +95,7 @@ export const v1CourseRouter = new Hono()
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
         const payload = c.req.valid('json');
-        const course = await createPublicApiCourseService(orgId, actorId, payload);
+        const course = await createPublicApiCourseService(orgId, actorId, payload, getEventSource(c));
 
         return c.json(
           {
@@ -319,7 +321,16 @@ export const v1CourseRouter = new Hono()
           );
         }
 
-        const { course, conversionOffenders } = await updatePublicApiCourseService(orgId, actorId, params, payload);
+        const { course, conversionOffenders, publishedNow } = await updatePublicApiCourseService(
+          orgId,
+          actorId,
+          params,
+          payload
+        );
+
+        if (publishedNow) {
+          captureCoursePublished(course, actorId, getEventSource(c));
+        }
 
         return c.json(
           {

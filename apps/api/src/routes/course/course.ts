@@ -19,6 +19,7 @@ import {
 } from '@cio/utils/validation/course';
 import { ZCourseTagAssignment, ZCourseTagParam } from '@cio/utils/validation/tag';
 import {
+  captureCoursePublished,
   createCourse,
   deleteCourse,
   getCourse,
@@ -34,6 +35,7 @@ import { attendanceRouter } from '@api/routes/course/attendance';
 import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
 import { liveSessionReminderRouter } from '@api/routes/course/live-session-reminder';
 import { authMiddleware } from '@api/middlewares/auth';
+import { getEventSource } from '@api/utils/event-source';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { cloneCourse } from '@api/services/course/clone';
 import {
@@ -75,6 +77,7 @@ import { sectionRouter } from '@api/routes/course/section';
 import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
+import { emitCoursePublishWebhookEvent } from '@cio/core/services/webhook/emit';
 import { updateCourseWithTags } from '@api/services/course/update-course';
 import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
 
@@ -147,7 +150,7 @@ export const courseRouter = new Hono()
       const user = c.get('user')!;
       const validatedData = c.req.valid('json');
 
-      const result = await createCourse(user.id, validatedData);
+      const result = await createCourse(user.id, validatedData, getEventSource(c));
 
       return c.json(
         {
@@ -373,6 +376,11 @@ export const courseRouter = new Hono()
             updatedByUserId: user.id,
             tagIds
           });
+          await emitCoursePublishWebhookEvent(courseId, result.publishChange, user.id);
+
+          if (result.publishedNow) {
+            captureCoursePublished(result.course, user.id, getEventSource(c));
+          }
 
           return c.json(
             {
@@ -387,7 +395,19 @@ export const courseRouter = new Hono()
           );
         }
 
-        const { course: result, conversionOffenders } = await updateCourse(courseId, courseData);
+        const {
+          course: result,
+          conversionOffenders,
+          publishedNow,
+          publishChange
+        } = await updateCourse(courseId, courseData);
+        const userId = c.get('user')?.id ?? null;
+
+        if (publishedNow) {
+          captureCoursePublished(result, c.get('user')!.id, getEventSource(c));
+        }
+
+        await emitCoursePublishWebhookEvent(courseId, publishChange, userId);
 
         return c.json(
           {

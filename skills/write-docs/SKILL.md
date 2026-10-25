@@ -80,9 +80,13 @@ Do not force every optional section into every article.
 
 Read [references/editorial-standard.md](references/editorial-standard.md) before drafting or substantially revising a page. It defines titles, introductions, voice, terminology, headings, procedures, callouts, tables, accessibility, and maintenance rules.
 
-### 5. Plan links and media
+### 5. Audit existing images and plan links and media
 
 Read [references/media-and-linking.md](references/media-and-linking.md) whenever the article adds, removes, or meaningfully changes screenshots, videos, diagrams, internal links, anchors, or related guides.
+
+Before writing or revising articles, inventory every image already referenced by each page in scope. Also inspect existing guides that the work newly adds to the sidebar or links from a new article; readers will reach those pages as part of the same path. Open each image and compare it with the current product and the surrounding instructions. Check that the relevant control or result is visible, labels and navigation still match, the page has finished loading, and no skeleton, placeholder, sensitive data, or retired feature appears. An existing image is not evidence that the page is current.
+
+Keep images that pass this review. Replace stale images with verified current captures, or remove their references when a correct capture is unavailable and report the missing media. Do not retain a misleading image merely to satisfy the lead-screenshot requirement. When replacing an old public asset, check every reference before retiring the file or URL.
 
 Every article includes one lead screenshot after the opening paragraph and before the first `##`. Choose any further screenshots after the written procedure is known. Do not add extra screenshots to fill space, and do not use a video to compensate for missing written instructions.
 
@@ -145,6 +149,7 @@ Check the rendered article, not only its source. Confirm that:
 - conditions and warnings appear before the affected action;
 - headings form a useful in-page table of contents;
 - screenshots sit beside the instruction they clarify and remain legible on mobile;
+- every existing image on a page in scope was opened and checked against the current product, including images on existing guides newly surfaced by navigation or links;
 - videos have descriptive titles and written equivalents;
 - internal links, fragments, images, and sidebar entries resolve;
 - the page has no placeholders, speculative copy, or stale screenshots;

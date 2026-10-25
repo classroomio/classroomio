@@ -36,7 +36,8 @@
         "title": "Ihre Akademie wird geöffnet…",
         "caption": "Ihre Kurse, Lernenden und Einstellungen werden vorbereitet."
       }
-    }
+    },
+    "back": "Zurück"
   },
   "validations": {
     "generic": {
@@ -394,18 +395,8 @@
       "passed_requires_points": "Für den Abschluss durch Bestehen muss mindestens ein Punkt verfügbar sein.",
       "draft_restored": "Wir haben die nicht gespeicherten Änderungen wiederhergestellt, die Sie hinterlassen haben"
     },
-    "poll": {
-      "info": {
-        "not_published": "Die Umfrage ist noch nicht veröffentlicht",
-        "vote_once": "Sie können nur einmal abstimmen"
-      },
-      "error": {
-        "creating_poll": "Beim Erstellen der Umfrage ist ein Fehler aufgetreten",
-        "updating_poll": "Beim Aktualisieren des Umfragestatus ist ein Fehler aufgetreten",
-        "submitting_poll": "Beim Absenden der Umfrage ist ein Fehler aufgetreten"
-      }
-    },
     "media_manager": {
+      "video_added": "Video zu Ihrer Bibliothek hinzugefügt",
       "list_failed": "Medien-Assets konnten nicht geladen werden",
       "storage_failed": "Speicherzusammenfassung konnte nicht geladen werden",
       "create_failed": "Medienasset konnte nicht erstellt werden",
@@ -1818,34 +1809,6 @@
             "manual": "Gespeicherte Version",
             "publish": "Veröffentlicht"
           }
-        },
-        "poll": {
-          "voted": "Abgestimmt",
-          "created_by": "Erstellt von",
-          "status": "Status",
-          "draft": "Entwurf",
-          "publish": "Veröffentlichen",
-          "expiration": "Ablauf",
-          "total_voted": "Gesamtstimmen",
-          "responses": "Antworten",
-          "expires": "Läuft ab",
-          "today": "Heute",
-          "back": "Zurück",
-          "result": "Ergebnis",
-          "delete": "Löschen",
-          "create_poll": "Umfrage erstellen",
-          "question": "Frage",
-          "options": "Optionen",
-          "option_label": "Optionsbezeichnung",
-          "cancel": "Abbrechen",
-          "poll_question": "Umfragefrage"
-        },
-        "polls": {
-          "title": "Umfrage",
-          "active_polls": "Aktive Umfragen",
-          "expired_polls": "Abgelaufene Umfragen",
-          "loading": "Laden...",
-          "no_polls": "Keine Umfragen zum Anzeigen"
         },
         "comments": {
           "title": "Kommentare",
@@ -3369,7 +3332,6 @@
         "save": "Änderungen speichern",
         "apps": {
           "title": "Apps",
-          "poll": "Umfrage",
           "live_comment": "Live-Kommentare"
         },
         "course": {
@@ -3712,6 +3674,11 @@
         "other": "Andere"
       },
       "refresh": "Aktualisieren"
+    },
+    "upload": {
+      "videos": "Videos hochladen",
+      "documents": "Dokumente hochladen",
+      "more_options": "Weitere Upload-Optionen"
     },
     "storage": {
       "total_bytes": "Gesamtspeicher",
@@ -4984,6 +4951,7 @@
     "title": "Automatisierung",
     "subtitle": "Verbinden Sie jetzt MCP-Clients, wobei Zapier und die öffentliche API auf demselben organisationsweiten Schlüsselsystem folgen.",
     "coming_soon": "Kommt bald",
+    "read_docs": "Dokumentation lesen",
     "mcp": {
       "setup": {
         "title": "Client-Setup",
@@ -5016,8 +4984,7 @@
         "rate_limits_description": "Zulässige Lese-/Schreib-/Veröffentlichungsanfragen pro Minute.",
         "used_label": "Verwendet:"
       },
-      "page_subtitle": "Verbinden Sie KI-Tools mit ClassroomIO über organisationsbezogene Schlüssel, die Sie jederzeit rotieren können.",
-      "view_docs": "Dokumentation anzeigen"
+      "page_subtitle": "Verbinden Sie KI-Tools mit ClassroomIO über organisationsbezogene Schlüssel, die Sie jederzeit rotieren können."
     },
     "api": {
       "subtitle": "Verwalten Sie API-Schlüssel zur Integration mit der öffentlichen ClassroomIO-API.",
@@ -5040,8 +5007,7 @@
       "setup": {
         "title": "Schnellstart",
         "description": "Verwenden Sie Ihren API-Schlüssel als Bearer-Token bei jeder Anfrage. Ersetzen Sie den Platzhalter durch einen Schlüssel von oben oder fügen Sie das Geheimnis direkt nach der Erstellung ein."
-      },
-      "view_docs": "Dokumentation anzeigen"
+      }
     },
     "keys": {
       "active": "Aktiv",
@@ -5163,7 +5129,9 @@
       "event_groups": {
         "organization": "Organisation",
         "course": "Kurse",
-        "learning": "Lernfortschritt"
+        "learning": "Lernfortschritt",
+        "cohort": "Kohorten",
+        "compliance": "Compliance"
       },
       "events": {
         "organization_invite_created": "Eine Team-Einladung wird gesendet",
@@ -5179,7 +5147,18 @@
         "course_submission_created": "Eine Übungseinreichung wird erstellt",
         "course_submission_status_changed": "Der Status einer Einreichung ändert sich, z. B. bei der Bewertung",
         "lesson_completion_updated": "Eine Lektion wird als abgeschlossen markiert oder zurückgesetzt",
-        "exercise_completion_updated": "Eine Übung wird abgeschlossen oder zurückgesetzt"
+        "exercise_completion_updated": "Eine Übung wird abgeschlossen oder zurückgesetzt",
+        "compliance_record_status_changed": "Der Compliance-Status eines Studenten ändert sich",
+        "compliance_record_waived": "Eine Compliance-Anforderung eines Studenten wird erlassen",
+        "organization_member_added": "Eine Person tritt der Organisation bei",
+        "organization_member_removed": "Eine Person wird aus der Organisation entfernt",
+        "organization_member_updated": "Rolle oder Status einer Person ändert sich",
+        "course_published": "Ein Kurs wird veröffentlicht",
+        "course_unpublished": "Die Veröffentlichung eines Kurses wird zurückgenommen",
+        "cohort_member_added": "Eine Person wird zu einer Kohorte hinzugefügt",
+        "cohort_member_removed": "Eine Person wird aus einer Kohorte entfernt",
+        "lesson_session_scheduled": "Eine Live-Sitzung wird geplant oder verschoben",
+        "course_payment_request_created": "Ein Student bittet darum, einen Kurs zu bezahlen"
       },
       "deliveries": {
         "title": "Zustellungen",

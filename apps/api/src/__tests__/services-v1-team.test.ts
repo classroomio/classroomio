@@ -152,7 +152,7 @@ describe('services/v1/team', () => {
       await updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: tutor.id }, { roleId: ROLE.ADMIN });
 
       expect(applyTeamMemberRoleChange).toHaveBeenCalledWith(ORG_ID, tutor.id, ROLE.ADMIN, ACTOR_ID, TX);
-      expect(reconcileAfterTeamRoleChange).toHaveBeenCalledWith(ORG_ID, { roleChanged: true });
+      expect(reconcileAfterTeamRoleChange).toHaveBeenCalledWith(ORG_ID, { roleChanged: true }, ACTOR_ID);
       expect(updateProfile).not.toHaveBeenCalled();
     });
 

@@ -32,9 +32,11 @@ Step screenshots later in the article still sit after the instruction they confi
 
 ## Verify the screenshot
 
+- When writing or revising an article, inspect all images already referenced by that page before adding a new one. Keep accurate images; replace or remove outdated, incomplete, or misleading ones.
 - Inspect the actual image before editing it.
 - Match it to a verified step in the current product. Do not document a mockup or roadmap UI as shipped.
 - Confirm the visible labels against `apps/dashboard/src/lib/utils/translations/en.json`.
+- Confirm that the page has finished loading: no skeletons or placeholder values remain, and the target control or result is fully visible.
 - Reject or replace images containing real customer names, emails, domains, student records, tokens, payment data, or private URLs.
 - If the image cannot be matched confidently to the intended step, ask instead of guessing.
 

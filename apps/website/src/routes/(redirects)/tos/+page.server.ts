@@ -1,13 +1,9 @@
-import { client } from '$lib/utils/posthog';
-import { getDistinctId } from '$lib/utils/posthog/distinct-id';
+import { trackEvent } from '$lib/utils/posthog/track-redirect';
 
 export const prerender = false;
 
-export const load = async ({ request }) => {
-  client.capture({
-    distinctId: getDistinctId(request),
-    event: 'terms of service page visited'
-  });
+export const load = async ({ request, platform }) => {
+  await trackEvent({ request, platform }, 'terms of service page visited');
 
   return {
     pageMetaTags: {

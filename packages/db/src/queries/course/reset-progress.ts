@@ -331,6 +331,7 @@ export async function resetStudentCourseProgress(
       await tx
         .update(schema.groupmember)
         .set({
+          completedAt: null,
           certificateEarnedAt: null,
           certificationEmailSentAt: null
         })

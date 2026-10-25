@@ -21,7 +21,14 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   },
   '/public-api/v1/team': { GET: 'list_team_members' },
   '/public-api/v1/team/:memberId': { GET: 'get_team_member', PUT: 'update_team_member' },
-  // MCP keys can only send tagIds here.
+  '/public-api/v1/organization/email-templates': { GET: 'list_email_templates' },
+  '/public-api/v1/organization/email-templates/:emailId/:locale': {
+    GET: 'get_email_template',
+    PUT: 'update_email_template',
+    DELETE: 'reset_email_template'
+  },
+  '/public-api/v1/organization/email-templates/:emailId/:locale/test': { POST: 'send_test_email_template' },
+  // MCP keys can only send tagIds or addTagIds here.
   '/public-api/v1/courses/:courseId': { PUT: 'set_course_tags' },
   '/public-api/v1/tags': { GET: 'list_tags', POST: 'create_tag' },
   '/public-api/v1/tags/:tagId': { PUT: 'update_tag' },
@@ -86,6 +93,10 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   '/public-api/v1/courses/:courseId/exercises/:exerciseId/notify/:jobId': { GET: 'get_course_exercise_notify_status' },
   '/public-api/v1/exercise-templates': { GET: 'list_exercise_templates' },
   '/public-api/v1/exercise-templates/:templateId': { GET: 'get_exercise_template' },
+  '/public-api/v1/course-templates': { GET: 'list_course_templates' },
+  '/public-api/v1/course-templates/:templateId': { GET: 'get_course_template' },
+  '/public-api/v1/course-templates/:templateId/courses': { POST: 'create_course_from_template' },
+  '/public-api/v1/courses/:courseId/template': { POST: 'save_course_as_template' },
   '/public-api/v1/courses/:courseId/submissions': { GET: 'list_course_submissions' },
   '/public-api/v1/courses/:courseId/submissions/:submissionId': {
     GET: 'get_course_submission',

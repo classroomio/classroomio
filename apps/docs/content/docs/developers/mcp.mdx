@@ -43,6 +43,10 @@ ClassroomIO API:
 
 The MCP package never decides permissions.
 
+### API access
+
+MCP keys (`cio_mcp_...`) don't get `public_api:*`. They can call only the audience, team, organization email template, cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their `audience:*`, `team:*`, `organization:*`, `cohort:*`, `course:member:*`, `course:certificate:*`, `course:read`/`course:write`, `course:exercise:*`, `course:submission:*`, `course:student:write`, and `media:write` scopes, plus the analytics GET endpoints (`/analytics/**` and `/courses/{courseId}/analytics/**`) through `analytics:read`, and the tag endpoints (`/tags/**`) through `course:read` and `course:tag:write`. With `course:tag:write` they can also call `PUT /courses/{courseId}`, but only with a body that holds just `tagIds` or `addTagIds`. Every other endpoint returns 403 for them.
+
 ## Required Environment Variables
 
 - `CLASSROOMIO_API_URL`
@@ -94,22 +98,42 @@ codex mcp add classroomio \
 
 ### OpenCode
 
+OpenCode reads MCP servers from the `mcp` key of its own config file. Put the block below in one
+of these places:
+
+- `opencode.json` in your project root (or `.opencode/opencode.json`) — the server is available
+  only in that project
+- `~/.config/opencode/opencode.json` — the server is available in every project you open
+
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "classroomio": {
-      "type": "local",
-      "command": ["npx", "-y", "@classroomio/mcp"],
-      "enabled": true,
-      "environment": {
-        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
-        "CLASSROOMIO_API_KEY": "<cio_mcp_key>"
+    "servers": {
+      "classroomio": {
+        "type": "local",
+        "command": ["npx", "-y", "@classroomio/mcp"],
+        "environment": {
+          "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+          "CLASSROOMIO_API_KEY": "<cio_mcp_key>"
+        }
       }
     }
   }
 }
 ```
+
+Notes:
+
+- `command` must be an array of strings, not a single string.
+- `environment` passes the env vars to the server process, so the key does not need to live in
+  your shell profile.
+- OpenCode loads its config once at startup and does not hot-reload. Restart OpenCode after
+  editing the file; the running session keeps using the old config.
+- OpenCode validates its config strictly and refuses to start when a field is wrong, so an
+  invalid block fails fast.
+- To verify the server works, start OpenCode in your project and ask it to list your ClassroomIO
+  courses. That exercises `list_org_courses` end to end with your key.
 
 ### Cursor
 
@@ -226,6 +250,27 @@ What the tools cover compared with the dashboard:
 - Covered: creating, editing, deleting, and notifying about exercises (including exercise sections and templates), reviewing and grading submissions, and the gradebook.
 - Not covered, on purpose: student actions (submitting an exercise, recording video answers). A key acts as its creator, an admin or tutor, and must not submit on a student's behalf.
 - Covered by other tools: moving or reordering exercises (`reorder_course_content`) and unlocking one (`isUnlocked` on `update_course_exercise`).
+
+Course template tools:
+
+- `list_course_templates`
+- `get_course_template`
+- `create_course_from_template`
+- `save_course_as_template`
+
+They call `/public-api/v1/course-templates` and `/public-api/v1/courses/:id/template` with the `course:read` (reads) and `course:write` (writes) scopes, which MCP keys have by default. They act as the person who created the key, with the same rules as the dashboard:
+
+- Listing and reading templates needs them to be an org admin or tutor.
+- Creating a course from a template and saving a course as a template need them to be an org admin.
+
+`list_course_templates` returns the organization's own templates first, then the curated global ones. Pass `source` (`all`, `org` or `global`) to narrow it; it takes `page` and `limit` (default 20, max 100) and returns `{ data, pagination }`. `get_course_template` returns the outline, item counts and the settings a new course starts with.
+
+`create_course_from_template` copies the template's content and settings into a new unpublished course and adds the key creator to it as a tutor. `save_course_as_template` copies a course into a new unpublished template and leaves the course unchanged. It counts against the plan's template limit (Basic 1, Early Adopter 25, Enterprise unlimited) and fails with 403 `UPGRADE_REQUIRED` once that is reached.
+
+What the tools cover compared with the dashboard:
+
+- Covered: browsing and previewing templates, creating a course from one, and saving a course as a template. Saving a template again works as a duplicate.
+- Not covered yet: converting a course into a template in place, and pulling template updates into courses made from it.
 
 Course member and invite tools:
 
@@ -347,6 +392,22 @@ These call the public API and need the key's `audience:read` / `audience:write` 
 - `update_audience_member` and `update_team_member` take `name` to set a joined member's full name. The profile is shared, so the name changes in every organization that person belongs to. Email, password, username and avatar stay with the person. On a member who has not accepted their invite yet, `update_audience_member` takes `email` to correct the address instead.
 - `remove_audience_member` deletes the organization membership; the person keeps their account. Inviting and removing team members is not available yet.
 - `list_audience_members` and `list_team_members` take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
+
+Email template tools:
+
+- `list_email_templates`
+- `get_email_template`
+- `update_email_template`
+- `reset_email_template`
+- `send_test_email_template`
+
+These call the public API and need the key's `organization:read` / `organization:write` scopes, which MCP keys have by default. Existing MCP keys that still have the default scope set were given them too. They need the key creator to be an org admin, the same as the dashboard's Emails settings page:
+
+- `list_email_templates` returns every student email in one `locale` (default `en`) without its body. `get_email_template` returns the body, the allowed `variables`, and whether the email may link to `{{action_url}}`.
+- `update_email_template` takes `content` and an optional `subject` (omit to keep it, `null` for the default). It rejects placeholders the email does not allow and removes unsafe HTML.
+- `reset_email_template` deletes the saved version and returns the default. It succeeds even when nothing was saved.
+- `send_test_email_template` sends up to 5 addresses a test with sample values. Without `content` or `subject` it tests the current template. The organization gets 5 test sends per 15 minutes, shared with the dashboard.
+- Saving, resetting and test sends need a paid plan (403 `UPGRADE_REQUIRED` otherwise). Students only get a saved template on a paid plan, and a non-English one only when the organization enforces that language.
 
 ## Draft Model
 

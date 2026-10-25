@@ -34,6 +34,7 @@ import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforceme
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
 import { emitCourseWebhookEvent } from '../webhook/emit';
+import { captureCourseEvent } from '../posthog';
 
 /**
  * Creates a new lesson
@@ -41,7 +42,11 @@ import { emitCourseWebhookEvent } from '../webhook/emit';
  * @param data Lesson creation data
  * @returns Created lesson
  */
-export async function createLesson(courseId: string, data: TLessonCreate): Promise<TLesson> {
+export async function createLesson(
+  courseId: string,
+  data: TLessonCreate,
+  options: { actorProfileId?: string | null } = {}
+): Promise<TLesson> {
   try {
     const slug = await resolveItemSlug({
       courseId,
@@ -65,6 +70,16 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
     }
 
     await touchCourseUpdatedAt(courseId);
+
+    if (data.lessonAt) {
+      await emitCourseWebhookEvent(courseId, 'lesson.session.scheduled', {
+        lessonId: lesson.id,
+        startsAt: lesson.lessonAt,
+        previousStartsAt: null,
+        callUrl: lesson.callUrl,
+        actorProfileId: options.actorProfileId ?? null
+      });
+    }
 
     return lesson;
   } catch (error) {
@@ -122,7 +137,11 @@ function hasSessionMoved(
  * @param data Partial lesson update data
  * @returns Updated lesson
  */
-export async function updateLessonService(lessonId: string, data: TLessonUpdate): Promise<TLesson> {
+export async function updateLessonService(
+  lessonId: string,
+  data: TLessonUpdate,
+  options: { actorProfileId?: string | null } = {}
+): Promise<TLesson> {
   try {
     const payload: TLessonUpdate = { ...data };
     const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
@@ -163,6 +182,16 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
 
     if (existing && hasSessionMoved(existing, updated)) {
       await skipActiveReminderDeliveriesForLesson(lessonId, 'lesson_rescheduled');
+
+      if (updated.courseId) {
+        await emitCourseWebhookEvent(updated.courseId, 'lesson.session.scheduled', {
+          lessonId,
+          startsAt: updated.lessonAt,
+          previousStartsAt: existing.lessonAt,
+          callUrl: updated.callUrl,
+          actorProfileId: options.actorProfileId ?? null
+        });
+      }
     }
 
     return updated;
@@ -459,7 +488,25 @@ export async function getLessonCompletionService(lessonId: string, profileId: st
  * @param isComplete Completion status
  * @returns Completion record
  */
-export async function upsertLessonCompletionService(lessonId: string, profileId: string, isComplete: boolean) {
+function captureLessonCompleted(
+  courseId: string,
+  lessonId: string,
+  profileId: string,
+  completionMethod: 'manual' | 'video_watch' | 'admin'
+) {
+  captureCourseEvent(courseId, {
+    event: 'lesson_completed',
+    distinctId: profileId,
+    properties: { lesson_id: lessonId, completion_method: completionMethod }
+  });
+}
+
+export async function upsertLessonCompletionService(
+  lessonId: string,
+  profileId: string,
+  isComplete: boolean,
+  completionMethod: 'manual' | 'admin' = 'manual'
+) {
   try {
     const lesson = await getLessonById(lessonId);
     if (!lesson) {
@@ -480,9 +527,14 @@ export async function upsertLessonCompletionService(lessonId: string, profileId:
       isComplete
     };
 
+    const previous = isComplete ? await getLessonCompletion(lessonId, profileId) : null;
     const completion = await upsertLessonCompletion(completionData);
 
     await emitCourseWebhookEvent(lesson.courseId, 'lesson.completion.updated', { lessonId, profileId, isComplete });
+
+    if (isComplete && !previous?.isComplete) {
+      captureLessonCompleted(lesson.courseId, lessonId, profileId, completionMethod);
+    }
 
     return completion;
   } catch (error) {
@@ -706,6 +758,7 @@ export async function updateLessonWatchProgressService(
         profileId,
         isComplete: true
       });
+      captureLessonCompleted(lesson.courseId, lessonId, profileId, 'video_watch');
     }
 
     if (!aggregate) {

@@ -25,10 +25,10 @@ export async function updateCourseWithTags(
 
     // A tags-only change skips updateCourse, whose checks on unrelated settings
     // (payment link, compliance deadline) would otherwise block tagging.
-    const { course, conversionOffenders } =
+    const { course, conversionOffenders, publishedNow, publishChange } =
       Object.keys(params.courseData).length > 0
         ? await updateCourse(params.courseId, params.courseData, tx)
-        : { course: lockedCourse, conversionOffenders: null };
+        : { course: lockedCourse, conversionOffenders: null, publishedNow: false, publishChange: null };
 
     const tagIds = params.addTagIds
       ? [
@@ -44,6 +44,6 @@ export async function updateCourseWithTags(
       { updatedByUserId: params.updatedByUserId, dbClient: tx }
     );
 
-    return { course, conversionOffenders, tags };
+    return { course, conversionOffenders, publishedNow, publishChange, tags };
   });
 }

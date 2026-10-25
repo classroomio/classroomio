@@ -10,6 +10,7 @@ import { createStudentSubmissionService, setStudentLessonCompletionService } fro
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, studentForbiddenResponse, mcpRateLimitResponse } from './docs';
@@ -91,7 +92,8 @@ export const v1CourseStudentRouter = new Hono()
           orgId,
           actorId,
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getEventSource(c)
         );
 
         return c.json({ success: true, data: submission }, 201);

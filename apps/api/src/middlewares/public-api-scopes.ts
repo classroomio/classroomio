@@ -11,8 +11,10 @@ const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certifi
 const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content)(?:\/|$)/;
 const COURSE_EXERCISE_PATH = /^(?:\/public-api\/v1)?\/(?:courses\/[^/]+\/exercises|exercise-templates)(?:\/|$)/;
 const COURSE_SUBMISSION_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:submissions|marks)(?:\/|$)/;
+const COURSE_TEMPLATE_PATH = /^(?:\/public-api\/v1)?(?:\/course-templates|\/courses\/[^/]+\/template)(?:\/|$)/;
 const AUDIENCE_PATH = /^(?:\/public-api\/v1)?\/audience(?:\/|$)/;
 const TEAM_PATH = /^(?:\/public-api\/v1)?\/team(?:\/|$)/;
+const ORGANIZATION_PATH = /^(?:\/public-api\/v1)?\/organization(?:\/|$)/;
 const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
 const TAG_PATH = /^(?:\/public-api\/v1)?\/tags(?:\/|$)/;
@@ -33,6 +35,10 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return isRead ? 'team:read' : 'team:write';
   }
 
+  if (ORGANIZATION_PATH.test(path)) {
+    return isRead ? 'organization:read' : 'organization:write';
+  }
+
   if (ANALYTICS_PATH.test(path) && isRead) {
     return 'analytics:read';
   }
@@ -49,7 +55,7 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return method === 'GET' || method === 'HEAD' ? 'course:certificate:read' : 'course:certificate:write';
   }
 
-  if (COURSE_CONTENT_PATH.test(path)) {
+  if (COURSE_CONTENT_PATH.test(path) || COURSE_TEMPLATE_PATH.test(path)) {
     return method === 'GET' || method === 'HEAD' ? 'course:read' : 'course:write';
   }
 
