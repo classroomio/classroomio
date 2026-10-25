@@ -132,6 +132,34 @@ function hasSessionMoved(
 }
 
 /**
+ * Reject an uploaded video that names no asset, unless the lesson already
+ * stores that exact entry.
+ *
+ * Uploads predating `assetId` are identified by `key` alone and must keep
+ * saving, so this cannot be a schema rule — but a newly introduced one is
+ * unreachable: the media pipeline, the encoder and every repair path find a
+ * video by its asset.
+ */
+function assertUploadedVideosNameTheirAsset(
+  incoming: TLessonUpdate['videos'],
+  stored: LessonById['videos'] | undefined
+): void {
+  if (!incoming) return;
+
+  const storedOrphanKeys = new Set(
+    (stored ?? []).filter((video) => video.type === 'upload' && !video.assetId).map((video) => video.key)
+  );
+
+  const introducesOrphan = incoming.some(
+    (video) => video.type === 'upload' && !video.assetId && !storedOrphanKeys.has(video.key)
+  );
+
+  if (introducesOrphan) {
+    throw new AppError('An uploaded video must reference the asset it was stored as', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+}
+
+/**
  * Updates a lesson
  * @param lessonId Lesson ID
  * @param data Partial lesson update data
@@ -145,8 +173,11 @@ export async function updateLessonService(
   try {
     const payload: TLessonUpdate = { ...data };
     const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
-    const needsExisting = payload.slug !== undefined || payload.order !== undefined || touchesSession;
+    const needsExisting =
+      payload.slug !== undefined || payload.order !== undefined || payload.videos !== undefined || touchesSession;
     const existing = needsExisting ? await getLessonById(lessonId) : null;
+
+    assertUploadedVideosNameTheirAsset(payload.videos, existing?.videos);
 
     if (payload.slug !== undefined) {
       if (!existing) {
