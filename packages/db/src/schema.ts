@@ -1309,7 +1309,9 @@ export const groupmember = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     assignedStudentId: varchar('assigned_student_id'),
     certificateEarnedAt: timestamp('certificate_earned_at', { withTimezone: true, mode: 'string' }),
-    certificationEmailSentAt: timestamp('certification_email_sent_at', { withTimezone: true, mode: 'string' })
+    certificationEmailSentAt: timestamp('certification_email_sent_at', { withTimezone: true, mode: 'string' }),
+    /** First time the learner met the course's certification rule, on any plan. */
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -3624,11 +3626,7 @@ export const learningPath = pgTable(
       name: 'learning_path_created_by_profile_id_fkey'
     }),
     unique('learning_path_public_id_unique').on(table.publicId),
-    // Partial index (not a plain unique constraint) so soft-deleted rows keep
-    // their slug without blocking reuse.
-    uniqueIndex('idx_learning_path_org_slug_active')
-      .on(table.organizationId, table.slug)
-      .where(sql`${table.status} != 'DELETED'`),
+    unique('learning_path_slug_key').on(table.slug),
     index('idx_learning_path_organization_id').on(table.organizationId),
     index('idx_learning_path_organization_id_is_published').on(table.organizationId, table.isPublished)
   ]

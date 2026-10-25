@@ -1,6 +1,7 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { safeServerApi } from '$lib/utils/services/api/server';
+import { isPathPaid } from '@cio/utils/validation/learning-path';
 import { redirect } from '@sveltejs/kit';
 import type { LearningPathItem } from '@cio/ui/custom/org-landing-page';
 
@@ -11,13 +12,14 @@ type ListPublicLearningPathsSuccess = Extract<InferResponseType<ListPublicLearni
 type PublicLearningPath = ListPublicLearningPathsSuccess['data']['learningPaths'][number];
 
 function toCatalogPath(path: PublicLearningPath): LearningPathItem {
+  const cost = path.cost ?? 0;
   return {
     id: path.id,
     slug: path.slug ?? path.publicId ?? path.id,
     logo: path.coverImage,
     title: path.name,
     description: path.description ?? '',
-    cost: path.cost ?? 0,
+    cost: isPathPaid(cost, path.landingPage) ? cost : 0,
     currency: path.currency ?? 'USD',
     courseCount: path.courseCount ?? 0,
     link: `/learning-paths/${path.slug ?? path.publicId ?? path.id}`

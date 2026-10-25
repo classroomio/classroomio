@@ -8,6 +8,7 @@
   import { Button } from '@cio/ui/base/button';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrgDomain } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import CoursePublishBadge from '$features/course/components/course-publish-badge.svelte';
@@ -32,7 +33,7 @@
   const setupSteps = $derived(path ? getSetupSteps(path, basePath) : []);
   const setupProgress = $derived(getSetupProgress(setupSteps));
   const isSetupIncomplete = $derived(setupProgress.completed < setupProgress.total);
-  const isNotOnSetupPage = $derived(!page.url.pathname.endsWith('/setup'));
+  const isOnSetupPage = $derived(page.url.pathname.endsWith('/setup'));
 
   let viewAsStudentOpen = $state(false);
   let viewPathSiteUnpublishedOpen = $state(false);
@@ -48,6 +49,17 @@
     if (pathname.endsWith('/settings')) return $t('learningPath.workspace.tabs.settings');
     return '';
   });
+
+  async function handleFinishSetup() {
+    if (isOnSetupPage) return;
+
+    try {
+      await goto(`${basePath}/setup`);
+    } catch (error) {
+      console.error('Failed to open learning path setup:', error);
+      snackbar.error('learningPath.snackbar.setup_open_failed');
+    }
+  }
 
   function handleViewSite() {
     if (!path?.id) return;
@@ -87,9 +99,8 @@
 
     <span class="grow"></span>
 
-    <!-- Finish Setup CTA (shown when setup is incomplete and outside setup page) -->
-    {#if path && isSetupIncomplete && isNotOnSetupPage}
-      <Button variant="outline" size="sm" onclick={() => goto(`${basePath}/setup`)} class="gap-1.5">
+    {#if path && isSetupIncomplete}
+      <Button variant="outline" size="sm" onclick={handleFinishSetup} class="gap-1.5">
         <CheckSquareIcon class="text-primary size-3.5" />
         <span class="hidden sm:inline"
           >{$t('learningPath.workspace.finish_setup', { percent: setupProgress.percent })}</span

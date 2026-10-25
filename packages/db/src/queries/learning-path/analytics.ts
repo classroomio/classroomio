@@ -7,6 +7,7 @@ import { startOfCurrentMonthUtc } from '@cio/utils/functions';
 import * as schema from '../../schema';
 import type { TLearningPathMemberWithProfile } from './learning-path-member';
 import { countPendingPathLearners } from './learning-path-member';
+import { pathCourseIsActiveSql, pathCoursePositionSql } from './learning-path-course';
 import { submissionMeetsCompletionPolicySql } from '../course/progression';
 
 /** Lookback window for "active learner" and "stuck" activity checks. */
@@ -101,9 +102,8 @@ export async function getPathAnalyticsSummary(
       dbClient
         .select({ courseId: schema.learningPathCourse.courseId })
         .from(schema.learningPathCourse)
-        .where(
-          and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
-        )
+        .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
+        .where(and(eq(schema.learningPathCourse.learningPathId, learningPathId), pathCourseIsActiveSql()))
     ]);
 
     const enrolled = Number(enrolledRows[0]?.count ?? 0);
@@ -226,7 +226,7 @@ export async function getPathCourseFunnelWithDropoff(
         learningPathCourseId: schema.learningPathCourse.id,
         courseId: schema.learningPathCourse.courseId,
         title: schema.course.title,
-        order: schema.learningPathCourse.order,
+        order: sql<number>`${pathCoursePositionSql()}`,
         completedCount:
           sql<number>`SUM(CASE WHEN ${isEnrolledStudent} AND ${schema.learningPathMemberCourse.status} = 'COMPLETED' THEN 1 ELSE 0 END)`.as(
             'completedCount'
@@ -249,9 +249,7 @@ export async function getPathCourseFunnelWithDropoff(
           isNull(schema.learningPathMember.removedAt)
         )
       )
-      .where(
-        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
-      )
+      .where(and(eq(schema.learningPathCourse.learningPathId, learningPathId), pathCourseIsActiveSql()))
       .groupBy(
         schema.learningPathCourse.id,
         schema.learningPathCourse.courseId,
@@ -352,7 +350,7 @@ export async function getPathAnalyticsStudents(
         avatarUrl: schema.profile.avatarUrl,
         profileEmail: schema.profile.email,
         currentCourseTitle: schema.course.title,
-        currentCourseOrder: schema.learningPathCourse.order
+        currentCourseOrder: pathCoursePositionSql()
       })
       .from(schema.learningPathMember)
       .leftJoin(schema.profile, eq(schema.learningPathMember.profileId, schema.profile.id))
@@ -364,7 +362,7 @@ export async function getPathAnalyticsStudents(
           isNull(schema.learningPathCourse.removedAt)
         )
       )
-      .leftJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
+      .leftJoin(schema.course, and(eq(schema.learningPathCourse.courseId, schema.course.id), pathCourseIsActiveSql()))
       .where(
         and(eq(schema.learningPathMember.learningPathId, learningPathId), isNull(schema.learningPathMember.removedAt))
       )
@@ -430,8 +428,7 @@ export async function getStuckItems(
           AND lpmc.status = 'IN_PROGRESS'
           AND lpmc.started_at <= ${thresholdDate.toISOString()}
         JOIN learning_path_course lpc ON lpc.id = lpmc.learning_path_course_id
-          AND lpc.removed_at IS NULL
-        JOIN course c ON c.id = lpc.course_id
+        JOIN course c ON c.id = lpc.course_id AND ${pathCourseIsActiveSql({ link: sql`lpc`, course: sql`c` })}
         WHERE lpm.learning_path_id = ${learningPathId}
           AND lpm.removed_at IS NULL
           AND lpm.role_id = ${ROLE.STUDENT}

@@ -1,6 +1,7 @@
 import type { InferResponseType } from '$lib/utils/services/api';
 import { classroomio } from '$lib/utils/services/api';
 import { safeServerApi } from '$lib/utils/services/api/server';
+import { isPathPaid } from '@cio/utils/validation/learning-path';
 import { error } from '@sveltejs/kit';
 import type { GetPublicLearningPathRequest } from '$features/learning-path/utils/types';
 
@@ -32,13 +33,14 @@ export const load = async ({ params, parent }) => {
 
   const pathData = pathResult.body.data;
   const cost = pathData.cost ?? 0;
+  const landing = (pathData.landingPage ?? {}) as { title?: string; description?: string };
 
   const path = {
     id: pathData.id,
     publicId: pathData.publicId ?? pathData.id,
     slug,
-    name: pathData.name,
-    description: pathData.description ?? '',
+    name: landing.title || pathData.name,
+    description: landing.description || pathData.description || '',
     cost,
     allowSelfEnrollment: pathData.selfEnrollment !== false,
     status: pathData.status,
@@ -55,6 +57,6 @@ export const load = async ({ params, parent }) => {
   return {
     path,
     currentOrg,
-    requiresPaymentOrInvite: cost > 0
+    requiresPaymentOrInvite: isPathPaid(cost, pathData.landingPage)
   };
 };

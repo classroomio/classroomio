@@ -1369,6 +1369,7 @@
         "last_login_at": "Sidste login",
         "enrolled_at": "Tilmeldt",
         "certificate_earned": "Certifikat opnået",
+        "completed": "Afsluttet",
         "not_started": "Ikke startet",
         "role": "Rolle",
         "action": "Handling",
@@ -6128,6 +6129,7 @@
         "no_courses": "Ingen tilgængelige kurser at tilføje.",
         "no_matches": "Ingen kurser matcher din søgning.",
         "pagination_status": "Side {page} af {totalPages}",
+        "public_course_disabled": "Offentlige kurser kan ikke føjes til en læringssti",
         "retry": "Prøv igen",
         "search_placeholder": "Søg efter kurser…",
         "select_courses": "Vælg kurser",
@@ -6270,7 +6272,8 @@
         "name_placeholder": "f.eks. Fullstack Webudvikling",
         "name_required": "Stinavn er påkrævet",
         "open_link": "Åbn link i ny fane",
-        "setup_landing_for_link": "Opsæt landingsside for at få stilink"
+        "setup_landing_for_link": "Opsæt landingsside for at få stilink",
+        "slug_taken": "Det link bruges allerede af en anden læringssti."
       },
       "progression": {
         "desc": "Styr, om elever kan få adgang til alle kurser eller skal gennemføre dem i rækkefølge.",
@@ -6344,7 +6347,8 @@
       "reordered": "Kursusrækkefølgen er opdateret",
       "settings_saved": "Læringsstiens indstillinger er opdateret",
       "tutor_removed": "Underviser fjernet fra forløbet",
-      "updated": "Læringsvej opdateret"
+      "updated": "Læringsvej opdateret",
+      "setup_open_failed": "Kunne ikke åbne opsætningen. Prøv igen."
     },
     "status": {
       "active": "Aktiv",

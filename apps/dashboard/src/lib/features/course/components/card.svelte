@@ -14,6 +14,7 @@
     getStudentCourseComplianceDate,
     getStudentCourseComplianceStatusKey,
     getStudentCourseComplianceStatusVariant,
+    isStudentCourseComplete,
     shouldShowStudentCourseComplianceStatusBadge
   } from '$features/course/utils/compliance-utils';
   import CardDropdown from './card-dropdown.svelte';
@@ -143,7 +144,7 @@
   const status = $derived(
     certificateEarnedAt
       ? 'COMPLETED'
-      : progressRate >= 100 && isLMS
+      : isLMS && isStudentCourseComplete(course as UserEnrolledCourses[number])
         ? 'COMPLETED'
         : progressRate > 0 && isLMS
           ? 'IN_PROGRESS'
@@ -217,6 +218,7 @@
   isLMS={!!isLMS}
   isExplore={!!isExplore}
   isCertificateView={!!isCertificateView}
+  certificateAvailable={!!certificateEarnedAt}
   isOnLandingPage={!!isOnLandingPage}
   {labels}
   onExploreClick={isExploreClickable ? onExploreClick : undefined}

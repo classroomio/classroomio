@@ -2,12 +2,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   getEarnedCertificates: vi.fn(),
+  getActiveOrganizationMemberIdByOrgAndProfile: vi.fn(),
   orgHasCertificatesEnabled: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/certificates', () => ({
   getEarnedCertificates: mocks.getEarnedCertificates
 }));
+
+vi.mock('@cio/db/queries/organization', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@cio/db/queries/organization')>();
+
+  return {
+    ...actual,
+    getActiveOrganizationMemberIdByOrgAndProfile: mocks.getActiveOrganizationMemberIdByOrgAndProfile
+  };
+});
 
 vi.mock('@api/utils/plan-features', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@api/utils/plan-features')>();
@@ -23,21 +33,45 @@ describe('getUserEarnedCertificates', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.getEarnedCertificates.mockResolvedValue({ items: [], total: 0 });
+    mocks.getActiveOrganizationMemberIdByOrgAndProfile.mockResolvedValue(7);
   });
 
-  it('reads the certificates when the plan includes certificates', async () => {
+  it('reads the certificates, telling the query whether the plan includes certificates', async () => {
     mocks.orgHasCertificatesEnabled.mockResolvedValue(true);
 
     await getUserEarnedCertificates('org-1', 'ada', query);
 
     expect(mocks.orgHasCertificatesEnabled).toHaveBeenCalledWith('org-1');
-    expect(mocks.getEarnedCertificates).toHaveBeenCalledWith({ orgId: 'org-1', profileId: 'ada', ...query });
+    expect(mocks.getEarnedCertificates).toHaveBeenCalledWith({
+      orgId: 'org-1',
+      profileId: 'ada',
+      certificatesEnabled: true,
+      ...query
+    });
   });
 
-  it('returns an empty page without reading certificates when the plan has none', async () => {
+  it('still lists completed rows with nothing downloadable when the plan has none', async () => {
     mocks.orgHasCertificatesEnabled.mockResolvedValue(false);
 
-    await expect(getUserEarnedCertificates('org-1', 'ada', query)).resolves.toEqual({ items: [], total: 0 });
+    await getUserEarnedCertificates('org-1', 'ada', query);
+
+    expect(mocks.getEarnedCertificates).toHaveBeenCalledWith({
+      orgId: 'org-1',
+      profileId: 'ada',
+      certificatesEnabled: false,
+      ...query
+    });
+  });
+
+  it('refuses with 403, without reading certificates, once the org membership is deactivated', async () => {
+    mocks.orgHasCertificatesEnabled.mockResolvedValue(true);
+    mocks.getActiveOrganizationMemberIdByOrgAndProfile.mockResolvedValue(null);
+
+    await expect(getUserEarnedCertificates('org-1', 'ada', query)).rejects.toMatchObject({
+      code: 'UNAUTHORIZED',
+      statusCode: 403
+    });
+    expect(mocks.getActiveOrganizationMemberIdByOrgAndProfile).toHaveBeenCalledWith('org-1', 'ada');
     expect(mocks.getEarnedCertificates).not.toHaveBeenCalled();
   });
 

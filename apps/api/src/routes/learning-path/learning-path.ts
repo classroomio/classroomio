@@ -766,8 +766,8 @@ export const learningPathRouter = new Hono()
   /**
    * GET /learning-path/:pathId/journey
    * The caller's journey through a path they are enrolled in: every course in
-   * order with live progress and lock state, the course to continue, and the
-   * certificate when downloadable. Backs the path hub and the in-course stepper.
+   * order with live progress and lock state, the course to continue, and
+   * whether the certificate can be downloaded. Backs the path hub and the in-course stepper.
    */
   .get('/:pathId/journey', authMiddleware, learningPathMemberMiddleware, zValidator('param', ZPathParam), async (c) => {
     try {

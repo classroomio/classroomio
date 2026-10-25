@@ -43,7 +43,7 @@
   });
 
   const filteredPaths = $derived(
-    learnerPathStore.enrolledPaths.filter((path) => {
+    learnerPathStore.unfinishedPaths.filter((path) => {
       if (status !== 'ALL' && learnerPathStore.getPathStatus(path) !== status) return false;
 
       return true;
@@ -89,7 +89,7 @@
     ...filteredCourses.map((item) => ({ kind: 'course' as const, item }))
   ]);
 
-  const hasAnyItem = $derived(learnerPathStore.enrolledPaths.length > 0 || standaloneCourseItems.length > 0);
+  const hasAnyItem = $derived(learnerPathStore.unfinishedPaths.length > 0 || standaloneCourseItems.length > 0);
 
   const activePath = $derived(learnerPathStore.activePath);
 

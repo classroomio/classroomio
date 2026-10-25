@@ -14,6 +14,7 @@ import type {
 } from '../../types';
 import { TPathMembersQuery } from '@cio/utils';
 import { toContainsPattern } from '@db/utils/like-pattern';
+import { pathCourseIsActiveSql, pathCoursePositionSql } from './learning-path-course';
 
 export interface TLearningPathMemberWithProfile extends TLearningPathMember {
   fullName?: string | null;
@@ -408,7 +409,7 @@ export async function listLearningPathMembers(
           avatarUrl: schema.profile.avatarUrl,
           profileEmail: schema.profile.email,
           currentCourseTitle: schema.course.title,
-          currentCourseOrder: schema.learningPathCourse.order
+          currentCourseOrder: pathCoursePositionSql()
         })
         .from(schema.learningPathMember)
         .leftJoin(schema.profile, eq(schema.learningPathMember.profileId, schema.profile.id))
@@ -420,7 +421,7 @@ export async function listLearningPathMembers(
             isNull(schema.learningPathCourse.removedAt)
           )
         )
-        .leftJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
+        .leftJoin(schema.course, and(eq(schema.learningPathCourse.courseId, schema.course.id), pathCourseIsActiveSql()))
         .where(and(...whereConditions))
         .orderBy(
           asc(schema.learningPathMember.roleId),
@@ -480,7 +481,7 @@ export async function getPathMemberDetail(
         avatarUrl: schema.profile.avatarUrl,
         profileEmail: schema.profile.email,
         currentCourseTitle: schema.course.title,
-        currentCourseOrder: schema.learningPathCourse.order
+        currentCourseOrder: pathCoursePositionSql()
       })
       .from(schema.learningPathMember)
       .leftJoin(schema.profile, eq(schema.learningPathMember.profileId, schema.profile.id))
@@ -492,7 +493,7 @@ export async function getPathMemberDetail(
           isNull(schema.learningPathCourse.removedAt)
         )
       )
-      .leftJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
+      .leftJoin(schema.course, and(eq(schema.learningPathCourse.courseId, schema.course.id), pathCourseIsActiveSql()))
       .where(
         and(
           eq(schema.learningPathMember.id, member.id),
@@ -509,7 +510,7 @@ export async function getPathMemberDetail(
         learningPathCourseId: schema.learningPathCourse.id,
         courseId: schema.learningPathCourse.courseId,
         title: schema.course.title,
-        order: schema.learningPathCourse.order,
+        order: sql<number>`${pathCoursePositionSql()}`,
         status: schema.learningPathMemberCourse.status,
         progressPercent: schema.learningPathMemberCourse.progressPercent,
         lessonsCompleted: schema.learningPathMemberCourse.lessonsCompleted,
@@ -530,7 +531,7 @@ export async function getPathMemberDetail(
         and(
           eq(schema.learningPathMemberCourse.learningPathMemberId, member.id),
           eq(schema.learningPathCourse.learningPathId, learningPathId),
-          isNull(schema.learningPathCourse.removedAt)
+          pathCourseIsActiveSql()
         )
       )
       .orderBy(schema.learningPathCourse.order);
@@ -840,8 +841,10 @@ export interface TProgressReconcileMember {
 /**
  * Unfinished students whose learning-path progress cache may have drifted
  * without an event: those active or enrolled since `activeSinceIso`, and every
- * unfinished student of a path whose course lessons or exercises were created
- * or edited since `contentChangedSinceIso`. Completed members are left alone so
+ * unfinished student of a path whose courses changed since
+ * `contentChangedSinceIso`: a course edited or deleted (deleting one can
+ * complete the path), or a lesson or exercise in an active course created or
+ * edited. Completed members are left alone so
  * a later content edit never takes a finished path away.
  */
 export async function listMembersForProgressReconcile(
@@ -862,18 +865,25 @@ export async function listMembersForProgressReconcile(
           OR EXISTS (
             SELECT 1
             FROM ${schema.learningPathCourse} lpc
+            JOIN ${schema.course} c ON c.id = lpc.course_id
             WHERE lpc.learning_path_id = lpm.learning_path_id
               AND lpc.removed_at IS NULL
               AND (
-                EXISTS (
-                  SELECT 1 FROM ${schema.lesson} l
-                  WHERE l.course_id = lpc.course_id
-                    AND GREATEST(l.created_at, l.updated_at) >= ${contentChangedSinceIso}
-                )
-                OR EXISTS (
-                  SELECT 1 FROM ${schema.exercise} ex
-                  WHERE ex.course_id = lpc.course_id
-                    AND GREATEST(ex.created_at, ex.updated_at) >= ${contentChangedSinceIso}
+                c.updated_at >= ${contentChangedSinceIso}
+                OR (
+                  ${pathCourseIsActiveSql({ link: sql`lpc`, course: sql`c` })}
+                  AND (
+                    EXISTS (
+                      SELECT 1 FROM ${schema.lesson} l
+                      WHERE l.course_id = lpc.course_id
+                        AND GREATEST(l.created_at, l.updated_at) >= ${contentChangedSinceIso}
+                    )
+                    OR EXISTS (
+                      SELECT 1 FROM ${schema.exercise} ex
+                      WHERE ex.course_id = lpc.course_id
+                        AND GREATEST(ex.created_at, ex.updated_at) >= ${contentChangedSinceIso}
+                    )
+                  )
                 )
               )
           )

@@ -1,0 +1,140 @@
+/**
+ * Runs the learning-path course helpers against a real database. Each test
+ * builds its own fixture in a rolled-back transaction. Skipped when no
+ * database URL is available.
+ */
+import { describe, expect, it } from 'vitest';
+
+import { sql } from 'drizzle-orm';
+
+import {
+  addPathCourses,
+  hasDatabase,
+  insertCourse,
+  insertOrganization,
+  insertPath,
+  insertProfile,
+  joinPath,
+  withRollback
+} from './fixtures/learner-db';
+
+describe.skipIf(!hasDatabase)('learning-path course helpers (database)', () => {
+  it('leave out removed links and deleted courses, in path order', async () => {
+    await withRollback(async (tx) => {
+      const { getCourseIdsInPath, listLearningPathCourses } = await import('@cio/db/queries/learning-path');
+
+      const orgId = await insertOrganization(tx, 'Org');
+      const path = await insertPath(tx, orgId, 'Data Science');
+      const first = await insertCourse(tx, orgId, 'First', { lessons: 1 });
+      const deleted = await insertCourse(tx, orgId, 'Deleted', { lessons: 1, status: 'DELETED' });
+      const last = await insertCourse(tx, orgId, 'Last', { lessons: 1 });
+      const removed = await insertCourse(tx, orgId, 'Removed', { lessons: 1 });
+      await addPathCourses(tx, path.pathId, [first.courseId, deleted.courseId, last.courseId]);
+      await addPathCourses(tx, path.pathId, [removed.courseId], '2026-09-01T00:00:00Z');
+
+      const courseIds = await getCourseIdsInPath(path.pathId, tx);
+      const courses = await listLearningPathCourses(path.pathId, tx);
+
+      expect(courseIds).toEqual([first.courseId, last.courseId]);
+      expect(courses.map((course) => course.courseId)).toEqual([first.courseId, last.courseId]);
+    });
+  }, 30000);
+
+  it('reorder the active courses of a path that links a deleted course, and treat it as not in the path', async () => {
+    await withRollback(async (tx) => {
+      const { getCourseIdsInPath, isCourseInPath, reorderLearningPathCourses } = await import(
+        '@cio/db/queries/learning-path'
+      );
+
+      const orgId = await insertOrganization(tx, 'Org');
+      const path = await insertPath(tx, orgId, 'Data Science');
+      const first = await insertCourse(tx, orgId, 'First', { lessons: 1 });
+      const deleted = await insertCourse(tx, orgId, 'Deleted', { lessons: 1, status: 'DELETED' });
+      const last = await insertCourse(tx, orgId, 'Last', { lessons: 1 });
+      await addPathCourses(tx, path.pathId, [first.courseId, deleted.courseId, last.courseId]);
+
+      await reorderLearningPathCourses(path.pathId, [last.courseId, first.courseId], tx);
+
+      expect(await getCourseIdsInPath(path.pathId, tx)).toEqual([last.courseId, first.courseId]);
+      expect(await isCourseInPath(path.pathId, first.courseId, tx)).toBe(true);
+      expect(await isCourseInPath(path.pathId, deleted.courseId, tx)).toBe(false);
+      await expect(
+        reorderLearningPathCourses(path.pathId, [last.courseId, deleted.courseId, first.courseId], tx)
+      ).rejects.toThrow();
+    });
+  }, 30000);
+
+  it('queue a path for progress reconcile when one of its courses is deleted', async () => {
+    await withRollback(async (tx) => {
+      const { listMembersForProgressReconcile } = await import('@cio/db/queries/learning-path');
+
+      const orgId = await insertOrganization(tx, 'Org');
+      const ada = await insertProfile(tx, 'ada');
+      const bob = await insertProfile(tx, 'bob');
+      const untouchedPath = await insertPath(tx, orgId, 'Untouched');
+      const changedPath = await insertPath(tx, orgId, 'Changed');
+      const untouched = await insertCourse(tx, orgId, 'Untouched course', { lessons: 0 });
+      const deleted = await insertCourse(tx, orgId, 'Deleted course', { lessons: 0, status: 'DELETED' });
+      await tx.execute(sql`UPDATE course SET updated_at = '2026-01-01T00:00:00Z' WHERE id = ${untouched.courseId}`);
+      await tx.execute(sql`UPDATE course SET updated_at = '2026-10-10T00:00:00Z' WHERE id = ${deleted.courseId}`);
+      await addPathCourses(tx, untouchedPath.pathId, [untouched.courseId]);
+      await addPathCourses(tx, changedPath.pathId, [deleted.courseId]);
+      await joinPath(tx, untouchedPath.pathId, ada, '2026-01-01T00:00:00Z', { status: 'IN_PROGRESS' });
+      await joinPath(tx, changedPath.pathId, bob, '2026-01-01T00:00:00Z', { status: 'IN_PROGRESS' });
+
+      const members = await listMembersForProgressReconcile(
+        { activeSinceIso: '2099-01-01T00:00:00Z', contentChangedSinceIso: '2026-10-01T00:00:00Z' },
+        tx
+      );
+      const pathIds = members.map((member) => member.learningPathId);
+
+      expect(pathIds).toContain(changedPath.pathId);
+      expect(pathIds).not.toContain(untouchedPath.pathId);
+    });
+  }, 30000);
+
+  it('number courses by position among active ones, skipping a deleted course', async () => {
+    await withRollback(async (tx) => {
+      const { getPathCourseFunnelStats, listLearningPathCourses, listLearningPathMembers } = await import(
+        '@cio/db/queries/learning-path'
+      );
+
+      const orgId = await insertOrganization(tx, 'Org');
+      const ada = await insertProfile(tx, 'ada');
+      const bob = await insertProfile(tx, 'bob');
+      const path = await insertPath(tx, orgId, 'Data Science');
+      const first = await insertCourse(tx, orgId, 'First', { lessons: 1 });
+      const deleted = await insertCourse(tx, orgId, 'Deleted', { lessons: 1, status: 'DELETED' });
+      const last = await insertCourse(tx, orgId, 'Last', { lessons: 1 });
+      await addPathCourses(tx, path.pathId, [first.courseId, deleted.courseId, last.courseId]);
+      const adaMember = await joinPath(tx, path.pathId, ada, '2026-01-01T00:00:00Z', { status: 'IN_PROGRESS' });
+      const bobMember = await joinPath(tx, path.pathId, bob, '2026-01-02T00:00:00Z', { status: 'IN_PROGRESS' });
+      await tx.execute(
+        sql`UPDATE learning_path_member SET current_course_id = ${last.courseId} WHERE id = ${adaMember}`
+      );
+      await tx.execute(
+        sql`UPDATE learning_path_member SET current_course_id = ${deleted.courseId} WHERE id = ${bobMember}`
+      );
+
+      const courses = await listLearningPathCourses(path.pathId, tx);
+      const funnel = await getPathCourseFunnelStats(path.pathId, tx);
+      const members = await listLearningPathMembers(path.pathId, { page: 1, limit: 20 }, tx);
+      const current = (memberId: string) => {
+        const member = members.data.find((row) => row.id === memberId);
+
+        return [member?.currentCourseTitle ?? null, member?.currentCourseOrder ?? null];
+      };
+
+      expect(courses.map((course) => [course.title, course.order])).toEqual([
+        ['First', 1],
+        ['Last', 2]
+      ]);
+      expect(funnel.map((course) => [course.title, course.order])).toEqual([
+        ['First', 1],
+        ['Last', 2]
+      ]);
+      expect(current(adaMember)).toEqual(['Last', 2]);
+      expect(current(bobMember)).toEqual([null, null]);
+    });
+  }, 30000);
+});

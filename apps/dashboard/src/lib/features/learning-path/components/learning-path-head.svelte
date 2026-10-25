@@ -22,6 +22,7 @@
     totalHours: number;
     sequentialUnlock: boolean;
     certificateEnabled: boolean;
+    certificateAvailable: boolean;
     progressPercent: number;
     coursesCompleted: number;
     nextCourseTitle?: string | null;
@@ -43,6 +44,7 @@
     totalHours,
     sequentialUnlock,
     certificateEnabled,
+    certificateAvailable,
     progressPercent,
     coursesCompleted,
     nextCourseTitle = null,
@@ -131,40 +133,35 @@
               {nextCourseTitle}
             {/if}
           </p>
-          {#if isComplete(coursesCompleted, courseCount) && learnerPathStore.hasPathCertificate(pathId)}
-            <ComboButton
-              label={$t('course.navItem.certificates.download_certificate')}
-              menuLabel={$t('course.navItem.certificates.download_certificate')}
-              testId="path-head-certificate-download"
-              loading={learnerPathStore.isDownloadingCertificate}
-              onSelect={() => learnerPathStore.downloadCertificate(pathId, name, 'pdf')}
-              items={[
-                {
-                  id: 'pdf',
-                  label: $t('course.navItem.certificates.editor.download_pdf'),
-                  icon: DownloadIcon,
-                  onSelect: () => learnerPathStore.downloadCertificate(pathId, name, 'pdf')
-                },
-                {
-                  id: 'png',
-                  label: $t('course.navItem.certificates.editor.download_png'),
-                  icon: ImageIcon,
-                  onSelect: () => learnerPathStore.downloadCertificate(pathId, name, 'png')
-                }
-              ]}
-            />
+          {#if isComplete(coursesCompleted, courseCount)}
+            {#if certificateAvailable}
+              <ComboButton
+                label={$t('course.navItem.certificates.download_certificate')}
+                menuLabel={$t('course.navItem.certificates.download_certificate')}
+                testId="path-head-certificate-download"
+                loading={learnerPathStore.isDownloadingCertificate}
+                onSelect={() => learnerPathStore.downloadCertificate(pathId, name, 'pdf')}
+                items={[
+                  {
+                    id: 'pdf',
+                    label: $t('course.navItem.certificates.editor.download_pdf'),
+                    icon: DownloadIcon,
+                    onSelect: () => learnerPathStore.downloadCertificate(pathId, name, 'pdf')
+                  },
+                  {
+                    id: 'png',
+                    label: $t('course.navItem.certificates.editor.download_png'),
+                    icon: ImageIcon,
+                    onSelect: () => learnerPathStore.downloadCertificate(pathId, name, 'png')
+                  }
+                ]}
+              />
+            {/if}
           {:else}
-            <Button
-              href={enrollHref}
-              variant={isComplete(coursesCompleted, courseCount) ? 'outline' : 'default'}
-              size="default"
-              class="shrink-0"
-            >
-              {isComplete(coursesCompleted, courseCount)
-                ? $t('learningPath.detail.view_certificate')
-                : coursesCompleted === 0
-                  ? $t('learningPath.hero.start_learning')
-                  : $t('learningPath.hero.continue_learning')}
+            <Button href={enrollHref} variant="default" size="default" class="shrink-0">
+              {coursesCompleted === 0
+                ? $t('learningPath.hero.start_learning')
+                : $t('learningPath.hero.continue_learning')}
               <ArrowUpRightIcon class="size-4" />
             </Button>
           {/if}

@@ -54,6 +54,14 @@
       ? false
       : data.path?.allowSelfEnrollment !== false && data.path?.status === 'ACTIVE' && Boolean(data.path?.isPublished)
   );
+
+  let membershipChecked = $state(false);
+  let membershipCheckComplete = $state(false);
+  const enrolledJourney = $derived(
+    learnerPathStore.selectedJourney && learnerPathStore.selectedJourney.path.id === data.path?.id
+      ? learnerPathStore.selectedJourney
+      : null
+  );
   const isPreparingEnrollment = $derived(
     isLoggedIn &&
       canJoinPath &&
@@ -131,7 +139,35 @@
     }
   }
 
+  async function handleContinue() {
+    try {
+      await goto(resolve(`/lms/paths/${data.path.publicId}`, {}));
+    } catch (error) {
+      console.error('[path enroll] failed to continue to path:', error);
+      snackbar.error('public_learning_paths.navigation_failed');
+    }
+  }
+
+  async function checkMembership(pathId: string) {
+    try {
+      await learnerPathStore.ensureSelectedPath(pathId);
+    } catch (error) {
+      console.error('[path enroll] membership check failed:', error);
+    } finally {
+      membershipCheckComplete = true;
+    }
+  }
+
   async function handleSubmit() {
+    if (enrolledPendingVerification) {
+      return;
+    }
+
+    if (enrolledJourney) {
+      await handleContinue();
+      return;
+    }
+
     if (!canJoinPath) {
       snackbar.error(getBlockedMessage());
       return;
@@ -162,6 +198,8 @@
       !sessionReady ||
       !isLoggedIn ||
       !canJoinPath ||
+      !membershipCheckComplete ||
+      enrolledJourney ||
       enrollmentInFlight ||
       loading ||
       enrollmentSucceeded ||
@@ -175,6 +213,15 @@
     }
 
     void completeEnrollment();
+  });
+
+  $effect(() => {
+    if (!sessionReady || !isLoggedIn || !data.path?.id || membershipChecked) return;
+    if (!appInitApi.isInitializedAndReady) return;
+
+    membershipChecked = true;
+    membershipCheckComplete = false;
+    void checkMembership(data.path.id);
   });
 
   $effect(() => {
@@ -215,6 +262,10 @@
           {$t('verify_email_modal.resend')}
         </Button>
       </div>
+    {:else if enrolledJourney}
+      <p class="ui:text-primary mt-3 text-center text-sm font-medium">
+        {$t('course.navItem.landing_page.enroll_page.enrolled_success')}
+      </p>
     {:else if data.requiresPaymentOrInvite}
       <p class="ui:text-muted-foreground mt-3 text-center text-sm">
         {$t('course.navItem.landing_page.enroll_page.requires_payment_or_invite')}
@@ -234,9 +285,15 @@
 
   {#if !enrolledPendingVerification}
     <div class="my-4 flex w-full items-center justify-center">
-      <Button type="submit" disabled={!canJoinPath || joinButtonLoading} loading={joinButtonLoading}>
-        {$t('learningPath.detail.enroll')}
-      </Button>
+      {#if enrolledJourney}
+        <Button type="button" onclick={handleContinue} disabled={joinButtonLoading}>
+          {$t('learningPath.hero.continue_learning')}
+        </Button>
+      {:else}
+        <Button type="submit" disabled={!canJoinPath || joinButtonLoading} loading={joinButtonLoading}>
+          {$t('learningPath.detail.enroll')}
+        </Button>
+      {/if}
     </div>
   {/if}
 </AuthUI>

@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes, throwAsInternal } from '@api/utils/errors';
+import { getPostgresError } from '@cio/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import { containsDisallowedHrefs } from '@cio/utils/validation/shared';
 import { db } from '@cio/db/drizzle';
@@ -309,14 +310,6 @@ export async function updateLearningPathService(
         throw new AppError('Landing page contains disallowed links', ErrorCodes.VALIDATION_ERROR, 400);
       }
 
-      if (data.slug && data.slug !== path.slug) {
-        const existingWithSlug = await getLearningPathBySlug(path.organizationId, data.slug, tx);
-
-        if (existingWithSlug && existingWithSlug.id !== path.id) {
-          throw new AppError('A learning path with this URL slug already exists', ErrorCodes.VALIDATION_ERROR, 400);
-        }
-      }
-
       const updated = await updateLearningPath(path.id, data, tx);
 
       if (!updated) {
@@ -336,6 +329,12 @@ export async function updateLearningPathService(
 
     return updated;
   } catch (error) {
+    const postgresError = getPostgresError(error);
+
+    if (postgresError?.code === '23505' && postgresError.constraint === 'learning_path_slug_key') {
+      throw new AppError('A learning path with this URL slug already exists', ErrorCodes.LEARNING_PATH_SLUG_TAKEN, 409);
+    }
+
     throwAsInternal(error, 'Failed to update learning path');
   }
 }

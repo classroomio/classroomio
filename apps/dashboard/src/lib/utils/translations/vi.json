@@ -1369,6 +1369,7 @@
         "last_login_at": "Đăng nhập lần cuối",
         "enrolled_at": "Ghi danh",
         "certificate_earned": "Đã nhận chứng chỉ",
+        "completed": "Đã hoàn thành",
         "not_started": "Chưa bắt đầu",
         "role": "Vai trò",
         "action": "Hành động",
@@ -6128,6 +6129,7 @@
         "no_courses": "Không có khóa học nào để thêm.",
         "no_matches": "Không có khóa học nào phù hợp với tìm kiếm của bạn.",
         "pagination_status": "Trang {page} trong tổng số {totalPages}",
+        "public_course_disabled": "Không thể thêm khóa học công khai vào lộ trình học tập",
         "retry": "Thử lại",
         "search_placeholder": "Tìm kiếm khóa học…",
         "select_courses": "Chọn khóa học",
@@ -6270,7 +6272,8 @@
         "name_placeholder": "ví dụ: Lập trình Web Fullstack",
         "name_required": "Tên lộ trình là bắt buộc",
         "open_link": "Mở liên kết trong tab mới",
-        "setup_landing_for_link": "Thiết lập landing page để lấy link lộ trình"
+        "setup_landing_for_link": "Thiết lập landing page để lấy link lộ trình",
+        "slug_taken": "Liên kết đó hiện đang được sử dụng bởi một lộ trình học tập khác."
       },
       "progression": {
         "desc": "Kiểm soát việc học viên có thể truy cập tất cả khóa học hay phải hoàn thành theo thứ tự.",
@@ -6344,7 +6347,8 @@
       "reordered": "Đã cập nhật thứ tự khóa học",
       "settings_saved": "Đã cập nhật cài đặt lộ trình học tập",
       "tutor_removed": "Đã xóa gia sư khỏi lộ trình",
-      "updated": "Đã cập nhật lộ trình học tập"
+      "updated": "Đã cập nhật lộ trình học tập",
+      "setup_open_failed": "Không thể mở phần thiết lập. Hãy thử lại."
     },
     "status": {
       "active": "Đang hoạt động",

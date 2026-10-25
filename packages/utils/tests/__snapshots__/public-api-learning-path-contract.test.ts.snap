@@ -516,20 +516,50 @@ exports[`public API learning path contracts > snapshots the generated JSON schem
     "counts": {
       "additionalProperties": {},
       "properties": {
-        "completed": {
-          "maximum": 9007199254740991,
-          "minimum": -9007199254740991,
-          "type": "integer",
+        "byKind": {
+          "additionalProperties": false,
+          "properties": {
+            "course": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer",
+            },
+            "learningPath": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer",
+            },
+          },
+          "required": [
+            "course",
+            "learningPath",
+          ],
+          "type": "object",
         },
-        "inProgress": {
-          "maximum": 9007199254740991,
-          "minimum": -9007199254740991,
-          "type": "integer",
+        "byStatus": {
+          "additionalProperties": false,
+          "properties": {
+            "inProgress": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer",
+            },
+            "notStarted": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer",
+            },
+          },
+          "required": [
+            "notStarted",
+            "inProgress",
+          ],
+          "type": "object",
         },
       },
       "required": [
-        "inProgress",
-        "completed",
+        "byStatus",
+        "byKind",
       ],
       "type": "object",
     },

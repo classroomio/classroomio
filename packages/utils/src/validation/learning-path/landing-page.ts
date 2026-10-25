@@ -114,3 +114,16 @@ export const ZLandingPage = z
     message: 'Landing page contains disallowed links'
   });
 export type TLandingPage = z.infer<typeof ZLandingPage>;
+
+/**
+ * Whether a learning path is paid. An explicit `paymentEnabled` flag wins;
+ * otherwise a path is paid once it has a positive cost. Kept as a single
+ * shared helper so the dashboard/API all compute "is paid" the same way.
+ */
+export function isPathPaid(
+  cost: number | null | undefined,
+  landingPage: Pick<TLandingPage, 'paymentEnabled'> | null | undefined
+): boolean {
+  const paidFlag = landingPage?.paymentEnabled;
+  return typeof paidFlag === 'boolean' ? paidFlag : typeof cost === 'number' && cost > 0;
+}

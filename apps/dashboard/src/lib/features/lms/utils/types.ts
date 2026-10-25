@@ -15,7 +15,8 @@ export type EnrolledCounts = GetEnrolledSuccess['counts'];
 export type EnrolledQuery = {
   page?: number;
   limit?: number;
-  status?: 'all' | 'in_progress' | 'completed';
+  status?: 'all' | 'not_started' | 'in_progress';
+  kind?: 'all' | 'course' | 'learning_path';
   search?: string;
 };
 
@@ -23,7 +24,6 @@ export type GetPathJourneyRequest = (typeof classroomio)['learning-path'][':path
 export type GetPathJourneySuccess = Extract<InferResponseType<GetPathJourneyRequest>, { success: true }>;
 export type PathJourney = GetPathJourneySuccess['data'];
 export type PathJourneyCourse = PathJourney['courses'][number];
-export type PathJourneyCertificate = NonNullable<PathJourney['certificate']>;
 
 export type GetEarnedCertificatesRequest = (typeof classroomio.organization)['certificates']['$get'];
 export type GetEarnedCertificatesSuccess = Extract<InferResponseType<GetEarnedCertificatesRequest>, { success: true }>;

@@ -40,7 +40,7 @@
   const done = $derived(certificateEarned || (coursesCompleted === courseCount && courseCount > 0));
   const ctaLabel = $derived(
     done
-      ? $t('learningPath.card.view_certificate')
+      ? $t('learningPath.hero.view_path')
       : coursesCompleted === 0
         ? $t('learningPath.hero.start_learning')
         : $t('learningPath.hero.continue_learning')
@@ -140,12 +140,7 @@
         />
       </span>
     {:else}
-      <Button
-        href={done ? '/lms/certificates' : href}
-        variant={done ? 'outline' : 'default'}
-        size="sm"
-        class="relative z-10 shrink-0"
-      >
+      <Button {href} variant={done ? 'outline' : 'default'} size="sm" class="relative z-10 shrink-0">
         {ctaLabel}
       </Button>
     {/if}

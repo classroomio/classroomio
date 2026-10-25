@@ -62,7 +62,9 @@
 {#if certificate.kind === 'course'}
   <CourseCard
     isCertificateView
-    href={`/courses/${certificate.data.id}/certificates`}
+    href={certificate.data.certificateAvailable
+      ? `/courses/${certificate.data.id}/certificates`
+      : `/courses/${certificate.data.id}`}
     title={certificate.data.title}
     description={certificate.data.description}
     coverImage={certificate.data.logo || undefined}
@@ -70,6 +72,7 @@
     {visibilityBadge}
     status="COMPLETED"
     certificateEarnedAt={certificate.data.earnedAt}
+    certificateAvailable={certificate.data.certificateAvailable}
     labels={courseCardLabels}
   />
 {:else}
@@ -82,7 +85,7 @@
     courseCount={certificate.data.courseCount}
     progressPercent={100}
     coursesCompleted={certificate.data.courseCount}
-    certificateEarned
+    certificateEarned={certificate.data.certificateAvailable}
     certificateEarnedAt={certificate.data.earnedAt}
     labels={learningPathCardLabels}
   />

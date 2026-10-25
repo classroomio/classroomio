@@ -16,6 +16,9 @@ type PublicLearningPathDetail = GetPublicLearningPathSuccess['data'];
 type PublicLearningPathCourse = PublicLearningPathDetail['courses'][number];
 
 type LandingPageContent = {
+  title?: string;
+  description?: string;
+  showCertificate?: boolean;
   goals?: string;
   skills?: string[];
   instructors?: Array<{
@@ -40,6 +43,9 @@ type LandingPageContent = {
   }>;
   showFaqs?: boolean;
   faqs?: Array<{ id?: string | number; question?: string; answer?: string }>;
+  discount?: number;
+  showDiscount?: boolean;
+  paymentEnabled?: boolean;
 };
 
 /** Landing-page goals are stored as HTML paragraphs; the detail needs text items. */
@@ -144,17 +150,18 @@ function toLearningPathDetail(
   const reviews = toReviewItems(landing.reviews);
   const rating = averageRating(reviews);
   const certificateDownloadable = (path.certificate as { isDownloadable?: boolean } | null)?.isDownloadable === true;
+  const showCertificate = landing.showCertificate !== false;
 
   return {
     id: path.id,
     slug,
-    title: path.name,
-    description: path.description ?? '',
+    title: landing.title || path.name,
+    description: landing.description || path.description || '',
     logo: path.coverImage ?? undefined,
     cost: path.cost ?? 0,
     currency: path.currency ?? 'USD',
     courseCount: path.courses.length,
-    hasCertificate: certificateDownloadable,
+    hasCertificate: certificateDownloadable && showCertificate,
     totalStudents: path.totalStudents ?? 0,
     rating,
     reviewsCount: reviews.length > 0 ? reviews.length : undefined,
@@ -162,9 +169,19 @@ function toLearningPathDetail(
     skills: landing.skills ?? [],
     series: path.courses.map(toSeriesCourse),
     instructors: toInstructors(landing.instructors, path.courses),
-    certificate: certificateDownloadable ? {} : null,
+    certificate: certificateDownloadable && showCertificate ? {} : null,
     reviews,
-    faq: toFaqItems(landing.faqs, landing.showFaqs)
+    faq: toFaqItems(landing.faqs, landing.showFaqs),
+    paymentEnabled: landing.paymentEnabled,
+    metadata:
+      landing.showDiscount || landing.discount != null
+        ? { discount: landing.discount, showDiscount: landing.showDiscount }
+        : undefined,
+    pricing: {
+      cost: path.cost ?? 0,
+      currency: path.currency ?? 'USD',
+      ctaHref: `/learning-paths/${slug}/enroll`
+    }
   };
 }
 

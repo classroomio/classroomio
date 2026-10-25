@@ -82,6 +82,14 @@ export async function addCoursesToPathService(
           throw new AppError(`Course "${courseId}" not found in this organization`, ErrorCodes.COURSE_NOT_FOUND, 404);
         }
 
+        if (courseRow.type === 'PUBLIC') {
+          throw new AppError(
+            `Public course "${courseId}" cannot be added to a learning path`,
+            ErrorCodes.VALIDATION_ERROR,
+            400
+          );
+        }
+
         const added = await addCourseToPath(path.id, courseId, tx);
         addedCourses.push(added);
 

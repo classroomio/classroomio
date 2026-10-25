@@ -301,7 +301,8 @@ export async function resetStudentCourseProgress(input: {
         .update(schema.groupmember)
         .set({
           certificateEarnedAt: null,
-          certificationEmailSentAt: null
+          certificationEmailSentAt: null,
+          completedAt: null
         })
         .where(eq(schema.groupmember.id, groupMemberId));
 
