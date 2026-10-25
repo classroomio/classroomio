@@ -34,10 +34,10 @@ The `prototypes/` directory holds standalone HTML/CSS design mocks for explorati
 
 ## Verification before commit/PR
 
-Before committing or opening/updating a PR, run the build checks that match the areas you changed. Use Node 20 (the repo's `.nvmrc` version):
+Before committing or opening/updating a PR, run the build checks that match the areas you changed. Use Node 24 (the repo's `.nvmrc` version):
 
 ```bash
-export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
+export PATH="$HOME/.nvm/versions/node/v24.22.1/bin:$PATH"
 ```
 
 - **Dashboard changes** (`apps/dashboard/**`, or shared packages consumed by the dashboard):
@@ -904,13 +904,13 @@ When moving from `apps/dashboard/src/lib/components/` to `apps/dashboard/src/lib
 The full setup/run flow lives in `README.md` and `DEV_SETUP_NOTES.md`. The notes below cover only the non-obvious, cloud-VM-specific caveats. The update script already runs `pnpm install` on startup.
 
 ### Node version (important)
-The sandbox injects `/exec-daemon/node` (Node 22) at the front of `PATH`, so a bare `node`/`pnpm` runs under Node 22 even though the repo requires Node `^20.19.3` (`.nvmrc`). Node 20.19.3 is installed via nvm and set as the nvm default. Before running any `pnpm`/dev command, prepend the repo Node to `PATH`:
+The sandbox injects `/exec-daemon/node` (Node 22) at the front of `PATH`, so a bare `node`/`pnpm` runs under Node 22 even though the repo requires Node `^24.22.1` (`.nvmrc`). Node 24.22.1 is installed via nvm and set as the nvm default. Before running any `pnpm`/dev command, prepend the repo Node to `PATH`:
 
 ```bash
-export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
+export PATH="$HOME/.nvm/versions/node/v24.22.1/bin:$PATH"
 ```
 
-`pnpm install` itself succeeds under either version (there is no `engine-strict`), but run the dev servers and DB scripts on Node 20.
+`pnpm install` itself succeeds under either version (there is no `engine-strict`), but run the dev servers and DB scripts on Node 24.
 
 ### Services & how to run them
 Docker is installed and provides Postgres 16 + Redis 7 (the app does not run them natively). After a fresh VM boot the Docker daemon is usually not running — start it (it needs the snapshot's `/etc/docker/daemon.json`, which already sets `fuse-overlayfs` + disables the containerd snapshotter, plus `iptables-legacy`):

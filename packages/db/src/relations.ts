@@ -1,9 +1,6 @@
 import {
   account,
   analyticsLoginEvents,
-  appsPoll,
-  appsPollOption,
-  appsPollSubmission,
   asset,
   assetUsage,
   communityAnswer,
@@ -101,7 +98,6 @@ export const courseRelations = relations(course, ({ one, many }) => ({
     fields: [course.groupId],
     references: [group.id]
   }),
-  appsPolls: many(appsPoll),
   lessons: many(lesson),
   communityQuestions: many(communityQuestion),
   courseNewsfeeds: many(courseNewsfeed),
@@ -183,8 +179,6 @@ export const groupmemberRelations = relations(groupmember, ({ one, many }) => ({
   groupAttendances: many(groupAttendance),
   lessonComments: many(lessonComment),
   submissions: many(submission),
-  appsPolls: many(appsPoll),
-  appsPollSubmissions: many(appsPollSubmission),
   group: one(group, {
     fields: [groupmember.groupId],
     references: [group.id]
@@ -200,27 +194,6 @@ export const groupmemberRelations = relations(groupmember, ({ one, many }) => ({
   courseNewsfeeds: many(courseNewsfeed),
   courseNewsfeedComments: many(courseNewsfeedComment),
   questionAnswers: many(questionAnswer)
-}));
-
-export const appsPollOptionRelations = relations(appsPollOption, ({ one, many }) => ({
-  appsPoll: one(appsPoll, {
-    fields: [appsPollOption.pollId],
-    references: [appsPoll.id]
-  }),
-  appsPollSubmissions: many(appsPollSubmission)
-}));
-
-export const appsPollRelations = relations(appsPoll, ({ one, many }) => ({
-  appsPollOptions: many(appsPollOption),
-  groupmember: one(groupmember, {
-    fields: [appsPoll.authorId],
-    references: [groupmember.id]
-  }),
-  course: one(course, {
-    fields: [appsPoll.courseId],
-    references: [course.id]
-  }),
-  appsPollSubmissions: many(appsPollSubmission)
 }));
 
 export const profileRelations = relations(profile, ({ one, many }) => ({
@@ -382,21 +355,6 @@ export const organizationEmaillistRelations = relations(organizationEmaillist, (
   organization: one(organization, {
     fields: [organizationEmaillist.organizationId],
     references: [organization.id]
-  })
-}));
-
-export const appsPollSubmissionRelations = relations(appsPollSubmission, ({ one }) => ({
-  appsPoll: one(appsPoll, {
-    fields: [appsPollSubmission.pollId],
-    references: [appsPoll.id]
-  }),
-  appsPollOption: one(appsPollOption, {
-    fields: [appsPollSubmission.pollOptionId],
-    references: [appsPollOption.id]
-  }),
-  groupmember: one(groupmember, {
-    fields: [appsPollSubmission.selectedById],
-    references: [groupmember.id]
   })
 }));
 

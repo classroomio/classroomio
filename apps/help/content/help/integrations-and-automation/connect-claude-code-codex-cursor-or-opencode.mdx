@@ -1,8 +1,87 @@
 ---
 title: 'Connect Claude Code, Codex, Cursor, or OpenCode'
-description: 'This ClassroomIO Help Center guide is still being worked on.'
+description: 'Connect a supported AI client to the ClassroomIO MCP server.'
+last_reviewed: '2026-10-21'
 ---
 
-:::info[This guide is coming soon]
-Bookmark this page and check back for the complete instructions.
-:::
+First [create an MCP key](/integrations-and-automation/create-rotate-and-revoke-mcp-keys) in **Automation → MCP**. Install Node.js so your client can run `npx -y @classroomio/mcp`. The server needs `CLASSROOMIO_API_URL=https://api.classroomio.com` and your key in `CLASSROOMIO_API_KEY`.
+
+![MCP client setup with the Codex tab selected](./images/connect-claude-code-codex-cursor-or-opencode/overview.webp)
+
+The **Automation → MCP** page also has client-specific setup snippets. Store the key in your secret manager and make it available as `CLASSROOMIO_API_KEY` to the client process before starting the client. The examples below refer to that variable, so the key does not appear in terminal commands or configuration files. Never commit a live key.
+
+## Claude Code
+
+Add this entry to a private or project `.mcp.json` file. Claude Code expands the variable when it starts the server.
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "command": "npx",
+      "args": ["-y", "@classroomio/mcp"],
+      "env": {
+        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+        "CLASSROOMIO_API_KEY": "${CLASSROOMIO_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+## Codex
+
+Add this entry to `~/.codex/config.toml`. `env_vars` forwards the named variable from the environment instead of storing its value.
+
+```toml
+[mcp_servers.classroomio]
+command = "npx"
+args = ["-y", "@classroomio/mcp"]
+env_vars = ["CLASSROOMIO_API_KEY"]
+
+[mcp_servers.classroomio.env]
+CLASSROOMIO_API_URL = "https://api.classroomio.com"
+```
+
+## Cursor and OpenCode
+
+For Cursor, add a `classroomio` entry to your personal `~/.cursor/mcp.json`. The variable reference reads the key from Cursor's environment when it starts.
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "command": "npx",
+      "args": ["-y", "@classroomio/mcp"],
+      "env": {
+        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+        "CLASSROOMIO_API_KEY": "${env:CLASSROOMIO_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+For OpenCode, add a local server to your OpenCode config: `opencode.json` in your project root, or `~/.config/opencode/opencode.json` to make the server available in every project. The `{env:...}` reference reads the key from OpenCode's environment.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "classroomio": {
+        "type": "local",
+        "command": ["npx", "-y", "@classroomio/mcp"],
+        "environment": {
+          "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+          "CLASSROOMIO_API_KEY": "{env:CLASSROOMIO_API_KEY}"
+        }
+      }
+    }
+  }
+}
+```
+
+Use the configuration file or UI specified by your client. The locations and schemas can change with client releases; check the [Claude Code](https://code.claude.com/docs/en/mcp), [Codex](https://developers.openai.com/codex/config-reference), [Cursor](https://docs.cursor.com/context/model-context-protocol), or [OpenCode](https://opencode.ai/v2/docs/mcp-servers) documentation if your client uses a different format.
+
+Restart or reconnect the client and check that ClassroomIO tools are listed. Try a read-only request in the intended organization before allowing writes. If no tools appear, check that Node.js can run the package and the JSON or command is valid. If a request is unauthorized, check the API URL, key status, and the key creator's permissions. The [developer MCP guide](https://classroomio.com/docs/developers/mcp) has full, current examples for all four clients.

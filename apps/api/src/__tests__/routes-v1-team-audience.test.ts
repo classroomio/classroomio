@@ -196,7 +196,12 @@ describe('team and audience routes through the v1 router', () => {
     expect(mocks.audience.getAudienceMemberService).toHaveBeenCalledWith('org-id', 'actor-id', { memberId: 7 });
 
     await request('POST', '/audience/assign-courses', { profileIds: [PROFILE_ID], courseIds: [COURSE_ID] });
-    expect(mocks.audience.assignAudienceCoursesService).toHaveBeenCalledWith('org-id', 'actor-id', expect.any(Object));
+    expect(mocks.audience.assignAudienceCoursesService).toHaveBeenCalledWith(
+      'org-id',
+      'actor-id',
+      expect.any(Object),
+      'mcp'
+    );
 
     await request('PUT', '/audience/7', { name: 'Sam Student' });
     expect(mocks.audience.updateAudienceService).toHaveBeenCalledWith('org-id', 7, 'actor-id', {

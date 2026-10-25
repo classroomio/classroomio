@@ -19,6 +19,7 @@ import { registerCourseSectionTools } from './tools/course-sections';
 import { registerCourseExerciseTools } from './tools/course-exercises';
 import { registerCourseSubmissionTools } from './tools/course-submissions';
 import { registerCourseTools } from './tools/courses';
+import { registerCourseTemplateTools } from './tools/course-templates';
 import { registerTeamTools } from './tools/team';
 
 async function main() {
@@ -43,6 +44,7 @@ async function main() {
   registerCourseContentTools(server, apiClient);
   registerCourseExerciseTools(server, apiClient);
   registerCourseSubmissionTools(server, apiClient);
+  registerCourseTemplateTools(server, apiClient);
   registerAnalyticsTools(server, apiClient);
   registerAudienceTools(server, apiClient);
   registerTeamTools(server, apiClient);

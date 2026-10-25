@@ -312,7 +312,9 @@ describe('gradeCourseSubmissionService', () => {
     expect(getQuestionsByExerciseIds).toHaveBeenCalledWith(['exercise-1']);
     expect(getQuestionAnswersBySubmissionId).toHaveBeenCalledWith(SUBMISSION_ID);
     expect(getSubmission).not.toHaveBeenCalled();
-    expect(updateSubmissionGradesBatch).toHaveBeenCalledWith(SUBMISSION_ID, COURSE_ID, payload);
+    expect(updateSubmissionGradesBatch).toHaveBeenCalledWith(SUBMISSION_ID, COURSE_ID, payload, {
+      actorProfileId: ACTOR_ID
+    });
     expect(result).toMatchObject({ gradingState: 'completed', total: 2 });
   });
 });
@@ -325,7 +327,12 @@ describe('updateCourseSubmissionService', () => {
       gradingState: 'completed'
     });
 
-    expect(updateSubmissionService).toHaveBeenCalledWith(SUBMISSION_ID, COURSE_ID, { gradingState: 'completed' });
+    expect(updateSubmissionService).toHaveBeenCalledWith(
+      SUBMISSION_ID,
+      COURSE_ID,
+      { gradingState: 'completed' },
+      { actorProfileId: ACTOR_ID }
+    );
     expect(result.gradingState).toBe('completed');
   });
 });

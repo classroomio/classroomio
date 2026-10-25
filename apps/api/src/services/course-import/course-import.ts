@@ -894,13 +894,17 @@ export async function publishCourseImportDraftService(
     }
 
     if (!courseId) {
-      const courseResult = await createCourse(profileId, {
-        title: courseTitle,
-        description: courseDescription,
-        type: courseType,
-        organizationId: orgId,
-        compliance: courseCompliance
-      });
+      const courseResult = await createCourse(
+        profileId,
+        {
+          title: courseTitle,
+          description: courseDescription,
+          type: courseType,
+          organizationId: orgId,
+          compliance: courseCompliance
+        },
+        'import'
+      );
 
       courseId = courseResult.course.id;
       await reserveDraftPublishedCourseId(orgId, draftId, draft, existing.summary, courseId);

@@ -33,6 +33,8 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
+import { captureCoursePublished } from '@cio/core/services/course/course';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { ORG_ADMIN_RULE } from '../team/docs';
@@ -97,7 +99,7 @@ export const v1CourseRouter = new Hono()
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
         const payload = c.req.valid('json');
-        const course = await createPublicApiCourseService(orgId, actorId, payload);
+        const course = await createPublicApiCourseService(orgId, actorId, payload, getEventSource(c));
 
         return c.json(
           {
@@ -376,7 +378,16 @@ export const v1CourseRouter = new Hono()
         const orgId = c.get('orgId')!;
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const { course, conversionOffenders } = await updatePublicApiCourseService(orgId, params, payload);
+        const { course, conversionOffenders, publishedNow } = await updatePublicApiCourseService(
+          orgId,
+          params,
+          payload,
+          c.get('actorId')
+        );
+
+        if (publishedNow) {
+          captureCoursePublished(course, c.get('actorId'), getEventSource(c));
+        }
 
         return c.json(
           {

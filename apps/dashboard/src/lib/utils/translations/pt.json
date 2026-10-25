@@ -36,7 +36,8 @@
         "title": "Abrindo sua academia…",
         "caption": "Preparando seus cursos, alunos e configurações."
       }
-    }
+    },
+    "back": "Voltar"
   },
   "validations": {
     "generic": {
@@ -394,18 +395,8 @@
       "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível.",
       "draft_restored": "Restauramos as alterações não salvas que você deixou"
     },
-    "poll": {
-      "info": {
-        "not_published": "A enquete ainda não foi publicada",
-        "vote_once": "Você só pode votar uma vez"
-      },
-      "error": {
-        "creating_poll": "Ocorreu um erro ao criar a enquete",
-        "updating_poll": "Ocorreu um erro ao atualizar o status da enquete",
-        "submitting_poll": "Ocorreu um erro ao enviar a enquete"
-      }
-    },
     "media_manager": {
+      "video_added": "Vídeo adicionado à sua biblioteca",
       "list_failed": "Falha ao carregar recursos de mídia",
       "storage_failed": "Falha ao carregar o resumo do armazenamento",
       "create_failed": "Falha ao criar recurso de mídia",
@@ -1818,34 +1809,6 @@
             "manual": "Versão salva",
             "publish": "Publicado"
           }
-        },
-        "poll": {
-          "voted": "Votado",
-          "created_by": "Criado por",
-          "status": "Status",
-          "draft": "Rascunho",
-          "publish": "Publicar",
-          "expiration": "Expiração",
-          "total_voted": "Total de votos",
-          "responses": "Respostas",
-          "expires": "Expira",
-          "today": "Hoje",
-          "back": "Voltar",
-          "result": "Resultado",
-          "delete": "Excluir",
-          "create_poll": "Criar enquete",
-          "question": "Pergunta",
-          "options": "Opções",
-          "option_label": "Rótulo da opção",
-          "cancel": "Cancelar",
-          "poll_question": "Pergunta da enquete"
-        },
-        "polls": {
-          "title": "Enquete",
-          "active_polls": "Enquetes ativas",
-          "expired_polls": "Enquetes expiradas",
-          "loading": "Carregando...",
-          "no_polls": "Nenhuma enquete para exibir"
         },
         "comments": {
           "title": "Comentários",
@@ -3369,7 +3332,6 @@
         "save": "Salvar alterações",
         "apps": {
           "title": "Aplicativos",
-          "poll": "Enquete",
           "live_comment": "Comentários ao vivo"
         },
         "course": {
@@ -3712,6 +3674,11 @@
         "other": "Outro"
       },
       "refresh": "Atualizar"
+    },
+    "upload": {
+      "videos": "Enviar vídeos",
+      "documents": "Enviar documentos",
+      "more_options": "Mais opções de envio"
     },
     "storage": {
       "total_bytes": "Armazenamento total",
@@ -4984,6 +4951,7 @@
     "title": "Automação",
     "subtitle": "Conecte clientes MCP agora, com o Zapier e a API pública seguindo o mesmo sistema de chaves com escopo organizacional.",
     "coming_soon": "Em breve",
+    "read_docs": "Ler a documentação",
     "mcp": {
       "setup": {
         "title": "Configuração do cliente",
@@ -5016,8 +4984,7 @@
         "rate_limits_description": "Solicitações de leitura/gravação/publicação permitidas por minuto.",
         "used_label": "Usado:"
       },
-      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO com chaves da organização que você pode rotacionar a qualquer momento.",
-      "view_docs": "Ver documentação"
+      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO com chaves da organização que você pode rotacionar a qualquer momento."
     },
     "api": {
       "subtitle": "Gerencie chaves de API para integrar com a API pública do ClassroomIO.",
@@ -5040,8 +5007,7 @@
       "setup": {
         "title": "Início rápido",
         "description": "Use sua chave de API como token Bearer em cada solicitação. Substitua o marcador por uma chave acima ou cole o segredo imediatamente após gerar uma."
-      },
-      "view_docs": "Ver documentação"
+      }
     },
     "keys": {
       "active": "Ativo",
@@ -5163,7 +5129,9 @@
       "event_groups": {
         "organization": "Organização",
         "course": "Cursos",
-        "learning": "Progresso de aprendizagem"
+        "learning": "Progresso de aprendizagem",
+        "cohort": "Coortes",
+        "compliance": "Conformidade"
       },
       "events": {
         "organization_invite_created": "Um convite de equipe é enviado",
@@ -5179,7 +5147,18 @@
         "course_submission_created": "Um envio de exercício é criado",
         "course_submission_status_changed": "O status de um envio muda, por exemplo, quando ele é avaliado",
         "lesson_completion_updated": "Uma aula é marcada como concluída ou redefinida",
-        "exercise_completion_updated": "Um exercício é concluído ou redefinido"
+        "exercise_completion_updated": "Um exercício é concluído ou redefinido",
+        "compliance_record_status_changed": "O status de conformidade de um aluno muda",
+        "compliance_record_waived": "Um requisito de conformidade de um aluno é dispensado",
+        "organization_member_added": "Uma pessoa entra na organização",
+        "organization_member_removed": "Uma pessoa é removida da organização",
+        "organization_member_updated": "A função ou o status de uma pessoa muda",
+        "course_published": "Um curso é publicado",
+        "course_unpublished": "Um curso é despublicado",
+        "cohort_member_added": "Uma pessoa é adicionada a uma coorte",
+        "cohort_member_removed": "Uma pessoa é removida de uma coorte",
+        "lesson_session_scheduled": "Uma sessão ao vivo é agendada ou remarcada",
+        "course_payment_request_created": "Um aluno solicita pagar por um curso"
       },
       "deliveries": {
         "title": "Entregas",

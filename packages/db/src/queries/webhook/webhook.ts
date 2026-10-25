@@ -15,14 +15,26 @@ import { WEBHOOK_DEGRADED_FAILURE_THRESHOLD } from '@cio/utils/constants/webhook
 export type TWebhookEndpointWithEvents = TWebhookEndpoint & { eventTypes: string[] };
 
 export type TWebhookEventContext = {
-  profiles: Map<string, { name: string | null; email: string | null }>;
-  course: { id: string; title: string | null; slug: string | null } | null;
+  profiles: Map<string, { name: string | null; email: string | null; externalId: string | null }>;
+  course: {
+    id: string;
+    title: string | null;
+    slug: string | null;
+    type: string | null;
+    isPublished: boolean | null;
+    cost: number | null;
+    currency: string | null;
+    tags: string[];
+  } | null;
+  statusLabels: Map<number, string>;
   exercise: { id: string; title: string | null } | null;
   lesson: { id: string; title: string | null } | null;
 };
 
 export type TWebhookEventContextInput = {
+  organizationId?: string;
   profileIds: string[];
+  statusIds?: number[];
   courseId?: string;
   exerciseId?: string;
   lessonId?: string;
@@ -314,39 +326,80 @@ export async function getWebhookEventContext(
   client: DbOrTxClient = db
 ): Promise<TWebhookEventContext> {
   try {
-    const [profileResult, courseResult, exerciseResult, lessonResult] = await Promise.allSettled([
-      input.profileIds.length > 0
-        ? client
-            .select({ id: schema.profile.id, name: schema.profile.fullname, email: schema.profile.email })
-            .from(schema.profile)
-            .where(inArray(schema.profile.id, input.profileIds))
-        : [],
-      input.courseId
-        ? client
-            .select({ id: schema.course.id, title: schema.course.title, slug: schema.course.slug })
-            .from(schema.course)
-            .where(eq(schema.course.id, input.courseId))
-            .limit(1)
-        : [],
-      input.exerciseId
-        ? client
-            .select({ id: schema.exercise.id, title: schema.exercise.title })
-            .from(schema.exercise)
-            .where(eq(schema.exercise.id, input.exerciseId))
-            .limit(1)
-        : [],
-      input.lessonId
-        ? client
-            .select({ id: schema.lesson.id, title: schema.lesson.title })
-            .from(schema.lesson)
-            .where(eq(schema.lesson.id, input.lessonId))
-            .limit(1)
-        : []
-    ]);
+    const statusIds = input.statusIds ?? [];
+    const [profileResult, externalIdResult, courseResult, tagResult, statusResult, exerciseResult, lessonResult] =
+      await Promise.allSettled([
+        input.profileIds.length > 0
+          ? client
+              .select({ id: schema.profile.id, name: schema.profile.fullname, email: schema.profile.email })
+              .from(schema.profile)
+              .where(inArray(schema.profile.id, input.profileIds))
+          : [],
+        input.organizationId && input.profileIds.length > 0
+          ? client
+              .select({ profileId: schema.account.userId, externalId: schema.account.accountId })
+              .from(schema.account)
+              .innerJoin(
+                schema.organizationSsoConfig,
+                eq(schema.organizationSsoConfig.betterAuthProviderId, schema.account.providerId)
+              )
+              .where(
+                and(
+                  eq(schema.organizationSsoConfig.organizationId, input.organizationId),
+                  inArray(schema.account.userId, input.profileIds)
+                )
+              )
+          : [],
+        input.courseId
+          ? client
+              .select({
+                id: schema.course.id,
+                title: schema.course.title,
+                slug: schema.course.slug,
+                type: schema.course.type,
+                isPublished: schema.course.isPublished,
+                cost: schema.course.cost,
+                currency: schema.course.currency
+              })
+              .from(schema.course)
+              .where(eq(schema.course.id, input.courseId))
+              .limit(1)
+          : [],
+        input.courseId
+          ? client
+              .select({ name: schema.tag.name })
+              .from(schema.tagAssignment)
+              .innerJoin(schema.tag, eq(schema.tag.id, schema.tagAssignment.tagId))
+              .where(eq(schema.tagAssignment.courseId, input.courseId))
+          : [],
+        statusIds.length > 0
+          ? client
+              .select({ id: schema.submissionstatus.id, label: schema.submissionstatus.label })
+              .from(schema.submissionstatus)
+              .where(inArray(schema.submissionstatus.id, statusIds))
+          : [],
+        input.exerciseId
+          ? client
+              .select({ id: schema.exercise.id, title: schema.exercise.title })
+              .from(schema.exercise)
+              .where(eq(schema.exercise.id, input.exerciseId))
+              .limit(1)
+          : [],
+        input.lessonId
+          ? client
+              .select({ id: schema.lesson.id, title: schema.lesson.title })
+              .from(schema.lesson)
+              .where(eq(schema.lesson.id, input.lessonId))
+              .limit(1)
+          : []
+      ]);
 
     const failedLookups = [
       ['profiles', profileResult],
+      ['externalIds', externalIdResult],
       ['course', courseResult],
+      ['tags', tagResult],
+      ['statuses', statusResult],
       ['exercise', exerciseResult],
       ['lesson', lessonResult]
     ] as const;
@@ -358,13 +411,25 @@ export async function getWebhookEventContext(
     }
 
     const profiles = profileResult.status === 'fulfilled' ? profileResult.value : [];
+    const externalIds = externalIdResult.status === 'fulfilled' ? externalIdResult.value : [];
     const course = courseResult.status === 'fulfilled' ? courseResult.value : [];
+    const tags = tagResult.status === 'fulfilled' ? tagResult.value : [];
+    const statuses = statusResult.status === 'fulfilled' ? statusResult.value : [];
     const exercise = exerciseResult.status === 'fulfilled' ? exerciseResult.value : [];
     const lesson = lessonResult.status === 'fulfilled' ? lessonResult.value : [];
 
+    const externalIdByProfile = new Map(externalIds.map((row) => [row.profileId, row.externalId]));
+    const courseRow = course[0];
+
     return {
-      profiles: new Map(profiles.map((row) => [row.id, { name: row.name, email: row.email }])),
-      course: course[0] ?? null,
+      profiles: new Map(
+        profiles.map((row) => [
+          row.id,
+          { name: row.name, email: row.email, externalId: externalIdByProfile.get(row.id) ?? null }
+        ])
+      ),
+      course: courseRow ? { ...courseRow, tags: tags.map((row) => row.name) } : null,
+      statusLabels: new Map(statuses.map((row) => [row.id, row.label])),
       exercise: exercise[0] ?? null,
       lesson: lesson[0] ?? null
     };
