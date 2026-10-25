@@ -471,7 +471,8 @@
         "title": "Akademiniz açılıyor…",
         "caption": "Kurslarınız, öğrencileriniz ve ayarlarınız hazırlanıyor."
       }
-    }
+    },
+    "back": "Geri"
   },
   "compliance": {
     "title": "Compliance",
@@ -2120,7 +2121,6 @@
         },
         "apps": {
           "title": "Uygulamalar",
-          "poll": "Anket",
           "live_comment": "Lcanlı yorumlar"
         },
         "auth_background": {
@@ -3594,34 +3594,6 @@
           "delete": "Sil",
           "load_more_btn": "LDaha fazlasını yükle",
           "comment_error": "Yorum gönderilemedi. Lütfen tekrar deneyin."
-        },
-        "polls": {
-          "title": "Anket",
-          "active_polls": "Aktif Anketler",
-          "expired_polls": "Süresi Dolmuş Anketler",
-          "loading": "LYükleniyor...",
-          "no_polls": "Görüntülenecek anket yok"
-        },
-        "poll": {
-          "voted": "Oylandı",
-          "created_by": "Oluşturan",
-          "status": "Durum",
-          "draft": "Draft",
-          "publish": "Yayınlama",
-          "expiration": "Sona Erme",
-          "total_voted": "Toplam Oylar",
-          "responses": "Yanıtlar",
-          "expires": "Sona Erme",
-          "today": "Bugün",
-          "back": "Geri",
-          "result": "Sonuç",
-          "delete": "Sil",
-          "create_poll": "Anket oluştur",
-          "question": "Soru",
-          "options": "Seçenekler",
-          "option_label": "Seçenek Etiketi",
-          "cancel": "İptal",
-          "poll_question": "Anket Sorusu"
         },
         "version_history": {
           "title": "Sürüm geçmişi",
@@ -5262,17 +5234,6 @@
     "lesson_video": {
       "generate_1080_completed": "1080p yorumlama eklendi",
       "generate_1080_failed": "1080p yorumlama oluşturulamadı"
-    },
-    "poll": {
-      "error": {
-        "creating_poll": "Anket oluşturulurken bir hata oluştu",
-        "updating_poll": "Anket durumu güncellenirken bir hata oluştu",
-        "submitting_poll": "Anket gönderilirken bir hata oluştu"
-      },
-      "info": {
-        "not_published": "Anket henüz yayınlanmadı",
-        "vote_once": "Yalnızca bir kez oy verebilirsiniz"
-      }
     },
     "exercise": {
       "validation_errors": "Lütfen kaydetmeden önce tüm doğrulama hatalarını düzeltin.",
