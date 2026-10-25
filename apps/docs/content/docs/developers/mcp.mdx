@@ -98,22 +98,42 @@ codex mcp add classroomio \
 
 ### OpenCode
 
+OpenCode reads MCP servers from the `mcp` key of its own config file. Put the block below in one
+of these places:
+
+- `opencode.json` in your project root (or `.opencode/opencode.json`) — the server is available
+  only in that project
+- `~/.config/opencode/opencode.json` — the server is available in every project you open
+
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "classroomio": {
-      "type": "local",
-      "command": ["npx", "-y", "@classroomio/mcp"],
-      "enabled": true,
-      "environment": {
-        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
-        "CLASSROOMIO_API_KEY": "<cio_mcp_key>"
+    "servers": {
+      "classroomio": {
+        "type": "local",
+        "command": ["npx", "-y", "@classroomio/mcp"],
+        "environment": {
+          "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+          "CLASSROOMIO_API_KEY": "<cio_mcp_key>"
+        }
       }
     }
   }
 }
 ```
+
+Notes:
+
+- `command` must be an array of strings, not a single string.
+- `environment` passes the env vars to the server process, so the key does not need to live in
+  your shell profile.
+- OpenCode loads its config once at startup and does not hot-reload. Restart OpenCode after
+  editing the file; the running session keeps using the old config.
+- OpenCode validates its config strictly and refuses to start when a field is wrong, so an
+  invalid block fails fast.
+- To verify the server works, start OpenCode in your project and ask it to list your ClassroomIO
+  courses. That exercises `list_org_courses` end to end with your key.
 
 ### Cursor
 
