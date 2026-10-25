@@ -513,7 +513,7 @@ export function buildAgentTools(
 
     get_block_recipe: tool({
       description:
-        'Get the exact markup for a lesson-body block type not spelled out in the system prompt (see the block type list there). Call this once, right before using that block type in update_lesson_content — never write its markup from memory.',
+        'Get the exact markup for a lesson-body block type not spelled out in the system prompt (see the block type list there). Call this once per distinct block type, right before its first use in update_lesson_content — a lesson needing both a table and math needs two separate calls. Never write its markup from memory.',
       inputSchema: getBlockRecipeParam,
       execute: async (args) => {
         return executeAgentTool('get_block_recipe', { orgId, userId, courseId, args }, async () => {

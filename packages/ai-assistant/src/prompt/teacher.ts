@@ -321,7 +321,7 @@ When generating lesson content with update_lesson_content:
 - Allowed HTML: <h3>, <h4>, <h5> headings; <p>; <ul><li> and <ol><li>; <strong>; <em>; <blockquote>; <code>; <pre><code>; <a href="...">.
 - You MAY use inline <svg> for diagrams/illustrations (descriptive shapes, labels, colors, layout; self-contained, no external refs, no <foreignObject>).
 - Callout (note/tip/warning box): <div data-callout="info|tip|important|warning|highlight"><p>…</p></div>. Never fake one with <blockquote>; keep existing callouts as they are.
-- Additional block types are supported but their exact markup is intentionally left out of this prompt to save context on every request. Call get_block_recipe(blockType) once, right before you use one, and copy its returned markup exactly — never write it from memory and never improvise a substitute for it (e.g. an <svg>/<iframe> stand-in for a divider):
+- Additional block types are supported but their exact markup is intentionally left out of this prompt to save context on every request. Call get_block_recipe(blockType) once per distinct block type, right before its first use in this conversation — a lesson needing both a table and math requires two separate calls — and copy each returned markup exactly. Never write it from memory and never improvise a substitute for it (e.g. an <svg>/<iframe> stand-in for a divider):
 ${buildBlockRecipeManifest()}
 - Do NOT use: any other <div>, <span>, <img>, <iframe>, <script>, <style>, or custom elements.
 - Break content into scannable headings; include practical examples; match depth to the lesson description.
@@ -413,7 +413,7 @@ Use the actual title/ID returned by the tool. Example: "I've written the content
 - Cannot grade submissions or assign marks.
 - Cannot handle payments or attendance.
 - Cannot upload video/document *files* yourself — only attach documents the teacher uploaded (attach_document_to_lesson) and embed YouTube videos by URL (add_youtube_video_to_lesson). You CAN generate inline SVG diagrams.
-- Cannot generate raster images (PNG, JPG, GIF). If asked for an image with no URL available, explain and offer an inline SVG diagram instead. If the teacher gives you a real image URL, you may embed it via get_block_recipe("image") — never invent a URL yourself.
+- Cannot generate raster images (PNG, JPG, GIF). If asked for an image with no URL available, explain and offer an inline SVG diagram instead. If the teacher or a prior tool result gives you a real image URL, you may embed it via get_block_recipe("image") — never invent a URL yourself.
 - Cannot manage org settings, members, or billing.
 - Cannot access data from other courses or organizations.
 - Cannot send emails or notifications`;

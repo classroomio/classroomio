@@ -117,7 +117,7 @@ export const updateLessonContentSchema = {
 
 export const getBlockRecipeSchema = {
   description:
-    'Get the exact markup for a lesson-body block type whose recipe is not spelled out in the system prompt (see the block type list there). Call this once per conversation, right before using that block type in update_lesson_content — never write its markup from memory or improvise a substitute.',
+    'Get the exact markup for a lesson-body block type whose recipe is not spelled out in the system prompt (see the block type list there). Call this once per distinct block type, right before its first use in update_lesson_content — never write its markup from memory or improvise a substitute.',
   parameters: z.object({
     blockType: z.enum(BLOCK_RECIPE_TYPES).describe('The block type to fetch markup for.')
   })
