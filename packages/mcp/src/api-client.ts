@@ -26,6 +26,9 @@ import type {
   TPublicApiCourseSubmissionsQuery,
   TPublicApiCreateCourseExercise,
   TPublicApiExerciseTemplatesQuery,
+  TPublicApiCourseTemplatesQuery,
+  TPublicApiCreateCourseFromTemplate,
+  TPublicApiSaveCourseTemplate,
   TPublicApiGradeCourseSubmission,
   TPublicApiUpdateCourseExercise,
   TPublicApiUpdateCourseSubmission,
@@ -298,6 +301,22 @@ export class ClassroomIoApiClient {
 
   async getExerciseTemplate(templateId: number) {
     return this.request(`/public-api/v1/exercise-templates/${templateId}`, { method: 'GET' });
+  }
+
+  async listCourseTemplates(query: Partial<TPublicApiCourseTemplatesQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/course-templates${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getCourseTemplate(templateId: string) {
+    return this.request(`/public-api/v1/course-templates/${templateId}`, { method: 'GET' });
+  }
+
+  async createCourseFromTemplate(templateId: string, payload: TPublicApiCreateCourseFromTemplate) {
+    return this.request(`/public-api/v1/course-templates/${templateId}/courses`, { method: 'POST', body: payload });
+  }
+
+  async saveCourseAsTemplate(courseId: string, payload: TPublicApiSaveCourseTemplate) {
+    return this.request(`/public-api/v1/courses/${courseId}/template`, { method: 'POST', body: payload });
   }
 
   async listCourseSubmissions(courseId: string, query: Partial<TPublicApiCourseSubmissionsQuery> = {}) {
