@@ -19,6 +19,7 @@ export type PersonalLearningState = {
   messages: PersonalLearningMessage[];
   conversationId: string | null;
   offer: PersonalLearningOffer | null;
+  goalDraft: string;
   selectedStudyDays: StudyDays;
   dailyMinutes: DailyMinutes;
   isAnswering: boolean;
@@ -40,6 +41,7 @@ export function createPersonalLearningState(): PersonalLearningState {
     messages: [],
     conversationId: null,
     offer: null,
+    goalDraft: '',
     selectedStudyDays: 7,
     dailyMinutes: 30,
     isAnswering: false,
@@ -56,6 +58,7 @@ export function submitQuestion(state: PersonalLearningState, message: string): P
     ...state,
     messages: [...state.messages, { role: 'user', content: trimmedMessage }],
     offer: null,
+    goalDraft: trimmedMessage,
     isAnswering: true
   };
 }
@@ -73,6 +76,9 @@ export function receiveAnswer(
     conversationId: response.conversationId ?? state.conversationId,
     messages: [...state.messages, { role: 'assistant', content: response.answer }],
     offer: response.offer ? { ...response.offer, choices: [1, 7, 30] } : null,
+    goalDraft: response.offer
+      ? ([...state.messages].reverse().find(({ role }) => role === 'user')?.content ?? state.goalDraft)
+      : state.goalDraft,
     selectedStudyDays: response.offer?.suggestedStudyDays ?? state.selectedStudyDays,
     isAnswering: false
   };
@@ -87,10 +93,12 @@ export function selectDailyMinutes(state: PersonalLearningState, value: DailyMin
 }
 
 export function buildAcceptPayload(state: PersonalLearningState, consent: boolean) {
-  if (!state.offer || !consent || state.isAnswering || state.isAccepting) return null;
+  const goal = state.goalDraft.trim();
+  if (!state.offer || !consent || state.isAnswering || state.isAccepting || !goal) return null;
 
   return {
     offerId: state.offer.id,
+    goal,
     targetStudyDays: state.selectedStudyDays,
     dailyMinutes: state.dailyMinutes,
     consent: true as const

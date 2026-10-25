@@ -6425,5 +6425,17 @@
     "new_badge": "Yeni",
     "read_full": "Tüm değişiklik günlüğünü oku",
     "close": "Kapat"
+  },
+  "personalLearning": {
+    "offer": {
+      "goal_label": "Kursun hangi konuya odaklanmasını istersiniz?"
+    },
+    "session": {
+      "status": {
+        "sourcing": "Kaynaklar aranıyor"
+      },
+      "progress": "İlk dersiniz hazırlanıyor…",
+      "source_quota_copy": "Günlük kaynak sınırına ulaşıldı. Herkese açık bir URL aramayı atlar ancak kaynak getirme kotasını kullanır; bu kota da dolduysa yarın tekrar deneyin."
+    }
   }
 }

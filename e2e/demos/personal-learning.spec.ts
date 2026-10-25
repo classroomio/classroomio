@@ -10,6 +10,8 @@ for (const { studyDays, dailyMinutes } of personalLearningCases) {
   test(`creates one ready lesson for a ${studyDays}-day personal learning plan`, async ({ page, context }) => {
     const baseUrl = process.env.DEMO_BASE_URL ?? 'http://localhost:5173';
     const acceptedPlans: Array<Record<string, unknown>> = [];
+    const editedGoal = 'Learn derivatives with practice';
+    let journeyStatusPoll = 0;
 
     await context.addCookies([
       { name: 'debugPlay', value: 'true', url: baseUrl },
@@ -50,17 +52,18 @@ for (const { studyDays, dailyMinutes } of personalLearningCases) {
               id: 'journey-e2e',
               conversationId: 'conversation-e2e',
               courseId: 'course-e2e',
-              goal: 'Explain derivatives',
+              goal: plan.goal,
               targetStudyDays: plan.targetStudyDays,
               dailyMinutes: plan.dailyMinutes
             },
-            session: { sessionIndex: 1, status: 'ready', lessonId: 'lesson-e2e', failureCode: null }
+            session: { sessionIndex: 1, status: 'sourcing', lessonId: null, failureCode: null }
           }
         });
         return;
       }
 
       if (request.method() === 'GET' && pathname.endsWith('/learning/journeys/journey-e2e')) {
+        const status = journeyStatusPoll++ === 0 ? 'generating' : 'ready';
         await route.fulfill({
           json: {
             success: true,
@@ -68,7 +71,7 @@ for (const { studyDays, dailyMinutes } of personalLearningCases) {
               id: 'journey-e2e',
               conversationId: 'conversation-e2e',
               courseId: 'course-e2e',
-              goal: 'Explain derivatives',
+              goal: editedGoal,
               targetStudyDays: studyDays,
               dailyMinutes
             },
@@ -76,7 +79,14 @@ for (const { studyDays, dailyMinutes } of personalLearningCases) {
               { role: 'user', content: 'Explain derivatives' },
               { role: 'assistant', content: 'A derivative measures how quickly a value changes.' }
             ],
-            sessions: [{ sessionIndex: 1, status: 'ready', lessonId: 'lesson-e2e', failureCode: null }]
+            sessions: [
+              {
+                sessionIndex: 1,
+                status,
+                lessonId: status === 'ready' ? 'lesson-e2e' : null,
+                failureCode: null
+              }
+            ]
           }
         });
         return;
@@ -112,13 +122,22 @@ for (const { studyDays, dailyMinutes } of personalLearningCases) {
     await page.getByTestId(`personal-learning-minutes-${dailyMinutes}`).click();
     await expect(page.getByTestId('personal-learning-accept')).toBeDisabled();
     await page.getByTestId('personal-learning-consent').check();
+    await page.getByTestId('personal-learning-goal').fill(editedGoal);
+    await expect(page.getByTestId('personal-learning-consent')).not.toBeChecked();
+    await expect(page.getByTestId('personal-learning-accept')).toBeDisabled();
+    await page.getByTestId('personal-learning-consent').check();
     await page.getByTestId('personal-learning-accept').click();
 
     await expect(page.getByTestId('personal-learning-session-1')).toBeVisible();
+    await expect(page.getByTestId('personal-learning-session-1')).toContainText('Finding sources');
+    await expect(page.getByTestId('personal-learning-session-1')).toContainText('Preparing lesson', {
+      timeout: 10_000
+    });
     await expect(page.getByTestId('personal-learning-session-1')).toContainText('Ready to learn');
     expect(acceptedPlans).toHaveLength(1);
     expect(acceptedPlans[0]).toMatchObject({
       consent: true,
+      goal: editedGoal,
       targetStudyDays: studyDays,
       dailyMinutes
     });

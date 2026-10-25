@@ -24,6 +24,7 @@ describe('personal learning state', () => {
 
     expect(initialState.offer).toBeNull();
     expect(answeredState.messages.map(({ role }) => role)).toEqual(['user', 'assistant']);
+    expect(answeredState.goalDraft).toBe('Explain derivatives.');
     expect(answeredState.isAnswering).toBe(false);
     expect(answeredState.offer?.choices).toEqual([1, 7, 30]);
   });
@@ -36,24 +37,53 @@ describe('personal learning state', () => {
   });
 
   it('allows changing day and daily-minute choices before an explicit consent', () => {
-    const stateWithOffer = receiveAnswer(createPersonalLearningState(), {
-      answer: 'Start with the core concepts.',
-      offer: { id: 'offer-2', suggestedStudyDays: 1, reason: 'A compact introduction fits one day.' }
-    });
+    const stateWithOffer = receiveAnswer(
+      submitQuestion(createPersonalLearningState(), 'Start with the core concepts.'),
+      {
+        answer: 'Start with the core concepts.',
+        offer: { id: 'offer-2', suggestedStudyDays: 1, reason: 'A compact introduction fits one day.' }
+      }
+    );
     const selectedDays = selectStudyDays(stateWithOffer, 30);
     const selectedBudget = selectDailyMinutes(selectedDays, 120);
 
     expect(buildAcceptPayload(selectedBudget, false)).toBeNull();
     expect(buildAcceptPayload(selectedBudget, true)).toEqual({
       offerId: 'offer-2',
+      goal: 'Start with the core concepts.',
       targetStudyDays: 30,
       dailyMinutes: 120,
       consent: true
     });
   });
 
+  it('uses the edited goal in the consent payload', () => {
+    const stateWithOffer = receiveAnswer(submitQuestion(createPersonalLearningState(), 'Explain derivatives'), {
+      answer: 'A derivative measures change.',
+      offer: { id: 'offer-goal', suggestedStudyDays: 7, reason: 'A week allows practice.' }
+    });
+    const editedState = { ...stateWithOffer, goalDraft: '  Learn derivatives with practice.  ' };
+
+    expect(buildAcceptPayload(editedState, true)).toEqual({
+      offerId: 'offer-goal',
+      goal: 'Learn derivatives with practice.',
+      targetStudyDays: 7,
+      dailyMinutes: 30,
+      consent: true
+    });
+  });
+
+  it('does not accept an empty edited goal', () => {
+    const stateWithOffer = receiveAnswer(submitQuestion(createPersonalLearningState(), 'Explain derivatives'), {
+      answer: 'A derivative measures change.',
+      offer: { id: 'offer-empty-goal', suggestedStudyDays: 7, reason: 'A week allows practice.' }
+    });
+
+    expect(buildAcceptPayload({ ...stateWithOffer, goalDraft: '   ' }, true)).toBeNull();
+  });
+
   it('dismisses an offer without accepting it and disables consent while pending', () => {
-    const stateWithOffer = receiveAnswer(createPersonalLearningState(), {
+    const stateWithOffer = receiveAnswer(submitQuestion(createPersonalLearningState(), 'Explain vectors.'), {
       answer: 'A vector has magnitude and direction.',
       offer: { id: 'offer-3', suggestedStudyDays: 7, reason: 'A week allows practice.' }
     });
@@ -78,6 +108,7 @@ describe('personal learning state', () => {
   it('offers URL retry for source failures only', () => {
     expect(isSourceRetryableFailure('NO_VERIFIABLE_SOURCE')).toBe(true);
     expect(isSourceRetryableFailure('LEARNING_SOURCE_FETCH_FAILED')).toBe(true);
+    expect(isSourceRetryableFailure('LEARNING_SOURCE_QUOTA_EXCEEDED')).toBe(true);
     expect(isSourceRetryableFailure('AI_NOT_CONFIGURED')).toBe(false);
   });
 });

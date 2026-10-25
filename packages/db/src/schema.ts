@@ -4546,6 +4546,7 @@ export type PersonalLearningSource = {
   title: string;
   accessedAt: string;
   content?: string;
+  evidence?: { claimId: string; quote: string }[];
 };
 
 export type PersonalLearningGenerationMeta = {

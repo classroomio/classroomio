@@ -2,7 +2,7 @@ import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { ROLE } from '@cio/utils/constants';
 import { generateSlug } from '@cio/utils/functions/slug';
-import { and, eq, lt, sql } from 'drizzle-orm';
+import { and, eq, inArray, lt, sql } from 'drizzle-orm';
 
 import type { PersonalLearningMessage, PersonalLearningOfferPayload } from '@db/schema';
 
@@ -367,11 +367,21 @@ export async function claimPersonalLearningSession(sessionId: string) {
   const [session] = await db
     .update(schema.personalLearningSession)
     .set({
-      status: 'generating',
+      status: 'sourcing',
       attempt: sql`${schema.personalLearningSession.attempt} + 1`,
       updatedAt: new Date().toISOString()
     })
     .where(and(eq(schema.personalLearningSession.id, sessionId), eq(schema.personalLearningSession.status, 'queued')))
+    .returning();
+
+  return session ?? null;
+}
+
+export async function markPersonalLearningSessionGenerating(sessionId: string) {
+  const [session] = await db
+    .update(schema.personalLearningSession)
+    .set({ status: 'generating', updatedAt: new Date().toISOString() })
+    .where(and(eq(schema.personalLearningSession.id, sessionId), eq(schema.personalLearningSession.status, 'sourcing')))
     .returning();
 
   return session ?? null;
@@ -460,7 +470,7 @@ export async function recoverPersonalLearningSessions(staleAfterMinutes: number,
     .set({ status: 'queued', updatedAt: new Date().toISOString() })
     .where(
       and(
-        eq(schema.personalLearningSession.status, 'generating'),
+        inArray(schema.personalLearningSession.status, ['sourcing', 'generating']),
         lt(schema.personalLearningSession.updatedAt, staleBefore)
       )
     );

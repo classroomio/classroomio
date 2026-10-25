@@ -6472,6 +6472,7 @@
     },
     "offer": {
       "heading": "Un plan de aprendizaje para tu objetivo",
+      "goal_label": "¿En qué quieres que se centre el curso?",
       "days_label": "¿Cuántos días de aprendizaje?",
       "days_unit": "días",
       "minutes_label": "Tiempo de estudio diario",
@@ -6490,12 +6491,14 @@
       "title": "Lección {number}",
       "status": {
         "queued": "En espera",
+        "sourcing": "Buscando fuentes",
         "generating": "Preparando la lección",
         "ready": "Lista para aprender",
         "failed": "Requiere atención"
       },
-      "progress": "Buscando fuentes verificadas y preparando la lección 1…",
+      "progress": "Se está preparando tu primera lección…",
       "failed_copy": "No pudimos verificar suficientes fuentes. Añade una URL pública para volver a intentarlo.",
+      "source_quota_copy": "Se alcanzó el límite diario de fuentes. Una URL pública evita la búsqueda, pero sigue usando el límite de descargas; si también se agotó, vuelve a intentarlo mañana.",
       "ready_copy": "La lección 1 está lista. Tu curso todavía contiene solo esta lección.",
       "source_url_label": "URL pública de una fuente de aprendizaje",
       "source_url_placeholder": "https://university.edu/learning-resource",

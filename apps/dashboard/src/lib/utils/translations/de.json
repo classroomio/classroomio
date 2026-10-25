@@ -6472,6 +6472,7 @@
     },
     "offer": {
       "heading": "Ein Lernplan, der zu deinem Ziel passt",
+      "goal_label": "Worauf soll sich der Kurs konzentrieren?",
       "days_label": "Wie viele Lerntage?",
       "days_unit": "Tage",
       "minutes_label": "Lernzeit pro Tag",
@@ -6490,12 +6491,14 @@
       "title": "Lektion {number}",
       "status": {
         "queued": "Wartet auf den Start",
+        "sourcing": "Quellen werden gesucht",
         "generating": "Lektion wird vorbereitet",
         "ready": "Bereit zum Lernen",
         "failed": "Aktion erforderlich"
       },
-      "progress": "Geprüfte Quellen werden gesucht und Lektion 1 wird vorbereitet…",
+      "progress": "Deine erste Lektion wird vorbereitet…",
       "failed_copy": "Es konnten nicht genügend Quellen geprüft werden. Füge eine öffentliche URL hinzu, um es erneut zu versuchen.",
+      "source_quota_copy": "Das tägliche Quellenlimit ist erreicht. Eine öffentliche URL überspringt die Suche, verbraucht aber weiterhin das Abruflimit. Ist dieses ebenfalls ausgeschöpft, versuche es morgen erneut.",
       "ready_copy": "Lektion 1 ist bereit. Dein Kurs enthält weiterhin nur diese Lektion.",
       "source_url_label": "Öffentliche URL zur Lernquelle",
       "source_url_placeholder": "https://university.edu/learning-resource",

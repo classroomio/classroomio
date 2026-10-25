@@ -8,6 +8,7 @@ const {
   generateObject,
   getPersonalLearningSessionContext,
   markPersonalLearningSessionFailed,
+  markPersonalLearningSessionGenerating,
   pickAnyConfiguredProvider
 } = vi.hoisted(() => ({
   claimPersonalLearningSession: vi.fn(),
@@ -17,6 +18,7 @@ const {
   generateObject: vi.fn(),
   getPersonalLearningSessionContext: vi.fn(),
   markPersonalLearningSessionFailed: vi.fn(),
+  markPersonalLearningSessionGenerating: vi.fn(),
   pickAnyConfiguredProvider: vi.fn()
 }));
 
@@ -25,7 +27,8 @@ vi.mock('@cio/db/queries/personal-learning', () => ({
   claimPersonalLearningSession,
   completePersonalLearningSession,
   getPersonalLearningSessionContext,
-  markPersonalLearningSessionFailed
+  markPersonalLearningSessionFailed,
+  markPersonalLearningSessionGenerating
 }));
 vi.mock('@cio/ai-assistant/providers', () => ({ createModel, pickAnyConfiguredProvider }));
 vi.mock('ai', () => ({ generateObject }));
@@ -48,7 +51,8 @@ describe('personal learning generation metadata', () => {
       },
       courseTitle: 'Derivatives'
     });
-    claimPersonalLearningSession.mockResolvedValue({ id: 'session-1', status: 'generating' });
+    claimPersonalLearningSession.mockResolvedValue({ id: 'session-1', status: 'sourcing' });
+    markPersonalLearningSessionGenerating.mockResolvedValue({ id: 'session-1', status: 'generating' });
     discoverLearningSources.mockResolvedValue([
       {
         url: 'https://example.edu/calculus',
@@ -66,7 +70,11 @@ describe('personal learning generation metadata', () => {
         activities: [{ type: 'explanation', estimatedMinutes: 20, content: 'Study rate of change.' }],
         checkQuestions: ['What does a derivative measure?'],
         citations: [
-          { url: 'https://example.edu/calculus', title: 'University calculus notes', claimIds: ['objective-1'] }
+          {
+            url: 'https://example.edu/calculus',
+            title: 'University calculus notes',
+            evidence: [{ claimId: 'objective-1', quote: 'A derivative measures instantaneous rate of change.' }]
+          }
         ],
         whyThisSession: 'Start with the central definition.'
       },
@@ -78,10 +86,19 @@ describe('personal learning generation metadata', () => {
   it('stores the selected model and prompt version, and repairs fenced JSON', async () => {
     await generatePersonalLearningSession({ sessionId: 'session-1', attempt: 1 });
 
+    expect(claimPersonalLearningSession).toHaveBeenCalledWith('session-1');
+    expect(markPersonalLearningSessionGenerating).toHaveBeenCalledWith('session-1');
+    expect(markPersonalLearningSessionGenerating.mock.invocationCallOrder[0]).toBeGreaterThan(
+      discoverLearningSources.mock.invocationCallOrder[0]
+    );
+    expect(generateObject.mock.invocationCallOrder[0]).toBeGreaterThan(
+      markPersonalLearningSessionGenerating.mock.invocationCallOrder[0]
+    );
+
     const completionInput = completePersonalLearningSession.mock.calls[0]?.[0];
     expect(completionInput.generationMeta).toMatchObject({
       model: 'kr/claude-sonnet-4.5',
-      promptVersion: 'personal-learning-session-v1'
+      promptVersion: 'personal-learning-session-v2'
     });
     expect(completionInput.generationMeta.generatedAt).toEqual(expect.any(String));
 
@@ -107,5 +124,17 @@ describe('personal learning generation metadata', () => {
     });
 
     expect(repairedJson).toBe('{"title":"Derivative basics"}');
+  });
+
+  it('does not automatically retry a daily source quota failure', async () => {
+    discoverLearningSources.mockRejectedValueOnce(
+      Object.assign(new Error('Daily learning source quota exceeded'), { code: 'LEARNING_SOURCE_QUOTA_EXCEEDED' })
+    );
+
+    await expect(generatePersonalLearningSession({ sessionId: 'session-1', attempt: 1 })).rejects.toMatchObject({
+      code: 'LEARNING_SOURCE_QUOTA_EXCEEDED'
+    });
+
+    expect(markPersonalLearningSessionFailed).toHaveBeenCalledWith('session-1', 'LEARNING_SOURCE_QUOTA_EXCEEDED', true);
   });
 });

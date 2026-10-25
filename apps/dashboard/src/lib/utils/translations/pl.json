@@ -6472,6 +6472,7 @@
     },
     "offer": {
       "heading": "Plan nauki dopasowany do celu",
+      "goal_label": "Na czym ma się skupić kurs?",
       "days_label": "Ile dni nauki?",
       "days_unit": "dni",
       "minutes_label": "Czas nauki każdego dnia",
@@ -6490,12 +6491,14 @@
       "title": "Lekcja {number}",
       "status": {
         "queued": "Oczekuje na rozpoczęcie",
+        "sourcing": "Wyszukiwanie źródeł",
         "generating": "Przygotowywanie lekcji",
         "ready": "Gotowa do nauki",
         "failed": "Wymaga uwagi"
       },
-      "progress": "Wyszukiwanie sprawdzonych źródeł i przygotowywanie pierwszej lekcji…",
+      "progress": "Przygotowywanie pierwszej lekcji…",
       "failed_copy": "Nie udało się zweryfikować wystarczającej liczby źródeł. Dodaj publiczny adres URL, aby spróbować ponownie.",
+      "source_quota_copy": "Dzienny limit źródeł został osiągnięty. Publiczny adres URL pomija wyszukiwanie, ale nadal wykorzystuje limit pobierania; jeśli on również się wyczerpał, spróbuj jutro.",
       "ready_copy": "Pierwsza lekcja jest gotowa. Kurs nadal zawiera tylko tę lekcję.",
       "source_url_label": "Publiczny adres URL źródła nauki",
       "source_url_placeholder": "https://university.edu/learning-resource",

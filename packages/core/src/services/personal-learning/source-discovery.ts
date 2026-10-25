@@ -12,7 +12,8 @@ const JINA_READER_URL = 'https://r.jina.ai/';
 const SOURCE_TIMEOUT_MS = 8_000;
 const MAX_SOURCE_COUNT = 3;
 const MAX_SOURCE_CONTENT_LENGTH = 12_000;
-const MAX_DAILY_SOURCE_REQUESTS = 20;
+const MAX_DAILY_SEARCH_REQUESTS = 5;
+const MAX_DAILY_FETCH_REQUESTS = 15;
 const SOURCE_QUOTA_TTL_SECONDS = 25 * 60 * 60;
 
 type SearchResult = { url: string; title: string };
@@ -70,16 +71,17 @@ async function assertPublicSourceHost(sourceUrl: URL): Promise<void> {
   }
 }
 
-async function reserveSourceQuota(ownerUserId: string): Promise<void> {
+async function reserveSourceQuota(ownerUserId: string, quota: 'search' | 'fetch'): Promise<void> {
   if (!redis.isReady) throw new AppError('Learning source quota is unavailable', 'SOURCE_QUOTA_UNAVAILABLE', 503);
 
   const utcDay = new Date().toISOString().slice(0, 10);
-  const quotaKey = `personal-learning:source-quota:${ownerUserId}:${utcDay}`;
+  const quotaKey = `personal-learning:${quota}-quota:${ownerUserId}:${utcDay}`;
+  const dailyLimit = quota === 'search' ? MAX_DAILY_SEARCH_REQUESTS : MAX_DAILY_FETCH_REQUESTS;
 
   try {
     const requestCount = await redis.incr(quotaKey);
     if (requestCount === 1) await redis.expire(quotaKey, SOURCE_QUOTA_TTL_SECONDS);
-    if (requestCount > MAX_DAILY_SOURCE_REQUESTS) {
+    if (requestCount > dailyLimit) {
       throw new AppError('Daily learning source quota exceeded', 'LEARNING_SOURCE_QUOTA_EXCEEDED', 429);
     }
   } catch (error) {
@@ -196,9 +198,10 @@ export async function discoverLearningSources(input: {
   }
 
   let searchResults: SearchResult[] = [];
+  const shouldSearch = Boolean(jinaApiKey && userSourceUrls.length === 0);
 
-  if (jinaApiKey) {
-    await reserveSourceQuota(input.ownerUserId);
+  if (shouldSearch && jinaApiKey) {
+    await reserveSourceQuota(input.ownerUserId, 'search');
     const searchUrl = new URL(encodeURIComponent(input.query.slice(0, 1000)), JINA_SEARCH_URL);
     searchUrl.searchParams.set('num', '6');
     searchUrl.searchParams.set('hl', input.language.slice(0, 2));
@@ -232,7 +235,7 @@ export async function discoverLearningSources(input: {
 
   for (const candidate of candidates) {
     await assertPublicSourceHost(candidate.url);
-    await reserveSourceQuota(input.ownerUserId);
+    await reserveSourceQuota(input.ownerUserId, 'fetch');
 
     let readerPayload: unknown;
 

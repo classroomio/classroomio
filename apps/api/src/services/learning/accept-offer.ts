@@ -30,7 +30,6 @@ export async function enqueueLearningSession(sessionId: string, journeyId: strin
     const jobId = attempt > 0 ? `personal-session-${journeyId}-1-retry-${attempt}` : undefined;
     await enqueuePersonalLearningSession({ sessionId, journeyId }, jobId ? { jobId } : undefined);
   } catch {
-    // The maintenance scanner recovers committed queued rows if Redis is unavailable.
     console.warn('personal-learning-enqueue-deferred', { sessionId, journeyId, status: 'queued' });
   }
 }

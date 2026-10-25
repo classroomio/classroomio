@@ -25,7 +25,15 @@ export const LearningSessionDraftSchema = z.object({
       z.object({
         url: z.string().url(),
         title: z.string().trim().min(1).max(200),
-        claimIds: z.array(z.string().trim().min(1).max(80)).min(1).max(8)
+        evidence: z
+          .array(
+            z.object({
+              claimId: z.string().trim().min(1).max(80),
+              quote: z.string().trim().min(1).max(1000)
+            })
+          )
+          .min(1)
+          .max(8)
       })
     )
     .min(1)
@@ -34,6 +42,10 @@ export const LearningSessionDraftSchema = z.object({
 });
 
 export type LearningSessionDraft = z.infer<typeof LearningSessionDraftSchema>;
+
+function normalizeEvidenceText(value: string): string {
+  return value.normalize('NFKC').replace(/\s+/g, ' ').trim();
+}
 
 export function validateSourceUrl(rawUrl: string): URL {
   let parsedUrl: URL;
@@ -75,11 +87,30 @@ export function validateSessionDraft(
   const parsedDraft = LearningSessionDraftSchema.safeParse(draft);
   if (!parsedDraft.success) throw new AppError('Generated learning session is invalid', 'INVALID_SESSION_DRAFT', 502);
 
-  const manifestUrls = new Set(sourceManifest.map(({ url }) => validateSourceUrl(url).href));
+  const sourcesByUrl = new Map(sourceManifest.map((source) => [validateSourceUrl(source.url).href, source]));
+  const claimIds = new Set([
+    ...parsedDraft.data.objectives.map((_, index) => `objective-${index + 1}`),
+    ...parsedDraft.data.activities.map((_, index) => `activity-${index + 1}`)
+  ]);
 
   for (const citation of parsedDraft.data.citations) {
-    if (!manifestUrls.has(validateSourceUrl(citation.url).href)) {
+    const source = sourcesByUrl.get(validateSourceUrl(citation.url).href);
+    if (!source) {
       throw new AppError('Session citation is not in the verified source manifest', 'UNKNOWN_CITATION', 502);
+    }
+
+    for (const evidence of citation.evidence) {
+      if (!claimIds.has(evidence.claimId)) {
+        throw new AppError('Citation evidence references an unknown learning claim', 'INVALID_CITATION_CLAIM', 502);
+      }
+
+      if (!source.content || !normalizeEvidenceText(source.content).includes(normalizeEvidenceText(evidence.quote))) {
+        throw new AppError(
+          'Citation evidence is not present in its verified source',
+          'UNVERIFIED_CITATION_EVIDENCE',
+          502
+        );
+      }
     }
   }
 

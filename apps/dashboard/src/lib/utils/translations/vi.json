@@ -6472,6 +6472,7 @@
     },
     "offer": {
       "heading": "Lộ trình phù hợp với mục tiêu của bạn",
+      "goal_label": "Bạn muốn khóa học tập trung vào điều gì?",
       "days_label": "Bạn muốn học trong bao nhiêu ngày?",
       "days_unit": "ngày",
       "minutes_label": "Thời gian học mỗi ngày",
@@ -6490,12 +6491,14 @@
       "title": "Buổi {number}",
       "status": {
         "queued": "Đang chờ bắt đầu",
+        "sourcing": "Đang tìm nguồn",
         "generating": "Đang chuẩn bị buổi học",
         "ready": "Sẵn sàng học",
         "failed": "Cần xử lý"
       },
-      "progress": "Đang tìm nguồn kiểm chứng và chuẩn bị buổi 1…",
+      "progress": "Buổi học đầu tiên đang được chuẩn bị…",
       "failed_copy": "Chưa thể kiểm chứng đủ tài liệu. Hãy thêm URL công khai để thử lại.",
+      "source_quota_copy": "Đã đạt giới hạn nguồn hằng ngày. URL công khai sẽ bỏ qua bước tìm kiếm nhưng vẫn dùng hạn mức tải nguồn; nếu hạn mức đó cũng hết, hãy thử lại vào ngày mai.",
       "ready_copy": "Buổi 1 đã sẵn sàng. Khóa học hiện vẫn chỉ có buổi này.",
       "source_url_label": "URL nguồn học công khai",
       "source_url_placeholder": "https://university.edu/learning-resource",

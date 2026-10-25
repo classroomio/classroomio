@@ -17,7 +17,9 @@ const fetchMock = vi.fn();
 describe('personal learning sources', () => {
   beforeEach(() => {
     redis.isReady = true;
+    redis.incr.mockReset();
     redis.incr.mockResolvedValue(1);
+    redis.expire.mockReset();
     redis.expire.mockResolvedValue(1);
     lookup.mockReset();
     lookup.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
@@ -66,6 +68,11 @@ describe('personal learning sources', () => {
     });
     expect(sources).toHaveLength(2);
     expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(redis.incr.mock.calls.map(([key]) => key)).toEqual([
+      expect.stringContaining(`personal-learning:search-quota:${ownerUserId}:`),
+      expect.stringContaining(`personal-learning:fetch-quota:${ownerUserId}:`),
+      expect.stringContaining(`personal-learning:fetch-quota:${ownerUserId}:`)
+    ]);
     expect(fetchMock.mock.calls[0][1]?.headers).toMatchObject({
       Authorization: 'Bearer test-jina-key',
       Accept: 'application/json'
@@ -253,12 +260,83 @@ describe('personal learning sources', () => {
   });
 
   it('fails closed when the per-user daily source quota is exhausted', async () => {
-    redis.incr.mockResolvedValueOnce(10_000);
+    redis.incr.mockResolvedValueOnce(6);
 
     await expect(discoverLearningSources({ ownerUserId, query: 'biology', language: 'en' })).rejects.toMatchObject({
       code: 'LEARNING_SOURCE_QUOTA_EXCEEDED'
     });
+    expect(redis.incr.mock.calls[0]?.[0]).toContain(`personal-learning:search-quota:${ownerUserId}:`);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('allows the fifth daily search', async () => {
+    redis.incr.mockResolvedValueOnce(5);
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ data: [] }), { status: 200, headers: { 'content-type': 'application/json' } })
+    );
+
+    await expect(discoverLearningSources({ ownerUserId, query: 'biology', language: 'en' })).rejects.toMatchObject({
+      code: 'NO_VERIFIABLE_SOURCE'
+    });
+    expect(redis.incr.mock.calls[0]?.[0]).toContain(`personal-learning:search-quota:${ownerUserId}:`);
+  });
+
+  it('can fetch a supplied public URL without search after the search quota is exhausted', async () => {
+    redis.incr.mockImplementation(async (key: string) =>
+      key.includes(':search-quota:') || key.includes(':source-quota:') ? 6 : 1
+    );
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ data: { content: '# Public guide\nThis source explains the topic.' } }), {
+        status: 200
+      })
+    );
+
+    const sources = await discoverLearningSources({
+      ownerUserId,
+      query: 'biology',
+      language: 'en',
+      userUrls: ['https://example.edu/guide']
+    });
+
+    expect(sources).toHaveLength(1);
+    expect(redis.incr).toHaveBeenCalledTimes(1);
+    expect(redis.incr.mock.calls[0]?.[0]).toContain(`personal-learning:fetch-quota:${ownerUserId}:`);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('enforces the independent daily fetch budget', async () => {
+    vi.stubEnv('JINA_API_KEY', '');
+    redis.incr.mockResolvedValueOnce(16);
+
+    await expect(
+      discoverLearningSources({
+        ownerUserId,
+        query: 'manual source',
+        language: 'en',
+        userUrls: ['https://example.edu/guide']
+      })
+    ).rejects.toMatchObject({ code: 'LEARNING_SOURCE_QUOTA_EXCEEDED' });
+
+    expect(redis.incr.mock.calls[0]?.[0]).toContain(`personal-learning:fetch-quota:${ownerUserId}:`);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('allows the fifteenth daily fetch', async () => {
+    vi.stubEnv('JINA_API_KEY', '');
+    redis.incr.mockResolvedValueOnce(15);
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ data: { content: '# Public guide\nVerified source material.' } }), { status: 200 })
+    );
+
+    const sources = await discoverLearningSources({
+      ownerUserId,
+      query: 'manual source',
+      language: 'en',
+      userUrls: ['https://example.edu/guide']
+    });
+
+    expect(sources).toHaveLength(1);
+    expect(redis.incr.mock.calls[0]?.[0]).toContain(`personal-learning:fetch-quota:${ownerUserId}:`);
   });
 
   it('returns NO_VERIFIABLE_SOURCE when search is unavailable and the learner supplied no URL', async () => {
@@ -272,14 +350,25 @@ describe('personal learning sources', () => {
 
   it('rejects unknown citations and activities above the selected daily-minute budget', () => {
     const manifest = [
-      { url: 'https://example.edu/lesson', title: 'Course notes', accessedAt: '2026-10-21T00:00:00.000Z' }
+      {
+        url: 'https://example.edu/lesson',
+        title: 'Course notes',
+        accessedAt: '2026-10-21T00:00:00.000Z',
+        content: 'A fitted line estimates the relationship between variables.'
+      }
     ];
     const draft = {
       title: 'Linear regression basics',
       objectives: ['Explain a fitted line'],
       activities: [{ type: 'reading', estimatedMinutes: 20, content: 'Read the source.' }],
       checkQuestions: ['What does the slope mean?'],
-      citations: [{ url: 'https://example.net/unverified', title: 'Unverified source', claimIds: ['objective-1'] }],
+      citations: [
+        {
+          url: 'https://example.net/unverified',
+          title: 'Unverified source',
+          evidence: [{ claimId: 'objective-1', quote: 'A fitted line estimates the relationship between variables.' }]
+        }
+      ],
       whyThisSession: 'Build the core concept.'
     };
 
@@ -289,5 +378,59 @@ describe('personal learning sources', () => {
     expect(() =>
       validateSessionDraft({ ...draft, citations: [{ ...draft.citations[0], url: manifest[0].url }] }, manifest, 15)
     ).toThrowError(expect.objectContaining({ code: 'DAILY_BUDGET_EXCEEDED' }));
+  });
+
+  it('requires citation evidence to match a generated claim and its verified source', () => {
+    const manifest = [
+      {
+        url: 'https://example.edu/lesson',
+        title: 'Exposure triangle',
+        accessedAt: '2026-10-21T00:00:00.000Z',
+        content: 'Exposure balances aperture,\nshutter speed, and ISO.'
+      }
+    ];
+    const draft = {
+      title: 'Exposure triangle',
+      objectives: ['Explain exposure controls'],
+      activities: [{ type: 'reading', estimatedMinutes: 20, content: 'Compare the settings.' }],
+      checkQuestions: ['Which settings affect exposure?'],
+      citations: [
+        {
+          url: manifest[0].url,
+          title: manifest[0].title,
+          evidence: [{ claimId: 'objective-1', quote: 'aperture, shutter speed, and ISO.' }]
+        }
+      ],
+      whyThisSession: 'Build the core concept.'
+    };
+
+    expect(validateSessionDraft(draft, manifest, 30)).toEqual(draft);
+    expect(() =>
+      validateSessionDraft(
+        {
+          ...draft,
+          citations: [
+            { ...draft.citations[0], evidence: [{ ...draft.citations[0].evidence[0], claimId: 'objective-2' }] }
+          ]
+        },
+        manifest,
+        30
+      )
+    ).toThrowError(expect.objectContaining({ code: 'INVALID_CITATION_CLAIM' }));
+    expect(() =>
+      validateSessionDraft(
+        {
+          ...draft,
+          citations: [
+            {
+              ...draft.citations[0],
+              evidence: [{ ...draft.citations[0].evidence[0], quote: 'ISO controls the shutter.' }]
+            }
+          ]
+        },
+        manifest,
+        30
+      )
+    ).toThrowError(expect.objectContaining({ code: 'UNVERIFIED_CITATION_EVIDENCE' }));
   });
 });

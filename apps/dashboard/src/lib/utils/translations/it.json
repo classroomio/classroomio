@@ -6415,5 +6415,17 @@
     "new_badge": "Nuovo",
     "read_full": "Leggi il changelog completo",
     "close": "Chiudi"
+  },
+  "personalLearning": {
+    "offer": {
+      "goal_label": "Su cosa vuoi che si concentri il corso?"
+    },
+    "session": {
+      "status": {
+        "sourcing": "Ricerca delle fonti"
+      },
+      "progress": "La prima lezione è in preparazione…",
+      "source_quota_copy": "È stato raggiunto il limite giornaliero delle fonti. Un URL pubblico evita la ricerca ma usa comunque la quota di recupero; se anche questa è esaurita, riprova domani."
+    }
   }
 }

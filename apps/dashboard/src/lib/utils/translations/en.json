@@ -6442,6 +6442,7 @@
     },
     "offer": {
       "heading": "A learning plan that fits your goal",
+      "goal_label": "What would you like the course to focus on?",
       "days_label": "How many learning days?",
       "days_unit": "days",
       "minutes_label": "Study time each day",
@@ -6460,12 +6461,14 @@
       "title": "Lesson {number}",
       "status": {
         "queued": "Waiting to start",
+        "sourcing": "Finding sources",
         "generating": "Preparing lesson",
         "ready": "Ready to learn",
         "failed": "Needs attention"
       },
-      "progress": "Finding verified sources and preparing lesson 1…",
+      "progress": "Your first lesson is being prepared…",
       "failed_copy": "We could not verify enough source material. Add a public URL to try again.",
+      "source_quota_copy": "Today's source limit has been reached. A public URL skips search but still uses the fetch quota; if that is exhausted, try again tomorrow.",
       "ready_copy": "Lesson 1 is ready. Your course still contains only this lesson.",
       "source_url_label": "Public learning source URL",
       "source_url_placeholder": "https://university.edu/learning-resource",

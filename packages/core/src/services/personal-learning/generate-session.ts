@@ -4,12 +4,13 @@ import {
   claimPersonalLearningSession,
   completePersonalLearningSession,
   getPersonalLearningSessionContext,
+  markPersonalLearningSessionGenerating,
   markPersonalLearningSessionFailed
 } from '@cio/db/queries/personal-learning';
 import { AppError } from '@cio/utils/errors';
 
 import { discoverLearningSources } from './source-discovery';
-import { LearningSessionDraftSchema, validateSessionDraft } from './source-validation';
+import { LearningSessionDraftSchema, validateSessionDraft, validateSourceUrl } from './source-validation';
 
 function escapeHtml(value: string): string {
   return value.replace(
@@ -56,6 +57,9 @@ export async function generatePersonalLearningSession(input: { sessionId: string
       language: context.journey.language,
       userUrls: context.journey.sourceUrls
     });
+    const generatingSession = await markPersonalLearningSessionGenerating(input.sessionId);
+    if (!generatingSession) return { status: 'pending' as const };
+
     const providerConfig = pickAnyConfiguredProvider();
     if (!providerConfig) throw new AppError('AI assistant is not configured', 'AI_NOT_CONFIGURED', 503);
 
@@ -72,10 +76,11 @@ export async function generatePersonalLearningSession(input: { sessionId: string
         'Do not outline, preview, name, or generate later sessions.',
         'Return one JSON object with exactly these keys: title, objectives, activities, checkQuestions, citations, whyThisSession.',
         'Each activity must have exactly type (one of reading, explanation, practice, reflection), estimatedMinutes (positive integer), and content (string).',
-        'Each citation must have exactly url, title, and claimIds; use the exact URL and title from a verified source.',
+        'Each citation must have exactly url, title, and evidence; use the exact URL and title from a verified source.',
+        'Each evidence entry must have exactly claimId and quote, with claimId set to an existing objective-N or activity-N and quote copied verbatim from that source.',
         'Do not include sessionNumber, durationMinutes, learningObjectives, nextSessionPreview, or any other keys.',
         'Return JSON only without Markdown fences or other text.',
-        'Example: {"title":"Introduction","objectives":["Explain one idea"],"activities":[{"type":"explanation","estimatedMinutes":20,"content":"Explain the idea"}],"checkQuestions":["What is the idea?"],"citations":[{"url":"https://example.edu/topic","title":"Verified source title","claimIds":["objective-1"]}],"whyThisSession":"Start with the core definition."}'
+        'Example: {"title":"Introduction","objectives":["Explain one idea"],"activities":[{"type":"explanation","estimatedMinutes":20,"content":"Explain the idea"}],"checkQuestions":["What is the idea?"],"citations":[{"url":"https://example.edu/topic","title":"Verified source title","evidence":[{"claimId":"objective-1","quote":"A verbatim excerpt from the verified source."}]}],"whyThisSession":"Start with the core definition."}'
       ].join(' '),
       prompt: JSON.stringify({
         goal: context.journey.goal,
@@ -92,14 +97,20 @@ export async function generatePersonalLearningSession(input: { sessionId: string
       maxRetries: 0
     });
     const draft = validateSessionDraft(generated.object, sources, context.journey.dailyMinutes);
+    const sourceManifest = sources.map((source) => ({
+      ...source,
+      evidence: draft.citations
+        .filter(({ url }) => validateSourceUrl(url).href === source.url)
+        .flatMap(({ evidence }) => evidence)
+    }));
     const completed = await completePersonalLearningSession({
       sessionId: input.sessionId,
       title: draft.title,
       content: buildLessonHtml(draft),
-      sourceManifest: sources,
+      sourceManifest,
       generationMeta: {
         model: modelId,
-        promptVersion: 'personal-learning-session-v1',
+        promptVersion: 'personal-learning-session-v2',
         generatedAt: new Date().toISOString()
       }
     });
@@ -109,7 +120,8 @@ export async function generatePersonalLearningSession(input: { sessionId: string
     return { status: 'ready' as const, lessonId: completed.lessonId };
   } catch (error) {
     const failureCode = errorCode(error);
-    const isFinalAttempt = input.attempt >= 3 || failureCode === 'NO_VERIFIABLE_SOURCE';
+    const isFinalAttempt =
+      input.attempt >= 3 || failureCode === 'NO_VERIFIABLE_SOURCE' || failureCode === 'LEARNING_SOURCE_QUOTA_EXCEEDED';
     await markPersonalLearningSessionFailed(input.sessionId, failureCode, isFinalAttempt);
     throw error;
   }

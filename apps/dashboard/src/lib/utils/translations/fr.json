@@ -6472,6 +6472,7 @@
     },
     "offer": {
       "heading": "Un parcours adapté à votre objectif",
+      "goal_label": "Sur quoi souhaitez-vous que le cours se concentre ?",
       "days_label": "Combien de jours d’apprentissage ?",
       "days_unit": "jours",
       "minutes_label": "Temps d’étude quotidien",
@@ -6490,12 +6491,14 @@
       "title": "Leçon {number}",
       "status": {
         "queued": "En attente",
+        "sourcing": "Recherche de sources",
         "generating": "Préparation de la leçon",
         "ready": "Prête à apprendre",
         "failed": "Action nécessaire"
       },
-      "progress": "Recherche de sources vérifiées et préparation de la leçon 1…",
+      "progress": "Votre première leçon est en préparation…",
       "failed_copy": "Nous n’avons pas pu vérifier suffisamment de sources. Ajoutez une URL publique pour réessayer.",
+      "source_quota_copy": "La limite quotidienne de sources est atteinte. Une URL publique évite la recherche, mais utilise toujours le quota de récupération ; si celui-ci est aussi épuisé, réessayez demain.",
       "ready_copy": "La leçon 1 est prête. Votre cours contient toujours uniquement cette leçon.",
       "source_url_label": "URL publique d’une source d’apprentissage",
       "source_url_placeholder": "https://university.edu/learning-resource",

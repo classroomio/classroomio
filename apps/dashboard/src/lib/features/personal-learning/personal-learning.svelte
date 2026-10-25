@@ -54,6 +54,7 @@
     if (status === 'ready') return t.get('personalLearning.session.status.ready');
     if (status === 'failed') return t.get('personalLearning.session.status.failed');
     if (status === 'generating') return t.get('personalLearning.session.status.generating');
+    if (status === 'sourcing') return t.get('personalLearning.session.status.sourcing');
     return t.get('personalLearning.session.status.queued');
   }
 
@@ -103,7 +104,7 @@
     if (!result) return;
 
     syncJourney(result);
-    if (result.sessions[0]?.status === 'queued' || result.sessions[0]?.status === 'generating') startPolling();
+    if (['queued', 'sourcing', 'generating'].includes(result.sessions[0]?.status ?? '')) startPolling();
   }
 
   function updateJourneyUrl(id: string) {
@@ -143,15 +144,8 @@
     if (!consent) return;
 
     state = beginAccept(state, consentChecked);
-    const goal = [...state.messages].reverse().find(({ role }) => role === 'user')?.content;
-    if (!goal) {
-      state = { ...state, isAccepting: false };
-      return;
-    }
-
     const result = await personalLearningApi.accept({
       ...consent,
-      goal,
       language: typeof navigator === 'undefined' ? 'en' : navigator.language
     });
     if (!result) {
@@ -263,6 +257,18 @@
             <p class="ui:text-muted-foreground mt-2 text-sm">{state.offer.reason}</p>
 
             <div class="mt-5 space-y-4">
+              <div class="space-y-2">
+                <Label.Root for="personal-learning-goal">{$t('personalLearning.offer.goal_label')}</Label.Root>
+                <Textarea
+                  id="personal-learning-goal"
+                  bind:value={state.goalDraft}
+                  maxlength={2000}
+                  rows={2}
+                  data-testid="personal-learning-goal"
+                  oninput={() => (consentChecked = false)}
+                />
+              </div>
+
               <fieldset>
                 <legend class="mb-2 text-sm font-medium">{$t('personalLearning.offer.days_label')}</legend>
                 <div class="grid grid-cols-3 gap-2">
@@ -433,13 +439,19 @@
                         {statusLabel(session.status)}
                       </span>
                     </div>
-                    {#if session.status === 'queued' || session.status === 'generating'}
+                    {#if ['queued', 'sourcing', 'generating'].includes(session.status)}
                       <p class="ui:text-muted-foreground mt-2 flex items-center gap-2 text-sm">
                         <LoaderCircleIcon size={15} class="animate-spin" />
                         {$t('personalLearning.session.progress')}
                       </p>
                     {:else if session.status === 'failed'}
-                      <p class="ui:text-muted-foreground mt-2 text-sm">{$t('personalLearning.session.failed_copy')}</p>
+                      <p class="ui:text-muted-foreground mt-2 text-sm">
+                        {#if session.failureCode === 'LEARNING_SOURCE_QUOTA_EXCEEDED'}
+                          {$t('personalLearning.session.source_quota_copy')}
+                        {:else}
+                          {$t('personalLearning.session.failed_copy')}
+                        {/if}
+                      </p>
                       {#if isSourceRetryableFailure(session.failureCode)}
                         <div class="mt-4 flex flex-col gap-2 sm:flex-row">
                           <Input

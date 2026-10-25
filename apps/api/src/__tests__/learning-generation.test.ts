@@ -43,7 +43,13 @@ const draft = {
   objectives: ['Explain the three exposure controls'],
   activities: [{ type: 'reading' as const, estimatedMinutes: 20, content: 'Compare the settings.' }],
   checkQuestions: ['What happens when ISO increases?'],
-  citations: [{ url: sources[0].url, title: sources[0].title, claimIds: ['objective-1'] }],
+  citations: [
+    {
+      url: sources[0].url,
+      title: sources[0].title,
+      evidence: [{ claimId: 'objective-1', quote: 'Exposure balances aperture, shutter speed and ISO.' }]
+    }
+  ],
   whyThisSession: 'Build the core vocabulary first.'
 };
 
@@ -134,8 +140,22 @@ describe('personal learning session generation', () => {
   });
 
   it('stores one verified lesson atomically and remains idempotent on a retry', async () => {
-    discoverLearningSources.mockResolvedValueOnce(sources);
-    generateObject.mockResolvedValueOnce({ object: draft });
+    discoverLearningSources.mockImplementationOnce(async () => {
+      const [sessionDuringDiscovery] = await db
+        .select()
+        .from(schema.personalLearningSession)
+        .where(eq(schema.personalLearningSession.id, sessionIds[0]));
+      expect(sessionDuringDiscovery.status).toBe('sourcing');
+      return sources;
+    });
+    generateObject.mockImplementationOnce(async () => {
+      const [sessionDuringGeneration] = await db
+        .select()
+        .from(schema.personalLearningSession)
+        .where(eq(schema.personalLearningSession.id, sessionIds[0]));
+      expect(sessionDuringGeneration.status).toBe('generating');
+      return { object: draft };
+    });
 
     const first = await generatePersonalLearningSession({ sessionId: sessionIds[0], attempt: 1 });
     const retry = await generatePersonalLearningSession({ sessionId: sessionIds[0], attempt: 2 });
@@ -151,7 +171,12 @@ describe('personal learning session generation', () => {
     expect(first).toMatchObject({ status: 'ready', lessonId: session.lessonId });
     expect(retry).toEqual(first);
     expect(session).toMatchObject({ status: 'ready', sessionIndex: 1 });
-    expect(session.sourceManifest).toEqual(sources);
+    expect(session.sourceManifest).toEqual([
+      {
+        ...sources[0],
+        evidence: [{ claimId: 'objective-1', quote: 'Exposure balances aperture, shutter speed and ISO.' }]
+      }
+    ]);
     expect(lessons).toHaveLength(1);
     expect(lessons[0]?.slug).toBe('exposure-triangle-1');
     expect(languageRows[0]?.content).toContain('University photography guide');
@@ -166,20 +191,29 @@ describe('personal learning session generation', () => {
     ).toHaveLength(1);
   });
 
-  it('fails immediately when verified-source discovery cannot proceed without a source', async () => {
-    discoverLearningSources.mockRejectedValueOnce(
-      Object.assign(new Error('No source'), { code: 'NO_VERIFIABLE_SOURCE' })
-    );
+  it('does not persist a lesson when a citation uses an unknown claim id', async () => {
+    discoverLearningSources.mockResolvedValueOnce(sources);
+    generateObject.mockResolvedValueOnce({
+      object: {
+        ...draft,
+        citations: [
+          {
+            ...draft.citations[0],
+            evidence: [{ claimId: 'objective-9', quote: 'Exposure balances aperture, shutter speed and ISO.' }]
+          }
+        ]
+      }
+    });
 
     await expect(generatePersonalLearningSession({ sessionId: sessionIds[1], attempt: 1 })).rejects.toMatchObject({
-      code: 'NO_VERIFIABLE_SOURCE'
+      code: 'INVALID_CITATION_CLAIM'
     });
     const [session] = await db
       .select()
       .from(schema.personalLearningSession)
       .where(eq(schema.personalLearningSession.id, sessionIds[1]));
 
-    expect(session).toMatchObject({ status: 'failed', failureCode: 'NO_VERIFIABLE_SOURCE' });
+    expect(session).toMatchObject({ status: 'failed', failureCode: 'INVALID_CITATION_CLAIM', lessonId: null });
     expect(await db.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseIds[1]))).toHaveLength(0);
   });
 
@@ -206,11 +240,19 @@ describe('personal learning session generation', () => {
       .update(schema.personalLearningSession)
       .set({ status: 'generating', updatedAt: '2026-10-20T00:00:00.000Z' })
       .where(eq(schema.personalLearningSession.id, sessionIds[2]));
+    await db
+      .update(schema.personalLearningSession)
+      .set({ status: 'sourcing', updatedAt: '2026-10-20T00:00:00.000Z' })
+      .where(eq(schema.personalLearningSession.id, sessionIds[1]));
     const recoveredSessions = await recoverPersonalLearningSessions(10);
     const [sessionAfterRecovery] = await db
       .select()
       .from(schema.personalLearningSession)
       .where(eq(schema.personalLearningSession.id, sessionIds[2]));
+    const [sourcingSessionAfterRecovery] = await db
+      .select()
+      .from(schema.personalLearningSession)
+      .where(eq(schema.personalLearningSession.id, sessionIds[1]));
     discoverLearningSources.mockResolvedValueOnce(sources);
     generateObject.mockResolvedValueOnce({ object: draft });
 
@@ -222,6 +264,12 @@ describe('personal learning session generation', () => {
       attempt: 0
     });
     expect(sessionAfterRecovery.status).toBe('queued');
+    expect(sourcingSessionAfterRecovery.status).toBe('queued');
+    expect(recoveredSessions).toContainEqual({
+      sessionId: sessionIds[1],
+      journeyId: journeyIds[1],
+      attempt: 1
+    });
     expect(result.status).toBe('ready');
     expect(await db.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseIds[2]))).toHaveLength(1);
   });

@@ -6472,6 +6472,7 @@
     },
     "offer": {
       "heading": "En læringsplan, der passer til dit mål",
+      "goal_label": "Hvad skal kurset fokusere på?",
       "days_label": "Hvor mange læringsdage?",
       "days_unit": "dage",
       "minutes_label": "Studietid pr. dag",
@@ -6490,12 +6491,14 @@
       "title": "Lektion {number}",
       "status": {
         "queued": "Venter på at starte",
+        "sourcing": "Finder kilder",
         "generating": "Forbereder lektionen",
         "ready": "Klar til at lære",
         "failed": "Kræver opmærksomhed"
       },
-      "progress": "Finder verificerede kilder og forbereder lektion 1…",
+      "progress": "Din første lektion bliver forberedt…",
       "failed_copy": "Vi kunne ikke verificere nok kildemateriale. Tilføj en offentlig URL for at prøve igen.",
+      "source_quota_copy": "Dagens kildegrænse er nået. En offentlig URL springer søgning over, men bruger stadig hentekvoten; prøv igen i morgen, hvis den også er opbrugt.",
       "ready_copy": "Lektion 1 er klar. Dit kursus indeholder stadig kun denne lektion.",
       "source_url_label": "Offentlig URL til læringskilde",
       "source_url_placeholder": "https://university.edu/learning-resource",
