@@ -116,4 +116,4 @@
   {/if}
 </div>
 
-<AddedVideoList type="google_drive" />
+<AddedVideoList type="google_drive" {lessonId} />

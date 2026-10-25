@@ -1,8 +1,30 @@
 ---
-title: 'Troubleshoot video uploads and playback'
-description: 'This ClassroomIO Help Center guide is still being worked on.'
+title: Troubleshoot video uploads and playback
+description: Check an interrupted upload, a video still processing, or a lesson video that will not play.
+last_reviewed: '2026-10-23'
 ---
 
-:::info[This guide is coming soon]
-Bookmark this page and check back for the complete instructions.
-:::
+An upload can fail before the file is saved, while a saved video can still be processing. Playback failures can also come from a hosted video's permissions or the student's browser and network.
+
+![Add a Video dialog with the available video sources](../build-courses/images/add-or-upload-a-video/overview.webp)
+
+## If the upload does not finish
+
+Open the lesson in **Edit** mode and choose **Video → Add/Edit Video(s) → Upload**. Video uploads require a paid plan. Check the uploader's current file-size limit and any displayed format message; those are the limits for your deployment. Keep the tab open and the connection stable until the file appears in the video list.
+
+If an upload was interrupted, try again with a smaller supported file or a stable network. Upload progress and video processing are separate: after the transfer completes, wait for the video's status and test playback before closing the editor. See [Add or upload a video](/build-courses/add-or-upload-a-video) for the full workflow.
+
+## If the video appears but will not play
+
+Try the lesson in an updated browser and another network. Refresh the page and check whether the issue affects one video or every video in the course. If the source is **YouTube**, **Vimeo**, **Google Drive**, or another external embed, verify that the link still works and that a student has permission to view it. A Vimeo domain restriction must allow the academy host; an unlisted link may require its privacy key.
+
+If a lesson requires video-watch completion, use an uploaded video. External embeds do not provide ClassroomIO's video-watch tracking; consider a manual completion rule for those sources.
+
+## If it still fails
+
+Send the course team the course and lesson names, video source, approximate time, device and browser, and the visible error text. Do not send a private video link or account credentials in a public message.
+
+## Related guides
+
+- [Create and edit a lesson](/build-courses/create-and-edit-a-lesson) — check the lesson's saved material
+- [Control progression and completion](/create-and-deliver/course-progression) — review the lesson completion rule

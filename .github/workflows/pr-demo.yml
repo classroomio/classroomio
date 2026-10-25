@@ -139,7 +139,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           # Pin to the repo engines/.nvmrc version (repo-wide Node upgrade is out of scope for this PR).
-          node-version: '20.19.3'
+          node-version: '24.22.1'
           cache: 'pnpm'
 
       - name: Install dependencies

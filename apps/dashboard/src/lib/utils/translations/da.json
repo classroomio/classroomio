@@ -36,7 +36,8 @@
         "title": "Åbner dit akademi...",
         "caption": "Vi gør dine kurser, elever og indstillinger klar."
       }
-    }
+    },
+    "back": "Tilbage"
   },
   "validations": {
     "generic": {
@@ -394,18 +395,8 @@
       "passed_requires_points": "Gennemførelse ved bestået kræver mindst ét tilgængeligt point.",
       "draft_restored": "Vi har gendannet de ikke-gemte ændringer, du efterlod"
     },
-    "poll": {
-      "info": {
-        "not_published": "Afstemningen er ikke offentliggjort endnu",
-        "vote_once": "Du kan kun stemme én gang"
-      },
-      "error": {
-        "creating_poll": "Der opstod en fejl under oprettelse af afstemning",
-        "updating_poll": "Der opstod en fejl under opdatering af afstemningsstatus",
-        "submitting_poll": "Der opstod en fejl under indsendelse af afstemning"
-      }
-    },
     "media_manager": {
+      "video_added": "Video føjet til dit bibliotek",
       "list_failed": "Kunne ikke indlæse medieaktiver",
       "storage_failed": "Kunne ikke indlæse lageroversigt",
       "create_failed": "Kunne ikke oprette medieaktiv",
@@ -1818,34 +1809,6 @@
             "manual": "Gemt version",
             "publish": "Udgivet"
           }
-        },
-        "poll": {
-          "voted": "Stemte",
-          "created_by": "Skabt af",
-          "status": "Status",
-          "draft": "Udkast",
-          "publish": "Udgiv",
-          "expiration": "Udløb",
-          "total_voted": "Samlet antal stemmer",
-          "responses": "Svar",
-          "expires": "Udløber",
-          "today": "I dag",
-          "back": "Tilbage",
-          "result": "Resultat",
-          "delete": "Slet",
-          "create_poll": "Opret afstemning",
-          "question": "Spørgsmål",
-          "options": "Valgmuligheder",
-          "option_label": "Valgmulighedsetiket",
-          "cancel": "Annuller",
-          "poll_question": "Afstemningsspørgsmål"
-        },
-        "polls": {
-          "title": "Afstemning",
-          "active_polls": "Aktive afstemninger",
-          "expired_polls": "Udløbne afstemninger",
-          "loading": "Indlæser...",
-          "no_polls": "Ingen afstemninger at vise"
         },
         "comments": {
           "title": "Kommentarer",
@@ -3369,7 +3332,6 @@
         "save": "Gem ændringer",
         "apps": {
           "title": "Apps",
-          "poll": "Afstemning",
           "live_comment": "Live kommentarer"
         },
         "course": {
@@ -3712,6 +3674,11 @@
         "other": "Andet"
       },
       "refresh": "Opfriske"
+    },
+    "upload": {
+      "videos": "Upload videoer",
+      "documents": "Upload dokumenter",
+      "more_options": "Flere uploadmuligheder"
     },
     "storage": {
       "total_bytes": "Samlet opbevaring",

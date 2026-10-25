@@ -36,7 +36,8 @@
         "title": "Ihre Akademie wird geöffnet…",
         "caption": "Ihre Kurse, Lernenden und Einstellungen werden vorbereitet."
       }
-    }
+    },
+    "back": "Zurück"
   },
   "validations": {
     "generic": {
@@ -394,18 +395,8 @@
       "passed_requires_points": "Für den Abschluss durch Bestehen muss mindestens ein Punkt verfügbar sein.",
       "draft_restored": "Wir haben die nicht gespeicherten Änderungen wiederhergestellt, die Sie hinterlassen haben"
     },
-    "poll": {
-      "info": {
-        "not_published": "Die Umfrage ist noch nicht veröffentlicht",
-        "vote_once": "Sie können nur einmal abstimmen"
-      },
-      "error": {
-        "creating_poll": "Beim Erstellen der Umfrage ist ein Fehler aufgetreten",
-        "updating_poll": "Beim Aktualisieren des Umfragestatus ist ein Fehler aufgetreten",
-        "submitting_poll": "Beim Absenden der Umfrage ist ein Fehler aufgetreten"
-      }
-    },
     "media_manager": {
+      "video_added": "Video zu Ihrer Bibliothek hinzugefügt",
       "list_failed": "Medien-Assets konnten nicht geladen werden",
       "storage_failed": "Speicherzusammenfassung konnte nicht geladen werden",
       "create_failed": "Medienasset konnte nicht erstellt werden",
@@ -1818,34 +1809,6 @@
             "manual": "Gespeicherte Version",
             "publish": "Veröffentlicht"
           }
-        },
-        "poll": {
-          "voted": "Abgestimmt",
-          "created_by": "Erstellt von",
-          "status": "Status",
-          "draft": "Entwurf",
-          "publish": "Veröffentlichen",
-          "expiration": "Ablauf",
-          "total_voted": "Gesamtstimmen",
-          "responses": "Antworten",
-          "expires": "Läuft ab",
-          "today": "Heute",
-          "back": "Zurück",
-          "result": "Ergebnis",
-          "delete": "Löschen",
-          "create_poll": "Umfrage erstellen",
-          "question": "Frage",
-          "options": "Optionen",
-          "option_label": "Optionsbezeichnung",
-          "cancel": "Abbrechen",
-          "poll_question": "Umfragefrage"
-        },
-        "polls": {
-          "title": "Umfrage",
-          "active_polls": "Aktive Umfragen",
-          "expired_polls": "Abgelaufene Umfragen",
-          "loading": "Laden...",
-          "no_polls": "Keine Umfragen zum Anzeigen"
         },
         "comments": {
           "title": "Kommentare",
@@ -3369,7 +3332,6 @@
         "save": "Änderungen speichern",
         "apps": {
           "title": "Apps",
-          "poll": "Umfrage",
           "live_comment": "Live-Kommentare"
         },
         "course": {
@@ -3712,6 +3674,11 @@
         "other": "Andere"
       },
       "refresh": "Aktualisieren"
+    },
+    "upload": {
+      "videos": "Videos hochladen",
+      "documents": "Dokumente hochladen",
+      "more_options": "Weitere Upload-Optionen"
     },
     "storage": {
       "total_bytes": "Gesamtspeicher",

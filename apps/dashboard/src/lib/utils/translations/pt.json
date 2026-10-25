@@ -36,7 +36,8 @@
         "title": "Abrindo sua academia…",
         "caption": "Preparando seus cursos, alunos e configurações."
       }
-    }
+    },
+    "back": "Voltar"
   },
   "validations": {
     "generic": {
@@ -394,18 +395,8 @@
       "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível.",
       "draft_restored": "Restauramos as alterações não salvas que você deixou"
     },
-    "poll": {
-      "info": {
-        "not_published": "A enquete ainda não foi publicada",
-        "vote_once": "Você só pode votar uma vez"
-      },
-      "error": {
-        "creating_poll": "Ocorreu um erro ao criar a enquete",
-        "updating_poll": "Ocorreu um erro ao atualizar o status da enquete",
-        "submitting_poll": "Ocorreu um erro ao enviar a enquete"
-      }
-    },
     "media_manager": {
+      "video_added": "Vídeo adicionado à sua biblioteca",
       "list_failed": "Falha ao carregar recursos de mídia",
       "storage_failed": "Falha ao carregar o resumo do armazenamento",
       "create_failed": "Falha ao criar recurso de mídia",
@@ -1818,34 +1809,6 @@
             "manual": "Versão salva",
             "publish": "Publicado"
           }
-        },
-        "poll": {
-          "voted": "Votado",
-          "created_by": "Criado por",
-          "status": "Status",
-          "draft": "Rascunho",
-          "publish": "Publicar",
-          "expiration": "Expiração",
-          "total_voted": "Total de votos",
-          "responses": "Respostas",
-          "expires": "Expira",
-          "today": "Hoje",
-          "back": "Voltar",
-          "result": "Resultado",
-          "delete": "Excluir",
-          "create_poll": "Criar enquete",
-          "question": "Pergunta",
-          "options": "Opções",
-          "option_label": "Rótulo da opção",
-          "cancel": "Cancelar",
-          "poll_question": "Pergunta da enquete"
-        },
-        "polls": {
-          "title": "Enquete",
-          "active_polls": "Enquetes ativas",
-          "expired_polls": "Enquetes expiradas",
-          "loading": "Carregando...",
-          "no_polls": "Nenhuma enquete para exibir"
         },
         "comments": {
           "title": "Comentários",
@@ -3369,7 +3332,6 @@
         "save": "Salvar alterações",
         "apps": {
           "title": "Aplicativos",
-          "poll": "Enquete",
           "live_comment": "Comentários ao vivo"
         },
         "course": {
@@ -3712,6 +3674,11 @@
         "other": "Outro"
       },
       "refresh": "Atualizar"
+    },
+    "upload": {
+      "videos": "Enviar vídeos",
+      "documents": "Enviar documentos",
+      "more_options": "Mais opções de envio"
     },
     "storage": {
       "total_bytes": "Armazenamento total",

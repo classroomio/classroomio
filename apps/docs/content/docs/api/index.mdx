@@ -1,0 +1,66 @@
+---
+title: Introduction
+description: A REST API for managing your ClassroomIO organization's audience, team, courses, and cohorts from your own code.
+last_reviewed: '2026-10-23'
+---
+
+## Overview
+
+The API is REST over HTTPS. Requests and responses are JSON, and every request is authenticated with an API key that belongs to one organization.
+
+Base URL:
+
+```text
+https://api.classroomio.com/public-api/v1
+```
+
+## Getting started
+
+1. [Generate an API key](/api/authentication#get-your-api-key) in your organization's dashboard.
+2. Send it in the `Authorization` header as a Bearer token.
+3. Make your first request from your server, with the key in an environment variable. Never put the key in browser code.
+
+<CodeGroup>
+
+```bash cURL
+curl https://api.classroomio.com/public-api/v1/courses \
+  -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
+```
+
+```js Node.js
+const res = await fetch('https://api.classroomio.com/public-api/v1/courses', {
+  headers: { Authorization: `Bearer ${process.env.CLASSROOMIO_API_KEY}` }
+});
+const { data } = await res.json();
+```
+
+</CodeGroup>
+
+## Available resources
+
+- **[Organization](/api/reference#audience)**: your audience (students) and your team.
+- **[Courses](/api/reference#courses)**: courses and their sections, lessons, exercises, members, invites, submissions, and certificates.
+- **[Cohorts](/api/reference#cohorts)**: cohorts and their members, courses, invites, goals, and newsfeed.
+- **[Analytics](/api/reference#analytics)**: organization, course, and student progress.
+- **[Media](/api/reference#public-api-assets)**: uploads for lesson and course assets.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" href="/api/authentication" icon="key-round">
+    Get an API key and send it with every request.
+  </Card>
+  <Card title="Rate limits" href="/api/rate-limits" icon="gauge">
+    How many requests you can make, and what to do when you hit the limit.
+  </Card>
+  <Card title="Errors" href="/api/errors" icon="circle-alert">
+    The error format, status codes, and how to fix common errors.
+  </Card>
+  <Card title="Pagination" href="/api/pagination" icon="list">
+    Page through list endpoints.
+  </Card>
+</CardGroup>
+
+## Need help?
+
+Ask in the [ClassroomIO Discord](https://dub.sh/ciodiscord) or [open an issue on GitHub](https://github.com/classroomio/classroomio/issues).

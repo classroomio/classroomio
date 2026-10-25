@@ -276,6 +276,13 @@
       "breakpoints": true
     },
     {
+      "idx": 39,
+      "version": "7",
+      "when": 1792741679148,
+      "tag": "0039_remove_poll_feature",
+      "breakpoints": true
+    },
+    {
       "idx": 40,
       "version": "7",
       "when": 1792940262981,
