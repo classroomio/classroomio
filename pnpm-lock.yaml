@@ -1361,19 +1361,19 @@ importers:
 
   packages/mcp:
     dependencies:
-      '@cio/question-types':
-        specifier: workspace:*
-        version: link:../question-types
-      '@cio/utils':
-        specifier: workspace:*
-        version: link:../utils
       '@modelcontextprotocol/sdk':
         specifier: ^1.27.1
         version: 1.27.1(zod@4.2.1)
     devDependencies:
+      '@cio/question-types':
+        specifier: workspace:*
+        version: link:../question-types
       '@cio/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@cio/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@types/node':
         specifier: ^24.10.1
         version: 24.10.4
