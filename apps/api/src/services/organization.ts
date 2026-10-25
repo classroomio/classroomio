@@ -1,3 +1,4 @@
+import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
@@ -254,6 +255,8 @@ export async function removeAudienceMember(orgId: string, memberId: number, remo
     if (!deleted) {
       throw new AppError('Audience member not found', ErrorCodes.ORG_AUDIENCE_REMOVE_FAILED, 404);
     }
+
+    await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 
     if (deleted.email && removedByProfileId) {
       const targetEmail = deleted.email.toLowerCase();
@@ -980,6 +983,8 @@ export async function removeTeamMember(orgId: string, memberId: number, removedB
     if (!deleted) {
       throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
     }
+
+    await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 
     if (deleted.email && removedByProfileId) {
       const targetEmail = deleted.email.toLowerCase();

@@ -1,3 +1,4 @@
+import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   countActiveStudents,
@@ -56,10 +57,19 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
     const isTeamMember = Object.values(orgRoles).some((roleId) => roleId === ROLE.ADMIN || roleId === ROLE.TUTOR);
 
     if (!isTeamMember) {
-      const membershipEnsured = await ensureSelfHostedStudentMembership({
+      const { ensured: membershipEnsured, createdMember } = await ensureSelfHostedStudentMembership({
         profileId: userId,
         email: profile.email
       });
+
+      if (createdMember) {
+        await emitOrganizationMemberWebhookEvent(
+          'organization.member.added',
+          createdMember.organizationId,
+          createdMember,
+          userId
+        );
+      }
 
       if (membershipEnsured) {
         organizations = await getOrganizationByProfileId(userId);

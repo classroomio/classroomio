@@ -14,6 +14,7 @@ import {
   getCourse,
   updateCourse as updateCourseService
 } from '@cio/core/services/course/course';
+import { emitCoursePublishWebhookEvent } from '@cio/core/services/webhook/emit';
 import { buildCourseOutline } from '@cio/core/services/course/utils';
 import type { TEventSource } from '@cio/core/services/posthog';
 import {
@@ -83,12 +84,16 @@ export async function createPublicApiCourseService(
 export async function updatePublicApiCourseService(
   orgId: string,
   params: TPublicApiCourseParam,
-  payload: TPublicApiUpdateCourse
+  payload: TPublicApiUpdateCourse,
+  actorId: string | null = null
 ) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCertificateChangeAllowed(params.courseId, payload.certificate);
 
-  return updateCourseService(params.courseId, payload);
+  const result = await updateCourseService(params.courseId, payload);
+  await emitCoursePublishWebhookEvent(params.courseId, result.publishChange, actorId);
+
+  return result;
 }
 
 export async function deletePublicApiCourseService(orgId: string, params: TPublicApiCourseParam) {

@@ -74,7 +74,13 @@ vi.mock('@cio/email', () => ({
   sanitizeEmailSubject: vi.fn()
 }));
 vi.mock('@api/services/course/compliance', () => ({
-  ensureComplianceEnrollmentRecordsForProfiles: vi.fn()
+  ensureComplianceEnrollmentRecordsForProfiles: vi.fn().mockResolvedValue({ createdCount: 0, createdRecords: [] }),
+  emitComplianceEnrollmentEvents: vi.fn().mockResolvedValue(undefined)
+}));
+vi.mock('@cio/core/services/webhook/emit', () => ({
+  emitWebhookEvent: vi.fn().mockResolvedValue(undefined),
+  emitOrganizationMemberWebhookEvent: vi.fn().mockResolvedValue(undefined),
+  emitCohortMemberWebhookEvent: vi.fn().mockResolvedValue(undefined)
 }));
 
 import {

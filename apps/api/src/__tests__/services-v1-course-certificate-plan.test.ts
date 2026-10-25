@@ -29,6 +29,7 @@ const params = { courseId: 'course-1' };
 describe('updatePublicApiCourseService certificate plan', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(updateCourse).mockResolvedValue({ course: {}, publishChange: null } as never);
   });
 
   it('checks the certificate change against the plan before updating the course', async () => {

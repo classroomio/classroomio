@@ -115,7 +115,8 @@ describe('v1CoursesRouter nested course-member/course-invite mounts', () => {
       'actor-1',
       { courseId: COURSE_ID },
       { roleId: 3, email: 'student@example.com' },
-      expect.any(String)
+      expect.any(String),
+      null
     );
     expect(await response.json()).toEqual({ success: true, data: { id: MEMBER_ID } });
   });

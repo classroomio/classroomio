@@ -99,7 +99,14 @@ export const v1CourseMembersRouter = new Hono()
         const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const member = await addCourseMemberService(orgId, actorId, params, payload, getEventSource(c));
+        const member = await addCourseMemberService(
+          orgId,
+          actorId,
+          params,
+          payload,
+          getEventSource(c),
+          c.get('automationKey')?.id ?? null
+        );
 
         return c.json(
           {

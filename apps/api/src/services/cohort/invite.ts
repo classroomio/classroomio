@@ -44,7 +44,8 @@ export async function inviteStudentsToCohort(
 export async function assignExistingStudentsToCohort(
   cohortId: string,
   data: TAssignExistingStudentsToCohort,
-  source: TEventSource = 'dashboard'
+  source: TEventSource = 'dashboard',
+  actorProfileId: string | null = null
 ) {
   const cohort = await getCohortById(cohortId);
   if (!cohort) {
@@ -58,6 +59,7 @@ export async function assignExistingStudentsToCohort(
       cohortIds: [cohortId],
       sendEmail: data.sendEmail
     },
-    source
+    source,
+    actorProfileId
   );
 }
