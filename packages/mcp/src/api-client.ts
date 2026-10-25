@@ -61,6 +61,10 @@ import type {
   TPublicApiUpdateCourseSection,
   TPublicApiCreateAsset,
   TPublicApiCreateAudience,
+  TPublicApiEmailTemplateParam,
+  TPublicApiEmailTemplateQuery,
+  TPublicApiSaveEmailTemplate,
+  TPublicApiSendTestEmailTemplate,
   TPublicApiCreateCohort,
   TPublicApiCreateCohortGoal,
   TPublicApiCreateCohortNewsfeed,
@@ -618,6 +622,39 @@ export class ClassroomIoApiClient {
 
   async updateTeamMember(memberId: number, payload: TPublicApiUpdateTeamMember) {
     return this.request(`/public-api/v1/team/${memberId}`, { method: 'PUT', body: payload });
+  }
+
+  // ─── Organization email templates (public API) ──────────────────────────
+
+  async listEmailTemplates(query: Partial<TPublicApiEmailTemplateQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/organization/email-templates${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getEmailTemplate({ emailId, locale }: TPublicApiEmailTemplateParam) {
+    return this.request(`/public-api/v1/organization/email-templates/${emailId}/${locale}`, { method: 'GET' });
+  }
+
+  async updateEmailTemplate({ emailId, locale }: TPublicApiEmailTemplateParam, payload: TPublicApiSaveEmailTemplate) {
+    return this.request(`/public-api/v1/organization/email-templates/${emailId}/${locale}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async resetEmailTemplate({ emailId, locale }: TPublicApiEmailTemplateParam) {
+    return this.request(`/public-api/v1/organization/email-templates/${emailId}/${locale}`, { method: 'DELETE' });
+  }
+
+  async sendTestEmailTemplate(
+    { emailId, locale }: TPublicApiEmailTemplateParam,
+    payload: TPublicApiSendTestEmailTemplate
+  ) {
+    return this.request(`/public-api/v1/organization/email-templates/${emailId}/${locale}/test`, {
+      method: 'POST',
+      body: payload
+    });
   }
 
   // ─── Course Members (public API) ────────────────────────────────────────

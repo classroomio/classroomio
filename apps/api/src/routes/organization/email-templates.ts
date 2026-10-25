@@ -20,7 +20,8 @@ const studentEmailTestRateLimit = createRateLimiter({
   windowMs: 15 * 60 * 1000,
   maxRequests: 5,
   message: 'Too many test emails. Please try again later.',
-  keyGenerator: (c) => `student_email_test:${c.req.header('cio-org-id') ?? 'unknown'}`
+  keyGenerator: (c) => `student_email_test:${c.req.header('cio-org-id') ?? 'unknown'}`,
+  failClosed: true
 });
 
 export const studentEmailTemplatesRouter = new Hono()

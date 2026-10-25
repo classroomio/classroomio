@@ -30,6 +30,8 @@ export * from './course-student-responses';
 export * from './course-submission';
 export * from './course-template';
 export * from './course-template-responses';
+export * from './email-template';
+export * from './email-template-responses';
 export * from './exercise-template';
 export * from './lesson';
 export * from './pagination';

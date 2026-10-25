@@ -1,0 +1,333 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API organization email template contract > ZPublicApiEmailTemplateParam keeps its published shape > ZPublicApiEmailTemplateParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "emailId": {
+      "description": "Which student email, as listed by GET /organization/email-templates",
+      "enum": [
+        "studentCourseInvite",
+        "studentCourseWelcome",
+        "studentCourseCompletion",
+        "studentOrgInvite",
+        "studentCohortWelcome",
+        "studentProvePayment",
+        "cohortGoalReminder",
+        "quizAssigned",
+        "sessionReminder",
+        "sessionUpdated",
+        "submissionGraded",
+        "newsfeedPost",
+      ],
+      "type": "string",
+    },
+    "locale": {
+      "description": "Language of the template",
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+        "tr",
+        "it",
+      ],
+      "type": "string",
+    },
+  },
+  "required": [
+    "emailId",
+    "locale",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API organization email template contract > ZPublicApiEmailTemplateQuery keeps its published shape > ZPublicApiEmailTemplateQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "locale": {
+      "default": "en",
+      "description": "Language of the templates to list. Default: en.",
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+        "tr",
+        "it",
+      ],
+      "type": "string",
+    },
+    "page": {
+      "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API organization email template contract > ZPublicApiEmailTemplateResponse keeps its published shape > ZPublicApiEmailTemplateResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "content": {
+      "description": "The saved HTML body, or the default when none is saved",
+      "type": "string",
+    },
+    "emailId": {
+      "enum": [
+        "studentCourseInvite",
+        "studentCourseWelcome",
+        "studentCourseCompletion",
+        "studentOrgInvite",
+        "studentCohortWelcome",
+        "studentProvePayment",
+        "cohortGoalReminder",
+        "quizAssigned",
+        "sessionReminder",
+        "sessionUpdated",
+        "submissionGraded",
+        "newsfeedPost",
+      ],
+      "type": "string",
+    },
+    "hasActionLink": {
+      "description": "Whether content may link to {{action_url}}",
+      "type": "boolean",
+    },
+    "isCustomized": {
+      "description": "false when the template matches the default",
+      "type": "boolean",
+    },
+    "locale": {
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+        "tr",
+        "it",
+      ],
+      "type": "string",
+    },
+    "subject": {
+      "description": "The saved subject, or the default when none is saved",
+      "type": "string",
+    },
+    "updatedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "When the template was last saved; null if it was never saved",
+    },
+    "variables": {
+      "description": "Placeholders allowed in content and subject, written as {{name}}",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "emailId",
+    "locale",
+    "subject",
+    "isCustomized",
+    "updatedAt",
+    "content",
+    "variables",
+    "hasActionLink",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API organization email template contract > ZPublicApiEmailTemplateSummaryResponse keeps its published shape > ZPublicApiEmailTemplateSummaryResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "emailId": {
+      "enum": [
+        "studentCourseInvite",
+        "studentCourseWelcome",
+        "studentCourseCompletion",
+        "studentOrgInvite",
+        "studentCohortWelcome",
+        "studentProvePayment",
+        "cohortGoalReminder",
+        "quizAssigned",
+        "sessionReminder",
+        "sessionUpdated",
+        "submissionGraded",
+        "newsfeedPost",
+      ],
+      "type": "string",
+    },
+    "isCustomized": {
+      "description": "false when the template matches the default",
+      "type": "boolean",
+    },
+    "locale": {
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+        "tr",
+        "it",
+      ],
+      "type": "string",
+    },
+    "subject": {
+      "description": "The saved subject, or the default when none is saved",
+      "type": "string",
+    },
+    "updatedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "When the template was last saved; null if it was never saved",
+    },
+  },
+  "required": [
+    "emailId",
+    "locale",
+    "subject",
+    "isCustomized",
+    "updatedAt",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API organization email template contract > ZPublicApiEmailTemplateTestResponse keeps its published shape > ZPublicApiEmailTemplateTestResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "queued": {
+      "const": true,
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "queued",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API organization email template contract > ZPublicApiSaveEmailTemplate keeps its published shape > ZPublicApiSaveEmailTemplate 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "content": {
+      "description": "HTML body. Use only the {{placeholders}} in the template's variables. An <a href="{{action_url}}"> link is allowed only when hasActionLink is true. Unsafe HTML is removed before saving.",
+      "maxLength": 50000,
+      "minLength": 1,
+      "type": "string",
+    },
+    "subject": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Subject line, with the same placeholders as content. Omit to keep the saved subject, or send null to use the default subject.",
+    },
+  },
+  "required": [
+    "content",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API organization email template contract > ZPublicApiSendTestEmailTemplate keeps its published shape > ZPublicApiSendTestEmailTemplate 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "content": {
+      "description": "Draft body to test. Omit to test the current template. HTML body. Use only the {{placeholders}} in the template's variables. An <a href="{{action_url}}"> link is allowed only when hasActionLink is true. Unsafe HTML is removed before saving.",
+      "maxLength": 50000,
+      "minLength": 1,
+      "type": "string",
+    },
+    "recipientEmails": {
+      "description": "1 to 5 addresses to send the test to",
+      "items": {
+        "format": "email",
+        "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+        "type": "string",
+      },
+      "maxItems": 5,
+      "minItems": 1,
+      "type": "array",
+    },
+    "subject": {
+      "description": "Draft subject to test. Omit to test the current subject.",
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "recipientEmails",
+  ],
+  "type": "object",
+}
+`;

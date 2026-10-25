@@ -44,6 +44,11 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/team': 'List team members',
   'GET /public-api/v1/team/{memberId}': 'Get a team member',
   'PUT /public-api/v1/team/{memberId}': 'Update a team member',
+  'GET /public-api/v1/organization/email-templates': 'List student email templates',
+  'GET /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Get a student email template',
+  'PUT /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Save a student email template',
+  'DELETE /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Reset a student email template',
+  'POST /public-api/v1/organization/email-templates/{emailId}/{locale}/test': 'Send a test student email',
   'GET /public-api/v1/courses': 'List courses',
   'POST /public-api/v1/courses': 'Create a course',
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
@@ -169,6 +174,10 @@ const OPERATION_SUMMARIES: Record<string, string> = {
 const OPERATION_TAGS = [
   { name: 'Audience', description: 'Manage people in your organization.' },
   { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
+  {
+    name: 'Organization Email Templates',
+    description: 'Read, customize, translate and reset the emails your organization sends to students.'
+  },
   { name: 'Courses', description: 'Create, update, delete, clone, and feature courses.' },
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
   { name: 'Course Members', description: 'Manage the people in a course and their progress.' },

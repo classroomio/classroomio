@@ -20,6 +20,7 @@ import { registerCourseExerciseTools } from './tools/course-exercises';
 import { registerCourseSubmissionTools } from './tools/course-submissions';
 import { registerCourseTools } from './tools/courses';
 import { registerCourseTemplateTools } from './tools/course-templates';
+import { registerEmailTemplateTools } from './tools/email-templates';
 import { registerTeamTools } from './tools/team';
 
 async function main() {
@@ -48,6 +49,7 @@ async function main() {
   registerAnalyticsTools(server, apiClient);
   registerAudienceTools(server, apiClient);
   registerTeamTools(server, apiClient);
+  registerEmailTemplateTools(server, apiClient);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
