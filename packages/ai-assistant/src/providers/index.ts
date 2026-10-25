@@ -19,18 +19,23 @@ const PROVIDER_API_KEY_ENV: Record<AIProvider, string> = {
   [AIProvider.MOONSHOT]: 'MOONSHOT_API_KEY'
 };
 
+type AIProviderOptions = { useOpenAICompatibleEnvironment?: boolean };
+
 /**
  * Creates an AI SDK LanguageModel from provider configuration.
  * Normalizes OpenAI, Anthropic, and Google into a single interface for streamText().
  */
-export function createModel(config: AIProviderConfig): LanguageModel {
-  const openAIBaseUrl = process.env.OPENAI_BASE_URL?.trim();
-  const configuredOpenAIModel = config.provider === AIProvider.OPENAI ? process.env.OPENAI_MODEL?.trim() : undefined;
+export function createModel(config: AIProviderConfig, options: AIProviderOptions = {}): LanguageModel {
+  const openAIBaseUrl = options.useOpenAICompatibleEnvironment ? process.env.OPENAI_BASE_URL?.trim() : undefined;
+  const configuredOpenAIModel =
+    options.useOpenAICompatibleEnvironment && config.provider === AIProvider.OPENAI
+      ? process.env.OPENAI_MODEL?.trim()
+      : undefined;
   const modelName = config.model || configuredOpenAIModel || DEFAULT_MODELS[config.provider];
 
   switch (config.provider) {
     case AIProvider.OPENAI: {
-      const openai = createOpenAI({ apiKey: config.apiKey, ...(openAIBaseUrl ? { baseURL: openAIBaseUrl } : {}) });
+      const openai = createOpenAI({ apiKey: config.apiKey, baseURL: openAIBaseUrl || 'https://api.openai.com/v1' });
       if (openAIBaseUrl) return openai.chat(modelName);
 
       return openai(modelName);
@@ -67,10 +72,11 @@ export function getProviderConfigForProvider(provider: AIProvider): AIProviderCo
  * Returns the first provider that has a key configured, in preference order.
  * Used by routes that don't take an explicit model (status check, title generation).
  */
-export function pickAnyConfiguredProvider(): AIProviderConfig | null {
-  const order: AIProvider[] = process.env.OPENAI_BASE_URL?.trim()
-    ? [AIProvider.OPENAI, AIProvider.GOOGLE, AIProvider.ANTHROPIC]
-    : [AIProvider.GOOGLE, AIProvider.OPENAI, AIProvider.ANTHROPIC];
+export function pickAnyConfiguredProvider(options: AIProviderOptions = {}): AIProviderConfig | null {
+  const order: AIProvider[] =
+    options.useOpenAICompatibleEnvironment && process.env.OPENAI_BASE_URL?.trim()
+      ? [AIProvider.OPENAI, AIProvider.GOOGLE, AIProvider.ANTHROPIC]
+      : [AIProvider.GOOGLE, AIProvider.OPENAI, AIProvider.ANTHROPIC];
 
   for (const provider of order) {
     const config = getProviderConfigForProvider(provider);

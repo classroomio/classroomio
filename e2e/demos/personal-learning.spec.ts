@@ -12,6 +12,7 @@ for (const { studyDays, dailyMinutes } of personalLearningCases) {
     const acceptedPlans: Array<Record<string, unknown>> = [];
     const editedGoal = 'Learn derivatives with practice';
     let journeyStatusPoll = 0;
+    let chatRequestCount = 0;
 
     await context.addCookies([
       { name: 'debugPlay', value: 'true', url: baseUrl },
@@ -24,19 +25,30 @@ for (const { studyDays, dailyMinutes } of personalLearningCases) {
       const { pathname } = new URL(request.url());
 
       if (request.method() === 'POST' && pathname.endsWith('/learning/chat')) {
+        const chatNumber = chatRequestCount++;
         await route.fulfill({
           json: {
             success: true,
-            answer: 'A derivative measures how quickly a value changes.',
+            answer:
+              chatNumber === 0
+                ? 'A derivative measures how quickly a value changes.'
+                : chatNumber === 1
+                  ? 'A derivative gives the local rate of change.'
+                  : 'A derivative is the instantaneous rate of change.',
             conversationId: 'conversation-e2e',
             offer: {
-              id: 'offer-e2e',
+              id: `offer-e2e-${chatNumber}`,
               suggestedStudyDays: 7,
               reason: 'A short sequence of practice builds a useful foundation.',
               choices: [1, 7, 30]
             }
           }
         });
+        return;
+      }
+
+      if (request.method() === 'POST' && /\/learning\/offers\/[^/]+\/dismiss$/.test(pathname)) {
+        await route.fulfill({ json: { success: true, status: 'dismissed' } });
         return;
       }
 
@@ -117,10 +129,32 @@ for (const { studyDays, dailyMinutes } of personalLearningCases) {
     await page.getByTestId('personal-learning-send').click();
     await expect(page.getByText('A derivative measures how quickly a value changes.')).toBeVisible();
     await expect(page.getByTestId('personal-learning-offer')).toBeVisible();
+    await page.getByTestId('personal-learning-consent').check();
+    await page.getByTestId('personal-learning-question').fill('Explain the rate of change');
+    await page.getByTestId('personal-learning-send').click();
+    await expect(page.getByText('A derivative gives the local rate of change.')).toBeVisible();
+    await expect(page.getByTestId('personal-learning-offer')).toBeVisible();
+    await expect(page.getByTestId('personal-learning-consent')).not.toBeChecked();
+    await page.getByTestId('personal-learning-consent').check();
+    await page.getByTestId('personal-learning-dismiss').click();
+    await expect(page.getByTestId('personal-learning-offer')).not.toBeVisible();
+    await page.getByTestId('personal-learning-question').fill('Explain instantaneous change');
+    await page.getByTestId('personal-learning-send').click();
+    await expect(page.getByText('A derivative is the instantaneous rate of change.')).toBeVisible();
+    await expect(page.getByTestId('personal-learning-offer')).toBeVisible();
+    await expect(page.getByTestId('personal-learning-consent')).not.toBeChecked();
 
     await page.getByTestId(`personal-learning-days-${studyDays}`).click();
     await page.getByTestId(`personal-learning-minutes-${dailyMinutes}`).click();
     await expect(page.getByTestId('personal-learning-accept')).toBeDisabled();
+    await page.getByTestId('personal-learning-consent').check();
+    await page.getByTestId(`personal-learning-days-${studyDays === 7 ? 30 : 7}`).click();
+    await expect(page.getByTestId('personal-learning-consent')).not.toBeChecked();
+    await page.getByTestId(`personal-learning-days-${studyDays}`).click();
+    await page.getByTestId('personal-learning-consent').check();
+    await page.getByTestId(`personal-learning-minutes-${dailyMinutes === 30 ? 60 : 30}`).click();
+    await expect(page.getByTestId('personal-learning-consent')).not.toBeChecked();
+    await page.getByTestId(`personal-learning-minutes-${dailyMinutes}`).click();
     await page.getByTestId('personal-learning-consent').check();
     await page.getByTestId('personal-learning-goal').fill(editedGoal);
     await expect(page.getByTestId('personal-learning-consent')).not.toBeChecked();

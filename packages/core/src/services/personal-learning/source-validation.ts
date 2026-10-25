@@ -93,7 +93,7 @@ export function validateSessionDraft(
     ...parsedDraft.data.activities.map((_, index) => `activity-${index + 1}`)
   ]);
 
-  for (const citation of parsedDraft.data.citations) {
+  const citations = parsedDraft.data.citations.map((citation) => {
     const source = sourcesByUrl.get(validateSourceUrl(citation.url).href);
     if (!source) {
       throw new AppError('Session citation is not in the verified source manifest', 'UNKNOWN_CITATION', 502);
@@ -112,6 +112,13 @@ export function validateSessionDraft(
         );
       }
     }
+
+    return { ...citation, title: source.title };
+  });
+
+  const citedClaimIds = new Set(citations.flatMap(({ evidence }) => evidence.map(({ claimId }) => claimId)));
+  if ([...claimIds].some((claimId) => !citedClaimIds.has(claimId))) {
+    throw new AppError('A learning claim is missing verified citation evidence', 'MISSING_CITATION_EVIDENCE', 502);
   }
 
   const estimatedMinutes = parsedDraft.data.activities.reduce(
@@ -122,5 +129,5 @@ export function validateSessionDraft(
     throw new AppError('Session activities exceed the selected daily study time', 'DAILY_BUDGET_EXCEEDED', 502);
   }
 
-  return parsedDraft.data;
+  return { ...parsedDraft.data, citations };
 }

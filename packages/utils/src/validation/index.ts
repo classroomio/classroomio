@@ -14,6 +14,7 @@ export * from './media';
 export * from './newsfeed';
 export * from './onboarding';
 export * from './organization';
+export * from './personal-learning';
 export * from './public-api';
 export * from './report';
 export * from './submission';

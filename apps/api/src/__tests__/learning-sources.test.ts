@@ -366,7 +366,10 @@ describe('personal learning sources', () => {
         {
           url: 'https://example.net/unverified',
           title: 'Unverified source',
-          evidence: [{ claimId: 'objective-1', quote: 'A fitted line estimates the relationship between variables.' }]
+          evidence: [
+            { claimId: 'objective-1', quote: 'A fitted line estimates the relationship between variables.' },
+            { claimId: 'activity-1', quote: 'A fitted line estimates the relationship between variables.' }
+          ]
         }
       ],
       whyThisSession: 'Build the core concept.'
@@ -398,19 +401,32 @@ describe('personal learning sources', () => {
         {
           url: manifest[0].url,
           title: manifest[0].title,
-          evidence: [{ claimId: 'objective-1', quote: 'aperture, shutter speed, and ISO.' }]
+          evidence: [
+            { claimId: 'objective-1', quote: 'aperture, shutter speed, and ISO.' },
+            { claimId: 'activity-1', quote: 'Exposure balances aperture, shutter speed, and ISO.' }
+          ]
         }
       ],
       whyThisSession: 'Build the core concept.'
     };
 
     expect(validateSessionDraft(draft, manifest, 30)).toEqual(draft);
+    expect(
+      validateSessionDraft(
+        { ...draft, citations: [{ ...draft.citations[0], title: 'Unverified title' }] },
+        manifest,
+        30
+      ).citations[0]?.title
+    ).toBe(manifest[0].title);
     expect(() =>
       validateSessionDraft(
         {
           ...draft,
           citations: [
-            { ...draft.citations[0], evidence: [{ ...draft.citations[0].evidence[0], claimId: 'objective-2' }] }
+            {
+              ...draft.citations[0],
+              evidence: [{ ...draft.citations[0].evidence[0], claimId: 'objective-2' }, draft.citations[0].evidence[1]]
+            }
           ]
         },
         manifest,
@@ -424,7 +440,10 @@ describe('personal learning sources', () => {
           citations: [
             {
               ...draft.citations[0],
-              evidence: [{ ...draft.citations[0].evidence[0], quote: 'ISO controls the shutter.' }]
+              evidence: [
+                { ...draft.citations[0].evidence[0], quote: 'ISO controls the shutter.' },
+                draft.citations[0].evidence[1]
+              ]
             }
           ]
         },
@@ -432,5 +451,52 @@ describe('personal learning sources', () => {
         30
       )
     ).toThrowError(expect.objectContaining({ code: 'UNVERIFIED_CITATION_EVIDENCE' }));
+  });
+
+  it('rejects objectives and activities without verified citation evidence', () => {
+    const manifest = [
+      {
+        url: 'https://example.edu/lesson',
+        title: 'Exposure triangle',
+        accessedAt: '2026-10-21T00:00:00.000Z',
+        content: 'Exposure balances aperture, shutter speed, and ISO.'
+      }
+    ];
+    const draft = {
+      title: 'Exposure triangle',
+      objectives: ['Explain exposure controls'],
+      activities: [{ type: 'explanation' as const, estimatedMinutes: 20, content: 'Compare the settings.' }],
+      checkQuestions: ['Which settings affect exposure?'],
+      citations: [
+        {
+          url: manifest[0].url,
+          title: manifest[0].title,
+          evidence: [{ claimId: 'objective-1', quote: 'Exposure balances aperture, shutter speed, and ISO.' }]
+        }
+      ],
+      whyThisSession: 'Build the core concept.'
+    };
+
+    expect(() => validateSessionDraft(draft, manifest, 30)).toThrowError(
+      expect.objectContaining({ code: 'MISSING_CITATION_EVIDENCE' })
+    );
+
+    const draftWithUncitedObjective = {
+      ...draft,
+      objectives: [...draft.objectives, 'Compare camera settings'],
+      citations: [
+        {
+          ...draft.citations[0],
+          evidence: [
+            ...draft.citations[0].evidence,
+            { claimId: 'activity-1', quote: 'Exposure balances aperture, shutter speed, and ISO.' }
+          ]
+        }
+      ]
+    };
+
+    expect(() => validateSessionDraft(draftWithUncitedObjective, manifest, 30)).toThrowError(
+      expect.objectContaining({ code: 'MISSING_CITATION_EVIDENCE' })
+    );
   });
 });

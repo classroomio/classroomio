@@ -107,7 +107,9 @@ describe('personal learning state', () => {
 
   it('offers URL retry for source failures only', () => {
     expect(isSourceRetryableFailure('NO_VERIFIABLE_SOURCE')).toBe(true);
+    expect(isSourceRetryableFailure('UNSAFE_SOURCE_HOST')).toBe(true);
     expect(isSourceRetryableFailure('LEARNING_SOURCE_FETCH_FAILED')).toBe(true);
+    expect(isSourceRetryableFailure('LEARNING_SOURCE_TIMEOUT')).toBe(true);
     expect(isSourceRetryableFailure('LEARNING_SOURCE_QUOTA_EXCEEDED')).toBe(true);
     expect(isSourceRetryableFailure('AI_NOT_CONFIGURED')).toBe(false);
   });

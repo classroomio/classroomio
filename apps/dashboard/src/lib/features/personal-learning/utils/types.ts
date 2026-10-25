@@ -1,9 +1,12 @@
-import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 
 export type PersonalLearningChatRequest = typeof classroomio.learning.chat.$post;
 export type PersonalLearningChatSuccess = Extract<InferResponseType<PersonalLearningChatRequest>, { success: true }>;
 
 export type PersonalLearningAcceptRequest = (typeof classroomio.learning.offers)[':offerId']['accept']['$post'];
+export type PersonalLearningAcceptInput = Omit<InferRequestType<PersonalLearningAcceptRequest>['json'], 'consent'> & {
+  offerId: string;
+};
 export type PersonalLearningAcceptSuccess = Extract<
   InferResponseType<PersonalLearningAcceptRequest>,
   { success: true }

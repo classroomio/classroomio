@@ -22,11 +22,11 @@ export async function answerPersonalLearningJourneyQuestion(input: {
   const context = await getPersonalLearningTutorContextForOwner(input.ownerUserId, input.journeyId);
   if (!context) throw new AppError('Personal learning lesson not found', 'LEARNING_NOT_FOUND', 404);
 
-  const providerConfig = pickAnyConfiguredProvider();
+  const providerConfig = pickAnyConfiguredProvider({ useOpenAICompatibleEnvironment: true });
   if (!providerConfig) throw new AppError('AI assistant is not configured', 'AI_NOT_CONFIGURED', 503);
 
   const generated = await generateText({
-    model: createModel(providerConfig),
+    model: createModel(providerConfig, { useOpenAICompatibleEnvironment: true }),
     system: [
       `You are a patient tutor for the learner's private course "${context.courseTitle}".`,
       `The study goal is: ${context.journey.goal}. Respond in ${context.journey.language}.`,

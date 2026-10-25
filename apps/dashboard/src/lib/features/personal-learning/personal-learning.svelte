@@ -4,11 +4,12 @@
   import { goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
   import { Checkbox } from '@cio/ui/base/checkbox';
-  import { Input } from '@cio/ui/base/input';
   import * as Label from '@cio/ui/base/label';
   import { Textarea } from '@cio/ui/base/textarea';
   import * as Page from '@cio/ui/base/page';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { ScrollToTop } from '@cio/ui/custom/scroll-to-top';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
@@ -119,6 +120,7 @@
     const nextState = submitQuestion(state, message);
     if (nextState === state) return;
 
+    consentChecked = false;
     state = nextState;
     question = '';
     const answer =
@@ -176,6 +178,7 @@
   async function dismissCurrentOffer() {
     if (!state.offer || !(await personalLearningApi.dismiss(state.offer.id))) return;
 
+    consentChecked = false;
     state = { ...state, offer: null };
   }
 
@@ -190,6 +193,16 @@
     sourceUrl = '';
     state = { ...state, sessions: [result.session] };
     startPolling();
+  }
+
+  function updateStudyDays(days: StudyDays) {
+    if (state.selectedStudyDays !== days) consentChecked = false;
+    state = selectStudyDays(state, days);
+  }
+
+  function updateDailyMinutes(minutes: DailyMinutes) {
+    if (state.dailyMinutes !== minutes) consentChecked = false;
+    state = selectDailyMinutes(state, minutes);
   }
 
   onMount(() => {
@@ -259,12 +272,12 @@
             <div class="mt-5 space-y-4">
               <div class="space-y-2">
                 <Label.Root for="personal-learning-goal">{$t('personalLearning.offer.goal_label')}</Label.Root>
-                <Textarea
+                <TextareaField
                   id="personal-learning-goal"
                   bind:value={state.goalDraft}
                   maxlength={2000}
                   rows={2}
-                  data-testid="personal-learning-goal"
+                  testId="personal-learning-goal"
                   oninput={() => (consentChecked = false)}
                 />
               </div>
@@ -278,7 +291,7 @@
                       testId={`personal-learning-days-${days}`}
                       variant={state.selectedStudyDays === days ? 'default' : 'outline'}
                       class="h-auto min-h-12 flex-col gap-0 py-2"
-                      onclick={() => (state = selectStudyDays(state, days))}
+                      onclick={() => updateStudyDays(days)}
                     >
                       <span class="text-base font-semibold">{days}</span>
                       <span class="text-xs font-normal">{$t('personalLearning.offer.days_unit')}</span>
@@ -295,7 +308,7 @@
                       type="button"
                       testId={`personal-learning-minutes-${minutes}`}
                       variant={state.dailyMinutes === minutes ? 'default' : 'outline'}
-                      onclick={() => (state = selectDailyMinutes(state, minutes))}
+                      onclick={() => updateDailyMinutes(minutes)}
                     >
                       {minutes}
                       {$t('personalLearning.offer.minutes_unit')}
@@ -338,7 +351,7 @@
           </div>
         {/if}
 
-        {#if !journeyId}
+        {#if !journeyId || canChatAboutLesson}
           <form
             class="mt-5 flex flex-col gap-2 sm:flex-row sm:items-end"
             onsubmit={(event) => {
@@ -351,38 +364,20 @@
               rows={2}
               maxlength={4000}
               data-testid="personal-learning-question"
-              placeholder={$t('personalLearning.chat.placeholder')}
-              aria-label={$t('personalLearning.chat.placeholder')}
-              disabled={state.isAnswering || state.isAccepting}
+              placeholder={canChatAboutLesson
+                ? $t('personalLearning.tutor.placeholder')
+                : $t('personalLearning.chat.placeholder')}
+              aria-label={canChatAboutLesson
+                ? $t('personalLearning.tutor.placeholder')
+                : $t('personalLearning.chat.placeholder')}
+              disabled={state.isAnswering || (!journeyId && state.isAccepting)}
               class="min-h-12 resize-y"
             />
             <Button
               type="submit"
               testId="personal-learning-send"
-              disabled={!question.trim() || state.isAnswering || state.isAccepting}
+              disabled={!question.trim() || state.isAnswering || (!journeyId && state.isAccepting)}
             >
-              {$t('personalLearning.chat.send')}
-            </Button>
-          </form>
-        {:else if canChatAboutLesson}
-          <form
-            class="mt-5 flex flex-col gap-2 sm:flex-row sm:items-end"
-            onsubmit={(event) => {
-              event.preventDefault();
-              void sendQuestion();
-            }}
-          >
-            <Textarea
-              bind:value={question}
-              rows={2}
-              maxlength={4000}
-              data-testid="personal-learning-question"
-              placeholder={$t('personalLearning.tutor.placeholder')}
-              aria-label={$t('personalLearning.tutor.placeholder')}
-              disabled={state.isAnswering}
-              class="min-h-12 resize-y"
-            />
-            <Button type="submit" testId="personal-learning-send" disabled={!question.trim() || state.isAnswering}>
               {$t('personalLearning.chat.send')}
             </Button>
           </form>
@@ -400,7 +395,10 @@
         <section class="ui:bg-card rounded-2xl border p-5 shadow-sm sm:p-7" data-testid="personal-learning-journey">
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p class="ui:text-primary text-xs font-semibold tracking-wide uppercase">
+              <p
+                class="ui:text-primary text-xs font-semibold tracking-wide uppercase"
+                data-testid="personal-learning-private-label"
+              >
                 {$t('personalLearning.course.private_label')}
               </p>
               <h2 class="mt-1 text-xl font-semibold">{journey.goal}</h2>
@@ -454,15 +452,18 @@
                       </p>
                       {#if isSourceRetryableFailure(session.failureCode)}
                         <div class="mt-4 flex flex-col gap-2 sm:flex-row">
-                          <Input
+                          <InputField
                             bind:value={sourceUrl}
                             type="url"
+                            name="personal-learning-source-url"
+                            label={$t('personalLearning.session.source_url_label')}
                             placeholder={$t('personalLearning.session.source_url_placeholder')}
-                            aria-label={$t('personalLearning.session.source_url_label')}
-                            disabled={isRetrying}
+                            testId="personal-learning-source-url"
+                            isDisabled={isRetrying}
                           />
                           <Button
                             onclick={retryWithSource}
+                            testId="personal-learning-retry"
                             disabled={!sourceUrl.trim() || isRetrying}
                             loading={isRetrying}
                           >

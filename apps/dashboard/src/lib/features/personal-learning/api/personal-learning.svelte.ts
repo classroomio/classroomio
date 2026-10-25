@@ -1,6 +1,7 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
 
 import type {
+  PersonalLearningAcceptInput,
   PersonalLearningAcceptRequest,
   PersonalLearningAcceptSuccess,
   PersonalLearningChatRequest,
@@ -13,7 +14,7 @@ import type {
   PersonalLearningRetryRequest,
   PersonalLearningRetrySuccess
 } from '../utils/types';
-import type { DailyMinutes, PersonalLearningMessage, StudyDays } from '../personal-learning-state';
+import type { PersonalLearningMessage } from '../personal-learning-state';
 
 class PersonalLearningApi extends BaseApi {
   async ask(message: string, conversationId: string | null): Promise<PersonalLearningChatSuccess | null> {
@@ -43,13 +44,7 @@ class PersonalLearningApi extends BaseApi {
     return dismissed;
   }
 
-  async accept(input: {
-    offerId: string;
-    goal: string;
-    language: string;
-    targetStudyDays: StudyDays;
-    dailyMinutes: DailyMinutes;
-  }): Promise<PersonalLearningAcceptSuccess | null> {
+  async accept(input: PersonalLearningAcceptInput): Promise<PersonalLearningAcceptSuccess | null> {
     let result: PersonalLearningAcceptSuccess | null = null;
     await this.execute<PersonalLearningAcceptRequest>({
       requestFn: () =>

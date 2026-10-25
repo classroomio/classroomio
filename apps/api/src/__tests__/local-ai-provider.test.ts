@@ -17,6 +17,35 @@ afterEach(() => {
 });
 
 describe('local OpenAI-compatible provider configuration', () => {
+  it('does not alter generic provider selection or model creation', async () => {
+    process.env.OPENAI_API_KEY = 'local-test-key';
+    process.env.OPENAI_BASE_URL = 'http://localhost:20128/v1';
+    process.env.OPENAI_MODEL = 'kr/claude-sonnet-4.5';
+    process.env.GOOGLE_API_KEY = 'google-test-key';
+
+    let requestUrl = '';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        requestUrl = String(input);
+        return new Response(JSON.stringify({ error: { message: 'unauthorized' } }), {
+          status: 401,
+          headers: { 'content-type': 'application/json' }
+        });
+      })
+    );
+
+    expect(pickAnyConfiguredProvider()).toMatchObject({ provider: 'google', apiKey: 'google-test-key' });
+    await expect(
+      generateText({
+        model: createModel({ provider: 'openai', apiKey: 'local-test-key' }),
+        prompt: 'Reply with ok.',
+        maxRetries: 0
+      })
+    ).rejects.toThrow();
+    expect(requestUrl).toBe('https://api.openai.com/v1/responses');
+  });
+
   it('uses the configured base URL and model with the Chat Completions API', async () => {
     process.env.OPENAI_BASE_URL = 'http://localhost:20128/v1';
     process.env.OPENAI_MODEL = 'kr/claude-sonnet-4.5';
@@ -49,7 +78,7 @@ describe('local OpenAI-compatible provider configuration', () => {
     let generationError: unknown;
     try {
       result = await generateText({
-        model: createModel({ provider: 'openai', apiKey: 'local-test-key' }),
+        model: createModel({ provider: 'openai', apiKey: 'local-test-key' }, { useOpenAICompatibleEnvironment: true }),
         prompt: 'Reply with ok.',
         maxRetries: 0
       });
@@ -64,12 +93,15 @@ describe('local OpenAI-compatible provider configuration', () => {
     expect(result?.text).toBe('ok');
   });
 
-  it('prefers OpenAI when a custom OpenAI base URL is configured', () => {
+  it('opts into OpenAI when a custom OpenAI base URL is configured', () => {
     process.env.OPENAI_API_KEY = 'local-test-key';
     process.env.OPENAI_BASE_URL = 'http://localhost:20128/v1';
     process.env.GOOGLE_API_KEY = 'google-test-key';
 
-    expect(pickAnyConfiguredProvider()).toMatchObject({ provider: 'openai', apiKey: 'local-test-key' });
+    expect(pickAnyConfiguredProvider({ useOpenAICompatibleEnvironment: true })).toMatchObject({
+      provider: 'openai',
+      apiKey: 'local-test-key'
+    });
   });
 
   it('does not apply the OpenAI model override to other providers', () => {

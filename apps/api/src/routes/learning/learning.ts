@@ -9,28 +9,14 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
 import { zValidator } from '@hono/zod-validator';
-import { z } from 'zod';
-
-const ZLearningChatBody = z.object({
-  conversationId: z.string().uuid().optional(),
-  message: z.string().trim().min(1).max(4000)
-});
-
-const ZLearningOfferParams = z.object({ offerId: z.string().uuid() });
-const ZPersonalLearningJourneyParams = z.object({ journeyId: z.string().uuid() });
-const ZPersonalLearningJourneyChatBody = z.object({
-  message: z.string().trim().min(1).max(4000)
-});
-const ZPersonalLearningRetryBody = z.object({
-  sourceUrls: z.array(z.string().url().max(2048)).min(1).max(5)
-});
-const ZAcceptLearningOfferBody = z.object({
-  consent: z.literal(true),
-  goal: z.string().trim().min(1).max(2000),
-  language: z.string().trim().min(2).max(16).default('en'),
-  targetStudyDays: z.union([z.literal(1), z.literal(7), z.literal(30)]),
-  dailyMinutes: z.union([z.literal(30), z.literal(60), z.literal(120)])
-});
+import {
+  ZAcceptLearningOfferBody,
+  ZLearningChatBody,
+  ZLearningOfferParams,
+  ZPersonalLearningJourneyChatBody,
+  ZPersonalLearningJourneyParams,
+  ZPersonalLearningRetryBody
+} from '@cio/utils/validation/personal-learning';
 
 export const learningRouter = new Hono()
   .get('/journeys/:journeyId', authMiddleware, zValidator('param', ZPersonalLearningJourneyParams), async (c) => {

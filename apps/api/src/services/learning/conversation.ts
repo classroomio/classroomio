@@ -29,11 +29,11 @@ export async function answerLearningQuestion(input: { ownerUserId: string; conve
       .join('\n');
   }
 
-  const providerConfig = pickAnyConfiguredProvider();
+  const providerConfig = pickAnyConfiguredProvider({ useOpenAICompatibleEnvironment: true });
   if (!providerConfig) throw new AppError('AI assistant is not configured', 'AI_NOT_CONFIGURED', 503);
 
   const generated = await generateObject({
-    model: createModel(providerConfig),
+    model: createModel(providerConfig, { useOpenAICompatibleEnvironment: true }),
     schema: LearningAnswer,
     system: [
       'You are a friendly study coach. Answer the learner question directly and accurately before proposing any course.',

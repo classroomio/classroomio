@@ -52,7 +52,10 @@ const draft = {
     {
       url: sources[0].url,
       title: sources[0].title,
-      evidence: [{ claimId: 'objective-1', quote: 'Exposure balances aperture, shutter speed and ISO.' }]
+      evidence: [
+        { claimId: 'objective-1', quote: 'Exposure balances aperture, shutter speed and ISO.' },
+        { claimId: 'activity-1', quote: 'Exposure balances aperture, shutter speed and ISO.' }
+      ]
     }
   ],
   whyThisSession: 'Build the core vocabulary first.'
@@ -175,7 +178,10 @@ describe('personal learning session generation', () => {
     expect(session.sourceManifest).toEqual([
       {
         ...sources[0],
-        evidence: [{ claimId: 'objective-1', quote: 'Exposure balances aperture, shutter speed and ISO.' }]
+        evidence: [
+          { claimId: 'objective-1', quote: 'Exposure balances aperture, shutter speed and ISO.' },
+          { claimId: 'activity-1', quote: 'Exposure balances aperture, shutter speed and ISO.' }
+        ]
       }
     ]);
     expect(lessons).toHaveLength(1);

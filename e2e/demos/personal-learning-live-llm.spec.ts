@@ -61,8 +61,8 @@ test('personal learning creates one private, source-cited lesson with a live mod
 
   const journey = page.getByTestId('personal-learning-journey');
   const session = page.getByTestId('personal-learning-session-1');
-  const sourceInput = page.getByRole('textbox', { name: 'Public learning source URL' });
-  await expect(journey.getByText('Private course')).toBeVisible();
+  const sourceInput = page.getByTestId('personal-learning-source-url');
+  await expect(journey.getByTestId('personal-learning-private-label')).toBeVisible();
   await expect(session).toBeVisible();
   await expect
     .poll(
@@ -88,7 +88,7 @@ test('personal learning creates one private, source-cited lesson with a live mod
         request.method() === 'POST' && /\/learning\/journeys\/[^/]+\/retry$/.test(new URL(response.url()).pathname)
       );
     });
-    await page.getByRole('button', { name: 'Retry with this source' }).click();
+    await page.getByTestId('personal-learning-retry').click();
     const retryResponse = await retryResponsePromise;
     expect(retryResponse.ok()).toBeTruthy();
   }

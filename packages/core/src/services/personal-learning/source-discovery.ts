@@ -123,9 +123,11 @@ async function fetchJinaJson(
 
   if (response.status === 429)
     throw new AppError('Learning source provider quota exceeded', 'LEARNING_SOURCE_QUOTA_EXCEEDED', 429);
+
   if (response.status === 422 && statusMismatchCode) {
     throw new AppError('Learning source page did not return HTTP 200', statusMismatchCode, 422);
   }
+
   if (!response.ok) throw new AppError('Learning source provider request failed', failureCode, 502);
 
   try {
