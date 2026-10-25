@@ -13,6 +13,7 @@ const COURSE_EXERCISE_PATH = /^(?:\/public-api\/v1)?\/(?:courses\/[^/]+\/exercis
 const COURSE_SUBMISSION_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:submissions|marks)(?:\/|$)/;
 const AUDIENCE_PATH = /^(?:\/public-api\/v1)?\/audience(?:\/|$)/;
 const TEAM_PATH = /^(?:\/public-api\/v1)?\/team(?:\/|$)/;
+const ORGANIZATION_PATH = /^(?:\/public-api\/v1)?\/organization(?:\/|$)/;
 const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
 
@@ -29,6 +30,10 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (TEAM_PATH.test(path)) {
     return isRead ? 'team:read' : 'team:write';
+  }
+
+  if (ORGANIZATION_PATH.test(path)) {
+    return isRead ? 'organization:read' : 'organization:write';
   }
 
   if (ANALYTICS_PATH.test(path) && isRead) {

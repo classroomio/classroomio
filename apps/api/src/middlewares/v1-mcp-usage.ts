@@ -21,6 +21,13 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   },
   '/public-api/v1/team': { GET: 'list_team_members' },
   '/public-api/v1/team/:memberId': { GET: 'get_team_member', PUT: 'update_team_member' },
+  '/public-api/v1/organization/email-templates': { GET: 'list_email_templates' },
+  '/public-api/v1/organization/email-templates/:emailId/:locale': {
+    GET: 'get_email_template',
+    PUT: 'update_email_template',
+    DELETE: 'reset_email_template'
+  },
+  '/public-api/v1/organization/email-templates/:emailId/:locale/test': { POST: 'send_test_email_template' },
   '/public-api/v1/courses/:courseId/members': { GET: 'list_course_members', POST: 'add_course_member' },
   '/public-api/v1/courses/:courseId/members/:memberId': {
     GET: 'get_course_member',

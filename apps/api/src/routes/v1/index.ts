@@ -16,6 +16,7 @@ import { v1CohortsRouter } from './cohorts';
 import { v1CoursesRouter } from './courses';
 import { v1MediaRouter } from './media';
 import { v1ExerciseTemplatesRouter } from './exercise-templates';
+import { v1OrganizationRouter } from './organization';
 import { v1TeamRouter } from './team';
 
 export const v1Router = new Hono()
@@ -42,6 +43,7 @@ export const v1Router = new Hono()
   .route('/analytics', v1AnalyticsRouter)
   .route('/audience', v1AudienceRouter)
   .route('/team', v1TeamRouter)
+  .route('/organization', v1OrganizationRouter)
   .route('/courses', v1CoursesRouter)
   .route('/cohorts', v1CohortsRouter)
   .route('/assets', v1MediaRouter)

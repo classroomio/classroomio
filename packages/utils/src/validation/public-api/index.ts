@@ -28,6 +28,8 @@ export * from './course-section';
 export * from './course-student';
 export * from './course-student-responses';
 export * from './course-submission';
+export * from './email-template';
+export * from './email-template-responses';
 export * from './exercise-template';
 export * from './lesson';
 export * from './pagination';

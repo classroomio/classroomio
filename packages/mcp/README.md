@@ -112,6 +112,11 @@ Current tools:
 - `list_team_members`
 - `get_team_member`
 - `update_team_member`
+- `list_email_templates`
+- `get_email_template`
+- `update_email_template`
+- `reset_email_template`
+- `send_test_email_template`
 
 Course certificate tools:
 
@@ -225,7 +230,7 @@ Course member and invite tools call the public API (`/public-api/v1/courses/:id/
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, and team routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. Email template tools call `/public-api/v1/organization/email-templates/...` and need `organization:read` / `organization:write`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, team, and organization email template routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
@@ -247,6 +252,14 @@ Audience and team tools act as the key creator:
 - `update_audience_member` and `update_team_member` take `name` to set a joined member's full name. The profile is shared, so the name changes in every organization that person belongs to. Email, password, username and avatar stay with the person. On a member who has not accepted their invite yet, `update_audience_member` takes `email` to correct the address instead.
 - `remove_audience_member` deletes the organization membership; the person keeps their account. Inviting and removing team members is not available yet.
 - `list_audience_members` and `list_team_members` take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
+
+Email template tools act as the key creator, who must be an org admin, the same as the dashboard's Emails settings page:
+
+- `list_email_templates` returns every student email in one `locale` (default `en`) without its body. `get_email_template` returns the body, the allowed `variables`, and whether the email may link to `{{action_url}}`.
+- `update_email_template` takes `content` and an optional `subject` (omit to keep it, `null` for the default). It rejects placeholders the email does not allow and removes unsafe HTML.
+- `reset_email_template` deletes the saved version and returns the default. It succeeds even when nothing was saved.
+- `send_test_email_template` sends up to 5 addresses a test with sample values. Without `content` or `subject` it tests the current template. The organization gets 5 test sends per 15 minutes, shared with the dashboard.
+- Saving, resetting and test sends need a paid plan (403 `UPGRADE_REQUIRED` otherwise). Students only get a saved template on a paid plan, and a non-English one only when the organization enforces that language.
 
 Analytics tools are read-only, cost no credits, and act as the key creator:
 
