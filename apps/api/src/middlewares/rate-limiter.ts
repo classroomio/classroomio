@@ -6,6 +6,7 @@ import {
 } from '@api/constants/rate-limiter';
 
 import type { Context, MiddlewareHandler } from 'hono';
+import { ErrorCodes } from '@api/utils/errors';
 import { RedisRateLimiter, type RateLimitResult } from '@api/utils/redis/limiter';
 import { userKeyGenerator } from '../utils/redis/key-generators';
 import { env } from '@cio/core/config/env';
@@ -32,12 +33,15 @@ export interface RateLimiterOptions {
   message?: string;
   standardHeaders?: boolean;
   legacyHeaders?: boolean;
+  /** Refuse the request with 503 when Redis can't decide, instead of letting it through. */
+  failClosed?: boolean;
 }
 
 const defaultOptions: Required<RateLimiterOptions> = {
   ...DEFAULT_RATE_LIMITER_OPTIONS,
   keyGenerator: userKeyGenerator,
-  skip: () => false
+  skip: () => false,
+  failClosed: false
 };
 
 function setRateLimitHeaders(c: Context, maxRequests: number, result: RateLimitResult): void {
@@ -76,32 +80,45 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
       return await next();
     }
 
+    const maxRequests = typeof opts.maxRequests === 'function' ? opts.maxRequests(c) : opts.maxRequests;
+    let result: RateLimitResult;
+
+    // Only the Redis check is guarded, so an error thrown downstream is never read as a Redis failure.
     try {
-      const maxRequests = typeof opts.maxRequests === 'function' ? opts.maxRequests(c) : opts.maxRequests;
       const limiter = new RedisRateLimiter(redis, opts.windowMs, maxRequests);
-
-      const key = opts.keyGenerator(c);
-      const result = await limiter.isAllowed(key);
-
-      if (opts.standardHeaders) {
-        setRateLimitHeaders(c, maxRequests, result);
-      }
-
-      if (opts.legacyHeaders) {
-        c.header(RATE_LIMIT_HEADERS.LIMIT, maxRequests.toString());
-        c.header(RATE_LIMIT_HEADERS.REMAINING, result.remaining.toString());
-        c.header(RATE_LIMIT_HEADERS.RESET, Math.ceil(result.resetTime / 1000).toString());
-      }
-
-      if (!result.allowed) {
-        return createRateLimitResponse(c, opts.message, result, opts.standardHeaders);
-      }
-
-      await next();
+      result = await limiter.isAllowed(opts.keyGenerator(c));
     } catch (error) {
+      if (opts.failClosed) {
+        logRedisUnavailableOnce('Redis rate limiter unavailable, refusing fail-closed requests', error);
+        return c.json(
+          {
+            success: false,
+            error: 'Rate limit could not be checked. Please try again later.',
+            code: ErrorCodes.RATE_LIMIT_UNAVAILABLE
+          },
+          503
+        );
+      }
+
       logRedisUnavailableOnce('Redis rate limiter unavailable, allowing requests without rate limiting', error);
-      await next();
+      return await next();
     }
+
+    if (opts.standardHeaders) {
+      setRateLimitHeaders(c, maxRequests, result);
+    }
+
+    if (opts.legacyHeaders) {
+      c.header(RATE_LIMIT_HEADERS.LIMIT, maxRequests.toString());
+      c.header(RATE_LIMIT_HEADERS.REMAINING, result.remaining.toString());
+      c.header(RATE_LIMIT_HEADERS.RESET, Math.ceil(result.resetTime / 1000).toString());
+    }
+
+    if (!result.allowed) {
+      return createRateLimitResponse(c, opts.message, result, opts.standardHeaders);
+    }
+
+    await next();
   };
 };
 

@@ -45,7 +45,7 @@ The MCP package never decides permissions.
 
 ### API access
 
-MCP keys (`cio_mcp_...`) don't get `public_api:*`. They can call only the audience, team, cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their `audience:*`, `team:*`, `cohort:*`, `course:member:*`, `course:certificate:*`, `course:read`/`course:write`, `course:exercise:*`, `course:submission:*`, `course:student:write`, and `media:write` scopes, plus the analytics GET endpoints (`/analytics/**` and `/courses/{courseId}/analytics/**`) through `analytics:read`. Every other endpoint returns 403 for them.
+MCP keys (`cio_mcp_...`) don't get `public_api:*`. They can call only the audience, team, organization email template, cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their `audience:*`, `team:*`, `organization:*`, `cohort:*`, `course:member:*`, `course:certificate:*`, `course:read`/`course:write`, `course:exercise:*`, `course:submission:*`, `course:student:write`, and `media:write` scopes, plus the analytics GET endpoints (`/analytics/**` and `/courses/{courseId}/analytics/**`) through `analytics:read`. Every other endpoint returns 403 for them.
 
 ## Required Environment Variables
 
@@ -386,6 +386,22 @@ These call the public API and need the key's `audience:read` / `audience:write` 
 - `update_audience_member` and `update_team_member` take `name` to set a joined member's full name. The profile is shared, so the name changes in every organization that person belongs to. Email, password, username and avatar stay with the person. On a member who has not accepted their invite yet, `update_audience_member` takes `email` to correct the address instead.
 - `remove_audience_member` deletes the organization membership; the person keeps their account. Inviting and removing team members is not available yet.
 - `list_audience_members` and `list_team_members` take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
+
+Email template tools:
+
+- `list_email_templates`
+- `get_email_template`
+- `update_email_template`
+- `reset_email_template`
+- `send_test_email_template`
+
+These call the public API and need the key's `organization:read` / `organization:write` scopes, which MCP keys have by default. Existing MCP keys that still have the default scope set were given them too. They need the key creator to be an org admin, the same as the dashboard's Emails settings page:
+
+- `list_email_templates` returns every student email in one `locale` (default `en`) without its body. `get_email_template` returns the body, the allowed `variables`, and whether the email may link to `{{action_url}}`.
+- `update_email_template` takes `content` and an optional `subject` (omit to keep it, `null` for the default). It rejects placeholders the email does not allow and removes unsafe HTML.
+- `reset_email_template` deletes the saved version and returns the default. It succeeds even when nothing was saved.
+- `send_test_email_template` sends up to 5 addresses a test with sample values. Without `content` or `subject` it tests the current template. The organization gets 5 test sends per 15 minutes, shared with the dashboard.
+- Saving, resetting and test sends need a paid plan (403 `UPGRADE_REQUIRED` otherwise). Students only get a saved template on a paid plan, and a non-English one only when the organization enforces that language.
 
 ## Draft Model
 

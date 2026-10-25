@@ -288,6 +288,13 @@
       "when": 1792952625947,
       "tag": "0040_groupmember_completed_at",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1792960500700,
+      "tag": "0041_mcp_key_organization_scopes",
+      "breakpoints": true
     }
   ]
 }
