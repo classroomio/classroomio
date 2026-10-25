@@ -46,7 +46,8 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
       { tag: 'Exercise Sections', label: 'Exercise Sections' },
       { tag: 'Exercise Templates', label: 'Templates' },
       { tag: 'Course Submissions', label: 'Submissions' },
-      { tag: 'Course Certificates', label: 'Certificates' }
+      { tag: 'Course Certificates', label: 'Certificates' },
+      { tag: 'Course Templates', label: 'Course Templates' }
     ]
   },
   {
