@@ -1,8 +1,17 @@
 ---
 title: 'Create and manage API keys'
-description: 'This ClassroomIO Help Center guide is still being worked on.'
+description: 'Create, rotate, and revoke organization keys for the public API.'
+last_reviewed: '2026-10-21'
 ---
 
-:::info[This guide is coming soon]
-Bookmark this page and check back for the complete instructions.
-:::
+Organization administrators with public API access manage credentials under **Automation → API**. If a plan or license upgrade banner appears, API-key creation is unavailable until that requirement is met.
+
+![API keys page showing a masked active key](./images/create-and-manage-api-keys/overview.webp)
+
+1. Select **Generate key**, give it a name that identifies the application, and save.
+2. Copy the revealed secret immediately into a server-side secret manager. The key list later shows only a masked prefix, status, creation date, and last-use date.
+3. Use it to [authenticate an API request](/integrations-and-automation/authenticate-an-api-request) and verify the application works.
+
+Keep separate keys for separate applications. For a planned replacement, create a new key, update the application, test requests with the new key, and then revoke the old key. **Rotate** replaces the existing key's secret immediately, so use it when immediate invalidation is required; requests using the old secret fail until the application is updated. To stop access, choose **Revoke** and confirm. A lost secret cannot be retrieved, so replace or rotate it.
+
+API keys are tied to the organization that issued them. Do not embed one in browser code, public repositories, screenshots, or support messages. Review the [API reference](https://classroomio.com/docs/api) for supported endpoints and request schemas.

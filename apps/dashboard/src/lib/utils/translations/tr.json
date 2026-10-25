@@ -1424,6 +1424,11 @@
     "common": {
       "not_available": "N/A"
     },
+    "upload": {
+      "videos": "Video yükle",
+      "documents": "Belge yükle",
+      "more_options": "Diğer yükleme seçenekleri"
+    },
     "storage": {
       "total_bytes": "Toplam Depolama",
       "internal_bytes": "Dahili Depolama",
@@ -5222,6 +5227,7 @@
     "update": "Güncelleme",
     "update_failed": "Güncelleme başarısız oldu",
     "media_manager": {
+      "video_added": "Video kitaplığınıza eklendi",
       "list_failed": "Medya varlıkları yüklenemedi",
       "storage_failed": "Depolama özeti yüklenemedi",
       "create_failed": "Medya varlığı oluşturulamadı",

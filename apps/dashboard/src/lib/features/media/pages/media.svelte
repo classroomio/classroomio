@@ -163,7 +163,7 @@
     await mediaApi.getStorageSummary();
   }
 
-  async function refreshMediaData() {
+  export async function refreshMediaData() {
     const pagesToLoad = Math.max(pagination?.page ?? 1, 1);
     await Promise.all([loadAssetPages(pagesToLoad), refreshStorageSummary()]);
   }

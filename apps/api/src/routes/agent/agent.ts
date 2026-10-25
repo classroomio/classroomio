@@ -60,7 +60,7 @@ import { AGENT_MODELS, DEFAULT_PICKER_MODEL_ID } from '@cio/utils/agent-models';
 import { buildSystemPrompt, buildContextMessage } from '@cio/ai-assistant/prompt';
 import { trackAgentEvent, AgentEvent } from '@cio/core/utils/tinybird';
 import { redis } from '@cio/core/utils/redis/redis';
-import { db } from '@cio/db';
+import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { eq } from 'drizzle-orm';
 import { listCourseSections } from '@cio/core/services/course/section';
