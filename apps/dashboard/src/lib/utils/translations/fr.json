@@ -1747,6 +1747,7 @@
           "chill": "chill avec les grands",
           "add_exercise": "Partagez vos connaissances avec le monde en créant des exercices engageants. Ajoutez un exercice maintenant.",
           "all_exercises": {
+            "draft_recovery": "Un brouillon non enregistré a été trouvé pour cet exercice. Souhaitez-vous le restaurer ?",
             "remote_update": {
               "merged_title": "Modifications de l’Assistant fusionnées",
               "merged_description": "Vos modifications non enregistrées ont été conservées pendant l’ajout des modifications de l’Assistant.",

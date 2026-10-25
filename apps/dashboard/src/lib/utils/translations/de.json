@@ -1747,6 +1747,7 @@
           "chill": "Entspannen Sie sich mit den großen Jungs",
           "add_exercise": "Teilen Sie Ihr Wissen mit der Welt, indem Sie spannende Übungen erstellen. Jetzt eine Übung hinzufügen.",
           "all_exercises": {
+            "draft_recovery": "Für diese Übung wurde ein nicht gespeicherter Entwurf gefunden. Möchten Sie ihn wiederherstellen?",
             "remote_update": {
               "merged_title": "Assistant-Änderungen zusammengeführt",
               "merged_description": "Deine ungespeicherten Bearbeitungen wurden beibehalten, während die Änderungen des Assistenten hinzugefügt wurden.",

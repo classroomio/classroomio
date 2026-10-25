@@ -3010,6 +3010,7 @@
           },
           "all_exercises": {
             "heading": "Tüm Alıştırmalar",
+            "draft_recovery": "Bu alıştırma için kaydedilmemiş bir taslak bulundu. Geri yüklemek ister misiniz?",
             "notify": {
               "action": "Öğrencileri bilgilendirin",
               "sending": "Öğrencileri bilgilendiriyor…",

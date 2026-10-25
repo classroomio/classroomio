@@ -7,6 +7,7 @@
   import EyeIcon from '@lucide/svelte/icons/eye';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import { onDestroy, onMount, tick, untrack } from 'svelte';
+  import { get } from 'svelte/store';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
@@ -32,6 +33,7 @@
   import { mapZodErrorsToTranslations } from '$lib/utils/validation';
   import { transformQuestionsToApiFormat } from '$features/course/components/exercise/functions';
   import { isOrgStudent, isCourseLearnerView, isStudentExperience } from '$lib/utils/store/app';
+  import { profile } from '$lib/utils/store/user';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { getCourseProgress } from '$features/course/utils/content';
   import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
@@ -162,14 +164,15 @@
 
   function discardExerciseDraft() {
     const courseId = courseApi.course?.id;
+    const profileId = get(profile).id;
 
     if (draftSaveTimer) {
       clearTimeout(draftSaveTimer);
       draftSaveTimer = null;
     }
 
-    if (courseId) {
-      clearExerciseDraft(courseId, exerciseId);
+    if (courseId && profileId) {
+      clearExerciseDraft(courseId, exerciseId, profileId);
     }
   }
 
@@ -180,8 +183,9 @@
     if (!shouldClearDraft) return;
 
     const courseId = courseApi.course?.id;
-    if (courseId) {
-      clearExerciseDraft(courseId, exerciseId);
+    const profileId = get(profile).id;
+    if (courseId && profileId) {
+      clearExerciseDraft(courseId, exerciseId, profileId);
     }
   }
 
@@ -488,7 +492,10 @@
         if (exerciseApi.exercise) {
           hydrateExercisePageData(exerciseApi.exercise, exerciseId);
         }
-        clearExerciseDraft(courseApi.course.id, exerciseId);
+        const profileId = get(profile).id;
+        if (profileId) {
+          clearExerciseDraft(courseApi.course.id, exerciseId, profileId);
+        }
         hasUnsavedChanges = false;
         patchExerciseListItemLocally();
         if (!silent) {
@@ -519,10 +526,11 @@
     }
 
     const courseId = courseApi.course?.id;
-    if (hasUnsavedChanges && courseId && hasDirtyQuestionnaire()) {
+    const profileId = get(profile).id;
+    if (hasUnsavedChanges && courseId && profileId && hasDirtyQuestionnaire()) {
       const baseState = getExerciseServerState(exerciseId);
       if (baseState) {
-        saveExerciseDraft(courseId, exerciseId, $questionnaire, baseState);
+        saveExerciseDraft(courseId, exerciseId, profileId, $questionnaire, baseState);
       }
     }
 
@@ -541,12 +549,13 @@
   onMount(() =>
     onUpgradeCheckoutHandoff(() => {
       const courseId = courseApi.course?.id;
-      if ($isOrgStudent || !courseId || !hasDirtyQuestionnaire()) return;
+      const profileId = get(profile).id;
+      if ($isOrgStudent || !courseId || !profileId || !hasDirtyQuestionnaire()) return;
 
       const baseState = getExerciseServerState(exerciseId);
       if (!baseState) return;
 
-      saveExerciseDraft(courseId, exerciseId, $questionnaire, baseState);
+      saveExerciseDraft(courseId, exerciseId, profileId, $questionnaire, baseState);
       hasUnsavedChanges = false;
     })
   );
@@ -569,24 +578,25 @@
 
   $effect(() => {
     const courseId = courseApi.course?.id;
+    const profileId = get(profile).id;
     const state = $questionnaire;
     const hasUnresolvedDraftConflict =
       $exerciseRemoteUpdateNotice?.exerciseId === exerciseId &&
       $exerciseRemoteUpdateNotice.source === 'draft' &&
       $exerciseRemoteUpdateNotice.type === 'conflict';
-    const shouldSaveDraft = !!courseId && questionnaireHasChanges && !hasUnresolvedDraftConflict;
+    const shouldSaveDraft = !!courseId && !!profileId && questionnaireHasChanges && !hasUnresolvedDraftConflict;
 
     if (draftSaveTimer) {
       clearTimeout(draftSaveTimer);
       draftSaveTimer = null;
     }
 
-    if (!shouldSaveDraft || !courseId) return;
+    if (!shouldSaveDraft || !courseId || !profileId) return;
 
     draftSaveTimer = setTimeout(() => {
       const baseState = getExerciseServerState(exerciseId);
       if (baseState) {
-        saveExerciseDraft(courseId, exerciseId, state, baseState);
+        saveExerciseDraft(courseId, exerciseId, profileId, state, baseState);
       }
       draftSaveTimer = null;
     }, 750);

@@ -1747,6 +1747,7 @@
           "chill": "relájate con los grandes",
           "add_exercise": "Comparte tus conocimientos con el mundo creando ejercicios atractivos. Añade un ejercicio ahora.",
           "all_exercises": {
+            "draft_recovery": "Se encontró un borrador no guardado para este ejercicio. ¿Quieres restaurarlo?",
             "remote_update": {
               "merged_title": "Cambios del Asistente combinados",
               "merged_description": "Tus ediciones sin guardar se conservaron mientras se añadían los cambios del Asistente.",

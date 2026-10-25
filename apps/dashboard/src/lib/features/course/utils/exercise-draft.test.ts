@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { get } from 'svelte/store';
 
 import { questionnaire, type QuestionnaireState } from '$features/course/components/exercise/store';
-import { clearExerciseDraft, restoreExerciseDraft, saveExerciseDraft } from './exercise-draft';
+import { applyExerciseDraft, clearExerciseDraft, peekExerciseDraft, saveExerciseDraft } from './exercise-draft';
 
 function createMemoryStorage(): Storage {
   const values = new Map<string, string>();
@@ -47,26 +47,57 @@ describe('exercise drafts', () => {
     questionnaire.set(makeState('Server title'));
   });
 
-  it('restores a draft and retains it until an explicit successful save clears it', () => {
+  it('scopes drafts per profile, so one account never sees another account’s draft', () => {
     const baseState = makeState('Server title');
-    saveExerciseDraft('course-1', 'exercise-1', makeState('Unsaved title'), baseState);
+    saveExerciseDraft('course-1', 'exercise-1', 'profile-a', makeState('Unsaved title'), baseState);
 
-    expect(restoreExerciseDraft('course-1', 'exercise-1')).not.toBeNull();
+    expect(peekExerciseDraft('course-1', 'exercise-1', 'profile-b')).toBeNull();
+    expect(peekExerciseDraft('course-1', 'exercise-1', 'profile-a')).not.toBeNull();
+  });
+
+  it('peeking a draft never touches the live editor; only applying it does', () => {
+    const baseState = makeState('Server title');
+    saveExerciseDraft('course-1', 'exercise-1', 'profile-a', makeState('Unsaved title'), baseState);
+
+    expect(peekExerciseDraft('course-1', 'exercise-1', 'profile-a')).not.toBeNull();
+    expect(get(questionnaire).title).toBe('Server title');
+
+    expect(applyExerciseDraft('course-1', 'exercise-1', 'profile-a')).not.toBeNull();
+    expect(get(questionnaire).title).toBe('Unsaved title');
+  });
+
+  it('retains an applied draft until an explicit successful save clears it', () => {
+    const baseState = makeState('Server title');
+    saveExerciseDraft('course-1', 'exercise-1', 'profile-a', makeState('Unsaved title'), baseState);
+
+    expect(applyExerciseDraft('course-1', 'exercise-1', 'profile-a')).not.toBeNull();
     expect(get(questionnaire).title).toBe('Unsaved title');
 
     questionnaire.set(makeState('Server title'));
-    expect(restoreExerciseDraft('course-1', 'exercise-1')).not.toBeNull();
+    expect(peekExerciseDraft('course-1', 'exercise-1', 'profile-a')).not.toBeNull();
 
-    clearExerciseDraft('course-1', 'exercise-1');
-    expect(restoreExerciseDraft('course-1', 'exercise-1')).toBeNull();
+    clearExerciseDraft('course-1', 'exercise-1', 'profile-a');
+    expect(peekExerciseDraft('course-1', 'exercise-1', 'profile-a')).toBeNull();
+  });
+
+  it('discarding a peeked draft removes it for good, without ever applying it', () => {
+    const baseState = makeState('Server title');
+    saveExerciseDraft('course-1', 'exercise-1', 'profile-a', makeState('Unsaved title'), baseState);
+
+    expect(peekExerciseDraft('course-1', 'exercise-1', 'profile-a')).not.toBeNull();
+    clearExerciseDraft('course-1', 'exercise-1', 'profile-a');
+
+    expect(peekExerciseDraft('course-1', 'exercise-1', 'profile-a')).toBeNull();
+    expect(applyExerciseDraft('course-1', 'exercise-1', 'profile-a')).toBeNull();
+    expect(get(questionnaire).title).toBe('Server title');
   });
 
   it('restores the draft side of conflicts and offers the server version as a choice', () => {
     const baseState = makeState('Original title');
-    saveExerciseDraft('course-1', 'exercise-1', makeState('Draft title'), baseState);
+    saveExerciseDraft('course-1', 'exercise-1', 'profile-a', makeState('Draft title'), baseState);
     questionnaire.set(makeState('Assistant title'));
 
-    const restoredDraft = restoreExerciseDraft('course-1', 'exercise-1');
+    const restoredDraft = applyExerciseDraft('course-1', 'exercise-1', 'profile-a');
 
     expect(restoredDraft).toMatchObject({
       conflictCount: 1,
@@ -78,10 +109,10 @@ describe('exercise drafts', () => {
   it('restores non-conflicting draft edits alongside newer server changes', () => {
     const baseState = makeState('Original title', 'Original description');
     const draftState = makeState('Draft title', 'Original description');
-    saveExerciseDraft('course-1', 'exercise-1', draftState, baseState);
+    saveExerciseDraft('course-1', 'exercise-1', 'profile-a', draftState, baseState);
     questionnaire.set(makeState('Original title', 'Assistant description'));
 
-    expect(restoreExerciseDraft('course-1', 'exercise-1')).not.toBeNull();
+    expect(applyExerciseDraft('course-1', 'exercise-1', 'profile-a')).not.toBeNull();
     expect(get(questionnaire).title).toBe('Draft title');
     expect(get(questionnaire).description).toBe('Assistant description');
   });

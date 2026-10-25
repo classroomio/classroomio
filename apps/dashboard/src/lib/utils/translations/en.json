@@ -3002,6 +3002,7 @@
           },
           "all_exercises": {
             "heading": "All Exercise",
+            "draft_recovery": "An unsaved draft was found for this exercise. Would you like to restore it?",
             "notify": {
               "action": "Notify students",
               "sending": "Notifying students…",

@@ -1747,6 +1747,7 @@
           "chill": "hygge med de store drenge",
           "add_exercise": "Del din viden med verden ved at lave engagerende øvelser. Tilføj en øvelse nu.",
           "all_exercises": {
+            "draft_recovery": "Der blev fundet et ikke-gemt udkast til denne motion. Vil du gendanne den?",
             "remote_update": {
               "merged_title": "Assistentens ændringer er flettet",
               "merged_description": "Dine ikke-gemte ændringer blev bevaret, mens Assistentens ændringer blev tilføjet.",

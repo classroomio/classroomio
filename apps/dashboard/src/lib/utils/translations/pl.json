@@ -1747,6 +1747,7 @@
           "chill": "relaksuj się z dużymi chłopcami",
           "add_exercise": "Podziel się swoją wiedzą ze światem tworząc angażujące ćwiczenia. Dodaj teraz ćwiczenie.",
           "all_exercises": {
+            "draft_recovery": "Znaleziono niezapisaną wersję roboczą tego ćwiczenia. Czy chcesz ją przywrócić?",
             "remote_update": {
               "merged_title": "Zmiany Asystenta zostały scalone",
               "merged_description": "Twoje niezapisane zmiany zostały zachowane podczas dodawania zmian Asystenta.",

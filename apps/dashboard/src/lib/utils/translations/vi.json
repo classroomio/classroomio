@@ -1747,6 +1747,7 @@
           "chill": "thư giãn với các chàng trai lớn",
           "add_exercise": "Chia sẻ kiến thức của bạn với thế giới bằng cách tạo ra các bài tập hấp dẫn. Thêm một bài tập bây giờ.",
           "all_exercises": {
+            "draft_recovery": "Đã tìm thấy một bản nháp chưa được lưu cho bài tập này. Bạn có muốn khôi phục nó không?",
             "remote_update": {
               "merged_title": "Đã hợp nhất thay đổi của Trợ lý",
               "merged_description": "Các chỉnh sửa chưa lưu của bạn được giữ lại khi thêm thay đổi của Trợ lý.",

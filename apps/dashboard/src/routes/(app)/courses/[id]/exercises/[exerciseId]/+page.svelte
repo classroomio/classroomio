@@ -5,13 +5,16 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import * as Page from '@cio/ui/base/page';
   import { ExercisePage } from '$features/course/pages';
-  import { questionnaireMetaData, reset } from '$features/course/components/exercise/store';
+  import { questionnaire, questionnaireMetaData, reset } from '$features/course/components/exercise/store';
   import { courseApi } from '$features/course/api';
   import { isOrgStudent } from '$lib/utils/store/app';
+  import { profile } from '$lib/utils/store/user';
   import { exerciseRemoteUpdateNotice, hydrateExercisePageData } from '$features/course/utils/exercise-page-utils';
-  import { restoreExerciseDraft } from '$features/course/utils/exercise-draft';
+  import { hasQuestionnaireChanges } from '$features/course/utils/exercise-state-merge';
+  import { applyExerciseDraft, clearExerciseDraft, peekExerciseDraft } from '$features/course/utils/exercise-draft';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { t } from '$lib/utils/functions/translations';
   import { ContentType } from '@cio/utils/constants/content';
 
   let { data = $bindable() } = $props();
@@ -52,8 +55,27 @@
 
     hydrateExercisePageData(data.exercise, currentExerciseId);
 
-    // Puts back work stashed before an upgrade checkout redirect.
-    const restoredDraft = restoreExerciseDraft(data.courseId, currentExerciseId);
+    // Offers to put back work stashed before an upgrade checkout redirect, or left behind by an
+    // interrupted session. The teacher must confirm: it may be an edit they meant to abandon.
+    const profileId = get(profile).id;
+    if (!profileId) return;
+
+    const pendingDraft = peekExerciseDraft(data.courseId, currentExerciseId, profileId);
+    if (!pendingDraft) return;
+
+    if (!hasQuestionnaireChanges(pendingDraft.questionnaire, get(questionnaire))) {
+      clearExerciseDraft(data.courseId, currentExerciseId, profileId);
+      return;
+    }
+
+    const shouldRestore = window.confirm(t.get('course.navItem.lessons.exercises.all_exercises.draft_recovery'));
+
+    if (!shouldRestore) {
+      clearExerciseDraft(data.courseId, currentExerciseId, profileId);
+      return;
+    }
+
+    const restoredDraft = applyExerciseDraft(data.courseId, currentExerciseId, profileId);
     if (restoredDraft) {
       if (restoredDraft.conflictCount > 0) {
         exerciseRemoteUpdateNotice.set({
