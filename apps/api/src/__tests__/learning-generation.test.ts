@@ -17,7 +17,12 @@ vi.mock('@cio/ai-assistant/providers', () => ({
 
 import { generatePersonalLearningSession } from '@cio/core/services/personal-learning/generate-session';
 import { getCourseWithRelations } from '@cio/db/queries/course/course';
-import { recoverPersonalLearningSessions } from '@cio/db/queries/personal-learning';
+import {
+  completePersonalLearningSession,
+  markPersonalLearningSessionFailed,
+  markPersonalLearningSessionGenerating,
+  recoverPersonalLearningSessions
+} from '@cio/db/queries/personal-learning';
 import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { ROLE } from '@cio/utils/constants';
@@ -25,11 +30,11 @@ import { getCourse } from '@cio/core/services/course/course';
 
 const ownerUserId = randomUUID();
 const otherUserId = randomUUID();
-const sessionIds = [randomUUID(), randomUUID(), randomUUID()];
-const journeyIds = [randomUUID(), randomUUID(), randomUUID()];
-const courseIds = [randomUUID(), randomUUID(), randomUUID()];
-const groupIds = [randomUUID(), randomUUID(), randomUUID()];
-const conversationIds = [randomUUID(), randomUUID(), randomUUID()];
+const sessionIds = Array.from({ length: 5 }, () => randomUUID());
+const journeyIds = Array.from({ length: 5 }, () => randomUUID());
+const courseIds = Array.from({ length: 5 }, () => randomUUID());
+const groupIds = Array.from({ length: 5 }, () => randomUUID());
+const conversationIds = Array.from({ length: 5 }, () => randomUUID());
 const sources = [
   {
     url: 'https://example.edu/photography',
@@ -96,7 +101,7 @@ describe('personal learning session generation', () => {
         courseId: courseIds[index],
         conversationId: conversationIds[index],
         goal: 'Learn basic photography',
-        language: 'en',
+        language: index === 3 ? 'it' : index === 4 ? 'tr' : 'en',
         targetStudyDays: 7,
         dailyMinutes: 30
       });
@@ -124,12 +129,8 @@ describe('personal learning session generation', () => {
     if (lessonIds.length) await db.delete(schema.lesson).where(inArray(schema.lesson.id, lessonIds));
     await db.delete(schema.groupmember).where(eq(schema.groupmember.groupId, groupIds[0]));
     await db.delete(schema.personalLearningJourney).where(eq(schema.personalLearningJourney.ownerUserId, ownerUserId));
-    await db.delete(schema.course).where(eq(schema.course.id, courseIds[0]));
-    await db.delete(schema.course).where(eq(schema.course.id, courseIds[1]));
-    await db.delete(schema.course).where(eq(schema.course.id, courseIds[2]));
-    await db.delete(schema.group).where(eq(schema.group.id, groupIds[0]));
-    await db.delete(schema.group).where(eq(schema.group.id, groupIds[1]));
-    await db.delete(schema.group).where(eq(schema.group.id, groupIds[2]));
+    await db.delete(schema.course).where(inArray(schema.course.id, courseIds));
+    await db.delete(schema.group).where(inArray(schema.group.id, groupIds));
     await db
       .delete(schema.personalLearningConversation)
       .where(eq(schema.personalLearningConversation.ownerUserId, ownerUserId));
@@ -217,6 +218,27 @@ describe('personal learning session generation', () => {
     expect(await db.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseIds[1]))).toHaveLength(0);
   });
 
+  it.each([
+    { index: 3, locale: 'it' },
+    { index: 4, locale: 'tr' }
+  ])('stores a generated lesson in the $locale locale', async ({ index, locale }) => {
+    discoverLearningSources.mockResolvedValueOnce(sources);
+    generateObject.mockResolvedValueOnce({ object: draft });
+
+    await generatePersonalLearningSession({ sessionId: sessionIds[index], attempt: 1 });
+
+    const [session] = await db
+      .select()
+      .from(schema.personalLearningSession)
+      .where(eq(schema.personalLearningSession.id, sessionIds[index]));
+    const [lessonLanguage] = await db
+      .select()
+      .from(schema.lessonLanguage)
+      .where(eq(schema.lessonLanguage.lessonId, session.lessonId!));
+
+    expect(lessonLanguage.locale).toBe(locale);
+  });
+
   it('loads a private course group without an organization for the journey owner', async () => {
     const courseWithRelations = await getCourseWithRelations(courseIds[0], undefined, ownerUserId);
 
@@ -272,5 +294,58 @@ describe('personal learning session generation', () => {
     });
     expect(result.status).toBe('ready');
     expect(await db.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseIds[2]))).toHaveLength(1);
+  });
+
+  it('keeps a completed session ready when a late generation failure arrives', async () => {
+    const [readySession] = await db
+      .select()
+      .from(schema.personalLearningSession)
+      .where(eq(schema.personalLearningSession.id, sessionIds[2]));
+
+    const failedSession = await markPersonalLearningSessionFailed(
+      sessionIds[2],
+      readySession.attempt,
+      'late failure',
+      true
+    );
+    const [sessionAfterFailure] = await db
+      .select()
+      .from(schema.personalLearningSession)
+      .where(eq(schema.personalLearningSession.id, sessionIds[2]));
+    const staleCompletion = await completePersonalLearningSession({
+      sessionId: sessionIds[2],
+      attempt: readySession.attempt - 1,
+      title: 'Stale lesson',
+      content: '<p>Stale content</p>',
+      sourceManifest: [],
+      generationMeta: {}
+    });
+
+    await db
+      .update(schema.personalLearningSession)
+      .set({ status: 'sourcing', attempt: readySession.attempt + 1 })
+      .where(eq(schema.personalLearningSession.id, sessionIds[2]));
+    const staleGenerating = await markPersonalLearningSessionGenerating(sessionIds[2], readySession.attempt);
+    await db
+      .update(schema.personalLearningSession)
+      .set({ status: 'generating' })
+      .where(eq(schema.personalLearningSession.id, sessionIds[2]));
+    const staleFailure = await markPersonalLearningSessionFailed(
+      sessionIds[2],
+      readySession.attempt,
+      'stale failure',
+      true
+    );
+    const [sessionAfterStaleFailure] = await db
+      .select()
+      .from(schema.personalLearningSession)
+      .where(eq(schema.personalLearningSession.id, sessionIds[2]));
+
+    expect(failedSession).toBeNull();
+    expect(sessionAfterFailure).toMatchObject({ status: 'ready', lessonId: readySession.lessonId });
+    expect(staleCompletion).toBeNull();
+    expect(staleGenerating).toBeNull();
+    expect(staleFailure).toBeNull();
+    expect(sessionAfterStaleFailure).toMatchObject({ status: 'generating', attempt: readySession.attempt + 1 });
   });
 });

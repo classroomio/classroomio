@@ -8,9 +8,85 @@ import {
   markPersonalLearningSessionFailed
 } from '@cio/db/queries/personal-learning';
 import { AppError } from '@cio/utils/errors';
+import { EMAIL_LOCALES, type EmailLocale } from '@cio/utils/email';
 
 import { discoverLearningSources } from './source-discovery';
 import { LearningSessionDraftSchema, validateSessionDraft, validateSourceUrl } from './source-validation';
+
+const LESSON_SECTION_LABELS = {
+  en: {
+    objectives: 'Learning objectives',
+    activities: 'Activities',
+    understanding: 'Check your understanding',
+    sources: 'Verified sources'
+  },
+  hi: {
+    objectives: 'सीखने के उद्देश्य',
+    activities: 'गतिविधियाँ',
+    understanding: 'अपनी समझ जाँचें',
+    sources: 'सत्यापित स्रोत'
+  },
+  fr: {
+    objectives: 'Objectifs d’apprentissage',
+    activities: 'Activités',
+    understanding: 'Vérifiez votre compréhension',
+    sources: 'Sources vérifiées'
+  },
+  pt: {
+    objectives: 'Objetivos de aprendizagem',
+    activities: 'Atividades',
+    understanding: 'Verifique sua compreensão',
+    sources: 'Fontes verificadas'
+  },
+  de: {
+    objectives: 'Lernziele',
+    activities: 'Aktivitäten',
+    understanding: 'Überprüfen Sie Ihr Verständnis',
+    sources: 'Verifizierte Quellen'
+  },
+  vi: {
+    objectives: 'Mục tiêu học tập',
+    activities: 'Hoạt động',
+    understanding: 'Kiểm tra mức độ hiểu của bạn',
+    sources: 'Nguồn đã xác minh'
+  },
+  ru: {
+    objectives: 'Цели обучения',
+    activities: 'Задания',
+    understanding: 'Проверьте понимание',
+    sources: 'Проверенные источники'
+  },
+  es: {
+    objectives: 'Objetivos de aprendizaje',
+    activities: 'Actividades',
+    understanding: 'Comprueba lo que has aprendido',
+    sources: 'Fuentes verificadas'
+  },
+  pl: {
+    objectives: 'Cele nauki',
+    activities: 'Aktywności',
+    understanding: 'Sprawdź swoją wiedzę',
+    sources: 'Zweryfikowane źródła'
+  },
+  da: {
+    objectives: 'Læringsmål',
+    activities: 'Aktiviteter',
+    understanding: 'Tjek din forståelse',
+    sources: 'Bekræftede kilder'
+  },
+  tr: {
+    objectives: 'Öğrenme hedefleri',
+    activities: 'Etkinlikler',
+    understanding: 'Anladığınızı kontrol edin',
+    sources: 'Doğrulanmış kaynaklar'
+  },
+  it: {
+    objectives: 'Obiettivi di apprendimento',
+    activities: 'Attività',
+    understanding: 'Verifica la comprensione',
+    sources: 'Fonti verificate'
+  }
+} satisfies Record<EmailLocale, { objectives: string; activities: string; understanding: string; sources: string }>;
 
 function escapeHtml(value: string): string {
   return value.replace(
@@ -19,7 +95,9 @@ function escapeHtml(value: string): string {
   );
 }
 
-function buildLessonHtml(draft: ReturnType<typeof validateSessionDraft>): string {
+function buildLessonHtml(draft: ReturnType<typeof validateSessionDraft>, language: string): string {
+  const lessonLocale = EMAIL_LOCALES.find((supportedLocale) => supportedLocale === language.slice(0, 2)) ?? 'en';
+  const labels = LESSON_SECTION_LABELS[lessonLocale];
   const objectives = draft.objectives.map((objective) => `<li>${escapeHtml(objective)}</li>`).join('');
   const activities = draft.activities
     .map(
@@ -32,7 +110,7 @@ function buildLessonHtml(draft: ReturnType<typeof validateSessionDraft>): string
     .map((citation) => `<li><a href="${escapeHtml(citation.url)}">${escapeHtml(citation.title)}</a></li>`)
     .join('');
 
-  return `<h2>Learning objectives</h2><ul>${objectives}</ul><h2>Activities</h2>${activities}<h2>Check your understanding</h2><ul>${questions}</ul><h2>Verified sources</h2><ul>${citations}</ul>`;
+  return `<h2>${labels.objectives}</h2><ul>${objectives}</ul><h2>${labels.activities}</h2>${activities}<h2>${labels.understanding}</h2><ul>${questions}</ul><h2>${labels.sources}</h2><ul>${citations}</ul>`;
 }
 
 function errorCode(error: unknown): string {
@@ -57,7 +135,7 @@ export async function generatePersonalLearningSession(input: { sessionId: string
       language: context.journey.language,
       userUrls: context.journey.sourceUrls
     });
-    const generatingSession = await markPersonalLearningSessionGenerating(input.sessionId);
+    const generatingSession = await markPersonalLearningSessionGenerating(input.sessionId, claimedSession.attempt);
     if (!generatingSession) return { status: 'pending' as const };
 
     const providerConfig = pickAnyConfiguredProvider();
@@ -105,8 +183,9 @@ export async function generatePersonalLearningSession(input: { sessionId: string
     }));
     const completed = await completePersonalLearningSession({
       sessionId: input.sessionId,
+      attempt: claimedSession.attempt,
       title: draft.title,
-      content: buildLessonHtml(draft),
+      content: buildLessonHtml(draft, context.journey.language),
       sourceManifest,
       generationMeta: {
         model: modelId,
@@ -122,7 +201,7 @@ export async function generatePersonalLearningSession(input: { sessionId: string
     const failureCode = errorCode(error);
     const isFinalAttempt =
       input.attempt >= 3 || failureCode === 'NO_VERIFIABLE_SOURCE' || failureCode === 'LEARNING_SOURCE_QUOTA_EXCEEDED';
-    await markPersonalLearningSessionFailed(input.sessionId, failureCode, isFinalAttempt);
+    await markPersonalLearningSessionFailed(input.sessionId, claimedSession.attempt, failureCode, isFinalAttempt);
     throw error;
   }
 }

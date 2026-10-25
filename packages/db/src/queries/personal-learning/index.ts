@@ -1,6 +1,7 @@
 import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { ROLE } from '@cio/utils/constants';
+import { EMAIL_LOCALES } from '@cio/utils/email';
 import { generateSlug } from '@cio/utils/functions/slug';
 import { and, eq, inArray, lt, sql } from 'drizzle-orm';
 
@@ -377,17 +378,28 @@ export async function claimPersonalLearningSession(sessionId: string) {
   return session ?? null;
 }
 
-export async function markPersonalLearningSessionGenerating(sessionId: string) {
+export async function markPersonalLearningSessionGenerating(sessionId: string, expectedAttempt: number) {
   const [session] = await db
     .update(schema.personalLearningSession)
     .set({ status: 'generating', updatedAt: new Date().toISOString() })
-    .where(and(eq(schema.personalLearningSession.id, sessionId), eq(schema.personalLearningSession.status, 'sourcing')))
+    .where(
+      and(
+        eq(schema.personalLearningSession.id, sessionId),
+        eq(schema.personalLearningSession.attempt, expectedAttempt),
+        eq(schema.personalLearningSession.status, 'sourcing')
+      )
+    )
     .returning();
 
   return session ?? null;
 }
 
-export async function markPersonalLearningSessionFailed(sessionId: string, failureCode: string, finalAttempt: boolean) {
+export async function markPersonalLearningSessionFailed(
+  sessionId: string,
+  expectedAttempt: number,
+  failureCode: string,
+  finalAttempt: boolean
+) {
   const [session] = await db
     .update(schema.personalLearningSession)
     .set({
@@ -395,7 +407,13 @@ export async function markPersonalLearningSessionFailed(sessionId: string, failu
       failureCode: failureCode.slice(0, 64),
       updatedAt: new Date().toISOString()
     })
-    .where(eq(schema.personalLearningSession.id, sessionId))
+    .where(
+      and(
+        eq(schema.personalLearningSession.id, sessionId),
+        eq(schema.personalLearningSession.attempt, expectedAttempt),
+        inArray(schema.personalLearningSession.status, ['sourcing', 'generating'])
+      )
+    )
     .returning();
 
   return session ?? null;
@@ -407,6 +425,7 @@ export async function completePersonalLearningSession(input: {
   content: string;
   sourceManifest: schema.PersonalLearningSource[];
   generationMeta: schema.PersonalLearningGenerationMeta;
+  attempt: number;
 }) {
   return db.transaction(async (tx) => {
     const [session] = await tx
@@ -416,6 +435,7 @@ export async function completePersonalLearningSession(input: {
       .for('update')
       .limit(1);
     if (!session) return null;
+    if (session.attempt !== input.attempt) return null;
     if (session.status === 'ready' && session.lessonId) return { session, lessonId: session.lessonId };
     if (session.status !== 'generating') return null;
 
@@ -426,9 +446,7 @@ export async function completePersonalLearningSession(input: {
       .limit(1);
     if (!journey) return null;
 
-    const lessonLanguage = ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da'].find(
-      (supportedLocale) => supportedLocale === journey.language.slice(0, 2)
-    ) as 'en' | 'hi' | 'fr' | 'pt' | 'de' | 'vi' | 'ru' | 'es' | 'pl' | 'da' | undefined;
+    const lessonLanguage = EMAIL_LOCALES.find((supportedLocale) => supportedLocale === journey.language.slice(0, 2));
 
     const [lesson] = await tx
       .insert(schema.lesson)

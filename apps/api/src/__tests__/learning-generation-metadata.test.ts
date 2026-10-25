@@ -51,7 +51,7 @@ describe('personal learning generation metadata', () => {
       },
       courseTitle: 'Derivatives'
     });
-    claimPersonalLearningSession.mockResolvedValue({ id: 'session-1', status: 'sourcing' });
+    claimPersonalLearningSession.mockResolvedValue({ id: 'session-1', status: 'sourcing', attempt: 1 });
     markPersonalLearningSessionGenerating.mockResolvedValue({ id: 'session-1', status: 'generating' });
     discoverLearningSources.mockResolvedValue([
       {
@@ -87,7 +87,7 @@ describe('personal learning generation metadata', () => {
     await generatePersonalLearningSession({ sessionId: 'session-1', attempt: 1 });
 
     expect(claimPersonalLearningSession).toHaveBeenCalledWith('session-1');
-    expect(markPersonalLearningSessionGenerating).toHaveBeenCalledWith('session-1');
+    expect(markPersonalLearningSessionGenerating).toHaveBeenCalledWith('session-1', 1);
     expect(markPersonalLearningSessionGenerating.mock.invocationCallOrder[0]).toBeGreaterThan(
       discoverLearningSources.mock.invocationCallOrder[0]
     );
@@ -96,6 +96,7 @@ describe('personal learning generation metadata', () => {
     );
 
     const completionInput = completePersonalLearningSession.mock.calls[0]?.[0];
+    expect(completionInput.attempt).toBe(1);
     expect(completionInput.generationMeta).toMatchObject({
       model: 'kr/claude-sonnet-4.5',
       promptVersion: 'personal-learning-session-v2'
@@ -135,6 +136,27 @@ describe('personal learning generation metadata', () => {
       code: 'LEARNING_SOURCE_QUOTA_EXCEEDED'
     });
 
-    expect(markPersonalLearningSessionFailed).toHaveBeenCalledWith('session-1', 'LEARNING_SOURCE_QUOTA_EXCEEDED', true);
+    expect(markPersonalLearningSessionFailed).toHaveBeenCalledWith(
+      'session-1',
+      1,
+      'LEARNING_SOURCE_QUOTA_EXCEEDED',
+      true
+    );
+  });
+
+  it('renders lesson section headings in the journey language', async () => {
+    const context = await getPersonalLearningSessionContext('session-1');
+    getPersonalLearningSessionContext.mockResolvedValueOnce({
+      ...context,
+      journey: { ...context.journey, language: 'fr' }
+    });
+
+    await generatePersonalLearningSession({ sessionId: 'session-1', attempt: 1 });
+
+    const completionInput = completePersonalLearningSession.mock.calls[0]?.[0];
+    expect(completionInput.content).toContain('<h2>Objectifs d’apprentissage</h2>');
+    expect(completionInput.content).toContain('<h2>Activités</h2>');
+    expect(completionInput.content).toContain('<h2>Vérifiez votre compréhension</h2>');
+    expect(completionInput.content).toContain('<h2>Sources vérifiées</h2>');
   });
 });

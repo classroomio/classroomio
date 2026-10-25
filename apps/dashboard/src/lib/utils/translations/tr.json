@@ -6394,15 +6394,55 @@
     "close": "Kapat"
   },
   "personalLearning": {
+    "title": "Kişisel öğrenme",
+    "subtitle": "Bir soru sorun, öğrenme planını keşfedin ve hazır olduğunuzda özel bir kurs oluşturun.",
+    "chat": {
+      "heading": "Ne öğrenmek istiyorsunuz?",
+      "description": "Önce yararlı bir yanıt alın. Kurs oluşturmak her zaman isteğe bağlıdır.",
+      "placeholder": "Bir soru sorun veya öğrenmek istediğiniz bir beceriyi açıklayın…",
+      "send": "Gönder",
+      "thinking": "Yanıt hazırlanıyor…"
+    },
     "offer": {
-      "goal_label": "Kursun hangi konuya odaklanmasını istersiniz?"
+      "heading": "Hedefinize uygun bir öğrenme planı",
+      "goal_label": "Kursun hangi konuya odaklanmasını istersiniz?",
+      "days_label": "Kaç gün öğrenmek istiyorsunuz?",
+      "days_unit": "gün",
+      "minutes_label": "Her gün çalışma süresi",
+      "minutes_unit": "dk/gün",
+      "consent": "Bu hedef için özel bir kurs oluşturulmasını ve doğrulanmış kaynaklar kullanılarak ilk dersinin hazırlanmasını kabul ediyorum.",
+      "disclaimer": "Süre, öğrenme hedefi için bir planlamadır; ustalık garantisi değildir. Sonraki dersler yalnızca siz istediğinizde oluşturulur.",
+      "accept": "Kabul et ve özel kursumu oluştur",
+      "dismiss": "Belki sonra"
+    },
+    "course": {
+      "private_label": "Özel kurs",
+      "plan_summary": "{days} öğrenme günü · günde {minutes} dakika"
     },
     "session": {
+      "loading": "Öğrenme planınız yükleniyor…",
+      "title": "Ders {number}",
       "status": {
-        "sourcing": "Kaynaklar aranıyor"
+        "queued": "Başlaması bekleniyor",
+        "sourcing": "Kaynaklar aranıyor",
+        "generating": "Ders hazırlanıyor",
+        "ready": "Öğrenmeye hazır",
+        "failed": "İlgilenilmesi gerekiyor"
       },
       "progress": "İlk dersiniz hazırlanıyor…",
-      "source_quota_copy": "Günlük kaynak sınırına ulaşıldı. Herkese açık bir URL aramayı atlar ancak kaynak getirme kotasını kullanır; bu kota da dolduysa yarın tekrar deneyin."
+      "failed_copy": "Yeterli kaynak materyalini doğrulayamadık. Yeniden denemek için herkese açık bir URL ekleyin.",
+      "source_quota_copy": "Günlük kaynak sınırına ulaşıldı. Herkese açık bir URL aramayı atlar ancak kaynak getirme kotasını kullanır; bu kota da dolduysa yarın tekrar deneyin.",
+      "ready_copy": "1. ders hazır. Kursunuzda hâlâ yalnızca bu ders bulunuyor.",
+      "source_url_label": "Herkese açık öğrenme kaynağı URL'si",
+      "source_url_placeholder": "https://university.edu/learning-resource",
+      "retry": "Bu kaynakla yeniden dene",
+      "open_lesson": "1. dersi aç"
+    },
+    "tutor": {
+      "placeholder": "1. ders hakkında bir soru sorun…"
+    },
+    "errors": {
+      "request": "İstek tamamlanmadı. Lütfen tekrar deneyin."
     }
   }
 }

@@ -6384,15 +6384,55 @@
     "close": "Chiudi"
   },
   "personalLearning": {
+    "title": "Apprendimento personale",
+    "subtitle": "Fai una domanda, esplora un piano di apprendimento e crea un corso privato quando vuoi.",
+    "chat": {
+      "heading": "Che cosa vuoi imparare?",
+      "description": "Ricevi prima una risposta utile. Creare un corso è sempre facoltativo.",
+      "placeholder": "Fai una domanda o descrivi un'abilità che vuoi imparare…",
+      "send": "Invia",
+      "thinking": "Sto preparando una risposta…"
+    },
     "offer": {
-      "goal_label": "Su cosa vuoi che si concentri il corso?"
+      "heading": "Un piano di apprendimento adatto al tuo obiettivo",
+      "goal_label": "Su cosa vuoi che si concentri il corso?",
+      "days_label": "Quanti giorni vuoi dedicare all'apprendimento?",
+      "days_unit": "giorni",
+      "minutes_label": "Tempo di studio al giorno",
+      "minutes_unit": "min/giorno",
+      "consent": "Acconsento alla creazione di un corso privato e alla generazione della prima lezione con fonti verificate per questo obiettivo.",
+      "disclaimer": "La durata è un obiettivo di pianificazione, non una promessa di padronanza. Le lezioni successive vengono create solo su tua richiesta.",
+      "accept": "Accetta e crea il mio corso privato",
+      "dismiss": "Forse più tardi"
+    },
+    "course": {
+      "private_label": "Corso privato",
+      "plan_summary": "{days} giorni di apprendimento · {minutes} minuti al giorno"
     },
     "session": {
+      "loading": "Caricamento del tuo piano di apprendimento…",
+      "title": "Lezione {number}",
       "status": {
-        "sourcing": "Ricerca delle fonti"
+        "queued": "In attesa di iniziare",
+        "sourcing": "Ricerca delle fonti",
+        "generating": "Preparazione della lezione",
+        "ready": "Pronto per imparare",
+        "failed": "Richiede attenzione"
       },
       "progress": "La prima lezione è in preparazione…",
-      "source_quota_copy": "È stato raggiunto il limite giornaliero delle fonti. Un URL pubblico evita la ricerca ma usa comunque la quota di recupero; se anche questa è esaurita, riprova domani."
+      "failed_copy": "Non siamo riusciti a verificare materiale sufficiente. Aggiungi un URL pubblico per riprovare.",
+      "source_quota_copy": "È stato raggiunto il limite giornaliero delle fonti. Un URL pubblico evita la ricerca ma usa comunque la quota di recupero; se anche questa è esaurita, riprova domani.",
+      "ready_copy": "La lezione 1 è pronta. Il corso contiene ancora solo questa lezione.",
+      "source_url_label": "URL di una fonte di apprendimento pubblica",
+      "source_url_placeholder": "https://university.edu/learning-resource",
+      "retry": "Riprova con questa fonte",
+      "open_lesson": "Apri la lezione 1"
+    },
+    "tutor": {
+      "placeholder": "Fai una domanda sulla lezione 1…"
+    },
+    "errors": {
+      "request": "La richiesta non è stata completata. Riprova."
     }
   }
 }
