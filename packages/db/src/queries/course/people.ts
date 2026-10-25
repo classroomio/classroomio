@@ -553,8 +553,6 @@ export async function deleteCourseMember(courseId: string, memberId: string): Pr
       }
 
       await tx.delete(schema.questionAnswer).where(eq(schema.questionAnswer.groupMemberId, memberId));
-      await tx.delete(schema.appsPollSubmission).where(eq(schema.appsPollSubmission.selectedById, memberId));
-
       const [deleted] = await tx
         .delete(schema.groupmember)
         .where(and(eq(schema.groupmember.id, memberId), eq(schema.groupmember.groupId, member.groupId)))

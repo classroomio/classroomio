@@ -1,4 +1,5 @@
 import { env } from '@cio/core/config/env';
+import { capturePlanLimitReached } from '@cio/core/services/posthog';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   countActiveOrganizationApiKeys,
@@ -82,6 +83,15 @@ export async function assertOrganizationAutomationKeyCreationAllowed(
   const activeKeys = await countActiveOrganizationApiKeys(organizationId, type);
 
   if (activeKeys >= limits.maxActiveKeys) {
+    capturePlanLimitReached({
+      orgId: organizationId,
+      limitType: 'automation_keys',
+      plan: planName,
+      limit: limits.maxActiveKeys,
+      current: activeKeys,
+      blocked: true
+    });
+
     throw new AppError(
       `Your plan allows up to ${limits.maxActiveKeys} active MCP key${limits.maxActiveKeys === 1 ? '' : 's'}`,
       ErrorCodes.AUTOMATION_KEY_LIMIT_EXCEEDED,

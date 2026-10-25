@@ -73,10 +73,14 @@ const ORG_COURSES_PAGE_SIZE = 6;
 export async function createOrg(profileId: string, data: { name: string; siteName: string }) {
   try {
     // Reuse existing function from onboarding service
-    return await createOrganizationWithOwner(profileId, {
-      orgName: data.name,
-      siteName: data.siteName
-    });
+    return await createOrganizationWithOwner(
+      profileId,
+      {
+        orgName: data.name,
+        siteName: data.siteName
+      },
+      'add_org'
+    );
   } catch (error) {
     // Re-throw AppError as-is
     if (error instanceof AppError) {
@@ -829,7 +833,16 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       }
     }
 
-    const organization = await updateOrganization(orgId, data);
+    let updateData = data;
+
+    if (data.customization) {
+      const apps = { ...data.customization.apps };
+      Reflect.deleteProperty(apps, 'poll');
+      const customization = { ...data.customization, apps };
+      updateData = { ...data, customization };
+    }
+
+    const organization = await updateOrganization(orgId, updateData);
     if (!organization) {
       throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
     }

@@ -6,6 +6,7 @@ import type {
 } from '@cio/utils/validation/public-api';
 
 import { createStudentInvite, listPaginatedStudentInvites, revokeStudentInvite } from '@api/services/course/invite';
+import type { TEventSource } from '@cio/core/services/posthog';
 import {
   assertAutomationActor,
   assertCourseBelongsToOrganization,
@@ -28,13 +29,14 @@ export async function createCourseInviteService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseInviteParam,
-  payload: TPublicApiCreateCourseInvite
+  payload: TPublicApiCreateCourseInvite,
+  source: TEventSource = 'public_api'
 ) {
   assertAutomationActor(actorId);
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCourseTeamMemberOrOrgAdmin(params.courseId, actorId);
 
-  return createStudentInvite(params.courseId, actorId, payload);
+  return createStudentInvite(params.courseId, actorId, payload, source);
 }
 
 export async function revokeCourseInviteService(

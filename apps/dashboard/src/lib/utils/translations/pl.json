@@ -36,7 +36,8 @@
         "title": "Otwierasz swoją akademię…",
         "caption": "Przygotowujemy Twoje kursy, uczniów i ustawienia."
       }
-    }
+    },
+    "back": "Powrót"
   },
   "validations": {
     "generic": {
@@ -393,17 +394,6 @@
       "error_fetching": "Pobieranie ćwiczeń nie powiodło się. Załaduj stronę ponownie",
       "passed_requires_points": "Ukończenie przez zaliczenie wymaga co najmniej jednego dostępnego punktu.",
       "draft_restored": "Przywróciliśmy niezapisane zmiany, które pozostawiłeś"
-    },
-    "poll": {
-      "info": {
-        "not_published": "Ankieta nie została jeszcze opublikowana",
-        "vote_once": "Można głosować tylko raz"
-      },
-      "error": {
-        "creating_poll": "Wystąpił błąd podczas tworzenia ankiety",
-        "updating_poll": "Wystąpił błąd podczas aktualizowania stanu ankiety",
-        "submitting_poll": "Wystąpił błąd podczas przesyłania ankiety"
-      }
     },
     "media_manager": {
       "video_added": "Film dodany do biblioteki",
@@ -1819,34 +1809,6 @@
           },
           "by_author": "Autor: {name}",
           "empty": "Brak wersji"
-        },
-        "poll": {
-          "voted": "Zagłosowano",
-          "created_by": "Stworzony przez",
-          "status": "Status",
-          "draft": "Wersja robocza",
-          "publish": "Publikuj",
-          "expiration": "Wygaśnięcie",
-          "total_voted": "Całkowita liczba głosów",
-          "responses": "Odpowiedzi",
-          "expires": "Wygasa",
-          "today": "Dzisiaj",
-          "back": "Powrót",
-          "result": "Wynik",
-          "delete": "Usuń",
-          "create_poll": "Utwórz ankietę",
-          "question": "Pytanie",
-          "options": "Opcje",
-          "option_label": "Etykieta opcji",
-          "cancel": "Anuluj",
-          "poll_question": "Pytanie w ankiecie"
-        },
-        "polls": {
-          "title": "Ankieta",
-          "active_polls": "Aktywne ankiety",
-          "expired_polls": "Wygasłe ankiety",
-          "loading": "Ładowanie...",
-          "no_polls": "Brak ankiet do wyświetlenia"
         },
         "comments": {
           "title": "Komentarze",
@@ -3370,7 +3332,6 @@
         "save": "Zapisz zmiany",
         "apps": {
           "title": "Aplikacje",
-          "poll": "Ankieta",
           "live_comment": "Komentarze na żywo"
         },
         "course": {
