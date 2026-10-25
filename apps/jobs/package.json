@@ -29,6 +29,7 @@
     "start:agent-course-generation": "node dist/workers/agent-course-generation.js",
     "start:audience": "node dist/workers/audience.js",
     "lint": "eslint . --ext .ts",
+    "test": "vitest run",
     "format": "prettier --write .",
     "dev:media-hls": "tsx watch src/workers/media-hls.ts",
     "start:media-hls": "node dist/workers/media-hls.js"
@@ -52,6 +53,7 @@
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
     "typescript": "^5.5.2",
+    "vitest": "^1.2.2",
     "zod": "^4.1.8"
   }
 }
