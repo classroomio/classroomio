@@ -22,7 +22,6 @@ vi.mock('@cio/core/utils/s3', () => ({
 
 import { enrichLessonWithPresignedUrls } from '@cio/core/utils/lesson-media';
 
-/** `hls` rides in the metadata catchall, so it is not on the declared shape. */
 function hlsFlag(video: { metadata?: unknown }): unknown {
   return (video.metadata as Record<string, unknown> | undefined)?.hls;
 }
@@ -96,9 +95,6 @@ describe('enrichLessonWithPresignedUrls — uploaded video links', () => {
   });
 
   it('never reports hls without a link that can serve it', async () => {
-    // The combination that broke playback: metadata claimed hls while the link
-    // was the raw file, so the player could not parse a manifest out of it.
-    // The flag now comes from the manifest key, so the two cannot disagree.
     mocks.getAssetsByIds.mockResolvedValue([asset({ metadata: { format: 'hls' } })]);
 
     const [video] = (await enrichLessonWithPresignedUrls(lessonWithUpload())).videos!;

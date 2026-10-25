@@ -86,23 +86,26 @@ function applyCanonicalVideoMetadata(
       metadata: mergedMetadata
     };
 
-    if (!asset.hlsManifestKey) {
-      return canonical;
-    }
-
-    // Serve the ladder, not the source. A video encoded in the browser stores
-    // this link when it is attached, but one encoded server-side is attached
-    // first and finalized minutes later — so the link has to be derived here or
-    // the lesson keeps serving the original file while claiming to be HLS.
-    // `key` is dropped so the presign pass below does not overwrite it.
-    const { key: _sourceKey, ...withoutKey } = canonical;
-
-    return {
-      ...withoutKey,
-      link: `/hls/${asset.hlsManifestKey}`.replace(/\/{2,}/g, '/'),
-      metadata: { ...mergedMetadata, hls: true }
-    };
+    return asset.hlsManifestKey ? playFromHlsManifest(canonical, asset.hlsManifestKey) : canonical;
   });
+}
+
+/**
+ * Point a video at its HLS manifest instead of its source file.
+ *
+ * @returns the video with no `key`, so {@link enrichLessonWithPresignedUrls}
+ * leaves its link alone rather than replacing it with a signed source URL.
+ */
+function playFromHlsManifest(video: LessonVideo, manifestKey: string): LessonVideo {
+  const { key: _sourceKey, ...withoutSourceKey } = video;
+  // `hls` is carried by the metadata catchall, which the inferred type omits.
+  const metadata = { ...(video.metadata ?? {}), hls: true } as LessonVideo['metadata'];
+
+  return {
+    ...withoutSourceKey,
+    link: `/hls/${manifestKey}`.replace(/\/{2,}/g, '/'),
+    metadata
+  };
 }
 
 function applyCanonicalDocumentMetadata(
