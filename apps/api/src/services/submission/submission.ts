@@ -55,6 +55,8 @@ import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUr
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
 import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
+import type { TEventSource } from '@cio/core/services/posthog';
+import { captureExerciseSubmitted } from '@api/services/product-events';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
 type SubmissionOverallStatus = 'auto_graded' | 'manual_required' | 'hybrid';
@@ -567,6 +569,7 @@ export type CreateSubmissionOptions = {
   /** Reject unknown questions, undecodable answers, foreign options and non-number values instead of skipping them. */
   strict?: boolean;
   allowUploads?: boolean;
+  source?: TEventSource;
 };
 
 const UPLOAD_QUESTION_TYPES = new Set(['FILE_UPLOAD', 'VIDEO_RECORDING']);
@@ -845,6 +848,14 @@ export async function createSubmissionService(
       const insertedRows = await insertQuestionAnswersBatch([...answeredRows, ...unansweredRows], tx);
 
       return { submission: createdSubmission, insertedAnswers: insertedRows };
+    });
+
+    captureExerciseSubmitted({
+      courseId,
+      exerciseId,
+      groupMemberId: submittedBy,
+      isAutoGraded: shouldAutoGrade,
+      source: options.source ?? 'dashboard'
     });
 
     let submission = created.submission;

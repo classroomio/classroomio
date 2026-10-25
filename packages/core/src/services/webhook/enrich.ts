@@ -1,11 +1,5 @@
 import { getWebhookEventContext, type TWebhookEventContext } from '@cio/db/queries/webhook';
-import { ROLE } from '@cio/utils/constants';
-
-const ROLE_LABELS: Record<number, string> = {
-  [ROLE.ADMIN]: 'admin',
-  [ROLE.TUTOR]: 'tutor',
-  [ROLE.STUDENT]: 'student'
-};
+import { ROLE_LABELS } from '@cio/utils/constants';
 
 const EMPTY_CONTEXT: TWebhookEventContext = { profiles: new Map(), course: null, exercise: null, lesson: null };
 

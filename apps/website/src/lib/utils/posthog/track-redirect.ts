@@ -2,11 +2,10 @@ import { redirect, type RequestEvent } from '@sveltejs/kit';
 import { client } from '$lib/utils/posthog';
 import { getDistinctId } from '$lib/utils/posthog/distinct-id';
 
-export async function trackAndRedirect(
-  { request, platform }: Pick<RequestEvent, 'request' | 'platform'>,
-  event: string,
-  destination: string
-): Promise<void> {
+type TrackContext = Pick<RequestEvent, 'request' | 'platform'>;
+
+/** Captures the event and keeps the Worker alive until PostHog has it. */
+export async function trackEvent({ request, platform }: TrackContext, event: string): Promise<void> {
   client.capture({ distinctId: getDistinctId(request), event });
 
   const flushPromise = client.flushAsync().catch(() => undefined);
@@ -16,6 +15,10 @@ export async function trackAndRedirect(
   } else {
     await flushPromise;
   }
+}
+
+export async function trackAndRedirect(context: TrackContext, event: string, destination: string): Promise<void> {
+  await trackEvent(context, event);
 
   redirect(307, destination);
 }

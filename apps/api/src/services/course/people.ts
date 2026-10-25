@@ -24,6 +24,8 @@ import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
+import type { TEventSource } from '@cio/core/services/posthog';
+import { captureLearnersEnrolled } from '@api/services/product-events';
 
 /**
  * Attaches only `stage` to a page of members.
@@ -221,7 +223,7 @@ export async function addMember(
  * @param members Array of member data
  * @returns Array of created members
  */
-export async function addMembers(courseId: string, members: TAddCourseMembers) {
+export async function addMembers(courseId: string, members: TAddCourseMembers, source: TEventSource = 'dashboard') {
   try {
     if (members.length === 0) {
       throw new AppError('At least one member must be provided', ErrorCodes.VALIDATION_ERROR, 400);
@@ -272,6 +274,8 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       if (addedStudentMember) {
         await invalidateOrgStats(courseOrgData.orgId);
       }
+
+      captureLearnersEnrolled(addedMembers, 'admin', source);
     }
 
     const studentProfileIds = members

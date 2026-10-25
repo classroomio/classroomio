@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { TNewGroup, TNewGroupmember } from '@db/types';
+import { TGroupmember, TNewGroup, TNewGroupmember } from '@db/types';
 import { and, asc, eq, inArray, isNotNull, isNull, ne, or } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
@@ -61,15 +61,15 @@ export async function getExistingGroupMembers(
 
 /**
  * Enroll users in course groups, skipping any existing memberships.
- * Returns the count of newly inserted memberships.
+ * Returns the newly inserted memberships.
  */
 export async function enrollUsersInCourseGroups(
   groupIds: string[],
   users: Array<{ profileId: string; email?: string }>,
   roleId: number,
   dbClient: DbOrTxClient = db
-): Promise<number> {
-  if (groupIds.length === 0 || users.length === 0) return 0;
+): Promise<TGroupmember[]> {
+  if (groupIds.length === 0 || users.length === 0) return [];
 
   const pairs = users.flatMap((u) => groupIds.map((groupId) => ({ groupId, profileId: u.profileId })));
   const existingSet = await getExistingGroupMembers(pairs, dbClient);
@@ -84,11 +84,7 @@ export async function enrollUsersInCourseGroups(
       email: emailByProfile.get(p.profileId) ?? undefined
     }));
 
-  if (toInsert.length > 0) {
-    await addGroupMembers(toInsert, dbClient);
-  }
-
-  return toInsert.length;
+  return addGroupMembers(toInsert, dbClient);
 }
 
 /**
@@ -481,11 +477,11 @@ export async function getGroupMemberIdByGroupAndProfile(
 export async function insertGroupMembersOnConflictDoNothing(
   values: TNewGroupmember[],
   dbClient: DbOrTxClient = db
-): Promise<void> {
-  if (values.length === 0) return;
+): Promise<TGroupmember[]> {
+  if (values.length === 0) return [];
 
   try {
-    await dbClient.insert(schema.groupmember).values(values).onConflictDoNothing();
+    return await dbClient.insert(schema.groupmember).values(values).onConflictDoNothing().returning();
   } catch (error) {
     console.error('insertGroupMembersOnConflictDoNothing error:', error);
     throw new Error(`Failed to insert group members: ${error instanceof Error ? error.message : 'Unknown error'}`);

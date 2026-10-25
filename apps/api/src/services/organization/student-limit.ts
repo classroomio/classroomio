@@ -3,6 +3,7 @@ import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getStudentLimit } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
+import { capturePlanLimitReached } from '@cio/core/services/posthog';
 import { type DbOrTxClient, db } from '@cio/db/drizzle';
 import {
   countActiveStudents,
@@ -103,6 +104,15 @@ export async function assertStudentCapacityOrThrow(
   const newCount = currentCount + additionalStudents;
 
   if (newCount > limit) {
+    capturePlanLimitReached({
+      orgId,
+      limitType: 'students',
+      plan: activePlan?.planName,
+      limit,
+      current: currentCount,
+      blocked: true
+    });
+
     throw new AppError(
       `This organization has reached its ${limit}-student limit on the Free plan`,
       ErrorCodes.UPGRADE_REQUIRED,
@@ -113,6 +123,17 @@ export async function assertStudentCapacityOrThrow(
   const halfway = Math.ceil(limit / 2);
   const crossedReached = currentCount < limit && newCount >= limit;
   const crossedHalf = currentCount < halfway && newCount >= halfway;
+
+  if (crossedReached) {
+    capturePlanLimitReached({
+      orgId,
+      limitType: 'students',
+      plan: activePlan?.planName,
+      limit,
+      current: newCount,
+      blocked: false
+    });
+  }
 
   if (crossedReached || crossedHalf) {
     const milestone: StudentMilestone = crossedReached ? 'reached' : 'half';
