@@ -134,13 +134,6 @@
       "when": 1791554492096,
       "tag": "0018_brave_randall",
       "breakpoints": true
-    },
-    {
-      "idx": 19,
-      "version": "7",
-      "when": 1792503611860,
-      "tag": "0019_bent_ma_gnuci",
-      "breakpoints": true
     }
   ]
 }
