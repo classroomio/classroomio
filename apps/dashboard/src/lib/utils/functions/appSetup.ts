@@ -29,7 +29,7 @@ export function setupCloudAnalytics(user: PosthogBootstrapUser | undefined, isOr
 export function setupAnalyticsBasedOnLicense(user: PosthogBootstrapUser | undefined, isOrgSite: boolean) {
   initUserJot(isOrgSite);
 
-  if (PUBLIC_IS_SELFHOSTED === 'true' || licenseApi.hasAccess('no-tracking')) {
+  if (licenseApi.hasAccess('no-tracking')) {
     return;
   }
 

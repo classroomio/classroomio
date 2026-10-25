@@ -38,9 +38,9 @@ Self-hosted mode is controlled by one flag, `PUBLIC_IS_SELFHOSTED=true`, which i
 the shipped Docker configuration. It locks the instance to a single organization with the full core
 feature set, and points invite links and emails at your own domain.
 
-**About telemetry:** self-hosted mode disables error reporting (Sentry), product analytics (PostHog,
-Umami) and the in-app feedback widget out of the box. The only thing an instance sends is the usage
-ping below, which you can turn off.
+**About telemetry:** self-hosted mode disables error reporting (Sentry) and the in-app feedback
+widget out of the box. Product analytics (PostHog, Umami) are only disabled by the `no-tracking`
+enterprise license feature. See [Enterprise & licensing](/self-hosted/enterprise).
 
 **Anonymous usage ping:** once a week (and once on first start) the jobs service sends ClassroomIO
 an `instance_started` event so we can count how many instances are running. It contains:

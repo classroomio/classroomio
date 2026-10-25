@@ -651,7 +651,6 @@ export async function getCourseProgress(
   roleId: number | null;
   certificateEarnedAt: string | null;
   certificationEmailSentAt: string | null;
-  completedAt: string | null;
 }> {
   try {
     // Get the groupmember ID for this profile in the course
@@ -660,8 +659,7 @@ export async function getCourseProgress(
         id: schema.groupmember.id,
         roleId: schema.groupmember.roleId,
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
-        certificationEmailSentAt: schema.groupmember.certificationEmailSentAt,
-        completedAt: schema.groupmember.completedAt
+        certificationEmailSentAt: schema.groupmember.certificationEmailSentAt
       })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
@@ -678,8 +676,7 @@ export async function getCourseProgress(
         groupMemberId: null,
         roleId: null,
         certificateEarnedAt: null,
-        certificationEmailSentAt: null,
-        completedAt: null
+        certificationEmailSentAt: null
       };
     }
 
@@ -687,7 +684,6 @@ export async function getCourseProgress(
     const roleId = groupMemberResult[0].roleId;
     const certificateEarnedAt = groupMemberResult[0].certificateEarnedAt ?? null;
     const certificationEmailSentAt = groupMemberResult[0].certificationEmailSentAt ?? null;
-    const completedAt = groupMemberResult[0].completedAt ?? null;
 
     const [lessons, completedLessons, exercises, [completedRow]] = await Promise.all([
       db.select({ id: schema.lesson.id }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId)),
@@ -732,8 +728,7 @@ export async function getCourseProgress(
       groupMemberId,
       roleId,
       certificateEarnedAt,
-      certificationEmailSentAt,
-      completedAt
+      certificationEmailSentAt
     };
   } catch (error) {
     console.error('getCourseProgress error:', error);

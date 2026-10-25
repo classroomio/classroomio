@@ -3,15 +3,11 @@ import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { licenseApi } from '$features/license/api/license.svelte';
 import type { AccountOrg } from '$features/app/types';
 import { currentOrg } from '$lib/utils/store/org';
-import { ROLE } from '@cio/utils/constants';
+import { ROLE_LABELS } from '@cio/utils/constants';
 import { getActiveOrgPlan, PLAN } from '@cio/utils/plans';
 import posthog from 'posthog-js';
 
-const ROLE_NAMES: Record<number, string> = {
-  [ROLE.ADMIN]: 'admin',
-  [ROLE.TUTOR]: 'tutor',
-  [ROLE.STUDENT]: 'student'
-};
+const DEPLOYMENT = PUBLIC_IS_SELFHOSTED === 'true' ? 'self_hosted' : 'cloud';
 
 const hasNoTracking = () => {
   const noTracking = licenseApi.hasAccess('no-tracking');
@@ -19,7 +15,7 @@ const hasNoTracking = () => {
   return noTracking;
 };
 
-const isTrackingOff = () => dev || PUBLIC_IS_SELFHOSTED === 'true' || hasNoTracking();
+const isTrackingOff = () => dev || hasNoTracking();
 
 export const capturePosthogEvent = (event: string, properties?: Record<string, unknown>): void => {
   if (isTrackingOff()) return;
@@ -41,7 +37,7 @@ const setPosthogOrg = (org: AccountOrg): void => {
 
   posthog.group('organization', org.id, { name: org.name, site_name: org.siteName, plan });
 
-  const role = org.roleId ? ROLE_NAMES[org.roleId] : undefined;
+  const role = org.roleId ? ROLE_LABELS[org.roleId] : undefined;
   if (role) posthog.setPersonProperties({ role });
 };
 
@@ -71,6 +67,8 @@ export const initPosthog = (user?: PosthogBootstrapUser): void => {
       bootstrap: { distinctID: user.id, isIdentifiedID: true }
     })
   });
+
+  posthog.register({ deployment: DEPLOYMENT });
 
   if (user) {
     posthog.setPersonProperties({

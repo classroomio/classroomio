@@ -6,8 +6,7 @@ const mocks = vi.hoisted(() => ({
   getCourseProgress: vi.fn(),
   getCourseOrganizationId: vi.fn(),
   getActiveOrganizationPlan: vi.fn(),
-  claimMemberCertificateEarned: vi.fn(),
-  claimMemberCourseCompleted: vi.fn()
+  claimMemberCertificateEarned: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/course/course', () => ({
@@ -17,8 +16,7 @@ vi.mock('@cio/db/queries/course/course', () => ({
 }));
 
 vi.mock('@cio/db/queries/course/people', () => ({
-  claimMemberCertificateEarned: mocks.claimMemberCertificateEarned,
-  claimMemberCourseCompleted: mocks.claimMemberCourseCompleted
+  claimMemberCertificateEarned: mocks.claimMemberCertificateEarned
 }));
 
 vi.mock('@cio/db/queries/tag', () => ({

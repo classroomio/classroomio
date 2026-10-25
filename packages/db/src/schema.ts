@@ -1401,8 +1401,7 @@ export const groupmember = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     assignedStudentId: varchar('assigned_student_id'),
     certificateEarnedAt: timestamp('certificate_earned_at', { withTimezone: true, mode: 'string' }),
-    certificationEmailSentAt: timestamp('certification_email_sent_at', { withTimezone: true, mode: 'string' }),
-    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' })
+    certificationEmailSentAt: timestamp('certification_email_sent_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({

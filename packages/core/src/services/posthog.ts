@@ -1,7 +1,9 @@
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
+import { LICENSE_FEATURE } from '@cio/utils';
 import { PLAN } from '@cio/utils/plans';
 
 import { env } from '../config/env';
+import { getLicenseStatus } from './license';
 
 export const POSTHOG_PROJECT_KEY = 'phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov';
 export const POSTHOG_CAPTURE_URL = 'https://eu.i.posthog.com/capture/';
@@ -29,11 +31,21 @@ export type TServerEvent = {
 };
 
 export function isServerEventsEnabled(): boolean {
-  return env.NODE_ENV === 'production' && env.PUBLIC_IS_SELFHOSTED !== 'true';
+  return env.NODE_ENV === 'production';
+}
+
+/** Only a self-hosted license can turn tracking off; a key that can't be verified also stops it. */
+async function isBlockedByLicense(): Promise<boolean> {
+  if (env.PUBLIC_IS_SELFHOSTED !== 'true' || !env.LICENSE_KEY?.trim()) return false;
+
+  const license = await getLicenseStatus();
+
+  return !license.valid || license.features.includes(LICENSE_FEATURE.NO_TRACKING);
 }
 
 function toPosthogEvent({ event, distinctId, orgId, properties }: TServerEvent) {
   const timestamp = new Date().toISOString();
+  const deployment = env.PUBLIC_IS_SELFHOSTED === 'true' ? 'self_hosted' : 'cloud';
 
   return {
     event,
@@ -41,6 +53,7 @@ function toPosthogEvent({ event, distinctId, orgId, properties }: TServerEvent) 
     timestamp,
     properties: {
       ...properties,
+      deployment,
       ...(orgId && { $groups: { organization: orgId } }),
       ...(!distinctId && { $process_person_profile: false })
     }
@@ -53,6 +66,13 @@ function toPosthogEvent({ event, distinctId, orgId, properties }: TServerEvent) 
  */
 export async function recordServerEvents(inputs: TServerEvent[]): Promise<void> {
   if (!isServerEventsEnabled()) return;
+
+  try {
+    if (await isBlockedByLicense()) return;
+  } catch (error) {
+    console.error('PostHog license check error:', error);
+    return;
+  }
 
   const events = inputs.filter((input) => input.distinctId || input.orgId).map(toPosthogEvent);
 

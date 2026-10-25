@@ -11,7 +11,7 @@ import {
   getCourseProgress as getCourseProgressQuery,
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
-import { claimMemberCertificateEarned, claimMemberCourseCompleted } from '@cio/db/queries/course/people';
+import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
 import { captureServerEvent } from '@cio/core/services/posthog';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
@@ -126,6 +126,20 @@ export async function evaluateCourseCertification(
           earnedAt
         });
 
+        trackServerEvent({
+          eventType: SERVER_EVENTS.COURSE_COMPLETED,
+          userId: profileId,
+          courseId,
+          props: { path: 'standard', earnedAt }
+        });
+
+        captureServerEvent({
+          event: 'course_completed',
+          distinctId: profileId,
+          orgId: courseRow.orgId,
+          properties: { course_id: courseId, course_type: courseRow.type }
+        });
+
         if (courseRow.certificate?.isDownloadable) {
           trackServerEvent({
             eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
@@ -135,35 +149,6 @@ export async function evaluateCourseCertification(
           });
         }
       }
-    }
-  }
-
-  // Completion ignores the certificate deadline: finishing late still counts as finishing.
-  const hasCompletedContent = !evaluation.blockers.some(
-    (blocker) => blocker.code === 'CERT_PROGRESS' || blocker.code === 'CERT_NO_CONTENT'
-  );
-
-  if (hasCompletedContent && progress.groupMemberId && !progress.completedAt) {
-    const completedAt = new Date().toISOString();
-    const didClaimCompletion = await claimMemberCourseCompleted(progress.groupMemberId, completedAt);
-
-    if (didClaimCompletion) {
-      const hasCertificate = !!certificateEarnedAt;
-
-      trackServerEvent({
-        eventType: SERVER_EVENTS.COURSE_COMPLETED,
-        orgId: courseRow.orgId,
-        userId: profileId,
-        courseId,
-        props: { path: 'standard' }
-      });
-
-      captureServerEvent({
-        event: 'course_completed',
-        distinctId: profileId,
-        orgId: courseRow.orgId,
-        properties: { course_id: courseId, course_type: courseRow.type, has_certificate: hasCertificate }
-      });
     }
   }
 

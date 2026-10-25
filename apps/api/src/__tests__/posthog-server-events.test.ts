@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { env, getCourseOrganizationId } = vi.hoisted(() => ({
+const { env, getCourseOrganizationId, getLicenseStatus } = vi.hoisted(() => ({
   env: {} as Record<string, string | undefined>,
-  getCourseOrganizationId: vi.fn()
+  getCourseOrganizationId: vi.fn(),
+  getLicenseStatus: vi.fn()
 }));
 
 vi.mock('@cio/core/config/env', () => ({ env }));
 vi.mock('@cio/db/queries/tag', () => ({ getCourseOrganizationId }));
+vi.mock('@cio/core/services/license', () => ({ getLicenseStatus }));
 
 import { captureCourseEvent, captureServerEvent, recordServerEvents } from '@cio/core/services/posthog';
 
@@ -33,12 +35,59 @@ describe('PostHog server events', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('sends nothing from a self-hosted instance', async () => {
+  it('tags cloud events as cloud', async () => {
+    await recordServerEvents([{ event: 'course_created', distinctId: 'user-1', orgId: 'org-1' }]);
+
+    expect(sentBatch().batch[0].properties.deployment).toBe('cloud');
+  });
+
+  it('sends from a self-hosted instance without a license, tagged as self-hosted', async () => {
     env.PUBLIC_IS_SELFHOSTED = 'true';
 
     await recordServerEvents([{ event: 'course_created', distinctId: 'user-1', orgId: 'org-1' }]);
 
+    expect(getLicenseStatus).not.toHaveBeenCalled();
+    expect(sentBatch().batch[0].properties.deployment).toBe('self_hosted');
+  });
+
+  it('sends nothing from a self-hosted instance whose license includes no-tracking', async () => {
+    env.PUBLIC_IS_SELFHOSTED = 'true';
+    env.LICENSE_KEY = 'license-1';
+    getLicenseStatus.mockResolvedValue({ valid: true, features: ['no-tracking'] });
+
+    await recordServerEvents([{ event: 'course_created', distinctId: 'user-1', orgId: 'org-1' }]);
+
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('sends nothing when a self-hosted license key cannot be verified', async () => {
+    env.PUBLIC_IS_SELFHOSTED = 'true';
+    env.LICENSE_KEY = 'license-1';
+    getLicenseStatus.mockResolvedValue({ valid: false, features: [] });
+
+    await recordServerEvents([{ event: 'course_created', distinctId: 'user-1', orgId: 'org-1' }]);
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('sends from a self-hosted instance whose license has no no-tracking feature', async () => {
+    env.PUBLIC_IS_SELFHOSTED = 'true';
+    env.LICENSE_KEY = 'license-1';
+    getLicenseStatus.mockResolvedValue({ valid: true, features: ['sso'] });
+
+    await recordServerEvents([{ event: 'course_created', distinctId: 'user-1', orgId: 'org-1' }]);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores a license on cloud', async () => {
+    env.LICENSE_KEY = 'license-1';
+    getLicenseStatus.mockResolvedValue({ valid: true, features: ['no-tracking'] });
+
+    await recordServerEvents([{ event: 'course_created', distinctId: 'user-1', orgId: 'org-1' }]);
+
+    expect(getLicenseStatus).not.toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it('sends the user as the person and the org as the group', async () => {
