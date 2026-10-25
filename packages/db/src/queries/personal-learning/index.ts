@@ -345,6 +345,7 @@ export async function retryPersonalLearningSessionForOwner(
         status: 'queued',
         failureCode: null,
         attempt: sql`${schema.personalLearningSession.attempt} + 1`,
+        retryCount: 0,
         updatedAt: new Date().toISOString()
       })
       .where(
@@ -367,6 +368,7 @@ export async function claimPersonalLearningSession(sessionId: string) {
     .set({
       status: 'sourcing',
       attempt: sql`${schema.personalLearningSession.attempt} + 1`,
+      retryCount: sql`${schema.personalLearningSession.retryCount} + 1`,
       updatedAt: new Date().toISOString()
     })
     .where(and(eq(schema.personalLearningSession.id, sessionId), eq(schema.personalLearningSession.status, 'queued')))

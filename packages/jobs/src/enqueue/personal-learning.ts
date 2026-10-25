@@ -13,10 +13,19 @@ export async function enqueuePersonalLearningSession(
   payload: TPersonalLearningSessionPayload,
   options?: JobsOptions
 ): Promise<string | undefined> {
-  const job = await getQueue(QUEUE_NAMES.personalLearning).add(JOB_NAMES.personalLearning.generateSession, payload, {
+  const queue = getQueue(QUEUE_NAMES.personalLearning);
+  const jobId = options?.jobId ?? getPersonalLearningSessionJobId(payload.journeyId);
+  const existingJob = await queue.getJob(jobId);
+
+  if (existingJob) {
+    const state = await existingJob.getState();
+    if (state === 'failed' || state === 'completed') await existingJob.remove();
+  }
+
+  const job = await queue.add(JOB_NAMES.personalLearning.generateSession, payload, {
     ...QUEUE_DEFAULTS[QUEUE_NAMES.personalLearning],
-    jobId: getPersonalLearningSessionJobId(payload.journeyId),
-    ...options
+    ...options,
+    jobId
   });
 
   return job.id;

@@ -4539,6 +4539,7 @@ export const personalLearningSession = pgTable(
     generationMeta: jsonb('generation_meta').default({}).notNull().$type<PersonalLearningGenerationMeta>(),
     failureCode: varchar('failure_code', { length: 64 }),
     attempt: integer().default(0).notNull(),
+    retryCount: integer('retry_count').default(0).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },

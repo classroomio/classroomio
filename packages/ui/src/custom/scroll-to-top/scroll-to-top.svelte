@@ -23,8 +23,8 @@
 
   const clearanceClasses: Record<Clearance, string> = {
     default: 'ui:bottom-[max(1.5rem,calc(env(safe-area-inset-bottom)+1rem))]',
-    'mobile-nav': 'ui:bottom-24 lg:ui:bottom-[max(1.5rem,calc(env(safe-area-inset-bottom)+1rem))]',
-    'ask-ai': 'ui:bottom-20 sm:ui:bottom-20 md:ui:bottom-6'
+    'mobile-nav': 'ui:bottom-24 ui:lg:bottom-[max(1.5rem,calc(env(safe-area-inset-bottom)+1rem))]',
+    'ask-ai': 'ui:bottom-20 ui:sm:bottom-20 ui:md:bottom-6'
   };
 
   function updateVisibility() {

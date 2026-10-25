@@ -202,7 +202,7 @@ export async function generatePersonalLearningSession(input: { sessionId: string
   } catch (error) {
     const failureCode = errorCode(error);
     const isFinalAttempt =
-      claimedSession.attempt >= 3 ||
+      claimedSession.retryCount >= 3 ||
       failureCode === 'NO_VERIFIABLE_SOURCE' ||
       failureCode === 'LEARNING_SOURCE_QUOTA_EXCEEDED';
     await markPersonalLearningSessionFailed(input.sessionId, claimedSession.attempt, failureCode, isFinalAttempt);

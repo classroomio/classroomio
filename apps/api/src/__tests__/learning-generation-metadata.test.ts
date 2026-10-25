@@ -151,7 +151,12 @@ describe('personal learning generation metadata', () => {
   });
 
   it('uses the persisted claim count to stop recovered jobs at the retry limit', async () => {
-    claimPersonalLearningSession.mockResolvedValueOnce({ id: 'session-1', status: 'sourcing', attempt: 3 });
+    claimPersonalLearningSession.mockResolvedValueOnce({
+      id: 'session-1',
+      status: 'sourcing',
+      attempt: 3,
+      retryCount: 3
+    });
     discoverLearningSources.mockRejectedValueOnce(
       Object.assign(new Error('Temporary source failure'), { code: 'LEARNING_SOURCE_FETCH_FAILED' })
     );
@@ -165,6 +170,29 @@ describe('personal learning generation metadata', () => {
       3,
       'LEARNING_SOURCE_FETCH_FAILED',
       true
+    );
+  });
+
+  it('gives a learner-initiated retry a fresh automatic retry budget', async () => {
+    claimPersonalLearningSession.mockResolvedValueOnce({
+      id: 'session-1',
+      status: 'sourcing',
+      attempt: 5,
+      retryCount: 1
+    });
+    discoverLearningSources.mockRejectedValueOnce(
+      Object.assign(new Error('Temporary source failure'), { code: 'LEARNING_SOURCE_FETCH_FAILED' })
+    );
+
+    await expect(generatePersonalLearningSession({ sessionId: 'session-1', attempt: 4 })).rejects.toMatchObject({
+      code: 'LEARNING_SOURCE_FETCH_FAILED'
+    });
+
+    expect(markPersonalLearningSessionFailed).toHaveBeenCalledWith(
+      'session-1',
+      5,
+      'LEARNING_SOURCE_FETCH_FAILED',
+      false
     );
   });
 
