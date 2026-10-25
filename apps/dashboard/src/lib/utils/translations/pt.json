@@ -4951,6 +4951,7 @@
     "title": "Automação",
     "subtitle": "Conecte clientes MCP agora, com o Zapier e a API pública seguindo o mesmo sistema de chaves com escopo organizacional.",
     "coming_soon": "Em breve",
+    "read_docs": "Ler a documentação",
     "mcp": {
       "setup": {
         "title": "Configuração do cliente",
@@ -4983,8 +4984,7 @@
         "rate_limits_description": "Solicitações de leitura/gravação/publicação permitidas por minuto.",
         "used_label": "Usado:"
       },
-      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO com chaves da organização que você pode rotacionar a qualquer momento.",
-      "view_docs": "Ver documentação"
+      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO com chaves da organização que você pode rotacionar a qualquer momento."
     },
     "api": {
       "subtitle": "Gerencie chaves de API para integrar com a API pública do ClassroomIO.",
@@ -5007,8 +5007,7 @@
       "setup": {
         "title": "Início rápido",
         "description": "Use sua chave de API como token Bearer em cada solicitação. Substitua o marcador por uma chave acima ou cole o segredo imediatamente após gerar uma."
-      },
-      "view_docs": "Ver documentação"
+      }
     },
     "keys": {
       "active": "Ativo",

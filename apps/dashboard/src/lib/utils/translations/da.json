@@ -4951,6 +4951,7 @@
     "title": "Automatisering",
     "subtitle": "Forbind MCP-klienter nu, med Zapier og den offentlige API, der følger på det samme nøglesystem med organisationsomfang.",
     "coming_soon": "Kommer snart",
+    "read_docs": "Læs dokumentation",
     "mcp": {
       "setup": {
         "title": "Klient opsætning",
@@ -4983,8 +4984,7 @@
         "rate_limits_description": "Læs/skriv/publicér anmodninger tilladt pr. minut.",
         "used_label": "Brugt:"
       },
-      "page_subtitle": "Forbind AI-værktøjer til ClassroomIO med organisationsnøgler, du kan rotere når som helst.",
-      "view_docs": "Se dokumentation"
+      "page_subtitle": "Forbind AI-værktøjer til ClassroomIO med organisationsnøgler, du kan rotere når som helst."
     },
     "api": {
       "subtitle": "Administrer API-nøgler til integration med ClassroomIOs offentlige API.",
@@ -5007,8 +5007,7 @@
       "setup": {
         "title": "Hurtig start",
         "description": "Brug din API-nøgle som Bearer-token på hver anmodning. Erstat pladsholderen med en nøgle ovenfor, eller indsæt hemmeligheden lige efter du genererer en."
-      },
-      "view_docs": "Se dokumentation"
+      }
     },
     "keys": {
       "active": "Aktiv",

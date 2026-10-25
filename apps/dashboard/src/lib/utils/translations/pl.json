@@ -4951,6 +4951,7 @@
     "title": "Automatyzacja",
     "subtitle": "Połącz teraz klientów MCP, korzystając z Zapiera i publicznego interfejsu API w tym samym systemie kluczy o zasięgu organizacji.",
     "coming_soon": "Już wkrótce",
+    "read_docs": "Przeczytaj dokumentację",
     "mcp": {
       "setup": {
         "title": "Konfiguracja klienta",
@@ -4983,8 +4984,7 @@
         "rate_limits_description": "Żądania odczytu/zapisu/publikowania dozwolone na minutę.",
         "used_label": "Używane:"
       },
-      "page_subtitle": "Połącz narzędzia AI z ClassroomIO za pomocą kluczy o zasięgu organizacji, które możesz w dowolnym momencie obrócić.",
-      "view_docs": "Zobacz dokumentację"
+      "page_subtitle": "Połącz narzędzia AI z ClassroomIO za pomocą kluczy o zasięgu organizacji, które możesz w dowolnym momencie obrócić."
     },
     "api": {
       "subtitle": "Zarządzaj kluczami API, aby integrować się z publicznym API ClassroomIO.",
@@ -5007,8 +5007,7 @@
       "setup": {
         "title": "Szybki start",
         "description": "Używaj klucza API jako tokena Bearer w każdym żądaniu. Zamień symbol zastępczy na klucz z powyższej listy lub wklej sekret zaraz po wygenerowaniu."
-      },
-      "view_docs": "Zobacz dokumentację"
+      }
     },
     "keys": {
       "active": "Aktywny",

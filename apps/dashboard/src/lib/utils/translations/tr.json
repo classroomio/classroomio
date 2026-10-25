@@ -4870,6 +4870,7 @@
     "title": "Automation",
     "subtitle": "Zapier ve genel API'nin aynı kuruluş kapsamlı anahtar sistemini takip etmesiyle MCP istemcilerini şimdi bağlayın.",
     "coming_soon": "Çok yakında",
+    "read_docs": "Dokümanları okuyun",
     "permissions": {
       "disabled_title": "Salt okuma erişimi",
       "disabled_description": "Yalnızca kuruluş yöneticileri şunları oluşturabilir, döndürebilir, veya otomasyon anahtarlarını iptal edin. Öğretmenler kurulum talimatlarını buradan inceleyebilir."
@@ -4948,8 +4949,7 @@
         "codex_description": "ClassroomIO MCP sunucusunu aynı kuruluş kapsamlı anahtarla Codex'e ekler.",
         "cursor_description": "Bunu şuraya yapıştırın: `~/.cursor/mcp.json` veya çalışma alanınız MCP config.",
         "opencode_description": "Bunu proje kökünüzdeki `opencode.json'a veya `~/.config/opencode/opencode.json`a ekleyin."
-      },
-      "view_docs": "Dokümanları Görüntüle"
+      }
     },
     "api": {
       "subtitle": "ClassroomIO genel API'si ile entegre olmak için API anahtarlarını yönetin.",
@@ -4972,8 +4972,7 @@
       "setup": {
         "title": "Hızlı başlangıç",
         "description": "API anahtarınızı her istekte Taşıyıcı belirteci olarak kullanın. Yer tutucuyu yukarıdan bir anahtarla değiştirin veya gizli anahtarı oluşturduktan hemen sonra yapıştırın."
-      },
-      "view_docs": "Belgeleri Görüntüleyin"
+      }
     },
     "zapier": {
       "page_subtitle": "ClassroomIO'yu Zapier aracılığıyla binlerce uygulamayla otomatikleştirin. Çok yakında."

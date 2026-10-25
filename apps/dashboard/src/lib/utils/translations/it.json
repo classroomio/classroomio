@@ -4860,6 +4860,7 @@
     "title": "Automazione",
     "subtitle": "Connetti subito i client MCP, con Zapier e l'API pubblica che seguono sullo stesso sistema di chiavi a livello di organizzazione.",
     "coming_soon": "Prossimamente",
+    "read_docs": "Leggi la documentazione",
     "permissions": {
       "disabled_title": "Accesso in sola lettura",
       "disabled_description": "Solo gli amministratori dell'organizzazione possono creare, ruotare o revocare le chiavi di automazione. Gli insegnanti possono rivedere le istruzioni di configurazione qui."
@@ -4938,8 +4939,7 @@
         "codex_description": "Aggiunge il server MCP ClassroomIO al Codex con la stessa chiave con ambito organizzazione.",
         "cursor_description": "Incollalo in \"~/.cursor/mcp.json\" o nella configurazione MCP dello spazio di lavoro.",
         "opencode_description": "Aggiungilo a `opencode.json` nella root del tuo progetto o a `~/.config/opencode/opencode.json`."
-      },
-      "view_docs": "Visualizza documenti"
+      }
     },
     "api": {
       "subtitle": "Gestisci le chiavi API per l'integrazione con l'API pubblica ClassroomIO.",
@@ -4962,8 +4962,7 @@
       "setup": {
         "title": "Avvio rapido",
         "description": "Utilizza la tua chiave API come token Bearer su ogni richiesta. Sostituisci il segnaposto con una chiave dall'alto o incolla il segreto immediatamente dopo averne generato uno."
-      },
-      "view_docs": "Visualizza documenti"
+      }
     },
     "zapier": {
       "page_subtitle": "Automatizza ClassroomIO con migliaia di app tramite Zapier. Prossimamente."
