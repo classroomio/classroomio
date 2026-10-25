@@ -71,20 +71,36 @@ function applyCanonicalVideoMetadata(
       thumbnailUrl: asset.thumbnailUrl ?? video.metadata?.thumbnailUrl,
       duration: asset.durationSeconds ?? video.metadata?.duration,
       aspectRatio: asset.aspectRatio ?? video.metadata?.aspectRatio,
-      ...(assetMetadata.format === 'hls' ? { hls: true } : {}),
       ...(typeof assetMetadata.sourceWidth === 'number' ? { sourceWidth: assetMetadata.sourceWidth } : {}),
       ...(typeof assetMetadata.sourceHeight === 'number' ? { sourceHeight: assetMetadata.sourceHeight } : {}),
       ...(Array.isArray(assetMetadata.hlsRenditions) ? { hlsRenditions: assetMetadata.hlsRenditions } : {}),
       ...(typeof assetMetadata.hls1080Status === 'string' ? { hls1080Status: assetMetadata.hls1080Status } : {})
     };
 
-    return {
+    const canonical = {
       ...video,
       type: mapProviderToVideoType(asset.provider),
       key: asset.storageKey ?? video.key,
       link: asset.provider === 'upload' ? video.link : (asset.sourceUrl ?? video.link),
       fileName: asset.title ?? video.fileName,
       metadata: mergedMetadata
+    };
+
+    if (!asset.hlsManifestKey) {
+      return canonical;
+    }
+
+    // Serve the ladder, not the source. A video encoded in the browser stores
+    // this link when it is attached, but one encoded server-side is attached
+    // first and finalized minutes later — so the link has to be derived here or
+    // the lesson keeps serving the original file while claiming to be HLS.
+    // `key` is dropped so the presign pass below does not overwrite it.
+    const { key: _sourceKey, ...withoutKey } = canonical;
+
+    return {
+      ...withoutKey,
+      link: `/hls/${asset.hlsManifestKey}`.replace(/\/{2,}/g, '/'),
+      metadata: { ...mergedMetadata, hls: true }
     };
   });
 }
