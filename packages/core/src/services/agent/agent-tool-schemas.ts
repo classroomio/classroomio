@@ -3,7 +3,8 @@ import { CoursePlanSchema } from '@cio/ai-assistant';
 import {
   LANDING_PAGE_COURSE_DESCRIPTION_PLAIN_HINT,
   LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT,
-  LANDING_PAGE_SECTION_HTML_AGENT_HINT
+  LANDING_PAGE_SECTION_HTML_AGENT_HINT,
+  BLOCK_RECIPE_TYPES
 } from '@cio/ai-assistant/tools';
 import {
   ADD_QUESTIONS_TOOL_DESCRIPTION,
@@ -97,6 +98,10 @@ export const updateContentParam = z.object({
   lessonId: z.string(),
   locale: z.string().default('en'),
   content: z.string().min(1)
+});
+
+export const getBlockRecipeParam = z.object({
+  blockType: z.enum(BLOCK_RECIPE_TYPES).describe('The block type to fetch exact lesson-body markup for.')
 });
 
 export const questionSchema = z.object({
