@@ -36,7 +36,8 @@
         "title": "Mở học viện của bạn…",
         "caption": "Đang chuẩn bị khóa học, học viên và cài đặt của bạn."
       }
-    }
+    },
+    "back": "Quay lại"
   },
   "validations": {
     "generic": {
@@ -393,17 +394,6 @@
       "error_fetching": "Tìm nạp bài tập không thành công, vui lòng tải lại trang",
       "passed_requires_points": "Hoàn thành theo điều kiện đạt yêu cầu cần có ít nhất một điểm khả dụng.",
       "draft_restored": "Chúng tôi đã khôi phục các thay đổi chưa lưu mà bạn để lại"
-    },
-    "poll": {
-      "info": {
-        "not_published": "Cuộc thăm dò chưa được công bố",
-        "vote_once": "Bạn chỉ có thể bỏ phiếu một lần"
-      },
-      "error": {
-        "creating_poll": "Đã xảy ra lỗi khi tạo cuộc thăm dò ý kiến",
-        "updating_poll": "Đã xảy ra lỗi khi cập nhật trạng thái cuộc thăm dò ý kiến",
-        "submitting_poll": "Đã xảy ra lỗi khi gửi cuộc thăm dò ý kiến"
-      }
     },
     "media_manager": {
       "video_added": "Đã thêm video vào thư viện của bạn",
@@ -1819,34 +1809,6 @@
             "manual": "Phiên bản đã lưu",
             "publish": "Đã xuất bản"
           }
-        },
-        "poll": {
-          "voted": "Đã bình chọn",
-          "created_by": "Tạo bởi",
-          "status": "Trạng thái",
-          "draft": "bản nháp",
-          "publish": "Xuất bản",
-          "expiration": "Hết hạn",
-          "total_voted": "Tổng số phiếu bầu",
-          "responses": "Phản hồi",
-          "expires": "Hết hạn",
-          "today": "hôm nay",
-          "back": "Quay lại",
-          "result": "kết quả",
-          "delete": "Xóa",
-          "create_poll": "Tạo cuộc thăm dò",
-          "question": "Câu hỏi",
-          "options": "Tùy chọn",
-          "option_label": "Nhãn lựa chọn",
-          "cancel": "Hủy bỏ",
-          "poll_question": "Câu hỏi thăm dò ý kiến"
-        },
-        "polls": {
-          "title": "Thăm dò ý kiến",
-          "active_polls": "Cuộc thăm dò đang hoạt động",
-          "expired_polls": "Cuộc thăm dò đã hết hạn",
-          "loading": "Đang tải...",
-          "no_polls": "Không có cuộc thăm dò nào để hiển thị"
         },
         "comments": {
           "title": "Bình luận",
@@ -3370,7 +3332,6 @@
         "save": "Lưu thay đổi",
         "apps": {
           "title": "Ứng dụng",
-          "poll": "Thăm dò ý kiến",
           "live_comment": "Bình luận trực tiếp"
         },
         "course": {
@@ -4990,6 +4951,7 @@
     "title": "Tự động hóa",
     "subtitle": "Kết nối các máy khách MCP ngay bây giờ, với Zapier và API công khai trên cùng một hệ thống khóa trong phạm vi tổ chức.",
     "coming_soon": "Sắp có",
+    "read_docs": "Đọc tài liệu",
     "mcp": {
       "setup": {
         "title": "Thiết lập máy khách",
@@ -5022,8 +4984,7 @@
         "rate_limits_description": "Yêu cầu đọc/ghi/xuất bản được phép mỗi phút.",
         "used_label": "Đã sử dụng:"
       },
-      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng khóa trong phạm vi tổ chức mà bạn có thể xoay bất cứ lúc nào.",
-      "view_docs": "Xem tài liệu"
+      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng khóa trong phạm vi tổ chức mà bạn có thể xoay bất cứ lúc nào."
     },
     "api": {
       "subtitle": "Quản lý khóa API để tích hợp với API công khai ClassroomIO.",
@@ -5046,8 +5007,7 @@
       "setup": {
         "title": "Bắt đầu nhanh",
         "description": "Dùng khóa API làm Bearer token cho mọi yêu cầu. Thay chỗ giữ chỗ bằng khóa ở trên, hoặc dán secret ngay sau khi tạo khóa."
-      },
-      "view_docs": "Xem tài liệu"
+      }
     },
     "keys": {
       "active": "Đang hoạt động",
@@ -5169,7 +5129,9 @@
       "event_groups": {
         "organization": "Tổ chức",
         "course": "Khóa học",
-        "learning": "Tiến độ học tập"
+        "learning": "Tiến độ học tập",
+        "cohort": "Nhóm học tập",
+        "compliance": "Tuân thủ"
       },
       "events": {
         "organization_invite_created": "Một lời mời tham gia nhóm được gửi",
@@ -5185,7 +5147,18 @@
         "course_submission_created": "Một bài nộp bài tập được tạo",
         "course_submission_status_changed": "Trạng thái bài nộp thay đổi, chẳng hạn khi được chấm điểm",
         "lesson_completion_updated": "Một bài học được đánh dấu hoàn thành hoặc đặt lại",
-        "exercise_completion_updated": "Một bài tập được hoàn thành hoặc đặt lại"
+        "exercise_completion_updated": "Một bài tập được hoàn thành hoặc đặt lại",
+        "compliance_record_status_changed": "Trạng thái tuân thủ của một học viên thay đổi",
+        "compliance_record_waived": "Yêu cầu tuân thủ của một học viên được miễn",
+        "organization_member_added": "Một người tham gia tổ chức",
+        "organization_member_removed": "Một người bị xóa khỏi tổ chức",
+        "organization_member_updated": "Vai trò hoặc trạng thái của một người thay đổi",
+        "course_published": "Một khóa học được xuất bản",
+        "course_unpublished": "Một khóa học bị hủy xuất bản",
+        "cohort_member_added": "Một người được thêm vào nhóm học tập",
+        "cohort_member_removed": "Một người bị xóa khỏi nhóm học tập",
+        "lesson_session_scheduled": "Một phiên trực tiếp được lên lịch hoặc dời lịch",
+        "course_payment_request_created": "Một học viên yêu cầu thanh toán cho một khóa học"
       },
       "deliveries": {
         "title": "Các lần gửi",

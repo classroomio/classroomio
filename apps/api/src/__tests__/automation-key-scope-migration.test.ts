@@ -47,7 +47,7 @@ const SCOPE_BACKFILLS = [
     ]
   },
   {
-    tag: '0039_mcp_key_organization_scopes',
+    tag: '0041_mcp_key_organization_scopes',
     added: ['organization:read', 'organization:write']
   }
 ];

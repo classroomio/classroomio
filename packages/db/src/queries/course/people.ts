@@ -553,8 +553,6 @@ export async function deleteCourseMember(courseId: string, memberId: string): Pr
       }
 
       await tx.delete(schema.questionAnswer).where(eq(schema.questionAnswer.groupMemberId, memberId));
-      await tx.delete(schema.appsPollSubmission).where(eq(schema.appsPollSubmission.selectedById, memberId));
-
       const [deleted] = await tx
         .delete(schema.groupmember)
         .where(and(eq(schema.groupmember.id, memberId), eq(schema.groupmember.groupId, member.groupId)))
@@ -640,6 +638,24 @@ export async function claimMemberCertificateEarned(memberId: string, earnedAt: s
   } catch (error) {
     console.error('claimMemberCertificateEarned error:', error);
     throw new Error(`Failed to claim certificate earned: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Atomically marks the member's course completion as announced.
+ * Returns true when this caller won the claim, so `course.completed` fires exactly once.
+ */
+export async function claimMemberCompleted(memberId: string, completedAt: string): Promise<boolean> {
+  try {
+    const updated = await db
+      .update(schema.groupmember)
+      .set({ completedAt })
+      .where(and(eq(schema.groupmember.id, memberId), isNull(schema.groupmember.completedAt)))
+      .returning({ id: schema.groupmember.id });
+    return updated.length > 0;
+  } catch (error) {
+    console.error('claimMemberCompleted error:', error);
+    throw new Error(`Failed to claim course completion: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

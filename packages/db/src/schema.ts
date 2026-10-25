@@ -406,31 +406,6 @@ export const currency = pgTable('currency', {
   name: varchar()
 });
 
-export const appsPollOption = pgTable(
-  'apps_poll_option',
-  {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
-      name: 'apps_poll_option_id_seq',
-      startWith: 1,
-      increment: 1,
-      minValue: 1,
-      cache: 1
-    }),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }),
-    pollId: uuid('poll_id'),
-    label: varchar()
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.pollId],
-      foreignColumns: [appsPoll.id],
-      name: 'apps_poll_option_poll_id_fkey'
-    })
-  ]
-);
-
 export const profile = pgTable(
   'profile',
   {
@@ -643,6 +618,7 @@ export const submission = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     exerciseId: uuid('exercise_id').notNull(),
     submittedBy: uuid('submitted_by'),
+    gradedBy: uuid('graded_by'),
     courseId: uuid('course_id'),
     feedback: text()
   },
@@ -994,33 +970,6 @@ export const courseCertificateIssue = pgTable(
   ]
 );
 
-export const appsPoll = pgTable(
-  'apps_poll',
-  {
-    id: uuid().defaultRandom().primaryKey().notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-    question: text(),
-    authorId: uuid(),
-    isPublic: boolean(),
-    status: varchar().default('draft'),
-    expiration: timestamp({ withTimezone: true, mode: 'string' }),
-    courseId: uuid()
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.authorId],
-      foreignColumns: [groupmember.id],
-      name: 'apps_poll_authorId_fkey'
-    }),
-    foreignKey({
-      columns: [table.courseId],
-      foreignColumns: [course.id],
-      name: 'apps_poll_courseId_fkey'
-    })
-  ]
-);
-
 export const videoTranscripts = pgTable('video_transcripts', {
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
@@ -1274,42 +1223,6 @@ export const assetUsage = pgTable(
   ]
 );
 
-export const appsPollSubmission = pgTable(
-  'apps_poll_submission',
-  {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
-      name: 'apps_poll_submision_id_seq',
-      startWith: 1,
-      increment: 1,
-      minValue: 1,
-      cache: 1
-    }),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    pollOptionId: bigint('poll_option_id', { mode: 'number' }),
-    selectedById: uuid('selected_by_id'),
-    pollId: uuid('poll_id')
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.pollId],
-      foreignColumns: [appsPoll.id],
-      name: 'apps_poll_submission_poll_id_fkey'
-    }),
-    foreignKey({
-      columns: [table.pollOptionId],
-      foreignColumns: [appsPollOption.id],
-      name: 'apps_poll_submission_poll_option_id_fkey'
-    }),
-    foreignKey({
-      columns: [table.selectedById],
-      foreignColumns: [groupmember.id],
-      name: 'apps_poll_submission_selected_by_id_fkey'
-    })
-  ]
-);
-
 export const exercise = pgTable(
   'exercise',
   {
@@ -1400,6 +1313,7 @@ export const groupmember = pgTable(
     email: varchar(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     assignedStudentId: varchar('assigned_student_id'),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
     certificateEarnedAt: timestamp('certificate_earned_at', { withTimezone: true, mode: 'string' }),
     certificationEmailSentAt: timestamp('certification_email_sent_at', { withTimezone: true, mode: 'string' })
   },
@@ -2469,7 +2383,7 @@ export const organization = pgTable(
       .notNull(),
     customization: json()
       .default({
-        apps: { poll: true, comments: true },
+        apps: { comments: true },
         course: { grading: true, newsfeed: true },
         dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
       })
@@ -2485,7 +2399,6 @@ export const organization = pgTable(
           grading: boolean;
         };
         apps: {
-          poll: boolean;
           comments: boolean;
         };
       }>()

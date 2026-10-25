@@ -307,7 +307,7 @@ describe('v1 cohort member service', () => {
     await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, payload);
 
     expect(getOrganizationMemberIdByOrgAndProfile).not.toHaveBeenCalled();
-    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload);
+    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload, 'public_api', ACTOR_ID);
   });
 
   it('adds members by profileId when the profile belongs to the organization', async () => {
@@ -317,7 +317,7 @@ describe('v1 cohort member service', () => {
     await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, payload);
 
     expect(getOrganizationMemberIdByOrgAndProfile).toHaveBeenCalledWith(ORG_ID, PROFILE_ID);
-    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload);
+    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload, 'public_api', ACTOR_ID);
   });
 
   it('refuses to add a profileId from another organization', async () => {
@@ -429,7 +429,7 @@ describe('v1 cohort member service', () => {
     await removePublicApiCohortMemberService(ORG_ID, ACTOR_ID, { cohortId: COHORT_ID, memberId: MEMBER_ID });
 
     expect(updateCohortMemberService).toHaveBeenCalledWith(COHORT_ID, MEMBER_ID, { roleId: 2 });
-    expect(removeCohortMemberService).toHaveBeenCalledWith(COHORT_ID, MEMBER_ID);
+    expect(removeCohortMemberService).toHaveBeenCalledWith(COHORT_ID, MEMBER_ID, ACTOR_ID);
   });
 
   it('refuses to touch members of a cohort from another organization', async () => {
@@ -474,7 +474,7 @@ describe('v1 cohort course service', () => {
 
     await addPublicApiCohortCourseService(ORG_ID, ACTOR_ID, cohortParams, { courseId: COURSE_ID });
 
-    expect(addCourseToCohortService).toHaveBeenCalledWith(COHORT_ID, { courseId: COURSE_ID });
+    expect(addCourseToCohortService).toHaveBeenCalledWith(COHORT_ID, { courseId: COURSE_ID }, 'public_api');
   });
 
   it('refuses to add a course when the actor is a student in the cohort', async () => {

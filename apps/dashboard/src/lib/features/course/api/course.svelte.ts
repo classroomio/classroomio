@@ -19,7 +19,6 @@ import type { TCourseType } from '@cio/db/types';
 import { ZCourseCreate, ZCourseUpdate, type TCourseUpdate } from '@cio/utils/validation/course/course';
 import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
 import { syncProgressionAccessToCourse } from '../utils/progression-utils';
-import { capturePosthogEvent } from '$lib/utils/services/posthog';
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
@@ -439,7 +438,6 @@ export class CourseApi extends BaseApiWithErrors {
     onCreated?: (courseId: string) => void
   ) {
     const org = get(currentOrg);
-    const userProfile = get(profile);
 
     // Prepare data for validation
     const data = {
@@ -466,17 +464,6 @@ export class CourseApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         if (response.data?.course) {
           const newCourse = response.data.course;
-
-          // Capture PostHog event
-          capturePosthogEvent('course_created', {
-            course_id: newCourse.id,
-            courseTitle: newCourse.title,
-            courseDescription: newCourse.description,
-            organization_id: org.id,
-            organization_name: org.name,
-            user_id: userProfile.id,
-            user_email: userProfile.email
-          });
 
           orgNavCountsApi.adjustCount('courses', 1);
 

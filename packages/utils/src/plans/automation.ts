@@ -39,6 +39,10 @@ export const MCP_TOOL_CREDIT_COST = {
   get_course_exercise_notify_status: 0,
   list_exercise_templates: 0,
   get_exercise_template: 0,
+  list_course_templates: 0,
+  get_course_template: 0,
+  create_course_from_template: 1,
+  save_course_as_template: 1,
   publish_course_draft: 5,
   publish_course_draft_to_existing_course: 5,
   list_org_cohorts: 0,
@@ -237,6 +241,8 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_course_exercise_notify_status' ||
     toolName === 'list_exercise_templates' ||
     toolName === 'get_exercise_template' ||
+    toolName === 'list_course_templates' ||
+    toolName === 'get_course_template' ||
     toolName === 'list_course_submissions' ||
     toolName === 'get_course_submission' ||
     toolName === 'get_course_marks' ||

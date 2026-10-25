@@ -278,8 +278,22 @@
     {
       "idx": 39,
       "version": "7",
-      "when": 1792924992597,
-      "tag": "0039_mcp_key_organization_scopes",
+      "when": 1792741679148,
+      "tag": "0039_remove_poll_feature",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1792952625947,
+      "tag": "0040_groupmember_completed_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1792960500700,
+      "tag": "0041_mcp_key_organization_scopes",
       "breakpoints": true
     }
   ]

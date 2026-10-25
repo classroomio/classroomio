@@ -137,7 +137,8 @@ describe('v1CohortsRouter invite, learner, and goal-evaluation routes', () => {
       'org-1',
       'actor-1',
       { cohortId: COHORT_ID },
-      { recipientCsv: 'email\nnew@test.dev', sendEmail: true }
+      { recipientCsv: 'email\nnew@test.dev', sendEmail: true },
+      expect.any(String)
     );
   });
 
@@ -168,7 +169,8 @@ describe('v1CohortsRouter invite, learner, and goal-evaluation routes', () => {
       'org-1',
       'actor-1',
       { cohortId: COHORT_ID },
-      { profileIds: [PROFILE_ID], sendEmail: false }
+      { profileIds: [PROFILE_ID], sendEmail: false },
+      expect.any(String)
     );
   });
 

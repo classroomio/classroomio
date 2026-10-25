@@ -28,9 +28,15 @@
       <Page.Subtitle>{$t('automation.mcp.page_subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
     <Page.Action>
-      <Button variant="outline" href={MCP_DOCS_URL} target="_blank" rel="noopener noreferrer">
+      <Button
+        variant="secondary"
+        href={MCP_DOCS_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        testId="automation-mcp-read-docs"
+      >
         <ArrowUpRightIcon size={16} />
-        {$t('automation.mcp.view_docs')}
+        {$t('automation.read_docs')}
       </Button>
     </Page.Action>
   </Page.Header>
