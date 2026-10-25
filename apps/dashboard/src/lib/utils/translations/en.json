@@ -4957,6 +4957,8 @@
       "event_groups": {
         "organization": "Organization",
         "course": "Courses",
+        "cohort": "Cohorts",
+        "compliance": "Compliance",
         "learning": "Learning progress"
       },
       "events": {
@@ -4973,7 +4975,18 @@
         "course_submission_created": "An exercise submission is created",
         "course_submission_status_changed": "A submission status changes, such as when it is graded",
         "lesson_completion_updated": "A lesson is marked complete or reset",
-        "exercise_completion_updated": "An exercise is completed or reset"
+        "exercise_completion_updated": "An exercise is completed or reset",
+        "compliance_record_status_changed": "A student's compliance status changes",
+        "compliance_record_waived": "A student's compliance requirement is waived",
+        "organization_member_added": "A person joins the organization",
+        "organization_member_removed": "A person is removed from the organization",
+        "organization_member_updated": "A person's role or status changes",
+        "course_published": "A course is published",
+        "course_unpublished": "A course is unpublished",
+        "cohort_member_added": "A person is added to a cohort",
+        "cohort_member_removed": "A person is removed from a cohort",
+        "lesson_session_scheduled": "A live session is scheduled or moved",
+        "course_payment_request_created": "A student requests to pay for a course"
       },
       "deliveries": {
         "title": "Deliveries",

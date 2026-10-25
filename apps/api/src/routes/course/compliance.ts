@@ -70,7 +70,7 @@ export const complianceRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const payload = c.req.valid('json');
-        const data = await resetCourseCompliance(courseId, payload);
+        const data = await resetCourseCompliance(courseId, payload, c.get('user')?.id ?? null);
 
         return c.json(
           {
@@ -94,7 +94,7 @@ export const complianceRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const payload = c.req.valid('json');
-        const data = await extendCourseCompliance(courseId, payload);
+        const data = await extendCourseCompliance(courseId, payload, c.get('user')?.id ?? null);
 
         return c.json(
           {

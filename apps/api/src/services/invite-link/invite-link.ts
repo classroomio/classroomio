@@ -12,6 +12,8 @@ import {
 import { createOrganizationMember, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 
 import { ROLE } from '@cio/utils/constants';
+import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import type { TOrganizationmember } from '@cio/db/types';
 import { db } from '@cio/db/drizzle';
 import { generateInviteToken, hashInviteToken } from '@api/utils/invite-token';
 import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
@@ -224,7 +226,7 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
   const organizationId = inviteContext.organization.id;
   const inviteId = inviteContext.invite.id;
 
-  const { wasAlreadyOrgMember, enrollResult } = await db.transaction(async (tx) => {
+  const { wasAlreadyOrgMember, createdOrgMember, enrollResult } = await db.transaction(async (tx) => {
     // Re-read under lock: without this a revoke landing mid-request still grants access.
     const locked = await lockInviteLinkForAccept(tx, inviteId);
 
@@ -238,11 +240,13 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
 
     const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(organizationId, user.id, tx);
 
+    let createdOrgMember: TOrganizationmember | null = null;
+
     if (!orgMemberId) {
       await assertStudentCapacityOrThrow(organizationId, 1);
 
       // `verified` is membership confirmation, not email ownership.
-      await createOrganizationMember(
+      createdOrgMember = await createOrganizationMember(
         {
           organizationId,
           roleId: inviteContext.invite.roleId,
@@ -261,8 +265,12 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
 
     await incrementInviteLinkJoinCount(tx, inviteId);
 
-    return { wasAlreadyOrgMember: Boolean(orgMemberId), enrollResult };
+    return { wasAlreadyOrgMember: Boolean(orgMemberId), createdOrgMember, enrollResult };
   });
+
+  if (createdOrgMember) {
+    await emitOrganizationMemberWebhookEvent('organization.member.added', organizationId, createdOrgMember, user.id);
+  }
 
   // Membership already committed at this point, so a failure here must never
   // surface as an accept failure — that would tell an already-joined user the

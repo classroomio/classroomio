@@ -5129,7 +5129,9 @@
       "event_groups": {
         "organization": "Organizacja",
         "course": "Kursy",
-        "learning": "Postępy w nauce"
+        "learning": "Postępy w nauce",
+        "cohort": "Kohorty",
+        "compliance": "Zgodność"
       },
       "events": {
         "organization_invite_created": "Wysłano zaproszenie do zespołu",
@@ -5145,7 +5147,18 @@
         "course_submission_created": "Utworzono zgłoszenie ćwiczenia",
         "course_submission_status_changed": "Zmienia się status zgłoszenia, na przykład po jego ocenieniu",
         "lesson_completion_updated": "Lekcja została oznaczona jako ukończona lub zresetowana",
-        "exercise_completion_updated": "Ćwiczenie zostało ukończone lub zresetowane"
+        "exercise_completion_updated": "Ćwiczenie zostało ukończone lub zresetowane",
+        "compliance_record_status_changed": "Zmienia się status zgodności studenta",
+        "compliance_record_waived": "Wymóg zgodności studenta zostaje uchylony",
+        "organization_member_added": "Osoba dołącza do organizacji",
+        "organization_member_removed": "Osoba zostaje usunięta z organizacji",
+        "organization_member_updated": "Zmienia się rola lub status osoby",
+        "course_published": "Kurs zostaje opublikowany",
+        "course_unpublished": "Publikacja kursu zostaje wycofana",
+        "cohort_member_added": "Osoba zostaje dodana do kohorty",
+        "cohort_member_removed": "Osoba zostaje usunięta z kohorty",
+        "lesson_session_scheduled": "Sesja na żywo zostaje zaplanowana lub przesunięta",
+        "course_payment_request_created": "Student prosi o możliwość opłacenia kursu"
       },
       "deliveries": {
         "title": "Dostarczenia",
