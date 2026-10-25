@@ -4990,6 +4990,7 @@
     "title": "Automatisierung",
     "subtitle": "Verbinden Sie jetzt MCP-Clients, wobei Zapier und die öffentliche API auf demselben organisationsweiten Schlüsselsystem folgen.",
     "coming_soon": "Kommt bald",
+    "read_docs": "Dokumentation lesen",
     "mcp": {
       "setup": {
         "title": "Client-Setup",
@@ -5022,8 +5023,7 @@
         "rate_limits_description": "Zulässige Lese-/Schreib-/Veröffentlichungsanfragen pro Minute.",
         "used_label": "Verwendet:"
       },
-      "page_subtitle": "Verbinden Sie KI-Tools mit ClassroomIO über organisationsbezogene Schlüssel, die Sie jederzeit rotieren können.",
-      "view_docs": "Dokumentation anzeigen"
+      "page_subtitle": "Verbinden Sie KI-Tools mit ClassroomIO über organisationsbezogene Schlüssel, die Sie jederzeit rotieren können."
     },
     "api": {
       "subtitle": "Verwalten Sie API-Schlüssel zur Integration mit der öffentlichen ClassroomIO-API.",
@@ -5046,8 +5046,7 @@
       "setup": {
         "title": "Schnellstart",
         "description": "Verwenden Sie Ihren API-Schlüssel als Bearer-Token bei jeder Anfrage. Ersetzen Sie den Platzhalter durch einen Schlüssel von oben oder fügen Sie das Geheimnis direkt nach der Erstellung ein."
-      },
-      "view_docs": "Dokumentation anzeigen"
+      }
     },
     "keys": {
       "active": "Aktiv",
