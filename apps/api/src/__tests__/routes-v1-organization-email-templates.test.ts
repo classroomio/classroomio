@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
   authenticate: vi.fn(),
   complete: vi.fn(),
   release: vi.fn(),
-  rateLimitKeys: [] as string[],
+  rateLimitKeys: [] as Array<{ key: string; failClosed?: boolean }>,
   emailTemplates: {
     listEmailTemplatesService: vi.fn(),
     getEmailTemplateService: vi.fn(),
@@ -24,10 +24,10 @@ vi.mock('@hono/node-server/conninfo', () => ({
 vi.mock('@api/middlewares/rate-limiter', () => ({
   createAuthenticationFailureRateLimiter: () => async (_c: Context, next: Next) => next(),
   createRateLimiter:
-    (options: { keyGenerator?: (c: Context) => string } = {}) =>
+    (options: { keyGenerator?: (c: Context) => string; failClosed?: boolean } = {}) =>
     async (c: Context, next: Next) => {
       const key = options.keyGenerator?.(c);
-      if (key?.startsWith('student_email_test:')) mocks.rateLimitKeys.push(key);
+      if (key?.startsWith('student_email_test:')) mocks.rateLimitKeys.push({ key, failClosed: options.failClosed });
       return next();
     }
 }));
@@ -191,10 +191,10 @@ describe('organization email template routes through the v1 router', () => {
     expect((await request('GET', TEMPLATE_PATH)).headers.get('Cache-Control')).toBe('private, no-store');
   });
 
-  it('rate-limits test sends per organization, on the same key as the dashboard', async () => {
+  it('rate-limits test sends per organization, on the same key as the dashboard, failing closed', async () => {
     await request('POST', `${TEMPLATE_PATH}/test`, { recipientEmails: ['a@example.com'] });
 
-    expect(mocks.rateLimitKeys).toEqual(['student_email_test:org-id']);
+    expect(mocks.rateLimitKeys).toEqual([{ key: 'student_email_test:org-id', failClosed: true }]);
   });
 
   it.each([

@@ -37,7 +37,8 @@ const testEmailRateLimit = createRateLimiter({
   windowMs: 15 * 60 * 1000,
   maxRequests: 5,
   message: 'Too many test emails. Please try again later.',
-  keyGenerator: (c) => `student_email_test:${c.get('orgId') ?? 'unknown'}`
+  keyGenerator: (c) => `student_email_test:${c.get('orgId') ?? 'unknown'}`,
+  failClosed: true
 });
 
 export const v1EmailTemplatesRouter = new Hono()
@@ -178,7 +179,10 @@ export const v1EmailTemplatesRouter = new Hono()
         429: {
           description: `More than 5 test emails in 15 minutes for the organization (shared with the dashboard), or: ${mcpRateLimitResponse.description}`
         },
-        503: { description: 'The email could not be queued' }
+        503: {
+          description:
+            'The email could not be queued, or the test-email limit could not be checked (code RATE_LIMIT_UNAVAILABLE)'
+        }
       }
     }),
     testEmailRateLimit,
