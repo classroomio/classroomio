@@ -36,8 +36,12 @@ function buildCspExtensions(): Record<string, string[]> {
   const frameAncestorsExtra = or('CSP_FRAME_ANCESTORS_DOMAINS');
 
   const serverUrl = process.env.PUBLIC_SERVER_URL;
+  const pluginAssetOrigin = process.env.PUBLIC_PLUGIN_ASSET_ORIGIN || process.env.PLUGIN_ASSET_ORIGIN;
   const connectSrc = serverUrl ? [...connectSrcBase, serverUrl] : connectSrcBase;
-  const frameSrc = serverUrl ? [...frameSrcBase, serverUrl] : frameSrcBase;
+  const frameSrcList = [...frameSrcBase];
+  if (serverUrl) frameSrcList.push(serverUrl);
+  if (pluginAssetOrigin) frameSrcList.push(...parseCspDomains(pluginAssetOrigin));
+  const frameSrc = Array.from(new Set(frameSrcList));
 
   const extensions: Record<string, string[]> = {};
   if (scriptSrc.length) extensions['script-src'] = scriptSrc;

@@ -138,7 +138,9 @@
   });
 
   onDestroy(() => {
-    window.removeEventListener('beforeunload', handleBeforeUnload);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    }
     if (themeObserver) {
       themeObserver.disconnect();
       themeObserver = null;

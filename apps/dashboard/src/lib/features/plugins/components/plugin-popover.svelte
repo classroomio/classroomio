@@ -136,10 +136,14 @@
 
     isUpdating = true;
     try {
-      await pluginsApi.install(installTargetPlugin.id, installTargetPlugin.version, $currentOrg.id);
-      snackbar.success($t('plugins.installed_success'));
-      isInstallModalOpen = false;
-      installTargetPlugin = null;
+      const result = await pluginsApi.install(installTargetPlugin.id, installTargetPlugin.version, $currentOrg.id);
+      if (result) {
+        snackbar.success($t('plugins.installed_success'));
+        isInstallModalOpen = false;
+        installTargetPlugin = null;
+      } else {
+        snackbar.error($t('plugins.failed_install'));
+      }
     } catch {
       snackbar.error($t('plugins.failed_install'));
     } finally {
@@ -165,8 +169,12 @@
     isUpdating = true;
     try {
       const nextStatus = checked ? 'active' : 'disabled';
-      await pluginsApi.updateStatus(plugin.installationId, nextStatus, $currentOrg.id);
-      snackbar.success(checked ? $t('plugins.enabled_success') : $t('plugins.disabled_success'));
+      const result = await pluginsApi.updateStatus(plugin.installationId, nextStatus, $currentOrg.id);
+      if (result) {
+        snackbar.success(checked ? $t('plugins.enabled_success') : $t('plugins.disabled_success'));
+      } else {
+        snackbar.error($t('plugins.failed_update'));
+      }
     } catch {
       snackbar.error($t('plugins.failed_update'));
     } finally {

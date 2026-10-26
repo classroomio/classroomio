@@ -1,5 +1,11 @@
 import { AppError } from '@api/utils/errors';
-import { getInstallationById, getInstallationGrants, getUserOrgRole } from '@cio/db/queries';
+import {
+  getInstallationById,
+  getInstallationGrants,
+  getPluginById,
+  getPluginVersionById,
+  getUserOrgRole
+} from '@cio/db/queries';
 import type { TPluginInstallation } from '@cio/db/types';
 import type { PluginPermissionScope } from '@cio/utils/validation/plugin';
 
@@ -56,6 +62,16 @@ export async function authorizePluginRequest(input: AuthorizePluginRequestInput)
 
   if (installation.status !== 'active' || installation.orgApprovalStatus !== 'approved') {
     throw new AppError('Plugin installation is not active or approved', 'INSTALLATION_NOT_ACTIVE', 403);
+  }
+
+  const plugin = await getPluginById(installation.pluginId);
+  if (!plugin || plugin.status === 'revoked') {
+    throw new AppError('Plugin has been revoked', 'PLUGIN_REVOKED', 403);
+  }
+
+  const version = await getPluginVersionById(installation.pluginVersionId);
+  if (!version || version.reviewStatus !== 'approved') {
+    throw new AppError('Plugin version is not approved', 'PLUGIN_VERSION_NOT_APPROVED', 403);
   }
 
   const grants = await getInstallationGrants(input.installationId);
@@ -121,6 +137,11 @@ export async function requireOrganizationInstallation(
   const installation = await getInstallationById(installationId);
   if (!installation || installation.ownerType !== 'organization' || installation.organizationId !== organizationId) {
     throw new AppError('Plugin installation not found', 'INSTALLATION_NOT_FOUND', 404);
+  }
+
+  const plugin = await getPluginById(installation.pluginId);
+  if (!plugin || plugin.status === 'revoked') {
+    throw new AppError('Plugin has been revoked', 'PLUGIN_REVOKED', 403);
   }
 
   return installation;

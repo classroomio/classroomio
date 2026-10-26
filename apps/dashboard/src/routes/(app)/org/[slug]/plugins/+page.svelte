@@ -126,8 +126,12 @@
     processingPluginId = plugin.id;
     try {
       const nextStatus = checked ? 'active' : 'disabled';
-      await pluginsApi.updateStatus(plugin.installationId, nextStatus, $currentOrg.id);
-      snackbar.success(checked ? 'plugins.enabled_success' : 'plugins.disabled_success');
+      const result = await pluginsApi.updateStatus(plugin.installationId, nextStatus, $currentOrg.id);
+      if (result) {
+        snackbar.success(checked ? 'plugins.enabled_success' : 'plugins.disabled_success');
+      } else {
+        snackbar.error('plugins.failed_update');
+      }
     } catch {
       snackbar.error('plugins.failed_update');
     } finally {
@@ -145,10 +149,14 @@
 
     processingPluginId = installTargetPlugin.id;
     try {
-      await pluginsApi.install(installTargetPlugin.id, installTargetPlugin.version, $currentOrg.id);
-      snackbar.success('plugins.installed_success');
-      isInstallModalOpen = false;
-      installTargetPlugin = null;
+      const result = await pluginsApi.install(installTargetPlugin.id, installTargetPlugin.version, $currentOrg.id);
+      if (result) {
+        snackbar.success('plugins.installed_success');
+        isInstallModalOpen = false;
+        installTargetPlugin = null;
+      } else {
+        snackbar.error('plugins.failed_install');
+      }
     } catch {
       snackbar.error('plugins.failed_install');
     } finally {
@@ -166,8 +174,12 @@
 
     processingPluginId = plugin.id;
     try {
-      await pluginsApi.updateStatus(plugin.installationId, 'uninstalled', $currentOrg.id);
-      snackbar.success('plugins.uninstalled_success');
+      const result = await pluginsApi.updateStatus(plugin.installationId, 'uninstalled', $currentOrg.id);
+      if (result) {
+        snackbar.success('plugins.uninstalled_success');
+      } else {
+        snackbar.error('plugins.failed_uninstall');
+      }
     } catch {
       snackbar.error('plugins.failed_uninstall');
     } finally {

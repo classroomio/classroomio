@@ -4,6 +4,7 @@ import {
   createPluginVersion,
   getPluginById,
   getPluginVersion,
+  listPluginVersions,
   updatePluginVersionArtifact,
   upsertPlugin
 } from '@cio/db/queries/plugin';
@@ -61,14 +62,39 @@ export async function publishDevelopmentRelease(options: {
   }
 
   const existingVersion = await getPluginVersion(manifest.id, manifest.version);
-  if (existingVersion && existingVersion.releasedBy !== 'development') {
-    throw new AppError(`Plugin ${manifest.id}@${manifest.version} is an immutable production release`, 'CONFLICT', 409);
+  if (existingVersion) {
+    if (existingVersion.releasedBy !== 'development') {
+      throw new AppError(
+        `Plugin ${manifest.id}@${manifest.version} is an immutable production release`,
+        'CONFLICT',
+        409
+      );
+    }
+    const versionOrgId = (existingVersion.releaseMetadata as Record<string, unknown> | null)?.organizationId;
+    if (versionOrgId && versionOrgId !== options.organizationId) {
+      throw new AppError('Cannot overwrite a development release owned by another organization', 'FORBIDDEN', 403);
+    }
+  }
+
+  const existingPlugin = await getPluginById(manifest.id);
+  if (existingPlugin) {
+    const existingVersions = await listPluginVersions(manifest.id);
+    const foreignDevVersion = existingVersions.find((v) => {
+      const orgId = (v.releaseMetadata as Record<string, unknown> | null)?.organizationId;
+      return orgId && orgId !== options.organizationId;
+    });
+    if (foreignDevVersion) {
+      throw new AppError(
+        'Cannot publish versions for a development plugin owned by another organization',
+        'FORBIDDEN',
+        403
+      );
+    }
   }
 
   const artifactDirectory = getArtifactsTargetDirectory(manifest.id, manifest.version, options.artifactDigest);
   extractEntriesToDirectory(entries, artifactDirectory, options.archive);
 
-  const existingPlugin = await getPluginById(manifest.id);
   if (!existingPlugin) {
     await upsertPlugin({
       id: manifest.id,

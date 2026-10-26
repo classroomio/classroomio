@@ -175,21 +175,36 @@ export function extractEntriesToDirectory(
     throw new AppError('Invalid artifact destination', 'SECURITY_VIOLATION', 400);
   }
 
-  fs.rmSync(resolvedDestination, { recursive: true, force: true });
-  fs.mkdirSync(resolvedDestination, { recursive: true });
+  const parentDir = path.dirname(resolvedDestination);
+  fs.mkdirSync(parentDir, { recursive: true });
 
-  for (const entry of entries) {
-    const filePath = path.resolve(resolvedDestination, entry.path);
-    if (!filePath.startsWith(`${resolvedDestination}${path.sep}`)) {
-      throw new AppError(`Archive contains an invalid path: ${entry.path}`, 'SECURITY_VIOLATION', 400);
+  const tempDestination = path.join(
+    parentDir,
+    `.${path.basename(resolvedDestination)}.tmp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  );
+  fs.rmSync(tempDestination, { recursive: true, force: true });
+  fs.mkdirSync(tempDestination, { recursive: true });
+
+  try {
+    for (const entry of entries) {
+      const filePath = path.resolve(tempDestination, entry.path);
+      if (!filePath.startsWith(`${tempDestination}${path.sep}`)) {
+        throw new AppError(`Archive contains an invalid path: ${entry.path}`, 'SECURITY_VIOLATION', 400);
+      }
+
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      fs.writeFileSync(filePath, entry.content);
     }
 
-    fs.mkdirSync(path.dirname(filePath), { recursive: true });
-    fs.writeFileSync(filePath, entry.content);
-  }
+    if (archiveBuffer) {
+      const archivePath = path.join(tempDestination, 'package.tar.gz');
+      fs.writeFileSync(archivePath, archiveBuffer);
+    }
 
-  if (archiveBuffer) {
-    const archivePath = path.join(resolvedDestination, 'package.tar.gz');
-    fs.writeFileSync(archivePath, archiveBuffer);
+    fs.rmSync(resolvedDestination, { recursive: true, force: true });
+    fs.renameSync(tempDestination, resolvedDestination);
+  } catch (error) {
+    fs.rmSync(tempDestination, { recursive: true, force: true });
+    throw error;
   }
 }

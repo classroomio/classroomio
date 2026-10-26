@@ -2,9 +2,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const getInstallationById = vi.hoisted(() => vi.fn());
 const getInstallationGrants = vi.hoisted(() => vi.fn());
+const getPluginById = vi.hoisted(() => vi.fn());
+const getPluginVersionById = vi.hoisted(() => vi.fn());
 const getUserOrgRole = vi.hoisted(() => vi.fn());
 
-vi.mock('@cio/db/queries', () => ({ getInstallationById, getInstallationGrants, getUserOrgRole }));
+vi.mock('@cio/db/queries', () => ({
+  getInstallationById,
+  getInstallationGrants,
+  getPluginById,
+  getPluginVersionById,
+  getUserOrgRole
+}));
 
 import { authorizePluginRequest, requireOrganizationInstallation } from '@api/services/plugin/authorization';
 
@@ -13,6 +21,8 @@ describe('requireOrganizationInstallation', () => {
     vi.clearAllMocks();
     getInstallationGrants.mockResolvedValue([]);
     getUserOrgRole.mockResolvedValue(1);
+    getPluginById.mockResolvedValue({ id: 'test-plugin', status: 'published' });
+    getPluginVersionById.mockResolvedValue({ id: 'test-version', reviewStatus: 'approved' });
   });
 
   it('returns an organization installation only to its owning tenant', async () => {
@@ -147,6 +157,53 @@ describe('requireOrganizationInstallation', () => {
 
     await expect(authorizePluginRequest(authorization)).rejects.toMatchObject({
       code: 'FORBIDDEN',
+      statusCode: 403
+    });
+  });
+
+  it('rejects authorization when the plugin has been revoked', async () => {
+    getInstallationById.mockResolvedValue({
+      id: '90d329c9-df43-416c-a8b6-1a739d2be966',
+      pluginId: 'test-plugin',
+      pluginVersionId: 'test-version',
+      ownerType: 'organization',
+      organizationId: 'f993bf31-e76f-4f5b-831c-c05f2f571bd0',
+      status: 'active',
+      orgApprovalStatus: 'approved'
+    });
+    getPluginById.mockResolvedValue({ id: 'test-plugin', status: 'revoked' });
+
+    await expect(
+      authorizePluginRequest({
+        installationId: '90d329c9-df43-416c-a8b6-1a739d2be966',
+        organizationId: 'f993bf31-e76f-4f5b-831c-c05f2f571bd0'
+      })
+    ).rejects.toMatchObject({
+      code: 'PLUGIN_REVOKED',
+      statusCode: 403
+    });
+  });
+
+  it('rejects authorization when the plugin version is not approved', async () => {
+    getInstallationById.mockResolvedValue({
+      id: '90d329c9-df43-416c-a8b6-1a739d2be966',
+      pluginId: 'test-plugin',
+      pluginVersionId: 'test-version',
+      ownerType: 'organization',
+      organizationId: 'f993bf31-e76f-4f5b-831c-c05f2f571bd0',
+      status: 'active',
+      orgApprovalStatus: 'approved'
+    });
+    getPluginById.mockResolvedValue({ id: 'test-plugin', status: 'published' });
+    getPluginVersionById.mockResolvedValue({ id: 'test-version', reviewStatus: 'pending' });
+
+    await expect(
+      authorizePluginRequest({
+        installationId: '90d329c9-df43-416c-a8b6-1a739d2be966',
+        organizationId: 'f993bf31-e76f-4f5b-831c-c05f2f571bd0'
+      })
+    ).rejects.toMatchObject({
+      code: 'PLUGIN_VERSION_NOT_APPROVED',
       statusCode: 403
     });
   });

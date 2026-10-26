@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { Hono } from '@api/utils/hono';
-import { getPluginVersion } from '@cio/db/queries/plugin';
+import { getPluginById, getPluginVersion } from '@cio/db/queries/plugin';
 
 const MIME_MAP: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -78,6 +78,11 @@ export const pluginAssetsRouter = new Hono().get('/:pluginId/:version/:digest/:a
 
   if (!assetPath || assetPath.includes('..') || assetPath.startsWith('/')) {
     return c.text('Invalid asset path', 400);
+  }
+
+  const pluginRecord = await getPluginById(pluginId);
+  if (!pluginRecord || pluginRecord.status === 'revoked') {
+    return c.text('Plugin artifact not found', 404);
   }
 
   const versionRecord = await getPluginVersion(pluginId, version);
