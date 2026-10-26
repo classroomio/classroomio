@@ -47,6 +47,7 @@
     formatPeopleShortDate,
     getMemberAvatarUrl,
     getMemberProgressPercent,
+    getMemberRoleLabel,
     isStudentMember,
     obscureMemberEmail
   } from '$features/course/utils/people-utils';
@@ -163,7 +164,7 @@
 
   // Stage is resolved in TypeScript after pagination, so it has no server sort key.
   const tableColumns: { label: string; sortKey?: ListPeopleQuery['sortBy']; wide?: boolean }[] = $derived([
-    { label: $t('course.navItem.people.learner'), sortKey: 'name' },
+    { label: $t('course.navItem.people.name'), sortKey: 'name' },
     { label: $t('course.navItem.people.progress'), sortKey: 'progress' },
     { label: $t('course.navItem.people.stage'), wide: true },
     { label: $t('course.navItem.people.last_login_at'), sortKey: 'lastLogin' },
@@ -333,6 +334,7 @@
                 onkeydown={(event) => handleRowKeydown(person, event)}
               >
                 <Table.Cell class="min-w-[220px]">
+                  {@const roleLabel = getMemberRoleLabel(person)}
                   {#if person.profile}
                     <div class="flex items-start lg:items-center">
                       <Avatar.Root class="mr-3">
@@ -348,8 +350,13 @@
                       </Avatar.Root>
                       <div class="flex flex-col items-start lg:flex-row lg:items-center">
                         <div class="mr-2">
-                          <p class="text-base font-normal dark:text-white">
-                            {person.profile.fullname}
+                          <p class="flex items-center gap-1.5 text-base font-normal dark:text-white">
+                            <span class="truncate">{person.profile.fullname}</span>
+                            {#if roleLabel}
+                              <Badge variant="secondary" class="shrink-0 px-1.5 py-0 text-[10px] leading-4 font-medium">
+                                {$t(roleLabel)}
+                              </Badge>
+                            {/if}
                           </p>
                           <p class="ui:text-primary line-clamp-1 text-xs">
                             {obscureMemberEmail(getEmail(person))}
@@ -385,6 +392,11 @@
                       <a href="mailto:{person.email}" class="text-md ui:text-primary mr-2 dark:text-white">
                         {person.email}
                       </a>
+                      {#if roleLabel}
+                        <Badge variant="secondary" class="mr-2 shrink-0 px-1.5 py-0 text-[10px] leading-4 font-medium">
+                          {$t(roleLabel)}
+                        </Badge>
+                      {/if}
                       <div class="flex items-center justify-between">
                         <RoleBasedSecurity allowedRoles={[1, 2]}>
                           <Button

@@ -8,8 +8,7 @@ export const DEFAULT_COMPLIANCE_SETTINGS = {
   reminderDaysBefore: [30, 7, 1],
   isMandatory: true,
   framework: null,
-  maxRetakeAttempts: null,
-  passingScore: 80
+  maxRetakeAttempts: null
 } satisfies TComplianceSettings;
 
 export function isSelfPacedLikeCourse(courseType: TCourseType | null | undefined): boolean {

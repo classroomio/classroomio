@@ -6,7 +6,9 @@ const mocks = vi.hoisted(() => ({
   getCourseProgress: vi.fn(),
   getCourseOrganizationId: vi.fn(),
   getActiveOrganizationPlan: vi.fn(),
-  claimMemberCertificateEarned: vi.fn()
+  claimMemberCertificateEarned: vi.fn(),
+  claimMemberCompleted: vi.fn(),
+  emitWebhookEvent: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/course/course', () => ({
@@ -15,15 +17,12 @@ vi.mock('@cio/db/queries/course/course', () => ({
   getCourseProgress: mocks.getCourseProgress
 }));
 
-vi.mock('@cio/db/queries/course/certification-exercise', () => ({
-  exerciseBelongsToCourse: vi.fn(),
-  getExerciseTitleAndMaxPoints: vi.fn(),
-  getStudentSubmissionsForExercise: vi.fn()
+vi.mock('@cio/db/queries/course/people', () => ({
+  claimMemberCertificateEarned: mocks.claimMemberCertificateEarned,
+  claimMemberCompleted: mocks.claimMemberCompleted
 }));
 
-vi.mock('@cio/db/queries/course/people', () => ({
-  claimMemberCertificateEarned: mocks.claimMemberCertificateEarned
-}));
+vi.mock('@cio/core/services/webhook/emit', () => ({ emitWebhookEvent: mocks.emitWebhookEvent }));
 
 vi.mock('@cio/db/queries/tag', () => ({
   getCourseOrganizationId: mocks.getCourseOrganizationId
@@ -41,7 +40,7 @@ vi.mock('@api/utils/course-completion', async (importOriginal) => {
   return { ...actual, scheduleCertificationCompletionWork: vi.fn() };
 });
 
-import { assertCertificateDownloadAllowed } from '../completion';
+import { assertCertificateDownloadAllowed, evaluateCourseCertification } from '../completion';
 
 const completedProgress = {
   groupMemberId: 'member-1',
@@ -49,6 +48,7 @@ const completedProgress = {
   lessonsCount: 2,
   exercisesCompleted: 0,
   exercisesCount: 0,
+  completedAt: null,
   certificateEarnedAt: null
 };
 
@@ -86,5 +86,68 @@ describe('assertCertificateDownloadAllowed', () => {
     await expect(assertCertificateDownloadAllowed('course-1', 'ada')).rejects.toMatchObject({
       code: 'UPGRADE_REQUIRED'
     });
+  });
+});
+
+describe('evaluateCourseCertification webhooks', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.getCourseProgress.mockResolvedValue(completedProgress);
+    mocks.getCourseCertificationRow.mockResolvedValue({ orgId: 'org-1', type: 'SELF_PACED', certificate: {} });
+    mocks.claimMemberCompleted.mockResolvedValue(true);
+    mocks.claimMemberCertificateEarned.mockResolvedValue(true);
+  });
+
+  it('emits course.completed without a certificate when the plan has no certificates', async () => {
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'BASIC' });
+
+    await evaluateCourseCertification('course-1', 'ada');
+
+    const emittedTypes = mocks.emitWebhookEvent.mock.calls.map(([, type]) => type);
+    expect(emittedTypes).toEqual(['course.completed']);
+    expect(mocks.claimMemberCertificateEarned).not.toHaveBeenCalled();
+  });
+
+  it('emits both events when the plan includes certificates', async () => {
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
+
+    await evaluateCourseCertification('course-1', 'ada');
+
+    const emittedTypes = mocks.emitWebhookEvent.mock.calls.map(([, type]) => type);
+    expect(emittedTypes).toEqual(['course.completed', 'course.certificate.issued']);
+  });
+
+  it('does not announce completion twice', async () => {
+    mocks.getCourseProgress.mockResolvedValue({ ...completedProgress, completedAt: '2026-10-01T00:00:00Z' });
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'BASIC' });
+
+    await evaluateCourseCertification('course-1', 'ada');
+
+    expect(mocks.emitWebhookEvent).not.toHaveBeenCalled();
+    expect(mocks.claimMemberCompleted).not.toHaveBeenCalled();
+  });
+
+  it('announces a completion made after the certificate deadline without issuing a certificate', async () => {
+    mocks.getCourseCertificationRow.mockResolvedValue({
+      orgId: 'org-1',
+      type: 'SELF_PACED',
+      certificate: { deadline: '2020-01-01T00:00:00.000Z' }
+    });
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
+
+    await evaluateCourseCertification('course-1', 'ada');
+
+    const emittedTypes = mocks.emitWebhookEvent.mock.calls.map(([, type]) => type);
+    expect(emittedTypes).toEqual(['course.completed']);
+    expect(mocks.claimMemberCertificateEarned).not.toHaveBeenCalled();
+  });
+
+  it('leaves the completion of a compliance course to the compliance cycle', async () => {
+    mocks.getCourseCertificationRow.mockResolvedValue({ orgId: 'org-1', type: 'COMPLIANCE', certificate: {} });
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
+
+    await evaluateCourseCertification('course-1', 'ada');
+
+    expect(mocks.emitWebhookEvent).not.toHaveBeenCalled();
   });
 });

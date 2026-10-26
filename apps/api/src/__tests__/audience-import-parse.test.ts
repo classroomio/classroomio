@@ -132,4 +132,16 @@ describe('isImportableEmail', () => {
   it.each(['ada', 'ada@', '@test.dev', 'ada@test', 'a b@test.dev'])('rejects %s', (email) => {
     expect(isImportableEmail(email)).toBe(false);
   });
+
+  it('rejects an address longer than 254 characters', () => {
+    expect(isImportableEmail(`${'a'.repeat(245)}@test.dev`)).toBe(true);
+    expect(isImportableEmail(`${'a'.repeat(246)}@test.dev`)).toBe(false);
+  });
+
+  it('rejects a very long string without a dot quickly', () => {
+    const started = performance.now();
+
+    expect(isImportableEmail(`a@${'a'.repeat(100_000)}`)).toBe(false);
+    expect(performance.now() - started).toBeLessThan(50);
+  });
 });

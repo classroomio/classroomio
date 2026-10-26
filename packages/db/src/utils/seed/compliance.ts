@@ -501,8 +501,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
         gracePeriodDays: 14,
         reminderDaysBefore: [30, 14, 7, 1],
         isMandatory: true,
-        framework: 'HIPAA',
-        passingScore: 80
+        framework: 'HIPAA'
       },
       status: 'ACTIVE',
       type: 'COMPLIANCE'
@@ -537,8 +536,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
         gracePeriodDays: 7,
         reminderDaysBefore: [14, 7, 1],
         isMandatory: true,
-        framework: 'ISO',
-        passingScore: 85
+        framework: 'ISO'
       },
       status: 'ACTIVE',
       type: 'COMPLIANCE'

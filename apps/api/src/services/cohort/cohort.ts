@@ -1,3 +1,5 @@
+import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import type { TOrganizationmember } from '@cio/db/types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type TCreateCohort,
@@ -63,6 +65,9 @@ import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
+import type { TGroupmember } from '@cio/db/types';
+import type { TEventSource } from '@cio/core/services/posthog';
+import { captureLearnersEnrolled } from '@api/services/product-events';
 
 type CohortMemberEnrollment = {
   profileId: string;
@@ -90,7 +95,8 @@ async function listCohortCourseGroups(cohortId: string): Promise<CohortCourseGro
 async function enrollCohortStudentsInGroups(
   organizationId: string,
   groupIds: string[],
-  members: CohortMemberEnrollment[]
+  members: CohortMemberEnrollment[],
+  source: TEventSource
 ) {
   const studentMembers = members.filter((member) => member.profileId && member.roleId === ROLE.STUDENT);
   const uniqueGroupIds = [...new Set(groupIds)];
@@ -126,14 +132,22 @@ async function enrollCohortStudentsInGroups(
   );
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+  let createdOrganizationMembers: TOrganizationmember[] = [];
 
-  await db.transaction(async (tx) => {
+  const enrolledMembers = await db.transaction(async (tx) => {
     studentMilestoneNotification = await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size, tx, {
       deferNotification: true
     });
-    await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
-    await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
+    createdOrganizationMembers = await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
+
+    return insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
   });
+
+  captureLearnersEnrolled(enrolledMembers, 'cohort', source);
+
+  for (const createdMember of createdOrganizationMembers) {
+    await emitOrganizationMemberWebhookEvent('organization.member.added', organizationId, createdMember);
+  }
 
   if (studentMilestoneNotification) {
     notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
@@ -324,8 +338,12 @@ export async function listCohortMembersPage(cohortId: string, page: TCohortListP
   return { items, total };
 }
 
-export async function addCohortMembers(cohortId: string, data: TAddCohortMembers) {
-  const results = await addCohortMembersSettled(cohortId, data);
+export async function addCohortMembers(
+  cohortId: string,
+  data: TAddCohortMembers,
+  actorProfileId: string | null = null
+) {
+  const results = await addCohortMembersSettled(cohortId, data, 'dashboard', actorProfileId);
 
   const added = results
     .filter((r) => r.status === 'fulfilled')
@@ -338,7 +356,12 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
 }
 
 /** One settled result per `data.members` entry, in request order. */
-export async function addCohortMembersSettled(cohortId: string, data: TAddCohortMembers) {
+export async function addCohortMembersSettled(
+  cohortId: string,
+  data: TAddCohortMembers,
+  source: TEventSource = 'dashboard',
+  actorProfileId: string | null = null
+) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -377,6 +400,8 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
 
         const transactionResult = await db.transaction(async (tx) => {
           let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+          let enrolledMembers: TGroupmember[] = [];
+          let createdOrgMembers: TOrganizationmember[] = [];
           const member = await addCohortMember(
             {
               cohortId,
@@ -401,7 +426,7 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
               });
             }
 
-            await insertOrganizationMembersOnConflictDoNothing(
+            createdOrgMembers = await insertOrganizationMembersOnConflictDoNothing(
               [
                 {
                   organizationId: cohort.organizationId,
@@ -414,7 +439,7 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
               tx
             );
 
-            await insertGroupMembersOnConflictDoNothing(
+            enrolledMembers = await insertGroupMembersOnConflictDoNothing(
               validCourseGroupIds.map((groupId) => ({
                 groupId,
                 roleId: ROLE.STUDENT,
@@ -442,13 +467,34 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
             );
           }
 
-          return { member, studentMilestoneNotification };
+          return { member, studentMilestoneNotification, enrolledMembers, createdOrgMembers };
         });
+
+        captureLearnersEnrolled(transactionResult.enrolledMembers, 'cohort', source);
 
         if (transactionResult.studentMilestoneNotification) {
           notifyStudentMilestone(transactionResult.studentMilestoneNotification).catch((error) => {
             console.error('notifyStudentMilestone error:', error);
           });
+        }
+
+        for (const createdOrgMember of transactionResult.createdOrgMembers) {
+          await emitOrganizationMemberWebhookEvent(
+            'organization.member.added',
+            cohort.organizationId,
+            createdOrgMember,
+            actorProfileId
+          );
+        }
+
+        if (transactionResult.member) {
+          await emitCohortMemberWebhookEvent(
+            'cohort.member.added',
+            cohort.organizationId,
+            cohortId,
+            transactionResult.member,
+            actorProfileId
+          );
         }
 
         return transactionResult.member;
@@ -464,11 +510,26 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
   }
 }
 
-export async function removeCohortMemberService(cohortId: string, memberId: string) {
+export async function removeCohortMemberService(
+  cohortId: string,
+  memberId: string,
+  actorProfileId: string | null = null
+) {
   try {
     const deleted = await removeCohortMember(cohortId, memberId);
     if (!deleted) {
       throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
+    }
+
+    const cohort = await getCohortById(cohortId);
+    if (cohort) {
+      await emitCohortMemberWebhookEvent(
+        'cohort.member.removed',
+        cohort.organizationId,
+        cohortId,
+        deleted,
+        actorProfileId
+      );
     }
 
     return deleted;
@@ -580,7 +641,11 @@ export async function listCohortCourses(cohortId: string, profileId: string) {
   }
 }
 
-export async function addCourseToCohortService(cohortId: string, data: TAddCourseToCohort) {
+export async function addCourseToCohortService(
+  cohortId: string,
+  data: TAddCourseToCohort,
+  source: TEventSource = 'dashboard'
+) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -632,7 +697,7 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
     });
 
     if (students.length > 0 && courseGroupIds.length > 0) {
-      await enrollCohortStudentsInGroups(cohort.organizationId, courseGroupIds, students);
+      await enrollCohortStudentsInGroups(cohort.organizationId, courseGroupIds, students, source);
     }
 
     return result;

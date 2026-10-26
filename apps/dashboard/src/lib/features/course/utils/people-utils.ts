@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import type { CourseMember, ListPeopleQuery, ListPeopleRequestQuery } from '$features/course/utils/types';
 import { ROLE } from '@cio/utils/constants';
+import { ROLE_LABEL } from '$lib/utils/constants/roles';
 
 export type CourseMemberStage = NonNullable<CourseMember['stage']>;
 
@@ -37,6 +38,15 @@ export function formatPeopleShortDate(value: string | null | undefined): string 
 
 export function isStudentMember(member: CourseMember): boolean {
   return member.roleId === ROLE.STUDENT && !!member.profileId;
+}
+
+/**
+ * Returns the translation key for the member's course role, or undefined when unknown.
+ */
+export function getMemberRoleLabel(member: CourseMember): string | undefined {
+  if (!member.roleId) return undefined;
+
+  return ROLE_LABEL[member.roleId as keyof typeof ROLE_LABEL];
 }
 
 export function getMemberProgressPercent(member: CourseMember): number | null {

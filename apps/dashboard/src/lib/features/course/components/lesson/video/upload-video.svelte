@@ -156,34 +156,36 @@
         }
 
         const hlsManifestUrl = `/hls/${result.assetId}/master.m3u8`;
-        lessonApi.updateLessonState(
-          'videos',
-          [
-            {
-              type: 'upload',
-              link: hlsManifestUrl,
-              assetId: result.assetId,
-              fileName: videoFile.name,
-              metadata: {
+        if (_lessonId) {
+          lessonApi.updateLessonState(
+            'videos',
+            [
+              {
+                type: 'upload',
+                link: hlsManifestUrl,
+                assetId: result.assetId,
                 fileName: videoFile.name,
-                createdAt: new Date().toISOString(),
-                hls: true,
-                sourceWidth: result.sourceWidth,
-                sourceHeight: result.sourceHeight,
-                hlsRenditions: result.hlsRenditions,
-                hls1080Status: result.hls1080Status,
-                ...(result.thumbnailUrl ? { thumbnailUrl: result.thumbnailUrl } : {})
+                metadata: {
+                  fileName: videoFile.name,
+                  createdAt: new Date().toISOString(),
+                  hls: true,
+                  sourceWidth: result.sourceWidth,
+                  sourceHeight: result.sourceHeight,
+                  hlsRenditions: result.hlsRenditions,
+                  hls1080Status: result.hls1080Status,
+                  ...(result.thumbnailUrl ? { thumbnailUrl: result.thumbnailUrl } : {})
+                }
+              } as {
+                type: 'upload';
+                link: string;
+                assetId?: string;
+                metadata?: Record<string, unknown>;
+                fileName?: string;
               }
-            } as {
-              type: 'upload';
-              link: string;
-              assetId?: string;
-              metadata?: Record<string, unknown>;
-              fileName?: string;
-            }
-          ],
-          { append: true }
-        );
+            ],
+            { append: true }
+          );
+        }
 
         formRes = {
           url: hlsManifestUrl,
@@ -249,59 +251,42 @@
       if (normalizedDurationSeconds != null) metadata.duration = normalizedDurationSeconds;
 
       const lessonVideoPosition = Array.isArray(lessonApi.lesson?.videos) ? lessonApi.lesson?.videos.length : 0;
-      let assetId: string | undefined;
-      if (_lessonId) {
-        const asset = await mediaApi.registerUploadedLessonVideo({
-          lessonId: _lessonId,
-          position: lessonVideoPosition,
-          fileKey,
-          videoUrl: formRes.url!,
-          fileName: videoFile.name,
-          mimeType: videoFile.type,
-          byteSize: videoFile.size,
-          thumbnailUrl,
-          durationSeconds: normalizedDurationSeconds
-        });
-        assetId = asset?.id;
-      } else {
-        const asset = await mediaApi.createAsset({
-          kind: 'video',
-          provider: 'upload',
-          storageProvider: 's3',
-          storageKey: fileKey,
-          sourceUrl: formRes.url!,
-          mimeType: videoFile.type,
-          byteSize: videoFile.size,
-          title: videoFile.name,
-          thumbnailUrl,
-          durationSeconds: normalizedDurationSeconds,
-          isExternal: false,
-          metadata
-        });
-        assetId = asset?.id;
-      }
+      const asset = await mediaApi.registerUploadedVideo({
+        lessonId: _lessonId,
+        position: lessonVideoPosition,
+        fileKey,
+        videoUrl: formRes.url!,
+        fileName: videoFile.name,
+        mimeType: videoFile.type,
+        byteSize: videoFile.size,
+        thumbnailUrl,
+        durationSeconds: normalizedDurationSeconds
+      });
+      const assetId = asset?.id;
 
-      lessonApi.updateLessonState(
-        'videos',
-        [
-          {
-            type: 'upload',
-            link: formRes.url!,
-            key: formRes?.fileKey,
-            assetId,
-            fileName: videoFile.name,
-            metadata
-          } as {
-            type: 'upload';
-            link: string;
-            key?: string;
-            assetId?: string;
-            metadata?: Record<string, unknown>;
-            fileName?: string;
-          }
-        ],
-        { append: true }
-      );
+      if (_lessonId) {
+        lessonApi.updateLessonState(
+          'videos',
+          [
+            {
+              type: 'upload',
+              link: formRes.url!,
+              key: formRes?.fileKey,
+              assetId,
+              fileName: videoFile.name,
+              metadata
+            } as {
+              type: 'upload';
+              link: string;
+              key?: string;
+              assetId?: string;
+              metadata?: Record<string, unknown>;
+              fileName?: string;
+            }
+          ],
+          { append: true }
+        );
+      }
 
       if (assetId) {
         startProcessingPoll(assetId);

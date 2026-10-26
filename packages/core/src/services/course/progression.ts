@@ -3,6 +3,7 @@ import { AppError, ErrorCodes } from '@cio/utils/errors';
 import {
   computeProgressionAccess,
   flattenNavigableItems,
+  type CourseProgressionMode,
   type ProgressionLockReason
 } from '@cio/utils/functions/course-progression';
 import type { CourseContentItemRow } from '@cio/db/queries/course/content';
@@ -40,7 +41,7 @@ export type AnnotatedCourseContent = {
 function annotateNavigableAccess(params: {
   navigableItems: CourseContentItem[];
   lessonPolicyById: Map<string, LessonProgressionPolicy>;
-  progressionMode: 'free' | 'sequential';
+  progressionMode: CourseProgressionMode;
   completedLessonIds: Set<string>;
   completedExerciseIds: Set<string>;
 }): Map<string, { accessible: boolean; lockReason: ProgressionLockReason | null }> {
@@ -111,7 +112,7 @@ export async function annotateCourseContentWithProgression(params: {
   courseId: string;
   profileId: string;
   roleId: number | null;
-  progressionMode?: 'free' | 'sequential';
+  progressionMode?: CourseProgressionMode;
   contentRows: CourseContentItemRow[];
   isContentGroupingEnabled: boolean;
 }): Promise<AnnotatedCourseContent> {
@@ -166,7 +167,7 @@ export async function assertStudentCanAccessContent(params: {
   roleId: number | null;
   contentId: string;
   type: ContentType.Lesson | ContentType.Exercise;
-  progressionMode?: 'free' | 'sequential';
+  progressionMode?: CourseProgressionMode;
   contentRows: CourseContentItemRow[];
   isContentGroupingEnabled: boolean;
 }): Promise<void> {

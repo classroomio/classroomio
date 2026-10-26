@@ -17,6 +17,7 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { COHORT_TEAM_RULE, cohortForbiddenResponses } from './docs';
 import { errorResponses, itemResponse, jsonResponse, nullableItemResponse } from '@api/utils/openapi/responses';
@@ -27,7 +28,7 @@ export const v1CohortInvitesRouter = new Hono()
   .post(
     '/invite',
     describeRoute({
-      description: `Invite students to a cohort by email, the same flow as the dashboard's invite modal. recipientCsv is a CSV of emails (optionally with names). For each row: an email that is not yet in your organization gets an organization invite (valid for 7 days) tagged with this cohort, so accepting it joins the cohort; an existing student in your organization is enrolled in the cohort directly; staff (admins/tutors) are skipped; invalid and repeated emails are reported per row. When sendEmail is true (default), invite and welcome emails are queued; emailsSent counts queued emails, not confirmed deliveries. Seat limits apply. ${COHORT_TEAM_RULE}`,
+      description: `Invite students to a cohort by email, the same flow as the dashboard's invite modal; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Invites'],
       responses: {
         201: jsonResponse(
@@ -48,7 +49,7 @@ export const v1CohortInvitesRouter = new Hono()
         const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const result = await invitePublicApiCohortStudentsService(orgId, actorId, params, payload);
+        const result = await invitePublicApiCohortStudentsService(orgId, actorId, params, payload, getEventSource(c));
 
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
@@ -59,7 +60,7 @@ export const v1CohortInvitesRouter = new Hono()
   .post(
     '/invite/assign',
     describeRoute({
-      description: `Add existing students from your organization's audience to a cohort, the same as the dashboard's "assign existing" option. Only profiles that are already students in your organization are assigned; any other profileId (including one from another organization) is skipped and not counted. When sendEmail is true (default), a cohort welcome email is queued for each newly assigned student. ${COHORT_TEAM_RULE}`,
+      description: `Add students already in your organization's audience to a cohort; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Invites'],
       responses: {
         200: jsonResponse('Students assigned', itemResponse(ZPublicApiAssignStudentsToCohortResponse)),
@@ -77,7 +78,7 @@ export const v1CohortInvitesRouter = new Hono()
         const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const result = await assignPublicApiCohortStudentsService(orgId, actorId, params, payload);
+        const result = await assignPublicApiCohortStudentsService(orgId, actorId, params, payload, getEventSource(c));
 
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
@@ -88,10 +89,13 @@ export const v1CohortInvitesRouter = new Hono()
   .get(
     '/invite-link',
     describeRoute({
-      description: `Get the cohort's shareable student join link. data is null if no link has been created yet. ${COHORT_TEAM_RULE}`,
+      description: `Get the cohort's shareable student join link; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Invites'],
       responses: {
-        200: jsonResponse('Invite link returned', nullableItemResponse(ZPublicApiCohortInviteLinkResponse)),
+        200: jsonResponse(
+          'Invite link returned; data is null if no link has been created yet',
+          nullableItemResponse(ZPublicApiCohortInviteLinkResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
@@ -115,10 +119,10 @@ export const v1CohortInvitesRouter = new Hono()
   .post(
     '/invite-link',
     describeRoute({
-      description: `Get the cohort's shareable student join link, creating it on the first call. Calling it again returns the same link. ${COHORT_TEAM_RULE}`,
+      description: `Get the cohort's shareable student join link, creating it on the first call; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Invites'],
       responses: {
-        200: jsonResponse('Invite link returned', InviteLinkResponse),
+        200: jsonResponse('Invite link returned; repeat calls return the same link', InviteLinkResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
@@ -142,7 +146,7 @@ export const v1CohortInvitesRouter = new Hono()
   .patch(
     '/invite-link',
     describeRoute({
-      description: `Disable (isRevoked: true) or re-enable (isRevoked: false) the cohort's join link. The link keeps the same URL. ${COHORT_TEAM_RULE}`,
+      description: `Disable or re-enable the cohort's student join link; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Invites'],
       responses: {
         200: jsonResponse('Invite link updated', InviteLinkResponse),

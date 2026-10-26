@@ -344,7 +344,7 @@
         {:else}
           <CourseContentIcon type={contentItem.type} size={14} />
         {/if}
-        <span class="flex-1 truncate" title={contentItem.title}>{contentItem.title}</span>
+        <span class="min-w-0 flex-1 truncate" title={contentItem.title}>{contentItem.title}</span>
         <div class="ml-auto flex items-center gap-1">
           {#if canManageContent}
             <div class="hidden items-center gap-2 group-focus-within/content-row:flex group-hover/content-row:flex">
@@ -420,127 +420,129 @@
   />
 {/snippet}
 
-<div class="{className} ui:group-data-[collapsible=icon]:hidden">
-  <ul
-    data-sidebar-outline
-    use:dragHandleZone={{
-      items: outline,
-      type: 'course-sidebar-outline',
-      dragDisabled: !canManageContent || saving,
-      dropTargetStyle: { outline: '2px solid var(--color-primary)' },
-      transformDraggedElement: collapseDraggedSection
-    }}
-    onconsider={(event) => handleConsider(null, event)}
-    onfinalize={(event) => handleFinalize(null, event)}
-    class="min-h-8 list-none"
-  >
-    {#each outline as entry (entry.id)}
-      <li
-        data-is-dnd-shadow-item-hint={(entry as SidebarOutlineEntry & Record<string, unknown>)[
-          SHADOW_ITEM_MARKER_PROPERTY_NAME
-        ]}
-      >
-        {#if entry.kind === 'item'}
-          {@render contentItemRow(entry.item)}
-        {:else}
-          {@const section = entry.section}
-          {@const sectionProgress = getContentItemsProgress(
-            entry.items.flatMap((child) => (child.kind === 'item' ? [child.item] : []))
-          )}
-          {@const sectionOpen = isSectionOpen(section.id)}
-          <Collapsible.Root
-            open={sectionOpen}
-            onOpenChange={(open) => handleSectionOpenChange(section.id, open)}
-            class="group/section"
-          >
-            {#snippet child({ props })}
-              <div {...props} data-sidebar-section-id={section.id}>
-                <Collapsible.Trigger>
-                  {#snippet child({ props })}
-                    <Sidebar.MenuSubButton
-                      {...props}
-                      class="group/content-row flex w-full items-center gap-2 font-medium"
-                    >
-                      {#if canManageContent}
-                        <span
-                          use:dragHandle
-                          role="button"
-                          tabindex="0"
-                          onkeydown={(event) => {
-                            if (event.key === 'Enter' || event.key === ' ') event.preventDefault();
-                          }}
-                          class="outline-handle relative flex size-3.5 shrink-0 cursor-grab items-center justify-center"
-                          aria-label={$t('course.navItem.lessons.drag')}
-                          onclick={(event) => {
-                            event.preventDefault();
-                            event.stopPropagation();
-                          }}
-                        >
-                          {@render sectionChevron('outline-icon')}
-                          <GripVerticalIcon class="outline-grip absolute size-3.5" />
-                        </span>
-                      {:else}
-                        {@render sectionChevron()}
-                      {/if}
-
-                      <span class="flex-1 truncate">{section.title}</span>
-
-                      <div class="ml-auto flex items-center gap-1">
-                        {#if sectionProgress.total > 0}
-                          {#if isStudent}
-                            <span
-                              class="shrink-0 text-[11px] font-medium tabular-nums {sectionProgress.completed ===
-                              sectionProgress.total
-                                ? 'text-green-600'
-                                : 'ui:text-muted-foreground'}"
-                            >
-                              {formatSectionCompletionLabel(sectionProgress.completed, sectionProgress.total)}
-                            </span>
-                          {:else}
-                            <span class="ui:text-muted-foreground shrink-0 text-[11px] font-medium tabular-nums">
-                              {sectionProgress.total}
-                            </span>
-                          {/if}
-                        {/if}
+{#if outline.length > 0 || dragging || saving}
+  <div class="{className} ui:group-data-[collapsible=icon]:hidden">
+    <ul
+      data-sidebar-outline
+      use:dragHandleZone={{
+        items: outline,
+        type: 'course-sidebar-outline',
+        dragDisabled: !canManageContent || saving,
+        dropTargetStyle: { outline: '2px solid var(--color-primary)' },
+        transformDraggedElement: collapseDraggedSection
+      }}
+      onconsider={(event) => handleConsider(null, event)}
+      onfinalize={(event) => handleFinalize(null, event)}
+      class="min-h-8 list-none"
+    >
+      {#each outline as entry (entry.id)}
+        <li
+          data-is-dnd-shadow-item-hint={(entry as SidebarOutlineEntry & Record<string, unknown>)[
+            SHADOW_ITEM_MARKER_PROPERTY_NAME
+          ]}
+        >
+          {#if entry.kind === 'item'}
+            {@render contentItemRow(entry.item)}
+          {:else}
+            {@const section = entry.section}
+            {@const sectionProgress = getContentItemsProgress(
+              entry.items.flatMap((child) => (child.kind === 'item' ? [child.item] : []))
+            )}
+            {@const sectionOpen = isSectionOpen(section.id)}
+            <Collapsible.Root
+              open={sectionOpen}
+              onOpenChange={(open) => handleSectionOpenChange(section.id, open)}
+              class="group/section"
+            >
+              {#snippet child({ props })}
+                <div {...props} data-sidebar-section-id={section.id}>
+                  <Collapsible.Trigger>
+                    {#snippet child({ props })}
+                      <Sidebar.MenuSubButton
+                        {...props}
+                        class="group/content-row flex w-full items-center gap-2 font-medium"
+                      >
                         {#if canManageContent}
-                          <div
-                            class="hidden items-center gap-2 group-focus-within/content-row:flex group-hover/content-row:flex"
+                          <span
+                            use:dragHandle
+                            role="button"
+                            tabindex="0"
+                            onkeydown={(event) => {
+                              if (event.key === 'Enter' || event.key === ' ') event.preventDefault();
+                            }}
+                            class="outline-handle relative flex size-3.5 shrink-0 cursor-grab items-center justify-center"
+                            aria-label={$t('course.navItem.lessons.drag')}
+                            onclick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                            }}
                           >
-                            {@render rowAction(
-                              $t('course.navItem.lessons.add_content_add_to_section'),
-                              (event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                onOpenContentModal?.(section.id);
-                              },
-                              Plus
-                            )}
-                            {@render rowAction(
-                              $t('common.delete'),
-                              (event) => requestDelete(event, { kind: 'section', sectionId: section.id }),
-                              Trash2Icon
-                            )}
-                          </div>
+                            {@render sectionChevron('outline-icon')}
+                            <GripVerticalIcon class="outline-grip absolute size-3.5" />
+                          </span>
+                        {:else}
+                          {@render sectionChevron()}
                         {/if}
-                      </div>
-                    </Sidebar.MenuSubButton>
-                  {/snippet}
-                </Collapsible.Trigger>
-                {#if isEmptySection(section.id)}
-                  {@render sectionDropZone(section.id, entry.items, sectionOpen)}
-                {:else}
-                  <Collapsible.Content>
-                    {@render sectionDropZone(section.id, entry.items, !draggingSection)}
-                  </Collapsible.Content>
-                {/if}
-              </div>
-            {/snippet}
-          </Collapsible.Root>
-        {/if}
-      </li>
-    {/each}
-  </ul>
-</div>
+
+                        <span class="min-w-0 flex-1 truncate">{section.title}</span>
+
+                        <div class="ml-auto flex items-center gap-1">
+                          {#if sectionProgress.total > 0}
+                            {#if isStudent}
+                              <span
+                                class="shrink-0 text-[11px] font-medium tabular-nums {sectionProgress.completed ===
+                                sectionProgress.total
+                                  ? 'text-green-600'
+                                  : 'ui:text-muted-foreground'}"
+                              >
+                                {formatSectionCompletionLabel(sectionProgress.completed, sectionProgress.total)}
+                              </span>
+                            {:else}
+                              <span class="ui:text-muted-foreground shrink-0 text-[11px] font-medium tabular-nums">
+                                {sectionProgress.total}
+                              </span>
+                            {/if}
+                          {/if}
+                          {#if canManageContent}
+                            <div
+                              class="hidden items-center gap-2 group-focus-within/content-row:flex group-hover/content-row:flex"
+                            >
+                              {@render rowAction(
+                                $t('course.navItem.lessons.add_content_add_to_section'),
+                                (event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  onOpenContentModal?.(section.id);
+                                },
+                                Plus
+                              )}
+                              {@render rowAction(
+                                $t('common.delete'),
+                                (event) => requestDelete(event, { kind: 'section', sectionId: section.id }),
+                                Trash2Icon
+                              )}
+                            </div>
+                          {/if}
+                        </div>
+                      </Sidebar.MenuSubButton>
+                    {/snippet}
+                  </Collapsible.Trigger>
+                  {#if isEmptySection(section.id)}
+                    {@render sectionDropZone(section.id, entry.items, sectionOpen)}
+                  {:else}
+                    <Collapsible.Content>
+                      {@render sectionDropZone(section.id, entry.items, !draggingSection)}
+                    </Collapsible.Content>
+                  {/if}
+                </div>
+              {/snippet}
+            </Collapsible.Root>
+          {/if}
+        </li>
+      {/each}
+    </ul>
+  </div>
+{/if}
 
 <style>
   :global(.group\/content-row:hover .outline-icon),

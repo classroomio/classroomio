@@ -1,0 +1,73 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API course clone and featured contract > ZPublicApiCloneCourse keeps its published shape > ZPublicApiCloneCourse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "description": "Description of the copy; defaults to the source course's",
+      "type": "string",
+    },
+    "slug": {
+      "description": "URL slug of the copy; must be unused. Defaults to one generated from the title",
+      "minLength": 1,
+      "type": "string",
+    },
+    "title": {
+      "description": "Title of the copy",
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "title",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course clone and featured contract > ZPublicApiFeaturedCoursesResponse keeps its published shape > ZPublicApiFeaturedCoursesResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "courseIds": {
+      "description": "Featured course ids in display order. GET /courses returns each position as displayOrder, null when not featured.",
+      "items": {
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+        "type": "string",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "courseIds",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course clone and featured contract > ZPublicApiSetFeaturedCourses keeps its published shape > ZPublicApiSetFeaturedCourses 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "courseIds": {
+      "description": "Published courses to show first, in this order (at most 4). Replaces the current list; an empty array clears it, so courses show newest first",
+      "items": {
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+        "type": "string",
+      },
+      "maxItems": 4,
+      "type": "array",
+    },
+  },
+  "required": [
+    "courseIds",
+  ],
+  "type": "object",
+}
+`;

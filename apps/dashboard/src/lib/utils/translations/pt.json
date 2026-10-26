@@ -36,7 +36,8 @@
         "title": "Abrindo sua academia…",
         "caption": "Preparando seus cursos, alunos e configurações."
       }
-    }
+    },
+    "back": "Voltar"
   },
   "validations": {
     "generic": {
@@ -161,6 +162,14 @@
       },
       "question": {
         "too_small": "O título da pergunta é obrigatório"
+      }
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "A URL do payload deve começar com http:// ou https://"
+      },
+      "event_types": {
+        "required": "Selecione pelo menos um evento"
       }
     }
   },
@@ -350,7 +359,8 @@
       },
       "info": {
         "conversion_blocked": "Corrija as perguntas abaixo para concluir a conversão para Público."
-      }
+      },
+      "sections_reorder_failed": "Não foi possível reordenar as seções"
     },
     "people": {
       "success": {
@@ -386,18 +396,8 @@
       "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível.",
       "draft_restored": "Restauramos as alterações não salvas que você deixou"
     },
-    "poll": {
-      "info": {
-        "not_published": "A enquete ainda não foi publicada",
-        "vote_once": "Você só pode votar uma vez"
-      },
-      "error": {
-        "creating_poll": "Ocorreu um erro ao criar a enquete",
-        "updating_poll": "Ocorreu um erro ao atualizar o status da enquete",
-        "submitting_poll": "Ocorreu um erro ao enviar a enquete"
-      }
-    },
     "media_manager": {
+      "video_added": "Vídeo adicionado à sua biblioteca",
       "list_failed": "Falha ao carregar recursos de mídia",
       "storage_failed": "Falha ao carregar o resumo do armazenamento",
       "create_failed": "Falha ao criar recurso de mídia",
@@ -516,6 +516,17 @@
       "success": "Obrigado. Vamos analisar esta denúncia.",
       "error": "Não foi possível enviar a denúncia. Tente novamente.",
       "already_submitted": "Já denunciou este conteúdo."
+    },
+    "webhooks": {
+      "created": "Webhook criado. Copie agora o segredo de assinatura, pois ele é mostrado apenas uma vez.",
+      "updated": "Webhook atualizado.",
+      "enabled": "Webhook ativado.",
+      "disabled": "Webhook desativado.",
+      "deleted": "Webhook excluído.",
+      "secret_regenerated": "Segredo de assinatura regenerado. Copie-o agora, pois ele é mostrado apenas uma vez.",
+      "test_success": "Evento de teste entregue com sucesso.",
+      "test_failed": "O evento de teste falhou. Abra o registro de entregas para ver o motivo.",
+      "redelivered": "Evento enfileirado para reenvio."
     }
   },
   "explore": {
@@ -576,7 +587,8 @@
     "required": "Atualização necessária",
     "enterprise_required": "Este recurso requer um plano Enterprise.",
     "public_api_required": "Faça upgrade para Early Adopter ou Enterprise para acessar a API pública.",
-    "unlock_field": "Atualize para desbloquear esta configuração"
+    "unlock_field": "Atualize para desbloquear esta configuração",
+    "webhooks_required": "Faça upgrade para Early Adopter ou Enterprise para usar webhooks."
   },
   "analytics": {
     "title": "Análises",
@@ -797,6 +809,7 @@
       "status": {
         "ready": "Pronto",
         "already_member": "Já na plateia",
+        "invite_resent": "Convite reenviado",
         "invalid_email": "E-mail inválido",
         "duplicate_in_file": "Duplicado no arquivo",
         "over_seat_limit": "Sem vagas disponíveis",
@@ -1085,6 +1098,9 @@
           "animation_none": "Nenhum"
         },
         "course_type_learn_more": "Saiba mais",
+        "completion_rules_card_title": "Regras de conclusão",
+        "completion_rules_card_desc": "Defina quando os alunos concluem este curso e recebem o certificado. Cursos de conformidade também usam o prazo como data de vencimento de cada aluno.",
+        "back_to_certificate_settings": "Voltar às configurações do certificado",
         "welcome_email": {
           "title": "E-mail de boas-vindas",
           "description": "Personalize o e-mail que os alunos recebem após a inscrição. Adicione uma nota pessoal, instruções ou um link de sessão ao vivo.",
@@ -1102,7 +1118,7 @@
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
         "go_to_certificate_settings": "Vá para configurações de certificado",
         "completion_deadline_label": "Prazo para conclusão do curso",
-        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
+        "completion_deadline_helper": "Os alunos devem concluir o curso antes desta data e hora (hora local). Deixe em branco para não definir um prazo.",
         "go_to_completion_deadline": "Ir para o prazo de conclusão",
         "generate_link": "Gerar novo link",
         "open_link": "Abrir link em nova aba",
@@ -1794,34 +1810,6 @@
             "manual": "Versão salva",
             "publish": "Publicado"
           }
-        },
-        "poll": {
-          "voted": "Votado",
-          "created_by": "Criado por",
-          "status": "Status",
-          "draft": "Rascunho",
-          "publish": "Publicar",
-          "expiration": "Expiração",
-          "total_voted": "Total de votos",
-          "responses": "Respostas",
-          "expires": "Expira",
-          "today": "Hoje",
-          "back": "Voltar",
-          "result": "Resultado",
-          "delete": "Excluir",
-          "create_poll": "Criar enquete",
-          "question": "Pergunta",
-          "options": "Opções",
-          "option_label": "Rótulo da opção",
-          "cancel": "Cancelar",
-          "poll_question": "Pergunta da enquete"
-        },
-        "polls": {
-          "title": "Enquete",
-          "active_polls": "Enquetes ativas",
-          "expired_polls": "Enquetes expiradas",
-          "loading": "Carregando...",
-          "no_polls": "Nenhuma enquete para exibir"
         },
         "comments": {
           "title": "Comentários",
@@ -3060,7 +3048,6 @@
         "later": "Fechar",
         "checking": "Verificando elegibilidade…",
         "not_eligible_title": "Quase lá",
-        "retake_exercise": "Refazer o exercício",
         "subtitle_no_certificate": "Parabéns – você concluiu este curso."
       }
     },
@@ -3070,24 +3057,18 @@
     "certification": {
       "rules_heading": "Regras",
       "deadline_label": "Prazo de certificação",
-      "deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
-      "threshold_label": "Conclusão mínima (%)",
-      "threshold_helper": "Progresso combinado de aulas e exercícios necessário para obter o certificado (0–100). O padrão é 100%.",
-      "final_exercise_label": "Exercício final (opcional)",
-      "final_exercise_none": "nenhum",
-      "final_exercise_helper": "Quando definido, os alunos devem atingir pelo menos a pontuação mínima neste exercício (melhores tentativas contam), além do percentual de conclusão acima.",
-      "min_exercise_score_label": "Nota mínima no exercício final (%)",
-      "min_exercise_score_helper": "A pontuação é uma porcentagem do total de pontos possíveis naquele exercício (0–100).",
+      "deadline_helper": "Os alunos devem concluir o curso antes desta data e hora (hora local). Deixe em branco para não definir um prazo.",
+      "completion_rules_heading": "Regras de conclusão",
+      "completion_rules_description": "Estas regras decidem quem recebe este certificado. Elas são definidas na aba Configurações do curso.",
+      "completion_rules_deadline": "Concluir até {date}",
+      "completion_rules_no_deadline": "Sem prazo",
+      "completion_rules_edit": "Editar regras de conclusão",
+      "completion_rules_upgrade": "Atualize seu plano para editar as regras de conclusão",
       "blocker_progress": "O progresso do seu curso é {current}%; {required}% é obrigatório.",
       "blocker_deadline": "O prazo de certificação expirou.",
       "blocker_no_content": "Este curso não possui lições ou exercícios para serem concluídos.",
-      "blocker_final_not_submitted": "Envie o exercício obrigatório \"{exerciseTitle}\" para se qualificar para o certificado.",
-      "blocker_final_pending": "Sua tentativa em \"{exerciseTitle}\" ainda está sendo avaliada.",
-      "blocker_final_score": "Sua melhor pontuação em \"{exerciseTitle}\" é {bestPercent}%; {requiredPercent}% é obrigatório.",
-      "blocker_final_misconfigured": "O exercício de certificação \"{exerciseTitle}\" não possui pontos configurados; peça ao seu instrutor para consertar.",
       "email_message_label": "Mensagem de e-mail",
       "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
-      "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado.",
       "deadline_required": "Os cursos de conformidade exigem um prazo de conclusão antes de serem publicados.",
       "deadline_invalid": "O prazo de conclusão do curso é inválido.",
       "deadline_required_enroll": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados."
@@ -3352,7 +3333,6 @@
         "save": "Salvar alterações",
         "apps": {
           "title": "Aplicativos",
-          "poll": "Enquete",
           "live_comment": "Comentários ao vivo"
         },
         "course": {
@@ -3662,7 +3642,8 @@
     },
     "status": {
       "active": "Ativo",
-      "archived": "Arquivado"
+      "archived": "Arquivado",
+      "processing": "Processando"
     },
     "provider": {
       "upload": "Enviar",
@@ -3695,6 +3676,11 @@
         "other": "Outro"
       },
       "refresh": "Atualizar"
+    },
+    "upload": {
+      "videos": "Enviar vídeos",
+      "documents": "Enviar documentos",
+      "more_options": "Mais opções de envio"
     },
     "storage": {
       "total_bytes": "Armazenamento total",
@@ -4967,6 +4953,7 @@
     "title": "Automação",
     "subtitle": "Conecte clientes MCP agora, com o Zapier e a API pública seguindo o mesmo sistema de chaves com escopo organizacional.",
     "coming_soon": "Em breve",
+    "read_docs": "Ler a documentação",
     "mcp": {
       "setup": {
         "title": "Configuração do cliente",
@@ -4999,8 +4986,7 @@
         "rate_limits_description": "Solicitações de leitura/gravação/publicação permitidas por minuto.",
         "used_label": "Usado:"
       },
-      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO com chaves da organização que você pode rotacionar a qualquer momento.",
-      "view_docs": "Ver documentação"
+      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO com chaves da organização que você pode rotacionar a qualquer momento."
     },
     "api": {
       "subtitle": "Gerencie chaves de API para integrar com a API pública do ClassroomIO.",
@@ -5023,8 +5009,7 @@
       "setup": {
         "title": "Início rápido",
         "description": "Use sua chave de API como token Bearer em cada solicitação. Substitua o marcador por uma chave acima ou cole o segredo imediatamente após gerar uma."
-      },
-      "view_docs": "Ver documentação"
+      }
     },
     "keys": {
       "active": "Ativo",
@@ -5064,7 +5049,9 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhooks",
+      "new_badge": "Novo"
     },
     "permissions": {
       "disabled_title": "Acesso somente leitura",
@@ -5072,6 +5059,142 @@
     },
     "zapier": {
       "page_subtitle": "Automatize o ClassroomIO com milhares de aplicativos pelo Zapier. Em breve."
+    },
+    "webhooks": {
+      "page_subtitle": "Envie eventos do ClassroomIO em tempo real para o Slack, seu CRM ou seu próprio backend.",
+      "description": "O ClassroomIO envia um HTTP POST assinado para a sua URL sempre que um evento selecionado ocorre. Entregas com falha são tentadas novamente automaticamente.",
+      "permissions_description": "Somente administradores da organização podem criar, editar ou excluir webhooks.",
+      "create": "Novo webhook",
+      "empty_title": "Nenhum webhook ainda",
+      "empty_description": "Crie um webhook para enviar convites, matrículas, conclusões e envios para as suas outras ferramentas.",
+      "reveal_title": "Seu novo segredo de assinatura",
+      "reveal_description": "Copie este segredo de assinatura agora. Ele não será exibido novamente e você precisará dele para verificar as solicitações.",
+      "reveal_docs": "Como verificar as solicitações",
+      "delete_confirm": "Excluir o webhook \"{name}\"? O histórico de entregas dele também será removido.",
+      "regenerate_confirm": "Regenerar o segredo de assinatura? O segredo atual deixa de funcionar imediatamente.",
+      "events_all": "Todos os eventos",
+      "events_count_one": "{count} evento",
+      "events_count_other": "{count} eventos",
+      "no_deliveries": "Nenhuma entrega ainda",
+      "retrying_hint": "Tentando novamente as entregas com falha",
+      "table": {
+        "name": "Destino",
+        "events": "Eventos",
+        "health": "Status",
+        "active": "Ativo",
+        "error_rate": "Taxa de erro (24 h)",
+        "error_rate_detail": "{failed} de {total} com falha",
+        "no_recent_deliveries": "Sem entregas em 24 h"
+      },
+      "health": {
+        "healthy": "Saudável",
+        "retrying": "Tentando novamente",
+        "degraded": "Com falhas",
+        "disabled": "Desativado automaticamente"
+      },
+      "actions": {
+        "label": "Ações do webhook",
+        "edit": "Editar",
+        "test": "Enviar evento de teste",
+        "deliveries": "Ver entregas",
+        "regenerate_secret": "Regenerar segredo",
+        "delete": "Excluir"
+      },
+      "form": {
+        "create_title": "Novo webhook",
+        "edit_title": "Editar webhook",
+        "description": "Escolha para onde o ClassroomIO envia eventos e quais eventos enviar.",
+        "sections": {
+          "endpoint": "Endpoint",
+          "events": "Eventos"
+        },
+        "name": "Nome",
+        "name_placeholder": "Sincronização de CRM",
+        "payload_url": "URL do payload",
+        "payload_url_help": "Deve ser uma URL HTTPS pública que retorne uma resposta 2xx em até 10 segundos.",
+        "secret": "Segredo de assinatura",
+        "secret_placeholder": "Deixe em branco para gerar um",
+        "secret_help": "Usado para assinar cada requisição, para que você possa verificar que ela veio do ClassroomIO.",
+        "secret_edit_placeholder": "Deixe em branco para manter o segredo atual",
+        "secret_edit_help": "Insira um novo valor para substituir o segredo. O atual nunca é exibido.",
+        "verify_ssl": "Verificar certificado SSL",
+        "verify_ssl_help": "Mantenha ativado, a menos que esteja testando com um certificado autoassinado.",
+        "active": "Ativo",
+        "events_help": "Escolha os eventos que devem acionar este webhook.",
+        "mode_all": "Enviar tudo para mim",
+        "mode_selected": "Deixar-me selecionar eventos individuais",
+        "cancel": "Cancelar",
+        "save": "Salvar webhook",
+        "select_all": "Selecionar tudo",
+        "events_selected": "{selected} de {total} selecionados"
+      },
+      "event_groups": {
+        "organization": "Organização",
+        "course": "Cursos",
+        "learning": "Progresso de aprendizagem",
+        "cohort": "Coortes",
+        "compliance": "Conformidade"
+      },
+      "events": {
+        "organization_invite_created": "Um convite de equipe é enviado",
+        "organization_invite_accepted": "Um convite de equipe é aceito",
+        "organization_invite_revoked": "Um convite de equipe é revogado ou substituído",
+        "course_invite_created": "Um convite de aluno é criado",
+        "course_invite_accepted": "Um aluno aceita um convite e se matricula",
+        "course_invite_revoked": "Um convite de aluno é revogado",
+        "course_member_added": "Um membro é adicionado a um curso",
+        "course_member_removed": "Um membro é removido de um curso",
+        "course_completed": "Um aluno conclui um curso",
+        "course_certificate_issued": "Um certificado é conquistado",
+        "course_submission_created": "Um envio de exercício é criado",
+        "course_submission_status_changed": "O status de um envio muda, por exemplo, quando ele é avaliado",
+        "lesson_completion_updated": "Uma aula é marcada como concluída ou redefinida",
+        "exercise_completion_updated": "Um exercício é concluído ou redefinido",
+        "compliance_record_status_changed": "O status de conformidade de um aluno muda",
+        "compliance_record_waived": "Um requisito de conformidade de um aluno é dispensado",
+        "organization_member_added": "Uma pessoa entra na organização",
+        "organization_member_removed": "Uma pessoa é removida da organização",
+        "organization_member_updated": "A função ou o status de uma pessoa muda",
+        "course_published": "Um curso é publicado",
+        "course_unpublished": "Um curso é despublicado",
+        "cohort_member_added": "Uma pessoa é adicionada a uma coorte",
+        "cohort_member_removed": "Uma pessoa é removida de uma coorte",
+        "lesson_session_scheduled": "Uma sessão ao vivo é agendada ou remarcada",
+        "course_payment_request_created": "Um aluno solicita pagar por um curso"
+      },
+      "deliveries": {
+        "title": "Entregas",
+        "description": "Eventos dos últimos 30 dias",
+        "back": "Voltar para entregas",
+        "filter_all": "Todos os status",
+        "empty": "Nenhuma entrega corresponde a este filtro.",
+        "load_error": "Não foi possível carregar as entregas. Tente novamente.",
+        "redeliver": "Reenviar",
+        "test_badge": "Teste",
+        "status": {
+          "PENDING": "Tentando novamente",
+          "SUCCESS": "Sucesso",
+          "FAILED": "Falhou",
+          "GAVE_UP": "Falhou"
+        },
+        "columns": {
+          "event": "Evento",
+          "event_id": "ID do evento",
+          "status": "Status",
+          "attempt": "Tentativa",
+          "http": "Status HTTP",
+          "duration": "Tempo de resposta",
+          "time": "Enviado",
+          "next_attempt": "Próxima tentativa"
+        },
+        "detail": {
+          "error": "Erro",
+          "request_headers": "Cabeçalhos da requisição",
+          "payload": "Payload",
+          "response_body": "Resposta",
+          "no_response": "Nenhuma resposta foi recebida."
+        }
+      }
     }
   },
   "ai_assistant": {
@@ -6162,8 +6285,6 @@
       "settings": "Configurações",
       "certificate": "Certificado ativado",
       "deadline": "Prazo {date}",
-      "threshold": "Conclua {percent}% do curso",
-      "final_exercise": "Aprovado em “{title}” em {percent}%",
       "sequential": "Lições desbloqueadas em ordem",
       "grading": "Um tutor avalia os envios",
       "comments_off": "Os comentários da lição estão desativados",
@@ -6256,8 +6377,6 @@
         "bannerImage": "Imagem da capa",
         "welcomeEmail": "E-mail de boas-vindas",
         "completionDeadline": "Prazo de conclusão",
-        "completionThreshold": "Limite de conclusão",
-        "finalExercise": "Exercício final",
         "lessonTabsOrder": "Guias de aula",
         "contentGrouping": "Agrupamento de conteúdo",
         "progression": "Progressão",
@@ -6286,8 +6405,7 @@
       "value": {
         "free": "Livre",
         "sequential": "Sequencial",
-        "no_price": "Grátis",
-        "pass_mark": "Nota de aprovação {score}"
+        "no_price": "Grátis"
       },
       "template_label": "Modelo",
       "yours_label": "Seu"

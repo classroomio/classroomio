@@ -27,12 +27,12 @@ import {
   getQuestionsByExerciseIds,
   stampCopiedTemplateUnits,
   syncOptionIdSequence,
-  updateCourse,
   updateExerciseSection
 } from '@db/queries';
 
 import { ROLE } from '@cio/utils/constants';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { captureServerEvent } from '@cio/core/services/posthog';
 import { transferUploadedAsset, withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
 
 const ASSET_ID_PATTERN = /[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/gi;
@@ -224,6 +224,20 @@ export async function cloneCourse(
     db.transaction(async (tx) => cloneCourseWithClient(courseId, options, tx))
   );
   await invalidateOrgStats(created.organizationId);
+
+  if (!created.course.isTemplate) {
+    captureServerEvent({
+      event: 'course_created',
+      distinctId: options.userId,
+      orgId: created.organizationId,
+      properties: {
+        course_id: created.course.id,
+        course_type: created.course.type,
+        is_published: !!created.course.isPublished,
+        source: options.templateId ? 'template' : 'clone'
+      }
+    });
+  }
 
   return created.course;
 }
@@ -515,16 +529,6 @@ async function cloneCourseWithClient(
   if (optionsToCreate.length > 0) {
     await syncOptionIdSequence(tx);
     await createOptions(optionsToCreate, tx);
-  }
-
-  const sourceExerciseId = courseCopy.certificate?.requiredExerciseId;
-  if (sourceExerciseId) {
-    const mappedExerciseId = exerciseMap.get(sourceExerciseId) ?? null;
-    const certificate = {
-      ...(courseCopy.certificate ?? {}),
-      requiredExerciseId: mappedExerciseId
-    };
-    await updateCourse(newCourse.id, { certificate }, tx);
   }
 
   if (options.setSourceIds) {

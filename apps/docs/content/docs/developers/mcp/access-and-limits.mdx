@@ -1,0 +1,22 @@
+---
+title: Access and limits
+description: Understand what a connected client can access and which changes need review.
+---
+
+## What can the client access?
+
+An MCP key belongs to one organization. It can access only the ClassroomIO actions allowed by its selected scopes **and** by the permissions of the person who created it. For example, a tutor's key does not gain organization administrator access. Removing that person's access also removes the key's access.
+
+The client may receive course, learner, or organization data that the key can read. Connect a client you trust, keep the key private, and use a separate key for each client so you can revoke one without disconnecting the others. You can manage keys in **Automation → MCP**.
+
+MCP keys cannot access the entire public API. If the client says an action is unavailable or unauthorized, check the key's scopes and the creator's role in the relevant course or organization. A key with a custom scope selection does not gain new scopes automatically.
+
+## Review changes before they go live
+
+Ask the client to show you a course draft or proposed edits before publishing. Small edits to live courses can take effect immediately. Inviting people, sending notifications, and testing email templates may send messages; repeating a request can send them again.
+
+Deleting a section also deletes its lessons and exercises. Deleting an exercise deletes its submissions. ClassroomIO blocks deletion of lessons, sections, content, or answered questions with student work unless the request explicitly forces it; forcing deletion also removes the affected work. Resetting a learner's progress discards their recorded progress.
+
+## Check limits
+
+**Automation → MCP** shows your organization's current key allowance and each key's read, write, and publish rate limits. Some actions, such as changing certificate settings or saving email templates, require a paid plan. If a request fails, see [API errors](/api/errors) and [rate limits](/api/rate-limits).

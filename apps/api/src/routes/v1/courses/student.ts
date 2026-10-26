@@ -10,6 +10,7 @@ import { createStudentSubmissionService, setStudentLessonCompletionService } fro
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, studentForbiddenResponse, mcpRateLimitResponse } from './docs';
@@ -20,7 +21,7 @@ export const v1CourseStudentRouter = new Hono()
   .put(
     '/lessons/:lessonId/completion',
     describeRoute({
-      description: `Record a lesson as completed for a student, or undo it. ${COURSE_TEAM_RULE}`,
+      description: `Record a lesson as completed for a student, or undo it; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse(
@@ -60,7 +61,7 @@ export const v1CourseStudentRouter = new Hono()
   .post(
     '/exercises/:exerciseId/submissions',
     describeRoute({
-      description: `Submit an exercise for a student. ${COURSE_TEAM_RULE}`,
+      description: `Submit an exercise for a student; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         201: jsonResponse(
@@ -91,7 +92,8 @@ export const v1CourseStudentRouter = new Hono()
           orgId,
           actorId,
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getEventSource(c)
         );
 
         return c.json({ success: true, data: submission }, 201);

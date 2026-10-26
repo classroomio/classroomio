@@ -28,14 +28,18 @@ export const ZPublicApiCertificateDeadline = z.iso.datetime({
 });
 
 const ZPublicApiCertificateSettingsFields = z.object({
-  isDownloadable: z.boolean().optional(),
+  isDownloadable: z
+    .boolean()
+    .optional()
+    .describe('Controls learner downloads only; the download endpoint works either way.'),
   theme: z.string().min(1).max(40).optional(),
-  design: ZPublicApiCertificateDesign.optional(),
-  deadline: ZPublicApiCertificateDeadline.nullable().optional(),
-  threshold: z.number().int().min(0).max(100).optional(),
-  requiredExerciseId: z.string().uuid().nullable().optional(),
-  exerciseMinScorePercent: z.number().int().min(0).max(100).nullable().optional(),
-  emailMessage: z.string().max(5000).nullable().optional()
+  design: ZPublicApiCertificateDesign.optional().describe(
+    'Replaces the whole stored design instead of merging, so read it first and send the full object. Sent without theme, it sets theme to design.templateId, as the dashboard editor does.'
+  ),
+  deadline: ZPublicApiCertificateDeadline.nullable()
+    .optional()
+    .describe('ISO 8601 datetime with a timezone, for example 2026-12-31T23:59:59Z. Send null to clear it.'),
+  emailMessage: z.string().max(5000).nullable().optional().describe('Send null to clear it.')
 });
 
 export const PUBLIC_API_CERTIFICATE_FIELDS = Object.keys(ZPublicApiCertificateSettingsFields.shape) as Array<
@@ -49,12 +53,12 @@ export const ZPublicApiUpdateCourseCertificate = ZPublicApiCertificateSettingsFi
 export type TPublicApiUpdateCourseCertificate = z.infer<typeof ZPublicApiUpdateCourseCertificate>;
 
 export const ZPublicApiListCourseCertificatesQuery = ZPublicApiPaginationQuery.extend({
-  search: z.string().trim().max(200).optional()
+  search: z.string().trim().max(200).optional().describe('Matches name or email.')
 });
 export type TPublicApiListCourseCertificatesQuery = z.infer<typeof ZPublicApiListCourseCertificatesQuery>;
 
 export const ZPublicApiCourseCertificateMemberParam = ZPublicApiCourseParam.extend({
-  memberId: z.string().uuid()
+  memberId: z.string().uuid().describe('The memberId returned by the issued certificates list.')
 });
 export type TPublicApiCourseCertificateMemberParam = z.infer<typeof ZPublicApiCourseCertificateMemberParam>;
 
@@ -62,6 +66,6 @@ export const ZPublicApiCertificateFileFormat = z.enum(['pdf', 'png']);
 export type TPublicApiCertificateFileFormat = z.infer<typeof ZPublicApiCertificateFileFormat>;
 
 export const ZPublicApiDownloadCourseCertificateQuery = z.object({
-  format: ZPublicApiCertificateFileFormat.default('pdf')
+  format: ZPublicApiCertificateFileFormat.default('pdf').describe('pdf or png. Default: pdf.')
 });
 export type TPublicApiDownloadCourseCertificateQuery = z.infer<typeof ZPublicApiDownloadCourseCertificateQuery>;

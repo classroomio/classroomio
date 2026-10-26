@@ -19,32 +19,32 @@ import {
   updateAudienceService
 } from '@api/services/v1/audience';
 
+import { AUDIENCE_IMPORT_MAX_ROWS } from '@cio/utils/validation/organization';
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { mcpRateLimitResponse } from './courses/docs';
-import { ORG_ADMIN_RULE } from './team/docs';
+import { ORG_ADMIN_FORBIDDEN, ORG_ADMIN_RULE } from './team/docs';
 
 const AudienceListEnvelope = z.object({ query: ZPublicApiAudienceQuery });
 
 const forbidden = (scope: 'audience:read' | 'audience:write') => ({
-  description: `The key has neither the public_api:* nor the ${scope} scope, or the automation actor is not an org admin`
+  description: `The key has neither the public_api:* nor the ${scope} scope, or ${ORG_ADMIN_FORBIDDEN}`
 });
 
-const AUDIENCE_UPDATE_DESCRIPTION = [
-  'Update an audience member (a student). Send only the fields to change.',
-  'email corrects the address of a member who has not accepted their invite yet, and re-sends the invite unless sendEmail is false (400 for a member who has joined, 409 if the email is already in the organization).',
-  "name sets the full name on the member's profile and only works once they have joined (400 for a pending member). The profile is shared, so the new name shows in every organization the person belongs to.",
-  'A joined member keeps control of their own email, password, username and avatar; they cannot be changed here.',
-  "To change an admin's or tutor's role, use PUT /team/{memberId}."
-].join(' ');
+const audienceWriteForbidden = forbidden('audience:write');
+
+const createAudienceForbidden = {
+  description: `${audienceWriteForbidden.description} Also returned with UPGRADE_REQUIRED when the Free plan student limit is reached while the request runs.`
+};
 
 export const v1AudienceRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List audience members (students) for the authenticated organization. ${ORG_ADMIN_RULE}`,
+      description: `List the organization's audience members; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse(
@@ -82,13 +82,16 @@ export const v1AudienceRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create an audience member invitation for the authenticated organization. ${ORG_ADMIN_RULE}`,
+      description: `Invite one person (email) or up to ${AUDIENCE_IMPORT_MAX_ROWS} (emails) to the organization as students; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
-        201: jsonResponse('Audience member created successfully', itemResponse(ZPublicApiCreateAudienceResponse)),
+        201: jsonResponse(
+          'Invites processed. rows has one entry per address, in order, with what happened to it',
+          itemResponse(ZPublicApiCreateAudienceResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: forbidden('audience:write'),
+        403: createAudienceForbidden,
         429: mcpRateLimitResponse
       }
     }),
@@ -98,7 +101,7 @@ export const v1AudienceRouter = new Hono()
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
         const payload = c.req.valid('json');
-        const result = await createAudienceService(orgId, actorId, payload);
+        const result = await createAudienceService(orgId, actorId, payload, getEventSource(c));
 
         return c.json(
           {
@@ -115,7 +118,7 @@ export const v1AudienceRouter = new Hono()
   .post(
     '/assign-courses',
     describeRoute({
-      description: `Assign one or more audience members to one or more courses or cohorts. ${ORG_ADMIN_RULE}`,
+      description: `Assign one or more audience members to one or more courses or cohorts; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse(
@@ -134,7 +137,7 @@ export const v1AudienceRouter = new Hono()
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
         const payload = c.req.valid('json');
-        const result = await assignAudienceCoursesService(orgId, actorId, payload);
+        const result = await assignAudienceCoursesService(orgId, actorId, payload, getEventSource(c));
 
         return c.json(
           {
@@ -151,7 +154,7 @@ export const v1AudienceRouter = new Hono()
   .get(
     '/:memberId',
     describeRoute({
-      description: `Get a single audience member by id. ${ORG_ADMIN_RULE}`,
+      description: `Get an audience member; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse('Audience member returned successfully', itemResponse(ZPublicApiAudienceMemberResponse)),
@@ -185,10 +188,13 @@ export const v1AudienceRouter = new Hono()
   .delete(
     '/:memberId',
     describeRoute({
-      description: `Remove an audience member from the organization. This deletes the membership; the person keeps their account. ${ORG_ADMIN_RULE}`,
+      description: `Remove an audience member; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
-        200: jsonResponse('Audience member removed successfully', itemResponse(ZPublicApiRemoveAudienceMemberResponse)),
+        200: jsonResponse(
+          'Organization membership deleted and pending invites revoked; the person keeps their account',
+          itemResponse(ZPublicApiRemoveAudienceMemberResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: forbidden('audience:write'),
@@ -219,7 +225,7 @@ export const v1AudienceRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: `${AUDIENCE_UPDATE_DESCRIPTION} ${ORG_ADMIN_RULE}`,
+      description: `Update a pending audience member's email or a joined member's name; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse('Audience member updated successfully', itemResponse(ZPublicApiAudienceMemberResponse)),

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  applySettingChanges,
   detectSettingChanges,
   detectTemplateContentChanges,
   insertionOrder,
@@ -159,8 +158,7 @@ describe('detectSettingChanges', () => {
         metadata: { progressionMode: 'free' }
       }),
       courseCreatedAt,
-      syncedAtByKey: { description: editedAt },
-      exerciseCopyBySourceId: new Map()
+      syncedAtByKey: { description: editedAt }
     });
 
     expect(changes.map((change) => change.key)).toEqual(['progression']);
@@ -176,8 +174,7 @@ describe('detectSettingChanges', () => {
         metadata: { allowSelfEnrollment: false }
       }),
       courseCreatedAt,
-      syncedAtByKey: {},
-      exerciseCopyBySourceId: new Map()
+      syncedAtByKey: {}
     });
 
     expect(changes.map((change) => change.key)).toContain('selfEnrollment');
@@ -218,39 +215,6 @@ describe('preparePullSelection', () => {
   it('pulls a new parent when a new lesson is selected', () => {
     const selection = preparePullSelection(units, [], ['lesson-1'], []);
     expect(selection).toEqual({ ok: true, unitIds: ['lesson-1', 'section-1'], settingKeys: [] });
-  });
-
-  it('pulls the final exercise with its setting instead of clearing it', () => {
-    const template = carrier({
-      updatedAt: afterCourse,
-      certificate: { requiredExerciseId: 'exercise-1', exerciseMinScorePercent: 70 }
-    });
-    const course = carrier();
-    const exerciseUnits = detectTemplateContentChanges({
-      courseCreatedAt,
-      templateSections: [],
-      templateLessons: [],
-      templateExercises: [exercise({ id: 'exercise-1', createdAt: afterCourse })],
-      courseSections: [],
-      courseLessons: [],
-      courseExercises: []
-    });
-    const settings = detectSettingChanges({
-      template,
-      course,
-      courseCreatedAt,
-      syncedAtByKey: {},
-      exerciseCopyBySourceId: new Map()
-    });
-    const finalExercise = settings.find((setting) => setting.key === 'finalExercise');
-    expect(finalExercise?.requiresUnitId).toBe('exercise-1');
-
-    const selection = preparePullSelection(exerciseUnits, settings, [], ['finalExercise']);
-    expect(selection).toEqual({ ok: true, unitIds: ['exercise-1'], settingKeys: ['finalExercise'] });
-
-    const patch = applySettingChanges(course, template, ['finalExercise'], new Map([['exercise-1', 'copy-1']]));
-    expect(patch.certificate?.requiredExerciseId).toBe('copy-1');
-    expect(patch.certificate?.exerciseMinScorePercent).toBe(70);
   });
 
   it('rejects a locked exercise and a unit that is no longer listed', () => {

@@ -3,32 +3,35 @@ import { defineConfig } from 'blume';
 import { extractOperations, type ApiDocument } from 'blume/openapi/model.ts';
 import { z } from 'zod';
 
+// Hand-written guides (content/docs/api) live at /api; the generated
+// reference mounts below them, since Blume always appends the full endpoint
+// index to its overview page.
 const API_ROUTE = '/api';
+const API_REFERENCE_ROUTE = '/api/reference';
 const apiSpec = JSON.parse(readFileSync(new URL('./openapi/public-api.json', import.meta.url), 'utf-8')) as ApiDocument;
-const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, API_ROUTE);
+const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, API_REFERENCE_ROUTE);
 
-// Sidebar layout for the API tab. A section is a non-collapsible header; its
-// core resource's CRUD routes sit flat beneath it and every sub-resource gets
-// its own collapsible group. Tags keep their full names in the OpenAPI spec
-// (tags must be unique across the spec) while display labels drop the
-// family prefix — the section header already provides that context.
-// Without sections, Blume orders tags by first path seen, which scatters them.
 interface TagPlacement {
   tag: string;
-  /** Display label for a collapsible group; defaults to the tag name. */
   label?: string;
-  /** Render the tag's routes as flat items instead of a collapsible group. */
   flat?: boolean;
-  /** Route substrings kept out of flat CRUD rows, at the end. */
-  last?: string[];
+  trailingRouteSubstrings?: string[];
 }
 
 const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
-  { label: 'Organization', tags: [{ tag: 'Audience' }, { tag: 'Team' }] },
+  {
+    label: 'Organization',
+    tags: [
+      { tag: 'Audience' },
+      { tag: 'Team' },
+      { tag: 'Organization Email Templates', label: 'Email Templates' },
+      { tag: 'Organization Landing Page', label: 'Landing Page' }
+    ]
+  },
   {
     label: 'Courses',
     tags: [
-      { tag: 'Courses', flat: true },
+      { tag: 'Courses', label: 'Overview' },
       { tag: 'Course Structure', label: 'Structure' },
       { tag: 'Course Sections', label: 'Sections' },
       { tag: 'Course Lessons', label: 'Lessons' },
@@ -42,13 +45,14 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
       { tag: 'Exercise Sections', label: 'Exercise Sections' },
       { tag: 'Exercise Templates', label: 'Templates' },
       { tag: 'Course Submissions', label: 'Submissions' },
-      { tag: 'Course Certificates', label: 'Certificates' }
+      { tag: 'Course Certificates', label: 'Certificates' },
+      { tag: 'Course Templates', label: 'Course Templates' }
     ]
   },
   {
     label: 'Cohorts',
     tags: [
-      { tag: 'Cohorts', flat: true, last: ['cohorts-enrolled'] },
+      { tag: 'Cohorts', label: 'Overview', trailingRouteSubstrings: ['cohorts-enrolled'] },
       { tag: 'Cohort Members', label: 'Members' },
       { tag: 'Cohort Courses', label: 'Courses' },
       { tag: 'Cohort Invites', label: 'Invites' },
@@ -72,32 +76,43 @@ const operationsOfTag = (tagName: string): string[] => {
     .map((operation) => operation.route);
 };
 
-const tagGroup = (placement: TagPlacement) => ({
-  label: placement.label ?? placement.tag,
-  display: 'group' as const,
-  collapsed: true,
-  items: operationsOfTag(placement.tag)
-});
+const routesOfPlacement = (placement: TagPlacement): string[] => {
+  const routes = operationsOfTag(placement.tag);
+  if (!placement.trailingRouteSubstrings) {
+    return routes;
+  }
+
+  const [trailingRoutes, mainRoutes] = routes.reduce(
+    ([trailingRoutes, mainRoutes], route) => {
+      const isTrailing = placement.trailingRouteSubstrings?.some((substring) => route.includes(substring));
+
+      return isTrailing
+        ? [[...trailingRoutes, route], mainRoutes]
+        : [trailingRoutes, [...mainRoutes, route]];
+    },
+    [[], []] as [string[], string[]]
+  );
+
+  return [...mainRoutes, ...trailingRoutes];
+};
+
+const tagGroup = (placement: TagPlacement) => {
+  const routes = routesOfPlacement(placement);
+
+  return {
+    label: placement.label ?? placement.tag,
+    display: 'group' as const,
+    collapsed: true,
+    items: routes
+  };
+};
 
 const sectionItem = (placement: TagPlacement) => {
   if (!placement.flat) {
     return [tagGroup(placement)];
   }
 
-  if (!placement.last) {
-    return operationsOfTag(placement.tag);
-  }
-
-  const [trailing, core] = operationsOfTag(placement.tag).reduce(
-    ([trailing, core], route) => {
-      const isTrailing = placement.last?.some((suffix) => route.includes(suffix));
-
-      return isTrailing ? [[...trailing, route], core] : [trailing, [...core, route]];
-    },
-    [[], []] as [string[], string[]]
-  );
-
-  return [...core, ...trailing];
+  return routesOfPlacement(placement);
 };
 
 const placedTags = new Set(API_SECTIONS.flatMap((section) => section.tags.map((placement) => placement.tag)));
@@ -153,7 +168,10 @@ export default defineConfig({
     site: 'https://classroomio.com',
     base: '/docs'
   },
-  redirects: [{ from: '/', to: '/developers', status: 301 }],
+  redirects: [
+    { from: '/', to: '/developers', status: 301 },
+    { from: '/developers/mcp/tools', to: '/developers/mcp/access-and-limits', status: 301 }
+  ],
   github: {
     owner: 'classroomio',
     repo: 'classroomio',
@@ -190,7 +208,7 @@ export default defineConfig({
   },
   openapi: {
     enabled: true,
-    route: API_ROUTE,
+    route: API_REFERENCE_ROUTE,
     sources: [{ label: 'API', spec: './openapi/public-api.json' }]
   },
   navigation: {
@@ -215,7 +233,21 @@ export default defineConfig({
         label: 'Connect',
         display: 'group',
         collapsed: false,
-        items: ['/developers/mcp', '/developers/token-auth']
+        items: [
+          {
+            label: 'MCP',
+            display: 'group',
+            collapsed: false,
+            items: [
+              '/developers/mcp',
+              '/developers/mcp/setup',
+              '/developers/mcp/access-and-limits',
+              '/developers/mcp/course-editing'
+            ]
+          },
+          '/developers/webhooks',
+          '/developers/token-auth'
+        ]
       },
       {
         label: 'Self-hosting',
@@ -283,7 +315,15 @@ export default defineConfig({
       {
         label: 'API',
         root: API_ROUTE,
-        items: [API_ROUTE, ...apiSidebarSections]
+        items: [
+          {
+            label: 'Getting started',
+            display: 'flat',
+            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination']
+          },
+          { label: 'Reference', display: 'flat', items: [API_REFERENCE_ROUTE] },
+          ...apiSidebarSections
+        ]
       }
     ]
   }

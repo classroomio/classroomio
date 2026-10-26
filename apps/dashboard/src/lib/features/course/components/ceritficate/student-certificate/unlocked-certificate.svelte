@@ -7,6 +7,7 @@
   import { isFreePlan } from '$lib/utils/store/org';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
+  import { REQUIRED_COURSE_COMPLETION_PERCENT } from '@cio/utils/functions/course-progression';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -118,7 +119,7 @@
       return [
         t.get('course.certificates.progress_hint', {
           current: 0,
-          required: courseApi.course?.certificate?.threshold ?? 100
+          required: REQUIRED_COURSE_COMPLETION_PERCENT
         })
       ];
     }
@@ -129,7 +130,7 @@
     return [
       t.get('course.certificates.progress_hint', {
         current: evaluation.progressPercent,
-        required: evaluation.certificationThreshold
+        required: REQUIRED_COURSE_COMPLETION_PERCENT
       })
     ];
   });

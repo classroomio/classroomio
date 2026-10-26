@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { AUDIENCE_IMPORT_MAX_ROWS } from '../organization/audience-import';
+
 const ZPublicApiAudienceActivityWindow = z.enum(['7d', '30d', '90d', '180d', 'never']);
 
 export const ZPublicApiAudienceQuery = z.object({
@@ -21,26 +23,49 @@ export const ZPublicApiAudienceQuery = z.object({
 });
 export type TPublicApiAudienceQuery = z.infer<typeof ZPublicApiAudienceQuery>;
 
-export const ZPublicApiCreateAudience = z.object({
-  email: z.string().email(),
-  courseIds: z.array(z.string().uuid()).optional(),
-  sendEmail: z.boolean().default(true)
-});
+export const ZPublicApiCreateAudience = z
+  .object({
+    email: z.string().trim().email().optional().describe('One person to invite. Send this or emails, not both'),
+    emails: z
+      .array(z.string().trim())
+      .min(1)
+      .max(AUDIENCE_IMPORT_MAX_ROWS)
+      .optional()
+      .describe(
+        `Up to ${AUDIENCE_IMPORT_MAX_ROWS} people to invite in one request. An address that is not valid comes back as an invalid_email row instead of failing the request. Names are not taken here; set one with PUT /audience/{memberId} after the person joins`
+      ),
+    courseIds: z.array(z.string().uuid()).optional(),
+    sendEmail: z.boolean().default(true).describe('Email the invite. Default: true; false adds them without an email.')
+  })
+  .refine((data) => (data.email === undefined) !== (data.emails === undefined), {
+    message: 'Send email or emails, not both',
+    path: ['emails']
+  });
 export type TPublicApiCreateAudience = z.infer<typeof ZPublicApiCreateAudience>;
 
 export const ZPublicApiMemberName = z.string().trim().min(3).max(120);
 
+export const MEMBER_NAME_DESCRIPTION =
+  'Joined members only: sets the full name on their profile. The profile is shared, so the name shows in every organization the person belongs to.';
+
 export const ZPublicApiUpdateAudience = z
   .object({
-    email: z.string().email().optional().describe('Pending members only: corrects the invited email'),
+    email: z
+      .string()
+      .email()
+      .optional()
+      .describe('Pending members only: corrects the invited email and re-sends the invite unless sendEmail is false'),
     sendEmail: z.boolean().default(true).describe('Whether to email the new invite when email changes'),
-    name: ZPublicApiMemberName.optional().describe('Joined members only: sets the full name on their profile')
+    name: ZPublicApiMemberName.optional().describe(MEMBER_NAME_DESCRIPTION)
   })
   .refine((data) => data.email !== undefined || data.name !== undefined, { message: 'No fields to update' })
   .refine((data) => data.email === undefined || data.name === undefined, {
     message: 'Send email or name, not both: email is for pending members and name is for joined members',
     path: ['name']
-  });
+  })
+  .describe(
+    "Send email for a pending member or name for a joined member. A joined member's own email, password, username and avatar cannot be changed here; to change an admin's or tutor's role, use PUT /team/{memberId}."
+  );
 export type TPublicApiUpdateAudience = z.infer<typeof ZPublicApiUpdateAudience>;
 
 export const ZPublicApiAssignAudienceCourses = z

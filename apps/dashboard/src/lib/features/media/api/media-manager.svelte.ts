@@ -78,7 +78,7 @@ export class MediaApi extends BaseApiWithErrors {
     return Math.max(0, Math.round(value));
   }
 
-  async listAssets(query: Partial<TAssetListQuery> = {}, options: { abortPrevious?: boolean } = {}) {
+  async listAssets(query: Partial<TAssetListQuery> = {}, options: { abortPrevious?: boolean; append?: boolean } = {}) {
     const parsed = ZAssetListQuery.partial().safeParse(query);
     if (!parsed.success) {
       this.errors = mapZodErrorsToTranslations(parsed.error);
@@ -107,7 +107,15 @@ export class MediaApi extends BaseApiWithErrors {
       requestFn: () => classroomio.organization.assets.$get({ query: rpcQuery }, { init: { signal: requestSignal } }),
       logContext: 'listing organization assets',
       onSuccess: (response) => {
-        this.assets = response.data;
+        if (!options.append) {
+          this.assets = response.data;
+        } else {
+          const existingAssetIds = new Set(this.assets.map((asset) => asset.id));
+          const newAssets = response.data.filter((asset) => !existingAssetIds.has(asset.id));
+
+          this.assets = [...this.assets, ...newAssets];
+        }
+
         this.pagination = response.pagination;
       },
       onError: () => {
@@ -405,9 +413,12 @@ export class MediaApi extends BaseApiWithErrors {
     return urls[asset.storageKey] ?? null;
   }
 
-  async registerUploadedLessonVideo(params: {
-    lessonId: string;
-    position: number;
+  /**
+   * Creates the asset for an uploaded video and attaches it to the lesson when `lessonId` is given.
+   */
+  async registerUploadedVideo(params: {
+    lessonId?: string;
+    position?: number;
     fileKey: string;
     videoUrl: string;
     fileName: string;
@@ -438,19 +449,24 @@ export class MediaApi extends BaseApiWithErrors {
       return null;
     }
 
-    await this.attachAsset(asset.id, {
-      targetType: 'lesson',
-      targetId: params.lessonId,
-      slotType: 'lesson_video',
-      position: params.position
-    });
+    if (params.lessonId) {
+      await this.attachAsset(asset.id, {
+        targetType: 'lesson',
+        targetId: params.lessonId,
+        slotType: 'lesson_video',
+        position: params.position
+      });
+    }
 
     return asset;
   }
 
-  async registerUploadedLessonDocument(params: {
-    lessonId: string;
-    position: number;
+  /**
+   * Creates the asset for an uploaded document and attaches it to the lesson when `lessonId` is given.
+   */
+  async registerUploadedDocument(params: {
+    lessonId?: string;
+    position?: number;
     fileKey: string;
     documentUrl: string;
     fileName: string;
@@ -477,12 +493,14 @@ export class MediaApi extends BaseApiWithErrors {
       return null;
     }
 
-    await this.attachAsset(asset.id, {
-      targetType: 'lesson',
-      targetId: params.lessonId,
-      slotType: 'lesson_document',
-      position: params.position
-    });
+    if (params.lessonId) {
+      await this.attachAsset(asset.id, {
+        targetType: 'lesson',
+        targetId: params.lessonId,
+        slotType: 'lesson_document',
+        position: params.position
+      });
+    }
 
     return asset;
   }

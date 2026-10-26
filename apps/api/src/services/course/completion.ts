@@ -4,145 +4,36 @@ import {
   isBeforeOrEqualDeadline,
   scheduleCertificationCompletionWork
 } from '@api/utils/course-completion';
-import {
-  exerciseBelongsToCourse,
-  getExerciseTitleAndMaxPoints,
-  getStudentSubmissionsForExercise
-} from '@cio/db/queries/course/certification-exercise';
+import { REQUIRED_COURSE_COMPLETION_PERCENT } from '@cio/utils/functions/course-progression';
 import {
   getCourseById,
   getCourseCertificationRow,
   getCourseProgress as getCourseProgressQuery,
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
-import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
+import { claimMemberCertificateEarned, claimMemberCompleted } from '@cio/db/queries/course/people';
+import { captureServerEvent } from '@cio/core/services/posthog';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
+import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { assertCertificatesEnabled, orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
+import { formatCertificateId } from '@api/services/course/certificate';
+import { resolveCertificateDesign } from '@api/utils/certificate';
+import type { TWebhookEventInput } from '@cio/utils/validation/webhook';
 
 export type CertificationBlocker = {
-  code:
-    | 'CERT_PROGRESS'
-    | 'CERT_DEADLINE_PASSED'
-    | 'CERT_NO_CONTENT'
-    | 'CERT_FINAL_EXERCISE_NOT_SUBMITTED'
-    | 'CERT_FINAL_EXERCISE_PENDING_GRADE'
-    | 'CERT_FINAL_EXERCISE_SCORE'
-    | 'CERT_FINAL_EXERCISE_MISCONFIGURED';
+  code: 'CERT_PROGRESS' | 'CERT_DEADLINE_PASSED' | 'CERT_NO_CONTENT';
   params?: Record<string, string | number>;
 };
 
 export type CourseCompletionEvaluation = {
   progressPercent: number;
-  certificationThreshold: number;
-  meetsThreshold: boolean;
+  hasCompletedAllContent: boolean;
   eligibleForCertificate: boolean;
   certificateEarnedAt: string | null;
   blockers: CertificationBlocker[];
-  meetsFinalExerciseRule: boolean;
 };
-
-function percentFromTotal(total: number, maxPoints: number): number {
-  if (maxPoints <= 0) return 0;
-  return Math.round((total / maxPoints) * 100);
-}
-
-async function evaluateFinalExerciseRule(params: {
-  courseId: string;
-  requiredExerciseId: string | null | undefined;
-  minScorePercent: number | null | undefined;
-  groupMemberId: string | null;
-}): Promise<{
-  meetsFinalExerciseRule: boolean;
-  blockers: CertificationBlocker[];
-}> {
-  const { courseId, requiredExerciseId, minScorePercent, groupMemberId } = params;
-
-  if (!requiredExerciseId) {
-    return { meetsFinalExerciseRule: true, blockers: [] };
-  }
-
-  const belongs = await exerciseBelongsToCourse(requiredExerciseId, courseId);
-  if (!belongs) {
-    return { meetsFinalExerciseRule: true, blockers: [] };
-  }
-
-  const requiredPercent = minScorePercent ?? 100;
-
-  if (!groupMemberId) {
-    return {
-      meetsFinalExerciseRule: false,
-      blockers: [{ code: 'CERT_FINAL_EXERCISE_NOT_SUBMITTED' }]
-    };
-  }
-
-  const { title: exerciseTitle, maxPoints } = await getExerciseTitleAndMaxPoints(requiredExerciseId);
-
-  if (maxPoints <= 0) {
-    return {
-      meetsFinalExerciseRule: false,
-      blockers: [
-        {
-          code: 'CERT_FINAL_EXERCISE_MISCONFIGURED',
-          params: { exerciseTitle }
-        }
-      ]
-    };
-  }
-
-  const submissions = await getStudentSubmissionsForExercise(groupMemberId, requiredExerciseId);
-
-  if (submissions.length === 0) {
-    return {
-      meetsFinalExerciseRule: false,
-      blockers: [
-        {
-          code: 'CERT_FINAL_EXERCISE_NOT_SUBMITTED',
-          params: { exerciseTitle }
-        }
-      ]
-    };
-  }
-
-  const completed = submissions.filter((s) => s.gradingState === 'completed');
-  if (completed.length === 0) {
-    return {
-      meetsFinalExerciseRule: false,
-      blockers: [
-        {
-          code: 'CERT_FINAL_EXERCISE_PENDING_GRADE',
-          params: { exerciseTitle }
-        }
-      ]
-    };
-  }
-
-  let bestPercent = 0;
-  for (const s of completed) {
-    const total = Number(s.total ?? 0);
-    const p = percentFromTotal(total, maxPoints);
-    if (p > bestPercent) bestPercent = p;
-  }
-
-  if (bestPercent < requiredPercent) {
-    return {
-      meetsFinalExerciseRule: false,
-      blockers: [
-        {
-          code: 'CERT_FINAL_EXERCISE_SCORE',
-          params: {
-            exerciseTitle,
-            bestPercent,
-            requiredPercent
-          }
-        }
-      ]
-    };
-  }
-
-  return { meetsFinalExerciseRule: true, blockers: [] };
-}
 
 async function buildCertificationEvaluation(
   courseId: string,
@@ -152,9 +43,7 @@ async function buildCertificationEvaluation(
 ): Promise<CourseCompletionEvaluation> {
   const progress = progressArg ?? (await getCourseProgressQuery(courseId, profileId));
   const certificate = courseRow.certificate ?? {};
-  const complianceMinScore = courseRow.type === 'COMPLIANCE' ? (courseRow.compliance?.passingScore ?? null) : null;
 
-  const threshold = certificate.threshold ?? 100;
   const progressPercent = calcCourseProgressPercent({
     lessonsCompleted: progress.lessonsCompleted,
     totalLessons: progress.lessonsCount,
@@ -163,45 +52,59 @@ async function buildCertificationEvaluation(
   });
 
   const now = new Date();
-  const meetsThreshold = progressPercent >= threshold;
+  const totalContentCount = progress.lessonsCount + progress.exercisesCount;
+  const completedContentCount = progress.lessonsCompleted + progress.exercisesCompleted;
+  const hasContent = totalContentCount > 0;
+  const hasCompletedAllContent = hasContent && completedContentCount >= totalContentCount;
   const withinDeadline = isBeforeOrEqualDeadline(certificate.deadline, now);
-  const hasContent = progress.lessonsCount + progress.exercisesCount > 0;
 
   const blockers: CertificationBlocker[] = [];
 
   if (!withinDeadline) {
     blockers.push({ code: 'CERT_DEADLINE_PASSED' });
   }
-  if (!meetsThreshold) {
+  if (!hasCompletedAllContent) {
     blockers.push({
       code: 'CERT_PROGRESS',
-      params: { current: progressPercent, required: threshold }
+      params: { current: progressPercent, required: REQUIRED_COURSE_COMPLETION_PERCENT }
     });
   }
   if (!hasContent) {
     blockers.push({ code: 'CERT_NO_CONTENT' });
   }
 
-  const finalEval = await evaluateFinalExerciseRule({
-    courseId,
-    requiredExerciseId: certificate.requiredExerciseId,
-    minScorePercent: certificate.exerciseMinScorePercent ?? complianceMinScore,
-    groupMemberId: progress.groupMemberId
-  });
-
-  blockers.push(...finalEval.blockers);
-
-  const eligibleForCertificate =
-    !!progress.groupMemberId && meetsThreshold && hasContent && withinDeadline && finalEval.meetsFinalExerciseRule;
+  const eligibleForCertificate = !!progress.groupMemberId && hasCompletedAllContent && withinDeadline;
 
   return {
     progressPercent,
-    certificationThreshold: threshold,
-    meetsThreshold,
+    hasCompletedAllContent,
     eligibleForCertificate,
     certificateEarnedAt: progress.certificateEarnedAt,
-    blockers,
-    meetsFinalExerciseRule: finalEval.meetsFinalExerciseRule
+    blockers
+  };
+}
+
+/**
+ * Builds the `certificate` of a `course.certificate.issued` event. Standard courses store no certificate
+ * row, so they have no `id`, and the printed id is the one the PDF shows.
+ */
+export function buildCertificateWebhookInput(params: {
+  courseRow: TCourseCertificationRow;
+  profileId: string;
+  issuedAt: string;
+  stored?: { id: string | null; cycleNumber: number; expiresAt: string; status: string } | null;
+}): TWebhookEventInput<'course.certificate.issued'>['certificate'] {
+  const { courseRow, profileId, issuedAt, stored } = params;
+  const design = resolveCertificateDesign(courseRow.certificate);
+  const displayId = formatCertificateId(design.idFormat, profileId, new Date(issuedAt));
+
+  return {
+    id: stored?.id ?? null,
+    displayId,
+    issuedAt,
+    expiresAt: stored?.expiresAt ?? null,
+    cycleNumber: stored?.cycleNumber ?? null,
+    status: stored?.status ?? 'valid'
   };
 }
 
@@ -227,43 +130,85 @@ export async function evaluateCourseCertification(
   let certificateEarnedAt = evaluation.certificateEarnedAt;
   let isNewCompletion = false;
 
-  if (evaluation.eligibleForCertificate && !certificateEarnedAt && progress.groupMemberId) {
-    const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
+  if (!evaluation.hasCompletedAllContent || !progress.groupMemberId) {
+    return { ...evaluation, certificateEarnedAt, isNewCompletion };
+  }
 
-    if (certificatesEnabled) {
-      const earnedAt = new Date().toISOString();
-      const didClaimCertificate = await claimMemberCertificateEarned(progress.groupMemberId, earnedAt);
-      certificateEarnedAt = earnedAt;
+  const groupMemberId = progress.groupMemberId;
+  const completionEventData = { profileId, memberId: groupMemberId };
 
-      if (didClaimCertificate) {
-        isNewCompletion = true;
+  if (!progress.completedAt) {
+    const completedAt = new Date().toISOString();
+    const didClaimCompletion = await claimMemberCompleted(groupMemberId, completedAt);
 
-        await invalidateOrgStats(courseRow.orgId);
+    if (didClaimCompletion) {
+      await invalidateOrgStats(courseRow.orgId);
 
-        scheduleCertificationCompletionWork({
-          courseId,
-          profileId,
-          groupMemberId: progress.groupMemberId,
-          courseRow,
-          earnedAt
-        });
-
-        trackServerEvent({
-          eventType: SERVER_EVENTS.COURSE_COMPLETED,
-          userId: profileId,
-          courseId,
-          props: { path: 'standard', earnedAt }
-        });
-
-        if (courseRow.certificate?.isDownloadable) {
-          trackServerEvent({
-            eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
-            userId: profileId,
-            courseId,
-            props: { path: 'standard', earnedAt }
-          });
-        }
+      if (courseRow.type !== 'COMPLIANCE') {
+        await emitWebhookEvent(courseRow.orgId, 'course.completed', { courseId, ...completionEventData, completedAt });
       }
+
+      trackServerEvent({
+        eventType: SERVER_EVENTS.COURSE_COMPLETED,
+        userId: profileId,
+        courseId,
+        props: { path: 'standard', earnedAt: completedAt }
+      });
+    }
+  }
+
+  const canIssueCertificate = evaluation.eligibleForCertificate && !certificateEarnedAt;
+
+  if (!canIssueCertificate) {
+    return { ...evaluation, certificateEarnedAt, isNewCompletion };
+  }
+
+  const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
+
+  if (!certificatesEnabled) {
+    return { ...evaluation, certificateEarnedAt, isNewCompletion };
+  }
+
+  const earnedAt = new Date().toISOString();
+  const didClaimCertificate = await claimMemberCertificateEarned(groupMemberId, earnedAt);
+  certificateEarnedAt = earnedAt;
+
+  if (didClaimCertificate) {
+    isNewCompletion = true;
+
+    captureServerEvent({
+      event: 'course_completed',
+      distinctId: profileId,
+      orgId: courseRow.orgId,
+      properties: { course_id: courseId, course_type: courseRow.type }
+    });
+
+    if (courseRow.type !== 'COMPLIANCE') {
+      const certificate = buildCertificateWebhookInput({ courseRow, profileId, issuedAt: earnedAt });
+
+      await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', {
+        courseId,
+        ...completionEventData,
+        completedAt: earnedAt,
+        certificate
+      });
+    }
+
+    scheduleCertificationCompletionWork({
+      courseId,
+      profileId,
+      groupMemberId,
+      courseRow,
+      earnedAt
+    });
+
+    if (courseRow.certificate?.isDownloadable) {
+      trackServerEvent({
+        eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
+        userId: profileId,
+        courseId,
+        props: { path: 'standard', earnedAt }
+      });
     }
   }
 

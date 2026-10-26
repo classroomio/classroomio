@@ -227,6 +227,8 @@ export const reorderOrgCourses = async (orgId: string, orders: { id: string; ord
     const courseIds = orders.map(({ id }) => id);
 
     await db.transaction(async (tx) => {
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`org_course_order:${orgId}`}))`);
+
       const allOrgCourses = await tx
         .select({ id: schema.course.id })
         .from(schema.course)
@@ -568,7 +570,10 @@ export async function createCourse(newCourse: TNewCourse, dbClient: DbOrTxClient
     return await dbClient.insert(schema.course).values(newCourse).returning();
   } catch (error) {
     console.error('createCourse error:', error);
-    throw new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw Object.assign(
+      new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`),
+      { cause: error }
+    );
   }
 }
 
@@ -649,6 +654,7 @@ export async function getCourseProgress(
   exercisesCompleted: number;
   groupMemberId: string | null;
   roleId: number | null;
+  completedAt: string | null;
   certificateEarnedAt: string | null;
   certificationEmailSentAt: string | null;
 }> {
@@ -658,6 +664,7 @@ export async function getCourseProgress(
       .select({
         id: schema.groupmember.id,
         roleId: schema.groupmember.roleId,
+        completedAt: schema.groupmember.completedAt,
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
         certificationEmailSentAt: schema.groupmember.certificationEmailSentAt
       })
@@ -675,6 +682,7 @@ export async function getCourseProgress(
         exercisesCompleted: 0,
         groupMemberId: null,
         roleId: null,
+        completedAt: null,
         certificateEarnedAt: null,
         certificationEmailSentAt: null
       };
@@ -682,6 +690,7 @@ export async function getCourseProgress(
 
     const groupMemberId = groupMemberResult[0].id;
     const roleId = groupMemberResult[0].roleId;
+    const completedAt = groupMemberResult[0].completedAt ?? null;
     const certificateEarnedAt = groupMemberResult[0].certificateEarnedAt ?? null;
     const certificationEmailSentAt = groupMemberResult[0].certificationEmailSentAt ?? null;
 
@@ -727,6 +736,7 @@ export async function getCourseProgress(
       exercisesCompleted: completedRow?.exercisesCompleted ?? 0,
       groupMemberId,
       roleId,
+      completedAt,
       certificateEarnedAt,
       certificationEmailSentAt
     };
@@ -736,28 +746,16 @@ export async function getCourseProgress(
   }
 }
 
-/** Course + org fields needed for certification email and threshold rules */
+/** Course + org fields needed for certification email and completion rules */
 export type TCourseCertificationRow = {
-  type: string | null;
-  compliance: {
-    retakeIntervalMonths: number;
-    gracePeriodDays?: number;
-    reminderDaysBefore?: number[];
-    isMandatory?: boolean;
-    framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
-    maxRetakeAttempts?: number | null;
-    passingScore?: number;
-  } | null;
   certificate: {
     isDownloadable?: boolean;
     theme?: string;
     deadline?: string | null;
-    threshold?: number;
-    requiredExerciseId?: string | null;
-    exerciseMinScorePercent?: number | null;
     emailMessage?: string | null;
   } | null;
   title: string;
+  type: TCourseType | null;
   orgId: string;
   orgSiteName: string | null;
   orgCustomDomain: string | null;
@@ -771,10 +769,9 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   try {
     const [row] = await db
       .select({
-        type: schema.course.type,
-        compliance: schema.course.compliance,
         certificate: schema.course.certificate,
         title: schema.course.title,
+        type: schema.course.type,
         orgId: schema.organization.id,
         orgSiteName: schema.organization.siteName,
         orgCustomDomain: schema.organization.customDomain,
@@ -1583,6 +1580,21 @@ export async function getCourseGroupIds(courseIds: string[], dbClient: DbOrTxCli
     console.error('getCourseGroupIds error:', error);
     throw new Error(`Failed to get course group IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
+}
+
+export async function getCoursesByGroupIds(groupIds: string[], dbClient: DbOrTxClient = db) {
+  if (groupIds.length === 0) return [];
+
+  return dbClient
+    .select({
+      courseId: schema.course.id,
+      groupId: schema.course.groupId,
+      cost: schema.course.cost,
+      organizationId: schema.group.organizationId
+    })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.group.id, schema.course.groupId))
+    .where(inArray(schema.course.groupId, groupIds));
 }
 
 /** Locks the course row so a concurrent status change can't slip past an accept in progress. */

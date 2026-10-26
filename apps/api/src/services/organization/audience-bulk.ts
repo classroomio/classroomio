@@ -7,6 +7,8 @@ import {
   type BulkApplyOutcome,
   applyAudienceBulkActionToMembers
 } from '@cio/core/services/organization/audience-bulk';
+import { ROLE } from '@cio/utils/constants';
+import { emitOrganizationMemberUpdatedWebhookEvent } from '@cio/core/services/webhook/emit';
 import { db } from '@cio/db/drizzle';
 import { QUEUE_NAMES, enqueueAudienceBulkAction, getQueue, getQueueJobEnvelope, type JobEnvelope } from '@cio/jobs';
 import {
@@ -260,8 +262,9 @@ export async function undoBulkAudienceAction(
   actorProfileId: string
 ): Promise<BulkAudienceActionResult> {
   const record = consumeUndoToken(undoToken, orgId, actorProfileId);
+  const revertedMembers: { id: number; profileId: string | null; email: string | null; from: string }[] = [];
 
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     const members = await getBulkAudienceMembersByIds(orgId, record.memberIds, tx);
 
     // Only members still in the state this action applied. Another admin may
@@ -277,6 +280,14 @@ export async function undoBulkAudienceAction(
       tx
     );
     const changed = stillApplied.filter((member) => changedIds.includes(member.id));
+    revertedMembers.push(
+      ...changed.map((member) => ({
+        id: member.id,
+        profileId: member.profileId,
+        email: member.email,
+        from: member.status
+      }))
+    );
 
     await recordOrganizationMemberAudit(
       orgId,
@@ -312,6 +323,17 @@ export async function undoBulkAudienceAction(
         })
     };
   });
+
+  for (const member of revertedMembers) {
+    await emitOrganizationMemberUpdatedWebhookEvent(
+      orgId,
+      { id: member.id, profileId: member.profileId, email: member.email, roleId: ROLE.STUDENT, status: record.status },
+      { status: { from: member.from, to: record.status } },
+      actorProfileId
+    );
+  }
+
+  return result;
 }
 
 const AUDIENCE_BULK_DOMAIN = 'audience-bulk-action';

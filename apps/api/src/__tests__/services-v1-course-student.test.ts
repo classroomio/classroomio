@@ -152,7 +152,7 @@ describe('setStudentLessonCompletionService', () => {
       contentId: LESSON_ID,
       type: ContentType.Lesson
     });
-    expect(upsertLessonCompletionService).toHaveBeenCalledWith(LESSON_ID, STUDENT_PROFILE_ID, true);
+    expect(upsertLessonCompletionService).toHaveBeenCalledWith(LESSON_ID, STUDENT_PROFILE_ID, true, 'admin');
     expect(evaluateCourseCertification).toHaveBeenCalledWith(COURSE_ID, STUDENT_PROFILE_ID);
     expect(result).toEqual({ lessonId: LESSON_ID, memberId: MEMBER_ID, isComplete: true, updatedAt: '2026-01-02' });
   });
@@ -169,7 +169,7 @@ describe('setStudentLessonCompletionService', () => {
 
     const result = await setStudentLessonCompletionService(ORG_ID, ACTOR_ID, lessonParams, { isComplete: false });
 
-    expect(upsertLessonCompletionService).toHaveBeenCalledWith(LESSON_ID, STUDENT_PROFILE_ID, false);
+    expect(upsertLessonCompletionService).toHaveBeenCalledWith(LESSON_ID, STUDENT_PROFILE_ID, false, 'admin');
     expect(evaluateCourseCertification).not.toHaveBeenCalled();
     expect(result.isComplete).toBe(false);
   });
@@ -195,7 +195,8 @@ describe('createStudentSubmissionService', () => {
     });
     expect(createSubmissionService).toHaveBeenCalledWith(COURSE_ID, EXERCISE_ID, MEMBER_ID, answers, {
       strict: true,
-      allowUploads: false
+      allowUploads: false,
+      source: 'public_api'
     });
     expect(result).toEqual({ id: 'submission-1', memberId: MEMBER_ID, gradingState: 'completed', total: 1 });
   });

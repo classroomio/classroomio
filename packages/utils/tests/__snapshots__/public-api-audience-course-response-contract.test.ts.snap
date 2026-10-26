@@ -147,9 +147,11 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
           "type": "null",
         },
       ],
+      "description": "null when nothing is stored.",
     },
     "design": {
       "additionalProperties": false,
+      "description": "The default design when nothing is stored.",
       "properties": {
         "accentColor": {
           "pattern": "^#[0-9a-fA-F]{6}$",
@@ -257,39 +259,16 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
           "type": "null",
         },
       ],
-    },
-    "exerciseMinScorePercent": {
-      "anyOf": [
-        {
-          "type": "number",
-        },
-        {
-          "type": "null",
-        },
-      ],
+      "description": "null when nothing is stored.",
     },
     "isDownloadable": {
       "default": false,
+      "description": "Controls learner downloads only; the download endpoint works either way.",
       "type": "boolean",
     },
-    "requiredExerciseId": {
-      "anyOf": [
-        {
-          "format": "uuid",
-          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-          "type": "string",
-        },
-        {
-          "type": "null",
-        },
-      ],
-    },
     "theme": {
+      "description": "Falls back to design.templateId when nothing is stored.",
       "type": "string",
-    },
-    "threshold": {
-      "default": 100,
-      "type": "number",
     },
   },
   "required": [
@@ -297,9 +276,6 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
     "theme",
     "design",
     "deadline",
-    "threshold",
-    "requiredExerciseId",
-    "exerciseMinScorePercent",
     "emailMessage",
   ],
   "type": "object",
@@ -523,37 +499,12 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
                 },
               ],
             },
-            "exerciseMinScorePercent": {
-              "anyOf": [
-                {
-                  "type": "number",
-                },
-                {
-                  "type": "null",
-                },
-              ],
-            },
             "isDownloadable": {
               "type": "boolean",
-            },
-            "requiredExerciseId": {
-              "anyOf": [
-                {
-                  "format": "uuid",
-                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-                  "type": "string",
-                },
-                {
-                  "type": "null",
-                },
-              ],
             },
             "theme": {
               "description": "Deprecated; use design.templateId",
               "type": "string",
-            },
-            "threshold": {
-              "type": "number",
             },
           },
           "type": "object",
@@ -603,9 +554,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
                   "type": "null",
                 },
               ],
-            },
-            "passingScore": {
-              "type": "number",
             },
             "reminderDaysBefore": {
               "items": {
@@ -1927,37 +1875,12 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
                 },
               ],
             },
-            "exerciseMinScorePercent": {
-              "anyOf": [
-                {
-                  "type": "number",
-                },
-                {
-                  "type": "null",
-                },
-              ],
-            },
             "isDownloadable": {
               "type": "boolean",
-            },
-            "requiredExerciseId": {
-              "anyOf": [
-                {
-                  "format": "uuid",
-                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-                  "type": "string",
-                },
-                {
-                  "type": "null",
-                },
-              ],
             },
             "theme": {
               "description": "Deprecated; use design.templateId",
               "type": "string",
-            },
-            "threshold": {
-              "type": "number",
             },
           },
           "type": "object",
@@ -2007,9 +1930,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
                   "type": "null",
                 },
               ],
-            },
-            "passingScore": {
-              "type": "number",
             },
             "reminderDaysBefore": {
               "items": {
@@ -2614,37 +2534,12 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
                 },
               ],
             },
-            "exerciseMinScorePercent": {
-              "anyOf": [
-                {
-                  "type": "number",
-                },
-                {
-                  "type": "null",
-                },
-              ],
-            },
             "isDownloadable": {
               "type": "boolean",
-            },
-            "requiredExerciseId": {
-              "anyOf": [
-                {
-                  "format": "uuid",
-                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-                  "type": "string",
-                },
-                {
-                  "type": "null",
-                },
-              ],
             },
             "theme": {
               "description": "Deprecated; use design.templateId",
               "type": "string",
-            },
-            "threshold": {
-              "type": "number",
             },
           },
           "type": "object",
@@ -2694,9 +2589,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
                   "type": "null",
                 },
               ],
-            },
-            "passingScore": {
-              "type": "number",
             },
             "reminderDaysBefore": {
               "items": {
@@ -3184,12 +3076,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                     },
                   ],
                 },
-                "passingScore": {
-                  "default": 80,
-                  "maximum": 100,
-                  "minimum": 0,
-                  "type": "integer",
-                },
                 "reminderDaysBefore": {
                   "default": [
                     30,
@@ -3215,7 +3101,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "gracePeriodDays",
                 "reminderDaysBefore",
                 "isMandatory",
-                "passingScore",
               ],
               "type": "object",
             },
@@ -3750,6 +3635,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "string",
               },
               "videos": {
+                "description": "Lesson videos as { type, link }, where type is youtube, vimeo, generic, upload or google_drive. Add new videos as youtube, vimeo or generic with a hosted URL, and keep any upload or google_drive entries already in the draft unchanged.",
                 "items": {
                   "additionalProperties": false,
                   "properties": {
@@ -3998,9 +3884,11 @@ exports[`public API audience and course response contract > ZPublicApiCreateAudi
             "type": "string",
           },
           "status": {
+            "description": "ready: added to the organization and invited. already_member: a student who has joined; enrolled in courseIds directly. invite_resent: invited earlier but not joined; earlier invites are revoked and a new one is created. invalid_email, missing_email: skipped. duplicate_in_file: the address appears earlier in the request; skipped. is_staff: an admin or tutor of the organization; skipped. over_seat_limit: no student seats left on the plan; skipped",
             "enum": [
               "ready",
               "already_member",
+              "invite_resent",
               "invalid_email",
               "duplicate_in_file",
               "is_staff",
@@ -4178,37 +4066,12 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
                     },
                   ],
                 },
-                "exerciseMinScorePercent": {
-                  "anyOf": [
-                    {
-                      "type": "number",
-                    },
-                    {
-                      "type": "null",
-                    },
-                  ],
-                },
                 "isDownloadable": {
                   "type": "boolean",
-                },
-                "requiredExerciseId": {
-                  "anyOf": [
-                    {
-                      "format": "uuid",
-                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-                      "type": "string",
-                    },
-                    {
-                      "type": "null",
-                    },
-                  ],
                 },
                 "theme": {
                   "description": "Deprecated; use design.templateId",
                   "type": "string",
-                },
-                "threshold": {
-                  "type": "number",
                 },
               },
               "type": "object",
@@ -4258,9 +4121,6 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
                       "type": "null",
                     },
                   ],
-                },
-                "passingScore": {
-                  "type": "number",
                 },
                 "reminderDaysBefore": {
                   "items": {

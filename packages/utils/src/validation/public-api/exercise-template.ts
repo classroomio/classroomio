@@ -3,7 +3,7 @@ import * as z from 'zod';
 import { ZPublicApiPaginationQuery } from './pagination';
 
 export const ZPublicApiExerciseTemplatesQuery = ZPublicApiPaginationQuery.extend({
-  tag: z.string().min(1).max(50).optional()
+  tag: z.string().min(1).max(50).optional().describe('Only return templates with this tag')
 });
 export type TPublicApiExerciseTemplatesQuery = z.infer<typeof ZPublicApiExerciseTemplatesQuery>;
 

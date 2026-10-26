@@ -27,12 +27,12 @@ function buildApp(orgRoles: Record<string, number>) {
 
   return new Hono()
     .use(setContext)
-    .post('/courses/reorder', orgAdminOrAutomationKeyMiddleware(['course:write']), (c) =>
+    .post('/course-import/drafts', orgAdminOrAutomationKeyMiddleware(['course_import:draft:create']), (c) =>
       c.json({ success: true, orgId: c.get('orgId'), actorId: c.get('actorId') })
     );
 }
 
-describe('orgAdminOrAutomationKeyMiddleware (courses reorder security)', () => {
+describe('orgAdminOrAutomationKeyMiddleware (course import drafts)', () => {
   beforeEach(() => {
     mocks.hasScopes.mockReset();
     mocks.hasScopes.mockReturnValue(true);
@@ -40,7 +40,7 @@ describe('orgAdminOrAutomationKeyMiddleware (courses reorder security)', () => {
 
   it('allows an organization admin', async () => {
     const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
-    const response = await app.request('/courses/reorder', {
+    const response = await app.request('/course-import/drafts', {
       method: 'POST',
       headers: { 'cio-org-id': ORG_ID }
     });
@@ -53,7 +53,7 @@ describe('orgAdminOrAutomationKeyMiddleware (courses reorder security)', () => {
 
   it('rejects a non-admin member (e.g. a student or tutor)', async () => {
     const app = buildApp({ [ORG_ID]: ROLE.STUDENT });
-    const response = await app.request('/courses/reorder', {
+    const response = await app.request('/course-import/drafts', {
       method: 'POST',
       headers: { 'cio-org-id': ORG_ID }
     });

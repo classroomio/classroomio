@@ -3,8 +3,10 @@ import { PUBLIC_API_BASE_URL } from '@cio/utils/openapi/public-api';
 
 const PUBLIC_API_SETUP_SECRET_PLACEHOLDER = '<paste-your-api-key>';
 
-export const MCP_DOCS_URL = 'https://classroomio.com/docs/mcp';
+export const MCP_DOCS_URL = 'https://classroomio.com/docs/developers/mcp';
 export const PUBLIC_API_DOCS_URL = 'https://classroomio.com/docs/api';
+export const WEBHOOKS_DOCS_URL = 'https://classroomio.com/docs/developers/webhooks';
+export const WEBHOOKS_VERIFY_SIGNATURE_DOCS_URL = `${WEBHOOKS_DOCS_URL}#verify-the-signature`;
 
 function getServerPath() {
   return 'npx -y @classroomio/mcp';
@@ -127,13 +129,14 @@ export function getOpenCodeSnippet(secret: string | null) {
   return `{
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "classroomio": {
-      "type": "local",
-      "command": ["npx", "-y", "@classroomio/mcp"],
-      "enabled": true,
-      "environment": {
-        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
-        "CLASSROOMIO_API_KEY": "${apiKey}"
+    "servers": {
+      "classroomio": {
+        "type": "local",
+        "command": ["npx", "-y", "@classroomio/mcp"],
+        "environment": {
+          "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+          "CLASSROOMIO_API_KEY": "${apiKey}"
+        }
       }
     }
   }

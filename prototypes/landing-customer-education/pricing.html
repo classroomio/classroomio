@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClassroomIO — Pricing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0b0d17;
+        --ink-2: #2b2f3d;
+        --muted: #646a7a;
+        --muted-2: #9096a6;
+        --line: #e8eaf0;
+        --soft: #f4f5f9;
+        --soft-2: #f8f9fc;
+        --lavender: #e7e9fb;
+        --blue: #2f5bea;
+        --navy: #070a18;
+        --green: #1f9d57;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; overflow-x: clip; }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      a { color: inherit; text-decoration: none; }
+      button { font: inherit; cursor: pointer; }
+      .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+      .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+      .eyebrow {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.14em;
+        text-transform: uppercase; color: var(--muted-2); margin-bottom: 18px;
+      }
+      .eyebrow i { width: 5px; height: 5px; border-radius: 50%; background: var(--blue); display: inline-block; }
+      h2.title {
+        margin: 0 auto; text-align: center; font-weight: 500; letter-spacing: -0.035em;
+        font-size: 68px; line-height: 1.06; max-width: 800px;
+      }
+      p.lead { text-align: center; color: var(--muted); max-width: 640px; margin: 22px auto 0; font-size: 15.5px; }
+      .btn {
+        display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 18px;
+        border-radius: 999px; border: 1px solid var(--line); background: #fff; font-weight: 500; font-size: 13.5px;
+      }
+      .btn.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+      .btn.white { background: #fff; color: var(--ink); border-color: #fff; }
+      .btn.ghost-dark { background: transparent; color: #fff; border-color: rgba(255,255,255,0.22); }
+      .btn { white-space: nowrap; }
+      .btn.sm { height: 30px; padding: 0 14px; font-size: 12px; }
+
+      /* nav */
+      .nav { height: 56px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,0.92); position: sticky; top: 0; z-index: 20; backdrop-filter: blur(8px); }
+      .nav .wrap { display: flex; align-items: center; height: 100%; gap: 28px; }
+      .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+      .logo b { width: 20px; height: 20px; border-radius: 5px; background: var(--blue); display: inline-block; }
+      .nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; font-size: 13px; color: var(--ink-2); }
+      .nav .right { margin-left: auto; display: flex; align-items: center; gap: 16px; font-size: 13px; }
+
+
+      .nav .menu { display: flex; gap: 4px; }
+      .nav .item { position: relative; }
+      .nav .item > a, .nav .item > button { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 10px; border: 0; border-radius: 8px; background: none; font: inherit; color: var(--ink-2); cursor: pointer; }
+      .nav .item > a:hover, .nav .item > button:hover, .nav .item.open > button { background: #f1f2f6; color: var(--ink); }
+      .nav .item svg { width: 10px; height: 10px; transition: transform .15s; }
+      .nav .item.open svg { transform: rotate(180deg); }
+      .nav .drop { position: absolute; top: calc(100% + 10px); left: -8px; min-width: 300px; padding: 8px; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 50px rgba(20,24,40,0.14); opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .15s, transform .15s, visibility .15s; }
+      .nav .drop::before { content: ""; position: absolute; left: 0; right: 0; top: -12px; height: 12px; }
+      .nav .item.open .drop, .nav .item:hover .drop, .nav .item:focus-within .drop { opacity: 1; visibility: visible; transform: none; }
+      .nav .drop a { display: flex; gap: 12px; padding: 10px; border-radius: 10px; align-items: flex-start; }
+      .nav .drop a:hover { background: #f5f6fa; }
+      .nav .drop i { flex: none; width: 30px; height: 30px; border-radius: 8px; background: #eef1ff; color: var(--blue); display: grid; place-items: center; font-style: normal; font-size: 14px; }
+      .nav .drop strong { display: block; font-size: 13px; color: var(--ink); font-weight: 600; }
+      .nav .drop span { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+      .nav .burger { display: none; margin-left: 8px; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 8px; background: #fff; cursor: pointer; font-size: 16px; }
+      html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+
+
+      .nav .drop.solutions-menu { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 6px; min-width: 620px; padding: 14px; left: -120px; }
+      .nav .drop.solutions-menu .rule { background: var(--line); margin: 6px 0; }
+      .nav .drop.solutions-menu h6 { margin: 4px 10px 8px; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+      .nav .drop.solutions-menu .col { display: flex; flex-direction: column; gap: 2px; }
+      .nav .drop.solutions-menu .col.ind { background: linear-gradient(180deg, #f7f8fc, #fff); border-radius: 10px; }
+      .nav .drop.solutions-menu .col.ind i { background: #f1ecff; color: #6a4df5; }
+      .nav .drop.solutions-menu .foot { grid-column: 1 / -1; margin-top: 6px; padding: 10px 12px; border-radius: 10px; background: #f5f6fa; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+      .nav .drop.solutions-menu .foot a { display: inline; padding: 0; color: var(--blue); font-weight: 600; }
+      .nav .drop.solutions-menu .foot a:hover { background: none; text-decoration: underline; }
+
+      /* hero */
+      .hero { position: relative; text-align: center; padding: 64px 0 0; background: radial-gradient(60% 50% at 80% 8%, #e9e4ff 0%, transparent 60%), radial-gradient(50% 45% at 15% 20%, #e8efff 0%, transparent 60%); overflow: hidden; }
+      .pill { display: inline-flex; gap: 8px; align-items: center; font-size: 11px; padding: 4px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: var(--muted); }
+      .pill b { background: var(--ink); color: #fff; border-radius: 999px; padding: 1px 8px; font-weight: 500; font-size: 10px; }
+      .hero h1 { font-size: 88px; line-height: 1.08; letter-spacing: -0.045em; font-weight: 500; margin: 30px auto 0; max-width: 860px; }
+      .hero p { max-width: 520px; margin: 24px auto 0; color: var(--muted); font-size: 14.5px; }
+      .hero .cta { display: flex; justify-content: center; gap: 10px; margin-top: 28px; }
+      .hero small { display: block; margin-top: 14px; color: var(--muted-2); font-size: 11px; }
+      .shot { margin: 90px auto 0; max-width: 1120px; background: #fff; border: 1px solid var(--line); border-bottom: 0; border-radius: 14px 14px 0 0; box-shadow: 0 30px 80px rgba(60,60,140,0.14); display: grid; grid-template-columns: 200px 1fr 220px; height: 520px; text-align: left; overflow: hidden; position: relative; }
+      .shot .side { border-right: 1px solid var(--line); padding: 18px; font-size: 11px; color: var(--muted); display: grid; gap: 10px; align-content: start; }
+      .shot .side b { color: var(--ink); font-size: 12px; }
+      .shot .side span { display: block; padding: 6px 8px; border-radius: 6px; }
+      .shot .side span.on { background: var(--soft); color: var(--ink); }
+      .shot .main { padding: 18px 22px; font-size: 11px; color: var(--muted); }
+      .shot .main h4 { margin: 4px 0 14px; font-size: 14px; color: var(--ink); font-weight: 500; }
+      .video { height: 340px; border-radius: 10px; background: linear-gradient(120deg, #08091a 0%, #231a5c 50%, #7a3fe0 100%); display: grid; place-items: center; }
+      .video i { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.4); display: grid; place-items: center; color: #fff; font-style: normal; font-size: 14px; }
+      .shot .chat { border-left: 1px solid var(--line); padding: 18px; font-size: 11px; color: var(--muted); display: grid; gap: 10px; align-content: start; }
+      .shot .chat .b { background: var(--soft); border-radius: 8px; padding: 8px 10px; }
+      .shot .tag { position: absolute; right: 24px; bottom: 16px; background: #1b1d26; color: #fff; font-size: 9px; padding: 6px 12px; border-radius: 999px; letter-spacing: 0.08em; }
+      .trusted { text-align: center; font-size: 10.5px; color: var(--muted-2); padding: 18px 0 12px; border-top: 1px solid var(--line); background: #fff; }
+      .trusted b { color: var(--blue); font-weight: 600; }
+      .marquee { background: #fff; border-bottom: 1px solid var(--line); padding: 14px 0 18px; overflow: hidden; white-space: nowrap; display: flex; gap: 90px; justify-content: center; mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+      .marquee span { font-size: 13px; font-weight: 600; color: #7b8090; letter-spacing: -0.01em; }
+
+      /* features */
+      .features { padding: 150px 0 190px; }
+      .bento { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 56px; }
+      .card { border-radius: 22px; padding: 28px; position: relative; overflow: hidden; }
+      .card h4 { margin: 0 0 8px; font-size: 14px; font-weight: 600; }
+      .card p { margin: 0; font-size: 11.5px; color: var(--muted); max-width: 300px; }
+      .c-public { background: var(--lavender); min-height: 520px; }
+      .c-public .stage { position: absolute; left: 0; right: 0; top: 0; height: 240px; }
+      .c-public .badge { position: absolute; left: 50%; top: 52px; transform: translateX(-50%); width: 150px; height: 88px; border-radius: 16px; background: #0b0d17; color: #fff; padding: 14px; box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
+      .c-public .badge b { display: block; width: 14px; height: 14px; background: var(--blue); border-radius: 4px; margin-bottom: 14px; }
+      .c-public .badge span { font-size: 14px; }
+      .c-public .dot { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.08); }
+      .c-public .txt { position: absolute; left: 28px; bottom: 28px; }
+      .c-analytics { background: #fbfbfd; border: 1px solid var(--line); min-height: 520px; }
+      .c-analytics .row { position: absolute; left: 28px; right: 28px; bottom: 36px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); font-size: 10px; color: var(--muted); }
+      .c-analytics .row .r { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+      .c-analytics .row i { width: 22px; height: 22px; background: var(--green); border-radius: 6px; display: inline-block; }
+      .c-domain { background: var(--lavender); min-height: 400px; }
+      .c-domain .win { position: absolute; right: 22px; bottom: 28px; width: 260px; height: 92px; background: #fff; border-radius: 10px; box-shadow: 0 14px 30px rgba(60,60,140,0.15); padding: 12px; transform: rotate(-3deg); }
+      .c-domain .win u { display: block; height: 6px; background: #eceef4; border-radius: 3px; margin: 14px 0 0; text-decoration: none; }
+      .c-domain .ok { position: absolute; left: 22px; bottom: 28px; background: #fff; border-radius: 8px; padding: 8px 12px; font-size: 9px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+      .c-domain .ok b { background: #d8f5e2; color: var(--green); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 4px; }
+      .c-dark { background: #0a0d1a; color: #fff; min-height: 400px; }
+      .c-dark p { color: #9aa0b4; }
+      .c-dark .bar { background: #151a2b; border-radius: 8px; height: 26px; margin-bottom: 14px; font-size: 10px; color: #7c839a; padding: 6px 12px; }
+      .c-dark .tags { display: flex; gap: 6px; margin-bottom: 8px; }
+      .c-dark .tags span { font-size: 9px; padding: 2px 8px; border-radius: 999px; background: #1d2a55; color: #9db3ff; }
+      .c-dark .tags span + span { background: #123a2c; color: #7fe3b0; }
+      .c-dark .shape { position: absolute; right: -30px; bottom: -40px; width: 300px; height: 260px; background: conic-gradient(from 200deg at 40% 40%, #2a2f45, #3a4059, #1a1e30, #2a2f45); clip-path: polygon(60% 0, 100% 10%, 100% 100%, 0 100%, 25% 45%); opacity: 0.9; }
+      .c-dark .btn { margin-top: 18px; position: relative; z-index: 2; }
+
+      /* ai */
+      .ai { background: linear-gradient(180deg, #f6f7fb 0%, #fff 100%); padding: 170px 0 190px; }
+      .panel { background: #fff; border: 1px solid #eef0f5; border-radius: 22px; box-shadow: 0 18px 50px rgba(30,40,100,0.06); margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 26px; padding: 24px; align-items: center; min-height: 520px; }
+      .panel.first { margin-top: 56px; }
+      .panel.rev .copy { order: 2; }
+      .copy { padding: 0 26px; }
+      .copy small { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted-2); }
+      .copy h3 { margin: 8px 0 10px; font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
+      .copy p { margin: 0 0 14px; font-size: 11.5px; color: var(--muted); max-width: 330px; }
+      .copy li { list-style: none; font-size: 11px; color: var(--ink-2); display: flex; gap: 10px; align-items: center; margin: 8px 0; }
+      .copy li i { width: 16px; height: 16px; border-radius: 4px; background: #eef0fb; display: inline-block; }
+      .copy ul { padding: 0; margin: 0; }
+      .mock { background: var(--soft); border-radius: 14px; padding: 18px; min-height: 270px; font-size: 10px; color: var(--muted); display: grid; gap: 10px; align-content: center; }
+      .mock .me { justify-self: end; background: #0b0d17; color: #fff; padding: 8px 14px; border-radius: 10px; }
+      .mock .w { background: #fff; border-radius: 10px; padding: 10px 12px; display: grid; gap: 8px; color: var(--ink-2); }
+      .mock .w span::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #0b0d17; margin-right: 8px; }
+      .mock .chip { justify-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 10px; font-size: 9px; }
+      .sync-item { background: #fff; border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+      .sync-item b { width: 28px; height: 28px; border-radius: 8px; background: #0b0d17; display: inline-block; }
+      .sync-item div { flex: 1; color: var(--ink); font-weight: 600; }
+      .sync-item div span { display: block; font-weight: 400; color: var(--muted-2); font-size: 9px; }
+      .sync-item em { font-style: normal; font-size: 8px; letter-spacing: 0.08em; padding: 4px 8px; border-radius: 6px; background: #eef0f4; color: #7b8090; }
+      .sync-item em.o { background: #fff0e0; color: #d98524; }
+      .sync-item em.g { background: #e1f6e9; color: var(--green); }
+      .dots { display: grid; place-items: center; gap: 8px; }
+      .dots i { width: 22px; height: 22px; border-radius: 50%; display: block; }
+
+      /* integrations */
+      .integrations { padding: 150px 0 160px; }
+      .flow { position: relative; max-width: 720px; height: 260px; margin: 90px auto 0; }
+      .tool { position: absolute; display: inline-flex; align-items: center; gap: 8px; background: #fff; border-radius: 999px; padding: 4px 14px 4px 4px; font-size: 9.5px; font-weight: 500; box-shadow: 0 4px 14px rgba(20,30,80,0.1); }
+      .tool i { width: 18px; height: 18px; border-radius: 50%; display: inline-block; }
+      .hub { position: absolute; left: 50%; top: 66px; transform: translateX(-50%); background: #0a0c14; color: #fff; padding: 9px 20px; border-radius: 999px; font-size: 10px; display: flex; gap: 8px; align-items: center; }
+      .zap { position: absolute; left: 62%; top: 66px; background: #fff4ea; color: #e07b2d; padding: 9px 20px; border-radius: 999px; font-size: 10px; box-shadow: 0 6px 18px rgba(224,123,45,0.12); }
+      .flow .cap { position: absolute; left: 50%; top: 112px; transform: translateX(-50%); font-size: 7px; letter-spacing: 0.1em; color: var(--muted-2); }
+
+      /* why */
+      .why { padding: 60px 0 190px; }
+      .why .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 48px; }
+      .why .card { background: var(--soft); border-radius: 28px; padding: 36px; min-height: 380px; }
+      .why .card small { font-family: 'JetBrains Mono', monospace; font-size: 8px; color: var(--muted-2); }
+      .why .card h4 { margin: 12px 0 6px; font-size: 14px; }
+      .why .card p { max-width: none; margin-bottom: 18px; }
+      .inner { background: #fff; border-radius: 14px; height: 190px; display: grid; place-items: center; }
+      .why .line { width: 90%; height: 5px; border-radius: 3px; background: #eef0f4; margin: 7px 0; }
+      .jt { display: flex; align-items: center; gap: 12px; font-size: 8px; letter-spacing: 0.06em; }
+      .jt span { padding: 3px 10px; border-radius: 4px; }
+      .jt .g { background: #e3f6ea; color: var(--green); } .jt .b { background: #e3ebff; color: var(--blue); } .jt .n { background: #f0f1f4; color: #7b8090; }
+      .bars { display: flex; align-items: flex-end; gap: 8px; width: 94%; height: 100%; padding-top: 10px; }
+      .bars i { flex: 1; background: var(--blue); border-radius: 3px 3px 0 0; display: block; }
+      .swatch { display: grid; gap: 6px; justify-items: center; font-weight: 600; font-size: 12px; }
+      .swatch div { display: flex; gap: 4px; } .swatch div i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+
+      /* stories */
+      .stories { padding: 20px 0 170px; }
+      .logos { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 56px; }
+      .ph { border: 1px dashed #dfe2ea; border-radius: 10px; height: 34px; background: repeating-linear-gradient(135deg, #fafbfd 0 6px, #f1f3f8 6px 7px); font-size: 7px; display: grid; place-items: center; color: var(--muted-2); letter-spacing: 0.1em; }
+      .quote { display: grid; grid-template-columns: 0.9fr 1.3fr; background: var(--soft); border-radius: 24px; margin-top: 10px; overflow: hidden; min-height: 480px; }
+      .quote .img { background: repeating-linear-gradient(135deg, #f8f9fc 0 8px, #eef0f6 8px 9px); display: grid; place-items: center; font-size: 8px; color: var(--muted-2); letter-spacing: 0.1em; }
+      .quote .q { padding: 44px 36px; display: flex; flex-direction: column; justify-content: center; }
+      .quote blockquote { margin: 0; font-size: 32px; line-height: 1.25; letter-spacing: -0.02em; }
+      .quote .meta { margin-top: 26px; display: flex; gap: 8px; font-size: 9px; align-items: center; }
+      .quote .meta span { border: 1px dashed #dfe2ea; border-radius: 6px; padding: 5px 12px; color: var(--muted-2); }
+      .quote .meta a { font-weight: 600; font-size: 10px; }
+      .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+      .stat { border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: 0 6px 24px rgba(20,30,80,0.04); }
+      .stat b { display: block; font-size: 36px; font-weight: 400; color: #b8bdcc; letter-spacing: -0.02em; }
+      .stat p { font-size: 9.5px; color: var(--muted-2); margin: 10px 0 14px; }
+      .stat span { display: block; border-radius: 999px; background: var(--soft); text-align: center; font-size: 8px; color: var(--muted-2); letter-spacing: 0.1em; padding: 5px; }
+
+      /* compare */
+      .compare { padding: 20px 0 170px; }
+      .table { margin-top: 52px; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: 0 16px 50px rgba(30,40,100,0.07); display: grid; grid-template-columns: 1.1fr 1.7fr 1.6fr 1.6fr 1.6fr; font-size: 12px; background: #fff; }
+      .table > div { padding: 26px 18px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: var(--muted); border-bottom: 1px solid #f1f2f6; }
+      .table > div.l { align-items: flex-start; text-align: left; color: var(--muted); }
+      .table .h { align-items: flex-start; text-align: left; color: var(--ink); font-weight: 600; padding-top: 20px; padding-bottom: 20px; min-height: 64px; }
+      .table .us { background: #eff2fd; color: var(--ink); font-weight: 600; }
+      .table .us.h { border-top: 2px solid var(--blue); }
+      .table .ck { gap: 12px; }
+      .table .ck span::before { content: '✓'; color: var(--green); background: #dff5e7; width: 14px; height: 14px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 8px; margin-right: 8px; }
+      .table .t { min-height: 80px; } .table .t2 { min-height: 150px; } .table .t3 { min-height: 190px; }
+      .foot-note { font-size: 8px; color: var(--muted-2); margin-top: 16px; }
+
+      /* cta */
+      .cta-band { background: var(--navy); color: #fff; text-align: center; padding: 170px 0 260px; position: relative; overflow: hidden; }
+      .cta-band h2 { font-size: 80px; line-height: 1.05; font-weight: 500; letter-spacing: -0.04em; margin: 0 auto; max-width: 900px; }
+      .cta-band p { color: #aab0c4; font-size: 12px; margin: 22px 0 0; }
+      .cta-band .cta { display: flex; justify-content: center; gap: 10px; margin-top: 22px; position: relative; z-index: 2; }
+      .cta-band small { display: block; font-size: 8.5px; color: #7f86a0; margin-top: 16px; position: relative; z-index: 2; }
+      .glow { position: absolute; left: -10%; right: -10%; bottom: -120px; height: 300px; background: radial-gradient(40% 70% at 12% 80%, #2f5bff 0%, transparent 70%), radial-gradient(30% 60% at 50% 100%, #d9772c 0%, transparent 70%), radial-gradient(40% 70% at 90% 80%, #b05bff 0%, transparent 70%); filter: blur(10px); }
+
+      /* footer */
+      footer { padding: 0 0 24px; }
+      footer > .wrap { padding-top: 54px; }
+      .fgrid { display: grid; grid-template-columns: 1.5fr repeat(5, 1fr); gap: 28px; font-size: 14px; }
+      .fgrid h6 { margin: 0 0 14px; font-family: 'JetBrains Mono', monospace; font-weight: 400; font-size: 11px; letter-spacing: 0.12em; color: var(--muted-2); text-transform: uppercase; }
+      .fgrid a { display: block; margin: 0 0 10px; color: var(--ink-2); line-height: 1.4; }
+      .fgrid .about { color: var(--muted); font-size: 14px; max-width: 220px; margin: 10px 0 14px; }
+      .socials { display: flex; gap: 8px; } .socials i { width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 1px solid var(--line); display: block; }
+      .mega { font-size: min(196px, 16vw); font-weight: 600; letter-spacing: -0.06em; color: #e9ebf1; text-align: center; line-height: 1; margin: 80px 0 20px; white-space: nowrap; }
+      .legal { border-top: 1px solid var(--line); padding-top: 18px; display: flex; justify-content: space-between; font-size: 13px; color: var(--muted-2); }
+      .legal span + span { margin-left: 16px; }
+
+      @media (max-width: 800px) {
+        h2.title { font-size: 36px; } .hero h1 { font-size: 42px; } .cta-band h2 { font-size: 38px; }
+        .bento, .panel, .why .grid, .quote, .stats { grid-template-columns: 1fr; }
+        .shot { grid-template-columns: 1fr; height: auto; } .shot .side, .shot .chat { display: none; }
+        .logos { grid-template-columns: repeat(3, 1fr); } .fgrid { grid-template-columns: 1fr 1fr; }
+        .mega { font-size: 70px; } .table { font-size: 8px; overflow-x: auto; }
+        .nav .burger { display: block; }
+        .nav .menu { display: none; position: absolute; top: 56px; left: 0; right: 0; flex-direction: column; background: #fff; border-bottom: 1px solid var(--line); padding: 12px 16px; max-height: calc(100vh - 56px); overflow: auto; }
+        .nav.mobile-open .menu { display: flex; }
+        .nav .drop { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: 0; min-width: 0; padding: 0 0 0 8px; display: none; }
+        .nav .item.open .drop { display: block; }
+        .nav .drop.solutions-menu { grid-template-columns: 1fr; min-width: 0; padding: 0 0 0 8px; } .nav .drop.solutions-menu .rule { display: none; } .nav .drop.solutions-menu.drop { display: none; } .nav .item.open .drop.solutions-menu { display: grid; }
+        .nav .item:hover .drop { display: none; } .nav .item.open:hover .drop { display: block; }
+        .nav .right .login { display: none; }
+        .panel.rev .copy { order: 0; }
+      }
+      /* pricing page */
+      .nav .item > a.active { background: #f1f2f6; color: var(--ink); }
+      .p-hero { position: relative; text-align: center; padding: 72px 0 56px; background: radial-gradient(55% 60% at 88% 0%, #dfe0ff 0%, transparent 65%), radial-gradient(50% 55% at 8% 5%, #e3e9ff 0%, transparent 65%); }
+      .pill { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px 0 6px; border-radius: 999px; background: rgba(255,255,255,.85); border: 1px solid var(--line); font-size: 11.5px; color: var(--ink-2); }
+      .pill i { width: 18px; height: 18px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font-style: normal; font-size: 10px; }
+      .p-hero h1 { font-size: 64px; line-height: 1.08; letter-spacing: -0.04em; font-weight: 500; margin: 22px auto 0; max-width: 760px; }
+      .p-hero p { color: var(--muted); max-width: 460px; margin: 18px auto 0; font-size: 14.5px; }
+      .toggle { display: inline-flex; margin-top: 28px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.9); border: 1px solid var(--line); }
+      .toggle button { border: 0; background: none; height: 34px; padding: 0 20px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--ink-2); display: inline-flex; align-items: center; gap: 8px; }
+      .toggle button.on { background: linear-gradient(180deg, #5b82ff, var(--blue)); color: #fff; box-shadow: 0 6px 16px rgba(47,91,234,.35); }
+      .toggle .save { font-size: 10px; padding: 2px 7px; border-radius: 999px; background: #e7ecff; color: var(--blue); font-weight: 600; }
+      .toggle button.on .save { background: rgba(255,255,255,.25); color: #fff; }
+      .plans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 8px; padding-bottom: 96px; align-items: stretch; }
+      .plan { position: relative; text-align: left; padding: 24px 22px; border-radius: 20px; border: 1px solid var(--line); background: linear-gradient(180deg, #f1f3ff 0%, #fff 38%); display: flex; flex-direction: column; }
+      .plan.pop { border: 1.5px solid #8ea6ff; box-shadow: 0 22px 50px rgba(47,91,234,.16); background: linear-gradient(180deg, #e8edff 0%, #fff 40%); }
+      .plan h3 { margin: 0; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+      .plan .badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--blue); color: #fff; }
+      .plan .desc { color: var(--muted); font-size: 12px; margin: 8px 0 0; min-height: 36px; }
+      .plan .price { margin-top: 18px; font-size: 44px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+      .plan .price small { font-size: 12px; color: var(--muted); font-weight: 400; letter-spacing: 0; margin-left: 4px; }
+      .plan .bill { height: 18px; margin-top: 8px; font-size: 11.5px; color: var(--muted-2); }
+      .plan .learners { margin-top: 12px; display: inline-block; align-self: flex-start; font-size: 11.5px; font-weight: 500; color: var(--blue); background: #eaeeff; padding: 4px 10px; border-radius: 999px; }
+      .plan .btn { justify-content: center; width: 100%; height: 44px; margin-top: 18px; }
+      .plan .btn.primary { background: linear-gradient(180deg, #5b82ff, var(--blue)); color: #fff; border-color: transparent; box-shadow: 0 10px 24px rgba(47,91,234,.35); }
+      .plan hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0 16px; }
+      .plan .fh { font-size: 11.5px; font-weight: 600; margin-bottom: 12px; }
+      .plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; font-size: 12px; color: var(--ink-2); }
+      .plan li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.4; }
+      .plan li.off { color: var(--muted-2); }
+      .ck { flex: none; width: 16px; height: 16px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font-size: 9px; font-weight: 700; margin-top: 1px; }
+      .off .ck, .ck.off { background: #d9dce6; }
+      .sec { padding: 88px 0 0; }
+      #stories { padding: 96px 0 0; }
+      #faq { padding-bottom: 112px; }
+      .sec h2.title { font-size: 52px; max-width: 720px; }
+      .cmp { margin-top: 48px; border: 1px solid #cfd8ff; border-radius: 20px; overflow: hidden; background: #fff; }
+      .cmp .row { display: grid; grid-template-columns: 1.7fr repeat(4, 1fr); border-top: 1px solid #dfe5ff; align-items: stretch; }
+      .cmp .row:first-child { border-top: 0; background: linear-gradient(135deg, #eef1ff, #fff); }
+      .cmp .row > div { padding: 15px 18px; font-size: 12px; color: var(--ink-2); display: flex; align-items: center; justify-content: center; text-align: center; border-left: 1px solid #dfe5ff; }
+      .cmp .row > div:first-child { justify-content: flex-start; text-align: left; border-left: 0; }
+      .cmp .row:first-child > div { flex-direction: column; justify-content: center; padding: 22px 18px; gap: 2px; font-weight: 600; font-size: 14px; color: var(--ink); }
+      .cmp .row:first-child > div:first-child { align-items: flex-start; }
+      .cmp .row:first-child small { font-size: 11px; font-weight: 400; color: var(--muted); }
+      .cmp .row:first-child b { font-size: 24px; letter-spacing: -0.03em; }
+      .cmp .row.hl > div:nth-child(3) { background: #f6f8ff; }
+      .self { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 48px; }
+      .self .plan { background: #fff; }
+      .self .plan .price { font-size: 34px; }
+      .faq { max-width: 720px; margin: 48px auto 0; display: grid; gap: 12px; }
+      .faq details { border: 1px solid var(--line); border-radius: 16px; background: #fff; padding: 0 20px; transition: background .2s; }
+      .faq details[open] { background: linear-gradient(180deg, #f1f3ff, #fff); border-color: #cfd8ff; }
+      .faq summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 18px 0; font-weight: 500; font-size: 13.5px; }
+      .faq summary::-webkit-details-marker { display: none; }
+      .faq summary::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); flex: none; }
+      .faq summary::after { content: ""; margin-left: auto; width: 7px; height: 7px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: rotate(45deg) translateY(-2px); transition: transform .2s; }
+      .faq details[open] summary::after { transform: rotate(-135deg); }
+      .faq details p { margin: 0 0 20px 18px; color: var(--muted); font-size: 12.5px; max-width: 600px; }
+      .news { padding: 72px 0 80px; text-align: center; background: radial-gradient(60% 80% at 85% 100%, #dfe0ff 0%, transparent 65%), radial-gradient(50% 70% at 10% 100%, #e3e9ff 0%, transparent 65%), #f8f9fe; }
+      .news h2 { margin: 0; font-size: 44px; font-weight: 500; letter-spacing: -0.035em; }
+      .news p { color: var(--muted); font-size: 13px; margin: 14px 0 0; }
+      .news form { display: flex; max-width: 440px; margin: 28px auto 0; padding: 6px; background: #fff; border: 1px solid var(--line); border-radius: 999px; box-shadow: 0 14px 34px rgba(47,91,234,.12); }
+      .news input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; padding: 0 16px; font: inherit; font-size: 13px; }
+      .news .btn { background: linear-gradient(180deg, #5b82ff, var(--blue)); color: #fff; border: 0; height: 40px; }
+      .news .thanks { display: none; margin-top: 18px; color: var(--green); font-size: 13px; }
+      @media (max-width: 1000px) { .plans { grid-template-columns: repeat(2, 1fr); } .self { grid-template-columns: 1fr; } }
+      @media (max-width: 800px) {
+        .p-hero h1 { font-size: 38px; } .sec h2.title, .news h2 { font-size: 32px; }
+        .plans { grid-template-columns: 1fr; }
+        .cmp { overflow-x: auto; } .cmp .row { min-width: 640px; }
+      }
+
+      .nav .drop.solutions-menu { min-width: 720px; left: -180px; }
+      .nav .drop.solutions-menu .ind .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+      .nav .drop.solutions-menu .ind .grid a { align-items: center; padding: 8px 10px; }
+      .nav .drop.solutions-menu .ind .grid i { width: 26px; height: 26px; font-size: 12px; }
+      @media (max-width: 800px) { .nav .drop.solutions-menu .ind .grid { grid-template-columns: 1fr; } .nav .drop.solutions-menu { min-width: 0; left: 0; } }
+      .k-faq { padding: 88px 0 0; }
+      .k-faq h2 { text-align: center; font-size: 44px; letter-spacing: -0.035em; font-weight: 600; margin: 0; }
+      .k-cta { margin: 96px 0 112px; border-radius: 24px; padding: 72px 24px; text-align: center; color: #fff; background: radial-gradient(60% 100% at 85% 0%, #7a6cff 0%, transparent 65%), radial-gradient(50% 90% at 10% 100%, #4f7bff 0%, transparent 65%), var(--blue); }
+      .k-cta h2 { margin: 0; font-size: 44px; letter-spacing: -0.035em; font-weight: 600; }
+      .k-cta p { margin: 14px 0 26px; color: #dfe5ff; }
+      @media (max-width: 800px) { .k-cta h2, .k-faq h2 { font-size: 30px; } }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap">
+        <a class="logo" href="index.html"><b></b>ClassroomIO</a>
+        <nav class="menu" id="menu" aria-label="Primary"><ul style="display:contents">
+          <li class="item"><button type="button" aria-haspopup="true" aria-expanded="false">Product<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 3.5l3 3 3-3"/></svg></button><div class="drop"><a href="index.html#features"><i>▣</i><div><strong>Branded Academies</strong><span>Public course hubs under your own brand</span></div></a><a href="index.html#features"><i>◔</i><div><strong>Learner Analytics</strong><span>Track progress, completion and engagement</span></div></a><a href="index.html#features"><i>◎</i><div><strong>Custom Domains &amp; SSO</strong><span>Your domain, your login, zero friction</span></div></a><a href="index.html#ai"><i>✦</i><div><strong>AI Course Creation</strong><span>Generate and maintain courses with AI</span></div></a><a href="index.html#integrations"><i>⇄</i><div><strong>Integrations</strong><span>HubSpot, Salesforce, Slack, Zendesk and more</span></div></a><a href="index.html#features"><i>◈</i><div><strong>Easy Customization</strong><span>Themes, colors and layouts without code</span></div></a></div></li>
+          <li class="item"><a class="active" href="pricing.html">Pricing</a></li>
+          <li class="item"><a href="about.html">About</a></li>
+          <li class="item"><button type="button" aria-haspopup="true" aria-expanded="false">Solutions<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 3.5l3 3 3-3"/></svg></button><div class="drop solutions-menu"><div class="col"><h6>By use case</h6><a href="index.html#why"><i>☺</i><div><strong>Customer Education</strong><span>Help customers get more value from your product</span></div></a><a href="index.html#why"><i>⚭</i><div><strong>Partner Training</strong><span>Certify resellers and partners at scale</span></div></a><a href="index.html#why"><i>♜</i><div><strong>Employee Training</strong><span>Onboard and upskill your internal teams</span></div></a></div><div class="rule"></div><div class="col ind"><h6>By industry</h6><div class="grid"><a href="customers.html"><i>‹›</i><div><strong>Software</strong></div></a><a href="customers.html"><i>⚙</i><div><strong>Manufacturing</strong></div></a><a href="customers.html"><i>⌂</i><div><strong>Public Sector</strong></div></a><a href="customers.html"><i>◫</i><div><strong>Retail</strong></div></a><a href="customers.html"><i>▤</i><div><strong>IT and Tech Services</strong></div></a><a href="customers.html"><i>$</i><div><strong>Financial Services</strong></div></a><a href="customers.html"><i>✚</i><div><strong>Healthcare</strong></div></a><a href="customers.html"><i>✎</i><div><strong>Education</strong></div></a></div></div><div class="foot"><span>Not sure where to start?</span><a href="index.html#cta">Talk to our team →</a></div></div></li>
+          <li class="item"><a href="customers.html">Customers</a></li>
+        </ul></nav>
+        <div class="right">
+          <a class="login" href="#">Log in</a>
+          <a class="btn dark sm" href="index.html#cta">Start for free</a>
+          <button class="burger" type="button" aria-label="Menu" aria-controls="menu" aria-expanded="false">☰</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="p-hero">
+      <div class="wrap">
+        <span class="pill"><i>$</i>Pricing plans</span>
+        <h1>Simple pricing that scales with your learners</h1>
+        <p>Unlimited video streaming, API access on the main plan, and no transaction fees. Pay for active learners, not registrations.</p>
+        <div class="toggle" id="toggle"><button type="button" class="on" data-mode="m">Monthly</button><button type="button" data-mode="a">Annual <span class="save">Save 17%</span></button></div>
+      </div>
+    </section>
+    <div class="wrap"><div class="plans" id="plans"><div class="plan"><h3>Starter</h3><p class="desc">Everything you need to launch your first branded academy.</p><div class="price"><span data-m="$39" data-a="$32.50">$39</span><small>/month</small></div><div class="bill"><span data-m="Billed monthly" data-a="Billed $390/year">Billed monthly</span></div><span class="learners">200 monthly active learners</span><a class="btn" href="index.html#cta">Start for free</a><hr/><div class="fh">Features included</div><ul><li class=""><span class="ck">✓</span>Unlimited courses</li><li class=""><span class="ck">✓</span>Unlimited video streaming</li><li class=""><span class="ck">✓</span>Custom branding &amp; certificates</li><li class=""><span class="ck">✓</span>All quiz question types</li><li class=""><span class="ck">✓</span>Video transcription &amp; AI assistant</li><li class=""><span class="ck">✓</span>Custom domain with SSL</li><li class=""><span class="ck">✓</span>REST API &amp; webhooks</li></ul></div><div class="plan pop"><h3>Growth<span class="badge">Popular</span></h3><p class="desc">The plan most customer education teams choose.</p><div class="price"><span data-m="$99" data-a="$82.50">$99</span><small>/month</small></div><div class="bill"><span data-m="Billed monthly" data-a="Billed $990/year">Billed monthly</span></div><span class="learners">1,000 monthly active learners</span><a class="btn primary" href="index.html#cta">Start for free</a><hr/><div class="fh">Features included</div><ul><li class=""><span class="ck">✓</span>Everything in Starter</li><li class=""><span class="ck">✓</span>Custom domain, full branding removal</li><li class=""><span class="ck">✓</span>Verifiable certificates with expiry</li><li class=""><span class="ck">✓</span>Learning paths with prerequisites</li><li class=""><span class="ck">✓</span>REST API, webhooks &amp; Zapier</li><li class=""><span class="ck">✓</span>Advanced analytics, priority support</li><li class=""><span class="ck">✓</span>Native CRM &amp; sandbox</li></ul></div><div class="plan"><h3>Scale</h3><p class="desc">For programs running at serious volume.</p><div class="price"><span data-m="$299" data-a="$249">$299</span><small>/month</small></div><div class="bill"><span data-m="Billed monthly" data-a="Billed $2,990/year">Billed monthly</span></div><span class="learners">5,000 monthly active learners</span><a class="btn" href="index.html#cta">Start for free</a><hr/><div class="fh">Features included</div><ul><li class=""><span class="ck">✓</span>Everything in Growth</li><li class=""><span class="ck">✓</span>Multi-language, multiple academies</li><li class=""><span class="ck">✓</span>Advanced certification programmes</li><li class=""><span class="ck">✓</span>Higher API limits, webhook delivery log</li><li class=""><span class="ck">✓</span>Native CRM integration, sandbox</li><li class=""><span class="ck">✓</span>10M AI tokens, named contact</li></ul></div><div class="plan"><h3>Enterprise</h3><p class="desc">Above 5,000 learners, priced by learner band.</p><div class="price">Custom</div><div class="bill">Annual contracts, from $6,000/year</div><span class="learners">5,000+ monthly active learners</span><a class="btn" href="index.html#cta">Talk to sales</a><hr/><div class="fh">Features included</div><ul><li class=""><span class="ck">✓</span>Everything in Scale</li><li class=""><span class="ck">✓</span>SSO (SAML &amp; OIDC), SCIM</li><li class=""><span class="ck">✓</span>Audit logs, SLA, custom data residency</li><li class=""><span class="ck">✓</span>SCORM and xAPI if needed</li><li class=""><span class="ck">✓</span>Security review, DPA, custom contract</li><li class=""><span class="ck">✓</span>Free migration from any LMS, onboarding</li></ul></div></div></div>
+
+    <section class="sec" id="compare" style="padding-top:0">
+      <div class="wrap">
+        <div class="eyebrow" style="margin-bottom:18px"><i></i>Compare plans</div>
+        <h2 class="title">Find the right plan for your academy</h2>
+        <p class="lead">Every plan includes unlimited video streaming and zero transaction fees.</p>
+        <div class="cmp"><div class="row"><div><b>Features</b><small>Choose the plan that fits your learner volume.</small></div><div>Starter<b>$39</b><small>/month</small></div><div>Growth<b>$99</b><small>/month</small></div><div>Scale<b>$299</b><small>/month</small></div><div>Enterprise<b>Custom</b><small>Annual only</small></div></div><div class="row hl"><div>Monthly active learners</div><div>200</div><div>1,000</div><div>5,000</div><div>Above 5,000</div></div><div class="row hl"><div>Unlimited video streaming</div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>Included storage (hard limit, paid add-on)</div><div>25 GB</div><div>250 GB</div><div>1 TB</div><div>Custom</div></div><div class="row hl"><div>Unlimited courses</div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>All quiz question types</div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>Transaction fees</div><div>0%</div><div>0%</div><div>0%</div><div>0%</div></div><div class="row hl"><div>MCP server access</div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>AI token quota</div><div>3M</div><div>3M</div><div>10M</div><div>Custom</div></div><div class="row hl"><div>Video transcription</div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>Branded certificates</div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>Verifiable certificates</div><div><span class="ck off"></span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>Custom domain with SSL</div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>REST API</div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>Webhooks</div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>Multi-language &amp; multiple academies</div><div><span class="ck off"></span></div><div><span class="ck off"></span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>Native CRM integration</div><div><span class="ck off"></span></div><div><span class="ck">✓</span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>SSO (SAML &amp; OIDC)</div><div><span class="ck off"></span></div><div><span class="ck off"></span></div><div><span class="ck off"></span></div><div><span class="ck">✓</span></div></div><div class="row hl"><div>Audit logs &amp; SLA</div><div><span class="ck off"></span></div><div><span class="ck off"></span></div><div><span class="ck off"></span></div><div><span class="ck">✓</span></div></div></div>
+      </div>
+    </section>
+
+    <section class="sec" id="self-hosted">
+      <div class="wrap">
+        <div class="eyebrow"><i></i>Self-hosted</div>
+        <h2 class="title">Prefer to host it yourself?</h2>
+        <p class="lead">Open source and self-hostable, with fully published prices.</p>
+        <div class="self"><div class="plan"><h3>Community</h3><p class="desc">Run ClassroomIO on your own infrastructure.</p><div class="price">Free<small>forever</small></div><a class="btn" href="#" style="margin-top:18px">View on GitHub</a><hr/><ul><li class=""><span class="ck">✓</span>AGPL licensed, fully open source</li><li class=""><span class="ck">✓</span>Community support</li><li class=""><span class="ck">✓</span>No feature crippling</li></ul></div><div class="plan"><h3>Self-hosted License</h3><p class="desc">A commercial license for one organization.</p><div class="price">$2,990<small>/year</small></div><a class="btn" href="#" style="margin-top:18px">Get a license</a><hr/><ul><li class=""><span class="ck">✓</span>Modifications can stay private</li><li class=""><span class="ck">✓</span>Email support and upgrade help</li><li class=""><span class="ck">✓</span>Unlimited learners</li></ul></div><div class="plan"><h3>Enterprise</h3><p class="desc">Cloud or self-hosted, with SSO and an SLA.</p><div class="price">$6,000+<small>/year</small></div><a class="btn" href="#" style="margin-top:18px">Talk to sales</a><hr/><ul><li class=""><span class="ck">✓</span>Everything in Self-hosted License</li><li class=""><span class="ck">✓</span>SSO, SLA and priority support</li><li class=""><span class="ck">✓</span>Named contact, onboarding</li><li class=""><span class="ck">✓</span>Free migration from any LMS</li></ul></div></div>
+      </div>
+    </section>
+
+    <section class="stories" id="stories">
+      <div class="wrap">
+        <div class="eyebrow">Customers</div>
+        <h2 class="title">See what teams<br />are building with<br />ClassroomIO.</h2>
+        <div class="logos"><div class="ph">COMPANY LOGO</div><div class="ph">COMPANY LOGO</div><div class="ph">COMPANY LOGO</div><div class="ph">COMPANY LOGO</div><div class="ph">COMPANY LOGO</div><div class="ph">COMPANY LOGO</div></div>
+        <div class="quote">
+          <div class="img mono">CUSTOMER PHOTO</div>
+          <div class="q">
+            <blockquote>“[Customer quote placeholder: one or two sentences naming a specific outcome, such as faster onboarding or fewer repeat tickets.]”</blockquote>
+            <div class="meta"><span>CUSTOMER NAME / ROLE, COMPANY</span><span>CLIENT LOGO</span><a href="#">Read the story ›</a></div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b>[X]%</b><p>[Metric placeholder: for example, reduction in onboarding time]</p><span class="mono">PLACEHOLDER</span></div>
+          <div class="stat"><b>[X]%</b><p>[Metric placeholder: for example, course completion rate]</p><span class="mono">PLACEHOLDER</span></div>
+          <div class="stat"><b>[X]</b><p>[Metric placeholder: for example, tickets avoided each month]</p><span class="mono">PLACEHOLDER</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="faq"><div class="wrap"><div class="eyebrow"><i></i>FAQ</div><h2 class="title">Frequently asked questions</h2><p class="lead">Got questions? Here is everything you need to know about getting started.</p><div class="faq"><details open><summary>What counts as a learner?</summary><p>Learners are counted as monthly active learners, not registered ones. People you bulk-invite who never log in do not count toward your plan.</p></details><details><summary>Are there transaction fees?</summary><p>No. ClassroomIO charges 0% transaction fees on every plan.</p></details><details><summary>Is video streaming really unlimited?</summary><p>Yes. Unlimited video streaming is included on every plan. File storage has an included allowance with a hard limit and a paid add-on if you need more.</p></details><details><summary>Is there a free trial?</summary><p>Yes. You can try Growth free for 14 days, no card required. You can also self-host the open source Community edition for free.</p></details><details><summary>What does annual billing save?</summary><p>Annual billing gives you two months free, about 17 percent off the monthly price.</p></details><details><summary>Can I self-host ClassroomIO?</summary><p>Yes. Community is free under AGPL. If you want to keep modifications private and get support, the Self-hosted License is $2,990 per year per organization.</p></details></div></div></section>
+
+    <section class="cta-band" id="cta">
+      <div class="wrap">
+        <h2>Ready to help<br />customers get more<br />from your product?</h2>
+        <p>Start free, or talk to us if you want a hand setting things up.</p>
+        <div class="cta">
+          <a class="btn white" href="#">Start for free</a>
+          <a class="btn ghost-dark" href="#">Book a demo</a>
+        </div>
+        <small>Free for up to 20 learners. No credit card required.</small>
+      </div>
+      <div class="glow"></div>
+    </section>
+
+
+    <footer id="footer">
+    <div class="news">
+      <div class="wrap">
+        <div class="eyebrow"><i></i>Newsletter</div>
+        <h2>Latest updates &amp; insights</h2>
+        <p>Product news, customer education tips and insights that matter most.</p>
+        <form id="news"><input type="email" required placeholder="Enter your email" aria-label="Email" /><button class="btn" type="submit">Subscribe now</button></form>
+        <div class="thanks" id="thanks">Thanks, you are subscribed.</div>
+      </div>
+    </div>
+      <div class="wrap">
+        <div class="fgrid">
+          <div>
+            <a class="logo" href="index.html" style="max-width: none"><b style="width: 18px; height: 18px; border-radius: 4px; background: var(--blue); display: inline-block"></b>ClassroomIO</a>
+            <p class="about">The open source customer education platform.</p>
+            <div class="socials"><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div><h6>Product</h6><a href="#">Course builder &amp; authoring</a><a href="#">Branded academy &amp; domains</a><a href="#">Certifications</a><a href="#">AI tutor</a><a href="#">Analytics</a><a href="#">Integrations &amp; automation</a><a href="pricing.html">Pricing</a></div>
+          <div><h6>Solutions</h6><a href="#">Customer education</a><a href="#">Partner training</a><a href="#">Onboarding</a><a href="#">Feature adoption</a><a href="#">Certification programs</a><a href="#">Support deflection</a></div>
+          <div><h6>For Devs</h6><a href="#">API</a><a href="#">MCP server &amp; skills</a><a href="#">Self-hosting docs</a><a href="#">GitHub</a></div>
+          <div><h6>Resources</h6><a href="#">Blog</a><a href="#">Help center</a><a href="#">Compare platforms</a><a href="#">Changelog</a><a href="#">Roadmap</a><a href="#">Free tools</a></div>
+          <div><h6>Company</h6><a href="about.html">About</a><a href="customers.html">Customers</a><a href="#">Contact</a><a href="#">Book a demo</a></div>
+        </div>
+        <div class="mega" aria-hidden="true">ClassroomIO</div>
+        <div class="legal">
+          <span>© 2026 ClassroomIO. Pricing preview: not for distribution.</span>
+          <span><span>Terms</span><span>Privacy</span><span>Security</span></span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const nav = document.querySelector(".nav");
+      const items = [...nav.querySelectorAll(".item")].filter((item) => item.querySelector(".drop"));
+      const burger = nav.querySelector(".burger");
+      const closeAll = () => items.forEach((item) => { item.classList.remove("open"); item.querySelector("button").setAttribute("aria-expanded", "false"); });
+      items.forEach((item) => {
+        const trigger = item.querySelector("button");
+        trigger.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const willOpen = !item.classList.contains("open");
+          closeAll();
+          item.classList.toggle("open", willOpen);
+          trigger.setAttribute("aria-expanded", String(willOpen));
+        });
+      });
+      burger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const open = nav.classList.toggle("mobile-open");
+        burger.setAttribute("aria-expanded", String(open));
+      });
+      nav.querySelectorAll(".drop a, .item > a").forEach((link) => link.addEventListener("click", () => { closeAll(); nav.classList.remove("mobile-open"); }));
+      document.addEventListener("click", closeAll);
+      document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeAll(); });
+      document.querySelectorAll('a[href="#"]').forEach((link) => link.addEventListener("click", (event) => event.preventDefault()));
+
+      const toggle = document.getElementById("toggle");
+      toggle.querySelectorAll("button").forEach((button) => button.addEventListener("click", () => {
+        toggle.querySelectorAll("button").forEach((other) => other.classList.toggle("on", other === button));
+        const key = button.dataset.mode === "a" ? "a" : "m";
+        document.querySelectorAll("[data-m]").forEach((node) => { node.textContent = node.dataset[key]; });
+      }));
+      const faqItems = [...document.querySelectorAll(".faq details")];
+      faqItems.forEach((item) => item.addEventListener("toggle", () => {
+        if (item.open) faqItems.forEach((other) => { if (other !== item) other.open = false; });
+      }));
+      document.getElementById("news").addEventListener("submit", (event) => {
+        event.preventDefault();
+        event.target.style.display = "none";
+        document.getElementById("thanks").style.display = "block";
+      });
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
-import { TNewGroup, TNewGroupmember } from '@db/types';
-import { and, asc, eq, inArray, isNotNull, isNull, or } from 'drizzle-orm';
+import { TGroupmember, TNewGroup, TNewGroupmember } from '@db/types';
+import { and, asc, eq, inArray, isNotNull, isNull, ne, or } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import { ROLE } from '@cio/utils/constants';
@@ -61,15 +61,15 @@ export async function getExistingGroupMembers(
 
 /**
  * Enroll users in course groups, skipping any existing memberships.
- * Returns the count of newly inserted memberships.
+ * Returns the newly inserted memberships.
  */
 export async function enrollUsersInCourseGroups(
   groupIds: string[],
   users: Array<{ profileId: string; email?: string }>,
   roleId: number,
   dbClient: DbOrTxClient = db
-): Promise<number> {
-  if (groupIds.length === 0 || users.length === 0) return 0;
+): Promise<TGroupmember[]> {
+  if (groupIds.length === 0 || users.length === 0) return [];
 
   const pairs = users.flatMap((u) => groupIds.map((groupId) => ({ groupId, profileId: u.profileId })));
   const existingSet = await getExistingGroupMembers(pairs, dbClient);
@@ -84,11 +84,7 @@ export async function enrollUsersInCourseGroups(
       email: emailByProfile.get(p.profileId) ?? undefined
     }));
 
-  if (toInsert.length > 0) {
-    await addGroupMembers(toInsert, dbClient);
-  }
-
-  return toInsert.length;
+  return addGroupMembers(toInsert, dbClient);
 }
 
 /**
@@ -363,43 +359,41 @@ export async function getCourseProgramAccess(
 }
 
 /**
- * Raises a profile's course roles in one org to at least their org role, so they never
- * outrank it. Role ids ascend by privilege (ADMIN 1, TUTOR 2, STUDENT 3), so this only
- * demotes — a deliberately lower course role is preserved.
+ * Sets a profile's course roles in one org to their current org role. Role ids ascend by
+ * privilege (ADMIN 1, TUTOR 2, STUDENT 3), so this demotes outranking course roles and
+ * promotes lagging ones — a student invited as tutor or admin teaches every course
+ * they already belong to, and a demoted member keeps no elevated course access.
  *
- * @returns the number of course roles that were demoted
+ * @returns the number of course roles that were updated
  */
-export async function clampCourseRolesToOrgRole(
+export async function syncCourseRolesToOrgRole(
   orgId: string,
   profileId: string,
   orgRoleId: number,
   dbClient: DbOrTxClient = db
 ): Promise<number> {
-  const outrankingRoles = Array.from({ length: Math.max(0, orgRoleId - 1) }, (_, index) => index + 1);
-  if (outrankingRoles.length === 0) return 0;
-
   try {
     const orgGroupIds = dbClient
       .select({ id: schema.group.id })
       .from(schema.group)
       .where(eq(schema.group.organizationId, orgId));
 
-    const demoted = await dbClient
+    const updated = await dbClient
       .update(schema.groupmember)
       .set({ roleId: orgRoleId })
       .where(
         and(
           eq(schema.groupmember.profileId, profileId),
-          inArray(schema.groupmember.roleId, outrankingRoles),
+          ne(schema.groupmember.roleId, orgRoleId),
           inArray(schema.groupmember.groupId, orgGroupIds)
         )
       )
       .returning({ id: schema.groupmember.id });
 
-    return demoted.length;
+    return updated.length;
   } catch (error) {
-    console.error('clampCourseRolesToOrgRole error:', error);
-    throw new Error(`Failed to clamp course roles: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('syncCourseRolesToOrgRole error:', error);
+    throw new Error(`Failed to sync course roles: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -483,11 +477,11 @@ export async function getGroupMemberIdByGroupAndProfile(
 export async function insertGroupMembersOnConflictDoNothing(
   values: TNewGroupmember[],
   dbClient: DbOrTxClient = db
-): Promise<void> {
-  if (values.length === 0) return;
+): Promise<TGroupmember[]> {
+  if (values.length === 0) return [];
 
   try {
-    await dbClient.insert(schema.groupmember).values(values).onConflictDoNothing();
+    return await dbClient.insert(schema.groupmember).values(values).onConflictDoNothing().returning();
   } catch (error) {
     console.error('insertGroupMembersOnConflictDoNothing error:', error);
     throw new Error(`Failed to insert group members: ${error instanceof Error ? error.message : 'Unknown error'}`);

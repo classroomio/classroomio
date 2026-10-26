@@ -181,142 +181,163 @@ export async function getStudentCourseProgressImpactCounts(input: {
   }
 }
 
-/**
- * Clears all learner progress for one student in one course inside a single transaction.
- */
-export async function resetStudentCourseProgress(input: {
+export type StudentCourseProgressInput = {
   courseId: string;
   groupMemberId: string;
   profileId: string;
-}): Promise<ResetStudentCourseProgressSummary> {
+};
+
+export type DeletedStudentCourseProgress = {
+  summary: ResetStudentCourseProgressSummary;
+  resetLessonIds: string[];
+  resetExerciseIds: string[];
+};
+
+/**
+ * Deletes every progress row a student owns in one course using the given transaction client.
+ */
+export async function deleteStudentCourseProgress(
+  tx: DbOrTxClient,
+  input: StudentCourseProgressInput
+): Promise<DeletedStudentCourseProgress> {
   const { courseId, groupMemberId, profileId } = input;
 
+  const lessonIds = await getCourseLessonIds(tx, courseId);
+  const newsfeedIds = await getCourseNewsfeedIds(tx, courseId);
+  const studentNewsfeedPostIds = await getStudentCourseNewsfeedPostIds(tx, courseId, groupMemberId);
+
+  const deletedCommentsOnStudentPosts =
+    studentNewsfeedPostIds.length > 0
+      ? await tx
+          .delete(schema.courseNewsfeedComment)
+          .where(inArray(schema.courseNewsfeedComment.courseNewsfeedId, studentNewsfeedPostIds))
+          .returning({ id: schema.courseNewsfeedComment.id })
+      : [];
+
+  const deletedStudentNewsfeedComments =
+    newsfeedIds.length > 0
+      ? await tx
+          .delete(schema.courseNewsfeedComment)
+          .where(
+            and(
+              eq(schema.courseNewsfeedComment.authorId, groupMemberId),
+              inArray(schema.courseNewsfeedComment.courseNewsfeedId, newsfeedIds)
+            )
+          )
+          .returning({ id: schema.courseNewsfeedComment.id })
+      : [];
+
+  const deletedNewsfeedPosts = await tx
+    .delete(schema.courseNewsfeed)
+    .where(and(eq(schema.courseNewsfeed.courseId, courseId), eq(schema.courseNewsfeed.authorId, groupMemberId)))
+    .returning({ id: schema.courseNewsfeed.id });
+
+  const deletedSubmissions = await tx
+    .delete(schema.submission)
+    .where(and(eq(schema.submission.courseId, courseId), eq(schema.submission.submittedBy, groupMemberId)))
+    .returning({ id: schema.submission.id, exerciseId: schema.submission.exerciseId });
+
+  const deletedLessonCompletions =
+    lessonIds.length > 0
+      ? await tx
+          .delete(schema.lessonCompletion)
+          .where(
+            and(eq(schema.lessonCompletion.profileId, profileId), inArray(schema.lessonCompletion.lessonId, lessonIds))
+          )
+          .returning({ id: schema.lessonCompletion.id, lessonId: schema.lessonCompletion.lessonId })
+      : [];
+
+  const deletedVideoProgress =
+    lessonIds.length > 0
+      ? await tx
+          .delete(schema.lessonVideoProgress)
+          .where(
+            and(
+              eq(schema.lessonVideoProgress.profileId, profileId),
+              inArray(schema.lessonVideoProgress.lessonId, lessonIds)
+            )
+          )
+          .returning({ id: schema.lessonVideoProgress.id })
+      : [];
+
+  const deletedAttendance = await tx
+    .delete(schema.groupAttendance)
+    .where(and(eq(schema.groupAttendance.courseId, courseId), eq(schema.groupAttendance.studentId, groupMemberId)))
+    .returning({ id: schema.groupAttendance.id });
+
+  const deletedLessonComments =
+    lessonIds.length > 0
+      ? await tx
+          .delete(schema.lessonComment)
+          .where(
+            and(
+              eq(schema.lessonComment.groupmemberId, groupMemberId),
+              inArray(schema.lessonComment.lessonId, lessonIds)
+            )
+          )
+          .returning({ id: schema.lessonComment.id })
+      : [];
+
+  const deletedCompletionRecords = await tx
+    .delete(schema.courseCompletionRecord)
+    .where(
+      and(eq(schema.courseCompletionRecord.courseId, courseId), eq(schema.courseCompletionRecord.profileId, profileId))
+    )
+    .returning({ id: schema.courseCompletionRecord.id });
+
+  const deletedCertificateIssues = await tx
+    .delete(schema.courseCertificateIssue)
+    .where(
+      and(eq(schema.courseCertificateIssue.courseId, courseId), eq(schema.courseCertificateIssue.profileId, profileId))
+    )
+    .returning({ id: schema.courseCertificateIssue.id });
+
+  const deletedAiChatConversations = await tx
+    .delete(schema.aiChatConversation)
+    .where(and(eq(schema.aiChatConversation.courseId, courseId), eq(schema.aiChatConversation.userId, profileId)))
+    .returning({ id: schema.aiChatConversation.id });
+
+  const summary = {
+    lessonCompletion: deletedLessonCompletions.length,
+    lessonVideoProgress: deletedVideoProgress.length,
+    submissions: deletedSubmissions.length,
+    groupAttendance: deletedAttendance.length,
+    lessonComments: deletedLessonComments.length,
+    courseNewsfeed: deletedNewsfeedPosts.length,
+    courseNewsfeedComments: deletedCommentsOnStudentPosts.length + deletedStudentNewsfeedComments.length,
+    courseCertificateIssues: deletedCertificateIssues.length,
+    courseCompletionRecords: deletedCompletionRecords.length,
+    aiChatConversations: deletedAiChatConversations.length
+  };
+
+  const resetLessonIds = [
+    ...new Set(deletedLessonCompletions.map((row) => row.lessonId).filter((id): id is string => id !== null))
+  ];
+  const resetExerciseIds = [...new Set(deletedSubmissions.map((row) => row.exerciseId))];
+
+  return { summary, resetLessonIds, resetExerciseIds };
+}
+
+/**
+ * Clears all learner progress for one student in one course inside a single transaction.
+ */
+export async function resetStudentCourseProgress(
+  input: StudentCourseProgressInput
+): Promise<DeletedStudentCourseProgress> {
   try {
     return await db.transaction(async (tx) => {
-      const lessonIds = await getCourseLessonIds(tx, courseId);
-      const newsfeedIds = await getCourseNewsfeedIds(tx, courseId);
-      const studentNewsfeedPostIds = await getStudentCourseNewsfeedPostIds(tx, courseId, groupMemberId);
-
-      const deletedCommentsOnStudentPosts =
-        studentNewsfeedPostIds.length > 0
-          ? await tx
-              .delete(schema.courseNewsfeedComment)
-              .where(inArray(schema.courseNewsfeedComment.courseNewsfeedId, studentNewsfeedPostIds))
-              .returning({ id: schema.courseNewsfeedComment.id })
-          : [];
-
-      const deletedStudentNewsfeedComments =
-        newsfeedIds.length > 0
-          ? await tx
-              .delete(schema.courseNewsfeedComment)
-              .where(
-                and(
-                  eq(schema.courseNewsfeedComment.authorId, groupMemberId),
-                  inArray(schema.courseNewsfeedComment.courseNewsfeedId, newsfeedIds)
-                )
-              )
-              .returning({ id: schema.courseNewsfeedComment.id })
-          : [];
-
-      const deletedNewsfeedPosts = await tx
-        .delete(schema.courseNewsfeed)
-        .where(and(eq(schema.courseNewsfeed.courseId, courseId), eq(schema.courseNewsfeed.authorId, groupMemberId)))
-        .returning({ id: schema.courseNewsfeed.id });
-
-      const deletedSubmissions = await tx
-        .delete(schema.submission)
-        .where(and(eq(schema.submission.courseId, courseId), eq(schema.submission.submittedBy, groupMemberId)))
-        .returning({ id: schema.submission.id });
-
-      const deletedLessonCompletions =
-        lessonIds.length > 0
-          ? await tx
-              .delete(schema.lessonCompletion)
-              .where(
-                and(
-                  eq(schema.lessonCompletion.profileId, profileId),
-                  inArray(schema.lessonCompletion.lessonId, lessonIds)
-                )
-              )
-              .returning({ id: schema.lessonCompletion.id })
-          : [];
-
-      const deletedVideoProgress =
-        lessonIds.length > 0
-          ? await tx
-              .delete(schema.lessonVideoProgress)
-              .where(
-                and(
-                  eq(schema.lessonVideoProgress.profileId, profileId),
-                  inArray(schema.lessonVideoProgress.lessonId, lessonIds)
-                )
-              )
-              .returning({ id: schema.lessonVideoProgress.id })
-          : [];
-
-      const deletedAttendance = await tx
-        .delete(schema.groupAttendance)
-        .where(and(eq(schema.groupAttendance.courseId, courseId), eq(schema.groupAttendance.studentId, groupMemberId)))
-        .returning({ id: schema.groupAttendance.id });
-
-      const deletedLessonComments =
-        lessonIds.length > 0
-          ? await tx
-              .delete(schema.lessonComment)
-              .where(
-                and(
-                  eq(schema.lessonComment.groupmemberId, groupMemberId),
-                  inArray(schema.lessonComment.lessonId, lessonIds)
-                )
-              )
-              .returning({ id: schema.lessonComment.id })
-          : [];
-
-      const deletedCompletionRecords = await tx
-        .delete(schema.courseCompletionRecord)
-        .where(
-          and(
-            eq(schema.courseCompletionRecord.courseId, courseId),
-            eq(schema.courseCompletionRecord.profileId, profileId)
-          )
-        )
-        .returning({ id: schema.courseCompletionRecord.id });
-
-      const deletedCertificateIssues = await tx
-        .delete(schema.courseCertificateIssue)
-        .where(
-          and(
-            eq(schema.courseCertificateIssue.courseId, courseId),
-            eq(schema.courseCertificateIssue.profileId, profileId)
-          )
-        )
-        .returning({ id: schema.courseCertificateIssue.id });
-
-      const deletedAiChatConversations = await tx
-        .delete(schema.aiChatConversation)
-        .where(and(eq(schema.aiChatConversation.courseId, courseId), eq(schema.aiChatConversation.userId, profileId)))
-        .returning({ id: schema.aiChatConversation.id });
+      const deleted = await deleteStudentCourseProgress(tx, input);
 
       await tx
         .update(schema.groupmember)
         .set({
+          completedAt: null,
           certificateEarnedAt: null,
           certificationEmailSentAt: null
         })
-        .where(eq(schema.groupmember.id, groupMemberId));
+        .where(eq(schema.groupmember.id, input.groupMemberId));
 
-      return {
-        lessonCompletion: deletedLessonCompletions.length,
-        lessonVideoProgress: deletedVideoProgress.length,
-        submissions: deletedSubmissions.length,
-        groupAttendance: deletedAttendance.length,
-        lessonComments: deletedLessonComments.length,
-        courseNewsfeed: deletedNewsfeedPosts.length,
-        courseNewsfeedComments: deletedCommentsOnStudentPosts.length + deletedStudentNewsfeedComments.length,
-        courseCertificateIssues: deletedCertificateIssues.length,
-        courseCompletionRecords: deletedCompletionRecords.length,
-        aiChatConversations: deletedAiChatConversations.length
-      };
+      return deleted;
     });
   } catch (error) {
     console.error('resetStudentCourseProgress error:', error);

@@ -20,7 +20,9 @@ import { generateUniqueCourseSlug } from '@cio/core/services/course/landing-page
 import { env } from '@cio/core/config/env';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { getPlanLimit } from '@cio/utils/plans';
+import { capturePlanLimitReached } from '@cio/core/services/posthog';
 import { slugifyTitle } from '@cio/utils/validation';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -33,6 +35,15 @@ async function assertTemplateCapacity(orgId: string, dbClient: DbOrTxClient = db
 
   const used = await countOrgTemplates(orgId, dbClient);
   if (used >= limit) {
+    capturePlanLimitReached({
+      orgId,
+      limitType: 'templates',
+      plan: plan?.planName,
+      limit,
+      current: used,
+      blocked: true
+    });
+
     throw new AppError(
       `Your plan includes ${limit} template${limit === 1 ? '' : 's'}`,
       ErrorCodes.UPGRADE_REQUIRED,
@@ -85,40 +96,29 @@ export async function listCourseTemplates(orgId: string) {
   };
 }
 
-function templatePreviewSettings(
-  template: {
-    type: string | null;
-    certificate: {
-      isDownloadable?: boolean;
-      deadline?: string | null;
-      threshold?: number;
-      requiredExerciseId?: string | null;
-      exerciseMinScorePercent?: number | null;
-    } | null;
-    metadata: {
-      progressionMode?: 'free' | 'sequential';
-      grading?: boolean;
-      commentsEnabled?: boolean;
-      lessonDownload?: boolean;
-      allowSelfEnrollment?: boolean | null;
-      allowNewStudent?: boolean | null;
-      aiTutor?: { enabled?: boolean };
-    } | null;
-    compliance: {
-      retakeIntervalMonths: number;
-      isMandatory?: boolean;
-    } | null;
-  },
-  exercises: { id: string; title: string }[]
-) {
+function templatePreviewSettings(template: {
+  type: string | null;
+  certificate: {
+    isDownloadable?: boolean;
+    deadline?: string | null;
+  } | null;
+  metadata: {
+    progressionMode?: CourseProgressionMode;
+    grading?: boolean;
+    commentsEnabled?: boolean;
+    lessonDownload?: boolean;
+    allowSelfEnrollment?: boolean | null;
+    allowNewStudent?: boolean | null;
+    aiTutor?: { enabled?: boolean };
+  } | null;
+  compliance: {
+    retakeIntervalMonths: number;
+    isMandatory?: boolean;
+  } | null;
+}) {
   const certificate = template.certificate ?? {};
   const metadata = template.metadata ?? {};
   const certificateOn = certificate.isDownloadable === true;
-  const requiredExerciseId = certificate.requiredExerciseId ?? null;
-  const finalExercise = requiredExerciseId
-    ? exercises.find((exercise) => exercise.id === requiredExerciseId)
-    : undefined;
-  const score = typeof certificate.exerciseMinScorePercent === 'number' ? certificate.exerciseMinScorePercent : 100;
   const compliance =
     template.type === 'COMPLIANCE' && template.compliance
       ? {
@@ -130,8 +130,6 @@ function templatePreviewSettings(
   return {
     certificate: certificateOn,
     deadline: certificate.deadline ?? null,
-    threshold: certificateOn ? (typeof certificate.threshold === 'number' ? certificate.threshold : 100) : null,
-    finalExercise: finalExercise ? { title: finalExercise.title, score } : null,
     sequential: metadata.progressionMode === 'sequential',
     grading: metadata.grading === true,
     commentsOff: metadata.commentsEnabled === false,
@@ -232,7 +230,7 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
       title: highlight.title,
       description: highlight.description
     })),
-    settings: templatePreviewSettings(template, exercises),
+    settings: templatePreviewSettings(template),
     outline
   };
 }

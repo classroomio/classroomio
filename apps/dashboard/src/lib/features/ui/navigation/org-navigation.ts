@@ -43,6 +43,8 @@ export interface NavItem {
   supportsDynamicSegment?: boolean; // Supports dynamic segments (like [slug])
   /** Unfiltered resource total shown on the far right of the org sidebar. */
   count?: number;
+  /** Show a "New" badge on the org sidebar. */
+  isNew?: boolean;
 }
 
 export interface NavItemConfig {
@@ -66,6 +68,8 @@ export interface NavItemConfig {
   hideFromSidebar?: boolean;
   /** When set, the org sidebar shows the matching total from org nav counts. */
   countKey?: OrgNavCountKey;
+  /** Show a "New" badge on the org sidebar. */
+  isNew?: boolean;
 }
 
 export interface NavGroup {
@@ -207,6 +211,7 @@ export const baseNavConfig: NavItemConfig[] = [
     icon: BotIcon,
     requiresAdmin: true,
     disableWhenNotAdmin: true,
+    isNew: true,
     matchPattern: '^/org/[^/]+/(automation|mcp|api|zapier)(/.*)?$',
     nestedRoutes: [
       { path: 'mcp', titleKey: 'automation.tabs.mcp' },
@@ -328,7 +333,8 @@ export function getOrgNavigationItems(
       useHashUrl: config.useHashUrl,
       nestedRoutes: config.nestedRoutes,
       supportsDynamicSegment: config.supportsDynamicSegment,
-      isPaid: config.isPaid
+      isPaid: config.isPaid,
+      isNew: config.isNew
     };
 
     // Handle nested items (like settings sub-items)
@@ -421,7 +427,8 @@ export function getOrgNavigationGroups(
       supportsDynamicSegment: config.supportsDynamicSegment,
       isPaid: config.isPaid,
       upgrade: config.upgradeResource ? Boolean(limitsReached[config.upgradeResource]) : undefined,
-      count: config.countKey && counts ? counts[config.countKey] : undefined
+      count: config.countKey && counts ? counts[config.countKey] : undefined,
+      isNew: config.isNew
     };
 
     if (visibleSubConfigs.length > 0) {

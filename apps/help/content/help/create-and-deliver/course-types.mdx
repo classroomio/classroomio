@@ -1,74 +1,55 @@
 ---
-title: Course Types
-description: Learn what Self-paced, Live class, Compliance, and Public course types do in ClassroomIO and when to use each.
+title: Compare ClassroomIO course types
+description: Choose between Self paced, Live class, Compliance, and Public course delivery.
+last_reviewed: '2026-10-21'
 ---
 
-Course **type** is set in each course's **Settings**. It is easy to miss because the dropdown alone does not show every change. Types mainly affect admin navigation, compliance tracking, grading, and whether the course uses the normal enroll-and-LMS flow.
+Choose a course type based on access and delivery: self-paced study, instructor-led classes, required compliance training, or public content without sign-in. Course type does not replace your publishing, content-lock, or completion settings.
 
-## Types at a glance
+![Create a Course dialog showing the four course types](./images/course-types/overview.webp)
 
-| Type           | Best for                         | Main differences                                           |
-| -------------- | -------------------------------- | ---------------------------------------------------------- |
-| **Self-paced** | Default online courses           | Standard LMS; students progress at their own pace          |
-| **Live class** | Instructor-led with grading      | **Marks** nav for grading exercises                        |
-| **Compliance** | Required training with deadlines | **Compliance** dashboard, due dates, retakes, bulk actions |
-| **Public**     | Open content without login       | Anonymous lesson access; no normal enrollment flow         |
+## Choose your delivery model
 
-## Self-paced
+### Self paced
 
-**Self-paced** is the default. Students enroll, open lessons in the LMS, and complete exercises on their schedule. Auto-grading applies to many exercise types in self-paced and compliance courses.
+Use **Self Paced** for enrolled students working on their own schedule. Combine lesson materials and exercises, then choose free or sequential progression. It is also the initial type for courses created from the Home AI prompt.
 
-Use self-paced for standard training, onboarding content, and evergreen material.
+[Create a self-paced course](/build-courses/create-a-self-paced-course) when students need an LMS course without a required live timetable.
 
-## Live class
+### Live class
 
-**Live class** adds instructor grading workflows. Admins and tutors see a **Marks** section in the course sidebar to review and grade student work.
+Use **Live Class** for instructor-led delivery. Schedule live sessions on lessons, provide the meeting links, and configure reminder emails. Selecting the type does not create a video meeting or session time.
 
-Use live class when an instructor scores assignments and you need a dedicated grading view. To schedule sessions with a
-join link, automatic reminders, and a calendar invite, see [Run a Live Class](/create-and-deliver/live-class).
+Grading depends on the exercise's question types and settings. Selecting Live class does not by itself make every question manually graded.
 
-## Compliance
+[Create a live class course](/build-courses/create-a-live-class-course), then [schedule the sessions](/create-and-deliver/live-class).
 
-**Compliance** turns on compliance-specific tooling:
+### Compliance
 
-- **Compliance** nav in the course sidebar
-- Passing scores, due dates, and retake rules
-- Bulk actions on student status
-- Completion tracking (including **not started** before a student opens content)
-- Certificate rules tied to compliance settings
+Use **Compliance** for required training with completion tracking, deadlines, and recurring training rules. Set the completion deadline before publishing and enrolling students. Review each exercise’s passing requirements and the course’s retake settings. Certificates require every lesson and exercise to be completed.
 
-Use compliance for mandatory training where you must track who completed requirements by a deadline.
+Enrollment and completion are separate: a student can appear in **People** while their compliance status is still **Not started**.
 
-:::info[Compliance status vs People membership]
-A student can appear in **People** as soon as they enroll while still showing **not started** on the Compliance dashboard. Membership and completion status are separate.
+[Create a compliance course](/build-courses/create-a-compliance-course) before assigning mandatory training.
+
+### Public
+
+Use **Public** for unlocked lessons and exercises visitors can access without an account. Exercises are restricted to automatically graded question types and score in the browser. Public courses do not use the normal enrolled-student LMS workflow.
+
+Use another type when you need managed enrollment, tracked student submissions, or instructor-reviewed answers. [Create a public course](/build-courses/create-a-public-course) for open learning material.
+
+## Set or change the type
+
+When creating a blank course, choose the type before entering its name and description. For an existing course, open **Settings → Course type**, select a value, and select **Save changes**.
+
+:::warning[Review access before switching]
+Changing an existing course's type can change access, completion behavior, and available tools. Switching to Public requires replacing or removing questions that cannot be automatically graded. Review existing students and content before saving.
 :::
 
-## Public
-
-**Public** courses skip the normal enroll-and-LMS path. Visitors can access lesson content anonymously. The landing page routes toward lesson content rather than a **Join course** flow.
-
-Use public when you want open educational content without requiring accounts. Public courses are not a substitute for private cohort enrollment.
-
-:::warning[Changing type on an existing course]
-Switching type after launch can change which sidebar items appear and how completion is tracked. Pick the type that matches your delivery model before students enroll when possible.
-:::
-
-## Why types can feel identical in Settings
-
-If you only flip the type dropdown, the course title and content look the same. The differences show up in:
-
-- Which sidebar items appear (**Marks**, **Compliance**)
-- How exercises are graded
-- Whether anonymous public access is used
-- How completion and certificates are evaluated
-
-Open the course sidebar after changing type to confirm the right tools are available.
+After a type change, inspect the settings and test the actual student or public experience. An administrator's access does not prove how the course behaves for visitors or enrolled students.
 
 ## Related guides
 
-- [Course](/reference/course) — course overview and admin areas
-- [Run a Live Class](/create-and-deliver/live-class): schedule sessions, reminders, and calendar invites
-- [Control Course Progression](/create-and-deliver/course-progression): sequential learning and completion rules
-- [How Course Enrollment Works](/manage-students/course-enrollment) — enrollment (not used for Public in the same way)
-- [Student Dashboard](/reference/student-dashboard) — student LMS views
-- [Create Your First Course](/get-started/create-first-course)
+- [Create a course from scratch](/build-courses/create-a-course-from-scratch) — start with an empty course
+- [Control progression and completion](/create-and-deliver/course-progression) — choose when students can continue
+- [Publish a course and allow self-enrollment](/build-courses/publish-a-course-and-allow-self-enrollment) — make the finished course available

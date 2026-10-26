@@ -36,3 +36,14 @@ export const ZPublicApiUpdateCourseStructure = z.object({
   draft: ZCourseImportDraftPayload
 });
 export type TPublicApiUpdateCourseStructure = z.infer<typeof ZPublicApiUpdateCourseStructure>;
+
+export const ZPublicApiCloneCourse = z.object({
+  title: z.string().min(1).describe('Title of the copy'),
+  description: z.string().optional().describe("Description of the copy; defaults to the source course's"),
+  slug: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('URL slug of the copy; must be unused. Defaults to one generated from the title')
+});
+export type TPublicApiCloneCourse = z.infer<typeof ZPublicApiCloneCourse>;

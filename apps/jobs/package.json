@@ -15,6 +15,7 @@
     "dev:media-transcribe": "tsx watch src/workers/media-transcribe.ts",
     "dev:emails": "tsx watch src/workers/emails.ts",
     "dev:notifications": "tsx watch src/workers/notifications.ts",
+    "dev:webhooks": "tsx watch src/workers/webhooks.ts",
     "dev:maintenance": "tsx watch src/workers/maintenance.ts",
     "dev:agent-course-generation": "tsx watch src/workers/agent-course-generation.ts",
     "dev:audience": "tsx watch src/workers/audience.ts",
@@ -23,10 +24,12 @@
     "start:media-transcribe": "node dist/workers/media-transcribe.js",
     "start:emails": "node dist/workers/emails.js",
     "start:notifications": "node dist/workers/notifications.js",
+    "start:webhooks": "node dist/workers/webhooks.js",
     "start:maintenance": "node dist/workers/maintenance.js",
     "start:agent-course-generation": "node dist/workers/agent-course-generation.js",
     "start:audience": "node dist/workers/audience.js",
     "lint": "eslint . --ext .ts",
+    "test": "vitest run",
     "format": "prettier --write .",
     "dev:media-hls": "tsx watch src/workers/media-hls.ts",
     "start:media-hls": "node dist/workers/media-hls.js"
@@ -46,10 +49,11 @@
     "openai": "^6.36.0"
   },
   "devDependencies": {
-    "@types/node": "^20.19.0",
+    "@types/node": "^24.10.1",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
     "typescript": "^5.5.2",
+    "vitest": "^1.2.2",
     "zod": "^4.1.8"
   }
 }

@@ -461,7 +461,8 @@
       "included": "Incluso",
       "untitled_lesson": "Lezione senza titolo",
       "format": "Formato"
-    }
+    },
+    "back": "Indietro"
   },
   "compliance": {
     "title": "Conformità",
@@ -1414,6 +1415,11 @@
     "common": {
       "not_available": "N / A"
     },
+    "upload": {
+      "videos": "Carica video",
+      "documents": "Carica documenti",
+      "more_options": "Altre opzioni di caricamento"
+    },
     "storage": {
       "total_bytes": "Spazio di archiviazione totale",
       "internal_bytes": "Archiviazione interna",
@@ -1454,7 +1460,8 @@
     },
     "status": {
       "active": "Attivo",
-      "archived": "Archiviato"
+      "archived": "Archiviato",
+      "processing": "In elaborazione"
     },
     "table": {
       "title": "Titolo",
@@ -2105,7 +2112,6 @@
         },
         "apps": {
           "title": "App",
-          "poll": "Sondaggio",
           "live_comment": "Commenti dal vivo"
         },
         "auth_background": {
@@ -2405,25 +2411,19 @@
     "certification": {
       "rules_heading": "Regole",
       "deadline_label": "Scadenza della certificazione",
-      "deadline_helper": "Gli studenti devono raggiungere la percentuale di completamento prima di questa data/ora (ora locale). Lascia vuoto senza scadenza.",
+      "deadline_helper": "Gli studenti devono completare il corso entro questa data e ora (ora locale). Lascia vuoto per nessuna scadenza.",
       "deadline_required": "I corsi di conformità richiedono una scadenza per il completamento prima di poter essere pubblicati.",
       "deadline_required_enroll": "I corsi di conformità richiedono una scadenza del certificato prima che gli studenti possano essere iscritti.",
       "deadline_invalid": "La scadenza per il completamento del corso non è valida.",
-      "threshold_label": "Completamento minimo (%)",
-      "threshold_helper": "Progresso combinato di lezione ed esercizio richiesto per ottenere il certificato (0–100). L'impostazione predefinita è 100%.",
-      "final_exercise_label": "Esercizio finale (facoltativo)",
-      "final_exercise_none": "nessuno",
-      "final_exercise_helper": "Una volta impostato, gli studenti devono raggiungere almeno il punteggio minimo in questo esercizio (conta il miglior tentativo) oltre alla percentuale di completamento di cui sopra.",
-      "final_exercise_multiple_attempts_note": "Agli studenti saranno consentiti tentativi illimitati sull'esercizio selezionato.",
-      "min_exercise_score_label": "Punteggio minimo nell'esercizio finale (%)",
-      "min_exercise_score_helper": "Il punteggio è una percentuale dei punti totali possibili in quell'esercizio (0–100).",
+      "completion_rules_heading": "Regole di completamento",
+      "completion_rules_description": "Queste regole stabiliscono chi ottiene questo certificato. Sono impostate nella scheda Impostazioni del corso.",
+      "completion_rules_deadline": "Completa entro il {date}",
+      "completion_rules_no_deadline": "Nessuna scadenza",
+      "completion_rules_edit": "Modifica le regole di completamento",
+      "completion_rules_upgrade": "Passa a un piano superiore per modificare le regole di completamento",
       "blocker_progress": "I progressi del tuo corso lo sono {current}%; {required}% è obbligatorio.",
       "blocker_deadline": "Il termine per la certificazione è scaduto.",
       "blocker_no_content": "Questo corso non prevede lezioni o esercizi da completare.",
-      "blocker_final_not_submitted": "Invia l'esercizio richiesto \"{exerciseTitle}\"per qualificarsi per il certificato.",
-      "blocker_final_pending": "Il tuo tentativo di \"{exerciseTitle}\" è ancora in fase di valutazione.",
-      "blocker_final_score": "Il tuo miglior punteggio su \"{exerciseTitle}\" È {bestPercent}%; {requiredPercent}% è obbligatorio.",
-      "blocker_final_misconfigured": "L’esercizio di certificazione”{exerciseTitle}\" non ha punti configurati; chiedi al tuo istruttore di risolverlo.",
       "email_message_label": "Messaggio di posta elettronica",
       "email_message_placeholder": "per esempio. Siamo orgogliosi dei tuoi progressi: continua a imparare!"
     },
@@ -2435,8 +2435,7 @@
         "view_certificate": "Visualizza certificato",
         "later": "Vicino",
         "checking": "Verifica dell'idoneità…",
-        "not_eligible_title": "Ci siamo quasi",
-        "retake_exercise": "Ripeti l'esercizio"
+        "not_eligible_title": "Ci siamo quasi"
       }
     },
     "header": {
@@ -3589,34 +3588,6 @@
           "load_more_btn": "Carica di più",
           "comment_error": "Impossibile pubblicare il commento. Per favore riprova."
         },
-        "polls": {
-          "title": "Sondaggio",
-          "active_polls": "Sondaggi attivi",
-          "expired_polls": "Sondaggi scaduti",
-          "loading": "Caricamento...",
-          "no_polls": "Nessun sondaggio da visualizzare"
-        },
-        "poll": {
-          "voted": "Votato",
-          "created_by": "Creato da",
-          "status": "Stato",
-          "draft": "Bozza",
-          "publish": "Pubblicare",
-          "expiration": "Scadenza",
-          "total_voted": "Voti totali",
-          "responses": "Risposte",
-          "expires": "Scade",
-          "today": "Oggi",
-          "back": "Indietro",
-          "result": "Risultato",
-          "delete": "Eliminare",
-          "create_poll": "Crea sondaggio",
-          "question": "Domanda",
-          "options": "Opzioni",
-          "option_label": "Etichetta opzione",
-          "cancel": "Annulla",
-          "poll_question": "Domanda del sondaggio"
-        },
         "version_history": {
           "title": "Cronologia delle versioni",
           "fetch_more_versions": "Ottieni più versioni",
@@ -4304,7 +4275,7 @@
         "certificate_deadline_required_description": "I corsi di conformità richiedono una scadenza del certificato prima che gli studenti possano essere iscritti. Si prega di impostare una scadenza nelle impostazioni del corso prima della pubblicazione.",
         "go_to_completion_deadline": "Vai alla scadenza per il completamento",
         "completion_deadline_label": "Scadenza per il completamento del corso",
-        "completion_deadline_helper": "Gli studenti devono raggiungere la percentuale di completamento prima di questa data/ora (ora locale). Lascia vuoto senza scadenza.",
+        "completion_deadline_helper": "Gli studenti devono completare il corso entro questa data e ora (ora locale). Lascia vuoto per nessuna scadenza.",
         "locked_content": {
           "title": "{count} gli elementi del corso sono bloccati",
           "description": "Gli studenti iscritti non potranno seguire lezioni o esercizi bloccati finché non li sbloccherai.",
@@ -4314,6 +4285,9 @@
         "type": "Tipo di corso",
         "course_type_desc": "Aggiorna il tipo di corso per un'esperienza più personalizzata.",
         "course_type_learn_more": "Saperne di più",
+        "completion_rules_card_title": "Regole di completamento",
+        "completion_rules_card_desc": "Decidi quando gli studenti completano questo corso e ottengono il relativo certificato. I corsi di conformità usano la scadenza anche come data limite di ogni studente.",
+        "back_to_certificate_settings": "Torna alle impostazioni del certificato",
         "live_class": "Lezione dal vivo",
         "self_paced": "Autodidattica",
         "compliance": "Conformità",
@@ -4598,6 +4572,7 @@
       "status": {
         "ready": "Pronto",
         "already_member": "Già tra il pubblico",
+        "invite_resent": "Invito inviato nuovamente",
         "invalid_email": "E-mail non valida",
         "duplicate_in_file": "Duplicato nel file",
         "is_staff": "Personale, non studente",
@@ -4879,12 +4854,14 @@
     "required": "Aggiornamento richiesto",
     "enterprise_required": "Questa funzionalità richiede un piano Enterprise.",
     "public_api_required": "Esegui l'upgrade a Early Adopter o Enterprise per accedere all'API pubblica.",
-    "unlock_field": "Esegui l'upgrade per sbloccare questa impostazione"
+    "unlock_field": "Esegui l'upgrade per sbloccare questa impostazione",
+    "webhooks_required": "Passa a Early Adopter o Enterprise per usare i webhook."
   },
   "automation": {
     "title": "Automazione",
     "subtitle": "Connetti subito i client MCP, con Zapier e l'API pubblica che seguono sullo stesso sistema di chiavi a livello di organizzazione.",
     "coming_soon": "Prossimamente",
+    "read_docs": "Leggi la documentazione",
     "permissions": {
       "disabled_title": "Accesso in sola lettura",
       "disabled_description": "Solo gli amministratori dell'organizzazione possono creare, ruotare o revocare le chiavi di automazione. Gli insegnanti possono rivedere le istruzioni di configurazione qui."
@@ -4892,7 +4869,9 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhook",
+      "new_badge": "Nuovo"
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -4961,8 +4940,7 @@
         "codex_description": "Aggiunge il server MCP ClassroomIO al Codex con la stessa chiave con ambito organizzazione.",
         "cursor_description": "Incollalo in \"~/.cursor/mcp.json\" o nella configurazione MCP dello spazio di lavoro.",
         "opencode_description": "Aggiungilo a `opencode.json` nella root del tuo progetto o a `~/.config/opencode/opencode.json`."
-      },
-      "view_docs": "Visualizza documenti"
+      }
     },
     "api": {
       "subtitle": "Gestisci le chiavi API per l'integrazione con l'API pubblica ClassroomIO.",
@@ -4985,11 +4963,146 @@
       "setup": {
         "title": "Avvio rapido",
         "description": "Utilizza la tua chiave API come token Bearer su ogni richiesta. Sostituisci il segnaposto con una chiave dall'alto o incolla il segreto immediatamente dopo averne generato uno."
-      },
-      "view_docs": "Visualizza documenti"
+      }
     },
     "zapier": {
       "page_subtitle": "Automatizza ClassroomIO con migliaia di app tramite Zapier. Prossimamente."
+    },
+    "webhooks": {
+      "page_subtitle": "Invia in tempo reale gli eventi di ClassroomIO a Slack, al tuo CRM o al tuo backend.",
+      "description": "ClassroomIO invia una richiesta HTTP POST firmata al tuo URL ogni volta che si verifica un evento selezionato. Le consegne non riuscite vengono ritentate automaticamente.",
+      "permissions_description": "Solo gli amministratori dell'organizzazione possono creare, modificare o eliminare i webhook.",
+      "create": "Nuovo webhook",
+      "empty_title": "Nessun webhook ancora",
+      "empty_description": "Crea un webhook per inviare inviti, iscrizioni, completamenti e consegne ai tuoi altri strumenti.",
+      "reveal_title": "Il tuo nuovo segreto di firma",
+      "reveal_description": "Copia questo segreto di firma ora. Non verrà mostrato di nuovo e ti servirà per verificare le richieste.",
+      "reveal_docs": "Come verificare le richieste",
+      "delete_confirm": "Eliminare il webhook \"{name}\"? Verrà rimossa anche la sua cronologia delle consegne.",
+      "regenerate_confirm": "Rigenerare il segreto di firma? Il segreto attuale smetterà di funzionare immediatamente.",
+      "events_all": "Tutti gli eventi",
+      "events_count_one": "{count} evento",
+      "events_count_other": "{count} eventi",
+      "no_deliveries": "Nessuna consegna ancora",
+      "retrying_hint": "Nuovo tentativo delle consegne non riuscite",
+      "table": {
+        "name": "Destinazione",
+        "events": "Eventi",
+        "health": "Stato",
+        "active": "Attivo",
+        "error_rate": "Tasso di errore (24 h)",
+        "error_rate_detail": "{failed} su {total} non riusciti",
+        "no_recent_deliveries": "Nessuna consegna nelle ultime 24 h"
+      },
+      "health": {
+        "healthy": "Funzionante",
+        "retrying": "Nuovo tentativo",
+        "degraded": "In errore",
+        "disabled": "Disattivato automaticamente"
+      },
+      "actions": {
+        "label": "Azioni del webhook",
+        "edit": "Modifica",
+        "test": "Invia evento di prova",
+        "deliveries": "Visualizza consegne",
+        "regenerate_secret": "Rigenera segreto",
+        "delete": "Elimina"
+      },
+      "form": {
+        "create_title": "Nuovo webhook",
+        "edit_title": "Modifica webhook",
+        "description": "Scegli dove ClassroomIO invia gli eventi e quali eventi inviare.",
+        "sections": {
+          "endpoint": "Endpoint",
+          "events": "Eventi"
+        },
+        "name": "Nome",
+        "name_placeholder": "Sincronizzazione CRM",
+        "payload_url": "URL del payload",
+        "payload_url_help": "Deve essere un URL HTTPS pubblico che restituisce una risposta 2xx entro 10 secondi.",
+        "secret": "Segreto di firma",
+        "secret_placeholder": "Lascia vuoto per generarne uno",
+        "secret_help": "Usato per firmare ogni richiesta, così puoi verificare che provenga da ClassroomIO.",
+        "secret_edit_placeholder": "Lascia vuoto per mantenere il segreto attuale",
+        "secret_edit_help": "Inserisci un nuovo valore per sostituire il segreto. Quello attuale non viene mai mostrato.",
+        "verify_ssl": "Verifica il certificato SSL",
+        "verify_ssl_help": "Lascia attivo, a meno che tu non stia testando con un certificato autofirmato.",
+        "active": "Attivo",
+        "events_help": "Scegli gli eventi che devono attivare questo webhook.",
+        "mode_all": "Inviami tutto",
+        "mode_selected": "Seleziono io i singoli eventi",
+        "cancel": "Annulla",
+        "save": "Salva webhook",
+        "select_all": "Seleziona tutto",
+        "events_selected": "{selected} di {total} selezionati"
+      },
+      "event_groups": {
+        "organization": "Organizzazione",
+        "course": "Corsi",
+        "learning": "Progressi di apprendimento",
+        "cohort": "Coorti",
+        "compliance": "Conformità"
+      },
+      "events": {
+        "organization_invite_created": "Viene inviato un invito al team",
+        "organization_invite_accepted": "Viene accettato un invito al team",
+        "organization_invite_revoked": "Un invito al team viene revocato o sostituito",
+        "course_invite_created": "Viene creato un invito per uno studente",
+        "course_invite_accepted": "Uno studente accetta un invito e si iscrive",
+        "course_invite_revoked": "Un invito per uno studente viene revocato",
+        "course_member_added": "Un membro viene aggiunto a un corso",
+        "course_member_removed": "Un membro viene rimosso da un corso",
+        "course_completed": "Uno studente completa un corso",
+        "course_certificate_issued": "Viene ottenuto un certificato",
+        "course_submission_created": "Viene creata la consegna di un esercizio",
+        "course_submission_status_changed": "Lo stato di una consegna cambia, ad esempio quando viene valutata",
+        "lesson_completion_updated": "Una lezione viene segnata come completata o reimpostata",
+        "exercise_completion_updated": "Un esercizio viene completato o reimpostato",
+        "compliance_record_status_changed": "Lo stato di conformità di uno studente cambia",
+        "compliance_record_waived": "Un requisito di conformità di uno studente viene derogato",
+        "organization_member_added": "Una persona si unisce all'organizzazione",
+        "organization_member_removed": "Una persona viene rimossa dall'organizzazione",
+        "organization_member_updated": "Il ruolo o lo stato di una persona cambia",
+        "course_published": "Un corso viene pubblicato",
+        "course_unpublished": "Un corso viene rimosso dalla pubblicazione",
+        "cohort_member_added": "Una persona viene aggiunta a una coorte",
+        "cohort_member_removed": "Una persona viene rimossa da una coorte",
+        "lesson_session_scheduled": "Una sessione dal vivo viene pianificata o spostata",
+        "course_payment_request_created": "Uno studente richiede di pagare un corso"
+      },
+      "deliveries": {
+        "title": "Consegne",
+        "description": "Eventi degli ultimi 30 giorni",
+        "back": "Torna alle consegne",
+        "filter_all": "Tutti gli stati",
+        "empty": "Nessuna consegna corrisponde a questo filtro.",
+        "load_error": "Impossibile caricare le consegne. Riprova.",
+        "redeliver": "Reinvia",
+        "test_badge": "Prova",
+        "status": {
+          "PENDING": "Nuovo tentativo",
+          "SUCCESS": "Riuscita",
+          "FAILED": "Non riuscita",
+          "GAVE_UP": "Non riuscita"
+        },
+        "columns": {
+          "event": "Evento",
+          "event_id": "ID evento",
+          "status": "Stato",
+          "attempt": "Tentativo",
+          "http": "Stato HTTP",
+          "duration": "Tempo di risposta",
+          "time": "Inviato",
+          "next_attempt": "Prossimo tentativo"
+        },
+        "detail": {
+          "error": "Errore",
+          "request_headers": "Intestazioni della richiesta",
+          "payload": "Payload",
+          "response_body": "Risposta",
+          "no_response": "Non è stata ricevuta alcuna risposta."
+        }
+      }
     }
   },
   "lms_navigation": {
@@ -5089,6 +5202,7 @@
     "update": "Aggiornamento",
     "update_failed": "Aggiornamento non riuscito",
     "media_manager": {
+      "video_added": "Video aggiunto alla tua libreria",
       "list_failed": "Impossibile caricare le risorse multimediali",
       "storage_failed": "Impossibile caricare il riepilogo dello spazio di archiviazione",
       "create_failed": "Impossibile creare la risorsa multimediale",
@@ -5123,17 +5237,6 @@
     "lesson_video": {
       "generate_1080_completed": "Aggiunta la resa 1080p",
       "generate_1080_failed": "Impossibile generare una rappresentazione a 1080p"
-    },
-    "poll": {
-      "error": {
-        "creating_poll": "Si è verificato un errore durante la creazione del sondaggio",
-        "updating_poll": "Si è verificato un errore durante l'aggiornamento dello stato del sondaggio",
-        "submitting_poll": "Si è verificato un errore durante l'invio del sondaggio"
-      },
-      "info": {
-        "not_published": "Il sondaggio non è ancora stato pubblicato",
-        "vote_once": "Puoi votare solo una volta"
-      }
     },
     "exercise": {
       "validation_errors": "Correggi tutti gli errori di convalida prima di salvare.",
@@ -5193,7 +5296,8 @@
       },
       "info": {
         "conversion_blocked": "Risolvi le domande seguenti per completare la conversione in Pubblico."
-      }
+      },
+      "sections_reorder_failed": "Impossibile riordinare le sezioni"
     },
     "course": {
       "success": {
@@ -5376,6 +5480,17 @@
           "cohort_newsfeed_comment_not_found": "Impossibile trovare il commento."
         }
       }
+    },
+    "webhooks": {
+      "created": "Webhook creato. Copia ora il segreto di firma perché viene mostrato una sola volta.",
+      "updated": "Webhook aggiornato.",
+      "enabled": "Webhook attivato.",
+      "disabled": "Webhook disattivato.",
+      "deleted": "Webhook eliminato.",
+      "secret_regenerated": "Segreto di firma rigenerato. Copialo ora perché viene mostrato una sola volta.",
+      "test_success": "Evento di prova consegnato con successo.",
+      "test_failed": "L'evento di prova non è riuscito. Apri il registro delle consegne per vedere il motivo.",
+      "redelivered": "Evento messo in coda per il reinvio."
     }
   },
   "specialization": {
@@ -5557,6 +5672,14 @@
       "custom": "{message}",
       "required_field": "Questo campo è obbligatorio",
       "invalid_field": "Valore non valido"
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "L'URL del payload deve iniziare con http:// o https://"
+      },
+      "event_types": {
+        "required": "Seleziona almeno un evento"
+      }
     }
   },
   "ai_assistant": {
@@ -6116,8 +6239,6 @@
       "settings": "Impostazioni",
       "certificate": "Certificato abilitato",
       "deadline": "Scadenza {date}",
-      "threshold": "Completare {percent}% del corso",
-      "final_exercise": "Passaggio \"{title}\" A {percent}%",
       "sequential": "Le lezioni si sbloccano in ordine",
       "grading": "Un tutor valuta gli elaborati",
       "comments_off": "I commenti delle lezioni sono disattivati",
@@ -6212,8 +6333,6 @@
         "bannerImage": "Immagine di copertina",
         "welcomeEmail": "E-mail di benvenuto",
         "completionDeadline": "Termine ultimo per il completamento",
-        "completionThreshold": "Soglia di completamento",
-        "finalExercise": "Esercizio finale",
         "lessonTabsOrder": "Schede delle lezioni",
         "contentGrouping": "Raggruppamento dei contenuti",
         "progression": "Progressione",
@@ -6242,8 +6361,7 @@
       "value": {
         "free": "Gratuito",
         "sequential": "Sequenziale",
-        "no_price": "Gratuito",
-        "pass_mark": "Voto minimo {score}"
+        "no_price": "Gratuito"
       },
       "template_label": "Modello",
       "yours_label": "Il tuo"

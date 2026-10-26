@@ -11,7 +11,7 @@ import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { mcpRateLimitResponse } from '../courses/docs';
-import { ORG_ADMIN_RULE, TEAM_UPDATE_DESCRIPTION, teamForbiddenResponse } from './docs';
+import { ORG_ADMIN_RULE, teamForbiddenResponse } from './docs';
 
 const TeamMemberResponse = itemResponse(ZPublicApiTeamMemberResponse);
 
@@ -19,10 +19,13 @@ export const v1TeamRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the organization's admins and tutors, newest first, including people whose invite is still pending. Students are listed by GET /audience. Paginated with page (default 1) and limit (default 20, max 100). ${ORG_ADMIN_RULE}`,
+      description: `List the organization's admins and tutors, including pending invites; ${ORG_ADMIN_RULE}.`,
       tags: ['Team'],
       responses: {
-        200: jsonResponse('Team members returned successfully', paginatedResponse(ZPublicApiTeamMemberResponse)),
+        200: jsonResponse(
+          'Admins and tutors, newest first; students are listed by GET /audience',
+          paginatedResponse(ZPublicApiTeamMemberResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: teamForbiddenResponse('team:read'),
@@ -46,7 +49,7 @@ export const v1TeamRouter = new Hono()
   .get(
     '/:memberId',
     describeRoute({
-      description: `Get a single admin or tutor by their organization member id. ${ORG_ADMIN_RULE}`,
+      description: `Get an admin or tutor by their organization member id; ${ORG_ADMIN_RULE}.`,
       tags: ['Team'],
       responses: {
         200: jsonResponse('Team member returned successfully', TeamMemberResponse),
@@ -74,10 +77,13 @@ export const v1TeamRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: `${TEAM_UPDATE_DESCRIPTION} ${ORG_ADMIN_RULE}`,
+      description: `Change a team member's organization role, name, or both; ${ORG_ADMIN_RULE}.`,
       tags: ['Team'],
       responses: {
-        200: jsonResponse('Team member updated successfully', TeamMemberResponse),
+        200: jsonResponse(
+          'Team member updated; inviting and removing team members are not part of the public API yet',
+          TeamMemberResponse
+        ),
         400: {
           description:
             'Invalid path or body, no fields to update, changing your own role, removing the last admin, or renaming a pending member'

@@ -143,6 +143,7 @@ export const ToolName = {
   CHECK_COURSE_GO_LIVE_READINESS: 'check_course_go_live_readiness',
   GO_LIVE_COURSE: 'go_live_course',
   // Agent tools
+  GET_BLOCK_RECIPE: 'get_block_recipe',
   GENERATE_COURSE_PLAN: 'generate_course_plan',
   ASK_TEMPLATE_QUESTIONS: 'ask_template_questions',
   FETCH_DOCUMENTATION_URL: 'fetch_documentation_url',

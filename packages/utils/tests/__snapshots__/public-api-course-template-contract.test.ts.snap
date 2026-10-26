@@ -1,0 +1,439 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API course template contract > ZPublicApiCourseTemplateListItemResponse keeps its published shape > ZPublicApiCourseTemplateListItemResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "bannerImage": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "createdAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "description": {
+      "type": "string",
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "lastUsedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "When the organization last created a course from this template; always null for global templates",
+    },
+    "source": {
+      "description": "org = one of the organization's own templates, global = a curated template shared with every organization",
+      "enum": [
+        "org",
+        "global",
+      ],
+      "type": "string",
+    },
+    "title": {
+      "type": "string",
+    },
+    "type": {
+      "anyOf": [
+        {
+          "enum": [
+            "SELF_PACED",
+            "LIVE_CLASS",
+            "COMPLIANCE",
+            "PUBLIC",
+          ],
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+  },
+  "required": [
+    "id",
+    "title",
+    "description",
+    "type",
+    "bannerImage",
+    "source",
+    "createdAt",
+    "lastUsedAt",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course template contract > ZPublicApiCourseTemplateParam keeps its published shape > ZPublicApiCourseTemplateParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "templateId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "templateId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course template contract > ZPublicApiCourseTemplateResponse keeps its published shape > ZPublicApiCourseTemplateResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "bannerImage": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "counts": {
+      "additionalProperties": false,
+      "properties": {
+        "exercises": {
+          "type": "number",
+        },
+        "lessons": {
+          "type": "number",
+        },
+        "sections": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "sections",
+        "lessons",
+        "exercises",
+      ],
+      "type": "object",
+    },
+    "curated": {
+      "description": "true for curated templates from the platform library",
+      "type": "boolean",
+    },
+    "description": {
+      "type": "string",
+    },
+    "highlights": {
+      "description": "Selling points shown for global templates; empty for org templates",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "title": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "description",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "outline": {
+      "description": "Sections in course order, with their lessons and exercises",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "exercises": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                  "type": "string",
+                },
+                "questionCount": {
+                  "type": "number",
+                },
+                "title": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "id",
+                "title",
+                "questionCount",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "id": {
+            "description": "Section id, or standalone-<first item id> for items outside a section",
+            "type": "string",
+          },
+          "lessons": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                  "type": "string",
+                },
+                "title": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "id",
+                "title",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+            "description": "null for items outside a section",
+          },
+        },
+        "required": [
+          "id",
+          "title",
+          "lessons",
+          "exercises",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "settings": {
+      "additionalProperties": false,
+      "description": "The settings a course created from this template starts with",
+      "properties": {
+        "aiTutor": {
+          "type": "boolean",
+        },
+        "certificate": {
+          "type": "boolean",
+        },
+        "commentsOff": {
+          "type": "boolean",
+        },
+        "compliance": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "mandatory": {
+                  "type": "boolean",
+                },
+                "months": {
+                  "type": "number",
+                },
+              },
+              "required": [
+                "months",
+                "mandatory",
+              ],
+              "type": "object",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "deadline": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "grading": {
+          "type": "boolean",
+        },
+        "lessonDownload": {
+          "type": "boolean",
+        },
+        "selfEnrollment": {
+          "type": "boolean",
+        },
+        "sequential": {
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "certificate",
+        "deadline",
+        "sequential",
+        "grading",
+        "commentsOff",
+        "lessonDownload",
+        "selfEnrollment",
+        "aiTutor",
+        "compliance",
+      ],
+      "type": "object",
+    },
+    "source": {
+      "description": "org = one of the organization's own templates, global = a curated template shared with every organization",
+      "enum": [
+        "org",
+        "global",
+      ],
+      "type": "string",
+    },
+    "title": {
+      "type": "string",
+    },
+    "type": {
+      "anyOf": [
+        {
+          "enum": [
+            "SELF_PACED",
+            "LIVE_CLASS",
+            "COMPLIANCE",
+            "PUBLIC",
+          ],
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+  },
+  "required": [
+    "id",
+    "title",
+    "description",
+    "type",
+    "bannerImage",
+    "source",
+    "curated",
+    "counts",
+    "highlights",
+    "settings",
+    "outline",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course template contract > ZPublicApiCourseTemplatesQuery keeps its published shape > ZPublicApiCourseTemplatesQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "source": {
+      "default": "all",
+      "description": "org = the organization's own templates, global = curated templates shared with every organization",
+      "enum": [
+        "all",
+        "org",
+        "global",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course template contract > ZPublicApiCreateCourseFromTemplate keeps its published shape > ZPublicApiCreateCourseFromTemplate 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "title": {
+      "description": "Title of the new course",
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "title",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course template contract > ZPublicApiSaveCourseTemplate keeps its published shape > ZPublicApiSaveCourseTemplate 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "title": {
+      "description": "Title of the new template",
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "title",
+  ],
+  "type": "object",
+}
+`;
