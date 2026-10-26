@@ -20,13 +20,7 @@ const dbMocks = vi.hoisted(() => ({
   replaceInstallationGrants: vi.fn(),
   updateInstallationSettings: vi.fn(),
   updateInstallationStatus: vi.fn(),
-  updateOrgApprovalStatus: vi.fn(),
-  updateInstallationSubscriptionStatus: vi.fn().mockResolvedValue(null),
-  revokeInstallationCredentials: vi.fn().mockResolvedValue(null),
-  registerPluginSubscriptions: vi.fn().mockResolvedValue([]),
-  enqueueOutboxEvent: vi.fn().mockResolvedValue({ id: 'outbox-1', eventType: 'test', payload: {} }),
-  createDeliveriesForOutboxEvent: vi.fn().mockResolvedValue([]),
-  listActiveSubscriptionsForEvent: vi.fn().mockResolvedValue([])
+  updateOrgApprovalStatus: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/plugin', () => dbMocks);
