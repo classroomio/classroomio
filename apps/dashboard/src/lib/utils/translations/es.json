@@ -359,7 +359,8 @@
       },
       "info": {
         "conversion_blocked": "Corrige las preguntas a continuación para completar la conversión a público."
-      }
+      },
+      "sections_reorder_failed": "No se pudieron reordenar las secciones"
     },
     "people": {
       "success": {
@@ -3641,7 +3642,8 @@
     },
     "status": {
       "active": "Activo",
-      "archived": "Archivado"
+      "archived": "Archivado",
+      "processing": "Procesando"
     },
     "provider": {
       "upload": "Subir",
