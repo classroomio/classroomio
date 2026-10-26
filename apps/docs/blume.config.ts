@@ -224,10 +224,17 @@ export default defineConfig({
         display: 'group',
         collapsed: false,
         items: [
-          '/developers/mcp',
-          '/developers/mcp-setup',
-          '/developers/mcp-tools',
-          '/developers/mcp-course-editing',
+          {
+            label: 'MCP',
+            display: 'group',
+            collapsed: false,
+            items: [
+              '/developers/mcp',
+              '/developers/mcp/setup',
+              '/developers/mcp/tools',
+              '/developers/mcp/course-editing'
+            ]
+          },
           '/developers/webhooks',
           '/developers/token-auth'
         ]
