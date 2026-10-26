@@ -8,7 +8,7 @@ import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 const ORG_ADMIN_RULE = 'the API key creator must be an org admin';
 
 const READ_ONLY: ToolAnnotations = { readOnlyHint: true, destructiveHint: false };
-const UPDATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, idempotentHint: true };
+const UPDATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: true, idempotentHint: true };
 
 const updateOrganizationShape = ZPublicApiUpdateOrganization.shape as unknown as ZodRawShapeCompat;
 
