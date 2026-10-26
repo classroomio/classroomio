@@ -1,0 +1,30 @@
+---
+title: MCP overview
+description: Connect an MCP client to ClassroomIO to work with courses, learners, cohorts, and organization data.
+---
+
+The `@classroomio/mcp` server lets an MCP client use ClassroomIO tools. It runs locally through `npx` and sends authenticated requests to the ClassroomIO API. The API checks the key's scopes and the key creator's permissions on every request.
+
+## Get started
+
+1. In ClassroomIO, open **Automation → MCP** and create a key for the organization you want to use.
+2. [Connect your client](/developers/mcp/setup) using `@classroomio/mcp` and the key.
+3. Ask the client to list your ClassroomIO courses to check the connection before making changes.
+
+Keep the key private. You can rotate or revoke it from **Automation → MCP**.
+
+## What you can do
+
+- Build a course draft, review it, then publish it as a new course or apply it to an existing one. You can also copy an existing course.
+- Manage live course content, exercises, submissions, certificates, members, and invitations.
+- Work with cohorts, audience and team members, email templates, and analytics. Organization admins can choose which published courses appear first on the landing page.
+
+See [access and limits](/developers/mcp/access-and-limits) before connecting a client or approving changes. The MCP server does not extract content from PDFs or create course content on its own; your client prepares the content and sends it to ClassroomIO.
+
+## Choose the right course workflow
+
+Tell your connected client what you want to create or change. For a new course or broad revision, ask to review a draft before it goes live. Small changes, such as moving a lesson, can take effect immediately. See [course prompts and expected results](/developers/mcp/course-editing).
+
+## API access
+
+MCP keys (`cio_mcp_...`) work only with supported MCP actions. They do not grant unrestricted `public_api:*` access. Each request must pass both the key's scope check and the permissions of the person who created the key. See [access and limits](/developers/mcp/access-and-limits) and [API authentication](/api/authentication).
