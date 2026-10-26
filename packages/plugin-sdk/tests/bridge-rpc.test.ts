@@ -57,17 +57,20 @@ describe('MessageChannel UI host bridge', () => {
     host.destroy();
   });
 
-  it('returns a one-time launch code for a plugin backend', async () => {
+  it('reads and writes client preferences', async () => {
     const channel = new MessageChannel();
+    const stored = new Map<string, unknown>();
     const host = new PluginBridgeHost({
       iframe: {} as HTMLIFrameElement,
       targetOrigin: 'https://plugin.example.com',
       context: mockContext,
       handlers: {
-        onRequestLaunchCode: async () => ({
-          code: 'lc_sec_random_9999',
-          expiresInSeconds: 60
-        })
+        onPreferenceGet: async ({ key, namespace }) => {
+          return stored.get(`${namespace || 'default'}:${key}`) ?? null;
+        },
+        onPreferenceSet: async ({ key, value, namespace }) => {
+          stored.set(`${namespace || 'default'}:${key}`, value);
+        }
       }
     });
     const client = new ClassroomIOClient();
@@ -75,10 +78,8 @@ describe('MessageChannel UI host bridge', () => {
     host.attachPort(channel.port1);
     client.attachPort(channel.port2, mockContext);
 
-    await expect(client.auth.requestLaunchCode()).resolves.toEqual({
-      code: 'lc_sec_random_9999',
-      expiresInSeconds: 60
-    });
+    await client.preferences.set('sidebar-open', true, 'ui');
+    await expect(client.preferences.get('sidebar-open', 'ui')).resolves.toBe(true);
 
     client.destroy();
     host.destroy();

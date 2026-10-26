@@ -7,6 +7,7 @@ import {
   buildAllPlugins,
   createDeterministicTarGz,
   packageSinglePlugin,
+  runCli,
   scaffoldPlugin,
   validateManifest,
   verifyArtifacts
@@ -241,5 +242,22 @@ describe('Plugin CLI (cio-plugin)', () => {
     fs.writeFileSync(path.join(tempDir, 'keep.txt'), 'keep');
 
     expect(() => scaffoldPlugin(tempDir)).toThrow('is not empty');
+  });
+
+  it('validates a plugin directory via CLI', async () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cio-cli-validate-'));
+    fs.writeFileSync(path.join(tempDir, 'plugin.json'), JSON.stringify(validManifest));
+
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => {}) as any);
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    try {
+      await runCli(['validate', tempDir]);
+      expect(exitSpy).toHaveBeenCalledWith(0);
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('is valid'));
+    } finally {
+      exitSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
   });
 });

@@ -15,34 +15,17 @@ const KEBAB_CASE_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ALLOWED_CAPABILITIES = new Set([
   'identity.profile:read',
   'organization.profile:read',
-  'organization.members:read',
   'course.metadata:read',
   'course.content:read',
-  'course.metadata:write',
   'course.enrollment:read',
-  'course.enrollment:write',
   'lesson.metadata:read',
   'lesson.content:read',
-  'lesson:write',
-  'learner.profile:read',
   'learner.progress:read',
   'learner.progress:write',
   'exercise.metadata:read',
-  'submission:read',
-  'submission:write',
-  'grade:read',
-  'grade:write',
   'certificate.issued:read',
-  'certificate.issuance:write',
-  'certificate.revocation:write',
   'certificate.template:read',
-  'certificate.template:write',
-  'cohort.metadata:read',
-  'cohort.membership:read',
-  'analytics.summary:read',
-  'notification:write',
-  'plugin.storage:read',
-  'plugin.storage:write'
+  'certificate.template:write'
 ]);
 
 function isSafeRelativePath(p) {
@@ -916,27 +899,30 @@ function printUsage() {
 ClassroomIO Plugin CLI (cio-plugin)
 
 Usage:
-  cio-plugin create [directory]        Scaffold a new ClassroomIO plugin starter
-  cio-plugin build [path] [options]    Validate, build, and package immutable plugin artifacts
-  cio-plugin dev [path] [options]      Install a local development release into one organization
+  cio-plugin create [directory]          Scaffold a new ClassroomIO plugin starter
+  cio-plugin build|pack [path] [options] Validate, build, and package immutable plugin artifacts
+  cio-plugin dev|seed [path] [options]   Install a local development release into one organization
+  cio-plugin validate [path]             Validate plugin.json manifest against schema
 
 Create Options:
   --id <pluginId>        Reverse-domain plugin ID (default: com.example.<slug>)
   --name <displayName>   Human-readable plugin name
   --publisher <name>     Publisher shown in the catalog
 
-Build Options:
+Build / Pack Options:
   --registry <path>      Path to plugins.json registry (e.g. registry/plugins.json)
 
-Development Options:
+Dev / Seed Options:
   --host <url>           ClassroomIO API host (default: $CLASSROOMIO_API_URL or http://localhost:3002)
   --token <token>        Development API token (default: $CLASSROOMIO_DEV_TOKEN)
   --org <orgId>          Development organization (default: $CLASSROOMIO_ORG_ID)
 
 Examples:
   npx cio-plugin create my-plugin --id com.acme.my-plugin --publisher "Acme Inc."
+  npx cio-plugin pack
   npx cio-plugin build --registry registry/plugins.json
-  npx cio-plugin dev --org <organization-id>
+  npx cio-plugin seed --org <organization-id>
+  npx cio-plugin validate
 `);
 }
 
@@ -998,8 +984,8 @@ export async function runCli(argv = process.argv.slice(2)) {
     process.exit(0);
   }
 
-  if (command === 'build') {
-    const rootDir = targetArg;
+  if (command === 'build' || command === 'pack') {
+    const rootDir = targetArg === command ? '.' : targetArg;
     try {
       console.log(`Building plugin artifacts...`);
       const { releases, outputRoot } = buildAllPlugins(rootDir, { registry: cliOptions.registry });
@@ -1017,7 +1003,7 @@ export async function runCli(argv = process.argv.slice(2)) {
     }
   }
 
-  if (command === 'dev') {
+  if (command === 'dev' || command === 'seed') {
     const targetDir = path.resolve(process.cwd(), targetArg === command ? '.' : targetArg);
     const host = (cliOptions.host || process.env.CLASSROOMIO_API_URL || 'http://localhost:3002').replace(/\/$/, '');
     const token = cliOptions.token || process.env.CLASSROOMIO_DEV_TOKEN || '';
@@ -1063,6 +1049,26 @@ export async function runCli(argv = process.argv.slice(2)) {
       process.exit(0);
     } catch (error) {
       console.error(`\n✖ Local development release failed: ${error.message}`);
+      process.exit(1);
+    }
+  }
+
+  if (command === 'validate') {
+    const targetDir = path.resolve(process.cwd(), targetArg === command ? '.' : targetArg);
+    try {
+      const manifestPath = path.join(targetDir, 'plugin.json');
+      if (!fs.existsSync(manifestPath)) {
+        throw new Error(`plugin.json not found in ${targetDir}`);
+      }
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const validation = validateManifest(manifest);
+      if (!validation.valid) {
+        throw new Error(`Manifest validation failed:\n  ${validation.errors.join('\n  ')}`);
+      }
+      console.log(`✓ Plugin manifest in ${targetDir} is valid.`);
+      process.exit(0);
+    } catch (err) {
+      console.error(`\n✖ ${err.message}`);
       process.exit(1);
     }
   }

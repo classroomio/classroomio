@@ -6,8 +6,6 @@ import {
   type BridgeRpcRequest,
   type BridgeRpcResponse,
   type BridgeToastPayload,
-  type BridgeLaunchCodeRequestPayload,
-  type BridgeLaunchCodeResponseData,
   type PluginContext,
   type PluginThemeV1,
   type BridgeSetDirtyPayload,
@@ -23,7 +21,6 @@ export interface PluginBridgeHostHandlers {
   onCloseModal?: () => Promise<void>;
   onResize?: (payload: BridgeResizePayload) => Promise<void>;
   onNavigate?: (payload: BridgeNavigationOpenPayload) => Promise<void>;
-  onRequestLaunchCode?: (payload: BridgeLaunchCodeRequestPayload) => Promise<BridgeLaunchCodeResponseData>;
   onSetDirty?: (payload: BridgeSetDirtyPayload) => Promise<void>;
   onStorageGet?: (payload: { key: string; namespace?: string; scope?: string }) => Promise<unknown>;
   onStorageSet?: (payload: { key: string; value: unknown; namespace?: string; scope?: string }) => Promise<void>;
@@ -32,7 +29,6 @@ export interface PluginBridgeHostHandlers {
   onPreferenceGet?: (payload: { key: string; namespace?: string }) => Promise<unknown>;
   onPreferenceSet?: (payload: { key: string; value: unknown; namespace?: string }) => Promise<void>;
   onPreferenceDelete?: (payload: { key: string; namespace?: string }) => Promise<boolean | void>;
-  onCertificateTemplatesApply?: (payload: any) => Promise<any>;
 }
 
 export interface PluginBridgeHostOptions {
@@ -159,18 +155,6 @@ export class PluginBridgeHost {
           await this.options.handlers.onNavigate(payload);
           break;
         }
-        case 'auth:requestLaunchCode': {
-          const payload = request.payload as BridgeLaunchCodeRequestPayload;
-          if (this.options.handlers.onRequestLaunchCode) {
-            resultData = await this.options.handlers.onRequestLaunchCode(payload);
-          } else {
-            throw {
-              code: 'FORBIDDEN',
-              message: 'Backend launch code requests are not supported in this host context'
-            };
-          }
-          break;
-        }
         case 'ui:setDirty': {
           const payload = request.payload as BridgeSetDirtyPayload;
           if (typeof payload?.dirty !== 'boolean') {
@@ -230,17 +214,6 @@ export class PluginBridgeHost {
             resultData = await this.options.handlers.onPreferenceDelete(request.payload as any);
           } else {
             resultData = true;
-          }
-          break;
-        }
-        case 'certificateTemplates:apply': {
-          if (this.options.handlers.onCertificateTemplatesApply) {
-            resultData = await this.options.handlers.onCertificateTemplatesApply(request.payload);
-          } else {
-            throw {
-              code: 'NOT_SUPPORTED',
-              message: 'certificateTemplates:apply capability is not supported in this surface context'
-            };
           }
           break;
         }

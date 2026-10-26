@@ -138,7 +138,6 @@ export function isValidBridgeRpcPayload(action: string, payload: unknown): boole
     case 'ui:modal:open':
       return typeof payload.title === 'string' && typeof payload.entrypoint === 'string';
     case 'ui:modal:close':
-    case 'auth:requestLaunchCode':
       return isEmptyRecord(payload);
     case 'ui:resize':
       return typeof payload.height === 'number' && Number.isFinite(payload.height);
@@ -158,8 +157,6 @@ export function isValidBridgeRpcPayload(action: string, payload: unknown): boole
       return typeof payload.key === 'string';
     case 'ui:preferences:set':
       return typeof payload.key === 'string' && 'value' in payload;
-    case 'certificateTemplates:apply':
-      return true;
     default:
       return false;
   }

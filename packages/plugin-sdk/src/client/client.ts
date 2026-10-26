@@ -7,8 +7,6 @@ import {
   type BridgeRpcRequest,
   type BridgeRpcResponse,
   type BridgeToastPayload,
-  type BridgeLaunchCodeRequestPayload,
-  type BridgeLaunchCodeResponseData,
   type PluginContext,
   type PluginThemeV1,
   type BridgeSetDirtyPayload,
@@ -215,15 +213,6 @@ export class ClassroomIOClient {
     }
   };
 
-  public auth = {
-    requestLaunchCode: async (options?: BridgeLaunchCodeRequestPayload): Promise<BridgeLaunchCodeResponseData> => {
-      return this.rpc<BridgeLaunchCodeResponseData, BridgeLaunchCodeRequestPayload>(
-        'auth:requestLaunchCode',
-        options ?? {}
-      );
-    }
-  };
-
   public ui = {
     toast: async (options: BridgeToastPayload): Promise<void> => {
       return this.rpc<void, BridgeToastPayload>('ui:toast', options);
@@ -302,12 +291,6 @@ export class ClassroomIOClient {
     },
     delete: async (key: string, namespace = 'default'): Promise<boolean> => {
       return this.rpc<boolean, BridgePreferenceDeletePayload>('ui:preferences:delete', { key, namespace });
-    }
-  };
-
-  public certificateTemplates = {
-    apply: async (payload: unknown): Promise<unknown> => {
-      return this.rpc<unknown>('certificateTemplates:apply', payload);
     }
   };
 
