@@ -1,16 +1,4 @@
-/**
- * Fetches the public API OpenAPI spec from R2 and enriches it with the bearer
- * auth scheme, so Blume can render the API reference statically at build time.
- *
- * This replaces the old SSR route that fetched the spec on every request. The
- * page now refreshes when the docs are rebuilt — .github/workflows/upload-openapi-spec.yml
- * triggers a docs deploy after it publishes a new spec.
- *
- * If the fetch fails but a previously fetched spec is on disk, that one is
- * reused: a network blip should not stop you building or previewing the docs.
- * With no spec at all there is nothing to render, so the build fails.
- */
-import { access, mkdir, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -27,12 +15,38 @@ const exists = async (path) => {
   }
 };
 
+const hideUuidPatterns = (value) => {
+  if (!value || typeof value !== 'object') {
+    return;
+  }
+
+  if (!Array.isArray(value) && value.format === 'uuid') {
+    delete value.pattern;
+  }
+
+  for (const child of Object.values(value)) {
+    hideUuidPatterns(child);
+  }
+};
+
+const writeDocsSpec = async (spec) => {
+  hideUuidPatterns(spec);
+  await mkdir(dirname(OUTPUT), { recursive: true });
+  await writeFile(OUTPUT, `${JSON.stringify(spec, null, 2)}\n`);
+};
+
+const reuseExistingSpec = async () => {
+  const cachedSpec = JSON.parse(await readFile(OUTPUT, 'utf-8'));
+  await writeDocsSpec(cachedSpec);
+};
+
 let response;
 
 try {
   response = await fetch(PUBLIC_API_OPENAPI_URL);
 } catch (error) {
   if (await exists(OUTPUT)) {
+    await reuseExistingSpec();
     console.warn(
       `[docs] Could not reach ${PUBLIC_API_OPENAPI_URL} (${error.cause?.code ?? error.message}). Reusing the spec already in openapi/.`
     );
@@ -47,6 +61,7 @@ try {
 
 if (!response.ok) {
   if (await exists(OUTPUT)) {
+    await reuseExistingSpec();
     console.warn(
       `[docs] ${PUBLIC_API_OPENAPI_URL} returned ${response.status} ${response.statusText}. Reusing the spec already in openapi/.`
     );
@@ -59,8 +74,6 @@ if (!response.ok) {
 }
 
 const spec = enrichPublicApiOpenApiSpec(await response.json());
-
-await mkdir(dirname(OUTPUT), { recursive: true });
-await writeFile(OUTPUT, `${JSON.stringify(spec, null, 2)}\n`);
+await writeDocsSpec(spec);
 
 console.log(`[docs] Wrote enriched OpenAPI spec to ${OUTPUT}`);
