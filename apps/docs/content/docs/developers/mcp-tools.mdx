@@ -16,7 +16,11 @@ The client lists the exact tools and input schemas available to it. Use this pag
 - Video: `upload_video` uploads a local file and returns an asset ID. Attach that ID with `create_lesson` or `update_lesson`.
 - Course templates: list or read templates, create a course from one, or save a course as a template. Reading needs an org admin or tutor; creating and saving need an org admin.
 
-Draft and direct editing workflows are in [Edit courses with MCP](/developers/mcp-course-editing). For live content, the key creator generally needs to be a course tutor/admin or org admin. Lesson comments are posted as the creator; only the author can edit one.
+### Draft publishing rules
+
+For existing courses, preserve each section or lesson's `externalId` when updating it and assign a new value to a new item. Publishing a draft updates matching items and creates new ones; omitting an existing section, lesson, or locale does not delete it. Lesson body HTML excludes the title and starts headings at `h3`.
+
+For live content, the key creator generally needs to be a course tutor/admin or org admin. Lesson comments are posted as the creator; only the author can edit one.
 
 ## Exercises, submissions, and marks
 

@@ -1,38 +1,32 @@
 ---
-title: Edit courses with MCP
-description: Choose between course drafts and direct edits to live content.
+title: Create and edit courses with MCP
+description: Prompts you can give your connected client and what to expect before changes go live.
 ---
+
+Once [your client is connected](/developers/mcp-setup), describe the course change in ordinary language. You do not need to choose a tool or prepare structured data.
 
 ## Create a course
 
-1. Call `create_course_draft` with the course structure and lesson content.
-2. Use `get_course_draft` and `update_course_draft` to review and revise it.
-3. Call `publish_course_draft` when the draft is ready.
+Try a prompt like this:
 
-A draft is saved separately from the live course. Lesson `content` contains the body HTML only: ClassroomIO renders the lesson title separately, so start body headings at `h3`.
+> Create a beginner algebra course for adults with six short lessons and a practice exercise after every two lessons. Make a draft first. Show me the outline and learning goals, and wait for my approval before publishing.
 
-If your source is a PDF, extract and organize its content in your client first. The MCP server receives structured course data, not the PDF.
+Include your audience, topic, desired length, and any source material you want the client to use. You can also ask the client to build a course from a PDF it can access.
+
+**What to expect:** The client prepares a course draft and shows you its structure and content for review. Ask for changes in the conversation. Publishing is a separate step; after you approve the draft, the client can publish it and give you the course link. If your client cannot read an attached PDF, provide its text or a file it can access.
 
 ## Revise an existing course
 
-For broad changes to lessons or course structure:
+Try:
 
-1. Call `get_course_structure` to read the current course.
-2. Call `create_course_draft_from_course` to make a draft from the current version.
-3. Make changes with `update_course_draft`, then review the result.
-4. Call `publish_course_draft_to_existing_course` to apply it.
+> Find my Algebra Basics course. Rewrite the first two lessons for beginners and show me the proposed changes before updating the live course. Keep the other lessons.
 
-Keep the existing `externalId` for each section or lesson you intend to update. Give new items new `externalId` values. Publishing a draft updates matching items and creates new ones; omitting a section, lesson, or locale does **not** delete it from the live course. Use an explicit delete tool when deletion is intended.
+**What to expect:** The client reads the current course, prepares a draft of the changes, and lets you review it before applying it. Existing lessons and sections omitted from the draft are not automatically deleted. The client should start each new broad revision from the current course, since someone may have edited it since the previous draft.
 
-After publishing, start another broad revision from the live course rather than reusing the published draft. The course may have changed in the dashboard or another client session.
+## Make a small change
 
-## Make a small live edit
+Try:
 
-Use a direct tool when you only need to change one part of a published course:
+> Move the recap lesson to the end of Algebra Basics. Leave the lesson content unchanged.
 
-- `update_course_landing_page` for landing page fields and cover images.
-- `reorder_course_content` for moving or reordering sections, lessons, and exercises.
-- Exercise tools for creating or editing an exercise and grading tools for submissions.
-- Section, lesson, and content tools for individual changes.
-
-Direct changes can affect a live course immediately. Delete tools can permanently remove content and student work; see [tools and permissions](/developers/mcp-tools#deletion-and-side-effects) before using them.
+**What to expect:** The client can make a focused change directly to the live course and report what changed. Changes like reordering content or editing one exercise may take effect immediately. If a request would delete content or student work, check the [deletion and side effects](/developers/mcp-tools#deletion-and-side-effects) before approving it.
