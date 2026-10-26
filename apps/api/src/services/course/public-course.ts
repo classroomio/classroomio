@@ -133,6 +133,14 @@ export async function getPublicCourseItemService(
           const assets = await getAssetsByIds([video.assetId], courseOrganizationId ?? undefined);
           storageKey = assets[0]?.storageKey ?? undefined;
           hlsManifestKey = assets[0]?.hlsManifestKey ?? null;
+
+          // A dashboard upload stores its poster when the video is attached; one
+          // encoded server-side has its thumbnail generated afterwards, so it
+          // only ever exists on the asset.
+          const assetThumbnail = assets[0]?.thumbnailUrl;
+          if (assetThumbnail && !video.metadata?.thumbnailUrl) {
+            video = { ...video, metadata: { ...(video.metadata ?? {}), thumbnailUrl: assetThumbnail } };
+          }
         }
 
         if (!storageKey && video.key) {

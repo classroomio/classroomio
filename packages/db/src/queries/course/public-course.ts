@@ -300,6 +300,8 @@ export interface PublicLessonContent {
      * shared media player attaches hls.js based on this flag.
      */
     hls?: boolean;
+    /** Poster frame. Only this key is carried over; the stored metadata is a catchall. */
+    metadata?: { thumbnailUrl?: string };
     transcript?: {
       vttUrl: string;
       vttUrlExpiresAt: string;
@@ -395,7 +397,10 @@ export async function getPublicCourseItem(
               type: lessonRow.videos[0].type,
               link: lessonRow.videos[0].link,
               assetId: lessonRow.videos[0].assetId,
-              ...(lessonRow.videos[0].key ? { key: lessonRow.videos[0].key } : {})
+              ...(lessonRow.videos[0].key ? { key: lessonRow.videos[0].key } : {}),
+              ...(lessonRow.videos[0].metadata?.thumbnailUrl
+                ? { metadata: { thumbnailUrl: lessonRow.videos[0].metadata.thumbnailUrl } }
+                : {})
             }
           : lessonRow.videoUrl
             ? { type: 'generic' as const, link: lessonRow.videoUrl }
