@@ -251,7 +251,6 @@ export const app = new Hono()
   .route('/invite', inviteRouter)
   .route('/org-site/course', publicCourseRouter)
   .route('/org-site/og', orgSiteOgRouter)
-  .route('/public-api/v1', v1Router)
   .route('/cohort', cohortRouter)
   .route('/unsplash', unsplashRouter)
   .route('/widgets', publicWidgetsRouter)
@@ -270,6 +269,11 @@ export const app = new Hono()
 
     return c.json({ error: 'Internal Server Error' }, 500);
   });
+
+// The public API is called over plain HTTP, never through the typed client. Mounted after the
+// typed RPC chain so its routes stay out of the client type, which tsc can no longer serialize
+// once they are included (TS7056).
+app.route('/public-api/v1', v1Router);
 
 // Dev-only BullMQ dashboard at /admin/queues. Mounted after the typed RPC
 // chain so it doesn't pollute the client type.

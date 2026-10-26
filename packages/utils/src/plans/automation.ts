@@ -21,6 +21,8 @@ export const MCP_TOOL_CREDIT_COST = {
   create_course_draft: 1,
   create_course_draft_from_course: 1,
   reorder_course_content: 1,
+  clone_course: 1,
+  set_featured_courses: 1,
   update_course_landing_page: 1,
   update_course_draft: 1,
   tag_course_draft: 1,
