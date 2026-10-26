@@ -7,6 +7,7 @@ import type {
 
 import { createLesson, updateLessonService } from '@cio/core/services/lesson/lesson';
 import { createAssetUsage, deleteAssetUsagesByTargetSlots } from '@cio/db/queries/assets';
+import { db } from '@cio/db/drizzle';
 import { getLessonById } from '@cio/db/queries/lesson';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { assertAutomationActor } from '@api/services/v1/shared';
@@ -36,7 +37,9 @@ const LESSON_VIDEO_SLOT = 'lesson_video';
  * nowhere, and nothing can tell that deleting the asset would break a lesson.
  *
  * Replaces the lesson's video slots wholesale, so a video dropped from the
- * payload stops being counted as used.
+ * payload stops being counted as used. The replacement runs in one
+ * transaction: a failed insert after the delete would otherwise leave the
+ * lesson tracked as using nothing at all.
  */
 async function recordLessonVideoUsage(
   orgId: string,
@@ -44,22 +47,27 @@ async function recordLessonVideoUsage(
   lessonId: string,
   videos: ResolvedLessonVideo[]
 ): Promise<void> {
-  await deleteAssetUsagesByTargetSlots('lesson', lessonId, [LESSON_VIDEO_SLOT]);
+  await db.transaction(async (tx) => {
+    await deleteAssetUsagesByTargetSlots('lesson', lessonId, [LESSON_VIDEO_SLOT], tx);
 
-  for (const [position, video] of videos.entries()) {
-    if (!video.assetId) continue;
+    for (const [position, video] of videos.entries()) {
+      if (!video.assetId) continue;
 
-    await createAssetUsage({
-      organizationId: orgId,
-      assetId: video.assetId,
-      targetType: 'lesson',
-      targetId: lessonId,
-      slotType: LESSON_VIDEO_SLOT,
-      slotKey: null,
-      position,
-      createdByProfileId: actorId
-    });
-  }
+      await createAssetUsage(
+        {
+          organizationId: orgId,
+          assetId: video.assetId,
+          targetType: 'lesson',
+          targetId: lessonId,
+          slotType: LESSON_VIDEO_SLOT,
+          slotKey: null,
+          position,
+          createdByProfileId: actorId
+        },
+        tx
+      );
+    }
+  });
 }
 
 export async function createPublicApiLessonService(

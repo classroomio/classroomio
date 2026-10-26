@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   resolveLessonVideos: vi.fn(),
   createAssetUsage: vi.fn(),
   deleteAssetUsagesByTargetSlots: vi.fn(),
+  transaction: vi.fn(),
   getLessonById: vi.fn(),
   getCourseOrganizationId: vi.fn()
 }));
@@ -20,6 +21,7 @@ vi.mock('@cio/db/queries/assets', () => ({
   deleteAssetUsagesByTargetSlots: mocks.deleteAssetUsagesByTargetSlots
 }));
 
+vi.mock('@cio/db/drizzle', () => ({ db: { transaction: mocks.transaction } }));
 vi.mock('@cio/db/queries/lesson', () => ({ getLessonById: mocks.getLessonById }));
 vi.mock('@cio/db/queries/tag', () => ({ getCourseOrganizationId: mocks.getCourseOrganizationId }));
 vi.mock('@api/services/v1/lessons/videos', () => ({ resolveLessonVideos: mocks.resolveLessonVideos }));
@@ -32,6 +34,7 @@ const COURSE_ID = 'a79703b5-b47b-46af-a1c4-ed591893d7a7';
 const LESSON_ID = 'ca51eeb5-3e1c-4370-9ecb-76f1f09e3988';
 const ASSET_A = '414807ff-909b-47a3-ad82-48233a501fc3';
 const ASSET_B = '5d570433-a343-4481-8d80-51abca2f944e';
+const txClient = { id: 'transaction-client' };
 
 describe('public API lesson videos record asset usage', () => {
   beforeEach(() => {
@@ -42,6 +45,7 @@ describe('public API lesson videos record asset usage', () => {
     mocks.updateLessonService.mockResolvedValue({ id: LESSON_ID });
     mocks.createAssetUsage.mockResolvedValue({ id: 'usage-1' });
     mocks.deleteAssetUsagesByTargetSlots.mockResolvedValue(0);
+    mocks.transaction.mockImplementation(async (run) => run(txClient));
     mocks.resolveLessonVideos.mockResolvedValue([{ type: 'upload', link: '', key: 'k', assetId: ASSET_A }]);
   });
 
@@ -64,7 +68,8 @@ describe('public API lesson videos record asset usage', () => {
         targetId: LESSON_ID,
         slotType: 'lesson_video',
         position: 0
-      })
+      }),
+      txClient
     );
   });
 
@@ -104,8 +109,52 @@ describe('public API lesson videos record asset usage', () => {
       } as never
     );
 
-    expect(mocks.deleteAssetUsagesByTargetSlots).toHaveBeenCalledWith('lesson', LESSON_ID, ['lesson_video']);
+    expect(mocks.deleteAssetUsagesByTargetSlots).toHaveBeenCalledWith('lesson', LESSON_ID, ['lesson_video'], txClient);
     expect(mocks.createAssetUsage).toHaveBeenCalledOnce();
+  });
+
+  it('replaces the slots on one transaction client, so a failed insert cannot half-apply', async () => {
+    mocks.resolveLessonVideos.mockResolvedValue([
+      { type: 'upload', link: '', assetId: ASSET_A },
+      { type: 'upload', link: '', assetId: ASSET_B }
+    ]);
+
+    await createPublicApiLessonService(
+      ORG_ID,
+      ACTOR_ID,
+      { courseId: COURSE_ID } as never,
+      {
+        title: 'Intro',
+        videos: [
+          { type: 'upload', assetId: ASSET_A },
+          { type: 'upload', assetId: ASSET_B }
+        ]
+      } as never
+    );
+
+    expect(mocks.transaction).toHaveBeenCalledOnce();
+    expect(mocks.deleteAssetUsagesByTargetSlots).toHaveBeenCalledWith('lesson', LESSON_ID, ['lesson_video'], txClient);
+    for (const [, client] of mocks.createAssetUsage.mock.calls) {
+      expect(client).toBe(txClient);
+    }
+  });
+
+  it('propagates a usage failure so the transaction rolls the delete back', async () => {
+    const usageError = new Error('usage insert failed');
+    mocks.createAssetUsage.mockRejectedValue(usageError);
+    mocks.transaction.mockImplementation(async (run) => run(txClient));
+
+    await expect(
+      createPublicApiLessonService(
+        ORG_ID,
+        ACTOR_ID,
+        { courseId: COURSE_ID } as never,
+        {
+          title: 'Intro',
+          videos: [{ type: 'upload', assetId: ASSET_A }]
+        } as never
+      )
+    ).rejects.toBe(usageError);
   });
 
   it('skips link-based videos, which have no asset to attach', async () => {
