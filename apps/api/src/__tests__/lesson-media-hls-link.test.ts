@@ -103,6 +103,35 @@ describe('enrichLessonWithPresignedUrls — uploaded video links', () => {
     expect(video.link).toBe('https://r2.example.com/source.mp4?X-Amz-Signature=abc');
   });
 
+  it('drops a stale hls flag when the link falls back to the source file', async () => {
+    mocks.getAssetsByIds.mockResolvedValue([asset()]);
+
+    const lesson = await enrichLessonWithPresignedUrls(
+      lessonWithUpload({
+        videos: [{ type: 'upload', link: '', key: SOURCE_KEY, assetId: ASSET_ID, metadata: { hls: true } }]
+      })
+    );
+    const [video] = lesson.videos!;
+
+    expect(video.link).toBe('https://r2.example.com/source.mp4?X-Amz-Signature=abc');
+    expect(hlsFlag(video)).toBeUndefined();
+  });
+
+  it('keeps the flag on a browser upload that has its manifest link but no source key', async () => {
+    const storedLink = `/hls/${ASSET_ID}/master.m3u8`;
+    mocks.getAssetsByIds.mockResolvedValue([asset({ storageKey: null, hlsManifestKey: null })]);
+
+    const lesson = await enrichLessonWithPresignedUrls(
+      lessonWithUpload({
+        videos: [{ type: 'upload', link: storedLink, assetId: ASSET_ID, metadata: { hls: true } }]
+      })
+    );
+    const [video] = lesson.videos!;
+
+    expect(video.link).toBe(storedLink);
+    expect(hlsFlag(video)).toBe(true);
+  });
+
   it('leaves a browser-encoded video that already stores its manifest link alone', async () => {
     const storedLink = `/hls/${ASSET_ID}/master.m3u8`;
     mocks.getAssetsByIds.mockResolvedValue([

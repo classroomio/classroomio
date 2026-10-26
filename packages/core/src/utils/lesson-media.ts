@@ -86,8 +86,26 @@ function applyCanonicalVideoMetadata(
       metadata: mergedMetadata
     };
 
-    return asset.hlsManifestKey ? playFromHlsManifest(canonical, asset.hlsManifestKey) : canonical;
+    if (asset.hlsManifestKey) {
+      return playFromHlsManifest(canonical, asset.hlsManifestKey);
+    }
+
+    return canonical.key ? playFromSourceFile(canonical) : canonical;
   });
+}
+
+/**
+ * Drop a stale `hls` flag from a video whose link is about to be presigned to
+ * its source file.
+ *
+ * @returns the video with `hls` removed, so a player does not read the source
+ * as a manifest. Only for videos that have a source key — a browser upload
+ * carries the flag and its manifest link before the asset is finalized.
+ */
+function playFromSourceFile(video: LessonVideo): LessonVideo {
+  const { hls: _staleFlag, ...metadata } = (video.metadata ?? {}) as Record<string, unknown>;
+
+  return { ...video, metadata: metadata as LessonVideo['metadata'] };
 }
 
 /**
