@@ -17,6 +17,7 @@ import {
   getCourse,
   updateCourse as updateCourseService
 } from '@cio/core/services/course/course';
+import type { UpdateCourseResult } from '@cio/core/services/course/course';
 import { emitCoursePublishWebhookEvent } from '@cio/core/services/webhook/emit';
 import { buildCourseOutline } from '@cio/core/services/course/utils';
 import type { TEventSource } from '@cio/core/services/posthog';
@@ -31,6 +32,9 @@ import { listPaginatedCourseMembers } from '@api/services/course/people';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertAutomationActor, assertCourseBelongsToOrganization, assertOrgTeamMember } from '@api/services/v1/shared';
 import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
+import { updateCourseWithTags } from '@api/services/course/update-course';
+import { getCourseTagsForOrganization } from '@cio/db/queries/tag';
+import type { TTag } from '@cio/db/types';
 
 export async function listCoursesService(orgId: string, query: TPublicApiCoursesQuery) {
   return getOrganizationCourses(orgId, '', ROLE.ADMIN, query);
@@ -85,19 +89,40 @@ export async function createPublicApiCourseService(
   );
 }
 
+const toCourseTag = ({ id, name, slug, color }: TTag) => ({ id, name, slug, color });
+
 export async function updatePublicApiCourseService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCourseParam,
-  payload: TPublicApiUpdateCourse,
-  actorId: string | null = null
+  payload: TPublicApiUpdateCourse
 ) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCertificateChangeAllowed(params.courseId, payload.certificate);
 
-  const result = await updateCourseService(params.courseId, payload);
-  await emitCoursePublishWebhookEvent(params.courseId, result.publishChange, actorId);
+  const { tagIds, addTagIds, ...courseData } = payload;
 
-  return result;
+  let updated: UpdateCourseResult & { tags: TTag[] };
+
+  if (tagIds === undefined && addTagIds === undefined) {
+    const result = await updateCourseService(params.courseId, courseData);
+    updated = { ...result, tags: await getCourseTagsForOrganization(orgId, params.courseId) };
+  } else {
+    assertAutomationActor(actorId);
+
+    updated = await updateCourseWithTags({
+      courseId: params.courseId,
+      courseData,
+      orgId,
+      updatedByUserId: actorId,
+      ...(addTagIds ? { addTagIds } : { tagIds: tagIds! })
+    });
+  }
+
+  const { course, conversionOffenders, publishedNow, publishChange, tags } = updated;
+  await emitCoursePublishWebhookEvent(params.courseId, publishChange, actorId);
+
+  return { course: { ...course, tags: tags.map(toCourseTag) }, conversionOffenders, publishedNow };
 }
 
 export async function deletePublicApiCourseService(orgId: string, params: TPublicApiCourseParam) {

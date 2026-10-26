@@ -26,7 +26,7 @@ vi.mock('@api/services/organization/automation-key', () => ({
 vi.mock('@api/services/organization/automation-usage', () => ({
   reserveMcpAutomationUsage: vi.fn().mockResolvedValue('reservation-id'),
   completeMcpAutomationUsage: mocks.complete,
-  releaseMcpAutomationUsage: vi.fn()
+  releaseMcpAutomationUsage: vi.fn().mockResolvedValue(undefined)
 }));
 
 vi.mock('@api/services/v1/cohorts/cohort', () => ({
@@ -61,6 +61,25 @@ vi.mock('@api/services/v1/courses/members', () => ({
   listCourseMembersService: vi.fn().mockResolvedValue({ items: [], page: 1, limit: 20, total: 0, totalPages: 0 })
 }));
 
+vi.mock('@api/services/v1/tags', () => ({
+  listPublicApiTagGroupsService: vi.fn().mockResolvedValue({ items: [], pagination: {} }),
+  createPublicApiTagService: vi.fn().mockResolvedValue({ id: 'tag-id' }),
+  createPublicApiTagGroupService: vi.fn(),
+  updatePublicApiTagService: vi.fn(),
+  updatePublicApiTagGroupService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/courses/course', () => ({
+  createPublicApiCourseService: vi.fn(),
+  deletePublicApiCourseService: vi.fn(),
+  exportCourseService: vi.fn(),
+  getCourseService: vi.fn(),
+  listCoursesService: vi.fn(),
+  listCourseStudentsService: vi.fn(),
+  updatePublicApiCourseService: vi.fn().mockResolvedValue({ course: { tags: [] }, conversionOffenders: null }),
+  updatePublicApiCourseStructureService: vi.fn()
+}));
+
 vi.mock('@api/services/v1/courses/sections', () => ({
   listPublicApiCourseSectionsService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
 }));
@@ -69,6 +88,9 @@ import { v1Router } from '@api/routes/v1';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 
+const TAG_ID = '22222222-2222-4222-8222-222222222222';
+
+// DEFAULT_SCOPES.mcp in services/organization/automation-key.ts.
 const MCP_DEFAULT_SCOPES = [
   'course_import:draft:create',
   'course_import:draft:read',
@@ -85,8 +107,11 @@ const MCP_DEFAULT_SCOPES = [
   'course:member:write',
   'course:certificate:read',
   'course:certificate:write',
+  'analytics:read',
+  'media:write',
   'course:submission:read',
   'course:submission:write',
+  'course:student:write',
   'audience:read',
   'audience:write',
   'team:read',
@@ -97,10 +122,14 @@ const MCP_DEFAULT_SCOPES = [
 
 const app = new Hono().route('/public-api/v1', v1Router);
 
-const request = (path: string) =>
-  app.request(`/public-api/v1${path}`, { headers: { Authorization: 'Bearer cio_mcp_test' } });
+const request = (path: string, method = 'GET', body?: unknown) =>
+  app.request(`/public-api/v1${path}`, {
+    method,
+    headers: { Authorization: 'Bearer cio_mcp_test', 'content-type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body)
+  });
 
-describe('default MCP key across the cohort, course member, certificate, exercise, submission, audience, team, and organization APIs', () => {
+describe('default MCP key across the cohort, course member, certificate, exercise, submission, audience, team, organization, and tag APIs', () => {
   beforeEach(() => {
     mocks.complete.mockReset().mockResolvedValue(undefined);
     mocks.authenticate.mockResolvedValue({
@@ -134,5 +163,43 @@ describe('default MCP key across the cohort, course member, certificate, exercis
 
     expect(response.status).toBe(403);
     expect(mocks.complete).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['GET', '/tags', 'list_tags', 0, 200, undefined],
+    ['POST', '/tags', 'create_tag', 1, 201, { name: 'Safety', groupId: TAG_ID, color: '#EF4444' }],
+    ['PUT', `/tags/${TAG_ID}`, 'update_tag', 1, 200, { color: '#F97316' }],
+    ['POST', '/tags/groups', 'create_tag_group', 1, 201, { name: 'Topics' }],
+    ['PUT', `/tags/groups/${TAG_ID}`, 'update_tag_group', 1, 200, { order: 1 }],
+    ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { tagIds: [TAG_ID] }],
+    ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { addTagIds: [TAG_ID] }]
+  ])('reaches %s %s and meters it as %s (%i credits)', async (method, path, toolName, credits, status, body) => {
+    const response = await request(path, method, body);
+
+    expect(response.status).toBe(status);
+    expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, credits);
+  });
+
+  it.each([
+    { title: 'New title' },
+    { title: 'New title', tagIds: [TAG_ID] },
+    { title: 'New title', addTagIds: [TAG_ID] },
+    {}
+  ])('refuses a course update with fields other than tagIds (%o)', async (body) => {
+    const response = await request(`/courses/${COURSE_ID}`, 'PUT', body);
+
+    expect(response.status).toBe(403);
+    expect(mocks.complete).not.toHaveBeenCalled();
+  });
+
+  it('refuses tagIds and addTagIds together', async () => {
+    const response = await request(`/courses/${COURSE_ID}`, 'PUT', { tagIds: [TAG_ID], addTagIds: [TAG_ID] });
+
+    expect(response.status).toBe(400);
+    expect(mocks.complete).not.toHaveBeenCalled();
+  });
+
+  it('is kept out of course delete', async () => {
+    expect((await request(`/courses/${COURSE_ID}`, 'DELETE')).status).toBe(403);
   });
 });

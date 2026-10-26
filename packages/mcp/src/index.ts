@@ -23,6 +23,7 @@ import { registerCourseTemplateTools } from './tools/course-templates';
 import { registerEmailTemplateTools } from './tools/email-templates';
 import { registerLandingPageTools } from './tools/landing-page';
 import { registerTeamTools } from './tools/team';
+import { registerTagTools } from './tools/tags';
 
 async function main() {
   const config = getConfig();
@@ -52,6 +53,7 @@ async function main() {
   registerTeamTools(server, apiClient);
   registerEmailTemplateTools(server, apiClient);
   registerLandingPageTools(server, apiClient);
+  registerTagTools(server, apiClient);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

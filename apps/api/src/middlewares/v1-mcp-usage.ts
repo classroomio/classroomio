@@ -30,6 +30,12 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     DELETE: 'reset_email_template'
   },
   '/public-api/v1/organization/email-templates/:emailId/:locale/test': { POST: 'send_test_email_template' },
+  // MCP keys can only send tagIds or addTagIds here.
+  '/public-api/v1/courses/:courseId': { PUT: 'set_course_tags' },
+  '/public-api/v1/tags': { GET: 'list_tags', POST: 'create_tag' },
+  '/public-api/v1/tags/:tagId': { PUT: 'update_tag' },
+  '/public-api/v1/tags/groups': { POST: 'create_tag_group' },
+  '/public-api/v1/tags/groups/:groupId': { PUT: 'update_tag_group' },
   '/public-api/v1/courses/:courseId/members': { GET: 'list_course_members', POST: 'add_course_member' },
   '/public-api/v1/courses/:courseId/members/:memberId': {
     GET: 'get_course_member',

@@ -168,7 +168,12 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per learner',
   'GET /public-api/v1/analytics/learners/{profileId}': "Get a learner's analytics",
   'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics',
-  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics'
+  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics',
+  'GET /public-api/v1/tags': 'List tag groups and tags',
+  'POST /public-api/v1/tags': 'Create a tag',
+  'PUT /public-api/v1/tags/{tagId}': 'Update a tag',
+  'POST /public-api/v1/tags/groups': 'Create a tag group',
+  'PUT /public-api/v1/tags/groups/{groupId}': 'Update a tag group'
 };
 
 const OPERATION_TAGS = [
@@ -179,6 +184,10 @@ const OPERATION_TAGS = [
     description: 'Read, customize, translate and reset the emails your organization sends to students.'
   },
   { name: 'Organization Landing Page', description: "Manage your organization's public landing page." },
+  {
+    name: 'Tags',
+    description: 'Create tag groups and tags. Set them on a course with tagIds or addTagIds on the course update.'
+  },
   { name: 'Courses', description: 'Create, update, delete, and clone courses.' },
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
   { name: 'Course Members', description: 'Manage the people in a course and their progress.' },

@@ -39,3 +39,5 @@ export * from './lesson';
 export * from './pagination';
 export * from './team';
 export * from './team-responses';
+export * from './tag';
+export * from './tag-responses';
