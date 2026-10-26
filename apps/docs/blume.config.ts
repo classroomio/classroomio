@@ -163,7 +163,10 @@ export default defineConfig({
     site: 'https://classroomio.com',
     base: '/docs'
   },
-  redirects: [{ from: '/', to: '/developers', status: 301 }],
+  redirects: [
+    { from: '/', to: '/developers', status: 301 },
+    { from: '/developers/mcp/tools', to: '/developers/mcp/access-and-limits', status: 301 }
+  ],
   github: {
     owner: 'classroomio',
     repo: 'classroomio',
@@ -233,7 +236,7 @@ export default defineConfig({
             items: [
               '/developers/mcp',
               '/developers/mcp/setup',
-              '/developers/mcp/tools',
+              '/developers/mcp/access-and-limits',
               '/developers/mcp/course-editing'
             ]
           },

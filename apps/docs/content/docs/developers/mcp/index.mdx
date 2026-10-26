@@ -19,7 +19,7 @@ Keep the key private. You can rotate or revoke it from **Automation → MCP**.
 - Manage live course content, exercises, submissions, certificates, members, and invitations.
 - Work with cohorts, audience and team members, email templates, and analytics.
 
-See the [tools and permissions reference](/developers/mcp/tools) for the supported areas, required scopes, and actions that delete data or send email. The MCP server does not extract content from PDFs or create course content on its own; your client prepares the content and passes it to the tools.
+See [access and limits](/developers/mcp/access-and-limits) before connecting a client or approving changes. The MCP server does not extract content from PDFs or create course content on its own; your client prepares the content and sends it to ClassroomIO.
 
 ## Choose the right course workflow
 
@@ -27,4 +27,4 @@ Tell your connected client what you want to create or change. For a new course o
 
 ## API access
 
-MCP keys (`cio_mcp_...`) work only with the endpoints supported by the MCP tools. They do not grant unrestricted `public_api:*` access. A tool call must pass both the key's scope check and the permissions of the person who created the key. See [tools and permissions](/developers/mcp/tools) for the scope groups and [API authentication](/api/authentication) for key behavior.
+MCP keys (`cio_mcp_...`) work only with supported MCP actions. They do not grant unrestricted `public_api:*` access. Each request must pass both the key's scope check and the permissions of the person who created the key. See [access and limits](/developers/mcp/access-and-limits) and [API authentication](/api/authentication).
