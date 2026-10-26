@@ -1,0 +1,72 @@
+---
+title: MCP tools and permissions
+description: Find supported MCP tool groups, required scopes, and important side effects.
+---
+
+ClassroomIO checks two things on every tool call: the MCP key's scopes and the permissions of the person who created it. Removing that person's access also removes the key's access. MCP keys cannot call the entire public API.
+
+The client lists the exact tools and input schemas available to it. Use this page to choose a tool group and understand its access rules; use the tool's schema for its current arguments. A key created with a custom, narrower scope list does not gain new scopes automatically. Create a key with the required scopes if a tool is unavailable.
+
+## Courses and drafts
+
+**Scopes:** `course_import:draft:create`, `course_import:draft:read`, `course_import:draft:update`, and `course_import:draft:publish` for drafts; `course:read` and `course:write` for live content and templates; `course:tag:write` for live course tags; and `media:write` for video uploads. The key creator must have the required course or organization role.
+
+- Course drafts: list and read courses, create or update drafts, tag drafts or courses, and publish a draft as a new or existing course.
+- Live content: update a landing page; list, create, edit, move, or delete sections, lessons, and content; manage lesson translations, history, and comments.
+- Video: `upload_video` uploads a local file and returns an asset ID. Attach that ID with `create_lesson` or `update_lesson`.
+- Course templates: list or read templates, create a course from one, or save a course as a template. Reading needs an org admin or tutor; creating and saving need an org admin.
+
+Draft and direct editing workflows are in [Edit courses with MCP](/developers/mcp-course-editing). For live content, the key creator generally needs to be a course tutor/admin or org admin. Lesson comments are posted as the creator; only the author can edit one.
+
+## Exercises, submissions, and marks
+
+**Scopes:** `course:exercise:read/write` and `course:submission:read/write`.
+
+Exercise tools create, update, delete, and notify about exercises; manage questions and sections; and read exercise templates. Submission tools list, read, grade, update, and delete submissions. `get_course_marks` reads the gradebook.
+
+Exercise and submission tools generally require the key creator to be a course tutor/admin or org admin. A course member can read marks, but a student receives only their own row. Exercise changes apply to the live course immediately; past submissions are not regraded. `notify_course_exercise` sends email on every call.
+
+## Certificates
+
+**Scopes:** `course:certificate:read/write`.
+
+Tools read and update certificate settings, list students who earned a certificate, and download an issued PDF or PNG. Reading settings needs course membership or org admin access. Updating settings, listing issued certificates, and downloading them need a course tutor/admin or org admin. Updating certificate settings requires a paid plan.
+
+Updating a certificate is partial, except that `design` replaces the whole design object. Read the current design before changing only part of it.
+
+## Course members and invitations
+
+**Scopes:** `course:member:read/write`.
+
+Tools list, add, update, and remove course members; reset progress; read member analytics; and create or revoke invitations. The key creator must be a course tutor/admin or org admin.
+
+## Cohorts
+
+**Scopes:** `cohort:read/write`.
+
+Tools manage cohorts, members, courses, invitations, join links, newsfeed posts, comments, reactions, and goals. Reading a cohort needs cohort membership or org admin access. Changes generally need a cohort tutor/admin or org admin; posting and reacting also require membership because they act as the key creator.
+
+`add_cohort_members` adds members without sending an invitation email. Use `invite_students_to_cohort` when an email invitation is needed.
+
+## Analytics
+
+**Scope:** `analytics:read`.
+
+Tools read organization, learner, course, student, and compliance analytics. Organization and learner analytics need an org admin or tutor; compliance learner lists need an org admin. Course analytics need a course tutor/admin or org admin. Some organization analytics sections are omitted for tutors.
+
+## Audience, team, and email templates
+
+**Scopes:** `audience:read/write`, `team:read/write`, and `organization:read/write`, respectively. The key creator must be an org admin.
+
+Audience tools list, add, assign courses to, update, and remove people. Team tools list and update members. Email template tools list, read, update, reset, and send test messages. Saving or testing a template requires a paid plan; test sends have a shared organization limit.
+
+Changing a joined member's name changes their shared profile across organizations. Removing an audience member removes their organization membership, not their account.
+
+## Deletion and side effects
+
+- Deleting an exercise also deletes its submissions. Deleting a section also deletes its lessons and exercises.
+- Deleting a lesson, section, or content with student work returns `409` unless `force` is set; `force` also deletes the affected work. Deleting an answered exercise question has the same safeguard.
+- `delete_course_submission` is a hard delete. Resetting member progress discards recorded progress.
+- Notifications, invitations, and test emails can send messages. Repeating a notification call can send them again.
+
+For API error responses and rate limits, see [Errors](/api/errors) and [Rate limits](/api/rate-limits).

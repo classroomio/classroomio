@@ -1,0 +1,38 @@
+---
+title: Edit courses with MCP
+description: Choose between course drafts and direct edits to live content.
+---
+
+## Create a course
+
+1. Call `create_course_draft` with the course structure and lesson content.
+2. Use `get_course_draft` and `update_course_draft` to review and revise it.
+3. Call `publish_course_draft` when the draft is ready.
+
+A draft is saved separately from the live course. Lesson `content` contains the body HTML only: ClassroomIO renders the lesson title separately, so start body headings at `h3`.
+
+If your source is a PDF, extract and organize its content in your client first. The MCP server receives structured course data, not the PDF.
+
+## Revise an existing course
+
+For broad changes to lessons or course structure:
+
+1. Call `get_course_structure` to read the current course.
+2. Call `create_course_draft_from_course` to make a draft from the current version.
+3. Make changes with `update_course_draft`, then review the result.
+4. Call `publish_course_draft_to_existing_course` to apply it.
+
+Keep the existing `externalId` for each section or lesson you intend to update. Give new items new `externalId` values. Publishing a draft updates matching items and creates new ones; omitting a section, lesson, or locale does **not** delete it from the live course. Use an explicit delete tool when deletion is intended.
+
+After publishing, start another broad revision from the live course rather than reusing the published draft. The course may have changed in the dashboard or another client session.
+
+## Make a small live edit
+
+Use a direct tool when you only need to change one part of a published course:
+
+- `update_course_landing_page` for landing page fields and cover images.
+- `reorder_course_content` for moving or reordering sections, lessons, and exercises.
+- Exercise tools for creating or editing an exercise and grading tools for submissions.
+- Section, lesson, and content tools for individual changes.
+
+Direct changes can affect a live course immediately. Delete tools can permanently remove content and student work; see [tools and permissions](/developers/mcp-tools#deletion-and-side-effects) before using them.
