@@ -1,0 +1,88 @@
+---
+title: Connect an MCP client
+description: Configure Claude Code, Codex, Cursor, or OpenCode to use the ClassroomIO MCP server.
+---
+
+Create an MCP key in **Automation → MCP** and install Node.js so your client can run `npx -y @classroomio/mcp`. Set `CLASSROOMIO_API_KEY` in the environment that starts your client. The examples pass that variable to the server without putting the key in a config file.
+
+The server also needs `CLASSROOMIO_API_URL=https://api.classroomio.com`. For a self-hosted installation, use your API URL instead.
+
+## Claude Code
+
+Add a `classroomio` entry to your `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "command": "npx",
+      "args": ["-y", "@classroomio/mcp"],
+      "env": {
+        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+        "CLASSROOMIO_API_KEY": "${CLASSROOMIO_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+## Codex
+
+Add this entry to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.classroomio]
+command = "npx"
+args = ["-y", "@classroomio/mcp"]
+env_vars = ["CLASSROOMIO_API_KEY"]
+
+[mcp_servers.classroomio.env]
+CLASSROOMIO_API_URL = "https://api.classroomio.com"
+```
+
+## Cursor
+
+Add this entry to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "command": "npx",
+      "args": ["-y", "@classroomio/mcp"],
+      "env": {
+        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+        "CLASSROOMIO_API_KEY": "${env:CLASSROOMIO_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+## OpenCode
+
+Put this entry in your project's `opencode.json`, or in `~/.config/opencode/opencode.json` for all projects:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "classroomio": {
+        "type": "local",
+        "command": ["npx", "-y", "@classroomio/mcp"],
+        "environment": {
+          "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+          "CLASSROOMIO_API_KEY": "{env:CLASSROOMIO_API_KEY}"
+        }
+      }
+    }
+  }
+}
+```
+
+## Check the connection
+
+Restart the client and check that ClassroomIO tools appear. Ask it to list courses in the intended organization. If the tools are missing, check that Node.js can run the package and that the client loaded the config. If the request is unauthorized, check the API URL, key status, scopes, and key creator's permissions.
+
+Client config formats can change. If an example no longer matches your installed client, check its [Claude Code](https://code.claude.com/docs/en/mcp), [Codex](https://developers.openai.com/codex/config-reference), [Cursor](https://docs.cursor.com/context/model-context-protocol), or [OpenCode](https://opencode.ai/v2/docs/mcp-servers) documentation.

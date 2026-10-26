@@ -359,7 +359,8 @@
       },
       "info": {
         "conversion_blocked": "Popraw poniższe pytania, aby zakończyć konwersję do wersji publicznej."
-      }
+      },
+      "sections_reorder_failed": "Nie udało się zmienić kolejności sekcji"
     },
     "people": {
       "success": {
@@ -3641,7 +3642,8 @@
     },
     "status": {
       "active": "Aktywny",
-      "archived": "Zarchiwizowane"
+      "archived": "Zarchiwizowane",
+      "processing": "Przetwarzanie"
     },
     "provider": {
       "upload": "Prześlij",

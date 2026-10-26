@@ -8,7 +8,7 @@ An MCP key belongs to one organization and has explicit scopes. ClassroomIO veri
 
 ![MCP page showing key and request rate limits](./images/understand-mcp-limits-and-permissions/overview.webp)
 
-Default MCP scopes cover supported draft, course, exercise, certificate, cohort, analytics, audience, and team tools. Some tools read data; others create, update, or publish it. Review the exact tool and scope list in the [MCP reference](https://classroomio.com/docs/developers/mcp) before connecting a client. Use separate keys for separate clients so each can be rotated or revoked independently.
+MCP can read and change supported course, cohort, learner, and organization data within the key's access. Review [MCP access and limits](https://classroomio.com/docs/developers/mcp/access-and-limits) before connecting a client. Use separate keys for separate clients so each can be rotated or revoked independently.
 
 **Automation → MCP** displays the current active-key allowance and per-key read, write, and publish rate limits. Check that live display rather than relying on a fixed number in a guide. Analytics reads do not consume AI credits; other AI-related product actions may have their own credit rules.
 

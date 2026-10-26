@@ -359,7 +359,8 @@
       },
       "info": {
         "conversion_blocked": "Vui lòng sửa các câu hỏi bên dưới để hoàn tất chuyển đổi sang chế độ Công khai."
-      }
+      },
+      "sections_reorder_failed": "Không thể sắp xếp lại các phần"
     },
     "people": {
       "success": {
@@ -3641,7 +3642,8 @@
     },
     "status": {
       "active": "Đang hoạt động",
-      "archived": "Đã lưu trữ"
+      "archived": "Đã lưu trữ",
+      "processing": "Đang xử lý"
     },
     "provider": {
       "upload": "Tải lên",

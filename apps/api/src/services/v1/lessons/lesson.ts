@@ -6,11 +6,13 @@ import type {
 } from '@cio/utils/validation/public-api';
 
 import { createLesson, updateLessonService } from '@cio/core/services/lesson/lesson';
+import { createAssetUsage, deleteAssetUsagesByTargetSlots } from '@cio/db/queries/assets';
+import { db } from '@cio/db/drizzle';
 import { getLessonById } from '@cio/db/queries/lesson';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { assertAutomationActor } from '@api/services/v1/shared';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { resolveLessonVideos } from './videos';
+import { resolveLessonVideos, type ResolvedLessonVideo } from './videos';
 
 async function assertCourseBelongsToOrganization(orgId: string, courseId: string): Promise<void> {
   const courseOrganizationId = await getCourseOrganizationId(courseId);
@@ -27,6 +29,47 @@ async function assertLessonBelongsToCourse(courseId: string, lessonId: string): 
   }
 }
 
+const LESSON_VIDEO_SLOT = 'lesson_video';
+
+/**
+ * Record which assets a lesson's videos use, the way the dashboard's attach
+ * does. Without this the media library reports an uploaded video as attached
+ * nowhere, and nothing can tell that deleting the asset would break a lesson.
+ *
+ * Replaces the lesson's video slots wholesale, so a video dropped from the
+ * payload stops being counted as used. The replacement runs in one
+ * transaction: a failed insert after the delete would otherwise leave the
+ * lesson tracked as using nothing at all.
+ */
+async function recordLessonVideoUsage(
+  orgId: string,
+  actorId: string,
+  lessonId: string,
+  videos: ResolvedLessonVideo[]
+): Promise<void> {
+  await db.transaction(async (tx) => {
+    await deleteAssetUsagesByTargetSlots('lesson', lessonId, [LESSON_VIDEO_SLOT], tx);
+
+    for (const [position, video] of videos.entries()) {
+      if (!video.assetId) continue;
+
+      await createAssetUsage(
+        {
+          organizationId: orgId,
+          assetId: video.assetId,
+          targetType: 'lesson',
+          targetId: lessonId,
+          slotType: LESSON_VIDEO_SLOT,
+          slotKey: null,
+          position,
+          createdByProfileId: actorId
+        },
+        tx
+      );
+    }
+  });
+}
+
 export async function createPublicApiLessonService(
   orgId: string,
   actorId: string | null,
@@ -38,7 +81,7 @@ export async function createPublicApiLessonService(
 
   const videos = payload.videos?.length ? await resolveLessonVideos(orgId, actorId, payload.videos) : undefined;
 
-  return createLesson(params.courseId, {
+  const lesson = await createLesson(params.courseId, {
     title: payload.title,
     courseId: params.courseId,
     order: payload.order,
@@ -47,6 +90,12 @@ export async function createPublicApiLessonService(
     public: payload.public,
     ...(videos ? { videos } : {})
   });
+
+  if (videos) {
+    await recordLessonVideoUsage(orgId, actorId, lesson.id, videos);
+  }
+
+  return lesson;
 }
 
 export async function updatePublicApiLessonService(
@@ -61,11 +110,17 @@ export async function updatePublicApiLessonService(
 
   const videos = payload.videos ? await resolveLessonVideos(orgId, actorId, payload.videos) : undefined;
 
-  return updateLessonService(params.lessonId, {
+  const lesson = await updateLessonService(params.lessonId, {
     title: payload.title,
     order: payload.order,
     isUnlocked: payload.isUnlocked,
     public: payload.public,
     ...(videos ? { videos } : {})
   });
+
+  if (videos) {
+    await recordLessonVideoUsage(orgId, actorId, params.lessonId, videos);
+  }
+
+  return lesson;
 }

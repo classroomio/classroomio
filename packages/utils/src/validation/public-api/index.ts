@@ -32,6 +32,8 @@ export * from './course-template';
 export * from './course-template-responses';
 export * from './email-template';
 export * from './email-template-responses';
+export * from './landing-page';
+export * from './landing-page-responses';
 export * from './exercise-template';
 export * from './lesson';
 export * from './pagination';

@@ -359,7 +359,8 @@
       },
       "info": {
         "conversion_blocked": "Beantworten Sie die folgenden Fragen, um die Umstellung auf öffentlich abzuschließen."
-      }
+      },
+      "sections_reorder_failed": "Abschnitte konnten nicht neu angeordnet werden"
     },
     "people": {
       "success": {
@@ -3641,7 +3642,8 @@
     },
     "status": {
       "active": "Aktiv",
-      "archived": "Archiviert"
+      "archived": "Archiviert",
+      "processing": "Wird verarbeitet"
     },
     "provider": {
       "upload": "Hochladen",

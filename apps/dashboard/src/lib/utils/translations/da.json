@@ -359,7 +359,8 @@
       },
       "info": {
         "conversion_blocked": "Ret spørgsmålene nedenfor for at fuldføre konverteringen til Offentlig."
-      }
+      },
+      "sections_reorder_failed": "Kunne ikke omarrangere sektioner"
     },
     "people": {
       "success": {
@@ -3641,7 +3642,8 @@
     },
     "status": {
       "active": "Aktiv",
-      "archived": "Arkiveret"
+      "archived": "Arkiveret",
+      "processing": "Behandler"
     },
     "provider": {
       "upload": "Upload",
