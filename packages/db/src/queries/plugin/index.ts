@@ -2,8 +2,4 @@ export * from './plugin';
 export * from './publisher';
 export * from './installation';
 export * from './grants';
-export * from './credentials';
-export * from './storage';
 export * from './audit';
-export * from './launch-code';
-export * from './events';

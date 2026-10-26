@@ -47,14 +47,7 @@ import {
   pluginVersion,
   pluginInstallation,
   pluginGrant,
-  pluginCredential,
-  pluginBackendClient,
-  pluginStorage,
-  pluginAuditEvent,
-  pluginLaunchCode,
-  pluginEventSubscription,
-  pluginEventOutbox,
-  pluginEventDelivery
+  pluginAuditEvent
 } from './schema';
 
 import { relations } from 'drizzle-orm/relations';
@@ -562,8 +555,7 @@ export const pluginRelations = relations(plugin, ({ one, many }) => ({
     references: [pluginPublisher.id]
   }),
   versions: many(pluginVersion),
-  installations: many(pluginInstallation),
-  backendClients: many(pluginBackendClient)
+  installations: many(pluginInstallation)
 }));
 
 export const pluginVersionRelations = relations(pluginVersion, ({ one, many }) => ({
@@ -596,11 +588,7 @@ export const pluginInstallationRelations = relations(pluginInstallation, ({ one,
     references: [profile.id]
   }),
   grants: many(pluginGrant),
-  credentials: many(pluginCredential),
-  storage: many(pluginStorage),
-  auditEvents: many(pluginAuditEvent),
-  launchCodes: many(pluginLaunchCode),
-  eventSubscriptions: many(pluginEventSubscription)
+  auditEvents: many(pluginAuditEvent)
 }));
 
 export const pluginGrantRelations = relations(pluginGrant, ({ one }) => ({
@@ -611,27 +599,6 @@ export const pluginGrantRelations = relations(pluginGrant, ({ one }) => ({
   grantedBy: one(profile, {
     fields: [pluginGrant.grantedByProfileId],
     references: [profile.id]
-  })
-}));
-
-export const pluginCredentialRelations = relations(pluginCredential, ({ one }) => ({
-  installation: one(pluginInstallation, {
-    fields: [pluginCredential.installationId],
-    references: [pluginInstallation.id]
-  })
-}));
-
-export const pluginBackendClientRelations = relations(pluginBackendClient, ({ one }) => ({
-  plugin: one(plugin, {
-    fields: [pluginBackendClient.pluginId],
-    references: [plugin.id]
-  })
-}));
-
-export const pluginStorageRelations = relations(pluginStorage, ({ one }) => ({
-  installation: one(pluginInstallation, {
-    fields: [pluginStorage.installationId],
-    references: [pluginInstallation.id]
   })
 }));
 
@@ -647,47 +614,5 @@ export const pluginAuditEventRelations = relations(pluginAuditEvent, ({ one }) =
   actor: one(profile, {
     fields: [pluginAuditEvent.actorProfileId],
     references: [profile.id]
-  })
-}));
-
-export const pluginLaunchCodeRelations = relations(pluginLaunchCode, ({ one }) => ({
-  installation: one(pluginInstallation, {
-    fields: [pluginLaunchCode.installationId],
-    references: [pluginInstallation.id]
-  }),
-  user: one(profile, {
-    fields: [pluginLaunchCode.userId],
-    references: [profile.id]
-  }),
-  organization: one(organization, {
-    fields: [pluginLaunchCode.organizationId],
-    references: [organization.id]
-  })
-}));
-
-export const pluginEventSubscriptionRelations = relations(pluginEventSubscription, ({ one, many }) => ({
-  installation: one(pluginInstallation, {
-    fields: [pluginEventSubscription.installationId],
-    references: [pluginInstallation.id]
-  }),
-  deliveries: many(pluginEventDelivery)
-}));
-
-export const pluginEventOutboxRelations = relations(pluginEventOutbox, ({ one, many }) => ({
-  organization: one(organization, {
-    fields: [pluginEventOutbox.organizationId],
-    references: [organization.id]
-  }),
-  deliveries: many(pluginEventDelivery)
-}));
-
-export const pluginEventDeliveryRelations = relations(pluginEventDelivery, ({ one }) => ({
-  outboxEvent: one(pluginEventOutbox, {
-    fields: [pluginEventDelivery.outboxEventId],
-    references: [pluginEventOutbox.id]
-  }),
-  subscription: one(pluginEventSubscription, {
-    fields: [pluginEventDelivery.subscriptionId],
-    references: [pluginEventSubscription.id]
   })
 }));
