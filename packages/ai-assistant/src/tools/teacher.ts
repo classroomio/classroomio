@@ -13,6 +13,7 @@ import {
   LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT,
   LANDING_PAGE_SECTION_HTML_AGENT_HINT
 } from './landing-page-html-hint';
+import { BLOCK_RECIPE_TYPES } from './block-recipes';
 
 const ENABLED_QUESTION_TYPE_MAX_ID = Math.max(...ENABLED_QUESTION_TYPE_REGISTRY.map((type) => type.id));
 
@@ -109,8 +110,16 @@ export const updateLessonContentSchema = {
       .string()
       .min(1)
       .describe(
-        'The full lesson HTML content. Use only: h2, h3, p, ul, ol, li, strong, em, blockquote, code, pre, a, and callouts as <div data-callout="info|tip|important|warning|highlight"><p>…</p></div>. Never use any other div, or span, table, img, iframe, script, or style.'
+        'The full lesson HTML content. Use only: h2, h3, p, ul, ol, li, strong, em, blockquote, code, pre, a, and callouts as <div data-callout="info|tip|important|warning|highlight"><p>…</p></div>. Never use any other div, or span, table, img, iframe, script, or style, except the exact markup that get_block_recipe returns for a block type.'
       )
+  })
+};
+
+export const getBlockRecipeSchema = {
+  description:
+    'Get the exact markup for a lesson-body block type whose recipe is not spelled out in the system prompt (see the block type list there). Call this once per distinct block type, right before its first use in update_lesson_content. Treat the result as a template: replace any placeholder or example content with values that fit the lesson, and emit only the final HTML fragment — never the recipe\'s prose or its "Example:" line, and never write this markup from memory.',
+  parameters: z.object({
+    blockType: z.enum(BLOCK_RECIPE_TYPES).describe('The block type to fetch markup for.')
   })
 };
 

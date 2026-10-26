@@ -1,3 +1,4 @@
+import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type AudienceImportResult,
@@ -47,6 +48,8 @@ import { db } from '@cio/db/drizzle';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 import { getWelcomeSessionIcs } from '../course/session-invite';
+import type { TEventSource } from '@cio/core/services/posthog';
+import { captureLearnerInvited, captureLearnersEnrolled } from '@api/services/product-events';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ORG_INVITE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
@@ -131,7 +134,8 @@ async function enrollAudienceStudentProfilesInCourses(
   organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>,
   profileIds: string[],
   courseIds: string[],
-  shouldSendEmail: boolean
+  shouldSendEmail: boolean,
+  source: TEventSource
 ): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
   if (courseIds.length === 0 || profileIds.length === 0) {
     return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
@@ -162,7 +166,7 @@ async function enrollAudienceStudentProfilesInCourses(
   const alreadyEnrolled = pairs.length - toInsert.length;
 
   if (toInsert.length > 0) {
-    await addGroupMembers(
+    const enrolledMembers = await addGroupMembers(
       toInsert.map((p) => ({
         groupId: p.groupId,
         roleId: ROLE.STUDENT,
@@ -172,6 +176,7 @@ async function enrollAudienceStudentProfilesInCourses(
     );
 
     await invalidateOrgStats(orgId);
+    captureLearnersEnrolled(enrolledMembers, 'audience', source);
   }
 
   if (validProfiles.length > 0) {
@@ -229,7 +234,9 @@ async function enrollAudienceStudentProfilesInCohorts(
   orgId: string,
   profileIds: string[],
   cohortIds: string[],
-  shouldSendEmail: boolean
+  shouldSendEmail: boolean,
+  source: TEventSource,
+  actorProfileId: string | null = null
 ): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
   if (cohortIds.length === 0 || profileIds.length === 0) {
     return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
@@ -258,7 +265,7 @@ async function enrollAudienceStudentProfilesInCohorts(
   const alreadyEnrolled = pairs.length - toInsert.length;
 
   if (toInsert.length > 0) {
-    await Promise.all(
+    const addedCohortMembers = await Promise.all(
       toInsert.map((pair) =>
         addCohortMember({
           cohortId: pair.cohortId,
@@ -268,6 +275,16 @@ async function enrollAudienceStudentProfilesInCohorts(
         })
       )
     );
+
+    for (const cohortMember of addedCohortMembers) {
+      await emitCohortMemberWebhookEvent(
+        'cohort.member.added',
+        orgId,
+        cohortMember.cohortId,
+        cohortMember,
+        actorProfileId
+      );
+    }
   }
 
   // Enrols every assigned profile, not only new memberships, so re-running repairs
@@ -281,10 +298,11 @@ async function enrollAudienceStudentProfilesInCohorts(
       profileId,
       email: profileEmailMap.get(profileId) || undefined
     }));
-    const enrolledCount = await enrollUsersInCourseGroups(groupIds, users, ROLE.STUDENT);
+    const enrolledMembers = await enrollUsersInCourseGroups(groupIds, users, ROLE.STUDENT);
 
-    if (enrolledCount > 0) {
+    if (enrolledMembers.length > 0) {
       await invalidateOrgStats(orgId);
+      captureLearnersEnrolled(enrolledMembers, 'cohort', source);
     }
 
     await ensureComplianceEnrollmentRecordsForProfiles(cohortCourseIds, validProfiles);
@@ -453,7 +471,12 @@ async function createStudentOrgInvitesAndSendEmails(input: {
   return { created: emails.length, emailsSent, emailsFailed };
 }
 
-export async function importAudienceMembers(orgId: string, data: TImportAudienceMembers, invitedByProfileId: string) {
+export async function importAudienceMembers(
+  orgId: string,
+  data: TImportAudienceMembers,
+  invitedByProfileId: string,
+  source: TEventSource = 'dashboard'
+) {
   const organization = await getOrganizationById(orgId);
   if (!organization || !organization.siteName) {
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
@@ -559,14 +582,17 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     organization,
     existingStudentProfileIds,
     courseIds,
-    data.sendEmail
+    data.sendEmail,
+    source
   );
   const assignedToCohorts = await enrollAudienceStudentProfilesInCohorts(
     organization,
     orgId,
     existingStudentProfileIds,
     cohortIds,
-    data.sendEmail
+    data.sendEmail,
+    source,
+    invitedByProfileId
   );
 
   let imported = 0;
@@ -590,6 +616,10 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
       });
       insertedMembers = await createOrganizationMembers(newMemberRows, tx);
     });
+
+    for (const insertedMember of insertedMembers) {
+      await emitOrganizationMemberWebhookEvent('organization.member.added', orgId, insertedMember, invitedByProfileId);
+    }
 
     if (studentMilestoneNotification) {
       notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
@@ -615,8 +645,9 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
         const profiles = await getProfilesByEmails(addedEmails);
         if (profiles.length > 0) {
           const users = profiles.map((p) => ({ profileId: p.id, email: p.email ?? undefined }));
-          await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
+          const enrolledMembers = await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
           await invalidateOrgStats(orgId);
+          captureLearnersEnrolled(enrolledMembers, 'audience', source);
           await ensureComplianceEnrollmentRecordsForProfiles(
             courseIds,
             profiles.map((profile) => profile.id)
@@ -633,7 +664,9 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
           orgId,
           profiles.map((profile) => profile.id),
           cohortIds,
-          false
+          false,
+          source,
+          invitedByProfileId
         );
       }
     }
@@ -669,6 +702,16 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     pendingEmailsSent = pendingOutcome.emailsSent;
     pendingEmailsFailed = pendingOutcome.emailsFailed;
   }
+
+  captureLearnerInvited({
+    profileId: invitedByProfileId,
+    orgId,
+    target: cohortIds.length > 0 ? 'cohort' : 'org',
+    inviteType: 'email',
+    count: imported + pendingStudentEmails.length,
+    cohortId: cohortIds.length === 1 ? cohortIds[0] : undefined,
+    source
+  });
 
   return {
     ...buildImportResult(rows, {
@@ -872,7 +915,12 @@ export async function revokeAudiencePendingInvite(
   return { revoked: true };
 }
 
-export async function assignAudienceToCourses(orgId: string, data: TAssignAudienceCourses) {
+export async function assignAudienceToCourses(
+  orgId: string,
+  data: TAssignAudienceCourses,
+  source: TEventSource = 'dashboard',
+  actorProfileId: string | null = null
+) {
   const organization = await getOrganizationById(orgId);
   if (!organization) {
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
@@ -895,7 +943,8 @@ export async function assignAudienceToCourses(orgId: string, data: TAssignAudien
       organization,
       data.profileIds,
       courseIds,
-      data.sendEmail
+      data.sendEmail,
+      source
     );
   }
 
@@ -910,7 +959,9 @@ export async function assignAudienceToCourses(orgId: string, data: TAssignAudien
       orgId,
       data.profileIds,
       cohortIds,
-      data.sendEmail
+      data.sendEmail,
+      source,
+      actorProfileId
     );
   }
 

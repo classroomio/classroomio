@@ -1,3 +1,4 @@
+import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
@@ -74,10 +75,14 @@ const ORG_COURSES_PAGE_SIZE = 6;
 export async function createOrg(profileId: string, data: { name: string; siteName: string }) {
   try {
     // Reuse existing function from onboarding service
-    return await createOrganizationWithOwner(profileId, {
-      orgName: data.name,
-      siteName: data.siteName
-    });
+    return await createOrganizationWithOwner(
+      profileId,
+      {
+        orgName: data.name,
+        siteName: data.siteName
+      },
+      'add_org'
+    );
   } catch (error) {
     // Re-throw AppError as-is
     if (error instanceof AppError) {
@@ -251,6 +256,8 @@ export async function removeAudienceMember(orgId: string, memberId: number, remo
     if (!deleted) {
       throw new AppError('Audience member not found', ErrorCodes.ORG_AUDIENCE_REMOVE_FAILED, 404);
     }
+
+    await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 
     if (deleted.email && removedByProfileId) {
       const targetEmail = deleted.email.toLowerCase();
@@ -837,7 +844,16 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       }
     }
 
-    const organization = await updateOrganization(orgId, data);
+    let updateData = data;
+
+    if (data.customization) {
+      const apps = { ...data.customization.apps };
+      Reflect.deleteProperty(apps, 'poll');
+      const customization = { ...data.customization, apps };
+      updateData = { ...data, customization };
+    }
+
+    const organization = await updateOrganization(orgId, updateData);
     if (!organization) {
       throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
     }
@@ -975,6 +991,8 @@ export async function removeTeamMember(orgId: string, memberId: number, removedB
     if (!deleted) {
       throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
     }
+
+    await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 
     if (deleted.email && removedByProfileId) {
       const targetEmail = deleted.email.toLowerCase();

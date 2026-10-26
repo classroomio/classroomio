@@ -461,7 +461,8 @@
       "included": "Included",
       "untitled_lesson": "Untitled lesson",
       "format": "Format"
-    }
+    },
+    "back": "Back"
   },
   "compliance": {
     "title": "Compliance",
@@ -1414,6 +1415,11 @@
     "common": {
       "not_available": "N/A"
     },
+    "upload": {
+      "videos": "Upload videos",
+      "documents": "Upload documents",
+      "more_options": "More upload options"
+    },
     "storage": {
       "total_bytes": "Total Storage",
       "internal_bytes": "Internal Storage",
@@ -1454,7 +1460,8 @@
     },
     "status": {
       "active": "Active",
-      "archived": "Archived"
+      "archived": "Archived",
+      "processing": "Processing"
     },
     "table": {
       "title": "Title",
@@ -2119,7 +2126,6 @@
         },
         "apps": {
           "title": "Apps",
-          "poll": "Poll",
           "live_comment": "Live comments"
         },
         "auth_background": {
@@ -3598,34 +3604,6 @@
           "load_more_btn": "Load more",
           "comment_error": "Failed to post comment. Please try again."
         },
-        "polls": {
-          "title": "Poll",
-          "active_polls": "Active Polls",
-          "expired_polls": "Expired Polls",
-          "loading": "Loading...",
-          "no_polls": "No polls to display"
-        },
-        "poll": {
-          "voted": "Voted",
-          "created_by": "Created by",
-          "status": "Status",
-          "draft": "Draft",
-          "publish": "Publish",
-          "expiration": "Expiration",
-          "total_voted": "Total Votes",
-          "responses": "Responses",
-          "expires": "Expires",
-          "today": "Today",
-          "back": "Back",
-          "result": "Result",
-          "delete": "Delete",
-          "create_poll": "Create poll",
-          "question": "Question",
-          "options": "Options",
-          "option_label": "Option Label",
-          "cancel": "Cancel",
-          "poll_question": "Poll Question"
-        },
         "version_history": {
           "title": "Version history",
           "fetch_more_versions": "Fetch more versions",
@@ -4899,6 +4877,7 @@
     "title": "Automation",
     "subtitle": "Connect MCP clients now, with Zapier and the public API following on the same org-scoped key system.",
     "coming_soon": "Coming soon",
+    "read_docs": "Read docs",
     "permissions": {
       "disabled_title": "Read-only access",
       "disabled_description": "Only organization admins can create, rotate, or revoke automation keys. Teachers can review the setup instructions here."
@@ -4981,6 +4960,8 @@
       "event_groups": {
         "organization": "Organization",
         "course": "Courses",
+        "cohort": "Cohorts",
+        "compliance": "Compliance",
         "learning": "Learning progress"
       },
       "events": {
@@ -4997,7 +4978,18 @@
         "course_submission_created": "An exercise submission is created",
         "course_submission_status_changed": "A submission status changes, such as when it is graded",
         "lesson_completion_updated": "A lesson is marked complete or reset",
-        "exercise_completion_updated": "An exercise is completed or reset"
+        "exercise_completion_updated": "An exercise is completed or reset",
+        "compliance_record_status_changed": "A student's compliance status changes",
+        "compliance_record_waived": "A student's compliance requirement is waived",
+        "organization_member_added": "A person joins the organization",
+        "organization_member_removed": "A person is removed from the organization",
+        "organization_member_updated": "A person's role or status changes",
+        "course_published": "A course is published",
+        "course_unpublished": "A course is unpublished",
+        "cohort_member_added": "A person is added to a cohort",
+        "cohort_member_removed": "A person is removed from a cohort",
+        "lesson_session_scheduled": "A live session is scheduled or moved",
+        "course_payment_request_created": "A student requests to pay for a course"
       },
       "deliveries": {
         "title": "Deliveries",
@@ -5100,8 +5092,7 @@
         "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
         "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",
         "opencode_description": "Add this to `opencode.json` in your project root or `~/.config/opencode/opencode.json`."
-      },
-      "view_docs": "View Docs"
+      }
     },
     "api": {
       "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
@@ -5124,8 +5115,7 @@
       "setup": {
         "title": "Quick start",
         "description": "Use your API key as a Bearer token on every request. Replace the placeholder with a key from above, or paste the secret immediately after you generate one."
-      },
-      "view_docs": "View Docs"
+      }
     },
     "zapier": {
       "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
@@ -5239,6 +5229,7 @@
     "update": "Update",
     "update_failed": "Update failed",
     "media_manager": {
+      "video_added": "Video added to your library",
       "list_failed": "Failed to load media assets",
       "storage_failed": "Failed to load storage summary",
       "create_failed": "Failed to create media asset",
@@ -5273,17 +5264,6 @@
     "lesson_video": {
       "generate_1080_completed": "1080p rendition added",
       "generate_1080_failed": "Could not generate 1080p rendition"
-    },
-    "poll": {
-      "error": {
-        "creating_poll": "An error occurred while creating poll",
-        "updating_poll": "An error occurred while updating poll status",
-        "submitting_poll": "An error occurred while submitting poll"
-      },
-      "info": {
-        "not_published": "Poll is not published yet",
-        "vote_once": "You can only vote once"
-      }
     },
     "exercise": {
       "validation_errors": "Please fix all validation errors before saving.",
@@ -5343,7 +5323,8 @@
       },
       "info": {
         "conversion_blocked": "Fix the questions below to complete conversion to Public."
-      }
+      },
+      "sections_reorder_failed": "Could not reorder sections"
     },
     "course": {
       "success": {

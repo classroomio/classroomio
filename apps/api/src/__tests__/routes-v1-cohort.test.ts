@@ -218,7 +218,8 @@ describe('v1CohortsRouter', () => {
       'org-1',
       'actor-1',
       { cohortId: COHORT_ID },
-      { members: [{ email: 'student@example.com', roleId: 3 }] }
+      { members: [{ email: 'student@example.com', roleId: 3 }] },
+      expect.any(String)
     );
     expect(updated.status).toBe(200);
     expect(updatePublicApiCohortMemberService).toHaveBeenCalledWith(
@@ -268,7 +269,8 @@ describe('v1CohortsRouter', () => {
       'org-1',
       'actor-1',
       { cohortId: COHORT_ID },
-      { courseId: COURSE_ID }
+      { courseId: COURSE_ID },
+      expect.any(String)
     );
     expect(removed.status).toBe(200);
     expect(removePublicApiCohortCourseService).toHaveBeenCalledWith('org-1', 'actor-1', {

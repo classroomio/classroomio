@@ -36,7 +36,8 @@
         "title": "Otwierasz swoją akademię…",
         "caption": "Przygotowujemy Twoje kursy, uczniów i ustawienia."
       }
-    }
+    },
+    "back": "Powrót"
   },
   "validations": {
     "generic": {
@@ -358,7 +359,8 @@
       },
       "info": {
         "conversion_blocked": "Popraw poniższe pytania, aby zakończyć konwersję do wersji publicznej."
-      }
+      },
+      "sections_reorder_failed": "Nie udało się zmienić kolejności sekcji"
     },
     "people": {
       "success": {
@@ -394,18 +396,8 @@
       "passed_requires_points": "Ukończenie przez zaliczenie wymaga co najmniej jednego dostępnego punktu.",
       "draft_restored": "Przywróciliśmy niezapisane zmiany, które pozostawiłeś"
     },
-    "poll": {
-      "info": {
-        "not_published": "Ankieta nie została jeszcze opublikowana",
-        "vote_once": "Można głosować tylko raz"
-      },
-      "error": {
-        "creating_poll": "Wystąpił błąd podczas tworzenia ankiety",
-        "updating_poll": "Wystąpił błąd podczas aktualizowania stanu ankiety",
-        "submitting_poll": "Wystąpił błąd podczas przesyłania ankiety"
-      }
-    },
     "media_manager": {
+      "video_added": "Film dodany do biblioteki",
       "list_failed": "Nie udało się załadować zasobów multimedialnych",
       "storage_failed": "Nie udało się wczytać podsumowania miejsca na dane",
       "create_failed": "Nie udało się utworzyć zasobu multimedialnego",
@@ -1818,34 +1810,6 @@
           },
           "by_author": "Autor: {name}",
           "empty": "Brak wersji"
-        },
-        "poll": {
-          "voted": "Zagłosowano",
-          "created_by": "Stworzony przez",
-          "status": "Status",
-          "draft": "Wersja robocza",
-          "publish": "Publikuj",
-          "expiration": "Wygaśnięcie",
-          "total_voted": "Całkowita liczba głosów",
-          "responses": "Odpowiedzi",
-          "expires": "Wygasa",
-          "today": "Dzisiaj",
-          "back": "Powrót",
-          "result": "Wynik",
-          "delete": "Usuń",
-          "create_poll": "Utwórz ankietę",
-          "question": "Pytanie",
-          "options": "Opcje",
-          "option_label": "Etykieta opcji",
-          "cancel": "Anuluj",
-          "poll_question": "Pytanie w ankiecie"
-        },
-        "polls": {
-          "title": "Ankieta",
-          "active_polls": "Aktywne ankiety",
-          "expired_polls": "Wygasłe ankiety",
-          "loading": "Ładowanie...",
-          "no_polls": "Brak ankiet do wyświetlenia"
         },
         "comments": {
           "title": "Komentarze",
@@ -3371,7 +3335,6 @@
         "save": "Zapisz zmiany",
         "apps": {
           "title": "Aplikacje",
-          "poll": "Ankieta",
           "live_comment": "Komentarze na żywo"
         },
         "course": {
@@ -3681,7 +3644,8 @@
     },
     "status": {
       "active": "Aktywny",
-      "archived": "Zarchiwizowane"
+      "archived": "Zarchiwizowane",
+      "processing": "Przetwarzanie"
     },
     "provider": {
       "upload": "Prześlij",
@@ -3714,6 +3678,11 @@
         "other": "Inne"
       },
       "refresh": "Odświeżać"
+    },
+    "upload": {
+      "videos": "Prześlij filmy",
+      "documents": "Prześlij dokumenty",
+      "more_options": "Więcej opcji przesyłania"
     },
     "storage": {
       "total_bytes": "Całkowita pamięć",
@@ -4986,6 +4955,7 @@
     "title": "Automatyzacja",
     "subtitle": "Połącz teraz klientów MCP, korzystając z Zapiera i publicznego interfejsu API w tym samym systemie kluczy o zasięgu organizacji.",
     "coming_soon": "Już wkrótce",
+    "read_docs": "Przeczytaj dokumentację",
     "mcp": {
       "setup": {
         "title": "Konfiguracja klienta",
@@ -5018,8 +4988,7 @@
         "rate_limits_description": "Żądania odczytu/zapisu/publikowania dozwolone na minutę.",
         "used_label": "Używane:"
       },
-      "page_subtitle": "Połącz narzędzia AI z ClassroomIO za pomocą kluczy o zasięgu organizacji, które możesz w dowolnym momencie obrócić.",
-      "view_docs": "Zobacz dokumentację"
+      "page_subtitle": "Połącz narzędzia AI z ClassroomIO za pomocą kluczy o zasięgu organizacji, które możesz w dowolnym momencie obrócić."
     },
     "api": {
       "subtitle": "Zarządzaj kluczami API, aby integrować się z publicznym API ClassroomIO.",
@@ -5042,8 +5011,7 @@
       "setup": {
         "title": "Szybki start",
         "description": "Używaj klucza API jako tokena Bearer w każdym żądaniu. Zamień symbol zastępczy na klucz z powyższej listy lub wklej sekret zaraz po wygenerowaniu."
-      },
-      "view_docs": "Zobacz dokumentację"
+      }
     },
     "keys": {
       "active": "Aktywny",
@@ -5165,7 +5133,9 @@
       "event_groups": {
         "organization": "Organizacja",
         "course": "Kursy",
-        "learning": "Postępy w nauce"
+        "learning": "Postępy w nauce",
+        "cohort": "Kohorty",
+        "compliance": "Zgodność"
       },
       "events": {
         "organization_invite_created": "Wysłano zaproszenie do zespołu",
@@ -5181,7 +5151,18 @@
         "course_submission_created": "Utworzono zgłoszenie ćwiczenia",
         "course_submission_status_changed": "Zmienia się status zgłoszenia, na przykład po jego ocenieniu",
         "lesson_completion_updated": "Lekcja została oznaczona jako ukończona lub zresetowana",
-        "exercise_completion_updated": "Ćwiczenie zostało ukończone lub zresetowane"
+        "exercise_completion_updated": "Ćwiczenie zostało ukończone lub zresetowane",
+        "compliance_record_status_changed": "Zmienia się status zgodności studenta",
+        "compliance_record_waived": "Wymóg zgodności studenta zostaje uchylony",
+        "organization_member_added": "Osoba dołącza do organizacji",
+        "organization_member_removed": "Osoba zostaje usunięta z organizacji",
+        "organization_member_updated": "Zmienia się rola lub status osoby",
+        "course_published": "Kurs zostaje opublikowany",
+        "course_unpublished": "Publikacja kursu zostaje wycofana",
+        "cohort_member_added": "Osoba zostaje dodana do kohorty",
+        "cohort_member_removed": "Osoba zostaje usunięta z kohorty",
+        "lesson_session_scheduled": "Sesja na żywo zostaje zaplanowana lub przesunięta",
+        "course_payment_request_created": "Student prosi o możliwość opłacenia kursu"
       },
       "deliveries": {
         "title": "Dostarczenia",

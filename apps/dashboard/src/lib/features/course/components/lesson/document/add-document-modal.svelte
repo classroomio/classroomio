@@ -164,36 +164,16 @@
 
       const lessonDocumentPosition = Array.isArray(lessonApi.lesson?.documents) ? lessonApi.lesson.documents.length : 0;
 
-      let assetId: string | undefined;
-      if (lessonId) {
-        const asset = await mediaApi.registerUploadedLessonDocument({
-          lessonId,
-          position: lessonDocumentPosition,
-          fileKey,
-          documentUrl: presignedUrls[fileKey],
-          fileName: selectedFile.name,
-          mimeType: selectedFile.type,
-          byteSize: selectedFile.size
-        });
-        assetId = asset?.id;
-      } else {
-        const asset = await mediaApi.createAsset({
-          kind: 'document',
-          provider: 'upload',
-          storageProvider: 's3',
-          storageKey: fileKey,
-          sourceUrl: presignedUrls[fileKey],
-          mimeType: selectedFile.type,
-          byteSize: selectedFile.size,
-          title: selectedFile.name,
-          isExternal: false,
-          metadata: {
-            fileName: selectedFile.name,
-            createdAt: new Date().toISOString()
-          }
-        });
-        assetId = asset?.id;
-      }
+      const asset = await mediaApi.registerUploadedDocument({
+        lessonId,
+        position: lessonDocumentPosition,
+        fileKey,
+        documentUrl: presignedUrls[fileKey],
+        fileName: selectedFile.name,
+        mimeType: selectedFile.type,
+        byteSize: selectedFile.size
+      });
+      const assetId = asset?.id;
 
       const document = {
         type: getFileType(selectedFile),
@@ -204,7 +184,9 @@
         assetId
       };
 
-      lessonApi.updateLessonState('documents', [document], { append: true });
+      if (lessonId) {
+        lessonApi.updateLessonState('documents', [document], { append: true });
+      }
 
       uploadedDocument = document;
       lessonDocUpload.update((state) => ({

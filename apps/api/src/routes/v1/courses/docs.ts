@@ -8,6 +8,7 @@ export const COURSE_MEMBER_RULE =
   'the key creator must be a course member (directly or through a program) or an org admin';
 export const COURSE_TEAM_RULE = 'the key creator must be a course tutor/admin or an org admin';
 export const ANY_KEY_RULE = 'any key with the public_api:* scope may call it';
+export const ORG_TEAM_RULE = 'the key creator must be an org admin or tutor';
 
 const ROLE_CHECKED_NOTE = "The key creator's role is checked on every call, so losing access ends it for the key too.";
 
@@ -44,6 +45,11 @@ export const contentForbiddenResponses = {
     `${TEAM_FORBIDDEN}, or ${COMMENTS_OFF}. The comment's author, a course tutor/admin or an org admin may delete it`
   )
 };
+
+export const cloneForbiddenResponse = forbidden(
+  'course:write',
+  'the automation actor is not an org admin or tutor, or the course is a template (copy templates with Use template)'
+);
 
 export const exerciseForbiddenResponses = {
   read: forbidden('course:exercise:read', TEAM_FORBIDDEN),

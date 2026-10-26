@@ -53,6 +53,10 @@ vi.mock('@api/services/v1/team', () => ({
   listTeamService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
 }));
 
+vi.mock('@api/services/v1/organization/email-templates', () => ({
+  listEmailTemplatesService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
 vi.mock('@api/services/v1/courses/members', () => ({
   listCourseMembersService: vi.fn().mockResolvedValue({ items: [], page: 1, limit: 20, total: 0, totalPages: 0 })
 }));
@@ -86,7 +90,9 @@ const MCP_DEFAULT_SCOPES = [
   'audience:read',
   'audience:write',
   'team:read',
-  'team:write'
+  'team:write',
+  'organization:read',
+  'organization:write'
 ];
 
 const app = new Hono().route('/public-api/v1', v1Router);
@@ -94,7 +100,7 @@ const app = new Hono().route('/public-api/v1', v1Router);
 const request = (path: string) =>
   app.request(`/public-api/v1${path}`, { headers: { Authorization: 'Bearer cio_mcp_test' } });
 
-describe('default MCP key across the cohort, course member, certificate, exercise, submission, audience, and team APIs', () => {
+describe('default MCP key across the cohort, course member, certificate, exercise, submission, audience, team, and organization APIs', () => {
   beforeEach(() => {
     mocks.complete.mockReset().mockResolvedValue(undefined);
     mocks.authenticate.mockResolvedValue({
@@ -114,7 +120,8 @@ describe('default MCP key across the cohort, course member, certificate, exercis
     [`/courses/${COURSE_ID}/exercises`, 'list_course_exercises'],
     [`/courses/${COURSE_ID}/submissions`, 'list_course_submissions'],
     ['/audience', 'list_audience_members'],
-    ['/team', 'list_team_members']
+    ['/team', 'list_team_members'],
+    ['/organization/email-templates', 'list_email_templates']
   ])('reaches %s and meters it as %s', async (path, toolName) => {
     const response = await request(path);
 

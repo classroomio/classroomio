@@ -1,6 +1,6 @@
 # The HLS encoder. Runs one job and exits, with no ClassroomIO credentials: it
 # receives a presigned source URL and a job token scoped to a single asset.
-FROM node:20-bookworm-slim AS build
+FROM node:24.22.1-bookworm-slim AS build
 
 WORKDIR /app
 COPY apps/encoder/package.json ./package.json
@@ -10,7 +10,7 @@ COPY apps/encoder/tsconfig.json ./tsconfig.json
 COPY apps/encoder/src ./src
 RUN npx tsc
 
-FROM node:20-bookworm-slim AS runtime
+FROM node:24.22.1-bookworm-slim AS runtime
 
 # libx264 comes from Debian's ffmpeg build.
 RUN apt-get update \

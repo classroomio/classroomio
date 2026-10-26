@@ -99,7 +99,8 @@ describe('v1 student activity routes', () => {
       'org-1',
       'actor-1',
       { courseId: COURSE_ID, memberId: MEMBER_ID, exerciseId: EXERCISE_ID },
-      payload
+      payload,
+      'public_api'
     );
     expect(await response.json()).toEqual({ success: true, data: { id: 'submission-1' } });
   });

@@ -93,7 +93,6 @@ import {
   toggleOrgLinkInvite
 } from '@api/services/organization/invite';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
-import { orgAdminOrAutomationKeyMiddleware } from '@api/middlewares/org-admin-or-automation-key';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-member-or-automation-key';
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
@@ -572,26 +571,20 @@ export const organizationRouter = new Hono()
   /**
    * POST /organization/courses/reorder
    * Persists the manual display order of organization courses (landing page + public catalog)
-   * Requires authentication and organization administrator privileges (or automation key with `course:write`)
+   * Requires authentication and organization administrator privileges. Automation keys use PUT /public-api/v1/organization/landing-page/featured-courses
    */
-  .post(
-    '/courses/reorder',
-    authOrAutomationKeyMiddleware,
-    orgAdminOrAutomationKeyMiddleware(['course:write']),
-    zValidator('json', ZCourseReorder),
-    async (c) => {
-      try {
-        const { courses } = c.req.valid('json');
-        const orgId = c.get('orgId')!;
+  .post('/courses/reorder', authMiddleware, orgAdminMiddleware, zValidator('json', ZCourseReorder), async (c) => {
+    try {
+      const { courses } = c.req.valid('json');
+      const orgId = c.req.header('cio-org-id')!;
 
-        await reorderOrgCourses(orgId, courses);
+      await reorderOrgCourses(orgId, courses);
 
-        return c.json({ success: true }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to reorder courses');
-      }
+      return c.json({ success: true }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to reorder courses');
     }
-  )
+  })
   /**
    * GET /organization/courses/enrolled
    * Gets enrolled courses for a user in an organization (used in lms)
@@ -1027,7 +1020,7 @@ export const organizationRouter = new Hono()
         const orgId = c.req.header('cio-org-id')!;
         const data = c.req.valid('json');
 
-        const result = await assignAudienceToCourses(orgId, data);
+        const result = await assignAudienceToCourses(orgId, data, 'dashboard', c.get('user')?.id ?? null);
 
         return c.json(
           {

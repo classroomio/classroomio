@@ -37,3 +37,5 @@ export const videoTabs = [
     icon: HardDriveIcon
   }
 ];
+
+export const lessonOnlyVideoTabs = new Set(['library', 'google_drive']);

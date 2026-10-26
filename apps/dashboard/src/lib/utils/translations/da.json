@@ -36,7 +36,8 @@
         "title": "Åbner dit akademi...",
         "caption": "Vi gør dine kurser, elever og indstillinger klar."
       }
-    }
+    },
+    "back": "Tilbage"
   },
   "validations": {
     "generic": {
@@ -358,7 +359,8 @@
       },
       "info": {
         "conversion_blocked": "Ret spørgsmålene nedenfor for at fuldføre konverteringen til Offentlig."
-      }
+      },
+      "sections_reorder_failed": "Kunne ikke omarrangere sektioner"
     },
     "people": {
       "success": {
@@ -394,18 +396,8 @@
       "passed_requires_points": "Gennemførelse ved bestået kræver mindst ét tilgængeligt point.",
       "draft_restored": "Vi har gendannet de ikke-gemte ændringer, du efterlod"
     },
-    "poll": {
-      "info": {
-        "not_published": "Afstemningen er ikke offentliggjort endnu",
-        "vote_once": "Du kan kun stemme én gang"
-      },
-      "error": {
-        "creating_poll": "Der opstod en fejl under oprettelse af afstemning",
-        "updating_poll": "Der opstod en fejl under opdatering af afstemningsstatus",
-        "submitting_poll": "Der opstod en fejl under indsendelse af afstemning"
-      }
-    },
     "media_manager": {
+      "video_added": "Video føjet til dit bibliotek",
       "list_failed": "Kunne ikke indlæse medieaktiver",
       "storage_failed": "Kunne ikke indlæse lageroversigt",
       "create_failed": "Kunne ikke oprette medieaktiv",
@@ -1818,34 +1810,6 @@
             "manual": "Gemt version",
             "publish": "Udgivet"
           }
-        },
-        "poll": {
-          "voted": "Stemte",
-          "created_by": "Skabt af",
-          "status": "Status",
-          "draft": "Udkast",
-          "publish": "Udgiv",
-          "expiration": "Udløb",
-          "total_voted": "Samlet antal stemmer",
-          "responses": "Svar",
-          "expires": "Udløber",
-          "today": "I dag",
-          "back": "Tilbage",
-          "result": "Resultat",
-          "delete": "Slet",
-          "create_poll": "Opret afstemning",
-          "question": "Spørgsmål",
-          "options": "Valgmuligheder",
-          "option_label": "Valgmulighedsetiket",
-          "cancel": "Annuller",
-          "poll_question": "Afstemningsspørgsmål"
-        },
-        "polls": {
-          "title": "Afstemning",
-          "active_polls": "Aktive afstemninger",
-          "expired_polls": "Udløbne afstemninger",
-          "loading": "Indlæser...",
-          "no_polls": "Ingen afstemninger at vise"
         },
         "comments": {
           "title": "Kommentarer",
@@ -3371,7 +3335,6 @@
         "save": "Gem ændringer",
         "apps": {
           "title": "Apps",
-          "poll": "Afstemning",
           "live_comment": "Live kommentarer"
         },
         "course": {
@@ -3681,7 +3644,8 @@
     },
     "status": {
       "active": "Aktiv",
-      "archived": "Arkiveret"
+      "archived": "Arkiveret",
+      "processing": "Behandler"
     },
     "provider": {
       "upload": "Upload",
@@ -3714,6 +3678,11 @@
         "other": "Andet"
       },
       "refresh": "Opfriske"
+    },
+    "upload": {
+      "videos": "Upload videoer",
+      "documents": "Upload dokumenter",
+      "more_options": "Flere uploadmuligheder"
     },
     "storage": {
       "total_bytes": "Samlet opbevaring",
@@ -4986,6 +4955,7 @@
     "title": "Automatisering",
     "subtitle": "Forbind MCP-klienter nu, med Zapier og den offentlige API, der følger på det samme nøglesystem med organisationsomfang.",
     "coming_soon": "Kommer snart",
+    "read_docs": "Læs dokumentation",
     "mcp": {
       "setup": {
         "title": "Klient opsætning",
@@ -5018,8 +4988,7 @@
         "rate_limits_description": "Læs/skriv/publicér anmodninger tilladt pr. minut.",
         "used_label": "Brugt:"
       },
-      "page_subtitle": "Forbind AI-værktøjer til ClassroomIO med organisationsnøgler, du kan rotere når som helst.",
-      "view_docs": "Se dokumentation"
+      "page_subtitle": "Forbind AI-værktøjer til ClassroomIO med organisationsnøgler, du kan rotere når som helst."
     },
     "api": {
       "subtitle": "Administrer API-nøgler til integration med ClassroomIOs offentlige API.",
@@ -5042,8 +5011,7 @@
       "setup": {
         "title": "Hurtig start",
         "description": "Brug din API-nøgle som Bearer-token på hver anmodning. Erstat pladsholderen med en nøgle ovenfor, eller indsæt hemmeligheden lige efter du genererer en."
-      },
-      "view_docs": "Se dokumentation"
+      }
     },
     "keys": {
       "active": "Aktiv",
@@ -5165,7 +5133,9 @@
       "event_groups": {
         "organization": "Organisation",
         "course": "Kurser",
-        "learning": "Læringsfremskridt"
+        "learning": "Læringsfremskridt",
+        "cohort": "Kohorter",
+        "compliance": "Overholdelse"
       },
       "events": {
         "organization_invite_created": "En teaminvitation sendes",
@@ -5181,7 +5151,18 @@
         "course_submission_created": "En opgaveaflevering oprettes",
         "course_submission_status_changed": "Status for en aflevering ændres, f.eks. når den bedømmes",
         "lesson_completion_updated": "En lektion markeres som fuldført eller nulstilles",
-        "exercise_completion_updated": "En opgave fuldføres eller nulstilles"
+        "exercise_completion_updated": "En opgave fuldføres eller nulstilles",
+        "compliance_record_status_changed": "En studerendes overholdelsesstatus ændres",
+        "compliance_record_waived": "En studerendes overholdelseskrav frafaldes",
+        "organization_member_added": "En person tilslutter sig organisationen",
+        "organization_member_removed": "En person fjernes fra organisationen",
+        "organization_member_updated": "En persons rolle eller status ændres",
+        "course_published": "Et kursus udgives",
+        "course_unpublished": "Et kursus afpubliceres",
+        "cohort_member_added": "En person føjes til en kohorte",
+        "cohort_member_removed": "En person fjernes fra en kohorte",
+        "lesson_session_scheduled": "En live-session planlægges eller flyttes",
+        "course_payment_request_created": "En studerende anmoder om at betale for et kursus"
       },
       "deliveries": {
         "title": "Leverancer",

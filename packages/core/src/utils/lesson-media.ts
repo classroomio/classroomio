@@ -71,14 +71,13 @@ function applyCanonicalVideoMetadata(
       thumbnailUrl: asset.thumbnailUrl ?? video.metadata?.thumbnailUrl,
       duration: asset.durationSeconds ?? video.metadata?.duration,
       aspectRatio: asset.aspectRatio ?? video.metadata?.aspectRatio,
-      ...(assetMetadata.format === 'hls' ? { hls: true } : {}),
       ...(typeof assetMetadata.sourceWidth === 'number' ? { sourceWidth: assetMetadata.sourceWidth } : {}),
       ...(typeof assetMetadata.sourceHeight === 'number' ? { sourceHeight: assetMetadata.sourceHeight } : {}),
       ...(Array.isArray(assetMetadata.hlsRenditions) ? { hlsRenditions: assetMetadata.hlsRenditions } : {}),
       ...(typeof assetMetadata.hls1080Status === 'string' ? { hls1080Status: assetMetadata.hls1080Status } : {})
     };
 
-    return {
+    const canonical = {
       ...video,
       type: mapProviderToVideoType(asset.provider),
       key: asset.storageKey ?? video.key,
@@ -86,7 +85,27 @@ function applyCanonicalVideoMetadata(
       fileName: asset.title ?? video.fileName,
       metadata: mergedMetadata
     };
+
+    return asset.hlsManifestKey ? playFromHlsManifest(canonical, asset.hlsManifestKey) : canonical;
   });
+}
+
+/**
+ * Point a video at its HLS manifest instead of its source file.
+ *
+ * @returns the video with no `key`, so {@link enrichLessonWithPresignedUrls}
+ * leaves its link alone rather than replacing it with a signed source URL.
+ */
+function playFromHlsManifest(video: LessonVideo, manifestKey: string): LessonVideo {
+  const { key: _sourceKey, ...withoutSourceKey } = video;
+  // `hls` is carried by the metadata catchall, which the inferred type omits.
+  const metadata = { ...(video.metadata ?? {}), hls: true } as LessonVideo['metadata'];
+
+  return {
+    ...withoutSourceKey,
+    link: `/hls/${manifestKey}`.replace(/\/{2,}/g, '/'),
+    metadata
+  };
 }
 
 function applyCanonicalDocumentMetadata(

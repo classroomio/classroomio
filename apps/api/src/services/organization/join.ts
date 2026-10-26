@@ -1,3 +1,4 @@
+import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   createOrganizationMember,
@@ -114,13 +115,14 @@ export async function joinOrganization(userId: string, orgId: string): Promise<J
 
   await assertStudentCapacityOrThrow(orgId, 1);
 
-  await createOrganizationMember({
+  const createdMember = await createOrganizationMember({
     organizationId: orgId,
     profileId: userId,
     email: normalizedEmail,
     roleId: ROLE.STUDENT,
     verified: true
   });
+  await emitOrganizationMemberWebhookEvent('organization.member.added', orgId, createdMember, userId);
 
   // A course team role from a previous membership must not come back on rejoin.
   await scheduleCourseRoleReconcile(orgId, userId);

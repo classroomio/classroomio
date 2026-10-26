@@ -36,7 +36,8 @@
         "title": "Ouvrir votre académie…",
         "caption": "Préparation de vos cours, étudiants et paramètres."
       }
-    }
+    },
+    "back": "Retour"
   },
   "validations": {
     "generic": {
@@ -358,7 +359,8 @@
       },
       "info": {
         "conversion_blocked": "Corrigez les questions ci-dessous pour terminer la conversion en public."
-      }
+      },
+      "sections_reorder_failed": "Impossible de réorganiser les sections"
     },
     "people": {
       "success": {
@@ -394,18 +396,8 @@
       "passed_requires_points": "La validation par réussite nécessite au moins un point disponible.",
       "draft_restored": "Nous avons restauré les modifications non enregistrées que vous aviez laissées"
     },
-    "poll": {
-      "info": {
-        "not_published": "Le sondage n'est pas encore publié",
-        "vote_once": "Vous ne pouvez voter qu'une seule fois"
-      },
-      "error": {
-        "creating_poll": "Une erreur s'est produite lors de la création du sondage",
-        "updating_poll": "Une erreur s'est produite lors de la mise à jour de l'état du sondage",
-        "submitting_poll": "Une erreur s'est produite lors de la soumission du sondage"
-      }
-    },
     "media_manager": {
+      "video_added": "Vidéo ajoutée à votre bibliothèque",
       "list_failed": "Échec du chargement des ressources multimédias",
       "storage_failed": "Échec du chargement du résumé du stockage",
       "create_failed": "Échec de la création de l'élément multimédia",
@@ -1818,34 +1810,6 @@
             "manual": "Version enregistrée",
             "publish": "Publié"
           }
-        },
-        "poll": {
-          "voted": "A voté",
-          "created_by": "Créé par",
-          "status": "Statut",
-          "draft": "Brouillon",
-          "publish": "Publier",
-          "expiration": "Expiration",
-          "total_voted": "Total des votes",
-          "responses": "Réponses",
-          "expires": "Expire",
-          "today": "Aujourd'hui",
-          "back": "Retour",
-          "result": "Résultat",
-          "delete": "Supprimer",
-          "create_poll": "Créer un sondage",
-          "question": "Question",
-          "options": "Possibilités",
-          "option_label": "Libellé de l'option",
-          "cancel": "Annuler",
-          "poll_question": "Question de sondage"
-        },
-        "polls": {
-          "title": "Sondage",
-          "active_polls": "Sondages actifs",
-          "expired_polls": "Sondages expirés",
-          "loading": "Chargement...",
-          "no_polls": "Aucun sondage à afficher"
         },
         "comments": {
           "title": "Commentaires",
@@ -3371,7 +3335,6 @@
         "save": "Enregistrer les modifications",
         "apps": {
           "title": "Applications",
-          "poll": "Sondage",
           "live_comment": "Commentaires en direct"
         },
         "course": {
@@ -3681,7 +3644,8 @@
     },
     "status": {
       "active": "Actif",
-      "archived": "Archivé"
+      "archived": "Archivé",
+      "processing": "Traitement en cours"
     },
     "provider": {
       "upload": "Téléverser",
@@ -3714,6 +3678,11 @@
         "other": "Autre"
       },
       "refresh": "Rafraîchir"
+    },
+    "upload": {
+      "videos": "Téléverser des vidéos",
+      "documents": "Téléverser des documents",
+      "more_options": "Plus d'options de téléversement"
     },
     "storage": {
       "total_bytes": "Stockage total",
@@ -4986,6 +4955,7 @@
     "title": "Automatisation",
     "subtitle": "Connectez les clients MCP maintenant, avec Zapier et l'API publique qui suivent sur le même système de clés à l'échelle de l'organisation.",
     "coming_soon": "Bientôt disponible",
+    "read_docs": "Lire la documentation",
     "mcp": {
       "setup": {
         "title": "Configuration du client",
@@ -5018,8 +4988,7 @@
         "rate_limits_description": "Requêtes de lecture/écriture/publication autorisées par minute.",
         "used_label": "Utilisé :"
       },
-      "page_subtitle": "Connectez des outils IA à ClassroomIO avec des clés à l'échelle de l'organisation que vous pouvez faire pivoter à tout moment.",
-      "view_docs": "Voir la documentation"
+      "page_subtitle": "Connectez des outils IA à ClassroomIO avec des clés à l'échelle de l'organisation que vous pouvez faire pivoter à tout moment."
     },
     "api": {
       "subtitle": "Gérez les clés API pour intégrer l'API publique ClassroomIO.",
@@ -5042,8 +5011,7 @@
       "setup": {
         "title": "Démarrage rapide",
         "description": "Utilisez votre clé API comme jeton Bearer sur chaque requête. Remplacez l'espace réservé par une clé ci-dessus, ou collez le secret immédiatement après l'avoir généré."
-      },
-      "view_docs": "Voir la documentation"
+      }
     },
     "keys": {
       "active": "Actif",
@@ -5165,7 +5133,9 @@
       "event_groups": {
         "organization": "Organisation",
         "course": "Cours",
-        "learning": "Progression de l'apprentissage"
+        "learning": "Progression de l'apprentissage",
+        "cohort": "Cohortes",
+        "compliance": "Conformité"
       },
       "events": {
         "organization_invite_created": "Une invitation d'équipe est envoyée",
@@ -5181,7 +5151,18 @@
         "course_submission_created": "Une soumission d'exercice est créée",
         "course_submission_status_changed": "Le statut d'une soumission change, par exemple lorsqu'elle est notée",
         "lesson_completion_updated": "Une leçon est marquée comme terminée ou réinitialisée",
-        "exercise_completion_updated": "Un exercice est terminé ou réinitialisé"
+        "exercise_completion_updated": "Un exercice est terminé ou réinitialisé",
+        "compliance_record_status_changed": "Le statut de conformité d'un étudiant change",
+        "compliance_record_waived": "L'exigence de conformité d'un étudiant est levée",
+        "organization_member_added": "Une personne rejoint l'organisation",
+        "organization_member_removed": "Une personne est retirée de l'organisation",
+        "organization_member_updated": "Le rôle ou le statut d'une personne change",
+        "course_published": "Un cours est publié",
+        "course_unpublished": "Un cours est dépublié",
+        "cohort_member_added": "Une personne est ajoutée à une cohorte",
+        "cohort_member_removed": "Une personne est retirée d'une cohorte",
+        "lesson_session_scheduled": "Une session en direct est planifiée ou déplacée",
+        "course_payment_request_created": "Un étudiant demande à payer un cours"
       },
       "deliveries": {
         "title": "Envois",

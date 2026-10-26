@@ -23,7 +23,7 @@ export async function seedOrganization({
       landingpage: {},
       theme: '',
       customization: {
-        apps: { poll: true, comments: true },
+        apps: { comments: true },
         course: { grading: true, newsfeed: true },
         dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
       }
@@ -36,7 +36,7 @@ export async function seedOrganization({
       landingpage: {},
       theme: '',
       customization: {
-        apps: { poll: true, comments: true },
+        apps: { comments: true },
         course: { grading: true, newsfeed: true },
         dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
       }
@@ -49,7 +49,7 @@ export async function seedOrganization({
       landingpage: {},
       theme: '',
       customization: {
-        apps: { poll: true, comments: true },
+        apps: { comments: true },
         course: { grading: true, newsfeed: true },
         dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
       }

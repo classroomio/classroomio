@@ -73,7 +73,9 @@ export const membersRouter = new Hono()
         const { courseId } = c.req.valid('param');
         const members = c.req.valid('json');
 
-        const addedMembers = await addMembers(courseId, members);
+        const addedMembers = await addMembers(courseId, members, 'dashboard', {
+          actorProfileId: c.get('user')?.id ?? null
+        });
 
         return c.json(
           {
@@ -124,7 +126,7 @@ export const membersRouter = new Hono()
   .delete('/:memberId', courseTeamMemberMiddleware, zValidator('param', ZCourseMembersMemberParam), async (c) => {
     try {
       const { courseId, memberId } = c.req.valid('param');
-      const member = await deleteMember(courseId, memberId);
+      const member = await deleteMember(courseId, memberId, { actorProfileId: c.get('user')?.id ?? null });
 
       return c.json(
         {

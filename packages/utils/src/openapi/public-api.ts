@@ -4,116 +4,9 @@ export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
-export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, your team, courses, and cohorts, and to read analytics, with organization-scoped API keys.
+export const PUBLIC_API_OPENAPI_DESCRIPTION = `Every endpoint in the ClassroomIO public API, grouped by resource.
 
-# Authentication
-
-All public API endpoints require an **organization-scoped API key** sent as a Bearer token.
-
-## Get an API key
-
-1. Sign in to [ClassroomIO](https://app.classroomio.com) as an **organization admin**.
-2. In the org sidebar, open the **Automation** section, then **API** ([/org/*/api](https://app.classroomio.com/org/*/api) — \`*\` picks your current organization automatically).
-3. Click **Generate API key** and copy the secret immediately (it is shown only once).
-4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
-
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the audience, team, cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their \`audience:*\`, \`team:*\`, \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:read\`/\`course:write\`, \`course:exercise:*\`, \`course:submission:*\`, \`course:student:write\`, and \`media:write\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
-
-## Send requests
-
-Add the key to every request:
-
-\`\`\`
-Authorization: Bearer cio_api_your_key_here
-\`\`\`
-
-Base URL: \`${PUBLIC_API_BASE_URL}\`
-
-## Try requests in this reference
-
-Use the **Authorize** button (lock icon) on this page, choose **bearerAuth**, paste your full API key, then run **Try it** on any endpoint.
-
-## Rate limits
-
-Requests to this API are rate limited per API key: **100 requests per minute** per key. A separate API key has its own budget, so traffic from one key does not affect another. Requests over the limit receive a \`429 Too Many Requests\` response with a \`Retry-After\` header.
-
-Two caveats to be aware of:
-
-- Rate limiting is only enforced when the API runs with NODE_ENV=production; it is disabled in development and test environments. This applies regardless of hosting a self-hosted production deployment with Redis available does enforce the per-key budget.
-- If the shared Redis store is unavailable, requests are served without rate limiting (fail open).
-
-## Plan access
-
-> **Paid Access** — On ClassroomIO Cloud, API key creation is available on **Early Adopter** and **Enterprise** plans. Self-hosted deployments require **Enterprise**.
-
-# HTTP methods
-
-The public API uses standard HTTP verbs:
-
-| Method | Use | Example |
-| --- | --- | --- |
-| \`GET\` | Fetch a resource or list | \`GET /public-api/v1/courses\` |
-| \`POST\` | Create a resource | \`POST /public-api/v1/audience\` |
-| \`PUT\` | Replace or update a resource | \`PUT /public-api/v1/courses/{courseId}\` |
-| \`DELETE\` | Remove a resource | \`DELETE /public-api/v1/audience/{memberId}\` |
-
-# Pagination
-
-List endpoints (\`GET /courses\`, \`GET /audience\`) accept:
-
-| Param | Type | Default | Notes |
-| --- | --- | --- | --- |
-| \`page\` | integer | \`1\` | 1-indexed |
-| \`limit\` | integer | \`20\` | Maximum \`100\` |
-
-Responses wrap results in a shared shape:
-
-\`\`\`json
-{
-  "success": true,
-  "data": [],
-  "pagination": { "page": 1, "limit": 20, "total": 42, "totalPages": 3 },
-  "query": { "page": 1, "limit": 20 }
-}
-\`\`\`
-
-\`pagination\` reports the actual result set; \`query\` echoes back the resolved request parameters (including any filters, e.g. \`search\` or \`tags\`).
-
-# Rate limiting
-
-Requests are limited **per API key**: 100 requests per minute. Every response includes:
-
-| Header | Meaning |
-| --- | --- |
-| \`X-RateLimit-Limit\` | Requests allowed in the current window |
-| \`X-RateLimit-Remaining\` | Requests left in the current window |
-| \`X-RateLimit-Reset\` | When the current window resets |
-
-Exceeding the limit returns \`429\` with a \`Retry-After\` header (seconds until you can retry).
-
-# Errors
-
-Failed requests return:
-
-\`\`\`json
-{
-  "success": false,
-  "error": "Human-readable message",
-  "code": "MACHINE_READABLE_CODE",
-  "field": "optional.field.path"
-}
-\`\`\`
-
-\`field\` is only present for validation errors that can be traced to a specific input.
-
-| Status | Meaning |
-| --- | --- |
-| \`400\` | Invalid request body or query: \`code\` is \`VALIDATION_ERROR\`, \`field\` identifies the offending input when known |
-| \`401\` | Missing or invalid API key |
-| \`403\` | The key is missing a required scope, or the organization's plan doesn't allow public API access |
-| \`404\` | The requested resource doesn't exist (or doesn't belong to your organization) |
-| \`429\` | Rate limit exceeded. See [Rate limiting](#rate-limiting): this response uses a different body, \`{ "error": "Too Many Requests", "message": "...", "retryAfter": 42 }\`, not the shape above |
-| \`500\` | Unexpected server error |
+New to the API? Start with the [introduction](https://classroomio.com/docs/api), then read [Authentication](https://classroomio.com/docs/api/authentication), [Rate limits](https://classroomio.com/docs/api/rate-limits), [Errors](https://classroomio.com/docs/api/errors), and [Pagination](https://classroomio.com/docs/api/pagination).
 `;
 
 type OpenApiDocument = Record<string, unknown>;
@@ -151,11 +44,18 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/team': 'List team members',
   'GET /public-api/v1/team/{memberId}': 'Get a team member',
   'PUT /public-api/v1/team/{memberId}': 'Update a team member',
+  'GET /public-api/v1/organization/email-templates': 'List student email templates',
+  'GET /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Get a student email template',
+  'PUT /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Save a student email template',
+  'DELETE /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Reset a student email template',
+  'POST /public-api/v1/organization/email-templates/{emailId}/{locale}/test': 'Send a test student email',
+  'PUT /public-api/v1/organization/landing-page/featured-courses': 'Set featured courses',
   'GET /public-api/v1/courses': 'List courses',
   'POST /public-api/v1/courses': 'Create a course',
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
   'PUT /public-api/v1/courses/{courseId}': 'Update a course',
   'DELETE /public-api/v1/courses/{courseId}': 'Delete a course',
+  'POST /public-api/v1/courses/{courseId}/clone': 'Clone a course',
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
@@ -200,6 +100,10 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify/{jobId}': 'Get an exercise notification status',
   'GET /public-api/v1/exercise-templates': 'List exercise templates',
   'GET /public-api/v1/exercise-templates/{templateId}': 'Get an exercise template',
+  'GET /public-api/v1/course-templates': 'List course templates',
+  'GET /public-api/v1/course-templates/{templateId}': 'Get a course template',
+  'POST /public-api/v1/course-templates/{templateId}/courses': 'Create a course from a template',
+  'POST /public-api/v1/courses/{courseId}/template': 'Save a course as a template',
   'GET /public-api/v1/courses/{courseId}/submissions': 'List course submissions',
   'GET /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Get a submission',
   'PUT /public-api/v1/courses/{courseId}/submissions/{submissionId}/grades': 'Grade a submission',
@@ -270,7 +174,12 @@ const OPERATION_SUMMARIES: Record<string, string> = {
 const OPERATION_TAGS = [
   { name: 'Audience', description: 'Manage people in your organization.' },
   { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
-  { name: 'Courses', description: 'Create, update, and delete courses.' },
+  {
+    name: 'Organization Email Templates',
+    description: 'Read, customize, translate and reset the emails your organization sends to students.'
+  },
+  { name: 'Organization Landing Page', description: "Manage your organization's public landing page." },
+  { name: 'Courses', description: 'Create, update, delete, and clone courses.' },
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
   { name: 'Course Members', description: 'Manage the people in a course and their progress.' },
   { name: 'Course Invites', description: 'Invite people to a course.' },
@@ -291,6 +200,11 @@ const OPERATION_TAGS = [
   { name: 'Exercise Templates', description: 'Browse built-in exercise templates.' },
   { name: 'Course Submissions', description: 'Review and grade exercise submissions and read the course gradebook.' },
   { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
+  {
+    name: 'Course Templates',
+    description:
+      'Browse course templates, create courses from them, and save courses as templates. Converting a course into a template in place and pulling template updates are dashboard-only for now.'
+  },
   { name: 'Public API Assets', description: 'Reserve asset uploads for media attached to lessons and exercises.' },
   { name: 'Cohorts', description: 'Create and manage cohorts.' },
   { name: 'Cohort Members', description: 'Manage the people in a cohort.' },
@@ -342,6 +256,7 @@ export function enrichPublicApiOpenApiSpec<T extends OpenApiDocument>(spec: T): 
       version: typeof info.version === 'string' ? info.version : '1.0.0',
       description: PUBLIC_API_OPENAPI_DESCRIPTION
     },
+    servers: [{ url: 'https://api.classroomio.com', description: 'Production environment' }],
     paths,
     tags: [...tags, ...OPERATION_TAGS.filter((tag) => !existingTagNames.has(tag.name))],
     components: {

@@ -461,7 +461,8 @@
       "included": "Incluso",
       "untitled_lesson": "Lezione senza titolo",
       "format": "Formato"
-    }
+    },
+    "back": "Indietro"
   },
   "compliance": {
     "title": "Conformità",
@@ -1414,6 +1415,11 @@
     "common": {
       "not_available": "N / A"
     },
+    "upload": {
+      "videos": "Carica video",
+      "documents": "Carica documenti",
+      "more_options": "Altre opzioni di caricamento"
+    },
     "storage": {
       "total_bytes": "Spazio di archiviazione totale",
       "internal_bytes": "Archiviazione interna",
@@ -1454,7 +1460,8 @@
     },
     "status": {
       "active": "Attivo",
-      "archived": "Archiviato"
+      "archived": "Archiviato",
+      "processing": "In elaborazione"
     },
     "table": {
       "title": "Titolo",
@@ -2105,7 +2112,6 @@
         },
         "apps": {
           "title": "App",
-          "poll": "Sondaggio",
           "live_comment": "Commenti dal vivo"
         },
         "auth_background": {
@@ -3584,34 +3590,6 @@
           "load_more_btn": "Carica di più",
           "comment_error": "Impossibile pubblicare il commento. Per favore riprova."
         },
-        "polls": {
-          "title": "Sondaggio",
-          "active_polls": "Sondaggi attivi",
-          "expired_polls": "Sondaggi scaduti",
-          "loading": "Caricamento...",
-          "no_polls": "Nessun sondaggio da visualizzare"
-        },
-        "poll": {
-          "voted": "Votato",
-          "created_by": "Creato da",
-          "status": "Stato",
-          "draft": "Bozza",
-          "publish": "Pubblicare",
-          "expiration": "Scadenza",
-          "total_voted": "Voti totali",
-          "responses": "Risposte",
-          "expires": "Scade",
-          "today": "Oggi",
-          "back": "Indietro",
-          "result": "Risultato",
-          "delete": "Eliminare",
-          "create_poll": "Crea sondaggio",
-          "question": "Domanda",
-          "options": "Opzioni",
-          "option_label": "Etichetta opzione",
-          "cancel": "Annulla",
-          "poll_question": "Domanda del sondaggio"
-        },
         "version_history": {
           "title": "Cronologia delle versioni",
           "fetch_more_versions": "Ottieni più versioni",
@@ -4885,6 +4863,7 @@
     "title": "Automazione",
     "subtitle": "Connetti subito i client MCP, con Zapier e l'API pubblica che seguono sullo stesso sistema di chiavi a livello di organizzazione.",
     "coming_soon": "Prossimamente",
+    "read_docs": "Leggi la documentazione",
     "permissions": {
       "disabled_title": "Accesso in sola lettura",
       "disabled_description": "Solo gli amministratori dell'organizzazione possono creare, ruotare o revocare le chiavi di automazione. Gli insegnanti possono rivedere le istruzioni di configurazione qui."
@@ -4963,8 +4942,7 @@
         "codex_description": "Aggiunge il server MCP ClassroomIO al Codex con la stessa chiave con ambito organizzazione.",
         "cursor_description": "Incollalo in \"~/.cursor/mcp.json\" o nella configurazione MCP dello spazio di lavoro.",
         "opencode_description": "Aggiungilo a `opencode.json` nella root del tuo progetto o a `~/.config/opencode/opencode.json`."
-      },
-      "view_docs": "Visualizza documenti"
+      }
     },
     "api": {
       "subtitle": "Gestisci le chiavi API per l'integrazione con l'API pubblica ClassroomIO.",
@@ -4987,8 +4965,7 @@
       "setup": {
         "title": "Avvio rapido",
         "description": "Utilizza la tua chiave API come token Bearer su ogni richiesta. Sostituisci il segnaposto con una chiave dall'alto o incolla il segreto immediatamente dopo averne generato uno."
-      },
-      "view_docs": "Visualizza documenti"
+      }
     },
     "zapier": {
       "page_subtitle": "Automatizza ClassroomIO con migliaia di app tramite Zapier. Prossimamente."
@@ -5064,7 +5041,9 @@
       "event_groups": {
         "organization": "Organizzazione",
         "course": "Corsi",
-        "learning": "Progressi di apprendimento"
+        "learning": "Progressi di apprendimento",
+        "cohort": "Coorti",
+        "compliance": "Conformità"
       },
       "events": {
         "organization_invite_created": "Viene inviato un invito al team",
@@ -5080,7 +5059,18 @@
         "course_submission_created": "Viene creata la consegna di un esercizio",
         "course_submission_status_changed": "Lo stato di una consegna cambia, ad esempio quando viene valutata",
         "lesson_completion_updated": "Una lezione viene segnata come completata o reimpostata",
-        "exercise_completion_updated": "Un esercizio viene completato o reimpostato"
+        "exercise_completion_updated": "Un esercizio viene completato o reimpostato",
+        "compliance_record_status_changed": "Lo stato di conformità di uno studente cambia",
+        "compliance_record_waived": "Un requisito di conformità di uno studente viene derogato",
+        "organization_member_added": "Una persona si unisce all'organizzazione",
+        "organization_member_removed": "Una persona viene rimossa dall'organizzazione",
+        "organization_member_updated": "Il ruolo o lo stato di una persona cambia",
+        "course_published": "Un corso viene pubblicato",
+        "course_unpublished": "Un corso viene rimosso dalla pubblicazione",
+        "cohort_member_added": "Una persona viene aggiunta a una coorte",
+        "cohort_member_removed": "Una persona viene rimossa da una coorte",
+        "lesson_session_scheduled": "Una sessione dal vivo viene pianificata o spostata",
+        "course_payment_request_created": "Uno studente richiede di pagare un corso"
       },
       "deliveries": {
         "title": "Consegne",
@@ -5214,6 +5204,7 @@
     "update": "Aggiornamento",
     "update_failed": "Aggiornamento non riuscito",
     "media_manager": {
+      "video_added": "Video aggiunto alla tua libreria",
       "list_failed": "Impossibile caricare le risorse multimediali",
       "storage_failed": "Impossibile caricare il riepilogo dello spazio di archiviazione",
       "create_failed": "Impossibile creare la risorsa multimediale",
@@ -5248,17 +5239,6 @@
     "lesson_video": {
       "generate_1080_completed": "Aggiunta la resa 1080p",
       "generate_1080_failed": "Impossibile generare una rappresentazione a 1080p"
-    },
-    "poll": {
-      "error": {
-        "creating_poll": "Si è verificato un errore durante la creazione del sondaggio",
-        "updating_poll": "Si è verificato un errore durante l'aggiornamento dello stato del sondaggio",
-        "submitting_poll": "Si è verificato un errore durante l'invio del sondaggio"
-      },
-      "info": {
-        "not_published": "Il sondaggio non è ancora stato pubblicato",
-        "vote_once": "Puoi votare solo una volta"
-      }
     },
     "exercise": {
       "validation_errors": "Correggi tutti gli errori di convalida prima di salvare.",
@@ -5318,7 +5298,8 @@
       },
       "info": {
         "conversion_blocked": "Risolvi le domande seguenti per completare la conversione in Pubblico."
-      }
+      },
+      "sections_reorder_failed": "Impossibile riordinare le sezioni"
     },
     "course": {
       "success": {
