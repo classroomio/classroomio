@@ -18,15 +18,16 @@ interface TagPlacement {
   trailingRouteSubstrings?: string[];
 }
 
-const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
+const API_SECTIONS: Array<{ label: string; display?: 'flat' | 'group'; tags: TagPlacement[] }> = [
   {
     label: 'Organization',
     tags: [{ tag: 'Audience' }, { tag: 'Team' }, { tag: 'Organization Email Templates', label: 'Email Templates' }]
   },
   {
     label: 'Courses',
+    display: 'group',
     tags: [
-      { tag: 'Courses', label: 'Manage courses' },
+      { tag: 'Courses', flat: true },
       { tag: 'Course Structure', label: 'Structure' },
       { tag: 'Course Sections', label: 'Sections' },
       { tag: 'Course Lessons', label: 'Lessons' },
@@ -46,8 +47,9 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
   },
   {
     label: 'Cohorts',
+    display: 'group',
     tags: [
-      { tag: 'Cohorts', label: 'Manage cohorts', trailingRouteSubstrings: ['cohorts-enrolled'] },
+      { tag: 'Cohorts', flat: true, trailingRouteSubstrings: ['cohorts-enrolled'] },
       { tag: 'Cohort Members', label: 'Members' },
       { tag: 'Cohort Courses', label: 'Courses' },
       { tag: 'Cohort Invites', label: 'Invites' },
@@ -124,7 +126,8 @@ if (unplacedTags.length > 0) {
 // docs build must not silently lose those pages from the sidebar.
 const apiSidebarSections = API_SECTIONS.map((section) => ({
   label: section.label,
-  display: 'flat' as const,
+  display: section.display ?? ('flat' as const),
+  collapsed: section.display === 'group',
   items: section.tags.flatMap(sectionItem)
 }))
   .filter((section) => section.items.length > 0)
