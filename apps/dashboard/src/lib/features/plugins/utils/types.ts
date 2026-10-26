@@ -35,30 +35,4 @@ export type UpdateInstallationSettingsRequest =
 export type UpdateOrgApprovalRequest =
   (typeof classroomio.plugins.installations)[':installationId']['approval']['$patch'];
 
-export type GetPluginStorageRequest =
-  (typeof classroomio.plugins.installations)[':installationId']['storage'][':namespace'][':key']['$get'];
-export type ListPluginStorageRequest =
-  (typeof classroomio.plugins.installations)[':installationId']['storage'][':namespace']['$get'];
-export type SetPluginStorageRequest =
-  (typeof classroomio.plugins.installations)[':installationId']['storage'][':namespace'][':key']['$put'];
-export type DeletePluginStorageRequest =
-  (typeof classroomio.plugins.installations)[':installationId']['storage'][':namespace'][':key']['$delete'];
-
-export type CreateLaunchCodeRequest = (typeof classroomio.plugins.launch)[':installationId']['launch-code']['$post'];
-export type CreateLaunchCodeResponse = InferResponseType<CreateLaunchCodeRequest>;
-
-export type ListSubscriptionsRequest =
-  (typeof classroomio.plugins.events)['installations'][':installationId']['subscriptions']['$get'];
-export type CreateSubscriptionRequest =
-  (typeof classroomio.plugins.events)['installations'][':installationId']['subscriptions']['$post'];
-
-export type ListDeliveriesRequest =
-  (typeof classroomio.plugins.events)['installations'][':installationId']['deliveries']['$get'];
-export type ReplayDeliveryRequest = (typeof classroomio.plugins.events)['deliveries'][':deliveryId']['replay']['$post'];
-export type TriggerTestEventRequest = typeof classroomio.plugins.events.test.$post;
-
-export type {
-  PluginInstallationStatus,
-  PluginOrgApprovalStatus,
-  TPluginApiStorageScope
-} from '@cio/utils/validation/plugin';
+export type { PluginInstallationStatus, PluginOrgApprovalStatus } from '@cio/utils/validation/plugin';

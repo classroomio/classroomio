@@ -1,15 +1,11 @@
 import { auth } from '@cio/db/auth';
 import type { TOrganizationApiKey } from '@db/types';
-import type { PluginApiAccessTokenClaims } from '@api/services/plugin/access-token';
-
 export type AuthSession = {
   Variables: {
     actorId: string | null;
     automationKey: TOrganizationApiKey | null;
     orgId: string | null;
     orgRoles: Record<string, number>;
-    pluginApiClaims: PluginApiAccessTokenClaims | null;
-    pluginApiRequestId: string | null;
     /** Asset an encoder job token authorizes, set by `encoderJobMiddleware`. */
     encoderAssetId: string | undefined;
     session: typeof auth.$Infer.Session.session | null;

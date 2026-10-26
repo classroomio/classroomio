@@ -16,8 +16,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@cio/tsconfig": "workspace:*",
-    "@classroomio/certificate-kit": "workspace:*"
+    "@cio/tsconfig": "workspace:*"
   },
   "devDependencies": {
     "tsc-alias": "^1.8.16",

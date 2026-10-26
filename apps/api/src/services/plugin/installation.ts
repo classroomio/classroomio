@@ -19,8 +19,6 @@ import {
   updateOrgApprovalStatus as updateOrgApprovalStatusQuery,
   getInstallationGrants
 } from '@cio/db/queries/plugin';
-import { revokeInstallationCredentials, updateInstallationSubscriptionStatus } from '@cio/db/queries/plugin';
-import { publishOutboxEvent, registerEventSubscription } from './events';
 import { requireOrganizationInstallation } from './authorization';
 import type {
   TNewPluginInstallation,
@@ -193,7 +191,6 @@ export async function installPlugin(params: InstallPluginParams): Promise<{
       throw new AppError('Failed to reinstall plugin', 'INSTALLATION_FAILED', 500);
     }
     installation = reinstalled;
-    await updateInstallationSubscriptionStatus(installation.id, 'active');
   } else {
     const newInstallationData: TNewPluginInstallation = {
       pluginId: actualPluginId,
@@ -222,16 +219,6 @@ export async function installPlugin(params: InstallPluginParams): Promise<{
 
   const grants = await replaceInstallationGrants(installation.id, requiredScopes, params.installedByProfileId);
 
-  const backend = manifest?.runtime?.backend;
-  const subscriptions = manifest?.events?.subscriptions ?? [];
-  if (backend?.baseUrl && subscriptions.length > 0) {
-    const webhookPath = backend.webhookPath ?? '/v1/webhooks/classroomio';
-    const endpoint = `${backend.baseUrl}${webhookPath}`;
-    for (const eventType of subscriptions) {
-      await registerEventSubscription(installation.id, eventType, endpoint);
-    }
-  }
-
   const auditMetadata = {
     version: params.version,
     ownerType: params.ownerType,
@@ -247,16 +234,6 @@ export async function installPlugin(params: InstallPluginParams): Promise<{
     outcome: 'success',
     metadata: auditMetadata
   });
-
-  await publishOutboxEvent(
-    'plugin.installed',
-    {
-      pluginId: params.pluginId,
-      installationId: installation.id,
-      version: params.version
-    },
-    params.organizationId
-  );
 
   return {
     installation,
@@ -324,12 +301,6 @@ export async function changeInstallationStatus(
 
   const auditMetadata = { status };
 
-  if (status === 'active') {
-    await updateInstallationSubscriptionStatus(installationId, 'active');
-  } else {
-    await updateInstallationSubscriptionStatus(installationId, 'disabled');
-    await revokeInstallationCredentials(installationId);
-  }
   await recordPluginAuditEvent({
     installationId,
     organizationId: updatedInstallation.organizationId,
@@ -339,26 +310,6 @@ export async function changeInstallationStatus(
     outcome: 'success',
     metadata: auditMetadata
   });
-
-  if (status === 'disabled') {
-    await publishOutboxEvent(
-      'plugin.disabled',
-      { pluginId: updatedInstallation.pluginId, installationId: updatedInstallation.id },
-      updatedInstallation.organizationId ?? undefined
-    );
-  } else if (status === 'active') {
-    await publishOutboxEvent(
-      'plugin.enabled',
-      { pluginId: updatedInstallation.pluginId, installationId: updatedInstallation.id },
-      updatedInstallation.organizationId ?? undefined
-    );
-  } else if (status === 'uninstalled') {
-    await publishOutboxEvent(
-      'plugin.uninstalled',
-      { pluginId: updatedInstallation.pluginId, installationId: updatedInstallation.id },
-      updatedInstallation.organizationId ?? undefined
-    );
-  }
 
   return updatedInstallation;
 }

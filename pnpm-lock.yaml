@@ -96,9 +96,6 @@ importers:
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
-      '@classroomio/certificate-kit':
-        specifier: workspace:*
-        version: link:../../packages/certificate-kit
       '@getworkbench/hono':
         specifier: 0.2.1
         version: 0.2.1(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(bullmq@5.76.5)(hono@4.11.3)(immer@9.0.21)(ioredis@5.10.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -1013,33 +1010,11 @@ importers:
         specifier: ^5.5.2
         version: 5.9.3
 
-  packages/certificate-kit:
-    dependencies:
-      zod:
-        specifier: 4.2.1
-        version: 4.2.1
-    devDependencies:
-      '@cio/tsconfig':
-        specifier: workspace:*
-        version: link:../tsconfig
-      '@types/node':
-        specifier: ^24.10.1
-        version: 24.10.4
-      typescript:
-        specifier: ^5.5.2
-        version: 5.9.3
-      vitest:
-        specifier: ^1.2.2
-        version: 1.6.1(@types/node@24.10.4)(jsdom@29.0.1(@noble/hashes@2.0.1))(lightningcss@1.32.0)(sass@1.97.1)
-
   packages/certificates:
     dependencies:
       '@cio/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
-      '@classroomio/certificate-kit':
-        specifier: workspace:*
-        version: link:../certificate-kit
     devDependencies:
       tsc-alias:
         specifier: ^1.8.16
@@ -1418,18 +1393,11 @@ importers:
         specifier: 4.2.1
         version: 4.2.1
 
-  packages/plugin-design:
-    devDependencies:
-      typescript:
-        specifier: ^5.5.2
-        version: 5.9.3
-
   packages/plugin-sdk:
-    dependencies:
+    devDependencies:
       '@cio/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
-    devDependencies:
       '@types/node':
         specifier: ^24.10.1
         version: 24.10.4

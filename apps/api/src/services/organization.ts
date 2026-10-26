@@ -58,7 +58,6 @@ import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure, recordOrganizationInviteAudits } from './organization/invite';
-import { publishOutboxEvent } from './plugin/events';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
 
 export { updateTeamMemberRole } from './organization/team-role';
@@ -1136,6 +1135,5 @@ export async function getUserAnalytics(userId: string, orgId: string) {
 }
 
 export async function deleteOrganization(orgId: string): Promise<void> {
-  await publishOutboxEvent('organization.deleted', { organizationId: orgId }, orgId);
   await deleteOrganizationById(orgId);
 }

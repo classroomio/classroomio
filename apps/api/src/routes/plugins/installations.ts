@@ -6,13 +6,10 @@ import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 import {
   ZInstallPlugin,
-  ZPluginApiStorageScope,
-  ZPluginApiStorageSet,
   ZUpdateInstallationSettings,
   ZUpdateInstallationStatus,
   ZUpdateOrgApprovalStatus
 } from '@cio/utils/validation/plugin';
-import { z } from 'zod';
 import {
   changeInstallationSettings,
   changeInstallationStatus,
@@ -22,11 +19,6 @@ import {
   listOrgPlugins,
   resolveOrgContributions
 } from '@api/services/plugin';
-import { deleteStorageValue, getStorageValue, listStorageRecords, setStorageValue } from '@api/services/plugin/storage';
-
-const ZStorageScopeQuery = z.object({
-  scope: ZPluginApiStorageScope.default('organization')
-});
 
 /**
  * Dashboard-facing installation management routes.
@@ -79,83 +71,6 @@ export const pluginInstallationsRouter = new Hono()
       return c.json({ success: true, data: result }, 201);
     } catch (error) {
       return handleError(c, error, 'Failed to install plugin');
-    }
-  })
-  .get('/:installationId/storage/:namespace/:key', authMiddleware, orgMemberMiddleware, async (c) => {
-    const user = c.get('user')!;
-    const orgId = c.get('orgId') as string;
-    const installationId = c.req.param('installationId');
-    const namespace = c.req.param('namespace');
-    const key = c.req.param('key');
-    const queryResult = ZStorageScopeQuery.safeParse(c.req.query());
-
-    if (!queryResult.success) {
-      return handleError(c, queryResult.error, 'Invalid plugin storage scope');
-    }
-
-    try {
-      const value = await getStorageValue(installationId, orgId, user.id, namespace, key, queryResult.data.scope);
-      return c.json({ success: true, data: { value } }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to load plugin storage');
-    }
-  })
-  .get('/:installationId/storage/:namespace', authMiddleware, orgMemberMiddleware, async (c) => {
-    const user = c.get('user')!;
-    const orgId = c.get('orgId') as string;
-    const installationId = c.req.param('installationId');
-    const namespace = c.req.param('namespace');
-    const queryResult = ZStorageScopeQuery.safeParse(c.req.query());
-
-    if (!queryResult.success) {
-      return handleError(c, queryResult.error, 'Invalid plugin storage scope');
-    }
-
-    try {
-      const records = await listStorageRecords(installationId, orgId, user.id, namespace, queryResult.data.scope);
-      return c.json({ success: true, data: { items: records } }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to list plugin storage');
-    }
-  })
-  .put(
-    '/:installationId/storage/:namespace/:key',
-    authMiddleware,
-    orgMemberMiddleware,
-    zValidator('json', ZPluginApiStorageSet),
-    async (c) => {
-      const user = c.get('user')!;
-      const orgId = c.get('orgId') as string;
-      const installationId = c.req.param('installationId');
-      const namespace = c.req.param('namespace');
-      const key = c.req.param('key');
-      const input = c.req.valid('json');
-
-      try {
-        const record = await setStorageValue(installationId, orgId, user.id, namespace, key, input.value, input.scope);
-        return c.json({ success: true, data: record }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to save plugin storage');
-      }
-    }
-  )
-  .delete('/:installationId/storage/:namespace/:key', authMiddleware, orgMemberMiddleware, async (c) => {
-    const user = c.get('user')!;
-    const orgId = c.get('orgId') as string;
-    const installationId = c.req.param('installationId');
-    const namespace = c.req.param('namespace');
-    const key = c.req.param('key');
-    const queryResult = ZStorageScopeQuery.safeParse(c.req.query());
-
-    if (!queryResult.success) {
-      return handleError(c, queryResult.error, 'Invalid plugin storage scope');
-    }
-
-    try {
-      const deleted = await deleteStorageValue(installationId, orgId, user.id, namespace, key, queryResult.data.scope);
-      return c.json({ success: true, data: { deleted } }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to delete plugin storage');
     }
   })
   .get('/:installationId', authMiddleware, orgMemberMiddleware, async (c) => {

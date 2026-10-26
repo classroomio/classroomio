@@ -48,8 +48,6 @@ import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 import { pluginsRouter } from '@api/routes/plugins';
-import { pluginApiRouter } from '@api/routes/plugin-api';
-import { handlePluginApiError } from '@api/routes/plugin-api/errors';
 import type { Hono as HonoInstance, Schema } from 'hono';
 import type { ExtractSchema, MergeSchemaPath } from 'hono/types';
 import type { AuthSession } from '@api/types/auth';
@@ -278,8 +276,7 @@ type AppSchema =
   | MountedRoutes<'/report', typeof reportRouter>
   | MountedRoutes<'/internal', typeof internalRouter>
   | MountedRoutes<'/agent', typeof agentRouter>
-  | MountedRoutes<'/plugins', typeof pluginsRouter>
-  | MountedRoutes<'/plugin-api', typeof pluginApiRouter>;
+  | MountedRoutes<'/plugins', typeof pluginsRouter>;
 
 export const app: HonoInstance<AuthSession, AppSchema> = baseApp
   .route('/onboarding', onboardingRouter)
@@ -309,7 +306,6 @@ export const app: HonoInstance<AuthSession, AppSchema> = baseApp
   .route('/internal', internalRouter)
   .route('/agent', agentRouter)
   .route('/plugins', pluginsRouter)
-  .route('/plugin-api', pluginApiRouter)
 
   // Error handling
   .onError((err, c) => {
@@ -318,10 +314,6 @@ export const app: HonoInstance<AuthSession, AppSchema> = baseApp
 
     if (c.req.path.startsWith('/public-api/v1/')) {
       return handlePublicApiError(c, err, 'Internal Server Error', ErrorCodes.INTERNAL_ERROR);
-    }
-
-    if (c.req.path.startsWith('/plugin-api/')) {
-      return handlePluginApiError(c, err, 'Plugin API request failed');
     }
 
     return c.json({ error: 'Internal Server Error' }, 500);

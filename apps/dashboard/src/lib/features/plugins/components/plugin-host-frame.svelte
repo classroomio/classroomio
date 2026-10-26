@@ -2,9 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { get } from 'svelte/store';
   import { PluginBridgeHost } from '@classroomio/plugin-sdk';
-  import { pluginsApi } from '../api/plugins.svelte';
   import { resolveCurrentHostTheme } from '../utils/theme';
-  import type { TPluginApiStorageScope } from '../utils/types';
   import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -46,25 +44,9 @@
   let frameHeight = $state<number | null>(null);
   let isDirty = false;
 
-  function getOrganizationId(): string {
-    const organizationIdFromContext = organizationId ?? get(currentOrg)?.id;
-    if (!organizationIdFromContext) {
-      throw new Error('Plugin storage requires an organization context');
-    }
-
-    return organizationIdFromContext;
-  }
-
   function getPreferenceStorageKey(namespace: string, key: string): string {
     const profileId = get(profile)?.id ?? 'anonymous';
     return `cio_plugin_preference_${profileId}_${installationId}_${namespace}_${key}`;
-  }
-
-  function getStorageScope(scope?: string): TPluginApiStorageScope {
-    if (scope === undefined || scope === 'organization') return 'organization';
-    if (scope === 'user' || scope === 'owner') return scope;
-
-    throw new Error('Plugin storage scope is invalid');
   }
 
   function handleBeforeUnload(event: BeforeUnloadEvent) {
@@ -111,24 +93,6 @@
             snackbar.info(payload.message);
           }
         },
-        onRequestLaunchCode: async () => {
-          if (!backendAudience || !bridgeHost) {
-            throw { code: 'FORBIDDEN', message: 'This contribution has no declared remote backend' };
-          }
-
-          const result = await pluginsApi.requestLaunchCode(
-            installationId,
-            organizationId ?? undefined,
-            target,
-            backendAudience,
-            bridgeHost.getHandshakeNonce(),
-            resource
-          );
-          if (!result) {
-            throw { code: 'INTERNAL_ERROR', message: 'Failed to mint launch code' };
-          }
-          return result;
-        },
         onResize: async ({ height }) => {
           if (!Number.isFinite(height)) return;
 
@@ -142,30 +106,6 @@
         },
         onSetDirty: async ({ dirty }) => {
           isDirty = dirty;
-        },
-        onStorageGet: async ({ key, namespace, scope }) => {
-          const ns = namespace || 'default';
-          const orgId = getOrganizationId();
-          return pluginsApi.getStorage(installationId, ns, key, getStorageScope(scope), orgId);
-        },
-        onStorageSet: async ({ key, value, namespace, scope }) => {
-          const ns = namespace || 'default';
-          const orgId = getOrganizationId();
-          await pluginsApi.setStorage(installationId, ns, key, value, getStorageScope(scope), orgId);
-        },
-        onStorageDelete: async ({ key, namespace, scope }) => {
-          const ns = namespace || 'default';
-          const orgId = getOrganizationId();
-          return pluginsApi.deleteStorage(installationId, ns, key, getStorageScope(scope), orgId);
-        },
-        onStorageList: async ({ namespace, scope }) => {
-          const orgId = getOrganizationId();
-          const records = await pluginsApi.listStorage(installationId, namespace, getStorageScope(scope), orgId);
-          return records.map((record) => ({
-            key: record.key,
-            value: record.value,
-            updatedAt: record.updatedAt
-          }));
         },
         onPreferenceGet: async ({ key, namespace }) => {
           const storageKey = getPreferenceStorageKey(namespace || 'default', key);

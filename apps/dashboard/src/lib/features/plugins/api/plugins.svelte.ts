@@ -2,7 +2,6 @@ import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   CatalogPluginDetails,
   CatalogPluginItem,
-  CreateLaunchCodeRequest,
   GetCatalogPluginDetailsRequest,
   GetInstallationRequest,
   InstallationDetails,
@@ -15,13 +14,8 @@ import type {
   UpdateInstallationSettingsRequest,
   UpdateInstallationStatusRequest,
   UpdateOrgApprovalRequest,
-  GetPluginStorageRequest,
-  ListPluginStorageRequest,
-  SetPluginStorageRequest,
-  DeletePluginStorageRequest,
   PluginInstallationStatus,
-  PluginOrgApprovalStatus,
-  TPluginApiStorageScope
+  PluginOrgApprovalStatus
 } from '../utils/types';
 
 export class PluginsApi extends BaseApiWithErrors {
@@ -171,122 +165,6 @@ export class PluginsApi extends BaseApiWithErrors {
         void this.listOrgInstallations(orgId);
       }
     });
-  }
-
-  async getStorage(
-    installationId: string,
-    namespace: string,
-    key: string,
-    scope: TPluginApiStorageScope,
-    orgId: string
-  ) {
-    const response = await this.execute<GetPluginStorageRequest>({
-      requestFn: () =>
-        classroomio.plugins.installations[':installationId'].storage[':namespace'][':key'].$get(
-          {
-            param: { installationId, namespace, key },
-            query: { scope }
-          },
-          { headers: { 'cio-org-id': orgId } }
-        ),
-      logContext: 'loading plugin storage'
-    });
-
-    if (!response) throw new Error(this.error ?? 'Failed to load plugin storage');
-
-    return response.data.value;
-  }
-
-  async listStorage(installationId: string, namespace: string, scope: TPluginApiStorageScope, orgId: string) {
-    const response = await this.execute<ListPluginStorageRequest>({
-      requestFn: () =>
-        classroomio.plugins.installations[':installationId'].storage[':namespace'].$get(
-          {
-            param: { installationId, namespace },
-            query: { scope }
-          },
-          { headers: { 'cio-org-id': orgId } }
-        ),
-      logContext: 'listing plugin storage'
-    });
-
-    if (!response) throw new Error(this.error ?? 'Failed to list plugin storage');
-
-    return response.data.items;
-  }
-
-  async setStorage(
-    installationId: string,
-    namespace: string,
-    key: string,
-    value: unknown,
-    scope: TPluginApiStorageScope,
-    orgId: string
-  ) {
-    const response = await this.execute<SetPluginStorageRequest>({
-      requestFn: () =>
-        classroomio.plugins.installations[':installationId'].storage[':namespace'][':key'].$put(
-          {
-            param: { installationId, namespace, key },
-            json: { value, scope }
-          },
-          { headers: { 'cio-org-id': orgId } }
-        ),
-      logContext: 'saving plugin storage'
-    });
-
-    if (!response) throw new Error(this.error ?? 'Failed to save plugin storage');
-
-    return response.data;
-  }
-
-  async deleteStorage(
-    installationId: string,
-    namespace: string,
-    key: string,
-    scope: TPluginApiStorageScope,
-    orgId: string
-  ) {
-    const response = await this.execute<DeletePluginStorageRequest>({
-      requestFn: () =>
-        classroomio.plugins.installations[':installationId'].storage[':namespace'][':key'].$delete(
-          {
-            param: { installationId, namespace, key },
-            query: { scope }
-          },
-          { headers: { 'cio-org-id': orgId } }
-        ),
-      logContext: 'deleting plugin storage'
-    });
-
-    if (!response) throw new Error(this.error ?? 'Failed to delete plugin storage');
-
-    return response.data.deleted;
-  }
-
-  async requestLaunchCode(
-    installationId: string,
-    orgId: string | undefined,
-    target: string,
-    audience: string,
-    nonce: string,
-    resource?: { type: 'lesson' | 'course' | 'certificate' | 'organization'; id: string }
-  ) {
-    const headers = orgId ? { 'cio-org-id': orgId } : undefined;
-
-    const response = await this.execute<CreateLaunchCodeRequest>({
-      requestFn: () =>
-        classroomio.plugins.launch[':installationId']['launch-code'].$post(
-          {
-            param: { installationId },
-            json: { target, audience, nonce, resource }
-          },
-          { headers }
-        ),
-      logContext: 'requesting plugin launch code'
-    });
-
-    return response ? response.data : null;
   }
 }
 

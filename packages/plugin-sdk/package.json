@@ -21,10 +21,6 @@
     "./protocol": {
       "types": "./dist/bridge/protocol.d.ts",
       "default": "./dist/bridge/protocol.js"
-    },
-    "./server": {
-      "types": "./dist/server/index.d.ts",
-      "default": "./dist/server/index.js"
     }
   },
   "bin": {
@@ -40,10 +36,8 @@
     "test": "vitest run",
     "format": "prettier --write \"src/**/*.ts\""
   },
-  "dependencies": {
-    "@cio/tsconfig": "workspace:*"
-  },
   "devDependencies": {
+    "@cio/tsconfig": "workspace:*",
     "@types/node": "^24.10.1",
     "rimraf": "^5.0.5",
     "tsc-alias": "^1.8.16",

@@ -1,11 +1,4 @@
-import {
-  CERTIFICATE_WIDTH,
-  FONTS_LINK_HREF,
-  FONTS_READY_CLASS,
-  normalizeCertificateDesign,
-  renderCertificatePreview
-} from '@classroomio/certificate-kit';
-import { DEFAULT_CERTIFICATE_DESIGN, LEGACY_THEME_MAP } from './constants';
+import { CERTIFICATE_WIDTH, DEFAULT_CERTIFICATE_DESIGN, FONTS_READY_CLASS, LEGACY_THEME_MAP } from './constants';
 import type {
   CertificateDesign,
   CertificateRenderData,
@@ -14,6 +7,20 @@ import type {
   StoredCertificateRecord
 } from './types';
 import { CERTIFICATE_TEMPLATE_IDS } from './types';
+import { renderBrutalist } from './templates/brutalist';
+import { renderClassique } from './templates/classique';
+import { renderMinimal } from './templates/minimal';
+import { renderNoir } from './templates/noir';
+import { renderPoster } from './templates/poster';
+import { BASE_STYLES, FONTS_LINK_HREF, type TemplateRenderer } from './templates/shared';
+
+const RENDERERS: Record<CertificateTemplateId, TemplateRenderer> = {
+  classique: renderClassique,
+  brutalist: renderBrutalist,
+  noir: renderNoir,
+  poster: renderPoster,
+  minimal: renderMinimal
+};
 
 export function resolveTemplateId(value: string | undefined | null): CertificateTemplateId {
   if (!value) return 'classique';
@@ -70,8 +77,8 @@ export function resolveCertificateDesign(stored?: StoredCertificateRecord | null
 
 export function renderCertificate(design: CertificateDesign, data: CertificateRenderData): CertificateRenderResult {
   const templateId = resolveTemplateId(design.templateId);
-  const normalizedDesign = normalizeCertificateDesign({ ...design, templateId });
-  const { html: body, styles } = renderCertificatePreview(normalizedDesign, data);
+  const renderer = RENDERERS[templateId];
+  const { body, styles } = renderer({ design: { ...design, templateId }, data });
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -99,7 +106,9 @@ ${body}
 </body>
 </html>`;
 
-  return { html, styles };
+  const fullStyles = BASE_STYLES + '\n' + styles;
+
+  return { html, styles: fullStyles };
 }
 
 /**
