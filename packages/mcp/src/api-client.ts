@@ -55,6 +55,8 @@ import type {
   TPublicApiReorderCourseContent,
   TPublicApiCloneCourse,
   TPublicApiSetFeaturedCourses,
+  TPublicApiUpdateDomain,
+  TPublicApiConnectCustomDomain,
   TPublicApiSetCourseLessonTranslation,
   TPublicApiUpdateCourseContentLock,
   TPublicApiUpdateCourseLessonComment,
@@ -562,6 +564,26 @@ export class ClassroomIoApiClient {
 
   async setFeaturedCourses(payload: TPublicApiSetFeaturedCourses) {
     return this.request('/public-api/v1/organization/landing-page/featured-courses', { method: 'PUT', body: payload });
+  }
+
+  async getDomain() {
+    return this.request('/public-api/v1/organization/domain', { method: 'GET' });
+  }
+
+  async updateDomain(payload: TPublicApiUpdateDomain) {
+    return this.request('/public-api/v1/organization/domain', { method: 'PATCH', body: payload });
+  }
+
+  async connectCustomDomain(payload: TPublicApiConnectCustomDomain) {
+    return this.request('/public-api/v1/organization/domain/custom', { method: 'PUT', body: payload });
+  }
+
+  async refreshCustomDomain() {
+    return this.request('/public-api/v1/organization/domain/custom/refresh', { method: 'POST' });
+  }
+
+  async removeCustomDomain() {
+    return this.request('/public-api/v1/organization/domain/custom', { method: 'DELETE' });
   }
 
   async reorderCourseContent(courseId: string, payload: TPublicApiReorderCourseContent) {

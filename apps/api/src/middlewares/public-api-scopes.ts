@@ -15,6 +15,7 @@ const COURSE_SUBMISSION_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:submi
 const COURSE_TEMPLATE_PATH = /^(?:\/public-api\/v1)?(?:\/course-templates|\/courses\/[^/]+\/template)(?:\/|$)/;
 const AUDIENCE_PATH = /^(?:\/public-api\/v1)?\/audience(?:\/|$)/;
 const TEAM_PATH = /^(?:\/public-api\/v1)?\/team(?:\/|$)/;
+const ORGANIZATION_DOMAIN_PATH = /^(?:\/public-api\/v1)?\/organization\/domain(?:\/|$)/;
 const ORGANIZATION_PATH = /^(?:\/public-api\/v1)?\/organization(?:\/|$)/;
 const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
@@ -32,6 +33,11 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (TEAM_PATH.test(path)) {
     return isRead ? 'team:read' : 'team:write';
+  }
+
+  // Moving the site is riskier than other org settings, so it has its own write scope.
+  if (ORGANIZATION_DOMAIN_PATH.test(path)) {
+    return isRead ? 'organization:read' : 'organization:domain:write';
   }
 
   if (ORGANIZATION_PATH.test(path)) {

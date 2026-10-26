@@ -124,6 +124,16 @@ export const ZClaimEarlyAdopterPlan = z.object({
 
 export type TClaimEarlyAdopterPlan = z.infer<typeof ZClaimEarlyAdopterPlan>;
 
+export const ZSiteName = z
+  .string()
+  .min(5)
+  .refine((val) => !/^[-]|[-]$/.test(val), {
+    message: 'Site name cannot start or end with a hyphen'
+  })
+  .refine((val) => !blockedSubdomain.includes(val), {
+    message: 'Sitename already exists.'
+  });
+
 export const ZCreateOrganization = z.object({
   name: z
     .string()
@@ -131,15 +141,7 @@ export const ZCreateOrganization = z.object({
     .refine((val) => !/^[-]|[-]$/.test(val), {
       message: 'Organization name cannot start or end with a hyphen'
     }),
-  siteName: z
-    .string()
-    .min(5)
-    .refine((val) => !/^[-]|[-]$/.test(val), {
-      message: 'Site name cannot start or end with a hyphen'
-    })
-    .refine((val) => !blockedSubdomain.includes(val), {
-      message: 'Sitename already exists.'
-    })
+  siteName: ZSiteName
 });
 
 export type TCreateOrganization = z.infer<typeof ZCreateOrganization>;
@@ -161,9 +163,7 @@ export const ZUpdateOrganization = z.object({
     .refine((val) => !val || !containsDisallowedHrefs(val), {
       message: 'URLs with javascript:, data:, or vbscript: schemes are not allowed'
     }),
-  siteName: z.string().min(1).optional(),
-  customDomain: z.string().nullable().optional(),
-  isCustomDomainVerified: z.boolean().optional(),
+  siteName: ZSiteName.optional(),
   customization: z.record(z.string(), z.unknown()).optional(),
   disableSignup: z.boolean().optional(),
   disableSignupMessage: z.string().optional(),

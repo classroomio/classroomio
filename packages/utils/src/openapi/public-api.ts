@@ -50,6 +50,11 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'DELETE /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Reset a student email template',
   'POST /public-api/v1/organization/email-templates/{emailId}/{locale}/test': 'Send a test student email',
   'PUT /public-api/v1/organization/landing-page/featured-courses': 'Set featured courses',
+  'GET /public-api/v1/organization/domain': 'Get domain settings',
+  'PATCH /public-api/v1/organization/domain': 'Update subdomain or favicon',
+  'PUT /public-api/v1/organization/domain/custom': 'Connect a custom domain',
+  'POST /public-api/v1/organization/domain/custom/refresh': 'Refresh custom domain status',
+  'DELETE /public-api/v1/organization/domain/custom': 'Remove the custom domain',
   'GET /public-api/v1/courses': 'List courses',
   'POST /public-api/v1/courses': 'Create a course',
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
@@ -179,6 +184,10 @@ const OPERATION_TAGS = [
     description: 'Read, customize, translate and reset the emails your organization sends to students.'
   },
   { name: 'Organization Landing Page', description: "Manage your organization's public landing page." },
+  {
+    name: 'Organization Domain',
+    description: 'Manage where your site is served: its subdomain, favicon and custom domain.'
+  },
   { name: 'Courses', description: 'Create, update, delete, and clone courses.' },
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
   { name: 'Course Members', description: 'Manage the people in a course and their progress.' },

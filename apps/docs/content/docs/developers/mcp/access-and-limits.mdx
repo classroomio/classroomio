@@ -15,8 +15,8 @@ MCP keys cannot access the entire public API. If the client says an action is un
 
 Ask the client to show you a course draft or proposed edits before publishing. Small edits to live courses can take effect immediately. Inviting people, sending notifications, and testing email templates may send messages; repeating a request can send them again.
 
-Deleting a section also deletes its lessons and exercises. Deleting an exercise deletes its submissions. ClassroomIO blocks deletion of lessons, sections, content, or answered questions with student work unless the request explicitly forces it; forcing deletion also removes the affected work. Resetting a learner's progress discards their recorded progress.
+Deleting a section also deletes its lessons and exercises. Deleting an exercise deletes its submissions. ClassroomIO blocks deletion of lessons, sections, content, or answered questions with student work unless the request explicitly forces it; forcing deletion also removes the affected work. Resetting a learner's progress discards their recorded progress. Changing the site's subdomain breaks every link to the old one, and removing a custom domain takes the site off that domain.
 
 ## Check limits
 
-**Automation → MCP** shows your organization's current key allowance and each key's read, write, and publish rate limits. Some actions, such as changing certificate settings or saving email templates, require a paid plan. If a request fails, see [API errors](/api/errors) and [rate limits](/api/rate-limits).
+**Automation → MCP** shows your organization's current key allowance and each key's read, write, and publish rate limits. Some actions, such as changing certificate settings, saving email templates or connecting a custom domain, require a paid plan. If a request fails, see [API errors](/api/errors) and [rate limits](/api/rate-limits).
