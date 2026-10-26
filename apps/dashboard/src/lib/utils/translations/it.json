@@ -1460,7 +1460,8 @@
     },
     "status": {
       "active": "Attivo",
-      "archived": "Archiviato"
+      "archived": "Archiviato",
+      "processing": "In elaborazione"
     },
     "table": {
       "title": "Titolo",
@@ -5295,7 +5296,8 @@
       },
       "info": {
         "conversion_blocked": "Risolvi le domande seguenti per completare la conversione in Pubblico."
-      }
+      },
+      "sections_reorder_failed": "Impossibile riordinare le sezioni"
     },
     "course": {
       "success": {
