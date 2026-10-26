@@ -254,6 +254,19 @@
 
   const isMaterialsEmpty = $derived(tabs.every((tab) => tab.badgeValue === 0));
   const hasLessonVideos = $derived((lessonApi.lesson?.videos?.length ?? 0) > 0);
+  const lessonReadingStats = $derived.by(() => {
+    const raw = lessonApi.lesson?.note;
+    if (!raw) return { wordCount: 0, estimatedMinutes: 1 };
+
+    const text = raw
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const wordCount = text.length > 0 ? text.split(/\s+/).length : 0;
+    const estimatedMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+    return { wordCount, estimatedMinutes };
+  });
 
   let timeoutId: NodeJS.Timeout | undefined;
 
@@ -659,7 +672,16 @@
               <Component {mode} {lessonId} {courseId} />
             {/each}
 
-            <PluginSlotRenderer target="lesson.after" resource={{ type: 'lesson', id: lessonId }} className="my-4" />
+            <PluginSlotRenderer
+              target="lesson.after"
+              resource={{
+                type: 'lesson',
+                id: lessonId,
+                wordCount: lessonReadingStats.wordCount,
+                estimatedMinutes: lessonReadingStats.estimatedMinutes
+              }}
+              className="my-4"
+            />
 
             {#if showLessonComments}
               <hr class="my-2" />

@@ -80,7 +80,14 @@
         installationId,
         pluginId,
         version,
-        surface: { target }
+        organization: $currentOrg?.id
+          ? {
+              id: $currentOrg.id,
+              name: $currentOrg.name,
+              avatarUrl: $currentOrg.avatar_url ?? null
+            }
+          : undefined,
+        surface: { target, resource }
       },
       handlers: {
         onToast: async (payload) => {
@@ -124,6 +131,17 @@
           const storageKey = getPreferenceStorageKey(namespace || 'default', key);
           localStorage.removeItem(storageKey);
           return true;
+        },
+        onCertificateTemplatesApply: async (payload: any) => {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(
+              new CustomEvent('cio:certificate-template-apply', {
+                detail: payload
+              })
+            );
+          }
+          snackbar.success('Template applied to certificate');
+          return { applied: true };
         }
       }
     });

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { CERTIFICATE_TEMPLATES, type CertificateTemplateId } from '@cio/certificates';
   import { t } from '$lib/utils/functions/translations';
   import { cn } from '@cio/ui/tools';
@@ -13,6 +14,23 @@
   }
 
   let { courseId = '', value, onSelect, disabled = false }: Props = $props();
+
+  onMount(() => {
+    function handleApplied(event: Event) {
+      const customEvent = event as CustomEvent;
+      const payload = customEvent.detail;
+      const design = payload?.design ?? payload;
+      const tid = design?.rendererTemplateId || design?.templateId;
+      if (tid) {
+        onSelect(tid as CertificateTemplateId);
+      }
+    }
+
+    window.addEventListener('cio:certificate-template-apply', handleApplied);
+    return () => {
+      window.removeEventListener('cio:certificate-template-apply', handleApplied);
+    };
+  });
 </script>
 
 <div class="grid grid-cols-2 gap-3">

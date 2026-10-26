@@ -294,6 +294,12 @@ export class ClassroomIOClient {
     }
   };
 
+  public certificateTemplates = {
+    apply: async (payload: unknown): Promise<unknown> => {
+      return this.rpc<unknown>('certificateTemplates:apply', payload);
+    }
+  };
+
   public destroy() {
     this.isDestroyed = true;
     for (const pending of this.pendingRequests.values()) {

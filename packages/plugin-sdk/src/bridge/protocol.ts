@@ -4,8 +4,20 @@ export interface PluginContext {
   installationId: string;
   pluginId: string;
   version: string;
+  organization?: {
+    id: string;
+    name: string;
+    avatarUrl?: string | null;
+  };
   surface?: {
     target: string;
+    resource?: {
+      type: 'lesson' | 'course' | 'certificate' | 'organization';
+      id: string;
+      title?: string;
+      wordCount?: number;
+      estimatedMinutes?: number;
+    };
   };
 }
 

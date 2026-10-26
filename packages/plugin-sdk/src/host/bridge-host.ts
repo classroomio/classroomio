@@ -29,6 +29,7 @@ export interface PluginBridgeHostHandlers {
   onPreferenceGet?: (payload: { key: string; namespace?: string }) => Promise<unknown>;
   onPreferenceSet?: (payload: { key: string; value: unknown; namespace?: string }) => Promise<void>;
   onPreferenceDelete?: (payload: { key: string; namespace?: string }) => Promise<boolean | void>;
+  onCertificateTemplatesApply?: (payload: unknown) => Promise<unknown>;
 }
 
 export interface PluginBridgeHostOptions {
@@ -214,6 +215,17 @@ export class PluginBridgeHost {
             resultData = await this.options.handlers.onPreferenceDelete(request.payload as any);
           } else {
             resultData = true;
+          }
+          break;
+        }
+        case 'certificateTemplates:apply': {
+          if (this.options.handlers.onCertificateTemplatesApply) {
+            resultData = await this.options.handlers.onCertificateTemplatesApply(request.payload);
+          } else {
+            throw {
+              code: 'NOT_SUPPORTED',
+              message: 'certificateTemplates:apply capability is not supported in this surface context'
+            };
           }
           break;
         }
