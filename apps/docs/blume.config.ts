@@ -225,8 +225,6 @@ export default defineConfig({
           '/developers/plugins',
           '/developers/plugins/manifest',
           '/developers/plugins/client-sdk',
-          '/developers/plugins/server-sdk',
-          '/developers/plugins/storage',
           '/developers/plugins/slots-and-surfaces',
           '/developers/plugins/packaging-and-publishing'
         ]

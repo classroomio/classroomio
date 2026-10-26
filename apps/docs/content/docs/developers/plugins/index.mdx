@@ -1,44 +1,34 @@
 ---
 title: Plugins Overview
-description: Build UI slots, custom tools, and backend integrations for ClassroomIO using the Plugin SDK.
+description: Build sandboxed UI slots, custom widgets, and standalone pages for ClassroomIO using the Plugin SDK.
 ---
 
-ClassroomIO plugins extend the academy platform with custom user interfaces, automated workflows, and external integrations. Whether you are building an announcement banner, an AI tutoring assistant, a certificate template, or a custom LMS reader widget, the Plugin system provides sandboxed UI embedding and secure host-delegated APIs.
+ClassroomIO plugins extend the academy platform with custom user interfaces and workflows. Whether you are building an announcement banner, an interactive lesson widget, or a dedicated academy dashboard, the plugin platform provides sandboxed UI embedding and a secure host bridge.
 
 ```mermaid
 graph TD
     subgraph Browser["Student & Teacher Browser"]
         Dashboard["ClassroomIO Dashboard"]
         Iframe["Plugin Iframe (Sandboxed UI)"]
-        Dashboard <--"MessageChannel (RPC & Themes)"--> Iframe
+        Dashboard <--"MessageChannel (RPC, Context, Themes)"--> Iframe
     end
 
     subgraph Host["ClassroomIO Platform"]
-        API["ClassroomIO API / Public API"]
-        DB[("Host Database (plugin_storage)")]
-        API --> DB
+        API["ClassroomIO API"]
+        CDN["Plugin Asset Storage (Immutable CDN)"]
+        Iframe -.->|"Fetch Sandboxed Assets"| CDN
     end
-
-    subgraph Developer["Plugin Infrastructure (Optional)"]
-        Backend["Plugin Remote Backend"]
-    end
-
-    Iframe -.->|"Launch Code Exchange"| Backend
-    Backend -->|"Bearer Access Token"| API
-    API -->|"Webhook Deliveries"| Backend
 ```
 
 ---
 
 ## Core Principles
 
-The plugin architecture is built around three foundational design principles:
+The plugin architecture is built around three foundational principles:
 
-1. **Sandboxed UI Isolation**: Custom interfaces render inside hardened `<iframe>` environments without `allow-same-origin`. They cannot inspect cookies, local storage, or host DOM, protecting student privacy and security.
-2. **Host-Owned Data Residency**: Plugins store tenant data directly in ClassroomIO's managed PostgreSQL database (`plugin_storage`). No student or academy data is stored on third-party servers, ensuring full GDPR, FERPA, and SOC 2 compliance.
-3. **Dual SDK Architecture**:
-   - **Client SDK (`@classroomio/plugin-sdk/client`)**: Runs inside the browser iframe to handle UI resizing, theme synchronization, native toasts, and modal controls via browser `MessageChannel`.
-   - **Server SDK (`@classroomio/plugin-sdk/server`)**: Runs on your backend server to interact with courses, lessons, student progress, certificates, and persistent storage using scoped OAuth tokens.
+1. **Sandboxed UI Isolation**: Custom interfaces render inside hardened `<iframe>` environments without `allow-same-origin`. They cannot inspect cookies, host session storage, or the parent DOM, protecting student privacy and platform security.
+2. **Deterministic Bridge Communication**: The sandboxed iframe communicates with ClassroomIO exclusively over an authenticated browser `MessageChannel`. The host provides UI resizing, theme synchronization, native toasts, modals, navigation, and client preferences.
+3. **Source-Controlled, PR-First Release**: All catalog plugins are maintained in the open `classroomio-plugins` repository. Code is validated in sandboxed CI, reviewed by maintainers, and built into immutable, digest-verified artifacts published to CDN storage upon merge.
 
 ---
 
@@ -51,11 +41,11 @@ The plugin architecture is built around three foundational design principles:
   <Card title="Academy Banners & Alerts" icon="megaphone">
     Display system notifications, countdowns, or announcements at the top of the learner LMS view using the <code>lms.banner</code> slot.
   </Card>
-  <Card title="Certificate Templates" icon="award">
-    Design custom SVG certificate layouts and register them in the visual Certificate Studio with <code>certificate.templates</code>.
-  </Card>
   <Card title="Standalone Academy Pages" icon="layout">
-    Mount dedicated full-page tools and dashboards inside the academy navigation with <code>plugin.page</code>.
+    Mount dedicated full-page tools, reports, and dashboards inside the academy navigation with <code>plugin.page</code>.
+  </Card>
+  <Card title="Contextual Actions" icon="cursor">
+    Inject custom buttons, commands, or dialog triggers into lesson and course action bars using <code>contributes.actions</code>.
   </Card>
 </CardGroup>
 
@@ -63,26 +53,21 @@ The plugin architecture is built around three foundational design principles:
 
 ## Anatomy of a Plugin
 
-A ClassroomIO plugin is a standalone project comprising:
+A ClassroomIO plugin is a standalone frontend project:
 
 ```text
 my-classroomio-plugin/
-├── plugin.json               # Manifest declaring permissions, slots, and entrypoints
-├── package.json
-├── vite.config.ts            # Frontend bundler
+├── plugin.json               # Manifest declaring identity, slots, and entrypoints
+├── package.json              # Dependencies and lifecycle scripts
+├── vite.config.ts            # Frontend bundler configuration
 ├── src/
-│   ├── banner.html           # UI Entrypoint 1
-│   ├── banner.ts
-│   ├── settings.html         # UI Entrypoint 2
-│   └── settings.ts
-├── dist/                     # Compiled production assets
-└── server/                   # Optional backend service (Node.js / Express / Cloudflare Worker)
-    └── index.ts
+│   ├── index.html            # Main UI entrypoint
+│   └── index.ts              # UI logic using @classroomio/plugin-sdk
+└── dist/                     # Compiled production assets
 ```
 
-1. **`plugin.json`**: The immutable manifest defining identity, contribution slots, requested permissions, network domains, and UI entrypoints.
+1. **`plugin.json`**: The manifest defining identity, contribution slots, requested permissions, network domains, and UI entrypoints.
 2. **`dist/`**: The static HTML, JS, and CSS files compiled by Vite or your chosen bundler.
-3. **Server Service (Optional)**: If your plugin performs background jobs, calls LLMs, or listens to webhooks, you run a server using the Server SDK.
 
 ---
 
@@ -94,7 +79,7 @@ commands from the plugin project directory unless noted otherwise.
 ### 1. Scaffold and install
 
 ```bash
-npx cio-plugin create reading-timer \
+npx @classroomio/plugin-sdk create reading-timer \
   --id com.example.reading-timer \
   --name "Reading timer" \
   --publisher "Example"
@@ -104,7 +89,7 @@ npm install
 
 `create` writes `plugin.json`, a Vite UI, an icon, and lifecycle scripts. The generated `dev` and
 `build` scripts are standard Vite commands: `dev` serves the UI for browser development and
-`build` compiles it. The `cio-plugin` CLI commands package and install local development artifacts.
+`build` compiles it. The `cio-plugin` CLI commands package, validate, and install local development artifacts.
 
 ### 2. Configure local development
 
@@ -128,12 +113,13 @@ UI directly from Vite for standalone browser work.
 ```bash
 npm run build
 npm run pack
+npx @classroomio/plugin-sdk validate
 ```
 
 `npm run build` compiles the UI. `npm run pack` invokes `cio-plugin build`, validates the manifest, packages the compiled
 assets, creates a deterministic `.tar.gz` archive, and computes its `sha256-...` digest. Open the
 selected organization's plugin page in the local ClassroomIO dashboard to exercise the iframe,
-slots, permissions, and host SDK.
+slots, and host bridge.
 
 ### 4. Submit a pull request to classroomio-plugins
 
@@ -144,8 +130,10 @@ in a sandboxed container without cloud secrets.
 ### 5. Automated release
 
 Maintainers review your pull request, permissions, and network allowlists. Once merged to `main`, trusted GitHub Actions
-release CI builds the package, uploads immutable assets to production storage, and registers the release with the
+release CI builds the package, uploads immutable assets to production CDN storage, and registers the release with the
 ClassroomIO API. See [Packaging and contributing](/developers/plugins/packaging-and-publishing) for details.
+
+---
 
 ## Quickstart: understand the plugin structure
 
@@ -261,12 +249,6 @@ Explore the detailed guides below to master every aspect of plugin development:
   </Card>
   <Card title="Client SDK" href="/developers/plugins/client-sdk" icon="monitor">
     Reference for <code>@classroomio/plugin-sdk/client</code>: toasts, theme tokens, modals, and auto-resize.
-  </Card>
-  <Card title="Server SDK" href="/developers/plugins/server-sdk" icon="server">
-    Reference for <code>@classroomio/plugin-sdk/server</code>: courses, lessons, progress, and certificates.
-  </Card>
-  <Card title="Host-Owned Storage" href="/developers/plugins/storage" icon="database">
-    Store tenant JSONB documents in ClassroomIO PostgreSQL with zero external databases.
   </Card>
   <Card title="Slots & Surfaces" href="/developers/plugins/slots-and-surfaces" icon="layers">
     Overview of all available mounting points: <code>lesson.after</code>, <code>lms.banner</code>, <code>plugin.page</code>.

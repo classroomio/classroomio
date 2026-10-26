@@ -186,34 +186,26 @@ Navigation is restricted to host-relative paths starting with `/`. Protocol-rela
 
 ---
 
-## Backend Authentication (`client.auth.requestLaunchCode`)
+## Client Preferences (`client.preferences`)
 
-If your plugin declares a remote backend in `plugin.json` (`runtime.backend.baseUrl`), your frontend needs to authenticate requests to that backend without leaking user tokens.
-
-Use `requestLaunchCode()` to mint a short-lived, single-use **Launch Code**:
+Plugins can store lightweight, client-side preferences (such as dismissed banners, collapsed sections, or local UI choices) without requiring a backend server:
 
 ```typescript
-const { code, state, expiresAt } = await client.auth.requestLaunchCode();
+// 1. Store a preference (optionally under a namespace)
+await client.preferences.set('sidebar_collapsed', true, 'ui_settings');
 
-// Send the one-time code to your plugin server:
-const response = await fetch('https://api.my-plugin.com/v1/auth/exchange', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ launchCode: code, state })
-});
+// 2. Retrieve a preference
+const isCollapsed = await client.preferences.get<boolean>('sidebar_collapsed', 'ui_settings');
 
-const { sessionToken } = await response.json();
+// 3. Delete a preference
+await client.preferences.delete('sidebar_collapsed', 'ui_settings');
 ```
 
-Your server then exchanges this launch code with ClassroomIO's token endpoint to obtain a verified identity and tenant token.
-
 ---
 
----
+## Host Context (`client.context`)
 
-## Host Context & Launch Tokens
-
-The Client SDK provides helpers to inspect the active learning environment and authenticate with your plugin backend:
+The Client SDK provides helpers to inspect the active learning environment:
 
 ### Active Plugin Context
 ```typescript
@@ -223,26 +215,6 @@ console.log(context.pluginId);       // e.g. "com.acme.my-plugin"
 console.log(context.surface.target); // e.g. "lesson.after"
 console.log(context.resource);       // { type: 'lesson', id: 'lesson-uuid' }
 ```
-
-### Requesting a Backend Launch Token
-When your frontend needs to communicate with your backend server or ClassroomIO's Public API:
-
-```typescript
-const launch = await client.auth.requestLaunchCode({
-  target: 'lesson.after',
-  resource: context.resource
-});
-
-// Send launch.code to your plugin backend, which exchanges it for a scoped JWT
-const response = await fetch('https://api.myplugin.com/session', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ code: launch.code })
-});
-```
-
-> **Domain Data Queries**:
-> Protected domain models (courses, lessons, enrollments, certificates, and student progress) are queried through the **[Server SDK](/docs/developers/plugins/server-sdk)** using authenticated REST endpoints and declared permission scopes, ensuring student privacy and organization security boundaries are enforced.
 
 ---
 

@@ -8,18 +8,19 @@ Contributors build and test plugins locally with the `cio-plugin` CLI, then subm
 to the official `classroomio-plugins` repository. Releases are built and published exclusively by
 trusted release CI upon merge to `main`.
 
-`cio-plugin` has three core commands for developers.
+`cio-plugin` has four core commands for developers.
 
 | Command | Purpose |
 | --- | --- |
 | `cio-plugin create <directory>` | Create a Vite-based plugin starter. |
 | `cio-plugin build [path] [--registry <path>]` | Validate, compile, and produce deterministic archives. `npm run pack` is the scaffolded alias. |
+| `cio-plugin validate [path]` | Validate manifest constraints, UI entrypoints, and packaging readiness without building an archive. |
 | `cio-plugin dev [path] --org <organization-id>` | Build and install a development release into one local organization. `npm run seed` is the scaffolded alias. |
 
 ## Create a plugin
 
 ```bash
-npx cio-plugin create reading-timer \
+npx @classroomio/plugin-sdk create reading-timer \
   --id com.example.reading-timer \
   --name "Reading timer" \
   --publisher "Example"
@@ -62,11 +63,13 @@ environments.
 ```bash
 npm run build
 npm run pack
+npx @classroomio/plugin-sdk validate
 ```
 
 `npm run build` compiles the UI into `dist/`. `npm run pack` invokes `cio-plugin build`, which validates `plugin.json`,
 checks generated assets, and creates a deterministic archive beneath `.plugin-artifacts/`. The SHA-256 digest
-uniquely identifies the archive contents.
+uniquely identifies the archive contents. `cio-plugin validate` can be run at any point to verify
+manifest constraints and entrypoint mappings.
 
 ## Contributing to the catalog
 
@@ -74,7 +77,7 @@ All public and catalog plugins are source-maintained in the `classroomio-plugins
 
 ### Contribution workflow
 
-1. **Scaffold & Build**: Create your plugin and verify that `npm run build` and `npm run pack` succeed locally.
+1. **Scaffold & Build**: Create your plugin and verify that `npm run build`, `npm run pack`, and `validate` succeed locally.
 2. **Test in Local ClassroomIO**: Use `npm run seed` to test iframe loading, theme sync, RPC methods, and permissions in your local ClassroomIO instance.
 3. **Fork `classroomio-plugins`**: Fork the [classroomio-plugins](https://github.com/classroomio/classroomio-plugins) repository.
 4. **Register Plugin**: Add your plugin directory to the repository and register it in `registry/plugins.json`:
@@ -89,7 +92,7 @@ All public and catalog plugins are source-maintained in the `classroomio-plugins
 5. **Open a Pull Request**: Submit a pull request against `classroomio-plugins` `main`.
 6. **PR CI Validation**: Untrusted pull request CI runs build, test, packing, isolation checks, and determinism verification in a sandbox without cloud secrets.
 7. **Maintainer Review**: Maintainers review the source code, requested permissions, network allowlists (`networkAccess.allowedDomains`), and runtime behavior.
-8. **Merge & Automated Release**: Once merged to `main`, trusted GitHub Actions release CI builds the canonical package, uploads immutable files to R2, and registers the release with the ClassroomIO API.
+8. **Merge & Automated Release**: Once merged to `main`, trusted GitHub Actions release CI builds the canonical package, uploads immutable files to R2/S3, and registers the release with the ClassroomIO API.
 
 ### Versioning and immutability
 
@@ -170,7 +173,6 @@ The application API never serves production artifact files directly; clients fet
 | --- | --- | --- |
 | `PLUGIN_RELEASE_DEPLOY_TOKEN` | production & release CI | Secret token for trusted CI release registration via `POST /internal/plugin-releases`. |
 | `PLUGIN_ARTIFACTS_PATH` | local | Filesystem root for local development artifacts. |
-| `PLUGIN_API_TOKEN_SECRET` | production | Secret (at least 32 characters) used to sign plugin backend access tokens. |
 | `PLUGIN_ASSET_BUCKET` | production | Storage bucket containing released plugin assets. |
 | `PLUGIN_ASSET_ORIGIN` | production | CDN origin serving released plugin assets. |
 
@@ -183,5 +185,5 @@ The application API never serves production artifact files directly; clients fet
 | `Development releases are unavailable in production` | `POST /plugins/development/releases` was called on a production host | Use the PR-first contribution flow for production releases. |
 | `Duplicate plugin ID in release request` | A release request contained duplicate IDs | Ensure each plugin ID in `releases` is unique. |
 | `Version already exists with a different digest` | An existing version was re-registered with changed code | Bump the SemVer version in `plugin.json` for new changes. |
-| `Archive not found in storage` | Release CI called the API before uploading the archive | Upload the archive to R2 before calling `/internal/plugin-releases`. |
+| `Archive not found in storage` | Release CI called the API before uploading the archive | Upload the archive to R2/S3 before calling `/internal/plugin-releases`. |
 | `Approved plugin assets fail to load` | CDN origin, bucket policy, or response headers are incorrect | Verify the digest-qualified production key and CDN response headers. |

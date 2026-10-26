@@ -33,11 +33,6 @@ ClassroomIO validates the manifest during `npm run pack` (the scaffolded alias f
         "chatWidget": "dist/chat.html",
         "settingsPage": "dist/settings.html"
       }
-    },
-    "backend": {
-      "type": "remote",
-      "baseUrl": "https://api.my-plugin.com",
-      "webhookPath": "/v1/webhooks/classroomio"
     }
   },
   "contributes": {
@@ -79,33 +74,10 @@ ClassroomIO validates the manifest during `npm run pack` (the scaffolded alias f
     "required": [
       "course.metadata:read",
       "lesson.metadata:read",
-      "identity.profile:read",
-      "plugin.storage:read",
-      "plugin.storage:write"
+      "identity.profile:read"
     ],
     "optional": [
       "learner.progress:write"
-    ]
-  },
-  "storage": {
-    "documents": [
-      {
-        "namespace": "assistant-settings",
-        "scope": "organization",
-        "schemaVersion": 1,
-        "schema": {
-          "type": "object",
-          "properties": {
-            "enabled": { "type": "boolean" }
-          }
-        }
-      }
-    ]
-  },
-  "events": {
-    "subscriptions": [
-      "lesson.completed",
-      "course.completed"
     ]
   },
   "networkAccess": {
@@ -140,11 +112,9 @@ ClassroomIO validates the manifest during `npm run pack` (the scaffolded alias f
 | `homepage` | `string` | No | HTTPS page for the plugin or publisher. |
 | `repository` | `string` | No | HTTPS source repository URL. |
 | `engines` | `object` | **Yes** | Compatibility ranges for ClassroomIO and the Plugin API. |
-| `runtime` | `object` | No | Optional UI entrypoints and/or remote backend declaration. |
+| `runtime` | `object` | No | UI entrypoints declaration. |
 | `contributes` | `object` | No | Mounting slots, full pages, actions, and navigation items. |
 | `permissions` | `object` | No | Scopes required or optionally requested by the plugin. |
-| `events` | `object` | No | Webhook events your backend wants to subscribe to. |
-| `storage` | `object` | No | Durable host-owned document namespaces and their JSON schemas. |
 | `networkAccess`| `object` | No | Whitelisted domains for browser Content Security Policy (CSP). |
 | `dataPolicy` | `object` | **Yes** | Customer-data handling and uninstall retention declaration. |
 | `settings` | `object` | No | Optional JSON schema for plugin settings managed by the host/plugin UI. |
@@ -185,7 +155,7 @@ loading executable code.
 
 ## `runtime`
 
-The `runtime` block defines how the plugin runs in the browser and connects to optional backend infrastructure.
+The `runtime` block defines the UI entrypoints rendered by the plugin in the browser.
 
 ### `runtime.ui.entrypoints`
 A key-value dictionary mapping entrypoint names to relative file paths:
@@ -209,28 +179,6 @@ actions. Its value is either a relative asset path or an object with `resource` 
 `renderMode: "custom"`. Paths must resolve to a valid packaged file; never use absolute paths or
 `..` traversal segments.
 
-### `runtime.backend` (Optional)
-If your plugin has a remote server, declare its endpoint:
-
-```json
-"runtime": {
-  "backend": {
-    "type": "remote",
-    "baseUrl": "https://api.my-plugin.com",
-    "webhookPath": "/v1/webhooks/classroomio"
-  }
-}
-```
-
-- `type`: Must be `"remote"`.
-- `baseUrl`: Base HTTPS URL for your backend server.
-- `webhookPath`: URL path where ClassroomIO delivers subscribed event payloads. It must begin with
-  `/`. The backend must be reachable at the declared origin and independently verify webhook
-  signatures.
-
-If a plugin has no UI or backend, omit `runtime`. If it has only a UI, declare `runtime.ui`; if it
-has only a backend, declare `runtime.backend`.
-
 ---
 
 ## `contributes`
@@ -253,7 +201,7 @@ Inline widgets embedded directly into specific dashboard surfaces:
 ```
 
 - `id`: Unique identifier for the contribution slot.
-- `target`: Supported mounting slot (e.g., `lesson.after`, `lms.banner`, `certificate.templates`).
+- `target`: Supported mounting slot (e.g., `lesson.after`, `lms.banner`, `plugin.page`).
 - `entrypoint`: Name matching a key in `runtime.ui.entrypoints`.
 - `title`: Label used for accessibility and framing.
 - `renderMode`: `"custom"` (renders the sandboxed iframe).
@@ -349,11 +297,10 @@ ClassroomIO uses granular, OAuth-compatible scopes. When an academy admin instal
   "required": [
     "course.metadata:read",
     "lesson.metadata:read",
-    "plugin.storage:read",
-    "plugin.storage:write"
+    "identity.profile:read"
   ],
   "optional": [
-    "lesson:write"
+    "learner.progress:write"
   ]
 }
 ```
@@ -370,14 +317,9 @@ ClassroomIO uses granular, OAuth-compatible scopes. When an academy admin instal
 | `lesson:write` | Create or update lessons. |
 | `learner.progress:read` | Read learner progress. |
 | `learner.progress:write` | Update learner progress. |
-| `certificate.issued:read` | Read issued certificates. |
-| `certificate.template:read` | Read certificate templates. |
-| `certificate.template:write` | Apply certificate templates. |
 | `identity.profile:read` | Read the current user's approved profile fields. |
 | `organization.profile:read` | Read approved organization profile fields. |
 | `course.enrollment:read` | Read authorized course enrollment records. |
-| `plugin.storage:read` | Read declared documents from the plugin's host-owned storage. |
-| `plugin.storage:write` | Write or delete declared documents in host-owned storage. |
 | `exercise.metadata:read` | Read exercise metadata without learner answers. |
 
 Other capability names may appear in platform planning documents, but only active scopes listed by
@@ -395,48 +337,6 @@ for the base installation. A manifest scope is only a request: every API route s
 issued installation grant and the caller's organization and actor authorization.
 
 ---
-
-## `storage`
-
-Declare every namespace used with `client.storage`. The installed manifest is the authority: ClassroomIO rejects access when the requested namespace and scope are not declared.
-
-```json
-"storage": {
-  "documents": [
-    {
-      "namespace": "assistant-settings",
-      "scope": "organization",
-      "schemaVersion": 1,
-      "schema": {
-        "type": "object",
-        "required": ["enabled"],
-        "properties": {
-          "enabled": { "type": "boolean" }
-        }
-      }
-    }
-  ]
-}
-```
-
-Use `organization` for shared academy state and `user` for records isolated to the signed-in user.
-See [Plugin storage](/developers/plugins/storage) for the SDK methods, limits, and device-local
-preferences. The `schema` describes the JSON shape owned by that namespace; it does not create a
-general database table. Keep namespaces unique within each scope and increment `schemaVersion`
-when the stored shape changes.
-
-## `events`
-
-`events.subscriptions` lists events that the plugin's remote backend wants delivered:
-
-```json
-"events": {
-  "subscriptions": ["lesson.completed", "course.completed"]
-}
-```
-
-Subscriptions are declarations, not credentials. The backend must be reachable and verify signed
-webhook deliveries. Omit `events` when the plugin has no backend event processing.
 
 ## `settings`
 

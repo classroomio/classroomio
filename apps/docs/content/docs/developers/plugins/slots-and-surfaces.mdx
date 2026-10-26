@@ -14,9 +14,8 @@ When a student or teacher opens a view containing a slot, the ClassroomIO dashbo
 | Slot Target | Location | Context Resource | Primary Use Cases |
 | :--- | :--- | :--- | :--- |
 | `lms.banner` | Top of the LMS learner layout | `organization` | Academy notices, urgency timers, maintenance banners. |
-| `lesson.after` | Directly below lesson reader content | `lesson` | AI tutoring, discussion forums, reading estimators, quiz widgets. |
-| `certificate.templates` | Certificate Studio template gallery | `course` | Custom certificate SVG layouts, dynamic credentials. |
-| `organization.settings` | Academy Settings sidebar | `organization` | Plugin administration screens, API key configuration. |
+| `lesson.after` | Directly below lesson reader content | `lesson` | Inline widgets, reading estimators, discussion frames, quiz widgets. |
+| `organization.settings` | Academy Settings sidebar | `organization` | Plugin administration screens, configuration panels. |
 | `plugin.page` | Full-page standalone route | `organization` | Complete dashboards, analytics suites, report builders. |
 
 ---
@@ -43,9 +42,9 @@ Renders an edge-to-edge banner at the very top of the student's LMS view.
 - **Height**: Banners should be compact (typically 40px – 80px high). Call `client.ui.resize()` immediately on load.
 - **Styling**: Use a transparent or subtle background color that contrasts cleanly with the student navbar.
 
-### Implementation Pattern: Dismissable New Course Banner
+### Implementation Pattern: Dismissable Announcement Banner
 
-This is the exact pattern used by the official ClassroomIO Announcement Banner. It pulls the latest published course on mount, remembers when the student dismisses it (or clicks the CTA), and stays hidden until a *new* course is published.
+This pattern checks whether the student previously dismissed the banner, and stays hidden until cleared:
 
 ```typescript
 import { createClassroomIOClient } from '@classroomio/plugin-sdk/client';
@@ -60,38 +59,38 @@ async function initBanner() {
     return;
   }
 
-  // 4. Render the announcement banner UI
+  // 2. Render the announcement banner UI
   const banner = document.getElementById('banner')!;
   banner.style.display = 'flex';
   banner.innerHTML = `
     <div class="banner-content">
-      <span>🎉 New Course Available: <strong>${latestCourse.title}</strong></span>
+      <span>🎉 Welcome to the academy! Check out our newest courses.</span>
       <div class="banner-actions">
-        <button id="cta-btn" class="primary-btn">View Course</button>
+        <button id="cta-btn" class="primary-btn">Explore</button>
         <button id="dismiss-btn" class="close-btn" aria-label="Dismiss">✕</button>
       </div>
     </div>
   `;
 
-  // 5. Expand the iframe to fit the banner
+  // 3. Expand the iframe to fit the banner
   await client.ui.resize(document.documentElement.scrollHeight);
 
-  // Helper: dismiss banner and remember course ID
+  // Helper: dismiss banner and remember state
   const dismiss = async () => {
     banner.style.display = 'none';
     await client.ui.resize(0); // Shrinks iframe so it takes zero vertical space
 
-    // Persist dismissed course ID in user storage
-    await client.storage.set('dismissed_course_id', latestCourse.id, 'banner', 'user');
+    // Persist dismissed preference
+    await client.preferences.set('dismissed_banner', true, 'announcements');
   };
 
-  // Close/Cancel button
+  // Close button
   document.getElementById('dismiss-btn')?.addEventListener('click', dismiss);
 
-  // CTA button: navigate to course and dismiss
+  // CTA button: navigate to courses
   document.getElementById('cta-btn')?.addEventListener('click', async () => {
     await dismiss();
-    await client.navigation.open(`/courses/${latestCourse.slug || latestCourse.id}`);
+    await client.navigation.open('/courses');
   });
 }
 
@@ -99,8 +98,7 @@ initBanner().catch(console.error);
 ```
 
 #### Why This Pattern Is Powerful
-- **No Developer Server Required**: The host manages course publishing and storage.
-- **Smart Re-activation**: If an instructor publishes a new course tomorrow (`latestCourse.id` changes), `dismissedCourseId === latestCourse.id` evaluates to `false`, and the banner automatically reappears for the student!
+- **No Remote Server Required**: The host manages preferences and bridge communication.
 - **Clean Collapse**: Calling `client.ui.resize(0)` smoothly collapses the iframe so it leaves zero empty margin in the LMS header.
 
 ---
@@ -113,10 +111,10 @@ Mounted directly beneath the content of an individual lesson in the course reade
 "contributes": {
   "slots": [
     {
-      "id": "lesson-discussion",
+      "id": "lesson-widget",
       "target": "lesson.after",
-      "entrypoint": "discussionBox",
-      "title": "Lesson Discussions"
+      "entrypoint": "widget",
+      "title": "Lesson Widget"
     }
   ]
 }
@@ -125,35 +123,11 @@ Mounted directly beneath the content of an individual lesson in the course reade
 ### Context & Design Guidelines
 - **Available Resource**: `{ type: 'lesson', id: 'lesson-uuid' }`
 - **Dynamic Content**: Because widgets expand dynamically, use `new ResizeObserver()` to call `client.ui.resize()` whenever children render.
-- **Accessing Lesson Data**: Query lesson details or student progress via your backend using the **[Server SDK](/docs/developers/plugins/server-sdk)** with a scoped launch token from `client.auth.requestLaunchCode()`.
+- **Context Inspection**: Call `await client.context.get()` to read the active lesson ID and surface metadata.
 
 ---
 
-## 3. `certificate.templates`
-
-Mounted inside ClassroomIO's visual **Certificate Studio** template picker panel.
-
-```json
-"contributes": {
-  "slots": [
-    {
-      "id": "minimal-dark-template",
-      "target": "certificate.templates",
-      "entrypoint": "templatePreview",
-      "title": "Minimal Dark Certificate"
-    }
-  ]
-}
-```
-
-### Context & Capabilities
-- **Available Resource**: `{ type: 'course', id: 'course-uuid' }`
-- Allows designers to preview custom SVG certificate layouts.
-- When the user selects your template, dispatch an RPC or call `client.certificateTemplates.apply()` to save the template to the course.
-
----
-
-## 4. `plugin.page` (Standalone Full-Page Views)
+## 3. `plugin.page` (Standalone Full-Page Views)
 
 Renders a complete, dedicated full-page application inside the academy at:
 ```text
@@ -197,12 +171,12 @@ In addition to embedded slots, plugins can inject menu buttons and actions into 
 "contributes": {
   "actions": [
     {
-      "id": "share-linkedin",
-      "target": "certificate.actions",
-      "label": "Share to LinkedIn",
-      "icon": { "resource": "dist/linkedin.svg" },
+      "id": "share-lesson",
+      "target": "lesson.actions",
+      "label": "Share Lesson",
+      "icon": { "resource": "dist/share.svg" },
       "actionType": "openUrl",
-      "urlTemplate": "https://www.linkedin.com/sharing/share-offsite/?url={certificateUrl}"
+      "urlTemplate": "https://twitter.com/intent/tweet?text={lessonTitle}"
     }
   ]
 }
