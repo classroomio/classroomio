@@ -163,8 +163,24 @@ export class ClassroomIoApiError extends Error {
   }
 }
 
+export type ClassroomIoApiClientOptions = {
+  /** Transport for API calls; defaults to the global fetch. */
+  fetch?: typeof fetch;
+  /** Sent with every API call, after the built-in headers. */
+  headers?: Record<string, string>;
+};
+
 export class ClassroomIoApiClient {
-  constructor(private readonly config: McpServerConfig) {}
+  private readonly fetchImpl: typeof fetch;
+  private readonly extraHeaders: Record<string, string>;
+
+  constructor(
+    private readonly config: McpServerConfig,
+    options: ClassroomIoApiClientOptions = {}
+  ) {
+    this.fetchImpl = options.fetch ?? fetch;
+    this.extraHeaders = options.headers ?? {};
+  }
 
   async createCourseDraft(payload: TCourseImportDraftCreate) {
     return this.request('/organization/course-import/drafts', {
@@ -969,12 +985,13 @@ export class ClassroomIoApiClient {
   }
 
   private send(path: string, options: RequestOptions) {
-    return fetch(new URL(path, this.config.CLASSROOMIO_API_URL), {
+    return this.fetchImpl(new URL(path, this.config.CLASSROOMIO_API_URL), {
       method: options.method,
       headers: {
         Authorization: `Bearer ${this.config.CLASSROOMIO_API_KEY}`,
         'content-type': 'application/json',
-        'user-agent': this.config.CLASSROOMIO_USER_AGENT
+        'user-agent': this.config.CLASSROOMIO_USER_AGENT,
+        ...this.extraHeaders
       },
       body: options.body ? JSON.stringify(options.body) : undefined
     });

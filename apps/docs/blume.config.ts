@@ -242,6 +242,7 @@ export default defineConfig({
             items: [
               '/developers/mcp',
               '/developers/mcp/setup',
+              '/developers/mcp/remote',
               '/developers/mcp/access-and-limits',
               '/developers/mcp/course-editing'
             ]

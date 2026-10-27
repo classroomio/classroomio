@@ -1,6 +1,6 @@
 # @classroomio/mcp
 
-Thin stdio MCP server for ClassroomIO course authoring.
+Thin MCP server for ClassroomIO course authoring. It runs over stdio for local clients, and ClassroomIO's API also serves it over HTTP for remote clients.
 
 The package does not parse PDFs or generate course structures. The agent does that work. `@classroomio/mcp` only exposes tools, validates tool input, and forwards requests to the ClassroomIO API.
 
@@ -28,6 +28,25 @@ ClassroomIO API
   v
 ClassroomIO DB
 ```
+
+## Transports
+
+### stdio (this package)
+
+`npx -y @classroomio/mcp` starts a local process for clients that can spawn one (Cursor, Claude Code, Codex, OpenCode). It authenticates with `CLASSROOMIO_API_KEY` and pins one organization for the life of the process. It is the only transport that registers `upload_video`, because that tool reads a file from the machine running the server.
+
+### Streamable HTTP (hosted by the API)
+
+Remote clients such as Claude and ChatGPT connect to `POST /mcp` on the ClassroomIO API (`https://mcp.classroomio.com/mcp` on ClassroomIO cloud). The endpoint is stateless and builds one server per request:
+
+- **Authentication.** A request carries `Authorization: Bearer <credential>`, either an OAuth access token issued for the MCP resource or a `cio_mcp_...` automation key. A missing or invalid credential gets `401` with a `WWW-Authenticate` header that points at `/.well-known/oauth-protected-resource`, which starts the OAuth flow in the client. A credential that was not issued for MCP gets `403`.
+- **Per-request identity.** Tool calls run in-process against the real `/public-api/v1` routes with the caller's own credential, so scopes, rate limits, plan limits and usage metering apply exactly as for a direct API call. There is no shared client.
+- **Tools.** The same tools as stdio, without `upload_video`.
+- **Methods.** Only `POST` is accepted. `GET` and `DELETE` return `405` because the server never opens a stream or session.
+
+The API imports `createMcpServer` and `ClassroomIoApiClient` from `@classroomio/mcp/server`. Importing the package root starts the stdio server, so never do that from another process.
+
+Set `MCP_PUBLIC_URL` on the API to the public URL of the endpoint when it is not served at `<API origin>/mcp`.
 
 ## Principles
 
