@@ -38,11 +38,13 @@
   onMount(async () => {
     const clientId = page.url.searchParams.get('client_id');
 
-    if (clientId) {
-      await Promise.all([oauthApi.loadClient(clientId), oauthApi.loadSelectedOrganization()]);
+    try {
+      if (clientId) {
+        await Promise.all([oauthApi.loadClient(clientId), oauthApi.loadSelectedOrganization()]);
+      }
+    } finally {
+      isReady = true;
     }
-
-    isReady = true;
   });
 </script>
 

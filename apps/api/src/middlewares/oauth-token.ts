@@ -3,6 +3,7 @@ import { Context, Next } from 'hono';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { authenticateOAuthAccessTokenService } from '@api/services/oauth/oauth';
 import { touchOrganizationApiKeyLastUsedService } from '@api/services/organization/automation-key';
+import { isInternalRequest } from '@api/utils/internal-request';
 
 export const AUTOMATION_KEY_PREFIX = 'cio_';
 
@@ -15,7 +16,8 @@ export const oauthTokenMiddleware = async (c: Context, next: Next) => {
     }
 
     const accessToken = authHeader.replace('Bearer ', '').trim();
-    const grantKey = await authenticateOAuthAccessTokenService(accessToken);
+    const resource = isInternalRequest(c.req.raw.headers) ? 'any' : 'api';
+    const grantKey = await authenticateOAuthAccessTokenService(accessToken, resource);
 
     c.set('automationKey', grantKey);
     c.set('orgId', grantKey.organizationId);

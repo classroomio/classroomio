@@ -26,7 +26,13 @@
 
     await oauthApi.listOrganizations();
 
-    if (oauthApi.organizations?.length === 1) {
+    if (!oauthApi.organizations) {
+      oauthApi.error = 'oauth.error.generic';
+
+      return;
+    }
+
+    if (oauthApi.organizations.length === 1) {
       await chooseOrganization(oauthApi.organizations[0].id);
     }
   });

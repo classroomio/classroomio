@@ -162,6 +162,10 @@ const authInstance = betterAuth({
 });
 export const auth = authInstance as unknown as ReturnType<typeof betterAuth>;
 
-export { verifyOAuthAccessToken, type OAuthAccessTokenClaims } from './auth/oauth/verify-access-token';
+export {
+  verifyOAuthAccessToken,
+  type OAuthAccessTokenClaims,
+  type OAuthResourceKind
+} from './auth/oauth/verify-access-token';
 export { OAUTH_API_SCOPES, OAUTH_SCOPES } from './auth/oauth/oauth-scopes';
 export { MCP_RESOURCE, OAUTH_ISSUER, PUBLIC_API_RESOURCE } from './constants';

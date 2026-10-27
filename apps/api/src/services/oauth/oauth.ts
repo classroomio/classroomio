@@ -1,7 +1,7 @@
 import type { TOrganizationApiKey } from '@cio/db/types';
-import { verifyOAuthAccessToken } from '@cio/db/auth';
+import { verifyOAuthAccessToken, type OAuthResourceKind } from '@cio/db/auth';
 import {
-  findActiveOAuthConsentId,
+  findActiveOAuthConsent,
   getOAuthOrganizationSelection,
   getOrCreateOAuthGrantKey,
   isActiveOrganizationAdmin,
@@ -13,6 +13,7 @@ import {
 } from '@cio/db/queries/auth';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { assertPublicApiAllowed } from '@api/services/organization/automation-usage';
 
 export async function listOAuthOrganizationsService(userId: string) {
   return listOAuthEligibleOrganizations(userId);
@@ -59,28 +60,43 @@ export async function revokeOAuthConnectedAppService(organizationId: string, con
   }
 }
 
-export async function authenticateOAuthAccessTokenService(token: string): Promise<TOrganizationApiKey> {
-  const claims = await verifyOAuthAccessToken(token).catch(() => null);
+/**
+ * Resolves a bearer OAuth access token to the key that meters its grant.
+ * The token must have been issued for `resource`; MCP tokens are never accepted for the public API
+ * unless the request was dispatched by this process on behalf of an authenticated MCP call.
+ */
+export async function authenticateOAuthAccessTokenService(
+  token: string,
+  resource: OAuthResourceKind
+): Promise<TOrganizationApiKey> {
+  const claims = await verifyOAuthAccessToken(token, resource).catch(() => null);
 
   if (!claims) {
     throw new AppError('Invalid or expired access token', ErrorCodes.UNAUTHORIZED, 401);
   }
 
-  const [isAdmin, consentId] = await Promise.all([
+  const [isAdmin, consent] = await Promise.all([
     isActiveOrganizationAdmin(claims.userId, claims.organizationId),
-    findActiveOAuthConsentId(claims.userId, claims.clientId, claims.organizationId)
+    findActiveOAuthConsent(claims.userId, claims.clientId, claims.organizationId)
   ]);
 
   if (!isAdmin) {
     await revokeUserOAuthGrantsInOrganization(claims.userId, claims.organizationId);
   }
 
-  if (!isAdmin || !consentId) {
+  const consentCreatedAtSeconds = consent ? Math.floor(consent.createdAt.getTime() / 1000) : 0;
+  const isIssuedForThisGrant = claims.issuedAt >= consentCreatedAtSeconds;
+
+  if (!isAdmin || !consent || !isIssuedForThisGrant) {
     throw new AppError('Access has been revoked', ErrorCodes.UNAUTHORIZED, 401);
   }
 
+  if (claims.kind === 'api') {
+    await assertPublicApiAllowed(claims.organizationId);
+  }
+
   const grantKey = await getOrCreateOAuthGrantKey({
-    consentId,
+    consentId: consent.id,
     organizationId: claims.organizationId,
     userId: claims.userId,
     type: claims.kind,

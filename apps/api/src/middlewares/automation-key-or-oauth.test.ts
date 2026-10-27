@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Hono } from '@api/utils/hono';
+import { markInternalRequest } from '@api/utils/internal-request';
 
 import { automationKeyOrOAuthMiddleware } from './automation-key-or-oauth';
 
@@ -51,6 +52,34 @@ describe('automationKeyOrOAuthMiddleware', () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ orgId: 'org-1', actorId: 'user-1', scopes: ['team:read'] });
     expect(mocks.authenticateKey).not.toHaveBeenCalled();
+  });
+
+  it('requires a token issued for the public API on external requests', async () => {
+    mocks.authenticateOAuth.mockResolvedValue(grantKey);
+
+    await buildApp().request('/probe', { headers: { Authorization: 'Bearer eyJhbGciOi' } });
+
+    expect(mocks.authenticateOAuth).toHaveBeenCalledWith('eyJhbGciOi', 'api');
+  });
+
+  it('accepts either resource only for requests dispatched by this process', async () => {
+    mocks.authenticateOAuth.mockResolvedValue(grantKey);
+    const headers = new Headers({ Authorization: 'Bearer eyJhbGciOi' });
+    markInternalRequest(headers);
+
+    await buildApp().request('/probe', { headers });
+
+    expect(mocks.authenticateOAuth).toHaveBeenCalledWith('eyJhbGciOi', 'any');
+  });
+
+  it('does not trust a forged internal request header', async () => {
+    mocks.authenticateOAuth.mockResolvedValue(grantKey);
+
+    await buildApp().request('/probe', {
+      headers: { Authorization: 'Bearer eyJhbGciOi', 'x-cio-internal-request': 'guess' }
+    });
+
+    expect(mocks.authenticateOAuth).toHaveBeenCalledWith('eyJhbGciOi', 'api');
   });
 
   it('answers 401 when the OAuth token is rejected', async () => {
