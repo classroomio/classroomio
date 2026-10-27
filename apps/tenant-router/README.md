@@ -6,7 +6,7 @@ Cloudflare Worker that fronts every browser-facing ClassroomIO host:
 - `myclassroomio.com/*` — apex (301 → `classroomio.com`)
 - `app.classroomio.com/*` — admin dashboard
 - `embed.classroomio.com/*` — public embed widget scripts (R2 `assets` bucket, path-for-path)
-- `mcp.classroomio.com/*` — remote MCP endpoint (`/mcp`) and its OAuth discovery documents, forwarded to the API unchanged
+- `mcp.classroomio.com/*` — remote MCP endpoint (`/` is served by the API's `/mcp`, and `/mcp` still works) and its OAuth discovery documents
 - BYOD customer domains via Approximated (their proxy forwards to `cio-api.onrender.com` directly, not through this Worker)
 
 The Worker forwards each request to one of two Render services based on path:

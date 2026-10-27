@@ -37,7 +37,7 @@ ClassroomIO DB
 
 ### Streamable HTTP (hosted by the API)
 
-Remote clients such as Claude and ChatGPT connect to `POST /mcp` on the ClassroomIO API (`https://mcp.classroomio.com/mcp` on ClassroomIO cloud). The endpoint is stateless and builds one server per request:
+Remote clients such as Claude and ChatGPT connect to `POST /mcp` on the ClassroomIO API (`https://mcp.classroomio.com` on ClassroomIO cloud, where the Cloudflare Worker maps `/` to `/mcp`). The endpoint is stateless and builds one server per request:
 
 - **Authentication.** A request carries `Authorization: Bearer <credential>`, either an OAuth access token issued for the MCP resource or a `cio_mcp_...` automation key. A missing or invalid credential gets `401` with a `WWW-Authenticate` header that points at `/.well-known/oauth-protected-resource`, which starts the OAuth flow in the client. A credential that was not issued for MCP gets `403`.
 - **Per-request identity.** Tool calls run in-process against the real `/public-api/v1` routes with the caller's own credential, so scopes, rate limits, plan limits and usage metering apply exactly as for a direct API call. There is no shared client.
