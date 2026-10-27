@@ -15,6 +15,12 @@
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
   import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
+  import {
+    LESSON_DOCUMENT_ACCEPTED_TYPES,
+    getFileUploadAcceptAttribute,
+    resolveFileUploadMimeType,
+    resolveFileUploadTypeKey
+  } from '@cio/utils/file-upload';
 
   interface Props {
     lessonId?: string;
@@ -30,23 +36,12 @@
 
   let uploadedDocument: NonNullable<Lesson['documents']>[number] | null = $state(null);
 
-  const ALLOWED_TYPES = [
-    'application/pdf',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/msword'
-  ];
+  const acceptAttribute = getFileUploadAcceptAttribute(LESSON_DOCUMENT_ACCEPTED_TYPES);
 
   const uploadLimits = getResolvedUploadLimits();
   const maxDocumentSize = uploadLimits.documentBytes;
 
   const documentUploader = new DocumentUploader();
-
-  function getFileType(file: File): 'pdf' | 'docx' | 'doc' {
-    if (file.type === 'application/pdf') return 'pdf';
-    if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'docx';
-    if (file.type === 'application/msword') return 'doc';
-    return 'pdf'; // fallback
-  }
 
   function formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
@@ -57,7 +52,7 @@
   }
 
   function validateFile(file: File): string | null {
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    if (!resolveFileUploadMimeType(file, LESSON_DOCUMENT_ACCEPTED_TYPES)) {
       return $t('course.navItem.lessons.materials.tabs.document.file_type_error');
     }
 
@@ -116,7 +111,8 @@
       return;
     }
 
-    selectedFile = file;
+    const mimeType = resolveFileUploadMimeType(file, LESSON_DOCUMENT_ACCEPTED_TYPES);
+    selectedFile = mimeType && file.type !== mimeType ? new File([file], file.name, { type: mimeType }) : file;
     $lessonDocUpload.error = null;
   }
 
@@ -176,7 +172,7 @@
       const assetId = asset?.id;
 
       const document = {
-        type: getFileType(selectedFile),
+        type: resolveFileUploadTypeKey(selectedFile, LESSON_DOCUMENT_ACCEPTED_TYPES) ?? 'file',
         name: selectedFile.name,
         link: presignedUrls[fileKey],
         key: fileKey,
@@ -282,7 +278,7 @@
       {:else}
         <div class={isDisabled ? 'pointer-events-none opacity-50' : ''}>
           <FileDropZone.Root
-            accept=".pdf,.docx,.doc,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
+            accept={acceptAttribute}
             maxFiles={1}
             fileCount={0}
             maxFileSize={maxDocumentSize}
