@@ -2,627 +2,379 @@
 
 ## Status
 
-- Draft
+- Draft (v2). Rewritten after the webhooks PRD shipped: triggers are instant (REST Hooks), not polling.
 
 ## Purpose
 
-Ship a Zapier integration that lets non-engineering teams connect ClassroomIO to the tools they already use (CRMs, HRIS, Slack, spreadsheets, email platforms, ticketing) without writing code. The integration must work today against the existing public API and silently upgrade to real-time delivery as the webhooks platform lands.
+Ship a Zapier integration that lets non-engineering teams connect ClassroomIO to the tools they already use (CRMs, HRIS, Slack, spreadsheets, email platforms, ticketing) without writing code. Triggers fire instantly from the shipped webhooks platform. Actions call the existing public REST API.
+
+## At a Glance
+
+### Triggers (ClassroomIO → Zapier: "when this happens in ClassroomIO, start a Zap")
+
+| # | Trigger | What it does | Webhook event |
+| --- | --- | --- | --- |
+| 1 | New Course Enrollment | Fires when a student is added to a course, however it happened (invite, invite link, self-enroll, import, API, SSO, payment, admin, cohort). Includes the source. | `course.member.added` |
+| 2 | Student Removed from Course | Fires when a student is removed from a course. Includes their progress at removal. | `course.member.removed` |
+| 3 | Course Completed | Fires when a student completes all required lessons in a course. | `course.completed` |
+| 4 | Certificate Issued | Fires when a certificate is issued to a learner. Includes certificate id, issue/expiry dates. | `course.certificate.issued` |
+| 5 | Exercise Submitted | Fires when a student submits an exercise. | `course.submission.created` |
+| 6 | Submission Status Changed | Fires when a submission is graded or its status changes. Includes previous and new status. | `course.submission.status_changed` |
+| 7 | Lesson Completed | Fires when a student marks a lesson complete. | `lesson.completion.updated` (`isComplete: true`) |
+| 8 | Course Invite Accepted | Fires when a student accepts a course invite. | `course.invite.accepted` |
+| 9 | Payment Request Created | Fires when a learner submits a payment request for a course. | `course.payment_request.created` |
+| 10 | New Organization Member | Fires when someone joins the organization (student, tutor, or admin). | `organization.member.added` |
+| 11 | Compliance Status Changed | Fires when a learner's compliance record changes (compliant, overdue, expired, and so on). Includes due date and valid-until. | `compliance.record.status_changed` |
+| 12 | Course Published | Fires when a course is published. | `course.published` |
+| 13 | Live Session Scheduled | Fires when a lesson session is scheduled or rescheduled. Includes start time and call URL. | `lesson.session.scheduled` |
+| 14 | Cohort Member Added | Fires when a student is added to a cohort. | `cohort.member.added` |
+
+Optional filters per trigger (applied in the Zapier app): `Course` on triggers 1–9, 11–13; `Cohort` on 14; `Source` on trigger 1.
+
+### Actions (Zapier → ClassroomIO: "do this in ClassroomIO")
+
+| # | Action | What it does | Endpoint | Status |
+| --- | --- | --- | --- | --- |
+| 1 | Enroll Student in Course | Finds or creates the student by email and enrolls them in a course. | `POST /audience` + `POST /courses/:courseId/members` | exists |
+| 2 | Add Student to Organization | Creates an audience member without enrolling them. | `POST /audience` | exists |
+| 3 | Update Student | Updates name, email, or profile fields of an audience member. | `PUT /audience/:memberId` | exists (payload extension) |
+| 4 | Remove Student from Organization | Removes a student from the organization. | `DELETE /audience/:memberId` | exists |
+| 5 | Remove Student from Course | Removes a student from one course. | `DELETE /courses/:courseId/members/:memberId` | exists |
+| 6 | Send Course Invite | Emails an invite to join a course. | `POST /courses/:courseId/invites` | exists |
+| 7 | Revoke Course Invite | Cancels a pending invite. | `POST /courses/:courseId/invites/:inviteId/revoke` | exists |
+| 8 | Reset Student Course Progress | Resets a student's progress in a course. | `POST /courses/:courseId/members/:memberId/reset-progress` | exists |
+| 9 | Mark Lesson Complete | Marks a lesson complete on a student's behalf. | `PUT /courses/:courseId/members/:memberId/lessons/:lessonId/completion` | exists |
+| 10 | Grade Submission | Sets the grade on an exercise submission. | `PUT /courses/:courseId/submissions/:submissionId/grades` | exists |
+| 11 | Add Student to Cohort | Adds a student to a cohort. | `POST /cohorts/:cohortId/members` | exists |
+| 12 | Post to Cohort Feed | Posts an announcement to a cohort's newsfeed. | `POST /cohorts/:cohortId/newsfeed` | exists |
+| 13 | Clone Course | Creates a copy of an existing course. | `POST /courses/:courseId/clone` | exists |
+| 14 | Add / Remove Tag on Student | Applies or removes a tag on an audience member. | `POST` / `DELETE /audience/:memberId/tags` | **new** |
+
+### Searches (find a record so later steps can use it)
+
+| # | Search | What it does | Endpoint |
+| --- | --- | --- | --- |
+| 1 | Find Student | Looks up an audience member by exact email. Powers "Find or Create Student". | `GET /audience?email=` (**new filter**) |
+| 2 | Find Course | Looks up a course by slug or title. Powers "Find or Create Course". | `GET /courses?slug=` / `?title=` (**new filters**) |
+
+### Deferred (not in v1)
+
+- Triggers: `exercise.completion.updated`, invite created/revoked (course and organization), `organization.member.removed`, `organization.member.updated`, `compliance.record.waived`, `course.unpublished`, `cohort.member.removed`.
+- Actions: Issue Certificate and Create Payment Request (no public API route yet), Create Course, Update Course, Publish Course.
+- `program_completed` (no webhook event yet).
 
 ## Problem Statement
 
-ClassroomIO already exposes a versioned public REST API at `/public-api/v1/*` and ships an MCP server, but those surfaces only serve engineering teams. The customers who run training programs (HR, customer success, sales enablement) cannot:
+ClassroomIO exposes a versioned public REST API at `/public-api/v1/*`, an MCP server, and a webhooks platform. All three serve engineering teams. The customers who run training programs (HR, customer success, sales enablement) cannot:
 
 - Enroll learners automatically when a contact reaches a CRM stage.
 - Sync course completions and certificates to HRIS, Drive, or BI warehouses.
 - Trigger Slack/email workflows on learner activity.
-- Connect ClassroomIO into the no-code stacks (Zapier, Make, n8n, Pipedream) that those teams already operate.
+- Connect ClassroomIO into the no-code stacks (Zapier, Make, n8n, Pipedream) those teams operate.
 
-The dashboard already advertises Zapier as an `Automation` tab (`/org/[slug]/automation/zapier`) and the automation-key system supports `type: 'zapier'`, but the page is a coming-soon callout and no Zapier app exists. We have customers who need this integration shipped now.
+The dashboard already advertises Zapier as an `Automation` tab (`/org/[slug]/automation/zapier`), but the page is a coming-soon callout and no Zapier app exists.
 
 ## Confirmed Decisions
 
-These are locked before implementation begins:
-
-1. **Distribution**: ship as a private Zapier app via a single shared invite URL first; promote to the public Zapier directory after ~5 paying orgs are using it and v1 is stable.
-2. **Plan gating**: Early Adopter+ only. Access is binary — either your plan includes Zapier or it doesn't. No monthly task credits. Per-minute rate limits still apply as abuse protection.
-3. **Plan downgrade behavior**: hard cutoff. When an org drops below Early Adopter, all existing OAuth grants are revoked immediately. No grace period.
-4. **Authentication**: OAuth 2.0 authorization code flow with refresh tokens, shipping in v1. No API-key-paste fallback for Zapier. Direct API consumers (Make, n8n, Pipedream, raw curl) keep using existing `type: 'api'` automation keys; Zapier exclusively uses OAuth.
-5. **Scopes**: `zapier:read` and `zapier:write` exist as OAuth scopes. Zapier requests both at connection time; the consent screen lets admins downgrade to read-only.
-6. **Triggers in v1**: polling only. No webhook dependency. Real-time REST Hooks ship in v1.1 once the webhooks PRD lands.
-7. **Trigger scope**: org-wide by default, with optional `Course` and `Tag` dropdown filters per trigger. No separate per-course trigger duplicates.
-8. **iPaaS parity**: the public REST API is the integration surface. Zapier connects via OAuth; Make / n8n / Pipedream can use OAuth too (all three support it) or `type: 'api'` keys for raw HTTP. The Zapier app is packaging only — no Zapier-specific endpoints or payloads.
-9. **Repo location**: `apps/zapier`. The Zapier app is a deployable that gets `zapier push`-ed to Zapier's cloud. Nothing else in the monorepo imports from it, so it sits next to `apps/api` and `apps/dashboard` rather than in `packages/`.
-10. **Revoke UX**: per-grant revoke is available in the dashboard for the safety-net case (compromised Zapier account, employee offboarding). No bulk "Disconnect Zapier" button — customers managing their integration normally do so from inside Zapier.
+1. **Distribution**: private Zapier app via a single shared invite URL first; promote to the public Zapier directory after ~5 paying orgs use it and v1 is stable.
+2. **Plan gating**: Early Adopter+ only. Binary access, no monthly task credits. Per-minute rate limits remain as abuse protection. Zapier's gate must match the webhook delivery entitlement (see Plan Gating).
+3. **Plan downgrade**: hard cutoff. All existing OAuth grants and Zapier webhook subscriptions are revoked immediately.
+4. **Authentication**: OAuth 2.0 authorization code flow with refresh tokens in v1. No API-key-paste fallback for Zapier. Make / n8n / Pipedream / raw HTTP keep using existing `type: 'api'` automation keys, or OAuth.
+5. **Scopes**: `zapier:read` and `zapier:write`. Zapier requests both; the consent screen lets admins downgrade to read-only. Subscribing to a trigger needs only `zapier:read`.
+6. **Triggers are instant**: REST Hooks backed by the shipped webhooks platform. No polling triggers in v1.
+7. **Trigger scope**: org-wide by default, with optional `Course` / `Cohort` / `Source` dropdown filters applied in the Zapier app.
+8. **iPaaS parity**: the public REST API plus webhooks is the integration surface. The Zapier app is packaging only, with no Zapier-specific payloads. The subscription endpoint is generic so other iPaaS vendors can use it.
+9. **Repo location**: `apps/zapier`, a deployable pushed to Zapier's cloud. Nothing else imports from it.
+10. **Revoke UX**: per-grant revoke in the dashboard for the safety-net case. No bulk "Disconnect Zapier" button.
 
 ## Current-State Audit
 
 | Capability | Current State | Notes |
 | --- | --- | --- |
-| Org-scoped automation keys | available | `organization_api_key` already supports `type: 'mcp' \| 'api' \| 'zapier'`. Rotation, revoke, last-used tracking all shipped. The `'zapier'` value becomes unused under the OAuth model (see Technical Design). |
-| Bearer auth middleware | available | `automationKeyMiddleware` + `automationKeyScopesMiddleware` in `apps/api/src/middlewares/`. Will be extended to also accept OAuth access tokens. |
-| OAuth 2.0 server | missing | No OAuth authorization-code flow exists on the API. Required for v1. |
-| OAuth consent screen | missing | No dashboard consent screen for third-party app authorization. Required for v1. |
-| Public REST API | partial | `/public-api/v1/courses` and `/public-api/v1/audience` shipped. Tags, announcements, certificates, course clone, full audience update still missing. |
-| Test-connection endpoint | missing | No `GET /public-api/v1/me` for Zapier's auth-test step. |
-| Polling cursor / since filter | missing | List endpoints support `page/limit` but no `?since=` or `?cursor=` for stable Zapier polling. |
-| Email/slug search filters | missing | Audience list does not accept `?email=`; courses list does not accept `?slug=` or `?title=`. |
-| Webhooks delivery | missing | `prd/webhooks/README.md` written but unshipped. Not a v1 dependency. |
-| Dashboard Zapier tab | partial | `/org/[slug]/automation/zapier` route exists but renders a `coming_soon` callout. Will become an OAuth-grant management page, not a key-management page. |
-| Automation usage tracking | available | `organization_automation_usage` already records `read \| write \| publish` per key. Will be extended to record per OAuth grant. |
-| Plan gating utilities | available | `MCP_AUTOMATION_LIMITS_BY_PLAN` pattern in `packages/utils/src/plans/automation.ts` is the reference for Zapier rate limits. |
-| Marketing positioning | partial | `apps/website/src/routes/automation/+page.svelte` advertises API + Webhooks + MCP. Does not yet mention Zapier. |
-
-## Data Sources Checked
-
-- `packages/db/src/schema.ts` (`organization_api_key`, `organization_automation_usage`)
-- `packages/utils/src/validation/organization/automation-key.ts`
-- `packages/utils/src/validation/public-api/audience.ts`
-- `packages/utils/src/validation/public-api/course.ts`
-- `packages/utils/src/plans/automation.ts`
-- `apps/api/src/middlewares/automation-key.ts`
-- `apps/api/src/middlewares/automation-key-scopes.ts`
-- `apps/api/src/routes/v1/courses.ts`
-- `apps/api/src/routes/v1/audience.ts`
-- `apps/api/src/services/v1/course.ts`
-- `apps/api/src/services/v1/audience.ts`
-- `apps/api/src/services/organization/automation-key.ts`
-- `apps/api/src/services/course/{invite,people,certificate,completion,clone,compliance}.ts`
-- `apps/api/src/services/submission/submission.ts`
-- `apps/api/src/services/newsfeed/newsfeed.ts`
-- `apps/api/src/services/tag.ts`
-- `apps/dashboard/src/lib/features/automation/pages/{mcp,zapier}.svelte`
-- `apps/website/src/routes/automation/+page.svelte`
-- `prd/public-api [DONE]/README.md`
-- `prd/webhooks/README.md`
+| Webhooks platform | **shipped** | 25 event types in `packages/utils/src/validation/webhook/events.ts`. HMAC-SHA256 signing, delivery log, redeliver, retries (`WEBHOOK_MAX_ATTEMPTS = 3`), cap of 20 endpoints per org (`WEBHOOK_MAX_ENDPOINTS_PER_ORG`). |
+| Webhook management API | session auth only | `/organization/webhooks` uses `authMiddleware` + `orgAdminMiddleware`. An OAuth token cannot call it. Zapier needs a bearer-auth subscription route (see Route Layer). |
+| Public REST API | broad | Courses, course members, invites, certificates, submissions and grades, lesson completion, cohorts (members, invites, newsfeed), team, analytics, media, templates. |
+| Public API gaps | small | `GET /me`, tags (list, tag, untag), `?email=` on audience, `?slug=` / `?title=` on courses, broader audience update payload. |
+| Org-scoped automation keys | available | `organization_api_key` supports `mcp \| api \| zapier`. `'zapier'` becomes unused under OAuth. |
+| Bearer auth middleware | available | `automationKeyMiddleware` + `automationKeyScopesMiddleware`. Extended to accept OAuth access tokens. |
+| OAuth 2.0 server and consent screen | missing | Required for v1. |
+| Dashboard Zapier tab | partial | Route exists with a `coming_soon` callout. Becomes an OAuth-grant management page. |
+| Automation usage tracking | available | `organization_automation_usage` records `read \| write \| publish`. Extended per OAuth grant. |
+| Plan gating utilities | available | `MCP_AUTOMATION_LIMITS_BY_PLAN` in `packages/utils/src/plans/automation.ts` is the reference pattern. |
+| Marketing positioning | partial | Automation page advertises API + Webhooks + MCP, not Zapier. |
 
 ## Product Goals
 
-1. An org admin can connect ClassroomIO from inside Zapier in under 60 seconds without copying or pasting any token. The flow is: click Connect on Zapier → log into ClassroomIO → consent → done.
-2. Non-engineering customers can build the three canonical Zaps without code:
-   - CRM new customer → enroll in onboarding course.
-   - Certificate issued → upload to HRIS / Drive.
-   - Exercise submitted → notify tutor in Slack.
-3. The Zapier app exposes a useful but small surface: 5 triggers, 5 actions, 2 searches in v1.
-4. Same OAuth flow and REST endpoints work for Make, n8n, and Pipedream — they support OAuth natively, so no additional development is needed beyond the Zapier package.
-5. Connected Zapier instances are visible to admins in the dashboard, with per-grant revoke for the safety-net case.
-6. The integration is forward-compatible with webhooks: when REST Hooks become available, high-volume triggers (exercise submitted, lesson completed) upgrade with no UX change for the Zapier user.
+1. An org admin connects ClassroomIO from inside Zapier in under 60 seconds, with no token copy-paste: Connect → log in → consent → done.
+2. Non-engineering customers can build the canonical Zaps without code:
+   - CRM new customer → Enroll Student in Course.
+   - Certificate Issued → upload to HRIS / Drive.
+   - Exercise Submitted → notify the tutor in Slack.
+3. 14 instant triggers, 14 actions, and 2 searches in v1.
+4. The same OAuth flow, REST endpoints, and subscription endpoint work for Make, n8n, and Pipedream.
+5. Connected Zapier instances are visible to admins in the dashboard, with per-grant revoke.
+6. A Zap fires within seconds of the event, not on a polling cadence.
 
 ## Non-Goals (v1)
 
-1. Public listing in the Zapier directory (deferred until v1 is validated with ~5 customers).
-2. Real-time triggers via REST Hooks (deferred to v1.1, gated on `prd/webhooks`).
-3. High-volume triggers (`exercise.submitted`, `lesson.completed`) that are impractical on polling.
-4. Make / n8n / Pipedream apps as separate packaged listings (the REST API + OAuth supports them; no curated app yet).
-5. Free / Basic plan access (gated to Early Adopter+).
-6. Inbound webhooks from Zapier to ClassroomIO (Zapier writes via REST actions, not webhooks).
-7. Monthly task credits or Zapier-specific credit budgets (Zapier is a binary plan feature; per-minute rate limits remain for abuse protection only).
-8. Custom triggers / dynamic events authored by the customer.
-9. PKCE / device-code / implicit OAuth grants (only authorization_code + refresh_token grants ship in v1).
-10. OAuth dynamic client registration (Zapier is a hard-coded confidential client; other iPaaS vendors are added by hand in v1).
-11. Bulk "Disconnect Zapier" button in the dashboard (customers disconnect from Zapier's side; admins use per-grant revoke for safety-net cases).
-12. Branding review and Zapier marketplace screenshots (post-private validation).
+1. Public listing in the Zapier directory (after private validation).
+2. Polling triggers (superseded by webhooks).
+3. Make / n8n / Pipedream curated app listings.
+4. Free / Basic plan access.
+5. Inbound webhooks from Zapier to ClassroomIO (Zapier writes via REST actions).
+6. Monthly task credits.
+7. Customer-authored custom triggers.
+8. PKCE / device-code / implicit OAuth grants (authorization_code + refresh_token only).
+9. OAuth dynamic client registration (Zapier is a hard-coded confidential client).
+10. Bulk "Disconnect Zapier" button.
+11. Branding review and Zapier marketplace screenshots.
+12. Deferred triggers and actions listed in At a Glance.
 
 ## User Stories
 
 1. As an HR ops admin, I want a new hire in BambooHR to auto-enroll in the onboarding course so I don't manage a spreadsheet.
-2. As a sales engineer, I want a HubSpot deal moving to "Customer" to enroll the buyer in the product training so onboarding starts on day zero.
-3. As an L&D admin, I want every `certificate.issued` to upload a PDF to the employee's Google Drive folder so my audit trail lives in the source-of-truth.
-4. As a tutor, I want every `exercise.submitted` for my course to DM me in Slack so I can grade quickly.
-5. As a finance ops admin, I want every `payment_request.created` to create a HubSpot deal so I don't reconcile manually.
-6. As an org admin, I want a Zapier-scoped key separate from my raw API keys so I can revoke Zapier without breaking my internal integrations.
-7. As an org admin, I want my Zapier usage to count against the same plan limits as MCP and API so I'm not over-billed by tool sprawl.
+2. As a sales engineer, I want a HubSpot deal moving to "Customer" to enroll the buyer in product training so onboarding starts on day zero.
+3. As an L&D admin, I want every certificate issued to upload a PDF to the employee's Google Drive folder so my audit trail lives in the source of truth.
+4. As a tutor, I want every exercise submission in my course to DM me in Slack so I can grade quickly.
+5. As a finance ops admin, I want every payment request to create a HubSpot deal so I don't reconcile manually.
+6. As a compliance lead, I want an overdue or expired compliance record to open a ticket so nothing slips.
+7. As an org admin, I want to revoke Zapier access without breaking my other integrations.
 
 ## UX Requirements
 
 ### Dashboard Zapier Tab
 
-Route: `/org/[slug]/automation/zapier`. Diverges from the MCP page because Zapier authenticates via OAuth grants, not bearer keys.
+Route: `/org/[slug]/automation/zapier`. Sections, top to bottom:
 
-Required sections (top to bottom):
+1. Admin permission callout for non-admins.
+2. Plan gating callout for orgs below Early Adopter, with an upgrade CTA. No connect flow visible.
+3. "Connect on Zapier" CTA linking to the shared private invite URL (later the public listing).
+4. Connected Zapier instances table, one row per active OAuth grant: label, scopes (`read` / `read+write`), active Zap subscriptions, last used, connected at, status. Row action: revoke.
+5. Rate-limit and subscription-limit summary for the org's plan.
+6. Setup guide with screenshots of the Connect flow.
+7. Docs callout linking to the `apps/docs` Zapier guide.
 
-1. **Admin permission callout** for non-admin users.
-2. **Plan gating callout** for orgs below Early Adopter — copy "Upgrade to Early Adopter to use Zapier" with an upgrade CTA. No connect flow visible.
-3. **"Connect on Zapier" CTA** linking to the shared private invite URL (later the public listing).
-4. **Connected Zapier instances table** — one row per active OAuth grant. Columns: label (e.g. "Zapier — workspace abc.com"), scopes (`read` / `read+write`), last used, connected at, status. Row action: revoke.
-5. **Rate limit summary** — current per-minute read and write caps for the org's plan.
-6. **Setup guide** — step-by-step screenshots of the Connect flow from inside Zapier (click Connect → log in → consent → done).
-7. **Docs callout** linking to `apps/docs` Zapier guide.
+Revoking a grant also deletes that grant's webhook subscriptions. Zapier-created subscriptions are labeled in the existing webhooks tab and are read-only there.
 
-Reuse where possible:
-
-- Read OAuth grants and usage via a new `automationOauth.svelte.ts` API class in `apps/dashboard/src/lib/features/automation/api/`.
-- Shared types live in `apps/dashboard/src/lib/features/automation/utils/types.ts`.
-- Replace the current placeholder in `apps/dashboard/src/lib/features/automation/pages/zapier.svelte`.
+Reuse: `automation-oauth.svelte.ts` API class in `apps/dashboard/src/lib/features/automation/api/`, types in `apps/dashboard/src/lib/features/automation/utils/types.ts`, replacing `pages/zapier.svelte`.
 
 ### Consent Screen
 
-Route: `/oauth/consent` in the dashboard. Triggered by Zapier's `authorize` redirect.
+Route: `/oauth/consent` in the dashboard, reached from Zapier's authorize redirect.
 
-Behavior:
-
-1. If the user is not logged in, redirect to the existing login flow with a `redirect_to=/oauth/consent?...` parameter so they return here after auth.
-2. Render the consenting org's name, the requesting app (Zapier), the requested scopes (`zapier:read`, `zapier:write`), and the redirect URI.
-3. For multi-org users, show an org picker — only orgs where the user is admin AND the plan is Early Adopter+ appear.
-4. Show two buttons: `Authorize` and `Deny`. On `Authorize`, the dashboard POSTs to the API to issue an authorization code, then redirects to Zapier's callback with `?code=…&state=…`. On `Deny`, redirects to Zapier's callback with `?error=access_denied&state=…`.
-5. Admins can untick `zapier:write` on the consent screen to grant a read-only connection.
+1. Unauthenticated users are redirected to login with `redirect_to=/oauth/consent?...`.
+2. Show the org name, the requesting app (Zapier), the requested scopes, and the redirect URI.
+3. Multi-org users get an org picker listing only orgs where they are admin and the plan is Early Adopter+.
+4. `Authorize` POSTs to the API to issue a code, then redirects to Zapier with `?code=…&state=…`. `Deny` redirects with `?error=access_denied&state=…`.
+5. Admins can untick `zapier:write` for a read-only connection.
 
 ### Zapier App UX
 
-The Zapier app surface, as seen by a Zap author:
-
-- **App name**: ClassroomIO
-- **Auth flow**: OAuth 2.0. User clicks `Connect` in Zapier → Zapier opens our `/oauth/authorize` URL → user logs in (if needed) and consents → redirected back to Zapier with a code → Zapier exchanges for tokens silently. No copy-paste.
-- **Test step**: after token exchange, Zapier calls `GET /public-api/v1/me` with the new access token. Shows `{org.name}` on Zapier's connections page.
-- **Trigger picker** lists the 5 triggers below with one-line descriptions matching the website's voice.
-- **Action picker** lists the 5 actions below.
-- **Search picker** lists the 2 searches below.
-- **Dynamic dropdowns**:
-  - `Course` dropdown is powered by `GET /public-api/v1/courses?fields=id,title&limit=100`.
-  - `Tag` dropdown is powered by `GET /public-api/v1/tags?limit=100` (new endpoint, see Technical Design).
-- **Sample data**: every trigger ships a static sample record so Zap authors can build downstream steps without firing a real event.
-- **Token refresh**: the Zapier app uses Zapier's built-in `refresh_token` handling — Zapier auto-refreshes access tokens via our `/oauth/token` endpoint when they expire.
+- **App name**: ClassroomIO.
+- **Auth**: OAuth 2.0, with Zapier's built-in refresh handling against `/oauth/token`.
+- **Test step**: `GET /public-api/v1/me`, shows the org name on Zapier's connections page.
+- **Dynamic dropdowns**: `Course` from `GET /public-api/v1/courses?fields=id,title&limit=100`, `Cohort` from the cohorts list, `Tag` from `GET /public-api/v1/tags?limit=100` (new).
+- **Sample data**: each trigger returns the org's most recent real event of that type, falling back to a static sample (see Route Layer).
 
 ### Marketing Surface
 
-Update `apps/website/src/routes/automation/+page.svelte` and the home page automation band to mention Zapier alongside REST API + Webhooks + MCP. Add a `Connect via Zapier` row to the integrations section. Update the `automate-section.svelte` copy to name Zapier explicitly ("New hire joins BambooHR → enrolled via Zapier").
+Update `apps/website/src/routes/automation/+page.svelte`, the home automation band, and `automate-section.svelte` to name Zapier alongside REST API + Webhooks + MCP. Follow-up PR after private listing; does not gate v1.
 
-This marketing work is a follow-up PR after the integration is private-listed. Tracked in this PRD but does not gate v1 ship.
+## Trigger Design (REST Hooks)
 
-## Trigger Catalog (v1)
+Each trigger is a Zapier REST Hook trigger:
 
-All triggers ship as polling. Each trigger emits `createdAt`-ordered records and dedupes by `id` on the Zapier side.
+1. **subscribe**: Zapier calls `POST /public-api/v1/webhooks/subscriptions` with its unique `targetUrl` and the trigger's event type. The API creates a Zapier-managed webhook endpoint bound to the OAuth grant and returns its id.
+2. **perform**: ClassroomIO delivers the standard webhook envelope to `targetUrl`. The Zapier app unwraps `data`, applies the optional `Course` / `Cohort` / `Source` filter, and returns the record.
+3. **unsubscribe**: Zapier calls `DELETE /public-api/v1/webhooks/subscriptions/:id` when a Zap is turned off.
+4. **performList**: Zapier calls `GET /public-api/v1/webhooks/subscriptions/samples?event=<type>` to populate the Zap editor with the latest real payload of that event type for the org, or a static sample when none exists.
 
-| Trigger | Description | Source endpoint | Optional filters |
-| --- | --- | --- | --- |
-| `new_audience_member` | New student added to the organization audience | `GET /public-api/v1/audience?sortBy=createdAt&sortOrder=desc` | none |
-| `student_enrolled_in_course` | A student was added to a course (invite accepted or direct add) | `GET /public-api/v1/audience/enrollments?sortBy=createdAt&sortOrder=desc` (new) | `courseId`, `tagId` |
-| `course_completed` | A student completed all required lessons in a course | `GET /public-api/v1/course-completions?sortBy=completedAt&sortOrder=desc` (new) | `courseId`, `tagId` |
-| `certificate_issued` | A certificate was issued for a learner | `GET /public-api/v1/certificates?sortBy=issuedAt&sortOrder=desc` (new) | `courseId` |
-| `payment_request_created` | A learner submitted a payment request form | `GET /public-api/v1/payment-requests?sortBy=createdAt&sortOrder=desc` (new) | `courseId` |
+Envelope, headers, signing, and retries are those of `prd/webhooks`. Delivery is at-least-once; the Zapier app dedupes on the envelope `id`.
 
-Deferred to v1.1 (require webhooks for sane volume / latency):
-
-- `exercise_submitted`
-- `exercise_graded`
-- `lesson_completed`
-- `newsfeed_post_created`
-- `community_question_created`
-- `compliance_course_overdue`
-
-Deferred to v2 (no current customer ask):
-
-- `program_completed`
-
-## Action Catalog (v1)
-
-Each action is a thin Zapier wrapper over an existing or new public API write endpoint.
-
-| Action | Description | Endpoint | Scope |
-| --- | --- | --- | --- |
-| `enroll_student_in_course` | Find-or-create the student by email and assign to one or more courses | `POST /public-api/v1/audience` + `POST /public-api/v1/audience/assign-courses` | `zapier:write` |
-| `add_student` | Create an audience member without course assignment | `POST /public-api/v1/audience` | `zapier:write` |
-| `update_student` | Update audience member profile (name, email, custom attributes) | `PUT /public-api/v1/audience/:memberId` (extend payload schema) | `zapier:write` |
-| `remove_student` | Remove a student from the organization | `DELETE /public-api/v1/audience/:memberId` | `zapier:write` |
-| `tag_student` | Apply or remove a tag on an audience member | `POST /public-api/v1/audience/:memberId/tags` (new) | `zapier:write` |
-
-Deferred to v1.1 (need new public API routes that aren't critical-path):
-
-- `send_announcement` (newsfeed post)
-- `issue_certificate`
-- `clone_course_from_template`
-- `publish_course_draft` (already an MCP tool; trivial to expose later)
-- `create_payment_request`
-
-## Search Catalog (v1)
-
-| Search | Description | Endpoint |
-| --- | --- | --- |
-| `find_student_by_email` | Look up audience member by exact email | `GET /public-api/v1/audience?email=…` (new filter) |
-| `find_course` | Look up a course by slug or title | `GET /public-api/v1/courses?slug=…` or `?title=…` (new filters) |
-
-Both searches power Zapier's find-or-create pattern; together with the create actions, Zapier auto-generates "Find or Create Student" and "Find or Create Course" steps with no extra Zapier app code.
+Zapier targets are unguessable HTTPS URLs on `hooks.zapier.com`. Subscribe rejects any other host. Signing stays on.
 
 ## Authentication and Scopes
 
 ### OAuth 2.0 server (new)
 
-Implement the authorization_code + refresh_token grants from RFC 6749 only. No PKCE, implicit, device, or client_credentials grants in v1. Zapier is registered as a single confidential OAuth client.
-
-Endpoints (hosted on the API):
+authorization_code + refresh_token grants (RFC 6749) only. Zapier is registered as a single confidential client.
 
 | Endpoint | Method | Purpose |
 | --- | --- | --- |
-| `/oauth/authorize` | `GET` | Validates `client_id`, `redirect_uri`, `response_type=code`, `scope`, `state`. Redirects the browser to the dashboard consent screen `/oauth/consent`. |
-| `/oauth/authorize/issue` | `POST` | Called by the dashboard consent screen after the admin clicks `Authorize`. Issues a single-use authorization code (TTL 60 seconds) bound to `org_id`, `client_id`, `scopes`, `redirect_uri`, and the consenting user. Returns the code to the dashboard, which redirects the browser to `redirect_uri?code=…&state=…`. |
-| `/oauth/token` | `POST` | Exchanges an authorization code for an access token (TTL 1 hour) + refresh token (TTL 90 days). Also handles `grant_type=refresh_token`. |
+| `/oauth/authorize` | `GET` | Validates `client_id`, `redirect_uri`, `response_type=code`, `scope`, `state`, then redirects to the dashboard consent screen. |
+| `/oauth/authorize/issue` | `POST` | Called by the consent screen (session auth). Issues a single-use code (60 s TTL) bound to org, client, scopes, redirect URI, and consenting user. |
+| `/oauth/token` | `POST` | Exchanges a code for an access token (1 h) + refresh token (90 d, sliding). Also handles `grant_type=refresh_token`. |
 | `/oauth/revoke` | `POST` | Revokes an access or refresh token (RFC 7009). |
 
-Library choice: lean on `oauth4webapi` or roll a minimal implementation. The scope is narrow enough that hand-rolling is reasonable; pick during implementation kickoff.
+### Client registration
 
-### OAuth client registration
-
-Zapier client credentials are stored as environment variables, not in the database, in v1:
-
-- `ZAPIER_OAUTH_CLIENT_ID`
-- `ZAPIER_OAUTH_CLIENT_SECRET`
-- `ZAPIER_OAUTH_REDIRECT_URIS` (comma-separated list of allowed callbacks from Zapier's docs)
-
-A `packages/utils/src/oauth/clients.ts` resolver returns the registered clients keyed by `client_id`. Adding Make / n8n / Pipedream later is a config-only change.
+Env vars: `ZAPIER_OAUTH_CLIENT_ID`, `ZAPIER_OAUTH_CLIENT_SECRET`, `ZAPIER_OAUTH_REDIRECT_URIS`. A resolver in `packages/utils/src/oauth/clients.ts` returns clients keyed by `client_id`, so adding other iPaaS vendors is config-only.
 
 ### Token storage
 
-New tables (see Technical Design):
+Tables `oauth_authorization_code`, `oauth_access_token`, `oauth_refresh_token` (see Technical Design). Tokens and codes are hashed at rest.
 
-- `oauth_authorization_code` — short-lived single-use codes.
-- `oauth_access_token` — hashed `Bearer` tokens.
-- `oauth_refresh_token` — hashed long-lived tokens.
+### Middleware
 
-Every token row carries: `id`, `client_id`, `organization_id`, `granted_by_profile_id`, `scopes`, `created_at`, `expires_at`, `revoked_at`, `last_used_at`.
+Extend `automationKeyMiddleware` into a unified `bearerAuthMiddleware`:
 
-### Middleware integration
+1. Read `Authorization: Bearer …`.
+2. Try an OAuth access token (hash lookup). If valid, set `orgId`, `actorId` (the granting profile), `authSource: 'oauth'`, and `scopes`.
+3. Fall back to the `organization_api_key` path for `type: 'api'` / `'mcp'`.
+4. Return 401 if neither matches.
 
-Extend `automationKeyMiddleware` to a unified `bearerAuthMiddleware` that:
-
-1. Reads `Authorization: Bearer …`.
-2. Tries to resolve the token as an OAuth access token (hash-and-lookup against `oauth_access_token`). If found and not expired or revoked, sets `c.set('orgId')`, `c.set('actorId', granted_by_profile_id)`, `c.set('authSource', 'oauth')`, `c.set('scopes', grant.scopes)`.
-3. Falls back to the existing automation-key path (`organization_api_key`) for `type: 'api'` / `type: 'mcp'` consumers.
-4. Returns 401 if neither path matches.
-
-This means existing API keys keep working unchanged for Make / n8n / Pipedream users who prefer raw bearer tokens. Zapier-only consumers go through OAuth.
+`automationKeyScopesMiddleware` checks OAuth scopes or API-key scopes depending on `authSource`.
 
 ### Scopes
 
-Two OAuth scopes:
+- `zapier:read`: all `GET` endpoints, `GET /me`, and trigger subscribe/unsubscribe/samples.
+- `zapier:write`: all actions (create, update, delete).
 
-- `zapier:read` — list, get, search on courses, audience, submissions, certificates, tags, completions, payment requests.
-- `zapier:write` — create, update, delete on audience, course assignments, tags.
+### Drop `type: 'zapier'` from API key types
 
-Scope-to-route map:
-
-| Endpoint | Required scopes (OAuth) | Required scopes (API key fallback) |
-| --- | --- | --- |
-| `GET /public-api/v1/me` | `zapier:read` | `public_api:*` |
-| All `GET /public-api/v1/*` triggers and searches | `zapier:read` | `public_api:*` |
-| Audience / course / tag write endpoints | `zapier:write` | `public_api:*` |
-
-`automationKeyScopesMiddleware` is extended to check whichever scope set applies based on `c.get('authSource')`.
-
-### Dropping `type: 'zapier'` from API key types
-
-Under the OAuth model, the dashboard never issues Zapier API keys. Update `ZOrganizationApiKeyType` in `packages/utils/src/validation/organization/automation-key.ts` to remove `'zapier'`. Existing rows are zero (the dashboard tab has always been a placeholder), so no migration is needed beyond the schema/enum change.
-
-## Polling Contract
-
-Every list endpoint exposed to Zapier triggers must guarantee:
-
-1. **Stable sort**: `sortBy` and `sortOrder` defaulted to newest-first.
-2. **Stable record ID**: each record returns an `id` that does not change across pages.
-3. **`since` cursor**: accept an optional `?since=<ISO-8601>` query parameter so Zapier can request only records newer than the highest `createdAt` it has already seen. If `since` is absent, return the most recent page only.
-4. **`limit` <= 100** with a default of 50.
-5. **Idempotent**: identical query returns identical results within the polling window.
-
-Zapier polls every 1–15 minutes depending on the customer's Zapier plan. Our endpoints must remain cheap to poll under that cadence.
-
-## Future REST Hooks Upgrade Path
-
-When `prd/webhooks/README.md` ships, we add to the Zapier app:
-
-1. Replace the existing `subscribe` / `unsubscribe` no-ops with calls to the webhook management API (`POST /organization/webhooks` with a Zapier-managed endpoint).
-2. Move the high-volume triggers (`exercise_submitted`, `lesson_completed`, `newsfeed_post_created`) to REST Hook mode and ship them in v1.1.
-3. Keep the existing polling triggers as a fallback when the webhook URL is unreachable.
-
-This is a Zapier-app-only change in v1.1 — the public API surface does not change shape.
+Remove `'zapier'` from `ZOrganizationApiKeyType` in `packages/utils/src/validation/organization/automation-key.ts` and from the `organization_api_key.type` enum. No rows exist, so no data migration.
 
 ## Plan Gating
 
-Zapier is a binary plan feature. No monthly credit budgets.
+Zapier is a binary plan feature.
 
-Add `ZAPIER_AUTOMATION_LIMITS_BY_PLAN` to `packages/utils/src/plans/automation.ts`:
+`ZAPIER_AUTOMATION_LIMITS_BY_PLAN` in `packages/utils/src/plans/automation.ts`:
 
-| Plan | Zapier enabled | Max active grants | Per-org reads / min | Per-org writes / min |
+| Plan | Zapier enabled | Max active grants | Max active trigger subscriptions | Writes / min |
 | --- | --- | --- | --- | --- |
 | Basic | no | 0 | 0 | 0 |
-| Early Adopter | yes | 5 | 120 | 40 |
-| Enterprise | yes | 25 | 360 | 120 |
+| Early Adopter | yes | 5 | 50 | 40 |
+| Enterprise | yes | 25 | 250 | 120 |
 
-Enforcement points:
+Reads use the existing public API per-minute limits.
 
-1. **At `/oauth/authorize`**: reject the request with `error=access_denied` if the consenting org's plan does not include Zapier, or if `max active grants` is already reached.
-2. **At `bearerAuthMiddleware`** for OAuth tokens: reject with 403 + `code: PLAN_GATED` if the org's plan has dropped below Early Adopter since the grant was issued.
-3. **At route entry**: rate-limit against the per-minute caps using the existing rate-limiter middleware, keyed by `(org_id, scope_category)`.
+Trigger subscriptions are counted separately from the 20-endpoint cap on customer-managed webhooks, so a Zapier-heavy org does not exhaust the cap. The subscription numbers are a starting proposal.
 
-Usage tracking: every Zapier API call still increments `organization_automation_usage` with category `read` or `write` for visibility, but no credits are deducted.
+Webhook delivery is itself plan-gated (`webhook-entitlement`). The Zapier plan list must be no wider than the webhook entitlement, so a grant can never exist on a plan where deliveries are suppressed. Confirm the entitlement's plan list before implementation and align the two.
 
-Plan downgrade flow:
+Enforcement:
 
-1. The plan-change service emits an internal event `organization.plan.changed`.
-2. A handler in `apps/api/src/services/oauth/` checks whether the new plan disables Zapier.
-3. If yes, revoke all active OAuth grants for the org by setting `revoked_at` on every related access and refresh token.
-4. The dashboard Zapier tab then shows the plan-gating callout with an upgrade CTA.
+1. `/oauth/authorize`: reject with `access_denied` if the org's plan excludes Zapier or the grant cap is reached.
+2. `bearerAuthMiddleware`: reject OAuth tokens with 403 + `PLAN_GATED` if the plan dropped below Early Adopter.
+3. Subscribe: reject when the subscription cap is reached.
+4. Route entry: rate-limit writes by `(org_id, scope_category)`.
 
-Basic / free plan users still see the dashboard Zapier tab so they understand the feature exists. The Connect CTA is replaced by an upgrade CTA. No connect link is rendered.
+Downgrade flow: the plan-change path in `apps/api/src/services/license.ts` calls `oauth/plan-guard.ts`, which sets `revoked_at` on all of the org's tokens and deletes its Zapier webhook subscriptions. The dashboard tab then shows the upgrade CTA.
+
+Usage tracking: every Zapier API call increments `organization_automation_usage`. Webhook deliveries are tracked in the existing delivery log.
 
 ## Technical Design
 
-### Schema additions
+### Schema additions (`packages/db/src/schema.ts`)
 
-In `packages/db/src/schema.ts`:
+1. `oauth_authorization_code`: `id`, `code_hash` (unique), `client_id`, `organization_id`, `granted_by_profile_id`, `redirect_uri`, `scopes`, `created_at`, `expires_at` (60 s), `consumed_at`.
+2. `oauth_access_token`: `id`, `token_hash` (unique), `token_prefix`, `client_id`, `organization_id`, `granted_by_profile_id`, `refresh_token_id`, `scopes`, `created_at`, `expires_at` (1 h), `revoked_at`, `last_used_at`.
+3. `oauth_refresh_token`: `id`, `token_hash` (unique), `client_id`, `organization_id`, `granted_by_profile_id`, `scopes`, `label`, `created_at`, `expires_at` (90 d, sliding), `revoked_at`, `last_used_at`.
+4. Webhook endpoint table: add nullable `oauth_refresh_token_id` (FK) and a `managed_by` marker (`'zapier'`) so subscriptions are tied to a grant, hidden from the editable list, and removed on revoke. Reuse the existing webhook tables; do not add a parallel delivery system.
 
-1. `oauth_authorization_code`
-   - `id` (UUID, primary)
-   - `code_hash` (string, indexed unique)
-   - `client_id` (string)
-   - `organization_id` (UUID, FK)
-   - `granted_by_profile_id` (UUID, FK)
-   - `redirect_uri` (string)
-   - `scopes` (text[])
-   - `created_at`, `expires_at` (60 s TTL)
-   - `consumed_at` (nullable; codes are single-use)
-2. `oauth_access_token`
-   - `id` (UUID, primary)
-   - `token_hash` (string, indexed unique)
-   - `token_prefix` (first 6 chars for dashboard display)
-   - `client_id`
-   - `organization_id` (FK)
-   - `granted_by_profile_id` (FK)
-   - `refresh_token_id` (FK to `oauth_refresh_token`)
-   - `scopes`
-   - `created_at`, `expires_at` (1 h TTL)
-   - `revoked_at`, `last_used_at`
-3. `oauth_refresh_token`
-   - `id` (UUID, primary)
-   - `token_hash` (string, indexed unique)
-   - `client_id`
-   - `organization_id` (FK)
-   - `granted_by_profile_id` (FK)
-   - `scopes`
-   - `label` (e.g., "Zapier — workspace abc.com" — derived from the Zapier callback URI host)
-   - `created_at`, `expires_at` (90 d TTL, sliding)
-   - `revoked_at`, `last_used_at`
+One migration file for the PR, per the repo's migration rules.
 
-Remove `'zapier'` from the `organization_api_key.type` enum (no migration since no rows use it).
+### Validation layer
 
-### Validation Layer
+- `packages/utils/src/validation/oauth/oauth.ts`: `ZOauthAuthorizeQuery`, `ZOauthIssueCodeBody`, `ZOauthTokenBody`, `ZOauthRevokeBody`, `ZOauthScope`.
+- `packages/utils/src/validation/public-api/me.ts`, `tag.ts`, `webhook-subscription.ts`.
+- Extend `audience.ts` (add `email` filter, broaden update payload) and `course.ts` (add `slug`, `title` filters).
+- Webhook event schemas stay in `validation/webhook/events.ts`; `apps/zapier` imports them.
 
-Add new files:
+### Query layer
 
-- `packages/utils/src/validation/oauth/oauth.ts` — `ZOauthAuthorizeQuery`, `ZOauthIssueCodeBody`, `ZOauthTokenBody`, `ZOauthRevokeBody`, `ZOauthScope`.
-- `packages/utils/src/validation/public-api/tag.ts`
-- `packages/utils/src/validation/public-api/me.ts`
-- `packages/utils/src/validation/public-api/enrollments.ts`
-- `packages/utils/src/validation/public-api/completions.ts`
-- `packages/utils/src/validation/public-api/certificates.ts`
-- `packages/utils/src/validation/public-api/payment-requests.ts`
+- `packages/db/src/queries/oauth/{authorization-code,access-token,refresh-token}.ts`.
+- `packages/db/src/queries/organization/me.ts`.
+- Webhook queries: create, delete, and list Zapier-managed endpoints per grant; latest event of a type per org.
+- Every query logs the original error with its function name.
 
-Extend:
+### Service layer
 
-- `packages/utils/src/validation/public-api/audience.ts` — accept `email` filter on `ZPublicApiAudienceQuery` and broaden `ZPublicApiUpdateAudience` to support full profile (name, locale, custom attributes).
-- `packages/utils/src/validation/public-api/course.ts` — accept `slug` and `title` filters on the list query.
-- `packages/utils/src/validation/organization/automation-key.ts` — remove `'zapier'` from `ZOrganizationApiKeyType`. The `'zapier:read'` / `'zapier:write'` scope strings live in the new OAuth scope enum, not in the automation-key scope enum.
+- `apps/api/src/services/oauth/{clients,authorize,token,revoke,plan-guard}.ts`.
+- `apps/api/src/services/v1/me.ts`, `tag.ts`, `webhook-subscription.ts`.
+- Extend `services/v1/audience.ts` for the update payload and tag/untag.
+- Subscribe validates the target host, the plan, and the cap, then creates the endpoint inside one transaction.
 
-### Query Layer
+### Route layer
 
-Add:
+OAuth (API root): `GET /oauth/authorize`, `POST /oauth/authorize/issue` (session auth), `POST /oauth/token`, `POST /oauth/revoke`.
 
-- `packages/db/src/queries/oauth/authorization-code.ts` — issue, consume, expire.
-- `packages/db/src/queries/oauth/access-token.ts` — issue, lookup by hash, revoke, touch `last_used_at`.
-- `packages/db/src/queries/oauth/refresh-token.ts` — issue, lookup by hash, revoke, list active grants per org.
-- `packages/db/src/queries/course/completions.ts` — list completions ordered by `completedAt` with `since` cursor.
-- `packages/db/src/queries/course/certificates.ts` — list issued certificates with `since` cursor.
-- `packages/db/src/queries/course/payment-requests.ts` — list payment requests with `since` cursor.
-- `packages/db/src/queries/organization/me.ts` — read org + grant metadata for the test-connection endpoint.
+New public API (`/public-api/v1`), each with `describeRoute` and one response type:
 
-### Service Layer
+- `GET /me`
+- `GET /tags`
+- `POST /audience/:memberId/tags`, `DELETE /audience/:memberId/tags/:tagId`
+- `POST /webhooks/subscriptions`, `DELETE /webhooks/subscriptions/:id`
+- `GET /webhooks/subscriptions/samples?event=`
 
-New services:
+Extended: `GET /audience?email=`, `GET /courses?slug=&title=`, `PUT /audience/:memberId`.
 
-- `apps/api/src/services/oauth/clients.ts` — load Zapier client config from env.
-- `apps/api/src/services/oauth/authorize.ts` — validate authorize request, issue code on consent.
-- `apps/api/src/services/oauth/token.ts` — exchange code for tokens, refresh tokens.
-- `apps/api/src/services/oauth/revoke.ts` — revoke tokens.
-- `apps/api/src/services/oauth/plan-guard.ts` — revoke all grants when an org drops below Early Adopter.
-- `apps/api/src/services/v1/me.ts`
-- `apps/api/src/services/v1/tag.ts`
-- `apps/api/src/services/v1/enrollments.ts`
-- `apps/api/src/services/v1/completions.ts`
-- `apps/api/src/services/v1/certificates.ts`
-- `apps/api/src/services/v1/payment-requests.ts`
+### Dashboard routes
 
-Extend `apps/api/src/services/v1/audience.ts` to handle the broadened `update` payload and the `tag/untag` action.
+- `apps/dashboard/src/routes/(app)/oauth/consent/+page.svelte` and `+page.server.ts`.
+- Replace `features/automation/pages/zapier.svelte`.
+- New `features/automation/api/automation-oauth.svelte.ts`.
+- Translations under `automation.zapier.*`, then `pnpm translate`.
 
-Wire `oauth/plan-guard.ts` into the existing plan-change pathway in `apps/api/src/services/license.ts` so downgrades immediately revoke grants.
-
-### Middleware Layer
-
-- New: rename `automationKeyMiddleware` to `bearerAuthMiddleware` (or wrap it) so it tries OAuth tokens first, then falls back to `organization_api_key`.
-- Extend `automationKeyScopesMiddleware` to honor `c.get('authSource')` and check OAuth scopes vs API-key scopes accordingly.
-
-### Route Layer
-
-New OAuth routes (mounted at the API root, not under `/public-api`):
-
-- `GET /oauth/authorize`
-- `POST /oauth/authorize/issue` (called by the dashboard consent screen with session auth, not bearer)
-- `POST /oauth/token`
-- `POST /oauth/revoke`
-
-New public API routes (all under `/public-api/v1`):
-
-- `GET /public-api/v1/me`
-- `GET /public-api/v1/audience/enrollments`
-- `GET /public-api/v1/course-completions`
-- `GET /public-api/v1/certificates`
-- `GET /public-api/v1/payment-requests`
-- `GET /public-api/v1/tags`
-- `POST /public-api/v1/audience/:memberId/tags`
-- `DELETE /public-api/v1/audience/:memberId/tags/:tagId`
-
-Public API routes follow the existing v1 pattern: `bearerAuthMiddleware` + `automationKeyScopesMiddleware` + `describeRoute` + `validator`. Each route returns a single response type per the routing rules in `AGENTS.md`.
-
-### Dashboard Routes
-
-New routes:
-
-- `apps/dashboard/src/routes/(app)/oauth/consent/+page.svelte` — consent screen.
-- `apps/dashboard/src/routes/(app)/oauth/consent/+page.server.ts` — load consent context (client, scopes, redirect URI, eligible orgs).
-
-Replace:
-
-- `apps/dashboard/src/lib/features/automation/pages/zapier.svelte` — new OAuth grant management page.
-- `apps/dashboard/src/routes/(app)/org/[slug]/zapier/+page.svelte` and any associated `+page.server.ts` — hydrate grants list and rate-limit data.
-
-New API class:
-
-- `apps/dashboard/src/lib/features/automation/api/automation-oauth.svelte.ts` — list grants, revoke a grant, consent action.
-
-### Zapier App (`apps/zapier`)
-
-New workspace package:
+### Zapier app (`apps/zapier`)
 
 ```
 apps/zapier/
 ├── package.json
 ├── tsconfig.json
-├── index.ts                    # Zapier app entry
+├── index.ts
 ├── authentication.ts
-├── triggers/
-│   ├── new-audience-member.ts
-│   ├── student-enrolled.ts
-│   ├── course-completed.ts
-│   ├── certificate-issued.ts
-│   ├── payment-request-created.ts
-│   └── program-completed.ts
-├── creates/                    # Zapier name for "actions"
-│   ├── enroll-student-in-course.ts
-│   ├── add-student.ts
-│   ├── update-student.ts
-│   ├── remove-student.ts
-│   └── tag-student.ts
+├── triggers/        # one file per trigger, all REST Hook
+├── creates/         # one file per action
 ├── searches/
-│   ├── find-student-by-email.ts
+│   ├── find-student.ts
 │   └── find-course.ts
 ├── utils/
-│   └── client.ts              # shared fetch wrapper, base URL, headers
+│   ├── client.ts
+│   └── hook.ts      # shared subscribe / unsubscribe / unwrap / dedupe
 └── test/
-    └── *.test.ts
 ```
 
-Dependencies (not introduced into root):
+Dependencies: `zapier-platform-core`, and `@cio/utils` via workspace protocol so webhook and API schema changes break the Zapier build at CI time.
 
-- `zapier-platform-core` (Zapier-required runtime).
-- `@cio/utils` for typed payload schemas via workspace protocol.
-
-Build/release flow:
-
-- `pnpm --filter @cio/zapier build` — typechecks the app.
-- `pnpm --filter @cio/zapier zapier:push` — uploads to Zapier under a private app version.
-- `pnpm --filter @cio/zapier zapier:promote` — manual step to promote a tested version.
-
-No CI auto-push. Promotion is a manual step gated on the on-call engineer.
+Release: `pnpm --filter @cio/zapier build`, `zapier:push` and `zapier:promote` manual and gated on the on-call engineer. No CI auto-push.
 
 ## API and Docs
 
-1. Every new `/public-api/v1/*` route added under this PRD is annotated with `describeRoute` so it lands in the existing OpenAPI generator.
-2. Run `pnpm --filter @cio/api upload:openapi` after route additions.
-3. Add a Zapier guide in `apps/docs`:
-   - Connecting your account (create key in dashboard, paste in Zapier).
-   - Trigger catalog with sample payloads.
-   - Action catalog with required fields.
-   - Search catalog.
-   - Rate limits and plan limits.
-   - Troubleshooting (key revoked, scope missing, plan downgrade).
-4. Update `apps/website/src/routes/automation/+page.svelte` to add a Zapier section alongside REST API + Webhooks + MCP. Include the canonical Zaps as copy.
-5. Add a `Connect on Zapier` button to `apps/website/src/lib/components/automate-section.svelte`.
+1. Annotate every new route with `describeRoute`; run `pnpm --filter @cio/api upload:openapi`.
+2. Add a Zapier guide in `apps/docs`: connect your account (OAuth), trigger catalog with sample payloads, action catalog with required fields, searches, limits, troubleshooting (grant revoked, scope missing, plan downgrade).
+3. Marketing updates as described above (follow-up).
 
 ## Rollout Plan
 
-### Phase 1: OAuth server foundation
-
-1. Schema: `oauth_authorization_code`, `oauth_access_token`, `oauth_refresh_token`.
-2. Queries, services, validation for OAuth.
-3. Routes: `/oauth/authorize`, `/oauth/authorize/issue`, `/oauth/token`, `/oauth/revoke`.
-4. Extend `bearerAuthMiddleware` to resolve OAuth tokens before falling back to automation keys.
-5. Add `zapier:read` / `zapier:write` scope enforcement to `automationKeyScopesMiddleware`.
-6. Plan-guard hook into `license.ts` for downgrade revocation.
-7. Drop `'zapier'` from `organization_api_key.type` enum.
-
-### Phase 2: Consent screen + dashboard
-
-1. Build `/oauth/consent` page in the dashboard with org picker, scope-edit, Authorize / Deny.
-2. Replace `pages/zapier.svelte` placeholder with the OAuth grant management page.
-3. Add `automation.zapier.*` translations (followed by `pnpm translate`).
-4. Plan-gating callout for Basic plan.
-
-### Phase 3: Public API surface
-
-1. Add `GET /public-api/v1/me`.
-2. Extend audience update payload + add `?email=` filter.
-3. Add course list `?slug=` / `?title=` filters.
-4. Add tag list + tag/untag audience endpoints.
-5. Add `enrollments`, `course-completions`, `certificates`, `payment-requests` list endpoints with `?since=` cursors.
-6. Build and upload OpenAPI spec.
-
-### Phase 4: Zapier app
-
-1. Scaffold `apps/zapier` with `zapier-platform-core` configured for OAuth 2.0.
-2. Implement triggers, creates, searches against the public API.
-3. Add dynamic dropdowns powered by `/courses` and `/tags`.
-4. Add sample data for each trigger.
-5. `zapier push` private app version 1.0.0.
-
-### Phase 5: Private validation
-
-1. Distribute the shared private invite URL to paying orgs.
-2. Collect usage data via `organization_automation_usage`.
-3. Iterate on copy, scopes UX, and field defaults based on Zap author feedback.
-4. Update docs and marketing.
-
-### Phase 6: Public listing
-
-1. Submit to Zapier directory review.
-2. Promote app version once approved.
-3. Update marketing site and announce.
-
-### Phase 7 (v1.1): REST Hooks upgrade
-
-1. Wait for `prd/webhooks` ship.
-2. Wire `subscribe` / `unsubscribe` to the webhook management API.
-3. Promote `exercise_submitted`, `lesson_completed`, `newsfeed_post_created` to instant triggers.
-
-### Phase 8 (v2): Programs, more actions, more iPaaS apps
-
-1. Add `program_completed` trigger and `apps/zapier` integration.
-2. Add `send_announcement`, `issue_certificate`, `clone_course_from_template`, `publish_course_draft`, `create_payment_request` actions.
-3. Register Make / n8n / Pipedream as additional OAuth clients (config-only).
-4. Consider native Make and Pipedream packages if customers ask.
+1. **OAuth server**: schema, queries, services, routes, `bearerAuthMiddleware`, scope enforcement, plan-guard, drop `'zapier'` from the key type.
+2. **Consent screen and dashboard**: `/oauth/consent`, grants page, translations, plan callout.
+3. **Public API and subscriptions**: `/me`, filters, tags, audience update, webhook subscription routes, samples, OpenAPI upload.
+4. **Zapier app**: scaffold, 14 triggers, 14 actions, 2 searches, dropdowns, `zapier push` 1.0.0.
+5. **Private validation**: share the invite URL with paying orgs, watch usage and delivery logs, iterate, update docs and marketing.
+6. **Public listing**: submit for directory review, promote, announce.
+7. **v2**: deferred triggers and actions, Issue Certificate and Create Payment Request routes, other iPaaS OAuth clients.
 
 ## Success Metrics
 
-1. >= 5 orgs connect a Zapier key within 30 days of private invite.
-2. >= 100 Zap runs/week within 60 days of private invite.
-3. p95 trigger latency under 5 minutes on the Early Adopter plan (Zapier polling cadence).
-4. < 2% of Zap runs fail due to API errors (excluding user misconfiguration).
-5. >= 80% of connected orgs use at least one trigger and one action (i.e., the integration is bidirectional, not one-way data export).
-6. Zero security incidents related to leaked or misused Zapier keys.
+1. At least 5 orgs connect via OAuth within 30 days of the private invite.
+2. At least 100 Zap runs per week within 60 days.
+3. p95 event-to-Zap latency under 30 seconds.
+4. Under 2% of Zap runs fail on API errors (excluding misconfiguration).
+5. At least 80% of connected orgs use one trigger and one action.
+6. Zero security incidents involving OAuth tokens.
 
 ## Risks and Mitigations
 
-1. **OAuth server is a new attack surface.**
-   - Mitigation: keep the implementation minimal (authorization_code + refresh_token only). Hash tokens at rest. Single-use authorization codes with 60-second TTL. Server-side scope validation. Add OAuth-specific security tests. Run a security review of the implementation before public listing.
-2. **Polling latency dissatisfies customers expecting real-time.**
-   - Mitigation: set expectation in dashboard and docs ("delivered within ~5 minutes on polling, instant after webhooks v1.1"). Prioritize webhooks PRD ship.
-3. **`exercise_submitted` demand on polling.**
-   - Mitigation: do not ship it in v1. Document that it lands with v1.1 / webhooks.
-4. **Zapier's marketplace review rejects public listing.**
-   - Mitigation: stay private until v1 is polished. Use private validation period to fix UX issues Zapier reviewers commonly flag (sample data, error messages, dropdown UX, OAuth flow edge cases).
-5. **Plan gating frustrates Basic users who see the tab but cannot use it.**
-   - Mitigation: clear upgrade CTA copy, and a docs link explaining why Zapier sits on Early Adopter+.
-6. **Plan downgrade silently revokes grants and breaks live Zaps.**
-   - Mitigation: surface a banner in the dashboard 7 days before a known billing-driven downgrade fires (where the billing system gives notice). For immediate downgrades, send a notification email naming each revoked grant and the Zaps that may be affected.
-7. **Drift between Zapier app schema and public API schema.**
-   - Mitigation: `apps/zapier` consumes types from `@cio/utils/validation/public-api` directly so a schema change at the API breaks the Zapier build at CI time.
-8. **Shared private invite URL leaks publicly.**
-   - Mitigation: enforce plan gating at the `/oauth/authorize` step regardless of who clicks Connect. Leakage of the invite URL is harmless because the OAuth flow still verifies the user is an admin of an Early Adopter+ org.
+1. **OAuth server is a new attack surface.** Keep it minimal, hash tokens, single-use 60 s codes, server-side scope validation, security tests, and a security review before public listing.
+2. **Subscription volume.** Each Zap trigger is one subscription. Mitigation: separate caps from the 20-endpoint webhook limit, delete on Zap-off and on revoke, and show counts in the dashboard.
+3. **Retries.** Webhooks retry only 3 times, so a Zapier outage can drop events. Mitigation: dedupe on envelope id; the delivery log lets admins redeliver; consider more attempts for Zapier-managed endpoints.
+4. **Auto-disable.** Failing endpoints get degraded or disabled by the webhook health logic. Mitigation: surface disabled Zapier subscriptions in the grants table and recover them on the next subscribe.
+5. **Plan mismatch.** Zapier and webhook entitlement drifting apart. Mitigation: derive both from one plan helper and add a test.
+6. **Downgrade silently breaks live Zaps.** Send a notification email naming each revoked grant, and show a dashboard banner ahead of known billing-driven downgrades.
+7. **Directory review rejects the listing.** Stay private until sample data, errors, dropdowns, and OAuth edge cases are polished.
+8. **Invite URL leaks.** Plan gating and the admin check at `/oauth/authorize` apply regardless of who clicks Connect.
+9. **Schema drift between the Zapier app and the API.** `apps/zapier` imports `@cio/utils` types.
 
 ## Build and Verification Commands
 
@@ -636,22 +388,26 @@ No CI auto-push. Promotion is a manual step gated on the on-call engineer.
 
 Manual verification:
 
-1. Install the Zapier app via the private invite URL while logged out — confirm Zapier prompts for ClassroomIO login during the OAuth handshake.
-2. Complete the OAuth flow as an org admin on Early Adopter — confirm `Test Connection` in Zapier shows the org name returned by `GET /public-api/v1/me`.
-3. Try the OAuth flow as a non-admin of the same org — confirm `Authorize` is hidden or disabled and Deny redirects with `error=access_denied`.
-4. Try the OAuth flow on a Basic-plan org — confirm `/oauth/authorize` rejects with the upgrade CTA visible.
-5. Untick `zapier:write` on the consent screen — confirm the resulting token only allows read endpoints and `403`s on write endpoints.
-6. Build a Zap: `New audience member` → Slack message. Trigger by adding an audience member; receive Slack message within 5 minutes.
-7. Build a Zap: HubSpot deal → `Enroll student in course`. Add a deal; confirm the audience member appears and is assigned.
-8. Build a Zap: `Certificate issued` → Google Drive upload. Issue a cert; confirm the file appears.
-9. Revoke the grant from the dashboard; confirm all three Zaps surface authentication errors on next run and Zapier shows a re-connect prompt.
-10. Downgrade the org to Basic; confirm the dashboard tab shows the upgrade CTA, the existing grants are revoked immediately, and Zaps fail with a `PLAN_GATED` error.
-11. Force an access token expiry; confirm Zapier transparently refreshes via `/oauth/token` without user interaction.
+1. Install via the invite URL while logged out; Zapier prompts for ClassroomIO login.
+2. Complete OAuth as an Early Adopter admin; the Test step shows the org name from `/me`.
+3. Try OAuth as a non-admin; Authorize is unavailable and Deny returns `access_denied`.
+4. Try OAuth on a Basic org; `/oauth/authorize` rejects with the upgrade CTA.
+5. Untick `zapier:write`; write endpoints return 403 and triggers still work.
+6. Zap: Exercise Submitted → Slack. Submit an exercise; the message arrives within seconds.
+7. Zap: HubSpot deal → Enroll Student in Course. The student appears and is enrolled.
+8. Zap: Certificate Issued → Google Drive upload.
+9. Turn a Zap off; confirm its subscription is deleted. Turn it on; confirm a new one is created.
+10. Revoke the grant in the dashboard; Zaps show re-connect, and its subscriptions are gone.
+11. Downgrade to Basic; the tab shows the upgrade CTA, grants and subscriptions are revoked, and Zaps fail with `PLAN_GATED`.
+12. Force access token expiry; Zapier refreshes silently.
+13. Make the target return 500 repeatedly; confirm retries, the delivery log entry, and the health state.
 
 ## Open Questions
 
-1. Should we use `oauth4webapi` (lighter, OAuth-spec-compliant), `node-oauth2-server` (heavier but battle-tested), or hand-roll the minimal authorization_code + refresh_token grants? Decide at implementation kickoff.
-2. Refresh-token rotation strategy: rotate on every refresh (safer, more complex) or keep the same refresh token across refreshes (simpler, Zapier-compatible)? Zapier supports both — confirm with Zapier docs during build.
-3. Should the consent screen support cross-org consent in a single screen (one Zapier connection covers multiple orgs), or strictly one OAuth grant per org? v1 is one grant per org; cross-org is a v2 question if multi-org admins ask for it.
-4. Where do we display `last_used_at` for a grant? Inside the dashboard grants table only, or also in an email digest? v1 is dashboard-only.
-5. Do we expose any OAuth telemetry (token issue / refresh / revoke counts) to the internal admin tooling, or rely on database queries on demand?
+1. OAuth library: `oauth4webapi`, `node-oauth2-server`, or hand-rolled.
+2. Refresh-token rotation: rotate on every refresh or reuse (Zapier supports both).
+3. One OAuth grant per org (v1) versus cross-org consent later.
+4. Should Zapier-managed endpoints get more than 3 delivery attempts?
+5. Exact subscription caps per plan, and whether Zapier subscriptions should be hidden from the customer's webhooks tab or shown read-only (proposed: read-only).
+6. Which plans webhook delivery is entitled to today; Zapier must match.
+7. Whether cohort and compliance triggers belong in v1 or wait for a customer ask.
