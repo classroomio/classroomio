@@ -42,12 +42,17 @@ class OAuthApi extends BaseApiWithErrors {
   }
 
   async loadClient(clientId: string) {
-    const { data } = await authClient.$fetch<OAuthClientInfo>('/oauth2/public-client', {
-      method: 'GET',
-      query: { client_id: clientId }
-    });
+    try {
+      const { data } = await authClient.$fetch<OAuthClientInfo>('/oauth2/public-client', {
+        method: 'GET',
+        query: { client_id: clientId }
+      });
 
-    this.client = data ?? null;
+      this.client = data ?? null;
+    } catch (error) {
+      console.error('Error loading OAuth client:', error);
+      this.client = null;
+    }
   }
 
   async continueAfterOrganization(oauthQuery: string): Promise<string | null> {
@@ -62,17 +67,24 @@ class OAuthApi extends BaseApiWithErrors {
     this.isLoading = true;
     this.error = null;
 
-    const { data, error } = await authClient.$fetch<OAuthRedirectResponse>(path, { method: 'POST', body });
+    try {
+      const { data, error } = await authClient.$fetch<OAuthRedirectResponse>(path, { method: 'POST', body });
 
-    this.isLoading = false;
+      if (error || !data?.url) {
+        this.error = 'oauth.error.generic';
 
-    if (error || !data?.url) {
-      this.error = error?.message || 'oauth.error.generic';
+        return null;
+      }
+
+      return data.url;
+    } catch (error) {
+      console.error('Error in OAuth authorization step:', error);
+      this.error = 'oauth.error.generic';
 
       return null;
+    } finally {
+      this.isLoading = false;
     }
-
-    return data.url;
   }
 }
 

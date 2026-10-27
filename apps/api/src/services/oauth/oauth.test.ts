@@ -12,7 +12,8 @@ import {
 const mocks = vi.hoisted(() => ({
   verifyOAuthAccessToken: vi.fn(),
   isActiveOrganizationAdmin: vi.fn(),
-  findActiveOAuthConsentId: vi.fn(),
+  findActiveOAuthConsent: vi.fn(),
+  assertPublicApiAllowed: vi.fn(),
   getOrCreateOAuthGrantKey: vi.fn(),
   saveOAuthOrganizationSelection: vi.fn(),
   listOAuthConnectedApps: vi.fn(),
@@ -21,8 +22,11 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('@cio/db/auth', () => ({ verifyOAuthAccessToken: mocks.verifyOAuthAccessToken }));
+vi.mock('@api/services/organization/automation-usage', () => ({
+  assertPublicApiAllowed: mocks.assertPublicApiAllowed
+}));
 vi.mock('@cio/db/queries/auth', () => ({
-  findActiveOAuthConsentId: mocks.findActiveOAuthConsentId,
+  findActiveOAuthConsent: mocks.findActiveOAuthConsent,
   getOrCreateOAuthGrantKey: mocks.getOrCreateOAuthGrantKey,
   isActiveOrganizationAdmin: mocks.isActiveOrganizationAdmin,
   saveOAuthOrganizationSelection: mocks.saveOAuthOrganizationSelection,
@@ -41,15 +45,18 @@ const claims = {
   clientId: 'client-1',
   organizationId: ORG_ID,
   scopes: ['course:read'],
-  kind: 'mcp' as const
+  kind: 'mcp' as const,
+  issuedAt: 1_800_000_100
 };
+
+const CONSENT = { id: CONSENT_ID, createdAt: new Date(1_800_000_000 * 1000) };
 
 describe('authenticateOAuthAccessTokenService', () => {
   beforeEach(() => {
     Object.values(mocks).forEach((mock) => mock.mockReset());
     mocks.verifyOAuthAccessToken.mockResolvedValue(claims);
     mocks.isActiveOrganizationAdmin.mockResolvedValue(true);
-    mocks.findActiveOAuthConsentId.mockResolvedValue(CONSENT_ID);
+    mocks.findActiveOAuthConsent.mockResolvedValue(CONSENT);
     mocks.getOrCreateOAuthGrantKey.mockResolvedValue({
       id: 'key-1',
       organizationId: ORG_ID,
@@ -60,7 +67,7 @@ describe('authenticateOAuthAccessTokenService', () => {
   });
 
   it('returns the grant key carrying only the token scopes', async () => {
-    const key = await authenticateOAuthAccessTokenService('token');
+    const key = await authenticateOAuthAccessTokenService('token', 'any');
 
     expect(key.scopes).toEqual(['course:read']);
     expect(key.organizationId).toBe(ORG_ID);
@@ -69,10 +76,40 @@ describe('authenticateOAuthAccessTokenService', () => {
     );
   });
 
+  it('verifies the token against the requested resource', async () => {
+    await authenticateOAuthAccessTokenService('token', 'api');
+
+    expect(mocks.verifyOAuthAccessToken).toHaveBeenCalledWith('token', 'api');
+  });
+
+  it('rejects a token issued before the current grant was created', async () => {
+    mocks.findActiveOAuthConsent.mockResolvedValue({ id: CONSENT_ID, createdAt: new Date(1_800_000_200 * 1000) });
+
+    await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({ statusCode: 401 });
+    expect(mocks.getOrCreateOAuthGrantKey).not.toHaveBeenCalled();
+  });
+
+  it('requires the public API plan for tokens issued for the public API', async () => {
+    mocks.verifyOAuthAccessToken.mockResolvedValue({ ...claims, kind: 'api' });
+    mocks.assertPublicApiAllowed.mockRejectedValue(
+      Object.assign(new Error('Public API keys require an Early Adopter or Enterprise plan'), { statusCode: 403 })
+    );
+
+    await expect(authenticateOAuthAccessTokenService('token', 'api')).rejects.toMatchObject({ statusCode: 403 });
+    expect(mocks.assertPublicApiAllowed).toHaveBeenCalledWith(ORG_ID);
+    expect(mocks.getOrCreateOAuthGrantKey).not.toHaveBeenCalled();
+  });
+
+  it('does not apply the public API plan check to MCP tokens', async () => {
+    await authenticateOAuthAccessTokenService('token', 'any');
+
+    expect(mocks.assertPublicApiAllowed).not.toHaveBeenCalled();
+  });
+
   it('rejects a token that fails verification', async () => {
     mocks.verifyOAuthAccessToken.mockRejectedValue(new Error('expired'));
 
-    await expect(authenticateOAuthAccessTokenService('token')).rejects.toMatchObject({
+    await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({
       statusCode: 401,
       code: ErrorCodes.UNAUTHORIZED
     });
@@ -82,29 +119,29 @@ describe('authenticateOAuthAccessTokenService', () => {
   it('rejects once the user is no longer an active admin of the organization', async () => {
     mocks.isActiveOrganizationAdmin.mockResolvedValue(false);
 
-    await expect(authenticateOAuthAccessTokenService('token')).rejects.toMatchObject({ statusCode: 401 });
+    await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({ statusCode: 401 });
   });
 
   it('deletes the user grants in that organization when admin access is gone', async () => {
     mocks.isActiveOrganizationAdmin.mockResolvedValue(false);
 
-    await authenticateOAuthAccessTokenService('token').catch(() => null);
+    await authenticateOAuthAccessTokenService('token', 'any').catch(() => null);
 
     expect(mocks.revokeUserGrants).toHaveBeenCalledWith(USER_ID, ORG_ID);
   });
 
   it('keeps the grants of an admin whose grant was already revoked untouched', async () => {
-    mocks.findActiveOAuthConsentId.mockResolvedValue(null);
+    mocks.findActiveOAuthConsent.mockResolvedValue(null);
 
-    await authenticateOAuthAccessTokenService('token').catch(() => null);
+    await authenticateOAuthAccessTokenService('token', 'any').catch(() => null);
 
     expect(mocks.revokeUserGrants).not.toHaveBeenCalled();
   });
 
   it('rejects once the grant has been revoked', async () => {
-    mocks.findActiveOAuthConsentId.mockResolvedValue(null);
+    mocks.findActiveOAuthConsent.mockResolvedValue(null);
 
-    await expect(authenticateOAuthAccessTokenService('token')).rejects.toMatchObject({ statusCode: 401 });
+    await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({ statusCode: 401 });
   });
 });
 

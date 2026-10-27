@@ -119,16 +119,16 @@ export async function getOAuthOrganizationSelection(sessionId: string): Promise<
 }
 
 /**
- * Returns the id of the grant a user gave a client for an organization, or null once it is revoked.
+ * Returns the grant a user gave a client for an organization, or null once it is revoked.
  */
-export async function findActiveOAuthConsentId(
+export async function findActiveOAuthConsent(
   userId: string,
   clientId: string,
   organizationId: string
-): Promise<string | null> {
+): Promise<{ id: string; createdAt: Date } | null> {
   try {
     const [row] = await db
-      .select({ id: schema.oauthConsent.id })
+      .select({ id: schema.oauthConsent.id, createdAt: schema.oauthConsent.createdAt })
       .from(schema.oauthConsent)
       .where(
         and(
@@ -139,9 +139,9 @@ export async function findActiveOAuthConsentId(
       )
       .limit(1);
 
-    return row?.id ?? null;
+    return row ?? null;
   } catch (error) {
-    console.error('findActiveOAuthConsentId error:', error);
+    console.error('findActiveOAuthConsent error:', error);
     throw new Error('Failed to check OAuth grant');
   }
 }
@@ -167,6 +167,7 @@ export async function getOrCreateOAuthGrantKey(data: {
     if (existing) return existing;
 
     const secret = randomBytes(32).toString('base64url');
+    const secretHash = createHash('sha256').update(secret).digest('hex');
 
     await db
       .insert(schema.organizationApiKey)
@@ -176,7 +177,7 @@ export async function getOrCreateOAuthGrantKey(data: {
         type: data.type,
         label: data.label,
         secretPrefix: 'oauth',
-        secretHash: createHash('sha256').update(secret).digest('hex'),
+        secretHash,
         scopes: [],
         oauthConsentId: data.consentId
       })
@@ -309,9 +310,16 @@ export async function listPublicJwks(): Promise<PublicJwk[]> {
       .select({ id: schema.jwks.id, publicKey: schema.jwks.publicKey, alg: schema.jwks.alg })
       .from(schema.jwks);
 
-    return rows.map((row) => ({ ...JSON.parse(row.publicKey), kid: row.id, ...(row.alg && { alg: row.alg }) }));
+    return rows.map(toPublicJwk);
   } catch (error) {
     console.error('listPublicJwks error:', error);
     throw new Error('Failed to list signing keys');
   }
+}
+
+function toPublicJwk(row: { id: string; publicKey: string; alg: string | null }): PublicJwk {
+  const key = JSON.parse(row.publicKey) as Record<string, unknown>;
+  const alg = row.alg ? { alg: row.alg } : {};
+
+  return { ...key, kid: row.id, ...alg };
 }

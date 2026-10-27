@@ -62,7 +62,9 @@
   });
 
   async function handleSsoLogin() {
-    const url = buildSsoRedirectUrl(ssoState.redirectUrl);
+    const url = oauthAuthorizeUrl
+      ? `${window.location.origin}${oauthAuthorizeUrl}`
+      : buildSsoRedirectUrl(ssoState.redirectUrl);
 
     await authClient.signIn.sso({
       email: fields.email,

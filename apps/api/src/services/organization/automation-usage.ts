@@ -55,6 +55,24 @@ async function getOrganizationPlanName(orgId: string): Promise<TPlan> {
   return (activePlan?.planName as TPlan | null) ?? 'BASIC';
 }
 
+/**
+ * Throws 403 unless the organization's plan includes the public API.
+ */
+export async function assertPublicApiAllowed(organizationId: string): Promise<void> {
+  const planName = await getOrganizationPlanName(organizationId);
+  const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
+
+  if (!canUsePublicApi(planName, isSelfHosted)) {
+    throw new AppError(
+      isSelfHosted
+        ? 'Public API keys require an Enterprise plan'
+        : 'Public API keys require an Early Adopter or Enterprise plan',
+      ErrorCodes.UPGRADE_REQUIRED,
+      403
+    );
+  }
+}
+
 export async function assertOrganizationAutomationKeyCreationAllowed(
   organizationId: string,
   type: TOrganizationApiKeyType
@@ -62,17 +80,7 @@ export async function assertOrganizationAutomationKeyCreationAllowed(
   const planName = await getOrganizationPlanName(organizationId);
 
   if (type === AUTOMATION_TYPE.API) {
-    const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
-
-    if (!canUsePublicApi(planName, isSelfHosted)) {
-      throw new AppError(
-        isSelfHosted
-          ? 'Public API keys require an Enterprise plan'
-          : 'Public API keys require an Early Adopter or Enterprise plan',
-        ErrorCodes.UPGRADE_REQUIRED,
-        403
-      );
-    }
+    await assertPublicApiAllowed(organizationId);
   }
 
   if (type !== AUTOMATION_TYPE.MCP) {
