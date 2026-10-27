@@ -35,7 +35,6 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return isRead ? 'team:read' : 'team:write';
   }
 
-  // Moving the site is riskier than other org settings, so it has its own write scope.
   if (ORGANIZATION_DOMAIN_PATH.test(path)) {
     return isRead ? 'organization:read' : 'organization:domain:write';
   }

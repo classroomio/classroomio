@@ -19,12 +19,21 @@ export const domainRouter = new Hono()
       const { action, domain } = c.req.valid('json');
 
       switch (action) {
-        case 'connect':
-          return c.json({ success: true, data: await connectOrgDomain(orgId, domain) }, 200);
-        case 'refresh':
-          return c.json({ success: true, data: await refreshOrgDomain(orgId) }, 200);
-        case 'remove':
-          return c.json({ success: true, data: await removeOrgDomain(orgId) }, 200);
+        case 'connect': {
+          const connected = await connectOrgDomain(orgId, domain);
+
+          return c.json({ success: true, data: connected }, 200);
+        }
+        case 'refresh': {
+          const refreshed = await refreshOrgDomain(orgId);
+
+          return c.json({ success: true, data: refreshed }, 200);
+        }
+        case 'remove': {
+          const removed = await removeOrgDomain(orgId);
+
+          return c.json({ success: true, data: removed }, 200);
+        }
       }
     } catch (error) {
       return handleError(c, error, 'Failed to process domain request');

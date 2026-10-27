@@ -28,13 +28,13 @@ export function registerDomainTools(server: McpServer, apiClient: ClassroomIoApi
     'update_domain',
     `Change the site subdomain or favicon; ${ORG_ADMIN_RULE}. A new subdomain breaks every link to the old one, so confirm with the user first.`,
     ZPublicApiUpdateDomain.shape as unknown as ZodRawShapeCompat,
-    UPDATE,
+    DESTRUCTIVE,
     async (args) => asText(await apiClient.updateDomain(ZPublicApiUpdateDomain.parse(args)))
   );
 
   server.tool(
     'connect_custom_domain',
-    `Connect a custom domain (paid plans only), or reconnect the one already connected; ${ORG_ADMIN_RULE}. Returns the DNS records the user must add; then call refresh_custom_domain until it is verified.`,
+    `Connect a custom domain (paid plan on ClassroomIO Cloud), or reconnect the one already connected; ${ORG_ADMIN_RULE}. Returns the DNS records the user must add; then call refresh_custom_domain until it is verified.`,
     ZPublicApiConnectCustomDomain.shape as unknown as ZodRawShapeCompat,
     UPDATE,
     async (args) => asText(await apiClient.connectCustomDomain(ZPublicApiConnectCustomDomain.parse(args)))

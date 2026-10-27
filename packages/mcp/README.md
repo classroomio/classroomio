@@ -300,7 +300,7 @@ Domain tools act as the key creator, who must be an org admin, the same as the d
 
 - `get_domain` returns the subdomain (`siteName`), the site URL, the favicon and the connected custom domain with its last known `verified` state.
 - `update_domain` changes `siteName` and/or `favicon` (`null` falls back to the logo). A new subdomain breaks every link to the old one.
-- `connect_custom_domain` takes `hostname` and returns the DNS records to add. It needs a paid plan (403 `UPGRADE_REQUIRED`). To switch domains, remove the current one first.
+- `connect_custom_domain` takes `hostname` and returns the DNS records to add. On ClassroomIO Cloud it needs a paid plan (403 `UPGRADE_REQUIRED`); self-hosted instances have no plan limit but return 409 `CUSTOM_DOMAIN_UNAVAILABLE` until Approximated is configured. To switch domains, remove the current one first.
 - `refresh_custom_domain` checks DNS and SSL again; `remove_custom_domain` disconnects the domain on any plan. Both act only on the organization's own connected domain.
 
 Analytics tools are read-only, cost no credits, and act as the key creator:
