@@ -24,7 +24,7 @@ export const FILE_UPLOAD_SUPPORTED_TYPES = [
   {
     value: 'text/x-python',
     label: 'Python (.py)',
-    aliases: ['py', '.py', 'text/x-script.python', 'application/x-python-code']
+    aliases: ['py', '.py', 'text/x-script.python', 'text/x-python-script', 'application/x-python-code']
   },
   { value: 'image/jpeg', label: 'JPEG (.jpg, .jpeg)', aliases: ['jpg', '.jpg', 'jpeg', '.jpeg', 'image/jpg'] },
   { value: 'image/png', label: 'PNG (.png)', aliases: ['png', '.png'] },
