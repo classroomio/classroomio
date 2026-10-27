@@ -86,6 +86,7 @@ import type {
   TPublicApiUpdateCourseCertificate,
   TPublicApiUpdateCourseMember,
   TPublicApiUpdateLesson,
+  TPublicApiUpdateOrganization,
   TPublicApiUpdateTeamMember
 } from '@cio/utils/validation/public-api';
 
@@ -622,6 +623,16 @@ export class ClassroomIoApiClient {
 
   async updateTeamMember(memberId: number, payload: TPublicApiUpdateTeamMember) {
     return this.request(`/public-api/v1/team/${memberId}`, { method: 'PUT', body: payload });
+  }
+
+  // ─── Organization (public API) ──────────────────────────────────────────
+
+  async getOrganization() {
+    return this.request('/public-api/v1/organization', { method: 'GET' });
+  }
+
+  async updateOrganization(payload: TPublicApiUpdateOrganization) {
+    return this.request('/public-api/v1/organization', { method: 'PATCH', body: payload });
   }
 
   // ─── Organization email templates (public API) ──────────────────────────
