@@ -26,6 +26,10 @@ export const oauthTokenMiddleware = async (c: Context, next: Next) => {
     await touchOrganizationApiKeyLastUsedService(grantKey);
     await next();
   } catch (error) {
+    if (error instanceof AppError && error.statusCode === 403) {
+      return c.json({ success: false, error: error.message, code: error.code }, 403);
+    }
+
     const message = error instanceof AppError ? error.message : 'Unauthorized';
 
     return c.json({ success: false, error: message, code: ErrorCodes.UNAUTHORIZED }, 401);

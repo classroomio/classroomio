@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
 import { markInternalRequest } from '@api/utils/internal-request';
 
@@ -88,6 +89,18 @@ describe('automationKeyOrOAuthMiddleware', () => {
     const response = await buildApp().request('/probe', { headers: { Authorization: 'Bearer eyJhbGciOi' } });
 
     expect(response.status).toBe(401);
+  });
+
+  it('keeps a plan restriction as 403 instead of reporting it as an authentication failure', async () => {
+    mocks.authenticateOAuth.mockRejectedValue(
+      new AppError('Public API keys require an Early Adopter or Enterprise plan', ErrorCodes.UPGRADE_REQUIRED, 403)
+    );
+
+    const response = await buildApp().request('/probe', { headers: { Authorization: 'Bearer eyJhbGciOi' } });
+    const body = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(body.code).toBe(ErrorCodes.UPGRADE_REQUIRED);
   });
 
   it('answers 401 without an Authorization header', async () => {
