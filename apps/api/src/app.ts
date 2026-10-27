@@ -2,12 +2,13 @@ import 'dotenv/config';
 
 import * as Sentry from '@sentry/node';
 import { consumeHandoffPayload, storeHandoffPayload } from '@api/utils/redis/oauth-handoff';
-import { isPublicCorsPath, sessionCors } from '@api/middlewares/cors';
+import { isPublicCorsPath, isPublicOAuthPath, publicApiCors, sessionCors } from '@api/middlewares/cors';
 import { randomBytes } from 'crypto';
 
 import { API_SERVER_URL } from '@api/constants';
 import {
   resolveOAuthBrowserOrigin,
+  restoreAuthorizeNavigationMode,
   rewriteAuthRequestUrl,
   rewriteOAuthProxyCallbackLocation,
   shouldRewriteOAuthProxyCallbackLocation
@@ -33,6 +34,7 @@ import { mediaRouter } from '@api/routes/media';
 import { transcriptsRouter } from '@api/routes/transcripts';
 import { mountQueueDashboard } from '@api/routes/admin/queues';
 import { onboardingRouter } from '@api/routes/onboarding';
+import { oauthRouter, wellKnownRouter } from '@api/routes/oauth';
 import { organizationRouter } from '@api/routes/organization';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
@@ -61,6 +63,8 @@ export const app = new Hono()
   // `cross-origin`. CORS still gates which origins can read the bytes.
   .use('*', secureHeaders({ crossOriginResourcePolicy: 'cross-origin' }))
   .use('*', async (c, next) => {
+    if (isPublicOAuthPath(c.req.path)) return publicApiCors(c, next);
+
     if (isPublicCorsPath(c.req.path)) return next();
 
     return sessionCors(c, next);
@@ -167,7 +171,7 @@ export const app = new Hono()
       }
     }
 
-    const response = await auth.handler(request);
+    const response = await auth.handler(restoreAuthorizeNavigationMode(request));
 
     // Outbound: if the OAuth callback redirected to
     // `/oauth-proxy-callback?cookies=…<huge>`, stash the cookies payload
@@ -257,6 +261,8 @@ export const app = new Hono()
   .route('/report', reportRouter)
   .route('/internal', internalRouter)
   .route('/agent', agentRouter)
+  .route('/oauth', oauthRouter)
+  .route('/.well-known', wellKnownRouter)
 
   // Error handling
   .onError((err, c) => {

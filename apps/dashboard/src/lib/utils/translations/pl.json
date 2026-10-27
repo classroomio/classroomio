@@ -527,6 +527,9 @@
       "test_success": "Zdarzenie testowe zostało dostarczone.",
       "test_failed": "Zdarzenie testowe nie powiodło się. Otwórz dziennik dostarczeń, aby zobaczyć powód.",
       "redelivered": "Zdarzenie dodane do kolejki ponownego dostarczenia."
+    },
+    "oauth": {
+      "revoked": "Dostęp aplikacji usunięty"
     }
   },
   "explore": {
@@ -6440,5 +6443,95 @@
     "new_badge": "Nowość",
     "read_full": "Przeczytaj pełny dziennik zmian",
     "close": "Zamknij"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Połącz aplikację z ClassroomIO",
+      "title": "Połącz {client} z ClassroomIO",
+      "workspace": "Przestrzeń robocza: {workspace}",
+      "permissions_heading": "{client} będzie mógł:",
+      "stay_connected": "Pozostań połączony, dopóki nie usuniesz dostępu",
+      "admin_note": "Tylko administratorzy przestrzeni roboczej mogą łączyć aplikacje. Dostęp wynika z Twoich uprawnień administratora i wygasa, jeśli je utracisz.",
+      "redirect_note": "Po zatwierdzeniu zostaniesz przekierowany do {host}.",
+      "allow": "Zezwól na dostęp",
+      "deny": "Odmów",
+      "unknown_client": "Ta aplikacja",
+      "error_title": "To żądanie połączenia jest nieprawidłowe",
+      "error_description": "Wróć do aplikacji, którą łączysz, i zacznij od nowa."
+    },
+    "select_organization": {
+      "title": "Wybierz przestrzeń roboczą",
+      "subtitle": "Wybierz przestrzeń roboczą, do której {client} ma mieć dostęp.",
+      "empty_title": "Brak dostępnych przestrzeni roboczych",
+      "empty_description": "Tylko administratorzy przestrzeni roboczej mogą łączyć aplikacje. Poproś administratora lub zaloguj się na konto administratora."
+    },
+    "error": {
+      "generic": "Coś poszło nie tak. Spróbuj ponownie."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Przeglądać kursy i ich zawartość",
+        "write": "Tworzyć, edytować i publikować kursy oraz ich zawartość"
+      },
+      "exercises": {
+        "read": "Przeglądać ćwiczenia i pytania",
+        "write": "Tworzyć i edytować ćwiczenia oraz pytania"
+      },
+      "course_members": {
+        "read": "Przeglądać uczestników kursu",
+        "write": "Dodawać uczestników kursu i zarządzać nimi oraz ich postępami"
+      },
+      "certificates": {
+        "read": "Przeglądać certyfikaty kursu",
+        "write": "Zarządzać certyfikatami kursu"
+      },
+      "submissions": {
+        "read": "Przeglądać zgłoszenia i oceny",
+        "write": "Oceniać zgłoszenia i zarządzać ocenami"
+      },
+      "cohorts": {
+        "read": "Przeglądać kohorty",
+        "write": "Tworzyć kohorty i zarządzać nimi"
+      },
+      "audience": {
+        "read": "Przeglądać Twoich odbiorców",
+        "write": "Dodawać odbiorców i zarządzać nimi"
+      },
+      "team": {
+        "read": "Przeglądać członków zespołu",
+        "write": "Zarządzać członkami zespołu"
+      },
+      "organization": {
+        "read": "Przeglądać ustawienia przestrzeni roboczej",
+        "write": "Edytować ustawienia, stronę docelową i szablony e-maili"
+      },
+      "analytics": {
+        "read": "Przeglądać statystyki",
+        "write": "Przeglądać statystyki"
+      },
+      "media": {
+        "read": "Przesyłać multimedia",
+        "write": "Przesyłać multimedia"
+      }
+    },
+    "connect": {
+      "title": "Połącz z Claude lub ChatGPT",
+      "description": "Dodaj ClassroomIO jako własny konektor w aplikacji AI za pomocą tego adresu URL, a następnie zaloguj się i zatwierdź dostęp.",
+      "step_1": "W aplikacji AI otwórz ustawienia konektorów lub integracji i dodaj własny konektor.",
+      "step_2": "Wklej powyższy adres URL i rozpocznij połączenie.",
+      "step_3": "Zaloguj się do ClassroomIO, wybierz tę przestrzeń roboczą i zatwierdź uprawnienia."
+    },
+    "connected_apps": {
+      "title": "Połączone aplikacje",
+      "description": "Aplikacje, którym zezwoliłeś na działanie w tej przestrzeni roboczej. Usuń aplikację, aby natychmiast odciąć jej dostęp.",
+      "empty_title": "Brak połączonych aplikacji",
+      "empty_description": "Aplikacje połączone za pomocą powyższego adresu URL pojawią się tutaj.",
+      "table_app": "Aplikacja",
+      "table_authorized_by": "Autoryzowana przez",
+      "table_permissions": "Uprawnienia",
+      "permissions_count": "Obszary: {count}",
+      "revoke": "Usuń dostęp",
+      "revoke_confirm": "Usunąć dostęp tej aplikacji? Przestanie działać natychmiast."
+    }
   }
 }

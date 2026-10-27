@@ -246,6 +246,7 @@ export default defineConfig({
               '/developers/mcp/course-editing'
             ]
           },
+          '/developers/oauth',
           '/developers/webhooks',
           '/developers/token-auth'
         ]

@@ -5491,6 +5491,9 @@
       "test_success": "Evento di prova consegnato con successo.",
       "test_failed": "L'evento di prova non è riuscito. Apri il registro delle consegne per vedere il motivo.",
       "redelivered": "Evento messo in coda per il reinvio."
+    },
+    "oauth": {
+      "revoked": "Accesso dell'app rimosso"
     }
   },
   "specialization": {
@@ -6396,5 +6399,95 @@
     "new_badge": "Nuovo",
     "read_full": "Leggi il changelog completo",
     "close": "Chiudi"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Collega un'app a ClassroomIO",
+      "title": "Collega {client} a ClassroomIO",
+      "workspace": "Spazio di lavoro: {workspace}",
+      "permissions_heading": "{client} potrà:",
+      "stay_connected": "Rimani connesso finché non rimuovi l'accesso",
+      "admin_note": "Solo gli amministratori dello spazio di lavoro possono collegare le app. L'accesso segue le tue autorizzazioni da amministratore e termina se le perdi.",
+      "redirect_note": "Dopo l'approvazione verrai reindirizzato a {host}.",
+      "allow": "Consenti l'accesso",
+      "deny": "Nega",
+      "unknown_client": "Questa app",
+      "error_title": "Questa richiesta di connessione non è valida",
+      "error_description": "Torna all'app che volevi collegare e ricomincia."
+    },
+    "select_organization": {
+      "title": "Scegli uno spazio di lavoro",
+      "subtitle": "Scegli lo spazio di lavoro a cui {client} può accedere.",
+      "empty_title": "Nessuno spazio di lavoro disponibile",
+      "empty_description": "Solo gli amministratori dello spazio di lavoro possono collegare le app. Chiedi a un amministratore o accedi con un account amministratore."
+    },
+    "error": {
+      "generic": "Qualcosa è andato storto. Riprova."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Visualizzare i corsi e i loro contenuti",
+        "write": "Creare, modificare e pubblicare corsi e i loro contenuti"
+      },
+      "exercises": {
+        "read": "Visualizzare esercizi e domande",
+        "write": "Creare e modificare esercizi e domande"
+      },
+      "course_members": {
+        "read": "Visualizzare i membri del corso",
+        "write": "Aggiungere e gestire i membri del corso e i loro progressi"
+      },
+      "certificates": {
+        "read": "Visualizzare i certificati del corso",
+        "write": "Gestire i certificati del corso"
+      },
+      "submissions": {
+        "read": "Visualizzare consegne e voti",
+        "write": "Valutare le consegne e gestire i voti"
+      },
+      "cohorts": {
+        "read": "Visualizzare le coorti",
+        "write": "Creare e gestire coorti"
+      },
+      "audience": {
+        "read": "Visualizzare il tuo pubblico",
+        "write": "Aggiungere e gestire il tuo pubblico"
+      },
+      "team": {
+        "read": "Visualizzare i membri del team",
+        "write": "Gestire i membri del team"
+      },
+      "organization": {
+        "read": "Visualizzare le impostazioni dello spazio di lavoro",
+        "write": "Modificare impostazioni, landing page e modelli di email"
+      },
+      "analytics": {
+        "read": "Visualizzare le analisi",
+        "write": "Visualizzare le analisi"
+      },
+      "media": {
+        "read": "Caricare contenuti multimediali",
+        "write": "Caricare contenuti multimediali"
+      }
+    },
+    "connect": {
+      "title": "Collega da Claude o ChatGPT",
+      "description": "Aggiungi ClassroomIO come connettore personalizzato nella tua app di IA con questo URL, poi accedi e approva l'accesso.",
+      "step_1": "Nella tua app di IA, apri le impostazioni di connettori o integrazioni e aggiungi un connettore personalizzato.",
+      "step_2": "Incolla l'URL qui sopra e avvia il collegamento.",
+      "step_3": "Accedi a ClassroomIO, scegli questo spazio di lavoro e approva le autorizzazioni."
+    },
+    "connected_apps": {
+      "title": "App collegate",
+      "description": "App che hai autorizzato a operare su questo spazio di lavoro. Rimuovi un'app per interrompere subito il suo accesso.",
+      "empty_title": "Nessuna app collegata",
+      "empty_description": "Le app che colleghi con l'URL qui sopra compariranno qui.",
+      "table_app": "App",
+      "table_authorized_by": "Autorizzata da",
+      "table_permissions": "Autorizzazioni",
+      "permissions_count": "{count} aree",
+      "revoke": "Rimuovi accesso",
+      "revoke_confirm": "Rimuovere l'accesso di questa app? Smetterà di funzionare subito."
+    }
   }
 }

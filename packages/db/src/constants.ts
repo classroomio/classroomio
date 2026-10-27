@@ -36,3 +36,14 @@ export const TRUSTED_ORIGINS = [
 
 export const BASE_URL =
   PUBLIC_IS_SELFHOSTED === 'true' && dashboardOrigin ? dashboardOrigin : PUBLIC_SERVER_URL || 'http://localhost:3002';
+
+const DEFAULT_APP_ORIGIN =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
+
+export const APP_ORIGIN = dashboardOrigin || DEFAULT_APP_ORIGIN;
+
+export const OAUTH_ISSUER = `${APP_ORIGIN}/api/auth`;
+
+export const MCP_RESOURCE = (process.env.MCP_PUBLIC_URL?.trim() || `${BASE_URL}/mcp`).replace(/\/$/, '');
+
+export const PUBLIC_API_RESOURCE = `${BASE_URL}/public-api/v1`;

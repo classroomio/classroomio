@@ -527,6 +527,9 @@
       "test_success": "Testhændelsen blev leveret.",
       "test_failed": "Testhændelsen mislykkedes. Åbn leveringsloggen for at se hvorfor.",
       "redelivered": "Hændelsen er sat i kø til ny levering."
+    },
+    "oauth": {
+      "revoked": "Appens adgang er fjernet"
     }
   },
   "explore": {
@@ -6440,5 +6443,95 @@
     "new_badge": "Ny",
     "read_full": "Læs hele ændringsloggen",
     "close": "Luk"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Forbind en app til ClassroomIO",
+      "title": "Forbind {client} til ClassroomIO",
+      "workspace": "Arbejdsområde: {workspace}",
+      "permissions_heading": "{client} vil kunne:",
+      "stay_connected": "Forbliv forbundet, indtil du fjerner adgangen",
+      "admin_note": "Kun administratorer af arbejdsområdet kan forbinde apps. Adgangen følger dine administratorrettigheder og ophører, hvis du mister dem.",
+      "redirect_note": "Når du godkender, bliver du sendt til {host}.",
+      "allow": "Tillad adgang",
+      "deny": "Afvis",
+      "unknown_client": "Denne app",
+      "error_title": "Denne forbindelsesanmodning er ugyldig",
+      "error_description": "Gå tilbage til den app, du forbandt, og start forfra."
+    },
+    "select_organization": {
+      "title": "Vælg et arbejdsområde",
+      "subtitle": "Vælg det arbejdsområde, {client} må have adgang til.",
+      "empty_title": "Intet arbejdsområde tilgængeligt",
+      "empty_description": "Kun administratorer af arbejdsområdet kan forbinde apps. Spørg en administrator, eller log ind med en administratorkonto."
+    },
+    "error": {
+      "generic": "Noget gik galt. Prøv igen."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Se kurser og deres indhold",
+        "write": "Oprette, redigere og udgive kurser og deres indhold"
+      },
+      "exercises": {
+        "read": "Se øvelser og spørgsmål",
+        "write": "Oprette og redigere øvelser og spørgsmål"
+      },
+      "course_members": {
+        "read": "Se kursusmedlemmer",
+        "write": "Tilføje og administrere kursusmedlemmer og deres fremskridt"
+      },
+      "certificates": {
+        "read": "Se kursuscertifikater",
+        "write": "Administrere kursuscertifikater"
+      },
+      "submissions": {
+        "read": "Se afleveringer og karakterer",
+        "write": "Bedømme afleveringer og administrere karakterer"
+      },
+      "cohorts": {
+        "read": "Se kohorter",
+        "write": "Oprette og administrere kohorter"
+      },
+      "audience": {
+        "read": "Se din målgruppe",
+        "write": "Tilføje og administrere din målgruppe"
+      },
+      "team": {
+        "read": "Se teammedlemmer",
+        "write": "Administrere teammedlemmer"
+      },
+      "organization": {
+        "read": "Se indstillinger for arbejdsområdet",
+        "write": "Redigere indstillinger, landingsside og e-mailskabeloner"
+      },
+      "analytics": {
+        "read": "Se analyser",
+        "write": "Se analyser"
+      },
+      "media": {
+        "read": "Uploade medier",
+        "write": "Uploade medier"
+      }
+    },
+    "connect": {
+      "title": "Forbind fra Claude eller ChatGPT",
+      "description": "Tilføj ClassroomIO som en brugerdefineret connector i din AI-app med denne URL, log derefter ind og godkend adgangen.",
+      "step_1": "Åbn indstillingerne for connectors eller integrationer i din AI-app, og tilføj en brugerdefineret connector.",
+      "step_2": "Indsæt URL'en ovenfor, og start forbindelsen.",
+      "step_3": "Log ind på ClassroomIO, vælg dette arbejdsområde, og godkend tilladelserne."
+    },
+    "connected_apps": {
+      "title": "Forbundne apps",
+      "description": "Apps, du har godkendt til at handle i dette arbejdsområde. Fjern en app for at afbryde dens adgang med det samme.",
+      "empty_title": "Ingen forbundne apps",
+      "empty_description": "Apps, du forbinder med URL'en ovenfor, vises her.",
+      "table_app": "App",
+      "table_authorized_by": "Godkendt af",
+      "table_permissions": "Tilladelser",
+      "permissions_count": "{count} områder",
+      "revoke": "Fjern adgang",
+      "revoke_confirm": "Fjern denne apps adgang? Den holder straks op med at virke."
+    }
   }
 }

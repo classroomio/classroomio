@@ -527,6 +527,9 @@
       "test_success": "Testereignis erfolgreich zugestellt.",
       "test_failed": "Das Testereignis ist fehlgeschlagen. Öffnen Sie das Zustellungsprotokoll, um den Grund zu sehen.",
       "redelivered": "Ereignis für die erneute Zustellung eingereiht."
+    },
+    "oauth": {
+      "revoked": "App-Zugriff entfernt"
     }
   },
   "explore": {
@@ -6440,5 +6443,95 @@
     "new_badge": "Neu",
     "read_full": "Vollständiges Änderungsprotokoll lesen",
     "close": "Schließen"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Eine App mit ClassroomIO verbinden",
+      "title": "{client} mit ClassroomIO verbinden",
+      "workspace": "Workspace: {workspace}",
+      "permissions_heading": "{client} kann Folgendes:",
+      "stay_connected": "Verbunden bleiben, bis du den Zugriff entfernst",
+      "admin_note": "Nur Workspace-Admins können Apps verbinden. Der Zugriff folgt deinen Admin-Berechtigungen und endet, wenn du sie verlierst.",
+      "redirect_note": "Nach deiner Zustimmung wirst du zu {host} weitergeleitet.",
+      "allow": "Zugriff erlauben",
+      "deny": "Ablehnen",
+      "unknown_client": "Diese App",
+      "error_title": "Diese Verbindungsanfrage ist ungültig",
+      "error_description": "Kehre zur App zurück, die du verbinden wolltest, und starte erneut."
+    },
+    "select_organization": {
+      "title": "Workspace auswählen",
+      "subtitle": "Wähle den Workspace, auf den {client} zugreifen darf.",
+      "empty_title": "Kein Workspace verfügbar",
+      "empty_description": "Nur Workspace-Admins können Apps verbinden. Frage einen Admin oder melde dich mit einem Admin-Konto an."
+    },
+    "error": {
+      "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Kurse und ihre Inhalte ansehen",
+        "write": "Kurse und ihre Inhalte erstellen, bearbeiten und veröffentlichen"
+      },
+      "exercises": {
+        "read": "Übungen und Fragen ansehen",
+        "write": "Übungen und Fragen erstellen und bearbeiten"
+      },
+      "course_members": {
+        "read": "Kursmitglieder ansehen",
+        "write": "Kursmitglieder und ihren Fortschritt hinzufügen und verwalten"
+      },
+      "certificates": {
+        "read": "Kurszertifikate ansehen",
+        "write": "Kurszertifikate verwalten"
+      },
+      "submissions": {
+        "read": "Abgaben und Bewertungen ansehen",
+        "write": "Abgaben bewerten und Bewertungen verwalten"
+      },
+      "cohorts": {
+        "read": "Kohorten ansehen",
+        "write": "Kohorten erstellen und verwalten"
+      },
+      "audience": {
+        "read": "Deine Zielgruppe ansehen",
+        "write": "Deine Zielgruppe hinzufügen und verwalten"
+      },
+      "team": {
+        "read": "Teammitglieder ansehen",
+        "write": "Teammitglieder verwalten"
+      },
+      "organization": {
+        "read": "Workspace-Einstellungen ansehen",
+        "write": "Workspace-Einstellungen, Landingpage und E-Mail-Vorlagen bearbeiten"
+      },
+      "analytics": {
+        "read": "Analysen ansehen",
+        "write": "Analysen ansehen"
+      },
+      "media": {
+        "read": "Medien hochladen",
+        "write": "Medien hochladen"
+      }
+    },
+    "connect": {
+      "title": "Über Claude oder ChatGPT verbinden",
+      "description": "Füge ClassroomIO mit dieser URL als benutzerdefinierten Connector in deiner KI-App hinzu, melde dich an und genehmige den Zugriff.",
+      "step_1": "Öffne in deiner KI-App die Einstellungen für Connectors oder Integrationen und füge einen benutzerdefinierten Connector hinzu.",
+      "step_2": "Füge die obige URL ein und starte die Verbindung.",
+      "step_3": "Melde dich bei ClassroomIO an, wähle diesen Workspace und genehmige die Berechtigungen."
+    },
+    "connected_apps": {
+      "title": "Verbundene Apps",
+      "description": "Apps, die du für diesen Workspace freigegeben hast. Entferne eine App, um ihren Zugriff sofort zu beenden.",
+      "empty_title": "Keine verbundenen Apps",
+      "empty_description": "Apps, die du mit der obigen URL verbindest, erscheinen hier.",
+      "table_app": "App",
+      "table_authorized_by": "Autorisiert von",
+      "table_permissions": "Berechtigungen",
+      "permissions_count": "{count} Bereiche",
+      "revoke": "Zugriff entfernen",
+      "revoke_confirm": "Zugriff dieser App entfernen? Sie funktioniert dann sofort nicht mehr."
+    }
   }
 }

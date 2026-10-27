@@ -527,6 +527,9 @@
       "test_success": "Evento de prueba entregado correctamente.",
       "test_failed": "El evento de prueba falló. Abra el registro de envíos para ver el motivo.",
       "redelivered": "Evento en cola para reenvío."
+    },
+    "oauth": {
+      "revoked": "Acceso de la app eliminado"
     }
   },
   "explore": {
@@ -6440,5 +6443,95 @@
     "new_badge": "Nuevo",
     "read_full": "Leer el registro de cambios completo",
     "close": "Cerrar"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Conecta una app con ClassroomIO",
+      "title": "Conectar {client} con ClassroomIO",
+      "workspace": "Espacio de trabajo: {workspace}",
+      "permissions_heading": "{client} podrá:",
+      "stay_connected": "Mantener la conexión hasta que quites el acceso",
+      "admin_note": "Solo los administradores del espacio de trabajo pueden conectar apps. El acceso sigue tus permisos de administrador y termina si los pierdes.",
+      "redirect_note": "Después de aprobar, serás enviado a {host}.",
+      "allow": "Permitir acceso",
+      "deny": "Denegar",
+      "unknown_client": "Esta app",
+      "error_title": "Esta solicitud de conexión no es válida",
+      "error_description": "Vuelve a la app que querías conectar y empieza de nuevo."
+    },
+    "select_organization": {
+      "title": "Elige un espacio de trabajo",
+      "subtitle": "Elige el espacio de trabajo al que {client} puede acceder.",
+      "empty_title": "No hay espacios de trabajo disponibles",
+      "empty_description": "Solo los administradores del espacio de trabajo pueden conectar apps. Pide ayuda a un administrador o inicia sesión con una cuenta de administrador."
+    },
+    "error": {
+      "generic": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Ver cursos y su contenido",
+        "write": "Crear, editar y publicar cursos y su contenido"
+      },
+      "exercises": {
+        "read": "Ver ejercicios y preguntas",
+        "write": "Crear y editar ejercicios y preguntas"
+      },
+      "course_members": {
+        "read": "Ver miembros del curso",
+        "write": "Añadir y gestionar miembros del curso y su progreso"
+      },
+      "certificates": {
+        "read": "Ver certificados del curso",
+        "write": "Gestionar certificados del curso"
+      },
+      "submissions": {
+        "read": "Ver entregas y calificaciones",
+        "write": "Calificar entregas y gestionar calificaciones"
+      },
+      "cohorts": {
+        "read": "Ver cohortes",
+        "write": "Crear y gestionar cohortes"
+      },
+      "audience": {
+        "read": "Ver tu audiencia",
+        "write": "Añadir y gestionar tu audiencia"
+      },
+      "team": {
+        "read": "Ver miembros del equipo",
+        "write": "Gestionar miembros del equipo"
+      },
+      "organization": {
+        "read": "Ver la configuración del espacio de trabajo",
+        "write": "Editar la configuración, la página de inicio y las plantillas de correo"
+      },
+      "analytics": {
+        "read": "Ver analíticas",
+        "write": "Ver analíticas"
+      },
+      "media": {
+        "read": "Subir archivos multimedia",
+        "write": "Subir archivos multimedia"
+      }
+    },
+    "connect": {
+      "title": "Conectar desde Claude o ChatGPT",
+      "description": "Añade ClassroomIO como conector personalizado en tu app de IA con esta URL, luego inicia sesión y aprueba el acceso.",
+      "step_1": "En tu app de IA, abre los ajustes de conectores o integraciones y añade un conector personalizado.",
+      "step_2": "Pega la URL de arriba e inicia la conexión.",
+      "step_3": "Inicia sesión en ClassroomIO, elige este espacio de trabajo y aprueba los permisos."
+    },
+    "connected_apps": {
+      "title": "Apps conectadas",
+      "description": "Apps que aprobaste para actuar en este espacio de trabajo. Elimina una app para cortar su acceso de inmediato.",
+      "empty_title": "No hay apps conectadas",
+      "empty_description": "Las apps que conectes con la URL de arriba aparecerán aquí.",
+      "table_app": "App",
+      "table_authorized_by": "Autorizada por",
+      "table_permissions": "Permisos",
+      "permissions_count": "{count} áreas",
+      "revoke": "Quitar acceso",
+      "revoke_confirm": "¿Quitar el acceso de esta app? Dejará de funcionar de inmediato."
+    }
   }
 }
