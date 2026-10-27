@@ -44,6 +44,10 @@ export const APP_ORIGIN = dashboardOrigin || DEFAULT_APP_ORIGIN;
 
 export const OAUTH_ISSUER = `${APP_ORIGIN}/api/auth`;
 
-export const MCP_RESOURCE = (process.env.MCP_PUBLIC_URL?.trim() || `${BASE_URL}/mcp`).replace(/\/$/, '');
+const CLOUD_MCP_URL = 'https://mcp.classroomio.com';
+
+const hasOwnMcpHost = PUBLIC_IS_SELFHOSTED === 'true' || process.env.NODE_ENV === 'development';
+
+export const MCP_RESOURCE = hasOwnMcpHost ? `${BASE_URL}/mcp` : CLOUD_MCP_URL;
 
 export const PUBLIC_API_RESOURCE = `${BASE_URL}/public-api/v1`;
