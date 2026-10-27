@@ -18,7 +18,7 @@ const FORWARDED_CLIENT_HEADERS = ['cf-connecting-ip', 'x-real-ip', 'x-forwarded-
 export async function authenticateMcpCredentialService(credential: string): Promise<TOrganizationApiKey> {
   const key = credential.startsWith(AUTOMATION_KEY_PREFIX)
     ? await authenticateOrganizationApiKeyService(credential)
-    : await authenticateOAuthAccessTokenService(credential);
+    : await authenticateOAuthAccessTokenService(credential, 'mcp');
 
   if (key.type !== 'mcp') {
     throw new AppError('This credential cannot be used with the MCP endpoint', ErrorCodes.FORBIDDEN, 403);

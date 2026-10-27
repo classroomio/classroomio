@@ -2,7 +2,14 @@ import 'dotenv/config';
 
 import * as Sentry from '@sentry/node';
 import { consumeHandoffPayload, storeHandoffPayload } from '@api/utils/redis/oauth-handoff';
-import { isPublicCorsPath, isPublicOAuthPath, publicApiCors, sessionCors } from '@api/middlewares/cors';
+import {
+  isMcpPath,
+  isPublicCorsPath,
+  isPublicOAuthPath,
+  mcpCors,
+  publicApiCors,
+  sessionCors
+} from '@api/middlewares/cors';
 import { randomBytes } from 'crypto';
 
 import { API_SERVER_URL } from '@api/constants';
@@ -66,6 +73,8 @@ export const app = new Hono()
   .use('*', secureHeaders({ crossOriginResourcePolicy: 'cross-origin' }))
   .use('*', async (c, next) => {
     if (isPublicOAuthPath(c.req.path)) return publicApiCors(c, next);
+
+    if (isMcpPath(c.req.path)) return mcpCors(c, next);
 
     if (isPublicCorsPath(c.req.path)) return next();
 

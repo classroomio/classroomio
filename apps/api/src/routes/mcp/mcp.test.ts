@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
 import { setInternalDispatch } from '@api/utils/internal-dispatch';
+import { isInternalRequest } from '@api/utils/internal-request';
+import { mcpCors } from '@api/middlewares/cors';
 
 import { mcpRouter } from './mcp';
 
@@ -89,6 +91,12 @@ describe('POST /mcp', () => {
     expect(mocks.authenticateOAuth).not.toHaveBeenCalled();
   });
 
+  it('requires OAuth tokens to be issued for the MCP resource', async () => {
+    await rpc('initialize', {}, { Authorization: 'Bearer eyJhbGciOi' });
+
+    expect(mocks.authenticateOAuth).toHaveBeenCalledWith('eyJhbGciOi', 'mcp');
+  });
+
   it('completes initialize and reports the server identity', async () => {
     const response = await rpc(
       'initialize',
@@ -126,6 +134,7 @@ describe('POST /mcp', () => {
     expect(new URL(forwarded.url).pathname).toBe('/public-api/v1/team');
     expect(forwarded.headers.get('authorization')).toBe('Bearer eyJhbGciOi');
     expect(forwarded.headers.get('cf-connecting-ip')).toBe('203.0.113.7');
+    expect(isInternalRequest(forwarded.headers)).toBe(true);
   });
 });
 
@@ -135,5 +144,35 @@ describe('other methods on /mcp', () => {
 
     expect(response.status).toBe(405);
     expect(response.headers.get('allow')).toBe('POST');
+  });
+});
+
+describe('mcpCors', () => {
+  const corsApp = new Hono()
+    .use('/mcp', mcpCors)
+    .post('/mcp', (c) => c.body(null, 401, { 'WWW-Authenticate': 'Bearer' }));
+
+  it('answers preflight from any origin with the MCP protocol headers', async () => {
+    const response = await corsApp.request('/mcp', {
+      method: 'OPTIONS',
+      headers: {
+        origin: 'https://client.example.com',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'authorization,content-type,mcp-protocol-version'
+      }
+    });
+
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+    expect(response.headers.get('access-control-allow-headers')?.toLowerCase()).toContain('mcp-protocol-version');
+    expect(response.headers.get('access-control-allow-credentials')).toBeNull();
+  });
+
+  it('exposes WWW-Authenticate so a browser client can start the OAuth flow', async () => {
+    const response = await corsApp.request('/mcp', {
+      method: 'POST',
+      headers: { origin: 'https://client.example.com' }
+    });
+
+    expect(response.headers.get('access-control-expose-headers')).toContain('WWW-Authenticate');
   });
 });
