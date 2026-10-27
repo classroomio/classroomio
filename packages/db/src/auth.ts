@@ -163,6 +163,7 @@ const authInstance = betterAuth({
 export const auth = authInstance as unknown as ReturnType<typeof betterAuth>;
 
 export {
+  InvalidOAuthTokenError,
   verifyOAuthAccessToken,
   type OAuthAccessTokenClaims,
   type OAuthResourceKind

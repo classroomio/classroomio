@@ -23,6 +23,20 @@ function getAudiences(resource: OAuthResourceKind): string[] {
   return resource === 'any' ? [MCP_RESOURCE, PUBLIC_API_RESOURCE] : [RESOURCE_BY_KIND[resource]];
 }
 
+const MIN_FORCED_REFRESH_INTERVAL_MS = 10 * 1000;
+
+/**
+ * Thrown when a token is malformed, expired, signed by an unknown key or issued for another resource.
+ * Any other failure while verifying is an infrastructure error and is not wrapped.
+ */
+export class InvalidOAuthTokenError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'InvalidOAuthTokenError';
+  }
+}
+
+let lastForcedRefreshAt = 0;
 let cachedJwks: { keySet: ReturnType<typeof createLocalJWKSet>; expiresAt: number } | null = null;
 
 async function getKeySet() {
@@ -42,8 +56,11 @@ async function verifyWithKeyRefresh(token: string, resource: OAuthResourceKind) 
 
     return payload;
   } catch (error) {
-    if (!(error instanceof errors.JWKSNoMatchingKey)) throw error;
+    const canRefresh = Date.now() - lastForcedRefreshAt >= MIN_FORCED_REFRESH_INTERVAL_MS;
 
+    if (!(error instanceof errors.JWKSNoMatchingKey) || !canRefresh) throw error;
+
+    lastForcedRefreshAt = Date.now();
     cachedJwks = null;
     const { payload } = await jwtVerify(token, await getKeySet(), options);
 
@@ -59,7 +76,11 @@ export async function verifyOAuthAccessToken(
   token: string,
   resource: OAuthResourceKind
 ): Promise<OAuthAccessTokenClaims> {
-  const payload = await verifyWithKeyRefresh(token, resource);
+  const payload = await verifyWithKeyRefresh(token, resource).catch((error: unknown) => {
+    if (error instanceof errors.JOSEError) throw new InvalidOAuthTokenError(error.message);
+
+    throw error;
+  });
 
   const organizationId = payload.org_id;
   const clientId = payload.azp;
@@ -70,14 +91,14 @@ export async function verifyOAuthAccessToken(
     typeof clientId !== 'string' ||
     typeof payload.iat !== 'number'
   ) {
-    throw new Error('OAuth access token is missing required claims');
+    throw new InvalidOAuthTokenError('OAuth access token is missing required claims');
   }
 
   const grantedScopes = typeof payload.scope === 'string' ? payload.scope.split(' ') : [];
   const scopes = grantedScopes.filter((scope) => OAUTH_API_SCOPES.some((allowed) => allowed === scope));
 
   const audiences = Array.isArray(payload.aud) ? payload.aud : payload.aud ? [payload.aud] : [];
-  const kind = audiences.includes(MCP_RESOURCE) ? 'mcp' : 'api';
+  const kind = resource === 'any' ? (audiences.includes(MCP_RESOURCE) ? 'mcp' : 'api') : resource;
 
   return { userId: payload.sub, clientId, organizationId, scopes, kind, issuedAt: payload.iat };
 }
