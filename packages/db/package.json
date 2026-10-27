@@ -111,6 +111,7 @@
     "better-auth": "^1.7.13",
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.44.7",
+    "fractional-indexing": "^4.0.0",
     "jose": "^6.2.13",
     "postgres": "^3.4.7"
   },

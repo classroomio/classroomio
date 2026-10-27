@@ -1,3 +1,4 @@
+import { seedLessonBlocks } from '../lesson-blocks';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { createAsset, createAssetUsage, getActiveAssetBySourceUrl } from '@db/queries/assets';
 import {
@@ -318,8 +319,14 @@ async function insertLaunchTemplate(orgId: string, fixture: LaunchTemplateFixtur
           slug: lessonSlugs[index],
           order: index + 1,
           isUnlocked: true,
-          public: fixture.type === 'PUBLIC',
-          videos: videosByLesson[index] ?? []
+          public: fixture.type === 'PUBLIC'
+        })),
+        dbClient
+      );
+      await seedLessonBlocks(
+        lessons.map((lesson, index) => ({
+          lessonId: lesson.id,
+          blocks: (videosByLesson[index] ?? []).map((video) => ({ type: 'video' as const, data: video }))
         })),
         dbClient
       );

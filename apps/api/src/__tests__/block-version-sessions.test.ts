@@ -5,12 +5,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // eslint-disable-next-line no-var
 var TX = { __transaction: true };
 
-vi.mock('@cio/db/queries/lesson/version', () => ({
-  extendLessonLanguageVersion: vi.fn(),
-  getLatestLessonLanguageVersion: vi.fn(),
-  insertLessonLanguageVersion: vi.fn(),
-  lockLessonLanguageVersionSession: vi.fn(),
-  promoteLessonLanguageVersion: vi.fn(),
+vi.mock('@cio/db/queries/block/version', () => ({
+  extendBlockLocaleVersion: vi.fn(),
+  getLatestBlockLocaleVersion: vi.fn(),
+  insertBlockLocaleVersion: vi.fn(),
+  lockBlockLocaleVersionSession: vi.fn(),
+  promoteBlockLocaleVersion: vi.fn(),
   sealLatestLessonVersionsForCourse: vi.fn()
 }));
 
@@ -23,28 +23,28 @@ vi.mock('@cio/db/drizzle', () => ({
 }));
 
 import { LESSON_VERSION_SESSION_IDLE_MS, LESSON_VERSION_SESSION_MAX_MS } from '@cio/utils/constants/lesson-version';
-import { canExtendVersionSession, recordLessonLanguageVersion } from '@cio/core/services/lesson-version';
+import { canExtendVersionSession, recordBlockLocaleVersion } from '@cio/core/services/block/block-version';
 import {
-  extendLessonLanguageVersion,
-  getLatestLessonLanguageVersion,
-  insertLessonLanguageVersion,
-  lockLessonLanguageVersionSession,
-  promoteLessonLanguageVersion
-} from '@cio/db/queries/lesson/version';
+  extendBlockLocaleVersion,
+  getLatestBlockLocaleVersion,
+  insertBlockLocaleVersion,
+  lockBlockLocaleVersionSession,
+  promoteBlockLocaleVersion
+} from '@cio/db/queries/block/version';
 
-import type { LessonVersionSessionState } from '@cio/db/queries/lesson/version';
+import type { BlockVersionSessionState } from '@cio/db/queries/block/version';
 
 const AUTHOR_ID = 'c2d4f6a8-0b9c-4d2e-8f1a-3e5d7c9b1a23';
 const OTHER_AUTHOR_ID = 'd3e5a7b9-1c0d-4e3f-9a2b-4f6e8d0c2b34';
 const LESSON_LANGUAGE_ID = 42;
 const NOW = new Date('2026-03-10T14:00:00.000Z').getTime();
 
-function buildLatest(overrides: Partial<LessonVersionSessionState> = {}): LessonVersionSessionState {
+function buildLatest(overrides: Partial<BlockVersionSessionState> = {}): BlockVersionSessionState {
   const oneMinuteAgo = new Date(NOW - 60_000).toISOString();
 
   return {
     id: 7,
-    lessonLanguageId: LESSON_LANGUAGE_ID,
+    blockLocaleId: LESSON_LANGUAGE_ID,
     newContent: '<p>previous</p>',
     kind: 'auto',
     label: null,
@@ -119,17 +119,17 @@ describe('canExtendVersionSession', () => {
   });
 });
 
-describe('recordLessonLanguageVersion', () => {
+describe('recordBlockLocaleVersion', () => {
   beforeEach(() => {
     // The service reads the wall clock to decide whether a session is still
     // open, so pin it to the fixtures' reference time.
     vi.useFakeTimers();
     vi.setSystemTime(NOW);
     vi.clearAllMocks();
-    vi.mocked(getLatestLessonLanguageVersion).mockResolvedValue(null);
-    vi.mocked(insertLessonLanguageVersion).mockImplementation(async (data) => ({ ...buildLatest(), ...data }) as any);
-    vi.mocked(extendLessonLanguageVersion).mockResolvedValue(buildLatest());
-    vi.mocked(promoteLessonLanguageVersion).mockResolvedValue(buildLatest({ kind: 'manual', isSealed: true }));
+    vi.mocked(getLatestBlockLocaleVersion).mockResolvedValue(null);
+    vi.mocked(insertBlockLocaleVersion).mockImplementation(async (data) => ({ ...buildLatest(), ...data }) as any);
+    vi.mocked(extendBlockLocaleVersion).mockResolvedValue(buildLatest());
+    vi.mocked(promoteBlockLocaleVersion).mockResolvedValue(buildLatest({ kind: 'manual', isSealed: true }));
   });
 
   afterEach(() => {
@@ -137,29 +137,29 @@ describe('recordLessonLanguageVersion', () => {
   });
 
   it('records nothing when the caller opted out', async () => {
-    const result = await recordLessonLanguageVersion({
-      lessonLanguageId: LESSON_LANGUAGE_ID,
+    const result = await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
       content: '<p>changed</p>',
       intent: 'none'
     });
 
     expect(result).toBeNull();
-    expect(getLatestLessonLanguageVersion).not.toHaveBeenCalled();
-    expect(insertLessonLanguageVersion).not.toHaveBeenCalled();
+    expect(getLatestBlockLocaleVersion).not.toHaveBeenCalled();
+    expect(insertBlockLocaleVersion).not.toHaveBeenCalled();
   });
 
   it('opens an unsealed session for the first autosave', async () => {
-    await recordLessonLanguageVersion({
-      lessonLanguageId: LESSON_LANGUAGE_ID,
+    await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
       content: '<p>first</p>',
       authorId: AUTHOR_ID,
       intent: 'auto'
     });
 
-    expect(insertLessonLanguageVersion).toHaveBeenCalledTimes(1);
-    const inserted = vi.mocked(insertLessonLanguageVersion).mock.calls[0]?.[0];
+    expect(insertBlockLocaleVersion).toHaveBeenCalledTimes(1);
+    const inserted = vi.mocked(insertBlockLocaleVersion).mock.calls[0]?.[0];
     expect(inserted).toMatchObject({
-      lessonLanguageId: LESSON_LANGUAGE_ID,
+      blockLocaleId: LESSON_LANGUAGE_ID,
       newContent: '<p>first</p>',
       kind: 'auto',
       editCount: 1,
@@ -171,15 +171,15 @@ describe('recordLessonLanguageVersion', () => {
   });
 
   it('seals a snapshot the author explicitly saved', async () => {
-    await recordLessonLanguageVersion({
-      lessonLanguageId: LESSON_LANGUAGE_ID,
+    await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
       content: '<p>checkpoint</p>',
       authorId: AUTHOR_ID,
       intent: 'manual',
       label: 'Before the rewrite'
     });
 
-    expect(vi.mocked(insertLessonLanguageVersion).mock.calls[0]?.[0]).toMatchObject({
+    expect(vi.mocked(insertBlockLocaleVersion).mock.calls[0]?.[0]).toMatchObject({
       kind: 'manual',
       label: 'Before the rewrite',
       isSealed: true
@@ -187,80 +187,80 @@ describe('recordLessonLanguageVersion', () => {
   });
 
   it('extends the open session instead of inserting a row', async () => {
-    vi.mocked(getLatestLessonLanguageVersion).mockResolvedValue(buildLatest());
+    vi.mocked(getLatestBlockLocaleVersion).mockResolvedValue(buildLatest());
 
-    await recordLessonLanguageVersion({
-      lessonLanguageId: LESSON_LANGUAGE_ID,
+    await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
       content: '<p>a few more words</p>',
       authorId: AUTHOR_ID,
       intent: 'auto'
     });
 
-    expect(extendLessonLanguageVersion).toHaveBeenCalledTimes(1);
-    expect(vi.mocked(extendLessonLanguageVersion).mock.calls[0]?.[1]).toEqual({
+    expect(extendBlockLocaleVersion).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(extendBlockLocaleVersion).mock.calls[0]?.[1]).toEqual({
       newContent: '<p>a few more words</p>'
     });
-    expect(vi.mocked(extendLessonLanguageVersion).mock.calls[0]?.[2]).toBe(TX);
-    expect(insertLessonLanguageVersion).not.toHaveBeenCalled();
+    expect(vi.mocked(extendBlockLocaleVersion).mock.calls[0]?.[2]).toBe(TX);
+    expect(insertBlockLocaleVersion).not.toHaveBeenCalled();
   });
 
   it('records nothing for an autosave that did not change the content', async () => {
     const latest = buildLatest();
-    vi.mocked(getLatestLessonLanguageVersion).mockResolvedValue(latest);
+    vi.mocked(getLatestBlockLocaleVersion).mockResolvedValue(latest);
 
-    const result = await recordLessonLanguageVersion({
-      lessonLanguageId: LESSON_LANGUAGE_ID,
+    const result = await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
       content: latest.newContent,
       authorId: AUTHOR_ID,
       intent: 'auto'
     });
 
     expect(result).toBe(latest);
-    expect(extendLessonLanguageVersion).not.toHaveBeenCalled();
-    expect(insertLessonLanguageVersion).not.toHaveBeenCalled();
+    expect(extendBlockLocaleVersion).not.toHaveBeenCalled();
+    expect(insertBlockLocaleVersion).not.toHaveBeenCalled();
   });
 
   it('takes the per-lesson lock before reading the session', async () => {
-    await recordLessonLanguageVersion({
-      lessonLanguageId: LESSON_LANGUAGE_ID,
+    await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
       content: '<p>first</p>',
       authorId: AUTHOR_ID,
       intent: 'auto'
     });
 
-    expect(lockLessonLanguageVersionSession).toHaveBeenCalledWith(LESSON_LANGUAGE_ID, TX);
-    expect(vi.mocked(lockLessonLanguageVersionSession).mock.invocationCallOrder[0]).toBeLessThan(
-      vi.mocked(getLatestLessonLanguageVersion).mock.invocationCallOrder[0]
+    expect(lockBlockLocaleVersionSession).toHaveBeenCalledWith(LESSON_LANGUAGE_ID, TX);
+    expect(vi.mocked(lockBlockLocaleVersionSession).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(getLatestBlockLocaleVersion).mock.invocationCallOrder[0]
     );
 
     // Every transaction-scoped call must share the one client, or a regression
     // that moved work outside the transaction would go undetected.
-    expect(getLatestLessonLanguageVersion).toHaveBeenCalledWith(LESSON_LANGUAGE_ID, TX);
-    expect(vi.mocked(insertLessonLanguageVersion).mock.calls[0]?.[1]).toBe(TX);
+    expect(getLatestBlockLocaleVersion).toHaveBeenCalledWith(LESSON_LANGUAGE_ID, TX);
+    expect(vi.mocked(insertBlockLocaleVersion).mock.calls[0]?.[1]).toBe(TX);
   });
 
   it('opens a new session when the open one was sealed mid-flight', async () => {
-    vi.mocked(getLatestLessonLanguageVersion).mockResolvedValue(buildLatest());
+    vi.mocked(getLatestBlockLocaleVersion).mockResolvedValue(buildLatest());
     // A concurrent publish sealed the row between the read and the update.
-    vi.mocked(extendLessonLanguageVersion).mockResolvedValue(null);
+    vi.mocked(extendBlockLocaleVersion).mockResolvedValue(null);
 
-    await recordLessonLanguageVersion({
-      lessonLanguageId: LESSON_LANGUAGE_ID,
+    await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
       content: '<p>raced</p>',
       authorId: AUTHOR_ID,
       intent: 'auto'
     });
 
-    expect(extendLessonLanguageVersion).toHaveBeenCalledTimes(1);
-    expect(insertLessonLanguageVersion).toHaveBeenCalledTimes(1);
+    expect(extendBlockLocaleVersion).toHaveBeenCalledTimes(1);
+    expect(insertBlockLocaleVersion).toHaveBeenCalledTimes(1);
   });
 
   it('never downgrades a publish snapshot to a manual one', async () => {
     const published = buildLatest({ kind: 'publish', isSealed: true, label: null });
-    vi.mocked(getLatestLessonLanguageVersion).mockResolvedValue(published);
+    vi.mocked(getLatestBlockLocaleVersion).mockResolvedValue(published);
 
-    const result = await recordLessonLanguageVersion({
-      lessonLanguageId: LESSON_LANGUAGE_ID,
+    const result = await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
       content: published.newContent,
       authorId: AUTHOR_ID,
       intent: 'manual',
@@ -269,23 +269,23 @@ describe('recordLessonLanguageVersion', () => {
 
     // Promoting would erase the record of what students were served.
     expect(result).toBe(published);
-    expect(promoteLessonLanguageVersion).not.toHaveBeenCalled();
-    expect(insertLessonLanguageVersion).not.toHaveBeenCalled();
+    expect(promoteBlockLocaleVersion).not.toHaveBeenCalled();
+    expect(insertBlockLocaleVersion).not.toHaveBeenCalled();
   });
 
   it('promotes the existing snapshot when a save adds no new content', async () => {
     const latest = buildLatest();
-    vi.mocked(getLatestLessonLanguageVersion).mockResolvedValue(latest);
+    vi.mocked(getLatestBlockLocaleVersion).mockResolvedValue(latest);
 
-    await recordLessonLanguageVersion({
-      lessonLanguageId: LESSON_LANGUAGE_ID,
+    await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
       content: latest.newContent,
       authorId: AUTHOR_ID,
       intent: 'manual',
       label: 'Reviewed'
     });
 
-    expect(promoteLessonLanguageVersion).toHaveBeenCalledWith(latest.id, { kind: 'manual', label: 'Reviewed' }, TX);
-    expect(insertLessonLanguageVersion).not.toHaveBeenCalled();
+    expect(promoteBlockLocaleVersion).toHaveBeenCalledWith(latest.id, { kind: 'manual', label: 'Reviewed' }, TX);
+    expect(insertBlockLocaleVersion).not.toHaveBeenCalled();
   });
 });
