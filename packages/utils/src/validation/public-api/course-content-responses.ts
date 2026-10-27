@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { ZPublicApiLessonBlockResponse } from './course-lesson-block';
+
 // Response shapes for OpenAPI docs only; handlers don't validate against them.
 const timestamp = z.string();
 const nullableTimestamp = z.string().nullable();
@@ -46,31 +48,39 @@ export const ZPublicApiCourseLessonTranslationResponse = z.object({
   updatedAt: timestamp
 });
 
+const DEPRECATED_CONTENT =
+  'Deprecated: derived from `blocks`. Use the blocks endpoints to read and write lesson content.';
+
 export const ZPublicApiCourseLessonDetailResponse = ZPublicApiCourseLessonResponse.extend({
-  note: z.string().nullable(),
-  videoUrl: z.string().nullable(),
-  slideUrl: z.string().nullable(),
-  slides: z.array(z.object({ id: z.string(), src: z.string(), platform: z.string() })),
-  videos: z.array(
-    z.object({
-      type: z.string(),
-      link: z.string().describe('For uploaded videos, a short-lived signed URL'),
-      assetId: z.string().optional(),
-      fileName: z.string().optional(),
-      watchEnforced: z.boolean().optional(),
-      metadata: z.record(z.string(), z.unknown()).optional()
-    })
-  ),
-  documents: z.array(
-    z.object({
-      type: z.string(),
-      name: z.string(),
-      link: z.string().describe('A short-lived signed URL'),
-      size: z.number().optional(),
-      assetId: z.string().optional()
-    })
-  ),
-  translations: z.array(ZPublicApiCourseLessonTranslationResponse)
+  note: z.string().nullable().describe(DEPRECATED_CONTENT),
+  videoUrl: z.string().nullable().describe('Deprecated: always null'),
+  slideUrl: z.string().nullable().describe('Deprecated: always null'),
+  slides: z.array(z.object({ id: z.string(), src: z.string(), platform: z.string() })).describe(DEPRECATED_CONTENT),
+  videos: z
+    .array(
+      z.object({
+        type: z.string(),
+        link: z.string().describe('For uploaded videos, a short-lived signed URL'),
+        assetId: z.string().optional(),
+        fileName: z.string().optional(),
+        watchEnforced: z.boolean().optional(),
+        metadata: z.record(z.string(), z.unknown()).optional()
+      })
+    )
+    .describe(DEPRECATED_CONTENT),
+  documents: z
+    .array(
+      z.object({
+        type: z.string(),
+        name: z.string(),
+        link: z.string().describe('A short-lived signed URL'),
+        size: z.number().optional(),
+        assetId: z.string().optional()
+      })
+    )
+    .describe(DEPRECATED_CONTENT),
+  translations: z.array(ZPublicApiCourseLessonTranslationResponse).describe(DEPRECATED_CONTENT),
+  blocks: z.array(ZPublicApiLessonBlockResponse).describe('The lesson content, in display order')
 });
 
 export const ZPublicApiCourseLessonNotifyResponse = z.object({ jobId: z.string() });
