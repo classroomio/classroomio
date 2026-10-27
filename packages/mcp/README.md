@@ -1,5 +1,7 @@
 # @classroomio/mcp
 
+> **Deprecated.** Running this package through `npx` with `CLASSROOMIO_API_KEY` is deprecated. Connect to the hosted server at `https://mcp.classroomio.com` instead: your client signs in with your ClassroomIO account and no key or Node.js install is needed. This package keeps working for now and is still the only way to use `upload_video`, which reads a file from your own computer. See [Connect an MCP client](https://classroomio.com/docs/developers/mcp/setup).
+
 Thin MCP server for ClassroomIO course authoring. It runs over stdio for local clients, and ClassroomIO's API also serves it over HTTP for remote clients.
 
 The package does not parse PDFs or generate course structures. The agent does that work. `@classroomio/mcp` only exposes tools, validates tool input, and forwards requests to the ClassroomIO API.
@@ -45,8 +47,6 @@ Remote clients such as Claude and ChatGPT connect to `POST /mcp` on the Classroo
 - **Methods.** Only `POST` is accepted. `GET` and `DELETE` return `405` because the server never opens a stream or session.
 
 The API imports `createMcpServer` and `ClassroomIoApiClient` from `@classroomio/mcp/server`. Importing the package root starts the stdio server, so never do that from another process.
-
-Set `MCP_PUBLIC_URL` on the API to the public URL of the endpoint when it is not served at `<API origin>/mcp`.
 
 ## Principles
 

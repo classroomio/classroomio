@@ -5,6 +5,12 @@ description: Understand what a connected client can access and which changes nee
 
 ## What can the client access?
 
+When you connect a client by signing in, it acts as you in one workspace, the one you chose on the approval screen. It can use only the ClassroomIO actions covered by the permissions you approved **and** by your role: you must be an admin of that workspace. If you stop being an admin, the client loses access immediately and its connection is removed. Removing the app in **Automation → MCP → Connected apps** also cuts off its access immediately. To use another workspace, connect again and choose it.
+
+Connecting through OAuth does not count toward your plan's limit on MCP keys. Requests are still subject to your plan's rate limits.
+
+### MCP keys (deprecated)
+
 An MCP key belongs to one organization. It can access only the ClassroomIO actions allowed by its selected scopes **and** by the permissions of the person who created it. For example, a tutor's key does not gain organization administrator access. Removing that person's access also removes the key's access.
 
 The client may receive course, learner, or organization data that the key can read. Connect a client you trust, keep the key private, and use a separate key for each client so you can revoke one without disconnecting the others. You can manage keys in **Automation → MCP**.
