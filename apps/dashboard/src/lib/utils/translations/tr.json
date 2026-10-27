@@ -1470,7 +1470,8 @@
     },
     "status": {
       "active": "Active",
-      "archived": "Archived"
+      "archived": "Archived",
+      "processing": "İşleniyor"
     },
     "table": {
       "title": "Title",
@@ -5305,7 +5306,8 @@
       },
       "info": {
         "conversion_blocked": "Herkese açık hale getirme işlemini tamamlamak için aşağıdaki soruları düzeltin."
-      }
+      },
+      "sections_reorder_failed": "Bölümler yeniden sıralanamadı"
     },
     "course": {
       "success": {
