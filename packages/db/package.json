@@ -100,14 +100,14 @@
     "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts"
   },
   "dependencies": {
-    "@better-auth/sso": "^1.4.18",
+    "@better-auth/sso": "^1.7.13",
     "@cio/email": "workspace:*",
     "@cio/jobs": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@cio/tsconfig": "workspace:*",
     "@cio/utils": "workspace:*",
     "bcrypt": "6.0.0",
-    "better-auth": "^1.4.18",
+    "better-auth": "^1.7.13",
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.44.7",
     "jose": "^6.1.3",
