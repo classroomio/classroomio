@@ -704,3 +704,14 @@ export type SidebarOutlineEntry =
 /** A lesson or exercise as a contents-page drag zone holds it: `id` is the drag key, `contentId` the item id. */
 export type ContentDndItem = CourseContentItem & { contentId: string };
 export type SidebarDeleteTarget = { kind: 'section'; sectionId: string } | { kind: 'item'; item: CourseContentItem };
+
+export type DocumentUploadStatus = 'queued' | 'uploading' | 'done' | 'error';
+
+export type DocumentUploadItem = {
+  id: string;
+  file: File;
+  status: DocumentUploadStatus;
+  progress: number;
+  position: number;
+  errorMessage: string | null;
+};

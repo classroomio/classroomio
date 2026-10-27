@@ -118,12 +118,6 @@ export class GenericUploader {
   }
 }
 
-export class DocumentUploader extends GenericUploader {
-  constructor() {
-    super('document');
-  }
-}
-
 export class VideoUploader extends GenericUploader {
   constructor() {
     super('video');
