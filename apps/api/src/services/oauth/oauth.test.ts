@@ -9,6 +9,10 @@ import {
   selectOAuthOrganizationService
 } from './oauth';
 
+const tokenErrors = vi.hoisted(() => ({
+  InvalidOAuthTokenError: class InvalidOAuthTokenError extends Error {}
+}));
+
 const mocks = vi.hoisted(() => ({
   verifyOAuthAccessToken: vi.fn(),
   isActiveOrganizationAdmin: vi.fn(),
@@ -21,7 +25,10 @@ const mocks = vi.hoisted(() => ({
   revokeUserGrants: vi.fn()
 }));
 
-vi.mock('@cio/db/auth', () => ({ verifyOAuthAccessToken: mocks.verifyOAuthAccessToken }));
+vi.mock('@cio/db/auth', () => ({
+  verifyOAuthAccessToken: mocks.verifyOAuthAccessToken,
+  InvalidOAuthTokenError: tokenErrors.InvalidOAuthTokenError
+}));
 vi.mock('@api/services/organization/automation-usage', () => ({
   assertPublicApiAllowed: mocks.assertPublicApiAllowed
 }));
@@ -107,13 +114,19 @@ describe('authenticateOAuthAccessTokenService', () => {
   });
 
   it('rejects a token that fails verification', async () => {
-    mocks.verifyOAuthAccessToken.mockRejectedValue(new Error('expired'));
+    mocks.verifyOAuthAccessToken.mockRejectedValue(new tokenErrors.InvalidOAuthTokenError('expired'));
 
     await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({
       statusCode: 401,
       code: ErrorCodes.UNAUTHORIZED
     });
     expect(mocks.getOrCreateOAuthGrantKey).not.toHaveBeenCalled();
+  });
+
+  it('lets infrastructure failures surface instead of reporting them as an invalid token', async () => {
+    mocks.verifyOAuthAccessToken.mockRejectedValue(new Error('database unavailable'));
+
+    await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toThrow('database unavailable');
   });
 
   it('rejects once the user is no longer an active admin of the organization', async () => {

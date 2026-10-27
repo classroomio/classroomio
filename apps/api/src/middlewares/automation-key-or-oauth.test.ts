@@ -84,7 +84,7 @@ describe('automationKeyOrOAuthMiddleware', () => {
   });
 
   it('answers 401 when the OAuth token is rejected', async () => {
-    mocks.authenticateOAuth.mockRejectedValue(new Error('revoked'));
+    mocks.authenticateOAuth.mockRejectedValue(new AppError('Access has been revoked', ErrorCodes.UNAUTHORIZED, 401));
 
     const response = await buildApp().request('/probe', { headers: { Authorization: 'Bearer eyJhbGciOi' } });
 
@@ -101,6 +101,14 @@ describe('automationKeyOrOAuthMiddleware', () => {
 
     expect(response.status).toBe(403);
     expect(body.code).toBe(ErrorCodes.UPGRADE_REQUIRED);
+  });
+
+  it('does not report infrastructure failures as authentication failures', async () => {
+    mocks.authenticateOAuth.mockRejectedValue(new Error('database unavailable'));
+
+    const response = await buildApp().request('/probe', { headers: { Authorization: 'Bearer eyJhbGciOi' } });
+
+    expect(response.status).toBe(500);
   });
 
   it('answers 401 without an Authorization header', async () => {

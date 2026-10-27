@@ -1,5 +1,5 @@
 import type { TOrganizationApiKey } from '@cio/db/types';
-import { verifyOAuthAccessToken, type OAuthResourceKind } from '@cio/db/auth';
+import { InvalidOAuthTokenError, verifyOAuthAccessToken, type OAuthResourceKind } from '@cio/db/auth';
 import {
   findActiveOAuthConsent,
   getOAuthOrganizationSelection,
@@ -69,11 +69,13 @@ export async function authenticateOAuthAccessTokenService(
   token: string,
   resource: OAuthResourceKind
 ): Promise<TOrganizationApiKey> {
-  const claims = await verifyOAuthAccessToken(token, resource).catch(() => null);
+  const claims = await verifyOAuthAccessToken(token, resource).catch((error: unknown) => {
+    if (error instanceof InvalidOAuthTokenError) {
+      throw new AppError('Invalid or expired access token', ErrorCodes.UNAUTHORIZED, 401);
+    }
 
-  if (!claims) {
-    throw new AppError('Invalid or expired access token', ErrorCodes.UNAUTHORIZED, 401);
-  }
+    throw error;
+  });
 
   const [isAdmin, consent] = await Promise.all([
     isActiveOrganizationAdmin(claims.userId, claims.organizationId),

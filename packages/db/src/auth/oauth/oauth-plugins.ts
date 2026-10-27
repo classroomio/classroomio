@@ -4,7 +4,7 @@ import { jwt } from 'better-auth/plugins';
 import { oauthProvider } from '@better-auth/oauth-provider';
 
 import { MCP_RESOURCE, OAUTH_ISSUER, PUBLIC_API_RESOURCE } from '@db/constants';
-import { getOAuthOrganizationSelection } from '@db/queries/auth/oauth';
+import { getOAuthOrganizationSelection, isActiveOrganizationAdmin } from '@db/queries/auth/oauth';
 import { OAUTH_SCOPES } from './oauth-scopes';
 
 export const OAUTH_LOGIN_PAGE = '/login';
@@ -36,13 +36,20 @@ export function buildOAuthPlugins(): BetterAuthPlugin[] {
 
           return !organizationId;
         },
-        consentReferenceId: async ({ session }) => {
+        consentReferenceId: async ({ user, session }) => {
           const organizationId = await getOAuthOrganizationSelection(session.id);
 
           if (!organizationId) {
             throw new APIError('BAD_REQUEST', {
               error: 'invalid_request',
               error_description: 'An organization must be selected before granting access'
+            });
+          }
+
+          if (!(await isActiveOrganizationAdmin(user.id, organizationId))) {
+            throw new APIError('FORBIDDEN', {
+              error: 'access_denied',
+              error_description: 'Only workspace admins can connect apps'
             });
           }
 
