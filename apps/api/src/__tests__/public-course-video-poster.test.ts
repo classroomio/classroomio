@@ -7,26 +7,31 @@ const mocks = vi.hoisted(() => ({
   getMediaTranscriptByAsset: vi.fn()
 }));
 
-vi.mock('@cio/db/queries/course', async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  getPublicCourseItem: mocks.getPublicCourseItem
-}));
+vi.mock('@cio/db/queries', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
 
-vi.mock('@cio/db/queries/assets', async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  getAssetsByIds: mocks.getAssetsByIds
-}));
+  return { ...actual, getMediaTranscriptByAsset: mocks.getMediaTranscriptByAsset };
+});
 
-vi.mock('@cio/core/utils/s3', async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  generateVideoDownloadPresignedUrls: mocks.generateVideoDownloadPresignedUrls
-}));
+vi.mock('@cio/db/queries/course', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
 
-vi.mock('@cio/db/queries', async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  getMediaTranscriptByAsset: mocks.getMediaTranscriptByAsset
-}));
+  return { ...actual, getPublicCourseItem: mocks.getPublicCourseItem };
+});
 
+vi.mock('@cio/db/queries/assets', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+
+  return { ...actual, getAssetsByIds: mocks.getAssetsByIds };
+});
+
+vi.mock('@cio/core/utils/s3', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+
+  return { ...actual, generateVideoDownloadPresignedUrls: mocks.generateVideoDownloadPresignedUrls };
+});
+
+import { toPublicLessonVideo } from '@cio/db/queries/course';
 import { getPublicCourseItemService } from '@api/services/course/public-course';
 
 const ORG_ID = '3f2504e0-4f89-11d3-9a0c-0305e82c3301';
@@ -52,6 +57,56 @@ function asset(overrides: Record<string, unknown> = {}) {
   return { id: ASSET_ID, storageKey: SOURCE_KEY, hlsManifestKey: null, thumbnailUrl: null, ...overrides };
 }
 
+/** The service returns a lesson or an exercise; every case here is a lesson. */
+async function lessonVideo() {
+  const item = await getPublicCourseItemService('course', 'lesson');
+  if (!item || item.kind !== 'lesson') throw new Error('expected a lesson');
+
+  return item.video;
+}
+
+describe('toPublicLessonVideo', () => {
+  it('carries the poster out of the stored metadata', () => {
+    const video = toPublicLessonVideo({
+      type: 'upload',
+      link: '',
+      key: SOURCE_KEY,
+      assetId: ASSET_ID,
+      metadata: { thumbnailUrl: STORED_POSTER }
+    } as never);
+
+    expect(video.metadata?.thumbnailUrl).toBe(STORED_POSTER);
+  });
+
+  it('keeps the rest of the stored metadata server-side', () => {
+    const video = toPublicLessonVideo({
+      type: 'upload',
+      link: '',
+      assetId: ASSET_ID,
+      metadata: { thumbnailUrl: STORED_POSTER, svid: 'internal', hash: 'secret', duration: 49 }
+    } as never);
+
+    expect(video.metadata).toEqual({ thumbnailUrl: STORED_POSTER });
+  });
+
+  it('omits metadata entirely when there is no poster', () => {
+    const video = toPublicLessonVideo({
+      type: 'upload',
+      link: '',
+      assetId: ASSET_ID,
+      metadata: { svid: 'x' }
+    } as never);
+
+    expect(video).not.toHaveProperty('metadata');
+  });
+
+  it('omits the key when the stored entry has none', () => {
+    const video = toPublicLessonVideo({ type: 'youtube', link: 'https://youtu.be/a' } as never);
+
+    expect(video).not.toHaveProperty('key');
+  });
+});
+
 describe('public course lesson video poster', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -71,9 +126,7 @@ describe('public course lesson video poster', () => {
       })
     );
 
-    const item = await getPublicCourseItemService('course', 'lesson');
-
-    expect(item?.video?.metadata?.thumbnailUrl).toBe(STORED_POSTER);
+    expect((await lessonVideo())?.metadata?.thumbnailUrl).toBe(STORED_POSTER);
   });
 
   it('falls back to the asset poster when the lesson entry has none', async () => {
@@ -82,9 +135,7 @@ describe('public course lesson video poster', () => {
     );
     mocks.getAssetsByIds.mockResolvedValue([asset({ thumbnailUrl: ASSET_POSTER })]);
 
-    const item = await getPublicCourseItemService('course', 'lesson');
-
-    expect(item?.video?.metadata?.thumbnailUrl).toBe(ASSET_POSTER);
+    expect((await lessonVideo())?.metadata?.thumbnailUrl).toBe(ASSET_POSTER);
   });
 
   it('prefers the stored poster over the asset, so a chosen thumbnail is not overwritten', async () => {
@@ -99,9 +150,7 @@ describe('public course lesson video poster', () => {
     );
     mocks.getAssetsByIds.mockResolvedValue([asset({ thumbnailUrl: ASSET_POSTER })]);
 
-    const item = await getPublicCourseItemService('course', 'lesson');
-
-    expect(item?.video?.metadata?.thumbnailUrl).toBe(STORED_POSTER);
+    expect((await lessonVideo())?.metadata?.thumbnailUrl).toBe(STORED_POSTER);
   });
 
   it('still carries the poster when the video plays from its HLS ladder', async () => {
@@ -112,10 +161,9 @@ describe('public course lesson video poster', () => {
       asset({ storageKey: null, hlsManifestKey: `${ASSET_ID}/master.m3u8`, thumbnailUrl: ASSET_POSTER })
     ]);
 
-    const item = await getPublicCourseItemService('course', 'lesson');
-
-    expect(item?.video?.link).toBe(`/hls/${ASSET_ID}/master.m3u8`);
-    expect(item?.video?.metadata?.thumbnailUrl).toBe(ASSET_POSTER);
+    const video = await lessonVideo();
+    expect(video?.link).toBe(`/hls/${ASSET_ID}/master.m3u8`);
+    expect(video?.metadata?.thumbnailUrl).toBe(ASSET_POSTER);
   });
 
   it('leaves a video with no poster anywhere without one', async () => {
@@ -123,8 +171,6 @@ describe('public course lesson video poster', () => {
       lessonItem({ type: 'upload', link: '', key: SOURCE_KEY, assetId: ASSET_ID })
     );
 
-    const item = await getPublicCourseItemService('course', 'lesson');
-
-    expect(item?.video?.metadata?.thumbnailUrl).toBeUndefined();
+    expect((await lessonVideo())?.metadata?.thumbnailUrl).toBeUndefined();
   });
 });
