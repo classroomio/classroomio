@@ -73,7 +73,7 @@
       "@tailwindcss/oxide"
     ],
     "overrides": {
-      "zod": "4.2.1",
+      "zod": "4.6.1",
       "miniflare>zod": "3.22.3",
       "blume>zod": "^4.3.6",
       "vite-plugin-mkcert>undici": "^7.24.8"
