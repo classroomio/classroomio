@@ -1,3 +1,4 @@
+import type { BetterAuthPlugin } from 'better-auth';
 import { APIError } from 'better-auth/api';
 import { jwt } from 'better-auth/plugins';
 import { oauthProvider } from '@better-auth/oauth-provider';
@@ -12,7 +13,7 @@ export const OAUTH_ORGANIZATION_PAGE = '/oauth/select-organization';
 
 const ACCESS_TOKEN_TTL_SECONDS = 10 * 60;
 
-export function buildOAuthPlugins() {
+export function buildOAuthPlugins(): BetterAuthPlugin[] {
   return [
     jwt({ jwt: { issuer: OAUTH_ISSUER } }),
     oauthProvider({
