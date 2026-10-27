@@ -2,6 +2,8 @@ import { deleteCourseContent } from '@cio/core/services/course/content';
 import { getLesson, listLessonsPaginated } from '@api/services/lesson';
 import { notifyCourseSessionUpdateService } from '@api/services/course/notify-session';
 import type { LessonById } from '@cio/db/queries/lesson';
+import type { LessonBlock } from '@cio/core/services/block/block-view';
+import { toPublicLessonBlock } from '../lessons/blocks';
 import type { TLesson, TLessonLanguage } from '@cio/db/types';
 import type {
   TPublicApiCourseLessonParam,
@@ -44,16 +46,17 @@ export function toPublicTranslation(language: TLessonLanguage) {
 }
 
 // Storage keys stay internal; callers get the signed link instead.
-function toPublicLessonDetail(lesson: LessonById) {
+function toPublicLessonDetail(lesson: LessonById & { blocks: LessonBlock[] }) {
   return {
     ...toPublicLesson(lesson),
     note: lesson.note,
-    videoUrl: lesson.videoUrl,
-    slideUrl: lesson.slideUrl,
+    videoUrl: null,
+    slideUrl: null,
     slides: lesson.slides ?? [],
     videos: (lesson.videos ?? []).map(({ key: _key, ...video }) => video),
     documents: (lesson.documents ?? []).map(({ key: _key, ...document }) => document),
-    translations: lesson.lessonLanguages.map(toPublicTranslation)
+    translations: lesson.lessonLanguages.map(toPublicTranslation),
+    blocks: lesson.blocks.map(toPublicLessonBlock)
   };
 }
 

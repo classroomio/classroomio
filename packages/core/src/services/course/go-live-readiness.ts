@@ -12,7 +12,7 @@ import { getDashboardBaseUrl } from '../../config/dashboard-url';
 import { captureCoursePublished, updateCourse } from './course';
 import { emitCoursePublishWebhookEvent } from '../webhook/emit';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
-import { sealLessonVersionsOnPublish } from '../lesson-version';
+import { sealBlockVersionsOnPublish } from '../block/block-version';
 import { db } from '@cio/db/drizzle';
 import { resolveCourseBannerImage } from '@cio/utils/functions';
 
@@ -292,9 +292,13 @@ export async function publishCourseWhenReady(courseId: string, profileId: string
   const slug = await ensureCourseSlug(courseId, course.title);
 
   // Publishing seals the snapshot students were served, so both writes share one transaction.
-  const { course: publishedCourse, publishedNow, publishChange } = await db.transaction(async (tx) => {
+  const {
+    course: publishedCourse,
+    publishedNow,
+    publishChange
+  } = await db.transaction(async (tx) => {
     const updated = await updateCourse(courseId, { slug, isPublished: true }, tx);
-    await sealLessonVersionsOnPublish(courseId, tx);
+    await sealBlockVersionsOnPublish(courseId, tx);
 
     return updated;
   });

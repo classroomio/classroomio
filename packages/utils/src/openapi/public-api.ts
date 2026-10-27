@@ -186,7 +186,13 @@ const OPERATION_TAGS = [
   { name: 'Course Sections', description: 'Add, rename, move and delete course sections.' },
   {
     name: 'Course Lessons',
-    description: 'List, create, read, update and delete lessons, including attached videos.'
+    description:
+      'List, create, read, update and delete lessons. The note, videos, slides and documents fields are deprecated: use Lesson Blocks.'
+  },
+  {
+    name: 'Lesson Blocks',
+    description:
+      'Read and edit the content blocks of a lesson: add, reorder, reuse, copy and remove notes, videos and slides.'
   },
   {
     name: 'Lesson Translations',

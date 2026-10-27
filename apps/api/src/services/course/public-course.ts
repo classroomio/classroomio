@@ -82,19 +82,21 @@ export interface PublicExerciseQuestion {
  * UUID cannot mint a cookie. They have to know a public course slug +
  * lesson slug whose video actually exposes the asset.
  */
-export async function issuePublicHlsCookieService(courseSlug: string, itemSlug: string) {
+export async function issuePublicHlsCookieService(courseSlug: string, itemSlug: string, requestedAssetId?: string) {
   try {
     const item = await getPublicCourseItemQuery(courseSlug, itemSlug);
     if (!item || item.kind !== 'lesson') {
       throw new AppError('Public lesson not found', ErrorCodes.NOT_FOUND, 404);
     }
 
-    const video = item.video;
-    if (video?.type !== 'upload' || !video.assetId) {
+    const lessonAssetIds = item.blocks.flatMap((block) =>
+      block.type === 'video' && block.video.type === 'upload' && block.video.assetId ? [block.video.assetId] : []
+    );
+    const assetId = requestedAssetId ?? lessonAssetIds[0];
+    if (!assetId || !lessonAssetIds.includes(assetId)) {
       throw new AppError('Lesson has no playable HLS asset', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    const assetId = video.assetId;
     const assets = await getAssetsByIds([assetId], item.courseOrganizationId ?? undefined);
     const asset = assets[0];
     if (!asset?.hlsManifestKey) {
@@ -112,6 +114,82 @@ export async function issuePublicHlsCookieService(courseSlug: string, itemSlug: 
   }
 }
 
+type PublicLessonVideoPayload = Extract<PublicCourseItemContent, { kind: 'lesson' }>['video'];
+
+/**
+ * Turns a stored lesson video into what an anonymous viewer can play: HLS or presigned links,
+ * transcript URLs, and no storage keys.
+ */
+async function resolvePublicVideo(
+  source: PublicLessonVideoPayload,
+  courseOrganizationId: string | null | undefined
+): Promise<PublicLessonVideoPayload> {
+  let video = source;
+
+  if (video?.type === 'upload') {
+    let storageKey: string | undefined;
+    let hlsManifestKey: string | null = null;
+
+    if (video.assetId) {
+      const assets = await getAssetsByIds([video.assetId], courseOrganizationId ?? undefined);
+      storageKey = assets[0]?.storageKey ?? undefined;
+      hlsManifestKey = assets[0]?.hlsManifestKey ?? null;
+    }
+
+    if (!storageKey && video.key) {
+      storageKey = video.key;
+    }
+
+    // HLS assets: serve the manifest URL via the api route (auth'd by
+    // the cio_hls cookie that the public-cookie endpoint mints when the
+    // learner loads the lesson). Don't presign storageKey — for HLS
+    // it's null anyway.
+    if (hlsManifestKey) {
+      const { key: _omitKey, ...rest } = video;
+      video = {
+        ...rest,
+        link: `/hls/${hlsManifestKey}`.replace(/\/{2,}/g, '/'),
+        hls: true
+      };
+    } else if (storageKey) {
+      const urls = await generateVideoDownloadPresignedUrls([storageKey]);
+      const signedLink = urls[storageKey];
+
+      if (signedLink) {
+        const { key: _omitKey, ...rest } = video;
+        video = { ...rest, link: signedLink };
+      }
+    }
+  }
+
+  if (video?.assetId && courseOrganizationId) {
+    const transcriptRow = await getMediaTranscriptByAsset(video.assetId, courseOrganizationId);
+    let transcript: {
+      vttUrl: string;
+      vttUrlExpiresAt: string;
+      language: string;
+    } | null = null;
+
+    if (transcriptRow) {
+      const vttUrl = await generateTranscriptVttPresignedUrl(transcriptRow.vttStorageKey, transcriptRow.vttBucket);
+      transcript = {
+        vttUrl,
+        vttUrlExpiresAt: new Date(Date.now() + TRANSCRIPT_VTT_PRESIGN_SECONDS * 1000).toISOString(),
+        language: transcriptRow.language
+      };
+    }
+
+    video = { ...video, transcript };
+  }
+
+  if (video?.key !== undefined) {
+    const { key: _omitS3Key, ...withoutKey } = video;
+    video = withoutKey;
+  }
+
+  return video;
+}
+
 export async function getPublicCourseItemService(
   courseSlug: string,
   itemSlug: string
@@ -122,71 +200,16 @@ export async function getPublicCourseItemService(
 
     if (baseItem.kind === 'lesson') {
       const { courseOrganizationId, ...lesson } = baseItem;
+      const video = await resolvePublicVideo(lesson.video, courseOrganizationId);
+      const blocks = await Promise.all(
+        lesson.blocks.map(async (block) =>
+          block.type === 'video' && block.video
+            ? { ...block, video: (await resolvePublicVideo(block.video, courseOrganizationId))! }
+            : block
+        )
+      );
 
-      let video = lesson.video;
-
-      if (video?.type === 'upload') {
-        let storageKey: string | undefined;
-        let hlsManifestKey: string | null = null;
-
-        if (video.assetId) {
-          const assets = await getAssetsByIds([video.assetId], courseOrganizationId ?? undefined);
-          storageKey = assets[0]?.storageKey ?? undefined;
-          hlsManifestKey = assets[0]?.hlsManifestKey ?? null;
-        }
-
-        if (!storageKey && video.key) {
-          storageKey = video.key;
-        }
-
-        // HLS assets: serve the manifest URL via the api route (auth'd by
-        // the cio_hls cookie that the public-cookie endpoint mints when the
-        // learner loads the lesson). Don't presign storageKey — for HLS
-        // it's null anyway.
-        if (hlsManifestKey) {
-          const { key: _omitKey, ...rest } = video;
-          video = {
-            ...rest,
-            link: `/hls/${hlsManifestKey}`.replace(/\/{2,}/g, '/'),
-            hls: true
-          };
-        } else if (storageKey) {
-          const urls = await generateVideoDownloadPresignedUrls([storageKey]);
-          const signedLink = urls[storageKey];
-
-          if (signedLink) {
-            const { key: _omitKey, ...rest } = video;
-            video = { ...rest, link: signedLink };
-          }
-        }
-      }
-
-      if (video?.assetId && courseOrganizationId) {
-        const transcriptRow = await getMediaTranscriptByAsset(video.assetId, courseOrganizationId);
-        let transcript: {
-          vttUrl: string;
-          vttUrlExpiresAt: string;
-          language: string;
-        } | null = null;
-
-        if (transcriptRow) {
-          const vttUrl = await generateTranscriptVttPresignedUrl(transcriptRow.vttStorageKey, transcriptRow.vttBucket);
-          transcript = {
-            vttUrl,
-            vttUrlExpiresAt: new Date(Date.now() + TRANSCRIPT_VTT_PRESIGN_SECONDS * 1000).toISOString(),
-            language: transcriptRow.language
-          };
-        }
-
-        video = { ...video, transcript };
-      }
-
-      if (video?.key !== undefined) {
-        const { key: _omitS3Key, ...withoutKey } = video;
-        video = withoutKey;
-      }
-
-      return { ...lesson, video };
+      return { ...lesson, blocks, video };
     }
 
     if (!baseItem.isUnlocked) {

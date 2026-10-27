@@ -1013,9 +1013,13 @@ export const organizationEmaillist = pgTable(
 export const lesson = pgTable(
   'lesson',
   {
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     note: varchar(),
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     videoUrl: varchar('video_url'),
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     slideUrl: varchar('slide_url'),
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     slides: jsonb().default([]).$type<
       {
         id: string;
@@ -1054,6 +1058,7 @@ export const lesson = pgTable(
     completionPolicy: varchar('completion_policy').default('manual').notNull(),
     videoWatchThreshold: integer('video_watch_threshold').default(95),
     commentsEnabled: boolean('comments_enabled').default(true).notNull(),
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     videos: jsonb().default([]).$type<
       {
         type: 'youtube' | 'vimeo' | 'generic' | 'upload' | 'google_drive';
@@ -1076,6 +1081,7 @@ export const lesson = pgTable(
         };
       }[]
     >(),
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     documents: jsonb().default([]).$type<
       {
         type: string;
@@ -1919,6 +1925,7 @@ export const instance = pgTable(
   ]
 );
 
+/** @deprecated Localized note content lives in `block_locale`. */
 export const lessonLanguage = pgTable(
   'lesson_language',
   {
@@ -2000,6 +2007,144 @@ export const lessonLanguageHistory = pgTable(
       table.lessonLanguageId.asc(),
       table.timestamp.desc()
     )
+  ]
+);
+
+export const block = pgTable(
+  'block',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    type: varchar().notNull(),
+    schemaVersion: integer('schema_version').default(1).notNull(),
+    data: jsonb().default({}).notNull().$type<Record<string, unknown>>(),
+    version: integer().default(1).notNull(),
+    createdBy: uuid('created_by'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'block_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdBy],
+      foreignColumns: [profile.id],
+      name: 'block_created_by_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('block_organization_type_idx').on(table.organizationId, table.type)
+  ]
+);
+
+export const blockPlacement = pgTable(
+  'block_placement',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    lessonId: uuid('lesson_id').notNull(),
+    blockId: uuid('block_id').notNull(),
+    position: text().notNull(),
+    required: boolean().default(false).notNull(),
+    watchThreshold: integer('watch_threshold'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'block_placement_lesson_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.blockId],
+      foreignColumns: [block.id],
+      name: 'block_placement_block_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    unique('block_placement_lesson_position_unique').on(table.lessonId, table.position),
+    index('block_placement_block_id_idx').on(table.blockId)
+  ]
+);
+
+export const blockLocale = pgTable(
+  'block_locale',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'block_locale_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    blockId: uuid('block_id').notNull(),
+    locale: locale().default('en').notNull(),
+    content: text(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.blockId],
+      foreignColumns: [block.id],
+      name: 'block_locale_block_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    unique('block_locale_block_locale_unique').on(table.blockId, table.locale)
+  ]
+);
+
+/**
+ * One row per editing session of a block's localized content, with the same
+ * coalescing rules `lesson_language_history` used. `old_content` is derived by
+ * the `block_versions` view from the previous row.
+ */
+export const blockLocaleHistory = pgTable(
+  'block_locale_history',
+  {
+    id: serial().primaryKey().notNull(),
+    blockLocaleId: bigint('block_locale_id', { mode: 'number' }).notNull(),
+    newContent: text('new_content'),
+    kind: lessonVersionKind().default('auto').notNull(),
+    label: text(),
+    authorId: uuid('author_id'),
+    sessionStartedAt: timestamp('session_started_at', { mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    timestamp: timestamp({ mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    editCount: integer('edit_count').default(1).notNull(),
+    isSealed: boolean('is_sealed').default(false).notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.blockLocaleId],
+      foreignColumns: [blockLocale.id],
+      name: 'block_locale_history_block_locale_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [profile.id],
+      name: 'block_locale_history_author_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('block_locale_history_locale_timestamp_idx').using('btree', table.blockLocaleId.asc(), table.timestamp.desc())
   ]
 );
 
@@ -2742,6 +2887,25 @@ export const lessonVersions = pgView('lesson_versions', {
   lessonId: uuid('lesson_id')
 }).as(
   sql`SELECT llh.id, lag(llh.new_content) OVER (PARTITION BY llh.lesson_language_id ORDER BY llh."timestamp", llh.id) AS old_content, llh.new_content, llh.kind, llh.label, llh.session_started_at, llh."timestamp", llh.edit_count, llh.is_sealed, llh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id LEFT JOIN profile p ON p.id = llh.author_id`
+);
+
+export const blockVersions = pgView('block_versions', {
+  id: integer(),
+  oldContent: text('old_content'),
+  newContent: text('new_content'),
+  kind: lessonVersionKind(),
+  label: text(),
+  sessionStartedAt: timestamp('session_started_at', { mode: 'string' }),
+  timestamp: timestamp({ mode: 'string' }),
+  editCount: integer('edit_count'),
+  isSealed: boolean('is_sealed'),
+  authorId: uuid('author_id'),
+  authorName: text('author_name'),
+  authorAvatarUrl: text('author_avatar_url'),
+  locale: locale(),
+  blockId: uuid('block_id')
+}).as(
+  sql`SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id`
 );
 
 export const exerciseTemplate = pgTable('exercise_template', {

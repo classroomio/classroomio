@@ -143,12 +143,32 @@ describe('services/v1/courses/lessons', () => {
       lesson({
         videos: [{ type: 'upload', link: 'https://signed', key: 'org/video.mp4', assetId: 'asset-1' }],
         documents: [{ type: 'pdf', name: 'a.pdf', link: 'https://signed', key: 'org/a.pdf' }],
-        lessonLanguages: [{ id: 1, lessonId: LESSON_ID, locale: 'en', content: '<p>Hi</p>', updatedAt: 'now' }]
+        lessonLanguages: [{ id: 1, lessonId: LESSON_ID, locale: 'en', content: '<p>Hi</p>', updatedAt: 'now' }],
+        blocks: [
+          {
+            id: 'block-1',
+            placementId: 'placement-1',
+            lessonId: LESSON_ID,
+            type: 'video',
+            position: 'a0',
+            required: false,
+            watchThreshold: null,
+            version: 1,
+            schemaVersion: 1,
+            data: { type: 'upload', link: 'https://signed', key: 'org/video.mp4', assetId: 'asset-1' },
+            contents: {},
+            usageCount: 1,
+            createdAt: 'now',
+            updatedAt: 'now'
+          }
+        ]
       })
     );
 
     const detail = await getPublicApiCourseLessonService(ORG_ID, ACTOR_ID, lessonParams);
 
+    expect(detail.blocks[0].data).not.toHaveProperty('key');
+    expect(detail.blocks[0].data).toMatchObject({ assetId: 'asset-1' });
     expect(detail.videos[0]).not.toHaveProperty('key');
     expect(detail.documents[0]).not.toHaveProperty('key');
     expect(detail.translations[0]).toMatchObject({ locale: 'en', content: '<p>Hi</p>' });

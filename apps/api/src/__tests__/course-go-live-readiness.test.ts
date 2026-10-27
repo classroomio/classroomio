@@ -11,7 +11,7 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { getOrganizationById } from '@cio/db/queries/organization';
 import { updateCourse } from '@cio/core/services/course/course';
 import { ensureCourseSlug, generateUniqueCourseSlug } from '@cio/core/services/course/landing-page';
-import { sealLessonVersionsOnPublish } from '@cio/core/services/lesson-version';
+import { sealBlockVersionsOnPublish } from '@cio/core/services/block/block-version';
 import {
   evaluateCourseGoLiveReadiness,
   getCourseGoLiveReadiness,
@@ -43,8 +43,8 @@ vi.mock('@cio/core/services/course/landing-page', () => ({
   generateUniqueCourseSlug: vi.fn()
 }));
 
-vi.mock('@cio/core/services/lesson-version', () => ({
-  sealLessonVersionsOnPublish: vi.fn()
+vi.mock('@cio/core/services/block/block-version', () => ({
+  sealBlockVersionsOnPublish: vi.fn()
 }));
 
 vi.mock('@cio/db/drizzle', () => ({
@@ -64,7 +64,7 @@ const mockedGetOrganizationById = vi.mocked(getOrganizationById);
 const mockedUpdateCourse = vi.mocked(updateCourse);
 const mockedEnsureCourseSlug = vi.mocked(ensureCourseSlug);
 const mockedGenerateUniqueCourseSlug = vi.mocked(generateUniqueCourseSlug);
-const mockedSealLessonVersionsOnPublish = vi.mocked(sealLessonVersionsOnPublish);
+const mockedSealBlockVersionsOnPublish = vi.mocked(sealBlockVersionsOnPublish);
 
 function buildCourse(overrides: Record<string, unknown> = {}) {
   return {
@@ -293,7 +293,7 @@ describe('course go-live service', () => {
     expect(result.readiness.ready).toBe(true);
     // Publishing is a version-history boundary: the snapshot students were
     // served is sealed so the next edit starts a fresh editing session.
-    expect(mockedSealLessonVersionsOnPublish).toHaveBeenCalledWith('course-1', TX);
+    expect(mockedSealBlockVersionsOnPublish).toHaveBeenCalledWith('course-1', TX);
   });
 
   it('does not seal lesson versions when the course is not ready to publish', async () => {
@@ -301,6 +301,6 @@ describe('course go-live service', () => {
     mockedGetCourseContentItems.mockResolvedValue([] as never);
 
     await expect(publishCourseWhenReady('course-1')).rejects.toThrow();
-    expect(mockedSealLessonVersionsOnPublish).not.toHaveBeenCalled();
+    expect(mockedSealBlockVersionsOnPublish).not.toHaveBeenCalled();
   });
 });

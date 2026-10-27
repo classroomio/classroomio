@@ -1,21 +1,21 @@
 import * as schema from '@db/schema';
 
-import type { TLessonLanguageHistory, TLessonVersion, TNewLessonLanguageHistory } from '@db/types';
+import type { TBlockLocaleHistory, TBlockVersion, TNewBlockLocaleHistory } from '@db/types';
 import type { TLessonVersionKind } from '@cio/utils/constants/lesson-version';
 import { and, desc, eq, getTableColumns, lt, or, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 /** Keyset cursor: the (timestamp, id) of the last row already returned. */
-export type TLessonVersionCursor = {
+export type TBlockVersionCursor = {
   timestamp: string;
   id: number;
 };
 
-export type TLessonVersionPage = {
-  items: TLessonVersion[];
+export type TBlockVersionPage = {
+  items: TBlockVersion[];
   /** Null when the last page has been reached. */
-  nextCursor: TLessonVersionCursor | null;
+  nextCursor: TBlockVersionCursor | null;
 };
 
 /**
@@ -30,34 +30,34 @@ export type TLessonVersionPage = {
  * coalescing entirely. `localtimestamp` keeps both sides of the subtraction in
  * the same frame.
  */
-export interface LessonVersionSessionState extends TLessonLanguageHistory {
+export interface BlockVersionSessionState extends TBlockLocaleHistory {
   msSinceLastEdit: number;
   msSinceSessionStart: number;
 }
 
-export async function getLatestLessonLanguageVersion(
-  lessonLanguageId: number,
+export async function getLatestBlockLocaleVersion(
+  blockLocaleId: number,
   dbClient?: DbOrTxClient
-): Promise<LessonVersionSessionState | null> {
+): Promise<BlockVersionSessionState | null> {
   const client = dbClient ?? db;
 
   try {
     const [latest] = await client
       .select({
-        ...getTableColumns(schema.lessonLanguageHistory),
-        msSinceLastEdit: sql<number>`(extract(epoch from (localtimestamp - ${schema.lessonLanguageHistory.timestamp})) * 1000)::double precision`,
-        msSinceSessionStart: sql<number>`(extract(epoch from (localtimestamp - ${schema.lessonLanguageHistory.sessionStartedAt})) * 1000)::double precision`
+        ...getTableColumns(schema.blockLocaleHistory),
+        msSinceLastEdit: sql<number>`(extract(epoch from (localtimestamp - ${schema.blockLocaleHistory.timestamp})) * 1000)::double precision`,
+        msSinceSessionStart: sql<number>`(extract(epoch from (localtimestamp - ${schema.blockLocaleHistory.sessionStartedAt})) * 1000)::double precision`
       })
-      .from(schema.lessonLanguageHistory)
-      .where(eq(schema.lessonLanguageHistory.lessonLanguageId, lessonLanguageId))
-      .orderBy(desc(schema.lessonLanguageHistory.timestamp), desc(schema.lessonLanguageHistory.id))
+      .from(schema.blockLocaleHistory)
+      .where(eq(schema.blockLocaleHistory.blockLocaleId, blockLocaleId))
+      .orderBy(desc(schema.blockLocaleHistory.timestamp), desc(schema.blockLocaleHistory.id))
       .limit(1);
 
     return latest ?? null;
   } catch (error) {
-    console.error('getLatestLessonLanguageVersion error:', error);
+    console.error('getLatestBlockLocaleVersion error:', error);
     throw new Error(
-      `Failed to get latest lesson language version: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to get latest block locale version: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -69,37 +69,37 @@ export async function getLatestLessonLanguageVersion(
  * duplicate sessions or letting the later-committing statement win with stale
  * content. Released automatically when the transaction ends.
  */
-export async function lockLessonLanguageVersionSession(lessonLanguageId: number, dbClient?: DbOrTxClient) {
+export async function lockBlockLocaleVersionSession(blockLocaleId: number, dbClient?: DbOrTxClient) {
   const client = dbClient ?? db;
 
   try {
-    await client.execute(sql`select pg_advisory_xact_lock(hashtext(${`lesson_version:${lessonLanguageId}`}))`);
+    await client.execute(sql`select pg_advisory_xact_lock(hashtext(${`block_version:${blockLocaleId}`}))`);
   } catch (error) {
-    console.error('lockLessonLanguageVersionSession error:', error);
+    console.error('lockBlockLocaleVersionSession error:', error);
     throw new Error(
-      `Failed to lock lesson language version session: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to lock block locale version session: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
 
 /** Starts a new version session. */
-export async function insertLessonLanguageVersion(
-  data: TNewLessonLanguageHistory,
+export async function insertBlockLocaleVersion(
+  data: TNewBlockLocaleHistory,
   dbClient?: DbOrTxClient
-): Promise<TLessonLanguageHistory> {
+): Promise<TBlockLocaleHistory> {
   const client = dbClient ?? db;
 
   try {
-    const [version] = await client.insert(schema.lessonLanguageHistory).values(data).returning();
+    const [version] = await client.insert(schema.blockLocaleHistory).values(data).returning();
     if (!version) {
       throw new Error('Insert returned no row');
     }
 
     return version;
   } catch (error) {
-    console.error('insertLessonLanguageVersion error:', error);
+    console.error('insertBlockLocaleVersion error:', error);
     throw new Error(
-      `Failed to insert lesson language version: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to insert block locale version: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -115,36 +115,36 @@ export async function insertLessonLanguageVersion(
  * were served. Returns null in that case so the caller opens a new session
  * instead.
  */
-export async function extendLessonLanguageVersion(
+export async function extendBlockLocaleVersion(
   versionId: number,
   values: { newContent: string | null },
   dbClient?: DbOrTxClient
-): Promise<TLessonLanguageHistory | null> {
+): Promise<TBlockLocaleHistory | null> {
   const client = dbClient ?? db;
 
   try {
     const [version] = await client
-      .update(schema.lessonLanguageHistory)
+      .update(schema.blockLocaleHistory)
       .set({
         newContent: values.newContent,
         // Stamped by Postgres so it matches the frame of the column default.
         timestamp: sql`localtimestamp`,
-        editCount: sql`${schema.lessonLanguageHistory.editCount} + 1`
+        editCount: sql`${schema.blockLocaleHistory.editCount} + 1`
       })
       .where(
         and(
-          eq(schema.lessonLanguageHistory.id, versionId),
-          eq(schema.lessonLanguageHistory.kind, 'auto'),
-          eq(schema.lessonLanguageHistory.isSealed, false)
+          eq(schema.blockLocaleHistory.id, versionId),
+          eq(schema.blockLocaleHistory.kind, 'auto'),
+          eq(schema.blockLocaleHistory.isSealed, false)
         )
       )
       .returning();
 
     return version ?? null;
   } catch (error) {
-    console.error('extendLessonLanguageVersion error:', error);
+    console.error('extendBlockLocaleVersion error:', error);
     throw new Error(
-      `Failed to extend lesson language version: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to extend block locale version: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -155,22 +155,22 @@ export async function extendLessonLanguageVersion(
  * autosave — the row already holds the right content, it just needs the stronger
  * kind so retention keeps it.
  */
-export async function promoteLessonLanguageVersion(
+export async function promoteBlockLocaleVersion(
   versionId: number,
   values: { kind: TLessonVersionKind; label?: string | null },
   dbClient?: DbOrTxClient
-): Promise<TLessonLanguageHistory> {
+): Promise<TBlockLocaleHistory> {
   const client = dbClient ?? db;
 
   try {
     const [version] = await client
-      .update(schema.lessonLanguageHistory)
+      .update(schema.blockLocaleHistory)
       .set({
         kind: values.kind,
         label: values.label ?? null,
         isSealed: true
       })
-      .where(eq(schema.lessonLanguageHistory.id, versionId))
+      .where(eq(schema.blockLocaleHistory.id, versionId))
       .returning();
 
     if (!version) {
@@ -179,112 +179,108 @@ export async function promoteLessonLanguageVersion(
 
     return version;
   } catch (error) {
-    console.error('promoteLessonLanguageVersion error:', error);
+    console.error('promoteBlockLocaleVersion error:', error);
     throw new Error(
-      `Failed to promote lesson language version: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to promote block locale version: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
 
 /**
- * Publish boundary. Marks the newest snapshot of every lesson language in a
+ * Publish boundary. Marks the newest snapshot of every block locale in a
  * course as the published one and seals it, so the next autosave opens a fresh
  * session instead of rewriting the content students were served.
  *
  * @returns Number of snapshots sealed.
  */
-export async function sealLatestLessonVersionsForCourse(courseId: string, dbClient?: DbOrTxClient) {
+export async function sealLatestBlockVersionsForCourse(courseId: string, dbClient?: DbOrTxClient) {
   const client = dbClient ?? db;
 
   try {
     const sealed = await client.execute(sql`
-      WITH latest AS (
-        SELECT DISTINCT ON (llh.lesson_language_id) llh.id
-        FROM lesson_language_history llh
-        JOIN lesson_language ll ON ll.id = llh.lesson_language_id
-        JOIN lesson l ON l.id = ll.lesson_id
+      WITH course_locales AS (
+        SELECT DISTINCT bl.id
+        FROM block_locale bl
+        JOIN block_placement bp ON bp.block_id = bl.block_id
+        JOIN lesson l ON l.id = bp.lesson_id
         WHERE l.course_id = ${courseId}
-        ORDER BY llh.lesson_language_id, llh."timestamp" DESC, llh.id DESC
+      ),
+      latest AS (
+        SELECT DISTINCT ON (bh.block_locale_id) bh.id
+        FROM block_locale_history bh
+        JOIN course_locales cl ON cl.id = bh.block_locale_id
+        ORDER BY bh.block_locale_id, bh."timestamp" DESC, bh.id DESC
       )
-      UPDATE lesson_language_history h
+      UPDATE block_locale_history h
       SET kind = 'publish', is_sealed = true
       FROM latest
       WHERE h.id = latest.id
       RETURNING h.id
     `);
 
-    // A lesson language can reach publication with no history at all: it
-    // predates versioning, or it was written by an importer that opted out.
-    // Snapshot its current content so every published lesson has an immutable
-    // record of what students received.
     const created = await client.execute(sql`
-      INSERT INTO lesson_language_history (lesson_language_id, new_content, kind, is_sealed)
-      SELECT ll.id, ll.content, 'publish', true
-      FROM lesson_language ll
-      JOIN lesson l ON l.id = ll.lesson_id
-      WHERE l.course_id = ${courseId}
+      INSERT INTO block_locale_history (block_locale_id, new_content, kind, is_sealed)
+      SELECT bl.id, bl.content, 'publish', true
+      FROM block_locale bl
+      WHERE bl.id IN (
+          SELECT DISTINCT bl2.id
+          FROM block_locale bl2
+          JOIN block_placement bp ON bp.block_id = bl2.block_id
+          JOIN lesson l ON l.id = bp.lesson_id
+          WHERE l.course_id = ${courseId}
+        )
         AND NOT EXISTS (
-          SELECT 1 FROM lesson_language_history h WHERE h.lesson_language_id = ll.id
+          SELECT 1 FROM block_locale_history h WHERE h.block_locale_id = bl.id
         )
       RETURNING id
     `);
 
     return sealed.length + created.length;
   } catch (error) {
-    console.error('sealLatestLessonVersionsForCourse error:', error);
+    console.error('sealLatestBlockVersionsForCourse error:', error);
     throw new Error(
-      `Failed to seal lesson versions for course: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to seal block versions for course: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
 
 /**
- * Gets lesson version history for a lesson and locale, newest first.
+ * Gets version history for a block and locale, newest first.
  *
- * `oldContent` is derived by the `lesson_versions` view from the preceding
- * snapshot, so a thinned history still diffs correctly — the jump is just wider.
- *
- * @param lessonId Lesson ID
- * @param locale Locale
- * @param endRange End range for pagination (0-indexed, inclusive)
+ * `oldContent` is derived by the `block_versions` view from the preceding snapshot,
+ * so a thinned history still diffs correctly: the jump is just wider.
  */
-export async function getLessonVersionHistory(
-  lessonId: string,
+export async function getBlockVersionHistory(
+  blockId: string,
   locale: string,
   limit: number,
-  cursor?: TLessonVersionCursor
-): Promise<TLessonVersionPage> {
+  cursor?: TBlockVersionCursor
+): Promise<TBlockVersionPage> {
   try {
-    // Keyset, not offset: the list is ordered by (timestamp, id) and rows are only ever
-    // appended at the newest end, so seeking past the last row read is stable under
-    // concurrent edits and costs the same at page 1 and page 50.
     const olderThanCursor = cursor
       ? or(
-          lt(schema.lessonVersions.timestamp, cursor.timestamp),
-          and(eq(schema.lessonVersions.timestamp, cursor.timestamp), lt(schema.lessonVersions.id, cursor.id))
+          lt(schema.blockVersions.timestamp, cursor.timestamp),
+          and(eq(schema.blockVersions.timestamp, cursor.timestamp), lt(schema.blockVersions.id, cursor.id))
         )
       : undefined;
 
     const rows = await db
       .select()
-      .from(schema.lessonVersions)
+      .from(schema.blockVersions)
       .where(
         and(
-          eq(schema.lessonVersions.lessonId, lessonId),
-          eq(schema.lessonVersions.locale, locale as any),
+          eq(schema.blockVersions.blockId, blockId),
+          eq(schema.blockVersions.locale, locale as TBlockVersion['locale'] & string),
           olderThanCursor
         )
       )
-      .orderBy(desc(schema.lessonVersions.timestamp), desc(schema.lessonVersions.id))
-      // One extra row is the has-more probe; it is trimmed before returning.
+      .orderBy(desc(schema.blockVersions.timestamp), desc(schema.blockVersions.id))
       .limit(limit + 1);
 
     if (rows.length > 0) {
       const hasMore = rows.length > limit;
       const items = hasMore ? rows.slice(0, limit) : rows;
       const last = items[items.length - 1];
-      // `lessonVersions` is a view, so its columns type as nullable. Without both keys
-      // there is no stable seek point, so stop rather than hand back a broken cursor.
       const canSeekPastLast = hasMore && last?.timestamp != null && last?.id != null;
 
       return {
@@ -293,29 +289,30 @@ export async function getLessonVersionHistory(
       };
     }
 
-    // A cursor that ran past the end has no fallback to offer — the synthesized
-    // current-content row below belongs to the first page only.
     if (cursor) {
       return { items: [], nextCursor: null };
     }
 
-    // Older lessons may not have a history row yet. Expose their current content
-    // so the version viewer is useful before the next edit creates a snapshot.
-    const [currentLanguage] = await db
+    const [currentLocale] = await db
       .select()
-      .from(schema.lessonLanguage)
-      .where(and(eq(schema.lessonLanguage.lessonId, lessonId), eq(schema.lessonLanguage.locale, locale as any)))
+      .from(schema.blockLocale)
+      .where(
+        and(
+          eq(schema.blockLocale.blockId, blockId),
+          eq(schema.blockLocale.locale, locale as TBlockVersion['locale'] & string)
+        )
+      )
       .limit(1);
 
-    if (!currentLanguage) {
+    if (!currentLocale) {
       return { items: [], nextCursor: null };
     }
 
     const now = new Date().toISOString();
-    const currentVersion: TLessonVersion = {
+    const currentVersion: TBlockVersion = {
       id: 0,
       oldContent: null,
-      newContent: currentLanguage.content,
+      newContent: currentLocale.content,
       kind: 'auto',
       label: null,
       sessionStartedAt: now,
@@ -325,22 +322,20 @@ export async function getLessonVersionHistory(
       authorId: null,
       authorName: null,
       authorAvatarUrl: null,
-      locale: currentLanguage.locale,
-      lessonId: currentLanguage.lessonId
+      locale: currentLocale.locale,
+      blockId: currentLocale.blockId
     };
 
     return { items: [currentVersion], nextCursor: null };
   } catch (error) {
-    console.error('getLessonVersionHistory error:', error);
-    throw new Error(
-      `Failed to get lesson version history: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
+    console.error('getBlockVersionHistory error:', error);
+    throw new Error(`Failed to get block version history: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
 /**
  * Tiered thinning of autosave snapshots. Milestones (`manual`, `publish`) and the
- * newest snapshot of each lesson language are never touched; everything else is
+ * newest snapshot of each block locale are never touched; everything else is
  * kept at decreasing resolution as it ages:
  *
  * - within `keepAllHours` — every snapshot
@@ -350,7 +345,7 @@ export async function getLessonVersionHistory(
  *
  * @returns Number of snapshots deleted.
  */
-export async function pruneAutoLessonVersions(
+export async function pruneAutoBlockVersions(
   options: { keepAllHours: number; hourlyDays: number; dailyDays: number },
   dbClient?: DbOrTxClient
 ) {
@@ -359,27 +354,27 @@ export async function pruneAutoLessonVersions(
   try {
     const rows = await client.execute(sql`
       WITH newest AS (
-        SELECT DISTINCT ON (lesson_language_id) id
-        FROM lesson_language_history
-        ORDER BY lesson_language_id, "timestamp" DESC, id DESC
+        SELECT DISTINCT ON (block_locale_id) id
+        FROM block_locale_history
+        ORDER BY block_locale_id, "timestamp" DESC, id DESC
       ),
       prunable AS (
         SELECT h.id,
                h."timestamp",
                row_number() OVER (
-                 PARTITION BY h.lesson_language_id, date_trunc('hour', h."timestamp")
+                 PARTITION BY h.block_locale_id, date_trunc('hour', h."timestamp")
                  ORDER BY h."timestamp" DESC, h.id DESC
                ) AS hour_rank,
                row_number() OVER (
-                 PARTITION BY h.lesson_language_id, date_trunc('day', h."timestamp")
+                 PARTITION BY h.block_locale_id, date_trunc('day', h."timestamp")
                  ORDER BY h."timestamp" DESC, h.id DESC
                ) AS day_rank
-        FROM lesson_language_history h
+        FROM block_locale_history h
         WHERE h.kind = 'auto'
           AND h.id NOT IN (SELECT id FROM newest)
           AND h."timestamp" < now() - make_interval(hours => ${options.keepAllHours})
       )
-      DELETE FROM lesson_language_history h
+      DELETE FROM block_locale_history h
       USING prunable p
       WHERE h.id = p.id
         AND CASE
@@ -392,19 +387,19 @@ export async function pruneAutoLessonVersions(
 
     return rows.length;
   } catch (error) {
-    console.error('pruneAutoLessonVersions error:', error);
+    console.error('pruneAutoBlockVersions error:', error);
     throw new Error(`Failed to prune lesson versions: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
 /**
- * Hard cap on autosave snapshots per lesson language, independent of age. Catches
+ * Hard cap on autosave snapshots per block locale, independent of age. Catches
  * pathological writers that would otherwise pile up thousands of rows before the
  * age-based tiers get a chance to thin them.
  *
  * @returns Number of snapshots deleted.
  */
-export async function capAutoLessonVersionsPerLanguage(maxPerLanguage: number, dbClient?: DbOrTxClient) {
+export async function capAutoBlockVersionsPerLocale(maxPerLanguage: number, dbClient?: DbOrTxClient) {
   const client = dbClient ?? db;
 
   try {
@@ -412,13 +407,13 @@ export async function capAutoLessonVersionsPerLanguage(maxPerLanguage: number, d
       WITH ranked AS (
         SELECT h.id,
                row_number() OVER (
-                 PARTITION BY h.lesson_language_id
+                 PARTITION BY h.block_locale_id
                  ORDER BY h."timestamp" DESC, h.id DESC
                ) AS recency_rank
-        FROM lesson_language_history h
+        FROM block_locale_history h
         WHERE h.kind = 'auto'
       )
-      DELETE FROM lesson_language_history h
+      DELETE FROM block_locale_history h
       USING ranked r
       WHERE h.id = r.id
         AND r.recency_rank > ${maxPerLanguage}
@@ -427,7 +422,7 @@ export async function capAutoLessonVersionsPerLanguage(maxPerLanguage: number, d
 
     return rows.length;
   } catch (error) {
-    console.error('capAutoLessonVersionsPerLanguage error:', error);
+    console.error('capAutoBlockVersionsPerLocale error:', error);
     throw new Error(`Failed to cap lesson versions: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

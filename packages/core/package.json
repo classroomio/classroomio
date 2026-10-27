@@ -49,9 +49,11 @@
     "@cio/question-types": "workspace:*",
     "@cio/tsconfig": "workspace:*",
     "@cio/utils": "workspace:*",
+    "@supadata/js": "^1.4.0",
     "ai": "^6.0.158",
     "axios": "^1.4.0",
     "drizzle-orm": "^0.44.7",
+    "fractional-indexing": "^4.0.0",
     "ioredis": "^5.4.1",
     "isomorphic-dompurify": "^3.7.1",
     "jszip": "^3.10.1",
@@ -59,7 +61,6 @@
     "nanoid": "^5.1.5",
     "pdf-parse": "^1.1.1",
     "redis": "^4.7.0",
-    "@supadata/js": "^1.4.0",
     "zod": "^4.2.1"
   },
   "devDependencies": {

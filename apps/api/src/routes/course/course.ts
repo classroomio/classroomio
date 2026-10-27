@@ -64,6 +64,7 @@ import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { invitesRouter } from '@api/routes/course/invite';
 import { katexRouter } from '@api/routes/course/katex';
+import { blockLibraryRouter } from '@api/routes/course/block-library';
 import { lessonRouter } from '@api/routes/course/lesson';
 import { markRouter } from '@api/routes/course/mark';
 import { membersRouter } from '@api/routes/course/people';
@@ -690,6 +691,7 @@ export const courseRouter = new Hono()
   .route('/:courseId/compliance', complianceRouter)
   .route('/:courseId/section', sectionRouter)
   .route('/:courseId/lesson', lessonRouter)
+  .route('/:courseId/block-library', blockLibraryRouter)
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)
   .route('/:courseId/attendance', attendanceRouter)

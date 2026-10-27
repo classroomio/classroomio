@@ -1,5 +1,6 @@
 import 'dotenv/config';
 
+import { seedLessonBlocks } from '@db/utils/seed/lesson-blocks';
 import {
   account,
   and,
@@ -432,7 +433,7 @@ async function seedCourse(adminProfileId: string) {
     type: 'SELF_PACED'
   });
   await db.insert(courseSection).values({ id: SECTION_ID, courseId: COURSE_ID, title: 'Projects', order: 1 });
-  await db.insert(lesson).values([
+  const demoLessons = [
     {
       id: LESSON_IDS[0],
       courseId: COURSE_ID,
@@ -453,7 +454,11 @@ async function seedCourse(adminProfileId: string) {
       isUnlocked: true,
       order: 2
     }
-  ]);
+  ];
+  await db.insert(lesson).values(demoLessons.map(({ note: _note, ...row }) => row));
+  await seedLessonBlocks(
+    demoLessons.map((row) => ({ lessonId: row.id, blocks: [{ type: 'note' as const, contents: { en: row.note } }] }))
+  );
 
   const enrolments = ALL_STUDENTS.map((student, index) => ({
     id: memberId(index),

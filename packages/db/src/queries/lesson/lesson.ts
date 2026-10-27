@@ -13,12 +13,17 @@ import type {
 import { and, asc, count, db, desc, eq, inArray, lt, ne, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
+import { deleteBlocksWithoutPlacements } from '@db/queries/block/block';
+import { withDerivedLessonContent } from '@db/queries/block/legacy';
+import { createLessonLanguage, listLessonLanguagesForLessons } from '@db/queries/lesson/language';
 import { contentWriteBumpsTimestamp } from '@db/queries/course/content-timestamp';
 
 // Lesson Queries
 export async function getLessonsByCourseId(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return dbClient.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseId));
+    const lessons = await dbClient.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseId));
+
+    return await withDerivedLessonContent(lessons, dbClient);
   } catch (error) {
     console.error('getLessonsByCourseId error:', error);
     throw new Error(
@@ -65,25 +70,29 @@ export async function getPaginatedLessonsByCourseId(
   }
 }
 
+export async function getLessonRowById(lessonId: string, dbClient: DbOrTxClient = db): Promise<TLesson | null> {
+  try {
+    const [lesson] = await dbClient.select().from(schema.lesson).where(eq(schema.lesson.id, lessonId)).limit(1);
+
+    return lesson ?? null;
+  } catch (error) {
+    console.error('getLessonRowById error:', error);
+    throw new Error(`Failed to get lesson "${lessonId}": ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export interface LessonById extends TLesson {
   lessonLanguages: TLessonLanguage[];
 }
 
 export async function getLessonById(lessonId: string): Promise<LessonById | null> {
   try {
-    const [lesson] = await db.select().from(schema.lesson).where(eq(schema.lesson.id, lessonId)).limit(1);
+    const lesson = await getLessonRowById(lessonId);
     if (!lesson) return null;
 
-    // Fetch lesson languages
-    const lessonLanguages = await db
-      .select()
-      .from(schema.lessonLanguage)
-      .where(eq(schema.lessonLanguage.lessonId, lessonId));
+    const [withContent] = await withDerivedLessonContent([lesson]);
 
-    return {
-      ...lesson,
-      lessonLanguages
-    };
+    return withContent;
   } catch (error) {
     console.error('getLessonById error:', error);
     throw new Error(
@@ -233,7 +242,18 @@ export async function updateLesson(lessonId: string, data: Partial<TLesson>, dbC
 
 export async function deleteLesson(lessonId: string, dbClient: DbOrTxClient = db) {
   try {
+    const placed = await dbClient
+      .select({ blockId: schema.blockPlacement.blockId })
+      .from(schema.blockPlacement)
+      .where(eq(schema.blockPlacement.lessonId, lessonId));
     const [deleted] = await dbClient.delete(schema.lesson).where(eq(schema.lesson.id, lessonId)).returning();
+    if (deleted) {
+      await deleteBlocksWithoutPlacements(
+        placed.map((row) => row.blockId),
+        dbClient
+      );
+    }
+
     return deleted || null;
   } catch (error) {
     console.error('deleteLesson error:', error);
@@ -489,9 +509,8 @@ export async function upsertLessonCompletion(data: TNewLessonCompletion): Promis
 
 // Lesson Language Queries
 export async function getLessonLanguagesByLessonIds(lessonIds: string[], dbClient: DbOrTxClient = db) {
-  if (lessonIds.length === 0) return [];
   try {
-    return dbClient.select().from(schema.lessonLanguage).where(inArray(schema.lessonLanguage.lessonId, lessonIds));
+    return await listLessonLanguagesForLessons(lessonIds, dbClient);
   } catch (error) {
     console.error('getLessonLanguagesByLessonIds error:', error);
     throw new Error(
@@ -503,7 +522,12 @@ export async function getLessonLanguagesByLessonIds(lessonIds: string[], dbClien
 export async function createLessonLanguages(values: TNewLessonLanguage[], dbClient: DbOrTxClient = db) {
   if (values.length === 0) return [];
   try {
-    return await dbClient.insert(schema.lessonLanguage).values(values).returning();
+    const created: Awaited<ReturnType<typeof createLessonLanguage>>[] = [];
+    for (const value of values) {
+      created.push(await createLessonLanguage(value, dbClient));
+    }
+
+    return created;
   } catch (error) {
     console.error('createLessonLanguages error:', error);
     throw new Error(`Failed to create lesson languages: ${error instanceof Error ? error.message : 'Unknown error'}`);

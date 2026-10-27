@@ -18,6 +18,10 @@ import {
   lessonCompletion,
   lessonLanguage,
   lessonLanguageHistory,
+  block,
+  blockPlacement,
+  blockLocale,
+  blockLocaleHistory,
   option,
   organization,
   organizationContacts,
@@ -280,7 +284,8 @@ export const lessonRelations = relations(lesson, ({ one, many }) => ({
   }),
   exercises: many(exercise),
   lessonCompletions: many(lessonCompletion),
-  lessonLanguages: many(lessonLanguage)
+  lessonLanguages: many(lessonLanguage),
+  blockPlacements: many(blockPlacement)
 }));
 
 export const assetRelations = relations(asset, ({ one, many }) => ({
@@ -473,6 +478,41 @@ export const lessonLanguageHistoryRelations = relations(lessonLanguageHistory, (
   lessonLanguage: one(lessonLanguage, {
     fields: [lessonLanguageHistory.lessonLanguageId],
     references: [lessonLanguage.id]
+  })
+}));
+
+export const blockRelations = relations(block, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [block.organizationId],
+    references: [organization.id]
+  }),
+  placements: many(blockPlacement),
+  locales: many(blockLocale)
+}));
+
+export const blockPlacementRelations = relations(blockPlacement, ({ one }) => ({
+  lesson: one(lesson, {
+    fields: [blockPlacement.lessonId],
+    references: [lesson.id]
+  }),
+  block: one(block, {
+    fields: [blockPlacement.blockId],
+    references: [block.id]
+  })
+}));
+
+export const blockLocaleRelations = relations(blockLocale, ({ one, many }) => ({
+  block: one(block, {
+    fields: [blockLocale.blockId],
+    references: [block.id]
+  }),
+  histories: many(blockLocaleHistory)
+}));
+
+export const blockLocaleHistoryRelations = relations(blockLocaleHistory, ({ one }) => ({
+  blockLocale: one(blockLocale, {
+    fields: [blockLocaleHistory.blockLocaleId],
+    references: [blockLocale.id]
   })
 }));
 

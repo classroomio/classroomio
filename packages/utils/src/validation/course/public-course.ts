@@ -17,3 +17,8 @@ export const ZPublicCourseItemParam = z.object({
   itemSlug: ZSlug
 });
 export type TPublicCourseItemParam = z.infer<typeof ZPublicCourseItemParam>;
+
+export const ZPublicHlsCookieQuery = z.object({
+  assetId: z.uuid().optional()
+});
+export type TPublicHlsCookieQuery = z.infer<typeof ZPublicHlsCookieQuery>;

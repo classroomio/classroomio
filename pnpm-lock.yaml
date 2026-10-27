@@ -1064,6 +1064,9 @@ importers:
       drizzle-orm:
         specifier: ^0.44.7
         version: 0.44.7(@cloudflare/workers-types@4.20260511.1)(@opentelemetry/api@1.9.1)(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7)
+      fractional-indexing:
+        specifier: ^4.0.0
+        version: 4.0.0
       ioredis:
         specifier: ^5.4.1
         version: 5.10.1
@@ -1259,6 +1262,9 @@ importers:
       drizzle-orm:
         specifier: ^0.44.7
         version: 0.44.7(@cloudflare/workers-types@4.20260511.1)(@opentelemetry/api@1.9.1)(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7)
+      fractional-indexing:
+        specifier: ^4.0.0
+        version: 4.0.0
       jose:
         specifier: ^6.1.3
         version: 6.1.3
@@ -11214,6 +11220,10 @@ packages:
 
   framesync@6.1.2:
     resolution: {integrity: sha512-jBTqhX6KaQVDyus8muwZbBeGGP0XgujBRbQ7gM7BRdS3CadCZIHiawyzYLnafYcvZIh5j8WE7cxZKFn7dXhu9g==}
+
+  fractional-indexing@4.0.0:
+    resolution: {integrity: sha512-Nr2P1Yyaj2sy1Qdt/wI3GcByxrUdbSKg5+cGvw8f18hT2SkQt6V72iOjBpk7IO3UkzBsdlGRs2a4z6dLrJprgw==}
+    engines: {node: ^14.13.1 || >=16.0.0}
 
   fresh@2.0.0:
     resolution: {integrity: sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==}
@@ -27465,6 +27475,8 @@ snapshots:
   framesync@6.1.2:
     dependencies:
       tslib: 2.4.0
+
+  fractional-indexing@4.0.0: {}
 
   fresh@2.0.0: {}
 

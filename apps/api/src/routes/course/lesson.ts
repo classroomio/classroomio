@@ -44,6 +44,7 @@ import { notifyCourseSessionUpdateService } from '@api/services/course/notify-se
 import { generateLessonPdf } from '@api/utils/lesson';
 import { ensureCourseGroupMemberId } from '@cio/core/services/course/course';
 import { handleError } from '@api/utils/errors';
+import { lessonBlockRouter } from '@api/routes/course/lesson-block';
 import { lessonLanguageRouter } from '@api/routes/course/lesson-language';
 import { zValidator } from '@hono/zod-validator';
 
@@ -410,4 +411,5 @@ export const lessonRouter = new Hono()
       })
     );
   })
-  .route('/:lessonId/language', lessonLanguageRouter);
+  .route('/:lessonId/language', lessonLanguageRouter)
+  .route('/:lessonId/blocks', lessonBlockRouter);

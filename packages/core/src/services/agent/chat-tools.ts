@@ -19,7 +19,9 @@ import { getExerciseSectionsByExerciseId } from '@cio/db/queries/exercise';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import { listCourseSections, createCourseSection, updateCourseSectionService } from '../course/section';
 import { createLesson, getLesson, updateLessonService } from '../lesson/lesson';
+import type { TLocale } from '@cio/db/types';
 import { upsertLessonLanguageService } from '../lesson-language';
+import { getLessonNoteHtml } from '../block/block-text';
 import {
   createExercise,
   getExercise,
@@ -475,13 +477,8 @@ export function buildAgentTools(
         return executeAgentTool('get_lesson_content', { orgId, userId, courseId, args }, async () => {
           await verifyLessonBelongsToCourse(args.lessonId, courseId);
           const lesson = await getLesson(args.lessonId);
-          const lessonWithLangs = lesson as {
-            id: string;
-            title: string;
-            lessonLanguages?: Array<{ locale: string; content: string | null }>;
-          };
-          const langContent = lessonWithLangs.lessonLanguages?.find((ll) => ll.locale === args.locale);
-          return { id: lesson.id, title: lesson.title, content: langContent?.content || null, locale: args.locale };
+          const content = await getLessonNoteHtml(args.lessonId, args.locale as TLocale);
+          return { id: lesson.id, title: lesson.title, content, locale: args.locale };
         });
       }
     }),

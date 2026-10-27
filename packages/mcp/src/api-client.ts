@@ -4,6 +4,7 @@ import type {
   TAutomationDraftTagAssignment,
   TAutomationDraftTagParam
 } from '@cio/utils/validation/tag';
+import type { TBlockLocaleCode } from '@cio/utils/validation/block';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import type {
   TCourseImportCourseParam,
@@ -17,6 +18,13 @@ import type {
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type {
+  TPublicApiAttachLessonBlock,
+  TPublicApiCreateLessonBlock,
+  TPublicApiDuplicateLessonBlock,
+  TPublicApiMoveLessonPlacement,
+  TPublicApiSetLessonBlockLocale,
+  TPublicApiUpdateLessonBlock,
+  TPublicApiUpdateLessonPlacement,
   TPublicApiAddExerciseQuestion,
   TPublicApiAddExerciseSection,
   TPublicApiUpdateExerciseQuestionFields,
@@ -474,6 +482,86 @@ export class ClassroomIoApiClient {
     const query = force ? '?force=true' : '';
 
     return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}${query}`, { method: 'DELETE' });
+  }
+
+  async listLessonBlocks(courseId: string, lessonId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks`, { method: 'GET' });
+  }
+
+  async createLessonBlock(courseId: string, lessonId: string, payload: TPublicApiCreateLessonBlock) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async attachLessonBlock(courseId: string, lessonId: string, payload: TPublicApiAttachLessonBlock) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/attach`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateLessonBlock(courseId: string, lessonId: string, blockId: string, payload: TPublicApiUpdateLessonBlock) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/${blockId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async setLessonBlockLocale(
+    courseId: string,
+    lessonId: string,
+    blockId: string,
+    locale: TBlockLocaleCode,
+    payload: TPublicApiSetLessonBlockLocale
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/${blockId}/locale/${locale}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async updateLessonPlacement(
+    courseId: string,
+    lessonId: string,
+    placementId: string,
+    payload: TPublicApiUpdateLessonPlacement
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/placements/${placementId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async moveLessonPlacement(
+    courseId: string,
+    lessonId: string,
+    placementId: string,
+    payload: TPublicApiMoveLessonPlacement
+  ) {
+    return this.request(
+      `/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/placements/${placementId}/move`,
+      { method: 'PUT', body: payload }
+    );
+  }
+
+  async removeLessonPlacement(courseId: string, lessonId: string, placementId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/placements/${placementId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async duplicateLessonBlock(
+    courseId: string,
+    lessonId: string,
+    blockId: string,
+    payload: TPublicApiDuplicateLessonBlock
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/${blockId}/duplicate`, {
+      method: 'POST',
+      body: payload
+    });
   }
 
   async notifyCourseLessonSessionUpdate(courseId: string, lessonId: string) {

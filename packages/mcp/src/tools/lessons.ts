@@ -50,7 +50,7 @@ const updateLessonShape = ZUpdateLessonToolInput.shape as unknown as ZodRawShape
 export function registerLessonTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'create_lesson',
-    'Create a lesson in a course, optionally with videos. Attaching an uploaded video here is what starts its thumbnail and adaptive-bitrate encoding, plus a transcript when the server has it configured.',
+    'Create a lesson in a course, optionally with videos (each becomes a video block; add notes and slides with add_lesson_block). Attaching an uploaded video here is what starts its thumbnail and adaptive-bitrate encoding, plus a transcript when the server has it configured.',
     createLessonShape,
     async (args) => {
       const { courseId, ...payload } = ZCreateLessonToolInput.parse(args);
@@ -62,7 +62,7 @@ export function registerLessonTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'update_lesson',
-    "Update a lesson, leaving omitted fields unchanged. Supplying videos replaces the lesson's videos entirely.",
+    "Update a lesson, leaving omitted fields unchanged. Supplying videos replaces the lesson's video blocks entirely; prefer the block tools to change one block.",
     updateLessonShape,
     async (args) => {
       const { courseId, lessonId, ...payload } = ZUpdateLessonToolInput.parse(args);

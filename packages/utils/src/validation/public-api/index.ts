@@ -19,6 +19,7 @@ export * from './course-exercise';
 export * from './course-exercise-responses';
 export * from './course-invite';
 export * from './course-lesson';
+export * from './course-lesson-block';
 export * from './course-lesson-comment';
 export * from './course-lesson-translation';
 export * from './course-member';

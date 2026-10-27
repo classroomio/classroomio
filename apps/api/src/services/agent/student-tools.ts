@@ -1,4 +1,4 @@
-import { and, eq, ilike, or } from 'drizzle-orm';
+import { and, eq, ilike, or, sql } from 'drizzle-orm';
 import { tool } from 'ai';
 import { z } from 'zod';
 
@@ -7,6 +7,7 @@ import * as schema from '@cio/db/schema';
 import type { AiTutorSettings } from '@cio/ai-assistant';
 
 import { getLesson } from '@cio/core/services/lesson/lesson';
+import { getLessonNoteHtml } from '@cio/core/services/block/block-text';
 import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
 import { getExercise } from '@cio/core/services/exercise/exercise';
 import { getCourseOutlineSummary } from '@cio/core/services/course/outline';
@@ -157,19 +158,13 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
         return executeStudentTool('read_lesson', { orgId, userId, courseId, args }, async () => {
           await verifyLessonBelongsToCourse(args.lessonId, courseId);
           const lesson = await getLesson(args.lessonId);
-          const lessonWithLangs = lesson as {
-            id: string;
-            title: string;
-            note?: string | null;
-            lessonLanguages?: Array<{ locale: string; content: string | null }>;
-          };
-          const content = lessonWithLangs.lessonLanguages?.find((ll) => ll.locale === 'en')?.content ?? null;
+          const content = await getLessonNoteHtml(args.lessonId, 'en');
 
           return {
             id: lesson.id,
             title: lesson.title,
             content,
-            note: lessonWithLangs.note ?? null
+            note: lesson.note ?? null
           };
         });
       }
@@ -242,23 +237,26 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
         return executeStudentTool('search_course', { orgId, userId, courseId, args }, async () => {
           const pattern = `%${args.query}%`;
           const limit = args.limit ?? 8;
+          const noteContent = sql<string | null>`(
+            SELECT string_agg(bl.content, E'\n' ORDER BY bp.position COLLATE "C")
+            FROM block_placement bp
+            JOIN block b ON b.id = bp.block_id AND b.type = 'note'
+            JOIN block_locale bl ON bl.block_id = b.id AND bl.locale = 'en'
+            WHERE bp.lesson_id = ${schema.lesson.id}
+          )`;
 
           const [lessonMatches, exerciseMatches] = await Promise.all([
             db
               .select({
                 id: schema.lesson.id,
                 title: schema.lesson.title,
-                content: schema.lessonLanguage.content
+                content: noteContent
               })
               .from(schema.lesson)
-              .leftJoin(
-                schema.lessonLanguage,
-                and(eq(schema.lessonLanguage.lessonId, schema.lesson.id), eq(schema.lessonLanguage.locale, 'en'))
-              )
               .where(
                 and(
                   eq(schema.lesson.courseId, courseId),
-                  or(ilike(schema.lesson.title, pattern), ilike(schema.lessonLanguage.content, pattern))
+                  or(ilike(schema.lesson.title, pattern), ilike(noteContent, pattern))
                 )
               )
               .limit(limit),

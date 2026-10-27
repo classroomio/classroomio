@@ -1,4 +1,4 @@
-import { ZPublicCourseBySlugParam, ZPublicCourseItemParam } from '@cio/utils/validation/course';
+import { ZPublicCourseBySlugParam, ZPublicCourseItemParam, ZPublicHlsCookieQuery } from '@cio/utils/validation/course';
 import {
   getPublicCourseItemService,
   getPublicCourseTreeService,
@@ -68,25 +68,31 @@ export const publicCourseRouter = new Hono()
    * segments. Caller is expected to call this once per lesson page load
    * before attaching hls.js.
    */
-  .post('/:courseSlug/item/:itemSlug/hls-cookie', zValidator('param', ZPublicCourseItemParam), async (c) => {
-    try {
-      const { courseSlug, itemSlug } = c.req.valid('param');
-      const result = await issuePublicHlsCookieService(courseSlug, itemSlug);
+  .post(
+    '/:courseSlug/item/:itemSlug/hls-cookie',
+    zValidator('param', ZPublicCourseItemParam),
+    zValidator('query', ZPublicHlsCookieQuery),
+    async (c) => {
+      try {
+        const { courseSlug, itemSlug } = c.req.valid('param');
+        const { assetId } = c.req.valid('query');
+        const result = await issuePublicHlsCookieService(courseSlug, itemSlug, assetId);
 
-      setCookie(c, result.cookieName, result.token, {
-        path: '/',
-        httpOnly: true,
-        secure: true,
-        // `None` (not `Lax`) so the cookie is sent on cross-site segment
-        // fetches issued by hls.js — Lax is withheld on cross-site
-        // subresource requests, which would 403 every segment when the
-        // public site and api/stream live on different hosts.
-        sameSite: 'None',
-        maxAge: result.maxAgeSeconds
-      });
+        setCookie(c, result.cookieName, result.token, {
+          path: '/',
+          httpOnly: true,
+          secure: true,
+          // `None` (not `Lax`) so the cookie is sent on cross-site segment
+          // fetches issued by hls.js — Lax is withheld on cross-site
+          // subresource requests, which would 403 every segment when the
+          // public site and api/stream live on different hosts.
+          sameSite: 'None',
+          maxAge: result.maxAgeSeconds
+        });
 
-      return c.json({ success: true as const, data: { expiresAt: result.expiresAt } });
-    } catch (error) {
-      return handleError(c, error, 'Failed to issue HLS cookie');
+        return c.json({ success: true as const, data: { expiresAt: result.expiresAt } });
+      } catch (error) {
+        return handleError(c, error, 'Failed to issue HLS cookie');
+      }
     }
-  });
+  );

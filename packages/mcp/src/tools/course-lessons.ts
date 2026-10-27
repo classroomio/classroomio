@@ -1,4 +1,14 @@
 import {
+  ZPublicApiAttachLessonBlock,
+  ZPublicApiCreateLessonBlock,
+  ZPublicApiDuplicateLessonBlock,
+  ZPublicApiLessonBlockLocaleParam,
+  ZPublicApiLessonBlockParam,
+  ZPublicApiLessonPlacementParam,
+  ZPublicApiMoveLessonPlacement,
+  ZPublicApiSetLessonBlockLocale,
+  ZPublicApiUpdateLessonBlock,
+  ZPublicApiUpdateLessonPlacement,
   ZPublicApiForceQuery,
   ZPublicApiCourseLessonCommentParam,
   ZPublicApiCourseLessonCommentsQuery,
@@ -51,6 +61,21 @@ export const ZUpdateCourseLessonCommentToolInput = ZPublicApiUpdateCourseLessonC
 );
 export const ZDeleteCourseLessonCommentToolInput = ZPublicApiCourseLessonCommentParam;
 
+export const ZCreateLessonBlockToolInput = ZPublicApiCourseLessonParam.extend({
+  block: ZPublicApiCreateLessonBlock.describe('The block to add')
+});
+export const ZAttachLessonBlockToolInput = ZPublicApiAttachLessonBlock.extend(ZPublicApiCourseLessonParam.shape);
+export const ZUpdateLessonBlockToolInput = ZPublicApiUpdateLessonBlock.extend(ZPublicApiLessonBlockParam.shape);
+export const ZSetLessonBlockLocaleToolInput = ZPublicApiSetLessonBlockLocale.extend(
+  ZPublicApiLessonBlockLocaleParam.shape
+);
+export const ZUpdateLessonPlacementToolInput = ZPublicApiUpdateLessonPlacement.extend(
+  ZPublicApiLessonPlacementParam.shape
+);
+export const ZMoveLessonPlacementToolInput = ZPublicApiMoveLessonPlacement.extend(ZPublicApiLessonPlacementParam.shape);
+export const ZRemoveLessonPlacementToolInput = ZPublicApiLessonPlacementParam;
+export const ZDuplicateLessonBlockToolInput = ZPublicApiDuplicateLessonBlock.extend(ZPublicApiLessonBlockParam.shape);
+
 const shape = (schema: { shape: unknown }) => schema.shape as unknown as ZodRawShapeCompat;
 
 export function registerCourseLessonTools(server: McpServer, apiClient: ClassroomIoApiClient) {
@@ -67,12 +92,111 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'get_course_lesson',
-    `Get one lesson with its note, slides, videos, documents and the content of every language; ${COURSE_TEAM_RULE}.`,
+    `Get one lesson with its blocks and the legacy note, slides, videos, documents and translations derived from them; ${COURSE_TEAM_RULE}.`,
     shape(ZCourseLessonToolInput),
     READ_ONLY,
     async (args) => {
       const { courseId, lessonId } = ZCourseLessonToolInput.parse(args);
       return jsonContent(await apiClient.getCourseLesson(courseId, lessonId));
+    }
+  );
+
+  server.tool(
+    'list_lesson_blocks',
+    `List a lesson's content blocks (notes, videos, slides, documents) in display order, with each block's version and where it is reused; ${COURSE_TEAM_RULE}. Prefer this over get_course_lesson for lesson content.`,
+    shape(ZCourseLessonToolInput),
+    READ_ONLY,
+    async (args) => {
+      const { courseId, lessonId } = ZCourseLessonToolInput.parse(args);
+      return jsonContent(await apiClient.listLessonBlocks(courseId, lessonId));
+    }
+  );
+
+  server.tool(
+    'add_lesson_block',
+    `Add a note, video or slides block to a lesson, at the end unless beforePlacementId or afterPlacementId is set. A note takes HTML content in one locale; a video takes the same input as create_lesson videos; ${COURSE_TEAM_RULE}.`,
+    shape(ZCreateLessonBlockToolInput),
+    CREATE,
+    async (args) => {
+      const { courseId, lessonId, block } = ZCreateLessonBlockToolInput.parse(args);
+      return jsonContent(await apiClient.createLessonBlock(courseId, lessonId, block));
+    }
+  );
+
+  server.tool(
+    'attach_lesson_block',
+    `Reuse an existing block in this lesson. The block is shared, so editing it changes every lesson that uses it; ${COURSE_TEAM_RULE}.`,
+    shape(ZAttachLessonBlockToolInput),
+    CREATE,
+    async (args) => {
+      const { courseId, lessonId, ...payload } = ZAttachLessonBlockToolInput.parse(args);
+      return jsonContent(await apiClient.attachLessonBlock(courseId, lessonId, payload));
+    }
+  );
+
+  server.tool(
+    'update_lesson_block',
+    `Replace a video or slides block's source. Send the version you last read as expectedVersion; a stale version fails with 409. The change shows in every lesson that uses the block; ${COURSE_TEAM_RULE}.`,
+    shape(ZUpdateLessonBlockToolInput),
+    UPDATE,
+    async (args) => {
+      const { courseId, lessonId, blockId, ...payload } = ZUpdateLessonBlockToolInput.parse(args);
+      return jsonContent(await apiClient.updateLessonBlock(courseId, lessonId, blockId, payload));
+    }
+  );
+
+  server.tool(
+    'set_lesson_block_content',
+    `Create or replace a note block's HTML content in one language, recorded in its history as the API key creator. Send the block version you last read as expectedVersion; ${COURSE_TEAM_RULE}.`,
+    shape(ZSetLessonBlockLocaleToolInput),
+    UPDATE,
+    async (args) => {
+      const { courseId, lessonId, blockId, locale, ...payload } = ZSetLessonBlockLocaleToolInput.parse(args);
+      return jsonContent(await apiClient.setLessonBlockLocale(courseId, lessonId, blockId, locale, payload));
+    }
+  );
+
+  server.tool(
+    'update_lesson_block_placement',
+    `Change how this lesson uses a block (required to complete, watch threshold) without affecting other lessons; ${COURSE_TEAM_RULE}.`,
+    shape(ZUpdateLessonPlacementToolInput),
+    UPDATE,
+    async (args) => {
+      const { courseId, lessonId, placementId, ...payload } = ZUpdateLessonPlacementToolInput.parse(args);
+      return jsonContent(await apiClient.updateLessonPlacement(courseId, lessonId, placementId, payload));
+    }
+  );
+
+  server.tool(
+    'move_lesson_block',
+    `Move a block before or after another block in the lesson, using placement ids from list_lesson_blocks; ${COURSE_TEAM_RULE}.`,
+    shape(ZMoveLessonPlacementToolInput),
+    UPDATE,
+    async (args) => {
+      const { courseId, lessonId, placementId, ...payload } = ZMoveLessonPlacementToolInput.parse(args);
+      return jsonContent(await apiClient.moveLessonPlacement(courseId, lessonId, placementId, payload));
+    }
+  );
+
+  server.tool(
+    'remove_lesson_block',
+    `Remove a block from this lesson. The block is deleted only when no other lesson uses it; ${COURSE_TEAM_RULE}.`,
+    shape(ZRemoveLessonPlacementToolInput),
+    DESTRUCTIVE,
+    async (args) => {
+      const { courseId, lessonId, placementId } = ZRemoveLessonPlacementToolInput.parse(args);
+      return jsonContent(await apiClient.removeLessonPlacement(courseId, lessonId, placementId));
+    }
+  );
+
+  server.tool(
+    'duplicate_lesson_block',
+    `Copy a block. With replacePlacementId this lesson switches to the copy, so later edits no longer affect other lessons; ${COURSE_TEAM_RULE}.`,
+    shape(ZDuplicateLessonBlockToolInput),
+    CREATE,
+    async (args) => {
+      const { courseId, lessonId, blockId, ...payload } = ZDuplicateLessonBlockToolInput.parse(args);
+      return jsonContent(await apiClient.duplicateLessonBlock(courseId, lessonId, blockId, payload));
     }
   );
 

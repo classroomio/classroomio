@@ -15,6 +15,7 @@ import {
   user
 } from '@db/drizzle';
 
+import { seedLessonBlocks } from './lesson-blocks';
 import type {
   TNewCourse,
   TNewCourseCompletionRecord,
@@ -622,7 +623,13 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
   const existingLessonIds = new Set(existingLessons.map((l) => l.id));
   const newLessons = lessonsPlan.filter((l) => !existingLessonIds.has(l.id!));
   if (newLessons.length > 0) {
-    await db.insert(lesson).values(newLessons);
+    await db.insert(lesson).values(newLessons.map(({ note: _note, ...row }) => row));
+    await seedLessonBlocks(
+      newLessons.map((row) => ({
+        lessonId: row.id!,
+        blocks: [{ type: 'note' as const, contents: { en: row.note ?? '' } }]
+      }))
+    );
     console.log(`   ✓ Inserted ${newLessons.length} compliance lesson(s)`);
   } else {
     console.log('   ✓ Compliance lessons already exist, skipping');

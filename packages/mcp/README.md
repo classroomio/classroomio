@@ -151,7 +151,8 @@ Course section, lesson and content tools:
 
 - `list_course_sections`, `create_course_section`, `update_course_section`, `delete_course_section`
 - `list_course_lessons`, `get_course_lesson`, `delete_course_lesson`, `notify_course_lesson_session_update`
-- `list_course_lesson_translations`, `set_course_lesson_translation`, `list_course_lesson_history`
+- `list_lesson_blocks`, `add_lesson_block`, `attach_lesson_block`, `update_lesson_block`, `set_lesson_block_content`, `update_lesson_block_placement`, `move_lesson_block`, `remove_lesson_block`, `duplicate_lesson_block`
+- `list_course_lesson_translations`, `set_course_lesson_translation`, `list_course_lesson_history` (these read and write the lesson's first note block)
 - `list_course_lesson_comments`, `create_course_lesson_comment`, `update_course_lesson_comment`, `delete_course_lesson_comment`
 - `reorder_course_content`, `set_course_content_unlocked`, `delete_course_content`
 
@@ -161,7 +162,8 @@ They call `/public-api/v1/courses/:id/{sections,lessons,content}` with the key's
 - `delete_course_section`, `delete_course_lesson` and `delete_course_content` are hard deletes. Deleting a section also deletes its lessons and exercises. If students have submissions or lesson completions in what you delete, they fail with 409 unless `force` is true, which deletes that work too.
 - `reorder_course_content`, `set_course_content_unlocked` and `delete_course_content` are all or nothing: one id outside the course fails the whole call with 404.
 - Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
-- Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`. Restoring a lesson version is not covered.
+- Lesson content is a list of blocks (notes, videos, slides, documents). A block can be reused in several lessons and editing it changes all of them; send the `version` you last read as `expectedVersion` so concurrent edits fail with 409 instead of overwriting each other. `required` and the watch threshold belong to a lesson's use of a block, not to the block.
+- Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`; the `videos` they take are video blocks. Restoring a lesson version is not covered.
 
 Course copy and landing page tools:
 
