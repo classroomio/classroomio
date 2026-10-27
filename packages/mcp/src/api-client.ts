@@ -87,6 +87,7 @@ import type {
   TPublicApiUpdateCourseMember,
   TPublicApiUpdateLesson,
   TPublicApiUpdateOrganization,
+  TPublicApiUpdateOrganizationCustomization,
   TPublicApiUpdateTeamMember
 } from '@cio/utils/validation/public-api';
 
@@ -633,6 +634,14 @@ export class ClassroomIoApiClient {
 
   async updateOrganization(payload: TPublicApiUpdateOrganization) {
     return this.request('/public-api/v1/organization', { method: 'PATCH', body: payload });
+  }
+
+  async getOrganizationCustomization() {
+    return this.request('/public-api/v1/organization/customization', { method: 'GET' });
+  }
+
+  async updateOrganizationCustomization(payload: TPublicApiUpdateOrganizationCustomization) {
+    return this.request('/public-api/v1/organization/customization', { method: 'PATCH', body: payload });
   }
 
   // ─── Organization email templates (public API) ──────────────────────────

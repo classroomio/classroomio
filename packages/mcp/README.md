@@ -116,6 +116,8 @@ Current tools:
 - `update_team_member`
 - `get_organization`
 - `update_organization`
+- `get_organization_customization`
+- `update_organization_customization`
 - `list_email_templates`
 - `get_email_template`
 - `update_email_template`
@@ -262,7 +264,7 @@ Course member and invite tools call the public API (`/public-api/v1/courses/:id/
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. Email template tools call `/public-api/v1/organization/email-templates/...` and need `organization:read` / `organization:write`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course section, lesson and content, course clone, course template, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, team, and organization email template and landing page routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. Email template tools call `/public-api/v1/organization/email-templates/...` and need `organization:read` / `organization:write`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course section, lesson and content, course clone, course template, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, team, and organization customization, email template and landing page routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
@@ -289,6 +291,11 @@ Organization tools call `GET` and `PATCH /public-api/v1/organization` with the `
 
 - `get_organization` returns the organization's `id`, `name`, `siteName`, `avatarUrl` (logo) and `theme`.
 - `update_organization` takes any of `name` (at least 5 characters), `avatarUrl` (an http(s) image URL) and `theme` (`blue`, `rose`, `green`, `orange`, `purple`, or a `#RRGGBB` / `#RRGGBBAA` color). Omitted fields keep their values. The site name and custom domain can't be changed here.
+
+LMS customization tools call `GET` and `PATCH /public-api/v1/organization/customization` with the same scopes and the same org admin rule, matching the dashboard's Customize LMS page:
+
+- `get_organization_customization` returns `dashboard` (`community`, `exercise`, `bannerImage`, `bannerText`), `course` (`newsfeed`, `grading`), `apps` (`comments`) and `auth` (`backgroundImage`), with defaults filled in. Unset images are `null`.
+- `update_organization_customization` takes any of those fields. Omitted fields keep their values. Images must be http(s) URLs, and `null` removes one. Setting `auth.backgroundImage` needs a paid plan (403 `UPGRADE_REQUIRED` otherwise); removing it doesn't. The language settings on that page aren't included.
 
 Email template tools act as the key creator, who must be an org admin, the same as the dashboard's Emails settings page:
 

@@ -1,4 +1,7 @@
-import { ZPublicApiUpdateOrganization } from '@cio/utils/validation/public-api';
+import {
+  ZPublicApiUpdateOrganization,
+  ZPublicApiUpdateOrganizationCustomization
+} from '@cio/utils/validation/public-api';
 
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -11,6 +14,7 @@ const READ_ONLY: ToolAnnotations = { readOnlyHint: true, destructiveHint: false 
 const UPDATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: true, idempotentHint: true };
 
 const updateOrganizationShape = ZPublicApiUpdateOrganization.shape as unknown as ZodRawShapeCompat;
+const updateCustomizationShape = ZPublicApiUpdateOrganizationCustomization.shape as unknown as ZodRawShapeCompat;
 
 export function registerOrganizationTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
@@ -29,6 +33,25 @@ export function registerOrganizationTools(server: McpServer, apiClient: Classroo
     async (args) => {
       const payload = ZPublicApiUpdateOrganization.parse(args);
       return jsonContent(await apiClient.updateOrganization(payload));
+    }
+  );
+
+  server.tool(
+    'get_organization_customization',
+    `Get the LMS customization students see: Community and Exercises in the dashboard, the dashboard banner, the course News Feed and marks, lesson comments, and the login background. Defaults are filled in; ${ORG_ADMIN_RULE}.`,
+    {},
+    READ_ONLY,
+    async () => jsonContent(await apiClient.getOrganizationCustomization())
+  );
+
+  server.tool(
+    'update_organization_customization',
+    `Update the LMS customization; omitted fields keep their values; ${ORG_ADMIN_RULE}. Images are http(s) URLs, null removes them. Setting a login background needs a paid plan. Students see the change.`,
+    updateCustomizationShape,
+    UPDATE,
+    async (args) => {
+      const payload = ZPublicApiUpdateOrganizationCustomization.parse(args);
+      return jsonContent(await apiClient.updateOrganizationCustomization(payload));
     }
   );
 }
