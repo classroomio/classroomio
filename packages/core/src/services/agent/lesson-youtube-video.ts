@@ -1,7 +1,8 @@
 import { AppError } from '@cio/utils/errors';
 
 import { attachAssetService, createAssetFromUploadService, getYouTubeMetadataService } from '../assets/assets';
-import { getLesson, updateLessonService } from '../lesson/lesson';
+import { createLessonBlock } from '../block/block';
+import { getLesson } from '../lesson/lesson';
 
 interface LessonVideoEntry {
   type: 'youtube' | 'generic' | 'upload' | 'google_drive';
@@ -24,9 +25,8 @@ export interface AttachYoutubeVideoToLessonResult {
 }
 
 /**
- * Attach a YouTube video the way the dashboard embed form does. All three writes
- * matter: skipping `lesson.videos` leaves the video tab empty, because that JSON
- * column is what it renders from.
+ * Attach a YouTube video the way the dashboard embed form does: the asset, its usage
+ * record and a video block in the lesson.
  *
  * Caption prefetch is suppressed — otherwise attaching a playlist would spend one
  * provider credit per video up front. Captions are fetched when someone asks for
@@ -99,7 +99,7 @@ export async function attachYoutubeVideoToLesson(input: {
     metadata: videoMetadata
   };
 
-  await updateLessonService(lessonId, { videos: [...existingVideos, newVideo] });
+  await createLessonBlock(lessonId, { type: 'video', data: newVideo }, { actorProfileId: userId });
 
   return {
     lessonId,

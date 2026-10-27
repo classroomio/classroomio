@@ -65,6 +65,7 @@ import * as schema from '@cio/db/schema';
 import { eq } from 'drizzle-orm';
 import { listCourseSections } from '@cio/core/services/course/section';
 import { getLesson } from '@cio/core/services/lesson/lesson';
+import { getLessonNoteHtml } from '@cio/core/services/block/block-text';
 import { getExercise } from '@cio/core/services/exercise/exercise';
 import { sanitizeDanglingToolCalls } from '@cio/core/services/agent/sanitize-tool-calls';
 import {
@@ -467,11 +468,7 @@ const agentCoreRouter = new Hono()
           await verifyLessonBelongsToCourse(context.lessonId, courseId);
           const lesson = await getLesson(context.lessonId);
           lessonTitle = lesson.title;
-          const lessonWithLangs = lesson as {
-            lessonLanguages?: Array<{ locale: string; content: string | null }>;
-          };
-          const langContent = lessonWithLangs.lessonLanguages?.find((ll) => ll.locale === 'en');
-          lessonContent = langContent?.content || undefined;
+          lessonContent = (await getLessonNoteHtml(context.lessonId, 'en')) ?? undefined;
         } catch {
           // Lesson not found or doesn't belong — continue without lesson context
         }
