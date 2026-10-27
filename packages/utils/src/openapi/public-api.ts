@@ -44,6 +44,8 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/team': 'List team members',
   'GET /public-api/v1/team/{memberId}': 'Get a team member',
   'PUT /public-api/v1/team/{memberId}': 'Update a team member',
+  'GET /public-api/v1/organization': 'Get the organization',
+  'PATCH /public-api/v1/organization': 'Update the organization',
   'GET /public-api/v1/organization/email-templates': 'List student email templates',
   'GET /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Get a student email template',
   'PUT /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Save a student email template',
@@ -177,6 +179,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
 };
 
 const OPERATION_TAGS = [
+  { name: 'Organization', description: "Read and update your organization's name, logo and theme." },
   { name: 'Audience', description: 'Manage people in your organization.' },
   { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
   {

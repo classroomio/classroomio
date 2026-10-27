@@ -23,6 +23,7 @@ import { registerCourseTemplateTools } from './tools/course-templates';
 import { registerDomainTools } from './tools/domain';
 import { registerEmailTemplateTools } from './tools/email-templates';
 import { registerLandingPageTools } from './tools/landing-page';
+import { registerOrganizationTools } from './tools/organization';
 import { registerTeamTools } from './tools/team';
 
 async function main() {
@@ -51,6 +52,7 @@ async function main() {
   registerAnalyticsTools(server, apiClient);
   registerAudienceTools(server, apiClient);
   registerTeamTools(server, apiClient);
+  registerOrganizationTools(server, apiClient);
   registerEmailTemplateTools(server, apiClient);
   registerLandingPageTools(server, apiClient);
   registerDomainTools(server, apiClient);

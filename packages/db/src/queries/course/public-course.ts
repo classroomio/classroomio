@@ -2,6 +2,7 @@ import { and, asc, eq, or, sql } from 'drizzle-orm';
 
 import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import type { TLesson } from '@db/types';
 import { pickLessonLanguageBody } from './lesson-language-body';
 import { resolveCourseBannerImage } from '@cio/utils/functions';
 
@@ -300,6 +301,8 @@ export interface PublicLessonContent {
      * shared media player attaches hls.js based on this flag.
      */
     hls?: boolean;
+    /** Poster frame. Only this key is carried over; the stored metadata is a catchall. */
+    metadata?: { thumbnailUrl?: string };
     transcript?: {
       vttUrl: string;
       vttUrlExpiresAt: string;
@@ -332,6 +335,27 @@ export type PublicCourseItemContent = PublicLessonContent | PublicExerciseConten
  * callers should pair this with `getExerciseQuestions` (which already ships with
  * answer keys) to render the client-side-graded exercise UI.
  */
+/**
+ * The public shape of a stored lesson video.
+ *
+ * Built field by field rather than spread: the stored entry's `metadata` is a
+ * catchall, so only the poster is carried over and everything else stays
+ * server-side.
+ */
+export function toPublicLessonVideo(
+  video: NonNullable<TLesson['videos']>[number]
+): NonNullable<Extract<PublicCourseItemContent, { kind: 'lesson' }>['video']> {
+  const thumbnailUrl = video.metadata?.thumbnailUrl;
+
+  return {
+    type: video.type,
+    link: video.link,
+    assetId: video.assetId,
+    ...(video.key ? { key: video.key } : {}),
+    ...(thumbnailUrl ? { metadata: { thumbnailUrl } } : {})
+  };
+}
+
 export async function getPublicCourseItem(
   courseSlug: string,
   itemSlug: string
@@ -391,12 +415,7 @@ export async function getPublicCourseItem(
 
       const firstVideo =
         Array.isArray(lessonRow.videos) && lessonRow.videos.length > 0
-          ? {
-              type: lessonRow.videos[0].type,
-              link: lessonRow.videos[0].link,
-              assetId: lessonRow.videos[0].assetId,
-              ...(lessonRow.videos[0].key ? { key: lessonRow.videos[0].key } : {})
-            }
+          ? toPublicLessonVideo(lessonRow.videos[0])
           : lessonRow.videoUrl
             ? { type: 'generic' as const, link: lessonRow.videoUrl }
             : null;
