@@ -6,10 +6,17 @@ import {
   ZPublicApiAudienceMemberParam,
   ZPublicApiAudienceQuery,
   ZPublicApiCreateAudience,
+  ZPublicApiCreateTeamInviteLink,
+  ZPublicApiInviteTeamMembers,
+  ZPublicApiInviteTeamMembersResponse,
+  ZPublicApiRemoveTeamMemberResponse,
+  ZPublicApiTeamInviteLinkQuery,
+  ZPublicApiTeamInviteLinkResponse,
   ZPublicApiTeamMemberParam,
   ZPublicApiTeamMemberResponse,
   ZPublicApiTeamQuery,
   ZPublicApiUpdateAudience,
+  ZPublicApiUpdateTeamInviteLink,
   ZPublicApiUpdateTeamMember
 } from '../src/validation/public-api';
 import { AUDIENCE_IMPORT_MAX_ROWS } from '../src/validation/organization/audience-import';
@@ -19,6 +26,10 @@ const requestSchemas = {
   ZPublicApiTeamQuery,
   ZPublicApiTeamMemberParam,
   ZPublicApiUpdateTeamMember,
+  ZPublicApiInviteTeamMembers,
+  ZPublicApiTeamInviteLinkQuery,
+  ZPublicApiCreateTeamInviteLink,
+  ZPublicApiUpdateTeamInviteLink,
   ZPublicApiAudienceQuery,
   ZPublicApiAudienceMemberParam,
   ZPublicApiCreateAudience,
@@ -29,6 +40,28 @@ const requestSchemas = {
 describe('public API team and audience update contract', () => {
   it.each(Object.entries(requestSchemas))('%s keeps its published shape', (name, schema) => {
     expect(z.toJSONSchema(schema, { io: 'input', unrepresentable: 'any' })).toMatchSnapshot(name);
+  });
+
+  it.each(
+    Object.entries({
+      ZPublicApiInviteTeamMembersResponse,
+      ZPublicApiRemoveTeamMemberResponse,
+      ZPublicApiTeamInviteLinkResponse
+    })
+  )('%s keeps its published response shape', (name, schema) => {
+    expect(z.toJSONSchema(schema, { io: 'output', unrepresentable: 'any' })).toMatchSnapshot(name);
+  });
+
+  it('only accepts the admin and tutor roles for invites and invite links', () => {
+    expect(ZPublicApiInviteTeamMembers.safeParse({ emails: ['a@example.com'], roleId: 3 }).success).toBe(false);
+    expect(ZPublicApiInviteTeamMembers.parse({ emails: ['a@example.com'], roleId: 2 })).toEqual({
+      emails: ['a@example.com'],
+      roleId: 2,
+      confirmedStudentEmails: []
+    });
+    expect(ZPublicApiTeamInviteLinkQuery.parse({ roleId: '1' })).toEqual({ roleId: 1 });
+    expect(ZPublicApiTeamInviteLinkQuery.safeParse({ roleId: '3' }).success).toBe(false);
+    expect(ZPublicApiUpdateTeamInviteLink.safeParse({ roleId: 1 }).success).toBe(false);
   });
 
   it('ZPublicApiTeamMemberResponse keeps its published shape', () => {

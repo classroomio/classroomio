@@ -78,6 +78,9 @@ import type {
   TPublicApiSetCohortInviteLinkRevoked,
   TPublicApiSetCohortReaction,
   TPublicApiTeamQuery,
+  TPublicApiCreateTeamInviteLink,
+  TPublicApiInviteTeamMembers,
+  TPublicApiUpdateTeamInviteLink,
   TPublicApiUpdateAudience,
   TPublicApiUpdateCohort,
   TPublicApiUpdateCohortGoal,
@@ -623,6 +626,26 @@ export class ClassroomIoApiClient {
 
   async updateTeamMember(memberId: number, payload: TPublicApiUpdateTeamMember) {
     return this.request(`/public-api/v1/team/${memberId}`, { method: 'PUT', body: payload });
+  }
+
+  async inviteTeamMembers(payload: TPublicApiInviteTeamMembers) {
+    return this.request('/public-api/v1/team/invites', { method: 'POST', body: payload });
+  }
+
+  async removeTeamMember(memberId: number) {
+    return this.request(`/public-api/v1/team/${memberId}`, { method: 'DELETE' });
+  }
+
+  async getTeamInviteLink(roleId: number) {
+    return this.request(`/public-api/v1/team/invite-link?roleId=${roleId}`, { method: 'GET' });
+  }
+
+  async createTeamInviteLink(payload: TPublicApiCreateTeamInviteLink) {
+    return this.request('/public-api/v1/team/invite-link', { method: 'POST', body: payload });
+  }
+
+  async updateTeamInviteLink(payload: TPublicApiUpdateTeamInviteLink) {
+    return this.request('/public-api/v1/team/invite-link', { method: 'PATCH', body: payload });
   }
 
   // ─── Organization (public API) ──────────────────────────────────────────

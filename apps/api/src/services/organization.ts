@@ -11,6 +11,7 @@ import {
   activateOrganizationPlan,
   cancelOrganizationPlan,
   checkSiteNameExists,
+  countOrganizationAdmins,
   createOrganizationPlan,
   deleteOrganizationAudienceMember,
   deleteOrganizationMember,
@@ -26,7 +27,9 @@ import {
   getOrganizationMemberIdByOrgAndProfile,
   getOrganizationPlanBySubscriptionId,
   getOrganizationTeam,
+  getOrganizationTeamMemberById,
   getOrganizations,
+  lockOrganizationForUpdate,
   revokeActiveOrganizationInvitesByEmails,
   updateOrganization,
   updateOrganizationPlan
@@ -48,6 +51,7 @@ import { countCohortsByOrgForProfile } from '@cio/db/queries/cohort';
 import { countAssetsByOrg } from '@cio/db/queries/assets';
 import { countTagsByOrg, getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { getAccountPrimary } from '@cio/db/queries/account';
+import { db } from '@cio/db/drizzle';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
@@ -979,10 +983,29 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
  */
 export async function removeTeamMember(orgId: string, memberId: number, removedByProfileId?: string) {
   try {
-    const deleted = await deleteOrganizationMember(orgId, memberId);
-    if (!deleted) {
-      throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
-    }
+    const deleted = await db.transaction(async (tx) => {
+      await lockOrganizationForUpdate(orgId, tx);
+
+      const member = await getOrganizationTeamMemberById(orgId, memberId, tx);
+      if (!member) {
+        throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
+      }
+
+      if (member.profileId && member.profileId === removedByProfileId) {
+        throw new AppError('You cannot remove yourself from the team', ErrorCodes.ORG_TEAM_REMOVE_SELF, 400);
+      }
+
+      const removed = await deleteOrganizationMember(orgId, memberId, tx);
+      if (!removed) {
+        throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
+      }
+
+      if ((await countOrganizationAdmins(orgId, tx)) < 1) {
+        throw new AppError('The organization must keep at least one admin', ErrorCodes.ORG_TEAM_LAST_ADMIN, 400);
+      }
+
+      return removed;
+    });
 
     await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 

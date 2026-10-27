@@ -20,7 +20,17 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     DELETE: 'remove_audience_member'
   },
   '/public-api/v1/team': { GET: 'list_team_members' },
-  '/public-api/v1/team/:memberId': { GET: 'get_team_member', PUT: 'update_team_member' },
+  '/public-api/v1/team/invites': { POST: 'invite_team_members' },
+  '/public-api/v1/team/invite-link': {
+    GET: 'get_team_invite_link',
+    POST: 'set_team_invite_link',
+    PATCH: 'set_team_invite_link'
+  },
+  '/public-api/v1/team/:memberId': {
+    GET: 'get_team_member',
+    PUT: 'update_team_member',
+    DELETE: 'remove_team_member'
+  },
   '/public-api/v1/organization': { GET: 'get_organization', PATCH: 'update_organization' },
   '/public-api/v1/organization/landing-page/featured-courses': { PUT: 'set_featured_courses' },
   '/public-api/v1/courses/:courseId/clone': { POST: 'clone_course' },
