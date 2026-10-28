@@ -250,4 +250,26 @@ describe.skipIf(!hasDatabase)('lesson blocks', () => {
     const remaining = await db.select().from(schema.block).where(eq(schema.block.id, block.id));
     expect(remaining).toEqual([]);
   });
+
+  it('keeps documents uploaded through the lesson editor as document blocks', async () => {
+    const document = {
+      type: 'pdf',
+      name: 'syllabus.pdf',
+      link: 'https://signed.example/a',
+      key: 'org/abc-syllabus.pdf',
+      size: 1200
+    };
+
+    await updateLessonService(ids.lessonA, { documents: [document] });
+
+    const { getLessonById } = await import('@db/queries/lesson');
+    const { listLessonBlockRows } = await import('@db/queries/block');
+    const rows = await listLessonBlockRows(ids.lessonA);
+    expect(rows.map((row) => row.block.type)).toEqual(['document']);
+    expect(rows[0].block.data).toMatchObject({ name: 'syllabus.pdf', key: 'org/abc-syllabus.pdf' });
+    expect((await getLessonById(ids.lessonA))?.documents).toHaveLength(1);
+
+    await updateLessonService(ids.lessonA, { documents: [] });
+    expect(await listLessonBlockRows(ids.lessonA)).toEqual([]);
+  });
 });
