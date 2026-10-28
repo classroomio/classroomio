@@ -16,14 +16,18 @@ vi.mock('@cio/db/drizzle', () => ({
   db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
 }));
 
-vi.mock('@cio/db/queries/organization', async (importOriginal) => ({
-  ...(await importOriginal<object>()),
-  lockOrganizationForUpdate: mocks.lockOrganizationForUpdate,
-  getOrganizationTeamMemberById: mocks.getOrganizationTeamMemberById,
-  deleteOrganizationMember: mocks.deleteOrganizationMember,
-  countOrganizationAdmins: mocks.countOrganizationAdmins,
-  revokeActiveOrganizationInvitesByEmails: mocks.revokeActiveOrganizationInvitesByEmails
-}));
+vi.mock('@cio/db/queries/organization', async (importOriginal) => {
+  const actual = await importOriginal<object>();
+
+  return {
+    ...actual,
+    lockOrganizationForUpdate: mocks.lockOrganizationForUpdate,
+    getOrganizationTeamMemberById: mocks.getOrganizationTeamMemberById,
+    deleteOrganizationMember: mocks.deleteOrganizationMember,
+    countOrganizationAdmins: mocks.countOrganizationAdmins,
+    revokeActiveOrganizationInvitesByEmails: mocks.revokeActiveOrganizationInvitesByEmails
+  };
+});
 
 vi.mock('@cio/core/services/webhook/emit', () => ({
   emitOrganizationMemberWebhookEvent: mocks.emitOrganizationMemberWebhookEvent
@@ -51,7 +55,7 @@ describe('removeTeamMember', () => {
     mocks.revokeActiveOrganizationInvitesByEmails.mockResolvedValue([]);
   });
 
-  it('removes a team member under the organization lock and revokes their invites after', async () => {
+  it('removes a team member and revokes their invites under the organization lock', async () => {
     await expect(removeTeamMember(ORG_ID, tutor.id, ACTOR_ID)).resolves.toEqual(tutor);
 
     expect(mocks.lockOrganizationForUpdate).toHaveBeenCalledWith(ORG_ID, TX);
@@ -62,7 +66,30 @@ describe('removeTeamMember', () => {
       tutor,
       ACTOR_ID
     );
-    expect(mocks.revokeActiveOrganizationInvitesByEmails).toHaveBeenCalledWith(ORG_ID, ['tutor@example.com'], ACTOR_ID);
+    expect(mocks.revokeActiveOrganizationInvitesByEmails).toHaveBeenCalledWith(
+      ORG_ID,
+      ['tutor@example.com'],
+      ACTOR_ID,
+      TX
+    );
+  });
+
+  it('records a revoke audit for each revoked invite after commit', async () => {
+    mocks.revokeActiveOrganizationInvitesByEmails.mockResolvedValue([{ id: 'invite-1' }]);
+
+    await removeTeamMember(ORG_ID, tutor.id, ACTOR_ID);
+
+    expect(mocks.recordOrganizationInviteAudits).toHaveBeenCalledWith([
+      expect.objectContaining({ inviteId: 'invite-1', eventType: 'REVOKED', targetEmail: 'tutor@example.com' })
+    ]);
+  });
+
+  it('fails the whole removal and sends no webhook when revoking the invites fails', async () => {
+    mocks.revokeActiveOrganizationInvitesByEmails.mockRejectedValue(new Error('db down'));
+
+    await expect(removeTeamMember(ORG_ID, tutor.id, ACTOR_ID)).rejects.toMatchObject({ statusCode: 500 });
+    expect(mocks.emitOrganizationMemberWebhookEvent).not.toHaveBeenCalled();
+    expect(mocks.recordOrganizationInviteAudits).not.toHaveBeenCalled();
   });
 
   it('refuses to remove yourself and deletes nothing', async () => {

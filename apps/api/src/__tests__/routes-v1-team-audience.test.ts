@@ -256,6 +256,18 @@ describe('team and audience routes through the v1 router', () => {
     expect(await response.json()).toMatchObject({ success: true, data: { requiresConfirmation: true } });
   });
 
+  it('returns 200, not 201, when every invite email failed to queue', async () => {
+    mocks.team.inviteTeamMembersService.mockResolvedValue({
+      ...inviteResult,
+      queuedCount: 0,
+      failedEmails: ['a@example.com']
+    });
+
+    const response = await request('POST', '/team/invites', { emails: ['a@example.com'], roleId: 2 });
+
+    expect(response.status).toBe(200);
+  });
+
   it('returns null data when the role has no active invite link', async () => {
     mocks.team.getTeamInviteLinkService.mockResolvedValue(null);
 

@@ -983,7 +983,7 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
  */
 export async function removeTeamMember(orgId: string, memberId: number, removedByProfileId?: string) {
   try {
-    const deleted = await db.transaction(async (tx) => {
+    const { deleted, targetEmail, revoked } = await db.transaction(async (tx) => {
       await lockOrganizationForUpdate(orgId, tx);
 
       const member = await getOrganizationTeamMemberById(orgId, memberId, tx);
@@ -1004,14 +1004,18 @@ export async function removeTeamMember(orgId: string, memberId: number, removedB
         throw new AppError('The organization must keep at least one admin', ErrorCodes.ORG_TEAM_LAST_ADMIN, 400);
       }
 
-      return removed;
+      const removedEmail = removed.email?.toLowerCase() ?? null;
+      const revokedInvites =
+        removedEmail && removedByProfileId
+          ? await revokeActiveOrganizationInvitesByEmails(orgId, [removedEmail], removedByProfileId, tx)
+          : [];
+
+      return { deleted: removed, targetEmail: removedEmail, revoked: revokedInvites };
     });
 
     await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 
-    if (deleted.email && removedByProfileId) {
-      const targetEmail = deleted.email.toLowerCase();
-      const revoked = await revokeActiveOrganizationInvitesByEmails(orgId, [targetEmail], removedByProfileId);
+    if (targetEmail && removedByProfileId && revoked.length > 0) {
       await recordOrganizationInviteAudits(
         revoked.map((invite) => ({
           inviteId: invite.id,

@@ -375,6 +375,9 @@ describe('services/v1/team', () => {
 
       await updateTeamInviteLinkService(ORG_ID, ACTOR_ID, { roleId: ROLE.TUTOR, enabled: true });
       expect(toggleOrgLinkInvite).toHaveBeenLastCalledWith(ORG_ID, ROLE.TUTOR, false, ACTOR_ID);
+
+      await updateTeamInviteLinkService(ORG_ID, ACTOR_ID, { roleId: ROLE.ADMIN, enabled: true });
+      expect(toggleOrgLinkInvite).toHaveBeenLastCalledWith(ORG_ID, ROLE.ADMIN, false, ACTOR_ID);
     });
   });
 });

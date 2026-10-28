@@ -62,6 +62,7 @@ describe('public API team and audience update contract', () => {
     expect(ZPublicApiTeamInviteLinkQuery.parse({ roleId: '1' })).toEqual({ roleId: 1 });
     expect(ZPublicApiTeamInviteLinkQuery.safeParse({ roleId: '3' }).success).toBe(false);
     expect(ZPublicApiUpdateTeamInviteLink.safeParse({ roleId: 1 }).success).toBe(false);
+    expect(ZPublicApiUpdateTeamInviteLink.safeParse({ roleId: 1, enabled: true }).success).toBe(true);
   });
 
   it('ZPublicApiTeamMemberResponse keeps its published shape', () => {

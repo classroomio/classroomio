@@ -84,11 +84,11 @@ export const v1TeamRouter = new Hono()
       tags: ['Team'],
       responses: {
         200: jsonResponse(
-          'Nothing was sent: some addresses are already on the team, or belong to students not listed in confirmedStudentEmails',
+          'No invite email was queued: some addresses are already on the team, belong to students not listed in confirmedStudentEmails, or every address is in failedEmails',
           itemResponse(ZPublicApiInviteTeamMembersResponse)
         ),
         201: jsonResponse(
-          'Invites created and emails queued; failedEmails lists any address that could not be invited',
+          'At least one invite email was queued; failedEmails lists any address that could not be invited',
           itemResponse(ZPublicApiInviteTeamMembersResponse)
         ),
         400: errorResponses.badRequest,
@@ -108,7 +108,7 @@ export const v1TeamRouter = new Hono()
         const actorId = c.get('actorId');
         const payload = c.req.valid('json');
         const result = await inviteTeamMembersService(orgId, actorId, payload);
-        const status = result.requiresConfirmation || result.existingTeamMembers.length > 0 ? 200 : 201;
+        const status = result.queuedCount > 0 ? 201 : 200;
 
         return c.json({ success: true, data: result }, status);
       } catch (error) {

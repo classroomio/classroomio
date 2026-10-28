@@ -38,11 +38,13 @@ function toPublicTeamMember(member: TOrgTeamMember) {
 type TLinkInvite = { id: string; token: string; roleId: number; isRevoked: boolean };
 
 function toPublicInviteLink(invite: TLinkInvite) {
+  const url = `${getAppBaseUrl()}/invite/link/${encodeURIComponent(invite.token)}`;
+
   return {
     id: invite.id,
     roleId: invite.roleId,
     enabled: !invite.isRevoked,
-    url: `${getAppBaseUrl()}/invite/link/${encodeURIComponent(invite.token)}`
+    url
   };
 }
 
