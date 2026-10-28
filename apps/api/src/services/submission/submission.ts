@@ -1005,6 +1005,7 @@ export async function updateSubmissionService(
 
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
+      await triggerCertificationIfExerciseComplete(updated.courseId, updated.exerciseId, updated.submittedBy);
     }
 
     if (statusChanged || gradingStateChanged) {
@@ -1126,6 +1127,7 @@ export async function updateSubmissionGradesBatch(
 
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
+      await triggerCertificationIfExerciseComplete(updated.courseId, updated.exerciseId, updated.submittedBy);
     }
 
     if (statusChanged || currentGradingState !== targetGradingState) {
