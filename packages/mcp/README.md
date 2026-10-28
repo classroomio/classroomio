@@ -295,7 +295,7 @@ Organization tools call `GET` and `PATCH /public-api/v1/organization` with the `
 LMS customization tools call `GET` and `PATCH /public-api/v1/organization/customization` with the same scopes and the same org admin rule, matching the dashboard's Customize LMS page:
 
 - `get_organization_customization` returns `dashboard` (`community`, `exercise`, `bannerImage`, `bannerText`), `course` (`newsfeed`, `grading`), `apps` (`comments`) and `auth` (`backgroundImage`), with defaults filled in. Unset images are `null`.
-- `update_organization_customization` takes any of those fields. Omitted fields keep their values. Images must be http(s) URLs, and `null` removes one. Setting `auth.backgroundImage` needs a paid plan (403 `UPGRADE_REQUIRED` otherwise); removing it doesn't. The language settings on that page aren't included.
+- `update_organization_customization` takes any of those fields. Omitted fields keep their values. Images must be http(s) URLs, and `null` removes one. Setting `auth.backgroundImage` needs a paid plan or a self-hosted install (403 `UPGRADE_REQUIRED` otherwise); removing it doesn't. The language settings on that page aren't included.
 
 Email template tools act as the key creator, who must be an org admin, the same as the dashboard's Emails settings page:
 

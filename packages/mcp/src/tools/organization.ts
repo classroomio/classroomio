@@ -46,7 +46,7 @@ export function registerOrganizationTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'update_organization_customization',
-    `Update the LMS customization; omitted fields keep their values; ${ORG_ADMIN_RULE}. Images are http(s) URLs, null removes them. Setting a login background needs a paid plan. Students see the change.`,
+    `Update the LMS customization; omitted fields keep their values; ${ORG_ADMIN_RULE}. Images are http(s) URLs, null removes them. Setting a login background needs a paid plan or a self-hosted install. Students see the change.`,
     updateCustomizationShape,
     UPDATE,
     async (args) => {

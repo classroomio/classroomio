@@ -1,21 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mocks = vi.hoisted(() => ({ env: { PUBLIC_IS_SELFHOSTED: 'false' } }));
+const mocks = vi.hoisted(() => ({ env: { PUBLIC_IS_SELFHOSTED: 'false' }, tx: { name: 'tx' } }));
 
+vi.mock('@cio/db/drizzle', () => ({ db: { transaction: vi.fn() } }));
 vi.mock('@cio/db/queries/organization', () => ({
   getActiveOrganizationPlan: vi.fn(),
   getOrganizationById: vi.fn(),
-  getOrganizationMemberRoleId: vi.fn()
+  getOrganizationMemberRoleId: vi.fn(),
+  lockOrganizationForUpdate: vi.fn()
 }));
 vi.mock('@api/services/organization', () => ({ updateOrg: vi.fn() }));
 vi.mock('@cio/core/config/env', () => ({ env: mocks.env }));
 
 import { PLAN } from '@cio/utils/plans';
 import { ROLE } from '@cio/utils/constants';
+import { db } from '@cio/db/drizzle';
 import {
   getActiveOrganizationPlan,
   getOrganizationById,
-  getOrganizationMemberRoleId
+  getOrganizationMemberRoleId,
+  lockOrganizationForUpdate
 } from '@cio/db/queries/organization';
 import { updateOrg } from '@api/services/organization';
 import {
@@ -49,6 +53,8 @@ beforeEach(() => {
   mocks.env.PUBLIC_IS_SELFHOSTED = 'false';
   vi.mocked(getOrganizationMemberRoleId).mockResolvedValue(ROLE.ADMIN);
   vi.mocked(getActiveOrganizationPlan).mockResolvedValue({ planName: PLAN.EARLY_ADOPTER } as never);
+  vi.mocked(db.transaction).mockImplementation((async (callback: (tx: unknown) => unknown) =>
+    callback(mocks.tx)) as never);
   mockStored(storedCustomization);
   vi.mocked(updateOrg).mockImplementation(async (_orgId, data) => ({ id: ORG_ID, ...data }) as never);
 });
@@ -118,13 +124,38 @@ describe('updatePublicApiOrganizationCustomizationService', () => {
       dashboard: { community: false }
     });
 
-    expect(updateOrg).toHaveBeenCalledWith(ORG_ID, {
-      customization: { ...storedCustomization, dashboard: { ...storedCustomization.dashboard, community: false } }
-    });
+    expect(updateOrg).toHaveBeenCalledWith(
+      ORG_ID,
+      { customization: { ...storedCustomization, dashboard: { ...storedCustomization.dashboard, community: false } } },
+      mocks.tx
+    );
     expect(result).toEqual({
       ...storedCustomization,
       dashboard: { ...storedCustomization.dashboard, community: false }
     });
+  });
+
+  it('locks the organization row before reading, and reads and writes in the same transaction', async () => {
+    await updatePublicApiOrganizationCustomizationService(ORG_ID, ACTOR_ID, { apps: { comments: true } });
+
+    expect(lockOrganizationForUpdate).toHaveBeenCalledWith(ORG_ID, mocks.tx);
+    expect(getOrganizationById).toHaveBeenCalledWith(ORG_ID, mocks.tx);
+    expect(vi.mocked(lockOrganizationForUpdate).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(getOrganizationById).mock.invocationCallOrder[0]
+    );
+    expect(vi.mocked(updateOrg).mock.calls[0][2]).toBe(mocks.tx);
+  });
+
+  it('merges into what the previous writer saved, not a value read before the lock', async () => {
+    vi.mocked(lockOrganizationForUpdate).mockImplementation(async () => {
+      mockStored({ ...storedCustomization, course: { grading: true, newsfeed: false } });
+    });
+
+    await updatePublicApiOrganizationCustomizationService(ORG_ID, ACTOR_ID, { dashboard: { community: false } });
+
+    const saved = vi.mocked(updateOrg).mock.calls[0][1].customization;
+    expect(saved?.course).toEqual({ grading: true, newsfeed: false });
+    expect(saved?.dashboard.community).toBe(false);
   });
 
   it('fills in the defaults before saving an organization that never saved its customization', async () => {
@@ -132,14 +163,18 @@ describe('updatePublicApiOrganizationCustomizationService', () => {
 
     await updatePublicApiOrganizationCustomizationService(ORG_ID, ACTOR_ID, { course: { grading: false } });
 
-    expect(updateOrg).toHaveBeenCalledWith(ORG_ID, {
-      customization: {
-        apps: { comments: true },
-        course: { grading: false, newsfeed: true },
-        dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' },
-        auth: { backgroundImage: '' }
-      }
-    });
+    expect(updateOrg).toHaveBeenCalledWith(
+      ORG_ID,
+      {
+        customization: {
+          apps: { comments: true },
+          course: { grading: false, newsfeed: true },
+          dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' },
+          auth: { backgroundImage: '' }
+        }
+      },
+      mocks.tx
+    );
   });
 
   it('stores a null image as an empty string, the way the dashboard clears it', async () => {

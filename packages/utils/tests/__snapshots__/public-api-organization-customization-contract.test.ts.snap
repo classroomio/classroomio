@@ -121,7 +121,7 @@ exports[`public API organization customization contract > ZPublicApiUpdateOrgani
               "type": "null",
             },
           ],
-          "description": "Public http(s) URL of the login and signup page background; null restores the default. Setting one needs a paid plan.",
+          "description": "Public http(s) URL of the login and signup page background; null restores the default. Setting one needs a paid plan or a self-hosted install.",
         },
       },
       "type": "object",

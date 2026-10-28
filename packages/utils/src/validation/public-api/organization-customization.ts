@@ -28,7 +28,7 @@ export const ZPublicApiUpdateOrganizationCustomization = z
     auth: z
       .object({
         backgroundImage: ZImageUrl.optional().describe(
-          'Public http(s) URL of the login and signup page background; null restores the default. Setting one needs a paid plan.'
+          'Public http(s) URL of the login and signup page background; null restores the default. Setting one needs a paid plan or a self-hosted install.'
         )
       })
       .optional()

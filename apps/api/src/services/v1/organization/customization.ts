@@ -1,6 +1,11 @@
 import type { TPublicApiUpdateOrganizationCustomization } from '@cio/utils/validation/public-api';
 
-import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/organization';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
+import {
+  getActiveOrganizationPlan,
+  getOrganizationById,
+  lockOrganizationForUpdate
+} from '@cio/db/queries/organization';
 import { DEFAULT_ORG_CUSTOMIZATION } from '@cio/utils/constants';
 import { canUseBasicAuthSettings } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
@@ -37,8 +42,8 @@ function toPublicCustomization({ dashboard, course, apps, auth }: TCustomization
   };
 }
 
-async function getStoredCustomization(orgId: string) {
-  const organization = await getOrganizationById(orgId);
+async function getStoredCustomization(orgId: string, dbClient: DbOrTxClient = db) {
+  const organization = await getOrganizationById(orgId, dbClient);
   if (!organization) {
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
   }
@@ -62,8 +67,8 @@ export async function getPublicApiOrganizationCustomizationService(orgId: string
 }
 
 /**
- * `updateOrg` replaces the whole customization JSON, so the patch is merged into the stored value first.
- * Omitted fields keep their values; a null image is stored as '', which is how the dashboard clears it.
+ * `updateOrg` replaces the whole customization JSON, so the patch is merged into the stored value under a row
+ * lock, and concurrent PATCHes can't undo each other. A null image is stored as '', which is how the dashboard clears it.
  */
 export async function updatePublicApiOrganizationCustomizationService(
   orgId: string,
@@ -77,22 +82,26 @@ export async function updatePublicApiOrganizationCustomizationService(
     await assertLoginBackgroundEntitlement(orgId);
   }
 
-  const current = await getStoredCustomization(orgId);
   const { bannerImage, ...dashboard } = payload.dashboard ?? {};
 
-  const customization: TCustomization = {
-    ...current,
-    dashboard: {
-      ...current.dashboard,
-      ...dashboard,
-      ...(bannerImage !== undefined && { bannerImage: bannerImage ?? '' })
-    },
-    course: { ...current.course, ...payload.course },
-    apps: { ...current.apps, ...payload.apps },
-    auth: backgroundImage === undefined ? current.auth : { ...current.auth, backgroundImage: backgroundImage ?? '' }
-  };
+  const organization = await db.transaction(async (tx) => {
+    await lockOrganizationForUpdate(orgId, tx);
+    const current = await getStoredCustomization(orgId, tx);
 
-  const organization = await updateOrg(orgId, { customization });
+    const customization: TCustomization = {
+      ...current,
+      dashboard: {
+        ...current.dashboard,
+        ...dashboard,
+        ...(bannerImage !== undefined && { bannerImage: bannerImage ?? '' })
+      },
+      course: { ...current.course, ...payload.course },
+      apps: { ...current.apps, ...payload.apps },
+      auth: backgroundImage === undefined ? current.auth : { ...current.auth, backgroundImage: backgroundImage ?? '' }
+    };
+
+    return updateOrg(orgId, { customization }, tx);
+  });
 
   return toPublicCustomization(withDefaults(organization.customization));
 }

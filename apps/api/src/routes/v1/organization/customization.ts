@@ -51,7 +51,7 @@ export const v1OrganizationCustomizationRouter = new Hono()
   .patch(
     '/',
     describeRoute({
-      description: `Update the LMS customization; omitted fields keep their values; ${ORG_ADMIN_RULE}. Setting a login background needs a paid plan.`,
+      description: `Update the LMS customization; omitted fields keep their values; ${ORG_ADMIN_RULE}. Setting a login background needs a paid plan or a self-hosted install.`,
       tags: [CUSTOMIZATION_TAG],
       responses: {
         200: jsonResponse('LMS customization updated', CustomizationResponse),
