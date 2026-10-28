@@ -99,7 +99,8 @@ The thing a comment points at can be edited or removed. The comment must not sil
 
 ### 6. Notifications
 
-Use the existing notification system (bell icon + email).
+Use the existing notification system (bell icon + email). If the bell or email delivery for
+these events does not exist yet, building it is part of this feature, not a separate prerequisite.
 
 | Event | Who is notified |
 | --- | --- |
@@ -115,7 +116,8 @@ Use the existing notification system (bell icon + email).
 ## Edge Cases
 
 - **Removed from the course team:** the person's old comments stay with their name. They can no
-  longer see the comments or be mentioned.
+  longer see the comments or be mentioned. The one exception is an org admin: they stay on every
+  course team of their org, so removing them from a course's list changes nothing for comments.
 - **Mentioning someone who later loses access:** they get no further notifications for that thread.
 - **Two people highlight overlapping text:** both threads exist. Clicking an overlap shows both.
 - **Lesson in another language (translations):** a highlight belongs to the language version it was
@@ -145,7 +147,10 @@ These are guides, not final decisions.
 - **Text anchors:** the lesson editor is Tiptap. Do not write anything into the lesson content
   itself, so clone, export and the learner view never see comment data. The thread stores the text
   range and the quoted text. The editor draws the highlight on top of the content while the author
-  is working, and re-finds the range by the quoted text when the content changes.
+  is working, and re-finds the range by the quoted text when the content changes. The thread also stores a few words
+  of text before and after the quote. If the quote appears more than once, the match with the same
+  surrounding words wins; if that is still ambiguous, the thread is marked "Original text was
+  removed" instead of guessing.
 - **Access:** org admins are allowed on every comment endpoint, in addition to admins and tutors on
   the course.
 - **Video anchors:** store the media/asset id and the second. If the lesson's asset id changes, the
@@ -166,3 +171,5 @@ These are guides, not final decisions.
 - [ ] Deleting highlighted text keeps the thread, marked "Original text was removed", with the original quote.
 - [ ] Cloning a course does not copy its comments.
 - [ ] A learner account cannot see or fetch any comment, through the UI or the API.
+- [ ] An org admin can still see and delete comments on a course after being removed from its team list.
+- [ ] If a highlighted quote appears twice after an edit, the thread attaches to the match with the same surrounding words, or is marked as removed when that is unclear.
