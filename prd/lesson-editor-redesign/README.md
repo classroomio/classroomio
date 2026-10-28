@@ -435,6 +435,8 @@ A dismissible hint banner introduces the drag-to-reorder affordance the first ti
 
 An admin can delete several blocks at once instead of removing them one by one. It works on every block type, so it is a feature of the editor, not of any one block.
 
+**Deleting one block at a time stays.** Bulk delete adds to **Remove block** in each block's "..." menu (section 5); it does not replace it. An admin can always delete a single block from its own menu, whether or not select mode is on, and that removal is not affected by select mode.
+
 * A **Bulk delete** button (trash icon) sits in the toolbar next to Edit / Preview. It only shows in Edit.
 * Clicking it turns on **select mode**. A bar appears above the canvas with a master checkbox, "N selected", **Select all**, a red **Delete N** button and **Cancel**. The bar stays visible while the admin scrolls.
 * In select mode, clicking anywhere on a block selects or unselects it. Each block shows a checkbox and a highlighted outline when selected. Controls inside blocks do not react to clicks.
@@ -858,6 +860,7 @@ Manually verify:
 36. After delete, a toast shows the count and Undo for 8 seconds; Undo restores the blocks in their original order and unselected.
 37. Deleting every block leaves an empty canvas and the lesson autosaves.
 38. Esc leaves select mode; Cmd/Ctrl + A selects all and Delete/Backspace deletes, neither while typing in a field. Switching to Preview leaves select mode.
+39. Each block can still be deleted individually from its "..." menu (Remove block), with or without using Bulk delete.
 
 ---
 
