@@ -6,8 +6,6 @@ A clickable prototype lives at [`prototypes/lesson-editor-redesign-v2/index.html
 
 The prototype shows everything in this PRD working: the five new blocks, the new empty state, and the new Add content menu. It also contains all of v1, unchanged.
 
-**Bulk delete** is demonstrated in the v1 prototype at [`prototypes/lesson-editor-redesign/index.html`](../../prototypes/lesson-editor-redesign/index.html), because it works on every block type, new or old. It is not in the v2 prototype.
-
 When this document and the prototype disagree on a UI detail, the prototype wins. One deliberate exception: the prototype lets a Tabs block be added inside a tab, but this PRD does not allow it (see Block 3).
 
 ## Purpose
@@ -234,39 +232,6 @@ The empty state is only visible in Edit. In Preview, an empty lesson shows what 
 
 ---
 
-## Bulk delete
-
-An admin can delete several blocks at once instead of removing them one by one. It works on every block type, old and new, so it is a feature of the editor, not of any one block.
-
-### How it works
-
-* A **Bulk delete** button (trash icon) sits in the toolbar next to Edit / Preview. It only shows in Edit.
-* Clicking it turns on **select mode**. A bar appears above the canvas with a master checkbox, "N selected", **Select all**, a red **Delete N** button and **Cancel**. The bar stays visible while the admin scrolls.
-* In select mode, clicking anywhere on a block selects or unselects it. Each block shows a checkbox and a highlighted outline when selected. Controls inside blocks do not react to clicks.
-* **Shift + click** selects every block between the last clicked block and this one.
-* The master checkbox shows empty, partly filled or full. Clicking it selects all or none.
-* **Delete N** removes the selected blocks and leaves select mode. If more than 5 blocks are selected, the first click changes the button to **Confirm delete N**; a second click within 4 seconds deletes. Otherwise it resets.
-* After deleting, a toast says how many blocks were deleted and offers **Undo** for 8 seconds. Undo puts the blocks back in their original order.
-* Deleting every block shows the empty state again.
-
-### Keyboard
-
-| Key | Action |
-| --- | --- |
-| Esc | Leave select mode and clear the selection |
-| Cmd/Ctrl + A | Select all blocks (not while typing in a field) |
-| Delete / Backspace | Delete the selected blocks (not while typing in a field) |
-
-### Rules
-
-* Select mode hides the drag-to-reorder hint and the scroll-position dots.
-* Switching to Preview leaves select mode.
-* Delete is disabled while nothing is selected.
-* Deleting autosaves like any other change.
-* A block inside a Tabs block is not selectable; only top-level blocks are.
-
----
-
 ## Data and API (high level)
 
 v1 already stores the lesson as an ordered list of blocks, where each block has a type and its own content. v2 adds five new block types to that list. Each new block keeps its own content with the block:
@@ -286,7 +251,6 @@ Notes for developers:
 * Learner activity (flipped cards, open tab, current step, chosen answer) is **not** stored. No new learner tables are needed.
 * Validation limits: Chart 1–12 data points, values 0 or more; Flashcards at least 1 card; Tabs at least 1 tab; Multiple Choice at least 2 options and exactly 1 correct; Process at least 1 step.
 * Lessons created before v2 are unaffected.
-* Bulk delete removes several blocks from the ordered list in one save. Undo restores the previous list. No new fields are needed.
 
 ## Non-goals
 
@@ -298,8 +262,6 @@ Notes for developers:
 * More than one correct answer, or other question types, in Multiple Choice
 * AI drafting for the five new blocks (AI still drafts Notes only, as in v1)
 * Changing any v1 behaviour
-* Bulk move, bulk duplicate or bulk change of block type
-* Bulk delete on the mobile layout (not yet designed)
 
 ---
 
@@ -381,20 +343,6 @@ Notes for developers:
 - [ ] The "+" between blocks opens a ten-tile menu plus "Ask AI instead", and inserts at that exact position.
 - [ ] The menu closes on pick, Escape, outside click, or when another menu opens.
 - [ ] The floating bar adds to the end of the lesson, or to the open tab when inside Tabs.
-
-### Bulk delete
-
-- [ ] A "Bulk delete" button with a trash icon shows in the toolbar in Edit only.
-- [ ] Clicking it shows the selection bar with master checkbox, "N selected", Select all, Delete N and Cancel, and the bar stays visible on scroll.
-- [ ] Clicking a block selects or unselects it, and controls inside blocks do not respond while select mode is on.
-- [ ] Shift + click selects the range from the last clicked block.
-- [ ] The master checkbox shows none, some or all, and toggles all or none.
-- [ ] Delete N is disabled when nothing is selected.
-- [ ] Deleting 5 or fewer blocks removes them straight away; deleting more than 5 needs a second click on "Confirm delete N" within 4 seconds.
-- [ ] After delete, a toast shows the count and Undo for 8 seconds; Undo restores the blocks in their original order and unselected.
-- [ ] Deleting every block shows the empty state; the lesson autosaves.
-- [ ] Esc leaves select mode; Cmd/Ctrl + A selects all and Delete/Backspace deletes, neither while typing in a field.
-- [ ] Switching to Preview leaves select mode.
 
 ## Status
 
