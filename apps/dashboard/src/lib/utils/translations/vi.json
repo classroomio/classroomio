@@ -527,6 +527,16 @@
       "test_success": "Đã gửi sự kiện thử nghiệm thành công.",
       "test_failed": "Sự kiện thử nghiệm thất bại. Mở nhật ký gửi để xem lý do.",
       "redelivered": "Sự kiện đã được đưa vào hàng đợi để gửi lại."
+    },
+    "insights": {
+      "reminder_sent": "Đã gửi lời nhắc",
+      "reminder_not_sent": "Thông báo nhắc nhở không được gửi: đã được gửi hôm nay hoặc người học đã tắt chức năng nhận email này.",
+      "reminder_failed": "Không thể gửi lời nhắc",
+      "reminders_sending": "Đang gửi lời nhắc nhở…",
+      "reminders_sent": "{count, plural, one {# lời nhắc đã được gửi} other {# lời nhắc đã được gửi}}",
+      "target_saved": "Đã lưu mục tiêu học viên",
+      "target_failed": "Không thể lưu mục tiêu học viên",
+      "target_invalid": "Nhập số nguyên từ 1 đến 1.000.000"
     }
   },
   "explore": {
@@ -613,38 +623,12 @@
     "assignment_completion": "Hoàn thành bài tập",
     "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
     "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành",
-    "students": "Sinh viên",
     "lessons": "Bài học",
     "tutors": "gia sư",
     "avg_grade": "Điểm trung bình",
-    "completion_rate": "Tỷ lệ hoàn thành",
-    "student_progress_overview": "Tổng quan về tiến bộ của học sinh",
-    "student_name": "Tên sinh viên",
     "lessons_completed": "Bài học đã hoàn thành",
-    "exercises_submitted": "Bài tập đã gửi",
     "average_grade": "Điểm trung bình",
-    "actions": "Hành động",
-    "view_details": "Xem chi tiết",
-    "no_students_found": "Không tìm thấy sinh viên nào",
-    "no_students_description": "Hiện chưa có học viên nào đăng ký khóa học này. Học sinh sẽ xuất hiện ở đây khi họ tham gia khóa học.",
-    "showing_students": "Đang hiển thị {start} cho {end} trong tổng số {total} sinh viên",
-    "no_analytics_data": "Không có dữ liệu phân tích",
-    "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu sự cố vẫn tiếp diễn.",
     "student": "Học viên",
-    "student_progress_distribution": "Phân phối tiến bộ của học sinh",
-    "grade_distribution": "Phân phối lớp",
-    "progress_80_plus": "Tiến độ trên 80%",
-    "progress_60_79": "Tiến độ 60-79%",
-    "progress_below_60": "Tiến độ dưới 60%",
-    "grade_90_plus": "90% + Lớp",
-    "grade_80_89": "Lớp 80-89%",
-    "grade_70_79": "Lớp 70-79%",
-    "grade_below_70": "Dưới 70% lớp",
-    "number_of_students": "Số lượng sinh viên",
-    "progress_range": "Phạm vi tiến độ",
-    "grade_range": "Khoảng điểm",
-    "no_progress_data": "Không có dữ liệu tiến độ",
-    "no_grade_data": "Không có dữ liệu điểm",
     "loading_chart": "Đang tải biểu đồ...",
     "no_data_default": "Không có sẵn dữ liệu",
     "no_data_default_description": "Không có dữ liệu để hiển thị tại thời điểm này.",
@@ -708,22 +692,16 @@
     "range": {
       "7d": "7 ngày qua",
       "30d": "30 ngày qua",
-      "90d": "90 ngày qua"
+      "90d": "90 ngày qua",
+      "all": "Mọi lúc",
+      "label": "Phạm vi thời gian",
+      "locked": "Nâng cấp để mở khóa khoảng thời gian này"
     },
     "tabs": {
       "overview": "Tổng quan",
       "funnel": "Kênh",
       "geography": "Địa lý",
       "course_types": "Các loại khóa học"
-    },
-    "course_metrics": {
-      "page_subtitle": "Việc ghi danh, hoàn thành bài học, điểm số và sự tiến bộ của mỗi học sinh đối với khóa học này.",
-      "progress_distribution_card_description": "Có bao nhiêu học sinh rơi vào mỗi mức độ hoàn thành.",
-      "grade_distribution_card_description": "Có bao nhiêu học sinh rơi vào từng nhóm lớp.",
-      "students_table_description": "Tổng quan có thể sắp xếp với các liên kết đến hồ sơ sinh viên.",
-      "kpi_team_tutors": "{count, plural, one {# gia sư trong nhóm khóa học} other {# gia sư trong nhóm khóa học}}",
-      "kpi_lessons_exercises": "{count, plural, one {# bài tập} other {# bài tập}} được ánh xạ tới bài học",
-      "kpi_progress_grade": "{grade}% điểm bài tập trung bình của các học sinh đã đăng ký"
     },
     "exercises_completed": "Bài tập đã hoàn thành",
     "course_progress": "Tiến độ khóa học",
@@ -3567,7 +3545,8 @@
     "back_to_app": "Quay lại ứng dụng",
     "create": "Tạo",
     "distribute": "phân phối",
-    "tools": "Công cụ"
+    "tools": "Công cụ",
+    "marketing": "Tiếp thị"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
@@ -6027,7 +6006,8 @@
       "newsfeed": "Bảng tin",
       "courses": "Khóa học",
       "people": "mọi người",
-      "settings": "Cài đặt"
+      "settings": "Cài đặt",
+      "analytics": "Phân tích"
     },
     "status": {
       "active": "Đang hoạt động",
@@ -6440,5 +6420,579 @@
     "new_badge": "Mới",
     "read_full": "Đọc toàn bộ nhật ký thay đổi",
     "close": "Đóng"
+  },
+  "marketing": {
+    "title": "Tiếp thị",
+    "subtitle": "Hiểu cách khách truy cập tìm thấy các khóa học của bạn và chuyển đổi thành học viên."
+  },
+  "insights": {
+    "title": "Phân tích",
+    "updated_seconds_ago": "đã cập nhật {count} giây trước",
+    "updated_minutes_ago": "{count, plural, one {đã cập nhật # phút trước} other {đã cập nhật # phút trước}}",
+    "retry": "Thử lại",
+    "all_courses": "Tất cả các khóa học",
+    "course_picker": "Khóa học",
+    "exercise_picker": "Bài tập",
+    "not_in_section": "Không có trong một phần",
+    "section_number": "Phần {number}",
+    "section_with_title": "Mục {number} · {title}",
+    "finished": "Hoàn thành",
+    "awaiting_grade": "Đang chờ chấm điểm",
+    "awaiting_grade_short": "Chưa giải quyết",
+    "pass_mark_tag": "Điểm đậu {mark}%",
+    "of_total": "{count} trong số {total}",
+    "never": "Không bao giờ",
+    "invited": "{count} đã mời",
+    "no_students": "Không có học viên",
+    "no_students_yet": "Chưa có học viên",
+    "no_graded_attempts": "Không có bài làm được chấm",
+    "names_and_more": "{names} và {count} mục khác",
+    "certificate_issued": "{count, plural, one {Đã phát hành} other {# ban hành}}",
+    "question_hint": {
+      "context_and_answer": "{context} · câu trả lời sai phổ biến nhất: {answer}",
+      "answer": "Câu trả lời sai phổ biến nhất: {answer}"
+    },
+    "chips": {
+      "label": "Giới thiệu về trang tổng quan này",
+      "live": "Trực tiếp · {updated}",
+      "live_every": "Trực tiếp · {updated} · làm mới mỗi {seconds} giây",
+      "students": "{count, plural, one {# người học} other {# người học}}",
+      "courses": "Khóa học: {count}",
+      "cohorts": "Nhóm thuần tập: {count}",
+      "active_cohorts": "{count, plural, one {# đoàn hệ tích cực} other {# nhóm thuần tập đang hoạt động}}",
+      "seats": "Số ghế: {used} trong tổng số {limit}"
+    },
+    "now_tag": {
+      "label": "Hiện nay",
+      "hint": "Cho thấy vị trí của người học hiện nay. Phạm vi không thay đổi thẻ này."
+    },
+    "student_chips": {
+      "latest": "Mới nhất",
+      "progress": "Tiến triển",
+      "now_at": "bây giờ ở {place}"
+    },
+    "donut": {
+      "students": "{count, plural, one {người học} other {người học}}"
+    },
+    "status": {
+      "at_risk": "Có nguy cơ",
+      "lagging": "tụt hậu",
+      "on_track": "Đang đi đúng hướng",
+      "completed": "Hoàn thành"
+    },
+    "flags": {
+      "overdue": "Quá hạn"
+    },
+    "legend": {
+      "middle_half": "50% người học ở giữa",
+      "cohort_average": "trung bình nhóm",
+      "student": "Người học",
+      "all_students": "Tất cả người học",
+      "in_progress": "{name} (đang tiến hành)",
+      "enrolled_students": "Người học đã đăng ký",
+      "target": "Mục tiêu",
+      "logins": "Lượt đăng nhập",
+      "direct_students": "Người học trực tiếp"
+    },
+    "notes": {
+      "score_distribution": "Người học theo thang điểm.",
+      "course_details": "Chọn một khóa học ở trên để xem điểm theo bài tập, bảng điểm theo từng phần và các câu hỏi khó nhất.",
+      "section_scorecard": "Một hàng cho mỗi phần khóa học. Điểm danh video là tỷ lệ video bài học đã xem. Việc đi học đều do gia sư chấm.",
+      "needs_attention": "Một người học có thể xuất hiện với nhiều lý do.",
+      "overdue": "Người học đã nhận được email nhắc nhở theo lịch trước thời hạn. \"Gửi lời nhắc\" sẽ gửi một lời nhắc ngay bây giờ.",
+      "hardest_questions": "Những câu hỏi người học bỏ lỡ nhiều nhất, với câu trả lời sai phổ biến nhất.",
+      "logins_per_day": "Học viên đăng nhập mỗi ngày.",
+      "students": {
+        "all_courses": "Nhấp vào một học viên để xem các khóa học của họ.",
+        "one_course": "Nhấp vào người học để xếp hạng điểm số của họ. Tìm kiếm, lọc và sắp xếp cũng áp dụng cho việc xuất.",
+        "course_scope": "Chọn một người học để mở ra sự tiến bộ của họ trong khóa học này. Tìm kiếm, lọc và sắp xếp cũng áp dụng cho việc xuất."
+      },
+      "showing_first": "Đang hiển thị {shown} mục đầu tiên trong {total}.",
+      "cohorts_select": "Chọn một nhóm thuần tập để mở trang tổng quan của nhóm đó.",
+      "cohorts_in_table": "{count, plural, one {Đoàn hệ} other {# nhóm thuần tập}} trong bảng trên.",
+      "not_counted_empty": "Không tính: {names} (chưa có học viên).",
+      "not_charted_empty": "Không hiển thị trên biểu đồ: {names} (chưa có học viên).",
+      "lesson_dropoff": "Độ dốc cao nhất là từ {from} đến {to}.",
+      "no_pass_mark": "Ở đây chưa có bài tập nào có điểm đậu nên không có tỷ lệ đạt. Đặt điểm đậu cho một bài tập để xem tỷ lệ này.",
+      "bucketed_total": "Mỗi thanh biểu thị tổng số lượt đăng nhập trong {days} ngày. Một người học được tính một lần mỗi ngày.",
+      "student_sheet_pick_course": "Nhấp vào một khóa học để lập biểu đồ điểm số của họ theo bài tập.",
+      "direct_students_charted": "Người học trực tiếp không thuộc đoàn hệ nào; họ hiển thị thành một đường riêng.",
+      "courses_select": "Chọn một khóa học để mở trang tổng quan của khóa học đó."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–25",
+        "1": "25–50",
+        "2": "50–75",
+        "3": "75–99",
+        "4": "Xong"
+      },
+      "score": {
+        "4": "<50",
+        "5": "thập niên 50",
+        "6": "thập niên 60",
+        "7": "thập niên 70",
+        "8": "thập niên 80",
+        "9": "90+",
+        "null": "Không có điểm"
+      }
+    },
+    "kpi": {
+      "share_of_cohort": "{percent} của nhóm thuần tập",
+      "share_of_enrolled": "{percent} trong số đã đăng ký",
+      "share_of_completions": "{percent} số lần hoàn thành",
+      "avg_progress_hint": "bài học và bài tập đã hoàn thành / tổng số",
+      "avg_score_hint": "qua các bài tập đã thực hiện",
+      "overdue_hint": "quá thời hạn của họ, chưa xong",
+      "completed_certified": "{percent} của nhóm thuần tập · {count} được chứng nhận",
+      "enrolled_this_week": "{count, plural, =0 {Tuần này không có học viên mới} other {+# tuần này}}",
+      "enrolled_in_days": "{count, plural, =0 {Không có người học mới trong {days} ngày qua} other {+# trong {days} ngày qua}}",
+      "added_in_days": "{count, plural, =0 {Không có trong {days} ngày qua} other {+# trong {days} ngày qua}}",
+      "completed_in_days": "{percent} của nhóm{count, plural, =0 {} other { · +# trong {days} ngày qua}}",
+      "logged_in_days": "Đã đăng nhập, {days} ngày qua",
+      "avg_score_in_days": "số lần thử trong {days} ngày qua",
+      "first_try_in_days": "của {took} được xếp loại trong {days} ngày{still, plural, =0 {} other { · # vẫn vượt qua}} vừa qua",
+      "median_days_in_days": "để hoàn thành trong {days} ngày qua",
+      "first_try_context": "của {took} đã làm bài tập đạt điểm {still, plural, =0 {} other { · # vẫn vượt qua}}",
+      "median_days_hint": "tuyển sinh đến khi hoàn thành",
+      "needs_attention_hint": "không hoạt động, điểm thấp hoặc quá hạn",
+      "delta": {
+        "this_week": {
+          "up": "+{count} điểm trong tuần này",
+          "down": "−{count} điểm trong tuần này",
+          "flat": "Không có thay đổi trong tuần này"
+        },
+        "vs_last_week": {
+          "up": "+{count} điểm so với tuần trước",
+          "down": "−{count} điểm so với tuần trước",
+          "flat": "Không có thay đổi so với tuần trước"
+        },
+        "in_days": {
+          "up": "+{count} điểm trong {days} ngày qua",
+          "down": "−{count} điểm trong {days} ngày qua",
+          "flat": "Không có thay đổi trong {days} ngày qua"
+        },
+        "vs_days_ago": {
+          "up": "+{count} điểm so với {days} ngày trước",
+          "down": "−{count} điểm so với {days} ngày trước",
+          "flat": "Không có thay đổi so với {days} ngày trước"
+        }
+      },
+      "no_data": {
+        "students": "chưa có người học",
+        "graded": "chưa có lượt làm bài được chấm",
+        "first_try": "chưa có lượt làm bài được chấm ở bài tập có điểm đạt",
+        "completions": "chưa có lượt hoàn thành",
+        "enrolments": "chưa có lượt ghi danh",
+        "in_days": "không có trong {days} ngày qua"
+      }
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Đã đăng nhập hôm nay"
+      },
+      "kpi_logged_in_week": {
+        "title": "Đã đăng nhập, 7 ngày qua"
+      },
+      "kpi_avg_progress": {
+        "title": "Tiến độ trung bình"
+      },
+      "kpi_avg_score": {
+        "title": "Điểm trung bình"
+      },
+      "kpi_avg_grade": {
+        "title": "Điểm trung bình"
+      },
+      "kpi_overdue": {
+        "title": "Quá hạn"
+      },
+      "kpi_completed": {
+        "title": "Hoàn thành"
+      },
+      "kpi_enrolled": {
+        "title": "Đã đăng ký"
+      },
+      "kpi_completion_rate": {
+        "title": "Tỷ lệ hoàn thành"
+      },
+      "kpi_first_try_pass": {
+        "title": "Tỷ lệ đạt"
+      },
+      "kpi_median_days": {
+        "title": "Số ngày trung bình để kết thúc"
+      },
+      "kpi_completions": {
+        "title": "Hoàn thành"
+      },
+      "kpi_certificates": {
+        "title": "Giấy chứng nhận đã cấp"
+      },
+      "kpi_needs_attention": {
+        "title": "Cần chú ý"
+      },
+      "courses_summary": {
+        "title": "Các khóa học trong nhóm này"
+      },
+      "students_by_status": {
+        "title": "Người học theo trạng thái"
+      },
+      "course_details": {
+        "title": "Chi tiết khóa học"
+      },
+      "scores_by_exercise": {
+        "title": "Điểm theo bài tập, {course}"
+      },
+      "progress_distribution": {
+        "title": "Phân phối tiến độ"
+      },
+      "section_scores": {
+        "title": "Điểm số và điểm danh theo từng phần"
+      },
+      "score_distribution": {
+        "title": "Phân phối điểm trung bình"
+      },
+      "section_scorecard": {
+        "title": "Bảng điểm theo từng phần"
+      },
+      "needs_attention": {
+        "title": "Cần sự chú ý, bởi lý do"
+      },
+      "overdue": {
+        "title": "Quá hạn, có nhắc nhở"
+      },
+      "hardest_questions": {
+        "title": "Những câu hỏi khó nhất"
+      },
+      "students": {
+        "title": "Người học"
+      },
+      "logins_per_day": {
+        "title": "Học viên đăng nhập mỗi ngày"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Điểm theo bài tập, theo đoàn hệ"
+      },
+      "exercise_score_distribution": {
+        "title": "Phân phối điểm, {exercise}"
+      },
+      "lesson_dropoff": {
+        "title": "Quá trình hoàn thành bài học"
+      },
+      "hardest_exercises": {
+        "title": "Bài tập khó nhất"
+      },
+      "cohorts_in_course": {
+        "title": "Nhóm tham gia khóa học này"
+      },
+      "cohort_details": {
+        "title": "Chi tiết nhóm"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Tổng quan về nhóm thuần tập"
+      },
+      "cohort_health": {
+        "title": "Người học theo nhóm sức khỏe"
+      },
+      "hiring_ramp": {
+        "title": "Người học đã đăng ký so với mục tiêu"
+      },
+      "avg_score_by_cohort": {
+        "title": "Điểm trung bình, theo đoàn hệ"
+      },
+      "courses_by_completion": {
+        "title": "Các khóa học hoàn thành"
+      },
+      "courses_at_a_glance": {
+        "title": "Khóa học tổng quan"
+      },
+      "scores_by_exercise_course": {
+        "title": "Điểm theo bài tập"
+      },
+      "avg_score_by_course": {
+        "title": "Điểm trung bình, theo khóa học"
+      },
+      "cohort_empty": {
+        "title": "Đoàn hệ chưa có học viên"
+      }
+    },
+    "measures": {
+      "rows__count": "Người học",
+      "progress_pct__avg": "Tiến độ trung bình",
+      "avg_score_pct__avg": "Điểm trung bình",
+      "avg_progress_pct__value": "Tiến độ trung bình",
+      "avg_score_pct__value": "Điểm trung bình",
+      "first_try_pass__pooled": "Tỷ lệ đạt",
+      "is_completed__count_if": "Hoàn thành",
+      "is_completed__rate": "Tỷ lệ hoàn thành",
+      "is_inactive__count_if": "Không đăng nhập, hơn 2 ngày",
+      "is_low_score__count_if": "Điểm trung bình dưới 50%",
+      "is_overdue__count_if": "Quá hạn",
+      "is_low_video__count_if": "Tỉ lệ xem video dưới 60%",
+      "logged_in__count_if": "Người học đã đăng nhập",
+      "section_score_pct__avg": "Điểm trung bình",
+      "video_pct__avg": "Tham dự video",
+      "attendance__pooled": "Tham dự lớp học",
+      "best_score_pct__avg": "Điểm trung bình",
+      "is_complete__rate": "Hoàn thành",
+      "members_total__value": "Người học đã đăng ký"
+    },
+    "columns": {
+      "student": "Người học",
+      "email": "E-mail",
+      "course": "Khóa học",
+      "students": "Người học",
+      "progress": "Tiến triển",
+      "avg_progress": "Tiến độ trung bình",
+      "avg_score": "Điểm trung bình",
+      "average_score": "Điểm trung bình",
+      "completed": "Hoàn thành",
+      "took_pass_mark": "Đã làm bài tập đạt điểm",
+      "passed_first_try": "Tỷ lệ đạt",
+      "exercises_passed": "Bài tập đã qua",
+      "now_at": "Bây giờ tại",
+      "courses_completed": "Khóa học đã hoàn thành",
+      "video": "Băng hình",
+      "classroom": "lớp học",
+      "video_attendance": "Tham dự video",
+      "classroom_attendance": "Tham dự lớp học",
+      "certificate": "Giấy chứng nhận",
+      "certificates": "Chứng chỉ",
+      "last_login": "Lần đăng nhập cuối cùng",
+      "status": "Trạng thái",
+      "trend": "Xu hướng",
+      "cohort": "đoàn hệ",
+      "created": "Tạo",
+      "overdue": "Quá hạn",
+      "health": "Sức khỏe",
+      "section": "Phần khóa học",
+      "exercises_taken": "Bài tập đã thực hiện",
+      "actions": "hành động"
+    },
+    "column_hints": {
+      "passed_first_try": "Những học viên đạt điểm đậu trong lần thi đầu tiên, trong các bài tập có điểm đậu.",
+      "section_passed_first_try": "Những học viên đạt điểm đậu trong lần chấm điểm đầu tiên ở mọi bài tập đều có điểm đậu trong phần này.",
+      "took_pass_mark": "Người học đã chấm điểm ít nhất một bài tập có điểm đạt.",
+      "exercises_passed": "Các bài tập có điểm đạt mà học viên này đã đạt điểm, trong số tất cả các bài tập có điểm đạt trong khóa học."
+    },
+    "actions": {
+      "send_reminder": "Gửi lời nhắc",
+      "queued": "Đã xếp hàng",
+      "remind_all_overdue": "{count, plural, other {Nhắc tất cả # người học quá hạn}}",
+      "reminders_queued": "Lời nhắc được xếp hàng đợi"
+    },
+    "target": {
+      "set": "Đặt mục tiêu",
+      "edit": "Chỉnh sửa mục tiêu",
+      "label": "Đối tượng người học",
+      "helper": "Bạn đang hướng tới có bao nhiêu người học đã đăng ký. Nó hiển thị dưới dạng một đường đứt nét.",
+      "clear": "Xóa mục tiêu",
+      "save": "Lưu mục tiêu"
+    },
+    "hints": {
+      "exercise_score_distribution": "Chọn một bài tập để xem điểm của nó"
+    },
+    "students": {
+      "search": "Tìm kiếm theo tên hoặc email",
+      "empty": "Không có người học nào phù hợp với các bộ lọc này",
+      "showing": {
+        "cohort": "Đang hiển thị {from}–{to} trong số {total} khớp · {count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
+        "course": "Đang hiển thị {from}–{to} trong số {total} khớp · {count, plural, one {# người học} other {# người học}} trong khóa học",
+        "org": "Đang hiển thị {from}–{to} trong số {total} khớp · {count, plural, one {# người học} other {# người học}} trong tổ chức"
+      },
+      "clear_filters": "{count, plural, one {Xóa # bộ lọc} other {Xóa # bộ lọc}}",
+      "sort": {
+        "status": "Sắp xếp: tụt hậu đầu tiên",
+        "progress": "Sắp xếp: ít tiến bộ nhất",
+        "name": "Sắp xếp: đặt tên từ A đến Z",
+        "low_score": "Sắp xếp: điểm trung bình thấp nhất"
+      },
+      "filters": {
+        "status": {
+          "label": "Trạng thái",
+          "any": "Tất cả trạng thái",
+          "at_risk": "Có nguy cơ",
+          "lagging": "tụt hậu",
+          "on_track": "Đang đi đúng hướng",
+          "completed": "Hoàn thành"
+        },
+        "activity": {
+          "label": "Lần đăng nhập cuối cùng",
+          "any": "Đăng nhập bất kỳ",
+          "today": "Đã đăng nhập hôm nay",
+          "idle": "Không đăng nhập hơn 2 ngày"
+        },
+        "score": {
+          "label": "Điểm trung bình",
+          "any": "Bất kỳ điểm trung bình nào",
+          "lt50": "Dưới 50%",
+          "mid": "50% đến 69%",
+          "gte70": "70% trở lên"
+        },
+        "flag": {
+          "label": "Cờ",
+          "any": "Bất kỳ lá cờ nào",
+          "overdue": "Quá hạn",
+          "certified": "Giấy chứng nhận đã được cấp",
+          "not_certified": "Không có chứng chỉ"
+        }
+      },
+      "showing_paged": {
+        "cohort": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
+        "course": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong khóa học",
+        "org": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong tổ chức"
+      },
+      "showing_filtered": {
+        "cohort": "{total, plural, one {# người học phù hợp} other {# người học phù hợp}} · {count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
+        "course": "{total, plural, one {# người học phù hợp} other {# người học phù hợp}} · {count, plural, one {# người học} other {# người học}} trong khóa học",
+        "org": "{total, plural, one {# người học phù hợp} other {# người học phù hợp}} · {count, plural, one {# người học} other {# người học}} trong tổ chức"
+      },
+      "showing_all": {
+        "cohort": "{count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
+        "course": "{count, plural, one {# người học} other {# người học}} trong khóa học",
+        "org": "{count, plural, one {# người học} other {# người học}} trong tổ chức"
+      }
+    },
+    "empty": {
+      "no_data": "Chưa có dữ liệu",
+      "no_overdue": "Không có người học quá hạn",
+      "no_cohorts": "Chưa có nhóm thuần tập nào",
+      "failed": "Không thể tải biểu đồ này",
+      "dashboard_failed": "Phân tích không thể tải",
+      "not_permitted": "Bạn không có quyền truy cập vào những phân tích này"
+    },
+    "scope_empty": {
+      "title": {
+        "cohort": "Chưa có học viên trong nhóm này",
+        "course": "Chưa có học viên trong khóa học này",
+        "org": "Chưa có học viên trong tổ chức của bạn"
+      },
+      "description": {
+        "cohort": "Phân tích sẽ được điền khi học viên mở bài học và nộp bài tập.",
+        "cohort_no_courses": "Thêm khóa học, sau đó mời học viên. Phân tích sẽ được điền khi họ mở bài học và nộp bài tập.",
+        "course": "Phân tích sẽ được điền khi học viên mở bài học và nộp bài tập.",
+        "org": "Thêm học viên vào học viện của bạn, sau đó ghi danh họ vào khóa học hoặc nhóm."
+      },
+      "pending": "{count, plural, one {# lời mời đang} other {# lời mời đang}} chờ được chấp nhận. Phân tích sẽ được điền khi học viên tham gia.",
+      "invite_students": "Mời học viên",
+      "add_courses": "Thêm khóa học",
+      "add_students": "Thêm học viên"
+    },
+    "student_sheet": {
+      "last_login": "Lần đăng nhập cuối cùng: {when}",
+      "courses_heading": "Khóa học",
+      "scores_heading": "Điểm theo bài tập, {course}",
+      "open_profile": "Mở hồ sơ khóa học",
+      "all_courses": "Tất cả khóa học"
+    },
+    "pagination": {
+      "showing": "Đang hiển thị {from}–{to} trên tổng số {total}",
+      "cohorts_org": "Đang hiển thị {from}–{to} trên tổng số {total} nhóm trong tổ chức",
+      "cohorts_course": "Đang hiển thị {from}–{to} trên tổng số {total} nhóm tham gia khóa học này",
+      "courses_cohort": "Đang hiển thị {from}–{to} trên tổng số {total} khóa học trong nhóm",
+      "courses_org": "Đang hiển thị {from}–{to} trên tổng số {total} khóa học trong tổ chức",
+      "sections_course": "Đang hiển thị {from}–{to} trên tổng số {total} phần trong khóa học",
+      "overdue_cohort": "Đang hiển thị {from}–{to} trên tổng số {total} học viên quá hạn trong nhóm"
+    },
+    "breakdown": {
+      "label": "Phân tích",
+      "courses": "Khóa học ({count})",
+      "cohorts": "Đoàn hệ ({count})",
+      "all_students": "Tất cả người học",
+      "by_cohort": "Theo đoàn hệ ({count})"
+    },
+    "cohorts": {
+      "picker": "Đoàn hệ: {selected} trên {total}",
+      "search": "Tìm đoàn hệ",
+      "empty": "Không có đoàn hệ phù hợp",
+      "newest": "Mới nhất {count}",
+      "none": "Xóa",
+      "students": "{count, plural, one {# học viên} other {# học viên}}",
+      "no_students": "Chưa có học viên",
+      "direct_included": "Học viên trực tiếp luôn được bao gồm.",
+      "select_all": "Chọn tất cả",
+      "select_shown": "Chọn mục đang hiển thị",
+      "load_more": "Tải thêm",
+      "showing_matches": "Đang hiển thị {shown} trên {total}",
+      "loading": "Đang tải đoàn hệ…",
+      "load_failed": "Không thể tải đoàn hệ."
+    },
+    "course_search": "Tìm khóa học",
+    "course_search_empty": "Không có khóa học phù hợp",
+    "empty_states": {
+      "show_all_time": "Hiển thị toàn bộ thời gian",
+      "create_cohort": "Tạo đoàn hệ",
+      "range": {
+        "title": "Không có hoạt động trong {days} ngày qua",
+        "description": "Thẻ này chỉ tính những gì diễn ra trong khoảng thời gian đã chọn."
+      },
+      "needs_attention": {
+        "title": "Không ai cần chú ý",
+        "description": "Không có người học nào không hoạt động, đạt dưới 50%, quá hạn hoặc chậm video."
+      },
+      "overdue": {
+        "title": "Không ai quá hạn",
+        "description": "Mọi người học đều trong thời hạn."
+      },
+      "scores": {
+        "title": "Chưa có lượt làm bài được chấm",
+        "description": "Điểm xuất hiện khi người học nộp bài tập và các lượt làm được chấm."
+      },
+      "student_scores": {
+        "title": "Chưa có lượt làm bài được chấm",
+        "description": "Điểm của người học này xuất hiện khi các lượt làm của họ được chấm."
+      },
+      "hardest_exercises": {
+        "title": "Chưa đủ lượt làm bài được chấm",
+        "description": "Một bài tập xuất hiện khi có ít nhất 3 người học có lượt làm được chấm."
+      },
+      "questions": {
+        "title": "Chưa đủ câu trả lời",
+        "description": "Một câu hỏi xuất hiện khi có ít nhất 5 người học trả lời trong một lượt làm được chấm."
+      },
+      "logins": {
+        "title": "Chưa có lượt đăng nhập",
+        "description": "Người học xuất hiện ở đây vào những ngày họ đăng nhập."
+      },
+      "lessons": {
+        "title": "Chưa có bài học hoàn thành",
+        "description": "Thanh của mỗi bài học được lấp đầy khi người học hoàn thành."
+      },
+      "growth": {
+        "title": "Chưa thêm người học",
+        "description": "Đường bắt đầu với người học đầu tiên được thêm vào tổ chức của bạn."
+      },
+      "courses_org": {
+        "title": "Chưa có khóa học hoàn thành",
+        "description": "Khóa học xuất hiện ở đây khi người học ghi danh và hoàn thành."
+      },
+      "courses_cohort": {
+        "title": "Chưa có hoạt động khóa học",
+        "description": "Thanh và hàng được lấp đầy khi người học bắt đầu bài học hoặc bài tập."
+      },
+      "cohorts_org": {
+        "title": "Chưa có đoàn hệ",
+        "description": "Tạo đoàn hệ để nhóm người học và so sánh tiến độ của họ."
+      },
+      "cohorts_org_no_students": {
+        "title": "Chưa có người học trong các đoàn hệ này",
+        "description": "Thêm người học vào tổ chức để bắt đầu so sánh tiến độ giữa các đoàn hệ."
+      },
+      "cohorts_course": {
+        "title": "Không có đoàn hệ nào bao gồm khóa học này",
+        "description": "Thêm khóa học này vào một đoàn hệ để so sánh các đoàn hệ tại đây."
+      },
+      "cohorts_course_no_students": {
+        "title": "Chưa có người học trong các đoàn hệ này",
+        "description": "Mời người học vào khóa học này để bắt đầu so sánh tiến độ giữa các đoàn hệ."
+      },
+      "default": {
+        "title": "Chưa có dữ liệu",
+        "description": "Thẻ này được lấp đầy khi người học sử dụng khóa học."
+      }
+    },
+    "export": {
+      "students_capped": "Danh sách học viên được giới hạn ở {limit} dòng đầu tiên.",
+      "exercises_capped": "Điểm bài tập được giới hạn ở {limit} kết quả đầu tiên."
+    }
   }
 }

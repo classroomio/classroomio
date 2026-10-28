@@ -32,8 +32,6 @@ const config = {
       '@cio/ui/*': path.resolve('./node_modules/@cio/ui/src/*'),
       '@cio/api': path.resolve('./node_modules/@cio/api/dist'),
       '@cio/api/*': path.resolve('./node_modules/@cio/api/dist/*'),
-      '@cio/utils': path.resolve('./node_modules/@cio/utils/dist'),
-      '@cio/utils/*': path.resolve('./node_modules/@cio/utils/dist/*'),
       '@cio/db/types': path.resolve('./node_modules/@cio/db/src/types.ts')
     },
     csp: {
