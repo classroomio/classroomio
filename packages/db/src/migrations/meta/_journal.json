@@ -330,6 +330,13 @@
       "when": 1793782571227,
       "tag": "0046_index_cleanup",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1793974398264,
+      "tag": "0047_insights_performance_indexes",
+      "breakpoints": true
     }
   ]
 }

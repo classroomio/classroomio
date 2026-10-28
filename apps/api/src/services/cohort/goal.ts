@@ -1,7 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
-import { buildEmailBranding } from '@cio/email';
+import { buildEmailBranding, buildEmailFromName } from '@cio/email';
 import {
   countAssignmentsByStatus,
   countCohortGoals,
@@ -20,6 +20,8 @@ import {
   getCohortMembers,
   listAllActiveCohortGoals,
   listAssignmentsForReminderScan,
+  listOverdueAssignmentReminderContexts,
+  type CohortGoalReminderContext,
   type TNewCohortGoal,
   type TNewCohortGoalAssignment,
   type TCohortGoal,
@@ -29,7 +31,12 @@ import {
   upsertCohortGoalAssignments
 } from '@cio/db/queries/cohort';
 import { ROLE } from '@cio/utils/constants';
-import { ZCreateCohortGoal, type TCreateCohortGoal, type TUpdateCohortGoal } from '@cio/utils/validation/cohort';
+import {
+  ZCreateCohortGoal,
+  type TCreateCohortGoal,
+  type TRemindOverdueCohortGoals,
+  type TUpdateCohortGoal
+} from '@cio/utils/validation/cohort';
 
 const AT_RISK_DAYS = 3;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -445,6 +452,49 @@ function getWholeDaysUntil(now: Date, target: Date): number {
   return Math.ceil(ms / DAY_MS);
 }
 
+function dayKey(now: Date): string {
+  return now.toISOString().slice(0, 10);
+}
+
+/**
+ * Queues one org-branded reminder email. False when nothing was queued: the learner opted out or email is unavailable.
+ */
+async function enqueueCohortGoalReminder(
+  context: CohortGoalReminderContext,
+  options: { email: string; daysUntilDue: number; idempotencyKey: string }
+): Promise<boolean> {
+  const baseUrl = getDashboardBaseUrl({
+    siteName: context.organizationSiteName,
+    customDomain: context.organizationCustomDomain,
+    isCustomDomainVerified: context.organizationIsCustomDomainVerified
+  });
+  const branding = buildEmailBranding({
+    name: context.organizationName,
+    avatarUrl: context.organizationAvatarUrl,
+    theme: context.organizationTheme
+  });
+  const from = buildEmailFromName(`${context.organizationName} (via ClassroomIO.com)`);
+
+  const result = await enqueueTransactionalEmail('cohortGoalReminder', {
+    to: options.email,
+    from,
+    fields: {
+      orgName: context.organizationName,
+      cohortName: context.cohortName,
+      goalTitle: context.goal.title,
+      daysUntilDue: options.daysUntilDue,
+      completedCount: context.assignment.completedCount ?? 0,
+      requiredCount: context.assignment.requiredCount ?? 0,
+      loginUrl: `${baseUrl}/lms/cohorts/${context.cohortId}`,
+      branding
+    },
+    idempotencyKey: options.idempotencyKey,
+    preference: { organizationId: context.organizationId, recipientProfileId: context.profileId }
+  });
+
+  return result.jobIds.length > 0;
+}
+
 /**
  * Scan all active goal assignments and send a reminder email when
  * `daysUntilDue` matches an entry in the goal's `reminderDaysBefore` cadence
@@ -458,58 +508,66 @@ export async function runCohortGoalReminderScan(): Promise<{
   remindersEnqueued: number;
 }> {
   const now = new Date();
-  const rows = await listAssignmentsForReminderScan();
-
+  const contexts = await listAssignmentsForReminderScan();
   let remindersEnqueued = 0;
 
-  for (const row of rows) {
-    if (!row.assignment.dueDate) continue;
-    if (!row.email) continue;
+  for (const context of contexts) {
+    if (!context.assignment.dueDate || !context.email) continue;
 
-    const dueDate = new Date(row.assignment.dueDate);
+    const dueDate = new Date(context.assignment.dueDate);
     if (Number.isNaN(dueDate.getTime())) continue;
 
     const daysUntilDue = getWholeDaysUntil(now, dueDate);
-    const reminderDays = row.goal.reminderDaysBefore ?? [];
-    const isOverdueDay = daysUntilDue === 0;
-    const matchesReminder = (daysUntilDue > 0 && reminderDays.includes(daysUntilDue)) || isOverdueDay;
-
+    const reminderDays = context.goal.reminderDaysBefore ?? [];
+    const matchesReminder = (daysUntilDue > 0 && reminderDays.includes(daysUntilDue)) || daysUntilDue === 0;
     if (!matchesReminder) continue;
 
-    const loginUrl = getDashboardBaseUrl({
-      siteName: row.organizationSiteName,
-      customDomain: row.organizationCustomDomain,
-      isCustomDomainVerified: row.organizationIsCustomDomainVerified
-    });
-    const dayKey = now.toISOString().slice(0, 10);
-
     try {
-      await enqueueTransactionalEmail('cohortGoalReminder', {
-        to: row.email,
-        fields: {
-          orgName: row.organizationName,
-          cohortName: row.cohortName,
-          goalTitle: row.goal.title,
-          daysUntilDue,
-          completedCount: row.assignment.completedCount ?? 0,
-          requiredCount: row.assignment.requiredCount ?? 0,
-          loginUrl: `${loginUrl}/lms/cohorts/${row.cohortId}`,
-          branding: buildEmailBranding({
-            name: row.organizationName,
-            avatarUrl: row.organizationAvatarUrl,
-            theme: row.organizationTheme
-          })
-        },
-        idempotencyKey: `cohort-goal-reminder:${row.assignment.id}:${daysUntilDue}:${dayKey}`,
-        preference: { organizationId: row.organizationId, recipientProfileId: row.profileId }
-      });
-      remindersEnqueued += 1;
+      const idempotencyKey = `cohort-goal-reminder:${context.assignment.id}:${daysUntilDue}:${dayKey(now)}`;
+      const enqueued = await enqueueCohortGoalReminder(context, { email: context.email, daysUntilDue, idempotencyKey });
+      if (enqueued) remindersEnqueued += 1;
     } catch (error) {
-      console.error(`runCohortGoalReminderScan: enqueue failed for assignment ${row.assignment.id}`, error);
+      console.error(`runCohortGoalReminderScan: enqueue failed for assignment ${context.assignment.id}`, error);
     }
   }
 
-  return { scanned: rows.length, remindersEnqueued };
+  return { scanned: contexts.length, remindersEnqueued };
+}
+
+/**
+ * Emails overdue learners on the cohort's active goals now: everyone, one course's goals, or one learner.
+ */
+export async function sendOverdueCohortGoalRemindersNow(
+  cohortId: string,
+  input: TRemindOverdueCohortGoals
+): Promise<{ enqueued: number; skipped: number }> {
+  const contexts = await listOverdueAssignmentReminderContexts(cohortId, {
+    courseId: input.courseId,
+    profileId: input.profileId
+  });
+  const now = new Date();
+  let enqueued = 0;
+  let skipped = 0;
+
+  for (const context of contexts) {
+    if (!context.email || !context.assignment.dueDate) {
+      skipped += 1;
+      continue;
+    }
+
+    const daysUntilDue = getWholeDaysUntil(now, new Date(context.assignment.dueDate));
+    const idempotencyKey = `cohort-goal-reminder-manual:${context.assignment.id}:${dayKey(now)}`;
+    const queued = await enqueueCohortGoalReminder(context, { email: context.email, daysUntilDue, idempotencyKey });
+
+    if (queued) {
+      enqueued += 1;
+      continue;
+    }
+
+    skipped += 1;
+  }
+
+  return { enqueued, skipped };
 }
 
 // ─── LMS read ────────────────────────────────────────────────────────────────
