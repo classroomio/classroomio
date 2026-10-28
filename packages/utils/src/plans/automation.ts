@@ -14,6 +14,7 @@ export const AUTOMATION_USAGE_CATEGORY = {
 
 export const MCP_TOOL_CREDIT_COST = {
   list_org_courses: 0,
+  list_related_courses: 0,
   get_course_structure: 0,
   get_course_draft: 0,
   list_course_exercises: 0,
@@ -215,6 +216,7 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_course_structure' ||
     toolName === 'get_course_draft' ||
     toolName === 'list_org_courses' ||
+    toolName === 'list_related_courses' ||
     toolName === 'list_course_exercises' ||
     toolName === 'get_course_exercise' ||
     toolName === 'list_org_cohorts' ||

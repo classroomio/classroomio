@@ -1,0 +1,171 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API related courses contract > ZPublicApiRelatedCourseResponse keeps its published shape > ZPublicApiRelatedCourseResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "bannerImage": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "cost": {
+      "anyOf": [
+        {
+          "type": "number",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "currency": {
+      "type": "string",
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "sharedTags": {
+      "description": "Tags this course has in common with the requested course",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "color": {
+            "type": "string",
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+          "slug": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "color",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "slug": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "tags": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "color": {
+            "type": "string",
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+          "slug": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "color",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "title": {
+      "type": "string",
+    },
+    "type": {
+      "anyOf": [
+        {
+          "enum": [
+            "SELF_PACED",
+            "LIVE_CLASS",
+            "COMPLIANCE",
+            "PUBLIC",
+          ],
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+  },
+  "required": [
+    "id",
+    "title",
+    "slug",
+    "type",
+    "cost",
+    "currency",
+    "bannerImage",
+    "tags",
+    "sharedTags",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API related courses contract > ZPublicApiRelatedCoursesQuery keeps its published shape > ZPublicApiRelatedCoursesQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "limit": {
+      "default": 4,
+      "maximum": 20,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "pricing": {
+      "description": "free: cost is 0; paid: cost above 0. Default: both",
+      "enum": [
+        "free",
+        "paid",
+      ],
+      "type": "string",
+    },
+    "profileId": {
+      "description": "Leave out courses this person is already a member of",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "limit",
+  ],
+  "type": "object",
+}
+`;

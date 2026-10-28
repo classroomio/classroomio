@@ -58,6 +58,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'PUT /public-api/v1/courses/{courseId}': 'Update a course',
   'DELETE /public-api/v1/courses/{courseId}': 'Delete a course',
   'POST /public-api/v1/courses/{courseId}/clone': 'Clone a course',
+  'GET /public-api/v1/courses/{courseId}/related': 'List related courses',
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
