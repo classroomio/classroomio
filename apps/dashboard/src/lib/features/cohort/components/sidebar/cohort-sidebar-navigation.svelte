@@ -8,6 +8,7 @@
     NewsFeedIcon,
     CourseIcon,
     PeopleIcon,
+    AnalyticsIcon,
     PremiumIcon,
     SettingsIcon
   } from '@cio/ui/custom/moving-icons';
@@ -63,6 +64,14 @@
         url: `/cohorts/${id}/people`,
         isActive: currentPath.endsWith('/people'),
         icon: PeopleIcon,
+        show: () => canManageMembers
+      },
+      {
+        id: 'analytics',
+        title: $t('cohorts.sidebar.analytics'),
+        url: `/cohorts/${id}/analytics`,
+        isActive: currentPath.endsWith('/analytics'),
+        icon: AnalyticsIcon,
         show: () => canManageMembers
       },
       {

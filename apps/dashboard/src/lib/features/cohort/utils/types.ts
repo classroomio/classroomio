@@ -88,6 +88,9 @@ type GoalsOverviewSuccess = Extract<GoalsOverviewResponse, { success: true }>;
 export type GoalsOverview = GoalsOverviewSuccess['data'];
 export type GoalsOverviewRow = GoalsOverview['goals'][number];
 
+export type RemindOverdueGoalsRequest =
+  (typeof classroomio.cohort)[':cohortId']['goal-assignments']['remind-overdue']['$post'];
+
 export type GetCohortInviteLinkRequest = (typeof classroomio.cohort)[':cohortId']['invite-link']['$get'];
 export type CreateCohortInviteLinkRequest = (typeof classroomio.cohort)[':cohortId']['invite-link']['$post'];
 export type ToggleCohortInviteLinkRequest = (typeof classroomio.cohort)[':cohortId']['invite-link']['$patch'];

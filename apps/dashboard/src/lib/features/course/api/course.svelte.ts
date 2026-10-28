@@ -2,12 +2,10 @@ import { BaseApiWithErrors, classroomio, hasErrorCode, matchesError } from '$lib
 
 import type {
   Course,
-  CourseAnalytics,
   CreateCourseRequest,
   CreatePaymentRequestRequest,
   DeleteCourseRequest,
   EnrollCourseRequest,
-  GetCourseAnalyticsRequest,
   GetCourseBySlugRequest,
   GetCertificationEvaluationRequest,
   GetCourseProgressRequest,
@@ -634,31 +632,6 @@ export class CourseApi extends BaseApiWithErrors {
       },
       onError: () => {
         snackbar.error('Failed to load certification status');
-      }
-    });
-  }
-
-  /**
-   * Gets course analytics including student progress, completion rates, and grades
-   * @param courseId Course ID
-   * @returns Course analytics data or null on error
-   */
-  async getAnalytics(courseId: string) {
-    await this.execute<GetCourseAnalyticsRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId']['analytics'].$get({
-          param: { courseId }
-        }),
-      logContext: 'fetching course analytics',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.courseAnalytics = response.data;
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: () => {
-        snackbar.error('Failed to fetch course analytics');
       }
     });
   }
