@@ -1,7 +1,7 @@
 ---
 title: Exports
 description: Which formats ClassroomIO exports, what each export contains, and the limits that apply.
-last_reviewed: '2026-09-12'
+last_reviewed: '2026-10-28'
 ---
 
 Anywhere you see an **Export as CSV** button, the dropdown beside it offers the other formats. Files are produced in your browser, so there is no job to wait for and no email to watch for.
@@ -48,11 +48,13 @@ Use it to see _which_ course someone stalled in.
 
 ### One course, all its students
 
-**A course, then Analytics, then Export.** One row per student in that course.
+**A course, then Analytics, then Export.** One row per student in that course, with a score column for each exercise. Up to 50,000 students.
 
-Columns: Name, Email, Lessons completed, Lessons, Exercises submitted, Exercises, Progress, Average grade, Last seen.
+Columns: Name, Email, Progress, Average score, Courses completed, one column per exercise, Video, Classroom, Certificates, Last login, Status.
 
-Use it to see _who_ is stalling in a course. The table on screen is paginated, but the export covers every student in the course.
+Use it to see _who_ is stalling in a course. The table on screen loads 10 students at a time, but the export covers every student that matches the current filters and order.
+
+The exercise columns are built from every matching student's attempted exercises, read in chunks. Up to 200,000 student-exercise results are included; if a course is larger than that, the file's subtitle says the exercise scores are limited.
 
 ### Grades and compliance
 
@@ -67,13 +69,15 @@ A student who has watched every lesson but submitted no exercises is **not** cou
 
 ## Limits
 
-|                        |                 |
-| ---------------------- | --------------- |
-| Audience export        | 20,000 students |
-| PDF                    | 2,000 rows      |
-| The other four exports | No row limit    |
+|                                   |                 |
+| --------------------------------- | --------------- |
+| Audience export                   | 20,000 students |
+| Course or cohort Analytics export | 50,000 students |
+| Exercise scores per export        | 200,000 results |
+| PDF                               | 2,000 rows      |
+| Other exports                     | No row limit    |
 
-The 20,000 cap applies to the audience data before a format is chosen, so it holds for CSV, Excel and HTML too, not only PDF.
+The 20,000 cap applies to the audience data before a format is chosen, so it holds for CSV, Excel and HTML too, not only PDF. The 50,000 student cap and the 200,000 exercise-score cap apply to the course and cohort Analytics data in the same way. When either cap is reached, the export file says so in its subtitle rather than leaving columns blank.
 
 :::note[No single all-students, all-courses file]
 There is no one export combining every student with every course, row by row. For that level of detail across the whole academy, export one course at a time.

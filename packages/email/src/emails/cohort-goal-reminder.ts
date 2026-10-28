@@ -11,7 +11,15 @@ import {
 
 export const cohortGoalReminderEmail = defineEmail({
   id: 'cohortGoalReminder',
-  subject: (fields, context) => renderStudentEmailSubject('cohortGoalReminder', fields, context),
+  subject: (fields, context) => {
+    const { locale } = getStudentEmailCopy('cohortGoalReminder', context);
+
+    return renderStudentEmailSubject(
+      'cohortGoalReminder',
+      { goal_title: fields.goalTitle, due_status: getLocalizedDueStatus(fields.daysUntilDue, locale) },
+      context
+    );
+  },
   schema: z.object({
     orgName: z.string().min(1),
     cohortName: z.string().min(1),

@@ -10,6 +10,10 @@
     return `${value}`;
   }
 
+  function defaultValueFormatter(value: number) {
+    return value.toLocaleString();
+  }
+
   let {
     ref = $bindable(null),
     class: className,
@@ -19,6 +23,7 @@
     labelKey,
     label,
     labelFormatter = defaultFormatter,
+    valueFormatter = defaultValueFormatter,
     labelClassName,
     formatter,
     nameKey,
@@ -34,6 +39,7 @@
     labelClassName?: string;
     labelFormatter?: // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ((value: any, payload: TooltipPayload[]) => string | number | Snippet) | null;
+    valueFormatter?: (value: number) => string;
     formatter?: Snippet<
       [
         {
@@ -156,7 +162,7 @@
               </div>
               {#if item.value !== undefined}
                 <span class="ui:text-foreground ui:font-mono ui:font-medium tabular-nums">
-                  {item.value.toLocaleString()}
+                  {item.value === null ? '–' : valueFormatter(item.value)}
                 </span>
               {/if}
             </div>

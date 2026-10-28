@@ -104,4 +104,49 @@ describe('cachedRead', () => {
     await expect(cachedRead(KEY, 600, compute)).resolves.toMatchObject({ data: { views: 5 } });
     expect(redisMocks.get).not.toHaveBeenCalled();
   });
+
+  it('refresh: true never calls redis.get before computing and overwrites the entry', async () => {
+    redisMocks.get.mockResolvedValue(JSON.stringify(CACHED));
+    const compute = vi.fn().mockResolvedValue({ views: 10 });
+
+    const entry = await cachedRead(KEY, 600, compute, { refresh: true });
+
+    expect(entry.data).toEqual({ views: 10 });
+    expect(redisMocks.set).toHaveBeenCalledWith(`${KEY}:lock`, '1', { NX: true, EX: 30 });
+    expect(redisMocks.setEx).toHaveBeenCalledWith(KEY, 600, JSON.stringify(entry));
+    expect(redisMocks.get).not.toHaveBeenCalled();
+    expect(redisMocks.del).toHaveBeenCalledWith(`${KEY}:lock`);
+  });
+
+  it('when lock is held during refresh, returns an entry whose generatedAt is at or after start time', async () => {
+    const started = Date.now();
+    const newerEntry = { data: { views: 99 }, generatedAt: new Date(started + 1000).toISOString() };
+
+    redisMocks.set.mockResolvedValue(null);
+    redisMocks.get.mockResolvedValueOnce(JSON.stringify(CACHED)).mockResolvedValueOnce(JSON.stringify(newerEntry));
+
+    const compute = vi.fn();
+
+    const entry = await cachedRead(KEY, 600, compute, { refresh: true });
+
+    expect(entry).toEqual(newerEntry);
+    expect(compute).not.toHaveBeenCalled();
+    expect(redisMocks.del).not.toHaveBeenCalled();
+  });
+
+  it('when lock is held during refresh and only stale entries arrive, computes anyway after timeout', async () => {
+    vi.useFakeTimers();
+    redisMocks.set.mockResolvedValue(null);
+    redisMocks.get.mockResolvedValue(JSON.stringify(CACHED));
+
+    const compute = vi.fn().mockResolvedValue({ views: 42 });
+
+    const pending = cachedRead(KEY, 600, compute, { refresh: true });
+    await vi.advanceTimersByTimeAsync(2_000);
+
+    const entry = await pending;
+    expect(entry.data).toEqual({ views: 42 });
+    expect(compute).toHaveBeenCalledTimes(1);
+    expect(redisMocks.setEx).toHaveBeenCalledWith(KEY, 600, JSON.stringify(entry));
+  });
 });

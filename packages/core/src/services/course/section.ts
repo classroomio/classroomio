@@ -16,6 +16,7 @@ import type {
 } from '@cio/utils/validation/course/section';
 import { updateUngroupedExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { db } from '@cio/db/drizzle';
+import { invalidateInsightsCourseStructure } from '../../utils/redis/insights-cache';
 import { claimSectionOrder } from './root-order';
 
 /**
@@ -33,6 +34,8 @@ export async function createCourseSection(courseId: string, data: TCourseSection
     if (!section) {
       throw new AppError('Failed to create course section', ErrorCodes.INTERNAL_ERROR, 500);
     }
+
+    void invalidateInsightsCourseStructure(courseId);
 
     return section;
   } catch (error) {
@@ -60,7 +63,7 @@ export async function promoteUngroupedSection(
     const existingSections = await getCourseSectionsByCourseId(courseId);
     const nextOrder = Math.max(...existingSections.map((section) => section.order ?? 0), 0) + 1;
 
-    return db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const [section] = await createCourseSections(
         [
           {
@@ -91,6 +94,10 @@ export async function promoteUngroupedSection(
         movedExercises
       };
     });
+
+    void invalidateInsightsCourseStructure(courseId);
+
+    return result;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -158,6 +165,10 @@ export async function updateCourseSectionService(
       throw new AppError('Failed to update course section', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
+    if (courseId) {
+      void invalidateInsightsCourseStructure(courseId);
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {
@@ -187,6 +198,10 @@ export async function deleteCourseSectionService(sectionId: string): Promise<TCo
     const deleted = await deleteCourseSection(sectionId);
     if (!deleted) {
       throw new AppError('Failed to delete course section', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    if (section.courseId) {
+      void invalidateInsightsCourseStructure(section.courseId);
     }
 
     return deleted;

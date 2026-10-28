@@ -10,6 +10,7 @@ export type ChartLegendItem = {
   label: string;
   color: string;
   value?: number;
+  dashed?: boolean;
 };
 
 export type ExtractSnippetParams<T> = T extends Snippet<[infer P]> ? P : never;

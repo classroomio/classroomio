@@ -33,7 +33,7 @@ const en: StudentEmailLocaleCopy = {
       body: '<p>Hi {{student_name}},</p><p>You are one step closer to joining <strong>{{course_name}}</strong>.</p><p>Please send your proof of payment to <strong>{{teacher_email}}</strong> to join the course.</p><p>Talk to you soon and see you in class.</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'Reminder: a cohort goal is due soon',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>Hi there,</p><p>The goal <strong>{{goal_title}}</strong> in <strong>{{cohort_name}}</strong> at {{org_name}} needs your attention.</p><p>{{due_status}}</p><p>Your progress: <strong>{{completed_count}} of {{required_count}} courses completed</strong>.</p><p>Cheers,<br>{{org_name}}</p>',
       cta: 'Open the LMS'
     },
@@ -104,7 +104,7 @@ const fr: StudentEmailLocaleCopy = {
       body: '<p>Bonjour {{student_name}},</p><p>Vous êtes tout près de rejoindre <strong>{{course_name}}</strong>.</p><p>Envoyez votre preuve de paiement à <strong>{{teacher_email}}</strong> pour rejoindre le cours.</p><p>À très bientôt en classe.</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'Rappel : un objectif de cohorte arrive à échéance',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>Bonjour,</p><p>L’objectif <strong>{{goal_title}}</strong> dans <strong>{{cohort_name}}</strong> chez {{org_name}} requiert votre attention.</p><p>{{due_status}}</p><p>Votre progression : <strong>{{completed_count}} cours terminés sur {{required_count}}</strong>.</p><p>À bientôt,<br>{{org_name}}</p>',
       cta: 'Ouvrir le LMS'
     },
@@ -175,7 +175,7 @@ const de: StudentEmailLocaleCopy = {
       body: '<p>Hallo {{student_name}},</p><p>Sie sind dem Beitritt zu <strong>{{course_name}}</strong> einen Schritt näher.</p><p>Senden Sie Ihren Zahlungsnachweis an <strong>{{teacher_email}}</strong>, um dem Kurs beizutreten.</p><p>Bis bald im Kurs.</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'Erinnerung: Ein Kohortenziel ist bald fällig',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>Hallo,</p><p>Das Ziel <strong>{{goal_title}}</strong> in <strong>{{cohort_name}}</strong> bei {{org_name}} benötigt Ihre Aufmerksamkeit.</p><p>{{due_status}}</p><p>Fortschritt: <strong>{{completed_count}} von {{required_count}} Kursen abgeschlossen</strong>.</p><p>Viele Grüße,<br>{{org_name}}</p>',
       cta: 'LMS öffnen'
     },
@@ -246,7 +246,7 @@ const es: StudentEmailLocaleCopy = {
       body: '<p>Hola {{student_name}},</p><p>Estás más cerca de unirte a <strong>{{course_name}}</strong>.</p><p>Envía el comprobante de pago a <strong>{{teacher_email}}</strong> para unirte al curso.</p><p>Nos vemos pronto en clase.</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'Recordatorio: se acerca la fecha de un objetivo',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>Hola,</p><p>El objetivo <strong>{{goal_title}}</strong> de <strong>{{cohort_name}}</strong> en {{org_name}} necesita tu atención.</p><p>{{due_status}}</p><p>Tu progreso: <strong>{{completed_count}} de {{required_count}} cursos completados</strong>.</p><p>Saludos,<br>{{org_name}}</p>',
       cta: 'Abrir el LMS'
     },
@@ -312,7 +312,7 @@ const pt: StudentEmailLocaleCopy = {
       body: '<p>Olá, {{student_name}},</p><p>Você está mais perto de participar de <strong>{{course_name}}</strong>.</p><p>Envie o comprovante de pagamento para <strong>{{teacher_email}}</strong> para entrar no curso.</p><p>Nos vemos em breve na aula.</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'Lembrete: uma meta da turma vence em breve',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>Olá,</p><p>A meta <strong>{{goal_title}}</strong> em <strong>{{cohort_name}}</strong> na {{org_name}} precisa da sua atenção.</p><p>{{due_status}}</p><p>Seu progresso: <strong>{{completed_count}} de {{required_count}} cursos concluídos</strong>.</p><p>Até breve,<br>{{org_name}}</p>',
       cta: 'Abrir o LMS'
     },
@@ -378,7 +378,7 @@ const hi: StudentEmailLocaleCopy = {
       body: '<p>नमस्ते {{student_name}},</p><p>आप <strong>{{course_name}}</strong> में शामिल होने के एक कदम और करीब हैं।</p><p>कोर्स में शामिल होने के लिए भुगतान प्रमाण <strong>{{teacher_email}}</strong> पर भेजें।</p><p>कक्षा में जल्द मिलेंगे।</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'रिमाइंडर: समूह का लक्ष्य जल्द पूरा करना है',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>नमस्ते,</p><p>{{org_name}} के <strong>{{cohort_name}}</strong> में लक्ष्य <strong>{{goal_title}}</strong> पर ध्यान देने की आवश्यकता है।</p><p>{{due_status}}</p><p>आपकी प्रगति: <strong>{{required_count}} में से {{completed_count}} कोर्स पूरे</strong>।</p><p>शुभकामनाएँ,<br>{{org_name}}</p>',
       cta: 'LMS खोलें'
     },
@@ -449,7 +449,7 @@ const vi: StudentEmailLocaleCopy = {
       body: '<p>Xin chào {{student_name}},</p><p>Bạn đã tiến gần hơn đến việc tham gia <strong>{{course_name}}</strong>.</p><p>Hãy gửi bằng chứng thanh toán đến <strong>{{teacher_email}}</strong> để tham gia khóa học.</p><p>Hẹn gặp bạn trong lớp.</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'Nhắc nhở: mục tiêu nhóm học sắp đến hạn',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>Xin chào,</p><p>Mục tiêu <strong>{{goal_title}}</strong> trong <strong>{{cohort_name}}</strong> tại {{org_name}} cần bạn chú ý.</p><p>{{due_status}}</p><p>Tiến độ: <strong>đã hoàn thành {{completed_count}}/{{required_count}} khóa học</strong>.</p><p>Thân mến,<br>{{org_name}}</p>',
       cta: 'Mở LMS'
     },
@@ -515,7 +515,7 @@ const ru: StudentEmailLocaleCopy = {
       body: '<p>Здравствуйте, {{student_name}}!</p><p>Вы стали ближе к участию в <strong>{{course_name}}</strong>.</p><p>Отправьте подтверждение оплаты на <strong>{{teacher_email}}</strong>, чтобы присоединиться к курсу.</p><p>До встречи на занятии.</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'Напоминание: срок цели группы скоро истекает',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>Здравствуйте!</p><p>Цель <strong>{{goal_title}}</strong> в <strong>{{cohort_name}}</strong> от {{org_name}} требует вашего внимания.</p><p>{{due_status}}</p><p>Прогресс: <strong>завершено {{completed_count}} из {{required_count}} курсов</strong>.</p><p>С уважением,<br>{{org_name}}</p>',
       cta: 'Открыть LMS'
     },
@@ -581,7 +581,7 @@ const pl: StudentEmailLocaleCopy = {
       body: '<p>Cześć {{student_name}},</p><p>Jesteś o krok bliżej dołączenia do <strong>{{course_name}}</strong>.</p><p>Wyślij potwierdzenie płatności na <strong>{{teacher_email}}</strong>, aby dołączyć do kursu.</p><p>Do zobaczenia na zajęciach.</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'Przypomnienie: zbliża się termin celu grupy',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>Cześć,</p><p>Cel <strong>{{goal_title}}</strong> w <strong>{{cohort_name}}</strong> w {{org_name}} wymaga Twojej uwagi.</p><p>{{due_status}}</p><p>Postęp: <strong>ukończono {{completed_count}} z {{required_count}} kursów</strong>.</p><p>Pozdrawiamy,<br>{{org_name}}</p>',
       cta: 'Otwórz LMS'
     },
@@ -652,7 +652,7 @@ const da: StudentEmailLocaleCopy = {
       body: '<p>Hej {{student_name}},</p><p>Du er et skridt nærmere <strong>{{course_name}}</strong>.</p><p>Send betalingsbevis til <strong>{{teacher_email}}</strong> for at deltage i kurset.</p><p>Vi ses snart i undervisningen.</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'Påmindelse: et holdmål nærmer sig fristen',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>Hej,</p><p>Målet <strong>{{goal_title}}</strong> i <strong>{{cohort_name}}</strong> hos {{org_name}} kræver din opmærksomhed.</p><p>{{due_status}}</p><p>Din fremgang: <strong>{{completed_count}} af {{required_count}} kurser gennemført</strong>.</p><p>Venlig hilsen,<br>{{org_name}}</p>',
       cta: 'Åbn LMS'
     },
@@ -718,7 +718,7 @@ const it: StudentEmailLocaleCopy = {
       body: "<p>Ciao {{student_name}},</p><p>Sei a un passo dall'iscriverti a <strong>{{course_name}}</strong>.</p><p>Invia la prova di pagamento a <strong>{{teacher_email}}</strong> per iscriverti al corso.</p><p>A presto in classe.</p><p>{{org_name}}</p>"
     },
     cohortGoalReminder: {
-      subject: 'Promemoria: un obiettivo del gruppo è in scadenza',
+      subject: '{{goal_title}} — {{due_status}}',
       body: "<p>Ciao,</p><p>L'obiettivo <strong>{{goal_title}}</strong> in <strong>{{cohort_name}}</strong> su {{org_name}} richiede la tua attenzione.</p><p>{{due_status}}</p><p>I tuoi progressi: <strong>{{completed_count}} di {{required_count}} corsi completati</strong>.</p><p>A presto,<br>{{org_name}}</p>",
       cta: "Apri l'LMS"
     },
@@ -784,7 +784,7 @@ const tr: StudentEmailLocaleCopy = {
       body: '<p>Merhaba {{student_name}},</p><p><strong>{{course_name}}</strong> kursuna katılmaya bir adım daha yaklaştınız.</p><p>Kursa katılmak için ödeme belgenizi <strong>{{teacher_email}}</strong> adresine gönderin.</p><p>Derste görüşmek üzere.</p><p>{{org_name}}</p>'
     },
     cohortGoalReminder: {
-      subject: 'Hatırlatma: grup hedefinin süresi yaklaşıyor',
+      subject: '{{goal_title}} — {{due_status}}',
       body: '<p>Merhaba,</p><p>{{org_name}} bünyesindeki <strong>{{cohort_name}}</strong> grubunda yer alan <strong>{{goal_title}}</strong> hedefi ilginizi bekliyor.</p><p>{{due_status}}</p><p>İlerlemeniz: <strong>{{required_count}} kurstan {{completed_count}} tanesi tamamlandı</strong>.</p><p>Sevgiler,<br>{{org_name}}</p>',
       cta: 'LMS’yi aç'
     },
