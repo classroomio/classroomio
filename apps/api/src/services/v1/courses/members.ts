@@ -55,20 +55,27 @@ export async function addCourseMemberService(
 ) {
   await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
-  let member = payload;
-  if (payload.profileId) {
-    await assertProfileBelongsToOrganization(orgId, payload.profileId);
-  } else if (payload.email) {
-    const profileId = await assertEmailBelongsToOrganization(orgId, payload.email);
+  const { sendEmail, ...memberInput } = payload;
+  let member = memberInput;
+  if (memberInput.profileId) {
+    await assertProfileBelongsToOrganization(orgId, memberInput.profileId);
+  } else if (memberInput.email) {
+    const profileId = await assertEmailBelongsToOrganization(orgId, memberInput.email);
     if (profileId) {
-      member = { ...payload, profileId };
+      member = { ...memberInput, profileId };
     }
   }
 
-  const [addedMember] = await addMembers(params.courseId, [member], source, {
-    source: buildMemberSource(apiKeyId ? 'api' : 'admin', { apiKeyId }),
-    actorProfileId: actorId
-  });
+  const [addedMember] = await addMembers(
+    params.courseId,
+    [member],
+    source,
+    {
+      source: buildMemberSource(apiKeyId ? 'api' : 'admin', { apiKeyId }),
+      actorProfileId: actorId
+    },
+    { sendEmail }
+  );
 
   return addedMember;
 }

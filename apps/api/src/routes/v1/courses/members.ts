@@ -79,7 +79,7 @@ export const v1CourseMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Give someone already in your organization access to a course, the same as adding a member in the dashboard; ${COURSE_TEAM_RULE}.`,
+      description: `Give someone already in your organization access to a course and send them the course welcome email; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Members'],
       responses: {
         201: jsonResponse('Course member added successfully', MemberResponse),

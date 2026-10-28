@@ -29,7 +29,13 @@ export const ZPublicApiAddCourseMember = z
       .describe(
         "Must belong to someone already in your organization; it is linked to that person's profile. To onboard someone new, use the invites endpoints."
       ),
-    name: z.string().optional().describe('Used in the welcome email sent to added tutors/admins')
+    name: z.string().optional().describe('Used in the welcome email sent to added tutors/admins'),
+    sendEmail: z
+      .boolean()
+      .default(true)
+      .describe(
+        'Send the course welcome email: students always get it, tutors and admins only when email and name are given. Default: true; false adds them without an email.'
+      )
   })
   .refine((data) => Boolean(data.profileId) || Boolean(data.email), {
     message: 'Either profileId or email must be provided',
