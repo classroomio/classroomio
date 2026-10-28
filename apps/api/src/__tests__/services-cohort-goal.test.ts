@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/cohort', () => ({
   countCohortGoals: vi.fn(),
@@ -17,8 +17,13 @@ vi.mock('@cio/db/queries/cohort', () => ({
   getCohortMembers: vi.fn(),
   listAllActiveCohortGoals: vi.fn(),
   listAssignmentsForReminderScan: vi.fn(),
+  listOverdueAssignmentReminderContexts: vi.fn(),
   updateCohortGoal: vi.fn(),
   upsertCohortGoalAssignments: vi.fn()
+}));
+
+vi.mock('@api/services/jobs', () => ({
+  enqueueTransactionalEmail: vi.fn()
 }));
 
 import {
@@ -27,10 +32,22 @@ import {
   getCohortGoalById,
   getCohortMembers,
   getCoursesByCohort,
+  listAssignmentsForReminderScan,
+  listOverdueAssignmentReminderContexts,
   updateCohortGoal as updateCohortGoalQuery,
-  upsertCohortGoalAssignments
+  upsertCohortGoalAssignments,
+  type CohortGoalReminderContext
 } from '@cio/db/queries/cohort';
-import { archiveGoal, createGoal, evaluateGoal, updateGoal } from '@api/services/cohort/goal';
+import {
+  archiveGoal,
+  createGoal,
+  evaluateGoal,
+  runCohortGoalReminderScan,
+  sendOverdueCohortGoalRemindersNow,
+  updateGoal
+} from '@api/services/cohort/goal';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { buildEmailFromName } from '@cio/email';
 
 const COHORT_ID = 'cohort-1';
 const GOAL_ID = 'goal-1';
@@ -219,5 +236,102 @@ describe('updateGoal partial-update field preservation', () => {
 
     expect(updateCohortGoalQuery).toHaveBeenNthCalledWith(1, COHORT_ID, GOAL_ID, { title: 'Renamed' });
     expect(updateCohortGoalQuery).toHaveBeenNthCalledWith(2, COHORT_ID, GOAL_ID, { status: 'archived' });
+  });
+});
+
+const ASSIGNMENT_ID = 'assignment-1';
+const COURSE_ID = '55555555-5555-4555-8555-555555555555';
+const NOW = new Date('2026-01-10T12:00:00.000Z');
+
+function reminderContext(overrides: Partial<CohortGoalReminderContext> = {}): CohortGoalReminderContext {
+  return {
+    assignment: {
+      id: ASSIGNMENT_ID,
+      goalId: GOAL_ID,
+      cohortMemberId: 'member-1',
+      profileId: PROFILE_ID,
+      status: 'in_progress',
+      completedCount: 1,
+      requiredCount: 3,
+      score: null,
+      teamPassRate: null,
+      dueDate: '2026-01-05T00:00:00.000Z',
+      completedAt: null,
+      lastEvaluatedAt: '2026-01-01T00:00:00.000Z',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z'
+    } as CohortGoalReminderContext['assignment'],
+    goal: EXISTING_GOAL,
+    profileId: PROFILE_ID,
+    email: 'learner@example.com',
+    cohortId: COHORT_ID,
+    cohortName: 'Cohort',
+    organizationId: '66666666-6666-4666-8666-666666666666',
+    organizationName: 'Acme',
+    organizationSiteName: 'acme',
+    organizationCustomDomain: null,
+    organizationIsCustomDomainVerified: null,
+    organizationAvatarUrl: null,
+    organizationTheme: null,
+    ...overrides
+  };
+}
+
+describe('cohort goal reminders', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+    vi.mocked(enqueueTransactionalEmail).mockResolvedValue({ jobIds: ['job-1'] });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('sends every overdue reminder for the course and counts the skipped learners', async () => {
+    vi.mocked(listOverdueAssignmentReminderContexts).mockResolvedValue([
+      reminderContext(),
+      reminderContext({ assignment: { ...reminderContext().assignment, id: 'assignment-2' }, email: null })
+    ]);
+
+    await expect(sendOverdueCohortGoalRemindersNow(COHORT_ID, { courseId: COURSE_ID })).resolves.toEqual({
+      enqueued: 1,
+      skipped: 1
+    });
+
+    expect(listOverdueAssignmentReminderContexts).toHaveBeenCalledWith(COHORT_ID, { courseId: COURSE_ID });
+    expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(enqueueTransactionalEmail).mock.calls[0]?.[1]).toMatchObject({
+      idempotencyKey: `cohort-goal-reminder-manual:${ASSIGNMENT_ID}:2026-01-10`
+    });
+  });
+
+  it('passes the learner filter through so only that learner is reminded', async () => {
+    vi.mocked(listOverdueAssignmentReminderContexts).mockResolvedValue([reminderContext()]);
+
+    await expect(sendOverdueCohortGoalRemindersNow(COHORT_ID, { profileId: PROFILE_ID })).resolves.toEqual({
+      enqueued: 1,
+      skipped: 0
+    });
+
+    expect(listOverdueAssignmentReminderContexts).toHaveBeenCalledWith(COHORT_ID, {
+      courseId: undefined,
+      profileId: PROFILE_ID
+    });
+    expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the scan idempotency key distinct from manual sends', async () => {
+    vi.mocked(listAssignmentsForReminderScan).mockResolvedValue([
+      reminderContext({ assignment: { ...reminderContext().assignment, dueDate: '2026-01-11T00:00:00.000Z' } })
+    ]);
+
+    await expect(runCohortGoalReminderScan()).resolves.toEqual({ scanned: 1, remindersEnqueued: 1 });
+
+    expect(vi.mocked(enqueueTransactionalEmail).mock.calls[0]?.[1]).toMatchObject({
+      idempotencyKey: `cohort-goal-reminder:${ASSIGNMENT_ID}:1:2026-01-10`,
+      from: buildEmailFromName('Acme (via ClassroomIO.com)')
+    });
   });
 });
