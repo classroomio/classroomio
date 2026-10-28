@@ -24,6 +24,8 @@ content it is about, so it gets lost and nobody knows what is still open.
 ## Users
 
 - **Admins and tutors on the course team** can see, write, reply to and resolve comments.
+- **Org admins** count as part of every course team in their org, so they can see, write and delete
+  comments on any course even if they are not listed on it.
 - **Learners** never see comments, not in the dashboard, the public course page, or the API.
   The API must enforce this. Hiding it in the UI is not enough.
 - You can only **@mention** people who are on the course team (admins and tutors with access to that
@@ -137,20 +139,26 @@ These are guides, not final decisions.
   New tables, roughly: `comment_thread` (course, anchor type, anchor data, status, resolved by/at) and
   `comment` (thread, author, body, edited at).
 - Store mentions as user ids, not as names inside the comment text, so renamed users display
-  correctly. See "Persisted columns store data, not presentation" in `CLAUDE.md`.
-- **Text anchors:** the lesson editor is Tiptap. Keep the highlight as a comment mark with the thread
-  id inside the lesson content, and save the quoted text on the thread as the fallback for when the
-  mark is gone. The mark must never show in the learner view.
+  correctly. See "Persisted columns store data, not presentation" in `CLAUDE.md`. Each comment keeps
+  its plain text body plus a list of mentions, one per `@`, each with the user id and its position
+  in the body. Editing a comment saves a fresh list, so positions never go stale.
+- **Text anchors:** the lesson editor is Tiptap. Do not write anything into the lesson content
+  itself, so clone, export and the learner view never see comment data. The thread stores the text
+  range and the quoted text. The editor draws the highlight on top of the content while the author
+  is working, and re-finds the range by the quoted text when the content changes.
+- **Access:** org admins are allowed on every comment endpoint, in addition to admins and tutors on
+  the course.
 - **Video anchors:** store the media/asset id and the second. If the lesson's asset id changes, the
   thread is outdated.
-- Every comment endpoint checks that the caller is an admin or tutor on that course.
+- Every comment endpoint checks that the caller is an admin or tutor on that course, or an admin of
+  the org that owns it.
 - Course outline and page badges need cheap open-thread counts. Return counts with the course
   outline rather than one request per lesson.
 
 ## Acceptance Criteria
 
 - [ ] A tutor can highlight text in a lesson, @mention an admin, and the admin gets a bell notification
-      and an email that opens the exact highlight.
+      and, if their email preferences allow it, an email that opens the exact highlight.
 - [ ] A tutor can leave a comment at a video timestamp, and clicking it seeks the video.
 - [ ] Comments can be left on the course (general), a lesson/exercise page, and an exercise question.
 - [ ] The Comments panel lists every open thread in the course and can filter to "Mentions me".
