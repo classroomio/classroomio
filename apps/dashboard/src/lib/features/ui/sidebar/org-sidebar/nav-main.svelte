@@ -22,7 +22,16 @@
         if (inst.status !== 'active') return false;
         const manifest = inst.manifest as any;
         const contributesPages = manifest?.contributes?.pages;
-        return Boolean(contributesPages && contributesPages.length > 0);
+        if (!contributesPages || contributesPages.length === 0) return false;
+        const navItems = manifest?.contributes?.navigation;
+        if (
+          !$isOrgAdmin &&
+          Array.isArray(navItems) &&
+          navItems.every((nav: any) => nav.visibility === 'organization.admin')
+        ) {
+          return false;
+        }
+        return true;
       })
       .map((inst) => {
         const routeKey = inst.plugin?.slug ?? inst.pluginId;

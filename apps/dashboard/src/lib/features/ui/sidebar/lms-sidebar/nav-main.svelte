@@ -15,9 +15,14 @@
   const pathWithQuery = $derived(page.url.pathname + page.url.search);
 
   const lmsPluginNavItems = $derived(
-    pluginsApi.installations.filter(
-      (inst) => inst.status === 'active' && Boolean((inst.manifest as any)?.contributes?.navigation?.length)
-    )
+    pluginsApi.installations.filter((inst) => {
+      if (inst.status !== 'active') return false;
+      const navItems = (inst.manifest as any)?.contributes?.navigation;
+      return (
+        Array.isArray(navItems) &&
+        navItems.some((nav: any) => nav.visibility !== 'organization.admin' && nav.location !== 'organization.settings')
+      );
+    })
   );
 </script>
 

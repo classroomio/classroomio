@@ -20,7 +20,7 @@
 {#if !isOrgLoaded}
   <SidebarSkeleton />
 {:else}
-  <Sidebar.Root collapsible="icon">
+  <Sidebar.Root collapsible="icon" class="md:relative! md:inset-y-auto! md:h-full!">
     <Sidebar.Header>
       <OrgLogo />
     </Sidebar.Header>

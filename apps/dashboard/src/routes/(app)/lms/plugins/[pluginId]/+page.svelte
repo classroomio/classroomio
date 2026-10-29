@@ -25,9 +25,14 @@
   });
 
   const installation = $derived(
-    pluginsApi.installations.find(
-      (inst) => inst.pluginId === page.params.pluginId || inst.plugin?.slug === page.params.pluginId
-    )
+    pluginsApi.installations.find((inst) => {
+      if (inst.pluginId !== page.params.pluginId && inst.plugin?.slug !== page.params.pluginId) return false;
+      const navItems = (inst.manifest as any)?.contributes?.navigation;
+      return (
+        Array.isArray(navItems) &&
+        navItems.some((nav: any) => nav.visibility !== 'organization.admin' && nav.location !== 'organization.settings')
+      );
+    })
   );
 
   const contribution = $derived(

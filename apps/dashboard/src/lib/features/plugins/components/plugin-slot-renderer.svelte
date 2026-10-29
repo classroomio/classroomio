@@ -47,6 +47,7 @@
         srcUrl={slot.artifactUrl}
         title={slot.title}
         backendAudience={slot.backendAudience}
+        className="block w-full border-0"
         {target}
         {resource}
         {onAction}

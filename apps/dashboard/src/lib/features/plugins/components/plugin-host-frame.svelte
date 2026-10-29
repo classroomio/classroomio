@@ -42,7 +42,7 @@
   let iframeElement = $state<HTMLIFrameElement | null>(null);
   let bridgeHost: PluginBridgeHost | null = null;
   let themeObserver: MutationObserver | null = null;
-  let frameHeight = $state<number | null>(null);
+  let frameHeight = $state<number | null>(target === 'plugin.page' ? null : 0);
   let isDirty = false;
 
   function getPreferenceStorageKey(namespace: string, key: string): string {
@@ -195,6 +195,27 @@
             }
 
             const response = await classroomio.plugins.installations[':installationId'].lessons.$get(
+              {
+                param: { installationId },
+                query: queryParams
+              },
+              { headers: { 'cio-org-id': orgId } }
+            );
+            return responseData(response);
+          }
+
+          if (payload.action === 'exercises:list') {
+            const orgId = requireOrganizationId();
+            const rawData =
+              payload.data && typeof payload.data === 'object' ? (payload.data as Record<string, unknown>) : {};
+            const queryParams: { courseId?: string } = {};
+            if (typeof rawData.courseId === 'string') {
+              queryParams.courseId = rawData.courseId;
+            } else if (resource?.type === 'course' && resource.id) {
+              queryParams.courseId = resource.id;
+            }
+
+            const response = await classroomio.plugins.installations[':installationId'].exercises.$get(
               {
                 param: { installationId },
                 query: queryParams

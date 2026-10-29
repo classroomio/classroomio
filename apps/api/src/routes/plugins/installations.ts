@@ -23,6 +23,7 @@ import {
   getInstallation,
   installPlugin,
   listInstallationCourses,
+  listInstallationExercises,
   listInstallationLessons,
   listOrgPlugins,
   resolveOrgContributions,
@@ -320,6 +321,28 @@ export const pluginInstallationsRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to fetch lessons for plugin installation');
+      }
+    }
+  )
+  .get(
+    '/:installationId/exercises',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZPluginInstallationParam),
+    zValidator('query', ZPluginLessonsListQuery),
+    async (c) => {
+      const user = c.get('user')!;
+      const orgId = c.get('orgId') as string;
+      const userRole = c.get('userRole') as number | undefined;
+      const { installationId } = c.req.valid('param');
+      const { courseId } = c.req.valid('query');
+
+      try {
+        const result = await listInstallationExercises(installationId, orgId, user.id, userRole, courseId);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch exercises for plugin installation');
       }
     }
   );
