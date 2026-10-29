@@ -6443,7 +6443,7 @@
     "awaiting_grade": "प्रतीक्षित वर्ग",
     "awaiting_grade_short": "लंबित",
     "pass_mark_tag": "उत्तीर्ण अंक {mark}%",
-    "of_total": "{count} का {total}",
+    "of_total": "{total} में से {count}",
     "never": "कभी नहीं",
     "invited": "{count} ने आमंत्रित किया",
     "no_students": "कोई छात्र नहीं",
@@ -6463,7 +6463,7 @@
       "courses": "पाठ्यक्रम: {count}",
       "cohorts": "समूह: {count}",
       "active_cohorts": "{count, plural, one {# सक्रिय समूह} other {#सक्रिय दल}}",
-      "seats": "सीटें: {used} में से {limit}"
+      "seats": "सीटें: {limit} में से {used}"
     },
     "now_tag": {
       "label": "अब",
@@ -6481,7 +6481,7 @@
       "at_risk": "जोखिम में",
       "lagging": "पिछड़ रहे",
       "on_track": "ट्रैक पर",
-      "completed": "पुरा होना।"
+      "completed": "पूर्ण"
     },
     "flags": {
       "overdue": "अतिदेय"
@@ -6611,7 +6611,7 @@
         "title": "अतिदेय"
       },
       "kpi_completed": {
-        "title": "पुरा होना।"
+        "title": "पूर्ण"
       },
       "kpi_enrolled": {
         "title": "दाखिला लिया"
@@ -6726,7 +6726,7 @@
       "avg_progress_pct__value": "औसत प्रगति",
       "avg_score_pct__value": "औसत स्कोर",
       "first_try_pass__pooled": "उत्तीर्णता दर",
-      "is_completed__count_if": "पुरा होना।",
+      "is_completed__count_if": "पूर्ण",
       "is_completed__rate": "पूर्णता दर",
       "is_inactive__count_if": "लॉगिन नहीं किया, 2+ दिन",
       "is_low_score__count_if": "औसत स्कोर 50% से कम",
@@ -6737,7 +6737,7 @@
       "video_pct__avg": "वीडियो उपस्थिति",
       "attendance__pooled": "कक्षा में उपस्थिति",
       "best_score_pct__avg": "औसत स्कोर",
-      "is_complete__rate": "पुरा होना।",
+      "is_complete__rate": "पूर्ण",
       "members_total__value": "नामांकित छात्र"
     },
     "columns": {
@@ -6749,7 +6749,7 @@
       "avg_progress": "औसत प्रगति",
       "avg_score": "औसत स्कोर",
       "average_score": "औसत स्कोर",
-      "completed": "पुरा होना।",
+      "completed": "पूर्ण",
       "took_pass_mark": "एक उत्तीर्ण अंक प्राप्त करने वाला अभ्यास किया।",
       "passed_first_try": "उत्तीर्णता दर",
       "exercises_passed": "अभ्यास सफल रहे",
@@ -6817,7 +6817,7 @@
           "at_risk": "जोखिम में",
           "lagging": "पिछड़ रहे",
           "on_track": "ट्रैक पर",
-          "completed": "पुरा होना।"
+          "completed": "पूर्ण"
         },
         "activity": {
           "label": "आखरी लॉगइन",

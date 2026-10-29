@@ -6450,7 +6450,7 @@
     "no_students_yet": "Chưa có học viên",
     "no_graded_attempts": "Không có bài làm được chấm",
     "names_and_more": "{names} và {count} mục khác",
-    "certificate_issued": "{count, plural, one {Đã phát hành} other {# ban hành}}",
+    "certificate_issued": "{count, plural, other {Đã cấp #}}",
     "question_hint": {
       "context_and_answer": "{context} · câu trả lời sai phổ biến nhất: {answer}",
       "answer": "Câu trả lời sai phổ biến nhất: {answer}"
