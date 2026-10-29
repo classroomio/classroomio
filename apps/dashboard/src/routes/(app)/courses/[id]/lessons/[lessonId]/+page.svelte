@@ -44,7 +44,7 @@
   });
 </script>
 
-<Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-4xl lg:max-w-5xl">
+<Page.Root class="mx-auto flex w-full gap-3 px-3 sm:w-[90%] sm:px-4 md:max-w-4xl md:gap-4 lg:max-w-5xl">
   {#key data.lessonId}
     <LessonPage courseId={data.courseId} lessonId={data.lessonId} />
   {/key}

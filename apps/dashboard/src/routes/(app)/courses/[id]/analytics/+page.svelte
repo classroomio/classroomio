@@ -25,7 +25,7 @@
   );
 </script>
 
-<Page.Root class="max-auto w-[90%] px-4">
+<Page.Root class="mx-auto flex w-full px-3 sm:w-[90%] sm:px-4">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>

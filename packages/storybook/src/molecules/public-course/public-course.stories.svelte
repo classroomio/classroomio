@@ -1,6 +1,8 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { PublicCourse } from '@cio/ui';
+  import { Button } from '@cio/ui/base/button';
+  import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
   import type { PublicCourseSidebarItem } from '@cio/ui/custom/public-course';
   import { QUESTION_LABELS } from '../exercise-question/question-labels';
   import {
@@ -249,6 +251,30 @@
         onNext={() => console.log('next')}
         onOpenSheet={() => console.log('open sheet')}
       />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Bottom nav · with complete toggle">
+  {#snippet template()}
+    <div class="ui:relative ui:min-h-[200px] ui:bg-background">
+      <PublicCourse.PublicCourseBottomNav
+        positionLabel="4 / 30"
+        sublineLabel="Blogs to Read Articles"
+        hasPrev
+        hasNext
+        centerVariant="ring"
+        progressPercent={10}
+        onPrev={() => console.log('prev')}
+        onNext={() => console.log('next')}
+        onOpenSheet={() => console.log('open sheet')}
+      >
+        {#snippet completeToggle()}
+          <Button type="button" variant="secondary" size="icon-sm" aria-label="Mark lesson complete">
+            <CircleCheckIcon size={18} />
+          </Button>
+        {/snippet}
+      </PublicCourse.PublicCourseBottomNav>
     </div>
   {/snippet}
 </Story>

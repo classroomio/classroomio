@@ -125,7 +125,9 @@
   </button>
 
   {#if completeToggle}
-    {@render completeToggle()}
+    <span class="ui:flex ui:items-center ui:justify-center">
+      {@render completeToggle()}
+    </span>
   {/if}
 
   <button type="button" class={navButtonClass} aria-label={nextLabel} disabled={!hasNext} onclick={onNext}>

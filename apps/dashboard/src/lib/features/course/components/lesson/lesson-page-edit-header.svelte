@@ -73,7 +73,7 @@
         {/if}
       </RoleBasedSecurity>
     {:else}
-      <Page.Title>{title}</Page.Title>
+      <Page.Title class="ui:text-xl ui:md:text-2xl">{title}</Page.Title>
     {/if}
   </div>
 
