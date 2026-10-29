@@ -16,6 +16,7 @@ export function buildStudentsExportDocument(params: {
   headers: StudentExportHeaders;
   rows: StudentExportRow[];
   exercises: InsightsStructureItem[];
+  courseSelected: boolean;
 }): ExportDocument<StudentExportRow> {
   const { headers } = params;
   const exerciseColumns = params.exercises.map((exercise) => ({
@@ -23,15 +24,19 @@ export function buildStudentsExportDocument(params: {
     header: exercise.title,
     value: (entry: StudentExportRow) => roundOrNull(entry.cells[exercise.id]?.scorePct ?? null)
   }));
-
-  const columns = [
-    { key: 'name', header: headers.name, value: (entry: StudentExportRow) => textCell(entry.row, 'name__value') },
-    { key: 'email', header: headers.email, value: (entry: StudentExportRow) => textCell(entry.row, 'email__value') },
+  const courseProgressColumns = [
     {
-      key: 'progress',
-      header: headers.progress,
-      value: (entry: StudentExportRow) => roundOrNull(numberCell(entry.row, 'overall_progress_pct__value'))
+      key: 'now_at',
+      header: headers.nowAt,
+      value: (entry: StudentExportRow) => {
+        const progress = numberCell(entry.row, 'overall_progress_pct__value');
+
+        return progress !== null && progress >= 100 ? headers.finished : textCell(entry.row, 'now_at_title__value');
+      }
     },
+    ...exerciseColumns
+  ];
+  const allCoursesColumns = [
     {
       key: 'average_score',
       header: headers.averageScore,
@@ -41,8 +46,19 @@ export function buildStudentsExportDocument(params: {
       key: 'courses_completed',
       header: headers.coursesCompleted,
       value: (entry: StudentExportRow) => numberCell(entry.row, 'courses_completed__value')
+    }
+  ];
+  const performanceColumns = params.courseSelected ? courseProgressColumns : allCoursesColumns;
+
+  const columns = [
+    { key: 'name', header: headers.name, value: (entry: StudentExportRow) => textCell(entry.row, 'name__value') },
+    { key: 'email', header: headers.email, value: (entry: StudentExportRow) => textCell(entry.row, 'email__value') },
+    {
+      key: 'progress',
+      header: headers.progress,
+      value: (entry: StudentExportRow) => roundOrNull(numberCell(entry.row, 'overall_progress_pct__value'))
     },
-    ...exerciseColumns,
+    ...performanceColumns,
     {
       key: 'video',
       header: headers.video,

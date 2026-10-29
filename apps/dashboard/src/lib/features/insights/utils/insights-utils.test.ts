@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   activeBreakdownGroup,
   availableBreakdownGroups,
+  canReturnToAllCourses,
   chartedCohorts,
   clampRangeToDays,
   cohortHealth,
@@ -1255,6 +1256,14 @@ describe('insights-utils', () => {
       ]);
     });
 
+    it('names the courses in the course score chart table', () => {
+      const result = resultOf([{ course_id: 'c1' }, { course_id: 'c2' }, { course_id: 'c3' }]);
+
+      expect(widgetNotes(widgetOf('avg_score_by_course'), result, widgetContext, mockTranslate)).toEqual([
+        'insights.notes.courses_in_table:count=3'
+      ]);
+    });
+
     it('reuses the empty-cohort query for the scores-by-cohort note', () => {
       const emptyCohorts = resultOf([{ cohort_id: 'b', cohort_label: 'Cohort B', students__value: 0 }]);
 
@@ -1300,6 +1309,14 @@ describe('insights-utils', () => {
       expect(widgetNotes(widget, null, { ...widgetContext, scopeType: 'course' }, mockTranslate)).toEqual([
         'insights.notes.students.course_scope'
       ]);
+    });
+  });
+
+  describe('canReturnToAllCourses', () => {
+    it('only returns to all courses when the dashboard itself is on all courses', () => {
+      expect(canReturnToAllCourses(null, 'course-1')).toBe(true);
+      expect(canReturnToAllCourses('course-1', 'course-1')).toBe(false);
+      expect(canReturnToAllCourses(null, null)).toBe(false);
     });
   });
 

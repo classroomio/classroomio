@@ -68,6 +68,7 @@
   }
 
   async function handleCourseChange(courseId: string | null) {
+    insightsStudentSheetApi.reset();
     await insightsApi.selectCourse(courseId);
     await insightsStudentsApi.load();
   }
