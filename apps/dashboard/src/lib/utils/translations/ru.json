@@ -429,6 +429,7 @@
       "delete_failed": "Не удалось удалить видео.",
       "added_to_lesson": "Видео добавлено в урок",
       "document_added_to_lesson": "Документ добавлен в урок",
+      "documents_added_to_lesson": "Документы добавлены в урок",
       "transcript_unavailable": "Транскрипция недоступна"
     },
     "tags": {
@@ -2446,6 +2447,10 @@
               "try_again": "Попробуйте еще раз",
               "upgrade": "Обновите свой план, чтобы загружать документы",
               "no_library_documents": "В вашей медиатеке нет доступных документов",
+              "selected_count": "Выбрано: {count}",
+              "clear_selection": "Сбросить",
+              "add_one_file": "Добавить 1 файл",
+              "add_files": "Добавить файлы: {count}",
               "download_success": "Документ успешно загружен",
               "download_error": "Не удалось загрузить документ",
               "remove_document": "Удалить документ",

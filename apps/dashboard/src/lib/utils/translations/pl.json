@@ -429,6 +429,7 @@
       "delete_failed": "Nie udało się usunąć filmu",
       "added_to_lesson": "Film dodany do lekcji",
       "document_added_to_lesson": "Dokument dodany do lekcji",
+      "documents_added_to_lesson": "Dokumenty dodane do lekcji",
       "transcript_unavailable": "Transkrypcja niedostępna"
     },
     "tags": {
@@ -2446,6 +2447,10 @@
               "try_again": "Spróbuj ponownie",
               "upgrade": "Uaktualnij swój plan, aby przesyłać dokumenty",
               "no_library_documents": "Brak dokumentów w Twojej bibliotece multimediów",
+              "selected_count": "Wybrano: {count}",
+              "clear_selection": "Wyczyść",
+              "add_one_file": "Dodaj 1 plik",
+              "add_files": "Dodaj pliki ({count})",
               "download_success": "Dokument pobrano pomyślnie",
               "download_error": "Nie udało się pobrać dokumentu",
               "remove_document": "Usuń dokument",

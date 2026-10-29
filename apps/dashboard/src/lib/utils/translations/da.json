@@ -429,6 +429,7 @@
       "delete_failed": "Videoen kunne ikke slettes",
       "added_to_lesson": "Video tilføjet til lektion",
       "document_added_to_lesson": "Dokument føjet til lektionen",
+      "documents_added_to_lesson": "Dokumenter føjet til lektionen",
       "transcript_unavailable": "Transskription utilgængelig"
     },
     "tags": {
@@ -2446,6 +2447,10 @@
               "try_again": "Prøv igen",
               "upgrade": "Opgrader din plan for at uploade dokumenter",
               "no_library_documents": "Ingen dokumenter tilgængelige i dit mediebibliotek",
+              "selected_count": "{count} valgt",
+              "clear_selection": "Ryd",
+              "add_one_file": "Tilføj 1 fil",
+              "add_files": "Tilføj {count} filer",
               "download_success": "Dokument downloadet",
               "download_error": "Kunne ikke downloade dokumentet",
               "remove_document": "Fjern dokumentet",

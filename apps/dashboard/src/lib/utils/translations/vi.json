@@ -429,6 +429,7 @@
       "delete_failed": "Không thể xóa video",
       "added_to_lesson": "Video đã được thêm vào bài học",
       "document_added_to_lesson": "Đã thêm tài liệu vào bài học",
+      "documents_added_to_lesson": "Đã thêm các tài liệu vào bài học",
       "transcript_unavailable": "Không có bản ghi"
     },
     "tags": {
@@ -2446,6 +2447,10 @@
               "try_again": "Thử lại",
               "upgrade": "Nâng cấp kế hoạch tải tài liệu lên của bạn",
               "no_library_documents": "Không có tài liệu nào trong thư viện phương tiện của bạn",
+              "selected_count": "Đã chọn {count}",
+              "clear_selection": "Bỏ chọn",
+              "add_one_file": "Thêm 1 tệp",
+              "add_files": "Thêm {count} tệp",
               "download_success": "Tài liệu đã được tải xuống thành công",
               "download_error": "Không thể tải xuống tài liệu",
               "remove_document": "Xóa tài liệu",

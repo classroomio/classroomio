@@ -429,6 +429,7 @@
       "delete_failed": "No se pudo eliminar el video",
       "added_to_lesson": "Vídeo añadido a la lección.",
       "document_added_to_lesson": "Documento añadido a la lección",
+      "documents_added_to_lesson": "Documentos añadidos a la lección",
       "transcript_unavailable": "Transcripción no disponible"
     },
     "tags": {
@@ -2446,6 +2447,10 @@
               "try_again": "Inténtalo de nuevo",
               "upgrade": "Actualice su plan para cargar documentos",
               "no_library_documents": "No hay documentos disponibles en su biblioteca multimedia",
+              "selected_count": "{count} seleccionados",
+              "clear_selection": "Borrar",
+              "add_one_file": "Agregar 1 archivo",
+              "add_files": "Agregar {count} archivos",
               "download_success": "Documento descargado correctamente",
               "download_error": "No se pudo descargar el documento",
               "remove_document": "Quitar documento",

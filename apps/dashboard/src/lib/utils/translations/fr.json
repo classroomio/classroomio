@@ -429,6 +429,7 @@
       "delete_failed": "Échec de la suppression de la vidéo",
       "added_to_lesson": "Vidéo ajoutée à la leçon",
       "document_added_to_lesson": "Document ajouté à la leçon",
+      "documents_added_to_lesson": "Documents ajoutés à la leçon",
       "transcript_unavailable": "Transcription indisponible"
     },
     "tags": {
@@ -2446,6 +2447,10 @@
               "try_again": "Réessayez",
               "upgrade": "Mettez à niveau votre forfait pour télécharger des documents",
               "no_library_documents": "Aucun document disponible dans votre médiathèque",
+              "selected_count": "{count} sélectionné(s)",
+              "clear_selection": "Effacer",
+              "add_one_file": "Ajouter 1 fichier",
+              "add_files": "Ajouter {count} fichiers",
               "download_success": "Document téléchargé avec succès",
               "download_error": "Échec du téléchargement du document",
               "remove_document": "Supprimer le document",

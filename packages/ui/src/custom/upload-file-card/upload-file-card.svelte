@@ -5,7 +5,7 @@
   import { Button } from '../../base/button';
   import { cn } from '../../tools';
   import { formatFileSize } from '../attachment-list/format-file-size';
-  import { getFileBadge } from './file-badge';
+  import FileTypeBadge from './file-type-badge.svelte';
   import type { UploadFileCardLabels, UploadFileCardStatus } from './types';
 
   interface Props {
@@ -37,7 +37,6 @@
     class: className = ''
   }: Props = $props();
 
-  const badge = $derived(getFileBadge(name));
   const isInFlight = $derived(status === 'queued' || status === 'uploading');
   const clampedProgress = $derived(Math.min(Math.max(progress, 0), 100));
   const totalSize = $derived(formatSize(size));
@@ -57,14 +56,7 @@
   ></div>
 
   <div class="ui:relative ui:flex ui:items-center ui:gap-3 ui:px-3 ui:py-2">
-    <span
-      class={cn(
-        'ui:flex ui:size-8 ui:shrink-0 ui:items-center ui:justify-center ui:rounded-md ui:text-[9px] ui:font-bold ui:text-white',
-        badge.colorClass
-      )}
-    >
-      {badge.label}
-    </span>
+    <FileTypeBadge {name} size="sm" />
 
     <div class="ui:min-w-0 ui:flex-1">
       <p class="ui:truncate ui:text-sm ui:leading-tight ui:font-medium" title={name}>{name}</p>

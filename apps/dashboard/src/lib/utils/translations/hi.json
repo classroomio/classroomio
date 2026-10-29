@@ -429,6 +429,7 @@
       "delete_failed": "वीडियो हटाने में विफल",
       "added_to_lesson": "पाठ में वीडियो जोड़ा गया",
       "document_added_to_lesson": "दस्तावेज़ पाठ में जोड़ा गया",
+      "documents_added_to_lesson": "दस्तावेज़ पाठ में जोड़े गए",
       "transcript_unavailable": "ट्रांसक्रिप्ट उपलब्ध नहीं"
     },
     "tags": {
@@ -2446,6 +2447,10 @@
               "try_again": "पुनः प्रयास करें",
               "upgrade": "दस्तावेज़ अपलोड करने की अपनी योजना को अपग्रेड करें",
               "no_library_documents": "आपकी मीडिया लाइब्रेरी में कोई दस्तावेज़ उपलब्ध नहीं है",
+              "selected_count": "{count} चयनित",
+              "clear_selection": "साफ़ करें",
+              "add_one_file": "1 फ़ाइल जोड़ें",
+              "add_files": "{count} फ़ाइलें जोड़ें",
               "download_success": "दस्तावेज़ सफलतापूर्वक डाउनलोड हुआ",
               "download_error": "दस्तावेज़ डाउनलोड करने में विफल",
               "remove_document": "दस्तावेज़ हटाएँ",

@@ -1,6 +1,6 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import { UploadFileCard } from '@cio/ui';
+  import { UploadFileCard, FileTypeBadge } from '@cio/ui';
   import { FIELDS } from './fields';
 
   const labels = {
@@ -118,6 +118,21 @@
       <UploadFileCard name="cohort_analysis.ipynb" size={475136} status="done" progress={100} {labels} />
       <UploadFileCard name="clean_data.py" size={312832} status="done" progress={100} {labels} />
       <UploadFileCard name="README" size={2048} status="done" progress={100} {labels} />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="FileTypeBadges">
+  {#snippet template()}
+    <div class="flex flex-wrap items-center gap-3">
+      <FileTypeBadge name="clean_data.py" />
+      <FileTypeBadge name="sales_data.csv" />
+      <FileTypeBadge name="cohort_analysis.ipynb" />
+      <FileTypeBadge name="learner_scores.xlsx" />
+      <FileTypeBadge name="syllabus.pdf" />
+      <FileTypeBadge name="README" />
+      <FileTypeBadge name="clean_data.py" size="sm" />
+      <FileTypeBadge name="learner_scores.xlsx" size="sm" />
     </div>
   {/snippet}
 </Story>

@@ -1,12 +1,14 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import { flip } from 'svelte/animate';
+  import { SvelteMap } from 'svelte/reactivity';
   import { fly } from 'svelte/transition';
   import { Button } from '@cio/ui/base/button';
+  import { Checkbox } from '@cio/ui/base/checkbox';
   import { Spinner } from '@cio/ui/base/spinner';
   import { Empty } from '@cio/ui/custom/empty';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { getFileBadge } from '@cio/ui/custom/upload-file-card';
+  import { FileTypeBadge } from '@cio/ui/custom/upload-file-card';
   import { lessonApi } from '$features/course/api';
   import { mediaApi } from '$features/media/api';
   import { formatBytes, getAssetDisplayName } from '$features/media/utils';
@@ -34,12 +36,14 @@
 
   let isLoading = $state(false);
   let isInitialLoading = $state(true);
-  let addingAssetId = $state<string | null>(null);
+  let isAdding = $state(false);
   let assets = $state<OrganizationAsset[]>([]);
   let page = $state(1);
   let totalPages = $state(1);
   let totalCount = $state(0);
   let libraryRequestId = 0;
+
+  const selectedAssets = new SvelteMap<string, OrganizationAsset>();
 
   const addedAssetIds = $derived(
     new Set(
@@ -48,6 +52,7 @@
   );
 
   const visibleAssets = $derived(assets.filter((asset) => !addedAssetIds.has(asset.id)));
+  const selectedCount = $derived(selectedAssets.size);
 
   async function loadLibrary(targetPage = 1) {
     const requestId = ++libraryRequestId;
@@ -79,25 +84,47 @@
     }
   }
 
-  async function addFromLibrary(asset: OrganizationAsset) {
-    if (!lessonApi.lesson) return;
+  function toggleSelection(asset: OrganizationAsset) {
+    if (selectedAssets.has(asset.id)) {
+      selectedAssets.delete(asset.id);
+      return;
+    }
 
-    addingAssetId = asset.id;
+    selectedAssets.set(asset.id, asset);
+  }
+
+  async function addSelectedToLesson() {
+    if (!lessonApi.lesson || selectedAssets.size === 0) return;
+
+    isAdding = true;
+    const assetsToAdd = [...selectedAssets.values()];
+    let addedCount = 0;
 
     try {
-      const position = lessonApi.lesson.documents?.length ?? 0;
-      const lessonDocument = await mediaApi.buildLessonDocumentFromAsset(asset, {
-        lessonId: lessonId || undefined,
-        position
-      });
+      for (const asset of assetsToAdd) {
+        const position = lessonApi.lesson.documents?.length ?? 0;
+        const lessonDocument = await mediaApi.buildLessonDocumentFromAsset(asset, {
+          lessonId: lessonId || undefined,
+          position
+        });
 
-      if (!lessonDocument) return;
+        if (!lessonDocument) continue;
 
-      lessonApi.updateLessonState('documents', [lessonDocument], { append: true });
-      snackbar.success('snackbar.media_manager.document_added_to_lesson');
+        lessonApi.updateLessonState('documents', [lessonDocument], { append: true });
+        selectedAssets.delete(asset.id);
+        addedCount += 1;
+      }
     } finally {
-      addingAssetId = null;
+      isAdding = false;
     }
+
+    if (addedCount === 0) return;
+
+    snackbar.success(
+      addedCount === 1
+        ? 'snackbar.media_manager.document_added_to_lesson'
+        : 'snackbar.media_manager.documents_added_to_lesson'
+    );
   }
 
   onMount(async () => {
@@ -140,34 +167,22 @@
     >
       {#each visibleAssets as asset (asset.id)}
         {@const displayName = getAssetDisplayName(asset)}
-        {@const badge = getFileBadge(displayName)}
-        <div
-          class="flex items-center justify-between gap-3 rounded-md border p-3"
+        <label
+          for={`library-document-${asset.id}`}
+          class="flex cursor-pointer items-center gap-3 rounded-lg border p-3"
           animate:flip={{ duration: 250 }}
           out:fly={{ x: -400, duration: 300 }}
         >
-          <div class="flex min-w-0 flex-1 items-center gap-3">
-            <span
-              class="flex size-8 shrink-0 items-center justify-center rounded-md text-[9px] font-bold text-white {badge.colorClass}"
-            >
-              {badge.label}
-            </span>
-            <div class="min-w-0 flex-1">
-              <p class="truncate text-sm font-medium">{displayName}</p>
-              <p class="ui:text-muted-foreground text-xs">{formatBytes(asset.byteSize)}</p>
-            </div>
-          </div>
-          <Button
-            size="sm"
-            variant="secondary"
-            class="shrink-0"
-            onclick={() => addFromLibrary(asset)}
-            loading={addingAssetId === asset.id}
-            disabled={addingAssetId !== null}
-          >
-            {$t(`${keyPrefix}.video.add_video.add_from_library`)}
-          </Button>
-        </div>
+          <Checkbox
+            id={`library-document-${asset.id}`}
+            checked={selectedAssets.has(asset.id)}
+            onCheckedChange={() => toggleSelection(asset)}
+            disabled={isAdding}
+          />
+          <FileTypeBadge name={displayName} />
+          <p class="min-w-0 flex-1 truncate text-sm font-medium">{displayName}</p>
+          <span class="ui:text-muted-foreground shrink-0 text-sm">{formatBytes(asset.byteSize)}</span>
+        </label>
       {/each}
     </div>
   {/if}
@@ -189,6 +204,22 @@
         onclick={() => loadLibrary(page + 1)}
       >
         {$t('media_manager.pagination.next')}
+      </Button>
+    </div>
+  {/if}
+
+  {#if selectedCount > 0}
+    <div class="flex items-center justify-between gap-3 border-t pt-4">
+      <div class="flex items-center gap-3">
+        <span class="text-sm font-medium">{$t(`${keyPrefix}.document.selected_count`, { count: selectedCount })}</span>
+        <Button variant="link" size="sm" class="h-auto p-0" disabled={isAdding} onclick={() => selectedAssets.clear()}>
+          {$t(`${keyPrefix}.document.clear_selection`)}
+        </Button>
+      </div>
+      <Button onclick={addSelectedToLesson} loading={isAdding} disabled={isAdding}>
+        {selectedCount === 1
+          ? $t(`${keyPrefix}.document.add_one_file`)
+          : $t(`${keyPrefix}.document.add_files`, { count: selectedCount })}
       </Button>
     </div>
   {/if}
