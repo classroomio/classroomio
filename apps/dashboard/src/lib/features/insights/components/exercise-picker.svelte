@@ -13,8 +13,9 @@
 
   let { exercises, value, onChange }: Props = $props();
 
-  const selectedValue = $derived(value ?? exercises[0]?.id ?? '');
+  const selectedValue = $derived(value ?? '');
   const selectedExercise = $derived(exercises.find((exercise) => exercise.id === selectedValue));
+  const triggerLabel = $derived(selectedExercise?.title ?? $t('insights.exercise_picker'));
 
   function handleChange(next: string) {
     onChange(next);
@@ -27,7 +28,7 @@
     aria-label={$t('insights.exercise_picker')}
     data-testid="insights-exercise-picker"
   >
-    <span class="truncate">{selectedExercise?.title ?? ''}</span>
+    <span class="truncate">{triggerLabel}</span>
   </Select.Trigger>
   <Select.Content>
     {#each exercises as exercise (exercise.id)}
