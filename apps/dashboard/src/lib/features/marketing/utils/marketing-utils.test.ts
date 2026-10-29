@@ -129,7 +129,7 @@ describe('formatChartTooltipDate', () => {
       rawCount: 1
     };
 
-    const formatted = formatChartTooltipDate(d, point);
+    const formatted = formatChartTooltipDate(d, point, 'en-US');
     expect(formatted).toContain('Sep 1, 2026');
   });
 
@@ -145,7 +145,7 @@ describe('formatChartTooltipDate', () => {
       rawCount: 7
     };
 
-    const formatted = formatChartTooltipDate(d1, point);
+    const formatted = formatChartTooltipDate(d1, point, 'en-US');
     expect(formatted).toBe('Sep 1 – 7, 2026');
   });
 
@@ -161,7 +161,7 @@ describe('formatChartTooltipDate', () => {
       rawCount: 7
     };
 
-    const formatted = formatChartTooltipDate(d1, point);
+    const formatted = formatChartTooltipDate(d1, point, 'en-US');
     expect(formatted).toBe('Aug 28 – Sep 3, 2026');
   });
 });

@@ -383,6 +383,20 @@ describe('insights students export', () => {
     expect(document.subtitle).toContain('insights.export.exercises_capped');
   });
 
+  it('throws when the export request fails', async () => {
+    setSelection('course-1');
+    studentExportPost.mockImplementation(async () => failureResponse());
+
+    await expect(
+      insightsStudentsApi.buildExportDocument({
+        filename: 'Cohort students',
+        title: 'Cohort',
+        headers,
+        attemptedByExercise: new Map()
+      })
+    ).rejects.toThrow('Insights student export failed');
+  });
+
   it('forces the table query on a manual refresh', async () => {
     setSelection(null);
     queryPost.mockImplementation(async () => ({
