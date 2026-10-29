@@ -48,6 +48,7 @@ import {
   updateSubmissionGrades
 } from '@cio/db/queries/submission';
 import { getProfileByGroupMemberId } from '@cio/db/queries/course/people';
+import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
 import { evaluateCourseCertification } from '@api/services/course/completion';
 import { updateSubmissionGradesBatch, updateSubmissionService } from '@api/services/submission/submission';
@@ -123,5 +124,17 @@ describe('certificate check after grading', () => {
     vi.mocked(evaluateCourseCertification).mockRejectedValue(new Error('boom'));
 
     await expect(gradeBatch()).resolves.toMatchObject({ id: SUBMISSION_ID });
+  });
+
+  it('still saves the grade and sends the status webhook when the certificate lookup fails', async () => {
+    vi.mocked(getProfileByGroupMemberId).mockRejectedValueOnce(new Error('db down'));
+
+    await expect(gradeBatch()).resolves.toMatchObject({ id: SUBMISSION_ID });
+    expect(evaluateCourseCertification).not.toHaveBeenCalled();
+    expect(emitCourseWebhookEvent).toHaveBeenCalledWith(
+      COURSE_ID,
+      'course.submission.status_changed',
+      expect.anything()
+    );
   });
 });
