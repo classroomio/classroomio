@@ -13,7 +13,7 @@ import { cachedRead } from '@api/utils/redis/cached-read';
 import { resolveAuthorizedScope } from './authorize';
 import { canonicalizeSpec, hashSpec } from './canonicalize';
 import { toInsightsError } from './errors';
-import { assertInsightsRangeAllowed } from './plan';
+import { resolveInsightsRange } from './plan';
 import { getInsightsCourseStructure, toOrderedItems } from './structure';
 import type { AuthorizedInsightsScope, InsightsActor, InsightsQueryResult } from './types';
 
@@ -86,8 +86,8 @@ export async function runInsightsQueryForActor(
 ): Promise<InsightsQueryResult> {
   try {
     const scope = await resolveAuthorizedScope(actor, request.scope);
-    const spec = canonicalizeSpec(request.spec);
-    await assertInsightsRangeAllowed(scope.orgId, spec.range);
+    const range = await resolveInsightsRange(scope.orgId, request.spec.range);
+    const spec = canonicalizeSpec({ ...request.spec, range });
 
     if (spec.search) {
       const output = await computeInsightsQuery(scope, spec);
@@ -120,8 +120,8 @@ export async function exportInsightsQueryForActor(
 ): Promise<InsightsQueryResult> {
   try {
     const scope = await resolveAuthorizedScope(actor, request.scope);
-    const spec = canonicalizeSpec(request.spec);
-    await assertInsightsRangeAllowed(scope.orgId, spec.range);
+    const range = await resolveInsightsRange(scope.orgId, request.spec.range);
+    const spec = canonicalizeSpec({ ...request.spec, range });
     const output = await computeInsightsQuery(scope, spec);
 
     return uncachedResult(output);

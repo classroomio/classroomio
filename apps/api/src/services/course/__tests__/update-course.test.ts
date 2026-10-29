@@ -5,7 +5,8 @@ const mocks = vi.hoisted(() => ({
   transaction: vi.fn(),
   updateCourse: vi.fn(),
   replaceCourseTags: vi.fn(),
-  getCourseByIdForUpdate: vi.fn()
+  getCourseByIdForUpdate: vi.fn(),
+  invalidateInsightsCourseStructure: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/course', () => ({
@@ -26,6 +27,10 @@ vi.mock('@cio/core/services/course/course', () => ({
 
 vi.mock('@api/services/tag', () => ({
   replaceCourseTags: mocks.replaceCourseTags
+}));
+
+vi.mock('@cio/core/utils/redis/insights-cache', () => ({
+  invalidateInsightsCourseStructure: mocks.invalidateInsightsCourseStructure
 }));
 
 import { updateCourseWithTags } from '../update-course';
@@ -110,5 +115,62 @@ describe('updateCourseWithTags', () => {
 
     expect(mocks.updateCourse).toHaveBeenCalledWith('course-1', { title: 'Updated course' }, transactionClient);
     expect(mocks.transaction).toHaveBeenCalledOnce();
+  });
+
+  it('invalidates cached course structure after transaction commits when groupingChanged is true', async () => {
+    mocks.updateCourse.mockResolvedValue({
+      course: { id: 'course-1', title: 'Updated course' },
+      conversionOffenders: null,
+      groupingChanged: true
+    });
+
+    await updateCourseWithTags({
+      courseId: 'course-1',
+      courseData: { title: 'Updated course' },
+      orgId: 'org-1',
+      updatedByUserId: 'user-1',
+      tagIds: ['tag-1']
+    });
+
+    expect(mocks.invalidateInsightsCourseStructure).toHaveBeenCalledWith('course-1');
+  });
+
+  it('does not invalidate cached course structure when groupingChanged is false', async () => {
+    mocks.updateCourse.mockResolvedValue({
+      course: { id: 'course-1', title: 'Updated course' },
+      conversionOffenders: null,
+      groupingChanged: false
+    });
+
+    await updateCourseWithTags({
+      courseId: 'course-1',
+      courseData: { title: 'Updated course' },
+      orgId: 'org-1',
+      updatedByUserId: 'user-1',
+      tagIds: ['tag-1']
+    });
+
+    expect(mocks.invalidateInsightsCourseStructure).not.toHaveBeenCalled();
+  });
+
+  it('does not invalidate cached course structure when transaction fails', async () => {
+    mocks.replaceCourseTags.mockRejectedValue(new Error('fail'));
+    mocks.updateCourse.mockResolvedValue({
+      course: { id: 'course-1', title: 'Updated course' },
+      conversionOffenders: null,
+      groupingChanged: true
+    });
+
+    await expect(
+      updateCourseWithTags({
+        courseId: 'course-1',
+        courseData: { title: 'Updated course' },
+        orgId: 'org-1',
+        updatedByUserId: 'user-1',
+        tagIds: ['tag-1']
+      })
+    ).rejects.toThrow('fail');
+
+    expect(mocks.invalidateInsightsCourseStructure).not.toHaveBeenCalled();
   });
 });
