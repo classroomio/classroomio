@@ -14,18 +14,18 @@ import {
   PLAN
 } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { BRAND_ROOT_DOMAIN, ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+import {
+  BRAND_ROOT_DOMAIN,
+  DEFAULT_ORG_CUSTOMIZATION as SHARED_DEFAULT_ORG_CUSTOMIZATION,
+  ROLE,
+  TENANT_ROOT_DOMAIN
+} from '@cio/utils/constants';
 import { isLocalOrPrivateHost } from '@cio/utils/functions';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 
 /** Deep-merge with this when hydrating an org from the API so nested `customization` keys stay stable. */
-export const DEFAULT_ORG_CUSTOMIZATION = {
-  apps: { comments: true },
-  course: { grading: true, newsfeed: true },
-  dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' },
-  auth: { backgroundImage: '' }
-} as NonNullable<AccountOrg['customization']>;
+export const DEFAULT_ORG_CUSTOMIZATION = SHARED_DEFAULT_ORG_CUSTOMIZATION as NonNullable<AccountOrg['customization']>;
 
 export function mergeAccountOrgFromServer(org: AccountOrg | PublicOrg): AccountOrg {
   const plans = org.plans.map((plan) => ({

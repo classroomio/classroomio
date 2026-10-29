@@ -2401,6 +2401,9 @@ export const organization = pgTable(
         apps: {
           comments: boolean;
         };
+        auth?: {
+          backgroundImage: string;
+        };
       }>()
       .notNull(),
     isRestricted: boolean('is_restricted').default(false).notNull(),
