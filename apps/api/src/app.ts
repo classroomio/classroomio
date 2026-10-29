@@ -48,8 +48,8 @@ import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 import { pluginsRouter } from '@api/routes/plugins';
-import type { Hono as HonoInstance, Schema } from 'hono';
-import type { ExtractSchema, MergeSchemaPath } from 'hono/types';
+import type { HonoBase } from 'hono/hono-base';
+import type { ExtractSchema, MergeSchemaPath, Schema } from 'hono/types';
 import type { AuthSession } from '@api/types/auth';
 
 // Create Hono app with chaining for RPC support
@@ -241,8 +241,8 @@ const baseApp = new Hono()
     });
   });
 
-type MountedRoutes<Path extends string, Router extends HonoInstance<any, any, any>> =
-  Router extends HonoInstance<any, infer Routes, any>
+type MountedRoutes<Path extends string, Router extends HonoBase<any, any, any>> =
+  Router extends HonoBase<any, infer Routes, any>
     ? Routes extends Schema
       ? MergeSchemaPath<Routes, Path>
       : never
@@ -278,7 +278,7 @@ type AppSchema =
   | MountedRoutes<'/agent', typeof agentRouter>
   | MountedRoutes<'/plugins', typeof pluginsRouter>;
 
-export const app: HonoInstance<AuthSession, AppSchema> = baseApp
+export const app: HonoBase<AuthSession, AppSchema> = baseApp
   .route('/onboarding', onboardingRouter)
   .route('/account', accountRouter)
   .route('/course', courseRouter)

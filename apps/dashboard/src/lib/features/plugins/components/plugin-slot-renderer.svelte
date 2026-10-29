@@ -1,16 +1,13 @@
 <script lang="ts">
   import { currentOrg } from '$lib/utils/store/org';
   import { pluginsApi } from '../api/plugins.svelte';
-  import PluginHostFrame, { type PluginActionEvent } from './plugin-host-frame.svelte';
+  import PluginHostFrame from './plugin-host-frame.svelte';
   import type { StableContributionTarget } from '@cio/utils/validation/plugin';
-  import type { ResolvedContributionItem } from '../utils/types';
+  import type { PluginActionEvent, PluginResourceContext, ResolvedContributionItem } from '../utils/types';
 
   interface Props {
     target: StableContributionTarget | string;
-    resource?: {
-      type: 'lesson' | 'course' | 'certificate' | 'organization';
-      id: string;
-    };
+    resource?: PluginResourceContext;
     className?: string;
     onAction?: (event: PluginActionEvent) => Promise<void> | void;
   }

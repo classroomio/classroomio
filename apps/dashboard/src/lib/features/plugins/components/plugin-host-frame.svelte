@@ -7,19 +7,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { classroomio } from '$lib/utils/services/api';
-
-  export interface PluginActionEvent {
-    installationId: string;
-    pluginId: string;
-    version: string;
-    target: string;
-    resource?: {
-      type: 'lesson' | 'course' | 'certificate' | 'organization';
-      id: string;
-    };
-    action: string;
-    data?: unknown;
-  }
+  import type { PluginActionEvent, PluginResourceContext, PluginStorageScope } from '../utils/types';
 
   interface Props {
     installationId: string;
@@ -32,10 +20,7 @@
     title?: string;
     target: string;
     backendAudience?: string;
-    resource?: {
-      type: 'lesson' | 'course' | 'certificate' | 'organization';
-      id: string;
-    };
+    resource?: PluginResourceContext;
     onAction?: (event: PluginActionEvent) => Promise<void> | void;
   }
 
@@ -124,8 +109,8 @@
         organization: $currentOrg?.id
           ? {
               id: $currentOrg.id,
-              name: $currentOrg.name,
-              avatarUrl: $currentOrg.avatar_url ?? null
+              name: $currentOrg.name ?? '',
+              avatarUrl: $currentOrg.avatarUrl ?? null
             }
           : undefined,
         surface: { target, resource }
@@ -196,8 +181,10 @@
         },
         onStorageGet: async ({ key, namespace, scope }) => {
           const orgId = requireOrganizationId();
-          const targetScope = scope ?? 'organization';
-          const queryParams: Record<string, string> = { scope: targetScope };
+          const targetScope: PluginStorageScope = scope ?? 'organization';
+          const queryParams: { scope: PluginStorageScope; resourceId?: string; resourceType?: string } = {
+            scope: targetScope
+          };
           if (targetScope === 'resource' && resource?.id) {
             queryParams.resourceId = resource.id;
             queryParams.resourceType = resource.type;
@@ -215,8 +202,13 @@
         },
         onStorageSet: async ({ key, value, namespace, scope }) => {
           const orgId = requireOrganizationId();
-          const targetScope = scope ?? 'organization';
-          const jsonPayload: Record<string, unknown> = { value, scope: targetScope };
+          const targetScope: PluginStorageScope = scope ?? 'organization';
+          const jsonPayload: {
+            value: unknown;
+            scope: PluginStorageScope;
+            resourceId?: string;
+            resourceType?: string;
+          } = { value, scope: targetScope };
           if (targetScope === 'resource' && resource?.id) {
             jsonPayload.resourceId = resource.id;
             jsonPayload.resourceType = resource.type;
@@ -234,8 +226,10 @@
         },
         onStorageDelete: async ({ key, namespace, scope }) => {
           const orgId = requireOrganizationId();
-          const targetScope = scope ?? 'organization';
-          const queryParams: Record<string, string> = { scope: targetScope };
+          const targetScope: PluginStorageScope = scope ?? 'organization';
+          const queryParams: { scope: PluginStorageScope; resourceId?: string; resourceType?: string } = {
+            scope: targetScope
+          };
           if (targetScope === 'resource' && resource?.id) {
             queryParams.resourceId = resource.id;
             queryParams.resourceType = resource.type;
@@ -254,8 +248,10 @@
         },
         onStorageList: async ({ namespace, scope }) => {
           const orgId = requireOrganizationId();
-          const targetScope = scope ?? 'organization';
-          const queryParams: Record<string, string> = { scope: targetScope };
+          const targetScope: PluginStorageScope = scope ?? 'organization';
+          const queryParams: { scope: PluginStorageScope; resourceId?: string; resourceType?: string } = {
+            scope: targetScope
+          };
           if (targetScope === 'resource' && resource?.id) {
             queryParams.resourceId = resource.id;
             queryParams.resourceType = resource.type;

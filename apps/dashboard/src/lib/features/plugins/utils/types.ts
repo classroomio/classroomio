@@ -35,4 +35,21 @@ export type UpdateInstallationSettingsRequest =
 export type UpdateOrgApprovalRequest =
   (typeof classroomio.plugins.installations)[':installationId']['approval']['$patch'];
 
+export interface PluginResourceContext {
+  type: 'lesson' | 'course' | 'certificate' | 'organization';
+  id: string;
+}
+
+export interface PluginActionEvent {
+  installationId: string;
+  pluginId: string;
+  version: string;
+  target: string;
+  resource?: PluginResourceContext;
+  action: string;
+  data?: unknown;
+}
+
+export type PluginStorageScope = 'organization' | 'user' | 'resource';
+
 export type { PluginInstallationStatus, PluginOrgApprovalStatus } from '@cio/utils/validation/plugin';

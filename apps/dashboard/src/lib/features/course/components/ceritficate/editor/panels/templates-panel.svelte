@@ -11,7 +11,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { cn } from '@cio/ui/tools';
   import { PluginSlotRenderer } from '$features/plugins/components';
-  import type { PluginActionEvent } from '$features/plugins/components/plugin-host-frame.svelte';
+  import type { PluginActionEvent } from '$features/plugins/utils/types';
   import TemplateThumb from './template-thumb.svelte';
 
   interface Props {

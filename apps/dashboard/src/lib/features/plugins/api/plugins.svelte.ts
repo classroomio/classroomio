@@ -10,7 +10,6 @@ import type {
   ListCatalogPluginsRequest,
   ListInstallationsRequest,
   ListContributionsRequest,
-  ResolvedContributionItem,
   UpdateInstallationSettingsRequest,
   UpdateInstallationStatusRequest,
   UpdateOrgApprovalRequest,
