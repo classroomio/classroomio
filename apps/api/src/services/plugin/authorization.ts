@@ -139,6 +139,14 @@ export async function requireOrganizationInstallation(
     throw new AppError('Plugin installation not found', 'INSTALLATION_NOT_FOUND', 404);
   }
 
+  if (installation.status !== 'active') {
+    throw new AppError('Plugin installation is not active', 'INSTALLATION_NOT_ACTIVE', 403);
+  }
+
+  if (installation.orgApprovalStatus !== 'approved') {
+    throw new AppError('Plugin installation is not approved for this organization', 'INSTALLATION_NOT_APPROVED', 403);
+  }
+
   const plugin = await getPluginById(installation.pluginId);
   if (!plugin || plugin.status === 'revoked') {
     throw new AppError('Plugin has been revoked', 'PLUGIN_REVOKED', 403);

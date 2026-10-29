@@ -6,6 +6,11 @@ import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 import {
   ZInstallPlugin,
+  ZPluginInstallationParam,
+  ZPluginStorageKeyParam,
+  ZPluginStorageNamespaceParam,
+  ZPluginStorageQuery,
+  ZPluginStoragePut,
   ZUpdateInstallationSettings,
   ZUpdateInstallationStatus,
   ZUpdateOrgApprovalStatus
@@ -17,7 +22,11 @@ import {
   getInstallation,
   installPlugin,
   listOrgPlugins,
-  resolveOrgContributions
+  resolveOrgContributions,
+  deleteStorageValue,
+  getStorageValue,
+  listStorageRecords,
+  setStorageValue
 } from '@api/services/plugin';
 
 /**
@@ -102,6 +111,130 @@ export const pluginInstallationsRouter = new Hono()
         return c.json({ success: true, data: updated }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update installation status');
+      }
+    }
+  )
+  .get(
+    '/:installationId/storage/:namespace/:key',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZPluginStorageKeyParam),
+    zValidator('query', ZPluginStorageQuery),
+    async (c) => {
+      const user = c.get('user')!;
+      const orgId = c.get('orgId') as string;
+      const userRole = c.get('userRole') as number | undefined;
+      const { installationId, namespace, key } = c.req.valid('param');
+      const { scope, resourceType, resourceId } = c.req.valid('query');
+
+      try {
+        const value = await getStorageValue(
+          installationId,
+          orgId,
+          user.id,
+          namespace,
+          key,
+          scope,
+          userRole,
+          resourceType,
+          resourceId
+        );
+        return c.json({ success: true, data: value }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch plugin storage item');
+      }
+    }
+  )
+  .put(
+    '/:installationId/storage/:namespace/:key',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZPluginStorageKeyParam),
+    zValidator('json', ZPluginStoragePut),
+    async (c) => {
+      const user = c.get('user')!;
+      const orgId = c.get('orgId') as string;
+      const userRole = c.get('userRole') as number | undefined;
+      const { installationId, namespace, key } = c.req.valid('param');
+      const { value, scope, resourceType, resourceId } = c.req.valid('json');
+
+      try {
+        const result = await setStorageValue(
+          installationId,
+          orgId,
+          user.id,
+          namespace,
+          key,
+          value,
+          scope,
+          userRole,
+          resourceType,
+          resourceId
+        );
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to set plugin storage item');
+      }
+    }
+  )
+  .delete(
+    '/:installationId/storage/:namespace/:key',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZPluginStorageKeyParam),
+    zValidator('query', ZPluginStorageQuery),
+    async (c) => {
+      const user = c.get('user')!;
+      const orgId = c.get('orgId') as string;
+      const userRole = c.get('userRole') as number | undefined;
+      const { installationId, namespace, key } = c.req.valid('param');
+      const { scope, resourceType, resourceId } = c.req.valid('query');
+
+      try {
+        const result = await deleteStorageValue(
+          installationId,
+          orgId,
+          user.id,
+          namespace,
+          key,
+          scope,
+          userRole,
+          resourceType,
+          resourceId
+        );
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to delete plugin storage item');
+      }
+    }
+  )
+  .get(
+    '/:installationId/storage/:namespace',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZPluginStorageNamespaceParam),
+    zValidator('query', ZPluginStorageQuery),
+    async (c) => {
+      const user = c.get('user')!;
+      const orgId = c.get('orgId') as string;
+      const userRole = c.get('userRole') as number | undefined;
+      const { installationId, namespace } = c.req.valid('param');
+      const { scope, resourceType, resourceId } = c.req.valid('query');
+
+      try {
+        const records = await listStorageRecords(
+          installationId,
+          orgId,
+          user.id,
+          namespace,
+          scope,
+          userRole,
+          resourceType,
+          resourceId
+        );
+        return c.json({ success: true, data: records }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to list plugin storage namespace');
       }
     }
   )

@@ -75,6 +75,11 @@ describe('Plugin Manifest CSP Policy', () => {
     await writeFile(path.join(artifactDirectory, 'settings.html'), '<!doctype html><title>Settings</title>');
     vi.stubEnv('PLUGIN_ARTIFACTS_PATH', artifactRoot);
 
+    vi.spyOn(db, 'getPluginById').mockResolvedValue({
+      id: 'com.classroomio.announcement-banner',
+      status: 'approved'
+    } as any);
+
     vi.spyOn(db, 'getPluginVersion').mockResolvedValue({
       id: 'version-1',
       pluginId: 'com.classroomio.announcement-banner',

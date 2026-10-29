@@ -50,7 +50,10 @@ export function buildPluginCsp(manifest?: { networkAccess?: { allowedDomains?: s
   const connectSrc =
     allowedConnectOrigins.length > 0 ? `'self' ${Array.from(new Set(allowedConnectOrigins)).join(' ')}` : "'none'";
 
-  return `default-src 'self'; connect-src ${connectSrc}; img-src 'self' data: blob:; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; object-src 'none'; base-uri 'none';`;
+  const isDev = process.env.NODE_ENV !== 'production';
+  const imgSrc = isDev ? "'self' data: https: http: blob:" : "'self' data: https: blob:";
+
+  return `default-src 'self'; connect-src ${connectSrc}; img-src ${imgSrc}; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; object-src 'none'; base-uri 'none';`;
 }
 
 function resolveArtifactDirectory(pluginId: string, version: string, digest: string): string | null {
