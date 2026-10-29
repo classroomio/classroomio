@@ -40,10 +40,11 @@
 
     sendingStudentIds.add(studentId);
     const courseId = insightsApi.selection.courseId;
+    const queuedKey = `${courseId ?? 'all'}:${studentId}`;
     const result = await cohortGoalApi.remindOverdue(cohortId, { courseId, profileId: studentId });
     sendingStudentIds.delete(studentId);
 
-    if (result.enqueued > 0) queuedStudentIds.add(`${courseKey}:${studentId}`);
+    if (result.enqueued > 0) queuedStudentIds.add(queuedKey);
   }
 
   async function remindAll() {
@@ -51,10 +52,11 @@
 
     isRemindingAll = true;
     const courseId = insightsApi.selection.courseId;
+    const queuedCourseKey = courseId ?? 'all';
     const result = await cohortGoalApi.remindOverdue(cohortId, { courseId });
     isRemindingAll = false;
 
-    if (result.enqueued > 0) queuedAllFor = courseKey;
+    if (result.enqueued > 0) queuedAllFor = queuedCourseKey;
   }
 </script>
 
