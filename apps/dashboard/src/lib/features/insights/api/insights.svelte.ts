@@ -295,8 +295,10 @@ class InsightsApi extends BaseApi {
 
     const pageOptions = cohortOptionsFromResult(result, t.get);
     const previousOptions = append ? this.cohortOptions : [];
-    const previousOptionsById = Object.fromEntries(previousOptions.map((option) => [option.id, option]));
-    const pageOptionsById = Object.fromEntries(pageOptions.map((option) => [option.id, option]));
+    const previousEntries = previousOptions.map((option) => [option.id, option] as const);
+    const pageEntries = pageOptions.map((option) => [option.id, option] as const);
+    const previousOptionsById = Object.fromEntries(previousEntries);
+    const pageOptionsById = Object.fromEntries(pageEntries);
     const mergedOptions = { ...previousOptionsById, ...pageOptionsById };
 
     this.cohortOptions = Object.values(mergedOptions);
@@ -345,9 +347,8 @@ class InsightsApi extends BaseApi {
     if (pageGroups.length === 0) return;
 
     const removed = new Set(pageGroups);
-    this.selection.pages = Object.fromEntries(
-      Object.entries(this.selection.pages).filter(([pageGroup]) => !removed.has(pageGroup))
-    );
+    const remainingPages = Object.entries(this.selection.pages).filter(([pageGroup]) => !removed.has(pageGroup));
+    this.selection.pages = Object.fromEntries(remainingPages);
   }
 
   /**

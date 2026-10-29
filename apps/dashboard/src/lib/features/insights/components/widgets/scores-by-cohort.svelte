@@ -25,7 +25,8 @@
   const selectedIds = $derived(insightsApi.selection.cohortIds ?? defaultIds);
   const knownOptions = $derived.by(() => {
     const knownById = { ...insightsApi.cohortOptionsById };
-    const defaultsById = Object.fromEntries(defaultOptions.map((cohort) => [cohort.id, cohort]));
+    const defaultEntries = defaultOptions.map((cohort) => [cohort.id, cohort] as const);
+    const defaultsById = Object.fromEntries(defaultEntries);
 
     return Object.values({ ...knownById, ...defaultsById });
   });
