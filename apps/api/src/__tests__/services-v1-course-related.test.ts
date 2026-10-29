@@ -47,7 +47,17 @@ beforeEach(() => {
 describe('listRelatedCoursesService', () => {
   it('returns each course with its tags and the tags it shares with the course', async () => {
     await expect(listRelatedCoursesService(ORG_ID, { courseId: COURSE_ID }, { limit: 4 })).resolves.toEqual([
-      expect.objectContaining({ id: 'course-2', tags: [preview('a'), preview('z')], sharedTags: [preview('a')] })
+      {
+        id: 'course-2',
+        title: 'course-2',
+        slug: 'course-2',
+        type: 'SELF_PACED',
+        cost: 0,
+        currency: 'USD',
+        bannerImage: null,
+        tags: [preview('a'), preview('z')],
+        sharedTags: [preview('a')]
+      }
     ]);
     expect(getRelatedCourses).toHaveBeenCalledWith(ORG_ID, COURSE_ID, ['a', 'b'], {
       excludeProfileId: undefined,

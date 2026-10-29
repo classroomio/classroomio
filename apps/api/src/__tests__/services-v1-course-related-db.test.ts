@@ -18,7 +18,8 @@ const FIXTURES: FixtureCourse[] = [
   { key: 'oneSharedEnrolled', tags: [0], createdAt: '2026-01-04T00:00:00Z' },
   { key: 'oneSharedNewer', tags: [2], createdAt: '2026-01-05T00:00:00Z' },
   { key: 'unpublished', tags: [0, 1, 2], isPublished: false, createdAt: '2026-01-06T00:00:00Z' },
-  { key: 'untagged', tags: [], createdAt: '2026-01-07T00:00:00Z' }
+  { key: 'untagged', tags: [], createdAt: '2026-01-07T00:00:00Z' },
+  { key: 'oneSharedProgram', tags: [1], createdAt: '2026-01-08T00:00:00Z' }
 ];
 
 describe.skipIf(!hasDatabase)('related courses against the database', () => {
@@ -30,6 +31,7 @@ describe.skipIf(!hasDatabase)('related courses against the database', () => {
   let tagIds: string[] = [];
   const groupIds: string[] = [];
   let learnerId = '';
+  const programIds: string[] = [];
 
   beforeAll(async () => {
     const { db } = await import('@db/drizzle');
@@ -102,12 +104,35 @@ describe.skipIf(!hasDatabase)('related courses against the database', () => {
     await db
       .insert(schema.groupmember)
       .values({ groupId: enrolledCourse.groupId!, roleId: ROLE.STUDENT, profileId: learnerId, email });
+
+    const programs = [
+      { status: 'ACTIVE' as const, courseKey: 'oneSharedProgram' },
+      { status: 'ARCHIVED' as const, courseKey: 'twoShared' }
+    ];
+    for (const { status, courseKey } of programs) {
+      const [programRow] = await db
+        .insert(schema.program)
+        .values({ organizationId, name: `related-${status}-${suffix}`, status })
+        .returning({ id: schema.program.id });
+      programIds.push(programRow.id);
+      await db
+        .insert(schema.programCourse)
+        .values({ programId: programRow.id, courseId: courseIdByKey.get(courseKey)! });
+      await db
+        .insert(schema.programMember)
+        .values({ programId: programRow.id, profileId: learnerId, roleId: ROLE.STUDENT });
+    }
   });
 
   afterAll(async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
 
+    if (programIds.length > 0) {
+      await db.delete(schema.programMember).where(inArray(schema.programMember.programId, programIds));
+      await db.delete(schema.programCourse).where(inArray(schema.programCourse.programId, programIds));
+      await db.delete(schema.program).where(inArray(schema.program.id, programIds));
+    }
     if (groupIds.length > 0) {
       await db.delete(schema.course).where(inArray(schema.course.groupId, groupIds));
       await db.delete(schema.groupmember).where(inArray(schema.groupmember.groupId, groupIds));
@@ -137,10 +162,16 @@ describe.skipIf(!hasDatabase)('related courses against the database', () => {
   };
 
   it('orders by shared tags, then newest, and leaves out the course itself, unpublished and untagged courses', async () => {
-    await expect(related()).resolves.toEqual(['threeSharedPaid', 'twoShared', 'oneSharedNewer', 'oneSharedEnrolled']);
+    await expect(related()).resolves.toEqual([
+      'threeSharedPaid',
+      'twoShared',
+      'oneSharedProgram',
+      'oneSharedNewer',
+      'oneSharedEnrolled'
+    ]);
   });
 
-  it("leaves out the learner's courses", async () => {
+  it("leaves out the learner's courses, direct or through an active program", async () => {
     await expect(related({ excludeProfileId: learnerId })).resolves.toEqual([
       'threeSharedPaid',
       'twoShared',
@@ -150,7 +181,12 @@ describe.skipIf(!hasDatabase)('related courses against the database', () => {
 
   it('filters by pricing', async () => {
     await expect(related({ pricing: 'paid' })).resolves.toEqual(['threeSharedPaid']);
-    await expect(related({ pricing: 'free' })).resolves.toEqual(['twoShared', 'oneSharedNewer', 'oneSharedEnrolled']);
+    await expect(related({ pricing: 'free' })).resolves.toEqual([
+      'twoShared',
+      'oneSharedProgram',
+      'oneSharedNewer',
+      'oneSharedEnrolled'
+    ]);
   });
 
   it('applies the limit', async () => {

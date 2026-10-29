@@ -94,7 +94,8 @@ export async function listRelatedCoursesService(
 
   return courses.map((course) => {
     const tags = tagsByCourseId[course.id] ?? [];
-    return { ...course, tags, sharedTags: tags.filter((tag) => sourceTagIds.has(tag.id)) };
+    const sharedTags = tags.filter((tag) => sourceTagIds.has(tag.id));
+    return { ...course, tags, sharedTags };
   });
 }
 

@@ -433,6 +433,21 @@ export async function getRelatedCourses(
                 eq(schema.groupmember.profileId, options.excludeProfileId)
               )
             )
+        ),
+        notExists(
+          db
+            .select({ id: schema.programMember.id })
+            .from(schema.programCourse)
+            .innerJoin(schema.program, eq(schema.programCourse.programId, schema.program.id))
+            .innerJoin(schema.programMember, eq(schema.programMember.programId, schema.program.id))
+            .where(
+              and(
+                eq(schema.programCourse.courseId, schema.course.id),
+                eq(schema.program.organizationId, orgId),
+                eq(schema.program.status, 'ACTIVE'),
+                eq(schema.programMember.profileId, options.excludeProfileId)
+              )
+            )
         )
       );
     }
