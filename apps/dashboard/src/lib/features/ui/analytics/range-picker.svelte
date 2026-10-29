@@ -1,6 +1,6 @@
 <script lang="ts" generics="TValue extends string | number">
-  import LockIcon from '@lucide/svelte/icons/lock';
   import { Button } from '@cio/ui/base/button';
+  import { PremiumIcon } from '@cio/ui/custom/moving-icons';
 
   interface Props {
     value: TValue;
@@ -44,7 +44,7 @@
       {disabled}
     >
       {#if option.locked}
-        <LockIcon class="ui:size-3" aria-hidden="true" />
+        <PremiumIcon size={12} class="text-primary shrink-0" />
       {/if}
       {option.label}
     </Button>
