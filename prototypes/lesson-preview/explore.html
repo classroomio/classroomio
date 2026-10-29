@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Explore · Lesson preview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../learning-paths/app-theme.css" />
+    <link rel="stylesheet" href="player.css" />
+    <script>
+      if (
+        localStorage.cioTheme === 'dark' ||
+        (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches)
+      )
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .proto-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 8px 0 16px;
+        font-size: 12.5px;
+        color: var(--muted-foreground);
+      }
+      .proto-bar a {
+        font-weight: 600;
+        color: var(--primary);
+      }
+      .proto-bar .sp {
+        flex: 1;
+      }
+      .course-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .xcourse-card {
+        overflow: hidden;
+        cursor: pointer;
+        text-align: left;
+        padding: 0;
+        font: inherit;
+        color: inherit;
+        width: 100%;
+      }
+      .xcourse-card:hover {
+        border-color: var(--ring);
+        box-shadow: var(--shadow-md);
+      }
+      .xc-cover {
+        height: 120px;
+        position: relative;
+      }
+      .xc-cover .badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+      }
+      .xc-body {
+        padding: 14px 15px 16px;
+      }
+      .xc-title {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .xc-meta {
+        font-size: 12.5px;
+        color: var(--muted-foreground);
+      }
+      .xc-foot {
+        margin-top: 12px;
+      }
+      .modal-back {
+        position: fixed;
+        inset: 0;
+        background: rgb(10 12 20 / 0.52);
+        z-index: 80;
+        display: none;
+        place-items: center;
+        padding: 24px;
+      }
+      .modal-back.open {
+        display: grid;
+      }
+      .modal {
+        width: min(520px, 100%);
+        max-height: 90vh;
+        overflow: auto;
+        background: var(--card);
+        color: var(--card-foreground);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        display: flex;
+        flex-direction: column;
+      }
+      .modal.wide {
+        width: min(920px, 100%);
+      }
+      .modal-banner {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        background: #111;
+      }
+      .modal-banner img-fallback {
+        display: block;
+      }
+      .modal-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 2;
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--secondary);
+        color: var(--secondary-foreground);
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+      }
+      .modal-close svg {
+        width: 16px;
+        height: 16px;
+      }
+      .modal-body {
+        padding: 18px 22px;
+      }
+      .modal-body h2 {
+        font-size: 20px;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
+      }
+      .modal-body p {
+        font-size: 14px;
+        color: var(--muted-foreground);
+        margin: 0 0 12px;
+        line-height: 1.55;
+      }
+      .modal-meta {
+        display: flex;
+        gap: 16px;
+        font-size: 13px;
+        color: var(--muted-foreground);
+        margin-bottom: 12px;
+      }
+      .modal-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 22px;
+        border-top: 1px solid var(--border);
+      }
+      .modal-foot .price {
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .pv-player {
+        border: 0;
+        border-radius: 0;
+      }
+      .hint {
+        font-size: 12.5px;
+        color: var(--muted-foreground);
+        margin: 0 0 18px;
+        max-width: 70ch;
+      }
+      @media (max-width: 900px) {
+        .course-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">C</div>
+          <div class="brand-name">ClassroomIO</div>
+        </div>
+        <div class="nav-label">Main</div>
+        <a class="nav-item" href="../learning-paths/lms-home.html"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" /></svg
+          >Dashboard</a
+        >
+        <a class="nav-item" href="../learning-paths/mylearning.html"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg
+          >My Learning</a
+        >
+        <a class="nav-item active" href="explore.html"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10" />
+            <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /></svg
+          >Explore</a
+        >
+        <div class="sidebar-foot">
+          <div class="avatar">AO</div>
+          <div class="who">
+            <div class="nm">Ada Okafor</div>
+            <div class="rl">Student</div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <span class="top-title">Explore</span>
+          <div class="top-actions">
+            <button class="icon-btn" id="theme" type="button" aria-label="Toggle theme">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1040px">
+            <div class="proto-bar">
+              <a href="index.html">← Lesson preview</a>
+              <span>LMS Explore · signed-in, not enrolled</span>
+              <span class="sp"></span>
+            </div>
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">Explore</h1>
+                <p class="page-sub">
+                  Click a course. If it has preview lessons, the modal widens and you can watch or read them here.
+                </p>
+              </div>
+            </div>
+            <p class="hint">
+              Left card has 4 preview lessons (wide modal + player). Right card has none (today’s narrow enroll modal).
+            </p>
+
+            <div class="course-grid">
+              <button class="card xcourse-card" type="button" data-open="preview">
+                <div
+                  class="xc-cover"
+                  style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.685 0.169 237.323))"
+                >
+                  <span class="badge badge-course-label">4 previews</span>
+                </div>
+                <div class="xc-body">
+                  <h3 class="xc-title">Modern Web Development with React</h3>
+                  <span class="xc-meta">24 lessons · $79</span>
+                  <div class="xc-foot"><span class="btn btn-outline btn-sm">Preview course</span></div>
+                </div>
+              </button>
+
+              <button class="card xcourse-card" type="button" data-open="plain">
+                <div
+                  class="xc-cover"
+                  style="background: linear-gradient(135deg, oklch(0.705 0.213 47.604), oklch(0.75 0.183 55.934))"
+                >
+                  <span class="badge badge-course-label">Course</span>
+                </div>
+                <div class="xc-body">
+                  <h3 class="xc-title">Writing Great Release Notes</h3>
+                  <span class="xc-meta">8 lessons · Free</span>
+                  <div class="xc-foot"><span class="btn btn-outline btn-sm">View course</span></div>
+                </div>
+              </button>
+
+              <button class="card xcourse-card" type="button" data-open="preview-free">
+                <div
+                  class="xc-cover"
+                  style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))"
+                >
+                  <span class="badge badge-course-label">4 previews</span>
+                </div>
+                <div class="xc-body">
+                  <h3 class="xc-title">SOC 2 Security Basics</h3>
+                  <span class="xc-meta">18 lessons · Free</span>
+                  <div class="xc-foot"><span class="btn btn-outline btn-sm">Preview course</span></div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="modal-back" id="modalBack" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal" id="modal">
+        <div id="modalMedia"></div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-foot">
+          <div class="price" id="modalPrice"></div>
+          <button class="btn btn-primary" type="button" id="modalCta">Enroll</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="player.js"></script>
+    <script>
+      const back = document.getElementById('modalBack');
+      const modal = document.getElementById('modal');
+      const media = document.getElementById('modalMedia');
+      let player = null;
+
+      function close() {
+        back.classList.remove('open');
+        player = null;
+        media.innerHTML = '';
+      }
+
+      function openPlain() {
+        modal.classList.remove('wide');
+        media.innerHTML = `
+          <div class="modal-banner" style="background:linear-gradient(135deg, oklch(0.705 0.213 47.604), oklch(0.75 0.183 55.934))">
+            <button class="modal-close" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>`;
+        document.getElementById('modalBody').innerHTML = `
+          <h2 id="modalTitle">Writing Great Release Notes</h2>
+          <p>How to write release notes people actually read. No preview lessons on this course, so the modal stays the size it is today.</p>
+          <div class="modal-meta"><span>8 lessons</span><span>2 exercises</span></div>
+          <h3 style="font-size:13px;margin:0 0 6px">Requirements</h3>
+          <p>None — this is a writing workshop.</p>`;
+        document.getElementById('modalPrice').textContent = 'Free';
+        document.getElementById('modalCta').textContent = 'Enroll for free';
+        back.classList.add('open');
+      }
+
+      function openPreview(isFree) {
+        modal.classList.add('wide');
+        media.innerHTML = `
+          <div style="position:relative">
+            <button class="modal-close" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            <div class="pv-player" id="explorePlayer"></div>
+          </div>`;
+        const title = isFree ? 'SOC 2 Security Basics' : 'Modern Web Development with React';
+        document.getElementById('modalBody').innerHTML = `
+          <h2 id="modalTitle">${title}</h2>
+          <p>${LessonPreview.course.description}</p>
+          <div class="modal-meta"><span>24 lessons</span><span>8 exercises</span></div>
+          <h3 style="font-size:13px;margin:0 0 6px">Requirements</h3>
+          <p>${LessonPreview.copy.en.reqBody}</p>`;
+        document.getElementById('modalPrice').textContent = isFree ? 'Free' : '$79';
+        document.getElementById('modalCta').textContent = isFree ? 'Enroll for free' : 'Buy · $79';
+        player = LessonPreviewPlayer.create(document.getElementById('explorePlayer'), {
+          lang: 'en',
+          isFree,
+          onCta() {
+            alert(isFree ? 'Would go to /course/.../enroll' : 'Would open payment / enroll');
+          }
+        });
+        back.classList.add('open');
+      }
+
+      document.querySelector('.course-grid').addEventListener('click', (event) => {
+        const card = event.target.closest('[data-open]');
+        if (!card) return;
+        const kind = card.getAttribute('data-open');
+        if (kind === 'plain') openPlain();
+        if (kind === 'preview') openPreview(false);
+        if (kind === 'preview-free') openPreview(true);
+      });
+
+      back.addEventListener('click', (event) => {
+        if (event.target === back || event.target.closest('[data-close]')) close();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && back.classList.contains('open')) close();
+      });
+      document.getElementById('theme').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      });
+    </script>
+  </body>
+</html>
