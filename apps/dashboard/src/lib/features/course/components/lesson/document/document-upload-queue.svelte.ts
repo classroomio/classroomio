@@ -148,6 +148,20 @@ export class DocumentUploadQueue {
         return;
       }
 
+      if (this.lessonId && lessonApi.lesson?.id !== this.lessonId) {
+        if (asset) {
+          await mediaApi.detachAsset(asset.id, {
+            targetType: 'lesson',
+            targetId: this.lessonId,
+            slotType: 'lesson_document'
+          });
+        }
+
+        item.progress = 100;
+        item.status = 'done';
+        return;
+      }
+
       if (this.lessonId) {
         const documentType = resolveFileUploadTypeKey(item.file, LESSON_DOCUMENT_ACCEPTED_TYPES) ?? 'file';
         const document = {

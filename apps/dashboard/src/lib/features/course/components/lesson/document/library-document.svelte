@@ -96,19 +96,31 @@
   async function addSelectedToLesson() {
     if (!lessonApi.lesson || selectedAssets.size === 0) return;
 
+    const targetLessonId = lessonId;
     isAdding = true;
     const assetsToAdd = [...selectedAssets.values()];
     let addedCount = 0;
 
     try {
       for (const asset of assetsToAdd) {
+        if (lessonApi.lesson?.id !== targetLessonId) break;
+
         const position = lessonApi.lesson.documents?.length ?? 0;
         const lessonDocument = await mediaApi.buildLessonDocumentFromAsset(asset, {
-          lessonId: lessonId || undefined,
+          lessonId: targetLessonId || undefined,
           position
         });
 
         if (!lessonDocument) continue;
+
+        if (lessonApi.lesson?.id !== targetLessonId) {
+          await mediaApi.detachAsset(asset.id, {
+            targetType: 'lesson',
+            targetId: targetLessonId,
+            slotType: 'lesson_document'
+          });
+          break;
+        }
 
         lessonApi.updateLessonState('documents', [lessonDocument], { append: true });
         selectedAssets.delete(asset.id);
