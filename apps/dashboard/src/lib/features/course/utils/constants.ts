@@ -21,7 +21,9 @@ export const CourseSortBy = {
   DateCreated: 'date_created',
   LastUpdatedAt: 'last_updated_at',
   Published: 'published',
-  Lessons: 'lessons'
+  Lessons: 'lessons',
+  Name: 'name',
+  Price: 'price'
 } as const;
 
 export type CourseSortBy = (typeof CourseSortBy)[keyof typeof CourseSortBy];
@@ -71,7 +73,9 @@ export const COURSE_SORT_OPTIONS = [
   { value: CourseSortBy.DateCreated, label: 'courses.course_filter.date_created' },
   { value: CourseSortBy.LastUpdatedAt, label: 'courses.course_filter.last_updated_at' },
   { value: CourseSortBy.Published, label: 'courses.course_filter.published' },
-  { value: CourseSortBy.Lessons, label: 'courses.course_filter.lessons' }
+  { value: CourseSortBy.Lessons, label: 'courses.course_filter.lessons' },
+  { value: CourseSortBy.Name, label: 'courses.course_filter.name' },
+  { value: CourseSortBy.Price, label: 'courses.course_filter.price' }
 ] as const;
 
 const COURSE_SORT_VALUES = new Set<string>(Object.values(CourseSortBy));

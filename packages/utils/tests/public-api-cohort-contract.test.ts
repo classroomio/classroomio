@@ -5,7 +5,11 @@ import {
   ZPublicApiAddCohortMembers,
   ZPublicApiAddCourseToCohort,
   ZPublicApiAssignStudentsToCohort,
+  ZPublicApiCohortListItemResponse,
+  ZPublicApiCohortMemberListItemResponse,
+  ZPublicApiCohortMembersQuery,
   ZPublicApiCohortNewsfeedQuery,
+  ZPublicApiCohortsQuery,
   ZPublicApiCreateCohort,
   ZPublicApiCreateCohortGoal,
   ZPublicApiCreateCohortNewsfeed,
@@ -21,6 +25,8 @@ import {
 
 // The public API is versioned; a change to any of these shapes is a contract change and must be deliberate.
 const requestSchemas = {
+  ZPublicApiCohortsQuery,
+  ZPublicApiCohortMembersQuery,
   ZPublicApiCreateCohort,
   ZPublicApiUpdateCohort,
   ZPublicApiAddCohortMembers,
@@ -38,9 +44,18 @@ const requestSchemas = {
   ZPublicApiSetCohortInviteLinkRevoked
 };
 
+const responseSchemas = {
+  ZPublicApiCohortListItemResponse,
+  ZPublicApiCohortMemberListItemResponse
+};
+
 describe('public API cohort request contract', () => {
   it.each(Object.entries(requestSchemas))('%s keeps its published shape', (name, schema) => {
     expect(z.toJSONSchema(schema, { io: 'input', unrepresentable: 'any' })).toMatchSnapshot(name);
+  });
+
+  it.each(Object.entries(responseSchemas))('%s response keeps its published shape', (name, schema) => {
+    expect(z.toJSONSchema(schema, { io: 'output', unrepresentable: 'any' })).toMatchSnapshot(name);
   });
 
   it('keeps goal create validation rules that are not visible in the JSON shape', () => {

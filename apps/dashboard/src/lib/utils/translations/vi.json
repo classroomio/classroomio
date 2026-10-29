@@ -3219,7 +3219,9 @@
       "date_created": "Ngày tạo",
       "last_updated_at": "Cập nhật lần cuối",
       "published": "Đã xuất bản",
-      "lessons": "Bài học"
+      "lessons": "Bài học",
+      "name": "Tên",
+      "price": "Giá"
     },
     "tag_filters": {
       "filter": "Lọc",

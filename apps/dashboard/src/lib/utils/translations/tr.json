@@ -2243,7 +2243,9 @@
       "date_created": "Oluşturulma Tarihi",
       "last_updated_at": "LSon Güncelleme Tarihi",
       "published": "Yayınlandı",
-      "lessons": "Lessons"
+      "lessons": "Lessons",
+      "name": "Ad",
+      "price": "Fiyat"
     },
     "course_card": {
       "empty_title": "Oluşturulan Kurs Yok",

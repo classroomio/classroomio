@@ -98,6 +98,308 @@ exports[`public API cohort request contract > ZPublicApiAssignStudentsToCohort k
 }
 `;
 
+exports[`public API cohort request contract > ZPublicApiCohortListItemResponse response keeps its published shape > ZPublicApiCohortListItemResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "courseCount": {
+      "type": "number",
+    },
+    "coverImage": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "createdAt": {
+      "type": "string",
+    },
+    "createdByProfileId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "name": {
+      "type": "string",
+    },
+    "organizationId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "status": {
+      "enum": [
+        "ACTIVE",
+        "INACTIVE",
+        "ARCHIVED",
+      ],
+      "type": "string",
+    },
+    "studentCount": {
+      "type": "number",
+    },
+    "updatedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+  },
+  "required": [
+    "id",
+    "createdAt",
+    "updatedAt",
+    "organizationId",
+    "name",
+    "description",
+    "coverImage",
+    "status",
+    "createdByProfileId",
+    "courseCount",
+    "studentCount",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiCohortMemberListItemResponse response keeps its published shape > ZPublicApiCohortMemberListItemResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "cohortId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "createdAt": {
+      "type": "string",
+    },
+    "email": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "lastLoginAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Null if no login was ever recorded",
+    },
+    "profile": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "avatarUrl": {
+              "anyOf": [
+                {
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "email": {
+              "anyOf": [
+                {
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "fullname": {
+              "anyOf": [
+                {
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "id": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string",
+            },
+            "username": {
+              "anyOf": [
+                {
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+          },
+          "required": [
+            "id",
+            "fullname",
+            "username",
+            "avatarUrl",
+            "email",
+          ],
+          "type": "object",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "profileId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "roleId": {
+      "type": "number",
+    },
+  },
+  "required": [
+    "id",
+    "cohortId",
+    "profileId",
+    "roleId",
+    "email",
+    "createdAt",
+    "profile",
+    "lastLoginAt",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiCohortMembersQuery keeps its published shape > ZPublicApiCohortMembersQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "lastLoginBefore": {
+      "description": "Not logged in for N days or more (including never); never = no login recorded.",
+      "enum": [
+        "7d",
+        "30d",
+        "90d",
+        "180d",
+        "never",
+      ],
+      "type": "string",
+    },
+    "limit": {
+      "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "membership": {
+      "description": "invited = the invite has not been accepted yet.",
+      "enum": [
+        "joined",
+        "invited",
+      ],
+      "type": "string",
+    },
+    "page": {
+      "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "roleId": {
+      "description": "2 = tutor, 3 = student",
+      "maximum": 3,
+      "minimum": 2,
+      "type": "integer",
+    },
+    "search": {
+      "description": "Matches name or email.",
+      "maxLength": 200,
+      "type": "string",
+    },
+    "sortBy": {
+      "default": "joined",
+      "description": "joined = when they were added. Default: joined.",
+      "enum": [
+        "name",
+        "role",
+        "joined",
+        "lastLogin",
+      ],
+      "type": "string",
+    },
+    "sortOrder": {
+      "default": "asc",
+      "description": "Default: asc.",
+      "enum": [
+        "asc",
+        "desc",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
 exports[`public API cohort request contract > ZPublicApiCohortNewsfeedQuery keeps its published shape > ZPublicApiCohortNewsfeedQuery 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -112,6 +414,63 @@ exports[`public API cohort request contract > ZPublicApiCohortNewsfeedQuery keep
       "maximum": 50,
       "minimum": 1,
       "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiCohortsQuery keeps its published shape > ZPublicApiCohortsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "search": {
+      "description": "Matches name or description.",
+      "maxLength": 200,
+      "type": "string",
+    },
+    "sortBy": {
+      "default": "createdAt",
+      "description": "courses and students sort on courseCount and studentCount. Default: createdAt.",
+      "enum": [
+        "createdAt",
+        "name",
+        "courses",
+        "students",
+        "status",
+      ],
+      "type": "string",
+    },
+    "sortOrder": {
+      "default": "desc",
+      "description": "Default: desc.",
+      "enum": [
+        "asc",
+        "desc",
+      ],
+      "type": "string",
+    },
+    "status": {
+      "enum": [
+        "ACTIVE",
+        "INACTIVE",
+        "ARCHIVED",
+      ],
+      "type": "string",
     },
   },
   "type": "object",

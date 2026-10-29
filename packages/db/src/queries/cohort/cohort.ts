@@ -25,7 +25,67 @@ export type TCohortNewsfeedComment = typeof schema.cohortNewsfeedComment.$inferS
 export type TNewCohortNewsfeedComment = typeof schema.cohortNewsfeedComment.$inferInsert;
 export type TCohortListPage = { page: number; limit: number };
 
+export type TCohortListFilters = {
+  search?: string;
+  status?: TCohort['status'];
+  sortBy?: 'createdAt' | 'name' | 'courses' | 'students' | 'status';
+  sortOrder?: 'asc' | 'desc';
+};
+
 const toOffset = (page: TCohortListPage) => (page.page - 1) * page.limit;
+
+const cohortCourseCountSql = () => sql<number>`
+  COALESCE(
+    (SELECT COUNT(*)::int
+     FROM ${schema.cohortCourse}
+     WHERE ${eq(schema.cohortCourse.cohortId, schema.cohort.id)}),
+    0
+  )
+`;
+
+const cohortStudentCountSql = () => sql<number>`
+  COALESCE(
+    (SELECT COUNT(*)::int
+     FROM ${schema.cohortMember}
+     WHERE ${and(eq(schema.cohortMember.cohortId, schema.cohort.id), eq(schema.cohortMember.roleId, ROLE.STUDENT))}),
+    0
+  )
+`;
+
+function cohortListConditions(organizationId: string, cohortIds: string[] | undefined, filters: TCohortListFilters) {
+  const conditions: SQL[] = [eq(schema.cohort.organizationId, organizationId)];
+
+  if (cohortIds && cohortIds.length > 0) {
+    conditions.push(inArray(schema.cohort.id, cohortIds));
+  }
+
+  if (filters.status) {
+    conditions.push(eq(schema.cohort.status, filters.status));
+  }
+
+  if (filters.search) {
+    const term = `%${filters.search}%`;
+    conditions.push(or(ilike(schema.cohort.name, term), ilike(schema.cohort.description, term))!);
+  }
+
+  return and(...conditions)!;
+}
+
+function cohortListOrderBy({ sortBy = 'createdAt', sortOrder = 'desc' }: TCohortListFilters): SQL[] {
+  const ordered = (column: SQLWrapper) => (sortOrder === 'asc' ? asc(column) : desc(column));
+  const column =
+    sortBy === 'name'
+      ? sql`lower(${schema.cohort.name})`
+      : sortBy === 'courses'
+        ? cohortCourseCountSql()
+        : sortBy === 'students'
+          ? cohortStudentCountSql()
+          : sortBy === 'status'
+            ? sql`${schema.cohort.status}::text`
+            : schema.cohort.createdAt;
+
+  return [ordered(column), ordered(schema.cohort.id)];
+}
 
 // ─── Program CRUD ────────────────────────────────────────────────────────────
 
@@ -94,40 +154,19 @@ export async function getCohortOrganizationId(cohortId: string): Promise<string 
 export async function getCohortsByOrg(
   organizationId: string,
   cohortIds?: string[],
-  page?: TCohortListPage
+  page?: TCohortListPage,
+  filters: TCohortListFilters = {}
 ): Promise<Array<TCohort & { courseCount: number; studentCount: number }>> {
   try {
-    const whereCondition =
-      cohortIds && cohortIds.length > 0
-        ? and(eq(schema.cohort.organizationId, organizationId), inArray(schema.cohort.id, cohortIds))
-        : eq(schema.cohort.organizationId, organizationId);
-
     const query = db
       .select({
         cohort: schema.cohort,
-        courseCount: sql<number>`
-          COALESCE(
-            (SELECT COUNT(*)::int
-             FROM ${schema.cohortCourse}
-             WHERE ${eq(schema.cohortCourse.cohortId, schema.cohort.id)}),
-            0
-          )
-        `.as('courseCount'),
-        studentCount: sql<number>`
-          COALESCE(
-            (SELECT COUNT(*)::int
-             FROM ${schema.cohortMember}
-             WHERE ${and(
-               eq(schema.cohortMember.cohortId, schema.cohort.id),
-               eq(schema.cohortMember.roleId, ROLE.STUDENT)
-             )}),
-            0
-          )
-        `.as('studentCount')
+        courseCount: cohortCourseCountSql().as('courseCount'),
+        studentCount: cohortStudentCountSql().as('studentCount')
       })
       .from(schema.cohort)
-      .where(whereCondition)
-      .orderBy(desc(schema.cohort.createdAt), desc(schema.cohort.id))
+      .where(cohortListConditions(organizationId, cohortIds, filters))
+      .orderBy(...cohortListOrderBy(filters))
       .$dynamic();
     const result = await (page ? query.limit(page.limit).offset(toOffset(page)) : query);
 
@@ -151,7 +190,8 @@ export async function getCohortsByOrg(
 export async function getCohortsByOrgForProfile(
   organizationId: string,
   profileId: string,
-  page?: TCohortListPage
+  page?: TCohortListPage,
+  filters: TCohortListFilters = {}
 ): Promise<Array<TCohort & { courseCount: number; studentCount: number }>> {
   try {
     const [adminRow] = await db
@@ -167,7 +207,7 @@ export async function getCohortsByOrgForProfile(
       .limit(1);
 
     if (adminRow) {
-      return getCohortsByOrg(organizationId, undefined, page);
+      return getCohortsByOrg(organizationId, undefined, page, filters);
     }
 
     const memberRows = await db
@@ -179,7 +219,7 @@ export async function getCohortsByOrgForProfile(
     const cohortIds = memberRows.map((r) => r.cohortId);
     if (cohortIds.length === 0) return [];
 
-    return getCohortsByOrg(organizationId, cohortIds, page);
+    return getCohortsByOrg(organizationId, cohortIds, page, filters);
   } catch (error) {
     console.error('getCohortsByOrgForProfile error:', error);
     throw new Error(
@@ -188,7 +228,11 @@ export async function getCohortsByOrgForProfile(
   }
 }
 
-export async function countCohortsByOrgForProfile(organizationId: string, profileId: string): Promise<number> {
+export async function countCohortsByOrgForProfile(
+  organizationId: string,
+  profileId: string,
+  filters: TCohortListFilters = {}
+): Promise<number> {
   try {
     const [adminRow] = await db
       .select({ id: schema.organizationmember.id })
@@ -202,16 +246,17 @@ export async function countCohortsByOrgForProfile(organizationId: string, profil
       )
       .limit(1);
 
+    const conditions = cohortListConditions(organizationId, undefined, filters);
     const [countRow] = adminRow
       ? await db
           .select({ count: count(schema.cohort.id) })
           .from(schema.cohort)
-          .where(eq(schema.cohort.organizationId, organizationId))
+          .where(conditions)
       : await db
           .select({ count: count(schema.cohort.id) })
           .from(schema.cohort)
           .innerJoin(schema.cohortMember, eq(schema.cohortMember.cohortId, schema.cohort.id))
-          .where(and(eq(schema.cohort.organizationId, organizationId), eq(schema.cohortMember.profileId, profileId)));
+          .where(and(conditions, eq(schema.cohortMember.profileId, profileId)));
 
     return Number(countRow?.count ?? 0);
   } catch (error) {
@@ -649,7 +694,7 @@ function buildCohortPeopleOrderBy(sortBy: TCohortPeopleSortBy, sortOrder: TCohor
   }
 
   if (sortBy === 'lastLogin') {
-    return [sql`${cohortLastLoginAtSql} IS NOT NULL`, ordered(cohortLastLoginAtSql), tiebreaker];
+    return [desc(sql`${cohortLastLoginAtSql} IS NOT NULL`), ordered(cohortLastLoginAtSql), tiebreaker];
   }
 
   if (sortBy === 'role') {

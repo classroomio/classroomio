@@ -3,11 +3,13 @@ import type {
   GetOrgCoursesRequest,
   GetOrgCoursesRequestQuery,
   GetRecommendedCoursesRequest,
+  GetRecommendedCoursesRequestQuery,
   GetUserEnrolledCoursesRequest,
   OrgCourses,
   OrgCoursesPagination,
   OrgCoursesQuery,
   RecommendedCourses,
+  RecommendedCoursesQuery,
   UserEnrolledCourses
 } from '$features/course/types';
 
@@ -142,10 +144,13 @@ export class CoursesApi extends BaseApiWithErrors {
    * Fetches recommended courses (published courses user isn't enrolled in) for the current organization
    * Org ID is automatically added from currentOrg store
    */
-  async getRecommendedCourses(options?: { limit?: number; page?: number }) {
-    const query: Record<string, string> = {};
-    if (options?.limit) query.limit = String(options.limit);
-    if (options?.page) query.page = String(options.page);
+  async getRecommendedCourses(options: RecommendedCoursesQuery = {}) {
+    const query: GetRecommendedCoursesRequestQuery = {
+      limit: options.limit ? String(options.limit) : undefined,
+      page: options.page ? String(options.page) : undefined,
+      sort: options.sort,
+      order: options.order
+    };
 
     await this.execute<GetRecommendedCoursesRequest>({
       requestFn: () =>

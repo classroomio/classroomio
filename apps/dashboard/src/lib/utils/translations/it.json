@@ -2233,7 +2233,9 @@
       "date_created": "Data di creazione",
       "last_updated_at": "Ultimo aggiornamento alle",
       "published": "Pubblicato",
-      "lessons": "Lezioni"
+      "lessons": "Lezioni",
+      "name": "Nome",
+      "price": "Prezzo"
     },
     "course_card": {
       "empty_title": "Nessun corso creato",
