@@ -357,20 +357,24 @@ class InsightsStudentsApi extends BaseApi {
     const studentSpec = this.#studentSpec(1, INSIGHTS_LIMITS.maxExportRows, courseId);
     const exerciseSpec = courseId ? this.#exportExerciseSpec(courseId) : undefined;
     const exportResult = await this.#exportStudents({ studentSpec, exerciseSpec });
-    const cells = exportResult?.cells ?? {};
+    if (!exportResult) {
+      throw new Error('Insights student export failed');
+    }
+
+    const cells = exportResult.cells;
     const structure = courseId ? insightsApi.dashboard?.structures[courseId] : undefined;
     const exercises = courseId ? visibleExerciseColumns(structure, params.attemptedByExercise) : [];
-    const rows = (exportResult?.students.rows ?? []).map((row) => {
+    const rows = exportResult.students.rows.map((row) => {
       const studentCells = cells[String(row['student_id'])] ?? {};
 
       return { row, cells: studentCells };
     });
     const notes: string[] = [];
-    if (exportResult?.studentsTruncated) {
+    if (exportResult.studentsTruncated) {
       notes.push(t.get('insights.export.students_capped', { limit: INSIGHTS_LIMITS.maxExportRows }));
     }
 
-    if (exportResult?.exercisesTruncated) {
+    if (exportResult.exercisesTruncated) {
       notes.push(t.get('insights.export.exercises_capped', { limit: INSIGHTS_LIMITS.maxExportExerciseCells }));
     }
 

@@ -23,6 +23,7 @@ import {
   formatKpi,
   formatPercent,
   formatPointsDelta,
+  formatShortDate,
   formatUpdatedAgo,
   groupScoreDisplay,
   growthYMax,
@@ -1423,6 +1424,12 @@ describe('insights-utils', () => {
   });
 
   describe('formatting & timestamps', () => {
+    it('formatShortDate handles ISO date-only strings and invalid values', () => {
+      expect(formatShortDate(undefined)).toBe('–');
+      expect(formatShortDate(123 as unknown as string)).toBe('–');
+      expect(formatShortDate('not-a-date')).toBe('–');
+      expect(formatShortDate('2026-10-29', 'en-US')).toContain('Oct 29');
+    });
     it('formatUpdatedAgo handles both sides of 60 seconds', () => {
       const now = Date.parse('2026-10-22T12:00:00Z');
       const justNow = '2026-10-22T11:59:30Z';
