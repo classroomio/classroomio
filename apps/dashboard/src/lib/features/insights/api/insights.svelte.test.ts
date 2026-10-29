@@ -3,6 +3,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const plan = vi.hoisted(() => ({ isFree: false }));
 const apiExecute = vi.hoisted(() => vi.fn());
+const snackbarError = vi.hoisted(() => vi.fn());
+
+vi.mock('$features/ui/snackbar/store', () => ({
+  snackbar: {
+    error: snackbarError,
+    info: vi.fn(),
+    loading: vi.fn(() => 'toast-1'),
+    success: vi.fn()
+  }
+}));
 
 vi.mock('$lib/utils/services/api', () => ({
   BaseApi: class {
@@ -198,6 +208,47 @@ describe('insights page state', () => {
     expect(insightsApi.pageState('cohorts')).toEqual({ page: 1, sort: null });
   });
 
+  it('drops a widget result that resolves after the scope changed', async () => {
+    const table = widgetOf({ id: 'course_details' });
+    setDashboard('cohort', [table]);
+    let resolveQuery = (_result: InsightsResult) => {};
+    const pending = new Promise<InsightsResult | null>((resolve) => {
+      resolveQuery = resolve;
+    });
+    vi.spyOn(insightsApi, 'sharedQuery').mockReturnValue(pending);
+
+    const run = insightsApi.runWidget(table);
+    insightsApi.reset();
+    resolveQuery(resultOf(1, 1));
+    await run;
+
+    expect(insightsApi.widgetState('course_details').result).toBeNull();
+    expect(insightsApi.widgetState('course_details').loading).toBe(false);
+  });
+
+  it('applies the newest request when the same widget runs again after a reset', async () => {
+    const table = widgetOf({ id: 'course_details' });
+    setDashboard('cohort', [table]);
+    const pending: Array<(result: InsightsResult) => void> = [];
+    vi.spyOn(insightsApi, 'sharedQuery').mockImplementation(
+      () =>
+        new Promise<InsightsResult | null>((resolve) => {
+          pending.push((result) => resolve(result));
+        })
+    );
+
+    const firstRun = insightsApi.runWidget(table);
+    insightsApi.reset();
+    setDashboard('cohort', [table]);
+    const secondRun = insightsApi.runWidget(table);
+
+    pending[0](resultOf(3, 3));
+    pending[1](resultOf(1, 1));
+    await Promise.all([firstRun, secondRun]);
+
+    expect(insightsApi.widgetState('course_details').result?.rows).toHaveLength(1);
+  });
+
   it('runs hidden data widgets without adding them to the rendered grid', async () => {
     const chart = widgetOf({ id: 'scores_by_exercise_by_cohort', breakdown: 'cohorts' });
     const options = widgetOf({ id: 'cohort_empty', breakdown: 'cohorts', hidden: true });
@@ -303,6 +354,61 @@ describe('insights refresh', () => {
     await insightsApi.poll();
 
     expect(runWidgets).toHaveBeenCalledWith({});
+  });
+
+  it('reports a failed manual refresh but stays silent while polling', async () => {
+    apiExecute.mockImplementation(async (options: { onError?: () => void }) => {
+      options.onError?.();
+    });
+    snackbarError.mockClear();
+    vi.spyOn(insightsApi, 'runVisibleWidgets').mockResolvedValue();
+
+    await insightsApi.poll();
+
+    expect(snackbarError).not.toHaveBeenCalled();
+
+    await insightsApi.refreshAll();
+
+    expect(snackbarError).toHaveBeenCalledWith('snackbar.insights.refresh_failed');
+  });
+
+  it('preloads the cohort picker for a scope with more than one cohort', async () => {
+    apiExecute.mockImplementation(async (options: { onSuccess?: (response: unknown) => void }) => {
+      const response = { data: summary };
+      options.onSuccess?.(response);
+
+      return response;
+    });
+    const shared = vi
+      .spyOn(insightsApi, 'sharedQuery')
+      .mockResolvedValue(
+        cohortResult(
+          [{ id: 'coh-a', name: 'Cohort A', students: 4, completed: 1, createdAt: '2026-04-03T00:00:00Z' }],
+          2
+        )
+      );
+    vi.spyOn(insightsApi, 'runVisibleWidgets').mockResolvedValue();
+
+    await insightsApi.loadDashboard({ type: 'course', id: 'course-1' } as never);
+
+    expect(shared).toHaveBeenCalledWith(expect.objectContaining({ source: 'cohort_summary' }), { refresh: false });
+    expect(insightsApi.cohortOptions.map((option) => option.id)).toEqual(['coh-a']);
+  });
+
+  it('skips the cohort preload when the scope has one cohort', async () => {
+    const singleCohortSummary = { ...summary, scope: { ...summary.scope, cohortCount: 1 } };
+    apiExecute.mockImplementation(async (options: { onSuccess?: (response: unknown) => void }) => {
+      const response = { data: singleCohortSummary };
+      options.onSuccess?.(response);
+
+      return response;
+    });
+    const shared = vi.spyOn(insightsApi, 'sharedQuery').mockResolvedValue(cohortResult([], 1));
+    vi.spyOn(insightsApi, 'runVisibleWidgets').mockResolvedValue();
+
+    await insightsApi.loadDashboard({ type: 'course', id: 'course-1' } as never);
+
+    expect(shared).not.toHaveBeenCalled();
   });
 
   it('refreshes an open picker when polling and on open', async () => {
