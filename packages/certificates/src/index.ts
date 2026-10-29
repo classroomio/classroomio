@@ -1,6 +1,9 @@
 export {
   CERTIFICATE_TEMPLATE_IDS,
   type CertificateDesign,
+  type CertificateDocumentSignatory,
+  type CertificateDocumentV1,
+  type CertificatePresentationV1,
   type CertificateRenderData,
   type CertificateRenderResult,
   type CertificateSignatory,
@@ -26,7 +29,22 @@ export {
   type AccentColor
 } from './constants';
 
-export { renderCertificate, renderCertificateDocument, resolveCertificateDesign, resolveTemplateId } from './render';
+export {
+  renderCertificate,
+  renderCertificateDocument,
+  renderCertificatePresentation,
+  renderCertificatePresentationDocument,
+  resolveCertificateDesign,
+  resolveTemplateId
+} from './render';
+export {
+  getCertificateDocumentIdFormat,
+  getStudioCertificateIdFormat,
+  isCertificateDocumentV1,
+  isStudioDesign,
+  renderCertificateDocumentV1,
+  renderStudioCertificate
+} from './studio';
 export {
   computeFitFontSize,
   computeFieldFontSizes,

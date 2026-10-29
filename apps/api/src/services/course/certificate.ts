@@ -1,6 +1,12 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCourseById, getOrganizationById, getProfileById, getCourseOrganizationId } from '@cio/db/queries';
-import { resolveCertificateDesign, type CertificateRenderInput } from '@api/utils/certificate';
+import {
+  getCertificateDocumentIdFormat,
+  getStudioCertificateIdFormat,
+  resolveCertificateDesign,
+  type CertificateRenderInput
+} from '@api/utils/certificate';
+import type { CertificatePresentationV1 } from '@cio/certificates';
 import type { TCertificateDownloadRequest } from '@cio/utils/validation/course';
 
 /**
@@ -30,12 +36,38 @@ export async function assembleCertificateRender(
     ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' })
     : issuedAtDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
 
+  const presentation = courseRow.certificate?.presentation;
+  const customDocument = courseRow.certificate?.customDocument ?? courseRow.certificate?.studioDesign;
+
+  let activePresentation: CertificatePresentationV1;
+  if (presentation && typeof presentation === 'object' && 'kind' in presentation) {
+    activePresentation = presentation as CertificatePresentationV1;
+  } else if (customDocument && typeof customDocument === 'object') {
+    activePresentation = {
+      kind: 'document',
+      schema: 'classroomio.certificate-document',
+      version: 1,
+      document: customDocument as any
+    };
+  } else {
+    activePresentation = {
+      kind: 'preset',
+      presetId: design.templateId,
+      overrides: design
+    };
+  }
+
+  const documentIdFormat =
+    activePresentation.kind === 'document' ? getCertificateDocumentIdFormat(activePresentation.document) : null;
+  const idFormat = documentIdFormat ?? design.idFormat;
   const certificateId = body.studentId
-    ? formatCertificateId(design.idFormat, body.studentId, issuedAtDate)
-    : formatCertificateId(design.idFormat, fallbackSequence(issuedAtDate), issuedAtDate);
+    ? formatCertificateId(idFormat, body.studentId, issuedAtDate)
+    : formatCertificateId(idFormat, fallbackSequence(issuedAtDate), issuedAtDate);
 
   return {
     design,
+    presentation: activePresentation,
+    studioDesign: null,
     data: {
       recipientName: body.studentName,
       courseName: courseRow.title,

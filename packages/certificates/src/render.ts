@@ -1,12 +1,14 @@
 import { CERTIFICATE_WIDTH, DEFAULT_CERTIFICATE_DESIGN, FONTS_READY_CLASS, LEGACY_THEME_MAP } from './constants';
 import type {
   CertificateDesign,
+  CertificatePresentationV1,
   CertificateRenderData,
   CertificateRenderResult,
   CertificateTemplateId,
   StoredCertificateRecord
 } from './types';
 import { CERTIFICATE_TEMPLATE_IDS } from './types';
+import { isCertificateDocumentV1, renderCertificateDocumentV1 } from './studio';
 import { renderBrutalist } from './templates/brutalist';
 import { renderClassique } from './templates/classique';
 import { renderMinimal } from './templates/minimal';
@@ -120,4 +122,67 @@ export function renderCertificateDocument(design: CertificateDesign, data: Certi
   const { html, styles } = renderCertificate(design, data);
 
   return html.replace('</head>', `<style>${styles}</style></head>`);
+}
+
+export function renderCertificatePresentation(
+  presentation: CertificatePresentationV1 | CertificateDesign | null | undefined,
+  data: CertificateRenderData
+): CertificateRenderResult {
+  if (presentation && typeof presentation === 'object') {
+    if ('kind' in presentation) {
+      if (presentation.kind === 'document') {
+        const rendered = renderCertificateDocumentV1(presentation.document, data);
+        if (rendered) return rendered;
+      } else if (presentation.kind === 'preset') {
+        const base = resolveCertificateDesign({ design: { templateId: presentation.presetId } });
+        const design: CertificateDesign = {
+          ...base,
+          ...(presentation.overrides ?? {}),
+          templateId: presentation.presetId
+        };
+        return renderCertificate(design, data);
+      }
+    } else if (isCertificateDocumentV1(presentation)) {
+      const rendered = renderCertificateDocumentV1(presentation, data);
+      if (rendered) return rendered;
+    } else if ('templateId' in presentation) {
+      return renderCertificate(presentation as CertificateDesign, data);
+    }
+  }
+
+  return renderCertificate(resolveCertificateDesign(null), data);
+}
+
+export function renderCertificatePresentationDocument(
+  presentation: CertificatePresentationV1 | CertificateDesign | null | undefined,
+  data: CertificateRenderData
+): string {
+  const { html, styles } = renderCertificatePresentation(presentation, data);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=${CERTIFICATE_WIDTH},initial-scale=1.0">
+  <title>Certificate</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="${FONTS_LINK_HREF}">
+  <style>${styles}</style>
+</head>
+<body>
+${html}
+<script>
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function() {
+      document.documentElement.classList.add('${FONTS_READY_CLASS}');
+    }).catch(function() {
+      document.documentElement.classList.add('${FONTS_READY_CLASS}');
+    });
+  } else {
+    document.documentElement.classList.add('${FONTS_READY_CLASS}');
+  }
+</script>
+</body>
+</html>`;
 }

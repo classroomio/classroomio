@@ -1,6 +1,11 @@
 <script lang="ts">
   import { onMount, untrack } from 'svelte';
-  import { renderCertificateDocument, type CertificateDesign, type CertificateRenderData } from '@cio/certificates';
+  import {
+    renderCertificatePresentationDocument,
+    type CertificateDesign,
+    type CertificatePresentationV1,
+    type CertificateRenderData
+  } from '@cio/certificates';
   import MinusIcon from '@lucide/svelte/icons/minus';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import MaximizeIcon from '@lucide/svelte/icons/maximize';
@@ -9,7 +14,8 @@
   type ZoomMode = number | 'fit';
 
   interface Props {
-    design: CertificateDesign;
+    design?: CertificateDesign;
+    presentation?: CertificatePresentationV1;
     data: CertificateRenderData;
     zoom?: ZoomMode;
     showControls?: boolean;
@@ -21,6 +27,7 @@
 
   let {
     design,
+    presentation,
     data,
     zoom = 'fit',
     showControls = false,
@@ -37,7 +44,13 @@
   let manualScale = $state<number | null>(typeof zoom === 'number' ? clamp(zoom) : null);
   let fitScale = $state(0.4);
 
-  const renderedHtml = $derived(renderCertificateDocument(design, data));
+  const renderedHtml = $derived(
+    presentation
+      ? renderCertificatePresentationDocument(presentation, data)
+      : design
+        ? renderCertificatePresentationDocument(design, data)
+        : ''
+  );
 
   $effect(() => {
     const html = renderedHtml;
