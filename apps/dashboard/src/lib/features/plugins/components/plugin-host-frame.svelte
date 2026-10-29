@@ -21,7 +21,7 @@
     target: string;
     backendAudience?: string;
     resource?: PluginResourceContext;
-    onAction?: (event: PluginActionEvent) => Promise<void> | void;
+    onAction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
   }
 
   let {
@@ -169,15 +169,45 @@
             data: payload.data
           };
 
-          if (!onAction) {
-            throw {
-              code: 'NOT_SUPPORTED',
-              message: `Host action "${payload.action}" is not supported in this surface context`
-            };
+          if (onAction) {
+            const result = await onAction(actionDetail);
+            return result !== undefined ? result : { handled: true };
           }
 
-          await onAction(actionDetail);
-          return { handled: true };
+          if (payload.action === 'courses:list') {
+            const orgId = requireOrganizationId();
+            const response = await classroomio.plugins.installations[':installationId'].courses.$get(
+              { param: { installationId } },
+              { headers: { 'cio-org-id': orgId } }
+            );
+            return responseData(response);
+          }
+
+          if (payload.action === 'lessons:list') {
+            const orgId = requireOrganizationId();
+            const rawData =
+              payload.data && typeof payload.data === 'object' ? (payload.data as Record<string, unknown>) : {};
+            const queryParams: { courseId?: string } = {};
+            if (typeof rawData.courseId === 'string') {
+              queryParams.courseId = rawData.courseId;
+            } else if (resource?.type === 'course' && resource.id) {
+              queryParams.courseId = resource.id;
+            }
+
+            const response = await classroomio.plugins.installations[':installationId'].lessons.$get(
+              {
+                param: { installationId },
+                query: queryParams
+              },
+              { headers: { 'cio-org-id': orgId } }
+            );
+            return responseData(response);
+          }
+
+          throw {
+            code: 'NOT_SUPPORTED',
+            message: `Host action "${payload.action}" is not supported in this surface context`
+          };
         },
         onStorageGet: async ({ key, namespace, scope }) => {
           const orgId = requireOrganizationId();

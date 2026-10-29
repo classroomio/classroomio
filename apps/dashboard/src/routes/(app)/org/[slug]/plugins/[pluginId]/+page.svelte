@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgPath, isOrgTeamMember } from '$lib/utils/store/org';
   import { PluginIcon, pluginsApi } from '$features/plugins';
   import { PluginHostFrame } from '$features/plugins/components';
   import type { ResolvedContributionItem } from '$features/plugins/utils/types';
@@ -21,7 +21,7 @@
     const organizationId = $currentOrg.id;
     if (!organizationId) return;
 
-    if (!$isOrgAdmin) {
+    if ($isOrgTeamMember === false) {
       void goto($currentOrgPath);
       return;
     }

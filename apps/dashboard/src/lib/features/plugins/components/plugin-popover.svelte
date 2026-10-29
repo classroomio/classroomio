@@ -7,7 +7,7 @@
   import PluginIcon from './plugin-icon.svelte';
   import PluginInstallModal from './plugin-install-modal.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
   import BlocksIcon from '@lucide/svelte/icons/blocks';
   import Loader2Icon from '@lucide/svelte/icons/loader-2';
@@ -301,13 +301,15 @@
                 </div>
               </div>
 
-              <div class="shrink-0 pt-0.5">
-                <Switch
-                  checked={plugin.isActive}
-                  disabled={isUpdating}
-                  onCheckedChange={(checked) => handleToggle(plugin, checked)}
-                />
-              </div>
+              {#if $isOrgAdmin}
+                <div class="shrink-0 pt-0.5">
+                  <Switch
+                    checked={plugin.isActive}
+                    disabled={isUpdating}
+                    onCheckedChange={(checked) => handleToggle(plugin, checked)}
+                  />
+                </div>
+              {/if}
             </div>
           </div>
         {/each}

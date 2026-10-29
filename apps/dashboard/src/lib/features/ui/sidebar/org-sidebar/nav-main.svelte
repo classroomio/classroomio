@@ -166,7 +166,7 @@
           {/snippet}
         </Collapsible.Root>
       {/each}
-      {#if group.labelKey === 'org_navigation.tools' && $isOrgAdmin}
+      {#if group.labelKey === 'org_navigation.tools' && $currentOrg.roleId !== 3}
         <Collapsible.Root
           open={isPluginsOpen || isPluginsActive}
           onOpenChange={(open) => (isPluginsOpen = open)}

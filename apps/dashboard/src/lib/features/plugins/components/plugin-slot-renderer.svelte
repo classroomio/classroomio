@@ -9,7 +9,7 @@
     target: StableContributionTarget | string;
     resource?: PluginResourceContext;
     className?: string;
-    onAction?: (event: PluginActionEvent) => Promise<void> | void;
+    onAction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
   }
 
   let { target, resource, className = '', onAction }: Props = $props();
