@@ -4,6 +4,7 @@ export interface PluginContext {
   installationId: string;
   pluginId: string;
   version: string;
+  backendAudience?: string;
   organization?: {
     id: string;
     name: string;
@@ -42,7 +43,8 @@ export type BridgeErrorCode =
   | 'RATE_LIMITED'
   | 'TIMEOUT'
   | 'INTERNAL_ERROR'
-  | 'NOT_FOUND';
+  | 'NOT_FOUND'
+  | 'NOT_SUPPORTED';
 
 export interface BridgeErrorPayload {
   code: BridgeErrorCode;
@@ -93,6 +95,43 @@ export interface BridgeSetDirtyPayload {
   dirty: boolean;
 }
 
+export interface BridgeStorageGetPayload {
+  key: string;
+  namespace?: string;
+  scope?: 'organization' | 'user' | 'resource';
+  resourceType?: string;
+  resourceId?: string;
+}
+
+export interface BridgeStorageSetPayload {
+  key: string;
+  value: unknown;
+  namespace?: string;
+  scope?: 'organization' | 'user' | 'resource';
+  resourceType?: string;
+  resourceId?: string;
+}
+
+export interface BridgeStorageDeletePayload {
+  key: string;
+  namespace?: string;
+  scope?: 'organization' | 'user' | 'resource';
+  resourceType?: string;
+  resourceId?: string;
+}
+
+export interface BridgeStorageListPayload {
+  namespace?: string;
+  scope?: 'organization' | 'user' | 'resource';
+  resourceType?: string;
+  resourceId?: string;
+}
+
+export interface BridgeActionPayload<T = unknown> {
+  action: string;
+  data?: T;
+}
+
 export function isBridgeHandshakeInit(message: unknown): message is BridgeHandshakeInit {
   return (
     typeof message === 'object' &&
@@ -134,7 +173,7 @@ function isEmptyRecord(value: unknown): boolean {
 }
 
 function isStorageScope(value: unknown): boolean {
-  return value === undefined || value === 'organization' || value === 'user' || value === 'owner';
+  return value === undefined || value === 'organization' || value === 'user' || value === 'resource';
 }
 
 export function isValidBridgeRpcPayload(action: string, payload: unknown): boolean {
@@ -157,45 +196,25 @@ export function isValidBridgeRpcPayload(action: string, payload: unknown): boole
       return typeof payload.href === 'string' && payload.href.length > 0;
     case 'ui:setDirty':
       return typeof payload.dirty === 'boolean';
+    case 'ui:preferences:get':
+    case 'ui:preferences:delete':
+      return typeof payload.key === 'string';
+    case 'ui:preferences:set':
+      return typeof payload.key === 'string' && 'value' in payload;
     case 'ui:storage:get':
     case 'ui:storage:delete':
       return typeof payload.key === 'string' && isStorageScope(payload.scope);
     case 'ui:storage:set':
       return typeof payload.key === 'string' && 'value' in payload && isStorageScope(payload.scope);
     case 'ui:storage:list':
-      return typeof payload.namespace === 'string' && isStorageScope(payload.scope);
-    case 'ui:preferences:get':
-    case 'ui:preferences:delete':
-      return typeof payload.key === 'string';
-    case 'ui:preferences:set':
-      return typeof payload.key === 'string' && 'value' in payload;
+      return (
+        (payload.namespace === undefined || typeof payload.namespace === 'string') && isStorageScope(payload.scope)
+      );
+    case 'ui:action':
+      return typeof payload.action === 'string' && payload.action.length > 0;
     default:
       return false;
   }
-}
-
-export interface BridgeStorageGetPayload {
-  key: string;
-  namespace?: string;
-  scope?: string;
-}
-
-export interface BridgeStorageSetPayload {
-  key: string;
-  value: unknown;
-  namespace?: string;
-  scope?: string;
-}
-
-export interface BridgeStorageDeletePayload {
-  key: string;
-  namespace?: string;
-  scope?: string;
-}
-
-export interface BridgeStorageListPayload {
-  namespace: string;
-  scope?: string;
 }
 
 export interface BridgePreferenceGetPayload {
@@ -270,7 +289,7 @@ export const DEFAULT_LIGHT_THEME_V1: PluginThemeV1 = {
     radiusSmall: '4px',
     radiusMedium: '8px',
     radiusLarge: '12px',
-    fontSans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    fontSans: "'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     fontMono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
   }
 };
@@ -294,7 +313,7 @@ export const DEFAULT_DARK_THEME_V1: PluginThemeV1 = {
     radiusSmall: '4px',
     radiusMedium: '8px',
     radiusLarge: '12px',
-    fontSans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    fontSans: "'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     fontMono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
   }
 };
@@ -303,6 +322,8 @@ export function applyThemeTokensToRoot(theme: PluginThemeV1): void {
   if (typeof document === 'undefined') return;
 
   const root = document.documentElement;
+  if (!root) return;
+
   root.setAttribute('data-theme', theme.colorScheme);
   root.style.setProperty('color-scheme', theme.colorScheme);
   root.style.setProperty('--cio-background', theme.tokens.background);
@@ -319,8 +340,10 @@ export function applyThemeTokensToRoot(theme: PluginThemeV1): void {
   root.style.setProperty('--cio-radius-lg', theme.tokens.radiusLarge);
   root.style.setProperty('--cio-font-sans', theme.tokens.fontSans);
   root.style.setProperty('--cio-font-mono', theme.tokens.fontMono);
-  // Compatibility aliases for pre-v1 official plugin styles. New plugins
-  // should use the canonical variables above.
+  root.style.setProperty('font-family', theme.tokens.fontSans);
+  if (document.body) {
+    document.body.style.fontFamily = theme.tokens.fontSans;
+  }
   root.style.setProperty('--cio-color-bg', theme.tokens.background);
   root.style.setProperty('--cio-color-bg-subtle', theme.tokens.surfaceMuted);
   root.style.setProperty('--cio-color-surface', theme.tokens.surface);

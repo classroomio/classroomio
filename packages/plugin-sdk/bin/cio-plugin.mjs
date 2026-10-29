@@ -15,17 +15,34 @@ const KEBAB_CASE_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ALLOWED_CAPABILITIES = new Set([
   'identity.profile:read',
   'organization.profile:read',
+  'organization.members:read',
   'course.metadata:read',
   'course.content:read',
+  'course.metadata:write',
   'course.enrollment:read',
+  'course.enrollment:write',
   'lesson.metadata:read',
   'lesson.content:read',
+  'lesson:write',
+  'learner.profile:read',
   'learner.progress:read',
   'learner.progress:write',
   'exercise.metadata:read',
+  'submission:read',
+  'submission:write',
+  'grade:read',
+  'grade:write',
   'certificate.issued:read',
+  'certificate.issuance:write',
+  'certificate.revocation:write',
   'certificate.template:read',
-  'certificate.template:write'
+  'certificate.template:write',
+  'cohort.metadata:read',
+  'cohort.membership:read',
+  'analytics.summary:read',
+  'notification:write',
+  'plugin.storage:read',
+  'plugin.storage:write'
 ]);
 
 function isSafeRelativePath(p) {

@@ -16,7 +16,7 @@ export const PLUGIN_INSTALLATION_STATUSES = ['active', 'disabled', 'revoked', 'u
 export type PluginInstallationStatus = (typeof PLUGIN_INSTALLATION_STATUSES)[number];
 export const ZPluginInstallationStatus = z.enum(PLUGIN_INSTALLATION_STATUSES);
 
-export const PLUGIN_STORAGE_SCOPE_TYPES = ['organization', 'user', 'global'] as const;
+export const PLUGIN_STORAGE_SCOPE_TYPES = ['organization', 'user', 'global', 'resource'] as const;
 export type PluginStorageScopeType = (typeof PLUGIN_STORAGE_SCOPE_TYPES)[number];
 export const ZPluginStorageScopeType = z.enum(PLUGIN_STORAGE_SCOPE_TYPES);
 
@@ -51,20 +51,6 @@ export const ZCreatePluginCredential = z.object({
 });
 export type TCreatePluginCredential = z.infer<typeof ZCreatePluginCredential>;
 
-export const ZPluginStorageSet = z.object({
-  namespace: z.string().trim().min(1).max(64).default('default'),
-  key: z.string().trim().min(1).max(128),
-  value: z.unknown(),
-  scope: z.enum(['owner', 'user']).default('owner')
-});
-export type TPluginStorageSet = z.infer<typeof ZPluginStorageSet>;
-
-export const ZPluginStorageDelete = z.object({
-  namespace: z.string().trim().min(1).max(128).default('default'),
-  key: z.string().trim().min(1).max(255)
-});
-export type TPluginStorageDelete = z.infer<typeof ZPluginStorageDelete>;
-
 export const ZPluginLaunchCodeExchange = z
   .object({
     code: z.string().trim().min(1),
@@ -74,11 +60,73 @@ export const ZPluginLaunchCodeExchange = z
   .strict();
 export type TPluginLaunchCodeExchange = z.infer<typeof ZPluginLaunchCodeExchange>;
 
-export const ZApplyCertificateTemplate = z.object({
-  courseId: z.string().uuid(),
-  externalTemplateId: z.string().trim().min(1).max(128),
-  externalTemplateVersion: z.number().int().min(1),
-  name: z.string().trim().min(1).max(128),
-  design: z.record(z.string(), z.unknown())
+export const ZPluginInstallationParam = z.object({
+  installationId: z.string().uuid()
 });
-export type TApplyCertificateTemplate = z.infer<typeof ZApplyCertificateTemplate>;
+export type TPluginInstallationParam = z.infer<typeof ZPluginInstallationParam>;
+
+export const ZPluginStorageKeyParam = z.object({
+  installationId: z.string().uuid(),
+  namespace: z.string().trim().min(1).max(128),
+  key: z.string().trim().min(1).max(255)
+});
+export type TPluginStorageKeyParam = z.infer<typeof ZPluginStorageKeyParam>;
+
+export const ZPluginStorageNamespaceParam = z.object({
+  installationId: z.string().uuid(),
+  namespace: z.string().trim().min(1).max(128)
+});
+export type TPluginStorageNamespaceParam = z.infer<typeof ZPluginStorageNamespaceParam>;
+
+export const ZPluginStorageQuery = z
+  .object({
+    scope: z.enum(['organization', 'user', 'resource']).optional().default('organization'),
+    resourceType: z.string().trim().min(1).max(64).optional(),
+    resourceId: z.string().uuid().optional()
+  })
+  .superRefine((data, ctx) => {
+    if (data.scope === 'resource') {
+      if (!data.resourceId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'resourceId is required when scope is "resource"',
+          path: ['resourceId']
+        });
+      }
+      if (!data.resourceType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'resourceType is required when scope is "resource"',
+          path: ['resourceType']
+        });
+      }
+    }
+  });
+export type TPluginStorageQuery = z.infer<typeof ZPluginStorageQuery>;
+
+export const ZPluginStoragePut = z
+  .object({
+    value: z.unknown(),
+    scope: z.enum(['organization', 'user', 'resource']).optional().default('organization'),
+    resourceType: z.string().trim().min(1).max(64).optional(),
+    resourceId: z.string().uuid().optional()
+  })
+  .superRefine((data, ctx) => {
+    if (data.scope === 'resource') {
+      if (!data.resourceId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'resourceId is required when scope is "resource"',
+          path: ['resourceId']
+        });
+      }
+      if (!data.resourceType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'resourceType is required when scope is "resource"',
+          path: ['resourceType']
+        });
+      }
+    }
+  });
+export type TPluginStoragePut = z.infer<typeof ZPluginStoragePut>;

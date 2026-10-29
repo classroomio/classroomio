@@ -10,13 +10,14 @@ import {
   type PluginContext,
   type PluginThemeV1,
   type BridgeSetDirtyPayload,
-  type BridgeStorageDeletePayload,
-  type BridgeStorageGetPayload,
-  type BridgeStorageListPayload,
-  type BridgeStorageSetPayload,
   type BridgePreferenceDeletePayload,
   type BridgePreferenceGetPayload,
   type BridgePreferenceSetPayload,
+  type BridgeStorageGetPayload,
+  type BridgeStorageSetPayload,
+  type BridgeStorageDeletePayload,
+  type BridgeStorageListPayload,
+  type BridgeActionPayload,
   applyThemeTokensToRoot,
   DEFAULT_LIGHT_THEME_V1,
   isBridgeHandshakeInit,
@@ -37,14 +38,6 @@ export class PluginBridgeError extends Error {
 export interface ClassroomIOClientOptions {
   timeoutMs?: number;
   targetWindow?: Window;
-}
-
-export type PluginStorageScope = 'organization' | 'user' | 'owner';
-
-export interface PluginStorageItem<T = unknown> {
-  key: string;
-  value: T;
-  updatedAt?: string;
 }
 
 export class ClassroomIOClient {
@@ -251,37 +244,6 @@ export class ClassroomIOClient {
     }
   };
 
-  public storage = {
-    get: async <T = unknown>(
-      key: string,
-      namespace = 'default',
-      scope: PluginStorageScope = 'organization'
-    ): Promise<T | null> => {
-      return this.rpc<T | null, BridgeStorageGetPayload>('ui:storage:get', { key, namespace, scope });
-    },
-    list: async <T = unknown>(
-      namespace: string,
-      scope: PluginStorageScope = 'organization'
-    ): Promise<PluginStorageItem<T>[]> => {
-      return this.rpc<PluginStorageItem<T>[], BridgeStorageListPayload>('ui:storage:list', { namespace, scope });
-    },
-    set: async <T = unknown>(
-      key: string,
-      value: T,
-      namespace = 'default',
-      scope: PluginStorageScope = 'organization'
-    ): Promise<void> => {
-      await this.rpc<void, BridgeStorageSetPayload>('ui:storage:set', { key, value, namespace, scope });
-    },
-    delete: async (
-      key: string,
-      namespace = 'default',
-      scope: PluginStorageScope = 'organization'
-    ): Promise<boolean> => {
-      return this.rpc<boolean, BridgeStorageDeletePayload>('ui:storage:delete', { key, namespace, scope });
-    }
-  };
-
   public preferences = {
     get: async <T = unknown>(key: string, namespace = 'default'): Promise<T | null> => {
       return this.rpc<T | null, BridgePreferenceGetPayload>('ui:preferences:get', { key, namespace });
@@ -294,10 +256,42 @@ export class ClassroomIOClient {
     }
   };
 
-  public certificateTemplates = {
-    apply: async (payload: unknown): Promise<unknown> => {
-      return this.rpc<unknown>('certificateTemplates:apply', payload);
+  public storage = {
+    get: async <T = unknown>(
+      key: string,
+      namespace = 'default',
+      scope: 'organization' | 'user' | 'resource' = 'organization'
+    ): Promise<T | null> => {
+      return this.rpc<T | null, BridgeStorageGetPayload>('ui:storage:get', { key, namespace, scope });
+    },
+    set: async <T = unknown>(
+      key: string,
+      value: T,
+      namespace = 'default',
+      scope: 'organization' | 'user' | 'resource' = 'organization'
+    ): Promise<void> => {
+      await this.rpc<void, BridgeStorageSetPayload>('ui:storage:set', { key, value, namespace, scope });
+    },
+    delete: async (
+      key: string,
+      namespace = 'default',
+      scope: 'organization' | 'user' | 'resource' = 'organization'
+    ): Promise<boolean> => {
+      return this.rpc<boolean, BridgeStorageDeletePayload>('ui:storage:delete', { key, namespace, scope });
+    },
+    list: async <T = unknown>(
+      namespace = 'default',
+      scope: 'organization' | 'user' | 'resource' = 'organization'
+    ): Promise<Array<{ key: string; value: T; updatedAt: string }>> => {
+      return this.rpc<Array<{ key: string; value: T; updatedAt: string }>, BridgeStorageListPayload>(
+        'ui:storage:list',
+        { namespace, scope }
+      );
     }
+  };
+
+  public action = async <TResult = unknown, TData = unknown>(action: string, data?: TData): Promise<TResult> => {
+    return this.rpc<TResult, BridgeActionPayload<TData>>('ui:action', { action, data });
   };
 
   public destroy() {

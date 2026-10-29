@@ -118,4 +118,35 @@ describe('MessageChannel UI host bridge', () => {
     client.destroy();
     host.destroy();
   });
+
+  it('dispatches generic host actions and storage calls', async () => {
+    const channel = new MessageChannel();
+    let handledAction: { action: string; data?: unknown } | null = null;
+    const host = new PluginBridgeHost({
+      iframe: {} as HTMLIFrameElement,
+      targetOrigin: 'https://plugin.example.com',
+      context: mockContext,
+      handlers: {
+        onAction: async (payload) => {
+          handledAction = payload;
+          return { applied: true };
+        },
+        onStorageGet: async ({ key }) => (key === 'setting' ? 'dark' : null),
+        onStorageSet: async () => {}
+      }
+    });
+    const client = new ClassroomIOClient();
+
+    host.attachPort(channel.port1);
+    client.attachPort(channel.port2, mockContext);
+
+    const result = await client.action('apply', { templateId: 't1' });
+    expect(result).toEqual({ applied: true });
+    expect(handledAction).toEqual({ action: 'apply', data: { templateId: 't1' } });
+
+    await expect(client.storage.get('setting')).resolves.toBe('dark');
+
+    client.destroy();
+    host.destroy();
+  });
 });

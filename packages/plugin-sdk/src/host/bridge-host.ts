@@ -9,6 +9,11 @@ import {
   type PluginContext,
   type PluginThemeV1,
   type BridgeSetDirtyPayload,
+  type BridgeStorageGetPayload,
+  type BridgeStorageSetPayload,
+  type BridgeStorageDeletePayload,
+  type BridgeStorageListPayload,
+  type BridgeActionPayload,
   DEFAULT_LIGHT_THEME_V1,
   BRIDGE_PROTOCOL_VERSION,
   isBridgeRpcRequest,
@@ -22,14 +27,14 @@ export interface PluginBridgeHostHandlers {
   onResize?: (payload: BridgeResizePayload) => Promise<void>;
   onNavigate?: (payload: BridgeNavigationOpenPayload) => Promise<void>;
   onSetDirty?: (payload: BridgeSetDirtyPayload) => Promise<void>;
-  onStorageGet?: (payload: { key: string; namespace?: string; scope?: string }) => Promise<unknown>;
-  onStorageSet?: (payload: { key: string; value: unknown; namespace?: string; scope?: string }) => Promise<void>;
-  onStorageDelete?: (payload: { key: string; namespace?: string; scope?: string }) => Promise<boolean | void>;
-  onStorageList?: (payload: { namespace: string; scope?: string }) => Promise<unknown>;
   onPreferenceGet?: (payload: { key: string; namespace?: string }) => Promise<unknown>;
   onPreferenceSet?: (payload: { key: string; value: unknown; namespace?: string }) => Promise<void>;
   onPreferenceDelete?: (payload: { key: string; namespace?: string }) => Promise<boolean | void>;
-  onCertificateTemplatesApply?: (payload: unknown) => Promise<unknown>;
+  onStorageGet?: (payload: BridgeStorageGetPayload) => Promise<unknown>;
+  onStorageSet?: (payload: BridgeStorageSetPayload) => Promise<void>;
+  onStorageDelete?: (payload: BridgeStorageDeletePayload) => Promise<boolean | void>;
+  onStorageList?: (payload: BridgeStorageListPayload) => Promise<unknown>;
+  onAction?: (payload: BridgeActionPayload) => Promise<unknown>;
 }
 
 export interface PluginBridgeHostOptions {
@@ -166,36 +171,6 @@ export class PluginBridgeHost {
           }
           break;
         }
-        case 'ui:storage:get': {
-          if (this.options.handlers.onStorageGet) {
-            resultData = await this.options.handlers.onStorageGet(request.payload as any);
-          } else {
-            resultData = null;
-          }
-          break;
-        }
-        case 'ui:storage:set': {
-          if (this.options.handlers.onStorageSet) {
-            await this.options.handlers.onStorageSet(request.payload as any);
-          }
-          break;
-        }
-        case 'ui:storage:delete': {
-          if (this.options.handlers.onStorageDelete) {
-            resultData = await this.options.handlers.onStorageDelete(request.payload as any);
-          } else {
-            resultData = true;
-          }
-          break;
-        }
-        case 'ui:storage:list': {
-          if (this.options.handlers.onStorageList) {
-            resultData = await this.options.handlers.onStorageList(request.payload as any);
-          } else {
-            resultData = [];
-          }
-          break;
-        }
         case 'ui:preferences:get': {
           if (this.options.handlers.onPreferenceGet) {
             resultData = await this.options.handlers.onPreferenceGet(request.payload as any);
@@ -218,13 +193,43 @@ export class PluginBridgeHost {
           }
           break;
         }
-        case 'certificateTemplates:apply': {
-          if (this.options.handlers.onCertificateTemplatesApply) {
-            resultData = await this.options.handlers.onCertificateTemplatesApply(request.payload);
+        case 'ui:storage:get': {
+          if (!this.options.handlers.onStorageGet) {
+            resultData = null;
+          } else {
+            resultData = await this.options.handlers.onStorageGet(request.payload as BridgeStorageGetPayload);
+          }
+          break;
+        }
+        case 'ui:storage:set': {
+          if (this.options.handlers.onStorageSet) {
+            await this.options.handlers.onStorageSet(request.payload as BridgeStorageSetPayload);
+          }
+          break;
+        }
+        case 'ui:storage:delete': {
+          if (!this.options.handlers.onStorageDelete) {
+            resultData = true;
+          } else {
+            resultData = await this.options.handlers.onStorageDelete(request.payload as BridgeStorageDeletePayload);
+          }
+          break;
+        }
+        case 'ui:storage:list': {
+          if (!this.options.handlers.onStorageList) {
+            resultData = [];
+          } else {
+            resultData = await this.options.handlers.onStorageList(request.payload as BridgeStorageListPayload);
+          }
+          break;
+        }
+        case 'ui:action': {
+          if (this.options.handlers.onAction) {
+            resultData = await this.options.handlers.onAction(request.payload as BridgeActionPayload);
           } else {
             throw {
               code: 'NOT_SUPPORTED',
-              message: 'certificateTemplates:apply capability is not supported in this surface context'
+              message: `Host action "${(request.payload as BridgeActionPayload).action}" is not supported in this surface context`
             };
           }
           break;
