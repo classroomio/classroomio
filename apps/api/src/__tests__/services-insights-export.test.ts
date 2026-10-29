@@ -24,7 +24,7 @@ vi.mock('@api/services/insights/structure', () => ({
 }));
 
 vi.mock('@api/services/insights/plan', () => ({
-  assertInsightsRangeAllowed: vi.fn().mockResolvedValue(undefined)
+  resolveInsightsRange: vi.fn().mockResolvedValue('all')
 }));
 
 import { runInsightsQuery } from '@cio/db/queries/insights';

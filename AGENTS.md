@@ -143,6 +143,8 @@ export type TUpdateProfile = z.infer<typeof ZUpdateProfile>;
 ### Step 2: Database query
 Put all direct database access in pure query functions under `packages/db/src/queries/{domain}/`. Routes and services never call Drizzle/`db` (or equivalent) directly—they import and compose these helpers.
 
+**Exercises are standalone course items.** Exercises belong directly to courses and sections (`course_id` and `section_id`), not lessons. Never join `lesson` or read `exercise.lesson_id` to resolve an exercise's course, section, or progress.
+
 ```typescript
 // packages/db/src/queries/auth/profile.ts
 export async function updateProfile(userId: string, data: Partial<TProfile>) {
@@ -796,6 +798,7 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 ### ❌ DON'T
 - Put business logic in routes or queries
 - Include validation in queries (belongs in routes)
+- **Link exercises to lessons in database queries** — exercises are standalone course items that belong directly to courses and sections (`course_id` and `section_id`); `exercise.lesson_id` is deprecated and must never be joined or used to resolve an exercise's course, section, or progress
 - Handle HTTP concerns in services
 - Skip client-side validation
 - Let components handle validation, navigation, or snackbar

@@ -28,7 +28,7 @@ vi.mock('@api/services/insights/structure', () => ({
 }));
 
 vi.mock('@api/services/insights/plan', () => ({
-  assertInsightsRangeAllowed: vi.fn().mockResolvedValue(undefined)
+  resolveInsightsRange: vi.fn().mockResolvedValue('all')
 }));
 
 vi.mock('@api/utils/redis/cached-read', () => ({
@@ -41,7 +41,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { cachedRead } from '@api/utils/redis/cached-read';
 import { resolveAuthorizedScope } from '@api/services/insights/authorize';
 import { exportInsightsQueryForActor, runInsightsQueryForActor } from '@api/services/insights/query';
-import { assertInsightsRangeAllowed } from '@api/services/insights/plan';
+import { resolveInsightsRange } from '@api/services/insights/plan';
 import type { InsightsActor } from '@api/services/insights/types';
 import { ZInsightsExportSpec, ZInsightsQuerySpec } from '@cio/utils/validation/insights';
 
@@ -78,7 +78,7 @@ describe('runInsightsQueryForActor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(resolveAuthorizedScope).mockResolvedValue(scope);
-    vi.mocked(assertInsightsRangeAllowed).mockResolvedValue(undefined);
+    vi.mocked(resolveInsightsRange).mockResolvedValue('all');
     vi.mocked(claimInsightsRefresh).mockResolvedValue(true);
     vi.mocked(cachedRead).mockImplementation(async (key, ttl, compute) => {
       const data = await compute();
@@ -102,20 +102,17 @@ describe('runInsightsQueryForActor', () => {
     expect(cachedRead).not.toHaveBeenCalled();
   });
 
-  it('refuses a range outside the plan before reading the cache', async () => {
-    vi.mocked(assertInsightsRangeAllowed).mockRejectedValue(
-      new AppError('Upgrade required', ErrorCodes.PLAN_UPGRADE_REQUIRED, 402)
-    );
+  it('clamps the range before hashing the spec and reading the cache', async () => {
+    vi.mocked(resolveInsightsRange).mockResolvedValue('7d');
 
-    await expect(
-      runInsightsQueryForActor(actor, {
-        scope: { type: 'cohort', id: COHORT_ID },
-        spec
-      })
-    ).rejects.toMatchObject({ statusCode: 402 });
+    await runInsightsQueryForActor(actor, {
+      scope: { type: 'cohort', id: COHORT_ID },
+      spec
+    });
 
-    expect(assertInsightsRangeAllowed).toHaveBeenCalledWith(ORG_ID, spec.range);
-    expect(cachedRead).not.toHaveBeenCalled();
+    expect(resolveInsightsRange).toHaveBeenCalledWith(ORG_ID, spec.range);
+    expect(runInsightsQuery).toHaveBeenCalledWith(expect.objectContaining({ range: '7d' }), expect.anything());
+    expect(cachedRead).toHaveBeenCalledTimes(1);
   });
 
   it('bypasses the cache when a search filter is present', async () => {

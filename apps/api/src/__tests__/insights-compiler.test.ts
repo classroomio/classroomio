@@ -1,7 +1,7 @@
 import { PgDialect } from 'drizzle-orm/pg-core';
 import { describe, expect, it } from 'vitest';
 
-import { compileInsightsQuery, requiresOrderedItems } from '@cio/db/queries/insights';
+import { compileInsightsQuery, requiresOrderedItems, type InsightsScopeRef } from '@cio/db/queries/insights';
 import { ZInsightsExportSpec, ZInsightsQuerySpec } from '@cio/utils/validation/insights';
 
 const ORG_ID = '11111111-1111-4111-8111-111111111111';
@@ -396,5 +396,78 @@ describe('compileInsightsQuery', () => {
 
     expect(compiled.sql).toContain('1 = 0');
     expect(compiled.params).not.toContain(COURSE_ID);
+  });
+
+  it('never links an exercise to a lesson', () => {
+    const sources: Array<{
+      source: string;
+      measure: { metric: string; agg: 'count' | 'sum' };
+      scope: InsightsScopeRef;
+    }> = [
+      {
+        source: 'student',
+        measure: { metric: 'rows', agg: 'count' },
+        scope: { orgId: ORG_ID, type: 'cohort', id: COHORT_ID }
+      },
+      {
+        source: 'student_course',
+        measure: { metric: 'rows', agg: 'count' },
+        scope: { orgId: ORG_ID, type: 'cohort', id: COHORT_ID }
+      },
+      {
+        source: 'assessment_result',
+        measure: { metric: 'rows', agg: 'count' },
+        scope: { orgId: ORG_ID, type: 'cohort', id: COHORT_ID }
+      },
+      {
+        source: 'section_activity',
+        measure: { metric: 'rows', agg: 'count' },
+        scope: { orgId: ORG_ID, type: 'cohort', id: COHORT_ID }
+      },
+      {
+        source: 'question_result',
+        measure: { metric: 'rows', agg: 'count' },
+        scope: { orgId: ORG_ID, type: 'cohort', id: COHORT_ID }
+      },
+      {
+        source: 'lesson_progress',
+        measure: { metric: 'rows', agg: 'count' },
+        scope: { orgId: ORG_ID, type: 'cohort', id: COHORT_ID }
+      },
+      {
+        source: 'login_day',
+        measure: { metric: 'rows', agg: 'count' },
+        scope: { orgId: ORG_ID, type: 'cohort', id: COHORT_ID }
+      },
+      {
+        source: 'overdue_item',
+        measure: { metric: 'rows', agg: 'count' },
+        scope: { orgId: ORG_ID, type: 'cohort', id: COHORT_ID }
+      },
+      {
+        source: 'org_member',
+        measure: { metric: 'members_total', agg: 'sum' },
+        scope: { orgId: ORG_ID, type: 'org', id: ORG_ID }
+      },
+      {
+        source: 'cohort_summary',
+        measure: { metric: 'rows', agg: 'count' },
+        scope: { orgId: ORG_ID, type: 'org', id: ORG_ID }
+      },
+      {
+        source: 'overdue_student',
+        measure: { metric: 'rows', agg: 'count' },
+        scope: { orgId: ORG_ID, type: 'cohort', id: COHORT_ID }
+      }
+    ];
+
+    for (const { source, measure, scope: testScope } of sources) {
+      const spec = ZInsightsQuerySpec.parse({ source, measures: [measure] });
+      const { query } = compileInsightsQuery(spec, { scope: testScope, orderedItems: [] });
+      const compiled = dialect.sqlToQuery(query);
+
+      expect(compiled.sql).not.toContain('exercise.lesson_id');
+      expect(compiled.sql).not.toContain('exercise_lesson_id_fkey');
+    }
   });
 });

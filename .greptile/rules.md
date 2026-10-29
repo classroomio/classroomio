@@ -17,6 +17,10 @@ These are manual, operator-invoked, run-once maintenance scripts (backfills, not
 
 - The org student-cap guard (`assertStudentCapacityOrThrow`) reads the count outside the insert transaction. This is a known, accepted best-effort TOCTOU consistent with the existing workspace-allowance check — do not re-flag it as a race-condition bug unless hard atomic enforcement is explicitly requested.
 
+## Course structure and exercises
+
+- Exercises are first-class course items that link directly to courses and sections via `course_id` and `section_id`. `exercise.lesson_id` is deprecated. Never join `lesson` or use `lesson_id` to resolve an exercise's course, section, or progress.
+
 ## Code style
 
 - Never call an `await` or a complex/multi-call expression inside an object literal (construction or update). Assign to a well-named local first, then reference it. (Also documented in `AGENTS.md`.)

@@ -70,6 +70,11 @@ export interface UpdateCourseResult {
   /** True when this update took the course from unpublished to published. */
   publishedNow: boolean;
   publishChange?: 'published' | 'unpublished' | null;
+  /**
+   * True when the content-grouping setting changed. Callers that pass a transaction must drop the cached insights
+   * structure after it commits; this call skips the invalidation while it does not own the transaction.
+   */
+  groupingChanged: boolean;
 }
 
 /**
@@ -499,7 +504,7 @@ export async function updateCourse(
       (currentCourse.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING) !==
       (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING);
 
-    if (groupingChanged) {
+    if (groupingChanged && dbClient === db) {
       void invalidateInsightsCourseStructure(courseId);
     }
 
@@ -509,7 +514,8 @@ export async function updateCourse(
       course: updated,
       conversionOffenders,
       publishedNow: !currentCourse.isPublished && !!updated.isPublished,
-      publishChange
+      publishChange,
+      groupingChanged
     };
   } catch (error) {
     if (error instanceof AppError) {

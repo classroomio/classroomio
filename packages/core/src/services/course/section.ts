@@ -258,7 +258,7 @@ export async function reorderCourseSections(sections: TCourseSectionReorder['sec
 }
 
 /**
- * Section order changes every item rank in the course, so each reordered section's course drops its cached outline.
+ * Drops the cached insights outline for the course behind each of the given sections.
  */
 async function invalidateReorderedSectionCourses(sectionIds: string[]): Promise<void> {
   if (sectionIds.length === 0) return;

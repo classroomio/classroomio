@@ -61,15 +61,15 @@ function exerciseCtes(context: InsightsCompileContext): SQL {
         exercise.id AS exercise_id,
         sc.course_id,
         exercise.title AS exercise_title,
-        COALESCE(exercise.section_id, lesson.section_id) AS section_id,
+        exercise.section_id,
         exercise.completion_policy = 'passed' AS is_pass_required,
         CASE WHEN exercise.completion_policy = 'passed' THEN COALESCE(exercise.pass_threshold, 100) END AS pass_mark,
         COALESCE(exercise.is_unlocked, true) AS is_unlocked,
         exercise.due_by,
         COALESCE((SELECT SUM(question.points) FROM question WHERE question.exercise_id = exercise.id), 0)::numeric AS max_points
       FROM exercise
-      LEFT JOIN lesson ON lesson.id = exercise.lesson_id
-      JOIN scope_course sc ON sc.course_id = COALESCE(exercise.course_id, lesson.course_id)
+      LEFT JOIN course_section cs ON cs.id = exercise.section_id
+      JOIN scope_course sc ON sc.course_id = COALESCE(exercise.course_id, cs.course_id)
     ),
     member_exercise AS (
       SELECT
