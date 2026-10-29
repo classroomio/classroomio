@@ -6510,6 +6510,7 @@
       "showing_first": "Mostrando los primeros {shown} de {total}.",
       "cohorts_select": "Seleccione una cohorte para abrir su panel.",
       "cohorts_in_table": "{count, plural, one {la cohorte} other {Las #cohortes}} en la tabla anterior.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "No contabilizados: {names} (aún no hay estudiantes).",
       "not_charted_empty": "No incluidos en el gráfico: {names} (aún no hay estudiantes).",
       "lesson_dropoff": "La caída más pronunciada se encuentra entre {from} y {to}.",

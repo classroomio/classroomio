@@ -12,6 +12,7 @@
 
   import { insightsApi, insightsStudentSheetApi } from '../../api';
   import {
+    canReturnToAllCourses,
     CHIP_CLASS,
     formatPercent,
     isInsightsStatus,
@@ -32,6 +33,7 @@
   const status = $derived(row?.['status__value']);
   const lastLoginAt = $derived(textCell(row, 'last_login_at__value'));
   const course = $derived(scopeCourse(insightsApi.dashboard, sheet.courseId));
+  const showBackToAllCourses = $derived(canReturnToAllCourses(insightsApi.selection.courseId, sheet.courseId));
   const courseProgress = $derived(numberCell(sheet.courseRow ?? undefined, 'progress_pct__value'));
   const courseNowAt = $derived(
     nowAtLabel(courseProgress, textCell(sheet.courseRow ?? undefined, 'now_at_title__value'), $t)
@@ -76,7 +78,7 @@
     </Sheet.Header>
 
     <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-auto px-4 pb-4">
-      {#if course}
+      {#if course && showBackToAllCourses}
         <Button
           variant="ghost"
           size="sm"

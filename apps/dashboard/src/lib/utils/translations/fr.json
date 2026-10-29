@@ -6510,6 +6510,7 @@
       "showing_first": "Affichage des {shown} premiers sur {total}.",
       "cohorts_select": "Sélectionnez une cohorte pour ouvrir son tableau de bord.",
       "cohorts_in_table": "{count, plural, one {La cohorte} other {Les # cohortes}} dans le tableau ci-dessus.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "Non comptés : {names} (pas encore d'étudiants).",
       "not_charted_empty": "Non affichés dans le graphique : {names} (pas encore d'étudiants).",
       "lesson_dropoff": "La chute la plus abrupte se situe entre {from} et {to}.",

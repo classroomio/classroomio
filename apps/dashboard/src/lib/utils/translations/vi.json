@@ -6510,6 +6510,7 @@
       "showing_first": "Đang hiển thị {shown} mục đầu tiên trong {total}.",
       "cohorts_select": "Chọn một nhóm thuần tập để mở trang tổng quan của nhóm đó.",
       "cohorts_in_table": "{count, plural, one {Đoàn hệ} other {# nhóm thuần tập}} trong bảng trên.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "Không tính: {names} (chưa có học viên).",
       "not_charted_empty": "Không hiển thị trên biểu đồ: {names} (chưa có học viên).",
       "lesson_dropoff": "Độ dốc cao nhất là từ {from} đến {to}.",

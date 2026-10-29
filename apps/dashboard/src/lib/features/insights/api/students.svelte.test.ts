@@ -44,6 +44,8 @@ const headers: StudentExportHeaders = {
   name: 'Name',
   email: 'Email',
   progress: 'Progress',
+  nowAt: 'Now at',
+  finished: 'Finished',
   averageScore: 'Average score',
   coursesCompleted: 'Courses completed',
   video: 'Video',
@@ -169,7 +171,18 @@ describe('insights students export', () => {
     });
     expect(studentExportPost).toHaveBeenCalledTimes(1);
     expect(document.rows).toHaveLength(3);
-    expect(document.columns.map((column) => column.header)).toContain('Exercise one');
+    expect(document.columns.map((column) => column.header)).toEqual([
+      'Name',
+      'Email',
+      'Progress',
+      'Now at',
+      'Exercise one',
+      'Video',
+      'Classroom',
+      'Certificates',
+      'Last login',
+      'Status'
+    ]);
     expect(document.columns.find((column) => column.key === 'exercise_exercise-1')?.value(document.rows[0])).toBe(80);
   });
 
@@ -189,6 +202,18 @@ describe('insights students export', () => {
     expect(request?.json.exerciseSpec).toBeUndefined();
     expect(document.rows).toHaveLength(3);
     expect(document.columns.some((column) => column.key.startsWith('exercise_'))).toBe(false);
+    expect(document.columns.map((column) => column.header)).toEqual([
+      'Name',
+      'Email',
+      'Progress',
+      'Average score',
+      'Courses completed',
+      'Video',
+      'Classroom',
+      'Certificates',
+      'Last login',
+      'Status'
+    ]);
   });
 
   it('puts a visible cap notice in the document when the export is partial', async () => {

@@ -6510,6 +6510,7 @@
       "showing_first": "Viser de første {shown} af {total}.",
       "cohorts_select": "Vælg en kohorte for at åbne dens betjeningspanel.",
       "cohorts_in_table": "{count, plural, one {Kohorten} other {De # kohorter}} i tabellen ovenfor.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "Ikke medregnet: {names} (ingen elever endnu).",
       "not_charted_empty": "Ikke vist i diagram: {names} (ingen elever endnu).",
       "lesson_dropoff": "Det stejleste fald er mellem {from} og {to}.",

@@ -6510,6 +6510,7 @@
       "showing_first": "Mostrando os primeiros {shown} de {total}.",
       "cohorts_select": "Selecione uma coorte para abrir seu painel.",
       "cohorts_in_table": "{count, plural, one {A coorte} other {As # coortes}} na tabela acima.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "Não contabilizados: {names} (ainda sem alunos).",
       "not_charted_empty": "Não incluídos no gráfico: {names} (ainda sem alunos).",
       "lesson_dropoff": "A queda mais acentuada ocorre entre {from} e {to}.",

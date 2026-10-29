@@ -6510,6 +6510,7 @@
       "showing_first": "Wyświetlanie pierwszych {shown} z {total}.",
       "cohorts_select": "Wybierz kohortę, aby otworzyć jej pulpit nawigacyjny.",
       "cohorts_in_table": "{count, plural, one {Kohorta} other {# kohorty}} w tabeli powyżej.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "Nieuwzględnione: {names} (brak studentów na razie).",
       "not_charted_empty": "Niepokazane na wykresie: {names} (brak studentów na razie).",
       "lesson_dropoff": "Największy spadek występuje pomiędzy {from} i {to}.",

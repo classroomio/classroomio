@@ -6480,6 +6480,7 @@
       "showing_first": "Mostra i primi {shown} di {total}.",
       "cohorts_select": "Seleziona una coorte per aprire la sua dashboard.",
       "cohorts_in_table": "{count, plural, one {La coorte} other {Le # coorti}} nella tabella sopra.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "Non conteggiati: {names} (ancora nessuno studente).",
       "not_charted_empty": "Non mostrati nel grafico: {names} (ancora nessuno studente).",
       "lesson_dropoff": "La discesa più ripida si verifica tra {from} e {to}.",

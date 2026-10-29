@@ -6510,6 +6510,7 @@
       "showing_first": "Показаны первые {shown} из {total}.",
       "cohorts_select": "Выберите когорту, чтобы открыть ее панель мониторинга.",
       "cohorts_in_table": "{count, plural, one {когорта} other {# когорты}} в таблице выше.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "Не учтены: {names} (пока нет студентов).",
       "not_charted_empty": "Не показаны на графике: {names} (пока нет студентов).",
       "lesson_dropoff": "Самое крутое падение происходит между {from} и {to}.",

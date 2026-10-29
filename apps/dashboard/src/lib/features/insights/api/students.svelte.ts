@@ -80,10 +80,11 @@ class InsightsStudentsApi extends BaseApi {
     return Math.max(1, Math.ceil(this.total / INSIGHTS_LIMITS.studentsPageSize));
   }
 
-  #studentSpec(page: number, limit: number): InsightsSpec {
+  #studentSpec(page: number, limit: number, selectedCourseId = insightsApi.selection.courseId): InsightsSpec {
     const parts = studentQueryParts(this.filters);
-    const courseId = insightsApi.selection.courseId;
-    const courseFilter = courseId ? [{ field: 'course' as const, op: 'eq' as const, value: courseId }] : [];
+    const courseFilter = selectedCourseId
+      ? [{ field: 'course' as const, op: 'eq' as const, value: selectedCourseId }]
+      : [];
     const sort = this.sort ? [{ field: this.sort.key, dir: this.sort.dir }] : parts.sort;
 
     return {
@@ -314,7 +315,7 @@ class InsightsStudentsApi extends BaseApi {
   }): Promise<ExportDocument<{ row: InsightsRow; cells: Record<string, StudentExerciseCell> }>> {
     const courseId = insightsApi.selection.courseId;
     const exportResult = await this.#exportStudents({
-      studentSpec: this.#studentSpec(1, INSIGHTS_LIMITS.maxExportRows),
+      studentSpec: this.#studentSpec(1, INSIGHTS_LIMITS.maxExportRows, courseId),
       exerciseSpec: courseId ? this.#exportExerciseSpec(courseId) : undefined
     });
     const cells = exportResult?.cells ?? {};
@@ -342,7 +343,8 @@ class InsightsStudentsApi extends BaseApi {
       subtitle,
       headers: params.headers,
       rows,
-      exercises
+      exercises,
+      courseSelected: Boolean(courseId)
     });
   }
 }

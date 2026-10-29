@@ -6532,6 +6532,7 @@
       "cohorts_select": "Select a cohort to open its dashboard.",
       "courses_select": "Select a course to open its dashboard.",
       "cohorts_in_table": "{count, plural, one {The cohort} other {The # cohorts}} in the table above.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "Not counted: {names} (no students yet).",
       "not_charted_empty": "Not charted: {names} (no students yet).",
       "direct_students_charted": "Direct students are not in a cohort; they appear as their own line.",

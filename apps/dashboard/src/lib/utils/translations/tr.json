@@ -6490,6 +6490,7 @@
       "showing_first": "{total} içinden ilk {shown} gösteriliyor.",
       "cohorts_select": "Kontrol panelini açmak için bir grup seçin.",
       "cohorts_in_table": "Yukarıdaki tabloda {count, plural, one {kohort} other {# kohort}}.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "Sayılmadı: {names} (henüz öğrenci yok).",
       "not_charted_empty": "Grafikte gösterilmedi: {names} (henüz öğrenci yok).",
       "lesson_dropoff": "En dik düşüş {from} ile {to} arasındadır.",

@@ -91,6 +91,8 @@
         name: $t('insights.columns.student'),
         email: $t('insights.columns.email'),
         progress: $t('insights.columns.progress'),
+        nowAt: $t('insights.columns.now_at'),
+        finished: $t('insights.finished'),
         averageScore: $t('insights.columns.average_score'),
         coursesCompleted: $t('insights.columns.courses_completed'),
         video: $t('insights.columns.video'),
@@ -304,7 +306,7 @@
       <ExportMenu
         document={loadExportDocument}
         estimatedRowCount={insightsStudentsApi.total}
-        disabled={insightsStudentsApi.total === 0}
+        disabled={insightsStudentsApi.total === 0 || insightsStudentsApi.loadingPage}
         testId="insights-students-export"
       />
     </div>

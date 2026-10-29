@@ -6510,6 +6510,7 @@
       "showing_first": "Zeigt die ersten {shown} von {total}.",
       "cohorts_select": "Wählen Sie eine Kohorte aus, um deren Dashboard zu öffnen.",
       "cohorts_in_table": "{count, plural, one {Die Kohorte} other {Die # Kohorten}} in der Tabelle oben.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "Nicht gezählt: {names} (noch keine Studierenden).",
       "not_charted_empty": "Nicht im Diagramm: {names} (noch keine Studierenden).",
       "lesson_dropoff": "Der steilste Abfall befindet sich zwischen {from} und {to}.",

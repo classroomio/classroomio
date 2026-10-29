@@ -6510,6 +6510,7 @@
       "showing_first": "{total} में से पहले {shown} दिखा रहा है।",
       "cohorts_select": "किसी समूह का डैशबोर्ड खोलने के लिए उसका चयन करें.",
       "cohorts_in_table": "उपरोक्त तालिका में {count, plural, one {पलटन} other {#दल}}।",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
       "not_counted_empty": "गणना में नहीं: {names} (अभी कोई छात्र नहीं)।",
       "not_charted_empty": "चार्ट में नहीं: {names} (अभी कोई छात्र नहीं)।",
       "lesson_dropoff": "सबसे तीव्र गिरावट {from} और {to} के बीच है।",
