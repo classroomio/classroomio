@@ -3,11 +3,11 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import type { TInsightsScopeType } from '@cio/utils/constants/insights';
 import { logRedisUnavailableOnce, redis } from './redis';
 
-export const INSIGHTS_TTL_SECONDS = { scope: 30, org: 60, structure: 600 } as const;
+export const INSIGHTS_TTL_SECONDS = { scope: 30, org: 60, structure: 600, plan: 60 } as const;
 
 export const INSIGHTS_REFRESH_COOLDOWN_SECONDS = 15;
 
-export type InsightsCacheSection = 'query' | 'dashboard' | 'structure';
+export type InsightsCacheSection = 'query' | 'dashboard' | 'structure' | 'plan';
 
 export function insightsKey(
   section: InsightsCacheSection,
@@ -24,6 +24,10 @@ export function insightsKey(
 
 export function insightsStructureKey(orgId: string, courseId: string): string {
   return insightsKey('structure', orgId, 'course', courseId);
+}
+
+export function insightsPlanKey(orgId: string): string {
+  return insightsKey('plan', orgId, 'org', orgId);
 }
 
 export function insightsTtlSeconds(scopeType: TInsightsScopeType): number {
@@ -85,5 +89,18 @@ export async function invalidateInsightsCourseStructure(courseId: string): Promi
     await redis.del(insightsStructureKey(orgId, courseId));
   } catch (error) {
     logRedisUnavailableOnce('Redis invalidate failed for insights structure, continuing', error);
+  }
+}
+
+/**
+ * Drops an organization's cached active plan so the next range check reads it fresh. Never throws.
+ */
+export async function invalidateInsightsPlan(orgId: string): Promise<void> {
+  if (!env.REDIS_URL) return;
+
+  try {
+    await redis.del(insightsPlanKey(orgId));
+  } catch (error) {
+    logRedisUnavailableOnce('Redis invalidate failed for insights plan, continuing', error);
   }
 }

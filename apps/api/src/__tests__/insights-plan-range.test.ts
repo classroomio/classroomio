@@ -8,6 +8,12 @@ vi.mock('@cio/db/queries/organization', () => ({
   getActiveOrganizationPlan: vi.fn()
 }));
 
+vi.mock('@api/utils/redis/cached-read', () => ({
+  cachedRead: vi.fn(async (_key, _ttl, compute) => ({ data: await compute(), generatedAt: new Date().toISOString() }))
+}));
+
+import { cachedRead } from '@api/utils/redis/cached-read';
+
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import { FREE_PLAN_INSIGHTS_DAYS, INSIGHTS_RANGE_DAYS } from '@cio/utils/constants/insights';
 import { FREE_PLAN_INSIGHTS_RANGE, resolveInsightsRange } from '@api/services/insights/plan';
@@ -58,5 +64,13 @@ describe('resolveInsightsRange', () => {
 
   it('points the free allowance range at the free allowance in days', () => {
     expect(INSIGHTS_RANGE_DAYS[FREE_PLAN_INSIGHTS_RANGE]).toBe(FREE_PLAN_INSIGHTS_DAYS);
+  });
+
+  it('reads the plan through cachedRead with the plan key and TTL', async () => {
+    vi.mocked(getActiveOrganizationPlan).mockResolvedValue(plan('ENTERPRISE') as never);
+
+    await resolveInsightsRange(ORG_ID, 'all');
+
+    expect(cachedRead).toHaveBeenCalledWith(`insights:plan:${ORG_ID}:org:${ORG_ID}`, 60, expect.any(Function));
   });
 });
