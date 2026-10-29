@@ -138,7 +138,7 @@ async function sendStudentCourseWelcome(
   student: TAddCourseMembers[number],
   delivery: { baseUrl: string; branding: ReturnType<typeof buildEmailBranding>; ics?: string }
 ) {
-  const to = student.email || (student.profileId ? (await getProfileById(student.profileId))?.email : null);
+  const to = student.profileId ? (await getProfileById(student.profileId))?.email : student.email;
   if (!to) return;
 
   const orgName = courseOrgData.orgName || 'ClassroomIO';

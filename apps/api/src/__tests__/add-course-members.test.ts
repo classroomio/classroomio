@@ -111,6 +111,24 @@ describe('welcome emails when adding course members', () => {
     ]);
   });
 
+  it("sends to the profile's email when the given email belongs to someone else", async () => {
+    await addMembers('course-1', [{ roleId: ROLE.STUDENT, profileId: 'profile-1', email: 'someone-else@example.com' }]);
+
+    expect(sentEmails()).toEqual([expect.objectContaining({ to: 'ada@example.com' })]);
+  });
+
+  it('sends to the given email when there is no profile yet', async () => {
+    await addMembers('course-1', [{ roleId: ROLE.STUDENT, email: 'pending@example.com' }]);
+
+    expect(getProfileById).not.toHaveBeenCalled();
+    expect(sentEmails()).toEqual([
+      expect.objectContaining({
+        to: 'pending@example.com',
+        idempotencyKey: 'course-people-student-welcome:course-1:pending@example.com'
+      })
+    ]);
+  });
+
   it('sends no email when sendEmail is false', async () => {
     await addMembers(
       'course-1',
