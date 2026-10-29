@@ -139,6 +139,8 @@ export type StudentExportHeaders = {
   name: string;
   email: string;
   progress: string;
+  nowAt: string;
+  finished: string;
   averageScore: string;
   coursesCompleted: string;
   video: string;

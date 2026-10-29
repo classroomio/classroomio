@@ -281,6 +281,10 @@ export function scopeCourse(dashboard: InsightsDashboard | null, courseId: strin
   return dashboard?.scope.courses.find((course) => course.id === courseId) ?? null;
 }
 
+export function canReturnToAllCourses(dashboardCourseId: string | null, sheetCourseId: string | null): boolean {
+  return dashboardCourseId === null && sheetCourseId !== null;
+}
+
 export function focusStructure(
   dashboard: InsightsDashboard | null,
   selection: InsightsSelection
@@ -1192,6 +1196,10 @@ export function widgetNotes(
 
   if ((widget.id === 'cohort_health' || widget.id === 'avg_score_by_cohort') && shown > 0) {
     notes.push(translate('insights.notes.cohorts_in_table', { count: shown }));
+  }
+
+  if (widget.id === 'avg_score_by_course' && shown > 0) {
+    notes.push(translate('insights.notes.courses_in_table', { count: shown }));
   }
 
   if (widget.id === 'cohort_health') {

@@ -7,6 +7,8 @@ const headers: StudentExportHeaders = {
   name: 'Name',
   email: 'Email',
   progress: 'Progress',
+  nowAt: 'Now at',
+  finished: 'Finished',
   averageScore: 'Average score',
   coursesCompleted: 'Courses completed',
   video: 'Video',
@@ -31,6 +33,7 @@ const row = {
   name__value: 'Jane Doe',
   email__value: 'jane@example.com',
   overall_progress_pct__value: 72.4,
+  now_at_title__value: 'Section one',
   avg_score_pct__value: 81.6,
   courses_completed__value: 2,
   video_pct__value: 50.5,
@@ -40,12 +43,13 @@ const row = {
   status__value: 'at_risk'
 } as InsightsRow;
 
-function document() {
+function document(courseSelected = false) {
   return buildStudentsExportDocument({
     filename: 'Cohort students',
     title: 'Cohort',
     headers,
     exercises,
+    courseSelected,
     rows: [
       {
         row,
@@ -59,7 +63,7 @@ function document() {
 }
 
 describe('buildStudentsExportDocument', () => {
-  it('keeps every student and one column per exercise', () => {
+  it('uses the all-courses columns when no course is selected', () => {
     const exportDocument = document();
 
     expect(exportDocument.rows).toHaveLength(1);
@@ -69,6 +73,22 @@ describe('buildStudentsExportDocument', () => {
       'Progress',
       'Average score',
       'Courses completed',
+      'Video',
+      'Classroom',
+      'Certificates',
+      'Last login',
+      'Status'
+    ]);
+  });
+
+  it('switches to course columns when a course is selected', () => {
+    const exportDocument = document(true);
+
+    expect(exportDocument.columns.map((column) => column.header)).toEqual([
+      'Name',
+      'Email',
+      'Progress',
+      'Now at',
       'Exercise one',
       'Exercise two',
       'Video',
@@ -80,16 +100,19 @@ describe('buildStudentsExportDocument', () => {
   });
 
   it('rounds percentages and leaves an unattempted exercise empty', () => {
-    const exportDocument = document();
-    const valueOf = (key: string) =>
-      exportDocument.columns.find((column) => column.key === key)?.value(exportDocument.rows[0]);
+    const allCourses = document();
+    const course = document(true);
+    const allCoursesValue = (key: string) =>
+      allCourses.columns.find((column) => column.key === key)?.value(allCourses.rows[0]);
+    const courseValue = (key: string) => course.columns.find((column) => column.key === key)?.value(course.rows[0]);
 
-    expect(valueOf('progress')).toBe(72);
-    expect(valueOf('average_score')).toBe(82);
-    expect(valueOf('exercise_exercise-1')).toBe(67);
-    expect(valueOf('exercise_exercise-2')).toBeNull();
-    expect(valueOf('video')).toBe(51);
-    expect(valueOf('classroom')).toBe(90);
+    expect(allCoursesValue('progress')).toBe(72);
+    expect(allCoursesValue('average_score')).toBe(82);
+    expect(allCoursesValue('video')).toBe(51);
+    expect(allCoursesValue('classroom')).toBe(90);
+    expect(courseValue('now_at')).toBe('Section one');
+    expect(courseValue('exercise_exercise-1')).toBe(67);
+    expect(courseValue('exercise_exercise-2')).toBeNull();
   });
 
   it('uses the translated status label rather than the stored status key', () => {

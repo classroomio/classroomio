@@ -77,7 +77,9 @@
       ];
     }
 
-    const items = [{ label: labels.average, color: averageColor, dashed: false }];
+    const items: Array<{ label: string; color: string; dashed: boolean }> = [
+      { label: labels.average, color: averageColor, dashed: false }
+    ];
     if (keys.low && keys.high && labels.band) {
       items.push({
         label: labels.band,
