@@ -121,6 +121,11 @@ Current tools:
 - `update_email_template`
 - `reset_email_template`
 - `send_test_email_template`
+- `get_domain`
+- `update_domain`
+- `connect_custom_domain`
+- `refresh_custom_domain`
+- `remove_custom_domain`
 
 Course certificate tools:
 
@@ -262,7 +267,7 @@ Course member and invite tools call the public API (`/public-api/v1/courses/:id/
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. Email template tools call `/public-api/v1/organization/email-templates/...` and need `organization:read` / `organization:write`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course section, lesson and content, course clone, course template, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, team, and organization email template and landing page routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. Email template tools call `/public-api/v1/organization/email-templates/...` and need `organization:read` / `organization:write`, also on by default. Domain tools call `/public-api/v1/organization/domain/...` and need `organization:read` (reads) and `organization:domain:write` (everything else), also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course section, lesson and content, course clone, course template, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, team, and organization email template, landing page and domain routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
@@ -297,6 +302,13 @@ Email template tools act as the key creator, who must be an org admin, the same 
 - `reset_email_template` deletes the saved version and returns the default. It succeeds even when nothing was saved.
 - `send_test_email_template` sends up to 5 addresses a test with sample values. Without `content` or `subject` it tests the current template. The organization gets 5 test sends per 15 minutes, shared with the dashboard.
 - Saving, resetting and test sends need a paid plan (403 `UPGRADE_REQUIRED` otherwise). Students only get a saved template on a paid plan, and a non-English one only when the organization enforces that language.
+
+Domain tools act as the key creator, who must be an org admin, the same as the dashboard's Domains settings page:
+
+- `get_domain` returns the subdomain (`siteName`), the site URL, the favicon and the connected custom domain with its last known `verified` state.
+- `update_domain` changes `siteName` and/or `favicon` (`null` falls back to the logo). A new subdomain breaks every link to the old one.
+- `connect_custom_domain` takes `hostname` and returns the DNS records to add. On ClassroomIO Cloud it needs a paid plan (403 `UPGRADE_REQUIRED`); self-hosted instances have no plan limit but return 409 `CUSTOM_DOMAIN_UNAVAILABLE` until Approximated is configured. To switch domains, remove the current one first.
+- `refresh_custom_domain` checks DNS and SSL again; `remove_custom_domain` disconnects the domain on any plan. Both act only on the organization's own connected domain.
 
 Analytics tools are read-only, cost no credits, and act as the key creator:
 

@@ -57,6 +57,10 @@ vi.mock('@api/services/v1/organization/email-templates', () => ({
   listEmailTemplatesService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
 }));
 
+vi.mock('@api/services/v1/organization/domain', () => ({
+  getDomainService: vi.fn().mockResolvedValue({})
+}));
+
 vi.mock('@api/services/v1/courses/members', () => ({
   listCourseMembersService: vi.fn().mockResolvedValue({ items: [], page: 1, limit: 20, total: 0, totalPages: 0 })
 }));
@@ -92,7 +96,8 @@ const MCP_DEFAULT_SCOPES = [
   'team:read',
   'team:write',
   'organization:read',
-  'organization:write'
+  'organization:write',
+  'organization:domain:write'
 ];
 
 const app = new Hono().route('/public-api/v1', v1Router);
@@ -121,7 +126,8 @@ describe('default MCP key across the cohort, course member, certificate, exercis
     [`/courses/${COURSE_ID}/submissions`, 'list_course_submissions'],
     ['/audience', 'list_audience_members'],
     ['/team', 'list_team_members'],
-    ['/organization/email-templates', 'list_email_templates']
+    ['/organization/email-templates', 'list_email_templates'],
+    ['/organization/domain', 'get_domain']
   ])('reaches %s and meters it as %s', async (path, toolName) => {
     const response = await request(path);
 

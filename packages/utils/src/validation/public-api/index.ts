@@ -36,6 +36,8 @@ export * from './landing-page';
 export * from './landing-page-responses';
 export * from './organization';
 export * from './organization-responses';
+export * from './organization-domain';
+export * from './organization-domain-responses';
 export * from './exercise-template';
 export * from './lesson';
 export * from './pagination';

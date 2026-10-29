@@ -140,7 +140,12 @@ export const MCP_TOOL_CREDIT_COST = {
   reset_email_template: 1,
   send_test_email_template: 1,
   get_organization: 0,
-  update_organization: 1
+  update_organization: 1,
+  get_domain: 0,
+  update_domain: 1,
+  connect_custom_domain: 1,
+  refresh_custom_domain: 1,
+  remove_custom_domain: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -261,7 +266,8 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_team_member' ||
     toolName === 'list_email_templates' ||
     toolName === 'get_email_template' ||
-    toolName === 'get_organization'
+    toolName === 'get_organization' ||
+    toolName === 'get_domain'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

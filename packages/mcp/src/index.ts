@@ -20,6 +20,7 @@ import { registerCourseExerciseTools } from './tools/course-exercises';
 import { registerCourseSubmissionTools } from './tools/course-submissions';
 import { registerCourseTools } from './tools/courses';
 import { registerCourseTemplateTools } from './tools/course-templates';
+import { registerDomainTools } from './tools/domain';
 import { registerEmailTemplateTools } from './tools/email-templates';
 import { registerLandingPageTools } from './tools/landing-page';
 import { registerOrganizationTools } from './tools/organization';
@@ -54,6 +55,7 @@ async function main() {
   registerOrganizationTools(server, apiClient);
   registerEmailTemplateTools(server, apiClient);
   registerLandingPageTools(server, apiClient);
+  registerDomainTools(server, apiClient);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

@@ -174,8 +174,6 @@ export interface TOrgUpdateForm {
   theme?: string;
   landingpage?: AccountOrg['landingpage'];
   siteName?: string;
-  customDomain?: string | null;
-  isCustomDomainVerified?: boolean;
   customization?: AccountOrg['customization'];
   disableSignup?: boolean;
   disableSignupMessage?: string;
