@@ -114,6 +114,10 @@ Current tools:
 - `list_team_members`
 - `get_team_member`
 - `update_team_member`
+- `invite_team_members`
+- `remove_team_member`
+- `get_team_invite_link`
+- `set_team_invite_link`
 - `get_organization`
 - `update_organization`
 - `list_email_templates`
@@ -282,7 +286,9 @@ Audience and team tools act as the key creator:
 - Every audience and team tool needs the key creator to be an org admin, the same as the dashboard's Audience and Team settings pages.
 - `update_team_member` switches a member between admin and tutor with `roleId` (1 or 2). The key creator cannot change their own role, and the organization must keep at least one admin.
 - `update_audience_member` and `update_team_member` take `name` to set a joined member's full name. The profile is shared, so the name changes in every organization that person belongs to. Email, password, username and avatar stay with the person. On a member who has not accepted their invite yet, `update_audience_member` takes `email` to correct the address instead.
-- `remove_audience_member` deletes the organization membership; the person keeps their account. Inviting and removing team members is not available yet.
+- `remove_audience_member` and `remove_team_member` delete the organization membership; the person keeps their account. The key creator cannot remove themselves, and the organization must keep at least one admin.
+- `invite_team_members` sends the same invite emails as Settings → Teams. If an address belongs to a student, nothing is sent and `requiresConfirmation` is true; call again with those addresses in `confirmedStudentEmails` to promote them.
+- `get_team_invite_link` and `set_team_invite_link` manage the reusable admin or tutor join link (`roleId` 1 or 2). `set_team_invite_link` with `enabled: true` returns the active link, creating a new one if the role's link is off; `enabled: false` turns it off.
 - `list_audience_members` and `list_team_members` take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
 
 Organization tools call `GET` and `PATCH /public-api/v1/organization` with the `organization:read` and `organization:write` scopes. The key creator must be an org admin, the same as the dashboard's Organization settings page:

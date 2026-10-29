@@ -134,6 +134,10 @@ export const MCP_TOOL_CREDIT_COST = {
   list_team_members: 0,
   get_team_member: 0,
   update_team_member: 1,
+  invite_team_members: 1,
+  remove_team_member: 1,
+  get_team_invite_link: 0,
+  set_team_invite_link: 1,
   list_email_templates: 0,
   get_email_template: 0,
   update_email_template: 1,
@@ -259,6 +263,7 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_audience_member' ||
     toolName === 'list_team_members' ||
     toolName === 'get_team_member' ||
+    toolName === 'get_team_invite_link' ||
     toolName === 'list_email_templates' ||
     toolName === 'get_email_template' ||
     toolName === 'get_organization'
