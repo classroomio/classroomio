@@ -78,6 +78,8 @@ export {
 } from './custom/checkbox-option-card';
 export * as ResourceListRow from './custom/resource-list-row';
 export { DocumentCard } from './custom/document-card';
+export { UploadFileCard } from './custom/upload-file-card';
+export type { UploadFileCardLabels, UploadFileCardStatus } from './custom/upload-file-card';
 export * as ExerciseQuestion from './custom/exercise-question';
 export { QuestionTypePicker, QuestionTypeIcon } from './custom/question-type-picker';
 export { MediaPlayer } from './custom/media-player';

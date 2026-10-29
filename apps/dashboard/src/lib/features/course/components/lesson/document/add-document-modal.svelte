@@ -9,9 +9,11 @@
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
   import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
+  import { formatFileSize } from '@cio/ui/custom/attachment-list';
   import { LESSON_DOCUMENT_ACCEPTED_TYPES, getFileUploadAcceptAttribute } from '@cio/utils/file-upload';
-  import { MAX_DOCUMENT_UPLOAD_FILES, formatUploadFileSize } from '$features/course/utils/document-upload-utils';
-  import DocumentUploadCard from './document-upload-card.svelte';
+  import { MAX_DOCUMENT_UPLOAD_FILES } from '$features/course/utils/document-upload-utils';
+  import { UploadFileCard } from '@cio/ui/custom/upload-file-card';
+  import type { UploadFileCardLabels } from '@cio/ui/custom/upload-file-card';
   import { DocumentUploadQueue } from './document-upload-queue.svelte';
 
   interface Props {
@@ -28,6 +30,15 @@
   const queue = new DocumentUploadQueue();
 
   let isDisabled = $derived($isFreePlan);
+
+  let cardLabels: UploadFileCardLabels = $derived({
+    completed: $t(`${keyPrefix}.completed`),
+    failed: $t(`${keyPrefix}.failed`),
+    retry: $t(`${keyPrefix}.try_again`),
+    remove: $t(`${keyPrefix}.remove_document`),
+    uploading: (percent) => $t(`${keyPrefix}.uploading_progress`, { percent }),
+    transferred: (uploaded, total) => $t(`${keyPrefix}.size_progress`, { uploaded, total })
+  });
 
   function handleOpenChange(isOpen: boolean) {
     if (isOpen) {
@@ -56,7 +67,7 @@
 
   function handleFileRejected(opts: { reason: FileRejectedReason; file: File }) {
     if (opts.reason === 'Maximum file size exceeded') {
-      snackbar.error($t(`${keyPrefix}.file_size_error`, { size: formatUploadFileSize(maxDocumentSize) }));
+      snackbar.error($t(`${keyPrefix}.file_size_error`, { size: formatFileSize(maxDocumentSize) }));
     } else if (opts.reason === 'Maximum files uploaded') {
       snackbar.error($t(`${keyPrefix}.max_files_error`, { count: MAX_DOCUMENT_UPLOAD_FILES }));
     } else if (opts.reason === 'File type not allowed') {
@@ -77,27 +88,35 @@
     </UpgradeBanner>
 
     <div class="flex flex-col gap-4 p-6">
-      <div class={isDisabled ? 'pointer-events-none opacity-50' : ''}>
-        <FileDropZone.Root
-          accept={acceptAttribute}
-          maxFiles={MAX_DOCUMENT_UPLOAD_FILES}
-          fileCount={queue.items.length}
-          maxFileSize={maxDocumentSize}
-          onUpload={handleFilesUpload}
-          onFileRejected={handleFileRejected}
-        >
-          <FileDropZone.Trigger
-            label={$t(`${keyPrefix}.drag_drop`)}
-            formatMaxFiles={() => $t(`${keyPrefix}.upload_description`)}
-            formatMaxFilesAndSize={(size) => $t(`${keyPrefix}.up_to_size_each`, { size })}
-          />
-        </FileDropZone.Root>
-      </div>
-
-      {#if queue.items.length > 0}
+      {#if queue.items.length === 0}
+        <div class={isDisabled ? 'pointer-events-none opacity-50' : ''}>
+          <FileDropZone.Root
+            accept={acceptAttribute}
+            maxFiles={MAX_DOCUMENT_UPLOAD_FILES}
+            fileCount={queue.items.length}
+            maxFileSize={maxDocumentSize}
+            onUpload={handleFilesUpload}
+            onFileRejected={handleFileRejected}
+          >
+            <FileDropZone.Trigger
+              label={$t(`${keyPrefix}.drag_drop`)}
+              formatMaxFiles={() => $t(`${keyPrefix}.upload_description`)}
+              formatMaxFilesAndSize={(size) => $t(`${keyPrefix}.up_to_size_each`, { size })}
+            />
+          </FileDropZone.Root>
+        </div>
+      {:else}
         <div class="flex max-h-[40vh] flex-col gap-2 overflow-y-auto">
           {#each queue.items as item (item.id)}
-            <DocumentUploadCard {item} onRemove={(id) => queue.remove(id)} onRetry={(id) => queue.retry(id)} />
+            <UploadFileCard
+              name={item.file.name}
+              size={item.file.size}
+              status={item.status}
+              progress={item.progress}
+              labels={cardLabels}
+              onRemove={() => queue.remove(item.id)}
+              onRetry={() => queue.retry(item.id)}
+            />
           {/each}
         </div>
       {/if}

@@ -220,6 +220,22 @@ Marketing / demo widget: left-hand list of question types and a live **take**-mo
 
 Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop (including `reorder` for the drag handle) so dashboard wrappers can supply translated strings. `AttachmentListFile.type` accepts a file extension or MIME type for icon styling. See `Molecules/AttachmentList` in Storybook.
 
+### Upload file card (`src/custom/upload-file-card/`)
+
+One compact row (about 52px) for a file that is uploading or has uploaded, meant to be stacked into an upload queue next to `FileDropZone`. A file-type badge (`PDF`, `CSV`, `XLSX`, `IPYNB`, `PY`, …) sits on the left, with the file name and a one-line status beside it. While the file is in flight the card fills with a gradient that sweeps to `progress` and a 2px bar tracks the same value along the bottom edge. `status` is `queued`, `uploading`, `done` or `error`: `queued` and `uploading` look the same, `done` fades the fill and shows a green check, and `error` shows `labels.failed` with a Retry button when `onRetry` is passed. `onRemove` renders an icon-only secondary button on every state except `done`, so a finished file is never deleted by accident. Copy is passed via `labels: UploadFileCardLabels`, including the `uploading(percent)` and `transferred(uploaded, total)` formatters, so the host supplies translated strings. `size` is in bytes and formatted with `formatSize` (default `formatFileSize`). See `Molecules/UploadFileCard` in Storybook.
+
+```svelte
+<UploadFileCard
+  name={file.name}
+  size={file.size}
+  status={item.status}
+  progress={item.progress}
+  {labels}
+  onRemove={() => queue.remove(item.id)}
+  onRetry={() => queue.retry(item.id)}
+/>
+```
+
 ### Slide embed (`src/custom/slide-embed/`)
 
 Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
@@ -441,7 +457,11 @@ Read-only `InputGroup` that shows a value with an inline Copy button. Focusing t
   import { CopyInput } from '@cio/ui/custom/copy-input';
 </script>
 
-<CopyInput value={secret} copyLabel={$t('automation.keys.reveal.copy')} copiedLabel={$t('automation.keys.reveal.copied')} />
+<CopyInput
+  value={secret}
+  copyLabel={$t('automation.keys.reveal.copy')}
+  copiedLabel={$t('automation.keys.reveal.copied')}
+/>
 ```
 
 ### Hooks (`src/hooks/`)
