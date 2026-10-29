@@ -7,6 +7,7 @@ import {
   canReturnToAllCourses,
   chartedCohorts,
   clampRangeToDays,
+  cleanWidgetTitle,
   cohortHealth,
   cohortOptionsFromResult,
   cohortOptionsFromSeries,
@@ -68,6 +69,7 @@ import {
   widgetNotes,
   widgetPaginationLabel,
   widgetPaginationTarget,
+  widgetTitle,
   widgetUsesPlaceholder
 } from './insights-utils';
 import type {
@@ -472,6 +474,93 @@ describe('insights-utils', () => {
       };
 
       expect(isWidgetVisible(cohortWidget, noCohortsDashboard, { ...selection, breakdown: 'cohorts' })).toBe(false);
+    });
+
+    it('keeps exercise widgets visible when the focused course has no exercises', () => {
+      const exerciseWidget: InsightsWidget = {
+        ...widgetOf('exercise_score_distribution'),
+        spec: {
+          source: 'assessment_result',
+          dimensions: [],
+          measures: [],
+          filters: [{ field: 'exercise', op: 'eq', value: '$exercise' }],
+          sort: [],
+          limit: 10,
+          page: 1,
+          range: 'all'
+        }
+      };
+      const emptyCourseDashboard: InsightsDashboard = {
+        ...mockDashboard,
+        scope: {
+          ...mockDashboard.scope,
+          type: 'course',
+          courses: [{ id: 'c1', title: 'Course 1', isGrouped: false, hasPassRequired: false }]
+        },
+        structures: {
+          c1: {
+            courseId: 'c1',
+            isGrouped: false,
+            sections: [],
+            items: [
+              {
+                id: 'l1',
+                title: 'Lesson 1',
+                type: 'LESSON',
+                rank: 1,
+                sectionId: null,
+                isPassRequired: false,
+                passMark: null,
+                isLocked: false,
+                maxPoints: null
+              }
+            ]
+          }
+        }
+      };
+      const selection: InsightsSelection = {
+        courseId: null,
+        exerciseId: null,
+        range: 'all',
+        breakdown: 'courses',
+        cohortIds: null,
+        pages: {}
+      };
+
+      expect(isWidgetVisible(exerciseWidget, emptyCourseDashboard, selection)).toBe(true);
+    });
+  });
+
+  describe('widgetTitle and cleanWidgetTitle', () => {
+    it('strips a trailing comma when the exercise placeholder is empty', () => {
+      expect(cleanWidgetTitle('Score distribution, ')).toBe('Score distribution');
+      expect(cleanWidgetTitle('Scores by exercise, ')).toBe('Scores by exercise');
+      expect(cleanWidgetTitle('Score distribution, Quiz 1')).toBe('Score distribution, Quiz 1');
+    });
+
+    it('formats widget titles without trailing commas', () => {
+      const widget: InsightsWidget = {
+        ...widgetOf('exercise_score_distribution'),
+        titleKey: 'insights.widgets.exercise_score_distribution.title'
+      };
+      const translate = (_key: string, vars?: Record<string, string | number>) =>
+        vars?.exercise ? `Score distribution, ${vars.exercise}` : 'Score distribution, ';
+
+      const emptyTitle = widgetTitle(
+        widget,
+        null,
+        {
+          courseId: null,
+          exerciseId: null,
+          range: 'all',
+          breakdown: 'courses',
+          cohortIds: null,
+          pages: {}
+        },
+        translate
+      );
+
+      expect(emptyTitle).toBe('Score distribution');
     });
   });
 
