@@ -2,6 +2,8 @@ export type BucketCombine = 'sum';
 
 export type ChartBucket = { date: Date; endDate: Date; isSingleDay: boolean; rawCount: number };
 
+export type ChartAxisTickProps = { x: number; y: number; value: string };
+
 type DailyPoint<TKey extends string> = { date: string } & Record<TKey, number | null>;
 
 export const DATE_TICK_MIN_WIDTH = 56;
@@ -83,9 +85,19 @@ export function visibleTicks<TValue>(
   return values.filter((_, index) => index % step === 0);
 }
 
-export function formatChartTooltipDate(date: Date, point?: ChartBucket): string {
+/**
+ * Shortens an axis label to what its tick can show at the chart's current width, so labels never overlap.
+ */
+export function truncateTickLabel(label: string, containerWidth: number, tickCount: number): string {
+  const availablePerTick = tickCount > 0 ? containerWidth / tickCount : 120;
+  const maxChars = Math.max(8, Math.min(20, Math.floor((availablePerTick - 16) / 7.5)));
+
+  return label.length > maxChars ? `${label.slice(0, maxChars)}…` : label;
+}
+
+export function formatChartTooltipDate(date: Date, point?: ChartBucket, locale?: string): string {
   if (!point || point.isSingleDay) {
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(locale, {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
@@ -93,7 +105,7 @@ export function formatChartTooltipDate(date: Date, point?: ChartBucket): string 
     });
   }
 
-  const startFormatted = point.date.toLocaleDateString('en-US', {
+  const startFormatted = point.date.toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric'
   });
@@ -102,8 +114,8 @@ export function formatChartTooltipDate(date: Date, point?: ChartBucket): string 
     point.date.getMonth() === point.endDate.getMonth() && point.date.getFullYear() === point.endDate.getFullYear();
 
   const endFormatted = isSameMonth
-    ? `${point.endDate.toLocaleDateString('en-US', { day: 'numeric' })}, ${point.endDate.getFullYear()}`
-    : point.endDate.toLocaleDateString('en-US', {
+    ? `${point.endDate.toLocaleDateString(locale, { day: 'numeric' })}, ${point.endDate.getFullYear()}`
+    : point.endDate.toLocaleDateString(locale, {
         month: 'short',
         day: 'numeric',
         year: 'numeric'

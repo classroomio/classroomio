@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
+  import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
   import UsersIcon from '@lucide/svelte/icons/users';
+  import { Button } from '@cio/ui/base/button';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import * as Table from '@cio/ui/base/table';
   import { Empty } from '@cio/ui/custom/empty';
@@ -65,6 +68,10 @@
     void insightsStudentsApi.setSort(key);
   }
 
+  function retryLoad() {
+    void insightsStudentsApi.retry();
+  }
+
   function selectStudent(row: InsightsRow) {
     const student = toSelectedStudent(row);
     if (!student || isCourseScope) return;
@@ -121,6 +128,14 @@
         <Skeleton class="h-11 w-full" />
       {/each}
     </div>
+  {:else if insightsStudentsApi.failed}
+    <Empty icon={CircleAlertIcon} title={$t('insights.students.failed')} class="h-[200px]">
+      <Button variant="outline" size="sm" onclick={retryLoad}>{$t('insights.retry')}</Button>
+    </Empty>
+  {:else if insightsStudentsApi.cellsFailed}
+    <Empty icon={CircleAlertIcon} title={$t('insights.students.cells_failed')} class="h-[200px]">
+      <Button variant="outline" size="sm" onclick={retryLoad}>{$t('insights.retry')}</Button>
+    </Empty>
   {:else if insightsStudentsApi.rows.length === 0}
     <Empty
       icon={UsersIcon}
@@ -128,6 +143,12 @@
       class="h-[200px]"
     />
   {:else}
+    {#if insightsStudentsApi.attemptedFailed}
+      <p class="ui:text-muted-foreground flex items-center gap-1.5 text-xs">
+        <CircleAlertIcon class="size-3.5" />
+        {$t('insights.students.attempts_unavailable')}
+      </p>
+    {/if}
     <div class={cn('transition-opacity duration-200', insightsStudentsApi.loadingPage && 'opacity-60')}>
       <Table.Root>
         <Table.Header>
@@ -227,7 +248,10 @@
                 {#if isCourseScope && courseId}
                   <a
                     class="ui:focus-visible:ring-ring flex w-full flex-col items-start rounded text-left focus-visible:ring-2 focus-visible:outline-none"
-                    href={`/courses/${courseId}/people/${studentId(row)}?back=/courses/${courseId}/analytics`}
+                    href={resolve(
+                      `/courses/${courseId}/people/${studentId(row)}?back=/courses/${courseId}/analytics`,
+                      {}
+                    )}
                   >
                     <span class="font-medium">{textCell(row, 'name__value')}</span>
                     <span class="ui:text-muted-foreground text-xs">{textCell(row, 'email__value')}</span>

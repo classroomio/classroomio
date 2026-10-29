@@ -107,7 +107,7 @@ class InsightsStudentSheetApi {
 
       this.scores = scores;
       this.courseRow = course?.rows[0] ?? null;
-      this.failed = !scores;
+      this.failed = !scores || !course;
     } else {
       const coursesSpec = studentCoursesSpec(student.id, this.coursesPage);
       const courses = await insightsApi.sharedQuery(coursesSpec, options);

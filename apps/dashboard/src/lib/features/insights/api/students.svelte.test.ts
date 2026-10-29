@@ -1,7 +1,20 @@
 import { INSIGHTS_LIMITS } from '@cio/utils/constants/insights';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { studentExportPost, queryPost } = vi.hoisted(() => ({ studentExportPost: vi.fn(), queryPost: vi.fn() }));
+const { studentExportPost, queryPost, snackbarError } = vi.hoisted(() => ({
+  studentExportPost: vi.fn(),
+  queryPost: vi.fn(),
+  snackbarError: vi.fn()
+}));
+
+vi.mock('$features/ui/snackbar/store', () => ({
+  snackbar: {
+    error: snackbarError,
+    info: vi.fn(),
+    loading: vi.fn(() => 'toast-1'),
+    success: vi.fn()
+  }
+}));
 
 vi.mock('$lib/utils/services/api', () => ({
   BaseApi: class {
@@ -129,6 +142,145 @@ function respondWith(
     })
   }));
 }
+
+function resultResponse(rows: InsightsRow[], total = rows.length) {
+  return {
+    json: async () => ({ success: true, data: { rows, columns: [], total } })
+  };
+}
+
+function failureResponse() {
+  return {
+    json: async () => ({ success: false, error: 'boom' })
+  };
+}
+
+function specOf(request: { json: { spec: { dimensions: string[] } } }): string {
+  const dimensions = request.json.spec.dimensions;
+  if (dimensions.includes('exercise') && dimensions.includes('student')) return 'cells';
+  if (dimensions.includes('exercise')) return 'attempted';
+
+  return 'students';
+}
+
+describe('insights students load failures', () => {
+  beforeEach(() => {
+    queryPost.mockReset();
+    snackbarError.mockClear();
+    insightsStudentsApi.rows = [];
+    insightsStudentsApi.total = 0;
+    insightsStudentsApi.cells = {};
+    insightsStudentsApi.attemptedResult = null;
+    insightsStudentsApi.hasLoaded = false;
+    insightsStudentsApi.loadingPage = false;
+    insightsStudentsApi.failed = false;
+    insightsStudentsApi.cellsFailed = false;
+    insightsStudentsApi.attemptedFailed = false;
+    insightsStudentsApi.page = 1;
+    insightsStudentsApi.search = '';
+    insightsStudentsApi.sort = null;
+    insightsStudentsApi.filters = { status: '', activity: '', score: '', flag: '' };
+  });
+
+  it('keeps the rows and reports a failed manual refresh', async () => {
+    setSelection(null);
+    insightsStudentsApi.rows = [studentRows[0]];
+    insightsStudentsApi.hasLoaded = true;
+    queryPost.mockResolvedValue(failureResponse());
+
+    await insightsStudentsApi.refreshVisible({ refresh: true });
+
+    expect(insightsStudentsApi.rows).toHaveLength(1);
+    expect(insightsStudentsApi.failed).toBe(false);
+    expect(snackbarError).toHaveBeenCalledWith('snackbar.insights.students_refresh_failed');
+  });
+
+  it('stays silent when a background refresh fails', async () => {
+    setSelection(null);
+    insightsStudentsApi.rows = [studentRows[0]];
+    insightsStudentsApi.hasLoaded = true;
+    queryPost.mockResolvedValue(failureResponse());
+
+    await insightsStudentsApi.refreshVisible();
+
+    expect(snackbarError).not.toHaveBeenCalled();
+  });
+
+  it('marks a failed first load instead of rendering an empty table', async () => {
+    setSelection(null);
+    queryPost.mockResolvedValue(failureResponse());
+
+    await insightsStudentsApi.load();
+
+    expect(insightsStudentsApi.hasLoaded).toBe(true);
+    expect(insightsStudentsApi.failed).toBe(true);
+    expect(insightsStudentsApi.rows).toHaveLength(0);
+  });
+
+  it('stops a non-quiet load when an exercise chunk fails', async () => {
+    setSelection('course-1');
+    queryPost.mockImplementation(async (request) => {
+      if (specOf(request) === 'cells') return failureResponse();
+
+      return specOf(request) === 'attempted' ? resultResponse([]) : resultResponse([studentRows[0]]);
+    });
+
+    await insightsStudentsApi.load();
+
+    expect(insightsStudentsApi.cellsFailed).toBe(true);
+    expect(insightsStudentsApi.cells).toEqual({});
+    expect(insightsStudentsApi.rows).toHaveLength(1);
+  });
+
+  it('keeps the loaded exercise cells when a background refresh fails', async () => {
+    setSelection('course-1');
+    queryPost.mockImplementation(async (request) => {
+      if (specOf(request) === 'cells') return resultResponse(exerciseRows);
+
+      return specOf(request) === 'attempted' ? resultResponse([]) : resultResponse([studentRows[0]]);
+    });
+
+    await insightsStudentsApi.load();
+    const loadedCells = structuredClone(insightsStudentsApi.cells);
+
+    queryPost.mockImplementation(async (request) => {
+      if (specOf(request) === 'cells') return failureResponse();
+
+      return specOf(request) === 'attempted' ? resultResponse([]) : resultResponse([studentRows[0]]);
+    });
+
+    await insightsStudentsApi.refreshVisible();
+
+    expect(insightsStudentsApi.cells).toEqual(loadedCells);
+    expect(insightsStudentsApi.cellsFailed).toBe(false);
+  });
+
+  it('keeps the last attempted counts when that query fails', async () => {
+    const attemptedRows = [{ exercise_id: 'exercise-1', is_attempted__count_if: 2 }] as InsightsRow[];
+    setSelection('course-1');
+    queryPost.mockImplementation(async (request) => {
+      if (specOf(request) === 'attempted') return resultResponse(attemptedRows);
+      if (specOf(request) === 'cells') return resultResponse([]);
+
+      return resultResponse([studentRows[0]]);
+    });
+
+    await insightsStudentsApi.load();
+    expect(insightsStudentsApi.attemptedResult?.rows).toHaveLength(1);
+
+    queryPost.mockImplementation(async (request) => {
+      if (specOf(request) === 'attempted') return failureResponse();
+      if (specOf(request) === 'cells') return resultResponse([]);
+
+      return resultResponse([studentRows[0]]);
+    });
+
+    await insightsStudentsApi.refreshVisible();
+
+    expect(insightsStudentsApi.attemptedFailed).toBe(true);
+    expect(insightsStudentsApi.attemptedResult?.rows).toHaveLength(1);
+  });
+});
 
 describe('insights students export', () => {
   beforeEach(() => {

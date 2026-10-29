@@ -61,11 +61,11 @@
           <Command.Input placeholder={$t('insights.course_search')} />
           <Command.List>
             <Command.Empty>{$t('insights.course_search_empty')}</Command.Empty>
-            <Command.Item value={$t('insights.all_courses')} onSelect={() => choose(null)}>
+            <Command.Item value={`${$t('insights.all_courses')} __all`} onSelect={() => choose(null)}>
               {$t('insights.all_courses')}
             </Command.Item>
             {#each courses as course (course.id)}
-              <Command.Item value={course.title} onSelect={() => choose(course.id)}>
+              <Command.Item value={`${course.title} ${course.id}`} onSelect={() => choose(course.id)}>
                 {course.title}
               </Command.Item>
             {/each}

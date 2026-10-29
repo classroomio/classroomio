@@ -1,4 +1,4 @@
-import { INSIGHTS_LIMITS, INSIGHTS_PLACEHOLDERS } from '@cio/utils/constants/insights';
+import { INSIGHTS_LIMITS } from '@cio/utils/constants/insights';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -39,7 +39,6 @@ import {
   studentPageRange,
   studentQueryParts,
   studentScoresSpec,
-  missingSelection,
   nextSort,
   nowAtLabel,
   oldestGeneratedAt,
@@ -335,6 +334,7 @@ describe('insights-utils', () => {
           exerciseId: null,
           range: 'all',
           breakdown: 'courses',
+          cohortIds: null,
           pages: {}
         })
       ).toBe(true);
@@ -344,6 +344,7 @@ describe('insights-utils', () => {
           exerciseId: null,
           range: 'all',
           breakdown: 'courses',
+          cohortIds: null,
           pages: {}
         })
       ).toBe(false);
@@ -354,6 +355,7 @@ describe('insights-utils', () => {
           exerciseId: null,
           range: 'all',
           breakdown: 'courses',
+          cohortIds: null,
           pages: {}
         })
       ).toBe(false);
@@ -363,6 +365,7 @@ describe('insights-utils', () => {
           exerciseId: null,
           range: 'all',
           breakdown: 'courses',
+          cohortIds: null,
           pages: {}
         })
       ).toBe(true);
@@ -398,6 +401,7 @@ describe('insights-utils', () => {
           exerciseId: null,
           range: 'all',
           breakdown: 'courses',
+          cohortIds: null,
           pages: {}
         })
       ).toBe(false);
@@ -407,6 +411,7 @@ describe('insights-utils', () => {
           exerciseId: null,
           range: 'all',
           breakdown: 'courses',
+          cohortIds: null,
           pages: {}
         })
       ).toBe(false);
@@ -417,6 +422,7 @@ describe('insights-utils', () => {
           exerciseId: null,
           range: 'all',
           breakdown: 'courses',
+          cohortIds: null,
           pages: {}
         })
       ).toBe(true);
@@ -426,6 +432,7 @@ describe('insights-utils', () => {
           exerciseId: null,
           range: 'all',
           breakdown: 'courses',
+          cohortIds: null,
           pages: {}
         })
       ).toBe(true);

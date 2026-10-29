@@ -17,9 +17,11 @@
     WIDGET_SPAN_CLASS,
     widgetEmptyState,
     widgetNotes,
-    widgetTitleVars
+    widgetTitleVars,
+    widgetUsesPlaceholder
   } from '../utils/insights-utils';
   import type { InsightsWidget, InsightsWidgetContext } from '../utils/types';
+  import ExercisePicker from './exercise-picker.svelte';
   import StudentsTable from './students/students-table.svelte';
   import NowTag from './now-tag.svelte';
   import WidgetEmpty from './widget-empty.svelte';
@@ -50,6 +52,15 @@
   const ownsPager = $derived(
     Boolean(widget.pageGroup) && pagerOwnerId(insightsApi.visibleWidgets, widget.pageGroup ?? '') === widget.id
   );
+  const pickerCourseId = $derived(
+    insightsApi.selection.courseId ?? insightsApi.dashboard?.scope.courses[0]?.id ?? null
+  );
+  const exercises = $derived.by(() => {
+    const items = pickerCourseId ? insightsApi.dashboard?.structures[pickerCourseId]?.items : [];
+
+    return (items ?? []).filter((item) => item.type === 'EXERCISE');
+  });
+  const showExercisePicker = $derived(widgetUsesPlaceholder(widget, 'exercise') && exercises.length > 0);
 </script>
 
 {#snippet nowTag()}
@@ -61,6 +72,15 @@
   class={cn('col-span-1 min-w-0', spanClass)}
   action={showNowTag ? nowTag : undefined}
 >
+  {#if showExercisePicker}
+    <div class="mb-3 flex justify-end">
+      <ExercisePicker
+        {exercises}
+        value={insightsApi.selection.exerciseId}
+        onChange={(id) => insightsApi.selectExercise(id)}
+      />
+    </div>
+  {/if}
   {#if isSelfLoading}
     <StudentsTable />
   {:else if missing}

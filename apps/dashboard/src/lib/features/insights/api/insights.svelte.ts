@@ -5,6 +5,7 @@ import {
   type TInsightsRange
 } from '@cio/utils/constants/insights';
 import { get } from 'svelte/store';
+import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { BaseApi, classroomio } from '$lib/utils/services/api';
 import { isFreePlan } from '$lib/utils/store/org';
@@ -151,6 +152,7 @@ class InsightsApi extends BaseApi {
 
     if (dashboardSeq !== this.#dashboardSeq) return;
 
+    await this.#preloadCohortOptions();
     await this.runVisibleWidgets();
   }
 
@@ -162,7 +164,8 @@ class InsightsApi extends BaseApi {
 
   async runWidget(widget: InsightsWidget, options: { refresh?: boolean } = {}) {
     const spec = resolveWidgetSpec(widget, this.selection);
-    if (!this.scope || !spec) return;
+    const scope = this.scope;
+    if (!scope || !spec) return;
 
     const requestedPage = widget.pageGroup ? this.pageState(widget.pageGroup).page : 1;
     const widgetSeq = (this.#widgetSeq.get(widget.id) ?? 0) + 1;
@@ -171,7 +174,7 @@ class InsightsApi extends BaseApi {
     this.widgetStates[widget.id] = { ...previous, loading: true, failed: false };
 
     const result = await this.sharedQuery(spec, { refresh: Boolean(options.refresh) });
-    if (this.#widgetSeq.get(widget.id) !== widgetSeq) return;
+    if (this.scope !== scope || this.#widgetSeq.get(widget.id) !== widgetSeq) return;
 
     if (widget.pageGroup) {
       const pageState = this.pageState(widget.pageGroup);
@@ -291,14 +294,13 @@ class InsightsApi extends BaseApi {
     }
 
     const pageOptions = cohortOptionsFromResult(result, t.get);
-    const byId = new Map((append ? this.cohortOptions : []).map((option) => [option.id, option]));
-    for (const option of pageOptions) byId.set(option.id, option);
+    const previousOptions = append ? this.cohortOptions : [];
+    const previousOptionsById = Object.fromEntries(previousOptions.map((option) => [option.id, option]));
+    const pageOptionsById = Object.fromEntries(pageOptions.map((option) => [option.id, option]));
+    const mergedOptions = { ...previousOptionsById, ...pageOptionsById };
 
-    this.cohortOptions = [...byId.values()];
-    this.cohortOptionsById = {
-      ...this.cohortOptionsById,
-      ...Object.fromEntries(pageOptions.map((option) => [option.id, option]))
-    };
+    this.cohortOptions = Object.values(mergedOptions);
+    this.cohortOptionsById = { ...this.cohortOptionsById, ...pageOptionsById };
     this.cohortOptionsMatchTotal = result.total;
     this.#cohortOptionsPage = page;
     this.cohortOptionsHasLoaded = true;
@@ -389,7 +391,8 @@ class InsightsApi extends BaseApi {
       requestFn: options.refresh
         ? () => classroomio.insights['dashboards-refresh'].$post({ json: { type: scope.type, id: scope.id } })
         : () => classroomio.insights.dashboards[':scopeType'][':scopeId'].$get({ param }),
-      logContext: 'refreshing insights dashboard'
+      logContext: 'refreshing insights dashboard',
+      onError: options.refresh ? () => snackbar.error('snackbar.insights.refresh_failed') : undefined
     });
     if (dashboardSeq !== this.#dashboardSeq) return;
 
@@ -438,6 +441,16 @@ class InsightsApi extends BaseApi {
     }
   }
 
+  /**
+   * The scores chart defaults to the newest cohorts, which it reads from the picker's list. Load the list up front
+   * so that default never depends on another widget's page.
+   */
+  async #preloadCohortOptions() {
+    if (this.cohortCount <= 1) return;
+
+    await this.loadCohortOptions();
+  }
+
   async #refreshCohortOptionsIfNeeded(options: { refresh?: boolean }) {
     if (!this.cohortOptionsHasLoaded) return;
     if (!options.refresh && !this.cohortOptionsOpen) return;
@@ -462,8 +475,12 @@ class InsightsApi extends BaseApi {
     const pending = this.#inFlight.get(key);
     if (pending) return pending;
 
-    const request = this.#query(scope, spec, refresh).finally(() => this.#inFlight.delete(key));
+    const request = this.#query(scope, spec, refresh);
+    const clearRequest = () => {
+      if (this.#inFlight.get(key) === request) this.#inFlight.delete(key);
+    };
     this.#inFlight.set(key, request);
+    void request.then(clearRequest, clearRequest);
 
     return request;
   }
@@ -498,7 +515,6 @@ class InsightsApi extends BaseApi {
     this.cohortOptionsOpen = false;
     this.#cohortOptionsSeq += 1;
     this.#cohortOptionsPage = 1;
-    this.#widgetSeq.clear();
     this.#inFlight.clear();
   }
 
