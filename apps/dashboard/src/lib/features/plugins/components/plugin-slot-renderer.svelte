@@ -1,7 +1,7 @@
 <script lang="ts">
   import { currentOrg } from '$lib/utils/store/org';
   import { pluginsApi } from '../api/plugins.svelte';
-  import PluginHostFrame from './plugin-host-frame.svelte';
+  import PluginHostFrame, { type PluginActionEvent } from './plugin-host-frame.svelte';
   import type { StableContributionTarget } from '@cio/utils/validation/plugin';
   import type { ResolvedContributionItem } from '../utils/types';
 
@@ -12,20 +12,23 @@
       id: string;
     };
     className?: string;
+    onAction?: (event: PluginActionEvent) => Promise<void> | void;
   }
 
-  let { target, resource, className = '' }: Props = $props();
+  let { target, resource, className = '', onAction }: Props = $props();
 
-  let listedOrgId = '';
+  let listedContributionKey = '';
   let contributions = $state<ResolvedContributionItem[]>([]);
 
   $effect(() => {
     const orgId = $currentOrg.id;
-    if (!orgId || orgId === listedOrgId) return;
+    const resourceKey = resource ? `${resource.type}:${resource.id}` : '';
+    const contributionKey = `${orgId}:${target}:${resourceKey}`;
+    if (!orgId || contributionKey === listedContributionKey) return;
 
-    listedOrgId = orgId;
+    listedContributionKey = contributionKey;
     void pluginsApi.listOrgContributions(orgId, target).then((result) => {
-      if ($currentOrg.id === orgId) contributions = result;
+      if ($currentOrg.id === orgId && listedContributionKey === contributionKey) contributions = result;
     });
   });
 
@@ -49,6 +52,7 @@
         backendAudience={slot.backendAudience}
         {target}
         {resource}
+        {onAction}
       />
     {/each}
   </div>

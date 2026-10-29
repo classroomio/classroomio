@@ -45,7 +45,15 @@ const config = {
         'style-src-elem': ['self', 'unsafe-inline', ...csp.styleSrc],
         // data: covers inlined woff2 (e.g. PDF.js / icon fonts); file fonts use 'self'
         'font-src': ['self', 'data:', ...csp.fontSrc],
-        'img-src': ['self', 'data:', ...csp.mediaSrc, 'blob:', 'http://localhost:9000'],
+        'img-src': [
+          'self',
+          'data:',
+          ...csp.mediaSrc,
+          'blob:',
+          'http://localhost:9000',
+          'http://localhost:3002',
+          ...(csp.apiOrigin ? [csp.apiOrigin] : [])
+        ],
         'media-src': [
           'self',
           ...csp.mediaSrc,
@@ -78,7 +86,15 @@ const config = {
         'style-src': ['self', 'unsafe-inline', ...csp.styleSrc],
         'style-src-elem': ['self', 'unsafe-inline', ...csp.styleSrc],
         'font-src': ['self', 'data:', ...csp.fontSrc],
-        'img-src': ['self', 'data:', ...csp.mediaSrc, 'blob:', 'http://localhost:9000'],
+        'img-src': [
+          'self',
+          'data:',
+          ...csp.mediaSrc,
+          'blob:',
+          'http://localhost:9000',
+          'http://localhost:3002',
+          ...(csp.apiOrigin ? [csp.apiOrigin] : [])
+        ],
         'media-src': [
           'self',
           ...csp.mediaSrc,

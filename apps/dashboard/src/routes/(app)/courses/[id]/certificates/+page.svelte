@@ -52,7 +52,8 @@
       certificate: {
         isDownloadable: course.certificate?.isDownloadable ?? false,
         theme: parseCertificateThemeId(course.certificate?.theme),
-        design: course.certificate?.design ?? null,
+        presentation: course.certificate?.presentation ?? null,
+        customDocument: course.certificate?.customDocument ?? (course.certificate as any)?.studioDesign ?? null,
         deadline: course.certificate?.deadline ?? null,
         emailMessage: course.certificate?.emailMessage ?? null
       }
@@ -97,7 +98,8 @@
       certificate: {
         isDownloadable: courseApi.course.certificate?.isDownloadable ?? false,
         theme: certificateTheme || 'classique',
-        design: courseApi.course.certificate?.design,
+        presentation: courseApi.course.certificate?.presentation,
+        customDocument: courseApi.course.certificate?.customDocument,
         deadline: courseApi.course.certificate?.deadline ?? null,
         emailMessage: courseApi.course.certificate?.emailMessage ?? null
       }

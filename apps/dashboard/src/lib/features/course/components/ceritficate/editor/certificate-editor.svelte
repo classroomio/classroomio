@@ -35,6 +35,7 @@
     CERTIFICATE_TEMPLATES.find((tpl) => tpl.id === store.draft.templateId) ?? CERTIFICATE_TEMPLATES[0]
   );
 
+  const previewPresentation = $derived(store.toPresentation());
   const previewDesign = $derived(store.toDesign());
 
   const sampleRenderData = $derived({
@@ -177,7 +178,12 @@
         aria-label={$t('course.navItem.certificates.editor.preview')}
       >
         <div class="flex min-h-0 flex-1 items-center justify-center p-6 sm:p-10 lg:p-14">
-          <Certificate.Preview design={previewDesign} data={sampleRenderData} showControls />
+          <Certificate.Preview
+            presentation={previewPresentation}
+            design={previewDesign}
+            data={sampleRenderData}
+            showControls
+          />
         </div>
       </section>
     </div>

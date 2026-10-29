@@ -1,7 +1,10 @@
 import {
+  CERTIFICATE_TEMPLATE_IDS,
   DEFAULT_CERTIFICATE_DESIGN,
   resolveCertificateDesign,
   type CertificateDesign,
+  type CertificateDocumentV1,
+  type CertificatePresentationV1,
   type CertificateTemplateId
 } from '@cio/certificates';
 
@@ -91,27 +94,74 @@ class CertificateEditorStore {
   activePanel = $state<CertificateEditorPanel>('templates');
   draft = $state<CertificateEditorDraft>(toDraft(DEFAULT_CERTIFICATE_DESIGN));
   initial = $state<CertificateEditorDraft>(toDraft(DEFAULT_CERTIFICATE_DESIGN));
+  customDocument = $state<CertificateDocumentV1 | null>(null);
+  #initialCustomDocument: CertificateDocumentV1 | null = null;
+  presentationMode = $state<'preset' | 'document'>('preset');
+  #initialPresentationMode: 'preset' | 'document' = 'preset';
   isSaving = $state(false);
   isSignatureUploading = $state(false);
   #initializedCourseId: string | null = null;
 
-  readonly isDirty = $derived(JSON.stringify(this.draft) !== JSON.stringify(this.initial));
+  readonly isDirty = $derived(
+    this.presentationMode !== this.#initialPresentationMode ||
+      JSON.stringify(this.customDocument) !== JSON.stringify(this.#initialCustomDocument) ||
+      JSON.stringify(this.draft) !== JSON.stringify(this.initial)
+  );
 
   syncFromCourse(courseId: string, force = false) {
     if (!force && this.#initializedCourseId === courseId) return;
 
+    const cert = courseApi.course?.certificate;
     const stored = readStoredDesign();
     this.initial = toDraft(stored);
     this.draft = toDraft(stored);
+
+    const presentation = cert?.presentation as CertificatePresentationV1 | undefined;
+    const customDoc = (cert?.customDocument ?? (cert as any)?.studioDesign) as CertificateDocumentV1 | undefined;
+
+    if (presentation && presentation.kind === 'document') {
+      this.customDocument = presentation.document;
+      this.#initialCustomDocument = presentation.document;
+      this.presentationMode = 'document';
+      this.#initialPresentationMode = 'document';
+    } else if (presentation && presentation.kind === 'preset') {
+      this.customDocument = null;
+      this.#initialCustomDocument = null;
+      this.presentationMode = 'preset';
+      this.#initialPresentationMode = 'preset';
+    } else if (customDoc) {
+      this.customDocument = customDoc;
+      this.#initialCustomDocument = customDoc;
+      this.presentationMode = 'document';
+      this.#initialPresentationMode = 'document';
+    } else {
+      this.customDocument = null;
+      this.#initialCustomDocument = null;
+      this.presentationMode = 'preset';
+      this.#initialPresentationMode = 'preset';
+    }
+
     this.#initializedCourseId = courseId;
   }
 
   reset() {
     this.draft = toDraft(fromDraft(this.initial));
+    this.customDocument = this.#initialCustomDocument;
+    this.presentationMode = this.#initialPresentationMode;
   }
 
   setTemplate(templateId: CertificateTemplateId) {
+    this.presentationMode = 'preset';
+    this.customDocument = null;
     this.draft.templateId = templateId;
+  }
+
+  setCustomDocument(doc: CertificateDocumentV1) {
+    this.customDocument = doc;
+    this.presentationMode = 'document';
+    if (doc.templateId && CERTIFICATE_TEMPLATE_IDS.includes(doc.templateId as CertificateTemplateId)) {
+      this.draft.templateId = doc.templateId as CertificateTemplateId;
+    }
   }
 
   setAccent(color: string) {
@@ -137,6 +187,23 @@ class CertificateEditorStore {
     return fromDraft(this.draft);
   }
 
+  toPresentation(): CertificatePresentationV1 {
+    if (this.presentationMode === 'document' && this.customDocument) {
+      return {
+        kind: 'document',
+        schema: 'classroomio.certificate-document',
+        version: 1,
+        document: this.customDocument
+      };
+    }
+
+    return {
+      kind: 'preset',
+      presetId: this.draft.templateId,
+      overrides: fromDraft(this.draft)
+    };
+  }
+
   async save() {
     const course = courseApi.course;
     if (!course?.id) return;
@@ -148,25 +215,27 @@ class CertificateEditorStore {
 
     this.isSaving = true;
     try {
+      const presentation = this.toPresentation();
       const design = fromDraft(this.draft);
       const certificate = {
         ...(course.certificate ?? {}),
         design,
-        theme: this.draft.templateId
+        theme: this.draft.templateId,
+        presentation,
+        customDocument: this.presentationMode === 'document' ? this.customDocument : null,
+        studioDesign: null
       };
 
       const updated = await courseApi.update(course.id, { certificate }, { showSuccessToast: false });
 
       if (updated) {
         if (courseApi.course) {
-          courseApi.course.certificate = {
-            ...(courseApi.course.certificate ?? {}),
-            design,
-            theme: this.draft.templateId
-          };
+          courseApi.course.certificate = certificate;
         }
 
         this.initial = toDraft(design);
+        this.#initialCustomDocument = this.customDocument;
+        this.#initialPresentationMode = this.presentationMode;
         this.#initializedCourseId = null;
         this.syncFromCourse(course.id, true);
         snackbar.success(t.get('course.navItem.certificates.editor.saved'));

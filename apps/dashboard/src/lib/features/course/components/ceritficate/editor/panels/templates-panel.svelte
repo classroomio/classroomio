@@ -1,9 +1,17 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { CERTIFICATE_TEMPLATES, type CertificateTemplateId } from '@cio/certificates';
+  import {
+    CERTIFICATE_TEMPLATE_IDS,
+    CERTIFICATE_TEMPLATES,
+    type CertificateDocumentV1,
+    type CertificateTemplateId
+  } from '@cio/certificates';
+  import { ZCertificateDocumentV1 } from '@cio/utils/validation/course';
+  import { certificateEditorStore } from '../store/certificate-editor.store.svelte';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { cn } from '@cio/ui/tools';
   import { PluginSlotRenderer } from '$features/plugins/components';
+  import type { PluginActionEvent } from '$features/plugins/components/plugin-host-frame.svelte';
   import TemplateThumb from './template-thumb.svelte';
 
   interface Props {
@@ -15,22 +23,30 @@
 
   let { courseId = '', value, onSelect, disabled = false }: Props = $props();
 
-  onMount(() => {
-    function handleApplied(event: Event) {
-      const customEvent = event as CustomEvent;
-      const payload = customEvent.detail;
-      const design = payload?.design ?? payload;
-      const tid = design?.rendererTemplateId || design?.templateId;
-      if (tid) {
-        onSelect(tid as CertificateTemplateId);
-      }
+  function applyDesign(rawDesign: unknown) {
+    const parsed = ZCertificateDocumentV1.safeParse(rawDesign);
+    if (!parsed.success) {
+      snackbar.error('course.navItem.certificates.editor.save_failed');
+      return;
     }
 
-    window.addEventListener('cio:certificate-template-apply', handleApplied);
-    return () => {
-      window.removeEventListener('cio:certificate-template-apply', handleApplied);
-    };
-  });
+    const validDoc = parsed.data as CertificateDocumentV1;
+    certificateEditorStore.setCustomDocument(validDoc);
+    snackbar.success('course.navItem.certificates.editor.saved');
+
+    const tid = validDoc.rendererTemplateId || validDoc.templateId;
+    if (CERTIFICATE_TEMPLATE_IDS.includes(tid as CertificateTemplateId)) {
+      onSelect(tid as CertificateTemplateId);
+    }
+  }
+
+  function handlePluginAction(detail: PluginActionEvent) {
+    if (detail.target === 'certificate.templates' && detail.action === 'apply') {
+      const payloadData = (detail.data ?? {}) as Record<string, unknown>;
+      const design = payloadData.document ?? payloadData.design ?? payloadData;
+      applyDesign(design);
+    }
+  }
 </script>
 
 <div class="grid grid-cols-2 gap-3">
@@ -67,6 +83,10 @@
 
 {#if courseId}
   <div class="ui:border-border mt-6 border-t pt-4">
-    <PluginSlotRenderer target="certificate.templates" resource={{ type: 'course', id: courseId }} />
+    <PluginSlotRenderer
+      target="certificate.templates"
+      resource={{ type: 'course', id: courseId }}
+      onAction={handlePluginAction}
+    />
   </div>
 {/if}

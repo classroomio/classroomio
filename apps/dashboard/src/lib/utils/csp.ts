@@ -43,6 +43,10 @@ function buildCspExtensions(): Record<string, string[]> {
   if (pluginAssetOrigin) frameSrcList.push(...parseCspDomains(pluginAssetOrigin));
   const frameSrc = Array.from(new Set(frameSrcList));
 
+  const imgSrcList = [...mediaSrc];
+  if (serverUrl) imgSrcList.push(serverUrl);
+  if (pluginAssetOrigin) imgSrcList.push(...parseCspDomains(pluginAssetOrigin));
+
   const extensions: Record<string, string[]> = {};
   if (scriptSrc.length) extensions['script-src'] = scriptSrc;
   if (styleSrc.length) {
@@ -52,10 +56,8 @@ function buildCspExtensions(): Record<string, string[]> {
   if (connectSrc.length) extensions['connect-src'] = connectSrc;
   if (frameSrc.length) extensions['frame-src'] = frameSrc;
   if (fontSrc.length) extensions['font-src'] = fontSrc;
-  if (mediaSrc.length) {
-    extensions['img-src'] = mediaSrc;
-    extensions['media-src'] = mediaSrc;
-  }
+  if (imgSrcList.length) extensions['img-src'] = Array.from(new Set(imgSrcList));
+  if (mediaSrc.length) extensions['media-src'] = mediaSrc;
   if (frameAncestorsExtra.length) {
     extensions['frame-ancestors'] = frameAncestorsExtra;
   }

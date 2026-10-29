@@ -6,6 +6,20 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
+  import { classroomio } from '$lib/utils/services/api';
+
+  export interface PluginActionEvent {
+    installationId: string;
+    pluginId: string;
+    version: string;
+    target: string;
+    resource?: {
+      type: 'lesson' | 'course' | 'certificate' | 'organization';
+      id: string;
+    };
+    action: string;
+    data?: unknown;
+  }
 
   interface Props {
     installationId: string;
@@ -22,6 +36,7 @@
       type: 'lesson' | 'course' | 'certificate' | 'organization';
       id: string;
     };
+    onAction?: (event: PluginActionEvent) => Promise<void> | void;
   }
 
   let {
@@ -35,7 +50,8 @@
     title = 'Plugin Frame',
     target,
     backendAudience,
-    resource
+    resource,
+    onAction
   }: Props = $props();
 
   let iframeElement = $state<HTMLIFrameElement | null>(null);
@@ -47,6 +63,27 @@
   function getPreferenceStorageKey(namespace: string, key: string): string {
     const profileId = get(profile)?.id ?? 'anonymous';
     return `cio_plugin_preference_${profileId}_${installationId}_${namespace}_${key}`;
+  }
+
+  function requireOrganizationId(): string {
+    if (!organizationId) {
+      throw { code: 'FORBIDDEN', message: 'An organization context is required' };
+    }
+
+    return organizationId;
+  }
+
+  async function responseData<T>(response: Response): Promise<T> {
+    if (!response.ok) {
+      throw { code: 'INTERNAL_ERROR', message: 'The requested plugin data could not be saved' };
+    }
+
+    const body = (await response.json()) as { success?: boolean; data?: T };
+    if (!body.success) {
+      throw { code: 'INTERNAL_ERROR', message: 'The requested plugin data could not be saved' };
+    }
+
+    return body.data as T;
   }
 
   function handleBeforeUnload(event: BeforeUnloadEvent) {
@@ -80,6 +117,7 @@
         installationId,
         pluginId,
         version,
+        backendAudience,
         organization: $currentOrg?.id
           ? {
               id: $currentOrg.id,
@@ -132,16 +170,101 @@
           localStorage.removeItem(storageKey);
           return true;
         },
-        onCertificateTemplatesApply: async (payload: any) => {
-          if (typeof window !== 'undefined') {
-            window.dispatchEvent(
-              new CustomEvent('cio:certificate-template-apply', {
-                detail: payload
-              })
-            );
+        onAction: async (payload) => {
+          const actionDetail: PluginActionEvent = {
+            installationId,
+            pluginId,
+            version,
+            target,
+            resource,
+            action: payload.action,
+            data: payload.data
+          };
+
+          if (!onAction) {
+            throw {
+              code: 'NOT_SUPPORTED',
+              message: `Host action "${payload.action}" is not supported in this surface context`
+            };
           }
-          snackbar.success('Template applied to certificate');
-          return { applied: true };
+
+          await onAction(actionDetail);
+          return { handled: true };
+        },
+        onStorageGet: async ({ key, namespace, scope }) => {
+          const orgId = requireOrganizationId();
+          const targetScope = scope ?? 'organization';
+          const queryParams: Record<string, string> = { scope: targetScope };
+          if (targetScope === 'resource' && resource?.id) {
+            queryParams.resourceId = resource.id;
+            queryParams.resourceType = resource.type;
+          }
+          const response = await classroomio.plugins.installations[':installationId'].storage[':namespace'][
+            ':key'
+          ].$get(
+            {
+              param: { installationId, namespace: namespace ?? 'default', key },
+              query: queryParams
+            },
+            { headers: { 'cio-org-id': orgId } }
+          );
+          return responseData(response);
+        },
+        onStorageSet: async ({ key, value, namespace, scope }) => {
+          const orgId = requireOrganizationId();
+          const targetScope = scope ?? 'organization';
+          const jsonPayload: Record<string, unknown> = { value, scope: targetScope };
+          if (targetScope === 'resource' && resource?.id) {
+            jsonPayload.resourceId = resource.id;
+            jsonPayload.resourceType = resource.type;
+          }
+          const response = await classroomio.plugins.installations[':installationId'].storage[':namespace'][
+            ':key'
+          ].$put(
+            {
+              param: { installationId, namespace: namespace ?? 'default', key },
+              json: jsonPayload
+            },
+            { headers: { 'cio-org-id': orgId } }
+          );
+          await responseData(response);
+        },
+        onStorageDelete: async ({ key, namespace, scope }) => {
+          const orgId = requireOrganizationId();
+          const targetScope = scope ?? 'organization';
+          const queryParams: Record<string, string> = { scope: targetScope };
+          if (targetScope === 'resource' && resource?.id) {
+            queryParams.resourceId = resource.id;
+            queryParams.resourceType = resource.type;
+          }
+          const response = await classroomio.plugins.installations[':installationId'].storage[':namespace'][
+            ':key'
+          ].$delete(
+            {
+              param: { installationId, namespace: namespace ?? 'default', key },
+              query: queryParams
+            },
+            { headers: { 'cio-org-id': orgId } }
+          );
+          const result = await responseData<{ success: boolean; deleted: boolean }>(response);
+          return result.deleted;
+        },
+        onStorageList: async ({ namespace, scope }) => {
+          const orgId = requireOrganizationId();
+          const targetScope = scope ?? 'organization';
+          const queryParams: Record<string, string> = { scope: targetScope };
+          if (targetScope === 'resource' && resource?.id) {
+            queryParams.resourceId = resource.id;
+            queryParams.resourceType = resource.type;
+          }
+          const response = await classroomio.plugins.installations[':installationId'].storage[':namespace'].$get(
+            {
+              param: { installationId, namespace: namespace ?? 'default' },
+              query: queryParams
+            },
+            { headers: { 'cio-org-id': orgId } }
+          );
+          return responseData(response);
         }
       }
     });
