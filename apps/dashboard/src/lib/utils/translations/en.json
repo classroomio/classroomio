@@ -2890,7 +2890,7 @@
                 "search_library_action": "Search",
                 "loading_library": "Loading media library...",
                 "no_library_videos": "No videos available in your media library",
-                "add_from_library": "Add from library",
+                "add_from_library": "Add",
                 "cancel_upload": "Cancel Upload",
                 "upload_cancelled": "Upload cancelled by user",
                 "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",

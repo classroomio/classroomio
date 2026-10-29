@@ -2876,7 +2876,7 @@
                 "search_library_action": "Ricerca",
                 "loading_library": "Caricamento catalogo multimediale...",
                 "no_library_videos": "Nessun video disponibile nel tuo catalogo multimediale",
-                "add_from_library": "Aggiungi dalla libreria",
+                "add_from_library": "Aggiungi",
                 "cancel_upload": "Annulla caricamento",
                 "upload_cancelled": "Caricamento annullato dall'utente",
                 "max_files": "{count, plural, one {Puoi caricare # file} other {Puoi caricare # file}}",

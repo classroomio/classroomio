@@ -2510,7 +2510,7 @@
                 "search_library_action": "Pesquisar",
                 "loading_library": "Carregando biblioteca de mídia...",
                 "no_library_videos": "Nenhum vídeo disponível na sua biblioteca de mídia",
-                "add_from_library": "Adicionar da biblioteca",
+                "add_from_library": "Adicionar",
                 "cancel_upload": "Cancelar upload",
                 "upload_cancelled": "Upload cancelado pelo usuário",
                 "max_files": "{count, plural, one {Você pode enviar # arquivo} other {Você pode enviar # arquivos}}",

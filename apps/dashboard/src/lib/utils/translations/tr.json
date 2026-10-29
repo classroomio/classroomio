@@ -2884,7 +2884,7 @@
                 "search_library_action": "Arama",
                 "loading_library": "LMedya kitaplığı yükleniyor...",
                 "no_library_videos": "Medya kitaplığınızda video yok",
-                "add_from_library": "Kütüphaneden ekle",
+                "add_from_library": "Ekle",
                 "cancel_upload": "Yüklemeyi iptal et",
                 "upload_cancelled": "Yükleme kullanıcı tarafından iptal edildi",
                 "max_files": "{sayı, çoğul, bir {You can upload # file} diğer {You can upload # files}}",

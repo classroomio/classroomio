@@ -2510,7 +2510,7 @@
                 "search_library_action": "Suchen",
                 "loading_library": "Medienbibliothek wird geladen...",
                 "no_library_videos": "In Ihrer Medienbibliothek sind keine Videos verfügbar",
-                "add_from_library": "Aus Bibliothek hinzufügen",
+                "add_from_library": "Hinzufügen",
                 "cancel_upload": "Hochladen abbrechen",
                 "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
                 "max_files": "{count, plural, one {Sie können # Datei hochladen} other {Sie können # Dateien hochladen}}",

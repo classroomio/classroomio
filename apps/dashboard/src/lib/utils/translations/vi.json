@@ -2510,7 +2510,7 @@
                 "search_library_action": "Tìm kiếm",
                 "loading_library": "Đang tải thư viện phương tiện...",
                 "no_library_videos": "Không có video nào trong thư viện phương tiện của bạn",
-                "add_from_library": "Thêm từ thư viện",
+                "add_from_library": "Thêm",
                 "cancel_upload": "Hủy tải lên",
                 "upload_cancelled": "Tải lên bị người dùng hủy",
                 "max_files": "{count, plural, one {Bạn có thể tải lên # tệp} other {Bạn có thể tải lên # tệp}}",

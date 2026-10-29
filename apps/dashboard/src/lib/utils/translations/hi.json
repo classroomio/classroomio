@@ -2510,7 +2510,7 @@
                 "search_library_action": "खोजें",
                 "loading_library": "मीडिया लाइब्रेरी लोड हो रही है...",
                 "no_library_videos": "आपकी मीडिया लाइब्रेरी में कोई वीडियो उपलब्ध नहीं है",
-                "add_from_library": "लाइब्रेरी से जोड़ें",
+                "add_from_library": "जोड़ें",
                 "cancel_upload": "अपलोड रद्द करें",
                 "upload_cancelled": "उपयोगकर्ता द्वारा अपलोड रद्द कर दिया गया",
                 "max_files": "{count, plural, one {आप # फ़ाइल अपलोड कर सकते हैं} other {आप # फ़ाइलें अपलोड कर सकते हैं}}",

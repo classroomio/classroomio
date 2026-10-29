@@ -2510,7 +2510,7 @@
                 "search_library_action": "Поиск",
                 "loading_library": "Загрузка медиатеки...",
                 "no_library_videos": "В вашей медиатеке нет доступных видео.",
-                "add_from_library": "Добавить из библиотеки",
+                "add_from_library": "Добавить",
                 "cancel_upload": "Отменить загрузку",
                 "upload_cancelled": "Загрузка отменена пользователем",
                 "max_files": "{count, plural, one {Можно загрузить # файл} other {Можно загрузить # файлов}}",

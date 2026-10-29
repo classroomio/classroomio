@@ -2510,7 +2510,7 @@
                 "search_library_action": "Søg",
                 "loading_library": "Indlæser mediebibliotek...",
                 "no_library_videos": "Der er ingen tilgængelige videoer i dit mediebibliotek",
-                "add_from_library": "Tilføj fra biblioteket",
+                "add_from_library": "Tilføj",
                 "cancel_upload": "Annuller upload",
                 "upload_cancelled": "Upload annulleret af brugeren",
                 "max_files": "{count, plural, one {Du kan uploade # fil} other {Du kan uploade # filer}}",

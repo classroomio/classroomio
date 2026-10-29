@@ -2510,7 +2510,7 @@
                 "search_library_action": "Rechercher",
                 "loading_library": "Chargement de la médiathèque...",
                 "no_library_videos": "Aucune vidéo disponible dans votre médiathèque",
-                "add_from_library": "Ajouter depuis la bibliothèque",
+                "add_from_library": "Ajouter",
                 "cancel_upload": "Annuler le téléchargement",
                 "upload_cancelled": "Téléchargement annulé par l'utilisateur",
                 "max_files": "{count, plural, one {Vous pouvez téléverser # fichier} other {Vous pouvez téléverser # fichiers}}",
