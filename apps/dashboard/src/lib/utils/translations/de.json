@@ -2435,6 +2435,7 @@
               "upload_description": "Laden Sie PDF-, DOCX-, DOC-, CSV-, XLSX-, IPYNB- oder PY-Dateien hoch",
               "up_to_size_each": "(bis zu {size} pro Datei)",
               "uploading_progress": "Wird hochgeladen {percent} %",
+              "queued": "Wartet",
               "completed": "Abgeschlossen",
               "failed": "Fehlgeschlagen",
               "finish": "Fertig",

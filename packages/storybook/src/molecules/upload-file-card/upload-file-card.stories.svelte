@@ -4,6 +4,7 @@
   import { FIELDS } from './fields';
 
   const labels = {
+    queued: 'Waiting',
     completed: 'Completed',
     failed: 'Failed',
     retry: 'Try Again',

@@ -2435,6 +2435,7 @@
               "upload_description": "Cargue archivos PDF, DOCX, DOC, CSV, XLSX, IPYNB o PY",
               "up_to_size_each": "(hasta {size} cada uno)",
               "uploading_progress": "Cargando {percent}%",
+              "queued": "En espera",
               "completed": "Completado",
               "failed": "Error",
               "finish": "Finalizar",

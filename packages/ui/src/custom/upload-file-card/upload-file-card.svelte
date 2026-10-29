@@ -79,6 +79,9 @@
           <span class="ui:text-muted-foreground ui:truncate" title={errorMessage ?? undefined}>
             · {errorMessage ?? totalSize}
           </span>
+        {:else if status === 'queued'}
+          <span class="ui:text-muted-foreground ui:font-medium">{labels.queued}</span>
+          <span class="ui:text-muted-foreground">· {totalSize}</span>
         {:else}
           <span class="ui:text-primary ui:font-medium">{labels.uploading(clampedProgress)}</span>
           <span class="ui:text-muted-foreground">· {labels.transferred(uploadedSize, totalSize)}</span>

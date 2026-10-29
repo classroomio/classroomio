@@ -2435,6 +2435,7 @@
               "upload_description": "Upload PDF-, DOCX-, DOC-, CSV-, XLSX-, IPYNB- eller PY-filer",
               "up_to_size_each": "(op til {size} hver)",
               "uploading_progress": "Uploader {percent}%",
+              "queued": "Venter",
               "completed": "Fuldført",
               "failed": "Mislykkedes",
               "finish": "Afslut",

@@ -2435,6 +2435,7 @@
               "upload_description": "Загрузите файлы PDF, DOCX, DOC, CSV, XLSX, IPYNB или PY",
               "up_to_size_each": "(до {size} каждый)",
               "uploading_progress": "Загрузка {percent}%",
+              "queued": "Ожидание",
               "completed": "Завершено",
               "failed": "Не удалось",
               "finish": "Готово",

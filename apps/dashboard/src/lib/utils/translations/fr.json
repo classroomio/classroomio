@@ -2435,6 +2435,7 @@
               "upload_description": "Téléchargez des fichiers PDF, DOCX, DOC, CSV, XLSX, IPYNB ou PY",
               "up_to_size_each": "(jusqu'à {size} chacun)",
               "uploading_progress": "Téléchargement {percent} %",
+              "queued": "En attente",
               "completed": "Terminé",
               "failed": "Échec",
               "finish": "Terminer",

@@ -2435,6 +2435,7 @@
               "upload_description": "Tải lên tệp PDF, DOCX, DOC, CSV, XLSX, IPYNB hoặc PY",
               "up_to_size_each": "(tối đa {size} mỗi tệp)",
               "uploading_progress": "Đang tải lên {percent}%",
+              "queued": "Đang chờ",
               "completed": "Hoàn tất",
               "failed": "Thất bại",
               "finish": "Hoàn thành",

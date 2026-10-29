@@ -2435,6 +2435,7 @@
               "upload_description": "Prześlij pliki PDF, DOCX, DOC, CSV, XLSX, IPYNB lub PY",
               "up_to_size_each": "(do {size} każdy)",
               "uploading_progress": "Przesyłanie {percent}%",
+              "queued": "Oczekuje",
               "completed": "Ukończono",
               "failed": "Niepowodzenie",
               "finish": "Zakończ",

@@ -2964,6 +2964,7 @@
               "upload_description": "PDF, DOCX, DOC, CSV, XLSX, IPYNB veya PY dosyalarını yükleyin",
               "up_to_size_each": "(her biri en fazla {size})",
               "uploading_progress": "Yükleniyor %{percent}",
+              "queued": "Bekliyor",
               "completed": "Tamamlandı",
               "failed": "Başarısız",
               "finish": "Bitir",

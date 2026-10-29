@@ -32,6 +32,7 @@
   let isDisabled = $derived($isFreePlan);
 
   let cardLabels: UploadFileCardLabels = $derived({
+    queued: $t(`${keyPrefix}.queued`),
     completed: $t(`${keyPrefix}.completed`),
     failed: $t(`${keyPrefix}.failed`),
     retry: $t(`${keyPrefix}.try_again`),

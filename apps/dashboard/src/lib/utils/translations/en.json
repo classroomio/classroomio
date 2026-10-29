@@ -2970,6 +2970,7 @@
               "upload_description": "Upload PDF, DOCX, DOC, CSV, XLSX, IPYNB, or PY files",
               "up_to_size_each": "(up to {size} each)",
               "uploading_progress": "Uploading {percent}%",
+              "queued": "Waiting",
               "completed": "Completed",
               "failed": "Failed",
               "finish": "Finish",

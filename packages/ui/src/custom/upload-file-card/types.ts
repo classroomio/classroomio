@@ -1,6 +1,7 @@
 export type UploadFileCardStatus = 'queued' | 'uploading' | 'done' | 'error';
 
 export type UploadFileCardLabels = {
+  queued: string;
   completed: string;
   failed: string;
   retry: string;
