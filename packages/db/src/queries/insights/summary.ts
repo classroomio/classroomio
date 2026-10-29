@@ -82,8 +82,8 @@ export async function getInsightsScopeSummary(
             'isGrouped', sc.is_grouped,
             'hasPassRequired', EXISTS (
               SELECT 1 FROM exercise
-              LEFT JOIN lesson ON lesson.id = exercise.lesson_id
-              WHERE COALESCE(exercise.course_id, lesson.course_id) = sc.course_id
+              LEFT JOIN course_section ON course_section.id = exercise.section_id
+              WHERE COALESCE(exercise.course_id, course_section.course_id) = sc.course_id
                 AND exercise.completion_policy = 'passed'
             )
           ) ORDER BY sc.course_title)

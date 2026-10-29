@@ -7,7 +7,7 @@ import { resolveAuthorizedScope } from './authorize';
 import { canonicalizeSpec } from './canonicalize';
 import { toInsightsError } from './errors';
 import { computeInsightsQuery, loadOrderedItems } from './query';
-import { assertInsightsRangeAllowed } from './plan';
+import { resolveInsightsRange } from './plan';
 import type {
   AuthorizedInsightsScope,
   InsightsActor,
@@ -140,8 +140,8 @@ export async function exportInsightsStudentsForActor(
 ): Promise<InsightsStudentExportResult> {
   try {
     const scope = await resolveAuthorizedScope(actor, request.scope);
-    const studentSpec = canonicalizeSpec(request.studentSpec);
-    await assertInsightsRangeAllowed(scope.orgId, studentSpec.range);
+    const studentRange = await resolveInsightsRange(scope.orgId, request.studentSpec.range);
+    const studentSpec = canonicalizeSpec({ ...request.studentSpec, range: studentRange });
     const students = await computeInsightsQuery(scope, studentSpec);
 
     if (!request.exerciseSpec) {
@@ -153,8 +153,8 @@ export async function exportInsightsStudentsForActor(
       };
     }
 
-    const exerciseSpec = canonicalizeSpec(request.exerciseSpec);
-    await assertInsightsRangeAllowed(scope.orgId, exerciseSpec.range);
+    const exerciseRange = await resolveInsightsRange(scope.orgId, request.exerciseSpec.range);
+    const exerciseSpec = canonicalizeSpec({ ...request.exerciseSpec, range: exerciseRange });
     const studentIds = uniqueIds(students.rows);
     const { cells, truncated } = await collectExerciseCells(scope, exerciseSpec, studentIds);
 

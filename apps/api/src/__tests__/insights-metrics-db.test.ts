@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { inArray, or } from 'drizzle-orm';
+import { inArray } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { ZInsightsQuerySpec } from '@cio/utils/validation/insights';
@@ -22,7 +22,6 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
   const groupIds: string[] = [];
   const groupMemberIds: string[] = [];
   const courseIds: string[] = [];
-  const lessonIds: string[] = [];
   const exerciseIds: string[] = [];
   const questionIds: number[] = [];
   const cohortIds: string[] = [];
@@ -273,14 +272,12 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
         videos: [{ type: 'upload', link: '', assetId: `asset-${suffix}` }]
       })
       .returning();
-    lessonIds.push(lessonX.id);
     lessonXId = lessonX.id;
 
     const createExercise = async (values: {
       label: string;
       courseId?: string;
       sectionId?: string;
-      lessonId?: string;
       order: number;
       completionPolicy: 'submitted' | 'passed';
       passThreshold?: number | null;
@@ -293,7 +290,6 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
           title: values.label,
           courseId: values.courseId ?? null,
           sectionId: values.sectionId ?? null,
-          lessonId: values.lessonId ?? null,
           order: values.order,
           slug: `${values.label.toLowerCase()}-${suffix}`,
           completionPolicy: values.completionPolicy,
@@ -341,7 +337,7 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
     });
     const exerciseE5 = await createExercise({
       label: 'E5',
-      lessonId: lessonX.id,
+      courseId: courseK1.id,
       order: 5,
       completionPolicy: 'submitted'
     });
@@ -701,7 +697,6 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
         videos: [{ type: 'upload', link: '', assetId: `asset-lp-${suffix}` }]
       })
       .returning();
-    lessonIds.push(lessonLP.id);
     lessonLPId = lessonLP.id;
 
     const qFT = await createQuestion(exerciseEFT.id, 'QFT', 100);
@@ -847,11 +842,7 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
       await db.delete(schema.submission).where(inArray(schema.submission.courseId, courseIds));
     }
     await remove(schema.question, schema.question.id, questionIds);
-    if (courseIds.length > 0 && lessonIds.length > 0) {
-      await db
-        .delete(schema.exercise)
-        .where(or(inArray(schema.exercise.courseId, courseIds), inArray(schema.exercise.lessonId, lessonIds)));
-    }
+    await remove(schema.exercise, schema.exercise.id, exerciseIds);
     if (courseIds.length > 0) {
       await db.delete(schema.lesson).where(inArray(schema.lesson.courseId, courseIds));
       await db.delete(schema.courseSection).where(inArray(schema.courseSection.courseId, courseIds));
