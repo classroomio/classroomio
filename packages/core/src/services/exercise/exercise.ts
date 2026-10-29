@@ -502,6 +502,7 @@ export async function updateExerciseService(
     });
 
     const courseId = (await resolveExerciseCourseId(result)) ?? existing?.courseId ?? null;
+    const previousCourseId = existing?.courseId ?? null;
     if (courseId) {
       await touchCourseUpdatedAt(courseId);
 
@@ -511,10 +512,16 @@ export async function updateExerciseService(
         sanitizedData.isUnlocked !== undefined ||
         sanitizedData.order !== undefined ||
         sanitizedData.sectionId !== undefined ||
+        sanitizedData.lessonId !== undefined ||
+        sanitizedData.questions !== undefined ||
         sanitizedData.title !== undefined;
 
       if (hasStructureChange) {
         void invalidateInsightsCourseStructure(courseId);
+
+        if (previousCourseId && previousCourseId !== courseId) {
+          void invalidateInsightsCourseStructure(previousCourseId);
+        }
       }
     }
 
@@ -828,6 +835,7 @@ export async function replaceExerciseService(exerciseId: string, data: TExercise
     const courseId = existing?.courseId;
     if (courseId) {
       await touchCourseUpdatedAt(courseId);
+      void invalidateInsightsCourseStructure(courseId);
     }
 
     return result;

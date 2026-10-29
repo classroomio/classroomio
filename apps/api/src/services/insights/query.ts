@@ -13,17 +13,32 @@ import { cachedRead } from '@api/utils/redis/cached-read';
 import { resolveAuthorizedScope } from './authorize';
 import { canonicalizeSpec, hashSpec } from './canonicalize';
 import { toInsightsError } from './errors';
+import { assertInsightsRangeAllowed } from './plan';
 import { getInsightsCourseStructure, toOrderedItems } from './structure';
 import type { AuthorizedInsightsScope, InsightsActor, InsightsQueryResult } from './types';
 
+function courseRequestedIds(spec: TInsightsQuerySpec): string[] | null {
+  const courseFilters = spec.filters.filter((filter) => filter.field === 'course' && filter.value !== undefined);
+  if (courseFilters.length === 0) return null;
+
+  const requestedIds = courseFilters.map((filter) =>
+    Array.isArray(filter.value) ? filter.value : [String(filter.value)]
+  );
+  const [firstRequest, ...remainingRequests] = requestedIds;
+
+  return remainingRequests.reduce(
+    (intersection, ids) => intersection.filter((courseId) => ids.includes(courseId)),
+    firstRequest
+  );
+}
+
 function courseIdsForSpec(scope: AuthorizedInsightsScope, spec: TInsightsQuerySpec): string[] {
-  const courseFilter = spec.filters.find((filter) => filter.field === 'course');
-  if (!courseFilter?.value) return scope.courseIds;
+  const requested = courseRequestedIds(spec);
+  if (!requested) return scope.courseIds;
 
-  const requestedIds = Array.isArray(courseFilter.value) ? courseFilter.value : [String(courseFilter.value)];
-  const requested = new Set(requestedIds);
+  const requestedSet = new Set(requested);
 
-  return scope.courseIds.filter((courseId) => requested.has(courseId));
+  return scope.courseIds.filter((courseId) => requestedSet.has(courseId));
 }
 
 export async function loadOrderedItems(
@@ -72,6 +87,7 @@ export async function runInsightsQueryForActor(
   try {
     const scope = await resolveAuthorizedScope(actor, request.scope);
     const spec = canonicalizeSpec(request.spec);
+    await assertInsightsRangeAllowed(scope.orgId, spec.range);
 
     if (spec.search) {
       const output = await computeInsightsQuery(scope, spec);
@@ -105,6 +121,7 @@ export async function exportInsightsQueryForActor(
   try {
     const scope = await resolveAuthorizedScope(actor, request.scope);
     const spec = canonicalizeSpec(request.spec);
+    await assertInsightsRangeAllowed(scope.orgId, spec.range);
     const output = await computeInsightsQuery(scope, spec);
 
     return uncachedResult(output);

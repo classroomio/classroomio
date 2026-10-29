@@ -157,12 +157,20 @@ function compileMeasure(
   };
 }
 
+const NUMERIC_FILTER_VALUE_TYPES: ReadonlySet<InsightsValueType> = new Set(['integer', 'number', 'percent']);
+
 function assertFilterValue(definition: InsightsFilterDefinition, filter: TInsightsFilter): void {
   const values = Array.isArray(filter.value) ? filter.value : [filter.value];
   const isIdFilter = definition.kind === 'pushdown' || definition.valueType === 'id';
 
   if (isIdFilter && values.some((value) => typeof value !== 'string' || !UUID_PATTERN.test(value))) {
     throw invalidSpec(`Filter ${filter.field} needs uuid values`);
+  }
+
+  if (definition.kind === 'predicate' && NUMERIC_FILTER_VALUE_TYPES.has(definition.valueType)) {
+    if (values.some((value) => typeof value !== 'number' || !Number.isFinite(value))) {
+      throw invalidSpec(`Filter ${filter.field} needs numeric values`);
+    }
   }
 
   if (definition.kind === 'predicate' && definition.allowedValues) {
@@ -173,6 +181,10 @@ function assertFilterValue(definition: InsightsFilterDefinition, filter: TInsigh
   }
 }
 
+/**
+ * Intersects repeated filters on the same pushdown field, so `course in [A, B]` plus `course eq A` narrows to A
+ * instead of the last filter silently winning.
+ */
 function collectPushdown(source: InsightsSourceDefinition, filters: TInsightsFilter[]): InsightsPushdown {
   const pushdown: InsightsPushdown = {};
 
@@ -183,8 +195,9 @@ function collectPushdown(source: InsightsSourceDefinition, filters: TInsightsFil
     if (filter.op !== 'eq' && filter.op !== 'in') throw invalidSpec(`Filter ${filter.field} only supports eq and in`);
 
     assertFilterValue(definition, filter);
-    const values = Array.isArray(filter.value) ? filter.value : [String(filter.value)];
-    pushdown[definition.target] = values;
+    const values = Array.isArray(filter.value) ? filter.value.map(String) : [String(filter.value)];
+    const existingValues = pushdown[definition.target];
+    pushdown[definition.target] = existingValues ? existingValues.filter((value) => values.includes(value)) : values;
   }
 
   return pushdown;
@@ -306,6 +319,10 @@ export function compileInsightsQuery(
   const firstDimensionKey = dimensions[0]?.definition.key ?? null;
   const measures = spec.measures.map((measure) => compileMeasure(source, measure, firstDimensionKey));
   const predicates = compilePredicates(source, spec);
+
+  const hasEmptyPushdown = Object.values(pushdown).some((values) => values.length === 0);
+  if (hasEmptyPushdown) predicates.push(sql`1 = 0`);
+
   const orderBy = compileOrderBy(spec, dimensions, measures);
   const limit = Math.min(spec.limit, INSIGHTS_LIMITS.maxExportRows);
   const offset = (spec.page - 1) * spec.limit;

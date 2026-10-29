@@ -536,12 +536,14 @@ export async function runCohortGoalReminderScan(): Promise<{
 
 /**
  * Emails overdue learners on the cohort's active goals now: everyone, one course's goals, or one learner.
+ * `truncated` reports that more overdue assignments exist than one bulk send covers, so the caller can ask for a
+ * narrower filter instead of believing every learner was reached.
  */
 export async function sendOverdueCohortGoalRemindersNow(
   cohortId: string,
   input: TRemindOverdueCohortGoals
-): Promise<{ enqueued: number; skipped: number }> {
-  const contexts = await listOverdueAssignmentReminderContexts(cohortId, {
+): Promise<{ enqueued: number; skipped: number; truncated: boolean }> {
+  const { contexts, truncated } = await listOverdueAssignmentReminderContexts(cohortId, {
     courseId: input.courseId,
     profileId: input.profileId
   });
@@ -557,7 +559,13 @@ export async function sendOverdueCohortGoalRemindersNow(
 
     const daysUntilDue = getWholeDaysUntil(now, new Date(context.assignment.dueDate));
     const idempotencyKey = `cohort-goal-reminder-manual:${context.assignment.id}:${dayKey(now)}`;
-    const queued = await enqueueCohortGoalReminder(context, { email: context.email, daysUntilDue, idempotencyKey });
+    let queued = false;
+
+    try {
+      queued = await enqueueCohortGoalReminder(context, { email: context.email, daysUntilDue, idempotencyKey });
+    } catch (error) {
+      console.error(`sendOverdueCohortGoalRemindersNow: enqueue failed for assignment ${context.assignment.id}`, error);
+    }
 
     if (queued) {
       enqueued += 1;
@@ -567,7 +575,7 @@ export async function sendOverdueCohortGoalRemindersNow(
     skipped += 1;
   }
 
-  return { enqueued, skipped };
+  return { enqueued, skipped, truncated };
 }
 
 // ─── LMS read ────────────────────────────────────────────────────────────────

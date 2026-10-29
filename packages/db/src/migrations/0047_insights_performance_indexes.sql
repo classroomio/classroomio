@@ -1,3 +1,7 @@
+-- Index-only additions for the Insights read paths. Drizzle runs migrations inside a transaction, so these are plain
+-- CREATE INDEX statements and take a SHARE lock while they build. On a large production database, create the
+-- submission, question_answer, lesson_completion and groupmember indexes out of band with CREATE INDEX
+-- CONCURRENTLY before deploying; the IF NOT EXISTS clauses then make this migration a no-op for them.
 CREATE INDEX IF NOT EXISTS "idx_submission_exercise_id_submitted_by" ON "submission" ("exercise_id", "submitted_by");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "idx_question_exercise_id" ON "question" ("exercise_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "idx_question_answer_submission_id" ON "question_answer" ("submission_id");--> statement-breakpoint

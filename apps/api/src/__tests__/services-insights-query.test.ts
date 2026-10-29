@@ -27,6 +27,10 @@ vi.mock('@api/services/insights/structure', () => ({
   toOrderedItems: vi.fn().mockReturnValue([])
 }));
 
+vi.mock('@api/services/insights/plan', () => ({
+  assertInsightsRangeAllowed: vi.fn().mockResolvedValue(undefined)
+}));
+
 vi.mock('@api/utils/redis/cached-read', () => ({
   cachedRead: vi.fn()
 }));
@@ -37,6 +41,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { cachedRead } from '@api/utils/redis/cached-read';
 import { resolveAuthorizedScope } from '@api/services/insights/authorize';
 import { exportInsightsQueryForActor, runInsightsQueryForActor } from '@api/services/insights/query';
+import { assertInsightsRangeAllowed } from '@api/services/insights/plan';
 import type { InsightsActor } from '@api/services/insights/types';
 import { ZInsightsExportSpec, ZInsightsQuerySpec } from '@cio/utils/validation/insights';
 
@@ -73,12 +78,12 @@ describe('runInsightsQueryForActor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(resolveAuthorizedScope).mockResolvedValue(scope);
+    vi.mocked(assertInsightsRangeAllowed).mockResolvedValue(undefined);
     vi.mocked(claimInsightsRefresh).mockResolvedValue(true);
     vi.mocked(cachedRead).mockImplementation(async (key, ttl, compute) => {
-      return {
-        data: await compute(),
-        generatedAt: new Date().toISOString()
-      };
+      const data = await compute();
+
+      return { data, generatedAt: new Date().toISOString() };
     });
   });
 
@@ -94,6 +99,22 @@ describe('runInsightsQueryForActor', () => {
       })
     ).rejects.toMatchObject({ statusCode: 403 });
 
+    expect(cachedRead).not.toHaveBeenCalled();
+  });
+
+  it('refuses a range outside the plan before reading the cache', async () => {
+    vi.mocked(assertInsightsRangeAllowed).mockRejectedValue(
+      new AppError('Upgrade required', ErrorCodes.PLAN_UPGRADE_REQUIRED, 402)
+    );
+
+    await expect(
+      runInsightsQueryForActor(actor, {
+        scope: { type: 'cohort', id: COHORT_ID },
+        spec
+      })
+    ).rejects.toMatchObject({ statusCode: 402 });
+
+    expect(assertInsightsRangeAllowed).toHaveBeenCalledWith(ORG_ID, spec.range);
     expect(cachedRead).not.toHaveBeenCalled();
   });
 

@@ -9,8 +9,12 @@ function parseWidgets(widgets: readonly TInsightsWidgetInput[]): TInsightsWidget
   return widgets.map((widget) => ZInsightsWidget.parse(widget));
 }
 
+const cohortWidgets = parseWidgets(COHORT_WIDGETS);
+const courseWidgets = parseWidgets(COURSE_WIDGETS);
+const orgWidgets = parseWidgets(ORG_WIDGETS);
+
 export const INSIGHTS_PRESETS: Record<TInsightsScopeType, TInsightsWidget[]> = {
-  cohort: parseWidgets(COHORT_WIDGETS),
-  course: parseWidgets(COURSE_WIDGETS),
-  org: parseWidgets(ORG_WIDGETS)
+  cohort: cohortWidgets,
+  course: courseWidgets,
+  org: orgWidgets
 };

@@ -50,10 +50,11 @@ const actor: InsightsActor = {
 describe('getInsightsDashboardForActor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(cachedRead).mockImplementation(async (key, ttl, compute) => ({
-      data: await compute(),
-      generatedAt: new Date().toISOString()
-    }));
+    vi.mocked(cachedRead).mockImplementation(async (key, ttl, compute) => {
+      const data = await compute();
+
+      return { data, generatedAt: new Date().toISOString() };
+    });
   });
 
   it('loads dashboard for cohort scope with structures and preset widgets', async () => {
