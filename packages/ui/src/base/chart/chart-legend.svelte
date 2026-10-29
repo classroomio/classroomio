@@ -21,7 +21,7 @@
         className ?? 'ui:mt-4'
       )}
     >
-      {#each items as item (item.label)}
+      {#each items as item, index (`${item.label}-${index}`)}
         <ChartLegendItem {item} {showValue} />
       {/each}
     </div>

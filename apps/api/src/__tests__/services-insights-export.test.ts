@@ -23,6 +23,10 @@ vi.mock('@api/services/insights/structure', () => ({
   toOrderedItems: vi.fn().mockReturnValue([])
 }));
 
+vi.mock('@api/services/insights/plan', () => ({
+  assertInsightsRangeAllowed: vi.fn().mockResolvedValue(undefined)
+}));
+
 import { runInsightsQuery } from '@cio/db/queries/insights';
 import { ZInsightsExportSpec } from '@cio/utils/validation/insights';
 import { resolveAuthorizedScope } from '@api/services/insights/authorize';

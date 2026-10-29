@@ -245,6 +245,8 @@ export async function reorderCourseSections(sections: TCourseSectionReorder['sec
     const updatePromises = sections.map(({ id, order }) => updateCourseSection(id, { order }));
 
     const updated = await Promise.all(updatePromises);
+    await invalidateReorderedSectionCourses(sections.map(({ id }) => id));
+
     return updated.filter((section): section is TCourseSection => section !== null);
   } catch (error) {
     throw new AppError(
@@ -252,5 +254,19 @@ export async function reorderCourseSections(sections: TCourseSectionReorder['sec
       ErrorCodes.INTERNAL_ERROR,
       500
     );
+  }
+}
+
+/**
+ * Section order changes every item rank in the course, so each reordered section's course drops its cached outline.
+ */
+async function invalidateReorderedSectionCourses(sectionIds: string[]): Promise<void> {
+  if (sectionIds.length === 0) return;
+
+  const sections = await Promise.all(sectionIds.map((sectionId) => getCourseSectionById(sectionId)));
+  const courseIds = new Set(sections.flatMap((section) => (section?.courseId ? [section.courseId] : [])));
+
+  for (const courseId of courseIds) {
+    void invalidateInsightsCourseStructure(courseId);
   }
 }

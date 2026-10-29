@@ -290,14 +290,18 @@ describe('cohort goal reminders', () => {
   });
 
   it('sends every overdue reminder for the course and counts the skipped learners', async () => {
-    vi.mocked(listOverdueAssignmentReminderContexts).mockResolvedValue([
-      reminderContext(),
-      reminderContext({ assignment: { ...reminderContext().assignment, id: 'assignment-2' }, email: null })
-    ]);
+    vi.mocked(listOverdueAssignmentReminderContexts).mockResolvedValue({
+      contexts: [
+        reminderContext(),
+        reminderContext({ assignment: { ...reminderContext().assignment, id: 'assignment-2' }, email: null })
+      ],
+      truncated: false
+    });
 
     await expect(sendOverdueCohortGoalRemindersNow(COHORT_ID, { courseId: COURSE_ID })).resolves.toEqual({
       enqueued: 1,
-      skipped: 1
+      skipped: 1,
+      truncated: false
     });
 
     expect(listOverdueAssignmentReminderContexts).toHaveBeenCalledWith(COHORT_ID, { courseId: COURSE_ID });
@@ -308,11 +312,15 @@ describe('cohort goal reminders', () => {
   });
 
   it('passes the learner filter through so only that learner is reminded', async () => {
-    vi.mocked(listOverdueAssignmentReminderContexts).mockResolvedValue([reminderContext()]);
+    vi.mocked(listOverdueAssignmentReminderContexts).mockResolvedValue({
+      contexts: [reminderContext()],
+      truncated: false
+    });
 
     await expect(sendOverdueCohortGoalRemindersNow(COHORT_ID, { profileId: PROFILE_ID })).resolves.toEqual({
       enqueued: 1,
-      skipped: 0
+      skipped: 0,
+      truncated: false
     });
 
     expect(listOverdueAssignmentReminderContexts).toHaveBeenCalledWith(COHORT_ID, {
@@ -320,6 +328,39 @@ describe('cohort goal reminders', () => {
       profileId: PROFILE_ID
     });
     expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports truncation when more assignments are overdue than one bulk send covers', async () => {
+    vi.mocked(listOverdueAssignmentReminderContexts).mockResolvedValue({
+      contexts: [reminderContext()],
+      truncated: true
+    });
+
+    await expect(sendOverdueCohortGoalRemindersNow(COHORT_ID, {})).resolves.toEqual({
+      enqueued: 1,
+      skipped: 0,
+      truncated: true
+    });
+  });
+
+  it('keeps reminding later learners when one assignment fails to enqueue', async () => {
+    vi.mocked(listOverdueAssignmentReminderContexts).mockResolvedValue({
+      contexts: [
+        reminderContext(),
+        reminderContext({ assignment: { ...reminderContext().assignment, id: 'assignment-2' } })
+      ],
+      truncated: false
+    });
+    vi.mocked(enqueueTransactionalEmail)
+      .mockRejectedValueOnce(new Error('template rejected'))
+      .mockResolvedValueOnce({ jobIds: ['job-2'] } as never);
+
+    await expect(sendOverdueCohortGoalRemindersNow(COHORT_ID, {})).resolves.toEqual({
+      enqueued: 1,
+      skipped: 1,
+      truncated: false
+    });
+    expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(2);
   });
 
   it('keeps the scan idempotency key distinct from manual sends', async () => {
