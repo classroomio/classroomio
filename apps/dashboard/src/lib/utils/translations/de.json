@@ -536,7 +536,10 @@
       "reminders_sent": "{count, plural, one {# Erinnerung gesendet} other {# Erinnerungen gesendet}}",
       "target_saved": "Lernziel gespeichert",
       "target_failed": "Das Lernziel konnte nicht gespeichert werden.",
-      "target_invalid": "Geben Sie eine ganze Zahl von 1 bis 1.000.000 ein."
+      "target_invalid": "Geben Sie eine ganze Zahl von 1 bis 1.000.000 ein.",
+      "reminders_truncated": "{count, plural, one {# Erinnerung gesendet} other {# Erinnerungen gesendet}}. Zu viele überfällige Lernende für einen Versand — grenze den Kurs ein, um die übrigen zu erreichen.",
+      "students_refresh_failed": "Schülerliste konnte nicht aktualisiert werden",
+      "refresh_failed": "Analysen konnten nicht aktualisiert werden"
     }
   },
   "explore": {
@@ -6510,7 +6513,7 @@
       "showing_first": "Zeigt die ersten {shown} von {total}.",
       "cohorts_select": "Wählen Sie eine Kohorte aus, um deren Dashboard zu öffnen.",
       "cohorts_in_table": "{count, plural, one {Die Kohorte} other {Die # Kohorten}} in der Tabelle oben.",
-      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "courses_in_table": "{count, plural, one {Der Kurs} other {Die # Kurse}} in der Tabelle oben.",
       "not_counted_empty": "Nicht gezählt: {names} (noch keine Studierenden).",
       "not_charted_empty": "Nicht im Diagramm: {names} (noch keine Studierenden).",
       "lesson_dropoff": "Der steilste Abfall befindet sich zwischen {from} und {to}.",
@@ -6530,10 +6533,10 @@
       },
       "score": {
         "4": "<50",
-        "5": "50er Jahre",
-        "6": "60er Jahre",
-        "7": "70er Jahre",
-        "8": "80er Jahre",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
         "9": "90+",
         "null": "Keine Wertung"
       }
@@ -6620,7 +6623,7 @@
         "title": "Bestehensquote"
       },
       "kpi_median_days": {
-        "title": "Durchschnittliche Anzahl Tage bis zum Abschluss"
+        "title": "Median der Tage bis zum Abschluss"
       },
       "kpi_completions": {
         "title": "Abschlüsse"
@@ -6851,7 +6854,10 @@
         "cohort": "{count, plural, one {# Studierender} other {# Studierende}} in der Kohorte",
         "course": "{count, plural, one {# Studierender} other {# Studierende}} im Kurs",
         "org": "{count, plural, one {# Studierender} other {# Studierende}} in der Organisation"
-      }
+      },
+      "failed": "Schüler konnten nicht geladen werden",
+      "cells_failed": "Übungsergebnisse konnten nicht geladen werden",
+      "attempts_unavailable": "Es konnte nicht geprüft werden, welche Übungen Versuche haben, daher sind einige gesperrte Übungen möglicherweise ausgeblendet."
     },
     "empty": {
       "no_data": "Noch keine Daten.",

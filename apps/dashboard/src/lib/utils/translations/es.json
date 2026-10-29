@@ -536,7 +536,10 @@
       "reminders_sent": "{count, plural, one {# recordatorio enviado} other {# recordatorios enviados}}",
       "target_saved": "Objetivo de aprendizaje guardado",
       "target_failed": "No se pudo salvar el objetivo del alumno",
-      "target_invalid": "Ingrese un número entero del 1 al 1.000.000."
+      "target_invalid": "Ingrese un número entero del 1 al 1.000.000.",
+      "reminders_truncated": "{count, plural, one {# recordatorio enviado} other {# recordatorios enviados}}. Hay demasiados estudiantes atrasados para enviarlos de una vez: limita el curso para llegar al resto.",
+      "students_refresh_failed": "No se pudo actualizar la lista de estudiantes",
+      "refresh_failed": "No se pudieron actualizar los análisis"
     }
   },
   "explore": {
@@ -6510,7 +6513,7 @@
       "showing_first": "Mostrando los primeros {shown} de {total}.",
       "cohorts_select": "Seleccione una cohorte para abrir su panel.",
       "cohorts_in_table": "{count, plural, one {la cohorte} other {Las #cohortes}} en la tabla anterior.",
-      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "courses_in_table": "{count, plural, one {El curso} other {Los # cursos}} de la tabla anterior.",
       "not_counted_empty": "No contabilizados: {names} (aún no hay estudiantes).",
       "not_charted_empty": "No incluidos en el gráfico: {names} (aún no hay estudiantes).",
       "lesson_dropoff": "La caída más pronunciada se encuentra entre {from} y {to}.",
@@ -6530,10 +6533,10 @@
       },
       "score": {
         "4": "<50",
-        "5": "años 50",
-        "6": "años 60",
-        "7": "años 70",
-        "8": "años 80",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
         "9": "Más de 90",
         "null": "Sin puntuación"
       }
@@ -6851,7 +6854,10 @@
         "cohort": "{count, plural, one {# estudiante} other {# estudiantes}} en cohorte",
         "course": "{count, plural, one {# estudiante} other {# estudiantes}} en curso",
         "org": "{count, plural, one {# estudiante} other {# estudiantes}} en la organización"
-      }
+      },
+      "failed": "No se pudieron cargar los estudiantes",
+      "cells_failed": "No se pudieron cargar las puntuaciones de los ejercicios",
+      "attempts_unavailable": "No se pudo comprobar qué ejercicios tienen intentos, así que algunos ejercicios bloqueados podrían estar ocultos."
     },
     "empty": {
       "no_data": "Aún no hay datos.",

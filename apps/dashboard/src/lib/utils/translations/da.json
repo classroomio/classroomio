@@ -536,7 +536,10 @@
       "reminders_sent": "{count, plural, one {# påmindelse sendt} other {# påmindelser sendt}}",
       "target_saved": "Elevmål gemt",
       "target_failed": "Kunne ikke gemme elevens mål",
-      "target_invalid": "Indtast et helt tal fra 1 til 1.000.000"
+      "target_invalid": "Indtast et helt tal fra 1 til 1.000.000",
+      "reminders_truncated": "{count, plural, one {# påmindelse sendt} other {# påmindelser sendt}}. For mange forsinkede elever til én udsendelse — afgræns kurset for at nå resten.",
+      "students_refresh_failed": "Kunne ikke opdatere elevlisten",
+      "refresh_failed": "Kunne ikke opdatere analyser"
     }
   },
   "explore": {
@@ -6510,7 +6513,7 @@
       "showing_first": "Viser de første {shown} af {total}.",
       "cohorts_select": "Vælg en kohorte for at åbne dens betjeningspanel.",
       "cohorts_in_table": "{count, plural, one {Kohorten} other {De # kohorter}} i tabellen ovenfor.",
-      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "courses_in_table": "{count, plural, one {Kurset} other {De # kurser}} i tabellen ovenfor.",
       "not_counted_empty": "Ikke medregnet: {names} (ingen elever endnu).",
       "not_charted_empty": "Ikke vist i diagram: {names} (ingen elever endnu).",
       "lesson_dropoff": "Det stejleste fald er mellem {from} og {to}.",
@@ -6530,10 +6533,10 @@
       },
       "score": {
         "4": "<50",
-        "5": "50'erne",
-        "6": "60'erne",
-        "7": "70'erne",
-        "8": "80'erne",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
         "9": "90+",
         "null": "Ingen score"
       }
@@ -6851,7 +6854,10 @@
         "cohort": "{count, plural, one {# studerende} other {# elever}} i kohorte",
         "course": "{count, plural, one {# studerende} other {# elever}} i kursus",
         "org": "{count, plural, one {# studerende} other {# elever}} i organisation"
-      }
+      },
+      "failed": "Kunne ikke indlæse elever",
+      "cells_failed": "Kunne ikke indlæse øvelsesresultater",
+      "attempts_unavailable": "Kunne ikke kontrollere, hvilke øvelser der har forsøg, så nogle låste øvelser kan være skjult."
     },
     "empty": {
       "no_data": "Ingen data endnu",

@@ -5493,7 +5493,10 @@
       "reminders_sent": "{count, plural, one {# hatırlatma gönderildi} other {# hatırlatma gönderildi}}",
       "target_saved": "Öğrenci hedefi kaydedildi",
       "target_failed": "Öğrenci hedefi kaydedilemedi",
-      "target_invalid": "1'den 1.000.000'a kadar bir tam sayı girin"
+      "target_invalid": "1'den 1.000.000'a kadar bir tam sayı girin",
+      "reminders_truncated": "{count, plural, one {# hatırlatma gönderildi} other {# hatırlatma gönderildi}}. Tek seferde göndermek için çok fazla gecikmiş öğrenci var — kalanlara ulaşmak için kursu daraltın.",
+      "students_refresh_failed": "Öğrenci listesi yenilenemedi",
+      "refresh_failed": "Analizler yenilenemedi"
     }
   },
   "specialization": {
@@ -6490,7 +6493,7 @@
       "showing_first": "{total} içinden ilk {shown} gösteriliyor.",
       "cohorts_select": "Kontrol panelini açmak için bir grup seçin.",
       "cohorts_in_table": "Yukarıdaki tabloda {count, plural, one {kohort} other {# kohort}}.",
-      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "courses_in_table": "{count, plural, one {Yukarıdaki tabloda # kurs} other {Yukarıdaki tabloda # kurs}} var.",
       "not_counted_empty": "Sayılmadı: {names} (henüz öğrenci yok).",
       "not_charted_empty": "Grafikte gösterilmedi: {names} (henüz öğrenci yok).",
       "lesson_dropoff": "En dik düşüş {from} ile {to} arasındadır.",
@@ -6510,10 +6513,10 @@
       },
       "score": {
         "4": "<50",
-        "5": "50'li yıllar",
-        "6": "60'lar",
-        "7": "70'ler",
-        "8": "80'ler",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
         "9": "90+",
         "null": "Puan yok"
       }
@@ -6600,7 +6603,7 @@
         "title": "Geçme oranı"
       },
       "kpi_median_days": {
-        "title": "Bitirmek için ortalama gün sayısı"
+        "title": "Bitirmek için medyan gün sayısı"
       },
       "kpi_completions": {
         "title": "Tamamlamalar"
@@ -6831,7 +6834,10 @@
         "cohort": "Grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
         "course": "Kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
         "org": "Kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
-      }
+      },
+      "failed": "Öğrenciler yüklenemedi",
+      "cells_failed": "Alıştırma puanları yüklenemedi",
+      "attempts_unavailable": "Hangi alıştırmalarda deneme olduğu kontrol edilemedi, bu yüzden bazı kilitli alıştırmalar gizli olabilir."
     },
     "empty": {
       "no_data": "Henüz veri yok",

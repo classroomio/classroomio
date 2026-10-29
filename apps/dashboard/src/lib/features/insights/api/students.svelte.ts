@@ -1,5 +1,6 @@
 import { INSIGHTS_LIMITS } from '@cio/utils/constants/insights';
 import type { ExportDocument } from '@cio/utils/export';
+import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { BaseApi, classroomio } from '$lib/utils/services/api';
 
@@ -73,8 +74,11 @@ class InsightsStudentsApi extends BaseApi {
   hasLoaded = $state(false);
   loadingPage = $state(false);
   failed = $state(false);
+  cellsFailed = $state(false);
+  attemptedFailed = $state(false);
 
   #seq = 0;
+  #attemptedCourseId: string | null = null;
 
   get pageCount(): number {
     return Math.max(1, Math.ceil(this.total / INSIGHTS_LIMITS.studentsPageSize));
@@ -157,7 +161,7 @@ class InsightsStudentsApi extends BaseApi {
     return response?.data ?? null;
   }
 
-  async #loadCells(rows: InsightsRow[], seq: number, refresh: boolean) {
+  async #loadCells(rows: InsightsRow[], seq: number, refresh: boolean, quiet: boolean) {
     const courseId = insightsApi.selection.courseId;
     const studentIds = rows.flatMap((row) => (typeof row['student_id'] === 'string' ? [row['student_id']] : []));
     if (!courseId || studentIds.length === 0) return;
@@ -174,21 +178,43 @@ class InsightsStudentsApi extends BaseApi {
     );
     if (seq !== this.#seq) return;
 
+    if (results.some((result) => !result)) {
+      if (!quiet) this.cellsFailed = true;
+
+      return;
+    }
+
     const pivots = results.flatMap((result) => (result ? [pivotStudentExercises(result)] : []));
     this.cells = Object.assign({}, ...pivots);
+    this.cellsFailed = false;
   }
 
+  /**
+   * Keeps the last successful counts when the query fails: an empty map would hide locked exercises that do have
+   * attempts, which reads as data loss rather than a failed request.
+   */
   async #loadAttempted(seq: number, refresh: boolean) {
     const courseId = insightsApi.selection.courseId;
-    if (!courseId) {
+    if (courseId !== this.#attemptedCourseId) {
       this.attemptedResult = null;
+      this.#attemptedCourseId = courseId;
+    }
+
+    if (!courseId) {
+      this.attemptedFailed = false;
       return;
     }
 
     const result = await this.#query(this.#attemptedSpec(courseId), refresh);
     if (seq !== this.#seq) return;
 
+    if (!result) {
+      this.attemptedFailed = true;
+      return;
+    }
+
     this.attemptedResult = result;
+    this.attemptedFailed = false;
   }
 
   async load() {
@@ -209,12 +235,18 @@ class InsightsStudentsApi extends BaseApi {
     return this.#loadPage({ quiet: true, refresh: options.refresh });
   }
 
+  /** Reloads the current page with a visible spinner and failure state, after a failed request. */
+  retry() {
+    return this.#loadPage();
+  }
+
   async #loadPage(options: { quiet?: boolean; refresh?: boolean } = {}) {
     this.#seq += 1;
     const seq = this.#seq;
     if (!options.quiet) {
       this.loadingPage = true;
       this.failed = false;
+      this.cellsFailed = false;
     }
 
     const result = await this.#query(this.#studentSpec(this.page, INSIGHTS_LIMITS.studentsPageSize), options.refresh);
@@ -224,7 +256,12 @@ class InsightsStudentsApi extends BaseApi {
     this.hasLoaded = true;
 
     if (!result) {
-      if (!options.quiet) this.failed = true;
+      if (options.quiet && options.refresh) {
+        snackbar.error('snackbar.insights.students_refresh_failed');
+      } else if (!options.quiet) {
+        this.failed = true;
+      }
+
       return;
     }
 
@@ -239,7 +276,7 @@ class InsightsStudentsApi extends BaseApi {
     if (!options.quiet) this.cells = {};
 
     await Promise.all([
-      this.#loadCells(result.rows, seq, Boolean(options.refresh)),
+      this.#loadCells(result.rows, seq, Boolean(options.refresh), Boolean(options.quiet)),
       this.#loadAttempted(seq, Boolean(options.refresh))
     ]);
   }
@@ -285,6 +322,9 @@ class InsightsStudentsApi extends BaseApi {
     this.page = 1;
     this.hasLoaded = false;
     this.failed = false;
+    this.cellsFailed = false;
+    this.attemptedFailed = false;
+    this.#attemptedCourseId = null;
     this.filters.status = '';
     this.filters.activity = '';
     this.filters.score = '';
@@ -314,10 +354,9 @@ class InsightsStudentsApi extends BaseApi {
     attemptedByExercise: ReadonlyMap<string, number>;
   }): Promise<ExportDocument<{ row: InsightsRow; cells: Record<string, StudentExerciseCell> }>> {
     const courseId = insightsApi.selection.courseId;
-    const exportResult = await this.#exportStudents({
-      studentSpec: this.#studentSpec(1, INSIGHTS_LIMITS.maxExportRows, courseId),
-      exerciseSpec: courseId ? this.#exportExerciseSpec(courseId) : undefined
-    });
+    const studentSpec = this.#studentSpec(1, INSIGHTS_LIMITS.maxExportRows, courseId);
+    const exerciseSpec = courseId ? this.#exportExerciseSpec(courseId) : undefined;
+    const exportResult = await this.#exportStudents({ studentSpec, exerciseSpec });
     const cells = exportResult?.cells ?? {};
     const structure = courseId ? insightsApi.dashboard?.structures[courseId] : undefined;
     const exercises = courseId ? visibleExerciseColumns(structure, params.attemptedByExercise) : [];
@@ -336,6 +375,7 @@ class InsightsStudentsApi extends BaseApi {
     }
 
     const subtitle = [params.subtitle, ...notes].filter(Boolean).join(' · ') || undefined;
+    const courseSelected = Boolean(courseId);
 
     return buildStudentsExportDocument({
       filename: params.filename,
@@ -344,7 +384,7 @@ class InsightsStudentsApi extends BaseApi {
       headers: params.headers,
       rows,
       exercises,
-      courseSelected: Boolean(courseId)
+      courseSelected
     });
   }
 }

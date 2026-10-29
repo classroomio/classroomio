@@ -536,7 +536,10 @@
       "reminders_sent": "{count, plural, one {# rappel envoyé} other {# rappels envoyés}}",
       "target_saved": "Objectif d'apprentissage enregistré",
       "target_failed": "Impossible de sauvegarder l'objectif de l'apprenant",
-      "target_invalid": "Saisissez un nombre entier compris entre 1 et 1 000 000"
+      "target_invalid": "Saisissez un nombre entier compris entre 1 et 1 000 000",
+      "reminders_truncated": "{count, plural, one {# rappel envoyé} other {# rappels envoyés}}. Trop d'apprenants en retard pour un seul envoi — limitez le cours pour atteindre les autres.",
+      "students_refresh_failed": "Impossible d'actualiser la liste des étudiants",
+      "refresh_failed": "Impossible d'actualiser les analyses"
     }
   },
   "explore": {
@@ -6510,7 +6513,7 @@
       "showing_first": "Affichage des {shown} premiers sur {total}.",
       "cohorts_select": "Sélectionnez une cohorte pour ouvrir son tableau de bord.",
       "cohorts_in_table": "{count, plural, one {La cohorte} other {Les # cohortes}} dans le tableau ci-dessus.",
-      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "courses_in_table": "{count, plural, one {Le cours} other {Les # cours}} du tableau ci-dessus.",
       "not_counted_empty": "Non comptés : {names} (pas encore d'étudiants).",
       "not_charted_empty": "Non affichés dans le graphique : {names} (pas encore d'étudiants).",
       "lesson_dropoff": "La chute la plus abrupte se situe entre {from} et {to}.",
@@ -6530,10 +6533,10 @@
       },
       "score": {
         "4": "<50",
-        "5": "années 50",
-        "6": "années 60",
-        "7": "années 70",
-        "8": "années 80",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
         "9": "90+",
         "null": "Aucun score"
       }
@@ -6851,7 +6854,10 @@
         "cohort": "{count, plural, one {# étudiant} other {# étudiants}} dans la cohorte",
         "course": "{count, plural, one {# étudiant} other {# étudiants}} en cours",
         "org": "{count, plural, one {# étudiant} other {# étudiants}} dans l'organisation"
-      }
+      },
+      "failed": "Impossible de charger les étudiants",
+      "cells_failed": "Impossible de charger les scores des exercices",
+      "attempts_unavailable": "Impossible de vérifier quels exercices ont des tentatives ; certains exercices verrouillés peuvent donc être masqués."
     },
     "empty": {
       "no_data": "Aucune donnée pour le moment",

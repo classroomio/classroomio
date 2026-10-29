@@ -3,12 +3,11 @@
 
   import { insightsApi, insightsStudentSheetApi } from '../../api';
   import { numberCell, textCell, toChartPoints } from '../../utils/insights-utils';
-  import type { InsightsResult, InsightsRow } from '../../utils/types';
+  import type { InsightsResult } from '../../utils/types';
   import LineBandChart from '../charts/line-band-chart.svelte';
 
   interface Props {
     result: InsightsResult;
-    courseRow?: InsightsRow | null;
     studentName: string;
   }
 

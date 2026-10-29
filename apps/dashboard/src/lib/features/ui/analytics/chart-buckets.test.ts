@@ -4,6 +4,7 @@ import {
   DATE_TICK_MIN_WIDTH,
   formatChartTooltipDate,
   getBucketSize,
+  truncateTickLabel,
   visibleTicks
 } from './chart-buckets';
 
@@ -79,10 +80,24 @@ describe('visibleTicks', () => {
   });
 });
 
+describe('truncateTickLabel', () => {
+  it('keeps a label that fits its tick', () => {
+    expect(truncateTickLabel('Short', 800, 4)).toBe('Short');
+  });
+
+  it('shortens a label wider than its tick', () => {
+    expect(truncateTickLabel('A very long exercise title', 400, 8)).toBe('A very l…');
+  });
+
+  it('keeps labels readable before the chart is measured', () => {
+    expect(truncateTickLabel('A very long exercise title', 0, 0)).toBe('A very long e…');
+  });
+});
+
 describe('formatChartTooltipDate', () => {
   it('formats single day date', () => {
     const date = new Date(2026, 8, 15);
-    expect(formatChartTooltipDate(date)).toContain('Sep 15, 2026');
+    expect(formatChartTooltipDate(date, undefined, 'en-US')).toContain('Sep 15, 2026');
   });
 
   it('formats range across same month', () => {
@@ -94,7 +109,7 @@ describe('formatChartTooltipDate', () => {
       isSingleDay: false,
       rawCount: 5
     };
-    expect(formatChartTooltipDate(start, point)).toBe('Sep 1 – 5, 2026');
+    expect(formatChartTooltipDate(start, point, 'en-US')).toBe('Sep 1 – 5, 2026');
   });
 
   it('formats range across different months', () => {
@@ -106,6 +121,6 @@ describe('formatChartTooltipDate', () => {
       isSingleDay: false,
       rawCount: 5
     };
-    expect(formatChartTooltipDate(start, point)).toBe('Sep 28 – Oct 2, 2026');
+    expect(formatChartTooltipDate(start, point, 'en-US')).toBe('Sep 28 – Oct 2, 2026');
   });
 });

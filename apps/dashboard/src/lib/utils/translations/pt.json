@@ -536,7 +536,10 @@
       "reminders_sent": "{count, plural, one {# lembrete enviado} other {# lembretes enviados}}",
       "target_saved": "Alvo do aluno salvo",
       "target_failed": "Não foi possível salvar a meta do aluno",
-      "target_invalid": "Insira um número inteiro de 1 a 1.000.000"
+      "target_invalid": "Insira um número inteiro de 1 a 1.000.000",
+      "reminders_truncated": "{count, plural, one {# lembrete enviado} other {# lembretes enviados}}. Há alunos atrasados demais para um único envio — restrinja o curso para alcançar os demais.",
+      "students_refresh_failed": "Não foi possível atualizar a lista de alunos",
+      "refresh_failed": "Não foi possível atualizar as análises"
     }
   },
   "explore": {
@@ -6510,7 +6513,7 @@
       "showing_first": "Mostrando os primeiros {shown} de {total}.",
       "cohorts_select": "Selecione uma coorte para abrir seu painel.",
       "cohorts_in_table": "{count, plural, one {A coorte} other {As # coortes}} na tabela acima.",
-      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "courses_in_table": "{count, plural, one {O curso} other {Os # cursos}} na tabela acima.",
       "not_counted_empty": "Não contabilizados: {names} (ainda sem alunos).",
       "not_charted_empty": "Não incluídos no gráfico: {names} (ainda sem alunos).",
       "lesson_dropoff": "A queda mais acentuada ocorre entre {from} e {to}.",
@@ -6530,10 +6533,10 @@
       },
       "score": {
         "4": "<50",
-        "5": "anos 50",
-        "6": "anos 60",
-        "7": "anos 70",
-        "8": "anos 80",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
         "9": "90+",
         "null": "Sem pontuação"
       }
@@ -6851,7 +6854,10 @@
         "cohort": "{count, plural, one {# aluno} other {# alunos}} na coorte",
         "course": "{count, plural, one {# aluno} other {# alunos}} em curso",
         "org": "{count, plural, one {# aluno} other {# alunos}} na organização"
-      }
+      },
+      "failed": "Não foi possível carregar os alunos",
+      "cells_failed": "Não foi possível carregar as pontuações dos exercícios",
+      "attempts_unavailable": "Não foi possível verificar quais exercícios têm tentativas, então alguns exercícios bloqueados podem estar ocultos."
     },
     "empty": {
       "no_data": "Ainda não há dados",

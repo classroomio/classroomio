@@ -129,11 +129,7 @@
             <Button variant="outline" size="sm" onclick={() => sheet.load()}>{$t('insights.retry')}</Button>
           </Empty>
         {:else if course && sheet.scores}
-          <StudentScoresChart
-            result={sheet.scores}
-            courseRow={sheet.courseRow}
-            studentName={sheet.student?.name ?? ''}
-          />
+          <StudentScoresChart result={sheet.scores} studentName={sheet.student?.name ?? ''} />
           <Button variant="outline" size="sm" class="self-start" href={profileHref}>
             {$t('insights.student_sheet.open_profile')}
           </Button>

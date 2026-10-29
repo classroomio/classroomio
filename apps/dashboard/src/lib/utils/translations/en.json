@@ -5485,6 +5485,9 @@
       "reminder_failed": "Couldn't send the reminder",
       "reminders_sending": "Sending reminders…",
       "reminders_sent": "{count, plural, one {# reminder sent} other {# reminders sent}}",
+      "reminders_truncated": "{count, plural, one {# reminder sent} other {# reminders sent}}. Too many overdue learners to send at once — narrow the course to reach the rest.",
+      "students_refresh_failed": "Couldn't refresh the student list",
+      "refresh_failed": "Couldn't refresh analytics",
       "target_saved": "Learner target saved",
       "target_failed": "Couldn't save the learner target",
       "target_invalid": "Enter a whole number from 1 to 1,000,000"
@@ -6823,6 +6826,9 @@
     "students": {
       "search": "Search by name or email",
       "empty": "No students match these filters",
+      "failed": "Students couldn't load",
+      "cells_failed": "Exercise scores couldn't load",
+      "attempts_unavailable": "Couldn't check which exercises have attempts, so some locked exercises may be hidden.",
       "showing": {
         "cohort": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in cohort",
         "course": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in course",

@@ -536,7 +536,10 @@
       "reminders_sent": "{count, plural, one {# lời nhắc đã được gửi} other {# lời nhắc đã được gửi}}",
       "target_saved": "Đã lưu mục tiêu học viên",
       "target_failed": "Không thể lưu mục tiêu học viên",
-      "target_invalid": "Nhập số nguyên từ 1 đến 1.000.000"
+      "target_invalid": "Nhập số nguyên từ 1 đến 1.000.000",
+      "reminders_truncated": "{count, plural, other {Đã gửi # lời nhắc}}. Có quá nhiều học viên quá hạn để gửi cùng lúc — hãy thu hẹp khóa học để tiếp cận những người còn lại.",
+      "students_refresh_failed": "Không thể làm mới danh sách học viên",
+      "refresh_failed": "Không thể làm mới phân tích"
     }
   },
   "explore": {
@@ -6510,7 +6513,7 @@
       "showing_first": "Đang hiển thị {shown} mục đầu tiên trong {total}.",
       "cohorts_select": "Chọn một nhóm thuần tập để mở trang tổng quan của nhóm đó.",
       "cohorts_in_table": "{count, plural, one {Đoàn hệ} other {# nhóm thuần tập}} trong bảng trên.",
-      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "courses_in_table": "{count, plural, other {# khóa học}} trong bảng trên.",
       "not_counted_empty": "Không tính: {names} (chưa có học viên).",
       "not_charted_empty": "Không hiển thị trên biểu đồ: {names} (chưa có học viên).",
       "lesson_dropoff": "Độ dốc cao nhất là từ {from} đến {to}.",
@@ -6530,10 +6533,10 @@
       },
       "score": {
         "4": "<50",
-        "5": "thập niên 50",
-        "6": "thập niên 60",
-        "7": "thập niên 70",
-        "8": "thập niên 80",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
         "9": "90+",
         "null": "Không có điểm"
       }
@@ -6620,7 +6623,7 @@
         "title": "Tỷ lệ đạt"
       },
       "kpi_median_days": {
-        "title": "Số ngày trung bình để kết thúc"
+        "title": "Số ngày trung vị để kết thúc"
       },
       "kpi_completions": {
         "title": "Hoàn thành"
@@ -6851,7 +6854,10 @@
         "cohort": "{count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
         "course": "{count, plural, one {# người học} other {# người học}} trong khóa học",
         "org": "{count, plural, one {# người học} other {# người học}} trong tổ chức"
-      }
+      },
+      "failed": "Không thể tải học viên",
+      "cells_failed": "Không thể tải điểm bài tập",
+      "attempts_unavailable": "Không thể kiểm tra bài tập nào có lượt làm, nên một số bài tập bị khóa có thể bị ẩn."
     },
     "empty": {
       "no_data": "Chưa có dữ liệu",

@@ -536,7 +536,10 @@
       "reminders_sent": "{count, plural, one {# wysłane przypomnienie} other {# wysłanych przypomnień}}",
       "target_saved": "Cel ucznia zapisany",
       "target_failed": "Nie udało się zapisać celu ucznia",
-      "target_invalid": "Wprowadź liczbę całkowitą od 1 do 1 000 000"
+      "target_invalid": "Wprowadź liczbę całkowitą od 1 do 1 000 000",
+      "reminders_truncated": "{count, plural, one {Wysłano # przypomnienie} other {Wysłano # przypomnień}}. Zbyt wielu spóźnionych uczniów na jedną wysyłkę — zawęź kurs, aby dotrzeć do pozostałych.",
+      "students_refresh_failed": "Nie udało się odświeżyć listy uczniów",
+      "refresh_failed": "Nie udało się odświeżyć analiz"
     }
   },
   "explore": {
@@ -6510,7 +6513,7 @@
       "showing_first": "Wyświetlanie pierwszych {shown} z {total}.",
       "cohorts_select": "Wybierz kohortę, aby otworzyć jej pulpit nawigacyjny.",
       "cohorts_in_table": "{count, plural, one {Kohorta} other {# kohorty}} w tabeli powyżej.",
-      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "courses_in_table": "{count, plural, one {Kurs} other {# kursów}} z tabeli powyżej.",
       "not_counted_empty": "Nieuwzględnione: {names} (brak studentów na razie).",
       "not_charted_empty": "Niepokazane na wykresie: {names} (brak studentów na razie).",
       "lesson_dropoff": "Największy spadek występuje pomiędzy {from} i {to}.",
@@ -6530,10 +6533,10 @@
       },
       "score": {
         "4": "<50",
-        "5": "Lata 50.",
-        "6": "Lata 60.",
-        "7": "Lata 70.",
-        "8": "Lata 80.",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
         "9": "90+",
         "null": "Brak wyniku"
       }
@@ -6851,7 +6854,10 @@
         "cohort": "{count, plural, one {#student} other {# studenci}} w kohorcie",
         "course": "{count, plural, one {#student} other {# studenci}} w kursie",
         "org": "{count, plural, one {#student} other {# studenci}} w organizacji"
-      }
+      },
+      "failed": "Nie udało się wczytać uczniów",
+      "cells_failed": "Nie udało się wczytać wyników ćwiczeń",
+      "attempts_unavailable": "Nie udało się sprawdzić, które ćwiczenia mają próby, więc niektóre zablokowane ćwiczenia mogą być ukryte."
     },
     "empty": {
       "no_data": "Brak danych",

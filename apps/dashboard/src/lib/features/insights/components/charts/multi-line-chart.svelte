@@ -10,7 +10,7 @@
   import { browser } from '$app/environment';
   import type { ChartConfig } from '@cio/ui/base/chart/types';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import { EXERCISE_TICK_MIN_WIDTH, visibleTicks } from '$features/ui';
+  import { EXERCISE_TICK_MIN_WIDTH, truncateTickLabel, visibleTicks, type ChartAxisTickProps } from '$features/ui';
 
   import { cycleColor, INSIGHTS_COLORS, NO_COHORT_SERIES_KEY } from '../../utils/insights-utils';
   import type { InsightsChartPoint } from '../../utils/types';
@@ -57,17 +57,11 @@
   );
 
   function formatTick(rank: number): string {
-    const label = labelByRank.get(rank) ?? '';
-    const availablePerTick = ticks.length > 0 ? containerWidth / ticks.length : 120;
-    const maxChars = Math.max(8, Math.min(20, Math.floor((availablePerTick - 16) / 7.5)));
-    if (label.length > maxChars) {
-      return `${label.slice(0, maxChars)}…`;
-    }
-    return label;
+    return truncateTickLabel(labelByRank.get(rank) ?? '', containerWidth, ticks.length);
   }
 </script>
 
-{#snippet tickLabel({ props: tickProps, index }: { props: any; index: number })}
+{#snippet tickLabel({ props: tickProps, index }: { props: ChartAxisTickProps; index: number })}
   {@const isFirst = index === 0}
   {@const isLast = index === ticks.length - 1 && ticks.length > 1}
   {@const anchor = isFirst ? 'start' : isLast ? 'end' : 'middle'}

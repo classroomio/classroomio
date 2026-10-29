@@ -5483,7 +5483,10 @@
       "reminders_sent": "{count, plural, one {# promemoria inviato} other {# promemoria inviati}}",
       "target_saved": "Obiettivo dello studente salvato",
       "target_failed": "Impossibile salvare l'obiettivo di apprendimento",
-      "target_invalid": "Inserisci un numero intero compreso tra 1 e 1.000.000"
+      "target_invalid": "Inserisci un numero intero compreso tra 1 e 1.000.000",
+      "reminders_truncated": "{count, plural, one {# promemoria inviato} other {# promemoria inviati}}. Troppi studenti in ritardo per un solo invio — limita il corso per raggiungere gli altri.",
+      "students_refresh_failed": "Impossibile aggiornare l'elenco degli studenti",
+      "refresh_failed": "Impossibile aggiornare le analisi"
     }
   },
   "specialization": {
@@ -6480,7 +6483,7 @@
       "showing_first": "Mostra i primi {shown} di {total}.",
       "cohorts_select": "Seleziona una coorte per aprire la sua dashboard.",
       "cohorts_in_table": "{count, plural, one {La coorte} other {Le # coorti}} nella tabella sopra.",
-      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "courses_in_table": "{count, plural, one {Il corso} other {I # corsi}} nella tabella sopra.",
       "not_counted_empty": "Non conteggiati: {names} (ancora nessuno studente).",
       "not_charted_empty": "Non mostrati nel grafico: {names} (ancora nessuno studente).",
       "lesson_dropoff": "La discesa più ripida si verifica tra {from} e {to}.",
@@ -6500,10 +6503,10 @@
       },
       "score": {
         "4": "<50",
-        "5": "anni '50",
-        "6": "anni '60",
-        "7": "anni '70",
-        "8": "anni '80",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
         "9": "90+",
         "null": "Nessun punteggio"
       }
@@ -6590,7 +6593,7 @@
         "title": "Tasso di superamento"
       },
       "kpi_median_days": {
-        "title": "Giorni medi per completare"
+        "title": "Giorni mediani per completare"
       },
       "kpi_completions": {
         "title": "Completamenti"
@@ -6821,7 +6824,10 @@
         "cohort": "{count, plural, one {# studente} other {# studenti}} nella coorte",
         "course": "{count, plural, one {# studente} other {# studenti}} nel corso",
         "org": "{count, plural, one {# studente} other {# studenti}} nell'organizzazione"
-      }
+      },
+      "failed": "Impossibile caricare gli studenti",
+      "cells_failed": "Impossibile caricare i punteggi degli esercizi",
+      "attempts_unavailable": "Impossibile verificare quali esercizi hanno tentativi, quindi alcuni esercizi bloccati potrebbero essere nascosti."
     },
     "empty": {
       "no_data": "Nessun dato ancora disponibile",

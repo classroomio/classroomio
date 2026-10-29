@@ -4,7 +4,6 @@
   import { insightsApi } from '../../api';
   import {
     chartedCohorts,
-    cohortOptionsFromResult,
     cohortOptionsFromSeries,
     defaultCohortIds,
     NO_COHORT_SERIES_KEY,
@@ -18,20 +17,17 @@
 
   const lines = $derived(toSeriesPoints(result, 'exercise', 'cohort', 'best_score_pct__avg', $t));
   const defaultOptions = $derived.by(() => {
-    const fromChartPage = cohortOptionsFromResult(insightsApi.widgetResult('cohorts_in_course'), $t);
+    const loadedOptions = insightsApi.cohortOptions;
 
-    return fromChartPage.length > 0 ? fromChartPage : cohortOptionsFromSeries(lines.seriesKeys);
+    return loadedOptions.length > 0 ? loadedOptions : cohortOptionsFromSeries(lines.seriesKeys);
   });
   const defaultIds = $derived(defaultCohortIds(defaultOptions));
   const selectedIds = $derived(insightsApi.selection.cohortIds ?? defaultIds);
   const knownOptions = $derived.by(() => {
-    const byId = new Map(defaultOptions.map((cohort) => [cohort.id, cohort]));
+    const knownById = { ...insightsApi.cohortOptionsById };
+    const defaultsById = Object.fromEntries(defaultOptions.map((cohort) => [cohort.id, cohort]));
 
-    for (const option of Object.values(insightsApi.cohortOptionsById)) {
-      if (!byId.has(option.id)) byId.set(option.id, option);
-    }
-
-    return [...byId.values()];
+    return Object.values({ ...knownById, ...defaultsById });
   });
   const seriesKeys = $derived(chartedCohorts(lines.seriesKeys, knownOptions, selectedIds, $t));
   const hasDirectStudents = $derived(lines.seriesKeys.some((entry) => entry.key === NO_COHORT_SERIES_KEY));
