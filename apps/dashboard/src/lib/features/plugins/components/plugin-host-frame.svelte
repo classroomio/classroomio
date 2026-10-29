@@ -74,13 +74,16 @@
   }
 
   async function responseData<T>(response: Response): Promise<T> {
-    if (!response.ok) {
-      throw { code: 'INTERNAL_ERROR', message: 'The requested plugin data could not be saved' };
-    }
+    let body: { success?: boolean; data?: T; message?: string; error?: string } | null = null;
+    try {
+      body = (await response.json()) as { success?: boolean; data?: T; message?: string; error?: string };
+    } catch {}
 
-    const body = (await response.json()) as { success?: boolean; data?: T };
-    if (!body.success) {
-      throw { code: 'INTERNAL_ERROR', message: 'The requested plugin data could not be saved' };
+    if (!response.ok || !body?.success) {
+      const message = body?.message || body?.error || 'The requested plugin data could not be saved';
+      const code =
+        response.status === 403 ? 'FORBIDDEN' : response.status === 400 ? 'INVALID_PARAMS' : 'INTERNAL_ERROR';
+      throw { code, message };
     }
 
     return body.data as T;
