@@ -194,18 +194,28 @@ export async function listAssignmentsForReminderScan(
 }
 
 /**
- * Overdue, still-open assignments on the cohort's active goals, oldest due date first, optionally limited to goals
- * that cover one course and to one learner. Reads one row past the bulk cap so the caller can report truncation.
+ * Where the previous page of overdue assignments stopped, so the next page can continue past it. Both values come
+ * from the last row of that page.
+ */
+export type CohortGoalReminderCursor = { dueDate: string; assignmentId: string };
+
+/**
+ * One page of overdue, still-open assignments on the cohort's active goals, oldest due date first, optionally limited
+ * to goals that cover one course and to one learner. `nextCursor` is set when more rows follow this page.
  */
 export async function listOverdueAssignmentReminderContexts(
   cohortId: string,
   filters: { courseId?: string; profileId?: string },
+  cursor?: CohortGoalReminderCursor,
   dbClient: DbOrTxClient = db
-): Promise<{ contexts: CohortGoalReminderContext[]; truncated: boolean }> {
+): Promise<{ contexts: CohortGoalReminderContext[]; nextCursor: CohortGoalReminderCursor | null }> {
   const courseCondition = filters.courseId
     ? sql`(jsonb_array_length(${schema.cohortGoal.courseIds}) = 0 OR ${schema.cohortGoal.courseIds} ? ${filters.courseId})`
     : undefined;
   const learnerCondition = filters.profileId ? eq(schema.cohortMember.profileId, filters.profileId) : undefined;
+  const cursorCondition = cursor
+    ? sql`(${schema.cohortGoalAssignment.dueDate}, ${schema.cohortGoalAssignment.id}) > (${cursor.dueDate}::timestamptz, ${cursor.assignmentId}::uuid)`
+    : undefined;
 
   try {
     const rows = await selectReminderContexts(
@@ -216,16 +226,22 @@ export async function listOverdueAssignmentReminderContexts(
         lt(schema.cohortGoalAssignment.dueDate, sql`now()`),
         notInArray(schema.cohortGoalAssignment.status, [...COHORT_GOAL_CLOSED_ASSIGNMENT_STATUSES]),
         courseCondition,
-        learnerCondition
+        learnerCondition,
+        cursorCondition
       )
     )
-      .orderBy(asc(schema.cohortGoalAssignment.dueDate))
+      .orderBy(asc(schema.cohortGoalAssignment.dueDate), asc(schema.cohortGoalAssignment.id))
       .limit(COHORT_GOAL_MAX_BULK_REMINDERS + 1);
 
-    const truncated = rows.length > COHORT_GOAL_MAX_BULK_REMINDERS;
-    const contexts = toReminderContexts(truncated ? rows.slice(0, COHORT_GOAL_MAX_BULK_REMINDERS) : rows);
+    const hasMore = rows.length > COHORT_GOAL_MAX_BULK_REMINDERS;
+    const pageRows = hasMore ? rows.slice(0, COHORT_GOAL_MAX_BULK_REMINDERS) : rows;
+    const lastRow = pageRows[pageRows.length - 1];
+    const nextCursor =
+      hasMore && lastRow?.assignment.dueDate
+        ? { dueDate: lastRow.assignment.dueDate, assignmentId: lastRow.assignment.id }
+        : null;
 
-    return { contexts, truncated };
+    return { contexts: toReminderContexts(pageRows), nextCursor };
   } catch (error) {
     console.error('listOverdueAssignmentReminderContexts error:', error);
     throw new Error(`Failed to list overdue assignments: ${error instanceof Error ? error.message : 'Unknown error'}`);

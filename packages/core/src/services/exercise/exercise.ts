@@ -3,7 +3,6 @@ import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '../.
 import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion } from '@cio/db/types';
 import type { TExerciseCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
 import { invalidateInsightsCourseStructure } from '../../utils/redis/insights-cache';
-import { getLessonById } from '@cio/db/queries/lesson';
 import {
   createExercises,
   syncOptionIdSequence,
@@ -29,7 +28,7 @@ import {
   updateOptions,
   updateQuestions
 } from '@cio/db/queries/exercise';
-import { touchCourseUpdatedAt } from '@cio/db/queries/course';
+import { getCourseSectionById, touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
 import { guardNonAutoGradableQuestionsForCourseType } from '../course/public-course-guard';
@@ -209,13 +208,13 @@ export async function resolveExerciseCourseId(exercise: TExercise): Promise<stri
     return exercise.courseId;
   }
 
-  if (!exercise.lessonId) {
+  if (!exercise.sectionId) {
     return null;
   }
 
-  const lesson = await getLessonById(exercise.lessonId);
+  const section = await getCourseSectionById(exercise.sectionId);
 
-  return lesson?.courseId ?? null;
+  return section?.courseId ?? null;
 }
 
 async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
@@ -502,7 +501,7 @@ export async function updateExerciseService(
     });
 
     const courseId = (await resolveExerciseCourseId(result)) ?? existing?.courseId ?? null;
-    const previousCourseId = existing?.courseId ?? null;
+    const previousCourseId = existing ? await resolveExerciseCourseId(existing) : null;
     if (courseId) {
       await touchCourseUpdatedAt(courseId);
 
@@ -512,7 +511,6 @@ export async function updateExerciseService(
         sanitizedData.isUnlocked !== undefined ||
         sanitizedData.order !== undefined ||
         sanitizedData.sectionId !== undefined ||
-        sanitizedData.lessonId !== undefined ||
         sanitizedData.questions !== undefined ||
         sanitizedData.title !== undefined;
 
@@ -832,7 +830,7 @@ export async function replaceExerciseService(exerciseId: string, data: TExercise
       return await getExercise(exerciseId, txClient);
     });
 
-    const courseId = existing?.courseId;
+    const courseId = await resolveExerciseCourseId(result);
     if (courseId) {
       await touchCourseUpdatedAt(courseId);
       void invalidateInsightsCourseStructure(courseId);
@@ -861,14 +859,15 @@ export async function deleteExerciseService(exerciseId: string): Promise<TExerci
       throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
     }
 
+    const courseId = await resolveExerciseCourseId(exercise);
     const deleted = await deleteExercise(exerciseId);
     if (!deleted) {
       throw new AppError('Failed to delete exercise', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
-    if (exercise.courseId) {
-      await touchCourseUpdatedAt(exercise.courseId);
-      void invalidateInsightsCourseStructure(exercise.courseId);
+    if (courseId) {
+      await touchCourseUpdatedAt(courseId);
+      void invalidateInsightsCourseStructure(courseId);
     }
 
     return deleted;

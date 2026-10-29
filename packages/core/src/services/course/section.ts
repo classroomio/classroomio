@@ -245,7 +245,7 @@ export async function reorderCourseSections(sections: TCourseSectionReorder['sec
     const updatePromises = sections.map(({ id, order }) => updateCourseSection(id, { order }));
 
     const updated = await Promise.all(updatePromises);
-    await invalidateReorderedSectionCourses(sections.map(({ id }) => id));
+    await invalidateReorderedSectionInsights(sections.map(({ id }) => id));
 
     return updated.filter((section): section is TCourseSection => section !== null);
   } catch (error) {
@@ -257,10 +257,7 @@ export async function reorderCourseSections(sections: TCourseSectionReorder['sec
   }
 }
 
-/**
- * Drops the cached insights outline for the course behind each of the given sections.
- */
-async function invalidateReorderedSectionCourses(sectionIds: string[]): Promise<void> {
+async function invalidateReorderedSectionInsights(sectionIds: string[]): Promise<void> {
   if (sectionIds.length === 0) return;
 
   const sections = await Promise.all(sectionIds.map((sectionId) => getCourseSectionById(sectionId)));

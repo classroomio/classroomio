@@ -295,7 +295,7 @@ describe('cohort goal reminders', () => {
         reminderContext(),
         reminderContext({ assignment: { ...reminderContext().assignment, id: 'assignment-2' }, email: null })
       ],
-      truncated: false
+      nextCursor: null
     });
 
     await expect(sendOverdueCohortGoalRemindersNow(COHORT_ID, { courseId: COURSE_ID })).resolves.toEqual({
@@ -304,7 +304,7 @@ describe('cohort goal reminders', () => {
       truncated: false
     });
 
-    expect(listOverdueAssignmentReminderContexts).toHaveBeenCalledWith(COHORT_ID, { courseId: COURSE_ID });
+    expect(listOverdueAssignmentReminderContexts).toHaveBeenCalledWith(COHORT_ID, { courseId: COURSE_ID }, undefined);
     expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(1);
     expect(vi.mocked(enqueueTransactionalEmail).mock.calls[0]?.[1]).toMatchObject({
       idempotencyKey: `cohort-goal-reminder-manual:${ASSIGNMENT_ID}:2026-01-10`
@@ -314,7 +314,7 @@ describe('cohort goal reminders', () => {
   it('passes the learner filter through so only that learner is reminded', async () => {
     vi.mocked(listOverdueAssignmentReminderContexts).mockResolvedValue({
       contexts: [reminderContext()],
-      truncated: false
+      nextCursor: null
     });
 
     await expect(sendOverdueCohortGoalRemindersNow(COHORT_ID, { profileId: PROFILE_ID })).resolves.toEqual({
@@ -323,24 +323,60 @@ describe('cohort goal reminders', () => {
       truncated: false
     });
 
-    expect(listOverdueAssignmentReminderContexts).toHaveBeenCalledWith(COHORT_ID, {
-      courseId: undefined,
-      profileId: PROFILE_ID
-    });
+    expect(listOverdueAssignmentReminderContexts).toHaveBeenCalledWith(
+      COHORT_ID,
+      {
+        courseId: undefined,
+        profileId: PROFILE_ID
+      },
+      undefined
+    );
     expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(1);
   });
 
-  it('reports truncation when more assignments are overdue than one bulk send covers', async () => {
+  it('pages through every overdue assignment instead of stopping at the first page', async () => {
+    const secondPageContext = reminderContext({
+      assignment: { ...reminderContext().assignment, id: 'assignment-2' }
+    });
+    vi.mocked(listOverdueAssignmentReminderContexts)
+      .mockResolvedValueOnce({
+        contexts: [reminderContext()],
+        nextCursor: { dueDate: '2026-01-10T00:00:00.000Z', assignmentId: ASSIGNMENT_ID }
+      })
+      .mockResolvedValueOnce({ contexts: [secondPageContext], nextCursor: null });
+
+    await expect(sendOverdueCohortGoalRemindersNow(COHORT_ID, {})).resolves.toEqual({
+      enqueued: 2,
+      skipped: 0,
+      truncated: false
+    });
+
+    expect(listOverdueAssignmentReminderContexts).toHaveBeenNthCalledWith(1, COHORT_ID, {}, undefined);
+    expect(listOverdueAssignmentReminderContexts).toHaveBeenNthCalledWith(
+      2,
+      COHORT_ID,
+      {},
+      {
+        dueDate: '2026-01-10T00:00:00.000Z',
+        assignmentId: ASSIGNMENT_ID
+      }
+    );
+    expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(2);
+  });
+
+  it('reports truncation only when the page budget runs out with assignments left', async () => {
     vi.mocked(listOverdueAssignmentReminderContexts).mockResolvedValue({
       contexts: [reminderContext()],
-      truncated: true
+      nextCursor: { dueDate: '2026-01-10T00:00:00.000Z', assignmentId: ASSIGNMENT_ID }
     });
 
     await expect(sendOverdueCohortGoalRemindersNow(COHORT_ID, {})).resolves.toEqual({
-      enqueued: 1,
+      enqueued: 10,
       skipped: 0,
       truncated: true
     });
+
+    expect(listOverdueAssignmentReminderContexts).toHaveBeenCalledTimes(10);
   });
 
   it('keeps reminding later learners when one assignment fails to enqueue', async () => {
@@ -349,7 +385,7 @@ describe('cohort goal reminders', () => {
         reminderContext(),
         reminderContext({ assignment: { ...reminderContext().assignment, id: 'assignment-2' } })
       ],
-      truncated: false
+      nextCursor: null
     });
     vi.mocked(enqueueTransactionalEmail)
       .mockRejectedValueOnce(new Error('template rejected'))
