@@ -131,16 +131,6 @@ export const ZPluginStoragePut = z
   });
 export type TPluginStoragePut = z.infer<typeof ZPluginStoragePut>;
 
-export const ZPluginCoursesListQuery = z.object({
-  cursor: z.string().trim().min(1).max(500).optional(),
-  limit: z.coerce.number().int().min(1).max(100).optional(),
-  publishedOnly: z
-    .enum(['true', 'false'])
-    .transform((value) => value === 'true')
-    .optional()
-});
-export type TPluginCoursesListQuery = z.infer<typeof ZPluginCoursesListQuery>;
-
 export const ZPluginLessonsListQuery = z.object({
   courseId: z.string().uuid().optional()
 });

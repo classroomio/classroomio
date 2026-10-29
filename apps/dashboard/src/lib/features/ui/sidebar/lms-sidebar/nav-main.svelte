@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrg } from '$lib/utils/store/org';
   import * as Collapsible from '@cio/ui/base/collapsible';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { t } from '$lib/utils/functions/translations';
@@ -9,14 +9,20 @@
   import { getLmsNavigationItems } from '$features/ui/navigation/lms-navigation';
   import { HoverableItem } from '@cio/ui/custom/moving-icons';
   import { PluginIcon, pluginsApi } from '$features/plugins';
-  import { hasPluginNavigation } from '$features/plugins/utils/navigation';
 
   const items = $derived(getLmsNavigationItems($currentOrg, $t, page.url.pathname));
 
   const pathWithQuery = $derived(page.url.pathname + page.url.search);
 
   const lmsPluginNavItems = $derived(
-    pluginsApi.installations.filter((installation) => hasPluginNavigation(installation, 'lms.navigation', $isOrgAdmin))
+    pluginsApi.installations.filter((inst) => {
+      if (inst.status !== 'active') return false;
+      const navItems = (inst.manifest as any)?.contributes?.navigation;
+      return (
+        Array.isArray(navItems) &&
+        navItems.some((nav: any) => nav.visibility !== 'organization.admin' && nav.location !== 'organization.settings')
+      );
+    })
   );
 </script>
 

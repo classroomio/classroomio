@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { goto } from '$app/navigation';
   import { get } from 'svelte/store';
   import { PluginBridgeHost } from '@classroomio/plugin-sdk';
   import { resolveCurrentHostTheme } from '../utils/theme';
@@ -136,7 +135,7 @@
           if (!href.startsWith('/') || href.startsWith('//')) {
             throw { code: 'INVALID_PARAMS', message: 'Plugins may only navigate to a host-relative path' };
           }
-          await goto(href);
+          window.location.assign(href);
         },
         onSetDirty: async ({ dirty }) => {
           isDirty = dirty;
@@ -177,15 +176,8 @@
 
           if (payload.action === 'courses:list') {
             const orgId = requireOrganizationId();
-            const rawData =
-              payload.data && typeof payload.data === 'object' ? (payload.data as Record<string, unknown>) : {};
-            const queryParams: { cursor?: string; limit?: string; publishedOnly?: string } = {};
-            if (typeof rawData.cursor === 'string') queryParams.cursor = rawData.cursor;
-            if (typeof rawData.limit === 'number') queryParams.limit = String(rawData.limit);
-            if (typeof rawData.publishedOnly === 'boolean') queryParams.publishedOnly = String(rawData.publishedOnly);
-
             const response = await classroomio.plugins.installations[':installationId'].courses.$get(
-              { param: { installationId }, query: queryParams },
+              { param: { installationId } },
               { headers: { 'cio-org-id': orgId } }
             );
             return responseData(response);

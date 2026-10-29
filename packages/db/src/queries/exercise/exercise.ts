@@ -12,7 +12,6 @@ import { and, asc, db, desc, eq, gt, inArray, isNull, lt, or, sql } from '@db/dr
 
 import type { DbOrTxClient } from '@db/drizzle';
 import { contentWriteBumpsTimestamp, stampContentUpdatedAt } from '@db/queries/course/content-timestamp';
-import { submissionMeetsCompletionPolicySql } from '@db/queries/course/progression';
 
 export async function touchExercisesUpdatedAt(exerciseIds: string[], dbClient: DbOrTxClient = db) {
   const ids = [...new Set(exerciseIds.filter(Boolean))];
@@ -912,19 +911,15 @@ export async function getPluginOrgExercisesList(
       completionPolicy: schema.exercise.completionPolicy,
       passThreshold: schema.exercise.passThreshold,
       dueBy: schema.exercise.dueBy,
-      questionCount: sql<number>`(select count(*)::int from ${schema.question} where ${schema.question.exerciseId} = ${schema.exercise.id})`,
-      totalPoints: sql<number>`(select coalesce(sum(${schema.question.points}), 0)::float from ${schema.question} where ${schema.question.exerciseId} = ${schema.exercise.id})`,
       createdAt: schema.exercise.createdAt,
       updatedAt: schema.exercise.updatedAt,
       completedAt: sql<string | null>`(
-        select coalesce(cs.updated_at, cs.created_at)
-        from ${schema.submission} as cs
-        inner join ${schema.groupmember} as gm on gm.id = cs.submitted_by
-        where cs.exercise_id = ${schema.exercise.id}
+        select coalesce(sub.updated_at, sub.created_at)
+        from ${schema.submission} as sub
+        inner join ${schema.groupmember} as gm on gm.id = sub.submitted_by
+        where sub.exercise_id = ${schema.exercise.id}
           and gm.profile_id = ${actorId}
-          and gm.group_id = ${schema.course.groupId}
-          and ${submissionMeetsCompletionPolicySql('exercise', 'cs')}
-        order by coalesce(cs.updated_at, cs.created_at) desc
+        order by coalesce(sub.updated_at, sub.created_at) desc
         limit 1
       )`
     })
@@ -932,7 +927,7 @@ export async function getPluginOrgExercisesList(
     .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
     .innerJoin(
       schema.course,
-      eq(schema.course.id, sql<string>`coalesce(${schema.exercise.courseId}, ${schema.lesson.courseId})`)
+      or(eq(schema.exercise.courseId, schema.course.id), eq(schema.lesson.courseId, schema.course.id))!
     )
     .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
     .where(and(...conditions))
@@ -948,8 +943,8 @@ export async function getPluginOrgExercisesList(
     allowMultipleAttempts: Boolean(row.allowMultipleAttempts),
     completionPolicy: row.completionPolicy,
     passThreshold: row.passThreshold !== null ? Number(row.passThreshold) : null,
-    questionCount: Number(row.questionCount) || 0,
-    totalPoints: Number(row.totalPoints) || 0,
+    questionCount: 0,
+    totalPoints: 0,
     dueBy: row.dueBy ?? null,
     completedAt: row.completedAt ?? null,
     createdAt: row.createdAt ?? new Date().toISOString(),

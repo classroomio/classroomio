@@ -5,8 +5,6 @@
   import { pluginsApi } from '$features/plugins';
   import { PluginHostFrame } from '$features/plugins/components';
   import type { ResolvedContributionItem } from '$features/plugins/utils/types';
-  import { hasPluginNavigation } from '$features/plugins/utils/navigation';
-  import { isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import BlocksIcon from '@lucide/svelte/icons/blocks';
@@ -29,7 +27,11 @@
   const installation = $derived(
     pluginsApi.installations.find((inst) => {
       if (inst.pluginId !== page.params.pluginId && inst.plugin?.slug !== page.params.pluginId) return false;
-      return hasPluginNavigation(inst, 'lms.navigation', $isOrgAdmin);
+      const navItems = (inst.manifest as any)?.contributes?.navigation;
+      return (
+        Array.isArray(navItems) &&
+        navItems.some((nav: any) => nav.visibility !== 'organization.admin' && nav.location !== 'organization.settings')
+      );
     })
   );
 

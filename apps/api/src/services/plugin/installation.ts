@@ -600,12 +600,10 @@ export async function listInstallationCourses(
   installationId: string,
   organizationId: string,
   actorUserId: string,
-  userRole: number | undefined,
-  options: { cursor?: string; limit?: number; publishedOnly?: boolean } = {}
+  userRole: number | undefined
 ): Promise<{
   role: 'admin' | 'tutor' | 'student';
   items: PluginCourseMetadata[];
-  nextCursor: string | null;
 }> {
   await requireOrganizationInstallation(installationId, organizationId);
 
@@ -616,14 +614,10 @@ export async function listInstallationCourses(
   }
 
   const canReadAllCourses = userRole === 1 || userRole === 2;
-  const { items, nextCursor } = await getPluginCoursesList(organizationId, actorUserId, canReadAllCourses, {
-    limit: options.limit ?? 100,
-    cursor: options.cursor,
-    publishedOnly: options.publishedOnly
-  });
+  const { items } = await getPluginCoursesList(organizationId, actorUserId, canReadAllCourses, { limit: 100 });
   const role = userRole === 1 ? 'admin' : userRole === 2 ? 'tutor' : 'student';
 
-  return { role, items, nextCursor };
+  return { role, items };
 }
 
 export async function listInstallationLessons(
