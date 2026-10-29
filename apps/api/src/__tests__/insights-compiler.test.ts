@@ -347,4 +347,54 @@ describe('compileInsightsQuery', () => {
       })
     ).toBe(false);
   });
+
+  it('rejects a non-numeric value for a numeric predicate filter', () => {
+    expect(() =>
+      compile({
+        source: 'student',
+        measures: [{ metric: 'rows', agg: 'count' }],
+        filters: [{ field: 'avg_score_pct', op: 'gte', value: 'abc' }]
+      })
+    ).toThrow(/numeric values/);
+  });
+
+  it('accepts a numeric value for a numeric predicate filter', () => {
+    const compiled = compile({
+      source: 'student',
+      measures: [{ metric: 'rows', agg: 'count' }],
+      filters: [{ field: 'avg_score_pct', op: 'gte', value: 40 }]
+    });
+
+    expect(compiled.params).toContain(40);
+  });
+
+  it('intersects repeated filters on the same pushdown field', () => {
+    const otherCourseId = '44444444-4444-4444-8444-444444444444';
+    const compiled = compile({
+      source: 'student',
+      measures: [{ metric: 'rows', agg: 'count' }],
+      filters: [
+        { field: 'course', op: 'in', value: [COURSE_ID, otherCourseId] },
+        { field: 'course', op: 'eq', value: COURSE_ID }
+      ]
+    });
+
+    expect(compiled.params).toContain(COURSE_ID);
+    expect(compiled.params).not.toContain(otherCourseId);
+    expect(compiled.sql).not.toContain('1 = 0');
+  });
+
+  it('returns no rows when repeated pushdown filters do not overlap', () => {
+    const compiled = compile({
+      source: 'student',
+      measures: [{ metric: 'rows', agg: 'count' }],
+      filters: [
+        { field: 'course', op: 'eq', value: COURSE_ID },
+        { field: 'course', op: 'eq', value: '44444444-4444-4444-8444-444444444444' }
+      ]
+    });
+
+    expect(compiled.sql).toContain('1 = 0');
+    expect(compiled.params).not.toContain(COURSE_ID);
+  });
 });

@@ -195,13 +195,13 @@ export async function listAssignmentsForReminderScan(
 
 /**
  * Overdue, still-open assignments on the cohort's active goals, oldest due date first, optionally limited to goals
- * that cover one course and to one learner.
+ * that cover one course and to one learner. Reads one row past the bulk cap so the caller can report truncation.
  */
 export async function listOverdueAssignmentReminderContexts(
   cohortId: string,
   filters: { courseId?: string; profileId?: string },
   dbClient: DbOrTxClient = db
-): Promise<CohortGoalReminderContext[]> {
+): Promise<{ contexts: CohortGoalReminderContext[]; truncated: boolean }> {
   const courseCondition = filters.courseId
     ? sql`(jsonb_array_length(${schema.cohortGoal.courseIds}) = 0 OR ${schema.cohortGoal.courseIds} ? ${filters.courseId})`
     : undefined;
@@ -220,9 +220,12 @@ export async function listOverdueAssignmentReminderContexts(
       )
     )
       .orderBy(asc(schema.cohortGoalAssignment.dueDate))
-      .limit(COHORT_GOAL_MAX_BULK_REMINDERS);
+      .limit(COHORT_GOAL_MAX_BULK_REMINDERS + 1);
 
-    return toReminderContexts(rows);
+    const truncated = rows.length > COHORT_GOAL_MAX_BULK_REMINDERS;
+    const contexts = toReminderContexts(truncated ? rows.slice(0, COHORT_GOAL_MAX_BULK_REMINDERS) : rows);
+
+    return { contexts, truncated };
   } catch (error) {
     console.error('listOverdueAssignmentReminderContexts error:', error);
     throw new Error(`Failed to list overdue assignments: ${error instanceof Error ? error.message : 'Unknown error'}`);

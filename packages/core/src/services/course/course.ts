@@ -51,6 +51,7 @@ import {
 } from '@cio/db/queries/organization';
 import { getStudentLimit } from '@cio/utils/plans';
 import { env } from '../../config/env';
+import { invalidateInsightsCourseStructure } from '../../utils/redis/insights-cache';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { captureCourseEvent, captureServerEvent, type TEventSource } from '../posthog';
 import { annotateCourseContentWithProgression } from './progression';
@@ -492,6 +493,14 @@ export async function updateCourse(
     if (data.status !== undefined) {
       const statsOrgId = await getOrgIdByCourseId(courseId, dbClient);
       await invalidateOrgStats(statsOrgId);
+    }
+
+    const groupingChanged =
+      (currentCourse.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING) !==
+      (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING);
+
+    if (groupingChanged) {
+      void invalidateInsightsCourseStructure(courseId);
     }
 
     const publishChange = resolvePublishChange(currentCourse.isPublished, updated.isPublished);
