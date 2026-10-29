@@ -428,6 +428,7 @@
       "delete_in_use": "Este vídeo ainda está anexado a uma aula. Remova-o primeiro.",
       "delete_failed": "Falha ao excluir vídeo",
       "added_to_lesson": "Vídeo adicionado à aula",
+      "document_added_to_lesson": "Documento adicionado à lição",
       "transcript_unavailable": "Transcrição indisponível"
     },
     "tags": {
@@ -2458,6 +2459,7 @@
               "try_again": "Tente novamente",
               "upgrade": "Atualize seu plano para fazer upload de documentos",
               "cancel_upload": "Cancelar upload",
+              "no_library_documents": "Nenhum documento disponível na sua biblioteca de mídia",
               "upload_cancelled": "Upload cancelado pelo usuário",
               "downloading": "Baixando...",
               "download_success": "Documento baixado com sucesso",

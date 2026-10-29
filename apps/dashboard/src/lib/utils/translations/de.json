@@ -428,6 +428,7 @@
       "delete_in_use": "Dieses Video ist noch einer Lektion beigefügt. Entfernen Sie es zuerst dort.",
       "delete_failed": "Video konnte nicht gelöscht werden",
       "added_to_lesson": "Video zur Lektion hinzugefügt",
+      "document_added_to_lesson": "Dokument zur Lektion hinzugefügt",
       "transcript_unavailable": "Transkript nicht verfügbar"
     },
     "tags": {
@@ -2458,6 +2459,7 @@
               "try_again": "Versuchen Sie es erneut",
               "upgrade": "Aktualisieren Sie Ihren Plan, um Dokumente hochzuladen",
               "cancel_upload": "Hochladen abbrechen",
+              "no_library_documents": "Keine Dokumente in Ihrer Medienbibliothek verfügbar",
               "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
               "downloading": "Herunterladen...",
               "download_success": "Dokument erfolgreich heruntergeladen",

@@ -428,6 +428,7 @@
       "delete_in_use": "Ten film jest nadal dołączony do lekcji. Najpierw usuń go tam.",
       "delete_failed": "Nie udało się usunąć filmu",
       "added_to_lesson": "Film dodany do lekcji",
+      "document_added_to_lesson": "Dokument dodany do lekcji",
       "transcript_unavailable": "Transkrypcja niedostępna"
     },
     "tags": {
@@ -2458,6 +2459,7 @@
               "try_again": "Spróbuj ponownie",
               "upgrade": "Uaktualnij swój plan, aby przesyłać dokumenty",
               "cancel_upload": "Anuluj przesyłanie",
+              "no_library_documents": "Brak dokumentów w Twojej bibliotece multimediów",
               "upload_cancelled": "Przesyłanie anulowane przez użytkownika",
               "downloading": "Pobieram...",
               "download_success": "Dokument pobrano pomyślnie",

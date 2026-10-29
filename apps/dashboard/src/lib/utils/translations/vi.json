@@ -428,6 +428,7 @@
       "delete_in_use": "Video này vẫn được đính kèm với một bài học. Loại bỏ nó ở đó đầu tiên.",
       "delete_failed": "Không thể xóa video",
       "added_to_lesson": "Video đã được thêm vào bài học",
+      "document_added_to_lesson": "Đã thêm tài liệu vào bài học",
       "transcript_unavailable": "Không có bản ghi"
     },
     "tags": {
@@ -2458,6 +2459,7 @@
               "try_again": "Thử lại",
               "upgrade": "Nâng cấp kế hoạch tải tài liệu lên của bạn",
               "cancel_upload": "Hủy tải lên",
+              "no_library_documents": "Không có tài liệu nào trong thư viện phương tiện của bạn",
               "upload_cancelled": "Tải lên bị người dùng hủy",
               "downloading": "Đang tải xuống...",
               "download_success": "Tài liệu đã được tải xuống thành công",

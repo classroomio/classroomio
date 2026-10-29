@@ -428,6 +428,7 @@
       "delete_in_use": "Denne video er stadig knyttet til en lektion. Fjern det der først.",
       "delete_failed": "Videoen kunne ikke slettes",
       "added_to_lesson": "Video tilføjet til lektion",
+      "document_added_to_lesson": "Dokument føjet til lektionen",
       "transcript_unavailable": "Transskription utilgængelig"
     },
     "tags": {
@@ -2458,6 +2459,7 @@
               "try_again": "Prøv igen",
               "upgrade": "Opgrader din plan for at uploade dokumenter",
               "cancel_upload": "Annuller upload",
+              "no_library_documents": "Ingen dokumenter tilgængelige i dit mediebibliotek",
               "upload_cancelled": "Upload annulleret af brugeren",
               "downloading": "Downloader...",
               "download_success": "Dokument downloadet",

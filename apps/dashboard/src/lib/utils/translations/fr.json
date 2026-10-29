@@ -428,6 +428,7 @@
       "delete_in_use": "Cette vidéo est toujours jointe à une leçon. Retirez-le d'abord.",
       "delete_failed": "Échec de la suppression de la vidéo",
       "added_to_lesson": "Vidéo ajoutée à la leçon",
+      "document_added_to_lesson": "Document ajouté à la leçon",
       "transcript_unavailable": "Transcription indisponible"
     },
     "tags": {
@@ -2458,6 +2459,7 @@
               "try_again": "Réessayez",
               "upgrade": "Mettez à niveau votre forfait pour télécharger des documents",
               "cancel_upload": "Annuler le téléchargement",
+              "no_library_documents": "Aucun document disponible dans votre médiathèque",
               "upload_cancelled": "Téléchargement annulé par l'utilisateur",
               "downloading": "Téléchargement...",
               "download_success": "Document téléchargé avec succès",
