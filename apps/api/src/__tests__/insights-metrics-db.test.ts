@@ -338,6 +338,7 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
     const exerciseE5 = await createExercise({
       label: 'E5',
       courseId: courseK1.id,
+      sectionId: sectionS1.id,
       order: 5,
       completionPolicy: 'submitted'
     });

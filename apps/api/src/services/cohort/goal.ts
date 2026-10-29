@@ -22,6 +22,7 @@ import {
   listAssignmentsForReminderScan,
   listOverdueAssignmentReminderContexts,
   type CohortGoalReminderContext,
+  type CohortGoalReminderCursor,
   type TNewCohortGoal,
   type TNewCohortGoalAssignment,
   type TCohortGoal,
@@ -535,44 +536,61 @@ export async function runCohortGoalReminderScan(): Promise<{
 }
 
 /**
- * Emails overdue learners on the cohort's active goals now: everyone, one course's goals, or one learner.
- * `truncated` reports that more overdue assignments exist than one bulk send covers, so the caller can ask for a
- * narrower filter instead of believing every learner was reached.
+ * How many 500-assignment pages one manual send reads. Ten pages reach 5,000 learners in one request; a cohort
+ * larger than that reports `truncated` so the caller can narrow the filter.
+ */
+const MAX_MANUAL_REMINDER_PAGES = 10;
+
+/**
+ * Emails overdue learners on the cohort's active goals now: everyone, one course's goals, or one learner. Pages
+ * through the overdue assignments until they run out, so every learner is reached in one request. `truncated`
+ * reports that the page budget ran out with assignments still unread.
  */
 export async function sendOverdueCohortGoalRemindersNow(
   cohortId: string,
   input: TRemindOverdueCohortGoals
 ): Promise<{ enqueued: number; skipped: number; truncated: boolean }> {
-  const { contexts, truncated } = await listOverdueAssignmentReminderContexts(cohortId, {
-    courseId: input.courseId,
-    profileId: input.profileId
-  });
   const now = new Date();
+  const filters = { courseId: input.courseId, profileId: input.profileId };
   let enqueued = 0;
   let skipped = 0;
+  let cursor: CohortGoalReminderCursor | undefined;
+  let truncated = false;
 
-  for (const context of contexts) {
-    if (!context.email || !context.assignment.dueDate) {
+  for (let page = 0; page < MAX_MANUAL_REMINDER_PAGES; page += 1) {
+    const result = await listOverdueAssignmentReminderContexts(cohortId, filters, cursor);
+
+    for (const context of result.contexts) {
+      if (!context.email || !context.assignment.dueDate) {
+        skipped += 1;
+        continue;
+      }
+
+      const daysUntilDue = getWholeDaysUntil(now, new Date(context.assignment.dueDate));
+      const idempotencyKey = `cohort-goal-reminder-manual:${context.assignment.id}:${dayKey(now)}`;
+      let queued = false;
+
+      try {
+        queued = await enqueueCohortGoalReminder(context, { email: context.email, daysUntilDue, idempotencyKey });
+      } catch (error) {
+        console.error(
+          `sendOverdueCohortGoalRemindersNow: enqueue failed for assignment ${context.assignment.id}`,
+          error
+        );
+      }
+
+      if (queued) {
+        enqueued += 1;
+        continue;
+      }
+
       skipped += 1;
-      continue;
     }
 
-    const daysUntilDue = getWholeDaysUntil(now, new Date(context.assignment.dueDate));
-    const idempotencyKey = `cohort-goal-reminder-manual:${context.assignment.id}:${dayKey(now)}`;
-    let queued = false;
+    if (!result.nextCursor) break;
 
-    try {
-      queued = await enqueueCohortGoalReminder(context, { email: context.email, daysUntilDue, idempotencyKey });
-    } catch (error) {
-      console.error(`sendOverdueCohortGoalRemindersNow: enqueue failed for assignment ${context.assignment.id}`, error);
-    }
-
-    if (queued) {
-      enqueued += 1;
-      continue;
-    }
-
-    skipped += 1;
+    cursor = result.nextCursor;
+    truncated = page === MAX_MANUAL_REMINDER_PAGES - 1;
   }
 
   return { enqueued, skipped, truncated };
