@@ -10,6 +10,7 @@
   import { formatCompactCount } from '@cio/utils/functions';
   import { orgNavCountsApi } from './org-nav-counts.svelte';
   import { PluginIcon, pluginsApi, PluginPopover } from '$features/plugins';
+  import { hasPluginNavigation } from '$features/plugins/utils/navigation';
   import BlocksIcon from '@lucide/svelte/icons/blocks';
 
   let isPluginsOpen = $state(false);
@@ -18,21 +19,7 @@
 
   const installedPluginNavItems = $derived.by(() => {
     return pluginsApi.installations
-      .filter((inst) => {
-        if (inst.status !== 'active') return false;
-        const manifest = inst.manifest as any;
-        const contributesPages = manifest?.contributes?.pages;
-        if (!contributesPages || contributesPages.length === 0) return false;
-        const navItems = manifest?.contributes?.navigation;
-        if (
-          !$isOrgAdmin &&
-          Array.isArray(navItems) &&
-          navItems.every((nav: any) => nav.visibility === 'organization.admin')
-        ) {
-          return false;
-        }
-        return true;
-      })
+      .filter((installation) => hasPluginNavigation(installation, 'organization.navigation', $isOrgAdmin))
       .map((inst) => {
         const routeKey = inst.plugin?.slug ?? inst.pluginId;
         return {

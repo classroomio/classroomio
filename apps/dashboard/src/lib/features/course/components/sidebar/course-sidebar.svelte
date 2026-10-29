@@ -16,6 +16,7 @@
   import CourseSidebarFooterNav from '$features/course/components/sidebar/course-sidebar-footer-nav.svelte';
   import { startResizablePanelDrag } from '$lib/utils/functions/resizable-panel';
   import { COURSE_SIDEBAR_DEFAULT_WIDTH, COURSE_SIDEBAR_MAX_WIDTH, COURSE_SIDEBAR_MIN_WIDTH } from './constants';
+  import PluginSlotRenderer from '$features/plugins/components/plugin-slot-renderer.svelte';
 
   const isOrgLoaded = $derived($orgs.length > 0 && $profile.id);
 
@@ -126,6 +127,9 @@
     <Sidebar.Content>
       {#if isCourseReady}
         <Navigation path={currentPath} {id} isStudent={$isStudentExperience} />
+        {#if sidebar.open}
+          <PluginSlotRenderer target="course.sidebar" resource={{ type: 'course', id }} className="px-2" />
+        {/if}
       {:else}
         <Sidebar.Group class="pt-0!">
           <div class="flex h-8 items-center gap-2 rounded-md px-2">
