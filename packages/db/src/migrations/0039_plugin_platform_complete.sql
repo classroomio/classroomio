@@ -6,6 +6,7 @@ CREATE TYPE "public"."PLUGIN_OWNER_TYPE" AS ENUM('organization', 'user');--> sta
 CREATE TYPE "public"."PLUGIN_PUBLISHER_CLASS" AS ENUM('first-party', 'verified-third-party', 'community');--> statement-breakpoint
 CREATE TYPE "public"."PLUGIN_REVIEW_STATUS" AS ENUM('pending', 'approved', 'rejected');--> statement-breakpoint
 CREATE TYPE "public"."PLUGIN_STATUS" AS ENUM('draft', 'published', 'deprecated', 'revoked');--> statement-breakpoint
+CREATE TYPE "public"."PLUGIN_STORAGE_SCOPE_TYPE" AS ENUM('organization', 'user', 'global', 'resource');--> statement-breakpoint
 CREATE TABLE "plugin" (
 	"id" varchar(128) PRIMARY KEY NOT NULL,
 	"slug" varchar(128) NOT NULL,
@@ -86,6 +87,19 @@ CREATE TABLE "plugin_version" (
 	CONSTRAINT "plugin_version_ci_provenance_check" CHECK ("plugin_version"."released_by" <> 'github-actions' OR ("plugin_version"."source_commit" IS NOT NULL AND "plugin_version"."release_run_url" IS NOT NULL AND "plugin_version"."artifact_digest" IS NOT NULL))
 );
 --> statement-breakpoint
+CREATE TABLE "plugin_storage" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"installation_id" uuid NOT NULL,
+	"scope_type" "PLUGIN_STORAGE_SCOPE_TYPE" NOT NULL,
+	"scope_id" uuid NOT NULL,
+	"resource_type" varchar(64) DEFAULT '' NOT NULL,
+	"namespace" varchar(128) DEFAULT 'default' NOT NULL,
+	"key" varchar(255) NOT NULL,
+	"value" jsonb DEFAULT '{}'::jsonb NOT NULL,
+	"created_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "plugin" ADD CONSTRAINT "plugin_publisher_id_plugin_publisher_id_fk" FOREIGN KEY ("publisher_id") REFERENCES "public"."plugin_publisher"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "plugin_audit_event" ADD CONSTRAINT "plugin_audit_event_installation_id_plugin_installation_id_fk" FOREIGN KEY ("installation_id") REFERENCES "public"."plugin_installation"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "plugin_audit_event" ADD CONSTRAINT "plugin_audit_event_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -98,6 +112,7 @@ ALTER TABLE "plugin_installation" ADD CONSTRAINT "plugin_installation_organizati
 ALTER TABLE "plugin_installation" ADD CONSTRAINT "plugin_installation_user_id_profile_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "plugin_installation" ADD CONSTRAINT "plugin_installation_installed_by_profile_id_profile_id_fk" FOREIGN KEY ("installed_by_profile_id") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "plugin_version" ADD CONSTRAINT "plugin_version_plugin_id_plugin_id_fk" FOREIGN KEY ("plugin_id") REFERENCES "public"."plugin"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "plugin_storage" ADD CONSTRAINT "plugin_storage_installation_id_plugin_installation_id_fk" FOREIGN KEY ("installation_id") REFERENCES "public"."plugin_installation"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "idx_plugin_publisher" ON "plugin" USING btree ("publisher");--> statement-breakpoint
 CREATE INDEX "idx_plugin_publisher_id" ON "plugin" USING btree ("publisher_id");--> statement-breakpoint
 CREATE INDEX "idx_plugin_status" ON "plugin" USING btree ("status");--> statement-breakpoint
@@ -115,4 +130,6 @@ CREATE UNIQUE INDEX "idx_plugin_installation_owner_org_unique" ON "plugin_instal
 CREATE UNIQUE INDEX "idx_plugin_installation_owner_user_unique" ON "plugin_installation" USING btree ("plugin_id","user_id") WHERE "plugin_installation"."user_id" IS NOT NULL AND "plugin_installation"."owner_type" = 'user';--> statement-breakpoint
 CREATE INDEX "idx_plugin_publisher_class" ON "plugin_publisher" USING btree ("publisher_class");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_plugin_version_plugin_ver_unique" ON "plugin_version" USING btree ("plugin_id","version");--> statement-breakpoint
-CREATE INDEX "idx_plugin_version_plugin_id" ON "plugin_version" USING btree ("plugin_id");
+CREATE INDEX "idx_plugin_version_plugin_id" ON "plugin_version" USING btree ("plugin_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_plugin_storage_inst_scope_ns_key_unique" ON "plugin_storage" USING btree ("installation_id","scope_type","scope_id","resource_type","namespace","key");--> statement-breakpoint
+CREATE INDEX "idx_plugin_storage_lookup" ON "plugin_storage" USING btree ("installation_id","namespace");

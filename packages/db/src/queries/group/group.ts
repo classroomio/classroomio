@@ -131,7 +131,7 @@ export const isUserCourseMember = async (
 
   return {
     isMember: result.length > 0,
-    organizationId: result[0].organizationId
+    organizationId: result[0]?.organizationId ?? null
   };
 };
 

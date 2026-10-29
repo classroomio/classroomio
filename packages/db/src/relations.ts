@@ -47,7 +47,8 @@ import {
   pluginVersion,
   pluginInstallation,
   pluginGrant,
-  pluginAuditEvent
+  pluginAuditEvent,
+  pluginStorage
 } from './schema';
 
 import { relations } from 'drizzle-orm/relations';
@@ -588,7 +589,8 @@ export const pluginInstallationRelations = relations(pluginInstallation, ({ one,
     references: [profile.id]
   }),
   grants: many(pluginGrant),
-  auditEvents: many(pluginAuditEvent)
+  auditEvents: many(pluginAuditEvent),
+  storage: many(pluginStorage)
 }));
 
 export const pluginGrantRelations = relations(pluginGrant, ({ one }) => ({
@@ -614,5 +616,12 @@ export const pluginAuditEventRelations = relations(pluginAuditEvent, ({ one }) =
   actor: one(profile, {
     fields: [pluginAuditEvent.actorProfileId],
     references: [profile.id]
+  })
+}));
+
+export const pluginStorageRelations = relations(pluginStorage, ({ one }) => ({
+  installation: one(pluginInstallation, {
+    fields: [pluginStorage.installationId],
+    references: [pluginInstallation.id]
   })
 }));

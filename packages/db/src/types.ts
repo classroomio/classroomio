@@ -295,6 +295,10 @@ export type TNewPluginGrant = typeof schema.pluginGrant.$inferInsert;
 export type TPluginAuditEvent = typeof schema.pluginAuditEvent.$inferSelect;
 export type TNewPluginAuditEvent = typeof schema.pluginAuditEvent.$inferInsert;
 
+export type TPluginStorageScopeType = (typeof schema.pluginStorageScopeType.enumValues)[number];
+export type TPluginStorage = typeof schema.pluginStorage.$inferSelect;
+export type TNewPluginStorage = typeof schema.pluginStorage.$inferInsert;
+
 export type TLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferSelect;
 export type TNewLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferInsert;
 

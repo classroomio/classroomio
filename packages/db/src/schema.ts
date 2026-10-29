@@ -100,6 +100,12 @@ export const pluginInstallationStatus = pgEnum('PLUGIN_INSTALLATION_STATUS', [
   'uninstalled'
 ]);
 export const pluginAuditOutcome = pgEnum('PLUGIN_AUDIT_OUTCOME', ['success', 'denied', 'error']);
+export const pluginStorageScopeType = pgEnum('PLUGIN_STORAGE_SCOPE_TYPE', [
+  'organization',
+  'user',
+  'global',
+  'resource'
+]);
 
 /**
  * Lifecycle state of an organization membership. Orthogonal to `verified`,
@@ -827,6 +833,21 @@ export const course = pgTable(
         ];
         idFormat?: string;
       };
+      customDocument?: Record<string, unknown> | null;
+      presentation?:
+        | {
+            kind: 'preset';
+            presetId: 'classique' | 'brutalist' | 'noir' | 'poster' | 'minimal';
+            overrides?: Record<string, unknown>;
+          }
+        | {
+            kind: 'document';
+            schema: 'classroomio.certificate-document';
+            version: 1;
+            document: Record<string, unknown>;
+          }
+        | null;
+      studioDesign?: Record<string, unknown> | null;
       deadline?: string | null;
       emailMessage?: string | null;
     }>(),
@@ -4562,6 +4583,42 @@ export const pluginAuditEvent = pgTable(
   (table) => [
     index('idx_plugin_audit_installation_created').on(table.installationId, table.createdAt),
     index('idx_plugin_audit_org_created').on(table.organizationId, table.createdAt)
+  ]
+);
+
+export const pluginStorage = pgTable(
+  'plugin_storage',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    installationId: uuid('installation_id')
+      .notNull()
+      .references(() => pluginInstallation.id, { onDelete: 'cascade' }),
+    scopeType: pluginStorageScopeType('scope_type').notNull(),
+    scopeId: uuid('scope_id').notNull(),
+    resourceType: varchar('resource_type', { length: 64 }).default('').notNull(),
+    namespace: varchar('namespace', { length: 128 }).default('default').notNull(),
+    key: varchar('key', { length: 255 }).notNull(),
+    value: jsonb('value').default({}).notNull().$type<unknown>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('idx_plugin_storage_inst_scope_ns_key_unique').on(
+      table.installationId,
+      table.scopeType,
+      table.scopeId,
+      table.resourceType,
+      table.namespace,
+      table.key
+    ),
+    index('idx_plugin_storage_lookup').on(table.installationId, table.namespace)
   ]
 );
 
