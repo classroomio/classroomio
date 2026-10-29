@@ -6865,7 +6865,9 @@
       "no_cohorts": "Brak kohort",
       "failed": "Nie można załadować tego wykresu",
       "dashboard_failed": "Nie można załadować analityki",
-      "not_permitted": "Nie masz dostępu do tych analiz"
+      "not_permitted": "Nie masz dostępu do tych analiz",
+      "no_exercises": "Brak ćwiczeń w tym kursie",
+      "no_exercises_description": "Wyniki pojawiają się po dodaniu ćwiczeń i przesłaniu prób przez uczniów."
     },
     "scope_empty": {
       "title": {

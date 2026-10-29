@@ -6962,7 +6962,9 @@
     "empty": {
       "failed": "This chart couldn't load",
       "dashboard_failed": "Analytics couldn't load",
-      "not_permitted": "You don't have access to these analytics"
+      "not_permitted": "You don't have access to these analytics",
+      "no_exercises": "No exercises in this course",
+      "no_exercises_description": "Scores appear once exercises are added and students submit attempts."
     },
     "export": {
       "students_capped": "Student list limited to the first {limit} rows.",

@@ -311,6 +311,22 @@ export function widgetTitleVars(
   };
 }
 
+export function cleanWidgetTitle(title: string): string {
+  return title.replace(/,\s*$/, '').trim();
+}
+
+export function widgetTitle(
+  widget: InsightsWidget,
+  dashboard: InsightsDashboard | null,
+  selection: InsightsSelection,
+  translate: Translate
+): string {
+  const vars = dashboard ? widgetTitleVars(dashboard, selection, translate) : undefined;
+  const rawTitle = translate(widget.titleKey, vars);
+
+  return cleanWidgetTitle(rawTitle);
+}
+
 export function availableBreakdownGroups(
   scopeType: InsightsScopeType,
   scope: Pick<InsightsScopeSummary, 'cohortCount'>

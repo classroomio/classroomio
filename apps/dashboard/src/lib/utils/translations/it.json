@@ -6835,7 +6835,9 @@
       "no_cohorts": "Ancora nessuna coorte",
       "failed": "Impossibile caricare questo grafico",
       "dashboard_failed": "Impossibile caricare Analytics",
-      "not_permitted": "Non hai accesso a questi dati analitici"
+      "not_permitted": "Non hai accesso a questi dati analitici",
+      "no_exercises": "Nessun esercizio in questo corso",
+      "no_exercises_description": "I punteggi compaiono quando vengono aggiunti gli esercizi e gli studenti inviano i tentativi."
     },
     "scope_empty": {
       "title": {

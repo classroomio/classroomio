@@ -6865,7 +6865,9 @@
       "no_cohorts": "Chưa có nhóm thuần tập nào",
       "failed": "Không thể tải biểu đồ này",
       "dashboard_failed": "Phân tích không thể tải",
-      "not_permitted": "Bạn không có quyền truy cập vào những phân tích này"
+      "not_permitted": "Bạn không có quyền truy cập vào những phân tích này",
+      "no_exercises": "Không có bài tập nào trong khóa học này",
+      "no_exercises_description": "Điểm sẽ xuất hiện khi bài tập được thêm vào và học sinh nộp bài."
     },
     "scope_empty": {
       "title": {

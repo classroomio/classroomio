@@ -6865,7 +6865,9 @@
       "no_cohorts": "Ainda não há coortes",
       "failed": "Não foi possível carregar este gráfico",
       "dashboard_failed": "Não foi possível carregar as análises",
-      "not_permitted": "Você não tem acesso a essas análises"
+      "not_permitted": "Você não tem acesso a essas análises",
+      "no_exercises": "Nenhum exercício neste curso",
+      "no_exercises_description": "As pontuações aparecem quando os exercícios são adicionados e os alunos enviam tentativas."
     },
     "scope_empty": {
       "title": {

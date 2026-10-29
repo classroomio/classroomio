@@ -6845,7 +6845,9 @@
       "no_cohorts": "Henüz grup yok",
       "failed": "Bu grafik yüklenemedi",
       "dashboard_failed": "Analytics yüklenemedi",
-      "not_permitted": "Bu analizlere erişiminiz yok"
+      "not_permitted": "Bu analizlere erişiminiz yok",
+      "no_exercises": "Bu kursta alıştırma yok",
+      "no_exercises_description": "Puanlar, alıştırmalar eklendiğinde ve öğrenciler denemeleri gönderdiğinde görünür."
     },
     "scope_empty": {
       "title": {

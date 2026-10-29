@@ -6865,7 +6865,9 @@
       "no_cohorts": "Noch keine Kohorten.",
       "failed": "Dieses Diagramm konnte nicht geladen werden.",
       "dashboard_failed": "Die Analysedaten konnten nicht geladen werden.",
-      "not_permitted": "Sie haben keinen Zugriff auf diese Analysen."
+      "not_permitted": "Sie haben keinen Zugriff auf diese Analysen.",
+      "no_exercises": "Keine Übungen in diesem Kurs",
+      "no_exercises_description": "Bewertungen erscheinen, sobald Übungen hinzugefügt werden und Studierende Versuche einreichen."
     },
     "scope_empty": {
       "title": {

@@ -6865,7 +6865,9 @@
       "no_cohorts": "Ingen kohorter endnu",
       "failed": "Dette diagram kunne ikke indlæses",
       "dashboard_failed": "Analytics kunne ikke indlæses",
-      "not_permitted": "Du har ikke adgang til disse analyser"
+      "not_permitted": "Du har ikke adgang til disse analyser",
+      "no_exercises": "Ingen øvelser i dette kursus",
+      "no_exercises_description": "Resultater vises, når der tilføjes øvelser, og eleverne afleverer forsøg."
     },
     "scope_empty": {
       "title": {

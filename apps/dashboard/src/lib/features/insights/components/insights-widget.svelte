@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ChartNoAxesColumnIcon from '@lucide/svelte/icons/chart-no-axes-column';
   import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
   import MousePointerClickIcon from '@lucide/svelte/icons/mouse-pointer-click';
   import { Button } from '@cio/ui/base/button';
@@ -17,7 +18,7 @@
     WIDGET_SPAN_CLASS,
     widgetEmptyState,
     widgetNotes,
-    widgetTitleVars,
+    widgetTitle,
     widgetUsesPlaceholder
   } from '../utils/insights-utils';
   import type { InsightsWidget, InsightsWidgetContext } from '../utils/types';
@@ -41,9 +42,7 @@
   const isSelfLoading = $derived(SELF_LOADING_WIDGET_IDS.has(widget.id));
   const missing = $derived(isSelfLoading ? null : missingSelection(widget, insightsApi.selection));
   const Renderer = $derived(rendererFor(widget));
-  const titleVars = $derived(
-    insightsApi.dashboard ? widgetTitleVars(insightsApi.dashboard, insightsApi.selection, $t) : undefined
-  );
+  const title = $derived(widgetTitle(widget, insightsApi.dashboard, insightsApi.selection, $t));
   const pageState = $derived(widget.pageGroup ? insightsApi.pageState(widget.pageGroup) : undefined);
   const isEmpty = $derived(state.result !== null && isEmptyResult(widget, state.result, pageState));
   const notes = $derived(isEmpty ? [] : widgetNotes(widget, state.result, context, $t));
@@ -67,11 +66,7 @@
   <NowTag />
 {/snippet}
 
-<AnalyticsPanelCard
-  title={$t(widget.titleKey, titleVars)}
-  class={cn('col-span-1 min-w-0', spanClass)}
-  action={showNowTag ? nowTag : undefined}
->
+<AnalyticsPanelCard {title} class={cn('col-span-1 min-w-0', spanClass)} action={showNowTag ? nowTag : undefined}>
   {#if showExercisePicker}
     <div class="mb-3 flex justify-end">
       <ExercisePicker
@@ -84,7 +79,16 @@
   {#if isSelfLoading}
     <StudentsTable />
   {:else if missing}
-    <Empty icon={MousePointerClickIcon} title={$t(`insights.hints.${widget.id}`)} class="h-[240px]" />
+    {#if widgetUsesPlaceholder(widget, 'exercise') && exercises.length === 0}
+      <Empty
+        icon={ChartNoAxesColumnIcon}
+        title={$t('insights.empty.no_exercises')}
+        description={$t('insights.empty.no_exercises_description')}
+        class="h-[240px]"
+      />
+    {:else}
+      <Empty icon={MousePointerClickIcon} title={$t(`insights.hints.${widget.id}`)} class="h-[240px]" />
+    {/if}
   {:else if state.failed && !state.result}
     <Empty icon={CircleAlertIcon} title={$t('insights.empty.failed')} class="h-[240px]">
       <Button variant="outline" size="sm" onclick={() => insightsApi.runWidget(widget)}>{$t('insights.retry')}</Button>
