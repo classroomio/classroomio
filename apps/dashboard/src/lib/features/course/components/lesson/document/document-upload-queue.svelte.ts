@@ -144,16 +144,16 @@ export class DocumentUploadQueue {
 
       if (controller.signal.aborted) {
         if (asset) {
-          if (this.lessonId) {
-            await mediaApi.detachAsset(asset.id, {
+          const isDetached =
+            !this.lessonId ||
+            (await mediaApi.detachAsset(asset.id, {
               targetType: 'lesson',
               targetId: this.lessonId,
               slotType: 'lesson_document',
               position: item.position
-            });
-          }
+            }));
 
-          await mediaApi.deleteAsset(asset.id);
+          if (isDetached) await mediaApi.deleteAsset(asset.id);
         }
 
         return;
@@ -164,7 +164,8 @@ export class DocumentUploadQueue {
           await mediaApi.detachAsset(asset.id, {
             targetType: 'lesson',
             targetId: this.lessonId,
-            slotType: 'lesson_document'
+            slotType: 'lesson_document',
+            position: item.position
           });
         }
 

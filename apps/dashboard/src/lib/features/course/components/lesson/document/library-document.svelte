@@ -117,7 +117,8 @@
           await mediaApi.detachAsset(asset.id, {
             targetType: 'lesson',
             targetId: targetLessonId,
-            slotType: 'lesson_document'
+            slotType: 'lesson_document',
+            position
           });
           break;
         }
