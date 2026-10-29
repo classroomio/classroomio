@@ -130,3 +130,8 @@ export const ZPluginStoragePut = z
     }
   });
 export type TPluginStoragePut = z.infer<typeof ZPluginStoragePut>;
+
+export const ZPluginLessonsListQuery = z.object({
+  courseId: z.string().uuid().optional()
+});
+export type TPluginLessonsListQuery = z.infer<typeof ZPluginLessonsListQuery>;

@@ -106,10 +106,37 @@ export interface PluginCourseMetadata {
   slug: string | null;
   description: string | null;
   imageUrl: string | null;
+  type: string | null;
   status: string;
   visibility: 'public' | 'private';
   published: boolean;
   publishedAt: string | null;
+  sessionTimezone: string | null;
+  certificateDeadline: string | null;
+  instructor: {
+    name: string;
+    avatarUrl: string | null;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PluginLessonMetadata {
+  id: string;
+  courseId: string;
+  title: string;
+  slug: string;
+  order: number;
+  isUnlocked: boolean;
+  lessonAt: string | null;
+  callUrl: string | null;
+  recordingUrl: string | null;
+  sessionDurationMinutes: number | null;
+  instructor: {
+    id: string;
+    name: string;
+    avatarUrl: string | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -173,9 +200,12 @@ export async function getPluginCoursesList(
       description: schema.course.description,
       bannerImage: schema.course.bannerImage,
       logo: schema.course.logo,
+      type: schema.course.type,
       status: schema.course.status,
       publicForAll: schema.course.publicForAll,
       isPublished: schema.course.isPublished,
+      metadata: schema.course.metadata,
+      certificate: schema.course.certificate,
       createdAt: schema.course.createdAt,
       updatedAt: schema.course.updatedAt
     })
@@ -196,15 +226,104 @@ export async function getPluginCoursesList(
     slug: row.slug ?? null,
     description: row.description ?? null,
     imageUrl: resolveCourseBannerImage(row),
+    type: row.type ?? null,
     status: row.status,
     visibility: row.publicForAll ? 'public' : 'private',
     published: Boolean(row.isPublished),
     publishedAt: row.isPublished ? (row.updatedAt ?? row.createdAt) : null,
+    sessionTimezone: row.metadata?.sessionTimezone ?? null,
+    certificateDeadline: row.certificate?.deadline ?? null,
+    instructor: row.metadata?.instructor?.name
+      ? {
+          name: row.metadata.instructor.name,
+          avatarUrl: row.metadata.instructor.imgUrl || null
+        }
+      : null,
     createdAt: row.createdAt ?? new Date().toISOString(),
     updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
   }));
 
   return { items, nextCursor };
+}
+
+export async function getPluginLessonsList(
+  organizationId: string,
+  actorId: string,
+  canReadAllCourses: boolean,
+  options?: { courseId?: string }
+): Promise<{ items: PluginLessonMetadata[] }> {
+  const conditions = [
+    eq(schema.group.organizationId, organizationId),
+    eq(schema.course.status, 'ACTIVE'),
+    eq(schema.course.isTemplate, false)
+  ];
+
+  if (options?.courseId) {
+    conditions.push(eq(schema.course.id, options.courseId));
+  }
+
+  if (!canReadAllCourses) {
+    conditions.push(
+      eq(schema.lesson.isUnlocked, true),
+      or(
+        and(eq(schema.course.isPublished, true), eq(schema.course.publicForAll, true)),
+        sql<boolean>`exists (
+          select 1 from ${schema.groupmember}
+          where ${schema.groupmember.groupId} = ${schema.course.groupId}
+            and ${schema.groupmember.profileId} = ${actorId}
+        )`
+      )!
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: schema.lesson.id,
+      courseId: schema.lesson.courseId,
+      title: schema.lesson.title,
+      slug: schema.lesson.slug,
+      order: schema.lesson.order,
+      isUnlocked: schema.lesson.isUnlocked,
+      lessonAt: schema.lesson.lessonAt,
+      callUrl: schema.lesson.callUrl,
+      recordingUrl: schema.lesson.recordingUrl,
+      sessionDurationMinutes: schema.lesson.sessionDurationMinutes,
+      createdAt: schema.lesson.createdAt,
+      updatedAt: schema.lesson.updatedAt,
+      teacherId: schema.profile.id,
+      teacherName: schema.profile.fullname,
+      teacherAvatarUrl: schema.profile.avatarUrl
+    })
+    .from(schema.lesson)
+    .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .leftJoin(schema.profile, eq(schema.lesson.teacherId, schema.profile.id))
+    .where(and(...conditions))
+    .orderBy(asc(schema.lesson.order), asc(schema.lesson.id));
+
+  const items: PluginLessonMetadata[] = rows.map((row) => ({
+    id: row.id,
+    courseId: row.courseId,
+    title: row.title,
+    slug: row.slug,
+    order: Number(row.order),
+    isUnlocked: Boolean(row.isUnlocked),
+    lessonAt: row.lessonAt ?? null,
+    callUrl: row.callUrl ?? null,
+    recordingUrl: row.recordingUrl ?? null,
+    sessionDurationMinutes: row.sessionDurationMinutes ?? null,
+    instructor: row.teacherId
+      ? {
+          id: row.teacherId,
+          name: row.teacherName ?? 'Instructor',
+          avatarUrl: row.teacherAvatarUrl ?? null
+        }
+      : null,
+    createdAt: row.createdAt ?? new Date().toISOString(),
+    updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
+  }));
+
+  return { items };
 }
 
 export async function getPluginCourseById(
@@ -236,9 +355,12 @@ export async function getPluginCourseById(
       description: schema.course.description,
       bannerImage: schema.course.bannerImage,
       logo: schema.course.logo,
+      type: schema.course.type,
       status: schema.course.status,
       publicForAll: schema.course.publicForAll,
       isPublished: schema.course.isPublished,
+      metadata: schema.course.metadata,
+      certificate: schema.course.certificate,
       createdAt: schema.course.createdAt,
       updatedAt: schema.course.updatedAt
     })
@@ -262,10 +384,19 @@ export async function getPluginCourseById(
     slug: row.slug ?? null,
     description: row.description ?? null,
     imageUrl: resolveCourseBannerImage(row),
+    type: row.type ?? null,
     status: row.status,
     visibility: row.publicForAll ? 'public' : 'private',
     published: Boolean(row.isPublished),
     publishedAt: row.isPublished ? (row.updatedAt ?? row.createdAt) : null,
+    sessionTimezone: row.metadata?.sessionTimezone ?? null,
+    certificateDeadline: row.certificate?.deadline ?? null,
+    instructor: row.metadata?.instructor?.name
+      ? {
+          name: row.metadata.instructor.name,
+          avatarUrl: row.metadata.instructor.imgUrl || null
+        }
+      : null,
     createdAt: row.createdAt ?? new Date().toISOString(),
     updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
   };

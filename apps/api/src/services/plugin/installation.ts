@@ -19,6 +19,12 @@ import {
   updateOrgApprovalStatus as updateOrgApprovalStatusQuery,
   getInstallationGrants
 } from '@cio/db/queries/plugin';
+import {
+  getPluginCoursesList,
+  getPluginLessonsList,
+  type PluginCourseMetadata,
+  type PluginLessonMetadata
+} from '@cio/db/queries/course';
 import { requireOrganizationInstallation } from './authorization';
 import type {
   TNewPluginInstallation,
@@ -587,4 +593,53 @@ export async function resolveOrgContributions(
   }
 
   return resolved;
+}
+
+export async function listInstallationCourses(
+  installationId: string,
+  organizationId: string,
+  actorUserId: string,
+  userRole: number | undefined
+): Promise<{
+  role: 'admin' | 'tutor' | 'student';
+  items: PluginCourseMetadata[];
+}> {
+  await requireOrganizationInstallation(installationId, organizationId);
+
+  const grants = await getInstallationGrants(installationId);
+  const grantedScopes = new Set(grants.map((grant) => grant.scope));
+  if (!grantedScopes.has('course.metadata:read')) {
+    throw new AppError('Plugin requires course.metadata:read permission', 'PLUGIN_PERMISSION_DENIED', 403);
+  }
+
+  const canReadAllCourses = userRole === 1 || userRole === 2;
+  const { items } = await getPluginCoursesList(organizationId, actorUserId, canReadAllCourses, { limit: 100 });
+  const role = userRole === 1 ? 'admin' : userRole === 2 ? 'tutor' : 'student';
+
+  return { role, items };
+}
+
+export async function listInstallationLessons(
+  installationId: string,
+  organizationId: string,
+  actorUserId: string,
+  userRole: number | undefined,
+  courseId?: string
+): Promise<{
+  role: 'admin' | 'tutor' | 'student';
+  items: PluginLessonMetadata[];
+}> {
+  await requireOrganizationInstallation(installationId, organizationId);
+
+  const grants = await getInstallationGrants(installationId);
+  const grantedScopes = new Set(grants.map((grant) => grant.scope));
+  if (!grantedScopes.has('lesson.metadata:read')) {
+    throw new AppError('Plugin requires lesson.metadata:read permission', 'PLUGIN_PERMISSION_DENIED', 403);
+  }
+
+  const canReadAllCourses = userRole === 1 || userRole === 2;
+  const { items } = await getPluginLessonsList(organizationId, actorUserId, canReadAllCourses, { courseId });
+  const role = userRole === 1 ? 'admin' : userRole === 2 ? 'tutor' : 'student';
+
+  return { role, items };
 }
