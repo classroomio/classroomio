@@ -56,7 +56,15 @@ export interface CertificateDocumentV1 {
   signatories: CertificateDocumentSignatory[];
   elements?: Record<
     string,
-    { enabled?: boolean; positionMode?: 'auto' | 'custom'; x?: number; y?: number; width?: number; height?: number }
+    {
+      enabled?: boolean;
+      positionMode?: 'auto' | 'custom';
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      zIndex?: number;
+    }
   >;
   border?: { style?: string; width?: number; primaryColor?: string; accentColor?: string };
   typography?: {
@@ -71,7 +79,7 @@ export interface CertificateDocumentV1 {
     primaryColor?: string;
     secondaryColor?: string;
   };
-  badge?: { style?: string; label?: string; foilColor?: string };
+  badge?: { style?: string; label?: string; foilColor?: string; customImageUrl?: string };
   qrCode?: { enabled?: boolean; position?: string };
   copy?: {
     title?: string;

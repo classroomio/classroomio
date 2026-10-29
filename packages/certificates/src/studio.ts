@@ -5,6 +5,7 @@ import type {
   CertificateRenderData,
   CertificateRenderResult
 } from './types';
+import { renderModularCertificateDocument } from './templates/modular';
 import { BASE_STYLES, escapeHtml } from './templates/shared';
 
 export function isCertificateDocumentV1(value: unknown): value is CertificateDocumentV1 {
@@ -95,6 +96,11 @@ export function renderCertificateDocumentV1(
   if (!isCertificateDocumentV1(designValue)) return null;
 
   const design = designValue;
+  if (design.rendererTemplateId === 'modular') {
+    const rendered = renderModularCertificateDocument(design, data);
+    return { html: rendered.html, styles: `${BASE_STYLES}\n${rendered.styles}` };
+  }
+
   const textColor = getColor(design.typography?.primaryColor, '#1c1917');
   const accentColor = getColor(design.accentColor, '#1c1917');
   const borderColor = getColor(design.border?.primaryColor, accentColor);
