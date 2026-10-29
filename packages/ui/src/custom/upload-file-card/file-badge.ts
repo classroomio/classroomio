@@ -25,9 +25,8 @@ function getExtension(fileName: string): string {
 
 export function getFileBadge(fileName: string): FileBadge {
   const extension = getExtension(fileName);
+  const label = (extension || 'file').slice(0, MAX_LABEL_LENGTH).toUpperCase();
+  const colorClass = BADGE_COLOR_BY_EXTENSION[extension] ?? DEFAULT_BADGE_COLOR;
 
-  return {
-    label: (extension || 'file').slice(0, MAX_LABEL_LENGTH).toUpperCase(),
-    colorClass: BADGE_COLOR_BY_EXTENSION[extension] ?? DEFAULT_BADGE_COLOR
-  };
+  return { label, colorClass };
 }

@@ -79,6 +79,14 @@
   {/snippet}
 </Story>
 
+<Story name="FailedWithReason" args={{ status: 'error', progress: 63, errorMessage: 'Network Error' }}>
+  {#snippet template(args)}
+    <div class="w-full max-w-md">
+      <UploadFileCard {...args} onRetry={() => console.log('retry')} onRemove={() => console.log('remove')} />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="FailedWithoutRetry" args={{ status: 'error', progress: 63 }}>
   {#snippet template(args)}
     <div class="w-full max-w-md">

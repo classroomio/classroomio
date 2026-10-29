@@ -62,7 +62,11 @@
       return;
     }
 
-    queue.add(files, lessonId);
+    const rejectedFiles = queue.add(files, lessonId);
+
+    if (rejectedFiles.length > 0) {
+      snackbar.error($t(`${keyPrefix}.file_type_error`));
+    }
   }
 
   function handleFileRejected(opts: { reason: FileRejectedReason; file: File }) {
@@ -113,6 +117,7 @@
               size={item.file.size}
               status={item.status}
               progress={item.progress}
+              errorMessage={item.errorMessage ?? $t(`${keyPrefix}.upload_error`)}
               labels={cardLabels}
               onRemove={() => queue.remove(item.id)}
               onRetry={() => queue.retry(item.id)}

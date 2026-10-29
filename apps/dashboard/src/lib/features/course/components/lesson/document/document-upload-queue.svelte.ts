@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { SvelteMap } from 'svelte/reactivity';
 import {
   LESSON_DOCUMENT_ACCEPTED_TYPES,
   resolveFileUploadMimeType,
@@ -18,32 +19,43 @@ export class DocumentUploadQueue {
   items = $state<DocumentUploadItem[]>([]);
 
   private lessonId = '';
-  private abortControllers = new Map<string, AbortController>();
+  private abortControllers = new SvelteMap<string, AbortController>();
 
   isUploading = $derived(this.items.some((item) => item.status === 'queued' || item.status === 'uploading'));
   allDone = $derived(this.items.length > 0 && this.items.every((item) => item.status === 'done'));
 
-  /** Starts uploading the files immediately. Files with unsupported types are skipped. */
-  add(files: File[], lessonId: string) {
+  /**
+   * Starts uploading the files immediately.
+   * @returns the files skipped because their type is not supported
+   */
+  add(files: File[], lessonId: string): File[] {
     this.lessonId = lessonId;
+    const rejected: File[] = [];
 
     for (const file of files) {
       const mimeType = resolveFileUploadMimeType(file, LESSON_DOCUMENT_ACCEPTED_TYPES);
-      if (!mimeType) continue;
+      if (!mimeType) {
+        rejected.push(file);
+        continue;
+      }
 
       const normalizedFile = file.type === mimeType ? file : new File([file], file.name, { type: mimeType });
+      const id = crypto.randomUUID();
+      const position = this.nextPosition();
 
       this.items.push({
-        id: crypto.randomUUID(),
+        id,
         file: normalizedFile,
         status: 'queued',
         progress: 0,
-        position: this.nextPosition(),
+        position,
         errorMessage: null
       });
     }
 
     this.pump();
+
+    return rejected;
   }
 
   /** Cancels the upload if it is running and drops the item from the list. */
@@ -102,6 +114,8 @@ export class DocumentUploadQueue {
       const presigned = await presignApi.getDocumentUploadUrl(item.file.name, item.file.type, item.file.size);
       if (!presigned) throw new Error('Failed to get presigned upload URL');
 
+      controller.signal.throwIfAborted();
+
       await axios.put(presigned.url, item.file, {
         headers: { 'Content-Type': item.file.type },
         maxContentLength: Infinity,
@@ -116,6 +130,8 @@ export class DocumentUploadQueue {
       const downloadUrls = await presignApi.getDocumentDownloadUrls([presigned.fileKey]);
       const documentUrl = downloadUrls[presigned.fileKey];
 
+      controller.signal.throwIfAborted();
+
       const asset = await mediaApi.registerUploadedDocument({
         lessonId: this.lessonId,
         position: item.position,
@@ -126,21 +142,24 @@ export class DocumentUploadQueue {
         byteSize: item.file.size
       });
 
+      if (controller.signal.aborted) {
+        if (asset) await mediaApi.deleteAsset(asset.id);
+
+        return;
+      }
+
       if (this.lessonId) {
-        lessonApi.updateLessonState(
-          'documents',
-          [
-            {
-              type: resolveFileUploadTypeKey(item.file, LESSON_DOCUMENT_ACCEPTED_TYPES) ?? 'file',
-              name: item.file.name,
-              link: documentUrl,
-              key: presigned.fileKey,
-              size: item.file.size,
-              assetId: asset?.id
-            }
-          ],
-          { append: true }
-        );
+        const documentType = resolveFileUploadTypeKey(item.file, LESSON_DOCUMENT_ACCEPTED_TYPES) ?? 'file';
+        const document = {
+          type: documentType,
+          name: item.file.name,
+          link: documentUrl,
+          key: presigned.fileKey,
+          size: item.file.size,
+          assetId: asset?.id
+        };
+
+        lessonApi.updateLessonState('documents', [document], { append: true });
       }
 
       item.progress = 100;

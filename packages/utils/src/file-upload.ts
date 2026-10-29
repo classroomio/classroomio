@@ -24,7 +24,7 @@ export const FILE_UPLOAD_SUPPORTED_TYPES = [
   {
     value: 'text/x-python',
     label: 'Python (.py)',
-    aliases: ['py', '.py', 'text/x-script.python', 'text/x-python-script', 'application/x-python-code']
+    aliases: ['py', '.py', 'text/x-script.python', 'text/x-python-script', 'application/x-python-code', 'text/plain']
   },
   { value: 'image/jpeg', label: 'JPEG (.jpg, .jpeg)', aliases: ['jpg', '.jpg', 'jpeg', '.jpeg', 'image/jpg'] },
   { value: 'image/png', label: 'PNG (.png)', aliases: ['png', '.png'] },
@@ -60,7 +60,7 @@ const SUPPORTED_TYPE_BY_VALUE = new Map<string, SupportedType>(
   FILE_UPLOAD_SUPPORTED_TYPES.map((entry) => [entry.value, entry])
 );
 const GENERIC_MIME_TYPES = new Set(['', 'application/octet-stream']);
-const EXTENSION_BOUND_MIME_TYPES = new Set(['application/json', 'application/vnd.ms-excel']);
+const EXTENSION_BOUND_MIME_TYPES = new Set(['application/json', 'application/vnd.ms-excel', 'text/plain']);
 
 function normalizeToken(value: string): string {
   return value.trim().toLowerCase();

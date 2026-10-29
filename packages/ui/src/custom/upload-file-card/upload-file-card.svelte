@@ -15,6 +15,8 @@
     status?: UploadFileCardStatus;
     /** Upload progress from 0 to 100. Drives the fill and the bar while the file is in flight. */
     progress?: number;
+    /** Why the upload failed. Shown beside the failed label; falls back to the file size. */
+    errorMessage?: string | null;
     labels: UploadFileCardLabels;
     formatSize?: (bytes: number) => string;
     onRemove?: () => void;
@@ -27,6 +29,7 @@
     size,
     status = 'uploading',
     progress = 0,
+    errorMessage = null,
     labels,
     formatSize = formatFileSize,
     onRemove,
@@ -72,8 +75,10 @@
           <span class="ui:font-medium ui:text-green-600">{labels.completed}</span>
           <span class="ui:text-muted-foreground">· {totalSize}</span>
         {:else if status === 'error'}
-          <span class="ui:text-destructive ui:font-medium">{labels.failed}</span>
-          <span class="ui:text-muted-foreground">· {totalSize}</span>
+          <span class="ui:text-destructive ui:shrink-0 ui:font-medium">{labels.failed}</span>
+          <span class="ui:text-muted-foreground ui:truncate" title={errorMessage ?? undefined}>
+            · {errorMessage ?? totalSize}
+          </span>
         {:else}
           <span class="ui:text-primary ui:font-medium">{labels.uploading(clampedProgress)}</span>
           <span class="ui:text-muted-foreground">· {labels.transferred(uploadedSize, totalSize)}</span>

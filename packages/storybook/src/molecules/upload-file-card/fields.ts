@@ -1,1 +1,1 @@
-export const FIELDS = ['name', 'size', 'status', 'progress', 'labels', 'formatSize', 'class'];
+export const FIELDS = ['name', 'size', 'status', 'progress', 'errorMessage', 'labels', 'formatSize', 'class'];

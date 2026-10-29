@@ -61,6 +61,8 @@ describe('file upload types', () => {
     expect(isFileTypeAllowed({ name: 'sales.xlsx', type: '' }, [])).toBe(true);
     expect(isFileTypeAllowed({ name: 'clean.py', type: 'text/x-python' }, [])).toBe(true);
     expect(isFileTypeAllowed({ name: 'clean.py', type: 'text/x-python-script' }, [])).toBe(true);
+    expect(isFileTypeAllowed({ name: 'clean.py', type: 'text/plain' }, [])).toBe(true);
+    expect(isFileTypeAllowed({ name: 'notes.txt', type: 'text/plain' }, [])).toBe(false);
     expect(isFileTypeAllowed({ name: 'clean.py', type: '' }, [])).toBe(true);
     expect(isFileTypeAllowed({ name: 'clean.py', type: 'application/octet-stream' }, [])).toBe(true);
     expect(isFileTypeAllowed({ name: 'clean.sh', type: 'text/x-python' }, [])).toBe(false);
