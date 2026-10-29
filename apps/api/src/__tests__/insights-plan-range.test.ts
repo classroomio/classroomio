@@ -9,7 +9,12 @@ vi.mock('@cio/db/queries/organization', () => ({
 }));
 
 vi.mock('@api/utils/redis/cached-read', () => ({
-  cachedRead: vi.fn(async (_key, _ttl, compute) => ({ data: await compute(), generatedAt: new Date().toISOString() }))
+  cachedRead: vi.fn(async (_key, _ttl, compute) => {
+    const data = await compute();
+    const generatedAt = new Date().toISOString();
+
+    return { data, generatedAt };
+  })
 }));
 
 import { cachedRead } from '@api/utils/redis/cached-read';
