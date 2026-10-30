@@ -91,7 +91,7 @@
 </script>
 
 {#snippet uploadPanel()}
-  <div class="flex flex-col gap-4 p-6">
+  <div class="flex flex-col gap-4 pb-3">
     {#if queue.items.length === 0}
       <div class={isDisabled ? 'pointer-events-none opacity-50' : ''}>
         <FileDropZone.Root
