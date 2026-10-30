@@ -91,7 +91,11 @@ describe('services/v1/courses/members', () => {
       statusCode: 403
     });
     await expect(
-      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, { roleId: ROLE.STUDENT, email: 'a@example.com' })
+      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, {
+        roleId: ROLE.STUDENT,
+        email: 'a@example.com',
+        sendEmail: true
+      })
     ).rejects.toMatchObject({ statusCode: 403 });
     await expect(deleteCourseMemberService(ORG_ID, ACTOR_ID, memberParams)).rejects.toMatchObject({
       statusCode: 403
@@ -125,7 +129,7 @@ describe('services/v1/courses/members', () => {
   });
 
   it('addCourseMemberService adds an org member by email, linked to their profile, and returns the single member', async () => {
-    const payload = { roleId: ROLE.STUDENT, email: 'a@example.com' };
+    const payload = { roleId: ROLE.STUDENT, email: 'a@example.com', sendEmail: true };
     vi.mocked(addMembers).mockResolvedValue([{ id: MEMBER_ID }] as Awaited<ReturnType<typeof addMembers>>);
 
     const result = await addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload);
@@ -133,15 +137,16 @@ describe('services/v1/courses/members', () => {
     expect(getOrganizationMembersByNormalizedEmails).toHaveBeenCalledWith(ORG_ID, ['a@example.com']);
     expect(addMembers).toHaveBeenCalledWith(
       COURSE_ID,
-      [{ ...payload, profileId: 'profile-1' }],
+      [{ roleId: ROLE.STUDENT, email: 'a@example.com', profileId: 'profile-1' }],
       'public_api',
-      expect.objectContaining({ actorProfileId: ACTOR_ID })
+      expect.objectContaining({ actorProfileId: ACTOR_ID }),
+      { sendEmail: true }
     );
     expect(result).toEqual({ id: MEMBER_ID });
   });
 
   it('addCourseMemberService keeps a pending org member (no profile yet) as an email-only member', async () => {
-    const payload = { roleId: ROLE.STUDENT, email: 'pending@example.com' };
+    const payload = { roleId: ROLE.STUDENT, email: 'pending@example.com', sendEmail: true };
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
       { normalizedEmail: 'pending@example.com', profileId: null, roleId: ROLE.STUDENT }
     ]);
@@ -151,9 +156,10 @@ describe('services/v1/courses/members', () => {
 
     expect(addMembers).toHaveBeenCalledWith(
       COURSE_ID,
-      [payload],
+      [{ roleId: ROLE.STUDENT, email: 'pending@example.com' }],
       'public_api',
-      expect.objectContaining({ actorProfileId: ACTOR_ID })
+      expect.objectContaining({ actorProfileId: ACTOR_ID }),
+      { sendEmail: true }
     );
   });
 
@@ -161,13 +167,17 @@ describe('services/v1/courses/members', () => {
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([]);
 
     await expect(
-      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, { roleId: ROLE.STUDENT, email: 'outsider@example.com' })
+      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, {
+        roleId: ROLE.STUDENT,
+        email: 'outsider@example.com',
+        sendEmail: true
+      })
     ).rejects.toMatchObject({ statusCode: 404 });
     expect(addMembers).not.toHaveBeenCalled();
   });
 
   it('addCourseMemberService returns 404 when the profileId does not belong to this organization', async () => {
-    const payload = { roleId: ROLE.STUDENT, profileId: 'other-org-profile' };
+    const payload = { roleId: ROLE.STUDENT, profileId: 'other-org-profile', sendEmail: true };
     vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(null);
 
     await expect(addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload)).rejects.toMatchObject({
@@ -181,7 +191,11 @@ describe('services/v1/courses/members', () => {
     vi.mocked(addMembers).mockRejectedValue(new AppError('Already a member of this course', 'CONFLICT', 409));
 
     await expect(
-      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, { roleId: ROLE.STUDENT, email: 'a@example.com' })
+      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, {
+        roleId: ROLE.STUDENT,
+        email: 'a@example.com',
+        sendEmail: true
+      })
     ).rejects.toMatchObject({ statusCode: 409 });
   });
 

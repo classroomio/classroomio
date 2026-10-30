@@ -114,7 +114,7 @@ describe('v1CoursesRouter nested course-member/course-invite mounts', () => {
       'org-1',
       'actor-1',
       { courseId: COURSE_ID },
-      { roleId: 3, email: 'student@example.com' },
+      { roleId: 3, email: 'student@example.com', sendEmail: true },
       expect.any(String),
       null
     );
