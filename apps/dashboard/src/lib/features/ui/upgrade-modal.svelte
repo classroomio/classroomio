@@ -15,6 +15,7 @@
   import { toggleConfetti } from './confetti/store';
   import EarlyAdopterCallout from './early-adopter-callout.svelte';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import {
     UPGRADE_CONFIRMATION_PARAM,
     UPGRADE_PARAM,
@@ -33,6 +34,8 @@
   let isYearlyPlan = $state(false);
   let isConfirming = $state(false);
   let handledUpgradeParamFor: string | null = null;
+  let wasModalOpen = false;
+  let openedFromLink = false;
 
   // Billing emails and the post-checkout return URL open the modal with `?upgrade=true`.
   // The params are consumed once here so that closing the modal never has to navigate.
@@ -44,8 +47,25 @@
     untrack(() => {
       handledUpgradeParamFor = currentHref;
       isConfirming = page.url.searchParams.get(UPGRADE_CONFIRMATION_PARAM) === 'true';
+      openedFromLink = true;
       clearUpgradeSearchParams();
       openUpgradeModal();
+    });
+  });
+
+  $effect(() => {
+    const isOpen = $isUpgradeModalOpen;
+
+    untrack(() => {
+      if (isOpen && !wasModalOpen && !isConfirming) {
+        capturePosthogEvent('upgrade_modal_opened', {
+          page: page.route.id,
+          opened_from: openedFromLink ? 'link' : 'app'
+        });
+      }
+
+      if (!isOpen) openedFromLink = false;
+      wasModalOpen = isOpen;
     });
   });
 
@@ -54,10 +74,23 @@
       return;
     }
 
+    const billingPeriod = isYearlyPlan ? 'yearly' : 'monthly';
+
     if (!plan.CTA.PRODUCT_ID && plan.CTA.DASHBOARD_LINK) {
+      capturePosthogEvent('upgrade_checkout_started', {
+        plan: planName,
+        billing_period: billingPeriod,
+        checkout_type: 'contact_sales'
+      });
       window.open(plan.CTA.DASHBOARD_LINK, '_blank');
       return;
     }
+
+    capturePosthogEvent(
+      'upgrade_checkout_started',
+      { plan: planName, billing_period: billingPeriod, checkout_type: 'polar' },
+      { send_instantly: true, transport: 'sendBeacon' }
+    );
 
     isLoadingPlan = planName;
 
