@@ -111,11 +111,9 @@
       <Field.Description>{$t('oauth.connect.description')}</Field.Description>
 
       {#if automationApi.mcpUrl}
-        <Code.Overflow>
-          <Code.Root code={automationApi.mcpUrl} lang="bash">
-            <Code.CopyButton />
-          </Code.Root>
-        </Code.Overflow>
+        <Code.Root code={automationApi.mcpUrl} lang="bash" hideLines>
+          <Code.CopyButton />
+        </Code.Root>
       {/if}
 
       <ol class="ui:text-muted-foreground list-decimal space-y-1 pl-5 text-sm">
@@ -137,11 +135,16 @@
     />
   {:else if mcpKeys.length > 0}
     <Tabs.Root bind:value={activeTab} class="w-full">
-      <Tabs.List class="inline-flex w-auto">
-        <Tabs.Trigger value="connections">{$t('automation.mcp.connections_tab')}</Tabs.Trigger>
-        <Tabs.Trigger value="keys" class="gap-2">
+      <Tabs.List class="self-start">
+        <Tabs.Trigger value="connections" class="flex-none px-3">{$t('automation.mcp.connections_tab')}</Tabs.Trigger>
+        <Tabs.Trigger value="keys" class="flex-none gap-2 px-3">
           {$t('automation.mcp.keys.title')}
-          <Badge variant="secondary">{$t('automation.mcp.keys.deprecated_badge')}</Badge>
+          <Badge
+            variant="outline"
+            class="border-transparent bg-orange-100 px-1.5 py-0 text-[10px] leading-4 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300"
+          >
+            {$t('automation.mcp.keys.deprecated_badge')}
+          </Badge>
         </Tabs.Trigger>
       </Tabs.List>
 
