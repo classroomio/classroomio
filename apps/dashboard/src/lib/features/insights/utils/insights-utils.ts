@@ -102,8 +102,8 @@ export const INSIGHTS_COLORS = {
   primary: 'var(--primary)',
   success: 'var(--success)',
   danger: 'var(--destructive)',
-  warning: 'oklch(0.769 0.188 70.08)',
-  muted: 'var(--chart-1)',
+  warning: 'oklch(0.834174 0.1413 83.88374)',
+  muted: 'oklch(0.503 0.032 265.21)',
   purple: 'oklch(0.58 0.2 305)',
   teal: 'oklch(0.65 0.12 190)',
   pink: 'oklch(0.62 0.2 350)',
@@ -125,6 +125,33 @@ export const SERIES_COLORS = [
   INSIGHTS_COLORS.indigo,
   INSIGHTS_COLORS.danger
 ] as const;
+
+const GROUPED_BAR_MAX_WIDTH = 40;
+const GROUPED_BAR_MIN_PADDING = 0.2;
+const GROUPED_BAR_MAX_PADDING = 0.9;
+
+export const GROUPED_BAR_GAP = 0.08;
+
+/**
+ * Band padding for a grouped bar chart that keeps every bar at most 40px wide, so a page with few categories, or a
+ * full-width card, doesn't stretch the bars. Padding grows with spare width and never drops below the default.
+ */
+export function groupedBandPadding(plotWidth: number, groupCount: number, seriesCount: number): number {
+  if (plotWidth <= 0 || groupCount === 0 || seriesCount === 0) return GROUPED_BAR_MIN_PADDING;
+
+  const widestGroup = (GROUPED_BAR_MAX_WIDTH * (seriesCount + GROUPED_BAR_GAP)) / (1 - GROUPED_BAR_GAP);
+  const padding = (plotWidth - widestGroup * groupCount) / (plotWidth + widestGroup);
+
+  return Math.min(GROUPED_BAR_MAX_PADDING, Math.max(GROUPED_BAR_MIN_PADDING, padding));
+}
+
+export const TONE_COLORS: Record<InsightsTone, string> = {
+  success: INSIGHTS_COLORS.success,
+  info: INSIGHTS_COLORS.primary,
+  warning: INSIGHTS_COLORS.warning,
+  danger: INSIGHTS_COLORS.danger,
+  muted: INSIGHTS_COLORS.muted
+};
 
 export const STATUS_COLORS: Record<TInsightsStatus, string> = {
   at_risk: INSIGHTS_COLORS.danger,

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { cn } from '@cio/ui/tools';
-
+  import { TONE_COLORS } from '../../utils/insights-utils';
   import type { InsightsTone } from '../../utils/types';
 
   interface Props {
@@ -16,14 +15,6 @@
   }
 
   let { items, max = 100 }: Props = $props();
-
-  const BAR_TONE_CLASS: Record<InsightsTone, string> = {
-    success: 'bg-emerald-500/70',
-    info: 'ui:bg-primary/70',
-    warning: 'bg-amber-500/70',
-    danger: 'bg-rose-500/70',
-    muted: 'ui:bg-muted-foreground/40'
-  };
 </script>
 
 <ul class="space-y-3">
@@ -36,8 +27,9 @@
       </div>
       <div class="ui:bg-muted h-2 overflow-hidden rounded-full">
         <div
-          class={cn('h-full rounded-full transition-[width] duration-500', BAR_TONE_CLASS[item.tone ?? 'info'])}
-          style="width: {width}%"
+          class="h-full rounded-full transition-[width] duration-500"
+          style:width="{width}%"
+          style:background-color={TONE_COLORS[item.tone ?? 'info']}
         ></div>
       </div>
       {#if item.hint}
