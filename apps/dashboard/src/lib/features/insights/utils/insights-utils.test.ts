@@ -23,6 +23,7 @@ import {
   formatCount,
   formatKpi,
   formatPercent,
+  groupedBandPadding,
   formatPointsDelta,
   formatShortDate,
   formatUpdatedAgo,
@@ -1223,6 +1224,33 @@ describe('insights-utils', () => {
         { key: 'c1', label: 'Cohort 1', dashed: false },
         directStudents
       ]);
+    });
+  });
+
+  describe('grouped bar width', () => {
+    const barWidth = (plotWidth: number, groups: number, series: number) => {
+      const padding = groupedBandPadding(plotWidth, groups, series);
+      const step = plotWidth / (groups + padding);
+      const groupWidth = step * (1 - padding);
+      const seriesStep = groupWidth / (series + 0.08);
+
+      return seriesStep * (1 - 0.08);
+    };
+
+    it('keeps the default padding when the bars already fit', () => {
+      expect(groupedBandPadding(300, 4, 3)).toBe(0.2);
+    });
+
+    it('caps each bar at 40px when a page has few categories', () => {
+      expect(barWidth(640, 4, 3)).toBeLessThanOrEqual(40.01);
+      expect(barWidth(640, 2, 3)).toBeCloseTo(40, 0);
+      expect(barWidth(1100, 4, 3)).toBeCloseTo(40, 0);
+      expect(barWidth(900, 1, 3)).toBeLessThanOrEqual(40.01);
+    });
+
+    it('falls back to the default padding with nothing to draw', () => {
+      expect(groupedBandPadding(0, 4, 3)).toBe(0.2);
+      expect(groupedBandPadding(640, 0, 3)).toBe(0.2);
     });
   });
 
