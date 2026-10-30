@@ -529,6 +529,9 @@
       "test_success": "Événement de test envoyé avec succès.",
       "test_failed": "L'événement de test a échoué. Ouvrez le journal des envois pour en voir la cause.",
       "redelivered": "Événement mis en file d'attente pour un nouvel envoi."
+    },
+    "oauth": {
+      "revoked": "Accès de l'application retiré"
     }
   },
   "explore": {
@@ -6438,5 +6441,95 @@
     "new_badge": "Nouveau",
     "read_full": "Lire le journal des modifications complet",
     "close": "Fermer"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Connecter une application à ClassroomIO",
+      "title": "Connecter {client} à ClassroomIO",
+      "workspace": "Espace de travail : {workspace}",
+      "permissions_heading": "{client} pourra :",
+      "stay_connected": "Rester connecté jusqu'à ce que vous retiriez l'accès",
+      "admin_note": "Seuls les administrateurs de l'espace de travail peuvent connecter des applications. L'accès suit vos autorisations d'administrateur et prend fin si vous les perdez.",
+      "redirect_note": "Après votre approbation, vous serez redirigé vers {host}.",
+      "allow": "Autoriser l'accès",
+      "deny": "Refuser",
+      "unknown_client": "Cette application",
+      "error_title": "Cette demande de connexion n'est pas valide",
+      "error_description": "Retournez à l'application que vous vouliez connecter et recommencez."
+    },
+    "select_organization": {
+      "title": "Choisir un espace de travail",
+      "subtitle": "Choisissez l'espace de travail auquel {client} peut accéder.",
+      "empty_title": "Aucun espace de travail disponible",
+      "empty_description": "Seuls les administrateurs de l'espace de travail peuvent connecter des applications. Demandez à un administrateur ou connectez-vous avec un compte administrateur."
+    },
+    "error": {
+      "generic": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Consulter les cours et leur contenu",
+        "write": "Créer, modifier et publier des cours et leur contenu"
+      },
+      "exercises": {
+        "read": "Consulter les exercices et les questions",
+        "write": "Créer et modifier des exercices et des questions"
+      },
+      "course_members": {
+        "read": "Consulter les membres des cours",
+        "write": "Ajouter et gérer les membres des cours et leur progression"
+      },
+      "certificates": {
+        "read": "Consulter les certificats de cours",
+        "write": "Gérer les certificats de cours"
+      },
+      "submissions": {
+        "read": "Consulter les soumissions et les notes",
+        "write": "Noter les soumissions et gérer les notes"
+      },
+      "cohorts": {
+        "read": "Consulter les cohortes",
+        "write": "Créer et gérer des cohortes"
+      },
+      "audience": {
+        "read": "Consulter votre audience",
+        "write": "Ajouter et gérer votre audience"
+      },
+      "team": {
+        "read": "Consulter les membres de l'équipe",
+        "write": "Gérer les membres de l'équipe"
+      },
+      "organization": {
+        "read": "Consulter les paramètres de l'espace de travail",
+        "write": "Modifier les paramètres, la page d'accueil et les modèles d'e-mail"
+      },
+      "analytics": {
+        "read": "Consulter les statistiques",
+        "write": "Consulter les statistiques"
+      },
+      "media": {
+        "read": "Téléverser des médias",
+        "write": "Téléverser des médias"
+      }
+    },
+    "connect": {
+      "title": "Se connecter depuis Claude ou ChatGPT",
+      "description": "Ajoutez ClassroomIO comme connecteur personnalisé dans votre application d'IA avec cette URL, puis connectez-vous et approuvez l'accès.",
+      "step_1": "Dans votre application d'IA, ouvrez les paramètres des connecteurs ou des intégrations et ajoutez un connecteur personnalisé.",
+      "step_2": "Collez l'URL ci-dessus et lancez la connexion.",
+      "step_3": "Connectez-vous à ClassroomIO, choisissez cet espace de travail et approuvez les autorisations."
+    },
+    "connected_apps": {
+      "title": "Applications connectées",
+      "description": "Applications que vous avez autorisées à agir sur cet espace de travail. Retirez une application pour couper son accès immédiatement.",
+      "empty_title": "Aucune application connectée",
+      "empty_description": "Les applications que vous connectez avec l'URL ci-dessus apparaîtront ici.",
+      "table_app": "Application",
+      "table_authorized_by": "Autorisée par",
+      "table_permissions": "Autorisations",
+      "permissions_count": "{count} domaines",
+      "revoke": "Retirer l'accès",
+      "revoke_confirm": "Retirer l'accès de cette application ? Elle cessera de fonctionner immédiatement."
+    }
   }
 }

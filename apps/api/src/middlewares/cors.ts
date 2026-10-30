@@ -33,11 +33,23 @@ export const sessionCors = cors({
  *
  * - `/public-api/`: Bearer-token REST API (automation keys).
  * - `/widgets/`: Anonymous payload endpoint hit by the course-widget embed script on customer sites.
+ * - `/.well-known/` and the OAuth token, register, revoke and JWKS endpoints: called by third-party clients with no cookies.
  *
  * Requests under these prefixes use `publicApiCors` and skip the Better Auth session lookup.
  */
-export const PUBLIC_CORS_PATH_PREFIXES = ['/public-api/', '/widgets/'] as const;
+export const PUBLIC_CORS_PATH_PREFIXES = ['/public-api/', '/widgets/', '/.well-known/'] as const;
+
+export const PUBLIC_OAUTH_PATHS = [
+  '/api/auth/oauth2/token',
+  '/api/auth/oauth2/register',
+  '/api/auth/oauth2/revoke',
+  '/api/auth/jwks'
+] as const;
+
+export function isPublicOAuthPath(path: string): boolean {
+  return path.startsWith('/.well-known/') || PUBLIC_OAUTH_PATHS.some((oauthPath) => path === oauthPath);
+}
 
 export function isPublicCorsPath(path: string): boolean {
-  return PUBLIC_CORS_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
+  return PUBLIC_CORS_PATH_PREFIXES.some((prefix) => path.startsWith(prefix)) || isPublicOAuthPath(path);
 }

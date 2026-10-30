@@ -1,0 +1,104 @@
+---
+title: OAuth for integrations
+description: Let a third-party platform act on a ClassroomIO workspace on behalf of an admin, without sharing an API key.
+---
+
+ClassroomIO is an OAuth 2.1 authorization server. A platform that cannot hold a long-lived secret registers itself, sends a workspace admin through a consent screen, and receives short-lived tokens it can use with the public API and the remote MCP endpoint.
+
+Use [automation keys](/developers/mcp/setup) instead when you run the client yourself.
+
+## What the admin sees
+
+1. The platform sends the admin to ClassroomIO to sign in.
+2. The admin picks the workspace the platform may act on, if they administer more than one.
+3. The consent screen names the platform, lists the permissions in plain language, and shows where approval will send the browser.
+4. After approval the platform receives an authorization code and exchanges it for tokens.
+
+Only workspace admins can connect a platform. Access follows the admin's role: if they stop being an admin of that workspace, the platform loses access and its grant is deleted.
+
+## Discovery
+
+Fetch the server metadata instead of hard-coding endpoints:
+
+```
+https://app.classroomio.com/.well-known/oauth-authorization-server
+```
+
+For a self-hosted installation, use your dashboard origin. The metadata lists the authorization, token, registration and revocation endpoints and the signing keys (`jwks_uri`).
+
+## Register a client
+
+Clients register themselves with [Dynamic Client Registration](https://datatracker.ietf.org/doc/html/rfc7591) at `registration_endpoint`. Registration is rate limited, and every registered client is untrusted: the consent screen is always shown.
+
+```bash
+curl -X POST https://app.classroomio.com/api/auth/oauth2/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_name": "My Platform",
+    "redirect_uris": ["https://platform.example.com/callback"],
+    "token_endpoint_auth_method": "none",
+    "grant_types": ["authorization_code", "refresh_token"],
+    "response_types": ["code"]
+  }'
+```
+
+Redirect URIs are matched exactly. Use HTTPS outside local development.
+
+## Authorize
+
+Send the admin to `authorization_endpoint` with these parameters:
+
+| Parameter               | Value                                                                                                 |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| `response_type`         | `code`                                                                                                |
+| `client_id`             | The ID returned at registration                                                                       |
+| `redirect_uri`          | One of the registered redirect URIs                                                                   |
+| `scope`                 | Space-separated [scopes](#scopes). Add `offline_access` to receive a refresh token                    |
+| `code_challenge`        | PKCE challenge. Only `S256` is accepted and PKCE is required                                          |
+| `code_challenge_method` | `S256`                                                                                                |
+| `resource`              | The API the token is for: `https://api.classroomio.com/public-api/v1` or the remote MCP endpoint URL |
+| `state`                 | A random value you verify on the callback                                                             |
+
+The `resource` parameter is required. Tokens are issued for that resource only and are rejected by everything else.
+
+Exchange the returned `code` at `token_endpoint` with the `code_verifier`, the same `redirect_uri` and the same `resource`.
+
+## Call the API
+
+Send the access token as a bearer token:
+
+```bash
+curl https://api.classroomio.com/public-api/v1/team \
+  -H "Authorization: Bearer <access_token>"
+```
+
+OAuth tokens use the same public API routes and the same scopes as automation keys, and they are subject to the same plan limits. A request fails with `401` when the token is expired or revoked, and with `403` when the token does not carry the scope the route needs.
+
+## Token lifetime
+
+- Access tokens expire after 10 minutes.
+- Refresh tokens are issued when you request `offline_access`. Each refresh returns a new refresh token and invalidates the previous one. Reusing an old refresh token is treated as theft and invalidates the newer refresh tokens too, so a replayed token cannot be used quietly.
+- A grant stays valid after the admin signs out of the dashboard. It ends when the admin removes the app, loses the admin role, or the grant is revoked.
+
+You can also revoke a token yourself at `revocation_endpoint` ([RFC 7009](https://datatracker.ietf.org/doc/html/rfc7009)).
+
+## Scopes
+
+Tokens carry the same scopes as automation keys. `public_api:*` is never granted through OAuth.
+
+| Area                      | Scopes                                                                                                           |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Courses and imports       | `course:read`, `course:write`, `course:tag:write`, `course_import:draft:create`, `course_import:draft:read`, `course_import:draft:update`, `course_import:draft:publish` |
+| Exercises                 | `course:exercise:read`, `course:exercise:write`                                                                  |
+| Course members            | `course:member:read`, `course:member:write`, `course:student:write`                                              |
+| Certificates              | `course:certificate:read`, `course:certificate:write`                                                            |
+| Submissions and marks     | `course:submission:read`, `course:submission:write`                                                              |
+| Cohorts                   | `cohort:read`, `cohort:write`                                                                                    |
+| Audience                  | `audience:read`, `audience:write`                                                                                |
+| Team                      | `team:read`, `team:write`                                                                                        |
+| Workspace                 | `organization:read`, `organization:write`                                                                        |
+| Analytics and media       | `analytics:read`, `media:write`                                                                                  |
+
+## Manage connected apps
+
+Admins see every connected platform in **Automation → MCP → Connected apps**, with who authorized it and when it was last used. Removing an app deletes its grant and tokens, and it stops working immediately.

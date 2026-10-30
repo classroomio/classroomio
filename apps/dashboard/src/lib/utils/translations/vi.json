@@ -529,6 +529,9 @@
       "test_success": "Đã gửi sự kiện thử nghiệm thành công.",
       "test_failed": "Sự kiện thử nghiệm thất bại. Mở nhật ký gửi để xem lý do.",
       "redelivered": "Sự kiện đã được đưa vào hàng đợi để gửi lại."
+    },
+    "oauth": {
+      "revoked": "Đã gỡ quyền truy cập của ứng dụng"
     }
   },
   "explore": {
@@ -6438,5 +6441,95 @@
     "new_badge": "Mới",
     "read_full": "Đọc toàn bộ nhật ký thay đổi",
     "close": "Đóng"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Kết nối ứng dụng với ClassroomIO",
+      "title": "Kết nối {client} với ClassroomIO",
+      "workspace": "Không gian làm việc: {workspace}",
+      "permissions_heading": "{client} sẽ có thể:",
+      "stay_connected": "Giữ kết nối cho đến khi bạn gỡ quyền truy cập",
+      "admin_note": "Chỉ quản trị viên không gian làm việc mới có thể kết nối ứng dụng. Quyền truy cập theo quyền quản trị của bạn và sẽ kết thúc nếu bạn mất quyền đó.",
+      "redirect_note": "Sau khi phê duyệt, bạn sẽ được chuyển đến {host}.",
+      "allow": "Cho phép truy cập",
+      "deny": "Từ chối",
+      "unknown_client": "Ứng dụng này",
+      "error_title": "Yêu cầu kết nối này không hợp lệ",
+      "error_description": "Hãy quay lại ứng dụng bạn đang kết nối và bắt đầu lại."
+    },
+    "select_organization": {
+      "title": "Chọn không gian làm việc",
+      "subtitle": "Chọn không gian làm việc mà {client} có thể truy cập.",
+      "empty_title": "Không có không gian làm việc nào",
+      "empty_description": "Chỉ quản trị viên không gian làm việc mới có thể kết nối ứng dụng. Hãy nhờ quản trị viên hoặc đăng nhập bằng tài khoản quản trị."
+    },
+    "error": {
+      "generic": "Đã xảy ra lỗi. Vui lòng thử lại."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Xem khóa học và nội dung",
+        "write": "Tạo, chỉnh sửa và xuất bản khóa học và nội dung"
+      },
+      "exercises": {
+        "read": "Xem bài tập và câu hỏi",
+        "write": "Tạo và chỉnh sửa bài tập và câu hỏi"
+      },
+      "course_members": {
+        "read": "Xem thành viên khóa học",
+        "write": "Thêm và quản lý thành viên khóa học cùng tiến độ"
+      },
+      "certificates": {
+        "read": "Xem chứng chỉ khóa học",
+        "write": "Quản lý chứng chỉ khóa học"
+      },
+      "submissions": {
+        "read": "Xem bài nộp và điểm",
+        "write": "Chấm bài nộp và quản lý điểm"
+      },
+      "cohorts": {
+        "read": "Xem các nhóm học",
+        "write": "Tạo và quản lý nhóm học"
+      },
+      "audience": {
+        "read": "Xem đối tượng của bạn",
+        "write": "Thêm và quản lý đối tượng của bạn"
+      },
+      "team": {
+        "read": "Xem thành viên nhóm",
+        "write": "Quản lý thành viên nhóm"
+      },
+      "organization": {
+        "read": "Xem cài đặt không gian làm việc",
+        "write": "Chỉnh sửa cài đặt, trang đích và mẫu email"
+      },
+      "analytics": {
+        "read": "Xem phân tích",
+        "write": "Xem phân tích"
+      },
+      "media": {
+        "read": "Tải lên phương tiện",
+        "write": "Tải lên phương tiện"
+      }
+    },
+    "connect": {
+      "title": "Kết nối từ Claude hoặc ChatGPT",
+      "description": "Thêm ClassroomIO làm trình kết nối tùy chỉnh trong ứng dụng AI của bạn bằng URL này, sau đó đăng nhập và phê duyệt quyền truy cập.",
+      "step_1": "Trong ứng dụng AI, mở cài đặt trình kết nối hoặc tích hợp và thêm một trình kết nối tùy chỉnh.",
+      "step_2": "Dán URL ở trên và bắt đầu kết nối.",
+      "step_3": "Đăng nhập ClassroomIO, chọn không gian làm việc này và phê duyệt các quyền."
+    },
+    "connected_apps": {
+      "title": "Ứng dụng đã kết nối",
+      "description": "Các ứng dụng bạn đã cho phép hoạt động trong không gian làm việc này. Gỡ một ứng dụng để cắt quyền truy cập ngay lập tức.",
+      "empty_title": "Chưa có ứng dụng nào được kết nối",
+      "empty_description": "Các ứng dụng bạn kết nối bằng URL ở trên sẽ xuất hiện tại đây.",
+      "table_app": "Ứng dụng",
+      "table_authorized_by": "Được ủy quyền bởi",
+      "table_permissions": "Quyền",
+      "permissions_count": "{count} mục",
+      "revoke": "Gỡ quyền truy cập",
+      "revoke_confirm": "Gỡ quyền truy cập của ứng dụng này? Ứng dụng sẽ ngừng hoạt động ngay lập tức."
+    }
   }
 }
