@@ -163,10 +163,14 @@ export async function getPluginCoursesList(
   organizationId: string,
   actorId: string,
   canReadAllCourses: boolean,
-  options?: { limit?: number; cursor?: string | null }
+  options?: { limit?: number; cursor?: string | null; publishedOnly?: boolean }
 ): Promise<{ items: PluginCourseMetadata[]; nextCursor: string | null }> {
   const limit = Math.max(1, Math.min(Number(options?.limit) || 20, 100));
   const conditions = [eq(schema.group.organizationId, organizationId), eq(schema.course.isTemplate, false)];
+  if (options?.publishedOnly) {
+    conditions.push(eq(schema.course.status, 'ACTIVE'), eq(schema.course.isPublished, true));
+  }
+
   if (!canReadAllCourses) {
     conditions.push(
       or(

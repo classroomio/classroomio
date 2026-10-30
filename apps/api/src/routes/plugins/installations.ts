@@ -7,6 +7,7 @@ import { zValidator } from '@hono/zod-validator';
 import {
   ZInstallPlugin,
   ZPluginInstallationParam,
+  ZPluginCoursesListQuery,
   ZPluginLessonsListQuery,
   ZPluginStorageKeyParam,
   ZPluginStorageNamespaceParam,
@@ -287,14 +288,16 @@ export const pluginInstallationsRouter = new Hono()
     authMiddleware,
     orgMemberMiddleware,
     zValidator('param', ZPluginInstallationParam),
+    zValidator('query', ZPluginCoursesListQuery),
     async (c) => {
       const user = c.get('user')!;
       const orgId = c.get('orgId') as string;
       const userRole = c.get('userRole') as number | undefined;
       const { installationId } = c.req.valid('param');
+      const query = c.req.valid('query');
 
       try {
-        const result = await listInstallationCourses(installationId, orgId, user.id, userRole);
+        const result = await listInstallationCourses(installationId, orgId, user.id, userRole, query);
 
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
