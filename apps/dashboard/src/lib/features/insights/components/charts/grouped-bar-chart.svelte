@@ -11,7 +11,13 @@
   import type { ChartConfig } from '@cio/ui/base/chart/types';
   import { Skeleton } from '@cio/ui/base/skeleton';
 
-  import { formatCount, formatPercent, truncateLabel } from '../../utils/insights-utils';
+  import {
+    formatCount,
+    formatPercent,
+    GROUPED_BAR_GAP,
+    groupedBandPadding,
+    truncateLabel
+  } from '../../utils/insights-utils';
   import type { InsightsChartPoint, InsightsChartSeries } from '../../utils/types';
 
   interface Props {
@@ -32,7 +38,13 @@
   const yDomain = $derived(percent ? [0, 100] : undefined);
   const formatValue = $derived(percent ? formatPercent : formatCount);
 
+  const CHART_PADDING = { top: 8, right: 20, bottom: 32, left: 24 };
+
   let containerWidth = $state(800);
+
+  const bandPadding = $derived(
+    groupedBandPadding(containerWidth - CHART_PADDING.left - CHART_PADDING.right, points.length, series.length)
+  );
 
   function formatCategory(key: string): string {
     const label = labelByKey.get(key) ?? key;
@@ -51,10 +63,11 @@
         <Chart.BarChart
           data={points}
           x="key"
-          xScale={Chart.scaleBand().padding(0.2)}
+          xScale={Chart.scaleBand().padding(bandPadding)}
           seriesLayout="group"
+          groupPadding={GROUPED_BAR_GAP}
           axis="x"
-          padding={{ top: 8, right: 20, bottom: 32, left: 24 }}
+          padding={CHART_PADDING}
           {series}
           {yDomain}
           props={{ xAxis: { format: formatCategory } }}
