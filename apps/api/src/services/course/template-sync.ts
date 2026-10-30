@@ -56,6 +56,7 @@ import {
 } from '@cio/utils/validation/course';
 
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { invalidateInsightsCourseStructure } from '@cio/core/utils/redis/insights-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { syncLessonAssetUsages, remapContentAssets } from '@api/services/course/clone';
 
@@ -499,6 +500,7 @@ export async function pullCourseTemplateUpdates(
 ) {
   const pulled = await withAssetStorageRollback(() =>
     db.transaction(async (tx) => {
+      let groupingChanged = false;
       await lockCourseForUpdate(courseId, tx);
       const { course, template, templateOrgId, courseOrgId } = await requireLinkedCourse(courseId, orgId, tx);
       if (!template || template.status === 'DELETED') {
@@ -747,7 +749,10 @@ export async function pullCourseTemplateUpdates(
       if (selection.settingKeys.length > 0) {
         const patch = applySettingChanges(toCarrier(course), toCarrier(template), selection.settingKeys);
         const remappedPatch = await remapContentAssets(patch, templateOrgId, courseOrgId, userId, tx);
-        await updateCourse(course.id, remappedPatch as Partial<TCourse>, tx);
+        const updateResult = await updateCourse(course.id, remappedPatch as Partial<TCourse>, tx);
+        const beforeGrouping = course.metadata?.isContentGroupingEnabled ?? false;
+        const afterGrouping = updateResult?.metadata?.isContentGroupingEnabled ?? false;
+        groupingChanged = beforeGrouping !== afterGrouping;
         await upsertTemplateSettingSync(course.id, selection.settingKeys, syncedAt, tx);
       }
 
@@ -755,11 +760,17 @@ export async function pullCourseTemplateUpdates(
 
       return {
         unitIds: selection.unitIds,
-        settingKeys: selection.settingKeys
+        settingKeys: selection.settingKeys,
+        groupingChanged
       };
     })
   );
 
   await invalidateOrgStats(orgId);
+
+  if (pulled.groupingChanged) {
+    void invalidateInsightsCourseStructure(courseId);
+  }
+
   return pulled;
 }

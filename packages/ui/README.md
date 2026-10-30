@@ -448,6 +448,26 @@ Pass `onCommit` for follow-up work that must run only on blur or Enter with the 
 <NumberField label="Points" integer min={1} bind:value={points} />
 ```
 
+### Chart legend (`src/base/chart/chart-legend.svelte`, `chart-legend-item.svelte`)
+
+Legend row for the Insights charts. `ChartLegend` renders one `ChartLegendItem` per entry and keys each row by label plus index, so two series with the same label still render. Items truncate their label and reveal the full text in a tooltip on hover or focus.
+
+| Prop        | Type                      | Default     | Purpose                                                |
+| ----------- | ------------------------- | ----------- | ------------------------------------------------------ |
+| `items`     | `ChartLegendItem[]`       | —           | Series to list: `label`, `color`, optional `value`, `dashed` |
+| `showValue` | `boolean`                 | `true`      | Show each item's `value` in parentheses                |
+| `class`     | `string`                  | `'ui:mt-4'` | Extra classes on the row                               |
+
+`ChartLegendItem` takes a single `item` plus the same `showValue`. A `dashed` item draws a dashed swatch instead of a solid one, for reference lines such as a target or pass mark. Import it directly rather than through the `@cio/ui/base/chart` barrel when a host renders on the server (the barrel pulls in layerchart).
+
+```svelte
+<script lang="ts">
+  import ChartLegend from '@cio/ui/base/chart/chart-legend.svelte';
+</script>
+
+<ChartLegend items={[{ label: 'Graduates', color: 'var(--chart-1)', value: 128 }]} />
+```
+
 ### Copy input (`src/custom/copy-input/`)
 
 Read-only `InputGroup` that shows a value with an inline Copy button. Focusing the input selects the value; the button switches to the copied label for two seconds. Use it to reveal a one-time secret, an invite link, or any value the user should copy rather than edit. The host passes translated labels.

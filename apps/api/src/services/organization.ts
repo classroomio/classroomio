@@ -1,4 +1,5 @@
 import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import { invalidateInsightsPlan } from '@cio/core/utils/redis/insights-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
@@ -712,6 +713,7 @@ export async function createOrgPlan(data: TNewOrganizationPlan) {
       isActive: true,
       provider: 'polar'
     });
+    void invalidateInsightsPlan(targetOrgId);
     return plan;
   } catch (error) {
     if (error instanceof AppError) {
@@ -885,6 +887,9 @@ export async function updateOrgPlan(subscriptionId: string, payload: TOrganizati
     if (!plan) {
       throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
     }
+    if (plan.orgId) {
+      void invalidateInsightsPlan(plan.orgId);
+    }
     return plan;
   } catch (error) {
     if (error instanceof AppError) {
@@ -913,6 +918,9 @@ export async function activateOrgPlan(data: TNewOrganizationPlan) {
     const activatedPlan = await activateOrganizationPlan(data.subscriptionId, data.payload);
 
     if (activatedPlan) {
+      if (activatedPlan.orgId) {
+        void invalidateInsightsPlan(activatedPlan.orgId);
+      }
       return activatedPlan;
     }
 
@@ -941,6 +949,9 @@ export async function cancelOrgPlan(subscriptionId: string, payload: TOrganizati
     const plan = await cancelOrganizationPlan(subscriptionId, payload);
     if (!plan) {
       throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
+    }
+    if (plan.orgId) {
+      void invalidateInsightsPlan(plan.orgId);
     }
     return plan;
   } catch (error) {

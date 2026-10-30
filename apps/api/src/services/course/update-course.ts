@@ -1,4 +1,5 @@
 import { updateCourse } from '@cio/core/services/course/course';
+import { invalidateInsightsCourseStructure } from '@cio/core/utils/redis/insights-cache';
 import { db } from '@cio/db/drizzle';
 import type { TCourse } from '@cio/db/types';
 import { replaceCourseTags } from '@api/services/tag';
@@ -10,8 +11,8 @@ export async function updateCourseWithTags(params: {
   updatedByUserId: string;
   tagIds: string[];
 }) {
-  return db.transaction(async (tx) => {
-    const { course, conversionOffenders, publishedNow, publishChange } = await updateCourse(
+  const result = await db.transaction(async (tx) => {
+    const { course, conversionOffenders, publishedNow, publishChange, groupingChanged } = await updateCourse(
       params.courseId,
       params.courseData,
       tx
@@ -23,6 +24,12 @@ export async function updateCourseWithTags(params: {
       { updatedByUserId: params.updatedByUserId, dbClient: tx }
     );
 
-    return { course, conversionOffenders, publishedNow, publishChange, tags };
+    return { course, conversionOffenders, publishedNow, publishChange, groupingChanged, tags };
   });
+
+  if (result.groupingChanged) {
+    void invalidateInsightsCourseStructure(params.courseId);
+  }
+
+  return result;
 }

@@ -10,6 +10,7 @@ import {
   ZCreateCohortNewsfeed,
   ZCreateCohortNewsfeedComment,
   ZInviteStudentsToCohort,
+  ZRemindOverdueCohortGoals,
   ZUpdateCohort,
   ZUpdateCohortGoal,
   ZUpdateCohortMember,
@@ -59,6 +60,7 @@ import {
   getOrgGoalsOverview,
   listGoals,
   removeGoal,
+  sendOverdueCohortGoalRemindersNow,
   updateGoal
 } from '@api/services/cohort/goal';
 
@@ -68,6 +70,7 @@ import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { cohortMemberMiddleware } from '@api/middlewares/cohort-member';
 import { cohortTeamMemberMiddleware } from '@api/middlewares/cohort-team-member';
 import { cohortNewsfeedCommentAuthorOrTeamMiddleware } from '@api/middlewares/cohort-newsfeed-comment-author-or-team';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
@@ -82,6 +85,13 @@ const ZCommentParam = z.object({
 });
 const ZGoalParam = z.object({ cohortId: z.string().uuid(), goalId: z.string().uuid() });
 const ZOrgQuery = z.object({ organizationId: z.string().uuid() });
+
+const cohortGoalReminderRateLimit = createRateLimiter({
+  windowMs: 60_000,
+  maxRequests: 20,
+  message: 'Too many reminders. Please try again shortly.',
+  keyGenerator: (c) => `cohort_goal_remind:${c.get('user')?.id ?? 'anonymous'}`
+});
 
 export const cohortRouter = new Hono()
   // ── Enrolled Cohorts (LMS) ─── must be before /:cohortId ───────────────
@@ -820,6 +830,30 @@ export const cohortRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to evaluate cohort goals');
+      }
+    }
+  )
+
+  /**
+   * POST /cohort/:cohortId/goal-assignments/remind-overdue
+   * Email every overdue learner on the cohort's active goals.
+   */
+  .post(
+    '/:cohortId/goal-assignments/remind-overdue',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    cohortGoalReminderRateLimit,
+    zValidator('param', ZCohortParam),
+    zValidator('json', ZRemindOverdueCohortGoals),
+    async (c) => {
+      try {
+        const { cohortId } = c.req.valid('param');
+        const input = c.req.valid('json');
+        const result = await sendOverdueCohortGoalRemindersNow(cohortId, input);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to send reminders');
       }
     }
   );
