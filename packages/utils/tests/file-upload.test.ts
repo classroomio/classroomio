@@ -38,7 +38,7 @@ describe('file upload types', () => {
     expect(isFileTypeAllowed({ name: 'data.json', type: 'application/json' }, [])).toBe(false);
     expect(isFileTypeAllowed({ name: 'payload.csv', type: 'application/x-msdownload' }, [])).toBe(false);
     expect(isFileTypeAllowed({ name: 'payload.exe', type: 'text/csv' }, [])).toBe(false);
-    expect(isFileTypeAllowed({ name: 'workbook.xls', type: 'application/vnd.ms-excel' }, [])).toBe(false);
+    expect(isFileTypeAllowed({ name: 'workbook.xlsb', type: 'application/vnd.ms-excel' }, [])).toBe(false);
   });
 
   it('enforces question-scoped accepted types when provided', () => {
@@ -66,6 +66,22 @@ describe('file upload types', () => {
     expect(isFileTypeAllowed({ name: 'clean.py', type: '' }, [])).toBe(true);
     expect(isFileTypeAllowed({ name: 'clean.py', type: 'application/octet-stream' }, [])).toBe(true);
     expect(isFileTypeAllowed({ name: 'clean.sh', type: 'text/x-python' }, [])).toBe(false);
+  });
+
+  it('accepts legacy Excel workbooks without claiming CSV files reported as vnd.ms-excel', () => {
+    const lessonTypes = LESSON_DOCUMENT_ACCEPTED_TYPES;
+
+    expect(isFileTypeAllowed({ name: 'budget.xls', type: 'application/vnd.ms-excel' }, lessonTypes)).toBe(true);
+    expect(isFileTypeAllowed({ name: 'budget.xls', type: '' }, lessonTypes)).toBe(true);
+    expect(isFileTypeAllowed({ name: 'budget.xls', type: 'text/csv' }, ['application/vnd.ms-excel'])).toBe(false);
+    expect(resolveFileUploadMimeType({ name: 'budget.xls', type: 'application/vnd.ms-excel' }, lessonTypes)).toBe(
+      'application/vnd.ms-excel'
+    );
+    expect(resolveFileUploadTypeKey({ name: 'budget.xls', type: '' }, lessonTypes)).toBe('xls');
+    expect(resolveFileUploadMimeType({ name: 'results.csv', type: 'application/vnd.ms-excel' }, lessonTypes)).toBe(
+      'text/csv'
+    );
+    expect(getFileUploadTypeKeyForMimeType('application/vnd.ms-excel')).toBe('xls');
   });
 
   it('resolves the canonical MIME type and type key for lesson documents', () => {
