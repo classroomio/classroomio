@@ -56,6 +56,10 @@ content it is about, so it gets lost and nobody knows what is still open.
 - As a teammate, I get notified when I am mentioned or someone replies, so I don't miss feedback.
 - As anyone on the course team, I can see every open thread in one place, so I know what is left to do.
 - As anyone on the course team, I can resolve a thread when it is fixed, so the list stays clean.
+- As a tutor, I can assign a thread to a teammate, so it is clear who owns it.
+- As a teammate, I can see which threads are new to me, so I know what I have not read.
+- As anyone on the course team, I can copy a link to a thread and share it.
+- As an admin, I am warned about open comments before I publish a page.
 
 ## Functional Requirements
 
@@ -84,6 +88,13 @@ content it is about, so it gets lost and nobody knows what is still open.
   Resolving clears the assignee. Removing someone from the team clears their assignments.
 - A resolved thread shows who resolved it and when.
 - Replying to a resolved thread reopens it.
+- **Copy link:** every thread has a **Copy link** button. The link opens the course on that thread,
+  scrolled to its highlight, video moment or question. Anyone without access to the course sees no
+  comment, as with every other comment endpoint.
+- **Unread:** each person has their own read state per thread. A thread with replies you have not seen
+  shows a blue dot, a "new" tag and a blue edge. The Comments button and the lesson in the course
+  outline show a dot too. Opening a thread marks it read for you only, and **Mark all read** clears
+  everything. Reading never changes whether a thread is open or resolved.
 
 ### 3a. Thread history
 
@@ -112,7 +123,8 @@ history of the whole course, and the lesson stays visible beside it.
 A side panel on the course, opened from the course header. It is the one place to see every thread in
 the course.
 
-- Filters: **Open** (default), **Resolved**, **Mentions me**, **Created by me**.
+- Filters: **Open** (default), **Resolved**, **Mentions me** (someone tagged you), **Assigned to me**
+  (it is yours to handle) and **Created by me**.
 - Grouped by where the thread lives: General, then each lesson/exercise in course order.
 - Clicking a thread takes you to the exact spot: scrolls to the highlight, seeks the video, or opens
   the question.
@@ -120,6 +132,16 @@ the course.
 - The panel can be **closed** from its header or with Esc, and reopened from the Comments button in
   the course header or an edge tab. Highlights stay visible while it is closed, and clicking one
   reopens the panel on that thread.
+
+### 4a. Publishing with open comments
+
+Comments never block publishing, but the team should not publish by accident with feedback still open.
+
+- When someone presses **Publish** on a lesson or exercise that has open threads, a confirm lists them
+  (who wrote each one and a short preview) with **Review comments**, **Cancel** and **Publish anyway**.
+- **Review comments** opens the panel on the first open thread.
+- With no open threads it is a plain publish confirm.
+- Learners never see the comments, whether the team publishes anyway or not.
 
 ### 5. When the content changes
 
@@ -145,10 +167,12 @@ these events does not exist yet, building it is part of this feature, not a sepa
 | Event                                                                     | Who is notified |
 | ------------------------------------------------------------------------- | --------------- |
 | You are @mentioned                                                        | You             |
+| A thread is assigned to you                                               | You             |
 | Someone replies in a thread you started, replied to, or were mentioned in | You             |
 | A thread you started is resolved                                          | You             |
 
 - You are never notified about your own actions.
+- Replies in a thread also notify its assignee.
 - Every notification links straight to the thread.
 - Email follows the user's notification preferences. Group emails so a busy review does not send
   dozens of emails at once (for example, one digest per thread every few minutes).
@@ -239,6 +263,10 @@ These are guides, not final decisions.
 - [ ] Resolving a thread removes its highlight and badge count; reopening brings them back.
 - [ ] Deleting highlighted text keeps the thread, marked "Original text was removed", with the original quote.
 - [ ] A reply from a teammate appears in an open thread without a refresh, and their coloured cursor with initials shows while they write.
+- [ ] A thread can be assigned when it is started or later. The assignee is notified and sees it under "Assigned to me", and resolving clears the assignee.
+- [ ] A thread with replies a person has not read shows as unread to that person only, and opening it clears it.
+- [ ] "Copy link" on a thread gives a link that opens the course on that thread.
+- [ ] Publishing a page with open threads shows a warning that lists them, with "Review comments" and "Publish anyway".
 - [ ] Cloning a course does not copy its comments.
 - [ ] A learner account cannot see or fetch any comment, through the UI or the API.
 - [ ] After a tutor is removed from a course, their comments and replies are still visible to the team, tagged "Former member", and open threads they started can still be resolved by others.

@@ -44,7 +44,7 @@ The shell (`shell.css`, `app-theme.css`) is copied from [`lesson-reader`](../les
 - **The panel is course-scoped, not lesson-scoped.** The transcript panel uses `scope: 'lesson'`, and the rail closes lesson-scoped panels when you change lesson. The Comments panel lists the whole course, so it must not close on navigation.
 - **The course header has no bell today.** The notification bell lives in the org-level app header (`features/ui/navigation/app-header.svelte`). The prototype puts a bell next to Comments so mentions are visible while working. Whether to reuse the org bell instead is still to decide.
 - **Highlights are drawn over the content.** The prototype finds the quoted text on every render and wraps it in `<mark>`. In the product the editor draws an overlay, and nothing is written into the lesson content (see the PRD's Technical Notes).
-- **Unread is stored per person per thread** (how many comments they have seen). These four additions (unread, copy link, publish warning, assignee) are not in the PRD yet.
+- **Unread is stored per person per thread** (how many comments they have seen). Unread, copy link, the publish warning and assignee are all in the PRD.
 - **Do not reuse `lesson/comments.svelte`.** That is the learner comment section, which uses `lesson_comment`. These comments use separate tables.
 
 ## How it is built
