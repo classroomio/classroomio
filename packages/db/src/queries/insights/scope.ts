@@ -15,6 +15,9 @@ export function uuidList(values: readonly string[]): SQL {
   );
 }
 
+/**
+ * Restricts `scope_course` to the courses a cohort or course scope covers; org scope adds nothing.
+ */
 function scopeTypeCourseFilter(scope: InsightsScopeRef): SQL {
   if (scope.type === 'cohort') {
     return sql`AND co.id IN (
@@ -30,6 +33,7 @@ function scopeTypeCourseFilter(scope: InsightsScopeRef): SQL {
   return sql``;
 }
 
+/** True for profiles with no non-active membership in the org. */
 export function inactiveOrgMemberFilter(profileColumn: SQL, orgId: string): SQL {
   return sql`NOT EXISTS (
     SELECT 1
@@ -40,6 +44,9 @@ export function inactiveOrgMemberFilter(profileColumn: SQL, orgId: string): SQL 
   )`;
 }
 
+/**
+ * Active, non-template courses of the scope's org, narrowed by the scope and any course pushdown.
+ */
 function scopeCourseSql(context: InsightsCompileContext): SQL {
   const { scope, pushdown } = context;
   const pushdownFilter = pushdown.courseIds?.length ? sql`AND co.id IN (${uuidList(pushdown.courseIds)})` : sql``;
@@ -60,6 +67,7 @@ function scopeCourseSql(context: InsightsCompileContext): SQL {
       ${pushdownFilter}`;
 }
 
+/** Students enrolled in the cohort scope, excluding inactive org members. */
 function cohortScopeStudentSql(context: InsightsCompileContext): SQL {
   const { scope, pushdown } = context;
   const studentFilter = pushdown.studentIds?.length
@@ -77,6 +85,7 @@ function cohortScopeStudentSql(context: InsightsCompileContext): SQL {
       ${studentFilter}`;
 }
 
+/** Enrollments of the cohort scope, each paired with its cohort id. */
 function cohortScopeEnrollmentSql(): SQL {
   return sql`
     SELECT
@@ -94,6 +103,9 @@ function cohortScopeEnrollmentSql(): SQL {
     JOIN scope_student sl ON sl.profile_id = gm.profile_id`;
 }
 
+/**
+ * Joins an enrollment to the cohorts containing its course. Empty unless the query groups by cohort.
+ */
 function cohortBridgeJoin(context: InsightsCompileContext): SQL {
   if (!context.byCohort) return sql``;
 
@@ -107,6 +119,9 @@ function cohortBridgeJoin(context: InsightsCompileContext): SQL {
     ) bridge ON true`;
 }
 
+/**
+ * Enrollments for course and org scopes, carrying each learner's cohort when the query groups by one.
+ */
 function wideScopeEnrollmentSql(context: InsightsCompileContext): SQL {
   const { scope, pushdown, byCohort } = context;
   const cohortColumn = byCohort ? sql`bridge.cohort_id` : sql`NULL::uuid`;
@@ -135,6 +150,9 @@ function wideScopeEnrollmentSql(context: InsightsCompileContext): SQL {
       ${cohortFilter}`;
 }
 
+/**
+ * The course outline as a VALUES table. An empty list keeps the columns and returns no rows.
+ */
 function orderedItemsSql(items: readonly InsightsOrderedItem[]): SQL {
   if (items.length === 0) {
     return sql`
@@ -154,8 +172,8 @@ function orderedItemsSql(items: readonly InsightsOrderedItem[]): SQL {
 }
 
 /**
- * The scope CTEs for one query: scope_course, scope_student, scope_enrollment, scope_member and course_item.
- * Every row any source reads is reachable only through these, so the org id can never be widened by a spec.
+ * The CTEs that scope courses, students and enrollments to the input scope and outline. Spec filters only narrow
+ * them, and they must precede `insightsMetricCtes` in the same WITH clause.
  */
 export function scopeCtes(context: InsightsCompileContext): SQL {
   const courseItem = orderedItemsSql(context.orderedItems);

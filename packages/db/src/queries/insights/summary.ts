@@ -14,6 +14,7 @@ function scopeNameSql(scope: InsightsScopeRef): SQL {
   return sql`(SELECT name FROM organization WHERE id = ${scope.orgId})`;
 }
 
+/** Invited students who have not accepted yet; zero outside cohort scope. */
 function pendingCountSql(scope: InsightsScopeRef): SQL {
   if (scope.type !== 'cohort') return sql`0`;
 
@@ -23,12 +24,16 @@ function pendingCountSql(scope: InsightsScopeRef): SQL {
   )`;
 }
 
+/** The cohort description with blanks as null; null outside cohort scope. */
 function scopeDescriptionSql(scope: InsightsScopeRef): SQL {
   if (scope.type === 'cohort') return sql`(SELECT NULLIF(description, '') FROM cohort WHERE id = ${scope.id})`;
 
   return sql`NULL::text`;
 }
 
+/**
+ * Non-archived cohorts holding the course, or every non-archived org cohort; zero for a cohort scope.
+ */
 function cohortCountSql(scope: InsightsScopeRef): SQL {
   if (scope.type === 'course') {
     return sql`(
@@ -45,12 +50,14 @@ function cohortCountSql(scope: InsightsScopeRef): SQL {
   return sql`0`;
 }
 
+/** Active cohorts of the org; zero outside org scope. */
 function activeCohortCountSql(scope: InsightsScopeRef): SQL {
   if (scope.type !== 'org') return sql`0`;
 
   return sql`(SELECT COUNT(*) FROM cohort WHERE organization_id = ${scope.orgId} AND status = 'ACTIVE')`;
 }
 
+/** The org's stored student target; null outside org scope. */
 function studentTargetSql(scope: InsightsScopeRef): SQL {
   if (scope.type !== 'org') return sql`NULL::int`;
 
@@ -58,7 +65,8 @@ function studentTargetSql(scope: InsightsScopeRef): SQL {
 }
 
 /**
- * Name, student counts and in-scope courses for a dashboard header. The caller must authorize the scope first.
+ * Name, description, counts, student target and in-scope courses for a dashboard header. The caller must authorize
+ * the scope first.
  */
 export async function getInsightsScopeSummary(
   scope: InsightsScopeRef,

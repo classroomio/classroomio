@@ -13,6 +13,7 @@ import {
   valueMetric
 } from './helpers';
 
+/** One row per cohort, with member counts, averages and pass rates. */
 export const cohortSummarySource: InsightsSourceDefinition = {
   id: 'cohort_summary',
   scopeTypes: ['course', 'org'],

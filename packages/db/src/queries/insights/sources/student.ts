@@ -18,6 +18,10 @@ import {
   valueMetric
 } from './helpers';
 
+/**
+ * One row per learner, or per learner and cohort when grouped by cohort, with progress, scores, activity and
+ * status.
+ */
 export const studentSource: InsightsSourceDefinition = {
   id: 'student',
   scopeTypes: ['cohort', 'course', 'org'],

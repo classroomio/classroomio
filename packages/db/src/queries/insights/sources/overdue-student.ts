@@ -13,6 +13,7 @@ import {
   valueMetric
 } from './helpers';
 
+/** One row per learner with overdue items, with course titles and progress. */
 export const overdueStudentSource: InsightsSourceDefinition = {
   id: 'overdue_student',
   scopeTypes: ['cohort', 'course'],

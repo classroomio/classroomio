@@ -49,6 +49,9 @@ export function valueMetric(valueType: InsightsValueType, column: string): Insig
   return { valueType, value: baseColumn(column), aggs: ['value'] };
 }
 
+/**
+ * A ratio aggregated as one pooled percentage, not an average of per-row percentages.
+ */
 export function pooledMetric(numerator: SQL, denominator: SQL): InsightsMetricDefinition {
   return { valueType: 'percent', value: numerator, denominator, aggs: ['pooled'] };
 }
@@ -62,6 +65,7 @@ export function idDimension(keyColumn: string, labelColumn?: string, rankColumn?
   };
 }
 
+/** A progress dimension bucketed into 0 to 4, with 100% in the top bucket; null stays null. */
 export function progressBucketDimension(column: string): InsightsDimensionDefinition {
   const value = baseColumn(column);
 
@@ -71,6 +75,7 @@ export function progressBucketDimension(column: string): InsightsDimensionDefini
   };
 }
 
+/** A score dimension bucketed into tens, clamped to 4 through 9; null scores stay null. */
 export function scoreBucketDimension(column: string): InsightsDimensionDefinition {
   const value = baseColumn(column);
 
