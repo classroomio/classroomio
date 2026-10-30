@@ -94,6 +94,26 @@
   function formatTick(rank: number): string {
     return truncateTickLabel(labelByRank.get(rank) ?? '', containerWidth, ticks.length);
   }
+
+  function formatTooltipValue(
+    value: number,
+    context?: { item?: { key?: string }; data?: Record<string, unknown> }
+  ): string {
+    if (context?.item?.key === 'band' && context.data) {
+      const low = keys.low ? context.data[keys.low] : null;
+      const high = keys.high ? context.data[keys.high] : null;
+
+      if (typeof low === 'number' && typeof high === 'number') {
+        const roundedLow = Math.round(low);
+        const roundedHigh = Math.round(high);
+        return roundedLow === roundedHigh ? `${roundedLow}%` : `${roundedLow}% – ${roundedHigh}%`;
+      }
+
+      return '–';
+    }
+
+    return typeof value === 'number' ? `${Math.round(value)}%` : '–';
+  }
 </script>
 
 {#snippet tickLabel({ props: tickProps, index }: { props: ChartAxisTickProps; index: number })}
@@ -127,7 +147,10 @@
           props={{ xAxis: { ticks, format: formatTick, tickLabel } }}
         >
           {#snippet tooltip()}
-            <Chart.Tooltip labelFormatter={(rank: number) => labelByRank.get(rank) ?? ''} />
+            <Chart.Tooltip
+              labelFormatter={(rank: number) => labelByRank.get(rank) ?? ''}
+              valueFormatter={formatTooltipValue}
+            />
           {/snippet}
         </Chart.AreaChart>
       </Chart.ChartContainer>
