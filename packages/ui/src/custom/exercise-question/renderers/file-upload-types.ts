@@ -50,7 +50,7 @@ export function fileTypeLabel(mimeType: string | undefined, fileName?: string): 
   const mime = mimeType ?? '';
   if (mime.includes('pdf')) return 'PDF';
   if (mime.includes('spreadsheetml') || mime.includes('xlsx')) return 'XLSX';
-  if (mime.includes('ms-excel')) return 'XLS';
+  if (mime.includes('ms-excel')) return fileExtensionLabel(fileName) === 'CSV' ? 'CSV' : 'XLS';
   if (mime.includes('wordprocessingml') || mime.includes('docx')) return 'DOCX';
   if (mime.includes('msword') || mime.includes('doc')) return 'DOC';
   if (mime.includes('image')) return 'IMAGE';
