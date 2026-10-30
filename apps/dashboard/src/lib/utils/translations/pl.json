@@ -4960,7 +4960,7 @@
     "mcp": {
       "setup": {
         "title": "Konfiguracja klienta",
-        "description": "Użyj jednego klucza o zasięgu organizacji na integrację. Jeśli klucz zostanie obrócony lub unieważniony, klient przestaje działać do czasu skonfigurowania nowego klucza tajnego.",
+        "description": "Dodaj powyższy adres URL do swojego klienta i zaloguj się, gdy pojawi się prośba. Klucz nie jest potrzebny.",
         "claude_code_description": "Rejestruje `@classroomio/mcp` w Claude Code przy użyciu wygenerowanego klucza o zasięgu organizacji.",
         "codex_description": "Dodaje serwer ClassroomIO MCP do Codexu z tym samym kluczem o zasięgu organizacji.",
         "cursor_description": "Wklej to do `~/.cursor/mcp.json` lub konfiguracji MCP w obszarze roboczym.",
@@ -4968,16 +4968,7 @@
       },
       "keys": {
         "title": "Klucze MCP",
-        "description": "Te klucze uwierzytelniają bieżącą organizację, gdy klient MCP wywołuje ClassroomIO poprzez `@classroomio/mcp`.",
-        "generate": "Wygeneruj klucz MCP",
-        "modal": {
-          "title": "Utwórz klucz MCP",
-          "description": "Wybierz nazwę tego klucza MCP przed jego wygenerowaniem.",
-          "name_label": "Nazwa klucza",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Anuluj",
-          "save": "Utwórz klucz"
-        },
+        "description": "Te starsze klucze nadal działają, ale nie można już tworzyć nowych kluczy MCP. Zmień je lub unieważnij tutaj, a nowych klientów łącz przez logowanie.",
         "reveal_title": "Twój nowy klucz MCP"
       },
       "usage": {
@@ -4989,7 +4980,7 @@
         "rate_limits_description": "Żądania odczytu/zapisu/publikowania dozwolone na minutę.",
         "used_label": "Używane:"
       },
-      "page_subtitle": "Połącz narzędzia AI z ClassroomIO za pomocą kluczy o zasięgu organizacji, które możesz w dowolnym momencie obrócić."
+      "page_subtitle": "Połącz narzędzia AI z ClassroomIO, logując się. Usuń aplikację w dowolnym momencie, aby odciąć jej dostęp."
     },
     "api": {
       "subtitle": "Zarządzaj kluczami API, aby integrować się z publicznym API ClassroomIO.",
@@ -5019,8 +5010,6 @@
       "revoked": "Unieważnione",
       "rotate": "Obróć",
       "revoke": "Odwołaj",
-      "empty_title": "Nie ma jeszcze kluczy MCP",
-      "empty_description": "Utwórz pierwszy klucz MCP o zasięgu organizacji, aby połączyć Claude Code, Codex, Cursor lub OpenCode.",
       "created_at_label": "Utworzono:",
       "last_used_label": "Ostatnio używane:",
       "never_used": "Nigdy",

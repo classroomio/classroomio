@@ -5,10 +5,9 @@ description: Connect an MCP client to ClassroomIO to work with courses, learners
 
 ClassroomIO's hosted MCP server lets an MCP client use ClassroomIO tools. Clients connect at `https://mcp.classroomio.com` and you sign in with your ClassroomIO account. The API checks the permissions you approved and your role in the workspace on every request.
 
-:::warning[The npm package is deprecated]
-The local `@classroomio/mcp` package that runs through `npx` and needs a key is deprecated. It keeps working for now. See [Connect an MCP client](/developers/mcp/setup) to move to the hosted server.
+:::note[MCP keys]
+New MCP keys can no longer be created. Keys you already have keep working until you revoke them, and you can rotate or revoke them in **Automation → MCP**. To connect a client, sign in using the steps on this page.
 :::
-
 ## Get started
 
 1. [Connect your client](/developers/mcp/setup) to `https://mcp.classroomio.com`. For Claude or ChatGPT, see [Connect from Claude or ChatGPT](/developers/mcp/remote).
@@ -33,4 +32,4 @@ Tell your connected client what you want to create or change. For a new course o
 
 A connected app can use the MCP actions only. It does not get unrestricted access to the public API. Each request must pass both the permissions you approved and your role in the workspace. See [access and limits](/developers/mcp/access-and-limits) and [API authentication](/api/authentication).
 
-Deprecated MCP keys (`cio_mcp_...`) follow the same rules: they work only with supported MCP actions and never grant `public_api:*` access.
+Existing MCP keys (`cio_mcp_...`) follow the same rules: they work only with supported MCP actions and never grant `public_api:*` access.

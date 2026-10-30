@@ -960,7 +960,7 @@ export default defineConfig({
                 root: '/integrations-and-automation/understand-classroomio-mcp'
               },
               {
-                label: 'Create, rotate, and revoke MCP keys',
+                label: 'Rotate and revoke MCP keys',
                 root: '/integrations-and-automation/create-rotate-and-revoke-mcp-keys'
               },
               {

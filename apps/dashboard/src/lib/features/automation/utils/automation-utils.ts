@@ -8,10 +8,6 @@ export const PUBLIC_API_DOCS_URL = 'https://classroomio.com/docs/api';
 export const WEBHOOKS_DOCS_URL = 'https://classroomio.com/docs/developers/webhooks';
 export const WEBHOOKS_VERIFY_SIGNATURE_DOCS_URL = `${WEBHOOKS_DOCS_URL}#verify-the-signature`;
 
-function getServerPath() {
-  return 'npx -y @classroomio/mcp';
-}
-
 export function getPublicApiSetupSecret(secret: string | null) {
   return secret ?? PUBLIC_API_SETUP_SECRET_PLACEHOLDER;
 }
@@ -97,64 +93,32 @@ func main() {
 }`;
 }
 
-export function getAutomationSetupSecret(secret: string | null) {
-  return secret ?? '<paste-your-mcp-key>';
+export function getClaudeCodeSnippet(mcpUrl: string) {
+  return `claude mcp add --transport http classroomio ${mcpUrl}`;
 }
 
-export function getClaudeCodeSnippet(secret: string | null) {
-  const apiKey = getAutomationSetupSecret(secret);
-
-  return `claude mcp add-json classroomio '{
-  "command": "npx",
-  "args": ["-y", "@classroomio/mcp"],
-  "env": {
-    "CLASSROOMIO_API_URL": "https://api.classroomio.com",
-    "CLASSROOMIO_API_KEY": "${apiKey}"
-  }
-}'`;
+export function getCodexSnippet(mcpUrl: string) {
+  return `codex mcp add classroomio --url ${mcpUrl}
+codex mcp login classroomio`;
 }
 
-export function getCodexSnippet(secret: string | null) {
-  const apiKey = getAutomationSetupSecret(secret);
-
-  return `codex mcp add classroomio \\
-  --env CLASSROOMIO_API_URL=https://api.classroomio.com \\
-  --env CLASSROOMIO_API_KEY=${apiKey} \\
-  -- npx -y @classroomio/mcp`;
-}
-
-export function getOpenCodeSnippet(secret: string | null) {
-  const apiKey = getAutomationSetupSecret(secret);
-
+export function getOpenCodeSnippet(mcpUrl: string) {
   return `{
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "servers": {
-      "classroomio": {
-        "type": "local",
-        "command": ["npx", "-y", "@classroomio/mcp"],
-        "environment": {
-          "CLASSROOMIO_API_URL": "https://api.classroomio.com",
-          "CLASSROOMIO_API_KEY": "${apiKey}"
-        }
-      }
+    "classroomio": {
+      "type": "remote",
+      "url": "${mcpUrl}"
     }
   }
 }`;
 }
 
-export function getCursorSnippet(secret: string | null) {
-  const apiKey = getAutomationSetupSecret(secret);
-
+export function getCursorSnippet(mcpUrl: string) {
   return `{
   "mcpServers": {
     "classroomio": {
-      "command": "npx",
-      "args": ["-y", "@classroomio/mcp"],
-      "env": {
-        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
-        "CLASSROOMIO_API_KEY": "${apiKey}"
-      }
+      "url": "${mcpUrl}"
     }
   }
 }`;
@@ -184,8 +148,4 @@ export function getAutomationKeyTypeLabel(type: AutomationKeyType) {
 
 export function getMaskedAutomationSecret(prefix: string) {
   return `${prefix}...`;
-}
-
-export function getCopyableServerCommand() {
-  return getServerPath();
 }

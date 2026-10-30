@@ -4898,8 +4898,6 @@
       "revoked": "Revoked",
       "rotate": "Rotate",
       "revoke": "Revoke",
-      "empty_title": "Hayır MCP anahtarları henüz",
-      "empty_description": "Claude Code, Codex, Cursor veya OpenCode'a bağlanmak için ilk kuruluş kapsamlı MCP anahtarını oluşturun.",
       "created_at_label": "Oluşturuldu:",
       "last_used_label": "LSon kullanım:",
       "never_used": "Never",
@@ -4919,7 +4917,7 @@
       }
     },
     "mcp": {
-      "page_subtitle": "Döndürebileceğiniz kuruluş kapsamlı anahtarlarla AI araçlarını ClassroomIO'ya bağlayın istediğiniz zaman.",
+      "page_subtitle": "Giriş yaparak yapay zeka araçlarını ClassroomIO'ya bağlayın. Erişimini kesmek için bir uygulamayı istediğiniz zaman kaldırın.",
       "usage": {
         "title": "Kullanım ve sınırlar",
         "description": "MCP her planda mevcuttur. Kullanım, anahtar limitleri ve hız limitleri tarafından kontrol edilir.",
@@ -4931,21 +4929,12 @@
       },
       "keys": {
         "title": "MCP anahtarları",
-        "description": "Bu anahtarlar, bir MCP istemcisi `@classroomio/mcp` aracılığıyla ClassroomIO'yu aradığında mevcut organizasyonun kimliğini doğrular.",
-        "generate": "MCP anahtarını oluştur",
-        "modal": {
-          "title": "MCP anahtarı oluştur",
-          "description": "Oluşturulmadan önce bu MCP anahtarı için bir ad seçin.",
-          "name_label": "Anahtar adı",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "İptal",
-          "save": "Anahtar oluştur"
-        },
+        "description": "Bu eski anahtarlar çalışmaya devam eder, ancak artık yeni MCP anahtarları oluşturulamaz. Bunları buradan yenileyin veya iptal edin, yeni istemcileri giriş yaparak bağlayın.",
         "reveal_title": "Yeni MCP anahtarınız"
       },
       "setup": {
         "title": "İstemci kurulumu",
-        "description": "Entegrasyon başına bir kuruluş kapsamlı anahtar kullanın. Bir anahtar döndürülür veya iptal edilirse, istemci yeni gizli dizi yapılandırılana kadar çalışmayı durdurur.",
+        "description": "Yukarıdaki URL'yi istemcinize ekleyin ve istendiğinde giriş yapın. Anahtara gerek yoktur.",
         "claude_code_description": "Oluşturulan kuruluş kapsamlı anahtarı kullanarak `@classroomio/mcp'yi Claude Koduyla kaydeder.",
         "codex_description": "ClassroomIO MCP sunucusunu aynı kuruluş kapsamlı anahtarla Codex'e ekler.",
         "cursor_description": "Bunu şuraya yapıştırın: `~/.cursor/mcp.json` veya çalışma alanınız MCP config.",

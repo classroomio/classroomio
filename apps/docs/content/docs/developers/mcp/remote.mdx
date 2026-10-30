@@ -22,7 +22,7 @@ For ClassroomIO cloud the URL is `https://mcp.classroomio.com`. For a self-hoste
 
 ## What the app can do
 
-The app can use the same tools as a local MCP client, except `upload_video`, which needs a file on your own computer. Every action passes the same checks as the API: the permissions you approved, your role in the workspace, and your plan's limits.
+The app can use every ClassroomIO MCP tool except `upload_video`, which needs a file on your own computer. Every action passes the same checks as the API: the permissions you approved, your role in the workspace, and your plan's limits.
 
 Approval is tied to one workspace. To use another workspace, connect again and choose it.
 
@@ -30,8 +30,6 @@ Approval is tied to one workspace. To use another workspace, connect again and c
 
 Open **Automation → MCP → Connected apps** and remove the app. It stops working immediately. Access also ends if you stop being an admin of the workspace.
 
-## If you cannot sign in
-
-Clients that cannot show a sign-in page can send an MCP key as `Authorization: Bearer cio_mcp_...` to the same URL. The local `npx` package is deprecated; see [Connect an MCP client](/developers/mcp/setup).
+## Other clients
 
 For Claude Code, Codex, Cursor, and OpenCode, see [Connect an MCP client](/developers/mcp/setup). To build your own integration with this sign-in flow, see [OAuth for integrations](/developers/oauth).

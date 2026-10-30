@@ -5038,8 +5038,6 @@
       "revoked": "Revoked",
       "rotate": "Rotate",
       "revoke": "Revoke",
-      "empty_title": "No MCP keys yet",
-      "empty_description": "Create the first org-scoped MCP key to connect Claude Code, Codex, Cursor, or OpenCode.",
       "created_at_label": "Created:",
       "last_used_label": "Last used:",
       "never_used": "Never",
@@ -5059,7 +5057,7 @@
       }
     },
     "mcp": {
-      "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
+      "page_subtitle": "Connect AI tools to ClassroomIO by signing in. Remove an app anytime to cut off its access.",
       "usage": {
         "title": "Usage and limits",
         "description": "MCP is available on every plan. Usage is controlled by key limits and rate limits.",
@@ -5071,21 +5069,12 @@
       },
       "keys": {
         "title": "MCP keys",
-        "description": "These keys authenticate the current organization when an MCP client calls ClassroomIO through `@classroomio/mcp`.",
-        "generate": "Generate MCP key",
-        "reveal_title": "Your new MCP key",
-        "modal": {
-          "title": "Create MCP key",
-          "description": "Choose a name for this MCP key before it is generated.",
-          "name_label": "Key name",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Cancel",
-          "save": "Create key"
-        }
+        "description": "These older keys keep working, but new MCP keys can no longer be created. Rotate or revoke them here, and connect new clients by signing in.",
+        "reveal_title": "Your new MCP key"
       },
       "setup": {
         "title": "Client setup",
-        "description": "Use one org-scoped key per integration. If a key is rotated or revoked, the client stops working until the new secret is configured.",
+        "description": "Add the URL above to your client and sign in when prompted. You don't need a key.",
         "claude_code_description": "Registers `@classroomio/mcp` with Claude Code using the generated org-scoped key.",
         "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
         "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",

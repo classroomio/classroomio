@@ -4888,8 +4888,6 @@
       "revoked": "Revocato",
       "rotate": "Ruotare",
       "revoke": "Revocare",
-      "empty_title": "Nessuna chiave MCP ancora",
-      "empty_description": "Crea la prima chiave MCP con ambito organizzazione per connettere Claude Code, Codex, Cursor o OpenCode.",
       "created_at_label": "Creato:",
       "last_used_label": "Ultimo utilizzo:",
       "never_used": "Mai",
@@ -4909,7 +4907,7 @@
       }
     },
     "mcp": {
-      "page_subtitle": "Collega gli strumenti AI a ClassroomIO con chiavi con ambito organizzazione che puoi ruotare in qualsiasi momento.",
+      "page_subtitle": "Collega gli strumenti di IA a ClassroomIO accedendo. Rimuovi un'app in qualsiasi momento per interromperne l'accesso.",
       "usage": {
         "title": "Utilizzo e limiti",
         "description": "MCP è disponibile su ogni piano. L'utilizzo è controllato da limiti chiave e limiti di velocità.",
@@ -4921,21 +4919,12 @@
       },
       "keys": {
         "title": "Chiavi MCP",
-        "description": "Queste chiavi autenticano l'organizzazione corrente quando un client MCP chiama ClassroomIO tramite `@classroomio/mcp`.",
-        "generate": "Genera la chiave MCP",
-        "modal": {
-          "title": "Crea chiave MCP",
-          "description": "Scegli un nome per questa chiave MCP prima che venga generata.",
-          "name_label": "Nome chiave",
-          "name_placeholder": "ClassroomIOOpenCode",
-          "cancel": "Annulla",
-          "save": "Crea chiave"
-        },
+        "description": "Queste chiavi meno recenti continuano a funzionare, ma non è più possibile creare nuove chiavi MCP. Ruotale o revocale qui e collega i nuovi client accedendo.",
         "reveal_title": "La tua nuova chiave MCP"
       },
       "setup": {
         "title": "Configurazione del cliente",
-        "description": "Utilizza una chiave con ambito organizzazione per integrazione. Se una chiave viene ruotata o revocata, il client smette di funzionare finché non viene configurato il nuovo segreto.",
+        "description": "Aggiungi l'URL qui sopra al tuo client e accedi quando richiesto. Non serve nessuna chiave.",
         "claude_code_description": "Registra `@classroomio/mcp` con Claude Code utilizzando la chiave con ambito org generata.",
         "codex_description": "Aggiunge il server MCP ClassroomIO al Codex con la stessa chiave con ambito organizzazione.",
         "cursor_description": "Incollalo in \"~/.cursor/mcp.json\" o nella configurazione MCP dello spazio di lavoro.",

@@ -4960,7 +4960,7 @@
     "mcp": {
       "setup": {
         "title": "Thiết lập máy khách",
-        "description": "Sử dụng một khóa trong phạm vi tổ chức cho mỗi lần tích hợp. Nếu một khóa bị xoay hoặc bị thu hồi, máy khách sẽ ngừng hoạt động cho đến khi bí mật mới được định cấu hình.",
+        "description": "Thêm URL ở trên vào ứng dụng khách của bạn và đăng nhập khi được yêu cầu. Bạn không cần khóa.",
         "claude_code_description": "Đăng ký `@classroomio/mcp` với Mã Claude bằng cách sử dụng khóa trong phạm vi tổ chức được tạo.",
         "codex_description": "Thêm máy chủ ClassroomIO MCP vào Codex bằng cùng một khóa trong phạm vi tổ chức.",
         "cursor_description": "Dán cái này vào `~/.cursor/mcp.json` hoặc cấu hình MCP không gian làm việc của bạn.",
@@ -4968,16 +4968,7 @@
       },
       "keys": {
         "title": "Khóa MCP",
-        "description": "Các khóa này xác thực tổ chức hiện tại khi máy khách MCP gọi ClassroomIO thông qua `@classroomio/mcp`.",
-        "generate": "Tạo khóa MCP",
-        "modal": {
-          "title": "Tạo khóa MCP",
-          "description": "Chọn tên cho khóa MCP này trước khi tạo.",
-          "name_label": "Tên khóa",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Hủy",
-          "save": "Tạo khóa"
-        },
+        "description": "Các khóa cũ này vẫn hoạt động, nhưng không thể tạo khóa MCP mới nữa. Hãy xoay hoặc thu hồi chúng tại đây, và kết nối ứng dụng khách mới bằng cách đăng nhập.",
         "reveal_title": "Khóa MCP mới của bạn"
       },
       "usage": {
@@ -4989,7 +4980,7 @@
         "rate_limits_description": "Yêu cầu đọc/ghi/xuất bản được phép mỗi phút.",
         "used_label": "Đã sử dụng:"
       },
-      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng khóa trong phạm vi tổ chức mà bạn có thể xoay bất cứ lúc nào."
+      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng cách đăng nhập. Gỡ một ứng dụng bất cứ lúc nào để cắt quyền truy cập của nó."
     },
     "api": {
       "subtitle": "Quản lý khóa API để tích hợp với API công khai ClassroomIO.",
@@ -5019,8 +5010,6 @@
       "revoked": "Đã thu hồi",
       "rotate": "Xoay",
       "revoke": "Thu hồi",
-      "empty_title": "Chưa có khóa MCP",
-      "empty_description": "Tạo khóa MCP trong phạm vi tổ chức đầu tiên để kết nối Mã Claude, Codex, Con trỏ hoặc OpenCode.",
       "created_at_label": "Đã tạo:",
       "last_used_label": "Sử dụng lần cuối:",
       "never_used": "không bao giờ",
