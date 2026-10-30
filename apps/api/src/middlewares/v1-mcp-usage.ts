@@ -24,6 +24,7 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   '/public-api/v1/organization': { GET: 'get_organization', PATCH: 'update_organization' },
   '/public-api/v1/organization/landing-page/featured-courses': { PUT: 'set_featured_courses' },
   '/public-api/v1/courses/:courseId/clone': { POST: 'clone_course' },
+  '/public-api/v1/courses/:courseId/related': { GET: 'list_related_courses' },
   '/public-api/v1/organization/email-templates': { GET: 'list_email_templates' },
   '/public-api/v1/organization/email-templates/:emailId/:locale': {
     GET: 'get_email_template',

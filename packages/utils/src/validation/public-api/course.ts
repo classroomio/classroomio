@@ -47,3 +47,10 @@ export const ZPublicApiCloneCourse = z.object({
     .describe('URL slug of the copy; must be unused. Defaults to one generated from the title')
 });
 export type TPublicApiCloneCourse = z.infer<typeof ZPublicApiCloneCourse>;
+
+export const ZPublicApiRelatedCoursesQuery = z.object({
+  profileId: z.uuid().optional().describe('Leave out courses this person is already a member of'),
+  pricing: z.enum(['free', 'paid']).optional().describe('free: cost is 0; paid: cost above 0. Default: both'),
+  limit: z.coerce.number().int().min(1).max(20).default(4)
+});
+export type TPublicApiRelatedCoursesQuery = z.infer<typeof ZPublicApiRelatedCoursesQuery>;

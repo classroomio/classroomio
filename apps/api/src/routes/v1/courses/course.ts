@@ -11,6 +11,8 @@ import {
   ZPublicApiCreateCourse,
   ZPublicApiCreateCourseResponse,
   ZPublicApiPaginationQuery,
+  ZPublicApiRelatedCourseResponse,
+  ZPublicApiRelatedCoursesQuery,
   ZPublicApiUpdateCourse,
   ZPublicApiUpdateCourseEnvelope,
   ZPublicApiUpdateCourseStructure,
@@ -24,6 +26,7 @@ import {
   getCourseService,
   listCoursesService,
   listCourseStudentsService,
+  listRelatedCoursesService,
   updatePublicApiCourseService,
   updatePublicApiCourseStructureService
 } from '@api/services/v1/courses/course';
@@ -145,6 +148,44 @@ export const v1CourseRouter = new Hono()
         );
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to clone course');
+      }
+    }
+  )
+  .get(
+    '/:courseId/related',
+    describeRoute({
+      description:
+        'List published courses that share tags with a course, most shared tags first, then newest; any key with the public_api:* or course:read scope may call it.',
+      tags: ['Courses'],
+      responses: {
+        200: jsonResponse(
+          'Related courses returned successfully; empty when the course has no tags',
+          itemResponse(z.array(ZPublicApiRelatedCourseResponse))
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: { description: 'The key has neither the public_api:* nor the course:read scope' },
+        404: { description: 'Course not found, or the profileId is not in your organization' }
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    validator('query', ZPublicApiRelatedCoursesQuery),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const params = c.req.valid('param');
+        const query = c.req.valid('query');
+        const courses = await listRelatedCoursesService(orgId, params, query);
+
+        return c.json(
+          {
+            success: true,
+            data: courses
+          },
+          200
+        );
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to list related courses');
       }
     }
   )

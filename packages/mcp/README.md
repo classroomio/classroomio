@@ -51,6 +51,7 @@ Current tools:
 - `tag_course_draft`
 - `tag_courses`
 - `clone_course`
+- `list_related_courses`
 - `set_featured_courses`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
@@ -165,9 +166,10 @@ They call `/public-api/v1/courses/:id/{sections,lessons,content}` with the key's
 - Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
 - Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`. Restoring a lesson version is not covered.
 
-Course copy and landing page tools:
+Course copy, related courses and landing page tools:
 
 - `clone_course` calls `POST /public-api/v1/courses/:id/clone` with the `course:write` scope. The key creator must be an org admin or tutor and becomes the copy's tutor. The copy keeps the source's published state, and its exercise due dates are set to the time of copying. Templates are refused.
+- `list_related_courses` calls `GET /public-api/v1/courses/:id/related` with the `course:read` scope. It returns published courses that share at least one tag with the course, most shared tags first, then newest, with the tags they share. Pass `profileId` to leave out courses that person is already in, `pricing` (`free` or `paid`) to filter by price, and `limit` (1–20, default 4). A course with no tags returns an empty list.
 - `set_featured_courses` calls `PUT /public-api/v1/organization/landing-page/featured-courses` with the `organization:write` scope. The key creator must be an org admin. It sets the published courses (at most 4) shown first, in the order given, on the landing page and public course list. Other published courses still show after them, newest first. It replaces the current list; an empty list clears it.
 
 MCP keys have both scopes by default.

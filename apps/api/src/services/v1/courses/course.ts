@@ -4,13 +4,20 @@ import type {
   TPublicApiCoursesQuery,
   TPublicApiCreateCourse,
   TPublicApiPaginationQuery,
+  TPublicApiRelatedCoursesQuery,
   TPublicApiUpdateCourse,
   TPublicApiUpdateCourseStructure
 } from '@cio/utils/validation/public-api';
+import type { TTag } from '@cio/db/types';
 
 import { ROLE } from '@cio/utils/constants';
 import { generateSlug } from '@cio/utils/functions';
 import { getCourseById, isCourseSlugTaken } from '@cio/db/queries/course';
+import {
+  getCourseTagsByCourseIdsForOrganization,
+  getCourseTagsForOrganization,
+  getRelatedCourses
+} from '@cio/db/queries/tag';
 import {
   createCourse as createCourseService,
   deleteCourse as deleteCourseService,
@@ -29,20 +36,67 @@ import { getOrganizationCourses } from '@api/services/organization';
 import { cloneCourse } from '@api/services/course/clone';
 import { listPaginatedCourseMembers } from '@api/services/course/people';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { assertAutomationActor, assertCourseBelongsToOrganization, assertOrgTeamMember } from '@api/services/v1/shared';
+import {
+  assertAutomationActor,
+  assertCourseBelongsToOrganization,
+  assertOrgTeamMember,
+  assertProfileBelongsToOrganization
+} from '@api/services/v1/shared';
 import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
 
 export async function listCoursesService(orgId: string, query: TPublicApiCoursesQuery) {
   return getOrganizationCourses(orgId, '', ROLE.ADMIN, query);
 }
 
+const toTagPreview = ({ id, name, slug, color }: TTag) => ({ id, name, slug, color });
+
 export async function getCourseService(orgId: string, params: TPublicApiCourseParam) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
 
-  const course = await getCourse(params.courseId);
+  const [course, tags] = await Promise.all([
+    getCourse(params.courseId),
+    getCourseTagsForOrganization(orgId, params.courseId)
+  ]);
   const outline = buildCourseOutline(course.content);
 
-  return { ...course, content: { ...course.content, outline } };
+  return { ...course, tags: tags.map(toTagPreview), content: { ...course.content, outline } };
+}
+
+export async function listRelatedCoursesService(
+  orgId: string,
+  params: TPublicApiCourseParam,
+  query: TPublicApiRelatedCoursesQuery
+) {
+  await assertCourseBelongsToOrganization(orgId, params.courseId);
+  if (query.profileId) {
+    await assertProfileBelongsToOrganization(orgId, query.profileId);
+  }
+
+  const sourceTags = await getCourseTagsForOrganization(orgId, params.courseId);
+  if (sourceTags.length === 0) {
+    return [];
+  }
+
+  const sourceTagIds = new Set(sourceTags.map((tag) => tag.id));
+  const courses = await getRelatedCourses(orgId, params.courseId, [...sourceTagIds], {
+    excludeProfileId: query.profileId,
+    pricing: query.pricing,
+    limit: query.limit
+  });
+  if (courses.length === 0) {
+    return [];
+  }
+
+  const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
+    orgId,
+    courses.map((course) => course.id)
+  );
+
+  return courses.map((course) => {
+    const tags = tagsByCourseId[course.id] ?? [];
+    const sharedTags = tags.filter((tag) => sourceTagIds.has(tag.id));
+    return { ...course, tags, sharedTags };
+  });
 }
 
 export async function listCourseStudentsService(

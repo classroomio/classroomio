@@ -10,6 +10,7 @@ const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|i
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
 const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content)(?:\/|$)/;
 const COURSE_CLONE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/clone\/?$/;
+const COURSE_RELATED_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/related\/?$/;
 const COURSE_EXERCISE_PATH = /^(?:\/public-api\/v1)?\/(?:courses\/[^/]+\/exercises|exercise-templates)(?:\/|$)/;
 const COURSE_SUBMISSION_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:submissions|marks)(?:\/|$)/;
 const COURSE_TEMPLATE_PATH = /^(?:\/public-api\/v1)?(?:\/course-templates|\/courses\/[^/]+\/template)(?:\/|$)/;
@@ -60,6 +61,10 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (COURSE_CLONE_PATH.test(path)) {
     return isRead ? null : 'course:write';
+  }
+
+  if (COURSE_RELATED_PATH.test(path)) {
+    return isRead ? 'course:read' : null;
   }
 
   // Only writes are mapped: there is no read route on this family yet, so a GET

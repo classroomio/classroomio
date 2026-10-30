@@ -1,5 +1,20 @@
 import type { TNewTag, TNewTagGroup, TTag, TTagAssignment, TTagGroup } from '@db/types';
-import { and, asc, count, eq, ilike, inArray, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  countDistinct,
+  desc,
+  eq,
+  gt,
+  ilike,
+  inArray,
+  isNull,
+  ne,
+  notExists,
+  or,
+  sql
+} from 'drizzle-orm';
 
 import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -371,6 +386,92 @@ export async function getCourseIdsByTagSlugs(orgId: string, tagSlugs: string[]):
   } catch (error) {
     console.error('getCourseIdsByTagSlugs error:', error);
     throw new Error('Failed to get course ids by tag slugs');
+  }
+}
+
+export type TRelatedCoursesOptions = { excludeProfileId?: string; pricing?: 'free' | 'paid'; limit: number };
+
+/**
+ * Published courses in the org that share at least one of `tagIds`, most shared tags first, then newest.
+ */
+export async function getRelatedCourses(
+  orgId: string,
+  courseId: string,
+  tagIds: string[],
+  options: TRelatedCoursesOptions
+) {
+  try {
+    if (tagIds.length === 0) {
+      return [];
+    }
+
+    const sharedTagCount = countDistinct(schema.tagAssignment.tagId);
+    const conditions = [
+      eq(schema.group.organizationId, orgId),
+      inArray(schema.tagAssignment.tagId, tagIds),
+      ne(schema.course.id, courseId),
+      eq(schema.course.status, 'ACTIVE'),
+      eq(schema.course.isPublished, true),
+      eq(schema.course.isTemplate, false)
+    ];
+
+    if (options.pricing === 'paid') {
+      conditions.push(gt(schema.course.cost, 0));
+    } else if (options.pricing === 'free') {
+      conditions.push(or(isNull(schema.course.cost), eq(schema.course.cost, 0))!);
+    }
+
+    if (options.excludeProfileId) {
+      conditions.push(
+        notExists(
+          db
+            .select({ id: schema.groupmember.id })
+            .from(schema.groupmember)
+            .where(
+              and(
+                eq(schema.groupmember.groupId, schema.course.groupId),
+                eq(schema.groupmember.profileId, options.excludeProfileId)
+              )
+            )
+        ),
+        notExists(
+          db
+            .select({ id: schema.programMember.id })
+            .from(schema.programCourse)
+            .innerJoin(schema.program, eq(schema.programCourse.programId, schema.program.id))
+            .innerJoin(schema.programMember, eq(schema.programMember.programId, schema.program.id))
+            .where(
+              and(
+                eq(schema.programCourse.courseId, schema.course.id),
+                eq(schema.program.organizationId, orgId),
+                eq(schema.program.status, 'ACTIVE'),
+                eq(schema.programMember.profileId, options.excludeProfileId)
+              )
+            )
+        )
+      );
+    }
+
+    return await db
+      .select({
+        id: schema.course.id,
+        title: schema.course.title,
+        slug: schema.course.slug,
+        type: schema.course.type,
+        cost: schema.course.cost,
+        currency: schema.course.currency,
+        bannerImage: schema.course.bannerImage
+      })
+      .from(schema.tagAssignment)
+      .innerJoin(schema.course, eq(schema.tagAssignment.courseId, schema.course.id))
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(and(...conditions))
+      .groupBy(schema.course.id)
+      .orderBy(desc(sharedTagCount), desc(schema.course.createdAt), desc(schema.course.id))
+      .limit(options.limit);
+  } catch (error) {
+    console.error('getRelatedCourses error:', error);
+    throw new Error('Failed to get related courses');
   }
 }
 
