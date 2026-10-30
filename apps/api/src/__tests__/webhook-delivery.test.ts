@@ -47,6 +47,9 @@ function buildEndpoint(path: string): TWebhookEndpoint {
     lastDeliveryAt: null,
     createdByProfileId: null,
     updatedByProfileId: null,
+    oauthConsentId: null,
+    filterCourseId: null,
+    filterCohortId: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };

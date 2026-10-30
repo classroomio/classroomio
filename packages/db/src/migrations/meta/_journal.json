@@ -302,6 +302,13 @@
       "when": 1793103932290,
       "tag": "0042_oauth_provider",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793398819390,
+      "tag": "0043_webhook_subscriptions",
+      "breakpoints": true
     }
   ]
 }

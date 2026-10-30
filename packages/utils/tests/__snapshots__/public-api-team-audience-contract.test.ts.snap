@@ -71,6 +71,12 @@ exports[`public API team and audience update contract > ZPublicApiAudienceQuery 
       ],
       "type": "string",
     },
+    "email": {
+      "description": "Exact email, case-insensitive. Use it to look someone up; search matches parts of names and emails",
+      "format": "email",
+      "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+      "type": "string",
+    },
     "enrollment": {
       "enum": [
         "enrolled",

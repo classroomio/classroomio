@@ -18,6 +18,7 @@ import {
   lessonCompletion,
   lessonLanguage,
   lessonLanguageHistory,
+  oauthConsent,
   option,
   organization,
   organizationContacts,
@@ -38,7 +39,8 @@ import {
   tag,
   tagAssignment,
   tagGroup,
-  user
+  user,
+  webhookEndpoint
 } from './schema';
 
 import { relations } from 'drizzle-orm/relations';
@@ -493,4 +495,15 @@ export const questionAnswerRelations = relations(questionAnswer, ({ one }) => ({
     fields: [questionAnswer.submissionId],
     references: [submission.id]
   })
+}));
+
+export const webhookEndpointRelations = relations(webhookEndpoint, ({ one }) => ({
+  oauthConsent: one(oauthConsent, {
+    fields: [webhookEndpoint.oauthConsentId],
+    references: [oauthConsent.id]
+  })
+}));
+
+export const oauthConsentRelations = relations(oauthConsent, ({ many }) => ({
+  webhookEndpoints: many(webhookEndpoint)
 }));

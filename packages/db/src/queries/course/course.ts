@@ -1746,3 +1746,19 @@ export async function updateCourseSlug(courseId: string, slug: string): Promise<
     throw new Error(`Failed to update course slug: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
+
+export async function getCourseTitlesByIds(courseIds: string[]): Promise<Map<string, string | null>> {
+  if (courseIds.length === 0) return new Map();
+
+  try {
+    const rows = await db
+      .select({ id: schema.course.id, title: schema.course.title })
+      .from(schema.course)
+      .where(inArray(schema.course.id, courseIds));
+
+    return new Map(rows.map((row) => [row.id, row.title]));
+  } catch (error) {
+    console.error('getCourseTitlesByIds error:', error);
+    throw new Error('Failed to load course titles');
+  }
+}
