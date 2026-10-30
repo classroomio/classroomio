@@ -11,6 +11,7 @@ import {
   scopePushdownFilters
 } from './helpers';
 
+/** One row per enrollment and section, with score, video and attendance results. */
 export const sectionActivitySource: InsightsSourceDefinition = {
   id: 'section_activity',
   scopeTypes: ['cohort', 'course'],

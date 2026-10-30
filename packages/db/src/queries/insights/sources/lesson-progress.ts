@@ -3,6 +3,7 @@ import { sql } from 'drizzle-orm';
 import type { InsightsSourceDefinition } from '../types';
 import { flagMetric, idDimension, rowsMetric, scopePushdownFilters } from './helpers';
 
+/** One row per enrollment and lesson, with completion state. */
 export const lessonProgressSource: InsightsSourceDefinition = {
   id: 'lesson_progress',
   scopeTypes: ['cohort', 'course'],

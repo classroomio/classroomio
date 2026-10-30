@@ -6,7 +6,7 @@ import { db, type DbOrTxClient } from '@db/drizzle';
 import type { InsightsExerciseMeta } from './types';
 
 /**
- * Pass rules, lock state and max points for every exercise in the given courses.
+ * Pass rules, lock state, owning course and max points for every exercise in the given courses.
  */
 export async function getInsightsExerciseMeta(
   courseIds: string[],

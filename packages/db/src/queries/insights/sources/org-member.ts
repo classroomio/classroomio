@@ -3,6 +3,7 @@ import { sql } from 'drizzle-orm';
 import type { InsightsSourceDefinition } from '../types';
 import { baseColumn, integerMetric } from './helpers';
 
+/** One row per period, with students added in it and the running total. */
 export const orgMemberSource: InsightsSourceDefinition = {
   id: 'org_member',
   scopeTypes: ['org'],

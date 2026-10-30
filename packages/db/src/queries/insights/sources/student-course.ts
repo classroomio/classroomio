@@ -16,6 +16,7 @@ import {
   valueMetric
 } from './helpers';
 
+/** One row per enrollment, with progress, scores, completion and overdue state. */
 export const studentCourseSource: InsightsSourceDefinition = {
   id: 'student_course',
   scopeTypes: ['cohort', 'course', 'org'],

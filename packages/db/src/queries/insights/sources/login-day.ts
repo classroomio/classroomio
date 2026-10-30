@@ -3,6 +3,7 @@ import { sql } from 'drizzle-orm';
 import type { InsightsSourceDefinition } from '../types';
 import { baseColumn, flagMetric, idDimension, rowsMetric, scopePushdownFilters } from './helpers';
 
+/** One row per learner and day in the login window, marking whether they logged in. */
 export const loginDaySource: InsightsSourceDefinition = {
   id: 'login_day',
   scopeTypes: ['cohort', 'course', 'org'],

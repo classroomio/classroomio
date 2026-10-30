@@ -17,6 +17,7 @@ import {
   valueMetric
 } from './helpers';
 
+/** One row per enrollment and exercise, with attempt, grading and pass state. */
 export const assessmentResultSource: InsightsSourceDefinition = {
   id: 'assessment_result',
   scopeTypes: ['cohort', 'course', 'org'],
