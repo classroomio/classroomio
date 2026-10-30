@@ -11,6 +11,7 @@ function withoutTotal(row: Record<string, unknown>): InsightsRow {
   return Object.fromEntries(Object.entries(row).filter(([key]) => key !== TOTAL_COLUMN)) as InsightsRow;
 }
 
+/** Grouped-row total for a page past the first; zero for the first page and when the count fails. */
 async function countInsightsTotal(
   spec: TInsightsQuerySpec,
   input: { scope: InsightsScopeRef; orderedItems: InsightsOrderedItem[] },
@@ -32,9 +33,8 @@ async function countInsightsTotal(
 }
 
 /**
- * Runs one insights spec. `total` is the number of grouped rows before limit and offset, including when the requested
- * page is past the end. The extra count query only runs for an empty page after the first, so callers can jump to the
- * last page instead of walking back one page at a time.
+ * Runs one insights spec. `total` counts the grouped rows before limit and offset, including on a page past the end,
+ * where a second query fetches it.
  */
 export async function runInsightsQuery(
   spec: TInsightsQuerySpec,

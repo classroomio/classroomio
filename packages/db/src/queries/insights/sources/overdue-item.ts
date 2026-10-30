@@ -12,6 +12,7 @@ import {
   valueMetric
 } from './helpers';
 
+/** One row per learner and overdue goal, compliance cycle or exercise. */
 export const overdueItemSource: InsightsSourceDefinition = {
   id: 'overdue_item',
   scopeTypes: ['cohort', 'course', 'org'],

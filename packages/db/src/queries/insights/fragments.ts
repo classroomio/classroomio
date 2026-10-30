@@ -11,6 +11,7 @@ import type { InsightsCompileContext } from './types';
 const GROWTH_WEEKS_ALL_TIME = 6;
 const DAILY_GROWTH_MAX_DAYS = 31;
 
+/** Start of a window covering today and the `days - 1` days before it. */
 function daysAgoStart(days: number): SQL {
   return sql`(CURRENT_DATE - ${days - 1}::int)::timestamptz`;
 }
@@ -29,12 +30,14 @@ function periodStartSql(context: InsightsCompileContext): SQL {
   return daysAgoStart(context.periodDays);
 }
 
+/** Keeps rows at or after the range start; everything passes on All time. */
 function inWindowSql(column: SQL, context: InsightsCompileContext): SQL {
   const windowStart = windowStartSql(context);
 
   return windowStart ? sql`${column} >= ${windowStart}` : sql`TRUE`;
 }
 
+/** Daily buckets up to 31 days, weekly beyond and on All time. */
 function growthBucketsSql(context: InsightsCompileContext): { series: SQL; step: SQL } {
   const days = context.rangeDays;
   if (days !== null && days <= DAILY_GROWTH_MAX_DAYS) {
@@ -50,6 +53,7 @@ function growthBucketsSql(context: InsightsCompileContext): { series: SQL; step:
   return { series, step };
 }
 
+/** Resolves each member's exercises, attempts and results. Expects the CTEs from `scopeCtes`. */
 function exerciseCtes(context: InsightsCompileContext): SQL {
   const meetsCompletionPolicy = submissionMeetsCompletionPolicySql('exercise', 'submission');
   const submissionInWindow = inWindowSql(sql`submission.created_at`, context);
@@ -128,6 +132,7 @@ function exerciseCtes(context: InsightsCompileContext): SQL {
     )`;
 }
 
+/** Resolves lesson completion and attendance per member. Expects the CTEs from `scopeCtes`. */
 function lessonCtes(): SQL {
   return sql`
     scoped_lesson AS (
@@ -187,6 +192,10 @@ function lessonCtes(): SQL {
     )`;
 }
 
+/**
+ * Lists overdue goals, compliance cycles and exercises per member. Expects the CTEs from `scopeCtes` and the
+ * `member_exercise_result` CTE.
+ */
 function overdueCte(context: InsightsCompileContext): SQL {
   return sql`
     overdue_item AS (
@@ -288,6 +297,7 @@ function overdueCte(context: InsightsCompileContext): SQL {
     )`;
 }
 
+/** Per-member course totals, ending in the `student_course_row` CTE. Expects the CTEs before it. */
 function courseCtes(context: InsightsCompileContext): SQL {
   const periodStart = periodStartSql(context);
   const completedInWindow = inWindowSql(sql`completion.completed_at`, context);
@@ -452,6 +462,7 @@ function courseCtes(context: InsightsCompileContext): SQL {
     )`;
 }
 
+/** Per-student aggregates, flags and status, ending in the `student_row` CTE. Expects the CTEs before it. */
 function studentCtes(context: InsightsCompileContext): SQL {
   const { inactiveDays, lowScorePct, laggingScorePct, lowVideoPct } = INSIGHTS_THRESHOLDS;
   const periodStart = periodStartSql(context);
@@ -557,6 +568,10 @@ function studentCtes(context: InsightsCompileContext): SQL {
     )`;
 }
 
+/**
+ * One row per learner with overdue items. Expects the `overdue_item`, `student_row`, `student_course_row` and
+ * `scope_course` CTEs.
+ */
 function overdueStudentCte(): SQL {
   return sql`
     overdue_student_row AS (
@@ -598,6 +613,7 @@ function overdueStudentCte(): SQL {
     )`;
 }
 
+/** One row per cohort in scope. Expects the `student_row`, `student_course_row` and `scope_course` CTEs. */
 function cohortSummaryCte(context: InsightsCompileContext): SQL {
   const { scope, pushdown } = context;
   const courseScopeFilter =
@@ -677,6 +693,9 @@ function cohortSummaryCte(context: InsightsCompileContext): SQL {
     )`;
 }
 
+/**
+ * Per-section exercise, video and attendance results, ending in the `section_row` CTE. Expects the CTEs before it.
+ */
 function sectionCtes(): SQL {
   return sql`
     section_exercise AS (
@@ -754,6 +773,10 @@ function sectionCtes(): SQL {
     )`;
 }
 
+/**
+ * The learner's answer for radio, true/false and checkbox questions, or NULL. Requires the `question` and `qa` table
+ * aliases to be the question row and its answer row from the learner's best submission.
+ */
 function wrongAnswerSql(): SQL {
   return sql`CASE question.question_type_id
     WHEN ${QUESTION_TYPE_IDS.RADIO} THEN (
@@ -768,6 +791,9 @@ function wrongAnswerSql(): SQL {
   END`;
 }
 
+/**
+ * Rows for the assessment, question, lesson, login and member-growth sources. Expects the CTEs before it.
+ */
 function assessmentCtes(context: InsightsCompileContext): SQL {
   const growth = growthBucketsSql(context);
 

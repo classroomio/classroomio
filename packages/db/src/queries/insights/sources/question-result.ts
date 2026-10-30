@@ -11,6 +11,7 @@ import {
   textMetric
 } from './helpers';
 
+/** One row per enrollment, exercise and question, from the learner's best graded submission. */
 export const questionResultSource: InsightsSourceDefinition = {
   id: 'question_result',
   scopeTypes: ['cohort', 'course', 'org'],

@@ -52,6 +52,7 @@ export type CompiledInsightsQuery = {
   columns: InsightsColumn[];
 };
 
+/** The 400 `INSIGHTS_QUERY_INVALID` error for a spec the compiler rejects. */
 function invalidSpec(message: string): OperationalQueryError {
   return new OperationalQueryError(message, 'INSIGHTS_QUERY_INVALID', 400);
 }
@@ -60,6 +61,7 @@ function alias(name: string): SQL {
   return sql`${sql.identifier(name)}`;
 }
 
+/** Normalises an expression to the type the client reads for this value type. */
 function outputValue(valueType: InsightsValueType, expression: SQL): SQL {
   if (valueType === 'date' || valueType === 'datetime') return sql`(to_json(${expression}) #>> '{}')`;
 
@@ -70,6 +72,7 @@ function outputValue(valueType: InsightsValueType, expression: SQL): SQL {
   return expression;
 }
 
+/** The aggregate for one measure. Throws when `running_count` has no dimension to order by. */
 function aggregateSql(agg: TInsightsAgg, metric: InsightsMetricDefinition, firstDimensionKey: SQL | null): SQL {
   const value = metric.value;
 
@@ -103,6 +106,10 @@ function aggregateSql(agg: TInsightsAgg, metric: InsightsMetricDefinition, first
   }
 }
 
+/**
+ * The value type a measure produces: counts are integers, rates and pooled ratios percentages, the rest the
+ * metric's own type.
+ */
 function aggregateValueType(agg: TInsightsAgg, metric: InsightsMetricDefinition): InsightsValueType {
   if (agg === 'count' || agg === 'count_if' || agg === 'running_count') return 'integer';
 
@@ -111,6 +118,7 @@ function aggregateValueType(agg: TInsightsAgg, metric: InsightsMetricDefinition)
   return metric.valueType;
 }
 
+/** Throws when the source does not define the dimension. */
 function compileDimension(source: InsightsSourceDefinition, id: TInsightsDimension): CompiledDimension {
   const definition = source.dimensions[id];
   if (!definition) throw invalidSpec(`Dimension ${id} is not available on ${source.id}`);
@@ -136,6 +144,7 @@ function compileDimension(source: InsightsSourceDefinition, id: TInsightsDimensi
   return { id, definition, select, groupBy, columns, orderBy };
 }
 
+/** Throws when the source has no such metric or the metric does not allow the aggregation. */
 function compileMeasure(
   source: InsightsSourceDefinition,
   measure: TInsightsMeasure,
@@ -159,6 +168,7 @@ function compileMeasure(
 
 const NUMERIC_FILTER_VALUE_TYPES: ReadonlySet<InsightsValueType> = new Set(['integer', 'number', 'percent']);
 
+/** Rejects values that break the field's uuid, numeric or allowed-value rule. */
 function assertFilterValue(definition: InsightsFilterDefinition, filter: TInsightsFilter): void {
   const values = Array.isArray(filter.value) ? filter.value : [filter.value];
   const isIdFilter = definition.kind === 'pushdown' || definition.valueType === 'id';
@@ -181,10 +191,7 @@ function assertFilterValue(definition: InsightsFilterDefinition, filter: TInsigh
   }
 }
 
-/**
- * Intersects repeated filters on the same pushdown field, so `course in [A, B]` plus `course eq A` narrows to A
- * instead of the last filter silently winning.
- */
+/** Narrows repeated filters on the same pushdown field to their intersection. */
 function collectPushdown(source: InsightsSourceDefinition, filters: TInsightsFilter[]): InsightsPushdown {
   const pushdown: InsightsPushdown = {};
 
@@ -228,6 +235,9 @@ function predicateSql(
   }
 }
 
+/**
+ * The predicate filters plus the search term, as one AND list. Throws for filters the source does not define.
+ */
 function compilePredicates(source: InsightsSourceDefinition, spec: TInsightsQuerySpec): SQL[] {
   const predicates: SQL[] = [];
 
@@ -252,6 +262,7 @@ function compilePredicates(source: InsightsSourceDefinition, spec: TInsightsQuer
   return predicates;
 }
 
+/** The ORDER BY clause: requested sorts first, then every dimension for a stable order. */
 function compileOrderBy(spec: TInsightsQuerySpec, dimensions: CompiledDimension[], measures: CompiledMeasure[]): SQL[] {
   const dimensionsById = new Map(dimensions.map((dimension) => [dimension.id as string, dimension]));
   const measureAliases = new Set(measures.map((measure) => measure.alias));
@@ -278,9 +289,7 @@ function compileOrderBy(spec: TInsightsQuerySpec, dimensions: CompiledDimension[
   return orderBy;
 }
 
-/**
- * True when the spec needs course outline ranks, which the service must load and pass in as `orderedItems`.
- */
+/** True when the spec reads the course outline, which the caller must supply as `orderedItems`. */
 export function requiresOrderedItems(spec: Pick<TInsightsQuerySpec, 'dimensions' | 'measures'>): boolean {
   const hasOutlineDimension = spec.dimensions.some((dimension) => OUTLINE_DIMENSIONS.has(dimension));
   const hasOutlineMetric = spec.measures.some((measure) => OUTLINE_METRICS.has(measure.metric));
@@ -289,8 +298,8 @@ export function requiresOrderedItems(spec: Pick<TInsightsQuerySpec, 'dimensions'
 }
 
 /**
- * Compiles a validated spec into one parameterized query. Throws `OperationalQueryError` (400) for anything the
- * registry does not allow. Every value is a bound parameter; identifiers only ever come from the registry.
+ * Compiles a validated spec into one parameterized query. Throws `OperationalQueryError` (400) for a spec the
+ * sources do not allow. Every value is a bound parameter; identifiers only ever come from the registry.
  */
 export function compileInsightsQuery(
   spec: TInsightsQuerySpec,
