@@ -117,9 +117,9 @@
                   <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
                   <div style="flex:1">
                     <div style="font-size:13px;font-weight:600">That's every app in this sample</div>
-                    <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px" id="dirMoreCopy">Zapier connects ClassroomIO to 6,000+ apps in total. Connect your account and search for any app from inside Zapier.</div>
+                    <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px" id="dirMoreCopy">Zapier connects ClassroomIO to 6,000+ apps in total. Search for any app from inside Zapier.</div>
                   </div>
-                  <a class="btn btn-outline btn-sm" href="oauth-consent.html">Connect on Zapier</a>
+                  <a class="btn btn-outline btn-sm" href="https://zapier.com/app/editor" target="_blank" rel="noopener">Continue in Zapier</a>
                 </div>
               </div>
             </div>
@@ -256,7 +256,7 @@
           var app = ZI.APPS[slug];
           var card = document.createElement('a');
           card.className = 'card zi-app-card';
-          card.href = 'app-detail.html?app=' + slug;
+          card.href = 'zapier-handoff.html?startApp=' + slug;
           card.innerHTML =
             ZI.badgeHTML(slug) +
             '<div class="txt">' +

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ClassroomIO + Zapier integrations</title>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="app-theme.css" />
     <link rel="stylesheet" href="zapier.css" />
     <script>
@@ -32,82 +32,106 @@
       </div>
     </nav>
 
-    <div class="zi-hand-band">
-      <div class="zi-hand-blocks"><i id="blockTop"></i><i id="blockBottom"></i></div>
-      <div class="zi-hand-wrap zi-hand-band-inner">
-        <div class="zi-hand-logo" id="cioLogo"></div>
-        <div class="zi-hand-logo" id="appLogo"></div>
-        <div class="zi-hand-band-title" id="bandTitle"></div>
+    <header class="zi-hx-hero" id="hero">
+      <div class="zi-hx-mesh" aria-hidden="true"></div>
+      <div class="zi-hand-wrap zi-hx-hero-inner">
+        <a class="zi-hx-crumb" id="crumb" href="app-directory.html"></a>
+
+        <div class="zi-hx-pair">
+          <span class="zi-hx-live"><span class="dot" aria-hidden="true"></span>Live preview</span>
+          <span class="zi-hx-verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>Official integration</span>
+        </div>
+
+        <h1 id="headline"></h1>
+        <p class="zi-hx-lead" id="lead"></p>
+
+        <div class="zi-hx-stage" aria-label="Live preview of the Zap">
+          <div class="zi-hx-win">
+            <div class="zi-hx-win-bar">
+              <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span id="srcLogo"></span>
+              <span class="ttl" id="srcTitle"></span>
+            </div>
+            <div class="zi-hx-win-body" id="srcBody"></div>
+          </div>
+
+          <div class="zi-hx-bridge" id="bridge">
+            <span class="zi-hx-bridge-pulse" aria-hidden="true"></span>
+            <span class="zi-hx-bridge-node"><img src="logos/zapier.svg" alt="Zapier" /></span>
+            <span class="zi-hx-bridge-label" id="bridgeLabel" aria-live="polite">Polling</span>
+          </div>
+
+          <div class="zi-hx-win">
+            <div class="zi-hx-win-bar">
+              <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span id="dstLogo"></span>
+              <span class="ttl" id="dstTitle"></span>
+            </div>
+            <div class="zi-hx-win-body" id="dstBody"></div>
+          </div>
+        </div>
+
+        <div class="zi-hx-actions">
+          <a class="zi-hx-cta" id="zapierCta" href="https://zapier.com/app/editor" target="_blank" rel="noopener"><img src="logos/zapier.svg" alt="" /><span id="ctaLabel">Continue to Zapier</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <div class="zi-hx-stats">
+            <span><b id="statTriggers"></b> triggers</span>
+            <span><b id="statActions"></b> actions</span>
+            <span><b>Polling</b> · Zapier checks every few minutes</span>
+          </div>
+          <span class="zi-hx-cta-note">Takes about 2 minutes. Nothing runs until you turn the Zap on.</span>
+        </div>
       </div>
-    </div>
+    </header>
 
     <main class="zi-hand-wrap">
-      <a class="zi-hand-crumb" id="crumb" href="app-directory.html"></a>
-
-      <div class="zi-hand-success">
-        <div class="zi-hand-success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
-        <div>
-          <div class="t">Your ClassroomIO organization is connected</div>
-          <div class="d" id="successDetail"></div>
-        </div>
-        <a class="btn btn-outline btn-sm" id="viewConnection" href="zapier-connected.html">View connection</a>
+      <div class="zi-hx-banner" id="connectedBanner">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="txt"><strong>Acme Academy is connected to Zapier.</strong> <span id="connectedScope">Read and write access.</span></span>
+        <a href="index.html?returning=1" id="connectedLink">View connection in ClassroomIO</a>
+        <a href="https://zapier.com/app/assets/connections" target="_blank" rel="noopener">View on Zapier<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
       </div>
 
-      <section class="zi-hand-hero">
-        <h1 id="headline"></h1>
-        <p id="lead"></p>
+      <ul class="zi-hx-trust">
+        <li>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+          <span><b id="trustScope">Read and write access only</b>Scoped to Acme Academy, nothing else</span>
+        </li>
+        <li>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></span>
+          <span><b>Revoke anytime</b>From Automation › Zapier in ClassroomIO</span>
+        </li>
+        <li>
+          <span class="ic"><img src="logos/zapier.svg" alt="" /></span>
+          <span><b>Your Zaps live in Zapier</b>Zapier builds, tests and runs them</span>
+        </li>
+      </ul>
 
-        <div class="zi-hand-flow">
-          <div class="zi-hand-flow-label">When this happens...</div>
-          <div class="zi-hand-step">
-            <div class="zi-hand-step-tile" id="triggerTile"></div>
-            <div class="zi-hand-step-body">
-              <div class="t" id="triggerTitle"></div>
-              <div class="d" id="triggerDesc"></div>
-            </div>
-          </div>
-          <div class="zi-hand-step-meta"><span>Trigger</span><span class="zi-hand-pill solid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Polling</span></div>
-
-          <div class="zi-hand-connector"><span class="zi-hand-flow-label">automatically do this!</span></div>
-
-          <div class="zi-hand-step">
-            <div class="zi-hand-step-tile" id="actionTile"></div>
-            <div class="zi-hand-step-body">
-              <div class="t" id="actionTitle"></div>
-              <div class="d" id="actionDesc"></div>
-            </div>
-          </div>
-          <div class="zi-hand-step-meta"><span>Action</span><span class="zi-hand-pill solid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Write</span></div>
-        </div>
-
-        <a class="zi-hand-cta" id="zapierCta" href="https://zapier.com/app/editor" target="_blank" rel="noopener">Continue to Zapier</a>
-      </section>
-
-      <div class="zi-hand-checks">
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Manage or revoke access anytime from Automation → Zapier</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Zapier builds, tests, and runs your Zap</span>
-      </div>
-
-      <section class="zi-hand-more-section">
+      <section class="zi-hx-more">
+        <div class="zi-hx-eyebrow">Triggers &amp; actions</div>
         <h2 id="moreTitle"></h2>
         <p id="moreSub"></p>
-        <div class="zi-hand-tabs" id="tabs">
-          <button type="button" data-tab="triggers">Triggers</button>
-          <button type="button" data-tab="actions">Actions</button>
-          <button type="button" data-tab="both" class="on">Triggers &amp; Actions</button>
+        <div class="zi-hx-tabs" id="tabs" role="tablist">
+          <span class="zi-hx-tabs-pill" id="tabsPill" aria-hidden="true"></span>
+          <button type="button" role="tab" data-tab="triggers">Triggers <span class="n" data-count="triggers"></span></button>
+          <button type="button" role="tab" data-tab="actions">Actions <span class="n" data-count="actions"></span></button>
+          <button type="button" role="tab" data-tab="both" class="on" aria-selected="true">Triggers &amp; Actions <span class="n" data-count="both"></span></button>
         </div>
-        <div class="zi-hand-grid" id="itemGrid"></div>
-        <div class="zi-hand-loadmore"><button type="button" id="loadMore">Load more</button></div>
+        <div class="zi-hx-grid" id="itemGrid"></div>
+        <div class="zi-hx-loadmore" id="loadMoreRow">
+          <button type="button" id="loadMore">Load more</button>
+          <span id="loadMoreCount"></span>
+        </div>
       </section>
     </main>
 
-    <footer class="zi-hand-footer">
-      <div class="zi-hand-wrap zi-hand-footer-inner">
+    <footer class="zi-hx-footer">
+      <div class="zi-hand-wrap">
         <div class="zi-hand-footer-crumbs" id="footerCrumbs"></div>
-        <div class="zi-hand-similar">
+        <div class="zi-hx-similar-head">
           <h3>Similar apps</h3>
-          <div id="similarList"></div>
+          <a href="app-directory.html">See all 20 apps<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
+        <div class="zi-hx-similar" id="similarList"></div>
       </div>
     </footer>
 
@@ -117,6 +141,11 @@
     <script>
       var ZAPIER_URL = 'https://zapier.com/app/editor';
       var PAGE_SIZE = 6;
+      var CYCLE_MS = 5200;
+      var CLASSROOMIO_BLUE = '#0542CC';
+      var SOURCE_ROWS = 4;
+      var DEST_ROWS = 3;
+      var AGE_LABELS = ['just now', '4 min ago', '26 min ago', '1 h ago'];
 
       var TRIGGER_FOR_CATEGORY = {
         crm: 'new_audience_member',
@@ -129,16 +158,66 @@
       };
 
       var TRIGGER_COPY = {
-        new_audience_member: { source: 'new ClassroomIO audience members', when: 'a new student joins your audience' },
-        student_enrolled_in_course: { source: 'new ClassroomIO course enrollments', when: 'a student enrolls in a course' },
-        course_completed: { source: 'ClassroomIO course completions', when: 'a student completes a course' },
-        certificate_issued: { source: 'newly issued ClassroomIO certificates', when: 'a certificate is issued' },
-        payment_request_created: { source: 'ClassroomIO payment requests', when: 'a learner submits a payment request' }
+        new_audience_member: { source: 'new ClassroomIO audience members', when: 'a new student joins your audience', verb: 'Join', screen: 'Audience', column: 'Email' },
+        student_enrolled_in_course: { source: 'new ClassroomIO course enrollments', when: 'a student enrolls in a course', verb: 'Enroll', screen: 'Enrollments', column: 'Course' },
+        course_completed: { source: 'ClassroomIO course completions', when: 'a student completes a course', verb: 'Finish a course', screen: 'Completions', column: 'Course' },
+        certificate_issued: { source: 'newly issued ClassroomIO certificates', when: 'a certificate is issued', verb: 'Earn a certificate', screen: 'Certificates', column: 'Course' },
+        payment_request_created: { source: 'ClassroomIO payment requests', when: 'a learner submits a payment request', verb: 'Request a payment', screen: 'Payment requests', column: 'Amount' }
       };
+
+      var STUDENTS = [
+        { name: ZI.SAMPLE_VALUES['Student Name'], email: ZI.SAMPLE_VALUES['Student Email'], course: ZI.SAMPLE_VALUES['Course Name'], amount: ZI.SAMPLE_VALUES.Amount, color: '#f97066' },
+        { name: 'Jonas Lee', email: 'jonas.lee@northwind.io', course: 'Onboarding Basics', amount: '$129.00', color: '#4f8cff' },
+        { name: 'Priya Shah', email: 'priya.shah@acme.co', course: 'Security & Compliance 101', amount: '$199.00', color: '#22b07d' },
+        { name: 'Mateo Kim', email: 'mateo@kimstudio.dev', course: 'Product Fundamentals', amount: '$249.00', color: '#a77bff' },
+        { name: 'Sofia Rossi', email: 'sofia.rossi@lumen.it', course: 'Onboarding Basics', amount: '$129.00', color: '#f5a524' },
+        { name: 'Daniel Okafor', email: 'daniel.okafor@brightpath.io', course: 'Security & Compliance 101', amount: '$199.00', color: '#14b8a6' },
+        { name: 'Hana Sato', email: 'hana.sato@kaizen.jp', course: 'Product Fundamentals', amount: '$249.00', color: '#ec4899' },
+        { name: 'Lucas Martin', email: 'lucas.martin@orbit.fr', course: 'Onboarding Basics', amount: '$129.00', color: '#6366f1' }
+      ];
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function escapeHTML(value) {
+        return String(value).replace(/[&<>"]/g, function (char) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char];
+        });
+      }
+
+      function initials(name) {
+        return name
+          .split(' ')
+          .map(function (part) {
+            return part[0];
+          })
+          .join('')
+          .slice(0, 2);
+      }
+
+      function studentValues(student) {
+        return {
+          'Student Name': student.name,
+          'Student Email': student.email,
+          'Course Name': student.course,
+          Amount: student.amount
+        };
+      }
+
+      function resolveTokens(template, values) {
+        return template.replace(/\{\{([^}]+)\}\}/g, function (match, token) {
+          return values[token] || ZI.SAMPLE_VALUES[token] || token;
+        });
+      }
+
+      function fieldValue(field) {
+        return field.default || (field.options && field.options[0]) || '';
+      }
 
       var params = new URLSearchParams(location.search);
       var slug = params.get('startApp');
-      var scope = params.get('scope');
+      var grantedScope = params.get('scope');
       var selected = slug && ZI.APPS[slug] ? ZI.APPS[slug] : null;
       var demoSlug = selected ? slug : 'slack';
       var demoApp = ZI.APPS[demoSlug];
@@ -147,128 +226,215 @@
       var trigger = ZI.TRIGGERS[triggerKey];
       var copy = TRIGGER_COPY[triggerKey];
       var displayName = selected ? selected.name : 'Zapier';
-      var displayColor = selected ? selected.color : '#ff4a00';
+      var reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      function $(id) {
-        return document.getElementById(id);
+      if (grantedScope === 'read') {
+        $('connectedScope').textContent = 'Read-only access.';
+        $('trustScope').textContent = 'Read-only access';
       }
 
-      var zapMarkHTML =
-        '<div class="zap-mark zap-mark-md"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>';
+      var hero = $('hero');
+      hero.style.setProperty('--hx-a', CLASSROOMIO_BLUE);
+      hero.style.setProperty('--hx-b', demoApp.color);
 
-      $('cioLogo').innerHTML = ZI.classroomioLogoHTML('width:44px;height:44px;border-radius:12px;border:none');
-      $('appLogo').innerHTML = selected
-        ? ZI.badgeHTML(slug, 'width:44px;height:44px;font-size:17px;border-radius:12px;border:none')
-        : zapMarkHTML;
-      $('bandTitle').textContent = 'ClassroomIO + ' + displayName;
-      $('blockBottom').style.background = displayColor;
       $('crumb').textContent = 'ClassroomIO + ' + displayName + ' integrations';
-      if (selected) $('crumb').href = 'app-detail.html?app=' + slug;
+      if (selected) $('crumb').href = 'app-directory.html?category=' + selected.category;
       document.title = 'ClassroomIO + ' + displayName + ' integrations';
 
-      $('successDetail').textContent =
-        'Acme Academy · ' + (scope === 'read' ? 'Read only' : 'Read + write') + ' access granted to Zapier';
+      $('headline').innerHTML = selected
+        ? escapeHTML(copy.verb) + ' in ClassroomIO. <span class="zi-hx-grad">See it in ' + escapeHTML(selected.name) + '.</span>'
+        : 'Automate ClassroomIO with <span class="zi-hx-grad">the apps your team already uses.</span>';
+      $('lead').textContent = 'No exports or spreadsheets. Zapier picks up ' + copy.source + ' and runs ' + demoAction.label + ' in ' + demoApp.name + ' for you.';
+      $('ctaLabel').textContent = selected ? 'Connect ' + selected.name + ' in Zapier' : 'Continue to Zapier';
 
-      $('headline').textContent = selected
-        ? demoAction.label + ' in ' + selected.name + ' from ' + copy.source
-        : 'Automate ClassroomIO with the apps your team already uses';
-      $('lead').textContent = selected
-        ? 'Keeping ' + selected.name + ' in step with what learners do in ClassroomIO can be time-consuming. This Zapier integration runs ' + demoAction.label + ' in ' + selected.name + ' automatically whenever ' + copy.when + '. Never update ' + selected.name + ' by hand again.'
-        : 'Your organization is connected. Pick any of 6,000+ apps in Zapier and let ClassroomIO events like enrollments, completions, and certificates start your Zaps.';
+      var barLogoStyle = 'width:18px;height:18px;border-radius:5px;border:none';
+      $('srcLogo').innerHTML = ZI.classroomioLogoHTML(barLogoStyle);
+      $('srcTitle').innerHTML = 'ClassroomIO <span>· ' + escapeHTML(copy.screen) + '</span>';
+      $('dstLogo').innerHTML = ZI.badgeHTML(demoSlug, barLogoStyle);
+      $('dstTitle').innerHTML = escapeHTML(demoApp.name) + ' <span>· ' + escapeHTML(demoAction.label) + '</span>';
 
-      $('triggerTile').style.background = 'var(--primary)';
-      $('triggerTile').innerHTML = '<div class="zi-hand-tile-card">' + ZI.classroomioLogoHTML('width:56px;height:56px;border-radius:12px;border:none') + '</div>';
-      $('triggerTitle').textContent = trigger.label;
-      $('triggerDesc').textContent = 'Triggers when ' + copy.when + '.';
+      function sourceColumn(student) {
+        if (copy.column === 'Course') return student.course;
+        if (copy.column === 'Amount') return student.amount;
+        return student.email;
+      }
 
-      $('actionTile').style.background = demoApp.color;
-      $('actionTile').innerHTML = '<div class="zi-hand-tile-card">' + ZI.badgeHTML(demoSlug, 'width:56px;height:56px;font-size:20px;border-radius:12px;border:none') + '</div>';
-      $('actionTitle').textContent = demoAction.label;
-      $('actionDesc').textContent = 'Runs in ' + demoApp.name + ' every time the trigger fires.';
+      var pillFields = demoAction.fields.filter(function (field) {
+        return field.type === 'pill';
+      });
+      var titleField = pillFields[0] || demoAction.fields[0];
+
+      function renderSource(students, highlightFirst) {
+        var rows = '<div class="zi-hx-row head"><span>Student</span><span>' + copy.column + '</span><span class="when">When</span></div>';
+        students.forEach(function (student, index) {
+          var isNew = highlightFirst && index === 0;
+          rows +=
+            '<div class="zi-hx-row' + (isNew ? ' new' : '') + '">' +
+            '<span class="zi-hx-who"><span class="zi-hx-av" style="background:' + student.color + '">' + initials(student.name) + '</span><b>' + escapeHTML(student.name) + '</b>' +
+            (isNew ? '<span class="zi-hx-newtag">NEW</span>' : '') + '</span>' +
+            '<span class="muted">' + escapeHTML(sourceColumn(student)) + '</span>' +
+            '<span class="when">' + AGE_LABELS[index] + '</span>' +
+            '</div>';
+        });
+        $('srcBody').innerHTML = rows;
+      }
+
+      function renderDestination(students, highlightFirst) {
+        var html = '<div class="zi-hx-dst-head">Recent Zap runs</div>';
+        students.forEach(function (student, index) {
+          var values = studentValues(student);
+          var meta = demoAction.fields
+            .filter(function (field) {
+              return field !== titleField;
+            })
+            .map(function (field) {
+              return '<span>' + escapeHTML(field.label) + ' <b>' + escapeHTML(resolveTokens(fieldValue(field), values)) + '</b></span>';
+            })
+            .join('');
+          html +=
+            '<div class="zi-hx-rec' + (highlightFirst && index === 0 ? ' new' : '') + '">' +
+            '<span class="t">' + escapeHTML(resolveTokens(fieldValue(titleField), values)) + '</span>' +
+            '<span class="when">' + AGE_LABELS[index] + '</span>' +
+            (meta ? '<span class="meta">' + meta + '</span>' : '') +
+            '</div>';
+        });
+        $('dstBody').innerHTML = html;
+      }
+
+      var sourceList = STUDENTS.slice(STUDENTS.length - SOURCE_ROWS).reverse();
+      var destList = sourceList.slice(0, DEST_ROWS);
+      var nextStudent = 0;
+      renderSource(sourceList, false);
+      renderDestination(destList, false);
+
+      function runZap() {
+        var student = STUDENTS[nextStudent % STUDENTS.length];
+        nextStudent += 1;
+        sourceList = [student].concat(sourceList).slice(0, SOURCE_ROWS);
+        renderSource(sourceList, true);
+        $('bridgeLabel').textContent = 'New event';
+
+        setTimeout(function () {
+          var bridge = $('bridge');
+          bridge.classList.remove('run');
+          void bridge.offsetWidth;
+          bridge.classList.add('run');
+          $('bridgeLabel').textContent = 'Running Zap';
+        }, 700);
+
+        setTimeout(function () {
+          destList = [student].concat(destList).slice(0, DEST_ROWS);
+          renderDestination(destList, true);
+          $('bridgeLabel').textContent = 'Zap ran';
+        }, 2300);
+      }
+
+      if (reduceMotion) {
+        sourceList = [STUDENTS[0]].concat(sourceList).slice(0, SOURCE_ROWS);
+        destList = [STUDENTS[0]].concat(destList).slice(0, DEST_ROWS);
+        renderSource(sourceList, true);
+        renderDestination(destList, true);
+        $('bridgeLabel').textContent = 'Zap ran';
+      } else {
+        setTimeout(runZap, 900);
+        setInterval(function () {
+          if (!document.hidden) runZap();
+        }, CYCLE_MS);
+      }
 
       $('moreTitle').textContent = 'More things you can do with ClassroomIO and ' + displayName;
-      $('moreSub').textContent = 'Discover other triggers and actions you can use with ClassroomIO' + (selected ? ' and ' + selected.name : ' in Zapier');
+      $('moreSub').textContent = 'Discover other triggers and actions you can use with ClassroomIO' + (selected ? ' and ' + selected.name : ' in Zapier') + '.';
 
       $('footerCrumbs').innerHTML =
         '<a href="app-directory.html">Apps</a><span>›</span><a href="app-directory.html' +
         (selected ? '?category=' + selected.category : '') + '">' + (selected ? ZI.categoryLabel(selected.category) : 'ClassroomIO') +
         '</a><span>›</span><b>ClassroomIO + ' + displayName + '</b>';
 
-      var similar = ZI.appSlugs()
-        .filter(function (other) {
-          return other !== demoSlug && ZI.APPS[other].category === demoApp.category;
-        })
-        .slice(0, 4);
+      var similar = ZI.appSlugs().filter(function (other) {
+        return other !== demoSlug && ZI.APPS[other].category === demoApp.category;
+      });
+      ZI.appSlugs().forEach(function (other) {
+        if (similar.length < 4 && other !== demoSlug && similar.indexOf(other) === -1 && ZI.APPS[other].popular) similar.push(other);
+      });
+      var pairLogoStyle = 'width:36px;height:36px;border-radius:10px';
       $('similarList').innerHTML = similar
+        .slice(0, 4)
         .map(function (other) {
+          var app = ZI.APPS[other];
           return (
-            '<a href="app-detail.html?app=' + other + '">' +
-            ZI.badgeHTML(other, 'width:32px;height:32px;font-size:12px;border-radius:8px') +
-            '<span>ClassroomIO + ' + ZI.APPS[other].name + '</span></a>'
+            '<a class="zi-hx-similar-card" href="zapier-handoff.html?startApp=' + other + (grantedScope ? '&scope=' + grantedScope : '') + '">' +
+            '<span class="pair">' + ZI.classroomioLogoHTML(pairLogoStyle) + ZI.badgeHTML(other, pairLogoStyle) + '</span>' +
+            '<span class="t">ClassroomIO + ' + app.name + '</span>' +
+            '<span class="d">' + app.description + '</span>' +
+            '</a>'
           );
         })
         .join('');
 
-      var connectionParams = [];
-      if (scope) connectionParams.push('scope=' + scope);
-      $('viewConnection').href = 'zapier-connected.html' + (connectionParams.length ? '?' + connectionParams.join('&') : '');
+      var srcBadge = ZI.classroomioLogoHTML('width:18px;height:18px;border-radius:6px;border:none');
+      var tokenLogo = ZI.classroomioLogoHTML('width:14px;height:14px;border-radius:4px;border:none');
 
-      function fieldNames(fields) {
-        return fields.join(', ');
+      function triggerDetail(trig) {
+        var rows = trig.fields
+          .map(function (field) {
+            return '<dt>' + escapeHTML(field) + '</dt><dd>' + escapeHTML(ZI.SAMPLE_VALUES[field] || '') + '</dd>';
+          })
+          .join('');
+        return '<div class="lbl">Sample data this trigger sends</div><dl class="zi-hx-kv">' + rows + '</dl>';
+      }
+
+      function actionDetail(fields) {
+        var rows = fields
+          .map(function (field) {
+            var value = escapeHTML(fieldValue(field)).replace(/\{\{([^}]+)\}\}/g, function (match, token) {
+              return '<span class="zi-hx-tok">' + tokenLogo + token + '</span>';
+            });
+            return '<dt>' + escapeHTML(field.label) + '</dt><dd>' + value + '</dd>';
+          })
+          .join('');
+        return '<div class="lbl">Fields you map in Zapier</div><dl class="zi-hx-kv">' + rows + '</dl>';
       }
 
       var items = [];
       Object.keys(ZI.TRIGGERS).forEach(function (key) {
-        var t = ZI.TRIGGERS[key];
-        items.push({
-          kind: 'trigger',
-          name: t.label,
-          desc: t.desc,
-          badge: 'Polling',
-          iconHTML: t.icon,
-          detail: 'Data you can use: ' + fieldNames(t.fields)
-        });
+        var trig = ZI.TRIGGERS[key];
+        items.push({ kind: 'trigger', name: trig.label, desc: trig.desc, iconHTML: trig.icon + '<span class="src">' + srcBadge + '</span>', detail: triggerDetail(trig) });
       });
       if (selected) {
         items.push({
           kind: 'action',
           name: demoAction.label,
           desc: 'Runs in ' + selected.name + ' when a ClassroomIO trigger fires.',
-          badge: 'Write',
-          iconHTML: ZI.badgeHTML(slug, 'width:24px;height:24px;font-size:10px;border-radius:6px;border:none'),
-          plainIcon: true,
-          detail:
-            'Fields to set: ' +
-            fieldNames(
-              demoAction.fields.map(function (f) {
-                return f.label;
-              })
-            )
+          logo: true,
+          iconHTML: ZI.badgeHTML(slug, 'width:100%;height:100%;border:none;border-radius:inherit'),
+          detail: actionDetail(demoAction.fields)
         });
       }
       Object.keys(ZI.CLASSROOMIO_ACTIONS).forEach(function (key) {
-        var a = ZI.CLASSROOMIO_ACTIONS[key];
-        items.push({
-          kind: 'action',
-          name: a.label,
-          desc: a.desc,
-          badge: 'Write',
-          iconHTML: a.icon,
-          detail:
-            'Fields to set: ' +
-            fieldNames(
-              a.fields.map(function (f) {
-                return f.label;
-              })
-            )
-        });
+        var act = ZI.CLASSROOMIO_ACTIONS[key];
+        items.push({ kind: 'action', name: act.label, desc: act.desc, iconHTML: act.icon + '<span class="src">' + srcBadge + '</span>', detail: actionDetail(act.fields) });
       });
 
+      var counts = {
+        both: items.length,
+        triggers: items.filter(function (item) {
+          return item.kind === 'trigger';
+        }).length,
+        actions: items.filter(function (item) {
+          return item.kind === 'action';
+        }).length
+      };
+      document.querySelectorAll('[data-count]').forEach(function (node) {
+        node.textContent = counts[node.dataset.count];
+      });
+      $('statTriggers').textContent = counts.triggers;
+      $('statActions').textContent = counts.actions;
+
       var state = { tab: 'both', visible: PAGE_SIZE };
-      var chevronSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
+      var chevronSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>';
       var arrowSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-      var clockSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
-      var plusSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>';
+      var pollingSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+      var writeSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>';
 
       function filteredItems() {
         return items.filter(function (item) {
@@ -282,32 +448,42 @@
         var list = filteredItems();
         var grid = $('itemGrid');
         grid.innerHTML = '';
-        list.slice(0, state.visible).forEach(function (item) {
-          var card = document.createElement('div');
-          card.className = 'zi-hand-item';
+        list.slice(0, state.visible).forEach(function (item, index) {
+          var isTrigger = item.kind === 'trigger';
+          var detailId = 'detail-' + item.kind + '-' + index;
+          var card = document.createElement('article');
+          card.className = 'zi-hx-card ' + item.kind;
+          card.style.animationDelay = (index % PAGE_SIZE) * 40 + 'ms';
           card.innerHTML =
-            '<div class="zi-hand-item-head">' +
-            '<div class="zi-hand-item-icon' + (item.plainIcon ? ' plain' : '') + '">' + item.iconHTML + '</div>' +
-            '<div class="txt"><div class="t">' + item.name + '</div><div class="d">' + item.desc + '</div></div>' +
-            '<button type="button" class="zi-hand-chevron" aria-label="Show details" aria-expanded="false">' + chevronSVG + '</button>' +
-            '</div>' +
-            '<div class="zi-hand-item-detail" hidden>' + item.detail + '</div>' +
-            '<div class="zi-hand-item-foot">' +
-            '<span class="kind">' + (item.kind === 'trigger' ? 'Trigger' : 'Action') + '</span>' +
-            '<span class="zi-hand-pill">' + (item.kind === 'trigger' ? clockSVG : plusSVG) + item.badge + '</span>' +
-            '<a class="try" href="' + ZAPIER_URL + '" target="_blank" rel="noopener">Try It' + arrowSVG + '</a>' +
+            '<button type="button" class="zi-hx-card-main" aria-expanded="false" aria-controls="' + detailId + '">' +
+            '<span class="zi-hx-card-ic' + (item.logo ? ' logo' : '') + '">' + item.iconHTML + '</span>' +
+            '<span class="txt"><span class="t">' + escapeHTML(item.name) + '</span><span class="d">' + escapeHTML(item.desc) + '</span></span>' +
+            '<span class="chev" aria-hidden="true">' + chevronSVG + '</span>' +
+            '</button>' +
+            '<div class="zi-hx-card-detail" id="' + detailId + '" hidden>' + item.detail + '</div>' +
+            '<div class="zi-hx-card-foot">' +
+            '<span class="kind">' + (isTrigger ? 'Trigger' : 'Action') + '</span>' +
+            '<span class="zi-hx-mode">' + (isTrigger ? pollingSVG + 'Polling' : writeSVG + 'Write') + '</span>' +
+            '<a class="zi-hx-try" href="' + ZAPIER_URL + '" target="_blank" rel="noopener">Try it' + arrowSVG + '</a>' +
             '</div>';
-          var chevron = card.querySelector('.zi-hand-chevron');
-          var detail = card.querySelector('.zi-hand-item-detail');
-          chevron.addEventListener('click', function () {
+          var toggle = card.querySelector('.zi-hx-card-main');
+          var detail = card.querySelector('.zi-hx-card-detail');
+          toggle.addEventListener('click', function () {
             var open = detail.hidden;
             detail.hidden = !open;
-            chevron.setAttribute('aria-expanded', open ? 'true' : 'false');
-            chevron.classList.toggle('open', open);
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
           });
           grid.appendChild(card);
         });
-        $('loadMore').parentElement.hidden = list.length <= state.visible;
+        var shown = Math.min(state.visible, list.length);
+        $('loadMoreRow').hidden = list.length <= state.visible;
+        $('loadMoreCount').textContent = 'Showing ' + shown + ' of ' + list.length;
+      }
+
+      function movePill(button) {
+        var pill = $('tabsPill');
+        pill.style.width = button.offsetWidth + 'px';
+        pill.style.transform = 'translateX(' + button.offsetLeft + 'px)';
       }
 
       $('tabs').addEventListener('click', function (event) {
@@ -318,9 +494,11 @@
         state.visible = PAGE_SIZE;
         $('tabs')
           .querySelectorAll('button')
-          .forEach(function (b) {
-            b.classList.toggle('on', b === button);
+          .forEach(function (other) {
+            other.classList.toggle('on', other === button);
+            other.setAttribute('aria-selected', other === button ? 'true' : 'false');
           });
+        movePill(button);
         renderItems();
       });
 
@@ -330,6 +508,12 @@
       });
 
       renderItems();
+      document.fonts.ready.then(function () {
+        movePill($('tabs').querySelector('button.on'));
+      });
+      addEventListener('resize', function () {
+        movePill($('tabs').querySelector('button.on'));
+      });
     </script>
   </body>
 </html>
