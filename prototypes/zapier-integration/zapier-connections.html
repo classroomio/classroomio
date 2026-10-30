@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Connections · Zapier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="zapier.css" />
+    <style>
+      * { box-sizing: border-box }
+      body { margin: 0; background: #fff; color: #2d2e2e; font-family: Geist, system-ui, sans-serif; font-size: 14px }
+      svg.i { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0 }
+      .zc-note { background: #fff3ec; color: #8a3a12; font-size: 12px; text-align: center; padding: 6px 16px; border-bottom: 1px solid #ffd9c4 }
+      .zc-note a { color: inherit; margin-left: 10px; text-decoration: underline }
+      .zc-top { display: flex; align-items: center; gap: 14px; padding: 14px 28px; border-bottom: 1px solid #e6e4df }
+      .zc-logo { font-weight: 700; font-size: 26px; letter-spacing: -.02em; color: #201515; margin-right: 12px }
+      .zc-logo b { color: #ff4f00 }
+      .zc-search { flex: 1; max-width: 700px; display: flex; align-items: center; gap: 10px; border: 1px solid #d9d6d0; border-radius: 8px; padding: 9px 12px; color: #77736b }
+      .zc-search kbd { margin-left: auto; font: 11px Geist, sans-serif; border: 1px solid #d9d6d0; border-radius: 4px; padding: 1px 5px }
+      .zc-top .sp { flex: 1 }
+      .zc-tbtn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid #d9d6d0; border-radius: 8px; color: #2d2e2e; text-decoration: none; background: #fff; font-size: 14px }
+      .zc-avatar { width: 38px; height: 38px; border-radius: 50%; background: #9db8d8; display: grid; place-items: center; font-weight: 600 }
+      .zc-shell { display: grid; grid-template-columns: 250px 210px 1fr; min-height: calc(100vh - 100px) }
+      .zc-side { padding: 18px 14px; border-right: 1px solid #e6e4df; display: flex; flex-direction: column }
+      .zc-create { display: flex; align-items: center; justify-content: center; gap: 8px; background: #ff4f00; color: #fff; border-radius: 8px; padding: 11px; font-weight: 600; margin-bottom: 14px }
+      .zc-nav a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; color: #2d2e2e; text-decoration: none }
+      .zc-nav a.on { background: #f5ebe6; font-weight: 600 }
+      .zc-nav hr { border: 0; border-top: 1px solid #e6e4df; margin: 10px 0 }
+      .zc-new { font-size: 11px; border: 1px solid #c9c5be; border-radius: 4px; padding: 1px 6px }
+      .zc-usage { margin-top: auto; padding: 14px 12px 0; font-size: 12.5px; color: #77736b; border-top: 1px solid #e6e4df }
+      .zc-usage div { display: flex; justify-content: space-between; margin-bottom: 12px }
+      .zc-usage a { color: #4a3aff }
+      .zc-sub { padding: 20px 12px; border-right: 1px solid #e6e4df }
+      .zc-sub h2 { font-size: 20px; margin: 0 0 18px 8px; font-weight: 600 }
+      .zc-sub a { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; color: #2d2e2e; text-decoration: none; font-size: 14px }
+      .zc-sub a.on { background: #f5ebe6; font-weight: 600 }
+      .zc-main { padding: 40px 56px 60px; min-width: 0 }
+      .zc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px }
+      .zc-head h1 { font-size: 32px; margin: 0; font-weight: 600; letter-spacing: -.01em }
+      .zc-create-conn { background: #3d3dbc; color: #fff; border: 0; border-radius: 6px; padding: 12px 18px; font: 600 14px Geist, sans-serif; cursor: pointer }
+      .zc-create-conn:hover { background: #3333a3 }
+      .zc-bar { display: flex; gap: 10px; margin-bottom: 22px }
+      .zc-viewby { border: 1px solid #d9d6d0; border-radius: 8px; padding: 11px 14px; color: #77736b; min-width: 230px }
+      .zc-viewby b { color: #2d2e2e; font-weight: 500 }
+      .zc-filter-in { flex: 1; display: flex; align-items: center; gap: 10px; border: 1px solid #d9d6d0; border-radius: 8px; padding: 11px 14px; color: #77736b }
+      table { width: 100%; border-collapse: collapse; border: 1px solid #e6e4df; border-radius: 10px }
+      th { text-align: left; font-weight: 500; padding: 14px 16px; border-bottom: 1px solid #e6e4df; font-size: 14px }
+      td { padding: 14px 16px; border-bottom: 1px solid #eeece8; vertical-align: middle }
+      tr:last-child td { border-bottom: 0 }
+      .cb { width: 18px; height: 18px; border: 1.5px solid #bdb9b1; border-radius: 4px; display: inline-block }
+      .cell { display: flex; align-items: center; gap: 14px }
+      .cell .t { font-weight: 500 }
+      .cell .s { font-size: 12.5px; color: #77736b }
+      .ver { font-size: 12.5px; color: #77736b; margin-left: 6px }
+      .ok { display: inline-flex; align-items: center; gap: 8px }
+      .ok::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #1a9d4b }
+      .dots { color: #55524b; letter-spacing: 1px; font-weight: 700 }
+      .zc-modal { position: fixed; inset: 0; background: rgba(40, 38, 34, .55); display: none; align-items: center; justify-content: center; z-index: 50 }
+      .zc-modal.open { display: flex }
+      .zc-dlg { background: #fff; width: min(640px, 92vw); border-radius: 6px; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,.3) }
+      .zc-dlg header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 36px }
+      .zc-dlg h2 { margin: 0; font-size: 20px; font-weight: 600 }
+      .zc-x { background: none; border: 0; cursor: pointer; color: #2d2e2e; font-size: 22px; line-height: 1 }
+      .zc-in { display: flex; align-items: center; gap: 10px; border: 1px solid #3d3dbc; background: #e9ecfc; border-radius: 4px; padding: 0 12px; margin-bottom: 22px }
+      .zc-in input { flex: 1; border: 0; background: transparent; padding: 13px 0; font: 16px Geist, sans-serif; outline: none }
+      .zc-res { max-height: 300px; overflow: auto; display: flex; flex-direction: column; gap: 12px }
+      .zc-opt { display: flex; align-items: center; gap: 12px; border: 1px solid #d9d6d0; border-radius: 6px; padding: 14px; color: #2d2e2e; text-decoration: none; font-weight: 500; font-size: 16px }
+      .zc-opt:hover { background: #f5f4ff; border-color: #3d3dbc }
+      .zc-empty { color: #77736b; padding: 8px 2px 12px }
+    </style>
+  </head>
+  <body>
+    <div class="zc-note">Prototype simulation of zapier.com/app/assets/connections <a href="index.html?returning=1">Back to ClassroomIO</a></div>
+    <div class="zc-top">
+      <span class="zc-logo"><b>_</b>zapier</span>
+      <div class="zc-search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Search assets, apps, templates, and more<kbd>⌘ K</kbd></div>
+      <span class="sp"></span>
+      <a class="zc-tbtn" href="#">Help</a>
+      <a class="zc-tbtn" href="#">Explore apps</a>
+      <a class="zc-tbtn" href="#">Contact Sales</a>
+      <a class="zc-tbtn" href="#">Upgrade</a>
+      <span class="zc-avatar">E</span>
+    </div>
+
+    <div class="zc-shell">
+      <aside class="zc-side">
+        <div class="zc-create">+ Create</div>
+        <nav class="zc-nav">
+          <a href="#">Home</a><a href="#">Automations</a><a href="#">Folders</a><a href="#">Favorites</a><a href="#">Templates</a>
+          <hr />
+          <a class="on" href="#">App connections</a>
+          <a href="#">MCP servers <span class="zc-new">New</span></a>
+          <a href="#">Zap history</a>
+          <a href="#">More</a>
+        </nav>
+        <div class="zc-usage">
+          <div><span>Plan tasks</span><span>0 / 100</span></div>
+          <div><span>Usage resets in 3 weeks</span></div>
+          <a href="#">Manage plan</a>
+        </div>
+      </aside>
+      <aside class="zc-sub">
+        <h2>Connections</h2>
+        <a class="on" href="#">App connections</a>
+        <a href="#">SDK credentials</a>
+      </aside>
+      <main class="zc-main">
+        <div class="zc-head">
+          <h1>Connections</h1>
+          <button class="zc-create-conn" id="createConn" type="button">Create connection</button>
+        </div>
+        <div class="zc-bar">
+          <div class="zc-viewby">View by: <b>Connections</b></div>
+          <div class="zc-filter-in"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Search connection or app name</div>
+          <div class="zc-viewby" style="min-width:0">Filters</div>
+        </div>
+        <table>
+          <thead><tr><th style="width:44px"><span class="cb"></span></th><th>Name</th><th>App</th><th>Status</th><th style="width:40px"></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <p style="font-size:13px;color:#77736b;margin-top:16px">1–<span id="count"></span> of <span id="count2"></span></p>
+      </main>
+    </div>
+
+    <div class="zc-modal" id="modal" role="dialog" aria-modal="true" aria-label="Add new connection">
+      <div class="zc-dlg">
+        <header><h2>Add new connection</h2><button class="zc-x" id="closeModal" type="button" aria-label="Close">×</button></header>
+        <div class="zc-in"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="appSearch" type="text" autocomplete="off" aria-label="Search apps" /></div>
+        <div class="zc-res" id="results"></div>
+      </div>
+    </div>
+
+    <script src="proto.js"></script>
+    <script src="brand-logos.js"></script>
+    <script src="apps-catalog.js"></script>
+    <script>
+      var CONNECTED = [
+        { slug: 'sheets', ver: '2.17.3', email: 'ellenaokpani@gmail.com' },
+        { slug: 'hubspot', ver: '1.14.1', name: 'HubSpot' },
+        { slug: 'slack', ver: '2.9.0', name: 'Acme Academy' },
+        { slug: 'zoom', ver: '1.6.2', email: 'ellenaokpani@gmail.com' }
+      ];
+      var rows = document.getElementById('rows');
+      CONNECTED.forEach(function (c) {
+        var app = ZI.APPS[c.slug];
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td><span class="cb"></span></td>' +
+          '<td><div class="cell">' + ZI.badgeHTML(c.slug, 'width:30px;height:30px;border-radius:8px') +
+          '<div><div class="t">' + (c.name || c.email) + '</div>' + (c.email && !c.name ? '<div class="s">' + c.email + '</div>' : '') + '</div></div></td>' +
+          '<td>' + app.name + '<span class="ver">' + c.ver + '</span></td>' +
+          '<td><span class="ok">Connected</span></td><td class="dots">⋮</td>';
+        rows.appendChild(tr);
+      });
+      document.getElementById('count').textContent = document.getElementById('count2').textContent = CONNECTED.length;
+
+      var modal = document.getElementById('modal');
+      var search = document.getElementById('appSearch');
+      var results = document.getElementById('results');
+      var slugs = Object.keys(ZI.APPS);
+
+      function renderResults() {
+        var q = search.value.trim().toLowerCase();
+        results.innerHTML = '';
+        if (!q) return;
+        var hits = slugs.filter(function (s) { return ZI.APPS[s].name.toLowerCase().indexOf(q) > -1; });
+        if (!hits.length) results.innerHTML = '<div class="zc-empty">No apps found</div>';
+        hits.forEach(function (s) {
+          var el = document.createElement('a');
+          el.className = 'zc-opt';
+          el.href = 'zapier-handoff.html?startApp=' + s;
+          el.innerHTML = ZI.badgeHTML(s, 'width:26px;height:26px;border-radius:6px') + '<span>' + ZI.APPS[s].name + '</span>';
+          results.appendChild(el);
+        });
+      }
+      function openModal() { modal.classList.add('open'); search.value = ''; renderResults(); search.focus(); }
+      function closeModal() { modal.classList.remove('open'); }
+      document.getElementById('createConn').onclick = openModal;
+      document.getElementById('closeModal').onclick = closeModal;
+      modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+      search.addEventListener('input', renderResults);
+    </script>
+  </body>
+</html>
