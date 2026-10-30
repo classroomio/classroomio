@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Collaborative Comments · Lesson page · ClassroomIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var theme = 'light';
+        try {
+          theme = localStorage.getItem('commentsProtoTheme') || 'light';
+        } catch (e) {}
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+      })();
+    </script>
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="shell.css" />
+    <link rel="stylesheet" href="comments.css" />
+  </head>
+  <body>
+    <div class="proto-bar">
+      <strong>Prototype <span class="v2-tag">v2</span></strong>
+      <button class="btn btn-sm story-btn" id="story" title="Watch the whole feature acted out step by step">
+        ▶ Play guided story
+      </button>
+      <span class="pb-sep">or try it yourself</span>
+      <label class="pb-group"
+        >Who am I?
+        <select id="viewAs" title="Switch person to see what each one sees">
+          <option value="u1">Ellena (Org admin)</option>
+          <option value="u2">Ada (Tutor)</option>
+          <option value="u3">Tunde (Tutor)</option>
+          <option value="learner">A learner (sees no comments)</option>
+        </select>
+      </label>
+      <span class="pb-group">
+        What if the course changes?
+        <button
+          class="btn btn-outline btn-sm"
+          id="simDelete"
+          title="Someone deletes the sentence that has a comment on it"
+        >
+          Delete a commented sentence
+        </button>
+        <button
+          class="btn btn-outline btn-sm"
+          id="simVideo"
+          title="Someone uploads a new video, so video comments no longer match"
+        >
+          Replace the video
+        </button>
+        <button
+          class="btn btn-outline btn-sm"
+          id="simQuestion"
+          title="Someone deletes a quiz question that has comments"
+        >
+          Delete a question
+        </button>
+      </span>
+      <span class="pb-group">
+        Team
+        <button
+          class="btn btn-outline btn-sm"
+          id="simRemove"
+          title="Remove a tutor from the course. Their comments stay in the history"
+        >
+          Remove Tunde from course
+        </button>
+      </span>
+      <span class="pb-group">
+        Live
+        <button
+          class="btn btn-outline btn-sm"
+          id="simLive"
+          title="A teammate starts typing and their reply appears on its own, no refresh"
+        >
+          A teammate replies live
+        </button>
+      </span>
+      <label class="pb-group"
+        >Theme
+        <select id="theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+      <button class="btn btn-outline btn-sm" id="reset" title="Put everything back to how it started">
+        Start over
+      </button>
+      <button class="btn btn-outline btn-sm" id="help">How to use</button>
+    </div>
+
+    <div class="cs-app">
+      <aside class="cs-side" id="side" aria-label="Course navigation"></aside>
+      <main class="cs-main">
+        <header class="cs-head" id="head"></header>
+        <div class="pg" id="page"></div>
+      </main>
+    </div>
+
+    <aside class="sp" id="panel" aria-label="Comments"></aside>
+    <div class="sp-resize" id="spResize" title="Drag to resize, double-click to reset" aria-hidden="true"></div>
+    <button class="sp-tab" id="spTab" aria-label="Open comments" hidden></button>
+    <aside class="coach" id="coach" aria-live="polite" hidden></aside>
+
+    <button class="float-comment" id="floatComment" hidden></button>
+    <div class="toast" id="toast" hidden></div>
+    <div class="dialog-overlay" id="dialog" hidden></div>
+
+    <script src="icons.js"></script>
+    <script src="comments.js"></script>
+  </body>
+</html>
