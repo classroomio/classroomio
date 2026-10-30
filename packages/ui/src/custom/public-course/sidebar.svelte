@@ -90,6 +90,7 @@
     <SidebarRow
       number={section.standalone ? undefined : index + 1}
       kind={item.kind}
+      depth={item.depth ?? 0}
       title={item.title}
       active={item.slug === activeSlug}
       locked={!item.isUnlocked}

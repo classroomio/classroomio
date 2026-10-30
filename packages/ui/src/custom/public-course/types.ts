@@ -38,6 +38,8 @@ export interface PublicCourseSidebarItem {
   slug: string;
   title: string;
   isUnlocked: boolean;
+  /** Nested outline depth (0 = root). Used by public note pages. */
+  depth?: number;
 }
 
 export interface PublicCourseSidebarSection {

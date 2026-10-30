@@ -21,6 +21,7 @@
   import { sidePanel, SidePanelRail } from '$features/side-panel';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { transcriptPanelDefinition } from '$features/course/components/lesson/video/transcript-panel-definition';
+  import { lessonNotePanelDefinition } from '$features/docs/panel';
   import { get } from 'svelte/store';
   import { page } from '$app/state';
   import { profile } from '$lib/utils/store/user';
@@ -46,6 +47,7 @@
   }
 
   sidePanel.register(transcriptPanelDefinition);
+  sidePanel.register(lessonNotePanelDefinition);
 
   interface Props {
     children?: import('svelte').Snippet;

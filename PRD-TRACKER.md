@@ -23,6 +23,8 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | 10 | `prd/pricing-improvements` | todo |
 | - | - | `prd/customer-course-documentation` | todo |
 | - | - | `prd/walkthrough-widget` | draft |
+| - | - | `prd/docs-content-layer` | draft (Docs as CE content primitive; has implementation-plan + strategy-review) |
+| - | - | `prd/docs-knowledge-base` | draft (Zoho KB later) |
 | - | - | `prd/copy-page-as-markdown` | todo |
 | - | 15 | `prd/webhooks` | todo |
 | - | - | `prd/zapier` | draft |
@@ -47,6 +49,8 @@ Use this file to keep a single prioritized view of all PRDs.
 | `prd/lesson-edit [DONE]` | done |
 | `prd/lessons-list [DONE]` | done |
 | `prd/media-manager [DONE]` | done |
+| `prd/notes-comments [DONE]` | done |
+| `prd/notes-sidebar [DONE]` | done (on #699; not on main yet) |
 | `prd/mcp-course-authoring [DONE]` | done |
 | `prd/org-landing-page-theme-picker [DONE]` | done |
 | `prd/programs [DONE]` | done |

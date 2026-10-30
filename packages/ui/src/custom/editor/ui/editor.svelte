@@ -30,6 +30,8 @@
   import slashcommand from '../extensions/slash-command/slashcommand';
   import SlashCommandList from './components/SlashCommandList.svelte';
   import ImageUploadModal from './components/image-upload-modal.svelte';
+  import { createTableOfContentsExtensions } from '../extensions/table-of-contents';
+  import TableOfContentsBlockComp from './components/table-of-contents-block.svelte';
 
   import '../editor.css';
   import '../extensions/callout/callout.css';
@@ -53,7 +55,8 @@
     placeholder = '',
     onImageUpload,
     onSearchUnsplash,
-    emailSafe = false
+    emailSafe = false,
+    extraExtensions = []
   }: EdraEditorProps = $props();
 
   let isImageModalOpen = $state(false);
@@ -78,7 +81,9 @@
             AudioExtended(AudioExtendedComp),
             IFramePlaceholder(IFramePlaceHolderComp),
             IFrameExtended(IFrameExtendedComp),
-            slashcommand(SlashCommandList)
+            slashcommand(SlashCommandList),
+            ...createTableOfContentsExtensions(TableOfContentsBlockComp),
+            ...extraExtensions
           ])
     ];
 
@@ -88,11 +93,6 @@
       editorExtensions,
       {
         onUpdate,
-        // onTransaction(props) {
-        //   console.log('on transaction', props);
-        //   editor = undefined;
-        //   editor = props.editor;
-        // },
         editable,
         autofocus
       },

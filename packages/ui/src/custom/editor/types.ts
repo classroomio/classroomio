@@ -1,8 +1,10 @@
-import type { Content, Editor } from '@tiptap/core';
+import type { Content, Editor, Extensions } from '@tiptap/core';
 import type { EditorState, Transaction } from '@tiptap/pm/state';
 
 import type { EditorView } from '@tiptap/pm/view';
 import type { Snippet } from 'svelte';
+
+export type { Content, Editor, Extensions, HTMLContent } from '@tiptap/core';
 
 export type EditorToolbarPreset = 'default' | 'email';
 
@@ -17,6 +19,7 @@ export interface EdraEditorProps {
   onImageUpload?: (file: File) => Promise<string>;
   onSearchUnsplash?: (query: string) => Promise<UnsplashPhoto[]>;
   emailSafe?: boolean;
+  extraExtensions?: Extensions;
 }
 
 export interface EditorProps {
@@ -38,6 +41,7 @@ export interface EditorProps {
   class?: string;
   // CSS class for the editor itself
   editorClass?: string;
+  frameless?: boolean;
   // Callback functions
   onContentChange?: (content: Content) => void;
   onEditorReady?: (editor: Editor) => void;
@@ -48,6 +52,7 @@ export interface EditorProps {
   expanded?: boolean;
   expandedTitle?: string;
   expandedDescription?: string;
+  extraExtensions?: Extensions;
 }
 
 export interface EdraToolbarProps {

@@ -2,6 +2,7 @@ import type { EditorProps } from '@cio/ui/custom/editor/types';
 
 export const FIELDS: (keyof EditorProps)[] = [
   'showToolBar',
+  'frameless',
   'editable',
   'enablePersistence',
   'contentStorageKey',

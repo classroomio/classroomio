@@ -17,7 +17,7 @@
 
 <script lang="ts">
   // Type-only imports are erased at build time — no static TipTap dependency.
-  import type { EditorToolbarPreset, HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
+  import type { EditorToolbarPreset, HTMLContent, TiptapEditor, Extensions } from '@cio/ui/custom/editor';
   import type { Snippet } from 'svelte';
   import { cn } from '@cio/ui/tools';
   import { uploadImage } from '$lib/utils/services/upload';
@@ -35,6 +35,7 @@
     editableStorageKey?: string;
     class?: string;
     editorClass?: string;
+    frameless?: boolean;
     onChange?: (content: HTMLContent) => void;
     onReady?: (editor: TiptapEditor) => void;
     onEditorDestroy?: () => void;
@@ -42,6 +43,7 @@
     expanded?: boolean;
     expandedTitle?: string;
     expandedDescription?: string;
+    extraExtensions?: Extensions;
   }
 
   let {
@@ -55,6 +57,7 @@
     editableStorageKey = 'edra-editable',
     class: className = '',
     editorClass = '',
+    frameless = false,
     placeholder = 'Welcome to ClassroomIO',
     onChange,
     onReady,
@@ -62,18 +65,23 @@
     expandable = false,
     expanded = $bindable(false),
     expandedTitle = '',
-    expandedDescription = ''
+    expandedDescription = '',
+    extraExtensions
   }: Props = $props();
 </script>
 
 {#await loadEditor()}
   <div
-    class={cn('ui:bg-background relative flex w-full flex-col rounded-md border border-dashed', className)}
+    class={cn(
+      'ui:bg-background relative flex w-full flex-col',
+      !frameless && 'rounded-md border border-dashed',
+      className
+    )}
     aria-busy="true"
     aria-hidden="true"
   >
     {#if showToolBar}
-      <div class="ui:bg-muted/50 h-9 shrink-0 border-b border-dashed"></div>
+      <div class={cn('ui:bg-muted/50 h-9 shrink-0', !frameless && 'border-b border-dashed')}></div>
     {/if}
     <div class={cn('ui:bg-muted/50 relative h-full w-full animate-pulse overflow-auto p-4', editorClass)}></div>
   </div>
@@ -89,6 +97,7 @@
     {editableStorageKey}
     class={className}
     {editorClass}
+    {frameless}
     {placeholder}
     onContentChange={onChange}
     onEditorReady={onReady}
@@ -99,5 +108,6 @@
     bind:expanded
     {expandedTitle}
     {expandedDescription}
+    {extraExtensions}
   />
 {/await}

@@ -14,16 +14,16 @@
   interface Props {
     /** Width classes matching the page content column (e.g. mx-auto w-full max-w-3xl). */
     class?: string;
-    /** Tailwind bottom offset class for the collapsed bar (e.g. bottom-4, bottom-24). */
     bottomClass?: string;
-    /** Tailwind bottom offset class for the expanded input dock (e.g. bottom-0, bottom-24). */
     expandedBottomClass?: string;
+    onSubmit?: (prompt: string) => void;
   }
 
   let {
     class: contentClass = 'mx-auto w-full max-w-3xl',
     bottomClass = 'bottom-4',
-    expandedBottomClass = 'bottom-0'
+    expandedBottomClass = 'bottom-0',
+    onSubmit
   }: Props = $props();
 
   const pageShellClass = 'mx-auto w-[90%] max-w-4xl px-3 sm:px-4 lg:max-w-5xl';
@@ -60,7 +60,11 @@
       return;
     }
 
-    sendPromptToAssistant(trimmed);
+    if (onSubmit) {
+      onSubmit(trimmed);
+    } else {
+      sendPromptToAssistant(trimmed);
+    }
     draft = '';
     collapse();
   }

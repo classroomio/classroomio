@@ -18,6 +18,8 @@
   const isSettingsRoute = $derived(/\/settings(?:\/|$)/.test(page.url.pathname));
   const isCoursesList = $derived(/\/courses\/?$/.test(page.url.pathname));
 
+  const isDocsWorkspace = $derived(/\/docs(?:\/|$)/.test(page.url.pathname));
+
   function redirect(siteName: string | null) {
     if (!siteName) return;
 
@@ -42,14 +44,14 @@
   <AddOrgModal />
 {/if}
 
-<Sidebar.Provider>
+<Sidebar.Provider class={isDocsWorkspace ? 'h-svh max-h-svh' : undefined}>
   {#if isSettingsRoute}
     <SettingsSidebar />
   {:else}
     <OrgSidebar />
   {/if}
 
-  <Sidebar.Inset>
+  <Sidebar.Inset class={isDocsWorkspace ? 'h-svh max-h-svh min-h-0 flex-1 overflow-hidden p-0' : undefined}>
     {#if isSettingsRoute}
       <div class="flex h-10 items-center px-3 md:hidden">
         <Sidebar.Trigger testId="settings-sidebar-trigger-mobile" />
@@ -59,7 +61,11 @@
     {/if}
 
     <div
-      class={isCoursesList ? 'flex w-full flex-1 flex-col' : 'mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4'}
+      class={isDocsWorkspace
+        ? 'flex min-h-0 flex-1 flex-col overflow-hidden'
+        : isCoursesList
+          ? 'flex w-full flex-1 flex-col'
+          : 'mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4'}
     >
       {#if data.orgName === '*'}
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">

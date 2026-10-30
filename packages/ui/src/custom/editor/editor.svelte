@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { HTMLContent, Editor } from '@tiptap/core';
+  import type { HTMLContent, Editor, Extensions } from '@tiptap/core';
   import type { Transaction } from '@tiptap/pm/state';
   import type { UnsplashPhoto } from './types';
   import type { Snippet } from 'svelte';
@@ -27,12 +27,15 @@
     class?: string;
     // CSS class for the editor itself
     editorClass?: string;
+    /** No dashed frame — plain document surface (notes, embedded panels). */
+    frameless?: boolean;
     // Placeholder text for the editor
     placeholder?: string | ((node: any) => string);
     // Callback functions
     onContentChange?: (content: HTMLContent) => void;
     onEditorReady?: (editor: Editor) => void;
     onEditorDestroy?: () => void;
+    extraExtensions?: Extensions;
     onImageUpload?: (file: File) => Promise<string>;
     onSearchUnsplash?: (query: string) => Promise<UnsplashPhoto[]>;
     showDragHandle?: boolean;
@@ -54,6 +57,7 @@
     editableStorageKey = 'edra-editable',
     class: className = '',
     editorClass = '',
+    frameless = false,
     placeholder,
     onContentChange,
     onEditorReady,
@@ -63,7 +67,8 @@
     expandable = false,
     expanded = $bindable(false),
     expandedTitle = '',
-    expandedDescription = ''
+    expandedDescription = '',
+    extraExtensions = []
   }: Props = $props();
 
   const editors = $state<{ inline?: Editor; expanded?: Editor }>({});
@@ -160,7 +165,8 @@
   {@const editor = editors[surface]}
   <div
     class={cn(
-      'ui:relative ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
+      'ui:relative ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col',
+      !frameless && 'ui:rounded-md ui:border ui:border-dashed',
       wrapperClass
     )}
   >
@@ -169,7 +175,8 @@
         <div transition:slide>
           <EdraToolBar
             class={cn(
-              'ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:border-b ui:border-dashed ui:p-0.5',
+              'ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:p-0.5',
+              !frameless && 'ui:border-b ui:border-dashed',
               toolbarPreset === 'email' ? 'ui:flex-wrap ui:overflow-x-hidden' : 'ui:flex-nowrap ui:overflow-x-auto'
             )}
             {editor}
@@ -188,7 +195,11 @@
     {/if}
     <div class="ui:flex ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:flex-col">
       <EdraEditor
-        class={cn('ui:relative ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:overflow-auto ui:p-4', contentClass)}
+        class={cn(
+          'ui:relative ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:overflow-auto',
+          frameless ? 'ui:p-0' : 'ui:p-4',
+          contentClass
+        )}
         bind:editor={editors[surface]}
         {editable}
         emailSafe={toolbarPreset === 'email'}
@@ -197,6 +208,7 @@
         {placeholder}
         {onImageUpload}
         {onSearchUnsplash}
+        {extraExtensions}
       />
     </div>
   </div>

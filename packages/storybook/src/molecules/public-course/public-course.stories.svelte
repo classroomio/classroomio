@@ -2,6 +2,8 @@
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { PublicCourse } from '@cio/ui';
   import type { PublicCourseSidebarItem } from '@cio/ui/custom/public-course';
+  import { FIELDS } from './fields';
+  import { Button } from '@cio/ui/base/button';
   import { QUESTION_LABELS } from '../exercise-question/question-labels';
   import {
     CALLOUT_FIXTURE,
@@ -18,8 +20,10 @@
     title: 'Molecules/PublicCourse',
     component: PublicCourse.PublicCourseShell,
     parameters: {
-      layout: 'fullscreen'
+      layout: 'fullscreen',
+      controls: { include: FIELDS }
     },
+    argTypes: { onItemClick: { control: false }, onPrev: { control: false }, onNext: { control: false } },
     tags: ['autodocs']
   });
 
@@ -320,6 +324,85 @@
         ]}
         activeSlug={SIDEBAR_FIXTURE[0].items[0].slug}
         collapsibleSections
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Docs · public site shell">
+  {#snippet template()}
+    <PublicCourse.PublicSiteShell
+      org={ORG_FIXTURE}
+      pageTitle="Instructor playbook"
+      breadcrumbs={[{ label: 'Knowledge base', href: '/' }, { label: 'Instructor playbook' }]}
+    >
+      <article class="mx-auto w-full max-w-3xl p-6">
+        <h1 class="text-3xl font-semibold">Instructor playbook</h1>
+        <p class="mt-4">A shared reference for planning, teaching, and improving your courses.</p>
+      </article>
+    </PublicCourse.PublicSiteShell>
+  {/snippet}
+</Story>
+
+<Story name="Docs · header without organization or title">
+  {#snippet template()}
+    <PublicCourse.PublicSiteHeader />
+  {/snippet}
+</Story>
+
+<Story name="Docs · header with page title">
+  {#snippet template()}
+    <PublicCourse.PublicSiteHeader org={ORG_FIXTURE} pageTitle="Instructor playbook" />
+  {/snippet}
+</Story>
+
+<Story name="Docs · header with custom actions">
+  {#snippet template()}
+    <PublicCourse.PublicSiteHeader org={ORG_FIXTURE} pageTitle="Instructor playbook">
+      {#snippet headerActions()}<Button size="sm" variant="secondary">Share</Button>{/snippet}
+      {#snippet topRight()}<Button size="sm">Open workspace</Button>{/snippet}
+    </PublicCourse.PublicSiteHeader>
+  {/snippet}
+</Story>
+
+<Story name="Docs · shell without attribution">
+  {#snippet template()}
+    <PublicCourse.PublicSiteShell org={ORG_FIXTURE} pageTitle="Workspace guide" showPoweredBy={false}>
+      <p class="p-6">Your organization’s public guide.</p>
+    </PublicCourse.PublicSiteShell>
+  {/snippet}
+</Story>
+
+<Story name="Docs · nested sidebar">
+  {#snippet template()}
+    <div class="h-96 w-72">
+      <PublicCourse.PublicCourseSidebar
+        sections={[
+          {
+            id: 'docs',
+            title: 'Knowledge base',
+            items: [
+              { id: 'root', kind: 'lesson', slug: 'guide', title: 'Instructor playbook', isUnlocked: true, depth: 0 },
+              {
+                id: 'child',
+                kind: 'lesson',
+                slug: 'objectives',
+                title: 'Learning objectives',
+                isUnlocked: true,
+                depth: 1
+              },
+              {
+                id: 'grandchild',
+                kind: 'lesson',
+                slug: 'examples',
+                title: 'Example objectives',
+                isUnlocked: true,
+                depth: 2
+              }
+            ]
+          }
+        ]}
+        activeSlug="objectives"
       />
     </div>
   {/snippet}

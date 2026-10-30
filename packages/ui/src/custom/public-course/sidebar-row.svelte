@@ -9,6 +9,8 @@
     number?: number;
     kind?: 'lesson' | 'exercise';
     title: string;
+    /** Nested outline depth (0 = top level). */
+    depth?: number;
     /** Is this the active (currently-viewed) row? */
     active?: boolean;
     /** Locked rows show a lock icon and a muted treatment. */
@@ -25,6 +27,7 @@
     number,
     kind = 'lesson',
     title,
+    depth = 0,
     active = false,
     locked = false,
     itemSlug,
@@ -35,12 +38,14 @@
 
   const rowClass = $derived(
     cn(
-      'ui:group ui:flex ui:items-center ui:gap-1.5 ui:py-1 ui:pl-3 ui:pr-4 ui:rounded-sm ui:text-sm ui:leading-snug ui:w-full ui:text-left ui:transition-colors',
+      'ui:group ui:flex ui:items-center ui:gap-1.5 ui:py-1 ui:pr-4 ui:rounded-sm ui:text-sm ui:leading-snug ui:w-full ui:text-left ui:transition-colors',
       active && 'ui:bg-transparent',
       locked && !active && 'ui:text-muted-foreground',
       className
     )
   );
+
+  const rowStyle = $derived(`padding-left: ${12 + depth * 14}px`);
 
   const titleClass = $derived(
     cn(
@@ -85,13 +90,14 @@
 {/snippet}
 
 {#if href}
-  <a {href} class={rowClass} aria-current={active ? 'page' : undefined} data-item-slug={itemSlug}>
+  <a {href} class={rowClass} style={rowStyle} aria-current={active ? 'page' : undefined} data-item-slug={itemSlug}>
     {@render body()}
   </a>
 {:else}
   <button
     type="button"
     class={rowClass}
+    style={rowStyle}
     aria-current={active ? 'page' : undefined}
     aria-disabled={locked || undefined}
     data-item-slug={itemSlug}

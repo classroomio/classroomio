@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 import { seedAccount } from '@db/utils/seed/account';
 import { seedCompliance } from '@db/utils/seed/compliance';
+import { seedDocs } from '@db/utils/seed/docs';
 import { MVC_SECTION_ID, PANDAS_SECTION_ID, REACT_SECTION_ID, seedCourseSections } from '@db/utils/seed/courseSection';
 import { seedCourseraDummyCourses } from '@db/utils/seed/courseraDummyCourses';
 import { seedCourses } from '@db/utils/seed/course';
@@ -14,7 +15,11 @@ import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
 import { seedNewsfeedThreads } from '@db/utils/seed/newsfeedThreads';
 import { seedOrganization } from '@db/utils/seed/organization';
 import { seedOrganizationMember } from '@db/utils/seed/organizationmember';
-import { seedEarlyAdopterOrganizationPlan, seedEnterpriseOrganizationPlan } from '@db/utils/seed/organizationPlan';
+import {
+  seedEarlyAdopterOrganizationPlan,
+  seedEnterpriseOrganizationPlan,
+  seedTestOrganizationPlan
+} from '@db/utils/seed/organizationPlan';
 import { seedProfile } from '@db/utils/seed/profile';
 import { seedQuestionTypes } from '@db/utils/seed/questionType';
 import { seedQuestions } from '@db/utils/seed/question';
@@ -66,7 +71,8 @@ const orderedSeeds = [
   'react-people-progress',
   'learner-lifecycle',
   'newsfeed-threads',
-  'launch-templates'
+  'launch-templates',
+  'docs'
 ] as const;
 
 type SeedName = (typeof orderedSeeds)[number];
@@ -105,7 +111,9 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
       'exercises',
       'questions',
       'react-people-progress',
-      'learner-lifecycle'
+      'learner-lifecycle',
+      'organization-plan',
+      'docs'
     ]
   },
   'coursera-test': {
@@ -215,6 +223,7 @@ Flags:
   --launch-templates         Seed ClassroomIO launch templates into coursera-test
   --reset                    With --launch-templates, retire the previously seeded templates first
   --react-people-progress    Seed React course students with varied progress (udemy-test)
+  --docs                     Seed docs demo data (udemy-test org)
   --help, -h                  Show this help message
 
 Examples:
@@ -277,6 +286,10 @@ const seedFunctions = {
     });
   },
   'organization-plan': async () => {
+    if (!selectedOrganization || selectedOrganization === 'udemy-test') {
+      await seedTestOrganizationPlan({ testOrgId: TEST_ORG_ID });
+    }
+
     if (!selectedOrganization || selectedOrganization === 'coursera-test') {
       console.log('📝 Seeding enterprise organization plan...');
       await seedEnterpriseOrganizationPlan({ enterpriseOrgId: ENTERPRISE_ORG_ID });
@@ -375,6 +388,15 @@ const seedFunctions = {
   compliance: async () => {
     console.log('📝 Seeding compliance demo data (coursera-test)...');
     await seedCompliance({ enterpriseOrgId: ENTERPRISE_ORG_ID });
+  },
+  docs: async () => {
+    await seedDocs({
+      testOrgId: TEST_ORG_ID,
+      adminUserId: ADMIN_USER_ID,
+      studentUserId: STUDENT_USER_ID,
+      mvcCourseId: MVC_COURSE_ID,
+      reactCourseId: REACT_COURSE_ID
+    });
   },
   'learner-lifecycle': async () => {
     console.log('📝 Seeding learner lifecycle roster (udemy-test)...');
