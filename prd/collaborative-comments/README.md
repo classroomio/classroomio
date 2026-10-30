@@ -128,7 +128,9 @@ the course.
 - Grouped by where the thread lives: General, then each lesson/exercise in course order.
 - Clicking a thread takes you to the exact spot: scrolls to the highlight, seeks the video, or opens
   the question.
-- The panel and page badges count **open** threads only.
+- The panel and page badges count **open** threads only. Counts and badges are never sent to
+  learners: the course outline response omits them for learners and includes them only for admins and
+  tutors on the course and org admins.
 - The panel can be **closed** from its header or with Esc, and reopened from the Comments button in
   the course header or an edge tab. Highlights stay visible while it is closed, and clicking one
   reopens the panel on that thread.
@@ -191,6 +193,10 @@ Comments show up for teammates without a page refresh.
 - Cursors are only shown between admins and tutors. Learners never see them.
 - Live updates never move the page under you: a thread you are typing in keeps your draft and focus.
 - If the connection drops, the panel shows it is offline and catches up on reconnect.
+- Live delivery has the same access rule as every comment endpoint. Subscriptions and the server-side
+  fan-out of events, cursors and unposted text check that the person is an admin or tutor on the
+  course, or an org admin, and drop them when they lose access. A connected learner receives no
+  posted updates, no drafts and no cursors.
 - Notifications (bell and email) work the same as in section 6.
 
 ## Edge Cases
@@ -202,8 +208,9 @@ Comments show up for teammates without a page refresh.
   assigned. Anything assigned to them is cleared and the thread goes back to unassigned. The one
   exception is an org admin: they stay on every course team of their org, so removing them from a
   course's list changes nothing for comments.
-- **Account deleted entirely:** their comments stay and show as "Deleted user". Each comment keeps
-  the author's name as it was at deletion, so the thread still reads clearly.
+- **Account deleted entirely:** their comments stay and readers see only "Deleted user", with no
+  name, avatar or profile link. The name as it was at deletion is kept for the team's audit trail
+  and is not shown in the panel, so the thread still reads clearly from its context.
 - **Removed person was mentioned:** the mention stays in the text as plain "@Ada" and no longer
   links to a profile.
 - **Mentioning someone who later loses access:** they get no further notifications for that thread.
@@ -243,7 +250,9 @@ These are guides, not final decisions.
   team membership. Removing someone from the team deletes the membership row only, never their
   comments. Whether to show "Former member" is worked out when the panel loads, by checking if the
   author is still on the team. Nothing is written into the comment. Account deletion must not
-  cascade to comments: keep the row and store the display name at that moment.
+  cascade to comments: keep the row and store the display name at that moment. Every history event
+  also stores its actor's user id and a display-name snapshot (replies, assignments, resolves,
+  reopens and membership events included), so the actor stays identifiable after an account is deleted.
 - **Access:** org admins are allowed on every comment endpoint, in addition to admins and tutors on
   the course.
 - **Video anchors:** store the media/asset id and the second. If the lesson's asset id changes, the
@@ -267,6 +276,7 @@ These are guides, not final decisions.
 - [ ] A thread with replies a person has not read shows as unread to that person only, and opening it clears it.
 - [ ] "Copy link" on a thread gives a link that opens the course on that thread.
 - [ ] Publishing a page with open threads shows a warning that lists them, with "Review comments" and "Publish anyway".
+- [ ] A learner connected while a teammate comments or types receives no posted updates, no drafts and no cursors, and the course outline sent to a learner has no comment counts.
 - [ ] Cloning a course does not copy its comments.
 - [ ] A learner account cannot see or fetch any comment, through the UI or the API.
 - [ ] After a tutor is removed from a course, their comments and replies are still visible to the team, tagged "Former member", and open threads they started can still be resolved by others.
