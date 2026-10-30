@@ -748,3 +748,12 @@ When adding a new component to this package, follow these steps:
 `PublicCourseSidebarSection.standalone` renders its items directly, without a section heading or collapse control. Group consecutive root lessons and exercises into one standalone entry, interleaved with section entries in course order. Standalone rows show the item type icon in the badge instead of a number, since numbers count position within a section. Standalone entries stay visible when `collapsibleSections` is enabled.
 
 `NumberBadge` renders its `children` snippet in place of `number`, for a badge that shows an icon.
+
+
+### Docs editor and public reader
+
+`Editor` accepts `frameless` to remove its border and content padding, and `extraExtensions` to register additional TipTap extensions. The table of contents block uses `<div data-type="table-of-contents"></div>` and updates from document headings. Add `DocCommentMark` through `extraExtensions` to render anchored comment highlights.
+
+`PublicCourse.PublicSiteHeader` renders organization branding with an optional `pageTitle` or `breadcrumbs`. Pass localized `exploreLabel` and `signInLabel`; `headerActions` adds actions before the default buttons, and `topRight` replaces those buttons.
+
+`PublicCourse.PublicSiteShell` wraps a public document with that header and a footer. It accepts the same header props, a `children` snippet, localized `poweredByLabel` and `poweredByBrand`, and `showPoweredBy` to hide the footer. Sidebar items accept `depth` to indent nested document pages.

@@ -196,6 +196,11 @@ export const ZUpdateOrganization = z.object({
           enrollmentWelcome: z.boolean().optional(),
           courseCompletion: z.boolean().optional()
         })
+        .optional(),
+      notes: z
+        .object({
+          defaultVisibility: z.enum(['private', 'team']).optional()
+        })
         .optional()
     })
     .optional()

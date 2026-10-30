@@ -576,7 +576,8 @@
     "explore": "अन्वेषण करें",
     "help": "मदद",
     "settings": "सेटिंग्स",
-    "cohorts": "कोहोर्ट"
+    "programs": "कार्यक्रम",
+    "my_notes": "My Notes"
   },
   "upgrade": {
     "certificate": "प्रमाणपत्र बनाने की अपनी योजना को अपग्रेड करें",
@@ -3565,7 +3566,8 @@
     "back_to_app": "ऐप पर वापस जाएं",
     "create": "बनाएँ",
     "distribute": "बांटो",
-    "tools": "उपकरण"
+    "tools": "उपकरण",
+    "docs": "दस्तावेज़"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",
@@ -4142,7 +4144,19 @@
           "add_theme": "थीम जोड़ें"
         }
       },
-      "page_subtitle": "इस संगठन के लिए छात्रों को दिखने वाला नाम, लोगो और थीम सेट करें।"
+      "page_subtitle": "इस संगठन के लिए छात्रों को दिखने वाला नाम, लोगो और थीम सेट करें।",
+      "notes": {
+        "heading": "Notes",
+        "description": "Control how new workspace notes are shared with your team.",
+        "share_by_default": {
+          "label": "Share new notes with the team",
+          "description": "When enabled, new workspace notes are visible to all admins and tutors. You can still make individual notes private."
+        },
+        "save": "Save notes settings"
+      },
+      "docs": {
+        "heading": "दस्तावेज़"
+      }
     },
     "profile": {
       "heading": "प्रोफाइल",
@@ -5650,7 +5664,8 @@
     "resize_panel_aria_label": "पैनल का आकार बदलें",
     "titles": {
       "ai_assistant": "AI सहायक",
-      "transcript": "ट्रांसक्रिप्ट"
+      "transcript": "ट्रांसक्रिप्ट",
+      "note_comments": "Comments"
     }
   },
   "compliance": {
@@ -6438,5 +6453,188 @@
     "new_badge": "नया",
     "read_full": "पूरा चेंजलॉग पढ़ें",
     "close": "बंद करें"
+  },
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All",
+        "from_lessons": "From lessons",
+        "mine": "Mine",
+        "shared_with_me": "Shared"
+      },
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet",
+      "badge_private": "Private",
+      "badge_shared_by_me": "Shared",
+      "badge_public": "Public",
+      "by_author": "By {name}"
+    },
+    "workspace": {
+      "empty_title": "No note selected",
+      "empty_description": "Create a new note or pick one from the list.",
+      "create_note": "Create note",
+      "no_notes": "No notes",
+      "note_count": "{count, plural, =1 {1 note} other {# notes}}",
+      "sections": {
+        "pinned": "Pinned",
+        "previous_7_days": "Previous 7 Days",
+        "previous_30_days": "Previous 30 Days"
+      },
+      "empty_mine": "You have no notes yet",
+      "empty_shared": "No notes have been shared with you",
+      "empty_shared_title": "Nothing shared yet",
+      "empty_shared_description": "When a teammate shares a note with the team, it will show up here.",
+      "empty_filtered": "No notes match your filters"
+    },
+    "convert_course": {
+      "button": "Convert to course",
+      "title": "Convert note to course",
+      "description": "Review the course structure before creating. No AI is used for this conversion.",
+      "course_title": "Course title",
+      "use_sections": "Use sections",
+      "use_sections_hint": "Group lessons under H1 headings from your note.",
+      "use_toc": "Use table of contents for lesson titles",
+      "use_toc_hint": "When a table of contents block is present, use its entries as lesson titles.",
+      "summary": "{sections} sections, {lessons} lessons",
+      "create": "Create course",
+      "success": "Course created from note",
+      "error": "Could not create course from note.",
+      "copy_success": "Course created. Your note is unchanged.",
+      "empty_error": "Add at least one lesson before creating a course.",
+      "already_converted_description": "This note is already linked to a course.",
+      "already_converted_body": "Open the existing course, or keep editing this note. Creating another course from the same note is blocked.",
+      "open_course": "Open course"
+    },
+    "templates": {
+      "heading": "Templates",
+      "empty": "Save a note as a template to reuse it here.",
+      "convert_success": "Note saved as template",
+      "convert_error": "Could not save note as template.",
+      "create_success": "Note created from template",
+      "create_error": "Could not create note from template.",
+      "use_template": "Use template",
+      "convert_copy_success": "Template saved. Your note is unchanged.",
+      "edit_template": "Edit template",
+      "remove_template": "Remove as template",
+      "remove_success": "Template removed",
+      "remove_error": "Could not remove template"
+    },
+    "share": {
+      "public_label": "Anyone with the link",
+      "public_description": "Anyone with the link can view this note. It will appear on your public academy site.",
+      "public_slug_label": "Public link slug",
+      "public_slug_hint": "Used in the public URL for this note.",
+      "copy_success": "Link copied"
+    },
+    "editor": {
+      "pin": "Pin note",
+      "unpin": "Unpin note",
+      "pin_success": "Note pinned",
+      "unpin_success": "Note unpinned",
+      "pin_error": "Could not update pin"
+    },
+    "comments": {
+      "ai_author": "ClassroomIO Assistant",
+      "ai_badge": "AI"
+    },
+    "ai_panel": {
+      "empty_title": "Get AI feedback on this note",
+      "empty_description": "Review the note to add anchored AI comments you can resolve like teammate feedback.",
+      "review_note": "Review note",
+      "review_selection": "Review selection",
+      "review_hint": "AI comments appear in the comments sidebar with yellow highlights in the note.",
+      "review_success": "AI comments added to your note",
+      "review_empty": "No new AI comments were added",
+      "review_error": "Could not generate AI comments",
+      "empty_note_error": "Add some content before asking AI to review",
+      "selection_required": "Select text in the note first",
+      "last_result": "{count, plural, =0 {No comments added} =1 {1 comment added} other {# comments added}}"
+    }
+  },
+  "docs": {
+    "ai_panel": {
+      "open": "एआई से पूछें"
+    },
+    "comments": {
+      "add": "टिप्पणी जोड़ें",
+      "add_inline": "टिप्पणी करें",
+      "ai_badge": "ऐ",
+      "delete": "हटाएँ",
+      "edit": "संपादित करें",
+      "heading": "टिप्पणियाँ",
+      "open_heading": "खुला",
+      "post": "पोस्ट",
+      "reply": "उत्तर",
+      "reply_label": "उत्तर",
+      "save": "सहेजें"
+    },
+    "convert_course": {
+      "course_title": "पाठ्यक्रम का शीर्षक"
+    },
+    "editor": {
+      "convert_to_template": "टेम्पलेट में कनवर्ट करें",
+      "delete": "हटाएँ",
+      "title_placeholder": "शीर्षकहीन",
+      "version_history": {
+        "current": "वर्तमान संस्करण",
+        "load_more": "और अधिक लोड करें",
+        "open": "संस्करण इतिहास",
+        "preview": "पूर्वावलोकन",
+        "title": "संस्करण इतिहास"
+      }
+    },
+    "empty_page": {
+      "templates": "टेम्पलेट्स"
+    },
+    "list": {
+      "badge_public": "सार्वजनिक",
+      "shared_with_team": "संगठन",
+      "tabs": {
+        "all": "सब"
+      }
+    },
+    "org": {
+      "new_note_title": "शीर्षकहीन"
+    },
+    "share": {
+      "cancel": "रद्द करें",
+      "copy_success": "लिंक कॉपी किया गया",
+      "open": "साझा करें",
+      "save": "सहेजें",
+      "team_label": "संगठन"
+    },
+    "sidebar": {
+      "footer": {
+        "templates": "टेम्पलेट्स"
+      },
+      "search_placeholder": "खोजें",
+      "sections": {
+        "organization": "संगठन",
+        "workspace": "संगठन"
+      }
+    },
+    "tags": {
+      "add": "टैग जोड़ें",
+      "heading": "टैग"
+    },
+    "templates": {
+      "browse": "टेम्प्लेट ब्राउज़ करें",
+      "heading": "टेम्पलेट्स",
+      "use_template": "टेम्प्लेट का उपयोग करें"
+    },
+    "trash": {
+      "restore": "पुनर्स्थापित करें"
+    },
+    "workspace": {
+      "sections": {
+        "pinned": "पिन किया गया"
+      }
+    },
+    "workspace_page_title": "दस्तावेज़"
   }
 }

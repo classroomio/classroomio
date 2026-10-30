@@ -48,7 +48,7 @@
   const groundingScopeOptions = [
     { value: 'course', labelKey: 'aiTutor.groundingScope.course' as const },
     { value: 'lesson', labelKey: 'aiTutor.groundingScope.lesson' as const },
-    { value: 'workspace', labelKey: 'aiTutor.groundingScope.workspace' as const }
+    { value: 'organization', labelKey: 'aiTutor.groundingScope.organization' as const }
   ];
 
   function parseForbiddenTopics(text: string): string[] {

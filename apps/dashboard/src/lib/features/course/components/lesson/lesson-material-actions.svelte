@@ -6,14 +6,19 @@
   import { t } from '$lib/utils/functions/translations';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { buildLessonSummarizePrompt } from './utils/lesson-summarize-prompt';
+  import { sidePanel } from '$features/side-panel';
+  import { LESSON_NOTE_PANEL_ID, openLessonNotePanel } from '$features/docs/utils/open-lesson-note';
+  import NotebookPenIcon from '@lucide/svelte/icons/notebook-pen';
 
   interface Props {
     showTranscript?: boolean;
     showSummarize?: boolean;
+    showTakeNote?: boolean;
     showTopSeparator?: boolean;
     showBottomSeparator?: boolean;
     /** Match the note column (`max-w-2xl`) instead of the full video column. */
     alignWithNote?: boolean;
+    courseId?: string;
     lessonId: string;
     onTranscript?: () => void;
   }
@@ -21,19 +26,28 @@
   let {
     showTranscript = false,
     showSummarize = false,
+    showTakeNote = false,
     showTopSeparator = true,
     showBottomSeparator = true,
     alignWithNote = false,
+    courseId,
     lessonId,
     onTranscript = () => {}
   }: Props = $props();
 
+  const isNotePanelOpen = $derived(sidePanel.activePanelId === LESSON_NOTE_PANEL_ID);
+
   function handleSummarizeLesson() {
     sendPromptToAssistant(buildLessonSummarizePrompt(lessonId));
   }
+
+  function handleTakeNote() {
+    if (!courseId) return;
+    openLessonNotePanel({ courseId, lessonId });
+  }
 </script>
 
-{#if showTranscript || (showSummarize && IS_AI_ENABLED)}
+{#if showTranscript || (showSummarize && IS_AI_ENABLED) || (showTakeNote && courseId)}
   <div class={alignWithNote ? 'mx-auto w-full max-w-2xl' : 'w-full'}>
     {#if showTopSeparator}
       <Separator class="my-2" />
@@ -61,6 +75,31 @@
             <Button variant="ghost" size="sm" class="h-auto px-1 py-1 sm:px-2" onclick={handleSummarizeLesson}>
               <PremiumIcon {isHovered} size={16} />
               {$t('course.navItem.lessons.materials.summarize_lesson')}
+            </Button>
+          {/snippet}
+        </HoverableItem>
+      {/if}
+
+      {#if showSummarize && showTakeNote && courseId}
+        <span class="ui:text-muted-foreground hidden text-sm sm:inline" aria-hidden="true">|</span>
+      {/if}
+
+      {#if showTakeNote && courseId}
+        <HoverableItem>
+          {#snippet children(isHovered)}
+            <Button
+              variant="ghost"
+              size="sm"
+              class="ui:h-auto ui:px-1 ui:py-1 sm:ui:px-2"
+              onclick={handleTakeNote}
+              aria-pressed={isNotePanelOpen}
+            >
+              <NotebookPenIcon
+                size={16}
+                class={isHovered ? 'text-primary' : 'text-muted-foreground'}
+                aria-hidden="true"
+              />
+              {isNotePanelOpen ? $t('docs.take_note.close') : $t('docs.take_note.open')}
             </Button>
           {/snippet}
         </HoverableItem>

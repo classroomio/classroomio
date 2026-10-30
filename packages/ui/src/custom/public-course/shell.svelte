@@ -4,10 +4,10 @@
   import FooterNav from './footer-nav.svelte';
   import MobileSheet from './mobile-sheet.svelte';
   import Sidebar from './sidebar.svelte';
-  import { Button } from '../../base/button';
+  import SiteHeader from './site-header.svelte';
+  import type { PublicSiteBreadcrumb } from './site-header.svelte';
   import { cn } from '../../tools';
   import type { PublicCourseOrgData, PublicCourseSidebarItem, PublicCourseSidebarSection } from './types';
-  import { ModeSwitcher } from '../../base/dark-mode';
 
   interface Props {
     sections: PublicCourseSidebarSection[];
@@ -30,6 +30,7 @@
     nextItem?: PublicCourseSidebarItem | null;
     /** Course title shown after the org name in the top header. */
     courseTitle: string;
+    breadcrumbs?: PublicSiteBreadcrumb[];
     /** Owning org / creator for the top-header logo + name. */
     org?: PublicCourseOrgData | null;
     /** Where clicking the org logo / name should go. Defaults to the org home (`/`). */
@@ -81,6 +82,7 @@
     prevItem = null,
     nextItem = null,
     courseTitle,
+    breadcrumbs = [],
     org = null,
     homeHref = '/',
     exploreHref = '/courses',
@@ -119,8 +121,6 @@
     return null;
   });
 
-  const orgInitial = $derived((org?.name?.trim()?.charAt(0) ?? 'C').toUpperCase());
-
   /** Left/right arrow keys navigate between items when focus is not in an editable element. */
   function onKeydown(event: KeyboardEvent) {
     const target = event.target as HTMLElement | null;
@@ -139,65 +139,18 @@
 <svelte:window onkeydown={onKeydown} />
 
 <div class={cn('ui:min-h-dvh ui:bg-background ui:text-foreground', className)}>
-  <!--
-    Top header. Sticky so it stays visible as guests scroll long lessons.
-    Layout: [org logo · org name | course title]  ··· [Explore courses] [Sign in] [Theme]
-    On mobile: org name and Sign in are hidden; Explore courses stays visible.
-    Height intentionally compact (h-12) to maximize content vertical space.
-  -->
-  <header
-    class="ui:sticky ui:top-0 ui:z-30 ui:border-b ui:border-border ui:bg-background/95 ui:backdrop-blur ui:supports-[backdrop-filter]:bg-background/80"
-  >
-    <div class="ui:flex ui:h-12 ui:items-center ui:gap-3 ui:px-4 ui:lg:px-6">
-      <a
-        href={homeHref}
-        aria-label={org?.name || undefined}
-        class="ui:flex ui:shrink-0 ui:items-center ui:gap-2 ui:rounded-md ui:focus-visible:outline-none ui:focus-visible:ring-2 ui:focus-visible:ring-ring"
-      >
-        {#if org?.avatarUrl}
-          <img
-            src={org.avatarUrl}
-            alt=""
-            class="ui:size-6 ui:rounded ui:object-cover"
-            width="24"
-            height="24"
-            loading="lazy"
-          />
-        {:else}
-          <span
-            class="ui:flex ui:size-6 ui:items-center ui:justify-center ui:rounded ui:bg-primary/10 ui:text-[11px] ui:font-semibold ui:text-primary"
-            aria-hidden="true"
-          >
-            {orgInitial}
-          </span>
-        {/if}
-        <span class="ui:hidden ui:truncate ui:text-sm ui:font-medium ui:text-foreground ui:sm:inline">
-          {org?.name ?? ''}
-        </span>
-      </a>
-
-      <span aria-hidden="true" class="ui:hidden ui:text-muted-foreground/60 ui:sm:inline">|</span>
-
-      <span class="ui:min-w-0 ui:flex-1 ui:truncate ui:text-sm ui:text-muted-foreground" title={courseTitle}>
-        {courseTitle}
-      </span>
-
-      <div class="ui:ml-auto ui:flex ui:shrink-0 ui:items-center ui:gap-2">
-        {@render headerActions?.()}
-        {#if topRight}
-          {@render topRight()}
-        {:else}
-          <Button href={exploreHref} variant="secondary" size="sm">
-            {exploreLabel}
-          </Button>
-          <Button href={signInHref} variant="default" size="sm" class="ui:hidden ui:sm:inline-flex">
-            {signInLabel}
-          </Button>
-        {/if}
-        <ModeSwitcher />
-      </div>
-    </div>
-  </header>
+  <SiteHeader
+    {org}
+    pageTitle={courseTitle}
+    {breadcrumbs}
+    {homeHref}
+    {exploreHref}
+    {signInHref}
+    {exploreLabel}
+    {signInLabel}
+    {topRight}
+    {headerActions}
+  />
 
   <!--
     Layout: sidebar pinned to the far left of the viewport (no centered max-width

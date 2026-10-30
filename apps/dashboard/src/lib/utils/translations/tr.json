@@ -5896,7 +5896,8 @@
     "resize_panel_aria_label": "Paneli yeniden boyutlandır",
     "titles": {
       "ai_assistant": "AI Assistant",
-      "transcript": "Transkript"
+      "transcript": "Transkript",
+      "note_comments": "Yorumlar"
     }
   },
   "cohorts": {
@@ -6404,5 +6405,74 @@
     "new_badge": "Yeni",
     "read_full": "Tüm değişiklik günlüğünü oku",
     "close": "Kapat"
+  },
+  "docs": {
+    "comments": {
+      "add": "Yorum ekle",
+      "add_inline": "Yorum",
+      "delete": "Sil",
+      "edit": "Düzenle",
+      "heading": "Yorumlar",
+      "post": "Gönderi",
+      "reply": "Yanıtla",
+      "reply_label": "Yanıtla",
+      "save": "Kaydet"
+    },
+    "convert_course": {
+      "course_title": "Kurs başlığı"
+    },
+    "editor": {
+      "convert_to_template": "Şablona dönüştürün",
+      "delete": "Sil",
+      "title_placeholder": "Başlıksız",
+      "version_history": {
+        "current": "Geçerli sürüm",
+        "load_more": "LDaha fazlasını yükle",
+        "open": "Sürüm geçmişi",
+        "preview": "Önizleme",
+        "title": "Sürüm geçmişi"
+      }
+    },
+    "empty_page": {
+      "templates": "Şablonlar"
+    },
+    "list": {
+      "badge_public": "Genel",
+      "shared_with_team": "Kuruluş",
+      "tabs": {
+        "all": "Tüm"
+      }
+    },
+    "org": {
+      "new_note_title": "Başlıksız"
+    },
+    "share": {
+      "cancel": "İptal",
+      "copy_success": "Bağlantı kopyalandı",
+      "save": "Kaydet",
+      "team_label": "Kuruluş"
+    },
+    "sidebar": {
+      "footer": {
+        "templates": "Şablonlar"
+      },
+      "search_placeholder": "Arama",
+      "sections": {
+        "organization": "Kuruluş",
+        "workspace": "Kuruluş"
+      }
+    },
+    "tags": {
+      "add": "Etiket ekle",
+      "heading": "Etiketler"
+    },
+    "templates": {
+      "browse": "Göz at şablonlar",
+      "heading": "Şablonlar",
+      "use_template": "Şablonu kullan"
+    },
+    "trash": {
+      "restore": "Geri Yükle"
+    }
   }
 }

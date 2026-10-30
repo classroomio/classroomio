@@ -105,7 +105,7 @@
     "groundingScope": {
       "course": "Whole course",
       "lesson": "Current lesson only",
-      "workspace": "Whole workspace"
+      "organization": "Whole organization"
     },
     "takeABreak": {
       "title": "Your AI tutor is taking a break",
@@ -231,6 +231,7 @@
   "public_course": {
     "header": {
       "explore_courses": "Explore courses",
+      "view_academy": "View academy",
       "sign_in": "Sign in"
     },
     "footer_nav": {
@@ -827,6 +828,15 @@
           "body": "Add team mates to your organization so you can both collaborate on projects.",
           "button": "Manage Team"
         }
+      },
+      "docs": {
+        "heading": "Docs",
+        "description": "Control how new organization docs are shared with admins and tutors.",
+        "share_by_default": {
+          "label": "Share new docs with the organization",
+          "description": "When enabled, new docs are visible to all admins and tutors in this organization. You can still make individual docs private."
+        },
+        "save": "Save docs settings"
       }
     },
     "token_auth": {
@@ -1670,7 +1680,8 @@
     "upgrade_left": "{count} left",
     "cohorts": "Cohorts",
     "exit_course": "Exit this course",
-    "exit_cohort": "Exit this cohort"
+    "exit_cohort": "Exit this cohort",
+    "docs": "Docs"
   },
   "pricing": {
     "plan_names": {
@@ -4799,6 +4810,7 @@
       "landing_views": "Landing views",
       "unique_visitors": "Unique visitors",
       "course_page_views": "Course page views",
+      "doc_page_views": "Doc page views",
       "enrollments": "Enrollments",
       "range_description": "In selected range"
     },
@@ -4815,6 +4827,7 @@
       "empty": "No funnel data yet",
       "step": {
         "landing_view": "Landing views",
+        "doc_page_view": "Doc page views",
         "course_page_view": "Course page views",
         "enrollment_completed": "Enrollments",
         "course_completed": "Completions"
@@ -5124,7 +5137,8 @@
     "explore": "Explore",
     "help": "Help",
     "settings": "Settings",
-    "cohorts": "Cohorts"
+    "cohorts": "Cohorts",
+    "my_notes": "My Notes"
   },
   "lms": {
     "view_landing_page": "Home"
@@ -5900,7 +5914,10 @@
     "resize_panel_aria_label": "Resize panel",
     "titles": {
       "ai_assistant": "AI Assistant",
-      "transcript": "Transcript"
+      "transcript": "Transcript",
+      "lesson_note": "Lesson Note",
+      "note_ai": "Note assistant",
+      "note_comments": "Comments"
     }
   },
   "cohorts": {
@@ -6408,5 +6425,303 @@
     "new_badge": "New",
     "read_full": "Read the full changelog",
     "close": "Close"
+  },
+  "docs": {
+    "page_title": "My Notes",
+    "workspace_page_title": "Docs",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "org_description": "Brainstorm and collaborate on course content before migrating it into a course.",
+    "take_note": {
+      "open": "Take Note",
+      "close": "Close Note"
+    },
+    "usage": {
+      "workspace": "{used}/{limit} organization docs used"
+    },
+    "lesson_panel": {
+      "loading": "Loading note…",
+      "load_error": "Could not load this note.",
+      "view_lesson": "View lesson",
+      "insert_timestamp": "Insert timestamp",
+      "timestamp_hint": "Play the lesson video to add timestamps.",
+      "placeholder": "Write notes about this lesson…"
+    },
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All",
+        "mine": "Mine",
+        "shared_with_me": "Shared",
+        "team": "Shared with team",
+        "from_lessons": "From lessons"
+      },
+      "shared_with_team": "Organization",
+      "badge_private": "Private",
+      "badge_shared_by_me": "Shared",
+      "badge_public": "Public",
+      "by_author": "By {name}",
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
+    },
+    "org": {
+      "new_note": "New note",
+      "new_note_title": "Untitled",
+      "import": "Import",
+      "create_error": "Could not create note.",
+      "import_error": "Could not import note. Use .md, .txt, or .docx files up to 5MB.",
+      "import_success": "Note imported"
+    },
+    "tags": {
+      "heading": "Tags",
+      "add": "Add tag",
+      "popover_title": "Add tags to this note",
+      "empty_groups": "Create tags in organization settings to organize notes.",
+      "save_error": "Could not save tags.",
+      "filter_all": "All tags"
+    },
+    "page": {
+      "add_cover": "Add cover",
+      "change_cover": "Change cover",
+      "remove_cover": "Remove cover",
+      "add_cover_description": "Upload a wide image for the top of this note.",
+      "upload_cover_prompt": "Choose an image to upload",
+      "cover_upload_success": "Cover updated",
+      "cover_upload_error": "Could not upload cover image.",
+      "cover_remove_success": "Cover removed",
+      "cover_remove_error": "Could not remove cover.",
+      "visibility_private": "Private · only visible to you",
+      "visibility_team": "Organization · visible to admins and tutors",
+      "visibility_public": "Public · on your academy site",
+      "public_views": "{count, plural, one {# public page view} other {# public page views}}"
+    },
+    "editor": {
+      "page_title": "Edit note",
+      "loading": "Loading note…",
+      "load_error": "Could not load this note.",
+      "title_placeholder": "Untitled",
+      "placeholder": "Start writing…",
+      "version_history": {
+        "open": "Version history",
+        "title": "Version history",
+        "loading": "Loading versions…",
+        "empty": "No versions yet.",
+        "versions": "Versions",
+        "current": "Current version",
+        "preview": "Preview",
+        "changes": "Changes",
+        "restore": "Restore version",
+        "restore_success": "Version restored",
+        "restore_error": "Could not restore version.",
+        "load_more": "Load more"
+      },
+      "delete": "Delete",
+      "delete_title": "Delete note?",
+      "delete_description": "This note will be permanently removed. This action cannot be undone.",
+      "delete_confirm": "Delete note",
+      "delete_success": "Note deleted",
+      "delete_error": "Could not delete note.",
+      "more_actions": "More actions",
+      "slash_hint": "Type / for formatting commands.",
+      "convert_to_template": "Convert to template",
+      "pin": "Pin note",
+      "unpin": "Unpin note",
+      "pin_success": "Note pinned",
+      "unpin_success": "Note unpinned",
+      "pin_error": "Could not update pin"
+    },
+    "empty_page": {
+      "hint": "Press Enter to continue with an empty page, or pick an option (↑↓ to select).",
+      "aria_label": "New note options",
+      "empty": "Empty",
+      "with_table_of_contents": "With table of contents",
+      "templates": "Templates",
+      "import": "Import"
+    },
+    "templates": {
+      "page_title": "Start a new course",
+      "page_subtitle": "Pick a template to pre-fill the module structure for the kind of course you're building — everything stays editable after.",
+      "heading": "Templates",
+      "browse": "Browse templates",
+      "browser_title": "Note templates",
+      "browser_description": "Start from a ClassroomIO template or reuse one you saved.",
+      "builtin_heading": "ClassroomIO templates",
+      "builtin_description": "Ready-made structures to get started quickly.",
+      "user_heading": "Your templates",
+      "user_description": "Notes you saved as templates for this organization.",
+      "empty": "Save a note as a template to reuse it here.",
+      "convert_success": "Note saved as template",
+      "convert_copy_success": "Template saved. Your note is unchanged.",
+      "convert_error": "Could not save note as template.",
+      "create_success": "Note created from template",
+      "create_error": "Could not create note from template.",
+      "use_template": "Use template",
+      "modules_included": "{count, plural, =1 {1 module included} other {# modules included}}",
+      "your_templates_heading": "Your saved templates",
+      "your_templates_description": "Notes you marked as templates for this organization.",
+      "your_templates_empty": "Save a note as a template to reuse it here.",
+      "edit_template": "Edit template",
+      "remove_template": "Remove as template",
+      "remove_success": "Template removed",
+      "remove_error": "Could not remove template",
+      "builtin": {
+        "blank": {
+          "title": "Blank note",
+          "description": "Start from scratch with an empty page."
+        },
+        "table_of_contents": {
+          "title": "Table of contents",
+          "description": "A structured page with a linked table of contents."
+        },
+        "course_outline": {
+          "title": "Course outline",
+          "description": "Sections and lessons for planning a new course."
+        },
+        "meeting_notes": {
+          "title": "Meeting notes",
+          "description": "Agenda, discussion, and action items."
+        },
+        "lesson_plan": {
+          "title": "Lesson plan",
+          "description": "Objectives, activities, and assessment for one lesson."
+        }
+      }
+    },
+    "workspace": {
+      "empty_title": "No note selected",
+      "empty_description": "Create a new note or pick one from the list.",
+      "empty_mine": "You have no notes yet",
+      "empty_shared": "No notes have been shared with you",
+      "empty_shared_title": "Nothing shared yet",
+      "empty_shared_description": "When someone shares a note with you directly, it will show up here.",
+      "empty_filtered": "No notes match your filters",
+      "create_note": "Create note",
+      "no_notes": "No notes",
+      "note_count": "{count, plural, =1 {1 note} other {# notes}}",
+      "sections": {
+        "pinned": "Pinned",
+        "previous_7_days": "Previous 7 Days",
+        "previous_30_days": "Previous 30 Days"
+      }
+    },
+    "convert_course": {
+      "button": "Convert to course",
+      "title": "Convert note to course",
+      "description": "Review the course structure before creating. No AI is used for this conversion.",
+      "course_title": "Course title",
+      "use_sections": "Use sections",
+      "use_sections_hint": "Group lessons under H1 headings from your note.",
+      "use_toc": "Use table of contents for lesson titles",
+      "use_toc_hint": "When a table of contents block is present, use its entries as lesson titles.",
+      "summary": "{sections} sections, {lessons} lessons",
+      "create": "Create course",
+      "success": "Course created from note",
+      "copy_success": "Course created. Your note is unchanged.",
+      "error": "Could not create course from note.",
+      "empty_error": "Add at least one lesson before creating a course.",
+      "already_converted_description": "This note is already linked to a course.",
+      "already_converted_body": "Open the existing course, or keep editing this note. Creating another course from the same note is blocked.",
+      "open_course": "Open course"
+    },
+    "comments": {
+      "heading": "Comments",
+      "count": "{count} comments",
+      "add": "Add comment",
+      "add_inline": "Comment",
+      "empty": "Select text in the note to start a comment thread.",
+      "open_heading": "Open",
+      "resolved_heading": "Resolved",
+      "new_thread_label": "New comment",
+      "reply_label": "Reply",
+      "reply_placeholder": "Write a comment…",
+      "reply": "Reply",
+      "post": "Post",
+      "resolve": "Resolve",
+      "reopen": "Reopen",
+      "anonymous": "Unknown user",
+      "ai_author": "ClassroomIO Assistant",
+      "ai_badge": "AI",
+      "save": "Save",
+      "edit": "Edit",
+      "delete": "Delete",
+      "mention_team_member": "Team member",
+      "mention_no_results": "No team members found",
+      "autosave_hint": "Saves automatically as you type.",
+      "empty_open": "No open comment threads.",
+      "empty_resolved": "No resolved comment threads."
+    },
+    "ai_panel": {
+      "open": "Ask AI",
+      "title": "Note assistant",
+      "empty_title": "Get AI feedback on this note",
+      "empty_description": "Review the note to add anchored AI comments you can resolve like teammate feedback.",
+      "note_context": "Responses will use this note as context.",
+      "review_note": "Review note",
+      "review_selection": "Review selection",
+      "review_hint": "AI comments appear in the comments sidebar with yellow highlights in the note.",
+      "review_success": "AI comments added to your note",
+      "review_empty": "No new AI comments were added",
+      "review_error": "Could not generate AI comments",
+      "empty_note_error": "Add some content before asking AI to review",
+      "selection_required": "Select text in the note first",
+      "last_result": "{count, plural, =0 {No comments added} =1 {1 comment added} other {# comments added}}"
+    },
+    "sidebar": {
+      "search_placeholder": "Search",
+      "search_modal_title": "Search notes",
+      "new_note": "New note",
+      "section_empty": "No notes",
+      "sections": {
+        "favorites": "Favorites",
+        "private": "Private",
+        "shared_with_me": "Shared with me",
+        "workspace": "Organization",
+        "organization": "Organization"
+      },
+      "footer": {
+        "templates": "Templates",
+        "trash": "Trash"
+      }
+    },
+    "trash": {
+      "title": "Trash",
+      "empty": "Notes you delete will appear here.",
+      "restore": "Restore",
+      "delete_forever": "Delete forever",
+      "confirm_delete": "Delete this note permanently? This cannot be undone."
+    },
+    "subpages": {
+      "heading": "Sub-pages",
+      "new": "New sub-page",
+      "empty": "No sub-pages yet."
+    },
+    "favorite": {
+      "add": "Added to favorites",
+      "remove": "Removed from favorites"
+    },
+    "share": {
+      "open": "Share",
+      "title": "Share note",
+      "description": "Choose who on your team can access this note.",
+      "private_label": "Only you",
+      "private_description": "Only you can view and edit this note.",
+      "team_label": "Organization",
+      "team_description": "All admins and tutors in {orgName} can view and collaborate on this note.",
+      "public_label": "Anyone with the link",
+      "public_description": "Anyone with the link can view this note. It will appear on your public academy site.",
+      "public_slug_label": "Public link slug",
+      "public_slug_hint": "Used in the public URL for this note.",
+      "copy_success": "Link copied",
+      "read_only_banner": "You can view this note. Only the author can edit it.",
+      "by_author": "By {name}",
+      "save": "Save",
+      "cancel": "Cancel",
+      "save_success": "Sharing updated",
+      "save_error": "Could not update sharing.",
+      "people_heading": "People with access",
+      "permission_read": "Can view",
+      "permission_write": "Can edit"
+    }
   }
 }

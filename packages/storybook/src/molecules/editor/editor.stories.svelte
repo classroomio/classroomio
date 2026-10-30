@@ -1,6 +1,6 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import { Editor } from '@cio/ui/custom/editor';
+  import { Editor, DocCommentMark } from '@cio/ui/custom/editor';
   import { FIELDS, DEFAULT_CONTENT } from './constants';
 
   const { Story } = defineMeta({
@@ -11,6 +11,11 @@
       controls: {
         include: FIELDS
       }
+    },
+    argTypes: {
+      onContentChange: { control: false },
+      onEditorReady: { control: false },
+      onEditorDestroy: { control: false }
     },
     tags: ['autodocs']
   });
@@ -97,5 +102,47 @@
 <Story name="Without Drag Handle">
   {#snippet template()}
     <Editor content={DEFAULT_CONTENT} editorClass="h-32" showDragHandle={false} />
+  {/snippet}
+</Story>
+
+<Story name="Docs · frameless">
+  {#snippet template()}
+    <Editor content={`<h1>Instructor playbook</h1><p>Plan your next course.</p>`} frameless />
+  {/snippet}
+</Story>
+
+<Story name="Docs · empty table of contents">
+  {#snippet template()}
+    <Editor content={`<div data-type="table-of-contents"></div><p></p>`} frameless />
+  {/snippet}
+</Story>
+
+<Story name="Docs · nested table of contents">
+  {#snippet template()}
+    <Editor
+      content={`<div data-type="table-of-contents"></div><h1>Getting started</h1><h2>Before the lesson</h2><h3>Materials</h3><h2>During the lesson</h2><h1>Next steps</h1>`}
+      frameless
+    />
+  {/snippet}
+</Story>
+
+<Story name="Docs · read only table of contents">
+  {#snippet template()}
+    <Editor
+      content={`<div data-type="table-of-contents"></div><h1>Course guide</h1><h2>Objectives</h2><p>Learn at your own pace.</p>`}
+      editable={false}
+      showToolBar={false}
+      frameless
+    />
+  {/snippet}
+</Story>
+
+<Story name="Docs · anchored comment">
+  {#snippet template()}
+    <Editor
+      content={`<p>Review <span data-doc-comment="sample-thread">this learning objective</span> with your team.</p>`}
+      extraExtensions={[DocCommentMark]}
+      frameless
+    />
   {/snippet}
 </Story>

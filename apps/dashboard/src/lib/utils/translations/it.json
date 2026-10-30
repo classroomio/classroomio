@@ -827,6 +827,9 @@
           "body": "Aggiungi compagni di squadra alla tua organizzazione in modo da poter collaborare entrambi ai progetti.",
           "button": "Gestisci squadra"
         }
+      },
+      "docs": {
+        "heading": "Documenti"
       }
     },
     "token_auth": {
@@ -1670,7 +1673,8 @@
     "upgrade_left": "{count} Sinistra",
     "cohorts": "Coorti",
     "exit_course": "Esci da questo corso",
-    "exit_cohort": "Esci da questa coorte"
+    "exit_cohort": "Esci da questa coorte",
+    "docs": "Documenti"
   },
   "pricing": {
     "plan_names": {
@@ -5886,7 +5890,8 @@
     "resize_panel_aria_label": "Ridimensiona il pannello",
     "titles": {
       "ai_assistant": "Assistente AI",
-      "transcript": "Trascrizione"
+      "transcript": "Trascrizione",
+      "note_comments": "Commenti"
     }
   },
   "cohorts": {
@@ -6394,5 +6399,85 @@
     "new_badge": "Nuovo",
     "read_full": "Leggi il changelog completo",
     "close": "Chiudi"
+  },
+  "docs": {
+    "ai_panel": {
+      "open": "Chiedi all'AI"
+    },
+    "comments": {
+      "add": "Aggiungi commento",
+      "add_inline": "Commento",
+      "delete": "Eliminare",
+      "edit": "Modificare",
+      "heading": "Commenti",
+      "open_heading": "Aprire",
+      "post": "Inviare",
+      "reply": "Rispondere",
+      "reply_label": "Rispondere",
+      "save": "Salva"
+    },
+    "convert_course": {
+      "course_title": "Titolo del corso"
+    },
+    "editor": {
+      "convert_to_template": "Converti in modello",
+      "delete": "Eliminare",
+      "title_placeholder": "Senza titolo",
+      "version_history": {
+        "current": "Versione attuale",
+        "load_more": "Carica di più",
+        "open": "Cronologia delle versioni",
+        "preview": "Anteprima",
+        "title": "Cronologia delle versioni"
+      }
+    },
+    "empty_page": {
+      "templates": "Modelli"
+    },
+    "list": {
+      "badge_public": "Pubblico",
+      "shared_with_team": "Organizzazione",
+      "tabs": {
+        "all": "Tutto"
+      }
+    },
+    "org": {
+      "new_note_title": "Senza titolo"
+    },
+    "share": {
+      "cancel": "Annulla",
+      "copy_success": "Collegamento copiato",
+      "open": "Condividere",
+      "save": "Salva",
+      "team_label": "Organizzazione"
+    },
+    "sidebar": {
+      "footer": {
+        "templates": "Modelli"
+      },
+      "search_placeholder": "Ricerca",
+      "sections": {
+        "organization": "Organizzazione",
+        "workspace": "Organizzazione"
+      }
+    },
+    "tags": {
+      "add": "Aggiungi etichetta",
+      "heading": "Tag"
+    },
+    "templates": {
+      "browse": "Sfoglia i modelli",
+      "heading": "Modelli",
+      "use_template": "Usa il modello"
+    },
+    "trash": {
+      "restore": "Ripristinare"
+    },
+    "workspace": {
+      "sections": {
+        "pinned": "Appuntato"
+      }
+    },
+    "workspace_page_title": "Documenti"
   }
 }

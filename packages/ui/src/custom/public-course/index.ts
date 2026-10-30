@@ -1,4 +1,6 @@
 export { default as PublicCourseShell } from './shell.svelte';
+export { default as PublicSiteHeader } from './site-header.svelte';
+export { default as PublicSiteShell } from './site-shell.svelte';
 export { default as PublicCourseSidebar } from './sidebar.svelte';
 export { default as PublicCourseSidebarRow } from './sidebar-row.svelte';
 export { default as PublicCourseBottomNav } from './bottom-nav.svelte';

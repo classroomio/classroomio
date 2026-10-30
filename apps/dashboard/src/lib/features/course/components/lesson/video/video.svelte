@@ -155,6 +155,8 @@
       <LessonMaterialActions
         showTranscript={hasTranscript}
         showSummarize={videos.length > 0}
+        showTakeNote={videos.length > 0}
+        {courseId}
         {lessonId}
         onTranscript={openTranscriptPanel}
       />

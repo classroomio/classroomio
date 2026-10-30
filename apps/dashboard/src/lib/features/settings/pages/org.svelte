@@ -1,5 +1,6 @@
 <script lang="ts">
   import PlusIcon from '@lucide/svelte/icons/plus';
+  import FileTextIcon from '@lucide/svelte/icons/file-text';
   import debounce from 'lodash/debounce';
   import ColorPicker from 'svelte-awesome-color-picker';
 
@@ -9,6 +10,7 @@
   import { orgApi } from '$features/org/api/org.svelte';
 
   import { Input } from '@cio/ui/base/input';
+  import { Switch } from '@cio/ui/base/switch';
   import { UploadImage, UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
@@ -22,6 +24,14 @@
   let name = $state('');
   let savedName = $state('');
   let capturedOrgId = $state<string | null>(null);
+  let shareNewNotesWithTeam = $state(getShareNewNotesWithTeam($currentOrg?.settings));
+  let savedShareNewNotesWithTeam = $state(false);
+
+  function getShareNewNotesWithTeam(settings: unknown) {
+    const notesSettings = (settings as { notes?: { defaultVisibility?: string } } | null | undefined)?.notes;
+
+    return notesSettings?.defaultVisibility === 'team';
+  }
 
   const themes = {
     rose: 'rose',
@@ -57,21 +67,35 @@
   }
 
   export async function handleUpdate() {
+    const existingSettings = ($currentOrg.settings as Record<string, unknown>) || {};
+    const existingNotes = (existingSettings.notes as Record<string, unknown>) || {};
+    const settings = {
+      ...existingSettings,
+      notes: {
+        ...existingNotes,
+        defaultVisibility: shareNewNotesWithTeam ? 'team' : 'private'
+      }
+    };
+
     await orgApi.update($currentOrg.id, {
       name,
-      avatar
+      avatar,
+      settings
     });
 
     if (orgApi.success) {
       $currentOrg.name = name;
       avatar = undefined;
       savedName = name;
+      savedShareNewNotesWithTeam = shareNewNotesWithTeam;
     }
   }
 
   function captureSavedFields() {
     savedName = $currentOrg.name;
     name = $currentOrg.name;
+    shareNewNotesWithTeam = getShareNewNotesWithTeam($currentOrg.settings);
+    savedShareNewNotesWithTeam = shareNewNotesWithTeam;
   }
 
   $effect(() => {
@@ -84,11 +108,13 @@
   });
 
   $effect(() => {
-    hasUnsavedChanges = name !== savedName || avatar !== undefined;
+    hasUnsavedChanges =
+      name !== savedName || avatar !== undefined || shareNewNotesWithTeam !== savedShareNewNotesWithTeam;
   });
 
   export function handleDiscard() {
     name = savedName;
+    shareNewNotesWithTeam = savedShareNewNotesWithTeam;
     avatar = undefined;
     orgApi.errors = {};
   }
@@ -189,6 +215,26 @@
             }}
           />
         </div>
+      </div>
+    </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend class="flex items-center gap-2">
+      <FileTextIcon class="size-5" />
+      {$t('settings.organization.docs.heading')}
+    </Field.Legend>
+    <Field.Description>{$t('settings.organization.docs.description')}</Field.Description>
+
+    <Field.Field orientation="horizontal">
+      <Switch bind:checked={shareNewNotesWithTeam} />
+      <div class="space-y-0.5">
+        <Field.Label>{$t('settings.organization.docs.share_by_default.label')}</Field.Label>
+        <Field.Description>
+          {$t('settings.organization.docs.share_by_default.description')}
+        </Field.Description>
       </div>
     </Field.Field>
   </Field.Set>

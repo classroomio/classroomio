@@ -144,6 +144,9 @@ importers:
       katex:
         specifier: ^0.16.10
         version: 0.16.27
+      mammoth:
+        specifier: ^1.9.0
+        version: 1.12.0
       marked:
         specifier: ^7.0.3
         version: 7.0.5
@@ -1561,6 +1564,9 @@ importers:
       '@tiptap/extension-table':
         specifier: ^3.10.7
         version: 3.14.0(@tiptap/core@3.14.0(@tiptap/pm@3.14.0))(@tiptap/pm@3.14.0)
+      '@tiptap/extension-table-of-contents':
+        specifier: ^3.14.0
+        version: 3.32.1(@tiptap/core@3.14.0(@tiptap/pm@3.14.0))(@tiptap/pm@3.14.0)
       '@tiptap/extension-text-align':
         specifier: ^3.10.7
         version: 3.14.0(@tiptap/core@3.14.0(@tiptap/pm@3.14.0))
@@ -8228,6 +8234,12 @@ packages:
     peerDependencies:
       '@tiptap/core': ^3.14.0
       '@tiptap/pm': ^3.14.0
+
+  '@tiptap/extension-table-of-contents@3.32.1':
+    resolution: {integrity: sha512-e9a2yB6WvApLtXY01cGCveU58J7iQxrivfd9MT6qKeqomJe6G24oeuq3D1euf2MNU6Twqkt0MZlkxgnZFoZFNg==}
+    peerDependencies:
+      '@tiptap/core': 3.32.1
+      '@tiptap/pm': 3.32.1
 
   '@tiptap/extension-table@3.14.0':
     resolution: {integrity: sha512-tt1OlzqlsRsTazARGpvwPJmKEu+jiMFuaueNM28V+AADtaIPyE160V6w2bkdeWQeaBWqZjOUGZaMjpsKqWXR+g==}
@@ -23609,6 +23621,12 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.14.0(@tiptap/pm@3.14.0)
       '@tiptap/pm': 3.14.0
+
+  '@tiptap/extension-table-of-contents@3.32.1(@tiptap/core@3.14.0(@tiptap/pm@3.14.0))(@tiptap/pm@3.14.0)':
+    dependencies:
+      '@tiptap/core': 3.14.0(@tiptap/pm@3.14.0)
+      '@tiptap/pm': 3.14.0
+      uuid: 14.0.1
 
   '@tiptap/extension-table@3.14.0(@tiptap/core@3.14.0(@tiptap/pm@3.14.0))(@tiptap/pm@3.14.0)':
     dependencies:

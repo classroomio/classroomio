@@ -18,3 +18,4 @@ export * from './course-content';
 export * from './course-banner-image';
 export * from './whisper-language';
 export * from './live-session';
+export * from './doc-comment-mentions';

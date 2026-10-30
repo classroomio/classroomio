@@ -56,7 +56,7 @@ function describeGrounding(settings: AiTutorSettings): string {
   switch (settings.groundingScope) {
     case 'lesson':
       return 'Focus answers on the current lesson. Reference other lessons only when the learner explicitly asks.';
-    case 'workspace':
+    case 'organization':
     case 'course':
     default:
       return 'Ground every answer in this course\u2019s lessons and exercises. Use the read tools to fetch lessons you need.';
