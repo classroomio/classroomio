@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
   import * as Collapsible from '@cio/ui/base/collapsible';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { t } from '$lib/utils/functions/translations';
@@ -20,7 +20,9 @@
       const navItems = (inst.manifest as any)?.contributes?.navigation;
       return (
         Array.isArray(navItems) &&
-        navItems.some((nav: any) => nav.visibility !== 'organization.admin' && nav.location !== 'organization.settings')
+        navItems.some(
+          (nav: any) => nav.location === 'lms.navigation' && (nav.visibility !== 'organization.admin' || $isOrgAdmin)
+        )
       );
     })
   );

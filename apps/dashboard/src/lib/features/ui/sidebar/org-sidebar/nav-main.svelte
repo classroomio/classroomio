@@ -24,14 +24,12 @@
         const contributesPages = manifest?.contributes?.pages;
         if (!contributesPages || contributesPages.length === 0) return false;
         const navItems = manifest?.contributes?.navigation;
-        if (
-          !$isOrgAdmin &&
-          Array.isArray(navItems) &&
-          navItems.every((nav: any) => nav.visibility === 'organization.admin')
-        ) {
-          return false;
-        }
-        return true;
+        if (!Array.isArray(navItems)) return false;
+        return navItems.some(
+          (nav: any) =>
+            (nav.location === 'organization.navigation' || nav.location === 'organization.settings') &&
+            (nav.visibility !== 'organization.admin' || $isOrgAdmin)
+        );
       })
       .map((inst) => {
         const routeKey = inst.plugin?.slug ?? inst.pluginId;

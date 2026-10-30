@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
   import { pluginsApi } from '$features/plugins';
   import { PluginHostFrame } from '$features/plugins/components';
   import type { ResolvedContributionItem } from '$features/plugins/utils/types';
@@ -30,7 +30,9 @@
       const navItems = (inst.manifest as any)?.contributes?.navigation;
       return (
         Array.isArray(navItems) &&
-        navItems.some((nav: any) => nav.visibility !== 'organization.admin' && nav.location !== 'organization.settings')
+        navItems.some(
+          (nav: any) => nav.location === 'lms.navigation' && (nav.visibility !== 'organization.admin' || $isOrgAdmin)
+        )
       );
     })
   );
