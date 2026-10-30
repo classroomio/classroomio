@@ -1,8 +1,7 @@
 # Zapier Integration PRD
+Prototype: open the clickable prototype (run it locally from ../../prototypes/zapier-integration, e.g. python3 -m http.server 4748). Start at index.html?returning=1, click View Connection, then Create connection and pick an app to reach the ClassroomIO + app page.
 
-## Status
-
-- Draft
+Prototype: https://github.com/classroomio/classroomio/tree/main/prototypes/zapier-integration
 
 ## Purpose
 
@@ -648,10 +647,5 @@ Manual verification:
 10. Downgrade the org to Basic; confirm the dashboard tab shows the upgrade CTA, the existing grants are revoked immediately, and Zaps fail with a `PLAN_GATED` error.
 11. Force an access token expiry; confirm Zapier transparently refreshes via `/oauth/token` without user interaction.
 
-## Open Questions
 
-1. Should we use `oauth4webapi` (lighter, OAuth-spec-compliant), `node-oauth2-server` (heavier but battle-tested), or hand-roll the minimal authorization_code + refresh_token grants? Decide at implementation kickoff.
-2. Refresh-token rotation strategy: rotate on every refresh (safer, more complex) or keep the same refresh token across refreshes (simpler, Zapier-compatible)? Zapier supports both — confirm with Zapier docs during build.
-3. Should the consent screen support cross-org consent in a single screen (one Zapier connection covers multiple orgs), or strictly one OAuth grant per org? v1 is one grant per org; cross-org is a v2 question if multi-org admins ask for it.
-4. Where do we display `last_used_at` for a grant? Inside the dashboard grants table only, or also in an email digest? v1 is dashboard-only.
-5. Do we expose any OAuth telemetry (token issue / refresh / revoke counts) to the internal admin tooling, or rely on database queries on demand?
+
