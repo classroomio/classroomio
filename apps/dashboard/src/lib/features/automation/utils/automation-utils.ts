@@ -93,37 +93,6 @@ func main() {
 }`;
 }
 
-export function getClaudeCodeSnippet(mcpUrl: string) {
-  return `claude mcp add --transport http classroomio ${mcpUrl}`;
-}
-
-export function getCodexSnippet(mcpUrl: string) {
-  return `codex mcp add classroomio --url ${mcpUrl}
-codex mcp login classroomio`;
-}
-
-export function getOpenCodeSnippet(mcpUrl: string) {
-  return `{
-  "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "classroomio": {
-      "type": "remote",
-      "url": "${mcpUrl}"
-    }
-  }
-}`;
-}
-
-export function getCursorSnippet(mcpUrl: string) {
-  return `{
-  "mcpServers": {
-    "classroomio": {
-      "url": "${mcpUrl}"
-    }
-  }
-}`;
-}
-
 export function getDefaultAutomationKeyLabel(type: AutomationKeyType) {
   switch (type) {
     case 'mcp':

@@ -4958,29 +4958,14 @@
     "coming_soon": "Em breve",
     "read_docs": "Ler a documentação",
     "mcp": {
-      "setup": {
-        "title": "Configuração do cliente",
-        "description": "Adicione o URL acima ao seu cliente e entre quando for solicitado. Você não precisa de uma chave.",
-        "claude_code_description": "Registra `@classroomio/mcp` com Claude Code usando a chave gerada com escopo organizacional.",
-        "codex_description": "Adiciona o servidor ClassroomIO MCP ao Codex com a mesma chave com escopo organizacional.",
-        "cursor_description": "Cole isso em `~/.cursor/mcp.json` ou na configuração do MCP do seu espaço de trabalho.",
-        "opencode_description": "Adicione isso a `opencode.json` na raiz do projeto ou a `~/.config/opencode/opencode.json`."
-      },
       "keys": {
         "title": "Chaves MCP",
         "description": "Estas chaves antigas continuam funcionando, mas não é mais possível criar novas chaves MCP. Gire-as ou revogue-as aqui e conecte novos clientes entrando na sua conta.",
-        "reveal_title": "Sua nova chave MCP"
+        "reveal_title": "Sua nova chave MCP",
+        "deprecated_badge": "Obsoleto"
       },
-      "usage": {
-        "title": "Uso e limites",
-        "description": "O MCP está disponível em todos os planos. O uso é controlado por limites de chaves e limites de taxa.",
-        "keys_title": "Chaves ativas",
-        "keys_description": "Use uma chave MCP por integração para que o acesso possa ser alternado ou revogado de forma limpa.",
-        "rate_limits_title": "Limites de taxa",
-        "rate_limits_description": "Solicitações de leitura/gravação/publicação permitidas por minuto.",
-        "used_label": "Usado:"
-      },
-      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO entrando na sua conta. Remova um app a qualquer momento para cortar o acesso dele."
+      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO entrando na sua conta. Remova um app a qualquer momento para cortar o acesso dele.",
+      "connections_tab": "Conexões"
     },
     "api": {
       "subtitle": "Gerencie chaves de API para integrar com a API pública do ClassroomIO.",
@@ -6513,8 +6498,6 @@
     "connected_apps": {
       "title": "Apps conectados",
       "description": "Apps que você aprovou para atuar neste espaço de trabalho. Remova um app para cortar o acesso dele imediatamente.",
-      "empty_title": "Nenhum app conectado",
-      "empty_description": "Os apps que você conectar com o URL acima aparecerão aqui.",
       "table_app": "App",
       "table_authorized_by": "Autorizado por",
       "table_permissions": "Permissões",

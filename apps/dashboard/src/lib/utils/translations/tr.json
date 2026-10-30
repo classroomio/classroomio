@@ -4918,28 +4918,13 @@
     },
     "mcp": {
       "page_subtitle": "Giriş yaparak yapay zeka araçlarını ClassroomIO'ya bağlayın. Erişimini kesmek için bir uygulamayı istediğiniz zaman kaldırın.",
-      "usage": {
-        "title": "Kullanım ve sınırlar",
-        "description": "MCP her planda mevcuttur. Kullanım, anahtar limitleri ve hız limitleri tarafından kontrol edilir.",
-        "keys_title": "Etkin anahtarlar",
-        "keys_description": "Entegrasyon başına bir MCP anahtarı kullanın, böylece erişim temiz bir şekilde döndürülebilir veya iptal edilebilir.",
-        "rate_limits_title": "Hız limitleri",
-        "rate_limits_description": "Okuma / yazma / yayınlama isteklerine dakika başına izin verilir.",
-        "used_label": "Kullanım:"
-      },
       "keys": {
         "title": "MCP anahtarları",
         "description": "Bu eski anahtarlar çalışmaya devam eder, ancak artık yeni MCP anahtarları oluşturulamaz. Bunları buradan yenileyin veya iptal edin, yeni istemcileri giriş yaparak bağlayın.",
-        "reveal_title": "Yeni MCP anahtarınız"
+        "reveal_title": "Yeni MCP anahtarınız",
+        "deprecated_badge": "Kullanımdan kaldırıldı"
       },
-      "setup": {
-        "title": "İstemci kurulumu",
-        "description": "Yukarıdaki URL'yi istemcinize ekleyin ve istendiğinde giriş yapın. Anahtara gerek yoktur.",
-        "claude_code_description": "Oluşturulan kuruluş kapsamlı anahtarı kullanarak `@classroomio/mcp'yi Claude Koduyla kaydeder.",
-        "codex_description": "ClassroomIO MCP sunucusunu aynı kuruluş kapsamlı anahtarla Codex'e ekler.",
-        "cursor_description": "Bunu şuraya yapıştırın: `~/.cursor/mcp.json` veya çalışma alanınız MCP config.",
-        "opencode_description": "Bunu proje kökünüzdeki `opencode.json'a veya `~/.config/opencode/opencode.json`a ekleyin."
-      }
+      "connections_tab": "Bağlantılar"
     },
     "api": {
       "subtitle": "ClassroomIO genel API'si ile entegre olmak için API anahtarlarını yönetin.",
@@ -6479,8 +6464,6 @@
     "connected_apps": {
       "title": "Bağlı uygulamalar",
       "description": "Bu çalışma alanında işlem yapması için onayladığınız uygulamalar. Erişimini hemen kesmek için bir uygulamayı kaldırın.",
-      "empty_title": "Bağlı uygulama yok",
-      "empty_description": "Yukarıdaki URL ile bağladığınız uygulamalar burada görünür.",
       "table_app": "Uygulama",
       "table_authorized_by": "Yetkilendiren",
       "table_permissions": "İzinler",

@@ -4908,28 +4908,13 @@
     },
     "mcp": {
       "page_subtitle": "Collega gli strumenti di IA a ClassroomIO accedendo. Rimuovi un'app in qualsiasi momento per interromperne l'accesso.",
-      "usage": {
-        "title": "Utilizzo e limiti",
-        "description": "MCP è disponibile su ogni piano. L'utilizzo è controllato da limiti chiave e limiti di velocità.",
-        "keys_title": "Chiavi attive",
-        "keys_description": "Utilizza una chiave MCP per integrazione in modo che l'accesso possa essere ruotato o revocato in modo pulito.",
-        "rate_limits_title": "Rate limit",
-        "rate_limits_description": "Richieste di lettura/scrittura/pubblicazione consentite al minuto.",
-        "used_label": "Usato:"
-      },
       "keys": {
         "title": "Chiavi MCP",
         "description": "Queste chiavi meno recenti continuano a funzionare, ma non è più possibile creare nuove chiavi MCP. Ruotale o revocale qui e collega i nuovi client accedendo.",
-        "reveal_title": "La tua nuova chiave MCP"
+        "reveal_title": "La tua nuova chiave MCP",
+        "deprecated_badge": "Obsoleto"
       },
-      "setup": {
-        "title": "Configurazione del cliente",
-        "description": "Aggiungi l'URL qui sopra al tuo client e accedi quando richiesto. Non serve nessuna chiave.",
-        "claude_code_description": "Registra `@classroomio/mcp` con Claude Code utilizzando la chiave con ambito org generata.",
-        "codex_description": "Aggiunge il server MCP ClassroomIO al Codex con la stessa chiave con ambito organizzazione.",
-        "cursor_description": "Incollalo in \"~/.cursor/mcp.json\" o nella configurazione MCP dello spazio di lavoro.",
-        "opencode_description": "Aggiungilo a `opencode.json` nella root del tuo progetto o a `~/.config/opencode/opencode.json`."
-      }
+      "connections_tab": "Connessioni"
     },
     "api": {
       "subtitle": "Gestisci le chiavi API per l'integrazione con l'API pubblica ClassroomIO.",
@@ -6469,8 +6454,6 @@
     "connected_apps": {
       "title": "App collegate",
       "description": "App che hai autorizzato a operare su questo spazio di lavoro. Rimuovi un'app per interrompere subito il suo accesso.",
-      "empty_title": "Nessuna app collegata",
-      "empty_description": "Le app che colleghi con l'URL qui sopra compariranno qui.",
       "table_app": "App",
       "table_authorized_by": "Autorizzata da",
       "table_permissions": "Autorizzazioni",

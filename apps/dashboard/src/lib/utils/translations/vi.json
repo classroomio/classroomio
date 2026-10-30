@@ -4958,29 +4958,14 @@
     "coming_soon": "Sắp có",
     "read_docs": "Đọc tài liệu",
     "mcp": {
-      "setup": {
-        "title": "Thiết lập máy khách",
-        "description": "Thêm URL ở trên vào ứng dụng khách của bạn và đăng nhập khi được yêu cầu. Bạn không cần khóa.",
-        "claude_code_description": "Đăng ký `@classroomio/mcp` với Mã Claude bằng cách sử dụng khóa trong phạm vi tổ chức được tạo.",
-        "codex_description": "Thêm máy chủ ClassroomIO MCP vào Codex bằng cùng một khóa trong phạm vi tổ chức.",
-        "cursor_description": "Dán cái này vào `~/.cursor/mcp.json` hoặc cấu hình MCP không gian làm việc của bạn.",
-        "opencode_description": "Thêm nội dung này vào `opencode.json` ở thư mục gốc dự án hoặc `~/.config/opencode/opencode.json`."
-      },
       "keys": {
         "title": "Khóa MCP",
         "description": "Các khóa cũ này vẫn hoạt động, nhưng không thể tạo khóa MCP mới nữa. Hãy xoay hoặc thu hồi chúng tại đây, và kết nối ứng dụng khách mới bằng cách đăng nhập.",
-        "reveal_title": "Khóa MCP mới của bạn"
+        "reveal_title": "Khóa MCP mới của bạn",
+        "deprecated_badge": "Không dùng nữa"
       },
-      "usage": {
-        "title": "Cách sử dụng và giới hạn",
-        "description": "MCP có sẵn trên mọi gói. Việc sử dụng được kiểm soát bằng giới hạn khóa và giới hạn tần suất.",
-        "keys_title": "Khóa đang hoạt động",
-        "keys_description": "Sử dụng một khóa MCP cho mỗi lần tích hợp để có thể luân chuyển hoặc thu hồi quyền truy cập một cách dễ dàng.",
-        "rate_limits_title": "Giới hạn tỷ lệ",
-        "rate_limits_description": "Yêu cầu đọc/ghi/xuất bản được phép mỗi phút.",
-        "used_label": "Đã sử dụng:"
-      },
-      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng cách đăng nhập. Gỡ một ứng dụng bất cứ lúc nào để cắt quyền truy cập của nó."
+      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng cách đăng nhập. Gỡ một ứng dụng bất cứ lúc nào để cắt quyền truy cập của nó.",
+      "connections_tab": "Kết nối"
     },
     "api": {
       "subtitle": "Quản lý khóa API để tích hợp với API công khai ClassroomIO.",
@@ -6513,8 +6498,6 @@
     "connected_apps": {
       "title": "Ứng dụng đã kết nối",
       "description": "Các ứng dụng bạn đã cho phép hoạt động trong không gian làm việc này. Gỡ một ứng dụng để cắt quyền truy cập ngay lập tức.",
-      "empty_title": "Chưa có ứng dụng nào được kết nối",
-      "empty_description": "Các ứng dụng bạn kết nối bằng URL ở trên sẽ xuất hiện tại đây.",
       "table_app": "Ứng dụng",
       "table_authorized_by": "Được ủy quyền bởi",
       "table_permissions": "Quyền",

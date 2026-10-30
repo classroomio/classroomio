@@ -5058,28 +5058,13 @@
     },
     "mcp": {
       "page_subtitle": "Connect AI tools to ClassroomIO by signing in. Remove an app anytime to cut off its access.",
-      "usage": {
-        "title": "Usage and limits",
-        "description": "MCP is available on every plan. Usage is controlled by key limits and rate limits.",
-        "keys_title": "Active keys",
-        "keys_description": "Use one MCP key per integration so access can be rotated or revoked cleanly.",
-        "rate_limits_title": "Rate limits",
-        "rate_limits_description": "Read / write / publish requests allowed per minute.",
-        "used_label": "Used:"
-      },
       "keys": {
         "title": "MCP keys",
         "description": "These older keys keep working, but new MCP keys can no longer be created. Rotate or revoke them here, and connect new clients by signing in.",
-        "reveal_title": "Your new MCP key"
+        "reveal_title": "Your new MCP key",
+        "deprecated_badge": "Deprecated"
       },
-      "setup": {
-        "title": "Client setup",
-        "description": "Add the URL above to your client and sign in when prompted. You don't need a key.",
-        "claude_code_description": "Registers `@classroomio/mcp` with Claude Code using the generated org-scoped key.",
-        "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
-        "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",
-        "opencode_description": "Add this to `opencode.json` in your project root or `~/.config/opencode/opencode.json`."
-      }
+      "connections_tab": "Connections"
     },
     "api": {
       "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
@@ -6483,8 +6468,6 @@
     "connected_apps": {
       "title": "Connected apps",
       "description": "Apps you approved to act on this workspace. Remove an app to cut off its access immediately.",
-      "empty_title": "No connected apps",
-      "empty_description": "Apps you connect with the URL above will appear here.",
       "table_app": "App",
       "table_authorized_by": "Authorized by",
       "table_permissions": "Permissions",

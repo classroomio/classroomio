@@ -4958,29 +4958,14 @@
     "coming_soon": "Kommt bald",
     "read_docs": "Dokumentation lesen",
     "mcp": {
-      "setup": {
-        "title": "Client-Setup",
-        "description": "Füge die URL oben zu deinem Client hinzu und melde dich an, wenn du dazu aufgefordert wirst. Du brauchst keinen Schlüssel.",
-        "claude_code_description": "Registriert „@classroomio/mcp“ bei Claude Code unter Verwendung des generierten organisationsweit gültigen Schlüssels.",
-        "codex_description": "Fügt den ClassroomIO MCP-Server mit demselben organisationsweit gültigen Schlüssel zu Codex hinzu.",
-        "cursor_description": "Fügen Sie dies in „~/.cursor/mcp.json“ oder Ihre Workspace-MCP-Konfiguration ein.",
-        "opencode_description": "Fügen Sie dies in `opencode.json` im Projektstamm oder in `~/.config/opencode/opencode.json` ein."
-      },
       "keys": {
         "title": "MCP-Schlüssel",
         "description": "Diese älteren Schlüssel funktionieren weiterhin, aber neue MCP-Schlüssel können nicht mehr erstellt werden. Rotiere oder widerrufe sie hier und verbinde neue Clients per Anmeldung.",
-        "reveal_title": "Ihr neuer MCP-Schlüssel"
+        "reveal_title": "Ihr neuer MCP-Schlüssel",
+        "deprecated_badge": "Veraltet"
       },
-      "usage": {
-        "title": "Nutzung und Grenzen",
-        "description": "MCP ist in jedem Plan verfügbar. Die Nutzung wird durch Schlüssellimits und Ratenlimits gesteuert.",
-        "keys_title": "Aktive Schlüssel",
-        "keys_description": "Verwenden Sie einen MCP-Schlüssel pro Integration, damit der Zugriff sauber rotiert oder widerrufen werden kann.",
-        "rate_limits_title": "Anfragenlimits pro Minute",
-        "rate_limits_description": "Zulässige Lese-/Schreib-/Veröffentlichungsanfragen pro Minute.",
-        "used_label": "Verwendet:"
-      },
-      "page_subtitle": "Verbinde KI-Tools mit ClassroomIO, indem du dich anmeldest. Entferne eine App jederzeit, um ihren Zugriff zu beenden."
+      "page_subtitle": "Verbinde KI-Tools mit ClassroomIO, indem du dich anmeldest. Entferne eine App jederzeit, um ihren Zugriff zu beenden.",
+      "connections_tab": "Verbindungen"
     },
     "api": {
       "subtitle": "Verwalten Sie API-Schlüssel zur Integration mit der öffentlichen ClassroomIO-API.",
@@ -6513,8 +6498,6 @@
     "connected_apps": {
       "title": "Verbundene Apps",
       "description": "Apps, die du für diesen Workspace freigegeben hast. Entferne eine App, um ihren Zugriff sofort zu beenden.",
-      "empty_title": "Keine verbundenen Apps",
-      "empty_description": "Apps, die du mit der obigen URL verbindest, erscheinen hier.",
       "table_app": "App",
       "table_authorized_by": "Autorisiert von",
       "table_permissions": "Berechtigungen",

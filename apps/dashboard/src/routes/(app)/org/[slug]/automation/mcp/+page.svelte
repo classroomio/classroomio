@@ -10,7 +10,6 @@
   let { data } = $props();
   $effect(() => {
     automationApi.keys = data.keys;
-    automationApi.usage = data.usage;
     automationApi.connectedApps = data.connectedApps;
     automationApi.mcpUrl = data.mcpUrl;
     automationApi.isFetched = true;

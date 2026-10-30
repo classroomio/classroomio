@@ -4958,29 +4958,14 @@
     "coming_soon": "Bientôt disponible",
     "read_docs": "Lire la documentation",
     "mcp": {
-      "setup": {
-        "title": "Configuration du client",
-        "description": "Ajoutez l'URL ci-dessus à votre client et connectez-vous lorsque c'est demandé. Aucune clé n'est nécessaire.",
-        "claude_code_description": "Enregistre `@classroomio/mcp` auprès de Claude Code à l'aide de la clé générée à l'échelle de l'organisation.",
-        "codex_description": "Ajoute le serveur ClassroomIO MCP au Codex avec la même clé de portée organisationnelle.",
-        "cursor_description": "Collez-le dans `~/.cursor/mcp.json` ou dans la configuration MCP de votre espace de travail.",
-        "opencode_description": "Ajoutez ceci à `opencode.json` à la racine du projet ou à `~/.config/opencode/opencode.json`."
-      },
       "keys": {
         "title": "Clés MCP",
         "description": "Ces anciennes clés continuent de fonctionner, mais il n'est plus possible de créer de nouvelles clés MCP. Renouvelez-les ou révoquez-les ici, et connectez les nouveaux clients en vous connectant.",
-        "reveal_title": "Votre nouvelle clé MCP"
+        "reveal_title": "Votre nouvelle clé MCP",
+        "deprecated_badge": "Obsolète"
       },
-      "usage": {
-        "title": "Utilisation et limites",
-        "description": "MCP est disponible sur tous les forfaits. L'utilisation est contrôlée par les limites de clés et les limites de taux.",
-        "keys_title": "Clés actives",
-        "keys_description": "Utilisez une clé MCP par intégration afin que l'accès puisse être alterné ou révoqué proprement.",
-        "rate_limits_title": "Limites de taux",
-        "rate_limits_description": "Requêtes de lecture/écriture/publication autorisées par minute.",
-        "used_label": "Utilisé :"
-      },
-      "page_subtitle": "Connectez des outils d'IA à ClassroomIO en vous connectant. Supprimez une application à tout moment pour couper son accès."
+      "page_subtitle": "Connectez des outils d'IA à ClassroomIO en vous connectant. Supprimez une application à tout moment pour couper son accès.",
+      "connections_tab": "Connexions"
     },
     "api": {
       "subtitle": "Gérez les clés API pour intégrer l'API publique ClassroomIO.",
@@ -6513,8 +6498,6 @@
     "connected_apps": {
       "title": "Applications connectées",
       "description": "Applications que vous avez autorisées à agir sur cet espace de travail. Retirez une application pour couper son accès immédiatement.",
-      "empty_title": "Aucune application connectée",
-      "empty_description": "Les applications que vous connectez avec l'URL ci-dessus apparaîtront ici.",
       "table_app": "Application",
       "table_authorized_by": "Autorisée par",
       "table_permissions": "Autorisations",
