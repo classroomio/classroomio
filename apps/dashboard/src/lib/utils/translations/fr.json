@@ -529,6 +529,19 @@
       "test_success": "Événement de test envoyé avec succès.",
       "test_failed": "L'événement de test a échoué. Ouvrez le journal des envois pour en voir la cause.",
       "redelivered": "Événement mis en file d'attente pour un nouvel envoi."
+    },
+    "insights": {
+      "reminder_sent": "Rappel envoyé",
+      "reminder_not_sent": "Rappel non envoyé : déjà envoyé aujourd'hui, ou l'apprenant a désactivé ces emails",
+      "reminder_failed": "Impossible d'envoyer le rappel",
+      "reminders_sending": "Envoi de rappels…",
+      "reminders_sent": "{count, plural, one {# rappel envoyé} other {# rappels envoyés}}",
+      "target_saved": "Objectif d'apprentissage enregistré",
+      "target_failed": "Impossible de sauvegarder l'objectif de l'apprenant",
+      "target_invalid": "Saisissez un nombre entier compris entre 1 et 1 000 000",
+      "reminders_truncated": "{count, plural, one {# rappel envoyé} other {# rappels envoyés}}. Trop d'apprenants en retard pour un seul envoi — limitez le cours pour atteindre les autres.",
+      "students_refresh_failed": "Impossible d'actualiser la liste des étudiants",
+      "refresh_failed": "Impossible d'actualiser les analyses"
     }
   },
   "explore": {
@@ -615,38 +628,12 @@
     "assignment_completion": "Achèvement de la mission",
     "assignment_completion_description": "Pourcentage de missions terminées",
     "average_grade_description": "Note moyenne de tous les devoirs terminés",
-    "students": "Étudiants",
     "lessons": "Leçons",
     "tutors": "tuteurs",
     "avg_grade": "Note moyenne",
-    "completion_rate": "Taux d'achèvement",
-    "student_progress_overview": "Aperçu des progrès des élèves",
-    "student_name": "Nom de l'étudiant",
     "lessons_completed": "Leçons terminées",
-    "exercises_submitted": "Exercices soumis",
     "average_grade": "Note moyenne",
-    "actions": "Actions",
-    "view_details": "Afficher les détails",
-    "no_students_found": "Aucun étudiant trouvé",
-    "no_students_description": "Il n'y a pas encore d'étudiants inscrits à ce cours. Les étudiants apparaîtront ici une fois qu'ils auront rejoint le cours.",
-    "showing_students": "Affichage de {start} à {end} sur {total} élèves",
-    "no_analytics_data": "Aucune donnée analytique",
-    "no_analytics_description": "Impossible de charger les données analytiques pour ce cours. Veuillez réessayer plus tard ou contacter l'assistance si le problème persiste.",
     "student": "Étudiant",
-    "student_progress_distribution": "Répartition des progrès des élèves",
-    "grade_distribution": "Répartition des notes",
-    "progress_80_plus": "80 %+ de progrès",
-    "progress_60_79": "60-79 % de progrès",
-    "progress_below_60": "Progrès inférieur à 60 %",
-    "grade_90_plus": "90 %+ Note",
-    "grade_80_89": "Note 80-89 %",
-    "grade_70_79": "Note 70-79 %",
-    "grade_below_70": "Note inférieure à 70 %",
-    "number_of_students": "Nombre d'étudiants",
-    "progress_range": "Plage de progression",
-    "grade_range": "Plage de notes",
-    "no_progress_data": "Aucune donnée de progression disponible",
-    "no_grade_data": "Aucune donnée de note disponible",
     "loading_chart": "Chargement du graphique...",
     "no_data_default": "Aucune donnée disponible",
     "no_data_default_description": "Il n'y a aucune donnée à afficher pour le moment.",
@@ -710,22 +697,16 @@
     "range": {
       "7d": "7 derniers jours",
       "30d": "30 derniers jours",
-      "90d": "90 derniers jours"
+      "90d": "90 derniers jours",
+      "all": "Tout le temps",
+      "label": "Période",
+      "locked": "Passez à un forfait supérieur pour débloquer cette période"
     },
     "tabs": {
       "overview": "Aperçu",
       "funnel": "Entonnoir",
       "geography": "Géographie",
       "course_types": "Types de cours"
-    },
-    "course_metrics": {
-      "page_subtitle": "Inscription, achèvement des cours, notes et progrès par élève pour ce cours.",
-      "progress_distribution_card_description": "Combien d’élèves entrent dans chaque tranche d’achèvement.",
-      "grade_distribution_card_description": "Combien d’élèves appartiennent à chaque tranche scolaire.",
-      "students_table_description": "Aperçu triable avec des liens vers les profils des étudiants.",
-      "kpi_team_tutors": "{count, plural, one {# tuteur dans l'équipe du cours} other {# tuteurs dans l'équipe du cours}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercice} other {# exercices}} mappés aux leçons",
-      "kpi_progress_grade": "{grade} % de note d'exercice moyenne parmi les étudiants inscrits"
     },
     "exercises_completed": "Exercices terminés",
     "course_progress": "Progression du cours",
@@ -3565,7 +3546,8 @@
     "back_to_app": "Retour à l'application",
     "create": "Créer",
     "distribute": "Distribuer",
-    "tools": "Outils"
+    "tools": "Outils",
+    "marketing": "Commercialisation"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -6025,7 +6007,8 @@
       "newsfeed": "Fil d'actualité",
       "courses": "Cours",
       "people": "Les gens",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "analytics": "Analytique"
     },
     "status": {
       "active": "Actif",
@@ -6438,5 +6421,585 @@
     "new_badge": "Nouveau",
     "read_full": "Lire le journal des modifications complet",
     "close": "Fermer"
+  },
+  "marketing": {
+    "title": "Commercialisation",
+    "subtitle": "Comprenez comment les visiteurs découvrent vos cours et se transforment en étudiants."
+  },
+  "insights": {
+    "title": "Analytique",
+    "updated_seconds_ago": "mis à jour il y a {count}s",
+    "updated_minutes_ago": "{count, plural, one {mis à jour il y a # minute} other {mis à jour il y a # minutes}}",
+    "retry": "Essayer à nouveau",
+    "all_courses": "Tous les cours",
+    "course_picker": "Cours",
+    "exercise_picker": "Exercice",
+    "not_in_section": "Pas dans une section",
+    "section_number": "Section {number}",
+    "section_with_title": "Section {number} · {title}",
+    "finished": "Fini",
+    "awaiting_grade": "En attente de note",
+    "awaiting_grade_short": "En attente",
+    "pass_mark_tag": "Note de passage {mark}%",
+    "of_total": "{count} de {total}",
+    "never": "Jamais",
+    "invited": "{count} invité",
+    "no_students": "Aucun étudiant",
+    "no_students_yet": "Pas encore d'étudiants",
+    "no_graded_attempts": "Aucune tentative notée",
+    "names_and_more": "{names} et {count} de plus",
+    "certificate_issued": "{count, plural, one {Émis} other {# émis}}",
+    "question_hint": {
+      "context_and_answer": "{context} · Réponse incorrecte la plus fréquente : {answer}",
+      "answer": "Réponse incorrecte la plus fréquente : {answer}"
+    },
+    "chips": {
+      "label": "À propos de ce tableau de bord",
+      "live": "En direct · {updated}",
+      "live_every": "En direct · {updated} · se rafraîchit toutes les {seconds}s",
+      "students": "{count, plural, one {# étudiant} other {# étudiants}}",
+      "courses": "Cours : {count}",
+      "cohorts": "Cohortes : {count}",
+      "active_cohorts": "{count, plural, one {# cohorte active} other {# cohortes actives}}",
+      "seats": "Places assises : {used} sur {limit}"
+    },
+    "now_tag": {
+      "label": "Maintenant",
+      "hint": "Indique le niveau actuel des étudiants. La plage de valeurs reste inchangée sur cette fiche."
+    },
+    "student_chips": {
+      "latest": "Dernier",
+      "progress": "Progrès",
+      "now_at": "maintenant à {place}"
+    },
+    "donut": {
+      "students": "{count, plural, one {étudiant} other {les étudiants}}"
+    },
+    "status": {
+      "at_risk": "À risque",
+      "lagging": "Retard",
+      "on_track": "En bonne voie",
+      "completed": "Complété"
+    },
+    "flags": {
+      "overdue": "En retard"
+    },
+    "legend": {
+      "middle_half": "50 % des étudiants du milieu",
+      "cohort_average": "Moyenne de la cohorte",
+      "student": "Étudiant",
+      "all_students": "Tous les étudiants",
+      "in_progress": "{name} (en cours)",
+      "enrolled_students": "Étudiants inscrits",
+      "target": "Cible",
+      "logins": "Connexions",
+      "direct_students": "Étudiants directs"
+    },
+    "notes": {
+      "score_distribution": "Étudiants par tranche de score.",
+      "course_details": "Sélectionnez un cours ci-dessus pour consulter les scores par exercice, le tableau de bord section par section et les questions les plus difficiles.",
+      "section_scorecard": "Une rangée par section de cours. La participation vidéo correspond au pourcentage de vidéos de cours visionnées. La présence en classe est enregistrée par le tuteur.",
+      "needs_attention": "Un étudiant peut se présenter pour plusieurs raisons.",
+      "overdue": "Les étudiants reçoivent déjà des courriels de rappel programmés avant une échéance. « Envoyer un rappel » en envoie un immédiatement.",
+      "hardest_questions": "Les questions auxquelles les étudiants font le plus d'erreurs, avec la réponse fausse la plus fréquente.",
+      "logins_per_day": "Les étudiants qui se sont inscrits chaque jour.",
+      "students": {
+        "all_courses": "Cliquez sur un étudiant pour voir ses cours.",
+        "one_course": "Cliquez sur un étudiant pour afficher ses résultats dans le graphique. Les fonctions de recherche, de filtrage et de tri sont également disponibles pour l'exportation.",
+        "course_scope": "Sélectionnez un étudiant pour consulter sa progression dans ce cours. Les options de recherche, de filtrage et de tri sont également disponibles pour l'exportation."
+      },
+      "showing_first": "Affichage des {shown} premiers sur {total}.",
+      "cohorts_select": "Sélectionnez une cohorte pour ouvrir son tableau de bord.",
+      "cohorts_in_table": "{count, plural, one {La cohorte} other {Les # cohortes}} dans le tableau ci-dessus.",
+      "courses_in_table": "{count, plural, one {Le cours} other {Les # cours}} du tableau ci-dessus.",
+      "not_counted_empty": "Non comptés : {names} (pas encore d'étudiants).",
+      "not_charted_empty": "Non affichés dans le graphique : {names} (pas encore d'étudiants).",
+      "lesson_dropoff": "La chute la plus abrupte se situe entre {from} et {to}.",
+      "no_pass_mark": "Aucun exercice n'a encore de note de passage, il n'y a donc pas de taux de réussite. Définissez une note de passage pour un exercice afin de la consulter.",
+      "bucketed_total": "Chaque barre totalise les connexions sur {days} jours. Un étudiant compte une fois par jour.",
+      "student_sheet_pick_course": "Cliquez sur un cours pour afficher ses résultats par exercice sous forme de graphique.",
+      "direct_students_charted": "Les étudiants directs ne font partie d'aucune cohorte ; ils apparaissent sur leur propre ligne.",
+      "courses_select": "Sélectionnez un cours pour ouvrir son tableau de bord."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–25",
+        "1": "25–50",
+        "2": "50–75",
+        "3": "75–99",
+        "4": "Fait"
+      },
+      "score": {
+        "4": "<50",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
+        "9": "90+",
+        "null": "Aucun score"
+      }
+    },
+    "kpi": {
+      "share_of_cohort": "{percent} de la cohorte",
+      "share_of_enrolled": "{percent} des inscrits",
+      "share_of_completions": "{percent} d'achèvements",
+      "avg_progress_hint": "leçons et exercices complétés / total",
+      "avg_score_hint": "à travers les exercices suivis",
+      "overdue_hint": "passé leur date limite, pas fait",
+      "completed_certified": "{percent} de la cohorte · {count} certifié",
+      "enrolled_this_week": "{count, plural, =0 {Pas de nouveaux étudiants cette semaine} other {+# cette semaine}}",
+      "enrolled_in_days": "{count, plural, =0 {Aucun nouvel étudiant au cours des {days} derniers jours} other {+# au cours des {days} derniers jours}}",
+      "added_in_days": "{count, plural, =0 {Aucun au cours des {days} derniers jours} other {+# au cours des {days} derniers jours}}",
+      "completed_in_days": "{percent} de la cohorte{count, plural, =0 {} other { · +# au cours des {days} derniers jours}}",
+      "logged_in_days": "Connecté, {days} derniers jours",
+      "avg_score_in_days": "tentatives au cours des {days} derniers jours",
+      "first_try_in_days": "de {took} noté au cours des {days} derniers jours{still, plural, =0 {} other { · # reste à passer}}",
+      "median_days_in_days": "pour les achèvements au cours des {days} derniers jours",
+      "first_try_context": "de {took} qui ont passé un exercice de note de passage{still, plural, =0 {} other { · # reste à passer}}",
+      "median_days_hint": "inscription à la fin",
+      "needs_attention_hint": "inactif, score faible ou en retard",
+      "delta": {
+        "this_week": {
+          "up": "+{count} pts cette semaine",
+          "down": "−{count} pts cette semaine",
+          "flat": "Pas de changement cette semaine"
+        },
+        "vs_last_week": {
+          "up": "+{count} pts par rapport à la semaine dernière",
+          "down": "-{count} pts par rapport à la semaine dernière",
+          "flat": "Aucun changement par rapport à la semaine dernière."
+        },
+        "in_days": {
+          "up": "+{count} pts au cours des {days} derniers jours",
+          "down": "−{count} pts au cours des {days} derniers jours",
+          "flat": "Aucun changement au cours des {days} derniers jours"
+        },
+        "vs_days_ago": {
+          "up": "+{count} pts contre {days} jours auparavant",
+          "down": "−{count} pts contre {days} jours auparavant",
+          "flat": "Aucun changement par rapport à il y a {days} jours"
+        }
+      },
+      "no_data": {
+        "students": "pas encore d'étudiants",
+        "graded": "pas encore de tentatives notées",
+        "first_try": "pas encore de tentative notée sur un exercice avec note de passage",
+        "completions": "aucun achèvement pour le moment",
+        "enrolments": "aucune inscription pour le moment",
+        "in_days": "aucun au cours des {days} derniers jours"
+      }
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Connecté aujourd'hui"
+      },
+      "kpi_logged_in_week": {
+        "title": "Connecté(e) ces 7 derniers jours"
+      },
+      "kpi_avg_progress": {
+        "title": "Progression moyenne"
+      },
+      "kpi_avg_score": {
+        "title": "Score moyen"
+      },
+      "kpi_avg_grade": {
+        "title": "Note moyenne"
+      },
+      "kpi_overdue": {
+        "title": "En retard"
+      },
+      "kpi_completed": {
+        "title": "Complété"
+      },
+      "kpi_enrolled": {
+        "title": "Inscrit"
+      },
+      "kpi_completion_rate": {
+        "title": "Taux d'achèvement"
+      },
+      "kpi_first_try_pass": {
+        "title": "Taux de réussite"
+      },
+      "kpi_median_days": {
+        "title": "Nombre médian de jours pour terminer"
+      },
+      "kpi_completions": {
+        "title": "Achèvements"
+      },
+      "kpi_certificates": {
+        "title": "Certificats délivrés"
+      },
+      "kpi_needs_attention": {
+        "title": "Nécessite une attention particulière"
+      },
+      "courses_summary": {
+        "title": "Cours de cette cohorte"
+      },
+      "students_by_status": {
+        "title": "Étudiants par statut"
+      },
+      "course_details": {
+        "title": "Détails du cours"
+      },
+      "scores_by_exercise": {
+        "title": "Résultats par exercice, {course}"
+      },
+      "progress_distribution": {
+        "title": "Distribution des progrès"
+      },
+      "section_scores": {
+        "title": "Résultats et présence par section"
+      },
+      "score_distribution": {
+        "title": "Distribution des scores moyens"
+      },
+      "section_scorecard": {
+        "title": "Tableau de bord section par section"
+      },
+      "needs_attention": {
+        "title": "Nécessite de l'attention, pour une raison"
+      },
+      "overdue": {
+        "title": "En retard, avec des rappels"
+      },
+      "hardest_questions": {
+        "title": "Les questions les plus difficiles"
+      },
+      "students": {
+        "title": "Étudiants"
+      },
+      "logins_per_day": {
+        "title": "Étudiants connectés par jour"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Scores par exercice, par cohorte"
+      },
+      "exercise_score_distribution": {
+        "title": "Distribution des scores, {exercise}"
+      },
+      "lesson_dropoff": {
+        "title": "dépôt de la leçon terminée"
+      },
+      "hardest_exercises": {
+        "title": "Exercices les plus difficiles"
+      },
+      "cohorts_in_course": {
+        "title": "Les cohortes qui suivent ce cours"
+      },
+      "cohort_details": {
+        "title": "Détails de la cohorte"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Aperçu des cohortes"
+      },
+      "cohort_health": {
+        "title": "Étudiants par cohorte santé"
+      },
+      "hiring_ramp": {
+        "title": "Étudiants inscrits par rapport à l'objectif"
+      },
+      "avg_score_by_cohort": {
+        "title": "Score moyen par cohorte"
+      },
+      "courses_by_completion": {
+        "title": "Cours par niveau d'achèvement"
+      },
+      "courses_at_a_glance": {
+        "title": "Cours en un coup d'œil"
+      },
+      "scores_by_exercise_course": {
+        "title": "Scores par exercice"
+      },
+      "avg_score_by_course": {
+        "title": "Score moyen, par cours"
+      },
+      "cohort_empty": {
+        "title": "Cohortes sans étudiants"
+      }
+    },
+    "measures": {
+      "rows__count": "Étudiants",
+      "progress_pct__avg": "Progression moyenne",
+      "avg_score_pct__avg": "Score moyen",
+      "avg_progress_pct__value": "Progression moyenne",
+      "avg_score_pct__value": "Score moyen",
+      "first_try_pass__pooled": "Taux de réussite",
+      "is_completed__count_if": "Complété",
+      "is_completed__rate": "Taux d'achèvement",
+      "is_inactive__count_if": "Aucune connexion requise, 2 jours et plus",
+      "is_low_score__count_if": "Score moyen inférieur à 50%",
+      "is_overdue__count_if": "En retard",
+      "is_low_video__count_if": "Participation vidéo inférieure à 60%",
+      "logged_in__count_if": "Étudiants connectés",
+      "section_score_pct__avg": "Score moyen",
+      "video_pct__avg": "Présence vidéo",
+      "attendance__pooled": "Présence en classe",
+      "best_score_pct__avg": "Score moyen",
+      "is_complete__rate": "Complété",
+      "members_total__value": "Étudiants inscrits"
+    },
+    "columns": {
+      "student": "Étudiant",
+      "email": "E-mail",
+      "course": "Cours",
+      "students": "Étudiants",
+      "progress": "Progrès",
+      "avg_progress": "Progression moyenne",
+      "avg_score": "Score moyen",
+      "average_score": "Score moyen",
+      "completed": "Complété",
+      "took_pass_mark": "A passé un exercice avec note de passage",
+      "passed_first_try": "Taux de réussite",
+      "exercises_passed": "Exercices réussis",
+      "now_at": "Maintenant chez",
+      "courses_completed": "Cours terminés",
+      "video": "Vidéo",
+      "classroom": "Classe",
+      "video_attendance": "Présence vidéo",
+      "classroom_attendance": "Présence en classe",
+      "certificate": "Certificat",
+      "certificates": "Certificats",
+      "last_login": "Dernière connexion",
+      "status": "Statut",
+      "trend": "Tendance",
+      "cohort": "Cohorte",
+      "created": "Créé",
+      "overdue": "En retard",
+      "health": "Santé",
+      "section": "Section du cours",
+      "exercises_taken": "Exercices effectués",
+      "actions": "Actions"
+    },
+    "column_hints": {
+      "passed_first_try": "Les étudiants qui ont atteint la note de passage dès leur première tentative notée, pour les exercices comportant une note de passage.",
+      "section_passed_first_try": "Les étudiants qui ont atteint la note de passage dès leur première tentative notée à chaque exercice comportant une note de passage dans cette section.",
+      "took_pass_mark": "Les étudiants sont évalués sur au moins un exercice ayant une note de passage.",
+      "exercises_passed": "Exercices ayant une note de passage que cet étudiant a réussie, parmi tous les exercices ayant une note de passage du cours."
+    },
+    "actions": {
+      "send_reminder": "Envoyer un rappel",
+      "queued": "File d'attente",
+      "remind_all_overdue": "Rappeler à tous {count, plural, one {# étudiant en retard} other {# étudiants en retard}}",
+      "reminders_queued": "Rappels en attente"
+    },
+    "target": {
+      "set": "Définir un objectif",
+      "edit": "Modifier la cible",
+      "label": "Objectif d'apprentissage",
+      "helper": "Le nombre d'étudiants inscrits que vous visez est indiqué par une ligne pointillée.",
+      "clear": "Supprimer la cible",
+      "save": "Enregistrer l'objectif"
+    },
+    "hints": {
+      "exercise_score_distribution": "Choisissez un exercice pour voir ses scores"
+    },
+    "students": {
+      "search": "Recherche par nom ou par courriel",
+      "empty": "Aucun étudiant ne correspond à ces filtres.",
+      "showing": {
+        "cohort": "Affichage de {from}–{to} sur {total} correspondant · {count, plural, one {# étudiant} other {# étudiants}} dans la cohorte",
+        "course": "Affichage de {from}–{to} sur {total} correspondant · {count, plural, one {# étudiant} other {# étudiants}} en cours",
+        "org": "Affichage de {from}–{to} sur {total} correspondant · {count, plural, one {# étudiant} other {# étudiants}} dans l'organisation"
+      },
+      "clear_filters": "{count, plural, one {Effacer # filtre} other {Supprimer # filtres}}",
+      "sort": {
+        "status": "Trier : en retard en premier",
+        "progress": "Trier : progrès le plus faible",
+        "name": "Trier : nom de A à Z",
+        "low_score": "Trier par score moyen le plus bas"
+      },
+      "filters": {
+        "status": {
+          "label": "Statut",
+          "any": "Tous les statuts",
+          "at_risk": "À risque",
+          "lagging": "Retard",
+          "on_track": "En bonne voie",
+          "completed": "Complété"
+        },
+        "activity": {
+          "label": "Dernière connexion",
+          "any": "Toute connexion",
+          "today": "Connecté aujourd'hui",
+          "idle": "Aucune connexion depuis plus de 2 jours"
+        },
+        "score": {
+          "label": "Score moyen",
+          "any": "Tout score moyen",
+          "lt50": "Moins de 50%",
+          "mid": "50 % à 69 %",
+          "gte70": "70 % et plus"
+        },
+        "flag": {
+          "label": "drapeaux",
+          "any": "N'importe quel drapeau",
+          "overdue": "En retard",
+          "certified": "Certificat délivré",
+          "not_certified": "Aucun certificat"
+        }
+      },
+      "showing_paged": {
+        "cohort": "Affichage de {from}–{to} sur {count, plural, one {# étudiant} other {# étudiants}} dans la cohorte",
+        "course": "Affichage de {from}–{to} sur {count, plural, one {# étudiant} other {# étudiants}} en cours",
+        "org": "Affichage de {from}–{to} sur {count, plural, one {# étudiant} other {# étudiants}} dans l'organisation"
+      },
+      "showing_filtered": {
+        "cohort": "{total, plural, one {# étudiant correspondant} other {# étudiants correspondants}} · {count, plural, one {# étudiant} other {# étudiants}} dans la cohorte",
+        "course": "{total, plural, one {# étudiant correspondant} other {# étudiants correspondants}} · {count, plural, one {# étudiant} other {# étudiants}} en cours",
+        "org": "{total, plural, one {# étudiant correspondant} other {# étudiants correspondants}} · {count, plural, one {# étudiant} other {# étudiants}} dans l'organisation"
+      },
+      "showing_all": {
+        "cohort": "{count, plural, one {# étudiant} other {# étudiants}} dans la cohorte",
+        "course": "{count, plural, one {# étudiant} other {# étudiants}} en cours",
+        "org": "{count, plural, one {# étudiant} other {# étudiants}} dans l'organisation"
+      },
+      "failed": "Impossible de charger les étudiants",
+      "cells_failed": "Impossible de charger les scores des exercices",
+      "attempts_unavailable": "Impossible de vérifier quels exercices ont des tentatives ; certains exercices verrouillés peuvent donc être masqués."
+    },
+    "empty": {
+      "no_data": "Aucune donnée pour le moment",
+      "no_overdue": "Aucun élève en retard",
+      "no_cohorts": "Aucune cohorte pour le moment",
+      "failed": "Ce graphique n'a pas pu être chargé.",
+      "dashboard_failed": "Impossible de charger les données analytiques",
+      "not_permitted": "Vous n'avez pas accès à ces analyses.",
+      "no_exercises": "Aucun exercice dans ce cours",
+      "no_exercises_description": "Les scores apparaissent lorsque des exercices sont ajoutés et que les étudiants soumettent des tentatives."
+    },
+    "scope_empty": {
+      "title": {
+        "cohort": "Aucun étudiant dans cette cohorte pour le moment",
+        "course": "Aucun étudiant dans ce cours pour le moment",
+        "org": "Aucun étudiant dans votre organisation pour le moment"
+      },
+      "description": {
+        "cohort": "Les analyses se remplissent à mesure que les étudiants ouvrent des leçons et soumettent des exercices.",
+        "cohort_no_courses": "Ajoutez des cours, puis invitez des étudiants. Les analyses se remplissent à mesure qu'ils ouvrent des leçons et soumettent des exercices.",
+        "course": "Les analyses se remplissent à mesure que les étudiants ouvrent des leçons et soumettent des exercices.",
+        "org": "Ajoutez des étudiants à votre académie, puis inscrivez-les à des cours ou des cohortes."
+      },
+      "pending": "{count, plural, one {# invitation est} other {# invitations sont}} en attente d'acceptation. Les analyses se remplissent dès que les étudiants rejoignent.",
+      "invite_students": "Inviter des étudiants",
+      "add_courses": "Ajouter des cours",
+      "add_students": "Ajouter des étudiants"
+    },
+    "student_sheet": {
+      "last_login": "Dernière connexion : {when}",
+      "courses_heading": "Cours",
+      "scores_heading": "Scores par exercice, {course}",
+      "open_profile": "Ouvrir le profil du cours",
+      "all_courses": "Tous les cours"
+    },
+    "pagination": {
+      "showing": "Affichage de {from}–{to} sur {total}",
+      "cohorts_org": "Affichage de {from}–{to} sur {total, plural, one {# cohorte} other {# cohortes}} dans l'organisation",
+      "cohorts_course": "Affichage de {from}–{to} sur {total, plural, one {# cohorte} other {# cohortes}} suivant ce cours",
+      "courses_cohort": "Affichage de {from}–{to} sur {total, plural, one {# cours} other {# cours}} dans la cohorte",
+      "courses_org": "Affichage de {from}–{to} sur {total, plural, one {# cours} other {# cours}} dans l'organisation",
+      "sections_course": "Affichage de {from}–{to} sur {total, plural, one {# section} other {# sections}} dans le cours",
+      "overdue_cohort": "Affichage de {from}–{to} sur {total, plural, one {# étudiant en retard} other {# étudiants en retard}} dans la cohorte"
+    },
+    "breakdown": {
+      "label": "Répartition",
+      "courses": "Cours ({count})",
+      "cohorts": "Cohortes ({count})",
+      "all_students": "Tous les étudiants",
+      "by_cohort": "Par cohorte ({count})"
+    },
+    "cohorts": {
+      "picker": "Cohortes : {selected} sur {total}",
+      "search": "Rechercher des cohortes",
+      "empty": "Aucune cohorte ne correspond",
+      "newest": "Les {count} plus récentes",
+      "none": "Effacer",
+      "students": "{count, plural, one {# étudiant} other {# étudiants}}",
+      "no_students": "Pas encore d'étudiants",
+      "direct_included": "Les étudiants directs sont toujours inclus.",
+      "select_all": "Tout sélectionner",
+      "select_shown": "Sélectionner affichés",
+      "load_more": "Charger plus",
+      "showing_matches": "Affichage de {shown} sur {total}",
+      "loading": "Chargement des cohortes…",
+      "load_failed": "Impossible de charger les cohortes."
+    },
+    "course_search": "Rechercher des cours",
+    "course_search_empty": "Aucun cours ne correspond",
+    "empty_states": {
+      "show_all_time": "Afficher tout l'historique",
+      "create_cohort": "Créer une cohorte",
+      "range": {
+        "title": "Aucune activité au cours des {days} derniers jours",
+        "description": "Cette carte ne compte que ce qui s'est passé sur la période sélectionnée."
+      },
+      "needs_attention": {
+        "title": "Personne n'a besoin d'attention",
+        "description": "Aucun étudiant n'est inactif, noté sous 50 %, en retard ou en retard sur les vidéos."
+      },
+      "overdue": {
+        "title": "Personne n'est en retard",
+        "description": "Tous les étudiants respectent leurs échéances."
+      },
+      "scores": {
+        "title": "Aucune tentative notée pour le moment",
+        "description": "Les scores apparaissent lorsque les étudiants soumettent des exercices et que les tentatives sont notées."
+      },
+      "student_scores": {
+        "title": "Aucune tentative notée pour le moment",
+        "description": "Les scores de cet étudiant apparaissent une fois ses tentatives notées."
+      },
+      "hardest_exercises": {
+        "title": "Pas encore assez de tentatives notées",
+        "description": "Un exercice apparaît dès qu'au moins 3 étudiants ont une tentative notée."
+      },
+      "questions": {
+        "title": "Pas encore assez de réponses",
+        "description": "Une question apparaît dès qu'au moins 5 étudiants y ont répondu dans une tentative notée."
+      },
+      "logins": {
+        "title": "Aucune connexion pour le moment",
+        "description": "Les étudiants apparaissent ici les jours où ils se connectent."
+      },
+      "lessons": {
+        "title": "Aucune leçon terminée pour le moment",
+        "description": "La barre de chaque leçon se remplit à mesure que les étudiants la terminent."
+      },
+      "growth": {
+        "title": "Aucun étudiant ajouté pour le moment",
+        "description": "La ligne commence avec le premier étudiant ajouté à votre organisation."
+      },
+      "courses_org": {
+        "title": "Aucun cours terminé pour le moment",
+        "description": "Les cours apparaissent ici à mesure que les étudiants s'inscrivent et les terminent."
+      },
+      "courses_cohort": {
+        "title": "Aucune activité de cours pour le moment",
+        "description": "Les barres et les lignes se remplissent dès que les étudiants commencent des leçons ou des exercices."
+      },
+      "cohorts_org": {
+        "title": "Aucune cohorte pour le moment",
+        "description": "Créez une cohorte pour regrouper des étudiants et comparer leur progression."
+      },
+      "cohorts_org_no_students": {
+        "title": "Aucun étudiant dans ces cohortes pour le moment",
+        "description": "Ajoutez des étudiants à votre organisation pour comparer la progression entre cohortes."
+      },
+      "cohorts_course": {
+        "title": "Aucune cohorte n'inclut ce cours",
+        "description": "Ajoutez ce cours à une cohorte pour comparer les cohortes ici."
+      },
+      "cohorts_course_no_students": {
+        "title": "Aucun étudiant dans ces cohortes pour le moment",
+        "description": "Invitez des étudiants à ce cours pour comparer la progression entre cohortes."
+      },
+      "default": {
+        "title": "Aucune donnée pour le moment",
+        "description": "Cette carte se remplit à mesure que les étudiants utilisent le cours."
+      }
+    },
+    "export": {
+      "students_capped": "La liste des étudiants est limitée aux {limit} premières lignes.",
+      "exercises_capped": "Les résultats des exercices sont limités aux {limit} premiers résultats."
+    }
   }
 }

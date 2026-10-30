@@ -529,6 +529,19 @@
       "test_success": "Testhændelsen blev leveret.",
       "test_failed": "Testhændelsen mislykkedes. Åbn leveringsloggen for at se hvorfor.",
       "redelivered": "Hændelsen er sat i kø til ny levering."
+    },
+    "insights": {
+      "reminder_sent": "Påmindelse sendt",
+      "reminder_not_sent": "Påmindelse ikke sendt: allerede sendt i dag, eller eleven har deaktiveret disse e-mails",
+      "reminder_failed": "Påmindelsen kunne ikke sendes",
+      "reminders_sending": "Sender påmindelser…",
+      "reminders_sent": "{count, plural, one {# påmindelse sendt} other {# påmindelser sendt}}",
+      "target_saved": "Elevmål gemt",
+      "target_failed": "Kunne ikke gemme elevens mål",
+      "target_invalid": "Indtast et helt tal fra 1 til 1.000.000",
+      "reminders_truncated": "{count, plural, one {# påmindelse sendt} other {# påmindelser sendt}}. For mange forsinkede elever til én udsendelse — afgræns kurset for at nå resten.",
+      "students_refresh_failed": "Kunne ikke opdatere elevlisten",
+      "refresh_failed": "Kunne ikke opdatere analyser"
     }
   },
   "explore": {
@@ -615,38 +628,12 @@
     "assignment_completion": "Afslutning af opgave",
     "assignment_completion_description": "Procentdel af udførte opgaver",
     "average_grade_description": "Gennemsnitskarakter for alle udførte opgaver",
-    "students": "studerende",
     "lessons": "Lektioner",
     "tutors": "undervisere",
     "avg_grade": "Gns. karakter",
-    "completion_rate": "Gennemførelsesgrad",
-    "student_progress_overview": "Oversigt over studerendes fremskridt",
-    "student_name": "Elevens navn",
     "lessons_completed": "Lektioner gennemført",
-    "exercises_submitted": "Indsendte øvelser",
     "average_grade": "Gennemsnitlig karakter",
-    "actions": "Handlinger",
-    "view_details": "Se detaljer",
-    "no_students_found": "Ingen studerende fundet",
-    "no_students_description": "Der er endnu ingen studerende tilmeldt dette kursus. Studerende vises her, når de tilmelder sig kurset.",
-    "showing_students": "Viser {start} til {end} af {total} elever",
-    "no_analytics_data": "Ingen analysedata",
-    "no_analytics_description": "Kan ikke indlæse analysedata for dette kursus. Prøv igen senere, eller kontakt support, hvis problemet fortsætter.",
     "student": "Studerende",
-    "student_progress_distribution": "Fordeling af studerendes fremskridt",
-    "grade_distribution": "Karakterfordeling",
-    "progress_80_plus": "80 %+ fremskridt",
-    "progress_60_79": "60-79 % fremgang",
-    "progress_below_60": "Under 60 % fremskridt",
-    "grade_90_plus": "90%+ karakter",
-    "grade_80_89": "80-89 % karakter",
-    "grade_70_79": "70-79 % karakter",
-    "grade_below_70": "Under 70 % karakter",
-    "number_of_students": "Antal studerende",
-    "progress_range": "Fremskridtsområde",
-    "grade_range": "Karakterinterval",
-    "no_progress_data": "Ingen statusdata tilgængelige",
-    "no_grade_data": "Ingen karakterdata tilgængelige",
     "loading_chart": "Indlæser diagram...",
     "no_data_default": "Ingen tilgængelige data",
     "no_data_default_description": "Der er ingen data at vise på nuværende tidspunkt.",
@@ -710,22 +697,16 @@
     "range": {
       "7d": "Sidste 7 dage",
       "30d": "Sidste 30 dage",
-      "90d": "Sidste 90 dage"
+      "90d": "Sidste 90 dage",
+      "all": "Alle tider",
+      "label": "Tidsinterval",
+      "locked": "Opgrader for at låse denne periode op"
     },
     "tabs": {
       "overview": "Oversigt",
       "funnel": "Tragt",
       "geography": "Geografi",
       "course_types": "Kursustyper"
-    },
-    "course_metrics": {
-      "page_subtitle": "Tilmelding, afslutning af lektioner, karakterer og fremskridt pr. elev for dette kursus.",
-      "progress_distribution_card_description": "Hvor mange elever falder der ind i hvert afslutningsbånd.",
-      "grade_distribution_card_description": "Hvor mange elever falder der ind i hvert klassetrin.",
-      "students_table_description": "Sorterbar oversigt med links til elevprofiler.",
-      "kpi_team_tutors": "{count, plural, one {# underviser på kursusholdet} other {# undervisere på kursusholdet}}",
-      "kpi_lessons_exercises": "{count, plural, one {# øvelse} other {# øvelser}} knyttet til lektioner",
-      "kpi_progress_grade": "{grade} % gennemsnitlig øvelseskarakter på tværs af tilmeldte elever"
     },
     "exercises_completed": "Øvelser fuldført",
     "course_progress": "Kursusstatus",
@@ -3565,7 +3546,8 @@
     "back_to_app": "Tilbage til app",
     "create": "Opret",
     "distribute": "Fordel",
-    "tools": "Værktøjer"
+    "tools": "Værktøjer",
+    "marketing": "Markedsføring"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -6025,7 +6007,8 @@
       "newsfeed": "Nyhedsfeed",
       "courses": "Kurser",
       "people": "Mennesker",
-      "settings": "Indstillinger"
+      "settings": "Indstillinger",
+      "analytics": "Analyse"
     },
     "status": {
       "active": "Aktiv",
@@ -6438,5 +6421,585 @@
     "new_badge": "Ny",
     "read_full": "Læs hele ændringsloggen",
     "close": "Luk"
+  },
+  "marketing": {
+    "title": "Markedsføring",
+    "subtitle": "Forstå, hvordan besøgende opdager dine kurser og konverterer til studerende."
+  },
+  "insights": {
+    "title": "Analyse",
+    "updated_seconds_ago": "opdateret for {count}s siden",
+    "updated_minutes_ago": "{count, plural, one {opdateret for # minut siden} other {opdateret for # minutter siden}}",
+    "retry": "Prøv igen",
+    "all_courses": "Alle kurser",
+    "course_picker": "Kursus",
+    "exercise_picker": "Øvelse",
+    "not_in_section": "Ikke i en sektion",
+    "section_number": "Afsnit {number}",
+    "section_with_title": "Sektion {number} · {title}",
+    "finished": "Færdig",
+    "awaiting_grade": "Venter på karakter",
+    "awaiting_grade_short": "Afventer",
+    "pass_mark_tag": "Beståelsesmærke {mark}%",
+    "of_total": "{count} af {total}",
+    "never": "Aldrig",
+    "invited": "{count} inviteret",
+    "no_students": "Ingen elever",
+    "no_students_yet": "Ingen elever endnu",
+    "no_graded_attempts": "Ingen vurderede forsøg",
+    "names_and_more": "{names} og {count} mere",
+    "certificate_issued": "{count, plural, one {Udstedt} other {# udstedt}}",
+    "question_hint": {
+      "context_and_answer": "{context} · mest almindelige forkerte svar: {answer}",
+      "answer": "Mest almindelige forkerte svar: {answer}"
+    },
+    "chips": {
+      "label": "Om dette dashboard",
+      "live": "Live · {updated}",
+      "live_every": "Live · {updated} · opdateres hvert {seconds}s",
+      "students": "{count, plural, one {# studerende} other {# elever}}",
+      "courses": "Kurser: {count}",
+      "cohorts": "Kohorter: {count}",
+      "active_cohorts": "{count, plural, one {# aktiv kohorte} other {# aktive kohorter}}",
+      "seats": "Pladser: {used} af {limit}"
+    },
+    "now_tag": {
+      "label": "Nu",
+      "hint": "Viser, hvor eleverne står nu. Intervallet ændrer ikke dette kort."
+    },
+    "student_chips": {
+      "latest": "Seneste",
+      "progress": "Fremskridt",
+      "now_at": "nu på {place}"
+    },
+    "donut": {
+      "students": "{count, plural, one {studerende} other {studerende}}"
+    },
+    "status": {
+      "at_risk": "I fare",
+      "lagging": "Bagud",
+      "on_track": "På rette spor",
+      "completed": "Færdiggjort"
+    },
+    "flags": {
+      "overdue": "Forsinket"
+    },
+    "legend": {
+      "middle_half": "Midterste 50% af eleverne",
+      "cohort_average": "Kohortegennemsnit",
+      "student": "Studerende",
+      "all_students": "Alle elever",
+      "in_progress": "{name} (i gang)",
+      "enrolled_students": "Tilmeldte elever",
+      "target": "Mål",
+      "logins": "Logins",
+      "direct_students": "Direkte elever"
+    },
+    "notes": {
+      "score_distribution": "Elever per scorebånd.",
+      "course_details": "Vælg et kursus ovenfor for at se scorer efter øvelse, scorekortet sektion for sektion og de sværeste spørgsmål.",
+      "section_scorecard": "Én række pr. kursusafsnit. Videodeltagelse er andelen af ​​sete lektionsvideoer. Klasseundervisningsdeltagelsen markeres af underviseren.",
+      "needs_attention": "En studerende kan optræde af mere end én årsag.",
+      "overdue": "Eleverne modtager allerede planlagte påmindelsesmails før en deadline. \"Send påmindelse\" sender en lige nu.",
+      "hardest_questions": "De spørgsmål, eleverne overser mest, med det mest almindelige forkerte svar.",
+      "logins_per_day": "Elever, der tilmeldte sig hver dag.",
+      "students": {
+        "all_courses": "Klik på en elev for at se deres kurser.",
+        "one_course": "Klik på en elev for at se deres score i et diagram. Søgning, filtre og sortering gælder også for eksporten.",
+        "course_scope": "Vælg en elev for at åbne deres status i dette kursus. Søgning, filtre og sortering gælder også for eksporten."
+      },
+      "showing_first": "Viser de første {shown} af {total}.",
+      "cohorts_select": "Vælg en kohorte for at åbne dens betjeningspanel.",
+      "cohorts_in_table": "{count, plural, one {Kohorten} other {De # kohorter}} i tabellen ovenfor.",
+      "courses_in_table": "{count, plural, one {Kurset} other {De # kurser}} i tabellen ovenfor.",
+      "not_counted_empty": "Ikke medregnet: {names} (ingen elever endnu).",
+      "not_charted_empty": "Ikke vist i diagram: {names} (ingen elever endnu).",
+      "lesson_dropoff": "Det stejleste fald er mellem {from} og {to}.",
+      "no_pass_mark": "Ingen øvelser her har endnu en beståelsesgrænse, så der er ingen beståelsesrate. Sæt en beståelsesgrænse for en øvelse for at se den.",
+      "bucketed_total": "Hver søjle opsummerer logins over {days} dage. En elev tæller én gang pr. dag.",
+      "student_sheet_pick_course": "Klik på et kursus for at kortlægge deres resultater efter øvelse.",
+      "direct_students_charted": "Direkte elever er ikke i en kohorte; de vises som deres egen linje.",
+      "courses_select": "Vælg et kursus for at åbne dets betjeningspanel."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–25",
+        "1": "25–50",
+        "2": "50–75",
+        "3": "75–99",
+        "4": "Færdig"
+      },
+      "score": {
+        "4": "<50",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
+        "9": "90+",
+        "null": "Ingen score"
+      }
+    },
+    "kpi": {
+      "share_of_cohort": "{percent} af kohorten",
+      "share_of_enrolled": "{percent} af tilmeldte",
+      "share_of_completions": "{percent} af fuldførelser",
+      "avg_progress_hint": "lektioner og øvelser gennemført / i alt",
+      "avg_score_hint": "på tværs af øvelser",
+      "overdue_hint": "forbi deres deadline, ikke gjort",
+      "completed_certified": "{percent} af kohorten · {count} certificeret",
+      "enrolled_this_week": "{count, plural, =0 {Ingen nye elever i denne uge} other {+# i denne uge}}",
+      "enrolled_in_days": "{count, plural, =0 {Ingen nye elever inden for de sidste {days} dage} other {+# inden for de sidste {days} dage}}",
+      "added_in_days": "{count, plural, =0 {Ingen inden for de sidste {days} dage} other {+# inden for de sidste {days} dage}}",
+      "completed_in_days": "{percent} af kohorten{count, plural, =0 {} other { · +# i de sidste {days} dage}}",
+      "logged_in_days": "Logget ind, sidste {days} dage",
+      "avg_score_in_days": "forsøg inden for de sidste {days} dage",
+      "first_try_in_days": "af {took} bedømt inden for de sidste {days} dage{still, plural, =0 {} other { · # stadig at bestå}}",
+      "median_days_in_days": "for fuldførelser inden for de sidste {days} dage",
+      "first_try_context": "af {took}, der tog en beståelsesmærkeøvelse{still, plural, =0 {} other { · # stadig at bestå}}",
+      "median_days_hint": "tilmelding til afslutning",
+      "needs_attention_hint": "inaktiv, lav score eller forsinket",
+      "delta": {
+        "this_week": {
+          "up": "+{count} point i denne uge",
+          "down": "−{count} point i denne uge",
+          "flat": "Ingen ændring i denne uge"
+        },
+        "vs_last_week": {
+          "up": "+{count} point i forhold til sidste uge",
+          "down": "−{count} point i forhold til sidste uge",
+          "flat": "Ingen ændring i forhold til sidste uge"
+        },
+        "in_days": {
+          "up": "+{count} point i de sidste {days} dage",
+          "down": "−{count} point i de sidste {days} dage",
+          "flat": "Ingen ændring i de sidste {days} dage"
+        },
+        "vs_days_ago": {
+          "up": "+{count} point vs. {days} dage siden",
+          "down": "−{count} point vs. {days} dage siden",
+          "flat": "Ingen ændring i forhold til {days} dage siden"
+        }
+      },
+      "no_data": {
+        "students": "endnu ingen elever",
+        "graded": "endnu ingen bedømte forsøg",
+        "first_try": "endnu ingen bedømte forsøg på en øvelse med beståelsesgrænse",
+        "completions": "endnu ingen gennemførsler",
+        "enrolments": "endnu ingen tilmeldinger",
+        "in_days": "ingen i de sidste {days} dage"
+      }
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Logget ind i dag"
+      },
+      "kpi_logged_in_week": {
+        "title": "Logget ind, de seneste 7 dage"
+      },
+      "kpi_avg_progress": {
+        "title": "Gennemsnitlig fremgang"
+      },
+      "kpi_avg_score": {
+        "title": "Gennemsnitlig score"
+      },
+      "kpi_avg_grade": {
+        "title": "Gennemsnitlig karakter"
+      },
+      "kpi_overdue": {
+        "title": "Forsinket"
+      },
+      "kpi_completed": {
+        "title": "Færdiggjort"
+      },
+      "kpi_enrolled": {
+        "title": "Tilmeldt"
+      },
+      "kpi_completion_rate": {
+        "title": "Færdiggørelsesprocent"
+      },
+      "kpi_first_try_pass": {
+        "title": "Beståelsesrate"
+      },
+      "kpi_median_days": {
+        "title": "Median antal dage til afslutning"
+      },
+      "kpi_completions": {
+        "title": "Færdiggørelser"
+      },
+      "kpi_certificates": {
+        "title": "Udstedte certifikater"
+      },
+      "kpi_needs_attention": {
+        "title": "Kræver opmærksomhed"
+      },
+      "courses_summary": {
+        "title": "Kurser i denne kohorte"
+      },
+      "students_by_status": {
+        "title": "Elever efter status"
+      },
+      "course_details": {
+        "title": "Kursusdetaljer"
+      },
+      "scores_by_exercise": {
+        "title": "Scorer efter øvelse, {course}"
+      },
+      "progress_distribution": {
+        "title": "Fordeling af fremskridt"
+      },
+      "section_scores": {
+        "title": "Scorer og fremmøde efter sektion"
+      },
+      "score_distribution": {
+        "title": "Gennemsnitlig scorefordeling"
+      },
+      "section_scorecard": {
+        "title": "Scorekort for sektion"
+      },
+      "needs_attention": {
+        "title": "Kræver opmærksomhed, af grund"
+      },
+      "overdue": {
+        "title": "Forsinket, med påmindelser"
+      },
+      "hardest_questions": {
+        "title": "De sværeste spørgsmål"
+      },
+      "students": {
+        "title": "Studerende"
+      },
+      "logins_per_day": {
+        "title": "Elever logget ind pr. dag"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Resultater efter øvelse, pr. kohorte"
+      },
+      "exercise_score_distribution": {
+        "title": "Scorefordeling, {exercise}"
+      },
+      "lesson_dropoff": {
+        "title": "Aflevering af færdiggjorte lektioner"
+      },
+      "hardest_exercises": {
+        "title": "De sværeste øvelser"
+      },
+      "cohorts_in_course": {
+        "title": "Kohorter, der tager dette kursus"
+      },
+      "cohort_details": {
+        "title": "Kohortedetaljer"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Kohorter i korte træk"
+      },
+      "cohort_health": {
+        "title": "Elever efter kohortesundhed"
+      },
+      "hiring_ramp": {
+        "title": "Tilmeldte elever vs. målgruppe"
+      },
+      "avg_score_by_cohort": {
+        "title": "Gennemsnitlig score, efter kohorte"
+      },
+      "courses_by_completion": {
+        "title": "Kurser efter færdiggørelse"
+      },
+      "courses_at_a_glance": {
+        "title": "Kurser i overblik"
+      },
+      "scores_by_exercise_course": {
+        "title": "Resultater efter øvelse"
+      },
+      "avg_score_by_course": {
+        "title": "Gennemsnitlig score, pr. kursus"
+      },
+      "cohort_empty": {
+        "title": "Kohorter uden elever"
+      }
+    },
+    "measures": {
+      "rows__count": "Studerende",
+      "progress_pct__avg": "Gennemsnitlig fremgang",
+      "avg_score_pct__avg": "Gennemsnitlig score",
+      "avg_progress_pct__value": "Gennemsnitlig fremgang",
+      "avg_score_pct__value": "Gennemsnitlig score",
+      "first_try_pass__pooled": "Beståelsesrate",
+      "is_completed__count_if": "Færdiggjort",
+      "is_completed__rate": "Færdiggørelsesprocent",
+      "is_inactive__count_if": "Ingen login, 2+ dage",
+      "is_low_score__count_if": "Gennemsnitlig score under 50%",
+      "is_overdue__count_if": "Forfaldne",
+      "is_low_video__count_if": "Videodeltagelse under 60 %",
+      "logged_in__count_if": "Eleverne er logget ind",
+      "section_score_pct__avg": "Gennemsnitlig score",
+      "video_pct__avg": "Video fremmøde",
+      "attendance__pooled": "Klassedeltagelse",
+      "best_score_pct__avg": "Gennemsnitlig score",
+      "is_complete__rate": "Afsluttet",
+      "members_total__value": "Tilmeldte elever"
+    },
+    "columns": {
+      "student": "Studerende",
+      "email": "E-mail",
+      "course": "Kursus",
+      "students": "Elever",
+      "progress": "Fremskridt",
+      "avg_progress": "Gns. fremskridt",
+      "avg_score": "Gennemsnitlig score",
+      "average_score": "Gennemsnitlig score",
+      "completed": "Afsluttet",
+      "took_pass_mark": "Tog en beståelsesøvelse",
+      "passed_first_try": "Beståelsesrate",
+      "exercises_passed": "Øvelser bestået",
+      "now_at": "Nu kl",
+      "courses_completed": "Kurser gennemført",
+      "video": "Video",
+      "classroom": "Klasseværelse",
+      "video_attendance": "Video fremmøde",
+      "classroom_attendance": "Klassedeltagelse",
+      "certificate": "Certifikat",
+      "certificates": "Certifikater",
+      "last_login": "Sidste login",
+      "status": "Status",
+      "trend": "Udvikling",
+      "cohort": "Kohorte",
+      "created": "Oprettet",
+      "overdue": "Forfaldne",
+      "health": "Sundhed",
+      "section": "Kursusafsnit",
+      "exercises_taken": "Øvelser taget",
+      "actions": "Handlinger"
+    },
+    "column_hints": {
+      "passed_first_try": "Elever, der har opnået bestået karakter på deres første bedømte forsøg, på øvelser, der har en bestået karakter.",
+      "section_passed_first_try": "Elever, der opnåede beståelseskravet i deres første bedømte forsøg i hver øvelse, med et beståelseskrav i denne sektion.",
+      "took_pass_mark": "Eleverne bedømmes på mindst én øvelse, der har beståelseskarakteren.",
+      "exercises_passed": "Øvelser med en beståelseskarakter, som denne elev har opnået karakteren på, ud af alle øvelser med en beståelseskarakter i kurset."
+    },
+    "actions": {
+      "send_reminder": "Send påmindelse",
+      "queued": "I kø",
+      "remind_all_overdue": "Mind alle {count, plural, one {# forsinket elev} other {# forsinkede elever}}",
+      "reminders_queued": "Påmindelser i kø"
+    },
+    "target": {
+      "set": "Sæt mål",
+      "edit": "Rediger mål",
+      "label": "Elevmål",
+      "helper": "Hvor mange tilmeldte elever du sigter mod. Det vises som en stiplet linje.",
+      "clear": "Fjern mål",
+      "save": "Gem mål"
+    },
+    "hints": {
+      "exercise_score_distribution": "Vælg en øvelse for at se dens resultater"
+    },
+    "students": {
+      "search": "Søg efter navn eller e-mail",
+      "empty": "Ingen elever matcher disse filtre",
+      "showing": {
+        "cohort": "Viser {from}–{to} af {total} matchende · {count, plural, one {# studerende} other {# elever}} i kohorte",
+        "course": "Viser {from}–{to} af {total} matchende · {count, plural, one {# studerende} other {# elever}} i kursus",
+        "org": "Viser {from}–{to} af {total} matchende · {count, plural, one {# studerende} other {# elever}} i organisation"
+      },
+      "clear_filters": "{count, plural, one {Ryd # filter} other {Ryd # filtre}}",
+      "sort": {
+        "status": "Sortér: haltende først",
+        "progress": "Sortér: mindst fremskridt",
+        "name": "Sortér: navn fra A til Å",
+        "low_score": "Sortér: laveste gennemsnitsscore"
+      },
+      "filters": {
+        "status": {
+          "label": "Status",
+          "any": "Alle statusser",
+          "at_risk": "I fare",
+          "lagging": "Bagud",
+          "on_track": "På rette spor",
+          "completed": "Færdiggjort"
+        },
+        "activity": {
+          "label": "Sidste login",
+          "any": "Ethvert login",
+          "today": "Logget ind i dag",
+          "idle": "Ingen login i 2+ dage"
+        },
+        "score": {
+          "label": "Gennemsnitlig score",
+          "any": "Enhver gennemsnitlig score",
+          "lt50": "Under 50 %",
+          "mid": "50 % til 69 %",
+          "gte70": "70 % og derover"
+        },
+        "flag": {
+          "label": "Flag",
+          "any": "Ethvert flag",
+          "overdue": "Forsinket",
+          "certified": "Certifikat udstedt",
+          "not_certified": "Intet certifikat"
+        }
+      },
+      "showing_paged": {
+        "cohort": "Viser {from}–{to} af {count, plural, one {# studerende} other {# elever}} i kohorte",
+        "course": "Viser {from}–{to} af {count, plural, one {# studerende} other {# elever}} i kursus",
+        "org": "Viser {from}–{to} af {count, plural, one {# studerende} other {# elever}} i organisation"
+      },
+      "showing_filtered": {
+        "cohort": "{total, plural, one {# studerende} other {# elever}} matchende · {count, plural, one {# studerende} other {# elever}} i kohorte",
+        "course": "{total, plural, one {# studerende} other {# elever}} matchende · {count, plural, one {# studerende} other {# elever}} i kursus",
+        "org": "{total, plural, one {# studerende} other {# elever}} matchende · {count, plural, one {# studerende} other {# elever}} i organisation"
+      },
+      "showing_all": {
+        "cohort": "{count, plural, one {# studerende} other {# elever}} i kohorte",
+        "course": "{count, plural, one {# studerende} other {# elever}} i kursus",
+        "org": "{count, plural, one {# studerende} other {# elever}} i organisation"
+      },
+      "failed": "Kunne ikke indlæse elever",
+      "cells_failed": "Kunne ikke indlæse øvelsesresultater",
+      "attempts_unavailable": "Kunne ikke kontrollere, hvilke øvelser der har forsøg, så nogle låste øvelser kan være skjult."
+    },
+    "empty": {
+      "no_data": "Ingen data endnu",
+      "no_overdue": "Ingen forsinkede elever",
+      "no_cohorts": "Ingen kohorter endnu",
+      "failed": "Dette diagram kunne ikke indlæses",
+      "dashboard_failed": "Analytics kunne ikke indlæses",
+      "not_permitted": "Du har ikke adgang til disse analyser",
+      "no_exercises": "Ingen øvelser i dette kursus",
+      "no_exercises_description": "Resultater vises, når der tilføjes øvelser, og eleverne afleverer forsøg."
+    },
+    "scope_empty": {
+      "title": {
+        "cohort": "Der er endnu ingen elever i denne kohorte",
+        "course": "Der er endnu ingen elever på dette kursus",
+        "org": "Der er endnu ingen elever i din organisation"
+      },
+      "description": {
+        "cohort": "Analyserne udfyldes, når eleverne åbner lektioner og indsender øvelser.",
+        "cohort_no_courses": "Tilføj kurser, og invitér derefter elever. Analyserne udfyldes, når de åbner lektioner og indsender øvelser.",
+        "course": "Analyserne udfyldes, når eleverne åbner lektioner og indsender øvelser.",
+        "org": "Tilføj elever til din academy, og tilmeld dem derefter til kurser eller kohorter."
+      },
+      "pending": "{count, plural, one {# invitation venter} other {# invitationer venter}} på at blive accepteret. Analyserne udfyldes, når eleverne tilmelder sig.",
+      "invite_students": "Invitér elever",
+      "add_courses": "Tilføj kurser",
+      "add_students": "Tilføj elever"
+    },
+    "student_sheet": {
+      "last_login": "Sidste login: {when}",
+      "courses_heading": "Kurser",
+      "scores_heading": "Scorer efter øvelse, {course}",
+      "open_profile": "Åbn kursusprofil",
+      "all_courses": "Alle kurser"
+    },
+    "pagination": {
+      "showing": "Viser {from}–{to} af {total}",
+      "cohorts_org": "Viser {from}–{to} af {total, plural, one {# hold} other {# hold}} i organisationen",
+      "cohorts_course": "Viser {from}–{to} af {total, plural, one {# hold} other {# hold}} som tager dette kursus",
+      "courses_cohort": "Viser {from}–{to} af {total, plural, one {# kursus} other {# kurser}} i holdet",
+      "courses_org": "Viser {from}–{to} af {total, plural, one {# kursus} other {# kurser}} i organisationen",
+      "sections_course": "Viser {from}–{to} af {total, plural, one {# sektion} other {# sektioner}} i kurset",
+      "overdue_cohort": "Viser {from}–{to} af {total, plural, one {# forsinket elev} other {# forsinkede elever}} i holdet"
+    },
+    "breakdown": {
+      "label": "Opdeling",
+      "courses": "Kurser ({count})",
+      "cohorts": "Kohorter ({count})",
+      "all_students": "Alle elever",
+      "by_cohort": "Efter kohorte ({count})"
+    },
+    "cohorts": {
+      "picker": "Kohorter: {selected} af {total}",
+      "search": "Søg kohorter",
+      "empty": "Ingen kohorter matcher",
+      "newest": "Nyeste {count}",
+      "none": "Ryd",
+      "students": "{count, plural, one {# studerende} other {# studerende}}",
+      "no_students": "Ingen studerende endnu",
+      "direct_included": "Direkte studerende er altid inkluderet.",
+      "select_all": "Vælg alle",
+      "select_shown": "Vælg viste",
+      "load_more": "Indlæs flere",
+      "showing_matches": "Viser {shown} af {total}",
+      "loading": "Indlæser kohorter…",
+      "load_failed": "Kohorter kunne ikke indlæses."
+    },
+    "course_search": "Søg efter kurser",
+    "course_search_empty": "Ingen kurser matcher",
+    "empty_states": {
+      "show_all_time": "Vis al tid",
+      "create_cohort": "Opret en kohorte",
+      "range": {
+        "title": "Ingen aktivitet i de sidste {days} dage",
+        "description": "Dette kort tæller kun det, der skete i den valgte periode."
+      },
+      "needs_attention": {
+        "title": "Ingen har brug for opmærksomhed",
+        "description": "Ingen elev er inaktiv, scorer under 50 %, er forsinket eller bagud med videoer."
+      },
+      "overdue": {
+        "title": "Ingen er forsinket",
+        "description": "Alle elever er inden for deres deadlines."
+      },
+      "scores": {
+        "title": "Endnu ingen bedømte forsøg",
+        "description": "Resultater vises, når eleverne afleverer øvelser, og forsøgene er bedømt."
+      },
+      "student_scores": {
+        "title": "Endnu ingen bedømte forsøg",
+        "description": "Denne elevs resultater vises, når deres forsøg er bedømt."
+      },
+      "hardest_exercises": {
+        "title": "Ikke nok bedømte forsøg endnu",
+        "description": "En øvelse vises, når mindst 3 elever har et bedømt forsøg."
+      },
+      "questions": {
+        "title": "Ikke nok svar endnu",
+        "description": "Et spørgsmål vises, når mindst 5 elever har svaret på det i et bedømt forsøg."
+      },
+      "logins": {
+        "title": "Ingen logins endnu",
+        "description": "Elever vises her på de dage, de logger ind."
+      },
+      "lessons": {
+        "title": "Ingen gennemførte lektioner endnu",
+        "description": "Hver lektions bjælke udfyldes, når eleverne gennemfører den."
+      },
+      "growth": {
+        "title": "Ingen elever tilføjet endnu",
+        "description": "Linjen starter med den første elev, der føjes til din organisation."
+      },
+      "courses_org": {
+        "title": "Ingen kursusgennemførsler endnu",
+        "description": "Kurser vises her, når eleverne tilmelder sig og gennemfører dem."
+      },
+      "courses_cohort": {
+        "title": "Ingen kursusaktivitet endnu",
+        "description": "Bjælker og rækker udfyldes, når eleverne starter lektioner eller øvelser."
+      },
+      "cohorts_org": {
+        "title": "Ingen kohorter endnu",
+        "description": "Opret en kohorte for at gruppere elever og sammenligne deres fremgang."
+      },
+      "cohorts_org_no_students": {
+        "title": "Ingen elever i disse kohorter endnu",
+        "description": "Føj elever til din organisation for at begynde at sammenligne fremgang på tværs af kohorter."
+      },
+      "cohorts_course": {
+        "title": "Ingen kohorte indeholder dette kursus",
+        "description": "Føj dette kursus til en kohorte for at sammenligne kohorter her."
+      },
+      "cohorts_course_no_students": {
+        "title": "Ingen elever i disse kohorter endnu",
+        "description": "Inviter elever til dette kursus for at begynde at sammenligne fremgang på tværs af kohorter."
+      },
+      "default": {
+        "title": "Ingen data endnu",
+        "description": "Dette kort udfyldes, når eleverne bruger kurset."
+      }
+    },
+    "export": {
+      "students_capped": "Elevlisten er begrænset til de første {limit} rækker.",
+      "exercises_capped": "Øvelsesresultater er begrænset til de første {limit} resultater."
+    }
   }
 }
