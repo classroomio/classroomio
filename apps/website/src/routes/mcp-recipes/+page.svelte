@@ -91,8 +91,8 @@
       </h1>
 
       <HeroSubtitle>
-        Plug the ClassroomIO MCP server into Cursor, Claude Code, Codex, or OpenCode. Then paste one of these prompts.
-        The agent plans the work, waits for your approval, and runs it.
+        Plug the ClassroomIO MCP server into Claude, ChatGPT, Cursor, Claude Code, Codex, or OpenCode. Then paste one of
+        these prompts. The agent plans the work, waits for your approval, and runs it.
       </HeroSubtitle>
 
       <div class="mt-9 flex flex-wrap items-center gap-3">
@@ -148,7 +148,7 @@
   <McpServerSection
     eyebrow="Setup"
     title="Two minutes to wire it up."
-    description="Drop this into your agent's MCP config, restart the client, and you're ready to run any of the recipes above."
+    description="Add this to your agent's MCP config, sign in when prompted, and you're ready to run any of the recipes above."
     showTools={false}
   />
 

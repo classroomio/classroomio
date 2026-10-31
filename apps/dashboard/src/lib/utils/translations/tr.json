@@ -4874,7 +4874,7 @@
     "read_docs": "Dokümanları okuyun",
     "permissions": {
       "disabled_title": "Salt okuma erişimi",
-      "disabled_description": "Yalnızca kuruluş yöneticileri şunları oluşturabilir, döndürebilir, veya otomasyon anahtarlarını iptal edin. Öğretmenler kurulum talimatlarını buradan inceleyebilir."
+      "disabled_description": "Otomasyonu yalnızca kuruluş yöneticileri yönetebilir; buna bağlı uygulamalar ve anahtarlar da dahildir."
     },
     "tabs": {
       "mcp": "MCP",

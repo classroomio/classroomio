@@ -5032,7 +5032,7 @@
     },
     "permissions": {
       "disabled_title": "Skrivebeskyttet adgang",
-      "disabled_description": "Kun organisationsadministratorer kan oprette, rotere eller tilbagekalde automatiseringsnøgler. Lærere kan gennemgå opsætningsinstruktionerne her."
+      "disabled_description": "Kun organisationsadministratorer kan administrere automatisering, herunder tilsluttede apps og nøgler."
     },
     "zapier": {
       "page_subtitle": "Automatiser ClassroomIO med tusindvis af apps via Zapier. Kommer snart."

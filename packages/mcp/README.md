@@ -264,7 +264,7 @@ What the tools cover compared with the dashboard:
 
 ## Auth Model
 
-The package expects an org-scoped ClassroomIO automation key generated from `Automation -> MCP` in the ClassroomIO dashboard.
+The package expects an existing org-scoped ClassroomIO automation key. New MCP keys can no longer be created, so use the hosted server at `https://mcp.classroomio.com` unless you already have a key. The hosted server uses the permissions you approve when you sign in and your role in the workspace instead of key scopes.
 
 The MCP process sends the key as a bearer token on every request.
 
@@ -328,6 +328,8 @@ Analytics tools are read-only, cost no credits, and act as the key creator:
 
 ## Required Environment Variables
 
+These settings, and the sections below that use them, apply only to this deprecated package.
+
 - `CLASSROOMIO_API_URL`
 - `CLASSROOMIO_API_KEY`
 - `CLASSROOMIO_USER_AGENT` optional
@@ -352,6 +354,8 @@ npx -y @classroomio/mcp
 ```
 
 ## Client Setup
+
+These examples use the deprecated local package with a key. To connect without a key, follow [Connect an MCP client](https://classroomio.com/docs/developers/mcp/setup).
 
 ### Claude Code
 

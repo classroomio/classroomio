@@ -4878,7 +4878,7 @@
     "read_docs": "Read docs",
     "permissions": {
       "disabled_title": "Read-only access",
-      "disabled_description": "Only organization admins can create, rotate, or revoke automation keys. Teachers can review the setup instructions here."
+      "disabled_description": "Only organization admins can manage automation, including connected apps and keys."
     },
     "tabs": {
       "mcp": "MCP",

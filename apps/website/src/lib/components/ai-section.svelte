@@ -88,7 +88,7 @@
           fileName="mcp.json"
           lang="JSON"
           codeLines={mcpJsonLines}
-          statusBar="paste into ~/.claude/mcp.json · restart your client"
+          statusBar="add to your client's MCP config · sign in when prompted"
         />
 
         <div class="mt-6">

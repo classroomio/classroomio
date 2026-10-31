@@ -4864,7 +4864,7 @@
     "read_docs": "Leggi la documentazione",
     "permissions": {
       "disabled_title": "Accesso in sola lettura",
-      "disabled_description": "Solo gli amministratori dell'organizzazione possono creare, ruotare o revocare le chiavi di automazione. Gli insegnanti possono rivedere le istruzioni di configurazione qui."
+      "disabled_description": "Solo gli amministratori dell'organizzazione possono gestire l'automazione, incluse le app connesse e le chiavi."
     },
     "tabs": {
       "mcp": "MCP",
