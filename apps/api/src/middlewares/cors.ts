@@ -19,6 +19,19 @@ export const publicApiCors = cors({
 });
 
 /**
+ * The remote MCP endpoint: bearer-token only, so any origin may call it. Browser-based MCP clients
+ * need the protocol headers allowed and `WWW-Authenticate` exposed to start the OAuth flow.
+ */
+export const mcpCors = cors({
+  origin: '*',
+  credentials: false,
+  allowMethods: ['POST', 'GET', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'Mcp-Protocol-Version', 'Mcp-Session-Id', 'Last-Event-ID'],
+  exposeHeaders: ['WWW-Authenticate', 'Mcp-Session-Id', 'Mcp-Protocol-Version'],
+  maxAge: 600
+});
+
+/**
  * Cookie/session routes (dashboard RPC, Better Auth, org dashboards).
  * Allowed origins: configured `TRUSTED_ORIGINS`, `*.classroomio.com`, verified custom domains.
  */
@@ -46,10 +59,16 @@ export const PUBLIC_OAUTH_PATHS = [
   '/api/auth/jwks'
 ] as const;
 
+export function isMcpPath(path: string): boolean {
+  return path === '/mcp' || path.startsWith('/mcp/');
+}
+
 export function isPublicOAuthPath(path: string): boolean {
   return path.startsWith('/.well-known/') || PUBLIC_OAUTH_PATHS.some((oauthPath) => path === oauthPath);
 }
 
 export function isPublicCorsPath(path: string): boolean {
-  return PUBLIC_CORS_PATH_PREFIXES.some((prefix) => path.startsWith(prefix)) || isPublicOAuthPath(path);
+  return (
+    PUBLIC_CORS_PATH_PREFIXES.some((prefix) => path.startsWith(prefix)) || isPublicOAuthPath(path) || isMcpPath(path)
+  );
 }

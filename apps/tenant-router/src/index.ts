@@ -282,7 +282,12 @@ async function handleHlsRequest(request: Request, env: Env): Promise<Response> {
 }
 
 function isMcpHostPath(pathname: string): boolean {
-  return pathname === MCP_PREFIX || pathname.startsWith(`${MCP_PREFIX}/`) || pathname.startsWith(WELL_KNOWN_PREFIX);
+  return (
+    pathname === '/' ||
+    pathname === MCP_PREFIX ||
+    pathname.startsWith(`${MCP_PREFIX}/`) ||
+    pathname.startsWith(WELL_KNOWN_PREFIX)
+  );
 }
 
 export default {
@@ -340,7 +345,11 @@ export default {
     const isApiCall = isProxiedApiCall || isDirectAuthCall || isMcpHost || isOAuthDiscoveryCall;
 
     const upstreamHost = isApiCall ? env.API_UPSTREAM_HOST : env.DASHBOARD_UPSTREAM_HOST;
-    const upstreamPath = isProxiedApiCall ? url.pathname.slice(PROXY_PREFIX.length) || '/' : url.pathname;
+    const upstreamPath = isProxiedApiCall
+      ? url.pathname.slice(PROXY_PREFIX.length) || '/'
+      : isMcpHost && url.pathname === '/'
+        ? MCP_PREFIX
+        : url.pathname;
     const isOrgSiteOgImage = isProxiedApiCall && upstreamPath.startsWith('/org-site/og/');
 
     const upstreamUrl = new URL(request.url);

@@ -19,7 +19,11 @@ vi.mock('@cio/db/queries/organization', () => ({
   reserveOrganizationAutomationUsage: mocks.reserveOrganizationAutomationUsage
 }));
 
-import { recordMcpAutomationUsage, reserveMcpAutomationUsage } from './automation-usage';
+import {
+  assertOrganizationAutomationKeyCreationAllowed,
+  recordMcpAutomationUsage,
+  reserveMcpAutomationUsage
+} from './automation-usage';
 import { getMcpAutomationLimits } from '@cio/utils/plans';
 
 const automationKey = {
@@ -99,5 +103,18 @@ describe('reserveMcpAutomationUsage', () => {
       statusCode: 503,
       code: 'AUTOMATION_USAGE_UNAVAILABLE'
     });
+  });
+});
+
+describe('assertOrganizationAutomationKeyCreationAllowed', () => {
+  it('rejects creating an MCP key', async () => {
+    await expect(assertOrganizationAutomationKeyCreationAllowed('org-id', 'mcp')).rejects.toMatchObject({
+      code: 'MCP_KEY_CREATION_DISABLED',
+      statusCode: 400
+    });
+  });
+
+  it('still allows creating a Zapier key', async () => {
+    await expect(assertOrganizationAutomationKeyCreationAllowed('org-id', 'zapier')).resolves.toBeUndefined();
   });
 });

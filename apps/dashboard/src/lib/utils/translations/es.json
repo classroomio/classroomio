@@ -4958,38 +4958,14 @@
     "coming_soon": "Próximamente",
     "read_docs": "Leer la documentación",
     "mcp": {
-      "setup": {
-        "title": "Configuración del cliente",
-        "description": "Utilice una clave con ámbito de organización por integración. Si se rota o revoca una clave, el cliente deja de funcionar hasta que se configura el nuevo secreto.",
-        "claude_code_description": "Registra `@classroomio/mcp` con Claude Code utilizando la clave de alcance organizacional generada.",
-        "codex_description": "Agrega el servidor ClassroomIO MCP al Codex con la misma clave de ámbito de organización.",
-        "cursor_description": "Pegue esto en `~/.cursor/mcp.json` o en la configuración MCP de su espacio de trabajo.",
-        "opencode_description": "Agregue esto a `opencode.json` en la raíz del proyecto o a `~/.config/opencode/opencode.json`."
-      },
       "keys": {
         "title": "Claves MCP",
-        "description": "Estas claves autentican la organización actual cuando un cliente MCP llama a ClassroomIO a través de `@classroomio/mcp`.",
-        "generate": "Generar clave MCP",
-        "modal": {
-          "title": "Crear clave MCP",
-          "description": "Elige un nombre para esta clave MCP antes de generarla.",
-          "name_label": "Nombre de la clave",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Cancelar",
-          "save": "Crear clave"
-        },
-        "reveal_title": "Tu nueva clave MCP"
+        "description": "Estas claves antiguas siguen funcionando, pero ya no se pueden crear nuevas claves MCP. Rótalas o revócalas aquí y conecta nuevos clientes iniciando sesión.",
+        "reveal_title": "Tu nueva clave MCP",
+        "deprecated_badge": "Obsoleto"
       },
-      "usage": {
-        "title": "Uso y límites",
-        "description": "MCP está disponible en todos los planes. El uso se controla mediante límites de claves y límites de tasa.",
-        "keys_title": "Claves activas",
-        "keys_description": "Utilice una clave MCP por integración para que el acceso se pueda rotar o revocar limpiamente.",
-        "rate_limits_title": "Límites de tarifas",
-        "rate_limits_description": "Solicitudes de lectura/escritura/publicación permitidas por minuto.",
-        "used_label": "Usado:"
-      },
-      "page_subtitle": "Conecta herramientas de IA a ClassroomIO con claves con ámbito de organización que puedes rotar en cualquier momento."
+      "page_subtitle": "Conecta herramientas de IA a ClassroomIO iniciando sesión. Elimina una app en cualquier momento para cortar su acceso.",
+      "connections_tab": "Conexiones"
     },
     "api": {
       "subtitle": "Administra las claves API para integrarte con la API pública de ClassroomIO.",
@@ -5019,8 +4995,6 @@
       "revoked": "Revocado",
       "rotate": "rotar",
       "revoke": "Revocar",
-      "empty_title": "Aún no hay claves MCP",
-      "empty_description": "Cree la primera clave MCP con ámbito de organización para conectar Claude Code, Codex, Cursor u OpenCode.",
       "created_at_label": "Creado:",
       "last_used_label": "Último usado:",
       "never_used": "nunca",
@@ -6524,8 +6498,6 @@
     "connected_apps": {
       "title": "Apps conectadas",
       "description": "Apps que aprobaste para actuar en este espacio de trabajo. Elimina una app para cortar su acceso de inmediato.",
-      "empty_title": "No hay apps conectadas",
-      "empty_description": "Las apps que conectes con la URL de arriba aparecerán aquí.",
       "table_app": "App",
       "table_authorized_by": "Autorizada por",
       "table_permissions": "Permisos",

@@ -96,7 +96,7 @@
       </HeroSubtitle>
 
       <div class="mt-9 flex flex-wrap items-center gap-3">
-        <CtaButton href="/signup">Get an MCP key</CtaButton>
+        <CtaButton href="/signup">Get started</CtaButton>
         <CtaButton href="/automation" variant="secondary">Read the docs</CtaButton>
       </div>
     </div>

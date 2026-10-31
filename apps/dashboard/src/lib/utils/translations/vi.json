@@ -4958,38 +4958,14 @@
     "coming_soon": "Sắp có",
     "read_docs": "Đọc tài liệu",
     "mcp": {
-      "setup": {
-        "title": "Thiết lập máy khách",
-        "description": "Sử dụng một khóa trong phạm vi tổ chức cho mỗi lần tích hợp. Nếu một khóa bị xoay hoặc bị thu hồi, máy khách sẽ ngừng hoạt động cho đến khi bí mật mới được định cấu hình.",
-        "claude_code_description": "Đăng ký `@classroomio/mcp` với Mã Claude bằng cách sử dụng khóa trong phạm vi tổ chức được tạo.",
-        "codex_description": "Thêm máy chủ ClassroomIO MCP vào Codex bằng cùng một khóa trong phạm vi tổ chức.",
-        "cursor_description": "Dán cái này vào `~/.cursor/mcp.json` hoặc cấu hình MCP không gian làm việc của bạn.",
-        "opencode_description": "Thêm nội dung này vào `opencode.json` ở thư mục gốc dự án hoặc `~/.config/opencode/opencode.json`."
-      },
       "keys": {
         "title": "Khóa MCP",
-        "description": "Các khóa này xác thực tổ chức hiện tại khi máy khách MCP gọi ClassroomIO thông qua `@classroomio/mcp`.",
-        "generate": "Tạo khóa MCP",
-        "modal": {
-          "title": "Tạo khóa MCP",
-          "description": "Chọn tên cho khóa MCP này trước khi tạo.",
-          "name_label": "Tên khóa",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Hủy",
-          "save": "Tạo khóa"
-        },
-        "reveal_title": "Khóa MCP mới của bạn"
+        "description": "Các khóa cũ này vẫn hoạt động, nhưng không thể tạo khóa MCP mới nữa. Hãy xoay hoặc thu hồi chúng tại đây, và kết nối ứng dụng khách mới bằng cách đăng nhập.",
+        "reveal_title": "Khóa MCP mới của bạn",
+        "deprecated_badge": "Không dùng nữa"
       },
-      "usage": {
-        "title": "Cách sử dụng và giới hạn",
-        "description": "MCP có sẵn trên mọi gói. Việc sử dụng được kiểm soát bằng giới hạn khóa và giới hạn tần suất.",
-        "keys_title": "Khóa đang hoạt động",
-        "keys_description": "Sử dụng một khóa MCP cho mỗi lần tích hợp để có thể luân chuyển hoặc thu hồi quyền truy cập một cách dễ dàng.",
-        "rate_limits_title": "Giới hạn tỷ lệ",
-        "rate_limits_description": "Yêu cầu đọc/ghi/xuất bản được phép mỗi phút.",
-        "used_label": "Đã sử dụng:"
-      },
-      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng khóa trong phạm vi tổ chức mà bạn có thể xoay bất cứ lúc nào."
+      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng cách đăng nhập. Gỡ một ứng dụng bất cứ lúc nào để cắt quyền truy cập của nó.",
+      "connections_tab": "Kết nối"
     },
     "api": {
       "subtitle": "Quản lý khóa API để tích hợp với API công khai ClassroomIO.",
@@ -5019,8 +4995,6 @@
       "revoked": "Đã thu hồi",
       "rotate": "Xoay",
       "revoke": "Thu hồi",
-      "empty_title": "Chưa có khóa MCP",
-      "empty_description": "Tạo khóa MCP trong phạm vi tổ chức đầu tiên để kết nối Mã Claude, Codex, Con trỏ hoặc OpenCode.",
       "created_at_label": "Đã tạo:",
       "last_used_label": "Sử dụng lần cuối:",
       "never_used": "không bao giờ",
@@ -6524,8 +6498,6 @@
     "connected_apps": {
       "title": "Ứng dụng đã kết nối",
       "description": "Các ứng dụng bạn đã cho phép hoạt động trong không gian làm việc này. Gỡ một ứng dụng để cắt quyền truy cập ngay lập tức.",
-      "empty_title": "Chưa có ứng dụng nào được kết nối",
-      "empty_description": "Các ứng dụng bạn kết nối bằng URL ở trên sẽ xuất hiện tại đây.",
       "table_app": "Ứng dụng",
       "table_authorized_by": "Được ủy quyền bởi",
       "table_permissions": "Quyền",

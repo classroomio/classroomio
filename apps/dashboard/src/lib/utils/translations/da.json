@@ -4958,38 +4958,14 @@
     "coming_soon": "Kommer snart",
     "read_docs": "Læs dokumentation",
     "mcp": {
-      "setup": {
-        "title": "Klient opsætning",
-        "description": "Brug én nøgle med organisationsomfang pr. integration. Hvis en nøgle roteres eller tilbagekaldes, holder klienten op med at arbejde, indtil den nye hemmelighed er konfigureret.",
-        "claude_code_description": "Registrerer `@classroomio/mcp` med Claude Code ved hjælp af den genererede org-omfangede nøgle.",
-        "codex_description": "Tilføjer ClassroomIO MCP-serveren til Codex med den samme org-omfattede nøgle.",
-        "cursor_description": "Indsæt dette i `~/.cursor/mcp.json` eller dit arbejdsområde MCP-konfiguration.",
-        "opencode_description": "Tilføj dette til `opencode.json` i projektroden eller `~/.config/opencode/opencode.json`."
-      },
       "keys": {
         "title": "MCP nøgler",
-        "description": "Disse nøgler autentificerer den aktuelle organisation, når en MCP-klient ringer til ClassroomIO gennem `@classroomio/mcp`.",
-        "generate": "Generer MCP-nøgle",
-        "modal": {
-          "title": "Opret MCP-nøgle",
-          "description": "Vælg et navn til denne MCP-nøgle, før den genereres.",
-          "name_label": "Nøglenavn",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Annuller",
-          "save": "Opret nøgle"
-        },
-        "reveal_title": "Din nye MCP-nøgle"
+        "description": "Disse ældre nøgler virker stadig, men der kan ikke længere oprettes nye MCP-nøgler. Roter eller tilbagekald dem her, og forbind nye klienter ved at logge ind.",
+        "reveal_title": "Din nye MCP-nøgle",
+        "deprecated_badge": "Udfaset"
       },
-      "usage": {
-        "title": "Anvendelse og grænser",
-        "description": "MCP er tilgængelig på alle abonnementer. Brugen styres af nøglegrænser og hastighedsgrænser.",
-        "keys_title": "Aktive nøgler",
-        "keys_description": "Brug én MCP-nøgle pr. integration, så adgang kan roteres eller tilbagekaldes rent.",
-        "rate_limits_title": "Satsgrænser",
-        "rate_limits_description": "Læs/skriv/publicér anmodninger tilladt pr. minut.",
-        "used_label": "Brugt:"
-      },
-      "page_subtitle": "Forbind AI-værktøjer til ClassroomIO med organisationsnøgler, du kan rotere når som helst."
+      "page_subtitle": "Forbind AI-værktøjer til ClassroomIO ved at logge ind. Fjern en app når som helst for at afbryde dens adgang.",
+      "connections_tab": "Forbindelser"
     },
     "api": {
       "subtitle": "Administrer API-nøgler til integration med ClassroomIOs offentlige API.",
@@ -5019,8 +4995,6 @@
       "revoked": "Tilbagekaldt",
       "rotate": "Roter",
       "revoke": "Tilbagekald",
-      "empty_title": "Ingen MCP-nøgler endnu",
-      "empty_description": "Opret den første org-omfattede MCP-nøgle til at forbinde Claude Code, Codex, Cursor eller OpenCode.",
       "created_at_label": "Oprettet:",
       "last_used_label": "Sidst brugt:",
       "never_used": "Aldrig",
@@ -6524,8 +6498,6 @@
     "connected_apps": {
       "title": "Forbundne apps",
       "description": "Apps, du har godkendt til at handle i dette arbejdsområde. Fjern en app for at afbryde dens adgang med det samme.",
-      "empty_title": "Ingen forbundne apps",
-      "empty_description": "Apps, du forbinder med URL'en ovenfor, vises her.",
       "table_app": "App",
       "table_authorized_by": "Godkendt af",
       "table_permissions": "Tilladelser",

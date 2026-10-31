@@ -2,7 +2,14 @@ import 'dotenv/config';
 
 import * as Sentry from '@sentry/node';
 import { consumeHandoffPayload, storeHandoffPayload } from '@api/utils/redis/oauth-handoff';
-import { isPublicCorsPath, isPublicOAuthPath, publicApiCors, sessionCors } from '@api/middlewares/cors';
+import {
+  isMcpPath,
+  isPublicCorsPath,
+  isPublicOAuthPath,
+  mcpCors,
+  publicApiCors,
+  sessionCors
+} from '@api/middlewares/cors';
 import { randomBytes } from 'crypto';
 
 import { API_SERVER_URL } from '@api/constants';
@@ -14,6 +21,7 @@ import {
   shouldRewriteOAuthProxyCallbackLocation
 } from '@api/utils/oauth-proxy-redirect';
 import { Hono } from '@api/utils/hono';
+import { setInternalDispatch } from '@api/utils/internal-dispatch';
 import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
 import { accountRouter } from '@api/routes/account';
 import { agentRouter } from '@api/routes/agent';
@@ -34,6 +42,7 @@ import { mediaRouter } from '@api/routes/media';
 import { transcriptsRouter } from '@api/routes/transcripts';
 import { mountQueueDashboard } from '@api/routes/admin/queues';
 import { onboardingRouter } from '@api/routes/onboarding';
+import { mcpRouter } from '@api/routes/mcp';
 import { oauthRouter, wellKnownRouter } from '@api/routes/oauth';
 import { organizationRouter } from '@api/routes/organization';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
@@ -64,6 +73,8 @@ export const app = new Hono()
   .use('*', secureHeaders({ crossOriginResourcePolicy: 'cross-origin' }))
   .use('*', async (c, next) => {
     if (isPublicOAuthPath(c.req.path)) return publicApiCors(c, next);
+
+    if (isMcpPath(c.req.path)) return mcpCors(c, next);
 
     if (isPublicCorsPath(c.req.path)) return next();
 
@@ -262,7 +273,6 @@ export const app = new Hono()
   .route('/internal', internalRouter)
   .route('/agent', agentRouter)
   .route('/oauth', oauthRouter)
-  .route('/.well-known', wellKnownRouter)
 
   // Error handling
   .onError((err, c) => {
@@ -280,6 +290,10 @@ export const app = new Hono()
 // typed RPC chain so its routes stay out of the client type, which tsc can no longer serialize
 // once they are included (TS7056).
 app.route('/public-api/v1', v1Router);
+app.route('/mcp', mcpRouter);
+app.route('/.well-known', wellKnownRouter);
+
+setInternalDispatch((request, env) => app.fetch(request, env));
 
 // Dev-only BullMQ dashboard at /admin/queues. Mounted after the typed RPC
 // chain so it doesn't pollute the client type.

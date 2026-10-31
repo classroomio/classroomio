@@ -1,5 +1,4 @@
 import { env } from '@cio/core/config/env';
-import { capturePlanLimitReached } from '@cio/core/services/posthog';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   countActiveOrganizationApiKeys,
@@ -77,34 +76,16 @@ export async function assertOrganizationAutomationKeyCreationAllowed(
   organizationId: string,
   type: TOrganizationApiKeyType
 ): Promise<void> {
-  const planName = await getOrganizationPlanName(organizationId);
+  if (type === AUTOMATION_TYPE.MCP) {
+    throw new AppError(
+      'MCP keys can no longer be created. Connect your client by signing in instead.',
+      ErrorCodes.MCP_KEY_CREATION_DISABLED,
+      400
+    );
+  }
 
   if (type === AUTOMATION_TYPE.API) {
     await assertPublicApiAllowed(organizationId);
-  }
-
-  if (type !== AUTOMATION_TYPE.MCP) {
-    return;
-  }
-
-  const limits = getMcpAutomationLimits(planName);
-  const activeKeys = await countActiveOrganizationApiKeys(organizationId, type);
-
-  if (activeKeys >= limits.maxActiveKeys) {
-    capturePlanLimitReached({
-      orgId: organizationId,
-      limitType: 'automation_keys',
-      plan: planName,
-      limit: limits.maxActiveKeys,
-      current: activeKeys,
-      blocked: true
-    });
-
-    throw new AppError(
-      `Your plan allows up to ${limits.maxActiveKeys} active MCP key${limits.maxActiveKeys === 1 ? '' : 's'}`,
-      ErrorCodes.AUTOMATION_KEY_LIMIT_EXCEEDED,
-      403
-    );
   }
 }
 

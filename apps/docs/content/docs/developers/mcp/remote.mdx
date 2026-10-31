@@ -1,0 +1,35 @@
+---
+title: Connect from Claude or ChatGPT
+description: Add ClassroomIO to an AI app as a custom connector and approve access with your ClassroomIO account.
+---
+
+AI apps that run in the cloud, such as Claude and ChatGPT, cannot start a local process. They connect to ClassroomIO over HTTPS and ask you to sign in and approve access, so you never paste a key.
+
+## Before you start
+
+- You must be an admin of the ClassroomIO workspace you want to connect.
+- Your AI app must support custom connectors for MCP servers. The name and location of the setting depends on the app and its plan.
+
+## Connect
+
+1. In ClassroomIO, open **Automation → MCP**. Copy the URL under **Connect from Claude or ChatGPT**.
+2. In your AI app, open the connectors or integrations settings and add a custom connector.
+3. Paste the URL and start the connection.
+4. Sign in to ClassroomIO if you are asked to, choose the workspace, and review the permissions.
+5. Approve. The app can now use ClassroomIO tools.
+
+For ClassroomIO cloud the URL is `https://mcp.classroomio.com`. For a self-hosted installation, use the URL shown on the same page.
+
+## What the app can do
+
+The app can use every ClassroomIO MCP tool except `upload_video`, which needs a file on your own computer. Every action passes the same checks as the API: the permissions you approved, your role in the workspace, and your plan's limits.
+
+Approval is tied to one workspace. To use another workspace, connect again and choose it.
+
+## Remove access
+
+Open **Automation → MCP → Connected apps** and remove the app. It stops working immediately. Access also ends if you stop being an admin of the workspace.
+
+## Other clients
+
+For Claude Code, Codex, Cursor, and OpenCode, see [Connect an MCP client](/developers/mcp/setup). To build your own integration with this sign-in flow, see [OAuth for integrations](/developers/oauth).
