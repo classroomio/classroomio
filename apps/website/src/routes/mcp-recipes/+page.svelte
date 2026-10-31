@@ -91,8 +91,8 @@
       </h1>
 
       <HeroSubtitle>
-        Plug the ClassroomIO MCP server into Claude, ChatGPT, Cursor, Claude Code, Codex, or OpenCode. Then paste one of
-        these prompts. The agent plans the work, waits for your approval, and runs it.
+        Plug the ClassroomIO MCP server into Claude, ChatGPT, Cursor, Claude Code, Codex, VS Code, Gemini CLI, or any
+        MCP client. Then paste one of these prompts. The agent plans the work, waits for your approval, and runs it.
       </HeroSubtitle>
 
       <div class="mt-9 flex flex-wrap items-center gap-3">

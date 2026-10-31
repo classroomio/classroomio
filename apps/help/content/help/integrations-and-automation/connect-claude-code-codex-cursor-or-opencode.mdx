@@ -1,6 +1,6 @@
 ---
-title: 'Connect Claude Code, Codex, Cursor, or OpenCode'
-description: 'Connect a supported AI client to ClassroomIO by signing in.'
+title: 'Connect an AI coding agent'
+description: 'Connect Claude Code, Codex, Cursor, OpenCode, VS Code, Gemini CLI, or another AI agent to ClassroomIO by signing in.'
 last_reviewed: '2026-10-30'
 ---
 
@@ -56,6 +56,67 @@ Add a remote server to `opencode.json` in your project root, or to `~/.config/op
   }
 }
 ```
+
+## VS Code (GitHub Copilot)
+
+Open the Command Palette, run **MCP: Add Server**, choose **HTTP (HTTP or Server-Sent Events)**, and enter `https://mcp.classroomio.com`. Or add this to `.vscode/mcp.json` in your workspace. VS Code uses `servers` as the top-level key, not `mcpServers`. Follow the sign-in prompt when VS Code starts the server.
+
+```json
+{
+  "servers": {
+    "classroomio": {
+      "type": "http",
+      "url": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+## Gemini CLI
+
+Add the server, then run `/mcp auth classroomio` inside Gemini CLI and follow the browser prompt:
+
+```bash
+gemini mcp add --transport http --scope user classroomio https://mcp.classroomio.com
+```
+
+## Goose
+
+Run `goose configure`, choose **Add Extension**, then **Remote Extension (Streamable HTTP)**, and enter `https://mcp.classroomio.com`. To try it in one session, run the command below. Goose obtains a client ID automatically, so complete the sign-in when it prompts you.
+
+```bash
+goose session --with-streamable-http-extension "https://mcp.classroomio.com"
+```
+
+## Factory Droid
+
+Add the server, then run `/mcp` inside droid, select `classroomio`, and choose **Authenticate**:
+
+```bash
+droid mcp add classroomio https://mcp.classroomio.com --type http
+```
+
+## Zed
+
+Open **Settings → AI → MCP Servers**, choose **Add Server**, then **Add Remote Server**, and point it at `https://mcp.classroomio.com`. Do not add an `Authorization` header; without one, Zed prompts you to sign in.
+
+## Warp
+
+Open **Settings → Agents → MCP servers**, choose **Add**, and paste the JSON below. Warp opens a browser sign-in when the server starts.
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "url": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+## Other AI agents
+
+Any client that supports remote MCP servers over Streamable HTTP with OAuth can connect. Point it at `https://mcp.classroomio.com` and sign in when it asks. A client that can only run local stdio servers cannot connect to the hosted server.
 
 The locations and formats can change with client releases. Check the [Claude Code](https://code.claude.com/docs/en/mcp), [Codex](https://developers.openai.com/codex/mcp), [Cursor](https://cursor.com/docs/mcp), or [OpenCode](https://opencode.ai/docs/mcp-servers) documentation if your client uses a different format.
 
