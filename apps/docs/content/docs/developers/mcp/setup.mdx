@@ -1,6 +1,6 @@
 ---
 title: Connect an MCP client
-description: Connect Claude Code, Codex, Cursor, OpenCode, VS Code, Gemini CLI, or another MCP client to ClassroomIO by signing in with your ClassroomIO account.
+description: Connect Claude Code, Codex, Cursor, OpenCode, VS Code, Gemini CLI, Amp, Kiro, Grok, or another MCP client to ClassroomIO by signing in with your ClassroomIO account.
 ---
 
 Connect to the hosted ClassroomIO MCP server at `https://mcp.classroomio.com`. Your client opens a ClassroomIO sign-in page, you choose the workspace and approve the permissions, and the client receives access. You do not create or paste a key, and you do not install anything.
@@ -171,6 +171,112 @@ Open **Settings → Agents → MCP servers**, choose **Add**, and paste this:
 ```
 
 Warp opens a browser sign-in when the server starts.
+
+## Devin (Windsurf)
+
+Windsurf's MCP documentation now redirects to Devin's. In Devin Desktop, open the Customize page from the Agents window and click **MCPs**. With the Devin CLI, add the server, then sign in:
+
+```bash
+devin mcp add classroomio https://mcp.classroomio.com
+devin mcp login classroomio
+```
+
+Devin registers itself with the server automatically. You can also add this entry to `~/.config/devin/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "url": "https://mcp.classroomio.com",
+      "transport": "http"
+    }
+  }
+}
+```
+
+## Amp
+
+Add the server. Amp opens the ClassroomIO sign-in page in your browser the next time you start it:
+
+```bash
+amp mcp add classroomio https://mcp.classroomio.com
+```
+
+Or add this to `~/.config/amp/settings.json`:
+
+```json
+{
+  "amp.mcpServers": {
+    "classroomio": {
+      "url": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+## Kiro
+
+Make sure MCP is turned on in Kiro's settings, then add this to `~/.kiro/settings/mcp.json`, or to `.kiro/settings/mcp.json` for one workspace:
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "url": "https://mcp.classroomio.com",
+      "oauthScopes": []
+    }
+  }
+}
+```
+
+Kiro opens the sign-in page when it connects. Keep `"oauthScopes": []`. Without it, Kiro asks for a default set of scopes that includes `openid`, `email` and `profile`, and ClassroomIO rejects them.
+
+## Cline (CLI)
+
+Add the server. Without `--yes`, the command opens the add wizard with these values filled in. Then run `cline mcp` and choose **Authorize OAuth** to sign in:
+
+```bash
+cline mcp add classroomio https://mcp.classroomio.com --transport http
+```
+
+## Grok
+
+For Grok Build, the terminal agent, add the server. Open `/mcps` and press `i` to sign in, or let it open the browser the first time the server is used:
+
+```bash
+grok mcp add --transport http classroomio https://mcp.classroomio.com
+```
+
+Or add this to `~/.grok/config.toml`:
+
+```toml
+[mcp_servers.classroomio]
+url = "https://mcp.classroomio.com"
+```
+
+For Grok on the web, go to grok.com/connectors, choose **New Connector**, then **Custom**, enter `https://mcp.classroomio.com`, and complete any authentication it asks for. On Grok Business and Enterprise, a team admin must first add the connector in the cloud console (console.x.ai).
+
+## Muse Code
+
+Add this to `~/.config/muse/settings.json`, then sign in:
+
+```json
+{
+  "schema_version": 1,
+  "mcp_servers": {
+    "classroomio": {
+      "transport": "streamable_http",
+      "url": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+```bash
+muse mcp login classroomio
+```
+
+Muse Code registers a client with the server automatically. The settings file must set `schema_version` to `1`.
 
 ## Other MCP clients
 

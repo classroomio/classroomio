@@ -20,6 +20,10 @@ AI apps that run in the cloud, such as Claude and ChatGPT, cannot start a local 
 
 For a self-hosted installation, the URL is your dashboard URL (`DASHBOARD_ORIGIN`) followed by `/mcp`. **Automation → MCP** shows it until you connect your first app.
 
+### ChatGPT
+
+In ChatGPT, open chatgpt.com/plugins, choose the plus button, and choose **Add custom MCP server**. Enter a name and description. Under **Connection**, choose the public endpoint option and enter `https://mcp.classroomio.com`. Configure authentication for OAuth, review the risk warning, choose **I understand and want to continue**, then choose **Create as a plugin**. OpenAI's documentation calls these plugins. Your account and workspace policies decide whether you can add one.
+
 ## What the app can do
 
 The app can use every ClassroomIO MCP tool except `upload_video`, which needs a file on your own computer. Every action passes the same checks as the API: the permissions you approved, your role in the workspace, and your plan's limits.
@@ -32,4 +36,4 @@ Open **Automation → MCP → Connected apps** and remove the app. It stops work
 
 ## Other clients
 
-For coding agents such as Claude Code, Codex, Cursor, OpenCode, VS Code, Gemini CLI, Goose, Factory Droid, Zed, and Warp, see [Connect an MCP client](/developers/mcp/setup). To build your own integration with this sign-in flow, see [OAuth for integrations](/developers/oauth).
+For coding agents such as Claude Code, Codex, Cursor, OpenCode, VS Code, Gemini CLI, Goose, Factory Droid, Zed, Warp, Devin, Amp, Kiro, Cline, Grok, and Muse Code, see [Connect an MCP client](/developers/mcp/setup). To build your own integration with this sign-in flow, see [OAuth for integrations](/developers/oauth).

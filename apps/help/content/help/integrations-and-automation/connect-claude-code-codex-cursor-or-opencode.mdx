@@ -1,6 +1,6 @@
 ---
 title: 'Connect an AI coding agent'
-description: 'Connect Claude Code, Codex, Cursor, OpenCode, VS Code, Gemini CLI, or another AI agent to ClassroomIO by signing in.'
+description: 'Connect Claude Code, Codex, Cursor, OpenCode, VS Code, Gemini CLI, Amp, Kiro, Grok, or another AI agent to ClassroomIO by signing in.'
 last_reviewed: '2026-10-30'
 ---
 
@@ -108,6 +108,72 @@ Open **Settings → Agents → MCP servers**, choose **Add**, and paste the JSON
 {
   "mcpServers": {
     "classroomio": {
+      "url": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+## Devin (Windsurf)
+
+Windsurf's MCP documentation now redirects to Devin's. In Devin Desktop, open the Customize page from the Agents window and click **MCPs**. With the Devin CLI, add the server, then sign in:
+
+```bash
+devin mcp add classroomio https://mcp.classroomio.com
+devin mcp login classroomio
+```
+
+## Amp
+
+Add the server. Amp opens the sign-in page in your browser the next time you start it:
+
+```bash
+amp mcp add classroomio https://mcp.classroomio.com
+```
+
+## Kiro
+
+Turn on MCP in Kiro's settings, then add the server to `~/.kiro/settings/mcp.json`. Keep `"oauthScopes": []`; without it Kiro asks for scopes that ClassroomIO rejects.
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "url": "https://mcp.classroomio.com",
+      "oauthScopes": []
+    }
+  }
+}
+```
+
+## Cline (CLI)
+
+Add the server. Without `--yes`, the command opens the add wizard with these values filled in. Then run `cline mcp` and choose **Authorize OAuth**:
+
+```bash
+cline mcp add classroomio https://mcp.classroomio.com --transport http
+```
+
+## Grok
+
+For Grok Build, add the server, then open `/mcps` and press `i` to sign in:
+
+```bash
+grok mcp add --transport http classroomio https://mcp.classroomio.com
+```
+
+For Grok on the web, go to grok.com/connectors, choose **New Connector**, then **Custom**, enter `https://mcp.classroomio.com`, and complete any authentication it asks for. On Grok Business and Enterprise, a team admin must first add the connector in the cloud console (console.x.ai).
+
+## Muse Code
+
+Add the server to `~/.config/muse/settings.json`, which must set `schema_version` to `1`, then sign in with `muse mcp login classroomio`:
+
+```json
+{
+  "schema_version": 1,
+  "mcp_servers": {
+    "classroomio": {
+      "transport": "streamable_http",
       "url": "https://mcp.classroomio.com"
     }
   }
