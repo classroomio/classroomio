@@ -46,6 +46,8 @@ export interface CertificateDocumentSignatory {
 
 export interface CertificateDocumentV1 {
   version: 1;
+  templateSourceId?: string;
+  templateName?: string;
   templateId?: string;
   rendererTemplateId?: string;
   accentColor: string;

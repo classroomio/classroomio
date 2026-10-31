@@ -18,6 +18,8 @@ export interface PluginContext {
       title?: string;
       wordCount?: number;
       estimatedMinutes?: number;
+      selectedTemplateId?: string;
+      selectedTemplateName?: string;
     };
   };
 }

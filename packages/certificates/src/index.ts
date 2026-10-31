@@ -35,6 +35,7 @@ export {
   renderCertificatePresentation,
   renderCertificatePresentationDocument,
   resolveCertificateDesign,
+  resolveStoredCertificatePresentation,
   resolveTemplateId
 } from './render';
 export {

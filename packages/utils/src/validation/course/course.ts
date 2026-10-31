@@ -440,6 +440,8 @@ export type TCourseLandingPageMetadataUpdate = z.infer<typeof ZCourseLandingPage
 export const ZCertificateDocumentV1 = z
   .object({
     version: z.literal(1).default(1),
+    templateSourceId: z.string().trim().min(1).optional(),
+    templateName: z.string().trim().min(1).optional(),
     templateId: z.string().trim().min(1).optional(),
     rendererTemplateId: z.string().trim().min(1).optional(),
     accentColor: z.string().trim().min(1),

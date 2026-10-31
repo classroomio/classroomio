@@ -77,6 +77,58 @@ export function resolveCertificateDesign(stored?: StoredCertificateRecord | null
   };
 }
 
+export function resolveStoredCertificatePresentation(
+  stored?: StoredCertificateRecord | null
+): CertificatePresentationV1 {
+  const presentation = stored?.presentation;
+  if (presentation && typeof presentation === 'object' && 'kind' in presentation) {
+    if (
+      presentation.kind === 'document' &&
+      'document' in presentation &&
+      isCertificateDocumentV1(presentation.document)
+    ) {
+      return {
+        kind: 'document',
+        schema: 'classroomio.certificate-document',
+        version: 1,
+        document: presentation.document
+      };
+    }
+
+    if (
+      presentation.kind === 'preset' &&
+      'presetId' in presentation &&
+      CERTIFICATE_TEMPLATE_IDS.includes(presentation.presetId as CertificateTemplateId)
+    ) {
+      return {
+        kind: 'preset',
+        presetId: presentation.presetId as CertificateTemplateId,
+        overrides:
+          'overrides' in presentation && presentation.overrides && typeof presentation.overrides === 'object'
+            ? (presentation.overrides as Partial<CertificateDesign>)
+            : undefined
+      };
+    }
+  }
+
+  const customDocument = stored?.customDocument ?? stored?.studioDesign;
+  if (isCertificateDocumentV1(customDocument)) {
+    return {
+      kind: 'document',
+      schema: 'classroomio.certificate-document',
+      version: 1,
+      document: customDocument
+    };
+  }
+
+  const design = resolveCertificateDesign(stored);
+  return {
+    kind: 'preset',
+    presetId: design.templateId,
+    overrides: design
+  };
+}
+
 export function renderCertificate(design: CertificateDesign, data: CertificateRenderData): CertificateRenderResult {
   const templateId = resolveTemplateId(design.templateId);
   const renderer = RENDERERS[templateId];

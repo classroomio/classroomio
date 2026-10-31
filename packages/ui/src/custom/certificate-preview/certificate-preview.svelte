@@ -99,7 +99,7 @@
     <iframe
       title="Certificate preview"
       srcdoc={renderedHtml}
-      sandbox=""
+      sandbox="allow-scripts"
       class="ui:h-full ui:w-full ui:rounded-sm ui:border-0 ui:shadow-[0_18px_40px_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.12)]"
       style:width="{width}px"
       style:height="{height}px"
