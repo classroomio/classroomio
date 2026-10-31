@@ -116,3 +116,24 @@ export function rewriteOAuthProxyCallbackLocation(location: string, browserOrigi
 
   return target.toString();
 }
+
+const OAUTH_AUTHORIZE_PATH = '/api/auth/oauth2/authorize';
+
+/**
+ * Better Auth answers `sec-fetch-mode: cors` requests with JSON instead of a 302. Node's `fetch`
+ * stamps that header on every forwarded request, so a browser navigation relayed by the dashboard
+ * proxy would never be redirected. Restores `navigate` for HTML navigations to the authorize endpoint.
+ */
+export function restoreAuthorizeNavigationMode(request: Request): Request {
+  const isAuthorizeNavigation =
+    request.method === 'GET' &&
+    new URL(request.url).pathname === OAUTH_AUTHORIZE_PATH &&
+    (request.headers.get('accept')?.includes('text/html') ?? false);
+
+  if (!isAuthorizeNavigation) return request;
+
+  const headers = new Headers(request.headers);
+  headers.set('sec-fetch-mode', 'navigate');
+
+  return new Request(request, { headers });
+}

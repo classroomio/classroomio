@@ -1,5 +1,4 @@
 import { env } from '@cio/core/config/env';
-import { capturePlanLimitReached } from '@cio/core/services/posthog';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   countActiveOrganizationApiKeys,
@@ -55,48 +54,38 @@ async function getOrganizationPlanName(orgId: string): Promise<TPlan> {
   return (activePlan?.planName as TPlan | null) ?? 'BASIC';
 }
 
+/**
+ * Throws 403 unless the organization's plan includes the public API.
+ */
+export async function assertPublicApiAllowed(organizationId: string): Promise<void> {
+  const planName = await getOrganizationPlanName(organizationId);
+  const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
+
+  if (!canUsePublicApi(planName, isSelfHosted)) {
+    throw new AppError(
+      isSelfHosted
+        ? 'Public API keys require an Enterprise plan'
+        : 'Public API keys require an Early Adopter or Enterprise plan',
+      ErrorCodes.UPGRADE_REQUIRED,
+      403
+    );
+  }
+}
+
 export async function assertOrganizationAutomationKeyCreationAllowed(
   organizationId: string,
   type: TOrganizationApiKeyType
 ): Promise<void> {
-  const planName = await getOrganizationPlanName(organizationId);
+  if (type === AUTOMATION_TYPE.MCP) {
+    throw new AppError(
+      'MCP keys can no longer be created. Connect your client by signing in instead.',
+      ErrorCodes.MCP_KEY_CREATION_DISABLED,
+      400
+    );
+  }
 
   if (type === AUTOMATION_TYPE.API) {
-    const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
-
-    if (!canUsePublicApi(planName, isSelfHosted)) {
-      throw new AppError(
-        isSelfHosted
-          ? 'Public API keys require an Enterprise plan'
-          : 'Public API keys require an Early Adopter or Enterprise plan',
-        ErrorCodes.UPGRADE_REQUIRED,
-        403
-      );
-    }
-  }
-
-  if (type !== AUTOMATION_TYPE.MCP) {
-    return;
-  }
-
-  const limits = getMcpAutomationLimits(planName);
-  const activeKeys = await countActiveOrganizationApiKeys(organizationId, type);
-
-  if (activeKeys >= limits.maxActiveKeys) {
-    capturePlanLimitReached({
-      orgId: organizationId,
-      limitType: 'automation_keys',
-      plan: planName,
-      limit: limits.maxActiveKeys,
-      current: activeKeys,
-      blocked: true
-    });
-
-    throw new AppError(
-      `Your plan allows up to ${limits.maxActiveKeys} active MCP key${limits.maxActiveKeys === 1 ? '' : 's'}`,
-      ErrorCodes.AUTOMATION_KEY_LIMIT_EXCEEDED,
-      403
-    );
+    await assertPublicApiAllowed(organizationId);
   }
 }
 

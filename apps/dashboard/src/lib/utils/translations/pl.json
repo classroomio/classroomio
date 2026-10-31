@@ -529,6 +529,9 @@
       "test_success": "Zdarzenie testowe zostało dostarczone.",
       "test_failed": "Zdarzenie testowe nie powiodło się. Otwórz dziennik dostarczeń, aby zobaczyć powód.",
       "redelivered": "Zdarzenie dodane do kolejki ponownego dostarczenia."
+    },
+    "oauth": {
+      "revoked": "Dostęp aplikacji usunięty"
     }
   },
   "explore": {
@@ -4953,38 +4956,14 @@
     "coming_soon": "Już wkrótce",
     "read_docs": "Przeczytaj dokumentację",
     "mcp": {
-      "setup": {
-        "title": "Konfiguracja klienta",
-        "description": "Użyj jednego klucza o zasięgu organizacji na integrację. Jeśli klucz zostanie obrócony lub unieważniony, klient przestaje działać do czasu skonfigurowania nowego klucza tajnego.",
-        "claude_code_description": "Rejestruje `@classroomio/mcp` w Claude Code przy użyciu wygenerowanego klucza o zasięgu organizacji.",
-        "codex_description": "Dodaje serwer ClassroomIO MCP do Codexu z tym samym kluczem o zasięgu organizacji.",
-        "cursor_description": "Wklej to do `~/.cursor/mcp.json` lub konfiguracji MCP w obszarze roboczym.",
-        "opencode_description": "Dodaj to do `opencode.json` w katalogu głównym projektu lub do `~/.config/opencode/opencode.json`."
-      },
       "keys": {
         "title": "Klucze MCP",
-        "description": "Te klucze uwierzytelniają bieżącą organizację, gdy klient MCP wywołuje ClassroomIO poprzez `@classroomio/mcp`.",
-        "generate": "Wygeneruj klucz MCP",
-        "modal": {
-          "title": "Utwórz klucz MCP",
-          "description": "Wybierz nazwę tego klucza MCP przed jego wygenerowaniem.",
-          "name_label": "Nazwa klucza",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Anuluj",
-          "save": "Utwórz klucz"
-        },
-        "reveal_title": "Twój nowy klucz MCP"
+        "description": "Te starsze klucze nadal działają, ale nie można już tworzyć nowych kluczy MCP. Zmień je lub unieważnij tutaj, a nowych klientów łącz przez logowanie.",
+        "reveal_title": "Twój nowy klucz MCP",
+        "deprecated_badge": "Przestarzałe"
       },
-      "usage": {
-        "title": "Zastosowanie i ograniczenia",
-        "description": "MCP jest dostępne w każdym planie. Wykorzystanie jest kontrolowane przez limity kluczy i limity żądań.",
-        "keys_title": "Aktywne klucze",
-        "keys_description": "Użyj jednego klucza MCP na każdą integrację, aby umożliwić łatwą rotację lub cofnięcie dostępu.",
-        "rate_limits_title": "Limity stawek",
-        "rate_limits_description": "Żądania odczytu/zapisu/publikowania dozwolone na minutę.",
-        "used_label": "Używane:"
-      },
-      "page_subtitle": "Połącz narzędzia AI z ClassroomIO za pomocą kluczy o zasięgu organizacji, które możesz w dowolnym momencie obrócić."
+      "page_subtitle": "Połącz narzędzia AI z ClassroomIO, logując się. Usuń aplikację w dowolnym momencie, aby odciąć jej dostęp.",
+      "connections_tab": "Połączenia"
     },
     "api": {
       "subtitle": "Zarządzaj kluczami API, aby integrować się z publicznym API ClassroomIO.",
@@ -5014,8 +4993,6 @@
       "revoked": "Unieważnione",
       "rotate": "Obróć",
       "revoke": "Odwołaj",
-      "empty_title": "Nie ma jeszcze kluczy MCP",
-      "empty_description": "Utwórz pierwszy klucz MCP o zasięgu organizacji, aby połączyć Claude Code, Codex, Cursor lub OpenCode.",
       "created_at_label": "Utworzono:",
       "last_used_label": "Ostatnio używane:",
       "never_used": "Nigdy",
@@ -5053,7 +5030,7 @@
     },
     "permissions": {
       "disabled_title": "Dostęp tylko do odczytu",
-      "disabled_description": "Tylko administratorzy organizacji mogą tworzyć, obracać i unieważniać klucze automatyzacji. Nauczyciele mogą zapoznać się z instrukcjami konfiguracji tutaj."
+      "disabled_description": "Tylko administratorzy organizacji mogą zarządzać automatyzacją, w tym połączonymi aplikacjami i kluczami."
     },
     "zapier": {
       "page_subtitle": "Automatyzuj ClassroomIO z tysiącami aplikacji przez Zapier. Wkrótce."
@@ -6438,5 +6415,93 @@
     "new_badge": "Nowość",
     "read_full": "Przeczytaj pełny dziennik zmian",
     "close": "Zamknij"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Połącz aplikację z ClassroomIO",
+      "title": "Połącz {client} z ClassroomIO",
+      "workspace": "Przestrzeń robocza: {workspace}",
+      "permissions_heading": "{client} będzie mógł:",
+      "stay_connected": "Pozostań połączony, dopóki nie usuniesz dostępu",
+      "admin_note": "Tylko administratorzy przestrzeni roboczej mogą łączyć aplikacje. Dostęp wynika z Twoich uprawnień administratora i wygasa, jeśli je utracisz.",
+      "redirect_note": "Po zatwierdzeniu zostaniesz przekierowany do {host}.",
+      "allow": "Zezwól na dostęp",
+      "deny": "Odmów",
+      "unknown_client": "Ta aplikacja",
+      "error_title": "To żądanie połączenia jest nieprawidłowe",
+      "error_description": "Wróć do aplikacji, którą łączysz, i zacznij od nowa."
+    },
+    "select_organization": {
+      "title": "Wybierz przestrzeń roboczą",
+      "subtitle": "Wybierz przestrzeń roboczą, do której {client} ma mieć dostęp.",
+      "empty_title": "Brak dostępnych przestrzeni roboczych",
+      "empty_description": "Tylko administratorzy przestrzeni roboczej mogą łączyć aplikacje. Poproś administratora lub zaloguj się na konto administratora."
+    },
+    "error": {
+      "generic": "Coś poszło nie tak. Spróbuj ponownie."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Przeglądać kursy i ich zawartość",
+        "write": "Tworzyć, edytować i publikować kursy oraz ich zawartość"
+      },
+      "exercises": {
+        "read": "Przeglądać ćwiczenia i pytania",
+        "write": "Tworzyć i edytować ćwiczenia oraz pytania"
+      },
+      "course_members": {
+        "read": "Przeglądać uczestników kursu",
+        "write": "Dodawać uczestników kursu i zarządzać nimi oraz ich postępami"
+      },
+      "certificates": {
+        "read": "Przeglądać certyfikaty kursu",
+        "write": "Zarządzać certyfikatami kursu"
+      },
+      "submissions": {
+        "read": "Przeglądać zgłoszenia i oceny",
+        "write": "Oceniać zgłoszenia i zarządzać ocenami"
+      },
+      "cohorts": {
+        "read": "Przeglądać kohorty",
+        "write": "Tworzyć kohorty i zarządzać nimi"
+      },
+      "audience": {
+        "read": "Przeglądać Twoich odbiorców",
+        "write": "Dodawać odbiorców i zarządzać nimi"
+      },
+      "team": {
+        "read": "Przeglądać członków zespołu",
+        "write": "Zarządzać członkami zespołu"
+      },
+      "organization": {
+        "read": "Przeglądać ustawienia przestrzeni roboczej",
+        "write": "Edytować ustawienia, stronę docelową i szablony e-maili"
+      },
+      "analytics": {
+        "read": "Przeglądać statystyki",
+        "write": "Przeglądać statystyki"
+      },
+      "media": {
+        "read": "Przesyłać multimedia",
+        "write": "Przesyłać multimedia"
+      }
+    },
+    "connect": {
+      "title": "Połącz z Claude lub ChatGPT",
+      "description": "Dodaj ClassroomIO jako własny konektor w aplikacji AI za pomocą tego adresu URL, a następnie zaloguj się i zatwierdź dostęp.",
+      "step_1": "W aplikacji AI otwórz ustawienia konektorów lub integracji i dodaj własny konektor.",
+      "step_2": "Wklej powyższy adres URL i rozpocznij połączenie.",
+      "step_3": "Zaloguj się do ClassroomIO, wybierz tę przestrzeń roboczą i zatwierdź uprawnienia."
+    },
+    "connected_apps": {
+      "title": "Połączone aplikacje",
+      "description": "Aplikacje, którym zezwoliłeś na działanie w tej przestrzeni roboczej. Usuń aplikację, aby natychmiast odciąć jej dostęp.",
+      "table_app": "Aplikacja",
+      "table_authorized_by": "Autoryzowana przez",
+      "table_permissions": "Uprawnienia",
+      "permissions_count": "Obszary: {count}",
+      "revoke": "Usuń dostęp",
+      "revoke_confirm": "Usunąć dostęp tej aplikacji? Przestanie działać natychmiast."
+    }
   }
 }

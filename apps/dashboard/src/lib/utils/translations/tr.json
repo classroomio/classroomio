@@ -4870,7 +4870,7 @@
     "read_docs": "Dokümanları okuyun",
     "permissions": {
       "disabled_title": "Salt okuma erişimi",
-      "disabled_description": "Yalnızca kuruluş yöneticileri şunları oluşturabilir, döndürebilir, veya otomasyon anahtarlarını iptal edin. Öğretmenler kurulum talimatlarını buradan inceleyebilir."
+      "disabled_description": "Otomasyonu yalnızca kuruluş yöneticileri yönetebilir; buna bağlı uygulamalar ve anahtarlar da dahildir."
     },
     "tabs": {
       "mcp": "MCP",
@@ -4894,8 +4894,6 @@
       "revoked": "Revoked",
       "rotate": "Rotate",
       "revoke": "Revoke",
-      "empty_title": "Hayır MCP anahtarları henüz",
-      "empty_description": "Claude Code, Codex, Cursor veya OpenCode'a bağlanmak için ilk kuruluş kapsamlı MCP anahtarını oluşturun.",
       "created_at_label": "Oluşturuldu:",
       "last_used_label": "LSon kullanım:",
       "never_used": "Never",
@@ -4915,38 +4913,14 @@
       }
     },
     "mcp": {
-      "page_subtitle": "Döndürebileceğiniz kuruluş kapsamlı anahtarlarla AI araçlarını ClassroomIO'ya bağlayın istediğiniz zaman.",
-      "usage": {
-        "title": "Kullanım ve sınırlar",
-        "description": "MCP her planda mevcuttur. Kullanım, anahtar limitleri ve hız limitleri tarafından kontrol edilir.",
-        "keys_title": "Etkin anahtarlar",
-        "keys_description": "Entegrasyon başına bir MCP anahtarı kullanın, böylece erişim temiz bir şekilde döndürülebilir veya iptal edilebilir.",
-        "rate_limits_title": "Hız limitleri",
-        "rate_limits_description": "Okuma / yazma / yayınlama isteklerine dakika başına izin verilir.",
-        "used_label": "Kullanım:"
-      },
+      "page_subtitle": "Giriş yaparak yapay zeka araçlarını ClassroomIO'ya bağlayın. Erişimini kesmek için bir uygulamayı istediğiniz zaman kaldırın.",
       "keys": {
         "title": "MCP anahtarları",
-        "description": "Bu anahtarlar, bir MCP istemcisi `@classroomio/mcp` aracılığıyla ClassroomIO'yu aradığında mevcut organizasyonun kimliğini doğrular.",
-        "generate": "MCP anahtarını oluştur",
-        "modal": {
-          "title": "MCP anahtarı oluştur",
-          "description": "Oluşturulmadan önce bu MCP anahtarı için bir ad seçin.",
-          "name_label": "Anahtar adı",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "İptal",
-          "save": "Anahtar oluştur"
-        },
-        "reveal_title": "Yeni MCP anahtarınız"
+        "description": "Bu eski anahtarlar çalışmaya devam eder, ancak artık yeni MCP anahtarları oluşturulamaz. Bunları buradan yenileyin veya iptal edin, yeni istemcileri giriş yaparak bağlayın.",
+        "reveal_title": "Yeni MCP anahtarınız",
+        "deprecated_badge": "Kullanımdan kaldırıldı"
       },
-      "setup": {
-        "title": "İstemci kurulumu",
-        "description": "Entegrasyon başına bir kuruluş kapsamlı anahtar kullanın. Bir anahtar döndürülür veya iptal edilirse, istemci yeni gizli dizi yapılandırılana kadar çalışmayı durdurur.",
-        "claude_code_description": "Oluşturulan kuruluş kapsamlı anahtarı kullanarak `@classroomio/mcp'yi Claude Koduyla kaydeder.",
-        "codex_description": "ClassroomIO MCP sunucusunu aynı kuruluş kapsamlı anahtarla Codex'e ekler.",
-        "cursor_description": "Bunu şuraya yapıştırın: `~/.cursor/mcp.json` veya çalışma alanınız MCP config.",
-        "opencode_description": "Bunu proje kökünüzdeki `opencode.json'a veya `~/.config/opencode/opencode.json`a ekleyin."
-      }
+      "connections_tab": "Bağlantılar"
     },
     "api": {
       "subtitle": "ClassroomIO genel API'si ile entegre olmak için API anahtarlarını yönetin.",
@@ -5499,6 +5473,9 @@
       "test_success": "Test olayı başarıyla teslim edildi.",
       "test_failed": "Test olayı başarısız oldu. Nedenini görmek için teslimat günlüğünü açın.",
       "redelivered": "Olay yeniden teslim için sıraya alındı."
+    },
+    "oauth": {
+      "revoked": "Uygulama erişimi kaldırıldı"
     }
   },
   "specialization": {
@@ -6404,5 +6381,93 @@
     "new_badge": "Yeni",
     "read_full": "Tüm değişiklik günlüğünü oku",
     "close": "Kapat"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "ClassroomIO'ya bir uygulama bağla",
+      "title": "{client} uygulamasını ClassroomIO'ya bağla",
+      "workspace": "Çalışma alanı: {workspace}",
+      "permissions_heading": "{client} şunları yapabilecek:",
+      "stay_connected": "Erişimi kaldırana kadar bağlı kal",
+      "admin_note": "Uygulamaları yalnızca çalışma alanı yöneticileri bağlayabilir. Erişim yönetici izinlerinizi izler ve onları kaybederseniz sona erer.",
+      "redirect_note": "Onayladıktan sonra {host} adresine yönlendirileceksiniz.",
+      "allow": "Erişime izin ver",
+      "deny": "Reddet",
+      "unknown_client": "Bu uygulama",
+      "error_title": "Bu bağlantı isteği geçerli değil",
+      "error_description": "Bağlamak istediğiniz uygulamaya dönün ve yeniden başlayın."
+    },
+    "select_organization": {
+      "title": "Çalışma alanı seçin",
+      "subtitle": "{client} uygulamasının erişebileceği çalışma alanını seçin.",
+      "empty_title": "Kullanılabilir çalışma alanı yok",
+      "empty_description": "Uygulamaları yalnızca çalışma alanı yöneticileri bağlayabilir. Bir yöneticiden yardım isteyin veya yönetici hesabıyla giriş yapın."
+    },
+    "error": {
+      "generic": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Kursları ve içeriklerini görüntüle",
+        "write": "Kursları ve içeriklerini oluştur, düzenle ve yayınla"
+      },
+      "exercises": {
+        "read": "Alıştırmaları ve soruları görüntüle",
+        "write": "Alıştırmaları ve soruları oluştur ve düzenle"
+      },
+      "course_members": {
+        "read": "Kurs üyelerini görüntüle",
+        "write": "Kurs üyelerini ve ilerlemelerini ekle ve yönet"
+      },
+      "certificates": {
+        "read": "Kurs sertifikalarını görüntüle",
+        "write": "Kurs sertifikalarını yönet"
+      },
+      "submissions": {
+        "read": "Gönderimleri ve notları görüntüle",
+        "write": "Gönderimleri notlandır ve notları yönet"
+      },
+      "cohorts": {
+        "read": "Kohortları görüntüle",
+        "write": "Kohortları oluştur ve yönet"
+      },
+      "audience": {
+        "read": "Hedef kitlenizi görüntüle",
+        "write": "Hedef kitlenizi ekle ve yönet"
+      },
+      "team": {
+        "read": "Ekip üyelerini görüntüle",
+        "write": "Ekip üyelerini yönet"
+      },
+      "organization": {
+        "read": "Çalışma alanı ayarlarını görüntüle",
+        "write": "Ayarları, açılış sayfasını ve e-posta şablonlarını düzenle"
+      },
+      "analytics": {
+        "read": "Analizleri görüntüle",
+        "write": "Analizleri görüntüle"
+      },
+      "media": {
+        "read": "Medya yükle",
+        "write": "Medya yükle"
+      }
+    },
+    "connect": {
+      "title": "Claude veya ChatGPT'den bağlan",
+      "description": "Bu URL ile ClassroomIO'yu yapay zeka uygulamanıza özel bağlayıcı olarak ekleyin, ardından giriş yapıp erişimi onaylayın.",
+      "step_1": "Yapay zeka uygulamanızda bağlayıcılar veya entegrasyonlar ayarlarını açın ve özel bir bağlayıcı ekleyin.",
+      "step_2": "Yukarıdaki URL'yi yapıştırın ve bağlantıyı başlatın.",
+      "step_3": "ClassroomIO'ya giriş yapın, bu çalışma alanını seçin ve izinleri onaylayın."
+    },
+    "connected_apps": {
+      "title": "Bağlı uygulamalar",
+      "description": "Bu çalışma alanında işlem yapması için onayladığınız uygulamalar. Erişimini hemen kesmek için bir uygulamayı kaldırın.",
+      "table_app": "Uygulama",
+      "table_authorized_by": "Yetkilendiren",
+      "table_permissions": "İzinler",
+      "permissions_count": "{count} alan",
+      "revoke": "Erişimi kaldır",
+      "revoke_confirm": "Bu uygulamanın erişimi kaldırılsın mı? Hemen çalışmayı durduracak."
+    }
   }
 }

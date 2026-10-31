@@ -128,6 +128,6 @@ The docs site (`apps/docs`) renders the public API reference sidebar from the Op
 - [ ] Routes and services are grouped by versioned domain folders.
 - [ ] Security and failure-mode tests are included.
 - [ ] Applicable resource lifecycle, actions, bulk operations, exports/files, reporting/history, notifications/webhooks, and audit operations are either supported or explicitly scoped out.
-- [ ] OpenAPI, examples, and MCP documentation match the implementation.
+- [ ] OpenAPI, examples, and MCP documentation match the implementation, confirmed by the sub-agent docs fact-check each commit requires (`skills/stage-and-commit/SKILL.md`, step 4).
 - [ ] The docs sidebar structure follows the section/tag rules above; every tag is placed in `API_SECTIONS` and the published spec is regenerated after tag changes.
 - [ ] PRs adding or re-tagging public API endpoints include the sidebar structure breakdown in the description.

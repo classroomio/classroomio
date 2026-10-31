@@ -529,6 +529,9 @@
       "test_success": "Đã gửi sự kiện thử nghiệm thành công.",
       "test_failed": "Sự kiện thử nghiệm thất bại. Mở nhật ký gửi để xem lý do.",
       "redelivered": "Sự kiện đã được đưa vào hàng đợi để gửi lại."
+    },
+    "oauth": {
+      "revoked": "Đã gỡ quyền truy cập của ứng dụng"
     }
   },
   "explore": {
@@ -4953,38 +4956,14 @@
     "coming_soon": "Sắp có",
     "read_docs": "Đọc tài liệu",
     "mcp": {
-      "setup": {
-        "title": "Thiết lập máy khách",
-        "description": "Sử dụng một khóa trong phạm vi tổ chức cho mỗi lần tích hợp. Nếu một khóa bị xoay hoặc bị thu hồi, máy khách sẽ ngừng hoạt động cho đến khi bí mật mới được định cấu hình.",
-        "claude_code_description": "Đăng ký `@classroomio/mcp` với Mã Claude bằng cách sử dụng khóa trong phạm vi tổ chức được tạo.",
-        "codex_description": "Thêm máy chủ ClassroomIO MCP vào Codex bằng cùng một khóa trong phạm vi tổ chức.",
-        "cursor_description": "Dán cái này vào `~/.cursor/mcp.json` hoặc cấu hình MCP không gian làm việc của bạn.",
-        "opencode_description": "Thêm nội dung này vào `opencode.json` ở thư mục gốc dự án hoặc `~/.config/opencode/opencode.json`."
-      },
       "keys": {
         "title": "Khóa MCP",
-        "description": "Các khóa này xác thực tổ chức hiện tại khi máy khách MCP gọi ClassroomIO thông qua `@classroomio/mcp`.",
-        "generate": "Tạo khóa MCP",
-        "modal": {
-          "title": "Tạo khóa MCP",
-          "description": "Chọn tên cho khóa MCP này trước khi tạo.",
-          "name_label": "Tên khóa",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Hủy",
-          "save": "Tạo khóa"
-        },
-        "reveal_title": "Khóa MCP mới của bạn"
+        "description": "Các khóa cũ này vẫn hoạt động, nhưng không thể tạo khóa MCP mới nữa. Hãy xoay hoặc thu hồi chúng tại đây, và kết nối ứng dụng khách mới bằng cách đăng nhập.",
+        "reveal_title": "Khóa MCP mới của bạn",
+        "deprecated_badge": "Không dùng nữa"
       },
-      "usage": {
-        "title": "Cách sử dụng và giới hạn",
-        "description": "MCP có sẵn trên mọi gói. Việc sử dụng được kiểm soát bằng giới hạn khóa và giới hạn tần suất.",
-        "keys_title": "Khóa đang hoạt động",
-        "keys_description": "Sử dụng một khóa MCP cho mỗi lần tích hợp để có thể luân chuyển hoặc thu hồi quyền truy cập một cách dễ dàng.",
-        "rate_limits_title": "Giới hạn tỷ lệ",
-        "rate_limits_description": "Yêu cầu đọc/ghi/xuất bản được phép mỗi phút.",
-        "used_label": "Đã sử dụng:"
-      },
-      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng khóa trong phạm vi tổ chức mà bạn có thể xoay bất cứ lúc nào."
+      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng cách đăng nhập. Gỡ một ứng dụng bất cứ lúc nào để cắt quyền truy cập của nó.",
+      "connections_tab": "Kết nối"
     },
     "api": {
       "subtitle": "Quản lý khóa API để tích hợp với API công khai ClassroomIO.",
@@ -5014,8 +4993,6 @@
       "revoked": "Đã thu hồi",
       "rotate": "Xoay",
       "revoke": "Thu hồi",
-      "empty_title": "Chưa có khóa MCP",
-      "empty_description": "Tạo khóa MCP trong phạm vi tổ chức đầu tiên để kết nối Mã Claude, Codex, Con trỏ hoặc OpenCode.",
       "created_at_label": "Đã tạo:",
       "last_used_label": "Sử dụng lần cuối:",
       "never_used": "không bao giờ",
@@ -5053,7 +5030,7 @@
     },
     "permissions": {
       "disabled_title": "Quyền truy cập chỉ đọc",
-      "disabled_description": "Chỉ quản trị viên tổ chức mới có thể tạo, xoay hoặc thu hồi khóa tự động hóa. Thầy cô có thể xem lại hướng dẫn thiết lập tại đây."
+      "disabled_description": "Chỉ quản trị viên tổ chức mới có thể quản lý tự động hóa, bao gồm các ứng dụng đã kết nối và khóa."
     },
     "zapier": {
       "page_subtitle": "Tự động hóa ClassroomIO với hàng nghìn ứng dụng qua Zapier. Sắp ra mắt."
@@ -6438,5 +6415,93 @@
     "new_badge": "Mới",
     "read_full": "Đọc toàn bộ nhật ký thay đổi",
     "close": "Đóng"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Kết nối ứng dụng với ClassroomIO",
+      "title": "Kết nối {client} với ClassroomIO",
+      "workspace": "Không gian làm việc: {workspace}",
+      "permissions_heading": "{client} sẽ có thể:",
+      "stay_connected": "Giữ kết nối cho đến khi bạn gỡ quyền truy cập",
+      "admin_note": "Chỉ quản trị viên không gian làm việc mới có thể kết nối ứng dụng. Quyền truy cập theo quyền quản trị của bạn và sẽ kết thúc nếu bạn mất quyền đó.",
+      "redirect_note": "Sau khi phê duyệt, bạn sẽ được chuyển đến {host}.",
+      "allow": "Cho phép truy cập",
+      "deny": "Từ chối",
+      "unknown_client": "Ứng dụng này",
+      "error_title": "Yêu cầu kết nối này không hợp lệ",
+      "error_description": "Hãy quay lại ứng dụng bạn đang kết nối và bắt đầu lại."
+    },
+    "select_organization": {
+      "title": "Chọn không gian làm việc",
+      "subtitle": "Chọn không gian làm việc mà {client} có thể truy cập.",
+      "empty_title": "Không có không gian làm việc nào",
+      "empty_description": "Chỉ quản trị viên không gian làm việc mới có thể kết nối ứng dụng. Hãy nhờ quản trị viên hoặc đăng nhập bằng tài khoản quản trị."
+    },
+    "error": {
+      "generic": "Đã xảy ra lỗi. Vui lòng thử lại."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Xem khóa học và nội dung",
+        "write": "Tạo, chỉnh sửa và xuất bản khóa học và nội dung"
+      },
+      "exercises": {
+        "read": "Xem bài tập và câu hỏi",
+        "write": "Tạo và chỉnh sửa bài tập và câu hỏi"
+      },
+      "course_members": {
+        "read": "Xem thành viên khóa học",
+        "write": "Thêm và quản lý thành viên khóa học cùng tiến độ"
+      },
+      "certificates": {
+        "read": "Xem chứng chỉ khóa học",
+        "write": "Quản lý chứng chỉ khóa học"
+      },
+      "submissions": {
+        "read": "Xem bài nộp và điểm",
+        "write": "Chấm bài nộp và quản lý điểm"
+      },
+      "cohorts": {
+        "read": "Xem các nhóm học",
+        "write": "Tạo và quản lý nhóm học"
+      },
+      "audience": {
+        "read": "Xem đối tượng của bạn",
+        "write": "Thêm và quản lý đối tượng của bạn"
+      },
+      "team": {
+        "read": "Xem thành viên nhóm",
+        "write": "Quản lý thành viên nhóm"
+      },
+      "organization": {
+        "read": "Xem cài đặt không gian làm việc",
+        "write": "Chỉnh sửa cài đặt, trang đích và mẫu email"
+      },
+      "analytics": {
+        "read": "Xem phân tích",
+        "write": "Xem phân tích"
+      },
+      "media": {
+        "read": "Tải lên phương tiện",
+        "write": "Tải lên phương tiện"
+      }
+    },
+    "connect": {
+      "title": "Kết nối từ Claude hoặc ChatGPT",
+      "description": "Thêm ClassroomIO làm trình kết nối tùy chỉnh trong ứng dụng AI của bạn bằng URL này, sau đó đăng nhập và phê duyệt quyền truy cập.",
+      "step_1": "Trong ứng dụng AI, mở cài đặt trình kết nối hoặc tích hợp và thêm một trình kết nối tùy chỉnh.",
+      "step_2": "Dán URL ở trên và bắt đầu kết nối.",
+      "step_3": "Đăng nhập ClassroomIO, chọn không gian làm việc này và phê duyệt các quyền."
+    },
+    "connected_apps": {
+      "title": "Ứng dụng đã kết nối",
+      "description": "Các ứng dụng bạn đã cho phép hoạt động trong không gian làm việc này. Gỡ một ứng dụng để cắt quyền truy cập ngay lập tức.",
+      "table_app": "Ứng dụng",
+      "table_authorized_by": "Được ủy quyền bởi",
+      "table_permissions": "Quyền",
+      "permissions_count": "{count} mục",
+      "revoke": "Gỡ quyền truy cập",
+      "revoke_confirm": "Gỡ quyền truy cập của ứng dụng này? Ứng dụng sẽ ngừng hoạt động ngay lập tức."
+    }
   }
 }

@@ -1,23 +1,17 @@
 ---
-title: 'Create, rotate, and revoke MCP keys'
-description: 'Create and manage the credentials used by ClassroomIO MCP clients.'
-last_reviewed: '2026-10-21'
+title: 'Rotate and revoke MCP keys'
+description: 'Manage MCP keys you created before sign-in was available.'
+last_reviewed: '2026-10-30'
 ---
 
-Organization administrators manage MCP credentials under **Automation → MCP**. The page shows active-key usage, rate limits, key names, status, creation date, and last use.
+New MCP keys can no longer be created. To connect a client, [sign in from the client](/integrations-and-automation/connect-claude-code-codex-cursor-or-opencode) instead. Keys you already have keep working, and organization administrators can rotate or revoke them under **Automation → MCP**. The **MCP keys** tab, marked Deprecated, appears only while your organization has at least one key.
 
-![MCP keys list with status and key actions](./images/create-rotate-and-revoke-mcp-keys/overview.webp)
+![Deprecated MCP keys tab listing each key's status and actions](./images/create-rotate-and-revoke-mcp-keys/overview.webp)
 
-## Create a key
-
-1. Select **Generate key**, enter a descriptive name, and save.
-2. Copy the secret from the reveal dialog immediately. The full value is shown only at creation or rotation.
-3. Store it in a secret manager, then use it as `CLASSROOMIO_API_KEY` in a [client setup](/integrations-and-automation/connect-claude-code-codex-cursor-or-opencode).
-
-MCP keys are organization scoped. Review [permissions and limits](/integrations-and-automation/understand-mcp-limits-and-permissions) before sharing one with a client.
+MCP keys are organization scoped. Review [permissions and limits](/integrations-and-automation/understand-mcp-limits-and-permissions) before leaving one in use.
 
 ## Rotate or revoke
 
-Open the key's action menu and choose **Rotate** to replace a secret. Copy the new value and update each client using that key; the previous secret stops working. Choose **Revoke** to stop a key entirely. Confirm the action and check that its status changes. To avoid an interruption, create a second key, update and test clients, then revoke the old key.
+Open the key's action menu and choose **Rotate** to replace a secret. Copy the new value and update each client using that key; the previous secret stops working. Choose **Revoke** to stop a key entirely. Confirm the action and check that its status changes.
 
-If you lose a secret, ClassroomIO cannot show it again. Rotate the key or create a new one. Never paste a live key into a support ticket or screenshot.
+If you lose a secret, ClassroomIO cannot show it again. Rotate the key, or revoke it and connect the client by signing in. Never paste a live key into a support ticket or screenshot.

@@ -44,6 +44,10 @@ interface Env {
   APEX_REDIRECT_TARGET: string;
   /** Hostname that serves embed widget assets from R2 (e.g. embed.classroomio.com). */
   EMBED_HOST: string;
+  /** Hostname of the admin dashboard (e.g. app.classroomio.com); serves OAuth discovery documents from the API. */
+  ADMIN_HOST: string;
+  /** Hostname that fronts the remote MCP endpoint (e.g. mcp.classroomio.com). */
+  MCP_HOST: string;
   /** Public API origin injected into embed scripts (e.g. https://api.classroomio.com). */
   API_URL: string;
   /** HMAC-SHA256 secret shared with the API to sign cio_hls tokens. */
@@ -62,6 +66,9 @@ const POSTHOG_UPSTREAM = 'eu.i.posthog.com';
 
 const PROXY_PREFIX = '/proxy';
 const AUTH_PREFIX = '/api/auth';
+const MCP_PREFIX = '/mcp';
+const WELL_KNOWN_PREFIX = '/.well-known/';
+const OAUTH_DISCOVERY_PREFIX = `${WELL_KNOWN_PREFIX}oauth-`;
 const HLS_PREFIX = '/hls/';
 const PROXY_HLS_PREFIX = '/proxy/hls/';
 const HLS_COOKIE_NAME = 'cio_hls';
@@ -274,6 +281,15 @@ async function handleHlsRequest(request: Request, env: Env): Promise<Response> {
   return new Response((object as R2ObjectBody).body, { status: 200, headers });
 }
 
+function isMcpHostPath(pathname: string): boolean {
+  return (
+    pathname === '/' ||
+    pathname === MCP_PREFIX ||
+    pathname.startsWith(`${MCP_PREFIX}/`) ||
+    pathname.startsWith(WELL_KNOWN_PREFIX)
+  );
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -290,6 +306,12 @@ export default {
     // Public embed scripts — served from the R2 `assets` bucket (no Render hop).
     if (originalHost === env.EMBED_HOST) {
       return handleEmbedAssetRequest(request, env);
+    }
+
+    const isMcpHost = originalHost === env.MCP_HOST;
+
+    if (isMcpHost && !isMcpHostPath(url.pathname)) {
+      return new Response('Not found', { status: 404 });
     }
 
     // HLS playback served directly from R2 — Render is never in the bytestream.
@@ -319,10 +341,15 @@ export default {
 
     const isProxiedApiCall = url.pathname === PROXY_PREFIX || url.pathname.startsWith(`${PROXY_PREFIX}/`);
     const isDirectAuthCall = url.pathname === AUTH_PREFIX || url.pathname.startsWith(`${AUTH_PREFIX}/`);
-    const isApiCall = isProxiedApiCall || isDirectAuthCall;
+    const isOAuthDiscoveryCall = originalHost === env.ADMIN_HOST && url.pathname.startsWith(OAUTH_DISCOVERY_PREFIX);
+    const isApiCall = isProxiedApiCall || isDirectAuthCall || isMcpHost || isOAuthDiscoveryCall;
 
     const upstreamHost = isApiCall ? env.API_UPSTREAM_HOST : env.DASHBOARD_UPSTREAM_HOST;
-    const upstreamPath = isProxiedApiCall ? url.pathname.slice(PROXY_PREFIX.length) || '/' : url.pathname;
+    const upstreamPath = isProxiedApiCall
+      ? url.pathname.slice(PROXY_PREFIX.length) || '/'
+      : isMcpHost && url.pathname === '/'
+        ? MCP_PREFIX
+        : url.pathname;
     const isOrgSiteOgImage = isProxiedApiCall && upstreamPath.startsWith('/org-site/og/');
 
     const upstreamUrl = new URL(request.url);

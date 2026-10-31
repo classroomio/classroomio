@@ -68,7 +68,7 @@ const requestAs = (type: 'mcp' | 'api', scopes: string[], path: string, init: Re
 
   return app.request(`/public-api/v1${path}`, {
     ...init,
-    headers: { Authorization: 'Bearer key', 'content-type': 'application/json', ...init.headers }
+    headers: { Authorization: 'Bearer cio_key', 'content-type': 'application/json', ...init.headers }
   });
 };
 

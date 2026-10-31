@@ -10,9 +10,21 @@ describe('shouldForwardToApi', () => {
     expect(shouldForwardToApi('/api/auth/get-session')).toBe(true);
   });
 
+  it('forwards OAuth discovery documents', () => {
+    expect(shouldForwardToApi('/.well-known/oauth-authorization-server')).toBe(true);
+    expect(shouldForwardToApi('/.well-known/oauth-protected-resource')).toBe(true);
+  });
+
+  it('forwards the remote MCP endpoint', () => {
+    expect(shouldForwardToApi('/mcp')).toBe(true);
+    expect(shouldForwardToApi('/mcp/')).toBe(true);
+    expect(shouldForwardToApi('/mcpx')).toBe(false);
+  });
+
   it('does not forward unrelated paths', () => {
     expect(shouldForwardToApi('/login')).toBe(false);
     expect(shouldForwardToApi('/api/csp-report')).toBe(false);
+    expect(shouldForwardToApi('/.well-known/security.txt')).toBe(false);
   });
 });
 

@@ -123,7 +123,7 @@ describe('public API rate limiting', () => {
   it('keeps reservations for invalid tokens and blocks another authentication lookup when exhausted', async () => {
     mocks.authenticate.mockRejectedValue(new Error('Invalid organization API key'));
 
-    const unauthorizedResponse = await requestWithToken('invalid-key');
+    const unauthorizedResponse = await requestWithToken('cio_invalid-key');
 
     expect(unauthorizedResponse.status).toBe(401);
     expect(mocks.authenticate).toHaveBeenCalledOnce();
@@ -137,7 +137,7 @@ describe('public API rate limiting', () => {
       resetTime: exhaustedLimitResetTime
     });
 
-    const limitedResponse = await requestWithToken('invalid-key');
+    const limitedResponse = await requestWithToken('cio_invalid-key');
 
     expect(limitedResponse.status).toBe(429);
     expect(mocks.reserveFailure).toHaveBeenCalledTimes(2);
@@ -155,7 +155,7 @@ describe('public API rate limiting', () => {
       scopes: []
     });
 
-    const forbiddenResponse = await requestWithToken('out-of-scope-key');
+    const forbiddenResponse = await requestWithToken('cio_out-of-scope-key');
 
     expect(forbiddenResponse.status).toBe(403);
     expect(mocks.authenticate).toHaveBeenCalledOnce();
@@ -179,14 +179,14 @@ describe('public API rate limiting', () => {
       resetTime: perKeyResetTime
     });
 
-    const response = await requestWithToken('valid-key');
+    const response = await requestWithToken('cio_valid-key');
 
     expect(response.status).toBe(429);
     expect(mocks.reserveFailure).toHaveBeenCalledWith(FAILED_AUTH_KEY);
     expect(mocks.releaseFailure).toHaveBeenCalledWith(FAILED_AUTH_KEY, 'failure-reservation');
     expect(mocks.isAllowed).toHaveBeenCalledOnce();
     expect(mocks.isAllowed).toHaveBeenCalledWith('automation_key:key-id');
-    expect(mocks.authenticate).toHaveBeenCalledWith('valid-key');
+    expect(mocks.authenticate).toHaveBeenCalledWith('cio_valid-key');
   });
 
   it('atomically bounds concurrent invalid-token authentication attempts', async () => {
@@ -208,7 +208,7 @@ describe('public API rate limiting', () => {
     });
 
     const requests = Array.from({ length: PUBLIC_API_FAILED_AUTH_MAX_REQUESTS + 1 }, () =>
-      requestWithToken('invalid-key')
+      requestWithToken('cio_invalid-key')
     );
     const responses = await Promise.all(requests);
     const responseStatuses = responses.map((response) => response.status);

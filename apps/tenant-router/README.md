@@ -6,6 +6,7 @@ Cloudflare Worker that fronts every browser-facing ClassroomIO host:
 - `myclassroomio.com/*` — apex (301 → `classroomio.com`)
 - `app.classroomio.com/*` — admin dashboard
 - `embed.classroomio.com/*` — public embed widget scripts (R2 `assets` bucket, path-for-path)
+- `mcp.classroomio.com/*` — remote MCP endpoint (`/` is served by the API's `/mcp`, and `/mcp` still works) and its OAuth discovery documents
 - BYOD customer domains via Approximated (their proxy forwards to `cio-api.onrender.com` directly, not through this Worker)
 
 The Worker forwards each request to one of two Render services based on path:
@@ -13,6 +14,8 @@ The Worker forwards each request to one of two Render services based on path:
 | Host / path   | Upstream                                                                       |
 | ------------- | ------------------------------------------------------------------------------ |
 | `embed.*`     | R2 `assets` bucket — `/{widget}` maps to internal keys (`src/embed-assets.ts`) |
+| `mcp.*`       | API service — `/mcp` and `/.well-known/*` only, any other path is a 404       |
+| `/.well-known/oauth-*` on `ADMIN_HOST` | API service — OAuth authorization server metadata       |
 | `/proxy/*`    | API service (`/proxy` prefix stripped, rest forwarded as-is)                   |
 | anything else | Dashboard service                                                              |
 
@@ -47,6 +50,8 @@ pnpm --filter @cio/tenant-router tail
 | `API_UPSTREAM_HOST`       | `.onrender.com` host of the API service                                         |
 | `APEX_REDIRECT_TARGET`    | URL to redirect `myclassroomio.com` apex to (default `https://classroomio.com`) |
 | `EMBED_HOST`              | Hostname for public embed widgets (default `embed.classroomio.com`)             |
+| `ADMIN_HOST`              | Admin dashboard hostname that serves OAuth discovery documents                  |
+| `MCP_HOST`                | Hostname that fronts the remote MCP endpoint (default `mcp.classroomio.com`)    |
 | `API_URL`                 | API origin injected into embed scripts as `window.CIO.apiBaseUrl`               |
 
 Update the values in `wrangler.toml` after looking them up in the Render dashboard.

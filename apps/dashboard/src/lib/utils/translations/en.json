@@ -4874,7 +4874,7 @@
     "read_docs": "Read docs",
     "permissions": {
       "disabled_title": "Read-only access",
-      "disabled_description": "Only organization admins can create, rotate, or revoke automation keys. Teachers can review the setup instructions here."
+      "disabled_description": "Only organization admins can manage automation, including connected apps and keys."
     },
     "tabs": {
       "mcp": "MCP",
@@ -5034,8 +5034,6 @@
       "revoked": "Revoked",
       "rotate": "Rotate",
       "revoke": "Revoke",
-      "empty_title": "No MCP keys yet",
-      "empty_description": "Create the first org-scoped MCP key to connect Claude Code, Codex, Cursor, or OpenCode.",
       "created_at_label": "Created:",
       "last_used_label": "Last used:",
       "never_used": "Never",
@@ -5055,38 +5053,14 @@
       }
     },
     "mcp": {
-      "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
-      "usage": {
-        "title": "Usage and limits",
-        "description": "MCP is available on every plan. Usage is controlled by key limits and rate limits.",
-        "keys_title": "Active keys",
-        "keys_description": "Use one MCP key per integration so access can be rotated or revoked cleanly.",
-        "rate_limits_title": "Rate limits",
-        "rate_limits_description": "Read / write / publish requests allowed per minute.",
-        "used_label": "Used:"
-      },
+      "page_subtitle": "Connect AI tools to ClassroomIO by signing in. Remove an app anytime to cut off its access.",
       "keys": {
         "title": "MCP keys",
-        "description": "These keys authenticate the current organization when an MCP client calls ClassroomIO through `@classroomio/mcp`.",
-        "generate": "Generate MCP key",
+        "description": "These older keys keep working, but new MCP keys can no longer be created. Rotate or revoke them here, and connect new clients by signing in.",
         "reveal_title": "Your new MCP key",
-        "modal": {
-          "title": "Create MCP key",
-          "description": "Choose a name for this MCP key before it is generated.",
-          "name_label": "Key name",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Cancel",
-          "save": "Create key"
-        }
+        "deprecated_badge": "Deprecated"
       },
-      "setup": {
-        "title": "Client setup",
-        "description": "Use one org-scoped key per integration. If a key is rotated or revoked, the client stops working until the new secret is configured.",
-        "claude_code_description": "Registers `@classroomio/mcp` with Claude Code using the generated org-scoped key.",
-        "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
-        "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",
-        "opencode_description": "Add this to `opencode.json` in your project root or `~/.config/opencode/opencode.json`."
-      }
+      "connections_tab": "Connections"
     },
     "api": {
       "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
@@ -5503,6 +5477,9 @@
           "cohort_newsfeed_comment_not_found": "That comment could not be found."
         }
       }
+    },
+    "oauth": {
+      "revoked": "App access removed"
     }
   },
   "specialization": {
@@ -6408,5 +6385,93 @@
     "new_badge": "New",
     "read_full": "Read the full changelog",
     "close": "Close"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Connect an app to ClassroomIO",
+      "title": "Connect {client} to ClassroomIO",
+      "workspace": "Workspace: {workspace}",
+      "permissions_heading": "{client} will be able to:",
+      "stay_connected": "Stay connected until you remove access",
+      "admin_note": "Only workspace admins can connect apps. Access follows your admin permissions and ends if you lose them.",
+      "redirect_note": "After you approve, you will be sent to {host}.",
+      "allow": "Allow access",
+      "deny": "Deny",
+      "unknown_client": "This app",
+      "error_title": "This connection request is not valid",
+      "error_description": "Go back to the app you were connecting and start again."
+    },
+    "select_organization": {
+      "title": "Choose a workspace",
+      "subtitle": "Pick the workspace {client} can access.",
+      "empty_title": "No workspace available",
+      "empty_description": "Only workspace admins can connect apps. Ask an admin or sign in with an admin account."
+    },
+    "error": {
+      "generic": "Something went wrong. Please try again."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "View courses and their content",
+        "write": "Create, edit and publish courses and their content"
+      },
+      "exercises": {
+        "read": "View exercises and questions",
+        "write": "Create and edit exercises and questions"
+      },
+      "course_members": {
+        "read": "View course members",
+        "write": "Add and manage course members and their progress"
+      },
+      "certificates": {
+        "read": "View course certificates",
+        "write": "Manage course certificates"
+      },
+      "submissions": {
+        "read": "View exercise submissions and marks",
+        "write": "Grade submissions and manage marks"
+      },
+      "cohorts": {
+        "read": "View cohorts",
+        "write": "Create and manage cohorts"
+      },
+      "audience": {
+        "read": "View your audience",
+        "write": "Add and manage your audience"
+      },
+      "team": {
+        "read": "View team members",
+        "write": "Manage team members"
+      },
+      "organization": {
+        "read": "View workspace settings",
+        "write": "Edit workspace settings, landing page and email templates"
+      },
+      "analytics": {
+        "read": "View analytics",
+        "write": "View analytics"
+      },
+      "media": {
+        "read": "Upload media",
+        "write": "Upload media"
+      }
+    },
+    "connect": {
+      "title": "Connect from Claude or ChatGPT",
+      "description": "Add ClassroomIO as a custom connector in your AI app using this URL, then sign in and approve access.",
+      "step_1": "In your AI app, open the connectors or integrations settings and add a custom connector.",
+      "step_2": "Paste the URL above and start the connection.",
+      "step_3": "Sign in to ClassroomIO, choose this workspace and approve the permissions."
+    },
+    "connected_apps": {
+      "title": "Connected apps",
+      "description": "Apps you approved to act on this workspace. Remove an app to cut off its access immediately.",
+      "table_app": "App",
+      "table_authorized_by": "Authorized by",
+      "table_permissions": "Permissions",
+      "permissions_count": "{count} areas",
+      "revoke": "Remove access",
+      "revoke_confirm": "Remove this app's access? It will stop working immediately."
+    }
   }
 }

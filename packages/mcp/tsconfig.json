@@ -12,7 +12,7 @@
     "declarationMap": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "tsconfig.tsbuildinfo"],
+  "exclude": ["node_modules", "dist", "tsconfig.tsbuildinfo", "src/**/*.test.ts"],
   "references": [{ "path": "../utils" }],
   "tsc-alias": {
     "resolveFullPaths": true,

@@ -529,6 +529,9 @@
       "test_success": "Événement de test envoyé avec succès.",
       "test_failed": "L'événement de test a échoué. Ouvrez le journal des envois pour en voir la cause.",
       "redelivered": "Événement mis en file d'attente pour un nouvel envoi."
+    },
+    "oauth": {
+      "revoked": "Accès de l'application retiré"
     }
   },
   "explore": {
@@ -4953,38 +4956,14 @@
     "coming_soon": "Bientôt disponible",
     "read_docs": "Lire la documentation",
     "mcp": {
-      "setup": {
-        "title": "Configuration du client",
-        "description": "Utilisez une clé à l’échelle de l’organisation par intégration. Si une clé est alternée ou révoquée, le client cesse de fonctionner jusqu'à ce que le nouveau secret soit configuré.",
-        "claude_code_description": "Enregistre `@classroomio/mcp` auprès de Claude Code à l'aide de la clé générée à l'échelle de l'organisation.",
-        "codex_description": "Ajoute le serveur ClassroomIO MCP au Codex avec la même clé de portée organisationnelle.",
-        "cursor_description": "Collez-le dans `~/.cursor/mcp.json` ou dans la configuration MCP de votre espace de travail.",
-        "opencode_description": "Ajoutez ceci à `opencode.json` à la racine du projet ou à `~/.config/opencode/opencode.json`."
-      },
       "keys": {
         "title": "Clés MCP",
-        "description": "Ces clés authentifient l'organisation actuelle lorsqu'un client MCP appelle ClassroomIO via `@classroomio/mcp`.",
-        "generate": "Générer une clé MCP",
-        "modal": {
-          "title": "Créer une clé MCP",
-          "description": "Choisissez un nom pour cette clé MCP avant qu'elle ne soit générée.",
-          "name_label": "Nom de la clé",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Annuler",
-          "save": "Créer la clé"
-        },
-        "reveal_title": "Votre nouvelle clé MCP"
+        "description": "Ces anciennes clés continuent de fonctionner, mais il n'est plus possible de créer de nouvelles clés MCP. Renouvelez-les ou révoquez-les ici, et connectez les nouveaux clients en vous connectant.",
+        "reveal_title": "Votre nouvelle clé MCP",
+        "deprecated_badge": "Obsolète"
       },
-      "usage": {
-        "title": "Utilisation et limites",
-        "description": "MCP est disponible sur tous les forfaits. L'utilisation est contrôlée par les limites de clés et les limites de taux.",
-        "keys_title": "Clés actives",
-        "keys_description": "Utilisez une clé MCP par intégration afin que l'accès puisse être alterné ou révoqué proprement.",
-        "rate_limits_title": "Limites de taux",
-        "rate_limits_description": "Requêtes de lecture/écriture/publication autorisées par minute.",
-        "used_label": "Utilisé :"
-      },
-      "page_subtitle": "Connectez des outils IA à ClassroomIO avec des clés à l'échelle de l'organisation que vous pouvez faire pivoter à tout moment."
+      "page_subtitle": "Connectez des outils d'IA à ClassroomIO en vous connectant. Supprimez une application à tout moment pour couper son accès.",
+      "connections_tab": "Connexions"
     },
     "api": {
       "subtitle": "Gérez les clés API pour intégrer l'API publique ClassroomIO.",
@@ -5014,8 +4993,6 @@
       "revoked": "Révoqué",
       "rotate": "Rotation",
       "revoke": "Révoquer",
-      "empty_title": "Pas encore de clés MCP",
-      "empty_description": "Créez la première clé MCP à l'échelle de l'organisation pour connecter Claude Code, Codex, Cursor ou OpenCode.",
       "created_at_label": "Créé :",
       "last_used_label": "Dernière utilisation :",
       "never_used": "Jamais",
@@ -5053,7 +5030,7 @@
     },
     "permissions": {
       "disabled_title": "Accès en lecture seule",
-      "disabled_description": "Seuls les administrateurs de l'organisation peuvent créer, alterner ou révoquer des clés d'automatisation. Les enseignants peuvent consulter les instructions de configuration ici."
+      "disabled_description": "Seuls les administrateurs de l'organisation peuvent gérer l'automatisation, y compris les applications connectées et les clés."
     },
     "zapier": {
       "page_subtitle": "Automatisez ClassroomIO avec des milliers d'applications via Zapier. Bientôt disponible."
@@ -6438,5 +6415,93 @@
     "new_badge": "Nouveau",
     "read_full": "Lire le journal des modifications complet",
     "close": "Fermer"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Connecter une application à ClassroomIO",
+      "title": "Connecter {client} à ClassroomIO",
+      "workspace": "Espace de travail : {workspace}",
+      "permissions_heading": "{client} pourra :",
+      "stay_connected": "Rester connecté jusqu'à ce que vous retiriez l'accès",
+      "admin_note": "Seuls les administrateurs de l'espace de travail peuvent connecter des applications. L'accès suit vos autorisations d'administrateur et prend fin si vous les perdez.",
+      "redirect_note": "Après votre approbation, vous serez redirigé vers {host}.",
+      "allow": "Autoriser l'accès",
+      "deny": "Refuser",
+      "unknown_client": "Cette application",
+      "error_title": "Cette demande de connexion n'est pas valide",
+      "error_description": "Retournez à l'application que vous vouliez connecter et recommencez."
+    },
+    "select_organization": {
+      "title": "Choisir un espace de travail",
+      "subtitle": "Choisissez l'espace de travail auquel {client} peut accéder.",
+      "empty_title": "Aucun espace de travail disponible",
+      "empty_description": "Seuls les administrateurs de l'espace de travail peuvent connecter des applications. Demandez à un administrateur ou connectez-vous avec un compte administrateur."
+    },
+    "error": {
+      "generic": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Consulter les cours et leur contenu",
+        "write": "Créer, modifier et publier des cours et leur contenu"
+      },
+      "exercises": {
+        "read": "Consulter les exercices et les questions",
+        "write": "Créer et modifier des exercices et des questions"
+      },
+      "course_members": {
+        "read": "Consulter les membres des cours",
+        "write": "Ajouter et gérer les membres des cours et leur progression"
+      },
+      "certificates": {
+        "read": "Consulter les certificats de cours",
+        "write": "Gérer les certificats de cours"
+      },
+      "submissions": {
+        "read": "Consulter les soumissions et les notes",
+        "write": "Noter les soumissions et gérer les notes"
+      },
+      "cohorts": {
+        "read": "Consulter les cohortes",
+        "write": "Créer et gérer des cohortes"
+      },
+      "audience": {
+        "read": "Consulter votre audience",
+        "write": "Ajouter et gérer votre audience"
+      },
+      "team": {
+        "read": "Consulter les membres de l'équipe",
+        "write": "Gérer les membres de l'équipe"
+      },
+      "organization": {
+        "read": "Consulter les paramètres de l'espace de travail",
+        "write": "Modifier les paramètres, la page d'accueil et les modèles d'e-mail"
+      },
+      "analytics": {
+        "read": "Consulter les statistiques",
+        "write": "Consulter les statistiques"
+      },
+      "media": {
+        "read": "Téléverser des médias",
+        "write": "Téléverser des médias"
+      }
+    },
+    "connect": {
+      "title": "Se connecter depuis Claude ou ChatGPT",
+      "description": "Ajoutez ClassroomIO comme connecteur personnalisé dans votre application d'IA avec cette URL, puis connectez-vous et approuvez l'accès.",
+      "step_1": "Dans votre application d'IA, ouvrez les paramètres des connecteurs ou des intégrations et ajoutez un connecteur personnalisé.",
+      "step_2": "Collez l'URL ci-dessus et lancez la connexion.",
+      "step_3": "Connectez-vous à ClassroomIO, choisissez cet espace de travail et approuvez les autorisations."
+    },
+    "connected_apps": {
+      "title": "Applications connectées",
+      "description": "Applications que vous avez autorisées à agir sur cet espace de travail. Retirez une application pour couper son accès immédiatement.",
+      "table_app": "Application",
+      "table_authorized_by": "Autorisée par",
+      "table_permissions": "Autorisations",
+      "permissions_count": "{count} domaines",
+      "revoke": "Retirer l'accès",
+      "revoke_confirm": "Retirer l'accès de cette application ? Elle cessera de fonctionner immédiatement."
+    }
   }
 }

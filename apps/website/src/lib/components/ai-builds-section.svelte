@@ -21,7 +21,7 @@
     {
       Icon: Terminal,
       title: 'Use your own agent',
-      description: 'Drive course authoring from Cursor, Claude Code, Codex, or OpenCode via MCP.'
+      description: 'Drive course authoring from Cursor, Claude Code, Codex, VS Code, Gemini CLI, or any MCP client.'
     }
   ];
 

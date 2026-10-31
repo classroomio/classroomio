@@ -5,9 +5,15 @@ description: Understand what a connected client can access and which changes nee
 
 ## What can the client access?
 
-An MCP key belongs to one organization. It can access only the ClassroomIO actions allowed by its selected scopes **and** by the permissions of the person who created it. For example, a tutor's key does not gain organization administrator access. Removing that person's access also removes the key's access.
+When you connect a client by signing in, it acts as you in one workspace, the one you chose on the approval screen. It can use only the ClassroomIO actions covered by the permissions you approved **and** by your role: you must be an admin of that workspace. If you stop being an admin, the client loses access immediately and its connection is removed. Removing the app in **Automation → MCP → Connected apps** also cuts off its access immediately. To use another workspace, connect again and choose it.
 
-The client may receive course, learner, or organization data that the key can read. Connect a client you trust, keep the key private, and use a separate key for each client so you can revoke one without disconnecting the others. You can manage keys in **Automation → MCP**.
+Requests from a connected app are subject to your plan's [rate limits](#limits).
+
+### MCP keys (existing keys only)
+
+New MCP keys can no longer be created. An existing MCP key belongs to one organization. It can access only the ClassroomIO actions allowed by its selected scopes **and** by the permissions of the person who created it. For example, a tutor's key does not gain organization administrator access. Removing that person's access also removes the key's access.
+
+The client may receive course, learner, or organization data that the key can read. Connect a client you trust, and keep the key private. You can rotate or revoke keys in **Automation → MCP**.
 
 MCP keys cannot access the entire public API. If the client says an action is unavailable or unauthorized, check the key's scopes and the creator's role in the relevant course or organization. A key with a custom scope selection does not gain new scopes automatically.
 
@@ -17,6 +23,14 @@ Ask the client to show you a course draft or proposed edits before publishing. S
 
 Deleting a section also deletes its lessons and exercises. Deleting an exercise deletes its submissions. ClassroomIO blocks deletion of lessons, sections, content, or answered questions with student work unless the request explicitly forces it; forcing deletion also removes the affected work. Resetting a learner's progress discards their recorded progress.
 
-## Check limits
+## Limits
 
-**Automation → MCP** shows your organization's current key allowance and each key's read, write, and publish rate limits. Some actions, such as changing certificate settings or saving email templates, require a paid plan. If a request fails, see [API errors](/api/errors) and [rate limits](/api/rate-limits).
+Requests are limited per minute, separately for reads, writes, and publishes. The limits depend on your plan and apply to each connected app or MCP key and to your whole organization. The dashboard does not show them. Going over a limit returns a `429`; wait up to a minute, then retry.
+
+| Plan | Each app or key (read / write / publish) | Whole organization (read / write / publish) |
+| --- | --- | --- |
+| Free | 30 / 10 / 1 | 60 / 20 / 2 |
+| Early Adopter | 60 / 20 / 3 | 120 / 40 / 5 |
+| Enterprise | 180 / 60 / 10 | 360 / 120 / 20 |
+
+Some actions, such as changing certificate settings or saving email templates, require a paid plan. If a request fails, see [API errors](/api/errors) and [rate limits](/api/rate-limits).

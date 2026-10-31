@@ -62,7 +62,7 @@ Status `403`
 }
 ```
 
-**Fix:** You're using a key that can't call this endpoint, usually an MCP key. Use an API key (`cio_api_...`) instead.
+**Fix:** You're using a key that can't call this endpoint, usually an MCP key or a connected MCP app. Use an API key (`cio_api_...`) instead.
 
 ### Resource not found
 
@@ -95,7 +95,7 @@ Status `400`
 
 ### Rate limit exceeded
 
-Status `429`. The body depends on which limit you hit. The per-key request limit uses its own shape with `retryAfter`. The MCP-key usage limit uses the standard format with `code` `AUTOMATION_RATE_LIMIT_EXCEEDED`. See [Exceeding the limit](/api/rate-limits#exceeding-the-limit).
+Status `429`. The body depends on which limit you hit. The per-key request limit uses its own shape with `retryAfter`. The MCP usage limit uses the standard format with `code` `AUTOMATION_RATE_LIMIT_EXCEEDED`. See [Exceeding the limit](/api/rate-limits#exceeding-the-limit).
 
 ## Next steps
 

@@ -61,6 +61,8 @@ export PATH="$HOME/.nvm/versions/node/v24.22.1/bin:$PATH"
 
 Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
 
+**Fact-check every commit against the docs.** Before each commit, spin up a sub agent to verify the commit's changes (`git diff --cached`) against our docs, help center, website and READMEs, and fix every inaccurate statement and stale screenshot it finds in the same commit. Procedure: [`skills/stage-and-commit/SKILL.md`](skills/stage-and-commit/SKILL.md), step 4.
+
 ## Database migrations
 
 **One migration file per PR.** However many schema changes a branch makes, and however many times
