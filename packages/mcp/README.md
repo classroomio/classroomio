@@ -44,6 +44,7 @@ Remote clients such as Claude and ChatGPT connect to `POST /mcp` on the Classroo
 - **Authentication.** A request carries `Authorization: Bearer <credential>`, either an OAuth access token issued for the MCP resource or a `cio_mcp_...` automation key. A missing or invalid credential gets `401` with a `WWW-Authenticate` header that points at `/.well-known/oauth-protected-resource`, which starts the OAuth flow in the client. A credential that was not issued for MCP gets `403`.
 - **Per-request identity.** Tool calls run in-process against the real `/public-api/v1` routes with the caller's own credential, so scopes, rate limits, plan limits and usage metering apply exactly as for a direct API call. There is no shared client.
 - **Tools.** The same tools as stdio, without `upload_video`.
+- **Accept header.** A missing or partial `Accept` header is treated as `application/json, text/event-stream`. Rejected requests (status 400 or above) are logged on the server.
 - **Methods.** Only `POST` is accepted. `GET` and `DELETE` return `405` because the server never opens a stream or session.
 
 The API imports `createMcpServer` and `ClassroomIoApiClient` from `@classroomio/mcp/server`. Importing the package root starts the stdio server, so never do that from another process.

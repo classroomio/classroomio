@@ -43,7 +43,12 @@ import { transcriptsRouter } from '@api/routes/transcripts';
 import { mountQueueDashboard } from '@api/routes/admin/queues';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { mcpRouter } from '@api/routes/mcp';
-import { oauthRouter, wellKnownRouter } from '@api/routes/oauth';
+import {
+  buildAuthorizationServerMetadata,
+  isAuthServerDiscoveryPath,
+  oauthRouter,
+  wellKnownRouter
+} from '@api/routes/oauth';
 import { organizationRouter } from '@api/routes/organization';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
@@ -128,6 +133,10 @@ export const app = new Hono()
   )
   .use('/api/auth/sign-up/*', signupGuard)
   .on(['POST', 'GET'], '/api/auth/*', async (c) => {
+    if (c.req.method === 'GET' && isAuthServerDiscoveryPath(c.req.path)) {
+      return c.json(buildAuthorizationServerMetadata());
+    }
+
     // Behind the Cloudflare Worker proxy the raw Request URL points at the
     // upstream `.onrender.com` host. Better Auth (and the oauth-proxy plugin)
     // need the original tenant/admin host to construct correct OAuth callback
