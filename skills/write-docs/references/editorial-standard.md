@@ -109,6 +109,8 @@ Do not add a manual “In this article” list. Blume creates an in-page table o
 
 ## Procedures
 
+Every step-by-step process is numbered. A sequence of actions written as a prose paragraph or as bullets is wrong, and so is one that hides steps in sentences such as "open X, choose Y, then enter Z". Split it into one numbered step per action. This applies to help articles and to `apps/docs`.
+
 Use numbered `###` action headings for a sequence with meaningful explanation or media.
 
 Each step should contain:
@@ -118,7 +120,7 @@ Each step should contain:
 3. the immediate response, when it confirms progress;
 4. a condition or branch, if it applies at that point.
 
-Use a simple ordered list when every step is one short sentence and none needs a screenshot, callout, or deep link.
+Use a simple numbered list when every step is one short sentence and none needs a screenshot, callout, or deep link. In `apps/docs`, a numbered list or Blume's `<Steps>`/`<Step title="…">` component is acceptable. Numbered `###` headings stay the rule for help articles, where steps need linkable anchors.
 
 Rules:
 
