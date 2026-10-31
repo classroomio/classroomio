@@ -27,7 +27,9 @@ export const mcpRouter = new Hono()
     try {
       await authenticateMcpCredentialService(credential);
     } catch (error) {
-      if (error instanceof AppError && error.statusCode === 403) {
+      if (!(error instanceof AppError) || error.statusCode >= 500) throw error;
+
+      if (error.statusCode === 403) {
         return c.json(jsonRpcError(error.message), 403);
       }
 

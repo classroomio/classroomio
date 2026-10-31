@@ -73,6 +73,15 @@ describe('POST /mcp', () => {
     expect(body.error.message).toBe('Invalid or expired credential');
   });
 
+  it('does not report an authentication outage as an invalid credential', async () => {
+    mocks.authenticateOAuth.mockRejectedValue(new Error('connection refused'));
+
+    const response = await rpc('initialize', {}, { Authorization: 'Bearer eyJhbGciOi' });
+
+    expect(response.status).toBe(500);
+    expect(response.headers.get('www-authenticate')).toBeNull();
+  });
+
   it('refuses credentials that were not issued for MCP', async () => {
     mocks.authenticateOAuth.mockResolvedValue({ id: 'key-1', type: 'api', organizationId: 'org-1' });
 
