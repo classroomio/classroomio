@@ -115,6 +115,7 @@ export async function updatePublicApiLessonService(
     order: payload.order,
     isUnlocked: payload.isUnlocked,
     public: payload.public,
+    lessonAt: payload.lessonAt,
     ...(videos ? { videos } : {})
   });
 

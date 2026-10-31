@@ -302,6 +302,13 @@
       "when": 1793103932290,
       "tag": "0042_oauth_provider",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793489857066,
+      "tag": "0043_lesson_at_no_default",
+      "breakpoints": true
     }
   ]
 }
