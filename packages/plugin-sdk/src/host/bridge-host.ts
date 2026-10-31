@@ -45,13 +45,22 @@ export interface PluginBridgeHostOptions {
   handlers: PluginBridgeHostHandlers;
 }
 
+function serializePluginContext(context: PluginContext): PluginContext {
+  return JSON.parse(JSON.stringify(context)) as PluginContext;
+}
+
 export class PluginBridgeHost {
   private port: MessagePort | null = null;
   private channel: MessageChannel | null = null;
   private isDestroyed = false;
   private nonce: string;
+  private options: PluginBridgeHostOptions;
 
-  constructor(private options: PluginBridgeHostOptions) {
+  constructor(options: PluginBridgeHostOptions) {
+    this.options = {
+      ...options,
+      context: serializePluginContext(options.context)
+    };
     this.nonce = crypto.randomUUID();
   }
 

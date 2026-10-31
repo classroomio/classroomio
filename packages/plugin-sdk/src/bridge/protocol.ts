@@ -20,6 +20,7 @@ export interface PluginContext {
       estimatedMinutes?: number;
       selectedTemplateId?: string;
       selectedTemplateName?: string;
+      selectedTemplateDocument?: unknown;
     };
   };
 }

@@ -96,14 +96,16 @@
   class={cn('ui:relative ui:flex ui:h-full ui:w-full ui:items-center ui:justify-center ui:overflow-hidden', className)}
 >
   <div class="ui:origin-center" style:width="{width}px" style:height="{height}px" style:transform="scale({scale})">
-    <iframe
-      title="Certificate preview"
-      srcdoc={renderedHtml}
-      sandbox="allow-scripts"
-      class="ui:h-full ui:w-full ui:rounded-sm ui:border-0 ui:shadow-[0_18px_40px_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.12)]"
-      style:width="{width}px"
-      style:height="{height}px"
-    ></iframe>
+    {#key renderedHtml}
+      <iframe
+        title="Certificate preview"
+        srcdoc={renderedHtml}
+        sandbox="allow-scripts"
+        class="ui:h-full ui:w-full ui:rounded-sm ui:border-0 ui:shadow-[0_18px_40px_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.12)]"
+        style:width="{width}px"
+        style:height="{height}px"
+      ></iframe>
+    {/key}
   </div>
 
   {#if showControls}

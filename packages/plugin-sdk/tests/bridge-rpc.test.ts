@@ -57,6 +57,41 @@ describe('MessageChannel UI host bridge', () => {
     host.destroy();
   });
 
+  it('serializes proxy-backed context before posting it to a plugin', async () => {
+    const channel = new MessageChannel();
+    const selectedTemplateDocument = new Proxy({ templateId: 'modular', accentColor: '#d4a017' }, {});
+    const context: PluginContext = {
+      ...mockContext,
+      surface: {
+        target: 'certificate.templates',
+        resource: {
+          type: 'course',
+          id: 'course-1',
+          selectedTemplateDocument
+        }
+      }
+    };
+    const contextMessage = new Promise<MessageEvent['data']>((resolve) => {
+      channel.port2.onmessage = (event) => resolve(event.data);
+    });
+    const host = new PluginBridgeHost({
+      iframe: {} as HTMLIFrameElement,
+      targetOrigin: 'https://plugin.example.com',
+      context,
+      handlers: {}
+    });
+
+    host.attachPort(channel.port1);
+
+    await expect(contextMessage).resolves.toMatchObject({
+      type: 'CIO_BRIDGE_CONTEXT_INIT',
+      context
+    });
+
+    channel.port2.close();
+    host.destroy();
+  });
+
   it('reads and writes client preferences', async () => {
     const channel = new MessageChannel();
     const stored = new Map<string, unknown>();
