@@ -4,9 +4,9 @@ import {
   getCertificateDocumentIdFormat,
   getStudioCertificateIdFormat,
   resolveCertificateDesign,
+  resolveStoredCertificatePresentation,
   type CertificateRenderInput
 } from '@api/utils/certificate';
-import type { CertificatePresentationV1 } from '@cio/certificates';
 import type { TCertificateDownloadRequest } from '@cio/utils/validation/course';
 
 /**
@@ -36,26 +36,7 @@ export async function assembleCertificateRender(
     ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' })
     : issuedAtDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
 
-  const presentation = courseRow.certificate?.presentation;
-  const customDocument = courseRow.certificate?.customDocument ?? courseRow.certificate?.studioDesign;
-
-  let activePresentation: CertificatePresentationV1;
-  if (presentation && typeof presentation === 'object' && 'kind' in presentation) {
-    activePresentation = presentation as CertificatePresentationV1;
-  } else if (customDocument && typeof customDocument === 'object') {
-    activePresentation = {
-      kind: 'document',
-      schema: 'classroomio.certificate-document',
-      version: 1,
-      document: customDocument as any
-    };
-  } else {
-    activePresentation = {
-      kind: 'preset',
-      presetId: design.templateId,
-      overrides: design
-    };
-  }
+  const activePresentation = resolveStoredCertificatePresentation(courseRow.certificate);
 
   const documentIdFormat =
     activePresentation.kind === 'document' ? getCertificateDocumentIdFormat(activePresentation.document) : null;

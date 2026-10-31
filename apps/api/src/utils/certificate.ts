@@ -7,6 +7,7 @@ import {
   renderCertificatePresentation,
   renderStudioCertificate,
   resolveCertificateDesign,
+  resolveStoredCertificatePresentation,
   type CertificateDesign,
   type CertificatePresentationV1,
   type CertificateRenderData
@@ -14,7 +15,12 @@ import {
 
 import { getCloudflarePdfBuffer, getCloudflarePngBuffer } from '@api/utils/cloudflare';
 
-export { getCertificateDocumentIdFormat, getStudioCertificateIdFormat, resolveCertificateDesign };
+export {
+  getCertificateDocumentIdFormat,
+  getStudioCertificateIdFormat,
+  resolveCertificateDesign,
+  resolveStoredCertificatePresentation
+};
 
 export interface CertificateRenderInput {
   design: CertificateDesign;
