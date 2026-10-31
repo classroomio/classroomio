@@ -38,7 +38,7 @@ All checks must pass before continuing. Fix and re-run until green — never ope
 
 ## 3. Commit
 
-Follow the `stage-and-commit` skill exactly: translation sync (`pnpm translate`) if `en.json` changed, `pnpm format:changed` (+ `pnpm --filter @cio/ui prefix` for UI files), explicit staging, pre-commit checks, Conventional Commits message, no AI attribution trailers.
+Follow the `stage-and-commit` skill exactly, including its sub-agent fact-check of the commit against the docs (step 4): translation sync (`pnpm translate`) if `en.json` changed, `pnpm format:changed` (+ `pnpm --filter @cio/ui prefix` for UI files), explicit staging, pre-commit checks, Conventional Commits message, no AI attribution trailers.
 
 ## 4. Open the draft PR
 
@@ -68,7 +68,7 @@ Every later request about the same feature ("also add X", "change how Y works", 
 
 1. Implement the change following step 1 conventions.
 2. Re-verify with the narrowest check that proves the change, plus one blast-radius check over what you touched (step 2). Skip the full suite unless core/shared packages changed.
-3. Commit (step 3 rules) and `git push` to the PR branch. Batch small related fixes into one commit/push — every push restarts CI.
+3. Commit (step 3 rules, including the docs fact-check) and `git push` to the PR branch. Batch small related fixes into one commit/push — every push restarts CI.
 4. If scope shifted, update the PR body (`gh pr edit --body-file ...`) so the description and "How should this be tested?" stay accurate.
 
 ## 6. Review comments & CI (check each pass)
