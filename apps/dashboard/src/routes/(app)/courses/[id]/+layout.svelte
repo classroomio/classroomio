@@ -58,20 +58,28 @@
   let { children, data }: Props = $props();
   const courseId = $derived(data.courseId);
   const loadedCourseId = $derived(courseApi.course?.id);
+  const serverCourseState = $derived(
+    data.course
+      ? `${data.course.id}:${data.course.updatedAt ?? ''}:${JSON.stringify(data.course.certificate ?? null)}`
+      : ''
+  );
   const currentPath = $derived(page.url.pathname);
   let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);
   let hasLoadedSidebarWidth = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
+  let appliedServerCourseState = $state('');
 
   $effect(() => {
     const profileId = $profile.id;
     if (!courseId || !profileId) return;
-    if (loadedCourseId === courseId) return;
 
-    if (data.course) {
+    if (data.course && serverCourseState !== appliedServerCourseState) {
+      appliedServerCourseState = serverCourseState;
       courseApi.setCourse(data.course, profileId);
       return;
     }
+
+    if (loadedCourseId === courseId) return;
 
     void courseApi.ensureCourse(courseId, profileId);
   });

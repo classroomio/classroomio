@@ -6,6 +6,7 @@
   import TypeIcon from '@lucide/svelte/icons/type';
   import PaletteIcon from '@lucide/svelte/icons/palette';
   import DownloadIcon from '@lucide/svelte/icons/download';
+  import { untrack } from 'svelte';
   import { t } from '$lib/utils/functions/translations';
 
   import { courseApi } from '$features/course/api';
@@ -18,16 +19,11 @@
   import ContentPanel from './panels/content-panel.svelte';
   import ColorsPanel from './panels/colors-panel.svelte';
   import ExportPanel from './panels/export-panel.svelte';
-  import { certificateEditorStore, type CertificateEditorPanel } from './store/certificate-editor.store.svelte';
+  import { createCertificateEditorStore, type CertificateEditorPanel } from './store/certificate-editor.store.svelte';
 
   let { courseId }: { courseId: string } = $props();
 
-  const store = certificateEditorStore;
-
-  $effect(() => {
-    if (!courseApi.course?.id || courseApi.course.id !== courseId) return;
-    store.syncFromCourse(courseId);
-  });
+  const store = untrack(() => createCertificateEditorStore(courseId, courseApi.course?.certificate));
 
   const courseTitle = $derived(courseApi.course?.title ?? '');
 
@@ -167,6 +163,7 @@
         <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4">
           {#if store.activePanel === 'templates'}
             <TemplatesPanel
+              {store}
               {courseId}
               value={store.draft.templateId}
               disabled={$isFreePlan}
@@ -174,7 +171,7 @@
               onSelect={(id: CertificateTemplateId) => store.setTemplate(id)}
             />
           {:else if store.activePanel === 'content'}
-            <ContentPanel disabled={$isFreePlan} />
+            <ContentPanel {store} disabled={$isFreePlan} />
           {:else if store.activePanel === 'colors'}
             <ColorsPanel
               value={store.draft.accentColor}

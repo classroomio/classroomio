@@ -7,13 +7,24 @@
   import CertificateEditor from '$features/course/components/ceritficate/editor/certificate-editor.svelte';
 
   const courseId = $derived(page.params.id ?? '');
+  let refreshedCourseId = $state('');
+  let isRefreshing = $state(true);
 
   $effect(() => {
-    if (!courseId || !$profile.id) return;
-    courseApi.ensureCourse(courseId, $profile.id);
+    const profileId = $profile.id;
+    if (!courseId || !profileId || refreshedCourseId === courseId) return;
+
+    const requestedCourseId = courseId;
+    refreshedCourseId = requestedCourseId;
+    isRefreshing = true;
+    void courseApi.refreshCourse(requestedCourseId, profileId).finally(() => {
+      if (refreshedCourseId === requestedCourseId) {
+        isRefreshing = false;
+      }
+    });
   });
 
-  const isReady = $derived(courseApi.course?.id === courseId);
+  const isReady = $derived(!isRefreshing && courseApi.course?.id === courseId);
 </script>
 
 <svelte:head>
@@ -22,7 +33,9 @@
 
 <div class="ui:bg-background min-h-screen w-full">
   {#if isReady}
-    <CertificateEditor {courseId} />
+    {#key courseId}
+      <CertificateEditor {courseId} />
+    {/key}
   {:else}
     <div class="flex min-h-[60vh] items-center justify-center">
       <Spinner class="size-8!" />

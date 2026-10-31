@@ -6,7 +6,8 @@ import {
   type CertificateDesign,
   type CertificateDocumentV1,
   type CertificatePresentationV1,
-  type CertificateTemplateId
+  type CertificateTemplateId,
+  type StoredCertificateRecord
 } from '@cio/certificates';
 
 import { courseApi } from '$features/course/api';
@@ -87,11 +88,7 @@ function fromDraft(draft: CertificateEditorDraft): CertificateDesign {
   };
 }
 
-function readStoredDesign(): CertificateDesign {
-  return resolveCertificateDesign(courseApi.course?.certificate);
-}
-
-class CertificateEditorStore {
+export class CertificateEditorStore {
   activePanel = $state<CertificateEditorPanel>('templates');
   draft = $state<CertificateEditorDraft>(toDraft(DEFAULT_CERTIFICATE_DESIGN));
   initial = $state<CertificateEditorDraft>(toDraft(DEFAULT_CERTIFICATE_DESIGN));
@@ -101,8 +98,7 @@ class CertificateEditorStore {
   #initialPresentationMode: 'preset' | 'document' = 'preset';
   isSaving = $state(false);
   isSignatureUploading = $state(false);
-  #initializedCourseId: string | null = null;
-  #initializedCertificateState: string | null = null;
+  readonly courseId: string;
 
   readonly isDirty = $derived(
     this.presentationMode !== this.#initialPresentationMode ||
@@ -110,18 +106,17 @@ class CertificateEditorStore {
       JSON.stringify(this.draft) !== JSON.stringify(this.initial)
   );
 
-  syncFromCourse(courseId: string, force = false) {
-    const cert = courseApi.course?.certificate;
-    const certificateState = JSON.stringify(cert ?? null);
-    if (!force && this.#initializedCourseId === courseId && this.#initializedCertificateState === certificateState) {
-      return;
-    }
+  constructor(courseId: string, certificate?: StoredCertificateRecord | null) {
+    this.courseId = courseId;
+    this.initialize(certificate);
+  }
 
-    const stored = readStoredDesign();
+  private initialize(certificate?: StoredCertificateRecord | null) {
+    const stored = resolveCertificateDesign(certificate);
     this.initial = toDraft(stored);
     this.draft = toDraft(stored);
 
-    const presentation = resolveStoredCertificatePresentation(cert);
+    const presentation = resolveStoredCertificatePresentation(certificate);
 
     if (presentation.kind === 'document') {
       this.customDocument = presentation.document;
@@ -135,9 +130,6 @@ class CertificateEditorStore {
       this.presentationMode = 'preset';
       this.#initialPresentationMode = 'preset';
     }
-
-    this.#initializedCourseId = courseId;
-    this.#initializedCertificateState = certificateState;
   }
 
   reset() {
@@ -203,7 +195,7 @@ class CertificateEditorStore {
 
   async save() {
     const course = courseApi.course;
-    if (!course?.id) return;
+    if (!course?.id || course.id !== this.courseId) return;
 
     if (this.isSignatureUploading) {
       snackbar.error(t.get('course.navItem.certificates.editor.signature_upload_in_progress'));
@@ -233,9 +225,6 @@ class CertificateEditorStore {
         this.initial = toDraft(design);
         this.#initialCustomDocument = this.customDocument;
         this.#initialPresentationMode = this.presentationMode;
-        this.#initializedCourseId = null;
-        this.#initializedCertificateState = null;
-        this.syncFromCourse(course.id, true);
         snackbar.success(t.get('course.navItem.certificates.editor.saved'));
         return;
       }
@@ -249,4 +238,9 @@ class CertificateEditorStore {
   }
 }
 
-export const certificateEditorStore = new CertificateEditorStore();
+export function createCertificateEditorStore(
+  courseId: string,
+  certificate?: StoredCertificateRecord | null
+): CertificateEditorStore {
+  return new CertificateEditorStore(courseId, certificate);
+}

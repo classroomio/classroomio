@@ -835,6 +835,8 @@ export class CourseApi extends BaseApiWithErrors {
 
     // Set the course data
     this.course = data;
+    this.loadedCourseId = data.id ?? null;
+    this.isCourseDirty = false;
   }
 
   /**

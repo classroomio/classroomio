@@ -1,7 +1,7 @@
 <script lang="ts">
   import { CERTIFICATE_TEMPLATES, type CertificateDocumentV1, type CertificateTemplateId } from '@cio/certificates';
   import { ZCertificateDocumentV1 } from '@cio/utils/validation/course';
-  import { certificateEditorStore } from '../store/certificate-editor.store.svelte';
+  import type { CertificateEditorStore } from '../store/certificate-editor.store.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { cn } from '@cio/ui/tools';
@@ -10,6 +10,7 @@
   import TemplateThumb from './template-thumb.svelte';
 
   interface Props {
+    store: CertificateEditorStore;
     courseId?: string;
     value: CertificateTemplateId;
     onSelect: (id: CertificateTemplateId) => void;
@@ -17,7 +18,7 @@
     customDesignActive?: boolean;
   }
 
-  let { courseId = '', value, onSelect, disabled = false, customDesignActive = false }: Props = $props();
+  let { store, courseId = '', value, onSelect, disabled = false, customDesignActive = false }: Props = $props();
 
   function applyDesign(rawDesign: unknown, templateSourceId: string | undefined, templateName: string | undefined) {
     const parsed = ZCertificateDocumentV1.safeParse(rawDesign);
@@ -31,7 +32,7 @@
       templateSourceId,
       templateName
     };
-    certificateEditorStore.setCustomDocument(validDoc);
+    store.setCustomDocument(validDoc);
     snackbar.success('course.navItem.certificates.editor.saved');
   }
 
@@ -85,8 +86,9 @@
       resource={{
         type: 'course',
         id: courseId,
-        selectedTemplateId: certificateEditorStore.customDocument?.templateSourceId,
-        selectedTemplateName: certificateEditorStore.customDocument?.templateName
+        selectedTemplateId: store.customDocument?.templateSourceId,
+        selectedTemplateName: store.customDocument?.templateName,
+        selectedTemplateDocument: store.customDocument
       }}
       onAction={handlePluginAction}
     />
