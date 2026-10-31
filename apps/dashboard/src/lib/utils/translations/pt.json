@@ -3739,6 +3739,11 @@
       "provider": "Usamos a Polar para ajudar a gerenciar seu faturamento",
       "open_billing": "Faturamento aberto",
       "error": "Ocorreu um erro ao abrir o faturamento",
+      "payment_failed": {
+        "warning": "O seu último pagamento falhou. Atualize o método de pagamento antes de {date} para continuar a matricular novos alunos.",
+        "blocked": "O seu último pagamento falhou, por isso novos alunos não conseguem matricular-se. Atualize o método de pagamento para retomar as matrículas.",
+        "action": "Atualizar método de pagamento"
+      },
       "page_subtitle": "Seu plano, portal de cobrança e como você paga pelo ClassroomIO.",
       "ai_credits": "AI credits",
       "ai_tokens_used": "AI credits usados este mês",

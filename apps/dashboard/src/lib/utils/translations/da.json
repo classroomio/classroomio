@@ -3739,6 +3739,11 @@
       "provider": "Vi bruger Polar til at hjælpe med at administrere din fakturering",
       "open_billing": "Åben fakturering",
       "error": "Der opstod en fejl under åbning af fakturering",
+      "payment_failed": {
+        "warning": "Din seneste betaling mislykkedes. Opdater din betalingsmetode inden {date} for fortsat at kunne tilmelde nye elever.",
+        "blocked": "Din seneste betaling mislykkedes, så nye elever kan ikke tilmelde sig. Opdater din betalingsmetode for at genoptage tilmeldingen.",
+        "action": "Opdater betalingsmetode"
+      },
       "page_subtitle": "Din plan, faktureringsportal og hvordan du betaler for ClassroomIO.",
       "ai_credits": "AI credits",
       "ai_tokens_used": "AI credits brugt denne måned",

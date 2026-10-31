@@ -8,6 +8,8 @@ import {
   canUseBasicAuthSettings,
   canUsePublicApi,
   getActiveOrgPlan,
+  getPaymentBlockDate,
+  isPaymentBlocked,
   getStudentLimit,
   isOrgOnFreePlan,
   isResourceLimitReached,
@@ -31,6 +33,7 @@ export function mergeAccountOrgFromServer(org: AccountOrg | PublicOrg): AccountO
   const plans = org.plans.map((plan) => ({
     provider: null,
     subscriptionId: null,
+    paymentFailedAt: null,
     customerId: null,
     ...plan
   }));
@@ -165,6 +168,10 @@ export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
 }
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => getOrgPublicOrigin($currentOrg));
+
+export const orgPaymentBlockDate = derived(currentOrgPlan, ($plan) => getPaymentBlockDate($plan));
+
+export const isOrgPaymentBlocked = derived(currentOrgPlan, ($plan) => isPaymentBlocked($plan));
 
 export const isFreePlan = derived(currentOrg, ($currentOrg) =>
   isOrgOnFreePlan({

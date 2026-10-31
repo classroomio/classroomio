@@ -3739,6 +3739,11 @@
       "provider": "Wir verwenden Polar, um Ihre Abrechnung zu verwalten",
       "open_billing": "Abrechnung öffnen",
       "error": "Beim Öffnen der Abrechnung ist ein Fehler aufgetreten",
+      "payment_failed": {
+        "warning": "Ihre letzte Zahlung ist fehlgeschlagen. Aktualisieren Sie Ihre Zahlungsmethode vor dem {date}, um weiterhin neue Lernende aufnehmen zu können.",
+        "blocked": "Ihre letzte Zahlung ist fehlgeschlagen, daher können sich keine neuen Lernenden anmelden. Aktualisieren Sie Ihre Zahlungsmethode, um die Anmeldung wieder zu ermöglichen.",
+        "action": "Zahlungsmethode aktualisieren"
+      },
       "page_subtitle": "Ihr Plan, Abrechnungsportal und wie Sie ClassroomIO bezahlen.",
       "ai_credits": "AI credits",
       "ai_tokens_used": "AI credits diesen Monat verwendet",

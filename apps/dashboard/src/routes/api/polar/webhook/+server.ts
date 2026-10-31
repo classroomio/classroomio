@@ -260,6 +260,18 @@ async function onPayload(payload: PolarWebhookPayload) {
       break;
     }
     case 'subscription.past_due':
+      try {
+        const result = await OrgPlanApiServer.markOrgPlanPastDue({
+          subscriptionId,
+          payload: data as unknown as Record<string, unknown>
+        });
+
+        console.log('Subscription past due recorded', result);
+      } catch (error) {
+        console.error('Error recording failed payment', error);
+      }
+
+      break;
     case 'subscription.canceled':
       try {
         const result = await OrgPlanApiServer.updateOrgPlan({

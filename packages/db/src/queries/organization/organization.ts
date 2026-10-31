@@ -70,6 +70,7 @@ export const getOrganizationByProfileId = async (
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
+        paymentFailedAt: schema.organizationPlan.paymentFailedAt,
         customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
       }
     })
@@ -116,6 +117,7 @@ export const getOrganizationByProfileId = async (
         isActive: row.plan.isActive,
         provider: row.plan.provider,
         subscriptionId: row.plan.subscriptionId,
+        paymentFailedAt: row.plan.paymentFailedAt,
         customerId: row.plan.customerId as string | null
       });
     }
@@ -1007,6 +1009,7 @@ export const getOrganizations = async (filters?: {
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
+        paymentFailedAt: schema.organizationPlan.paymentFailedAt,
         customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
       }
     })
@@ -1048,6 +1051,7 @@ export const getOrganizations = async (filters?: {
         isActive: row.plan.isActive,
         provider: row.plan.provider,
         subscriptionId: row.plan.subscriptionId,
+        paymentFailedAt: row.plan.paymentFailedAt,
         customerId: row.plan.customerId as string | null
       });
     }
@@ -1131,6 +1135,7 @@ export const getFirstOrganizationWithPlans = async (): Promise<
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
+        paymentFailedAt: schema.organizationPlan.paymentFailedAt,
         customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
       }
     })
@@ -1167,6 +1172,7 @@ export const getFirstOrganizationWithPlans = async (): Promise<
         isActive: row.plan.isActive,
         provider: row.plan.provider,
         subscriptionId: row.plan.subscriptionId,
+        paymentFailedAt: row.plan.paymentFailedAt,
         customerId: row.plan.customerId as string | null
       });
     }
@@ -1270,6 +1276,41 @@ export const updateOrganizationPlan = async (
 };
 
 /**
+ * Records a failed payment on an organization plan by subscription ID.
+ * The first failure timestamp is kept so retries of the same failure never move the block date.
+ * @param subscriptionId Subscription ID
+ * @param payload Payload data to update
+ * @returns The plan and whether this call recorded a new failure, or null when the plan does not exist
+ */
+export const markOrganizationPlanPastDue = async (
+  subscriptionId: string,
+  payload: TOrganizationPlan['payload'],
+  dbClient: DbOrTxClient = db
+): Promise<{ plan: TOrganizationPlan; isNewFailure: boolean } | null> => {
+  const [existing] = await dbClient
+    .select({ paymentFailedAt: schema.organizationPlan.paymentFailedAt })
+    .from(schema.organizationPlan)
+    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .limit(1);
+
+  if (!existing) {
+    return null;
+  }
+
+  const [plan] = await dbClient
+    .update(schema.organizationPlan)
+    .set({
+      payload,
+      paymentFailedAt: existing.paymentFailedAt ?? sql`timezone('utc'::text, now())`,
+      updatedAt: sql`timezone('utc'::text, now())`
+    })
+    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .returning();
+
+  return { plan, isNewFailure: existing.paymentFailedAt === null };
+};
+
+/**
  * Activates an organization plan by subscription ID.
  * @param subscriptionId Subscription ID
  * @param payload Payload data to update
@@ -1285,6 +1326,7 @@ export const activateOrganizationPlan = async (
     .set({
       isActive: true,
       deactivatedAt: null,
+      paymentFailedAt: null,
       payload,
       updatedAt: sql`timezone('utc'::text, now())`
     })
@@ -1310,6 +1352,7 @@ export const cancelOrganizationPlan = async (
     .set({
       isActive: false,
       deactivatedAt: sql`timezone('utc'::text, now())`,
+      paymentFailedAt: null,
       payload,
       updatedAt: sql`timezone('utc'::text, now())`
     })

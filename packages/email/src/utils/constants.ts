@@ -16,6 +16,7 @@ export const EMAIL_IDS = [
   'earlyAdopterReminder',
   'studentLimitReached',
   'studentLimitApproaching',
+  'paymentFailed',
   'contentReportAlert',
   'webhookFailing',
   'webhookDisabled',

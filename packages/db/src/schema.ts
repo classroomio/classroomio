@@ -1837,6 +1837,7 @@ export const organizationPlan = pgTable(
     planName: plan('plan_name'),
     isActive: boolean('is_active'),
     deactivatedAt: timestamp('deactivated_at', { withTimezone: true, mode: 'string' }),
+    paymentFailedAt: timestamp('payment_failed_at', { withTimezone: true, mode: 'string' }),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     payload: jsonb(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations

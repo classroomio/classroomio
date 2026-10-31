@@ -3739,6 +3739,11 @@
       "provider": "Używamy Polar do zarządzania Twoimi rozliczeniami",
       "open_billing": "Otwórz rozliczenia",
       "error": "Wystąpił błąd podczas otwierania rozliczeń",
+      "payment_failed": {
+        "warning": "Ostatnia płatność nie powiodła się. Zaktualizuj metodę płatności przed {date}, aby nadal zapisywać nowych uczniów.",
+        "blocked": "Ostatnia płatność nie powiodła się, więc nowi uczniowie nie mogą się zapisać. Zaktualizuj metodę płatności, aby wznowić zapisy.",
+        "action": "Zaktualizuj metodę płatności"
+      },
       "page_subtitle": "Twój plan, portal rozliczeniowy i sposób płatności za ClassroomIO.",
       "ai_credits": "AI credits",
       "ai_tokens_used": "AI credits wykorzystane w tym miesiącu",

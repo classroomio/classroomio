@@ -3739,6 +3739,11 @@
       "provider": "Nous utilisons Polar pour vous aider à gérer votre facturation",
       "open_billing": "Facturation ouverte",
       "error": "Une erreur s'est produite lors de l'ouverture de la facturation",
+      "payment_failed": {
+        "warning": "Votre dernier paiement a échoué. Mettez à jour votre moyen de paiement avant le {date} pour continuer à inscrire de nouveaux apprenants.",
+        "blocked": "Votre dernier paiement a échoué, les nouveaux apprenants ne peuvent donc plus s'inscrire. Mettez à jour votre moyen de paiement pour reprendre les inscriptions.",
+        "action": "Mettre à jour le moyen de paiement"
+      },
       "page_subtitle": "Votre forfait, le portail de facturation et le mode de paiement de ClassroomIO.",
       "ai_credits": "AI credits",
       "ai_tokens_used": "AI credits utilisés ce mois-ci",

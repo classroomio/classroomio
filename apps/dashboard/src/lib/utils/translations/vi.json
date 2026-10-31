@@ -3739,6 +3739,11 @@
       "provider": "Chúng tôi sử dụng Polar để giúp quản lý việc thanh toán của bạn",
       "open_billing": "Thanh toán mở",
       "error": "Đã xảy ra lỗi khi mở thanh toán",
+      "payment_failed": {
+        "warning": "Thanh toán gần nhất của bạn đã thất bại. Hãy cập nhật phương thức thanh toán trước {date} để tiếp tục ghi danh học viên mới.",
+        "blocked": "Thanh toán gần nhất của bạn đã thất bại nên học viên mới không thể ghi danh. Hãy cập nhật phương thức thanh toán để tiếp tục ghi danh.",
+        "action": "Cập nhật phương thức thanh toán"
+      },
       "page_subtitle": "Gói của bạn, cổng thanh toán và cách bạn thanh toán cho ClassroomIO.",
       "ai_credits": "AI credits",
       "ai_tokens_used": "AI credits đã dùng trong tháng này",

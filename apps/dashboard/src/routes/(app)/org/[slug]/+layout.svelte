@@ -7,7 +7,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { appInitApi } from '$features/app/init.svelte';
-  import { AppHeader } from '$features/ui';
+  import { AppHeader, PaymentFailedBanner } from '$features/ui';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
   import { OrgSidebar } from '$features/ui/sidebar/org-sidebar';
@@ -69,6 +69,7 @@
         </div>
         <Skeleton class="h-[50vh] w-full rounded-xl" />
       {:else}
+        <PaymentFailedBanner />
         {@render children?.()}
       {/if}
     </div>

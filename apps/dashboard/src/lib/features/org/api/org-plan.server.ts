@@ -2,6 +2,7 @@ import type {
   TCancelOrgPlan,
   TCreateOrgPlan,
   TEarlyAdopterSubscriptionEvent,
+  TMarkOrgPlanPastDue,
   TUpdateOrgPlan
 } from '@cio/utils/validation/organization';
 
@@ -14,6 +15,8 @@ type ActivateOrgPlanRequest = typeof classroomio.organization.plan.activate.$pos
 type ActivateOrgPlanSuccess = Extract<InferResponseType<ActivateOrgPlanRequest>, { success: true }>;
 type UpdateOrgPlanRequest = typeof classroomio.organization.plan.$put;
 type UpdateOrgPlanSuccess = Extract<InferResponseType<UpdateOrgPlanRequest>, { success: true }>;
+type MarkOrgPlanPastDueRequest = (typeof classroomio.organization.plan)['past-due']['$post'];
+type MarkOrgPlanPastDueSuccess = Extract<InferResponseType<MarkOrgPlanPastDueRequest>, { success: true }>;
 type CancelOrgPlanRequest = typeof classroomio.organization.plan.cancel.$post;
 type CancelOrgPlanSuccess = Extract<InferResponseType<CancelOrgPlanRequest>, { success: true }>;
 type RecordEarlyAdopterEventRequest = (typeof classroomio.organization.plan)['early-adopter-event']['$post'];
@@ -88,6 +91,29 @@ export class OrgPlanApiServer {
 
     if (!result.ok) {
       console.error('Error updating org plan (server):', result);
+      return null;
+    }
+
+    return result.body.data;
+  }
+
+  /**
+   * Records a failed subscription payment (server-side)
+   * @param params Subscription ID and Polar payload
+   * @returns Response data or null on error
+   */
+  static async markOrgPlanPastDue(params: TMarkOrgPlanPastDue) {
+    const result = await safeServerApi<MarkOrgPlanPastDueSuccess>(() =>
+      classroomio.organization.plan['past-due'].$post(
+        {
+          json: params
+        },
+        getApiKeyHeaders()
+      )
+    );
+
+    if (!result.ok) {
+      console.error('Error recording failed payment (server):', result);
       return null;
     }
 

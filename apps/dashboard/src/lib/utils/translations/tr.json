@@ -1257,7 +1257,12 @@
       "active": "Yapmıyorsunuz etkin faturanız var",
       "provider": "Faturalandırmanızı yönetmenize yardımcı olması için Polar'ı kullanıyoruz",
       "open_billing": "Açık faturalandırma",
-      "error": "Faturalandırmayı açarken bir hata oluştu"
+      "error": "Faturalandırmayı açarken bir hata oluştu",
+      "payment_failed": {
+        "warning": "Son ödemeniz başarısız oldu. Yeni öğrenci kaydetmeye devam etmek için {date} tarihinden önce ödeme yönteminizi güncelleyin.",
+        "blocked": "Son ödemeniz başarısız oldu, bu nedenle yeni öğrenciler kayıt olamıyor. Kayıtları yeniden başlatmak için ödeme yönteminizi güncelleyin.",
+        "action": "Ödeme yöntemini güncelle"
+      }
     },
     "ai_credits": {
       "sub_title": "AI kredileri",

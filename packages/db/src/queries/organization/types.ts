@@ -1,7 +1,10 @@
 import { TOrganization, TOrganizationPlan } from '@db/types';
 import type { OrgUsageLimits } from '@cio/utils/plans';
 
-export type OrganizationPlan = Pick<TOrganizationPlan, 'planName' | 'isActive' | 'provider' | 'subscriptionId'> & {
+export type OrganizationPlan = Pick<
+  TOrganizationPlan,
+  'planName' | 'isActive' | 'provider' | 'subscriptionId' | 'paymentFailedAt'
+> & {
   customerId: string | null;
 };
 
