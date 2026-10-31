@@ -55,7 +55,10 @@ export const accountRouter = new Hono()
     try {
       const validatedData = c.req.valid('json');
 
-      const updatedProfile = await updateUser(user.id, validatedData);
+      const updatedProfile = await updateUser(user.id, validatedData, {
+        kind: 'self',
+        orgId: c.req.header('cio-org-id')
+      });
 
       return c.json(
         {

@@ -10,8 +10,13 @@ export const ZPublicApiAudienceMemberResponse = z.object({
   id: z.number(),
   profileId: z.string().uuid().nullable().describe('null until the invited person creates an account'),
   name: z.string(),
+  username: z.string().nullable().describe('null until the invited person creates an account'),
   email: z.string(),
   avatarUrl: z.string(),
+  locale: z
+    .string()
+    .nullable()
+    .describe('Language ClassroomIO is shown in for them; null until they create an account'),
   createdAt: z.string().describe('Day the member joined this organization, as a date string (e.g. "Mon Oct 05 2026")'),
   status: z.enum(['active', 'pending', 'expired', 'revoked']).describe('Invite state'),
   memberStatus: memberStatus.describe('Lifecycle state of the membership'),

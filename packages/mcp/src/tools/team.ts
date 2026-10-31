@@ -53,7 +53,7 @@ export function registerTeamTools(server: McpServer, apiClient: ClassroomIoApiCl
 
   server.tool(
     'update_team_member',
-    `Change a team member's organization role, name, or both; ${ORG_ADMIN_RULE}.`,
+    `Change a team member's organization role, their profile (name, username, avatar, language), or both; ${ORG_ADMIN_RULE}. They are emailed which profile fields changed.`,
     updateTeamMemberShape,
     WRITE,
     async (args) => {

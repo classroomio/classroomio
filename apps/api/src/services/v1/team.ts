@@ -5,11 +5,18 @@ import type {
 } from '@cio/utils/validation/public-api';
 
 import { db } from '@cio/db/drizzle';
-import { updateProfile } from '@cio/db/queries/auth';
+import { applyProfileUpdate } from '@api/services/account/profile';
+import { sendProfileUpdatedEmail } from '@api/services/account/profile-updated-email';
 import { getOrgTeam } from '@api/services/organization';
 import { applyTeamMemberRoleChange, reconcileAfterTeamRoleChange } from '@api/services/organization/team-role';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { assertAutomationActor, assertMemberHasJoined, assertOrgAdmin, paginateInMemory } from './shared';
+import {
+  assertAutomationActor,
+  assertMemberHasJoined,
+  assertOrgAdmin,
+  paginateInMemory,
+  toProfileUpdate
+} from './shared';
 
 type TOrgTeamMember = Awaited<ReturnType<typeof getOrgTeam>>[number];
 
@@ -18,7 +25,10 @@ function toPublicTeamMember(member: TOrgTeamMember) {
     id: member.id,
     profileId: member.profileId ?? null,
     name: member.fullname,
+    username: member.username,
     email: member.email,
+    avatarUrl: member.avatarUrl,
+    locale: member.locale,
     roleId: member.roleId,
     verified: member.verified ?? false
   };
@@ -59,30 +69,29 @@ export async function updateTeamMemberService(
   await assertOrgAdmin(orgId, actorId);
 
   const member = await getTeamMember(orgId, params.memberId);
+  const profileUpdate = toProfileUpdate(payload);
 
-  if (payload.name !== undefined) {
-    assertMemberHasJoined(member.profileId);
+  if (profileUpdate) {
+    assertMemberHasJoined(member.profileId, payload);
   }
 
-  const { roleId, name } = payload;
+  const { roleId } = payload;
   const profileId = member.profileId;
 
-  const appliedRole = await db.transaction(async (tx) => {
-    const applied =
+  const { appliedRole, appliedProfile } = await db.transaction(async (tx) => {
+    const appliedRole =
       roleId !== undefined ? await applyTeamMemberRoleChange(orgId, params.memberId, roleId, actorId, tx) : null;
+    const appliedProfile = profileUpdate && profileId ? await applyProfileUpdate(profileId, profileUpdate, tx) : null;
 
-    if (name !== undefined && profileId) {
-      const updatedProfile = await updateProfile(profileId, { fullname: name }, tx);
-      if (!updatedProfile) {
-        throw new AppError('Team member profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
-      }
-    }
-
-    return applied;
+    return { appliedRole, appliedProfile };
   });
 
   if (appliedRole) {
     await reconcileAfterTeamRoleChange(orgId, appliedRole, actorId);
+  }
+
+  if (appliedProfile) {
+    await sendProfileUpdatedEmail(appliedProfile, { kind: 'org_admin', orgId, actorId });
   }
 
   return toPublicTeamMember(await getTeamMember(orgId, params.memberId));

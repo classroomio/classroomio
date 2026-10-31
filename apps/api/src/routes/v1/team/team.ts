@@ -77,7 +77,7 @@ export const v1TeamRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: `Change a team member's organization role, name, or both; ${ORG_ADMIN_RULE}.`,
+      description: `Change a team member's organization role, their profile (name, username, avatar, language), or both; ${ORG_ADMIN_RULE}.`,
       tags: ['Team'],
       responses: {
         200: jsonResponse(
@@ -86,7 +86,7 @@ export const v1TeamRouter = new Hono()
         ),
         400: {
           description:
-            'Invalid path or body, no fields to update, changing your own role, removing the last admin, or renaming a pending member'
+            'Invalid path or body, no fields to update, changing your own role, removing the last admin, a profile change on a pending member, or a username that is already taken'
         },
         401: errorResponses.unauthorized,
         403: teamForbiddenResponse('team:write'),

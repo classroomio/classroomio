@@ -225,13 +225,13 @@ export const v1AudienceRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: `Update a pending audience member's email or a joined member's name; ${ORG_ADMIN_RULE}.`,
+      description: `Update a pending audience member's email, or a joined member's name, username, avatar or language; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse('Audience member updated successfully', itemResponse(ZPublicApiAudienceMemberResponse)),
         400: {
           description:
-            'Invalid path or body, no fields to update, an email change on a joined member, or a name change on a pending member'
+            'Invalid path or body, no fields to update, an email change on a joined member, a profile change on a pending member, or a username that is already taken'
         },
         401: errorResponses.unauthorized,
         403: forbidden('audience:write'),

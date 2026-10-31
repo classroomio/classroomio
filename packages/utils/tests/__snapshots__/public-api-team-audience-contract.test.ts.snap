@@ -229,11 +229,26 @@ exports[`public API team and audience update contract > ZPublicApiTeamMemberResp
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
+    "avatarUrl": {
+      "description": "Empty until the person sets a profile picture",
+      "type": "string",
+    },
     "email": {
       "type": "string",
     },
     "id": {
       "type": "number",
+    },
+    "locale": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Language ClassroomIO is shown in for them; null until they create an account",
     },
     "name": {
       "description": "Empty until the invited person creates an account",
@@ -256,6 +271,17 @@ exports[`public API team and audience update contract > ZPublicApiTeamMemberResp
       "description": "1 = admin, 2 = tutor",
       "type": "number",
     },
+    "username": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "null until the invited person creates an account",
+    },
     "verified": {
       "description": "false while the invite is still pending",
       "type": "boolean",
@@ -265,7 +291,10 @@ exports[`public API team and audience update contract > ZPublicApiTeamMemberResp
     "id",
     "profileId",
     "name",
+    "username",
     "email",
+    "avatarUrl",
+    "locale",
     "roleId",
     "verified",
   ],
@@ -299,12 +328,35 @@ exports[`public API team and audience update contract > ZPublicApiTeamQuery keep
 exports[`public API team and audience update contract > ZPublicApiUpdateAudience keeps its published shape > ZPublicApiUpdateAudience 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "Send email for a pending member or name for a joined member. A joined member's own email, password, username and avatar cannot be changed here; to change an admin's or tutor's role, use PUT /team/{memberId}.",
+  "description": "Send email for a pending member, or any of name, username, avatarUrl and locale for a joined member. The person is emailed which profile fields changed; email and password stay with the person. To change an admin's or tutor's role, use PUT /team/{memberId}.",
   "properties": {
+    "avatarUrl": {
+      "description": "Joined members only: sets their profile picture to this http or https image URL. The profile is shared, so the change shows in every organization the person belongs to.",
+      "format": "uri",
+      "type": "string",
+    },
     "email": {
       "description": "Pending members only: corrects the invited email and re-sends the invite unless sendEmail is false",
       "format": "email",
       "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+      "type": "string",
+    },
+    "locale": {
+      "description": "Joined members only: sets the language ClassroomIO is shown in for them. The profile is shared, so the change shows in every organization the person belongs to.",
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+        "tr",
+        "it",
+      ],
       "type": "string",
     },
     "name": {
@@ -318,6 +370,11 @@ exports[`public API team and audience update contract > ZPublicApiUpdateAudience
       "description": "Whether to email the new invite when email changes",
       "type": "boolean",
     },
+    "username": {
+      "description": "Joined members only: sets their username. Usernames are unique across ClassroomIO, so a taken one returns 400. The profile is shared, so the change shows in every organization the person belongs to.",
+      "minLength": 3,
+      "type": "string",
+    },
   },
   "type": "object",
 }
@@ -326,8 +383,31 @@ exports[`public API team and audience update contract > ZPublicApiUpdateAudience
 exports[`public API team and audience update contract > ZPublicApiUpdateTeamMember keeps its published shape > ZPublicApiUpdateTeamMember 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "Send only the fields to change. Email, password, username and avatar belong to the person and cannot be changed here.",
+  "description": "Send only the fields to change. The person is emailed which profile fields changed; email and password stay with the person.",
   "properties": {
+    "avatarUrl": {
+      "description": "Joined members only: sets their profile picture to this http or https image URL. The profile is shared, so the change shows in every organization the person belongs to.",
+      "format": "uri",
+      "type": "string",
+    },
+    "locale": {
+      "description": "Joined members only: sets the language ClassroomIO is shown in for them. The profile is shared, so the change shows in every organization the person belongs to.",
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+        "tr",
+        "it",
+      ],
+      "type": "string",
+    },
     "name": {
       "description": "Joined members only: sets the full name on their profile. The profile is shared, so the name shows in every organization the person belongs to.",
       "maxLength": 120,
@@ -346,6 +426,11 @@ exports[`public API team and audience update contract > ZPublicApiUpdateTeamMemb
         },
       ],
       "description": "1 = admin, 2 = tutor. You cannot change your own role, and the organization must keep at least one admin. A pending member's invite is updated to match.",
+    },
+    "username": {
+      "description": "Joined members only: sets their username. Usernames are unique across ClassroomIO, so a taken one returns 400. The profile is shared, so the change shows in every organization the person belongs to.",
+      "minLength": 3,
+      "type": "string",
     },
   },
   "type": "object",

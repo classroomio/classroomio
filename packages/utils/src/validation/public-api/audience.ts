@@ -43,10 +43,49 @@ export const ZPublicApiCreateAudience = z
   });
 export type TPublicApiCreateAudience = z.infer<typeof ZPublicApiCreateAudience>;
 
-export const ZPublicApiMemberName = z.string().trim().min(3).max(120);
+const ZPublicApiMemberName = z.string().trim().min(3).max(120);
 
-export const MEMBER_NAME_DESCRIPTION =
+const SHARED_PROFILE_NOTE = 'The profile is shared, so the change shows in every organization the person belongs to.';
+
+const MEMBER_NAME_DESCRIPTION =
   'Joined members only: sets the full name on their profile. The profile is shared, so the name shows in every organization the person belongs to.';
+
+/**
+ * Profile fields an org admin's key may set on a joined member, with the rules of Settings → Profile
+ * (`ZUpdateProfile`). Declared here so a dashboard schema change can't silently change the public contract.
+ */
+export const ZPublicApiMemberProfileFields = {
+  name: ZPublicApiMemberName.optional().describe(MEMBER_NAME_DESCRIPTION),
+  username: z
+    .string()
+    .min(3)
+    .optional()
+    .describe(
+      `Joined members only: sets their username. Usernames are unique across ClassroomIO, so a taken one returns 400. ${SHARED_PROFILE_NOTE}`
+    ),
+  avatarUrl: z
+    .url({ protocol: /^https?$/ })
+    .optional()
+    .describe(
+      `Joined members only: sets their profile picture to this http or https image URL. ${SHARED_PROFILE_NOTE}`
+    ),
+  locale: z
+    .enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it'])
+    .optional()
+    .describe(`Joined members only: sets the language ClassroomIO is shown in for them. ${SHARED_PROFILE_NOTE}`)
+};
+
+const ZPublicApiMemberProfile = z.object(ZPublicApiMemberProfileFields);
+export type TPublicApiMemberProfileFields = z.infer<typeof ZPublicApiMemberProfile>;
+
+export const MEMBER_PROFILE_EMAIL_NOTE =
+  'The person is emailed which profile fields changed; email and password stay with the person.';
+
+export function hasMemberProfileField(data: TPublicApiMemberProfileFields) {
+  return (
+    data.name !== undefined || data.username !== undefined || data.avatarUrl !== undefined || data.locale !== undefined
+  );
+}
 
 export const ZPublicApiUpdateAudience = z
   .object({
@@ -56,15 +95,15 @@ export const ZPublicApiUpdateAudience = z
       .optional()
       .describe('Pending members only: corrects the invited email and re-sends the invite unless sendEmail is false'),
     sendEmail: z.boolean().default(true).describe('Whether to email the new invite when email changes'),
-    name: ZPublicApiMemberName.optional().describe(MEMBER_NAME_DESCRIPTION)
+    ...ZPublicApiMemberProfileFields
   })
-  .refine((data) => data.email !== undefined || data.name !== undefined, { message: 'No fields to update' })
-  .refine((data) => data.email === undefined || data.name === undefined, {
-    message: 'Send email or name, not both: email is for pending members and name is for joined members',
-    path: ['name']
+  .refine((data) => data.email !== undefined || hasMemberProfileField(data), { message: 'No fields to update' })
+  .refine((data) => data.email === undefined || !hasMemberProfileField(data), {
+    message:
+      'Send email or profile fields, not both: email is for pending members and name, username, avatarUrl and locale are for joined members'
   })
   .describe(
-    "Send email for a pending member or name for a joined member. A joined member's own email, password, username and avatar cannot be changed here; to change an admin's or tutor's role, use PUT /team/{memberId}."
+    `Send email for a pending member, or any of name, username, avatarUrl and locale for a joined member. ${MEMBER_PROFILE_EMAIL_NOTE} To change an admin's or tutor's role, use PUT /team/{memberId}.`
   );
 export type TPublicApiUpdateAudience = z.infer<typeof ZPublicApiUpdateAudience>;
 
