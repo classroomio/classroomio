@@ -169,7 +169,11 @@ export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => getOrgPublicOrigin($currentOrg));
 
-export const orgPaymentBlockDate = derived(currentOrgPlan, ($plan) => getPaymentBlockDate($plan));
+export const orgPaymentBlockDate = derived(currentOrgPlan, ($plan) =>
+  $plan?.provider === 'polar' ? getPaymentBlockDate($plan) : null
+);
+
+export const isOrgPaymentPastDue = derived(orgPaymentBlockDate, ($blockDate) => $blockDate !== null);
 
 export const isOrgPaymentBlocked = derived(currentOrgPlan, ($plan) => isPaymentBlocked($plan));
 

@@ -4,7 +4,7 @@
   import { resolve } from '$app/paths';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isOrgPaymentPastDue } from '$lib/utils/store/org';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { appInitApi } from '$features/app/init.svelte';
   import { AppHeader, PaymentFailedBanner } from '$features/ui';
@@ -42,7 +42,9 @@
   <AddOrgModal />
 {/if}
 
-<Sidebar.Provider>
+<PaymentFailedBanner />
+
+<Sidebar.Provider style={$isOrgPaymentPastDue ? '--app-banner-height: 2.25rem; padding-top: 2.25rem;' : ''}>
   {#if isSettingsRoute}
     <SettingsSidebar />
   {:else}
@@ -69,7 +71,6 @@
         </div>
         <Skeleton class="h-[50vh] w-full rounded-xl" />
       {:else}
-        <PaymentFailedBanner />
         {@render children?.()}
       {/if}
     </div>
