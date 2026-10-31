@@ -16,11 +16,11 @@
 
   let listedContributionKey = '';
   let contributions = $state<ResolvedContributionItem[]>([]);
+  const resourceKey = $derived(resource ? JSON.stringify(resource) : '');
 
   $effect(() => {
     const orgId = $currentOrg.id;
-    const resourceKey = resource ? `${resource.type}:${resource.id}` : '';
-    const contributionKey = `${orgId}:${target}:${resourceKey}`;
+    const contributionKey = `${orgId}:${target}:${resource?.type ?? ''}:${resource?.id ?? ''}`;
     if (!orgId || contributionKey === listedContributionKey) return;
 
     listedContributionKey = contributionKey;
@@ -38,7 +38,7 @@
 
 {#if matchingSlots.length > 0}
   <div class="plugin-slot-container flex flex-col gap-4 {className}">
-    {#each matchingSlots as slot (slot.installationId + slot.contributionId)}
+    {#each matchingSlots as slot (slot.installationId + slot.contributionId + resourceKey)}
       <PluginHostFrame
         installationId={slot.installationId}
         pluginId={slot.pluginId}

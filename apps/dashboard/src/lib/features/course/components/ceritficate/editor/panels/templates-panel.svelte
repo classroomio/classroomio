@@ -1,10 +1,5 @@
 <script lang="ts">
-  import {
-    CERTIFICATE_TEMPLATE_IDS,
-    CERTIFICATE_TEMPLATES,
-    type CertificateDocumentV1,
-    type CertificateTemplateId
-  } from '@cio/certificates';
+  import { CERTIFICATE_TEMPLATES, type CertificateDocumentV1, type CertificateTemplateId } from '@cio/certificates';
   import { ZCertificateDocumentV1 } from '@cio/utils/validation/course';
   import { certificateEditorStore } from '../store/certificate-editor.store.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -19,39 +14,41 @@
     value: CertificateTemplateId;
     onSelect: (id: CertificateTemplateId) => void;
     disabled?: boolean;
+    customDesignActive?: boolean;
   }
 
-  let { courseId = '', value, onSelect, disabled = false }: Props = $props();
+  let { courseId = '', value, onSelect, disabled = false, customDesignActive = false }: Props = $props();
 
-  function applyDesign(rawDesign: unknown) {
+  function applyDesign(rawDesign: unknown, templateSourceId: string | undefined, templateName: string | undefined) {
     const parsed = ZCertificateDocumentV1.safeParse(rawDesign);
     if (!parsed.success) {
       snackbar.error('course.navItem.certificates.editor.save_failed');
       return;
     }
 
-    const validDoc = parsed.data as CertificateDocumentV1;
+    const validDoc: CertificateDocumentV1 = {
+      ...(parsed.data as CertificateDocumentV1),
+      templateSourceId,
+      templateName
+    };
     certificateEditorStore.setCustomDocument(validDoc);
     snackbar.success('course.navItem.certificates.editor.saved');
-
-    const tid = validDoc.rendererTemplateId || validDoc.templateId;
-    if (CERTIFICATE_TEMPLATE_IDS.includes(tid as CertificateTemplateId)) {
-      onSelect(tid as CertificateTemplateId);
-    }
   }
 
   function handlePluginAction(detail: PluginActionEvent) {
     if (detail.target === 'certificate.templates' && detail.action === 'apply') {
       const payloadData = (detail.data ?? {}) as Record<string, unknown>;
       const design = payloadData.document ?? payloadData.design ?? payloadData;
-      applyDesign(design);
+      const templateSourceId = typeof payloadData.id === 'string' ? payloadData.id : undefined;
+      const templateName = typeof payloadData.name === 'string' ? payloadData.name : undefined;
+      applyDesign(design, templateSourceId, templateName);
     }
   }
 </script>
 
 <div class="grid grid-cols-2 gap-3">
   {#each CERTIFICATE_TEMPLATES as template (template.id)}
-    {@const isActive = template.id === value}
+    {@const isActive = !customDesignActive && template.id === value}
     <button
       type="button"
       class={cn(
@@ -85,7 +82,12 @@
   <div class="ui:border-border mt-6 border-t pt-4">
     <PluginSlotRenderer
       target="certificate.templates"
-      resource={{ type: 'course', id: courseId }}
+      resource={{
+        type: 'course',
+        id: courseId,
+        selectedTemplateId: certificateEditorStore.customDocument?.templateSourceId,
+        selectedTemplateName: certificateEditorStore.customDocument?.templateName
+      }}
       onAction={handlePluginAction}
     />
   </div>

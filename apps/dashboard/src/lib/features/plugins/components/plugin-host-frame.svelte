@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { get } from 'svelte/store';
   import { PluginBridgeHost } from '@classroomio/plugin-sdk';
   import { resolveCurrentHostTheme } from '../utils/theme';
@@ -43,7 +44,7 @@
   let iframeElement = $state<HTMLIFrameElement | null>(null);
   let bridgeHost: PluginBridgeHost | null = null;
   let themeObserver: MutationObserver | null = null;
-  let frameHeight = $state<number | null>(target === 'plugin.page' ? null : 0);
+  let frameHeight = $state<number | null>(null);
   let isDirty = false;
 
   function getPreferenceStorageKey(namespace: string, key: string): string {
@@ -63,7 +64,9 @@
     let body: { success?: boolean; data?: T; message?: string; error?: string } | null = null;
     try {
       body = (await response.json()) as { success?: boolean; data?: T; message?: string; error?: string };
-    } catch {}
+    } catch {
+      body = null;
+    }
 
     if (!response.ok || !body?.success) {
       const message = body?.message || body?.error || 'The requested plugin data could not be saved';
@@ -136,7 +139,11 @@
           if (!href.startsWith('/') || href.startsWith('//')) {
             throw { code: 'INVALID_PARAMS', message: 'Plugins may only navigate to a host-relative path' };
           }
-          await goto(href);
+          const resolvedHref =
+            href.startsWith('/org/plugins/') && $currentOrg?.siteName
+              ? `/org/${$currentOrg.siteName}/plugins/${href.slice('/org/plugins/'.length)}`
+              : href;
+          await goto(resolve(resolvedHref, {}));
         },
         onSetDirty: async ({ dirty }) => {
           isDirty = dirty;

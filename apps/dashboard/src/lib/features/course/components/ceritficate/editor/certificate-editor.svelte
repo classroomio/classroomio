@@ -34,6 +34,15 @@
   const activeTemplateMeta = $derived(
     CERTIFICATE_TEMPLATES.find((tpl) => tpl.id === store.draft.templateId) ?? CERTIFICATE_TEMPLATES[0]
   );
+  const activeTemplateLabel = $derived(
+    store.presentationMode === 'document'
+      ? (store.customDocument?.templateName ??
+          store.customDocument?.templateId ??
+          store.customDocument?.rendererTemplateId ??
+          activeTemplateMeta.label)
+      : activeTemplateMeta.label
+  );
+  const customDesignActive = $derived(store.presentationMode === 'document');
 
   const previewPresentation = $derived(store.toPresentation());
   const previewDesign = $derived(store.toDesign());
@@ -56,6 +65,8 @@
   }
 
   function setActive(panel: CertificateEditorPanel) {
+    if (customDesignActive && (panel === 'content' || panel === 'colors')) return;
+
     store.activePanel = panel;
   }
 </script>
@@ -66,7 +77,7 @@
     <CertificateEditorHeader
       {courseId}
       {courseTitle}
-      templateLabel={activeTemplateMeta.label}
+      templateLabel={activeTemplateLabel}
       isDirty={store.isDirty}
       isSaving={store.isSaving}
       isSignatureUploading={store.isSignatureUploading}
@@ -98,6 +109,7 @@
           tooltipSide="right"
           aria-label={$t('course.navItem.certificates.editor.panel_content')}
           aria-current={store.activePanel === 'content' ? 'page' : undefined}
+          disabled={customDesignActive}
           onclick={() => setActive('content')}
         >
           <TypeIcon class="size-4" />
@@ -109,6 +121,7 @@
           tooltipSide="right"
           aria-label={$t('course.navItem.certificates.editor.panel_colors')}
           aria-current={store.activePanel === 'colors' ? 'page' : undefined}
+          disabled={customDesignActive}
           onclick={() => setActive('colors')}
         >
           <PaletteIcon class="size-4" />
@@ -157,6 +170,7 @@
               {courseId}
               value={store.draft.templateId}
               disabled={$isFreePlan}
+              {customDesignActive}
               onSelect={(id: CertificateTemplateId) => store.setTemplate(id)}
             />
           {:else if store.activePanel === 'content'}

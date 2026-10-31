@@ -10,7 +10,12 @@
 
   import { courseApi } from '$features/course/api';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import { CERTIFICATE_TEMPLATES, type CertificateDesign, resolveCertificateDesign } from '@cio/certificates';
+  import {
+    CERTIFICATE_TEMPLATES,
+    type CertificateDesign,
+    resolveCertificateDesign,
+    resolveStoredCertificatePresentation
+  } from '@cio/certificates';
 
   type Props = {
     errors?: Record<string, string>;
@@ -20,19 +25,30 @@
 
   const design: CertificateDesign = $derived(resolveCertificateDesign(courseApi.course?.certificate));
 
+  const presentation = $derived(resolveStoredCertificatePresentation(courseApi.course?.certificate));
+
+  const activeDocument = $derived(presentation?.kind === 'document' ? presentation.document : null);
+
   const previewData = $derived({
     recipientName: 'Eleanor Vance',
     courseName: courseApi.course?.title ?? 'Course Title',
-    courseDescription: design.descriptionOverride || courseApi.course?.description || '',
+    courseDescription:
+      activeDocument?.descriptionOverride || design.descriptionOverride || courseApi.course?.description || '',
     orgName: $currentOrg.name || 'Organization',
     orgLogoUrl: $currentOrg.avatarUrl || undefined,
     date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' }),
-    certificateId: (design.idFormat ?? 'N° {seq}').replace('{seq}', '0247')
+    certificateId: (activeDocument?.idFormat ?? design.idFormat ?? 'N° {seq}').replace('{seq}', '0247')
   });
 
   const templateLabel = $derived(
-    CERTIFICATE_TEMPLATES.find((tpl) => tpl.id === design.templateId)?.label ?? design.templateId
+    activeDocument?.templateName ??
+      activeDocument?.templateId ??
+      activeDocument?.rendererTemplateId ??
+      CERTIFICATE_TEMPLATES.find((tpl) => tpl.id === design.templateId)?.label ??
+      design.templateId
   );
+  const accentColor = $derived(activeDocument?.accentColor ?? design.accentColor);
+  const signatories = $derived(activeDocument?.signatories ?? design.signatories);
 
   const courseId = $derived(courseApi.course?.id ?? '');
   const editorHref = $derived(courseId ? resolve('/courses/[id]/certificates/editor', { id: courseId }) : '#');
@@ -40,7 +56,7 @@
 
 <div class="grid w-full gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
   <div class="aspect-[1.4/1] w-full">
-    <Certificate.Preview {design} data={previewData} zoom="fit" />
+    <Certificate.Preview {design} {presentation} data={previewData} zoom="fit" />
   </div>
 
   <div class="flex flex-col gap-3">
@@ -61,8 +77,8 @@
             {$t('course.navItem.certificates.editor.field_accent')}
           </span>
           <span class="ui:border-border inline-flex items-center gap-2 rounded-full border px-2 py-0.5 text-xs">
-            <span class="size-3.5 rounded-full" style:background-color={design.accentColor} aria-hidden="true"></span>
-            {design.accentColor}
+            <span class="size-3.5 rounded-full" style:background-color={accentColor} aria-hidden="true"></span>
+            {accentColor}
           </span>
         </div>
         <div class="flex items-start justify-between gap-2">
@@ -70,14 +86,10 @@
             {$t('course.navItem.certificates.editor.field_signatories')}
           </span>
           <div class="text-right text-xs">
-            {#if design.signatories[0].enabled}
-              <div class="font-medium">{design.signatories[0].name}</div>
-              <div class="ui:text-muted-foreground">{design.signatories[0].role}</div>
-            {/if}
-            {#if design.signatories[1].enabled}
-              <div class:mt-1={design.signatories[0].enabled} class="font-medium">{design.signatories[1].name}</div>
-              <div class="ui:text-muted-foreground">{design.signatories[1].role}</div>
-            {/if}
+            {#each signatories.filter((signatory) => signatory.enabled) as signatory, index (`${signatory.name}-${index}`)}
+              <div class:mt-1={index > 0} class="font-medium">{signatory.name}</div>
+              <div class="ui:text-muted-foreground">{signatory.role}</div>
+            {/each}
           </div>
         </div>
       </Card.Content>

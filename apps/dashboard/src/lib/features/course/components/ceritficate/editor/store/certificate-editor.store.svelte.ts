@@ -2,6 +2,7 @@ import {
   CERTIFICATE_TEMPLATE_IDS,
   DEFAULT_CERTIFICATE_DESIGN,
   resolveCertificateDesign,
+  resolveStoredCertificatePresentation,
   type CertificateDesign,
   type CertificateDocumentV1,
   type CertificatePresentationV1,
@@ -101,6 +102,7 @@ class CertificateEditorStore {
   isSaving = $state(false);
   isSignatureUploading = $state(false);
   #initializedCourseId: string | null = null;
+  #initializedCertificateState: string | null = null;
 
   readonly isDirty = $derived(
     this.presentationMode !== this.#initialPresentationMode ||
@@ -109,31 +111,24 @@ class CertificateEditorStore {
   );
 
   syncFromCourse(courseId: string, force = false) {
-    if (!force && this.#initializedCourseId === courseId) return;
-
     const cert = courseApi.course?.certificate;
+    const certificateState = JSON.stringify(cert ?? null);
+    if (!force && this.#initializedCourseId === courseId && this.#initializedCertificateState === certificateState) {
+      return;
+    }
+
     const stored = readStoredDesign();
     this.initial = toDraft(stored);
     this.draft = toDraft(stored);
 
-    const presentation = cert?.presentation as CertificatePresentationV1 | undefined;
-    const customDoc = (cert?.customDocument ?? (cert as any)?.studioDesign) as CertificateDocumentV1 | undefined;
+    const presentation = resolveStoredCertificatePresentation(cert);
 
-    if (presentation && presentation.kind === 'document') {
+    if (presentation.kind === 'document') {
       this.customDocument = presentation.document;
       this.#initialCustomDocument = presentation.document;
       this.presentationMode = 'document';
       this.#initialPresentationMode = 'document';
-    } else if (presentation && presentation.kind === 'preset') {
-      this.customDocument = null;
-      this.#initialCustomDocument = null;
-      this.presentationMode = 'preset';
-      this.#initialPresentationMode = 'preset';
-    } else if (customDoc) {
-      this.customDocument = customDoc;
-      this.#initialCustomDocument = customDoc;
-      this.presentationMode = 'document';
-      this.#initialPresentationMode = 'document';
+      this.activePanel = 'templates';
     } else {
       this.customDocument = null;
       this.#initialCustomDocument = null;
@@ -142,6 +137,7 @@ class CertificateEditorStore {
     }
 
     this.#initializedCourseId = courseId;
+    this.#initializedCertificateState = certificateState;
   }
 
   reset() {
@@ -159,6 +155,7 @@ class CertificateEditorStore {
   setCustomDocument(doc: CertificateDocumentV1) {
     this.customDocument = doc;
     this.presentationMode = 'document';
+    this.activePanel = 'templates';
     if (doc.templateId && CERTIFICATE_TEMPLATE_IDS.includes(doc.templateId as CertificateTemplateId)) {
       this.draft.templateId = doc.templateId as CertificateTemplateId;
     }
@@ -237,6 +234,7 @@ class CertificateEditorStore {
         this.#initialCustomDocument = this.customDocument;
         this.#initialPresentationMode = this.presentationMode;
         this.#initializedCourseId = null;
+        this.#initializedCertificateState = null;
         this.syncFromCourse(course.id, true);
         snackbar.success(t.get('course.navItem.certificates.editor.saved'));
         return;

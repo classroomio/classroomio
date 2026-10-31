@@ -38,6 +38,8 @@ export type UpdateOrgApprovalRequest =
 export interface PluginResourceContext {
   type: 'lesson' | 'course' | 'certificate' | 'organization';
   id: string;
+  selectedTemplateId?: string;
+  selectedTemplateName?: string;
 }
 
 export interface PluginActionEvent {
