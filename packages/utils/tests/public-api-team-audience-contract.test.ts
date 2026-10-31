@@ -106,15 +106,49 @@ describe('public API team and audience update contract', () => {
     expect(ZPublicApiUpdateAudience.safeParse({ email: 'a@example.com', name: 'Ada Lovelace' }).success).toBe(false);
   });
 
-  it('leaves no way to change the fields that belong to the person', () => {
+  it('takes the Settings → Profile fields and leaves no way to change email or password', () => {
     const parsed = ZPublicApiUpdateTeamMember.parse({
       name: 'Ada Lovelace',
       email: 'new@example.com',
       password: 'secret',
       username: 'ada',
-      avatarUrl: 'https://example.com/a.png'
+      avatarUrl: 'https://example.com/a.png',
+      locale: 'fr'
     });
 
-    expect(parsed).toEqual({ name: 'Ada Lovelace' });
+    expect(parsed).toEqual({
+      name: 'Ada Lovelace',
+      username: 'ada',
+      avatarUrl: 'https://example.com/a.png',
+      locale: 'fr'
+    });
+  });
+
+  it.each([
+    ['ZPublicApiUpdateAudience', ZPublicApiUpdateAudience],
+    ['ZPublicApiUpdateTeamMember', ZPublicApiUpdateTeamMember]
+  ] as const)('%s accepts any one profile field on its own', (_name, schema) => {
+    expect(schema.safeParse({ username: 'ada' }).success).toBe(true);
+    expect(schema.safeParse({ avatarUrl: 'https://example.com/a.png' }).success).toBe(true);
+    expect(schema.safeParse({ locale: 'de' }).success).toBe(true);
+  });
+
+  it.each([
+    ['ZPublicApiUpdateAudience', ZPublicApiUpdateAudience],
+    ['ZPublicApiUpdateTeamMember', ZPublicApiUpdateTeamMember]
+  ] as const)('%s keeps the Settings → Profile rules for username, avatar and language', (_name, schema) => {
+    expect(schema.safeParse({ username: 'ab' }).success).toBe(false);
+    expect(schema.safeParse({ avatarUrl: 'not a url' }).success).toBe(false);
+    expect(schema.safeParse({ avatarUrl: 'javascript:alert(1)' }).success).toBe(false);
+    expect(schema.safeParse({ avatarUrl: 'data:image/png;base64,AAAA' }).success).toBe(false);
+    expect(schema.safeParse({ locale: 'xx' }).success).toBe(false);
+  });
+
+  it('rejects email with any profile field, since they apply to different kinds of member', () => {
+    expect(ZPublicApiUpdateAudience.safeParse({ email: 'a@example.com', username: 'ada' }).success).toBe(false);
+    expect(ZPublicApiUpdateAudience.safeParse({ email: 'a@example.com', locale: 'fr' }).success).toBe(false);
+    expect(
+      ZPublicApiUpdateAudience.safeParse({ email: 'a@example.com', avatarUrl: 'https://example.com/a.png' }).success
+    ).toBe(false);
   });
 });

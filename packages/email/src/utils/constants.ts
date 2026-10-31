@@ -29,6 +29,7 @@ export const EMAIL_IDS = [
   'teacherStudentBuyRequest',
   'teacherStudentJoined',
   'verifyEmail',
+  'profileUpdated',
   'welcome'
 ] as const;
 

@@ -21,6 +21,8 @@ import {
   getOrganizationMembersByNormalizedEmails
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
+import { hasMemberProfileField, type TPublicApiMemberProfileFields } from '@cio/utils/validation/public-api';
+import type { TUpdateProfile } from '@cio/utils/validation/account';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 export type TPublicApiPagination = { page: number; limit: number; total: number; totalPages: number };
@@ -47,16 +49,35 @@ export function assertAutomationActor(actorId: string | null): asserts actorId i
   }
 }
 
-/** Throws 400 if the member has not joined yet. */
-export function assertMemberHasJoined(profileId: string | null | undefined): asserts profileId is string {
+const MEMBER_PROFILE_FIELD_KEYS = ['name', 'username', 'avatarUrl', 'locale'] as const;
+
+/** Throws 400, naming the first profile field sent, if the member has not joined yet and so has no profile. */
+export function assertMemberHasJoined(
+  profileId: string | null | undefined,
+  payload: TPublicApiMemberProfileFields
+): asserts profileId is string {
   if (!profileId) {
     throw new AppError(
-      'Only members who have joined can be renamed. A pending member has no profile yet',
+      'Only members who have joined have a profile to update. A pending member has no profile yet',
       ErrorCodes.VALIDATION_ERROR,
       400,
-      'name'
+      MEMBER_PROFILE_FIELD_KEYS.find((key) => payload[key] !== undefined)
     );
   }
+}
+
+/** The profile fields of a member update body, named as the account service names them; null when none are sent. */
+export function toProfileUpdate(payload: TPublicApiMemberProfileFields): TUpdateProfile | null {
+  if (!hasMemberProfileField(payload)) {
+    return null;
+  }
+
+  return {
+    fullname: payload.name,
+    username: payload.username,
+    avatarUrl: payload.avatarUrl,
+    locale: payload.locale
+  };
 }
 
 export async function assertCohortBelongsToOrganization(orgId: string, cohortId: string): Promise<void> {

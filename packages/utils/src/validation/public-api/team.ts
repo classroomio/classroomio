@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 import { ROLE } from '../../constants/roles';
-import { MEMBER_NAME_DESCRIPTION, ZPublicApiMemberName } from './audience';
+import { MEMBER_PROFILE_EMAIL_NOTE, ZPublicApiMemberProfileFields, hasMemberProfileField } from './audience';
 import { ZPublicApiPaginationQuery } from './pagination';
 
 const ZPublicApiTeamRoleId = z
@@ -21,10 +21,8 @@ export type TPublicApiTeamMemberParam = z.infer<typeof ZPublicApiTeamMemberParam
 export const ZPublicApiUpdateTeamMember = z
   .object({
     roleId: ZPublicApiTeamRoleId.optional(),
-    name: ZPublicApiMemberName.optional().describe(MEMBER_NAME_DESCRIPTION)
+    ...ZPublicApiMemberProfileFields
   })
-  .refine((data) => data.roleId !== undefined || data.name !== undefined, { message: 'No fields to update' })
-  .describe(
-    'Send only the fields to change. Email, password, username and avatar belong to the person and cannot be changed here.'
-  );
+  .refine((data) => data.roleId !== undefined || hasMemberProfileField(data), { message: 'No fields to update' })
+  .describe(`Send only the fields to change. ${MEMBER_PROFILE_EMAIL_NOTE}`);
 export type TPublicApiUpdateTeamMember = z.infer<typeof ZPublicApiUpdateTeamMember>;
