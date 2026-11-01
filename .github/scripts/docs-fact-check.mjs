@@ -1,7 +1,7 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { posix, resolve } from 'node:path';
+import { posix, resolve, sep } from 'node:path';
 
 const marker = '<!-- classroomio-docs-fact-check -->';
 const repository = process.env.GITHUB_REPOSITORY;
@@ -47,6 +47,21 @@ function gitFetch(ref) {
       GIT_CONFIG_VALUE_0: `AUTHORIZATION: basic ${credentials}`
     }
   });
+}
+
+function assertContainedSymlinks(worktree) {
+  const root = realpathSync(worktree);
+  const trackedPaths = git('-C', worktree, 'ls-files', '-z').split('\0').filter(Boolean);
+
+  for (const trackedPath of trackedPaths) {
+    const file = resolve(worktree, trackedPath);
+    if (!lstatSync(file).isSymbolicLink()) continue;
+
+    const target = realpathSync(file);
+    if (target === root || target.startsWith(`${root}${sep}`)) continue;
+
+    throw new Error(`PR symlink escapes the review worktree: ${trackedPath}`);
+  }
 }
 
 function parseChangedLines(diff, paths) {
@@ -191,8 +206,6 @@ function runOpenCode(worktree, prompt) {
     [
       'run',
       '--standalone',
-      '--dir',
-      worktree,
       '--agent',
       'docs-review',
       '--model',
@@ -206,6 +219,7 @@ function runOpenCode(worktree, prompt) {
       timeout: 20 * 60 * 1000,
       env: {
         ...safeEnvironment,
+        PWD: worktree,
         OPENCODE_CONFIG_CONTENT: JSON.stringify(configuration),
         OPENCODE_DISABLE_PROJECT_CONFIG: '1',
         OPENCODE_DISABLE_EXTERNAL_SKILLS: '1',
@@ -271,6 +285,7 @@ async function main() {
   try {
     git('worktree', 'add', '--detach', worktree, headSha);
     worktreeAdded = true;
+    assertContainedSymlinks(worktree);
     writeFileSync(resolve(worktree, '.docs-review-diff.patch'), diff, { flag: 'wx' });
     const imageInventory = buildImageInventory(worktree);
     writeFileSync(resolve(worktree, '.docs-review-images.json'), JSON.stringify(imageInventory), { flag: 'wx' });
