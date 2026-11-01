@@ -7,8 +7,10 @@
   import EyeIcon from '@lucide/svelte/icons/eye';
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import PaintbrushIcon from '@lucide/svelte/icons/paintbrush';
+  import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import ZapIcon from '@lucide/svelte/icons/zap';
   import { isFreeLandingPageTheme } from '@cio/utils/constants';
+  import { isLandingPagePresentationV1, type LandingPagePresentationV1 } from '@cio/landing-pages';
 
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
@@ -23,6 +25,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Badge } from '@cio/ui/base/badge';
   import * as Card from '@cio/ui/base/card';
+  import * as Dialog from '@cio/ui/base/dialog';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { PremiumIcon } from '@cio/ui/custom/moving-icons';
@@ -41,6 +44,38 @@
 
   let normalized = $state(createDefaultLandingPageSettings());
   let hasInitialized = $state(false);
+  let isSwitchingModalOpen = $state(false);
+  let isSwitching = $state(false);
+
+  const activePresentation = $derived.by<LandingPagePresentationV1 | null>(() => {
+    const raw = ($currentOrg.landingpage as Record<string, unknown> | null)?.presentation;
+    return isLandingPagePresentationV1(raw) ? raw : null;
+  });
+
+  async function handleSwitchToBuiltin() {
+    if (!$currentOrg.id || isSwitching) return;
+    isSwitching = true;
+    try {
+      const currentLp = ($currentOrg.landingpage ?? {}) as Record<string, unknown>;
+      await orgApi.update(
+        $currentOrg.id,
+        {
+          landingpage: {
+            ...currentLp,
+            presentation: null
+          }
+        },
+        {
+          onSuccess: () => {
+            isSwitchingModalOpen = false;
+            snackbar.success($t('settings.landing_page.studio.switched_success'));
+          }
+        }
+      );
+    } finally {
+      isSwitching = false;
+    }
+  }
 
   $effect(() => {
     if (hasInitialized || !$currentOrg.id) return;
@@ -219,6 +254,44 @@
 </script>
 
 <div class="w-full space-y-10 px-2 pb-12">
+  {#if activePresentation}
+    <div
+      class="ui:border-primary/30 ui:bg-primary/5 relative flex flex-col justify-between gap-4 rounded-xl border p-5 md:flex-row md:items-center"
+    >
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <Badge variant="default" class="gap-1 text-xs">
+            <SparklesIcon class="size-3" />
+            {$t('settings.landing_page.studio.active_title')}
+          </Badge>
+          <span class="ui:text-muted-foreground text-xs">
+            {$t('settings.landing_page.studio.revision_info', {
+              revision: activePresentation.revision,
+              date: new Date(activePresentation.publishedAt).toLocaleDateString()
+            })}
+          </span>
+        </div>
+        <p class="ui:text-muted-foreground text-sm">
+          {$t('settings.landing_page.studio.active_description')}
+        </p>
+        <p class="text-xs font-medium">
+          {$t('settings.landing_page.studio.template', {
+            name: activePresentation.source.templateName || activePresentation.document.templateId
+          })}
+        </p>
+      </div>
+      <div class="flex shrink-0 items-center gap-2">
+        <Button variant="outline" size="sm" onclick={() => (isSwitchingModalOpen = true)} disabled={isSwitching}>
+          {$t('settings.landing_page.studio.switch_to_builtin')}
+        </Button>
+        <Button size="sm" href="/org/{$currentOrg.siteName}/plugins/landing-studio">
+          {$t('settings.landing_page.studio.open_studio')}
+          <ArrowRightIcon class="size-4" />
+        </Button>
+      </div>
+    </div>
+  {/if}
+
   <section>
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div
@@ -358,3 +431,20 @@
 </div>
 
 <ThemePreviewDialog />
+
+<Dialog.Root bind:open={isSwitchingModalOpen}>
+  <Dialog.Content class="max-w-md">
+    <Dialog.Header>
+      <Dialog.Title>{$t('settings.landing_page.studio.switch_modal_title')}</Dialog.Title>
+      <Dialog.Description>{$t('settings.landing_page.studio.switch_modal_description')}</Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Button variant="outline" size="sm" onclick={() => (isSwitchingModalOpen = false)} disabled={isSwitching}>
+        {$t('common.cancel')}
+      </Button>
+      <Button variant="default" size="sm" onclick={handleSwitchToBuiltin} disabled={isSwitching}>
+        {isSwitching ? $t('common.saving') : $t('settings.landing_page.studio.switch_confirm')}
+      </Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

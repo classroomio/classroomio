@@ -175,13 +175,24 @@ export async function getPluginUninstallDataImpact(installationId: string, organ
       )
     );
 
+  const [landingPageOutputs] = await db
+    .select({ count: count(schema.organization.id) })
+    .from(schema.organization)
+    .where(
+      and(
+        eq(schema.organization.id, organizationId),
+        sql`${schema.organization.landingpage}->'presentation'->'source'->>'installationId' = ${installationId}`
+      )
+    );
+
   return {
     storedData: {
       exists: Number(storage?.records ?? 0) > 0,
       bytes: Number(storage?.bytes ?? 0)
     },
     appliedContent: {
-      certificateDesigns: Number(publishedOutputs?.count ?? 0)
+      certificateDesigns: Number(publishedOutputs?.count ?? 0),
+      landingPageDesigns: Number(landingPageOutputs?.count ?? 0)
     }
   };
 }
@@ -244,6 +255,26 @@ export async function uninstallPluginInstallation(
       }
 
       publishedOutputsRemoved = courses.length;
+
+      const [orgWithPresentation] = await transaction
+        .select({ id: schema.organization.id, landingpage: schema.organization.landingpage })
+        .from(schema.organization)
+        .where(
+          and(
+            eq(schema.organization.id, organizationId),
+            sql`${schema.organization.landingpage}->'presentation'->'source'->>'installationId' = ${installationId}`
+          )
+        );
+
+      if (orgWithPresentation) {
+        const lp = (orgWithPresentation.landingpage ?? {}) as Record<string, unknown>;
+        const nextLp = { ...lp, presentation: null };
+        await transaction
+          .update(schema.organization)
+          .set({ landingpage: nextLp })
+          .where(eq(schema.organization.id, organizationId));
+        publishedOutputsRemoved += 1;
+      }
     }
 
     const now = new Date().toISOString();

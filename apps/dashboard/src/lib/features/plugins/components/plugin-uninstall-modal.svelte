@@ -6,6 +6,7 @@
   import AlertTriangleIcon from '@lucide/svelte/icons/triangle-alert';
   import DatabaseIcon from '@lucide/svelte/icons/database';
   import AwardIcon from '@lucide/svelte/icons/award';
+  import GlobeIcon from '@lucide/svelte/icons/globe';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { pluginsApi } from '../api/plugins.svelte';
@@ -27,7 +28,8 @@
   let removePublishedOutputs = $state(false);
   const hasStoredData = $derived(impact?.storedData.exists ?? false);
   const certificateDesignCount = $derived(impact?.appliedContent.certificateDesigns ?? 0);
-  const hasCleanupChoices = $derived(hasStoredData || certificateDesignCount > 0);
+  const landingPageDesignCount = $derived(impact?.appliedContent.landingPageDesigns ?? 0);
+  const hasCleanupChoices = $derived(hasStoredData || certificateDesignCount > 0 || landingPageDesignCount > 0);
 
   $effect(() => {
     const organizationId = $currentOrg.id;
@@ -104,6 +106,19 @@
                 {$t('plugins.uninstall_modal.remove_certificate_designs_description', {
                   count: certificateDesignCount
                 })}
+              </span>
+            </span>
+          </label>
+        {/if}
+
+        {#if landingPageDesignCount > 0}
+          <label class="ui:border-border flex cursor-pointer items-start gap-3 rounded-lg border p-4">
+            <Checkbox bind:checked={removePublishedOutputs} disabled={isUninstalling} />
+            <GlobeIcon class="ui:text-muted-foreground mt-0.5 size-4 shrink-0" />
+            <span>
+              <span class="block text-sm font-medium">{$t('plugins.uninstall_modal.remove_landing_page_design')}</span>
+              <span class="ui:text-muted-foreground mt-1 block text-xs">
+                {$t('plugins.uninstall_modal.remove_landing_page_design_description')}
               </span>
             </span>
           </label>

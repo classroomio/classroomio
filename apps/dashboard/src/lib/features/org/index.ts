@@ -1,4 +1,5 @@
 export { default as OrgLandingPage } from './components/landing-page/landing-page.svelte';
+export { default as StudioLandingPage } from './components/landing-page/studio-landing-page.svelte';
 export { default as AddOrgModal } from './components/add-org-modal/add-org-modal.svelte';
 export { default as Quizzes } from './components/quiz/quizzes.svelte';
 export { default as NewQuizModal } from './components/quiz/new-quiz-modal.svelte';

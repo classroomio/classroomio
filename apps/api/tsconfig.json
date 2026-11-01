@@ -29,7 +29,9 @@
       "@cio/jobs": ["./node_modules/@cio/jobs/dist/index.d.ts"],
       "@cio/jobs/*": ["./node_modules/@cio/jobs/dist/*"],
       "@cio/analytics": ["./node_modules/@cio/analytics/dist/index.d.ts"],
-      "@cio/analytics/*": ["./node_modules/@cio/analytics/dist/*"]
+      "@cio/analytics/*": ["./node_modules/@cio/analytics/dist/*"],
+      "@cio/landing-pages": ["../../packages/landing-pages/dist/index.d.ts"],
+      "@cio/landing-pages/*": ["../../packages/landing-pages/dist/*"]
     }
   },
   "include": ["src/**/*"],
@@ -40,7 +42,8 @@
     { "path": "../../packages/utils" },
     { "path": "../../packages/email" },
     { "path": "../../packages/jobs" },
-    { "path": "../../packages/analytics" }
+    { "path": "../../packages/analytics" },
+    { "path": "../../packages/landing-pages" }
   ],
   "tsc-alias": {
     "resolveFullPaths": true,

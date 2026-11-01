@@ -15,6 +15,12 @@
   import { user, profile } from '$lib/utils/store/user';
   import { resolveOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
   import { resolveOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
+  import StudioLandingPage from './studio-landing-page.svelte';
+  import {
+    isLandingPagePresentationV1,
+    type LandingPagePresentationV1,
+    type LandingPageRenderData
+  } from '@cio/landing-pages';
 
   interface Props {
     orgSiteName?: string;
@@ -25,6 +31,42 @@
 
   let hasLoadedCourses = $state(false);
   let ThemeComponent = $state<Component | null>(null);
+
+  const studioPresentation = $derived.by<LandingPagePresentationV1 | null>(() => {
+    const raw = (org.landingpage as Record<string, unknown> | null)?.presentation;
+    return isLandingPagePresentationV1(raw) ? raw : null;
+  });
+
+  const studioRenderData = $derived.by<LandingPageRenderData>(() => {
+    const siteName = orgSiteName || org.siteName || '';
+
+    return {
+      organization: {
+        id: org.id,
+        name: org.name ?? '',
+        logoUrl: org.avatarUrl ?? null,
+        slug: siteName
+      },
+      courses: (orgApi.publicCourses ?? []).map((c: any) => ({
+        id: c.id,
+        title: c.title,
+        description: c.description ?? null,
+        slug: c.slug,
+        image: c.image ?? null,
+        isPricing: Boolean(c.isPricing),
+        cost: c.cost ?? null,
+        currency: c.currency ?? '$',
+        totalLessons: c.totalLessons ?? c.lessonsCount ?? 0
+      })),
+      auth: {
+        isAuthenticated: Boolean($user?.id),
+        user: $user ? { id: $user.id, name: $profile?.fullname, email: $user.email } : null,
+        dashboardUrl: siteName ? `/org/${siteName}` : '/home',
+        loginUrl: '/login',
+        signupUrl: '/signup'
+      }
+    };
+  });
 
   const authAction = $derived(
     resolveOrgLandingAuthAction({
@@ -76,7 +118,9 @@
   });
 </script>
 
-{#if !ThemeComponent || !hasLoadedCourses || orgApi.isFetchingOrgPublicCourses}
+{#if studioPresentation && studioRenderData}
+  <StudioLandingPage presentation={studioPresentation} renderData={studioRenderData} />
+{:else if !ThemeComponent || !hasLoadedCourses || orgApi.isFetchingOrgPublicCourses}
   <PageLoader />
 {:else}
   <ThemeComponent {...landingPageProps} />

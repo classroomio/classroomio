@@ -13,6 +13,7 @@ import {
   ZPluginStorageNamespaceParam,
   ZPluginStorageQuery,
   ZPluginStoragePut,
+  ZPublishLandingPage,
   ZUninstallPlugin,
   ZUpdateInstallationSettings,
   ZUpdateInstallationStatus,
@@ -29,12 +30,14 @@ import {
   listInstallationExercises,
   listInstallationLessons,
   listOrgPlugins,
+  publishLandingPage,
   resolveOrgContributions,
   deleteStorageValue,
   getStorageValue,
   listStorageRecords,
   setStorageValue,
-  uninstallPlugin
+  uninstallPlugin,
+  unpublishLandingPage
 } from '@api/services/plugin';
 
 /**
@@ -386,6 +389,44 @@ export const pluginInstallationsRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to fetch exercises for plugin installation');
+      }
+    }
+  )
+  .post(
+    '/:installationId/landing-page/publish',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZPluginInstallationParam),
+    zValidator('json', ZPublishLandingPage),
+    async (c) => {
+      const user = c.get('user')!;
+      const orgId = c.get('orgId') as string;
+      const { installationId } = c.req.valid('param');
+      const payload = c.req.valid('json');
+
+      try {
+        const result = await publishLandingPage(installationId, orgId, payload, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to publish landing page');
+      }
+    }
+  )
+  .post(
+    '/:installationId/landing-page/unpublish',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZPluginInstallationParam),
+    async (c) => {
+      const user = c.get('user')!;
+      const orgId = c.get('orgId') as string;
+      const { installationId } = c.req.valid('param');
+
+      try {
+        const result = await unpublishLandingPage(installationId, orgId, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to unpublish landing page');
       }
     }
   );

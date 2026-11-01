@@ -1321,6 +1321,18 @@
         "save": "Salva",
         "cancel": "Annulla",
         "add": "Aggiungi nuovo collegamento"
+      },
+      "studio": {
+        "active_title": "Published via Landing Page Studio",
+        "active_description": "Your academy homepage is currently rendered using a custom design published from Landing Page Studio.",
+        "template": "Template: {name}",
+        "revision_info": "Revision {revision} • Published {date}",
+        "open_studio": "Customize in Landing Page Studio",
+        "switch_to_builtin": "Switch to built-in design",
+        "switch_modal_title": "Switch to built-in design?",
+        "switch_modal_description": "Your academy homepage will immediately display the built-in theme. Your drafts in Landing Page Studio will be preserved.",
+        "switch_confirm": "Switch to built-in",
+        "switched_success": "Switched back to built-in design"
       }
     },
     "integrations": {
@@ -6463,7 +6475,9 @@
       "delete_storage_description": "Permanently delete settings and content saved inside this plugin. Keep this unchecked to restore them if the plugin is reinstalled.",
       "remove_certificate_designs": "Remove applied certificate designs",
       "remove_certificate_designs_description": "{count} courses use a certificate design from this plugin. They will return to their built-in certificate design.",
-      "destructive_warning": "Selected data will be permanently deleted and cannot be restored by reinstalling the plugin."
+      "destructive_warning": "Selected data will be permanently deleted and cannot be restored by reinstalling the plugin.",
+      "remove_landing_page_design": "Remove published landing page design",
+      "remove_landing_page_design_description": "Your academy homepage will return to its built-in design."
     },
     "failed_update": "Failed to update plugin status",
     "failed_install": "Failed to install plugin",

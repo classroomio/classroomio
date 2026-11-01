@@ -5,3 +5,4 @@ export * from './authorization';
 export * from './release';
 export * from './release-validation';
 export * from './development';
+export * from './landing-page';

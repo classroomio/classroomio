@@ -41,6 +41,13 @@ export const ZUninstallPlugin = z.object({
 });
 export type TUninstallPlugin = z.infer<typeof ZUninstallPlugin>;
 
+export const ZPublishLandingPage = z.object({
+  document: z.record(z.string(), z.unknown()),
+  templateSourceId: z.string().trim().optional(),
+  templateName: z.string().trim().optional()
+});
+export type TPublishLandingPage = z.infer<typeof ZPublishLandingPage>;
+
 export const ZUpdateOrgApprovalStatus = z.object({
   approval: ZPluginOrgApprovalStatus
 });
