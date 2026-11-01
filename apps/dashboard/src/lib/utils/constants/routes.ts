@@ -18,7 +18,8 @@ export const ROUTE = {
   RESET: '/reset',
   LOGOUT: '/logout',
   AUTH_FAILED: '/auth-failed',
-  VERIFY_EMAIL_ERROR: '/verify-email-error'
+  VERIFY_EMAIL_ERROR: '/verify-email-error',
+  OAUTH: '/oauth'
 };
 
 export const PUBLIC_ROUTES = [
@@ -52,5 +53,6 @@ export const ROUTES_TO_HIDE_NAV = [
   `^${ROUTE.FORGOT}$`,
   `^${ROUTE.RESET}$`,
   `^${ROUTE.ONBOARDING}$`,
-  `^${ROUTE.VERIFY_EMAIL_ERROR}$`
+  `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
+  `^${ROUTE.OAUTH}/.*`
 ];

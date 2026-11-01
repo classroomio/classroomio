@@ -1,7 +1,7 @@
 import { Context, Next } from 'hono';
 
 import { authMiddleware } from './auth';
-import { automationKeyMiddleware } from './automation-key';
+import { automationKeyOrOAuthMiddleware } from './automation-key-or-oauth';
 
 export const authOrAutomationKeyMiddleware = async (c: Context, next: Next) => {
   const user = c.get('user');
@@ -16,13 +16,13 @@ export const authOrAutomationKeyMiddleware = async (c: Context, next: Next) => {
   const authHeader = c.req.header('Authorization');
 
   if (authHeader?.startsWith('Bearer ')) {
-    return automationKeyMiddleware(c, next);
+    return automationKeyOrOAuthMiddleware(c, next);
   }
 
   return c.json(
     {
       success: false,
-      message: 'Unauthorized: Authentication required (session or automation key)'
+      message: 'Unauthorized: Authentication required (session, automation key or OAuth token)'
     },
     401
   );

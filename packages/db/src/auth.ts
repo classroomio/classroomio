@@ -22,6 +22,7 @@ import { resolveTrustedBrowserOrigin } from './utils';
 import { sso } from '@better-auth/sso';
 import { syncUserWithProfile } from './auth/hooks/sync-user';
 import { tokenExchange } from './auth/plugins/token-exchange';
+import { buildOAuthPlugins } from './auth/oauth/oauth-plugins';
 import { trackLoginHook } from './auth/hooks/track-login';
 import { syncProfileEmailVerificationFromAuthUser } from './queries/auth/profile';
 
@@ -42,7 +43,7 @@ function buildOAuthProxyPlugin() {
   return [oAuthProxy({ productionURL: CONSTANTS.BASE_URL })];
 }
 
-export const auth: ReturnType<typeof betterAuth> = betterAuth({
+const authInstance = betterAuth({
   baseURL: CONSTANTS.BASE_URL,
   database: drizzleAdapter(db, {
     provider: 'pg',
@@ -142,6 +143,7 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
     ...buildOAuthProxyPlugin(),
     loginLink(),
     tokenExchange(),
+    ...buildOAuthPlugins(),
     // Attaches the user's org memberships ({ [orgId]: roleId }) to the session
     // so org-scoped middlewares can authorize without a per-request DB query.
     // Refreshes when the session cookie cache expires (see session.cookieCache.maxAge).
@@ -158,3 +160,13 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
     })
   ]
 });
+export const auth = authInstance as unknown as ReturnType<typeof betterAuth>;
+
+export {
+  InvalidOAuthTokenError,
+  verifyOAuthAccessToken,
+  type OAuthAccessTokenClaims,
+  type OAuthResourceKind
+} from './auth/oauth/verify-access-token';
+export { OAUTH_API_SCOPES, OAUTH_SCOPES } from './auth/oauth/oauth-scopes';
+export { MCP_RESOURCE, OAUTH_ISSUER, PUBLIC_API_RESOURCE } from './constants';

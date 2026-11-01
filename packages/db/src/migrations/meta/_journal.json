@@ -299,8 +299,15 @@
     {
       "idx": 42,
       "version": "7",
+      "when": 1793103932290,
+      "tag": "0042_oauth_provider",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
       "when": 1793431872796,
-      "tag": "0042_organization_plan_payment_failed_at",
+      "tag": "0043_organization_plan_payment_failed_at",
       "breakpoints": true
     }
   ]

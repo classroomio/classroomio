@@ -347,30 +347,24 @@ most time on MCP — it's how you create content through an AI agent.
 The MCP server lets you use any MCP-compatible AI agent (Claude Code, Cursor, Codex,
 OpenCode, etc.) to create courses, lessons, and exercises through natural language.
 
-**Step 1 — Generate a key**
+**Step 1 — Open the MCP page**
 
-- [ ] Navigate to **MCP** (`/org/[slug]/mcp`).
-- [ ] Click **Generate Key**, give it a label (e.g. "onboarding-test").
-- [ ] **Copy the secret immediately** — it is shown only once.
-- [ ] Note the usage dashboard: credits used/remaining, active keys, rate limits.
+- [ ] Navigate to **Automation → MCP** (`/org/[slug]/automation/mcp`).
+- [ ] With no app connected yet, note the connect URL (locally `http://localhost:3002/mcp`) and the three steps under **Connect from Claude or ChatGPT**.
+- [ ] MCP keys can no longer be created. An **MCP keys** tab marked Deprecated appears only if the org already has keys.
 
 **Step 2 — Connect your agent**
 
-Pick whichever agent you normally use. Add the MCP server using the key you just generated.
+Pick whichever agent you normally use and add the server by URL. The agent opens the ClassroomIO sign-in page (your local dashboard); sign in as an admin, choose the workspace, and approve the permissions.
 
 <details>
 <summary>Claude Code</summary>
 
 ```bash
-claude mcp add-json classroomio '{
-  "command": "npx",
-  "args": ["-y", "@classroomio/mcp"],
-  "env": {
-    "CLASSROOMIO_API_URL": "http://localhost:3002",
-    "CLASSROOMIO_API_KEY": "<your-key-here>"
-  }
-}'
+claude mcp add --transport http classroomio http://localhost:3002/mcp
 ```
+
+Then run `/mcp` inside Claude Code, select `classroomio`, and follow the browser prompt.
 
 </details>
 
@@ -383,12 +377,7 @@ Add to `~/.cursor/mcp.json`:
 {
   "mcpServers": {
     "classroomio": {
-      "command": "npx",
-      "args": ["-y", "@classroomio/mcp"],
-      "env": {
-        "CLASSROOMIO_API_URL": "http://localhost:3002",
-        "CLASSROOMIO_API_KEY": "<your-key-here>"
-      }
+      "url": "http://localhost:3002/mcp"
     }
   }
 }
@@ -399,19 +388,14 @@ Add to `~/.cursor/mcp.json`:
 <details>
 <summary>OpenCode</summary>
 
-Add to your `opencode.json`:
+Add to your `opencode.json`, then run `opencode mcp auth classroomio`:
 
 ```json
 {
   "mcp": {
     "classroomio": {
-      "type": "local",
-      "command": ["npx", "-y", "@classroomio/mcp"],
-      "enabled": true,
-      "environment": {
-        "CLASSROOMIO_API_URL": "http://localhost:3002",
-        "CLASSROOMIO_API_KEY": "<your-key-here>"
-      }
+      "type": "remote",
+      "url": "http://localhost:3002/mcp"
     }
   }
 }
@@ -419,10 +403,10 @@ Add to your `opencode.json`:
 
 </details>
 
-> **Important:** Use `http://localhost:3002` as the API URL (not the production URL)
+> **Important:** Use `http://localhost:3002/mcp` (not `https://mcp.classroomio.com`)
 > since you're running the app locally.
 
-- [ ] Add the MCP server to your agent using the config above (pick your agent).
+- [ ] Add the MCP server to your agent using the config above (pick your agent) and finish the sign-in.
 - [ ] Verify the connection — ask your agent to list the tools it has available. You should
   see `list_org_courses`, `create_course_draft`, `publish_course_draft`, and others.
 
@@ -430,11 +414,11 @@ Add to your `opencode.json`:
 
 Ask your agent to create a course using the MCP tools. Try prompts like:
 
-- *"List the courses in my org"* — uses `list_org_courses` (0 credits).
-- *"Create a course draft called 'MCP Test Course' about Introduction to Cloud Computing with 2 sections and 4 lessons"* — uses `create_course_draft` (1 credit) + multiple `update_course_draft` calls (1 credit each).
+- *"List the courses in my org"* — uses `list_org_courses`.
+- *"Create a course draft called 'MCP Test Course' about Introduction to Cloud Computing with 2 sections and 4 lessons"* — uses `create_course_draft` + multiple `update_course_draft` calls.
 - *"Add exercises to the first lesson with 3 multiple choice questions"* — uses `update_course_draft`.
-- *"Tag the draft with relevant tags"* — uses `tag_course_draft` (1 credit).
-- *"Publish the draft"* — uses `publish_course_draft` (5 credits).
+- *"Tag the draft with relevant tags"* — uses `tag_course_draft`.
+- *"Publish the draft"* — uses `publish_course_draft`.
 
 - [ ] List your org's courses through the agent to confirm the connection works.
 - [ ] Create a course draft with at least 2 sections and 4 lessons.
@@ -444,9 +428,9 @@ Ask your agent to create a course using the MCP tools. Try prompts like:
 - [ ] Go to the dashboard — navigate to **Courses** (`/org/[slug]/courses`) and confirm
   the MCP-created course appears with the correct structure, content, and tags.
 - [ ] Open the course and verify sections, lessons, and exercises were created correctly.
-- [ ] Check the **MCP page** usage dashboard — confirm the credits used matches your activity.
+- [ ] Open **Automation → MCP → Connected apps** and confirm your agent is listed with a recent **Last used** date.
 - 📸 **Screenshot:** Your agent mid-conversation showing it calling an MCP tool (e.g. creating a course draft).
-- 📸 **Screenshot:** The MCP page usage dashboard showing credits used after your session.
+- 📸 **Screenshot:** **Automation → MCP → Connected apps** showing your agent after your session.
 
 **Step 4 — Update an existing course**
 
@@ -454,9 +438,8 @@ Ask your agent to create a course using the MCP tools. Try prompts like:
   to it using `create_course_draft_from_course` + `publish_course_draft_to_existing_course`.
 - [ ] Verify the new section appears in the dashboard.
 
-> **Note:** Each write tool call costs 1 credit, publish costs 5. The basic plan gives
-> 20 credits/month. If you run out, rotate/revoke the key and generate a new one (or
-> upgrade the org plan in Settings → Billing).
+> **Note:** Requests are rate limited per minute by plan. If you hit a limit, wait a
+> minute and retry. To disconnect your agent, remove it under **Automation → MCP → Connected apps**.
 
 ---
 

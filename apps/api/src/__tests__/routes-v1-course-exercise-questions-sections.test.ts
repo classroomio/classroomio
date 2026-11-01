@@ -66,7 +66,7 @@ const request = (path: string, init: RequestInit = {}, scopes = ['public_api:*']
 
   return app.request(`/public-api/v1${path}`, {
     ...init,
-    headers: { Authorization: 'Bearer key', 'content-type': 'application/json', ...init.headers }
+    headers: { Authorization: 'Bearer cio_key', 'content-type': 'application/json', ...init.headers }
   });
 };
 

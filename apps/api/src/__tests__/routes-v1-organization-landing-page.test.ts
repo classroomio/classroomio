@@ -56,7 +56,7 @@ const requestAs = (type: 'mcp' | 'api', scopes: string[], payload: unknown) => {
   return app.request(`/public-api/v1${PATH}`, {
     method: 'PUT',
     body: JSON.stringify(payload),
-    headers: { Authorization: 'Bearer key', 'content-type': 'application/json' }
+    headers: { Authorization: 'Bearer cio_key', 'content-type': 'application/json' }
   });
 };
 

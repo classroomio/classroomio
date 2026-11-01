@@ -4,7 +4,7 @@ import {
   PUBLIC_API_FAILED_AUTH_MAX_REQUESTS
 } from '@api/constants/rate-limiter';
 import { Hono } from '@api/utils/hono';
-import { automationKeyMiddleware } from '@api/middlewares/automation-key';
+import { automationKeyOrOAuthMiddleware } from '@api/middlewares/automation-key-or-oauth';
 import { createAuthenticationFailureRateLimiter, createRateLimiter } from '@api/middlewares/rate-limiter';
 import { publicApiCors } from '@api/middlewares/cors';
 import { publicApiScopesMiddleware } from '@api/middlewares/public-api-scopes';
@@ -30,7 +30,7 @@ export const v1Router = new Hono()
       keyGenerator: publicApiFailedAuthKeyGenerator
     })
   )
-  .use('*', automationKeyMiddleware)
+  .use('*', automationKeyOrOAuthMiddleware)
   .use('*', publicApiScopesMiddleware)
   .use(
     '*',

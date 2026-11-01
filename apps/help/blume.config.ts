@@ -960,11 +960,11 @@ export default defineConfig({
                 root: '/integrations-and-automation/understand-classroomio-mcp'
               },
               {
-                label: 'Create, rotate, and revoke MCP keys',
+                label: 'Rotate and revoke MCP keys',
                 root: '/integrations-and-automation/create-rotate-and-revoke-mcp-keys'
               },
               {
-                label: 'Connect Claude Code, Codex, Cursor, or OpenCode',
+                label: 'Connect an AI coding agent',
                 root: '/integrations-and-automation/connect-claude-code-codex-cursor-or-opencode'
               },
               {
