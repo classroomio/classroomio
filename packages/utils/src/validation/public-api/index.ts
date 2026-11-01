@@ -35,6 +35,7 @@ export * from './email-template-responses';
 export * from './landing-page';
 export * from './landing-page-responses';
 export * from './organization';
+export * from './organization-customization';
 export * from './organization-responses';
 export * from './organization-domain';
 export * from './organization-domain-responses';

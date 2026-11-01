@@ -6,6 +6,7 @@ export const ORGANIZATION_TAG = 'Organization';
 export const EMAIL_TEMPLATES_TAG = 'Organization Email Templates';
 export const LANDING_PAGE_TAG = 'Organization Landing Page';
 export const DOMAIN_TAG = 'Organization Domain';
+export const CUSTOMIZATION_TAG = 'Organization Customization';
 
 /** Templates change whenever an admin edits them, so no cache (private ones included) may store them. */
 export const EMAIL_TEMPLATES_CACHE_CONTROL = 'private, no-store';

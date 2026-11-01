@@ -46,6 +46,8 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'PUT /public-api/v1/team/{memberId}': 'Update a team member',
   'GET /public-api/v1/organization': 'Get the organization',
   'PATCH /public-api/v1/organization': 'Update the organization',
+  'GET /public-api/v1/organization/customization': 'Get the LMS customization',
+  'PATCH /public-api/v1/organization/customization': 'Update the LMS customization',
   'GET /public-api/v1/organization/email-templates': 'List student email templates',
   'GET /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Get a student email template',
   'PUT /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Save a student email template',
@@ -199,6 +201,10 @@ const OPERATION_TAGS = [
   {
     name: 'Organization Domain',
     description: 'Manage where your site is served: its subdomain, favicon and custom domain.'
+  },
+  {
+    name: 'Organization Customization',
+    description: 'Turn LMS features on or off for students, and set the dashboard banner and login background.'
   },
   { name: 'Courses', description: 'Create, update, delete, and clone courses.' },
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },

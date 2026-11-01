@@ -8,6 +8,7 @@ import type {
   TOrganizationCourseSort
 } from '@cio/utils/validation/organization';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   activateOrganizationPlan,
   cancelOrganizationPlan,
@@ -808,7 +809,8 @@ async function assertAuthSettingsEntitlement(orgId: string, data: Partial<TOrgan
   }
 }
 
-export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
+/** `dbClient` is used for the organization write only. */
+export async function updateOrg(orgId: string, data: Partial<TOrganization>, dbClient: DbOrTxClient = db) {
   try {
     if (data.siteName) {
       const exists = await checkSiteNameExists(data.siteName, orgId); // exclude current org
@@ -853,7 +855,7 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       updateData = { ...data, customization };
     }
 
-    const organization = await updateOrganization(orgId, updateData);
+    const organization = await updateOrganization(orgId, updateData, dbClient);
     if (!organization) {
       throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
     }
