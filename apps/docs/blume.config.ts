@@ -27,7 +27,8 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
       { tag: 'Team' },
       { tag: 'Organization Email Templates', label: 'Email Templates' },
       { tag: 'Organization Landing Page', label: 'Landing Page' },
-      { tag: 'Tags' }
+      { tag: 'Tags' },
+      { tag: 'Organization Domain', label: 'Domain' }
     ]
   },
   {

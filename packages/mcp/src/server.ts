@@ -17,6 +17,7 @@ import { registerCourseExerciseTools } from './tools/course-exercises';
 import { registerCourseSubmissionTools } from './tools/course-submissions';
 import { registerCourseTools } from './tools/courses';
 import { registerCourseTemplateTools } from './tools/course-templates';
+import { registerDomainTools } from './tools/domain';
 import { registerEmailTemplateTools } from './tools/email-templates';
 import { registerLandingPageTools } from './tools/landing-page';
 import { registerOrganizationTools } from './tools/organization';
@@ -63,6 +64,7 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
   registerEmailTemplateTools(server, apiClient);
   registerLandingPageTools(server, apiClient);
   registerTagTools(server, apiClient);
+  registerDomainTools(server, apiClient);
 
   if (options.includeLocalFileTools) {
     registerMediaUploadTools(server, apiClient);

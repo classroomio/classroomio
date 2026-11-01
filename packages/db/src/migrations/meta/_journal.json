@@ -302,6 +302,13 @@
       "when": 1793103932290,
       "tag": "0042_oauth_provider",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793492200966,
+      "tag": "0043_mcp_key_domain_scope",
+      "breakpoints": true
     }
   ]
 }
