@@ -135,15 +135,13 @@ describe('Plugin Installation Service', () => {
       status: 'disabled'
     });
     dbMocks.getPluginUninstallDataImpact.mockResolvedValueOnce({
-      storageRecords: 3,
-      storageBytes: 512,
-      publishedOutputs: 2
+      storedData: { exists: true, bytes: 512 },
+      appliedContent: { certificateDesigns: 2 }
     });
 
     await expect(getPluginUninstallImpact('installation-1', 'organization-1')).resolves.toEqual({
-      storageRecords: 3,
-      storageBytes: 512,
-      publishedOutputs: 2
+      storedData: { exists: true, bytes: 512 },
+      appliedContent: { certificateDesigns: 2 }
     });
   });
 

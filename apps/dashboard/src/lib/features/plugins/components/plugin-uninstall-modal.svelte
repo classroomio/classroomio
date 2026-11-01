@@ -25,6 +25,9 @@
   let loadedInstallationId = $state('');
   let deletePluginStorage = $state(false);
   let removePublishedOutputs = $state(false);
+  const hasStoredData = $derived(impact?.storedData.exists ?? false);
+  const certificateDesignCount = $derived(impact?.appliedContent.certificateDesigns ?? 0);
+  const hasCleanupChoices = $derived(hasStoredData || certificateDesignCount > 0);
 
   $effect(() => {
     const organizationId = $currentOrg.id;
@@ -65,7 +68,11 @@
   <Dialog.Content class="max-w-lg">
     <Dialog.Header>
       <Dialog.Title>{$t('plugins.uninstall_modal.title', { name: plugin?.name ?? '' })}</Dialog.Title>
-      <Dialog.Description>{$t('plugins.uninstall_modal.description')}</Dialog.Description>
+      <Dialog.Description>
+        {$t(
+          hasCleanupChoices ? 'plugins.uninstall_modal.description_with_data' : 'plugins.uninstall_modal.description'
+        )}
+      </Dialog.Description>
     </Dialog.Header>
 
     {#if !impact}
@@ -74,29 +81,33 @@
       </div>
     {:else}
       <div class="space-y-3 py-2">
-        <label class="ui:border-border flex cursor-pointer items-start gap-3 rounded-lg border p-4">
-          <Checkbox bind:checked={deletePluginStorage} disabled={isUninstalling || impact.storageRecords === 0} />
-          <DatabaseIcon class="ui:text-muted-foreground mt-0.5 size-4 shrink-0" />
-          <span>
-            <span class="block text-sm font-medium">{$t('plugins.uninstall_modal.delete_storage')}</span>
-            <span class="ui:text-muted-foreground mt-1 block text-xs">
-              {$t('plugins.uninstall_modal.delete_storage_description', {
-                count: impact.storageRecords
-              })}
+        {#if hasStoredData}
+          <label class="ui:border-border flex cursor-pointer items-start gap-3 rounded-lg border p-4">
+            <Checkbox bind:checked={deletePluginStorage} disabled={isUninstalling} />
+            <DatabaseIcon class="ui:text-muted-foreground mt-0.5 size-4 shrink-0" />
+            <span>
+              <span class="block text-sm font-medium">{$t('plugins.uninstall_modal.delete_storage')}</span>
+              <span class="ui:text-muted-foreground mt-1 block text-xs">
+                {$t('plugins.uninstall_modal.delete_storage_description')}
+              </span>
             </span>
-          </span>
-        </label>
+          </label>
+        {/if}
 
-        <label class="ui:border-border flex cursor-pointer items-start gap-3 rounded-lg border p-4">
-          <Checkbox bind:checked={removePublishedOutputs} disabled={isUninstalling || impact.publishedOutputs === 0} />
-          <AwardIcon class="ui:text-muted-foreground mt-0.5 size-4 shrink-0" />
-          <span>
-            <span class="block text-sm font-medium">{$t('plugins.uninstall_modal.remove_outputs')}</span>
-            <span class="ui:text-muted-foreground mt-1 block text-xs">
-              {$t('plugins.uninstall_modal.remove_outputs_description', { count: impact.publishedOutputs })}
+        {#if certificateDesignCount > 0}
+          <label class="ui:border-border flex cursor-pointer items-start gap-3 rounded-lg border p-4">
+            <Checkbox bind:checked={removePublishedOutputs} disabled={isUninstalling} />
+            <AwardIcon class="ui:text-muted-foreground mt-0.5 size-4 shrink-0" />
+            <span>
+              <span class="block text-sm font-medium">{$t('plugins.uninstall_modal.remove_certificate_designs')}</span>
+              <span class="ui:text-muted-foreground mt-1 block text-xs">
+                {$t('plugins.uninstall_modal.remove_certificate_designs_description', {
+                  count: certificateDesignCount
+                })}
+              </span>
             </span>
-          </span>
-        </label>
+          </label>
+        {/if}
 
         {#if deletePluginStorage || removePublishedOutputs}
           <div

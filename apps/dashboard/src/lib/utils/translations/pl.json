@@ -6487,12 +6487,13 @@
     "uninstalled_success": "Plugin uninstalled",
     "uninstall_modal": {
       "title": "Uninstall {name}?",
-      "description": "Choose what should happen to this plugin's stored data and published designs.",
-      "delete_storage": "Delete plugin data now",
-      "delete_storage_description": "Delete {count} stored records immediately. Otherwise they remain available for recovery if the plugin is reinstalled.",
-      "remove_outputs": "Remove published designs",
-      "remove_outputs_description": "Remove {count} published designs attributed to this plugin and restore their built-in fallback.",
-      "destructive_warning": "Deleted plugin data and removed designs cannot be restored by reinstalling the plugin."
+      "description": "This plugin has no saved data or applied content. Uninstalling removes it from your academy.",
+      "description_with_data": "Uninstalling removes the plugin from your academy. Choose whether to also delete the data below.",
+      "delete_storage": "Delete saved plugin data",
+      "delete_storage_description": "Permanently delete settings and content saved inside this plugin. Keep this unchecked to restore them if the plugin is reinstalled.",
+      "remove_certificate_designs": "Remove applied certificate designs",
+      "remove_certificate_designs_description": "{count} courses use a certificate design from this plugin. They will return to their built-in certificate design.",
+      "destructive_warning": "Selected data will be permanently deleted and cannot be restored by reinstalling the plugin."
     },
     "failed_update": "Failed to update plugin status",
     "failed_install": "Failed to install plugin",

@@ -176,9 +176,13 @@ export async function getPluginUninstallDataImpact(installationId: string, organ
     );
 
   return {
-    storageRecords: Number(storage?.records ?? 0),
-    storageBytes: Number(storage?.bytes ?? 0),
-    publishedOutputs: Number(publishedOutputs?.count ?? 0)
+    storedData: {
+      exists: Number(storage?.records ?? 0) > 0,
+      bytes: Number(storage?.bytes ?? 0)
+    },
+    appliedContent: {
+      certificateDesigns: Number(publishedOutputs?.count ?? 0)
+    }
   };
 }
 
