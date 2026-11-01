@@ -38,14 +38,14 @@ describe('bannerImage on course update', () => {
     expect(result.success && result.data.bannerImage).toBe('https://example.com/banner.png');
   });
 
-  it('still omits tagIds from the public API schema', () => {
+  it('keeps tagIds next to bannerImage on the public API schema', () => {
     const result = ZPublicApiUpdateCourse.safeParse({
       bannerImage: 'https://example.com/banner.png',
       tagIds: ['3f2504e0-4f89-11d3-9a0c-0305e82c3301']
     });
 
     expect(result.success).toBe(true);
-    expect(result.success && 'tagIds' in result.data).toBe(false);
+    expect(result.success && result.data.tagIds).toEqual(['3f2504e0-4f89-11d3-9a0c-0305e82c3301']);
   });
 });
 
