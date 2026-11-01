@@ -45,7 +45,12 @@ import {
   ZVimeoMetadataQuery,
   ZYouTubeMetadataQuery
 } from '@cio/utils/validation/assets';
-import { getAssetHlsManifestLink, isHlsAsset, mapAssetToLessonVideo } from '../utils/media-manager-utils';
+import {
+  getAssetHlsManifestLink,
+  isHlsAsset,
+  mapAssetToLessonDocument,
+  mapAssetToLessonVideo
+} from '../utils/media-manager-utils';
 
 import type { AttachAssetRequest } from '../utils/types';
 import type { DetachAssetRequest } from '../utils/types';
@@ -530,6 +535,34 @@ export class MediaApi extends BaseApiWithErrors {
       url,
       key: asset.storageKey
     });
+  }
+
+  /**
+   * Resolves a signed download link for a library document and attaches it to the lesson when `lessonId` is given.
+   * @returns the lesson document entry, or null when the link could not be resolved or the attachment failed
+   */
+  async buildLessonDocumentFromAsset(
+    asset: OrganizationAsset,
+    params: { lessonId?: string; position?: number; slotType?: string } = {}
+  ) {
+    const url = await this.getAssetDownloadUrl(asset);
+    if (!url) {
+      snackbar.error('snackbar.media_manager.download_failed');
+      return null;
+    }
+
+    if (params.lessonId) {
+      const usage = await this.attachAsset(asset.id, {
+        targetType: 'lesson',
+        targetId: params.lessonId,
+        slotType: params.slotType ?? 'lesson_document',
+        position: params.position
+      });
+
+      if (!usage) return null;
+    }
+
+    return mapAssetToLessonDocument(asset, { url, key: asset.storageKey });
   }
 
   /**

@@ -2,9 +2,11 @@ import type {
   AutomationKey,
   AutomationKeyType,
   AutomationUsage,
+  ConnectedApp,
   CreateAutomationKeyRequest,
   GetAutomationUsageRequest,
   ListAutomationKeysRequest,
+  RevokeConnectedAppRequest,
   RevokeAutomationKeyRequest,
   RotateAutomationKeyRequest
 } from '$features/automation/utils/types';
@@ -17,6 +19,8 @@ class AutomationApi extends BaseApiWithErrors {
   generatedSecret = $state<string | null>(null);
   isFetched = $state(false);
   keys = $state<AutomationKey[]>([]);
+  connectedApps = $state<ConnectedApp[]>([]);
+  mcpUrl = $state('');
   usage = $state<AutomationUsage | null>(null);
 
   async listKeys(type?: AutomationKeyType) {
@@ -108,6 +112,18 @@ class AutomationApi extends BaseApiWithErrors {
         this.generatedSecret = response.data.secret;
         this.keys = this.keys.map((key) => (key.id === response.data.key.id ? response.data.key : key));
         snackbar.success('snackbar.automation.rotated');
+      }
+    });
+  }
+
+  async revokeConnectedApp(consentId: string) {
+    return this.execute<RevokeConnectedAppRequest>({
+      requestFn: () =>
+        classroomio.organization.automation['connected-apps'][':consentId'].$delete({ param: { consentId } }),
+      logContext: 'revoking connected app',
+      onSuccess: (response) => {
+        this.connectedApps = this.connectedApps.filter((app) => app.consentId !== response.data.consentId);
+        snackbar.success('snackbar.oauth.revoked');
       }
     });
   }

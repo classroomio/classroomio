@@ -1,14 +1,11 @@
 import { z } from 'zod';
 
-/** Replaced with the package version at build time; absent when run from source. */
-declare const __MCP_VERSION__: string | undefined;
-
-const packageVersion = typeof __MCP_VERSION__ === 'string' ? __MCP_VERSION__ : 'dev';
+import { MCP_VERSION } from './version';
 
 const ZConfig = z.object({
   CLASSROOMIO_API_URL: z.url().default('https://api.classroomio.com'),
   CLASSROOMIO_API_KEY: z.string().min(1),
-  CLASSROOMIO_USER_AGENT: z.string().min(1).default(`classroomio-mcp/${packageVersion}`)
+  CLASSROOMIO_USER_AGENT: z.string().min(1).default(`classroomio-mcp/${MCP_VERSION}`)
 });
 
 export type McpServerConfig = z.infer<typeof ZConfig>;

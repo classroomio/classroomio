@@ -14,7 +14,7 @@
       icon: '🤖',
       title: 'MCP server',
       description:
-        'Drive course authoring from Cursor, Claude Code, Codex, or OpenCode. The MCP server exposes the API surface as agent tools: list, create, update, publish.'
+        'Drive course authoring from Cursor, Claude Code, Codex, VS Code, Gemini CLI, or any MCP client. The MCP server exposes the API surface as agent tools: list, create, update, publish.'
     },
     {
       icon: '🪝',

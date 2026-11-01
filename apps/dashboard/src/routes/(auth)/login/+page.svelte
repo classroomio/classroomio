@@ -17,6 +17,7 @@
   import ShieldIcon from '@lucide/svelte/icons/shield';
   import { buildSsoRedirectUrl, createSsoEmailChecker, type SsoAuthState } from '$features/auth/utils/auth-sso';
   import { authSsoStore, ensureSsoInfoLoaded } from '$features/auth/utils/auth-sso-store';
+  import { buildOAuthAuthorizeUrl, isOAuthAuthorizationQuery } from '$features/oauth/utils/oauth-scopes';
 
   const emailFromUrl = page.url.searchParams.get('email') ?? '';
   const isEmailPrefilled = !!emailFromUrl;
@@ -30,6 +31,9 @@
   let discoveryState = $state<SsoAuthState | null>(null);
 
   const redirectUrl = $derived(page.url.searchParams.get('redirect'));
+  const oauthAuthorizeUrl = $derived(
+    isOAuthAuthorizationQuery(page.url.searchParams) ? buildOAuthAuthorizeUrl(page.url.search) : null
+  );
 
   const hideGoogleAuth = $derived(!!($globalStore.isOrgSite && $currentOrg.disableGoogleAuth));
 
@@ -58,7 +62,9 @@
   });
 
   async function handleSsoLogin() {
-    const url = buildSsoRedirectUrl(ssoState.redirectUrl);
+    const url = oauthAuthorizeUrl
+      ? `${window.location.origin}${oauthAuthorizeUrl}`
+      : buildSsoRedirectUrl(ssoState.redirectUrl);
 
     await authClient.signIn.sso({
       email: fields.email,
@@ -106,6 +112,11 @@
               });
             }
 
+            if (oauthAuthorizeUrl) {
+              window.location.href = oauthAuthorizeUrl;
+              return;
+            }
+
             const redirect = redirectUrl || '/';
             window.location.href = redirect.startsWith('/') ? redirect : `/?redirect=${encodeURIComponent(redirect)}`;
           }
@@ -151,6 +162,7 @@
   {handleSubmit}
   isLoading={loading}
   {hideGoogleAuth}
+  redirectPathname={oauthAuthorizeUrl ?? ''}
   getPasswordAuthAlternative={ssoState.available ? getPasswordAuthAlternative : undefined}
 >
   <div class="flex flex-col gap-6">

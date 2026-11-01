@@ -7,20 +7,30 @@ import { build } from 'esbuild';
 // package.json beside it to read at runtime.
 const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 
-await build({
-  entryPoints: ['src/index.ts'],
-  outfile: 'dist/index.js',
+const shared = {
   bundle: true,
   format: 'esm',
   platform: 'node',
   target: 'node20',
-  minify: true,
   sourcemap: false,
   external: ['@modelcontextprotocol/sdk', 'zod'],
   define: {
     __MCP_VERSION__: JSON.stringify(version)
-  },
+  }
+};
+
+await build({
+  ...shared,
+  entryPoints: ['src/index.ts'],
+  outfile: 'dist/index.js',
+  minify: true,
   banner: {
     js: '#!/usr/bin/env node'
   }
+});
+
+await build({
+  ...shared,
+  entryPoints: ['src/server.ts'],
+  outfile: 'dist/server.js'
 });

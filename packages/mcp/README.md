@@ -1,6 +1,8 @@
 # @classroomio/mcp
 
-Thin stdio MCP server for ClassroomIO course authoring.
+> **Deprecated.** Running this package through `npx` with `CLASSROOMIO_API_KEY` is deprecated. Connect to the hosted server at `https://mcp.classroomio.com` instead: your client signs in with your ClassroomIO account and no key or Node.js install is needed. This package keeps working for now and is still the only way to use `upload_video`, which reads a file from your own computer. See [Connect an MCP client](https://classroomio.com/docs/developers/mcp/setup).
+
+Thin MCP server for ClassroomIO course authoring. It runs over stdio for local clients, and ClassroomIO's API also serves it over HTTP for remote clients.
 
 The package does not parse PDFs or generate course structures. The agent does that work. `@classroomio/mcp` only exposes tools, validates tool input, and forwards requests to the ClassroomIO API.
 
@@ -28,6 +30,23 @@ ClassroomIO API
   v
 ClassroomIO DB
 ```
+
+## Transports
+
+### stdio (this package)
+
+`npx -y @classroomio/mcp` starts a local process for clients that can spawn one (Cursor, Claude Code, Codex, OpenCode). It authenticates with `CLASSROOMIO_API_KEY` and pins one organization for the life of the process. It is the only transport that registers `upload_video`, because that tool reads a file from the machine running the server.
+
+### Streamable HTTP (hosted by the API)
+
+Remote clients such as Claude and ChatGPT connect to `POST /mcp` on the ClassroomIO API (`https://mcp.classroomio.com` on ClassroomIO cloud, where the Cloudflare Worker maps `/` to `/mcp`). The endpoint is stateless and builds one server per request:
+
+- **Authentication.** A request carries `Authorization: Bearer <credential>`, either an OAuth access token issued for the MCP resource or a `cio_mcp_...` automation key. A missing or invalid credential gets `401` with a `WWW-Authenticate` header that points at `/.well-known/oauth-protected-resource`, which starts the OAuth flow in the client. A credential that was not issued for MCP gets `403`.
+- **Per-request identity.** Tool calls run in-process against the real `/public-api/v1` routes with the caller's own credential, so scopes, rate limits, plan limits and usage metering apply exactly as for a direct API call. There is no shared client.
+- **Tools.** The same tools as stdio, without `upload_video`.
+- **Methods.** Only `POST` is accepted. `GET` and `DELETE` return `405` because the server never opens a stream or session.
+
+The API imports `createMcpServer` and `ClassroomIoApiClient` from `@classroomio/mcp/server`. Importing the package root starts the stdio server, so never do that from another process.
 
 ## Principles
 
@@ -120,6 +139,8 @@ Current tools:
 - `list_team_members`
 - `get_team_member`
 - `update_team_member`
+- `get_organization`
+- `update_organization`
 - `list_email_templates`
 - `get_email_template`
 - `update_email_template`
@@ -249,7 +270,7 @@ What the tools cover compared with the dashboard:
 
 ## Auth Model
 
-The package expects an org-scoped ClassroomIO automation key generated from `Automation -> MCP` in the ClassroomIO dashboard.
+The package expects an existing org-scoped ClassroomIO automation key. New MCP keys can no longer be created, so use the hosted server at `https://mcp.classroomio.com` unless you already have a key. The hosted server uses the permissions you approve when you sign in and your role in the workspace instead of key scopes.
 
 The MCP process sends the key as a bearer token on every request.
 
@@ -289,6 +310,11 @@ Audience and team tools act as the key creator:
 - `remove_audience_member` deletes the organization membership; the person keeps their account. Inviting and removing team members is not available yet.
 - `list_audience_members` and `list_team_members` take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
 
+Organization tools call `GET` and `PATCH /public-api/v1/organization` with the `organization:read` and `organization:write` scopes. The key creator must be an org admin, the same as the dashboard's Organization settings page:
+
+- `get_organization` returns the organization's `id`, `name`, `siteName`, `avatarUrl` (logo) and `theme`.
+- `update_organization` takes any of `name` (at least 5 characters), `avatarUrl` (an http(s) image URL) and `theme` (`blue`, `rose`, `green`, `orange`, `purple`, or a `#RRGGBB` / `#RRGGBBAA` color). Omitted fields keep their values. The site name and custom domain can't be changed here.
+
 Email template tools act as the key creator, who must be an org admin, the same as the dashboard's Emails settings page:
 
 - `list_email_templates` returns every student email in one `locale` (default `en`) without its body. `get_email_template` returns the body, the allowed `variables`, and whether the email may link to `{{action_url}}`.
@@ -307,6 +333,8 @@ Analytics tools are read-only, cost no credits, and act as the key creator:
 - `list_compliance_learners` takes `page` and `limit` (default 20, max 100); `list_course_analytics_students` caps `limit` at 50. Both return `{ data, pagination }`.
 
 ## Required Environment Variables
+
+These settings, and the sections below that use them, apply only to this deprecated package.
 
 - `CLASSROOMIO_API_URL`
 - `CLASSROOMIO_API_KEY`
@@ -332,6 +360,8 @@ npx -y @classroomio/mcp
 ```
 
 ## Client Setup
+
+These examples use the deprecated local package with a key. To connect without a key, follow [Connect an MCP client](https://classroomio.com/docs/developers/mcp/setup).
 
 ### Claude Code
 

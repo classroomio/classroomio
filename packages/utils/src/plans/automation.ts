@@ -144,7 +144,9 @@ export const MCP_TOOL_CREDIT_COST = {
   update_tag: 1,
   create_tag_group: 1,
   update_tag_group: 1,
-  set_course_tags: 1
+  set_course_tags: 1,
+  get_organization: 0,
+  update_organization: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -265,7 +267,8 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_team_member' ||
     toolName === 'list_email_templates' ||
     toolName === 'get_email_template' ||
-    toolName === 'list_tags'
+    toolName === 'list_tags' ||
+    toolName === 'get_organization'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

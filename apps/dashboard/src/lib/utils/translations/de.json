@@ -428,6 +428,8 @@
       "delete_in_use": "Dieses Video ist noch einer Lektion beigefügt. Entfernen Sie es zuerst dort.",
       "delete_failed": "Video konnte nicht gelöscht werden",
       "added_to_lesson": "Video zur Lektion hinzugefügt",
+      "document_added_to_lesson": "Dokument zur Lektion hinzugefügt",
+      "documents_added_to_lesson": "Dokumente zur Lektion hinzugefügt",
       "transcript_unavailable": "Transkript nicht verfügbar"
     },
     "tags": {
@@ -527,6 +529,9 @@
       "test_success": "Testereignis erfolgreich zugestellt.",
       "test_failed": "Das Testereignis ist fehlgeschlagen. Öffnen Sie das Zustellungsprotokoll, um den Grund zu sehen.",
       "redelivered": "Ereignis für die erneute Zustellung eingereiht."
+    },
+    "oauth": {
+      "revoked": "App-Zugriff entfernt"
     }
   },
   "explore": {
@@ -2427,34 +2432,30 @@
             "document": {
               "title": "Dokumente",
               "add_document": "Dokument hinzufügen",
-              "no_document": "Es wurden noch keine Dokumente hochgeladen",
-              "view_document": "Dokument anzeigen",
               "download": "Herunterladen",
-              "upload_document": "Dokument hochladen",
               "upload_title": "Dokument hochladen",
-              "upload_description": "Laden Sie PDF-, DOCX- oder DOC-Dateien hoch. Maximale Größe: 5 MB",
+              "upload_description": "Laden Sie PDF-, DOCX-, DOC-, CSV-, XLSX-, XLS-, IPYNB- oder PY-Dateien hoch",
+              "up_to_size_each": "(bis zu {size} pro Datei)",
+              "uploading_progress": "Wird hochgeladen {percent} %",
+              "queued": "Wartet",
+              "completed": "Abgeschlossen",
+              "failed": "Fehlgeschlagen",
+              "finish": "Fertig",
+              "max_files_error": "Sie können bis zu {count} Dateien gleichzeitig hochladen.",
+              "size_progress": "{uploaded} von {total}",
               "drag_drop": "Ziehen Sie Ihr Dokument per Drag & Drop hierher",
-              "or": "oder",
-              "choose_file": "Wählen Sie Datei",
-              "cancel": "Abbrechen",
-              "uploading": "Hochladen...",
-              "upload_success": "Dokument erfolgreich hochgeladen!",
               "upload_error": "Das Hochladen des Dokuments ist fehlgeschlagen",
-              "file_type_error": "Dateityp wird nicht unterstützt. Bitte laden Sie PDF-, DOCX- oder DOC-Dateien hoch.",
+              "file_type_error": "Dateityp wird nicht unterstützt. Bitte laden Sie PDF-, DOCX-, DOC-, CSV-, XLSX-, XLS-, IPYNB- oder PY-Dateien hoch.",
               "file_size_error": "Dateigröße zu groß. Die maximale Größe ist {size}.",
-              "type": "Typ",
-              "size": "Größe",
-              "upload_error_title": "Fehler beim Hochladen",
-              "upload_error_message": "Nicht unterstütztes Dateiformat oder Upload fehlgeschlagen",
-              "upload_error_try_again": "Bitte versuchen Sie es erneut mit einer gültigen Dokumentdatei",
               "try_again": "Versuchen Sie es erneut",
               "upgrade": "Aktualisieren Sie Ihren Plan, um Dokumente hochzuladen",
-              "cancel_upload": "Hochladen abbrechen",
-              "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
-              "downloading": "Herunterladen...",
+              "no_library_documents": "Keine Dokumente in Ihrer Medienbibliothek verfügbar",
+              "selected_count": "{count} ausgewählt",
+              "clear_selection": "Zurücksetzen",
+              "add_one_file": "1 Datei hinzufügen",
+              "add_files": "{count} Dateien hinzufügen",
               "download_success": "Dokument erfolgreich heruntergeladen",
               "download_error": "Dokument konnte nicht heruntergeladen werden",
-              "view_pdf": "PDF ansehen",
               "remove_document": "Dokument entfernen",
               "delete": "Löschen",
               "page_of": "Seite {page} von {total}",
@@ -2500,7 +2501,7 @@
                 "search_library_action": "Suchen",
                 "loading_library": "Medienbibliothek wird geladen...",
                 "no_library_videos": "In Ihrer Medienbibliothek sind keine Videos verfügbar",
-                "add_from_library": "Aus Bibliothek hinzufügen",
+                "add_from_library": "Hinzufügen",
                 "cancel_upload": "Hochladen abbrechen",
                 "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
                 "max_files": "{count, plural, one {Sie können # Datei hochladen} other {Sie können # Dateien hochladen}}",
@@ -4955,38 +4956,14 @@
     "coming_soon": "Kommt bald",
     "read_docs": "Dokumentation lesen",
     "mcp": {
-      "setup": {
-        "title": "Client-Setup",
-        "description": "Verwenden Sie einen organisationsweiten Schlüssel pro Integration. Wenn ein Schlüssel rotiert oder widerrufen wird, funktioniert der Client nicht mehr, bis das neue Geheimnis konfiguriert ist.",
-        "claude_code_description": "Registriert „@classroomio/mcp“ bei Claude Code unter Verwendung des generierten organisationsweit gültigen Schlüssels.",
-        "codex_description": "Fügt den ClassroomIO MCP-Server mit demselben organisationsweit gültigen Schlüssel zu Codex hinzu.",
-        "cursor_description": "Fügen Sie dies in „~/.cursor/mcp.json“ oder Ihre Workspace-MCP-Konfiguration ein.",
-        "opencode_description": "Fügen Sie dies in `opencode.json` im Projektstamm oder in `~/.config/opencode/opencode.json` ein."
-      },
       "keys": {
         "title": "MCP-Schlüssel",
-        "description": "Diese Schlüssel authentifizieren die aktuelle Organisation, wenn ein MCP-Client ClassroomIO über „@classroomio/mcp“ aufruft.",
-        "generate": "MCP-Schlüssel generieren",
-        "modal": {
-          "title": "MCP-Schlüssel erstellen",
-          "description": "Wählen Sie einen Namen für diesen MCP-Schlüssel, bevor er generiert wird.",
-          "name_label": "Schlüsselname",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Abbrechen",
-          "save": "Schlüssel erstellen"
-        },
-        "reveal_title": "Ihr neuer MCP-Schlüssel"
+        "description": "Diese älteren Schlüssel funktionieren weiterhin, aber neue MCP-Schlüssel können nicht mehr erstellt werden. Rotiere oder widerrufe sie hier und verbinde neue Clients per Anmeldung.",
+        "reveal_title": "Ihr neuer MCP-Schlüssel",
+        "deprecated_badge": "Veraltet"
       },
-      "usage": {
-        "title": "Nutzung und Grenzen",
-        "description": "MCP ist in jedem Plan verfügbar. Die Nutzung wird durch Schlüssellimits und Ratenlimits gesteuert.",
-        "keys_title": "Aktive Schlüssel",
-        "keys_description": "Verwenden Sie einen MCP-Schlüssel pro Integration, damit der Zugriff sauber rotiert oder widerrufen werden kann.",
-        "rate_limits_title": "Anfragenlimits pro Minute",
-        "rate_limits_description": "Zulässige Lese-/Schreib-/Veröffentlichungsanfragen pro Minute.",
-        "used_label": "Verwendet:"
-      },
-      "page_subtitle": "Verbinden Sie KI-Tools mit ClassroomIO über organisationsbezogene Schlüssel, die Sie jederzeit rotieren können."
+      "page_subtitle": "Verbinde KI-Tools mit ClassroomIO, indem du dich anmeldest. Entferne eine App jederzeit, um ihren Zugriff zu beenden.",
+      "connections_tab": "Verbindungen"
     },
     "api": {
       "subtitle": "Verwalten Sie API-Schlüssel zur Integration mit der öffentlichen ClassroomIO-API.",
@@ -5016,8 +4993,6 @@
       "revoked": "Widerrufen",
       "rotate": "Drehen",
       "revoke": "Widerrufen",
-      "empty_title": "Noch keine MCP-Schlüssel",
-      "empty_description": "Erstellen Sie den ersten organisationsweit gültigen MCP-Schlüssel, um Claude Code, Codex, Cursor oder OpenCode zu verbinden.",
       "created_at_label": "Erstellt:",
       "last_used_label": "Zuletzt verwendet:",
       "never_used": "Niemals",
@@ -5055,7 +5030,7 @@
     },
     "permissions": {
       "disabled_title": "Nur lesender Zugriff",
-      "disabled_description": "Nur Organisationsadministratoren können Automatisierungsschlüssel erstellen, rotieren oder widerrufen. Lehrer können die Einrichtungsanweisungen hier einsehen."
+      "disabled_description": "Nur Organisationsadministratoren können Automatisierungen verwalten, einschließlich verbundener Apps und Schlüssel."
     },
     "zapier": {
       "page_subtitle": "Automatisieren Sie ClassroomIO mit Tausenden von Apps über Zapier. Demnächst verfügbar."
@@ -6440,5 +6415,93 @@
     "new_badge": "Neu",
     "read_full": "Vollständiges Änderungsprotokoll lesen",
     "close": "Schließen"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Eine App mit ClassroomIO verbinden",
+      "title": "{client} mit ClassroomIO verbinden",
+      "workspace": "Workspace: {workspace}",
+      "permissions_heading": "{client} kann Folgendes:",
+      "stay_connected": "Verbunden bleiben, bis du den Zugriff entfernst",
+      "admin_note": "Nur Workspace-Admins können Apps verbinden. Der Zugriff folgt deinen Admin-Berechtigungen und endet, wenn du sie verlierst.",
+      "redirect_note": "Nach deiner Zustimmung wirst du zu {host} weitergeleitet.",
+      "allow": "Zugriff erlauben",
+      "deny": "Ablehnen",
+      "unknown_client": "Diese App",
+      "error_title": "Diese Verbindungsanfrage ist ungültig",
+      "error_description": "Kehre zur App zurück, die du verbinden wolltest, und starte erneut."
+    },
+    "select_organization": {
+      "title": "Workspace auswählen",
+      "subtitle": "Wähle den Workspace, auf den {client} zugreifen darf.",
+      "empty_title": "Kein Workspace verfügbar",
+      "empty_description": "Nur Workspace-Admins können Apps verbinden. Frage einen Admin oder melde dich mit einem Admin-Konto an."
+    },
+    "error": {
+      "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Kurse und ihre Inhalte ansehen",
+        "write": "Kurse und ihre Inhalte erstellen, bearbeiten und veröffentlichen"
+      },
+      "exercises": {
+        "read": "Übungen und Fragen ansehen",
+        "write": "Übungen und Fragen erstellen und bearbeiten"
+      },
+      "course_members": {
+        "read": "Kursmitglieder ansehen",
+        "write": "Kursmitglieder und ihren Fortschritt hinzufügen und verwalten"
+      },
+      "certificates": {
+        "read": "Kurszertifikate ansehen",
+        "write": "Kurszertifikate verwalten"
+      },
+      "submissions": {
+        "read": "Abgaben und Bewertungen ansehen",
+        "write": "Abgaben bewerten und Bewertungen verwalten"
+      },
+      "cohorts": {
+        "read": "Kohorten ansehen",
+        "write": "Kohorten erstellen und verwalten"
+      },
+      "audience": {
+        "read": "Deine Zielgruppe ansehen",
+        "write": "Deine Zielgruppe hinzufügen und verwalten"
+      },
+      "team": {
+        "read": "Teammitglieder ansehen",
+        "write": "Teammitglieder verwalten"
+      },
+      "organization": {
+        "read": "Workspace-Einstellungen ansehen",
+        "write": "Workspace-Einstellungen, Landingpage und E-Mail-Vorlagen bearbeiten"
+      },
+      "analytics": {
+        "read": "Analysen ansehen",
+        "write": "Analysen ansehen"
+      },
+      "media": {
+        "read": "Medien hochladen",
+        "write": "Medien hochladen"
+      }
+    },
+    "connect": {
+      "title": "Über Claude oder ChatGPT verbinden",
+      "description": "Füge ClassroomIO mit dieser URL als benutzerdefinierten Connector in deiner KI-App hinzu, melde dich an und genehmige den Zugriff.",
+      "step_1": "Öffne in deiner KI-App die Einstellungen für Connectors oder Integrationen und füge einen benutzerdefinierten Connector hinzu.",
+      "step_2": "Füge die obige URL ein und starte die Verbindung.",
+      "step_3": "Melde dich bei ClassroomIO an, wähle diesen Workspace und genehmige die Berechtigungen."
+    },
+    "connected_apps": {
+      "title": "Verbundene Apps",
+      "description": "Apps, die du für diesen Workspace freigegeben hast. Entferne eine App, um ihren Zugriff sofort zu beenden.",
+      "table_app": "App",
+      "table_authorized_by": "Autorisiert von",
+      "table_permissions": "Berechtigungen",
+      "permissions_count": "{count} Bereiche",
+      "revoke": "Zugriff entfernen",
+      "revoke_confirm": "Zugriff dieser App entfernen? Sie funktioniert dann sofort nicht mehr."
+    }
   }
 }

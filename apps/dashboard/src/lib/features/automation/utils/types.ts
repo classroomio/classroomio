@@ -7,12 +7,21 @@ export type RevokeAutomationKeyRequest = (typeof classroomio.organization)['auto
 export type RotateAutomationKeyRequest =
   (typeof classroomio.organization)['automation']['keys'][':keyId']['rotate']['$post'];
 
+export type ListConnectedAppsRequest = (typeof classroomio.organization)['automation']['connected-apps']['$get'];
+export type RevokeConnectedAppRequest =
+  (typeof classroomio.organization)['automation']['connected-apps'][':consentId']['$delete'];
+export type GetOAuthConfigRequest = typeof classroomio.oauth.config.$get;
+
 export type ListAutomationKeysSuccess = Extract<InferResponseType<ListAutomationKeysRequest>, { success: true }>;
 export type GetAutomationUsageSuccess = Extract<InferResponseType<GetAutomationUsageRequest>, { success: true }>;
 export type CreateAutomationKeySuccess = Extract<InferResponseType<CreateAutomationKeyRequest>, { success: true }>;
 export type RevokeAutomationKeySuccess = Extract<InferResponseType<RevokeAutomationKeyRequest>, { success: true }>;
 export type RotateAutomationKeySuccess = Extract<InferResponseType<RotateAutomationKeyRequest>, { success: true }>;
 
+export type ListConnectedAppsSuccess = Extract<InferResponseType<ListConnectedAppsRequest>, { success: true }>;
+export type GetOAuthConfigSuccess = Extract<InferResponseType<GetOAuthConfigRequest>, { success: true }>;
+
+export type ConnectedApp = ListConnectedAppsSuccess['data'][number];
 export type AutomationKey = ListAutomationKeysSuccess['data'][number];
 export type AutomationKeyType = AutomationKey['type'];
 export type AutomationUsage = GetAutomationUsageSuccess['data'];

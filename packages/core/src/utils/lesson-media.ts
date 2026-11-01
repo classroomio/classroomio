@@ -1,4 +1,5 @@
 import { dedupe } from '@cio/utils';
+import { getFileUploadTypeKeyForMimeType } from '@cio/utils/file-upload';
 import { enrichObjectsWithUrls, extractKeysFromObjects } from './presigned-urls';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from './s3';
 
@@ -24,19 +25,7 @@ function mapAssetMimeTypeToDocumentType(mimeType: string | null, fallbackType: L
     return fallbackType;
   }
 
-  if (mimeType === 'application/pdf') {
-    return 'pdf';
-  }
-
-  if (mimeType === 'application/msword') {
-    return 'doc';
-  }
-
-  if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-    return 'docx';
-  }
-
-  return fallbackType;
+  return getFileUploadTypeKeyForMimeType(mimeType) ?? fallbackType;
 }
 
 function applyCanonicalVideoMetadata(

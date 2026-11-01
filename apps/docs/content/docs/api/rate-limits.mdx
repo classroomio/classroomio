@@ -42,7 +42,7 @@ This body is shaped differently from [other errors](/api/errors): it has no `suc
 
 ### MCP keys
 
-MCP keys (`cio_mcp_...`) also have per-minute usage limits for each key and for the whole organization. Going over them returns a `429` in the [standard error format](/api/errors#error-format), with no `Retry-After` header and no `retryAfter` field:
+MCP usage also has per-minute limits for each connected app or MCP key (`cio_mcp_...`) and for the whole organization. Going over them returns a `429` in the [standard error format](/api/errors#error-format), with no `Retry-After` header and no `retryAfter` field:
 
 ```json
 {
@@ -52,11 +52,11 @@ MCP keys (`cio_mcp_...`) also have per-minute usage limits for each key and for 
 }
 ```
 
-Wait until the next minute starts, then retry.
+Wait up to a minute, because the limit counts the last 60 seconds, then retry.
 
 ## Handle a 429
 
-Wait for `Retry-After` seconds, then retry. When the header is missing, as it is for MCP keys, this waits 60 seconds:
+Wait for `Retry-After` seconds, then retry. When the header is missing, as it is for MCP usage limits, this waits 60 seconds:
 
 ```js
 async function request(url, options) {
