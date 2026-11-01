@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { ClassroomIoApiClient } from './api-client';
 import { createMcpServer } from './server';
 
-async function connect(options: { includeLocalFileTools: boolean }) {
+async function connect(options: { includeLocalFileTools: boolean; toolProfile?: 'full' | 'compact' }) {
   const apiClient = new ClassroomIoApiClient({
     CLASSROOMIO_API_URL: 'https://api.example.com',
     CLASSROOMIO_API_KEY: 'cio_mcp_test',
@@ -44,6 +44,26 @@ describe('createMcpServer', () => {
     const remote = (await (await connect({ includeLocalFileTools: false })).listTools()).tools.map((tool) => tool.name);
 
     expect(local.filter((name) => !remote.includes(name))).toEqual(['upload_video']);
+  });
+});
+
+describe('compact tool profile', () => {
+  it('keeps reads and common edits but drops the heavy authoring tools', async () => {
+    const client = await connect({ includeLocalFileTools: false, toolProfile: 'compact' });
+    const { tools } = await client.listTools();
+    const names = tools.map((tool) => tool.name);
+
+    expect(names).toContain('list_org_courses');
+    expect(names).toContain('update_lesson');
+    expect(names).not.toContain('update_course_draft');
+    expect(names).not.toContain('delete_course_section');
+  });
+
+  it('serves a tool list under 100 KB', async () => {
+    const client = await connect({ includeLocalFileTools: false, toolProfile: 'compact' });
+    const { tools } = await client.listTools();
+
+    expect(JSON.stringify(tools).length).toBeLessThan(100_000);
   });
 });
 

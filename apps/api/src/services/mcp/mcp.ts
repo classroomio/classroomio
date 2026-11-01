@@ -37,6 +37,8 @@ export function getMcpResourceMetadataUrl(): string {
   return `${resource.origin}/.well-known/oauth-protected-resource${resourcePath}`;
 }
 
+const COMPACT_TOOL_CLIENT_PATTERN = /openai/i;
+
 /**
  * Builds an MCP server whose tool calls run in-process against the caller's own credential,
  * so every tool is subject to the same routes, scopes, limits and metering as a direct API call.
@@ -63,5 +65,8 @@ export function createRemoteMcpServer(options: { credential: string; requestHead
     }
   );
 
-  return createMcpServer(apiClient, { includeLocalFileTools: false });
+  const userAgent = options.requestHeaders.get('user-agent') ?? '';
+  const toolProfile = COMPACT_TOOL_CLIENT_PATTERN.test(userAgent) ? 'compact' : 'full';
+
+  return createMcpServer(apiClient, { includeLocalFileTools: false, toolProfile });
 }

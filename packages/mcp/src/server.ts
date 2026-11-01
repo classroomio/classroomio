@@ -31,7 +31,50 @@ export { ClassroomIoApiClient } from './api-client';
 export type CreateMcpServerOptions = {
   /** Registers tools that read files from the machine running the server; only safe for a local stdio process. */
   includeLocalFileTools: boolean;
+  /** `compact` registers only reads and common edits, for clients that cannot load the full tool list. */
+  toolProfile?: 'full' | 'compact';
 };
+
+const COMPACT_WRITE_TOOLS = new Set([
+  'add_course_member',
+  'add_audience_member',
+  'clone_course',
+  'create_course_draft_from_course',
+  'create_course_from_template',
+  'create_course_section',
+  'create_lesson',
+  'create_tag',
+  'create_tag_group',
+  'grade_course_submission',
+  'invite_team_members',
+  'publish_course_draft',
+  'set_course_tags',
+  'tag_courses',
+  'update_cohort',
+  'update_course_section',
+  'update_lesson',
+  'update_organization'
+]);
+
+export function isCompactToolName(name: string): boolean {
+  return name.startsWith('list_') || name.startsWith('get_') || COMPACT_WRITE_TOOLS.has(name);
+}
+
+function onlyToolsNamed(server: McpServer, isIncluded: (name: string) => boolean): McpServer {
+  return new Proxy(server, {
+    get(target, property) {
+      if (property === 'tool' || property === 'registerTool') {
+        return (name: string, ...args: unknown[]) => {
+          if (!isIncluded(name)) return undefined;
+
+          return (target[property] as (...registerArgs: unknown[]) => unknown).call(target, name, ...args);
+        };
+      }
+
+      return Reflect.get(target, property, target);
+    }
+  });
+}
 
 /**
  * Builds an MCP server with every ClassroomIO tool bound to the given API client.
@@ -43,31 +86,33 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
     version: MCP_VERSION
   });
 
-  registerCourseDraftTools(server, apiClient);
-  registerCourseTools(server, apiClient);
-  registerCohortTools(server, apiClient);
-  registerCohortNewsfeedTools(server, apiClient);
-  registerCohortGoalTools(server, apiClient);
-  registerLessonTools(server, apiClient);
-  registerCourseMemberTools(server, apiClient);
-  registerCourseCertificateTools(server, apiClient);
-  registerCourseSectionTools(server, apiClient);
-  registerCourseLessonTools(server, apiClient);
-  registerCourseContentTools(server, apiClient);
-  registerCourseExerciseTools(server, apiClient);
-  registerCourseSubmissionTools(server, apiClient);
-  registerCourseTemplateTools(server, apiClient);
-  registerAnalyticsTools(server, apiClient);
-  registerAudienceTools(server, apiClient);
-  registerTeamTools(server, apiClient);
-  registerOrganizationTools(server, apiClient);
-  registerEmailTemplateTools(server, apiClient);
-  registerLandingPageTools(server, apiClient);
-  registerTagTools(server, apiClient);
-  registerDomainTools(server, apiClient);
+  const registry = options.toolProfile === 'compact' ? onlyToolsNamed(server, isCompactToolName) : server;
+
+  registerCourseDraftTools(registry, apiClient);
+  registerCourseTools(registry, apiClient);
+  registerCohortTools(registry, apiClient);
+  registerCohortNewsfeedTools(registry, apiClient);
+  registerCohortGoalTools(registry, apiClient);
+  registerLessonTools(registry, apiClient);
+  registerCourseMemberTools(registry, apiClient);
+  registerCourseCertificateTools(registry, apiClient);
+  registerCourseSectionTools(registry, apiClient);
+  registerCourseLessonTools(registry, apiClient);
+  registerCourseContentTools(registry, apiClient);
+  registerCourseExerciseTools(registry, apiClient);
+  registerCourseSubmissionTools(registry, apiClient);
+  registerCourseTemplateTools(registry, apiClient);
+  registerAnalyticsTools(registry, apiClient);
+  registerAudienceTools(registry, apiClient);
+  registerTeamTools(registry, apiClient);
+  registerOrganizationTools(registry, apiClient);
+  registerEmailTemplateTools(registry, apiClient);
+  registerLandingPageTools(registry, apiClient);
+  registerTagTools(registry, apiClient);
+  registerDomainTools(registry, apiClient);
 
   if (options.includeLocalFileTools) {
-    registerMediaUploadTools(server, apiClient);
+    registerMediaUploadTools(registry, apiClient);
   }
 
   return server;

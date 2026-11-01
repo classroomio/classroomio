@@ -46,7 +46,7 @@ OpenAI's documentation calls these plugins. Your account and workspace policies 
 
 ## What the app can do
 
-The app can use every ClassroomIO MCP tool except `upload_video`, which needs a file on your own computer. Every action passes the same checks as the API: the permissions you approved, your role in the workspace, and your plan's limits.
+The app can use every ClassroomIO MCP tool except `upload_video`, which needs a file on your own computer. ChatGPT limits how large a tool list it can load, so it gets a smaller set: every `list_` and `get_` tool plus common edits such as adding members, managing sections and lessons, tags, and grading. Claude and coding agents get the full set. Every action passes the same checks as the API: the permissions you approved, your role in the workspace, and your plan's limits.
 
 Approval is tied to one workspace. To use another workspace, connect again and choose it.
 

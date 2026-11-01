@@ -146,6 +146,19 @@ describe('POST /mcp', () => {
     expect(response.status).toBe(200);
   });
 
+  it('serves ChatGPT a compact tool list and every other client the full one', async () => {
+    const headers = { Authorization: 'Bearer eyJhbGciOi' };
+    const chatgpt = await (await rpc('tools/list', {}, { ...headers, 'user-agent': 'openai-mcp/1.0.0' })).json();
+    const other = await (await rpc('tools/list', {}, { ...headers, 'user-agent': 'claude-code/1.0' })).json();
+    const chatgptNames: string[] = chatgpt.result.tools.map((tool: { name: string }) => tool.name);
+    const otherNames: string[] = other.result.tools.map((tool: { name: string }) => tool.name);
+
+    expect(chatgptNames).toContain('list_org_courses');
+    expect(chatgptNames).not.toContain('update_course_draft');
+    expect(otherNames).toContain('update_course_draft');
+    expect(chatgptNames.length).toBeLessThan(otherNames.length);
+  });
+
   it('runs a tool call through the internal dispatch with the caller credential', async () => {
     const response = await rpc(
       'tools/call',
