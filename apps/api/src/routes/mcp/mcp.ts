@@ -1,4 +1,5 @@
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
+import { SUPPORTED_PROTOCOL_VERSIONS } from '@modelcontextprotocol/sdk/types.js';
 
 import { AppError } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
@@ -11,12 +12,22 @@ import {
 const JSON_RPC_INVALID_REQUEST = -32600;
 const MCP_ACCEPT = 'application/json, text/event-stream';
 
-function withStreamableAccept(request: Request): Request {
+/**
+ * Clients such as ChatGPT send a protocol version newer than the SDK knows, which the transport answers
+ * with 400. Dropping an unknown version makes the transport assume its default, so the request is served.
+ */
+function normalizeMcpRequest(request: Request): Request {
   const accept = request.headers.get('Accept') ?? '';
-  if (accept.includes('application/json') && accept.includes('text/event-stream')) return request;
+  const protocolVersion = request.headers.get('Mcp-Protocol-Version');
+  const hasStreamableAccept = accept.includes('application/json') && accept.includes('text/event-stream');
+  const hasUnknownVersion = protocolVersion !== null && !SUPPORTED_PROTOCOL_VERSIONS.includes(protocolVersion);
+
+  if (hasStreamableAccept && !hasUnknownVersion) return request;
 
   const headers = new Headers(request.headers);
-  headers.set('Accept', MCP_ACCEPT);
+
+  if (!hasStreamableAccept) headers.set('Accept', MCP_ACCEPT);
+  if (hasUnknownVersion) headers.delete('Mcp-Protocol-Version');
 
   return new Request(request, { headers });
 }
@@ -56,7 +67,7 @@ export const mcpRouter = new Hono()
     try {
       await server.connect(transport);
 
-      const response = await transport.handleRequest(withStreamableAccept(c.req.raw));
+      const response = await transport.handleRequest(normalizeMcpRequest(c.req.raw));
 
       if (response.status >= 400) {
         const rejection = await response.clone().text();
