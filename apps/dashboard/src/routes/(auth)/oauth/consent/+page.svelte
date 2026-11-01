@@ -12,6 +12,7 @@
   } from '$features/oauth/utils/oauth-scopes';
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';
+  import { Skeleton } from '@cio/ui/base/skeleton';
   import CheckIcon from '@lucide/svelte/icons/check';
 
   let isReady = $state(false);
@@ -51,12 +52,29 @@
 <svelte:head><title>{$t('oauth.consent.page_title')}</title></svelte:head>
 
 <AuthUI showOnlyContent showLogo isLoading={oauthApi.isLoading} handleSubmit={() => respond(true)}>
-  {#if isReady && !canRespond}
+  {#if !isReady}
+    <div class="flex flex-col gap-6">
+      <div class="flex flex-col items-center gap-2">
+        <Skeleton class="h-7 w-72" />
+        <Skeleton class="h-5 w-48" />
+      </div>
+      <div class="space-y-3">
+        <Skeleton class="h-5 w-56" />
+        {#each [0, 1, 2, 3] as index (index)}
+          <Skeleton class="h-5 w-full" />
+        {/each}
+      </div>
+      <div class="flex gap-3">
+        <Skeleton class="h-10 flex-1" />
+        <Skeleton class="h-10 flex-1" />
+      </div>
+    </div>
+  {:else if !canRespond}
     <div class="space-y-1 text-center">
       <h1 class="text-xl font-medium">{$t('oauth.consent.error_title')}</h1>
       <p class="ui:text-muted-foreground text-sm">{$t('oauth.consent.error_description')}</p>
     </div>
-  {:else if isReady}
+  {:else}
     <div class="flex flex-col gap-6">
       <div class="space-y-1 text-center">
         <h1 class="text-2xl font-normal">{$t('oauth.consent.title', { client: clientName })}</h1>
@@ -99,13 +117,18 @@
           type="button"
           variant="outline"
           class="flex-1"
-          disabled={oauthApi.isLoading}
+          disabled={oauthApi.isLoading || oauthApi.isRedirecting}
           onclick={() => respond(false)}
           testId="oauth-consent-deny"
         >
           {$t('oauth.consent.deny')}
         </Button>
-        <Button type="submit" class="flex-1" loading={oauthApi.isLoading} testId="oauth-consent-allow">
+        <Button
+          type="submit"
+          class="flex-1"
+          loading={oauthApi.isLoading || oauthApi.isRedirecting}
+          testId="oauth-consent-allow"
+        >
           {$t('oauth.consent.allow')}
         </Button>
       </div>

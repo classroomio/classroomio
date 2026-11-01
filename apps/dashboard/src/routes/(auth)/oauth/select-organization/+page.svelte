@@ -7,14 +7,21 @@
   import { t } from '$lib/utils/functions/translations';
   import * as Avatar from '@cio/ui/base/avatar';
   import { Button } from '@cio/ui/base/button';
+  import { Skeleton } from '@cio/ui/base/skeleton';
 
   const oauthQuery = $derived(getOAuthQuery(page.url.search));
   const clientName = $derived(oauthApi.client?.client_name || t.get('oauth.consent.unknown_client'));
   const hasOrganizations = $derived((oauthApi.organizations?.length ?? 0) > 0);
 
   async function chooseOrganization(organizationId: string) {
+    oauthApi.isRedirecting = true;
+
     const selection = await oauthApi.selectOrganization(organizationId);
-    if (!selection) return;
+    if (!selection) {
+      oauthApi.failAuthorizationStep();
+
+      return;
+    }
 
     const nextUrl = await oauthApi.continueAfterOrganization(oauthQuery);
     if (nextUrl) window.location.href = nextUrl;
@@ -48,6 +55,8 @@
         <p class="ui:text-muted-foreground text-sm">
           {$t('oauth.select_organization.subtitle', { client: clientName })}
         </p>
+      {:else if !oauthApi.organizations && !oauthApi.error}
+        <Skeleton class="mx-auto h-5 w-64" />
       {/if}
     </div>
 
@@ -60,12 +69,17 @@
       <p class="ui:text-destructive text-center text-sm">{$t('oauth.error.generic')}</p>
     {:else}
       <div class="flex flex-col gap-2">
+        {#if !oauthApi.organizations}
+          {#each [0, 1, 2] as index (index)}
+            <Skeleton class="h-[66px] w-full rounded-md" />
+          {/each}
+        {/if}
         {#each oauthApi.organizations ?? [] as organization (organization.id)}
           <Button
             type="button"
             variant="outline"
             class="h-auto justify-start gap-3 py-3"
-            disabled={oauthApi.isLoading}
+            disabled={oauthApi.isLoading || oauthApi.isRedirecting}
             onclick={() => chooseOrganization(organization.id)}
             testId="oauth-select-organization-{organization.id}"
           >

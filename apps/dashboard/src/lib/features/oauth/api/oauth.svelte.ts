@@ -6,6 +6,7 @@ import type {
   OAuthRedirectResponse,
   SelectOAuthOrganizationRequest
 } from '$features/oauth/utils/types';
+import { snackbar } from '$features/ui/snackbar/store';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import { authClient } from '$lib/utils/services/auth/client';
 
@@ -13,6 +14,7 @@ class OAuthApi extends BaseApiWithErrors {
   organizations = $state<OAuthOrganization[] | null>(null);
   selectedOrganization = $state<OAuthOrganization | null>(null);
   client = $state<OAuthClientInfo | null>(null);
+  isRedirecting = $state(false);
 
   async listOrganizations() {
     return this.execute<ListOAuthOrganizationsRequest>({
@@ -63,6 +65,12 @@ class OAuthApi extends BaseApiWithErrors {
     return this.postAuthorizationStep('/oauth2/consent', { accept, oauth_query: oauthQuery });
   }
 
+  failAuthorizationStep() {
+    this.isRedirecting = false;
+    this.error = 'oauth.error.generic';
+    snackbar.error('oauth.error.generic');
+  }
+
   private async postAuthorizationStep(path: string, body: Record<string, unknown>): Promise<string | null> {
     this.isLoading = true;
     this.error = null;
@@ -71,15 +79,17 @@ class OAuthApi extends BaseApiWithErrors {
       const { data, error } = await authClient.$fetch<OAuthRedirectResponse>(path, { method: 'POST', body });
 
       if (error || !data?.url) {
-        this.error = 'oauth.error.generic';
+        this.failAuthorizationStep();
 
         return null;
       }
 
+      this.isRedirecting = true;
+
       return data.url;
     } catch (error) {
       console.error('Error in OAuth authorization step:', error);
-      this.error = 'oauth.error.generic';
+      this.failAuthorizationStep();
 
       return null;
     } finally {
