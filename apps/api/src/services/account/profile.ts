@@ -3,6 +3,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   countActiveStudents,
   ensureSelfHostedStudentMembership,
+  getActiveOrganizationPlan,
   getOrganizationByProfileId,
   getUserOrgRolesMap
 } from '@cio/db/queries/organization';
@@ -94,11 +95,13 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
         const studentsLimit = getPlanLimit('students', activePlan?.planName);
         const templatesUsed = await countOrgTemplates(org.id);
         const templatesLimit = getPlanLimit('templates', activePlan?.planName);
+        const effectivePlan = await getActiveOrganizationPlan(org.id);
 
         org.limits = {
           students: toResourceUsage(studentsUsed, studentsLimit),
           templates: toResourceUsage(templatesUsed, templatesLimit)
         };
+        org.paymentFailedAt = effectivePlan?.paymentFailedAt ?? null;
       })
     );
   }

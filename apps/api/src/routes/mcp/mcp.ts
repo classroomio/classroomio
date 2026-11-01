@@ -9,6 +9,17 @@ import {
 } from '@api/services/mcp/mcp';
 
 const JSON_RPC_INVALID_REQUEST = -32600;
+const MCP_ACCEPT = 'application/json, text/event-stream';
+
+function withStreamableAccept(request: Request): Request {
+  const accept = request.headers.get('Accept') ?? '';
+  if (accept.includes('application/json') && accept.includes('text/event-stream')) return request;
+
+  const headers = new Headers(request.headers);
+  headers.set('Accept', MCP_ACCEPT);
+
+  return new Request(request, { headers });
+}
 
 function jsonRpcError(message: string) {
   return { jsonrpc: '2.0', error: { code: JSON_RPC_INVALID_REQUEST, message }, id: null };
@@ -45,7 +56,21 @@ export const mcpRouter = new Hono()
     try {
       await server.connect(transport);
 
-      return await transport.handleRequest(c.req.raw);
+      const response = await transport.handleRequest(withStreamableAccept(c.req.raw));
+
+      if (response.status >= 400) {
+        const rejection = await response.clone().text();
+        console.warn('mcp request rejected', {
+          status: response.status,
+          accept: c.req.header('Accept'),
+          contentType: c.req.header('Content-Type'),
+          protocolVersion: c.req.header('Mcp-Protocol-Version'),
+          userAgent: c.req.header('User-Agent'),
+          rejection: rejection.slice(0, 500)
+        });
+      }
+
+      return response;
     } finally {
       await transport.close();
       await server.close();

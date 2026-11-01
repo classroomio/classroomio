@@ -1342,7 +1342,12 @@
       "active": "You don't have any active billing",
       "provider": "We use Polar to help manage your billing",
       "open_billing": "Open billing",
-      "error": "An error occurred while opening billing"
+      "error": "An error occurred while opening billing",
+      "payment_failed": {
+        "warning": "Your last payment failed. Update your payment method before {date} to keep enrolling new students.",
+        "blocked": "Your last payment failed, so new students can't enrol. Update your payment method to resume enrollment.",
+        "action": "Update payment method"
+      }
     },
     "ai_credits": {
       "sub_title": "AI credits",

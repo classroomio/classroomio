@@ -70,7 +70,6 @@
           {
             title: trimmedTitle,
             courseId,
-            lessonAt: new Date().toDateString(),
             isUnlocked: true,
             order,
             sectionId

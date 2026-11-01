@@ -24,7 +24,7 @@ Fetch the server metadata instead of hard-coding endpoints:
 https://app.classroomio.com/.well-known/oauth-authorization-server
 ```
 
-For a self-hosted installation, use your dashboard origin. The metadata lists the authorization, token, registration and revocation endpoints and the signing keys (`jwks_uri`).
+The same document is also served at `/.well-known/openid-configuration` and under `/api/auth/.well-known/`, and any origin can read it. For a self-hosted installation, use your dashboard origin. The metadata lists the authorization, token, registration and revocation endpoints, the signing keys (`jwks_uri`) and `scopes_supported`. It sets `authorization_response_iss_parameter_supported` to `true`, so check that the `iss` parameter on the authorization response matches the issuer.
 
 ## Register a client
 
