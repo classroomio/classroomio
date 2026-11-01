@@ -2,6 +2,7 @@ import { ContentType } from '@cio/utils/constants/content';
 import { ROLE } from '@cio/utils/constants/roles';
 import { useState } from 'react';
 
+import { parseTimestamp } from '@/feature/common/helpers/time-ago';
 import type { AttendanceStatus, TeachCourse, TeachCourseMember } from '@/feature/teach/types/teach';
 
 export type AttendanceSession = { id: string; title: string; lessonAt: string | null; number: number };
@@ -20,8 +21,8 @@ export function sessionsOf(course: TeachCourse): AttendanceSession[] {
 export function defaultSessionOf(sessions: AttendanceSession[], now = Date.now()) {
   const dated = sessions.filter((session) => session.lessonAt);
   const started = dated
-    .filter((session) => new Date(session.lessonAt!).getTime() <= now)
-    .sort((first, second) => new Date(second.lessonAt!).getTime() - new Date(first.lessonAt!).getTime());
+    .filter((session) => parseTimestamp(session.lessonAt!) <= now)
+    .sort((first, second) => parseTimestamp(second.lessonAt!) - parseTimestamp(first.lessonAt!));
 
   return started[0] ?? dated[0] ?? sessions[0] ?? null;
 }

@@ -139,5 +139,9 @@ export const ru: TranslatedMessages<typeof en> = {
   menuDownload: 'Скачать',
   menuManageDownload: 'Управлять загрузкой',
   menuCopyLink: 'Копировать ссылку',
-  linkCopied: 'Ссылка скопирована'
+  linkCopied: 'Ссылка скопирована',
+  nextLiveClass: 'Следующее живое занятие',
+  dueSoon: 'Скоро срок',
+  recentUpdates: 'Последние обновления',
+  joinSession: 'Присоединиться'
 };

@@ -134,5 +134,9 @@ export const pl: TranslatedMessages<typeof en> = {
   menuDownload: 'Pobierz',
   menuManageDownload: 'Zarządzaj pobieraniem',
   menuCopyLink: 'Kopiuj link',
-  linkCopied: 'Skopiowano link'
+  linkCopied: 'Skopiowano link',
+  nextLiveClass: 'Następne zajęcia na żywo',
+  dueSoon: 'Wkrótce termin',
+  recentUpdates: 'Ostatnie aktualizacje',
+  joinSession: 'Dołącz'
 };

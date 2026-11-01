@@ -1,5 +1,6 @@
 import { getLiveSessionPhase } from '@cio/utils/functions/live-session';
 
+import { parseTimestamp } from '@/feature/common/helpers/time-ago';
 import { findItem } from '@/feature/course/helpers/course-content';
 import { formatDay, formatSessionTime } from '@/feature/course/helpers/format-date';
 import type { en } from '@/feature/course/translations/en';
@@ -20,9 +21,11 @@ export function lockReasonOf(item: CourseContentItem, items: CourseContentItem[]
 }
 
 export function liveSessionPhaseOf(item: Pick<CourseContentItem, 'callUrl' | 'lessonAt' | 'sessionDurationMinutes'>) {
+  const startTime = item.lessonAt ? parseTimestamp(item.lessonAt) : Number.NaN;
+
   return getLiveSessionPhase({
     callUrl: item.callUrl,
-    lessonAt: item.lessonAt,
+    lessonAt: Number.isFinite(startTime) ? new Date(startTime).toISOString() : null,
     sessionDurationMinutes: item.sessionDurationMinutes
   });
 }

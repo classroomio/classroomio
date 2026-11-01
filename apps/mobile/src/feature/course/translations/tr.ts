@@ -104,5 +104,9 @@ export const tr: TranslatedMessages<typeof en> = {
   menuDownload: 'İndir',
   menuManageDownload: 'İndirmeyi yönet',
   menuCopyLink: 'Bağlantıyı kopyala',
-  linkCopied: 'Bağlantı kopyalandı'
+  linkCopied: 'Bağlantı kopyalandı',
+  nextLiveClass: 'Sıradaki canlı ders',
+  dueSoon: 'Yakında son tarih',
+  recentUpdates: 'Son güncellemeler',
+  joinSession: 'Katıl'
 };

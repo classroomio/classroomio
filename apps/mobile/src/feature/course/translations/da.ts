@@ -111,5 +111,9 @@ export const da: TranslatedMessages<typeof en> = {
   menuDownload: 'Download',
   menuManageDownload: 'Administrer download',
   menuCopyLink: 'Kopiér link',
-  linkCopied: 'Link kopieret'
+  linkCopied: 'Link kopieret',
+  nextLiveClass: 'Næste liveundervisning',
+  dueSoon: 'Snart frist',
+  recentUpdates: 'Seneste opdateringer',
+  joinSession: 'Deltag'
 };

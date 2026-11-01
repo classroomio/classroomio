@@ -116,5 +116,9 @@ export const de: TranslatedMessages<typeof en> = {
   menuDownload: 'Herunterladen',
   menuManageDownload: 'Download verwalten',
   menuCopyLink: 'Link kopieren',
-  linkCopied: 'Link kopiert'
+  linkCopied: 'Link kopiert',
+  nextLiveClass: 'Nächste Live-Sitzung',
+  dueSoon: 'Bald fällig',
+  recentUpdates: 'Neueste Updates',
+  joinSession: 'Beitreten'
 };

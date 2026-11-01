@@ -100,5 +100,9 @@ export const en = {
   menuDownload: 'Download',
   menuManageDownload: 'Manage download',
   menuCopyLink: 'Copy link',
-  linkCopied: 'Link copied'
+  linkCopied: 'Link copied',
+  nextLiveClass: 'Next live class',
+  dueSoon: 'Due soon',
+  recentUpdates: 'Recent updates',
+  joinSession: 'Join'
 };

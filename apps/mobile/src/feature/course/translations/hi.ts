@@ -107,5 +107,9 @@ export const hi: TranslatedMessages<typeof en> = {
   menuDownload: 'डाउनलोड करें',
   menuManageDownload: 'डाउनलोड प्रबंधित करें',
   menuCopyLink: 'लिंक कॉपी करें',
-  linkCopied: 'लिंक कॉपी हो गया'
+  linkCopied: 'लिंक कॉपी हो गया',
+  nextLiveClass: 'अगली लाइव क्लास',
+  dueSoon: 'जल्द देय',
+  recentUpdates: 'हाल के अपडेट',
+  joinSession: 'जुड़ें'
 };

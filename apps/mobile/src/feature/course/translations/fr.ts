@@ -108,5 +108,9 @@ export const fr: TranslatedMessages<typeof en> = {
   menuDownload: 'Télécharger',
   menuManageDownload: 'Gérer le téléchargement',
   menuCopyLink: 'Copier le lien',
-  linkCopied: 'Lien copié'
+  linkCopied: 'Lien copié',
+  nextLiveClass: 'Prochain cours en direct',
+  dueSoon: 'À rendre bientôt',
+  recentUpdates: 'Dernières nouvelles',
+  joinSession: 'Rejoindre'
 };

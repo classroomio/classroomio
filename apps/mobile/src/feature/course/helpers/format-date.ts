@@ -1,3 +1,4 @@
+import { parseTimestamp } from '@/feature/common/helpers/time-ago';
 import type { Locale } from '@/feature/i18n/types/i18n';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -32,9 +33,9 @@ function dayFormatFor(locale: Locale) {
 }
 
 function toDate(value: string) {
-  const date = new Date(value);
+  const time = parseTimestamp(value);
 
-  return Number.isNaN(date.getTime()) ? null : date;
+  return Number.isFinite(time) ? new Date(time) : null;
 }
 
 export function formatSessionTime(value: string, locale: Locale) {

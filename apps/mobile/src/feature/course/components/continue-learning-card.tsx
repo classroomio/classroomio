@@ -1,12 +1,12 @@
-import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
+import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
 import { StyleSheet, View } from 'react-native';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import { Icon } from '@/feature/common/components/icon';
-import { NotchCard } from '@/feature/common/components/notch-card';
 import { PressableScale } from '@/feature/common/components/pressable-scale';
-import { Progress } from '@/feature/common/components/progress';
 import { Text } from '@/feature/common/components/text';
 import { RADII, SPACING } from '@/feature/common/constants/layout';
+import { withAlpha } from '@/feature/common/helpers/color';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { progressPercentOf } from '@/feature/course/helpers/learning-status';
@@ -18,7 +18,7 @@ import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { CourseBanner } from './course-banner';
 import { CourseZoomLink } from './course-zoom-link';
 
-/** The course the learner is most likely to resume, as the featured block at the top of Home. */
+/** The course the learner is most likely to resume: its artwork full-bleed, with the title and progress set over it. */
 export function ContinueLearningCard({ course }: { course: EnrolledCourse }) {
   const t = useTranslations(courseCatalog);
   const common = useTranslations(commonCatalog);
@@ -33,43 +33,69 @@ export function ContinueLearningCard({ course }: { course: EnrolledCourse }) {
       <PressableScale
         accessibilityRole="button"
         accessibilityLabel={`${common('continue')}, ${course.title}, ${percent}`}
-        scaleTo={0.985}
+        scaleTo={0.98}
       >
-        <NotchCard style={styles.card}>
-          <CourseBanner uri={course.bannerImage || course.logo} recyclingKey={course.id} style={styles.banner} />
-          <View style={styles.copy}>
-            <Text variant="heading" numberOfLines={2}>
-              {course.title}
-            </Text>
-            <Text variant="caption" tone="muted" numberOfLines={1}>
+        <View style={[styles.card, { backgroundColor: colors.muted }]}>
+          <CourseBanner
+            uri={course.bannerImage || course.logo}
+            recyclingKey={course.id}
+            style={StyleSheet.absoluteFill}
+          />
+          <Svg style={StyleSheet.absoluteFill} width="100%" height="100%" preserveAspectRatio="none">
+            <Defs>
+              <LinearGradient id="scrim" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0.25" stopColor={colors.artworkScrim} stopOpacity={0} />
+                <Stop offset="1" stopColor={colors.artworkScrim} stopOpacity={0.82} />
+              </LinearGradient>
+            </Defs>
+            <Rect x="0" y="0" width="100%" height="100%" fill="url(#scrim)" />
+          </Svg>
+
+          <View style={styles.overlay}>
+            <Text variant="captionStrong" style={{ color: withAlpha(colors.onSolid, 0.8) }} numberOfLines={1}>
               {`${percent} · ${lessons}`}
             </Text>
-          </View>
-          <Progress value={progress} />
-          <View style={[styles.action, { backgroundColor: colors.primary }]}>
-            <Text variant="label" tone="onPrimary">
-              {common('continue')}
+            <Text variant="title" style={{ color: colors.onSolid }} numberOfLines={2}>
+              {course.title}
             </Text>
-            <Icon icon={ArrowRightIcon} size={18} tone="onPrimary" />
+            <View style={styles.footer}>
+              <View style={[styles.track, { backgroundColor: withAlpha(colors.onSolid, 0.3) }]}>
+                <View style={[styles.fill, { width: `${progress}%`, backgroundColor: colors.onSolid }]} />
+              </View>
+              <View style={[styles.play, { backgroundColor: colors.onSolid }]}>
+                <Icon icon={PlayIcon} size={20} color={colors.primary} weight="fill" />
+              </View>
+            </View>
           </View>
-        </NotchCard>
+        </View>
       </PressableScale>
     </CourseZoomLink>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { gap: SPACING.sm },
-  banner: { width: '100%', aspectRatio: 16 / 9, borderRadius: RADII.input, borderCurve: 'continuous' },
-  copy: { gap: 2 },
-  action: {
-    flexDirection: 'row',
+  card: {
+    width: '100%',
+    aspectRatio: 4 / 3,
+    justifyContent: 'flex-end',
+    borderRadius: RADII.sheet,
+    borderCurve: 'continuous',
+    overflow: 'hidden'
+  },
+  overlay: { padding: SPACING.lg, gap: SPACING.xxs },
+  footer: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md, marginTop: SPACING.sm },
+  track: {
+    flex: 1,
+    height: 5,
+    borderRadius: RADII.pill,
+    overflow: 'hidden'
+  },
+  fill: { height: '100%', borderRadius: RADII.pill },
+  play: {
+    width: 48,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: SPACING.xs,
-    minHeight: 44,
-    marginTop: SPACING.xxs,
-    borderRadius: RADII.md,
-    borderCurve: 'continuous'
+    borderRadius: RADII.pill
   }
 });

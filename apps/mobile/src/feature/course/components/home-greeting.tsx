@@ -8,6 +8,7 @@ import { dayPartOf, firstNameOf, type HomeStatus } from '@/feature/course/helper
 import { courseCatalog } from '@/feature/course/translations/catalog';
 import type { en } from '@/feature/course/translations/en';
 import type { Translator } from '@/feature/i18n/helpers/translate';
+import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
 const GREETING_KEYS = {
@@ -36,9 +37,13 @@ export function HomeGreeting({ status }: { status: HomeStatus | null }) {
   const account = useAccountQuery();
   const name = firstNameOf(account.data?.profile.fullname);
   const keys = GREETING_KEYS[dayPartOf()];
+  const format = useFormatters();
 
   return (
     <View style={styles.greeting}>
+      <Text variant="captionStrong" tone="muted">
+        {format.weekdayDate(new Date())}
+      </Text>
       <Text variant="display" accessibilityRole="header" numberOfLines={2}>
         {name ? t(keys.named, { name }) : t(keys.plain)}
       </Text>

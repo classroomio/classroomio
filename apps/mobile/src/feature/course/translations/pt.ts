@@ -107,5 +107,9 @@ export const pt: TranslatedMessages<typeof en> = {
   menuDownload: 'Baixar',
   menuManageDownload: 'Gerenciar download',
   menuCopyLink: 'Copiar link',
-  linkCopied: 'Link copiado'
+  linkCopied: 'Link copiado',
+  nextLiveClass: 'Próxima aula ao vivo',
+  dueSoon: 'Prazo próximo',
+  recentUpdates: 'Novidades recentes',
+  joinSession: 'Entrar'
 };

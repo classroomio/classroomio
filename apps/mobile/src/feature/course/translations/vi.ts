@@ -104,5 +104,9 @@ export const vi: TranslatedMessages<typeof en> = {
   menuDownload: 'Tải xuống',
   menuManageDownload: 'Quản lý bản tải xuống',
   menuCopyLink: 'Sao chép liên kết',
-  linkCopied: 'Đã sao chép liên kết'
+  linkCopied: 'Đã sao chép liên kết',
+  nextLiveClass: 'Buổi học trực tiếp tiếp theo',
+  dueSoon: 'Sắp đến hạn',
+  recentUpdates: 'Cập nhật gần đây',
+  joinSession: 'Tham gia'
 };
