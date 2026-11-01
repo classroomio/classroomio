@@ -503,8 +503,6 @@ class OrgApi extends BaseApiWithErrors {
             theme: response.data.theme ?? undefined,
             landingpage: response.data.landingpage ?? undefined,
             siteName: response.data.siteName ?? undefined,
-            customDomain: response.data.customDomain,
-            isCustomDomainVerified: response.data.isCustomDomainVerified ?? undefined,
             customization: response.data.customization ?? undefined
           });
           return;

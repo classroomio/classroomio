@@ -43,6 +43,7 @@ const ORG_ID = 'org-1';
 const ACTOR_ID = 'actor-1';
 const MEMBER_ID = 42;
 const PROFILE_ID = 'profile-9';
+const ADMIN_CHANGE = { kind: 'org_admin', orgId: ORG_ID, actorId: ACTOR_ID };
 
 const joined = { id: MEMBER_ID, profileId: PROFILE_ID, name: 'Sam Student', email: 'sam@example.com' };
 const pending = { id: MEMBER_ID, profileId: null, name: '', email: 'sam@example.com' };
@@ -153,8 +154,43 @@ describe('services/v1/audience', () => {
     it('renames a joined member on their profile', async () => {
       await updateAudienceService(ORG_ID, MEMBER_ID, ACTOR_ID, { name: 'Samuel Student', sendEmail: true });
 
-      expect(updateUser).toHaveBeenCalledWith(PROFILE_ID, { fullname: 'Samuel Student' });
+      expect(updateUser).toHaveBeenCalledWith(PROFILE_ID, { fullname: 'Samuel Student' }, ADMIN_CHANGE);
       expect(updatePendingAudienceMemberEmail).not.toHaveBeenCalled();
+    });
+
+    it('sets username, avatar and language through the shared profile update, as an org admin change', async () => {
+      await updateAudienceService(ORG_ID, MEMBER_ID, ACTOR_ID, {
+        username: 'samuel',
+        avatarUrl: 'https://cdn.example.com/sam.png',
+        locale: 'es',
+        sendEmail: true
+      });
+
+      expect(updateUser).toHaveBeenCalledWith(
+        PROFILE_ID,
+        { username: 'samuel', avatarUrl: 'https://cdn.example.com/sam.png', locale: 'es' },
+        ADMIN_CHANGE
+      );
+    });
+
+    it('refuses a username change on a pending member and names the field', async () => {
+      vi.mocked(getOrgAudienceMember).mockResolvedValue(pending as never);
+
+      await expect(
+        updateAudienceService(ORG_ID, MEMBER_ID, ACTOR_ID, { username: 'samuel', sendEmail: true })
+      ).rejects.toMatchObject({ statusCode: 400, field: 'username' });
+
+      expect(updateUser).not.toHaveBeenCalled();
+    });
+
+    it('passes on a taken username as 400', async () => {
+      vi.mocked(updateUser).mockRejectedValueOnce(
+        new AppError('Username already exists', ErrorCodes.VALIDATION_ERROR, 400, 'username')
+      );
+
+      await expect(
+        updateAudienceService(ORG_ID, MEMBER_ID, ACTOR_ID, { username: 'taken', sendEmail: true })
+      ).rejects.toMatchObject({ statusCode: 400, field: 'username', message: 'Username already exists' });
     });
 
     it('looks the member up in the key organization only', async () => {

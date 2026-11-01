@@ -175,7 +175,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'tag_courses',
-    'Assign tags to one or more live courses by name. Existing tags are kept unless mode is replace.',
+    'Assign tags to one or more live courses by name; existing tags are kept unless mode is replace. Each course is one write, and if the rate limit stops it partway the error lists the courses already tagged.',
     tagCoursesShape,
     async (args) => {
       const payload = ZAutomationCourseTagAssignment.parse(args);

@@ -89,8 +89,8 @@ export async function syncProfileEmailVerificationFromAuthUser(userId: string, d
   }
 }
 
-export const getProfileById = async (id: string) => {
-  const [profile] = await db.select().from(schema.profile).where(eq(schema.profile.id, id)).limit(1);
+export const getProfileById = async (id: string, dbClient: DbOrTxClient = db) => {
+  const [profile] = await dbClient.select().from(schema.profile).where(eq(schema.profile.id, id)).limit(1);
 
   return profile;
 };
@@ -176,6 +176,15 @@ export const updateProfile = async (
     .returning();
 
   return updatedProfile;
+};
+
+/** Keeps the auth user's name and image in step with the profile, as the dashboard's `authClient.updateUser` does. */
+export const updateAuthUserProfile = async (
+  id: string,
+  data: { name?: string; image?: string },
+  dbClient: DbOrTxClient = db
+) => {
+  await dbClient.update(schema.user).set(data).where(eq(schema.user.id, id));
 };
 
 export const markUserAndProfileEmailVerified = async (userId: string, dbClient: DbOrTxClient = db) => {

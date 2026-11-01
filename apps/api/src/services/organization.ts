@@ -4,13 +4,16 @@ import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from 
 import type {
   TCourseReorder,
   TGetAudienceQuery,
-  TGetOrganizationCoursesQuery
+  TGetOrganizationCoursesQuery,
+  TOrganizationCourseSort
 } from '@cio/utils/validation/organization';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   activateOrganizationPlan,
   cancelOrganizationPlan,
   checkSiteNameExists,
+  countOrganizationAdmins,
   createOrganizationPlan,
   deleteOrganizationAudienceMember,
   deleteOrganizationMember,
@@ -26,7 +29,9 @@ import {
   getOrganizationMemberIdByOrgAndProfile,
   getOrganizationPlanBySubscriptionId,
   getOrganizationTeam,
+  getOrganizationTeamMemberById,
   getOrganizations,
+  lockOrganizationForUpdate,
   revokeActiveOrganizationInvitesByEmails,
   updateOrganization,
   updateOrganizationPlan
@@ -572,9 +577,16 @@ export async function getUserEnrolledCourses(orgId: string, userId: string) {
  * @param userId - User ID to exclude enrolled courses
  * @returns Array of recommended courses
  */
-export async function getRecommendedCourses(orgId: string, userId: string, limit?: number, page?: number) {
+export async function getRecommendedCourses(
+  orgId: string,
+  userId: string,
+  limit?: number,
+  page?: number,
+  sort?: TOrganizationCourseSort,
+  order?: 'asc' | 'desc'
+) {
   try {
-    return getExploreCourses({ orgId, profileId: userId, limit, page });
+    return getExploreCourses({ orgId, profileId: userId, limit, page, sortKey: sort, order });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -800,7 +812,8 @@ async function assertAuthSettingsEntitlement(orgId: string, data: Partial<TOrgan
   }
 }
 
-export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
+/** `dbClient` is used for the organization write only. */
+export async function updateOrg(orgId: string, data: Partial<TOrganization>, dbClient: DbOrTxClient = db) {
   try {
     if (data.siteName) {
       const exists = await checkSiteNameExists(data.siteName, orgId); // exclude current org
@@ -845,7 +858,7 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       updateData = { ...data, customization };
     }
 
-    const organization = await updateOrganization(orgId, updateData);
+    const organization = await updateOrganization(orgId, updateData, dbClient);
     if (!organization) {
       throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
     }
@@ -979,16 +992,39 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
  */
 export async function removeTeamMember(orgId: string, memberId: number, removedByProfileId?: string) {
   try {
-    const deleted = await deleteOrganizationMember(orgId, memberId);
-    if (!deleted) {
-      throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
-    }
+    const { deleted, targetEmail, revoked } = await db.transaction(async (tx) => {
+      await lockOrganizationForUpdate(orgId, tx);
+
+      const member = await getOrganizationTeamMemberById(orgId, memberId, tx);
+      if (!member) {
+        throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
+      }
+
+      if (member.profileId && member.profileId === removedByProfileId) {
+        throw new AppError('You cannot remove yourself from the team', ErrorCodes.ORG_TEAM_REMOVE_SELF, 400);
+      }
+
+      const removed = await deleteOrganizationMember(orgId, memberId, tx);
+      if (!removed) {
+        throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
+      }
+
+      if ((await countOrganizationAdmins(orgId, tx)) < 1) {
+        throw new AppError('The organization must keep at least one admin', ErrorCodes.ORG_TEAM_LAST_ADMIN, 400);
+      }
+
+      const removedEmail = removed.email?.toLowerCase() ?? null;
+      const revokedInvites =
+        removedEmail && removedByProfileId
+          ? await revokeActiveOrganizationInvitesByEmails(orgId, [removedEmail], removedByProfileId, tx)
+          : [];
+
+      return { deleted: removed, targetEmail: removedEmail, revoked: revokedInvites };
+    });
 
     await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 
-    if (deleted.email && removedByProfileId) {
-      const targetEmail = deleted.email.toLowerCase();
-      const revoked = await revokeActiveOrganizationInvitesByEmails(orgId, [targetEmail], removedByProfileId);
+    if (targetEmail && removedByProfileId && revoked.length > 0) {
       await recordOrganizationInviteAudits(
         revoked.map((invite) => ({
           inviteId: invite.id,

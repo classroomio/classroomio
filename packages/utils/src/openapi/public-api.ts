@@ -44,20 +44,33 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/team': 'List team members',
   'GET /public-api/v1/team/{memberId}': 'Get a team member',
   'PUT /public-api/v1/team/{memberId}': 'Update a team member',
+  'DELETE /public-api/v1/team/{memberId}': 'Remove a team member',
+  'POST /public-api/v1/team/invites': 'Invite team members',
+  'GET /public-api/v1/team/invite-link': 'Get the team invite link',
+  'POST /public-api/v1/team/invite-link': 'Create the team invite link',
+  'PATCH /public-api/v1/team/invite-link': 'Turn the team invite link off or on',
   'GET /public-api/v1/organization': 'Get the organization',
   'PATCH /public-api/v1/organization': 'Update the organization',
+  'GET /public-api/v1/organization/customization': 'Get the LMS customization',
+  'PATCH /public-api/v1/organization/customization': 'Update the LMS customization',
   'GET /public-api/v1/organization/email-templates': 'List student email templates',
   'GET /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Get a student email template',
   'PUT /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Save a student email template',
   'DELETE /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Reset a student email template',
   'POST /public-api/v1/organization/email-templates/{emailId}/{locale}/test': 'Send a test student email',
   'PUT /public-api/v1/organization/landing-page/featured-courses': 'Set featured courses',
+  'GET /public-api/v1/organization/domain': 'Get domain settings',
+  'PATCH /public-api/v1/organization/domain': 'Update subdomain or favicon',
+  'PUT /public-api/v1/organization/domain/custom': 'Connect a custom domain',
+  'POST /public-api/v1/organization/domain/custom/refresh': 'Refresh custom domain status',
+  'DELETE /public-api/v1/organization/domain/custom': 'Remove the custom domain',
   'GET /public-api/v1/courses': 'List courses',
   'POST /public-api/v1/courses': 'Create a course',
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
   'PUT /public-api/v1/courses/{courseId}': 'Update a course',
   'DELETE /public-api/v1/courses/{courseId}': 'Delete a course',
   'POST /public-api/v1/courses/{courseId}/clone': 'Clone a course',
+  'GET /public-api/v1/courses/{courseId}/related': 'List related courses',
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
@@ -170,7 +183,12 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per learner',
   'GET /public-api/v1/analytics/learners/{profileId}': "Get a learner's analytics",
   'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics',
-  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics'
+  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics',
+  'GET /public-api/v1/tags': 'List tag groups and tags',
+  'POST /public-api/v1/tags': 'Create a tag',
+  'PUT /public-api/v1/tags/{tagId}': 'Update a tag',
+  'POST /public-api/v1/tags/groups': 'Create a tag group',
+  'PUT /public-api/v1/tags/groups/{groupId}': 'Update a tag group'
 };
 
 const OPERATION_TAGS = [
@@ -182,6 +200,18 @@ const OPERATION_TAGS = [
     description: 'Read, customize, translate and reset the emails your organization sends to students.'
   },
   { name: 'Organization Landing Page', description: "Manage your organization's public landing page." },
+  {
+    name: 'Tags',
+    description: 'Create tag groups and tags. Set them on a course with tagIds or addTagIds on the course update.'
+  },
+  {
+    name: 'Organization Domain',
+    description: 'Manage where your site is served: its subdomain, favicon and custom domain.'
+  },
+  {
+    name: 'Organization Customization',
+    description: 'Turn LMS features on or off for students, and set the dashboard banner and login background.'
+  },
   { name: 'Courses', description: 'Create, update, delete, and clone courses.' },
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
   { name: 'Course Members', description: 'Manage the people in a course and their progress.' },

@@ -61,6 +61,7 @@ import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
 import { signupGuard } from '@api/middlewares/signup-guard';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
+import { upgradeRequiredEvent } from '@api/middlewares/upgrade-required-event';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 
@@ -124,6 +125,7 @@ export const app = new Hono()
     await next();
   })
   .use('*', rateLimiter)
+  .use('*', upgradeRequiredEvent)
 
   // Routes
   .get('/', (c) =>

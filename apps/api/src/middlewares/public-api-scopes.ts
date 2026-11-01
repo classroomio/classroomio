@@ -10,14 +10,18 @@ const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|i
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
 const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content)(?:\/|$)/;
 const COURSE_CLONE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/clone\/?$/;
+const COURSE_RELATED_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/related\/?$/;
 const COURSE_EXERCISE_PATH = /^(?:\/public-api\/v1)?\/(?:courses\/[^/]+\/exercises|exercise-templates)(?:\/|$)/;
 const COURSE_SUBMISSION_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:submissions|marks)(?:\/|$)/;
 const COURSE_TEMPLATE_PATH = /^(?:\/public-api\/v1)?(?:\/course-templates|\/courses\/[^/]+\/template)(?:\/|$)/;
 const AUDIENCE_PATH = /^(?:\/public-api\/v1)?\/audience(?:\/|$)/;
 const TEAM_PATH = /^(?:\/public-api\/v1)?\/team(?:\/|$)/;
+const ORGANIZATION_DOMAIN_PATH = /^(?:\/public-api\/v1)?\/organization\/domain(?:\/|$)/;
 const ORGANIZATION_PATH = /^(?:\/public-api\/v1)?\/organization(?:\/|$)/;
 const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
+const TAG_PATH = /^(?:\/public-api\/v1)?\/tags(?:\/|$)/;
+const COURSE_ITEM_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/?$/;
 
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
   const isRead = method === 'GET' || method === 'HEAD';
@@ -32,6 +36,10 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (TEAM_PATH.test(path)) {
     return isRead ? 'team:read' : 'team:write';
+  }
+
+  if (ORGANIZATION_DOMAIN_PATH.test(path)) {
+    return isRead ? 'organization:read' : 'organization:domain:write';
   }
 
   if (ORGANIZATION_PATH.test(path)) {
@@ -62,6 +70,10 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return isRead ? null : 'course:write';
   }
 
+  if (COURSE_RELATED_PATH.test(path)) {
+    return isRead ? 'course:read' : null;
+  }
+
   // Only writes are mapped: there is no read route on this family yet, so a GET
   // falls through to null and is refused rather than opened by a write scope.
   if (MEDIA_PATH.test(path)) {
@@ -74,6 +86,15 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (COURSE_SUBMISSION_PATH.test(path)) {
     return method === 'GET' || method === 'HEAD' ? 'course:submission:read' : 'course:submission:write';
+  }
+
+  if (TAG_PATH.test(path)) {
+    return isRead ? 'course:read' : 'course:tag:write';
+  }
+
+  // The handler limits these keys to a tagIds- or addTagIds-only body; every other course field still needs public_api:*.
+  if (COURSE_ITEM_PATH.test(path) && method === 'PUT') {
+    return 'course:tag:write';
   }
 
   return null;

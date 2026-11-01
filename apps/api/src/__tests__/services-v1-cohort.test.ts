@@ -22,7 +22,7 @@ vi.mock('@api/services/cohort/cohort', () => ({
   updateCohort: vi.fn(),
   deleteCohort: vi.fn(),
   listOrgCohortsPage: vi.fn(),
-  listCohortMembersPage: vi.fn(),
+  listPaginatedCohortPeople: vi.fn(),
   listCohortCoursesPage: vi.fn(),
   addCohortMembersSettled: vi.fn(),
   getEnrolledCohorts: vi.fn(),
@@ -48,7 +48,7 @@ import {
   getCohort,
   getEnrolledCohorts,
   listCohortCoursesPage,
-  listCohortMembersPage,
+  listPaginatedCohortPeople,
   listOrgCohortsPage,
   removeCohortMemberService,
   removeCourseFromCohortService,
@@ -57,6 +57,7 @@ import {
 } from '@api/services/cohort/cohort';
 import { assertCohortBelongsToOrganization, toPublicApiPagination } from '@api/services/v1/shared';
 import { ROLE } from '@cio/utils/constants';
+import { ZPublicApiCohortMembersQuery, ZPublicApiCohortsQuery } from '@cio/utils/validation/public-api';
 import {
   createPublicApiCohortService,
   deletePublicApiCohortService,
@@ -88,6 +89,8 @@ const PROFILE_ID = 'profile-1';
 
 const cohortParams = { cohortId: COHORT_ID };
 const firstPage = { page: 1, limit: 20 };
+const cohortsQuery = ZPublicApiCohortsQuery.parse({});
+const membersQuery = ZPublicApiCohortMembersQuery.parse({});
 
 function mockActorAsCohortTutor() {
   vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.TUTOR);
@@ -141,17 +144,37 @@ describe('v1 cohort service', () => {
     mockActorAsCohortTutor();
   });
 
-  it('lists only the cohorts the actor can see, like the dashboard', async () => {
+  it('lists only the cohorts the actor can see, newest first by default', async () => {
     vi.mocked(listOrgCohortsPage).mockResolvedValue({ items: [], total: 0 });
 
-    const result = await listCohortsService(ORG_ID, ACTOR_ID, firstPage);
+    const result = await listCohortsService(ORG_ID, ACTOR_ID, cohortsQuery);
 
-    expect(listOrgCohortsPage).toHaveBeenCalledWith(ORG_ID, ACTOR_ID, firstPage);
+    expect(listOrgCohortsPage).toHaveBeenCalledWith(ORG_ID, ACTOR_ID, {
+      ...firstPage,
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
+    });
     expect(result.pagination).toEqual({ page: 1, limit: 20, total: 0, totalPages: 0 });
   });
 
+  it('passes search, status and sort through to the cohort list', async () => {
+    vi.mocked(listOrgCohortsPage).mockResolvedValue({ items: [], total: 3 });
+    const query = ZPublicApiCohortsQuery.parse({ search: 'spring', status: 'ACTIVE', sortBy: 'students' });
+
+    const result = await listCohortsService(ORG_ID, ACTOR_ID, query);
+
+    expect(listOrgCohortsPage).toHaveBeenCalledWith(ORG_ID, ACTOR_ID, {
+      ...firstPage,
+      search: 'spring',
+      status: 'ACTIVE',
+      sortBy: 'students',
+      sortOrder: 'desc'
+    });
+    expect(result.pagination.total).toBe(3);
+  });
+
   it('rejects listing cohorts with no automation actor', async () => {
-    await expect(listCohortsService(ORG_ID, null, firstPage)).rejects.toMatchObject({ statusCode: 401 });
+    await expect(listCohortsService(ORG_ID, null, cohortsQuery)).rejects.toMatchObject({ statusCode: 401 });
     expect(listOrgCohortsPage).not.toHaveBeenCalled();
   });
 
@@ -282,22 +305,58 @@ describe('v1 cohort member service', () => {
     mockActorAsCohortTutor();
   });
 
-  it('lists members a page at a time when the actor is a cohort member', async () => {
-    vi.mocked(listCohortMembersPage).mockResolvedValue({ items: [], total: 45 });
+  it('lists members with the dashboard people query, in join order by default', async () => {
+    const pagination = { page: 2, limit: 20, total: 45, totalPages: 3 };
+    vi.mocked(listPaginatedCohortPeople).mockResolvedValue({ items: [], pagination });
+    const query = ZPublicApiCohortMembersQuery.parse({ page: '2' });
 
-    const result = await listPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, { page: 2, limit: 20 });
+    const result = await listPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, query);
 
-    expect(listCohortMembersPage).toHaveBeenCalledWith(COHORT_ID, { page: 2, limit: 20 });
-    expect(result.pagination).toEqual({ page: 2, limit: 20, total: 45, totalPages: 3 });
+    expect(listPaginatedCohortPeople).toHaveBeenCalledWith(COHORT_ID, {
+      page: 2,
+      limit: 20,
+      sortBy: 'joined',
+      sortOrder: 'asc'
+    });
+    expect(result.pagination).toEqual(pagination);
+  });
+
+  it('passes member filters through to the people query', async () => {
+    vi.mocked(listPaginatedCohortPeople).mockResolvedValue({
+      items: [],
+      pagination: { page: 1, limit: 20, total: 0, totalPages: 0 }
+    });
+    const query = ZPublicApiCohortMembersQuery.parse({
+      search: 'ada',
+      roleId: '3',
+      membership: 'invited',
+      lastLoginBefore: 'never',
+      sortBy: 'name',
+      sortOrder: 'desc'
+    });
+
+    await listPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, query);
+
+    expect(listPaginatedCohortPeople).toHaveBeenCalledWith(COHORT_ID, {
+      ...firstPage,
+      search: 'ada',
+      roleId: 3,
+      membership: 'invited',
+      lastLoginBefore: 'never',
+      sortBy: 'name',
+      sortOrder: 'desc'
+    });
   });
 
   it('refuses to list members when the actor is neither a member nor an org admin', async () => {
     mockActorAsOutsider();
 
-    await expect(listPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, firstPage)).rejects.toMatchObject({
-      statusCode: 403
-    });
-    expect(listCohortMembersPage).not.toHaveBeenCalled();
+    await expect(listPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, membersQuery)).rejects.toMatchObject(
+      {
+        statusCode: 403
+      }
+    );
+    expect(listPaginatedCohortPeople).not.toHaveBeenCalled();
   });
 
   it('adds members by email without an organization check, like the dashboard', async () => {
@@ -435,10 +494,12 @@ describe('v1 cohort member service', () => {
   it('refuses to touch members of a cohort from another organization', async () => {
     vi.mocked(getCohortOrganizationId).mockResolvedValue(OTHER_ORG_ID);
 
-    await expect(listPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, firstPage)).rejects.toMatchObject({
-      statusCode: 404
-    });
-    expect(listCohortMembersPage).not.toHaveBeenCalled();
+    await expect(listPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, membersQuery)).rejects.toMatchObject(
+      {
+        statusCode: 404
+      }
+    );
+    expect(listPaginatedCohortPeople).not.toHaveBeenCalled();
   });
 });
 

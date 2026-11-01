@@ -519,8 +519,8 @@ export const checkEmailsExistInOrg = async (orgId: string, emails: string[]): Pr
  * @param memberId Member ID to delete
  * @returns Deleted member or null if not found
  */
-export const deleteOrganizationMember = async (orgId: string, memberId: number) => {
-  const [deleted] = await db
+export const deleteOrganizationMember = async (orgId: string, memberId: number, dbClient: DbOrTxClient = db) => {
+  const [deleted] = await dbClient
     .delete(schema.organizationmember)
     .where(and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.id, memberId)))
     .returning();
@@ -727,7 +727,10 @@ export const getOrganizationTeam = async (orgId: string) => {
       profile: {
         id: schema.profile.id,
         fullname: schema.profile.fullname,
-        email: schema.profile.email
+        email: schema.profile.email,
+        username: schema.profile.username,
+        avatarUrl: schema.profile.avatarUrl,
+        locale: schema.profile.locale
       }
     })
     .from(schema.organizationmember)
@@ -746,7 +749,10 @@ export const getOrganizationTeam = async (orgId: string) => {
     verified: member.verified,
     roleId: member.roleId,
     profileId: member.profile?.id,
-    fullname: member.profile?.fullname || ''
+    fullname: member.profile?.fullname || '',
+    username: member.profile?.username ?? null,
+    avatarUrl: member.profile?.avatarUrl || '',
+    locale: member.profile?.locale ?? null
   }));
 };
 

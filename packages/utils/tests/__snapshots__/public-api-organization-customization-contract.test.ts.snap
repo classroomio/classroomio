@@ -1,0 +1,175 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API organization customization contract > ZPublicApiOrganizationCustomizationResponse keeps its published shape 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "apps": {
+      "additionalProperties": false,
+      "properties": {
+        "comments": {
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "comments",
+      ],
+      "type": "object",
+    },
+    "auth": {
+      "additionalProperties": false,
+      "properties": {
+        "backgroundImage": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+          "description": "null when the login page uses the default background",
+        },
+      },
+      "required": [
+        "backgroundImage",
+      ],
+      "type": "object",
+    },
+    "course": {
+      "additionalProperties": false,
+      "properties": {
+        "grading": {
+          "type": "boolean",
+        },
+        "newsfeed": {
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "newsfeed",
+        "grading",
+      ],
+      "type": "object",
+    },
+    "dashboard": {
+      "additionalProperties": false,
+      "properties": {
+        "bannerImage": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+          "description": "null when no banner image is set",
+        },
+        "bannerText": {
+          "type": "string",
+        },
+        "community": {
+          "type": "boolean",
+        },
+        "exercise": {
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "community",
+        "exercise",
+        "bannerImage",
+        "bannerText",
+      ],
+      "type": "object",
+    },
+  },
+  "required": [
+    "dashboard",
+    "course",
+    "apps",
+    "auth",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API organization customization contract > ZPublicApiUpdateOrganizationCustomization keeps its published shape 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "apps": {
+      "properties": {
+        "comments": {
+          "description": "Show lesson comments, where the course and lesson allow them",
+          "type": "boolean",
+        },
+      },
+      "type": "object",
+    },
+    "auth": {
+      "properties": {
+        "backgroundImage": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+          "description": "Public http(s) URL of the login and signup page background; null restores the default. Setting one needs a paid plan or a self-hosted install.",
+        },
+      },
+      "type": "object",
+    },
+    "course": {
+      "properties": {
+        "grading": {
+          "description": "Let students see their marks in a course",
+          "type": "boolean",
+        },
+        "newsfeed": {
+          "description": "Let students open the course News Feed",
+          "type": "boolean",
+        },
+      },
+      "type": "object",
+    },
+    "dashboard": {
+      "properties": {
+        "bannerImage": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+          "description": "Public http(s) URL of the dashboard banner image; null removes it. Upload the image first, then send its URL.",
+        },
+        "bannerText": {
+          "description": "Dashboard banner text; an empty string removes it",
+          "maxLength": 500,
+          "type": "string",
+        },
+        "community": {
+          "description": "Show Community in the student sidebar",
+          "type": "boolean",
+        },
+        "exercise": {
+          "description": "Show Exercises in the student sidebar",
+          "type": "boolean",
+        },
+      },
+      "type": "object",
+    },
+  },
+  "type": "object",
+}
+`;

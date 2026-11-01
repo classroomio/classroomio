@@ -654,6 +654,7 @@ export async function getCourseProgress(
   exercisesCompleted: number;
   groupMemberId: string | null;
   roleId: number | null;
+  enrolledAt: string | null;
   completedAt: string | null;
   certificateEarnedAt: string | null;
   certificationEmailSentAt: string | null;
@@ -664,6 +665,7 @@ export async function getCourseProgress(
       .select({
         id: schema.groupmember.id,
         roleId: schema.groupmember.roleId,
+        enrolledAt: schema.groupmember.createdAt,
         completedAt: schema.groupmember.completedAt,
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
         certificationEmailSentAt: schema.groupmember.certificationEmailSentAt
@@ -682,6 +684,7 @@ export async function getCourseProgress(
         exercisesCompleted: 0,
         groupMemberId: null,
         roleId: null,
+        enrolledAt: null,
         completedAt: null,
         certificateEarnedAt: null,
         certificationEmailSentAt: null
@@ -690,6 +693,7 @@ export async function getCourseProgress(
 
     const groupMemberId = groupMemberResult[0].id;
     const roleId = groupMemberResult[0].roleId;
+    const enrolledAt = groupMemberResult[0].enrolledAt ?? null;
     const completedAt = groupMemberResult[0].completedAt ?? null;
     const certificateEarnedAt = groupMemberResult[0].certificateEarnedAt ?? null;
     const certificationEmailSentAt = groupMemberResult[0].certificationEmailSentAt ?? null;
@@ -736,6 +740,7 @@ export async function getCourseProgress(
       exercisesCompleted: completedRow?.exercisesCompleted ?? 0,
       groupMemberId,
       roleId,
+      enrolledAt,
       completedAt,
       certificateEarnedAt,
       certificationEmailSentAt
@@ -796,7 +801,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
 }
 
 type OrgCoursePublishedStatus = 'published' | 'unpublished';
-type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons';
+type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons' | 'name' | 'price';
 type OrgCourseSortOrder = 'asc' | 'desc';
 
 interface GetOrgCoursesOptions {
@@ -864,20 +869,20 @@ function orgCourseListConditions({
 
 function orgCourseListOrderBy(sortKey?: OrgCourseSortKey, order?: OrgCourseSortOrder) {
   const direction = order === 'asc' ? asc : desc;
+  const column =
+    sortKey === 'last_updated_at'
+      ? sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`
+      : sortKey === 'published'
+        ? schema.course.isPublished
+        : sortKey === 'lessons'
+          ? sql`COUNT(DISTINCT ${schema.lesson.id})`
+          : sortKey === 'name'
+            ? sql`lower(${schema.course.title})`
+            : sortKey === 'price'
+              ? sql`COALESCE(${schema.course.cost}, 0)`
+              : schema.course.createdAt;
 
-  if (sortKey === 'last_updated_at') {
-    return direction(sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`);
-  }
-
-  if (sortKey === 'published') {
-    return direction(schema.course.isPublished);
-  }
-
-  if (sortKey === 'lessons') {
-    return direction(sql`COUNT(DISTINCT ${schema.lesson.id})`);
-  }
-
-  return direction(schema.course.createdAt);
+  return [direction(column), direction(schema.course.id)];
 }
 
 export async function countOrgCourses({
@@ -986,7 +991,7 @@ export const getOrgCourses = async ({
 
     const result = await itemsQuery
       .groupBy(schema.course.id)
-      .orderBy(orgCourseListOrderBy(sortKey, order))
+      .orderBy(...orgCourseListOrderBy(sortKey, order))
       .limit(limit)
       .offset((page - 1) * limit);
 
@@ -1244,6 +1249,8 @@ interface GetExploreCoursesOptions {
   profileId: string;
   limit?: number;
   page?: number;
+  sortKey?: OrgCourseSortKey;
+  order?: OrgCourseSortOrder;
 }
 
 export interface GetExploreCoursesResult {
@@ -1264,7 +1271,9 @@ export const getExploreCourses = async ({
   orgId,
   profileId,
   limit,
-  page = 1
+  page = 1,
+  sortKey,
+  order
 }: GetExploreCoursesOptions): Promise<GetExploreCoursesResult> => {
   try {
     const whereCondition = and(
@@ -1301,7 +1310,7 @@ export const getExploreCourses = async ({
       )
       .where(whereCondition)
       .groupBy(schema.course.id, schema.group.id)
-      .orderBy(desc(schema.course.createdAt));
+      .orderBy(...orgCourseListOrderBy(sortKey, order));
 
     const countSelect = db
       .select({ total: count(schema.course.id) })
