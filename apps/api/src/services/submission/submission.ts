@@ -66,15 +66,19 @@ async function triggerCertificationIfExerciseComplete(
   exerciseId: string,
   groupMemberId: string
 ): Promise<void> {
-  const profile = await getProfileByGroupMemberId(groupMemberId);
-  if (!profile?.id) return;
+  try {
+    const profile = await getProfileByGroupMemberId(groupMemberId);
+    if (!profile?.id) return;
 
-  const isComplete = await isExerciseCompletedForMember(exerciseId, groupMemberId);
-  if (!isComplete) return;
+    const isComplete = await isExerciseCompletedForMember(exerciseId, groupMemberId);
+    if (!isComplete) return;
 
-  void evaluateCourseCertification(courseId, profile.id).catch((certError) => {
-    console.error('Failed to evaluate course certification after exercise submission:', certError);
-  });
+    void evaluateCourseCertification(courseId, profile.id).catch((certError) => {
+      console.error('Failed to evaluate course certification after exercise submission:', certError);
+    });
+  } catch (lookupError) {
+    console.error('Failed to check course certification after exercise submission:', lookupError);
+  }
 }
 
 const LEGACY_BOARD_STATUS_LABELS: Record<number, string> = {
@@ -1005,6 +1009,7 @@ export async function updateSubmissionService(
 
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
+      await triggerCertificationIfExerciseComplete(updated.courseId, updated.exerciseId, updated.submittedBy);
     }
 
     if (statusChanged || gradingStateChanged) {
@@ -1126,6 +1131,7 @@ export async function updateSubmissionGradesBatch(
 
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
+      await triggerCertificationIfExerciseComplete(updated.courseId, updated.exerciseId, updated.submittedBy);
     }
 
     if (statusChanged || currentGradingState !== targetGradingState) {
