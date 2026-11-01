@@ -60,13 +60,13 @@ The app ships in the 12 dashboard languages (`EMAIL_LOCALES` in `@cio/utils/emai
 
 `app.config.ts` reads three required variables and refuses to load without them. Copy `.env.example` to `.env` (gitignored) for local development builds, and to `.env.production` for store builds (see below). EAS cloud builds set them as EAS environment variables.
 
-- `APP_ID`: the iOS bundle identifier and Android package. Local and fork builds use their own reverse-domain ID, never the official `com.classroomio.app`.
-- `APP_VARIANT`: `development`, `preview` or `production`. It sets the app name on the device and is available at runtime as `Constants.expoConfig.extra.appVariant`.
+- `APP_ID`: the iOS bundle identifier and Android package of the store app. Development and preview builds append `.dev` or `.preview`, so they install next to it on the same phone. Local and fork builds use their own reverse-domain ID, never the official `com.classroomio.app`.
+- `APP_VARIANT`: `development`, `preview` or `production`. It sets the app name, bundle ID suffix and link scheme (`classroomio`, `classroomio-dev`, `classroomio-preview`) and is available at runtime as `Constants.expoConfig.extra.appVariant`.
 - `EAS_PROJECT_ID`: the EAS project the app builds under (`eas init` prints it). Forks create their own.
 
 EAS: `eas.json` has `development`, `preview` and `production` profiles; each sets `APP_VARIANT`. `APP_ID` and `EAS_PROJECT_ID` live as EAS environment variables (`eas env:create`), because cloud builds don't read `.env`. EAS CLI ignores `.env` when it evaluates the config locally, so run it through `pnpm eas <command>` (for example `pnpm eas build --profile development --platform ios`), which loads `.env` first.
 
-A new `APP_ID` must be registered on the Apple team with Push Notifications before `expo run:ios --device` can sign it. The first `pnpm build:ios:dev` (a local EAS build) does that through EAS-managed credentials; install the result with `DEVICE_ID=<udid> pnpm install:ios:dev`. After that, `npx expo run:ios --device` works directly.
+A new bundle ID (`APP_ID` plus `.dev` for development builds) must be registered on the Apple team with Push Notifications before `expo run:ios --device` can sign it. The first `pnpm build:ios:dev` (a local EAS build) does that through EAS-managed credentials; install the result with `DEVICE_ID=<udid> pnpm install:ios:dev`. After that, `npx expo run:ios --device` works directly.
 
 Store builds read `.env.production` (gitignored) with the same variables as `.env`: `APP_VARIANT=production`, the store `APP_ID`, and `EXPO_PUBLIC_API_URL` set to the production API (empty falls back to `https://api.classroomio.com`). Keep it in sync with the EAS `production` environment. `pnpm build:ios` and `pnpm build:android` make a local EAS production build in `build/`; `pnpm deploy:ios` and `pnpm deploy:android` build and then upload it with `eas submit`: iOS to App Store Connect for TestFlight, Android to the Play internal track, which needs a Google service account key and a first upload made by hand in Play Console.
 

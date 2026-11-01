@@ -91,6 +91,7 @@ This repo is a monorepo that consists of these primary apps:
 2. `api`: The api service that handles PDF, video processing, Emailing and Notifications.
 3. `dashboard`: The web application that runs the learning management system hosted [here](https://app.classroomio.com).
 4. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
+5. `mobile`: The iOS and Android app. Setup steps are in [apps/mobile/README.md](apps/mobile/README.md).
 
 The repository also contains shared packages under `packages/` (for example `packages/db`, `packages/utils`, and `packages/ui`).
 
