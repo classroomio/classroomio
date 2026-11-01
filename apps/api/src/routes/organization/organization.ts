@@ -18,6 +18,7 @@ import {
   ZGetOrganizations,
   ZGetUserAnalytics,
   ZImportAudienceMembers,
+  ZMarkOrgPlanPastDue,
   ZInviteTeamMembers,
   ZLMSExercisesParam,
   ZRemoveTeamMember,
@@ -70,6 +71,7 @@ import { ROLE } from '@cio/utils/constants';
 import { TOrganization } from '@db/types';
 import { assetsRouter } from '@api/routes/organization/assets';
 import { joinOrganization } from '@api/services/organization/join';
+import { markOrgPlanPastDue } from '@api/services/organization/payment-status';
 import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
 import { organizationMemberEmailNotificationsRouter } from '@api/routes/organization/member-email-notifications';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -868,6 +870,21 @@ export const organizationRouter = new Hono()
       }
     }
   )
+  /**
+   * POST /organization/plan/past-due
+   * Records a failed subscription payment and emails the org admins on the first failure
+   * Requires a server API key
+   */
+  .post('/plan/past-due', apiKeyMiddleware, zValidator('json', ZMarkOrgPlanPastDue), async (c) => {
+    try {
+      const { subscriptionId, payload } = c.req.valid('json');
+      const plan = await markOrgPlanPastDue(subscriptionId, payload);
+
+      return c.json({ success: true, data: plan }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to record failed payment');
+    }
+  })
   /**
    * POST /organization/plan/cancel
    * Cancels an organization plan by subscription ID

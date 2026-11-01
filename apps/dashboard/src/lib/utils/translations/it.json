@@ -1342,7 +1342,12 @@
       "active": "Non hai alcuna fatturazione attiva",
       "provider": "Usiamo Polar per aiutarti a gestire la tua fatturazione",
       "open_billing": "Fatturazione aperta",
-      "error": "Si è verificato un errore durante l'apertura della fatturazione"
+      "error": "Si è verificato un errore durante l'apertura della fatturazione",
+      "payment_failed": {
+        "warning": "L'ultimo pagamento non è andato a buon fine. Aggiorna il metodo di pagamento prima del {date} per continuare a iscrivere nuovi studenti.",
+        "blocked": "L'ultimo pagamento non è andato a buon fine, quindi i nuovi studenti non possono iscriversi. Aggiorna il metodo di pagamento per riprendere le iscrizioni.",
+        "action": "Aggiorna metodo di pagamento"
+      }
     },
     "ai_credits": {
       "sub_title": "Crediti IA",

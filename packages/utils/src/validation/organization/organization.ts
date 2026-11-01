@@ -107,6 +107,13 @@ export const ZCancelOrgPlan = z.object({
 
 export type TCancelOrgPlan = z.infer<typeof ZCancelOrgPlan>;
 
+export const ZMarkOrgPlanPastDue = z.object({
+  subscriptionId: z.string().min(1),
+  payload: z.record(z.string(), z.unknown())
+});
+
+export type TMarkOrgPlanPastDue = z.infer<typeof ZMarkOrgPlanPastDue>;
+
 export const ZEarlyAdopterSubscriptionEvent = z.object({
   event: z.enum(['activated', 'updated', 'revoked']),
   subscriptionId: z.string().min(1),

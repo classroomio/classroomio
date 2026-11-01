@@ -49,7 +49,7 @@ import {
   getOrganizationMemberIdByOrgAndProfile,
   insertOrganizationMembersOnConflictDoNothing
 } from '@cio/db/queries/organization';
-import { getStudentLimit } from '@cio/utils/plans';
+import { getStudentLimit, isPaymentBlocked } from '@cio/utils/plans';
 import { env } from '../../config/env';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { captureCourseEvent, captureServerEvent, type TEventSource } from '../posthog';
@@ -80,6 +80,8 @@ async function isStudentLimitReached(orgId: string): Promise<boolean> {
   if (env.PUBLIC_IS_SELFHOSTED === 'true') return false;
 
   const activePlan = await getActiveOrganizationPlan(orgId);
+  if (isPaymentBlocked(activePlan)) return true;
+
   const limit = getStudentLimit(activePlan?.planName);
   if (!Number.isFinite(limit)) return false;
 
