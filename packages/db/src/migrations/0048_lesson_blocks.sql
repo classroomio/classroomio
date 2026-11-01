@@ -247,3 +247,5 @@ BEGIN
   END IF;
 END
 $$;
+--> statement-breakpoint
+ALTER TABLE "lesson" ADD COLUMN "reading_density" varchar DEFAULT 'comfortable' NOT NULL;

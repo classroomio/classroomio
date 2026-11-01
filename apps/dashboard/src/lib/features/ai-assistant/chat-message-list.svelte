@@ -26,6 +26,8 @@
   interface Props {
     messages: AiAssistantMessage[];
     isStreaming: boolean;
+    /** True while the panel is creating a conversation / waiting for the first token. */
+    isPreparing?: boolean;
     isLoadingHistory: boolean;
     isStudent: boolean;
     courseId: string;
@@ -49,6 +51,7 @@
   let {
     messages,
     isStreaming,
+    isPreparing = false,
     isLoadingHistory,
     isStudent,
     courseId,
@@ -154,32 +157,49 @@
   });
 </script>
 
+{#snippet loadingBubble(label?: string)}
+  <div class="flex items-start" data-testid="ai-chat-loading" aria-live="polite">
+    <div class="ui:bg-muted flex items-center gap-2 rounded-lg px-3 py-2">
+      <LoaderIcon size={16} class="ui:text-muted-foreground animate-spin" />
+      {#if label}
+        <span class="ui:text-muted-foreground text-xs">{label}</span>
+      {/if}
+    </div>
+  </div>
+{/snippet}
+
 <div class="flex-1 overflow-y-auto p-4" bind:this={messagesContainer} onscroll={handleScroll}>
   {#if isLoadingHistory}
     <div class="flex h-full items-center justify-center">
       <Spinner class="ui:text-muted-foreground size-6" />
     </div>
   {:else if isEmpty}
-    <!-- Empty state with quick actions -->
-    <div class="flex h-full flex-col items-center justify-center gap-4">
-      <div class="flex flex-col items-center gap-2 text-center">
-        <SparklesIcon size={32} class="ui:text-muted-foreground" />
-        <p class="ui:text-muted-foreground text-sm">
-          {$t(isStudent ? 'ai_assistant.student_empty_state' : 'ai_assistant.empty_state')}
-        </p>
+    {#if isPreparing || isStreaming}
+      <div class="flex h-full items-center justify-center">
+        {@render loadingBubble(isPreparing ? $t('ai_assistant.plan_thinking') : undefined)}
       </div>
+    {:else}
+      <!-- Empty state with quick actions -->
+      <div class="flex h-full flex-col items-center justify-center gap-4">
+        <div class="flex flex-col items-center gap-2 text-center">
+          <SparklesIcon size={32} class="ui:text-muted-foreground" />
+          <p class="ui:text-muted-foreground text-sm">
+            {$t(isStudent ? 'ai_assistant.student_empty_state' : 'ai_assistant.empty_state')}
+          </p>
+        </div>
 
-      <div class="flex flex-wrap justify-center gap-2">
-        {#each quickActions as option (option.key)}
-          <button
-            onclick={() => onQuickAction(option.prompt)}
-            class="ui:text-muted-foreground ui:hover:bg-muted cursor-pointer rounded-full border px-3 py-1.5 text-xs transition-colors"
-          >
-            {$t(option.key)}
-          </button>
-        {/each}
+        <div class="flex flex-wrap justify-center gap-2">
+          {#each quickActions as option (option.key)}
+            <button
+              onclick={() => onQuickAction(option.prompt)}
+              class="ui:text-muted-foreground ui:hover:bg-muted cursor-pointer rounded-full border px-3 py-1.5 text-xs transition-colors"
+            >
+              {$t(option.key)}
+            </button>
+          {/each}
+        </div>
       </div>
-    </div>
+    {/if}
   {:else}
     <!-- Message list -->
     <div class="flex flex-col gap-3">
@@ -208,12 +228,8 @@
         />
       {/each}
 
-      {#if isStreaming && (isStudent || !planExecutionState)}
-        <div class="flex items-start">
-          <div class="ui:bg-muted rounded-lg px-3 py-2">
-            <LoaderIcon size={16} class="ui:text-muted-foreground animate-spin" />
-          </div>
-        </div>
+      {#if isPreparing || (isStreaming && (isStudent || !planExecutionState))}
+        {@render loadingBubble(isPreparing ? $t('ai_assistant.plan_thinking') : undefined)}
       {/if}
 
       {#if planExecutionState && !isStudent}

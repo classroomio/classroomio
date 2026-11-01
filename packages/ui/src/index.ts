@@ -100,6 +100,23 @@ export * as EmailPreview from './custom/email-preview';
 export * from './custom/animation';
 export { AttachmentList } from './custom/attachment-list';
 export type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './custom/attachment-list';
+export { AddContentMenu } from './custom/add-content-menu';
+export type { AddContentChoice } from './custom/add-content-menu';
+export { AddContentRow } from './custom/add-content-row';
+export type { AddContentShortcut } from './custom/add-content-row';
+export { BlockShell } from './custom/block-shell';
+export type { BlockShellMenuItem } from './custom/block-shell';
+export { BlockList } from './custom/block-list';
+export { ImageBlock, ImageSettingsDialog } from './custom/blocks/image-block';
+export type { ImageBlockFit, ImageBlockSettings } from './custom/blocks/image-block';
+export { DocumentBlock } from './custom/blocks/document-block';
+export { SlideBlock } from './custom/blocks/slide-block';
+export { VideoBlock } from './custom/blocks/video-block';
+export { NoteBlock } from './custom/blocks/note-block';
+export type { NoteBlockStyle } from './custom/blocks/note-block';
+export { BlockChangeButton } from './custom/blocks/block-change-button';
+export { DensityControl } from './custom/density-control';
+export type { DensityControlOption, DensityControlValue } from './custom/density-control';
 export {
   SlideEmbedCard,
   SlideEmbedFrame,

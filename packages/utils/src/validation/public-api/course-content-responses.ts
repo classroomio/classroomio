@@ -36,6 +36,7 @@ export const ZPublicApiCourseLessonResponse = z.object({
   completionPolicy: z.string(),
   videoWatchThreshold: z.number().nullable(),
   commentsEnabled: z.boolean(),
+  readingDensity: z.enum(['compact', 'comfortable', 'spacious']),
   createdAt: nullableTimestamp,
   updatedAt: nullableTimestamp
 });

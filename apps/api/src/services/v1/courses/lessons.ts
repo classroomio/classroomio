@@ -30,6 +30,7 @@ export function toPublicLesson(lesson: TLesson) {
     completionPolicy: lesson.completionPolicy,
     videoWatchThreshold: lesson.videoWatchThreshold,
     commentsEnabled: lesson.commentsEnabled,
+    readingDensity: lesson.readingDensity,
     createdAt: lesson.createdAt,
     updatedAt: lesson.updatedAt
   };

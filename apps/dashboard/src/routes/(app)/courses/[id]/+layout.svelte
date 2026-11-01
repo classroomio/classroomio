@@ -117,12 +117,19 @@
     )
   );
 
+  const isLessonEditWithBlockEditor = $derived(
+    currentPath.includes('/lessons/') &&
+      page.url.searchParams.get('mode') === 'edit' &&
+      page.url.searchParams.get('editor') !== 'legacy'
+  );
+
   const showContentAskAiBar = $derived(
     isCourseReady &&
       isLessonOrExercisePage &&
       IS_AI_ENABLED &&
       !($isCourseLearnerView && isContentLockedForStudent) &&
-      sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID
+      sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID &&
+      !isLessonEditWithBlockEditor
   );
 
   const courseProgress = $derived(getCourseProgress(courseApi.course));

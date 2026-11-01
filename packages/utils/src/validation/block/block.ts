@@ -5,7 +5,7 @@ import { ZLessonVideoItem } from '../lesson/lesson';
 import { ZLessonVersionIntent } from '../lesson/language';
 import { isAllowedHref } from '../shared/safe-href';
 
-export const BLOCK_TYPES = ['note', 'video', 'slides', 'document'] as const;
+export const BLOCK_TYPES = ['note', 'video', 'slides', 'document', 'image'] as const;
 export type TBlockType = (typeof BLOCK_TYPES)[number];
 
 export const BLOCK_LOCALES = ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it'] as const;
@@ -56,11 +56,19 @@ export const ZDocumentBlockData = z.object({
 });
 export type TDocumentBlockData = z.infer<typeof ZDocumentBlockData>;
 
+export const ZImageBlockData = z.object({
+  url: z.url(),
+  alt: z.string().max(300).optional(),
+  fit: z.enum(['cover', 'contain']).optional()
+});
+export type TImageBlockData = z.infer<typeof ZImageBlockData>;
+
 export const ZBlockDataByType = {
   note: ZNoteBlockData,
   video: ZVideoBlockData,
   slides: ZSlidesBlockData,
-  document: ZDocumentBlockData
+  document: ZDocumentBlockData,
+  image: ZImageBlockData
 } as const;
 
 export type TBlockDataByType = {
@@ -68,6 +76,7 @@ export type TBlockDataByType = {
   video: TVideoBlockData;
   slides: TSlidesBlockData;
   document: TDocumentBlockData;
+  image: TImageBlockData;
 };
 
 export const ZBlockType = z.enum(BLOCK_TYPES);
@@ -110,7 +119,8 @@ export const ZBlockCreate = z
     blockCreateVariant('note'),
     blockCreateVariant('video'),
     blockCreateVariant('slides'),
-    blockCreateVariant('document')
+    blockCreateVariant('document'),
+    blockCreateVariant('image')
   ])
   .and(ZPlacementAnchor)
   .and(ZPlacementSettings)

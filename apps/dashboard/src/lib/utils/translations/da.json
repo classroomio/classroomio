@@ -2693,6 +2693,68 @@
                 "activities": "Generer lektionsaktiviteter"
               }
             }
+          },
+          "blocks": {
+            "add_content": "Tilføj indhold",
+            "example": "Eksempel",
+            "change_type": "Ændring {type}",
+            "edit_type": "Rediger {type}",
+            "remove": "Fjern blokering",
+            "move_up": "Flyt op",
+            "move_down": "Flyt ned",
+            "actions": "Blokeringshandlinger",
+            "drag": "Træk for at ændre rækkefølgen",
+            "drag_hint": "Træk i håndtaget på en blok for at ændre dens rækkefølge. Du kan også bruge Flyt op og Flyt ned fra dens menu.",
+            "dismiss_hint": "Afvis tip til ændring af rækkefølge",
+            "empty_title": "Begynd at opbygge denne lektion",
+            "empty_description": "Tilføj en note, video, slides, dokument eller billede. Du kan tilføje så mange blokke, som du har brug for, i en hvilken som helst rækkefølge.",
+            "empty_note": "Denne note er tom.",
+            "note_style": "Stil",
+            "preview_label": "Læreroplevelse i appen",
+            "scroll_rail": "Lektionsblokke",
+            "go_to_block": "Gå til blok {index}",
+            "image": {
+              "upload": "Upload billede",
+              "upload_error": "Billedet kunne ikke uploades. Prøv igen.",
+              "change": "Skift billede",
+              "settings": "Billedindstillinger",
+              "alt": "Alt-tekst",
+              "alt_placeholder": "Beskriv billedet for elever, der bruger hjælpemidler",
+              "fit": "Passe",
+              "fit_cover": "Fylde",
+              "fit_contain": "Passe"
+            },
+            "settings": {
+              "title": "Lektionsindstillinger",
+              "description": "Administrer denne lektion uden at forlade indholdslærredet."
+            },
+            "reading_density": {
+              "title": "Læsetæthed",
+              "description": "Styrer afstanden mellem blokke for elever. Det ændrer ikke redigeringslærredet.",
+              "compact": "Kompakt",
+              "comfortable": "Komfortabel",
+              "spacious": "Rummelig"
+            },
+            "styles": {
+              "default": "Misligholdelse",
+              "info": "Info",
+              "tip": "Tip",
+              "important": "Vigtig",
+              "warning": "Advarsel",
+              "highlight": "Fremhæv"
+            },
+            "ai": {
+              "title": "Udarbejd en note med AI",
+              "prompt_label": "Hurtig",
+              "prompt_placeholder": "f.eks. En kort introduktion til vandets kredsløb for begyndere"
+            },
+            "types": {
+              "note": "Note",
+              "video": "Video",
+              "slides": "Slides",
+              "document": "Dokument",
+              "image": "Billede"
+            }
           }
         },
         "lesson_nav": {
@@ -2842,7 +2904,12 @@
         "add_content_add_to_section": "Tilføj indhold",
         "expand_content": "Udvid indhold",
         "collapse_content": "Skjul indholdet",
-        "no_section": "Ingen sektion"
+        "no_section": "Ingen sektion",
+        "header": {
+          "mode_label": "Lektionstilstand",
+          "mode_edit": "Redigere",
+          "mode_preview": "Forhåndsvisning"
+        }
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
