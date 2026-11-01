@@ -40,5 +40,10 @@ export const en = {
   joinedOn: 'Joined {date}',
   notifications: 'Notifications',
   orgRole: '{org} · {role}',
-  appVersion: 'ClassroomIO {version}'
+  appVersion: 'ClassroomIO {version}',
+  statInProgressEmpty: 'You have no courses in progress.',
+  statCompletedEmpty: 'You have not completed a course yet.',
+  statCertificatesEmpty: 'You have not earned a certificate yet.',
+  statCourseCount: { one: '{count} course', other: '{count} courses' },
+  statEarnedOn: 'Earned {date}'
 };

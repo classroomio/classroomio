@@ -1,13 +1,13 @@
 import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
 import { FunnelSimpleIcon } from 'phosphor-react-native/src/icons/FunnelSimple';
-import { createContext, use, useState, type ReactNode } from 'react';
+import { createContext, use, useRef, type ReactNode, type RefObject } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { Icon } from '@/feature/common/components/icon';
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetSeparator,
   OptionSheetTitle
@@ -23,8 +23,7 @@ type CourseFilterContextValue = {
   courseId: string | null;
   onCourseChange: (courseId: string | null) => void;
   courses: CourseOption[];
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  sheet: RefObject<SheetRef | null>;
 };
 
 const CourseFilterContext = createContext<CourseFilterContextValue | null>(null);
@@ -44,15 +43,13 @@ type CourseFilterProps = {
 };
 
 export function CourseFilter({ courseId, onCourseChange, courses, children }: CourseFilterProps) {
-  const [open, setOpen] = useState(false);
+  const sheet = useRef<SheetRef>(null);
 
-  return (
-    <CourseFilterContext value={{ courseId, onCourseChange, courses, open, setOpen }}>{children}</CourseFilterContext>
-  );
+  return <CourseFilterContext value={{ courseId, onCourseChange, courses, sheet }}>{children}</CourseFilterContext>;
 }
 
 export function CourseFilterTrigger() {
-  const { courseId, courses, setOpen } = useCourseFilter();
+  const { courseId, courses, sheet } = useCourseFilter();
   const t = useTranslations(communityCatalog);
   const selected = courses.find((course) => course.id === courseId);
   const label = selected?.title ?? t('allCourses');
@@ -64,7 +61,7 @@ export function CourseFilterTrigger() {
       hitSlop={HIT_SLOP}
       onPress={() => {
         selectionHaptic();
-        setOpen(true);
+        sheet.current?.present();
       }}
       style={styles.trigger}
     >
@@ -78,24 +75,22 @@ export function CourseFilterTrigger() {
 }
 
 export function CourseFilterSheet() {
-  const { courseId, onCourseChange, courses, open, setOpen } = useCourseFilter();
+  const { courseId, onCourseChange, courses, sheet } = useCourseFilter();
   const t = useTranslations(communityCatalog);
 
   return (
-    <OptionSheet open={open} onOpenChange={setOpen}>
-      <OptionSheetContent>
-        <OptionSheetTitle>{t('courseFilterTitle')}</OptionSheetTitle>
-        <OptionSheetItem selected={courseId === null} onSelect={() => onCourseChange(null)}>
-          {t('allCourses')}
+    <OptionSheet ref={sheet}>
+      <OptionSheetTitle>{t('courseFilterTitle')}</OptionSheetTitle>
+      <OptionSheetItem selected={courseId === null} onSelect={() => onCourseChange(null)}>
+        {t('allCourses')}
+      </OptionSheetItem>
+      {courses.length > 0 ? <OptionSheetSeparator /> : null}
+      {courses.map((course) => (
+        <OptionSheetItem key={course.id} selected={course.id === courseId} onSelect={() => onCourseChange(course.id)}>
+          {course.title}
         </OptionSheetItem>
-        {courses.length > 0 ? <OptionSheetSeparator /> : null}
-        {courses.map((course) => (
-          <OptionSheetItem key={course.id} selected={course.id === courseId} onSelect={() => onCourseChange(course.id)}>
-            {course.title}
-          </OptionSheetItem>
-        ))}
-        <OptionSheetCancel />
-      </OptionSheetContent>
+      ))}
+      <OptionSheetCancel />
     </OptionSheet>
   );
 }

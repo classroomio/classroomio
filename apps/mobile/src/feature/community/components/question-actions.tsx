@@ -9,7 +9,7 @@ import { PencilSimpleIcon } from 'phosphor-react-native/src/icons/PencilSimple';
 import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
 import * as Clipboard from 'expo-clipboard';
 import { router } from 'expo-router';
-import { createContext, use, useState, type ReactNode } from 'react';
+import { createContext, use, useRef, useState, type ReactNode, type Ref } from 'react';
 
 import { useAuth } from '@/feature/auth/components/auth-provider';
 import {
@@ -21,10 +21,10 @@ import {
   AlertDialogFooter,
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetSeparator,
   OptionSheetTitle
@@ -89,7 +89,7 @@ export function QuestionActions({ children }: { children: ReactNode }) {
   const deleteMutation = useDeleteQuestionMutation();
   const [confirming, setConfirming] = useState<CommunityQuestionSummary | null>(null);
   const [menuQuestion, setMenuQuestion] = useState<CommunityQuestionSummary | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const menu = useRef<SheetRef>(null);
 
   const isVoted = (question: CommunityQuestionSummary) => voted.has(questionVoteKey(question.id));
 
@@ -165,7 +165,7 @@ export function QuestionActions({ children }: { children: ReactNode }) {
     openMenu: (question) => {
       selectionHaptic();
       setMenuQuestion(question);
-      setMenuOpen(true);
+      menu.current?.present();
     }
   };
 
@@ -185,7 +185,12 @@ export function QuestionActions({ children }: { children: ReactNode }) {
   return (
     <QuestionActionsContext value={value}>
       {children}
-      <QuestionActionsSheet question={menuQuestion} open={menuOpen} onOpenChange={setMenuOpen} actions={value} />
+      <QuestionActionsSheet
+        ref={menu}
+        question={menuQuestion}
+        onDismiss={() => setMenuQuestion(null)}
+        actions={value}
+      />
       <AlertDialog
         open={confirming !== null}
         onOpenChange={(open) => !open && setConfirming(null)}
@@ -207,80 +212,74 @@ export function QuestionActions({ children }: { children: ReactNode }) {
 }
 
 type QuestionActionsSheetProps = {
+  ref: Ref<SheetRef>;
   question: CommunityQuestionSummary | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onDismiss: () => void;
   actions: QuestionActionsValue;
 };
 
-function QuestionActionsSheet({ question, open, onOpenChange, actions }: QuestionActionsSheetProps) {
+function QuestionActionsSheet({ ref, question, onDismiss, actions }: QuestionActionsSheetProps) {
   const t = useTranslations(communityCatalog);
   const tc = useTranslations(commonCatalog);
   const manage = question ? actions.canManage(question) : false;
   const voted = question ? actions.isVoted(question) : false;
 
   return (
-    <OptionSheet open={open && question !== null} onOpenChange={onOpenChange}>
-      <OptionSheetContent>
-        {question ? (
-          <>
-            <OptionSheetTitle>{question.title}</OptionSheetTitle>
-            <OptionSheetItem icon={ArrowSquareOutIcon} onSelect={() => actions.open(question)}>
-              {tc('open')}
+    <OptionSheet ref={ref} onDismiss={onDismiss}>
+      {question ? (
+        <>
+          <OptionSheetTitle>{question.title}</OptionSheetTitle>
+          <OptionSheetItem icon={ArrowSquareOutIcon} onSelect={() => actions.open(question)}>
+            {tc('open')}
+          </OptionSheetItem>
+          <OptionSheetItem
+            icon={ArrowFatUpIcon}
+            selected={voted}
+            disabled={!actions.canUpvote(question)}
+            onSelect={() => actions.upvote(question)}
+          >
+            {voted ? t('upvoted') : t('upvote')}
+          </OptionSheetItem>
+          <OptionSheetItem
+            icon={question.isFollowing ? BellSimpleSlashIcon : BellSimpleIcon}
+            disabled={actions.offline}
+            onSelect={() => actions.toggleFollow(question)}
+          >
+            {question.isFollowing ? t('unfollowQuestion') : t('followQuestion')}
+          </OptionSheetItem>
+          {actions.linkOf(question) ? (
+            <OptionSheetItem icon={LinkIcon} onSelect={() => actions.copyLink(question)}>
+              {t('copyLink')}
             </OptionSheetItem>
-            <OptionSheetItem
-              icon={ArrowFatUpIcon}
-              selected={voted}
-              disabled={!actions.canUpvote(question)}
-              onSelect={() => actions.upvote(question)}
-            >
-              {voted ? t('upvoted') : t('upvote')}
+          ) : null}
+          {manage || actions.canModerate ? <OptionSheetSeparator /> : null}
+          {manage ? (
+            <OptionSheetItem icon={PencilSimpleIcon} disabled={actions.offline} onSelect={() => actions.edit(question)}>
+              {t('editQuestion')}
             </OptionSheetItem>
+          ) : null}
+          {actions.canModerate ? (
             <OptionSheetItem
-              icon={question.isFollowing ? BellSimpleSlashIcon : BellSimpleIcon}
+              icon={question.isHidden ? EyeIcon : EyeSlashIcon}
               disabled={actions.offline}
-              onSelect={() => actions.toggleFollow(question)}
+              onSelect={() => actions.toggleHidden(question)}
             >
-              {question.isFollowing ? t('unfollowQuestion') : t('followQuestion')}
+              {question.isHidden ? t('showToLearners') : t('hideFromLearners')}
             </OptionSheetItem>
-            {actions.linkOf(question) ? (
-              <OptionSheetItem icon={LinkIcon} onSelect={() => actions.copyLink(question)}>
-                {t('copyLink')}
-              </OptionSheetItem>
-            ) : null}
-            {manage || actions.canModerate ? <OptionSheetSeparator /> : null}
-            {manage ? (
-              <OptionSheetItem
-                icon={PencilSimpleIcon}
-                disabled={actions.offline}
-                onSelect={() => actions.edit(question)}
-              >
-                {t('editQuestion')}
-              </OptionSheetItem>
-            ) : null}
-            {actions.canModerate ? (
-              <OptionSheetItem
-                icon={question.isHidden ? EyeIcon : EyeSlashIcon}
-                disabled={actions.offline}
-                onSelect={() => actions.toggleHidden(question)}
-              >
-                {question.isHidden ? t('showToLearners') : t('hideFromLearners')}
-              </OptionSheetItem>
-            ) : null}
-            {manage ? (
-              <OptionSheetItem
-                icon={TrashIcon}
-                destructive
-                disabled={actions.offline}
-                onSelect={() => actions.remove(question)}
-              >
-                {t('deleteQuestion')}
-              </OptionSheetItem>
-            ) : null}
-          </>
-        ) : null}
-        <OptionSheetCancel />
-      </OptionSheetContent>
+          ) : null}
+          {manage ? (
+            <OptionSheetItem
+              icon={TrashIcon}
+              destructive
+              disabled={actions.offline}
+              onSelect={() => actions.remove(question)}
+            >
+              {t('deleteQuestion')}
+            </OptionSheetItem>
+          ) : null}
+        </>
+      ) : null}
+      <OptionSheetCancel />
     </OptionSheet>
   );
 }

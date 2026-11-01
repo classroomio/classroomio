@@ -1,6 +1,7 @@
 import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
 import { CalendarXIcon } from 'phosphor-react-native/src/icons/CalendarX';
 import { UserMinusIcon } from 'phosphor-react-native/src/icons/UserMinus';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -159,7 +160,12 @@ export default function AttendanceScreen() {
     );
   }
 
-  return <AttendanceSheet course={course.data} initialSessionId={lessonId} />;
+  return (
+    // The native modal covers the root sheet host, so this screen hosts its own sheets.
+    <BottomSheetModalProvider>
+      <AttendanceSheet course={course.data} initialSessionId={lessonId} />
+    </BottomSheetModalProvider>
+  );
 }
 
 const styles = StyleSheet.create({

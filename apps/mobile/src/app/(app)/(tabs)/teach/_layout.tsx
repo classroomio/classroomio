@@ -8,6 +8,8 @@ import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { teachCatalog } from '@/feature/teach/translations/catalog';
 
+export const unstable_settings = { anchor: 'index' };
+
 export default function TeachLayout() {
   const { colors } = useTheme();
   const t = useTranslations(commonCatalog);

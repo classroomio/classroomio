@@ -1,5 +1,5 @@
 import { ArrowUpIcon } from 'phosphor-react-native/src/icons/ArrowUp';
-import { ImageSquareIcon } from 'phosphor-react-native/src/icons/ImageSquare';
+import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
 import { WifiSlashIcon } from 'phosphor-react-native/src/icons/WifiSlash';
 import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { Image } from 'expo-image';
@@ -161,8 +161,11 @@ export function ComposerNotice({ title, description }: { title: string; descript
   );
 }
 
+/** The input field: one rounded capsule holding the attach button, the text input and the send button. */
 export function ComposerRow({ children }: { children: ReactNode }) {
-  return <View style={styles.row}>{children}</View>;
+  const { colors } = useTheme();
+
+  return <View style={[styles.row, { backgroundColor: colors.muted, borderColor: colors.border }]}>{children}</View>;
 }
 
 export function ComposerInput(props: Omit<TextInputProps, 'value' | 'onChangeText'>) {
@@ -170,7 +173,7 @@ export function ComposerInput(props: Omit<TextInputProps, 'value' | 'onChangeTex
   const { value, onChangeText, disabled, inputRef } = useComposer();
 
   return (
-    <View style={[styles.field, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+    <View style={styles.field}>
       <TextInput
         ref={inputRef}
         multiline
@@ -190,6 +193,7 @@ export function ComposerInput(props: Omit<TextInputProps, 'value' | 'onChangeTex
 
 export function ComposerAttach({ onPress, disabled = false }: { onPress: () => void; disabled?: boolean }) {
   const t = useTranslations(commonCatalog);
+  const { colors } = useTheme();
   const composer = useComposer();
   const blocked = disabled || composer.disabled || composer.submitting;
 
@@ -204,9 +208,13 @@ export function ComposerAttach({ onPress, disabled = false }: { onPress: () => v
         tapHaptic();
         onPress();
       }}
-      style={({ pressed }) => [styles.iconButton, pressed && styles.pressed, blocked && styles.disabled]}
+      style={({ pressed }) => [
+        styles.attach,
+        { backgroundColor: pressed ? colors.mutedStrong : colors.surface, borderColor: colors.border },
+        blocked && styles.disabled
+      ]}
     >
-      <Icon icon={ImageSquareIcon} size={21} tone="muted" />
+      <Icon icon={PlusIcon} size={17} tone="ink" weight="bold" />
     </Pressable>
   );
 }
@@ -226,14 +234,14 @@ export function ComposerSend({ accessibilityLabel }: { accessibilityLabel?: stri
       onPress={submit}
       style={({ pressed }) => [
         styles.send,
-        { backgroundColor: canSubmit || submitting ? colors.primary : colors.mutedStrong },
+        { backgroundColor: canSubmit || submitting ? colors.primary : colors.borderStrong },
         pressed && styles.pressed
       ]}
     >
       {submitting ? (
         <Spinner tone="onPrimary" />
       ) : (
-        <Icon icon={ArrowUpIcon} size={19} tone={canSubmit ? 'onPrimary' : 'subtle'} weight="bold" />
+        <Icon icon={ArrowUpIcon} size={17} color={colors.onSolid} weight="bold" />
       )}
     </Pressable>
   );
@@ -286,7 +294,7 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
     paddingHorizontal: GUTTER - SPACING.xxs,
     paddingTop: SPACING.xs,
-    borderTopWidth: StyleSheet.hairlineWidth * 2
+    borderTopWidth: StyleSheet.hairlineWidth
   },
   context: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, paddingHorizontal: SPACING.xxs },
   contextLabel: { flex: 1 },
@@ -300,26 +308,35 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous'
   },
   noticeCopy: { flex: 1, gap: 1 },
-  row: { flexDirection: 'row', alignItems: 'flex-end', gap: SPACING.xs },
-  field: {
-    flex: 1,
-    minHeight: 40,
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderRadius: 20,
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: SPACING.xxs,
+    minHeight: 44,
+    padding: SPACING.xxs + 1,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 22,
     borderCurve: 'continuous'
   },
+  field: { flex: 1, minHeight: 34, justifyContent: 'center' },
   input: {
     ...TEXT_VARIANTS.body,
     fontSize: 15,
     lineHeight: 20,
     maxHeight: 132,
-    paddingHorizontal: SPACING.sm + 2,
-    paddingTop: 10,
-    paddingBottom: 10
+    paddingHorizontal: SPACING.xs,
+    paddingTop: 7,
+    paddingBottom: 7
   },
-  iconButton: { width: 36, height: 40, alignItems: 'center', justifyContent: 'center' },
-  send: { width: 36, height: 36, marginBottom: 2, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  attach: {
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 17,
+    borderWidth: StyleSheet.hairlineWidth
+  },
+  send: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
   pressed: { opacity: 0.6 },
   disabled: { opacity: 0.45 },
   attachments: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs, paddingHorizontal: SPACING.xxs },

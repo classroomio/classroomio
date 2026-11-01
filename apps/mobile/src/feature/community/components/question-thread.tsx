@@ -25,6 +25,7 @@ import {
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
 import { Banner, BannerContent, BannerDescription, BannerIcon, BannerTitle } from '@/feature/common/components/banner';
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import {
   Composer,
   ComposerAttach,
@@ -40,7 +41,6 @@ import { FlashHighlight } from '@/feature/common/components/flash-highlight';
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetSeparator
 } from '@/feature/common/components/option-sheet';
@@ -106,8 +106,8 @@ export function QuestionThread({ slug }: { slug: string }) {
   const accept = useAcceptAnswerMutation(slug);
   const attachments = useImageAttachments();
   const [draft, setDraft] = useState('');
-  const [menu, setMenu] = useState<MenuTarget>({ kind: 'question' });
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menu, setMenu] = useState<MenuTarget | null>(null);
+  const menuSheet = useRef<SheetRef>(null);
   const [confirming, setConfirming] = useState<MenuTarget | null>(null);
 
   const data = question.data;
@@ -118,11 +118,11 @@ export function QuestionThread({ slug }: { slug: string }) {
   const newAnswer = useRevealNewItem({ listRef, data: answers, matches: isAnswer });
   const canManage = (authorId: string | null | undefined) => Boolean(userId && (authorId === userId || isStaff));
   const link = webHost && org?.siteName ? questionWebUrlOf(webHost, org.siteName, slug, isStaff) : null;
-  const menuAnswer = menu.kind === 'answer' ? answers.find((answer) => answer.id === menu.answerId) : undefined;
+  const menuAnswer = menu?.kind === 'answer' ? answers.find((answer) => answer.id === menu.answerId) : undefined;
 
   const openMenu = (target: MenuTarget) => {
     setMenu(target);
-    setMenuOpen(true);
+    menuSheet.current?.present();
   };
 
   const runUpvote = (input: { kind: 'question'; id: number } | { kind: 'answer'; id: string }) =>
@@ -343,87 +343,85 @@ export function QuestionThread({ slug }: { slug: string }) {
         </Composer>
       ) : null}
 
-      <OptionSheet open={menuOpen} onOpenChange={setMenuOpen}>
-        <OptionSheetContent>
-          {data && menu.kind === 'question' ? (
-            <>
-              <OptionSheetItem
-                icon={data.isFollowing ? BellSimpleSlashIcon : BellSimpleIcon}
-                disabled={offline}
-                onSelect={toggleFollow}
-              >
-                {data.isFollowing ? t('unfollowQuestion') : t('followQuestion')}
+      <OptionSheet ref={menuSheet} onDismiss={() => setMenu(null)}>
+        {data && menu?.kind === 'question' ? (
+          <>
+            <OptionSheetItem
+              icon={data.isFollowing ? BellSimpleSlashIcon : BellSimpleIcon}
+              disabled={offline}
+              onSelect={toggleFollow}
+            >
+              {data.isFollowing ? t('unfollowQuestion') : t('followQuestion')}
+            </OptionSheetItem>
+            {link ? (
+              <OptionSheetItem icon={LinkIcon} onSelect={copyLink}>
+                {t('copyLink')}
               </OptionSheetItem>
-              {link ? (
-                <OptionSheetItem icon={LinkIcon} onSelect={copyLink}>
-                  {t('copyLink')}
-                </OptionSheetItem>
-              ) : null}
-              {canManage(data.authorId) || canModerate ? <OptionSheetSeparator /> : null}
-              {canManage(data.authorId) ? (
-                <OptionSheetItem
-                  icon={PencilSimpleIcon}
-                  disabled={offline}
-                  onSelect={() => router.push({ pathname: '/community/edit/[slug]', params: { slug } })}
-                >
-                  {t('editQuestion')}
-                </OptionSheetItem>
-              ) : null}
-              {canModerate ? (
-                <OptionSheetItem
-                  icon={data.isHidden ? EyeIcon : EyeSlashIcon}
-                  disabled={offline}
-                  onSelect={toggleQuestionHidden}
-                >
-                  {data.isHidden ? t('showToLearners') : t('hideFromLearners')}
-                </OptionSheetItem>
-              ) : null}
-              {canManage(data.authorId) ? (
-                <OptionSheetItem
-                  icon={TrashIcon}
-                  destructive
-                  disabled={offline}
-                  onSelect={() => setConfirming({ kind: 'question' })}
-                >
-                  {t('deleteQuestion')}
-                </OptionSheetItem>
-              ) : null}
-            </>
-          ) : null}
-          {data && menuAnswer ? (
-            <>
-              {canAccept ? (
-                <OptionSheetItem
-                  icon={data.acceptedAnswerId === menuAnswer.id ? XCircleIcon : CheckCircleIcon}
-                  disabled={offline || (menuAnswer.isHidden && data.acceptedAnswerId !== menuAnswer.id)}
-                  onSelect={() => toggleAccepted(menuAnswer)}
-                >
-                  {data.acceptedAnswerId === menuAnswer.id ? t('unmarkAccepted') : t('markAccepted')}
-                </OptionSheetItem>
-              ) : null}
-              {canModerate ? (
-                <OptionSheetItem
-                  icon={menuAnswer.isHidden ? EyeIcon : EyeSlashIcon}
-                  disabled={offline}
-                  onSelect={() => toggleAnswerHidden(menuAnswer)}
-                >
-                  {menuAnswer.isHidden ? t('showToLearners') : t('hideFromLearners')}
-                </OptionSheetItem>
-              ) : null}
-              {canManage(menuAnswer.author.id) ? (
-                <OptionSheetItem
-                  icon={TrashIcon}
-                  destructive
-                  disabled={offline}
-                  onSelect={() => setConfirming({ kind: 'answer', answerId: menuAnswer.id })}
-                >
-                  {t('deleteAnswer')}
-                </OptionSheetItem>
-              ) : null}
-            </>
-          ) : null}
-          <OptionSheetCancel />
-        </OptionSheetContent>
+            ) : null}
+            {canManage(data.authorId) || canModerate ? <OptionSheetSeparator /> : null}
+            {canManage(data.authorId) ? (
+              <OptionSheetItem
+                icon={PencilSimpleIcon}
+                disabled={offline}
+                onSelect={() => router.push({ pathname: '/community/edit/[slug]', params: { slug } })}
+              >
+                {t('editQuestion')}
+              </OptionSheetItem>
+            ) : null}
+            {canModerate ? (
+              <OptionSheetItem
+                icon={data.isHidden ? EyeIcon : EyeSlashIcon}
+                disabled={offline}
+                onSelect={toggleQuestionHidden}
+              >
+                {data.isHidden ? t('showToLearners') : t('hideFromLearners')}
+              </OptionSheetItem>
+            ) : null}
+            {canManage(data.authorId) ? (
+              <OptionSheetItem
+                icon={TrashIcon}
+                destructive
+                disabled={offline}
+                onSelect={() => setConfirming({ kind: 'question' })}
+              >
+                {t('deleteQuestion')}
+              </OptionSheetItem>
+            ) : null}
+          </>
+        ) : null}
+        {data && menuAnswer ? (
+          <>
+            {canAccept ? (
+              <OptionSheetItem
+                icon={data.acceptedAnswerId === menuAnswer.id ? XCircleIcon : CheckCircleIcon}
+                disabled={offline || (menuAnswer.isHidden && data.acceptedAnswerId !== menuAnswer.id)}
+                onSelect={() => toggleAccepted(menuAnswer)}
+              >
+                {data.acceptedAnswerId === menuAnswer.id ? t('unmarkAccepted') : t('markAccepted')}
+              </OptionSheetItem>
+            ) : null}
+            {canModerate ? (
+              <OptionSheetItem
+                icon={menuAnswer.isHidden ? EyeIcon : EyeSlashIcon}
+                disabled={offline}
+                onSelect={() => toggleAnswerHidden(menuAnswer)}
+              >
+                {menuAnswer.isHidden ? t('showToLearners') : t('hideFromLearners')}
+              </OptionSheetItem>
+            ) : null}
+            {canManage(menuAnswer.author.id) ? (
+              <OptionSheetItem
+                icon={TrashIcon}
+                destructive
+                disabled={offline}
+                onSelect={() => setConfirming({ kind: 'answer', answerId: menuAnswer.id })}
+              >
+                {t('deleteAnswer')}
+              </OptionSheetItem>
+            ) : null}
+          </>
+        ) : null}
+        <OptionSheetCancel />
       </OptionSheet>
 
       <AlertDialog

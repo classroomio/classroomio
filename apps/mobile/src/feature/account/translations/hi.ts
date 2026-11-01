@@ -44,5 +44,10 @@ export const hi: TranslatedMessages<typeof en> = {
   joinedOn: '{date} से सदस्य',
   notifications: 'सूचनाएं',
   orgRole: '{org} · {role}',
-  appVersion: 'ClassroomIO {version}'
+  appVersion: 'ClassroomIO {version}',
+  statInProgressEmpty: 'आपका कोई कोर्स जारी नहीं है।',
+  statCompletedEmpty: 'आपने अभी तक कोई कोर्स पूरा नहीं किया है।',
+  statCertificatesEmpty: 'आपने अभी तक कोई प्रमाणपत्र नहीं पाया है।',
+  statCourseCount: { one: '{count} कोर्स', other: '{count} कोर्स' },
+  statEarnedOn: '{date} को मिला'
 };

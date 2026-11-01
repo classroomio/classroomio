@@ -1,8 +1,9 @@
 import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
 import { DownloadSimpleIcon } from 'phosphor-react-native/src/icons/DownloadSimple';
-import { useState, type ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { ProgressRing } from '@/feature/common/components/progress';
 import { HIT_SLOP } from '@/feature/common/constants/layout';
@@ -75,15 +76,15 @@ function HeaderButton({ label, onPress, children }: { label: string; onPress: ()
 export function CourseDownloadHeaderButton({ courseId }: { courseId: string }) {
   const t = useTranslations(downloadsCatalog);
   const course = useCourseDownload(courseId);
-  const [open, setOpen] = useState(false);
+  const sheet = useRef<SheetRef>(null);
   const status = course?.status ?? null;
 
   return (
     <>
-      <HeaderButton label={t(statusLabelKey(status, 'course'))} onPress={() => setOpen(true)}>
+      <HeaderButton label={t(statusLabelKey(status, 'course'))} onPress={() => sheet.current?.present()}>
         <HeaderGlyph status={status} percent={course ? courseDownloadPercent(course) : 0} />
       </HeaderButton>
-      <DownloadSheet open={open} onOpenChange={setOpen} courseId={courseId} />
+      <DownloadSheet ref={sheet} courseId={courseId} />
     </>
   );
 }
@@ -91,16 +92,16 @@ export function CourseDownloadHeaderButton({ courseId }: { courseId: string }) {
 export function LessonDownloadHeaderButton({ courseId, lessonId }: { courseId: string; lessonId: string }) {
   const t = useTranslations(downloadsCatalog);
   const lesson = useCourseDownload(courseId)?.lessons.find((entry) => entry.lessonId === lessonId) ?? null;
-  const [open, setOpen] = useState(false);
+  const sheet = useRef<SheetRef>(null);
   const status = lesson?.status ?? null;
   const percent = lesson && lesson.expectedBytes > 0 ? Math.min(99, (lesson.bytes / lesson.expectedBytes) * 100) : 0;
 
   return (
     <>
-      <HeaderButton label={t(statusLabelKey(status, 'lesson'))} onPress={() => setOpen(true)}>
+      <HeaderButton label={t(statusLabelKey(status, 'lesson'))} onPress={() => sheet.current?.present()}>
         <HeaderGlyph status={status} percent={percent} />
       </HeaderButton>
-      <DownloadSheet open={open} onOpenChange={setOpen} courseId={courseId} lessonId={lessonId} />
+      <DownloadSheet ref={sheet} courseId={courseId} lessonId={lessonId} />
     </>
   );
 }

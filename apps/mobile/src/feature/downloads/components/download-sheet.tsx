@@ -5,20 +5,19 @@ import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
 import { WifiSlashIcon } from 'phosphor-react-native/src/icons/WifiSlash';
 import { useQuery } from '@tanstack/react-query';
 import { NetworkStateType, useNetworkState } from 'expo-network';
-import { Children, Fragment, isValidElement, useState, type ReactNode } from 'react';
+import { Children, Fragment, isValidElement, useState, type ReactNode, type Ref } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Banner, BannerContent, BannerDescription, BannerIcon, BannerTitle } from '@/feature/common/components/banner';
 import {
-  BottomSheet,
-  BottomSheetClose,
-  BottomSheetContent,
-  BottomSheetDescription,
-  BottomSheetHeader,
-  BottomSheetHeading,
-  BottomSheetScrollView,
-  BottomSheetTitle,
-  useBottomSheetClose
+  Sheet,
+  SheetClose,
+  SheetDescription,
+  SheetHeader,
+  SheetHeading,
+  SheetTitle,
+  useSheetDismiss,
+  type SheetRef
 } from '@/feature/common/components/bottom-sheet';
 import { Button, ButtonSpinner, ButtonText } from '@/feature/common/components/button';
 import { Card } from '@/feature/common/components/card';
@@ -33,7 +32,7 @@ import {
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { Switch } from '@/feature/common/components/switch';
 import { Text } from '@/feature/common/components/text';
-import { SPACING } from '@/feature/common/constants/layout';
+import { GUTTER, SPACING } from '@/feature/common/constants/layout';
 import { successHaptic } from '@/feature/common/helpers/haptics';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
 import { useTheme } from '@/feature/common/helpers/use-theme';
@@ -60,19 +59,17 @@ import { useActiveOrgId } from '@/feature/org/helpers/active-org-store';
 import { showToast } from '@/feature/toast/helpers/toast-store';
 
 type DownloadSheetProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  courseId: string;
+  ref: Ref<SheetRef>;
+  courseId: string | null;
   lessonId?: string;
+  onDismiss?: () => void;
 };
 
-export function DownloadSheet({ open, onOpenChange, courseId, lessonId }: DownloadSheetProps) {
+export function DownloadSheet({ ref, courseId, lessonId, onDismiss }: DownloadSheetProps) {
   return (
-    <BottomSheet open={open} onOpenChange={onOpenChange}>
-      <BottomSheetContent>
-        <DownloadSheetBody courseId={courseId} lessonId={lessonId} />
-      </BottomSheetContent>
-    </BottomSheet>
+    <Sheet ref={ref} onDismiss={onDismiss}>
+      {courseId ? <DownloadSheetBody courseId={courseId} lessonId={lessonId} /> : null}
+    </Sheet>
   );
 }
 
@@ -99,7 +96,7 @@ function DownloadSheetBody({ courseId, lessonId }: { courseId: string; lessonId?
   const t = useTranslations(downloadsCatalog);
   const downloadErrorMessage = useDownloadErrorMessage();
   const locale = useLocale();
-  const close = useBottomSheetClose();
+  const close = useSheetDismiss();
   const offline = useIsOffline();
   const network = useNetworkState();
   const orgId = useActiveOrgId();
@@ -156,14 +153,14 @@ function DownloadSheetBody({ courseId, lessonId }: { courseId: string; lessonId?
 
   return (
     <>
-      <BottomSheetHeader>
-        <BottomSheetHeading>
-          <BottomSheetTitle>{title}</BottomSheetTitle>
-          {data ? <BottomSheetDescription>{data.title}</BottomSheetDescription> : null}
-        </BottomSheetHeading>
-        <BottomSheetClose />
-      </BottomSheetHeader>
-      <BottomSheetScrollView contentContainerStyle={styles.body}>
+      <SheetHeader>
+        <SheetHeading>
+          <SheetTitle>{title}</SheetTitle>
+          {data ? <SheetDescription>{data.title}</SheetDescription> : null}
+        </SheetHeading>
+        <SheetClose />
+      </SheetHeader>
+      <View style={styles.body}>
         {offline && !data ? (
           <Banner tone="neutral">
             <BannerIcon icon={WifiSlashIcon} />
@@ -291,7 +288,7 @@ function DownloadSheetBody({ courseId, lessonId }: { courseId: string; lessonId?
             </View>
           </>
         )}
-      </BottomSheetScrollView>
+      </View>
     </>
   );
 }
@@ -326,7 +323,7 @@ function DownloadFact({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  body: { gap: SPACING.md },
+  body: { paddingHorizontal: GUTTER, paddingBottom: SPACING.sm, gap: SPACING.md },
   loading: { gap: SPACING.sm },
   facts: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.xxs },
   fact: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SPACING.sm, minHeight: 40 },

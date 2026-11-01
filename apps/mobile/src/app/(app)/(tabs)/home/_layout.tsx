@@ -4,6 +4,8 @@ import { tabStackScreenOptions } from '@/feature/common/helpers/stack-screen-opt
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { NotificationBell } from '@/feature/notifications/components/notification-bell';
 
+export const unstable_settings = { anchor: 'index' };
+
 export default function HomeLayout() {
   const { colors } = useTheme();
 

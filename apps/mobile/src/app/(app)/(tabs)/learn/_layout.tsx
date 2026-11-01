@@ -7,6 +7,8 @@ import { commonCatalog } from '@/feature/common/translations/catalog';
 import { exploreCatalog } from '@/feature/explore/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
+export const unstable_settings = { anchor: 'index' };
+
 export default function LearnLayout() {
   const { colors } = useTheme();
   const t = useTranslations(commonCatalog);

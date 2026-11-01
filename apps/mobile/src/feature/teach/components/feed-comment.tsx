@@ -1,5 +1,5 @@
 import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import {
@@ -14,7 +14,6 @@ import {
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
@@ -29,6 +28,7 @@ import {
   PostMenuButton,
   PostMeta
 } from '@/feature/common/components/post';
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { useTheme } from '@/feature/common/helpers/use-theme';
@@ -36,7 +36,6 @@ import { showToast } from '@/feature/toast/helpers/toast-store';
 import { useDeleteCommentMutation } from '@/feature/teach/api/course-newsfeed';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
-import { afterSheetCloses } from '@/feature/teach/helpers/after-sheet';
 import { AGO_KEYS, elapsedCopy } from '@/feature/teach/helpers/relative-time';
 import { teachCatalog } from '@/feature/teach/translations/catalog';
 import type { NewsfeedCommentThread } from '@/feature/teach/types/teach';
@@ -53,7 +52,7 @@ export function FeedComment({ courseId, feedId, comment }: FeedCommentProps) {
   const t = useTranslations(teachCatalog);
   const common = useTranslations(commonCatalog);
   const { colors } = useTheme();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const menu = useRef<SheetRef>(null);
   const [confirming, setConfirming] = useState(false);
   const deleteComment = useDeleteCommentMutation(courseId, feedId);
   const author = comment.authorFullname || comment.authorUsername || t('courseMember');
@@ -100,7 +99,7 @@ export function FeedComment({ courseId, feedId, comment }: FeedCommentProps) {
           </PostAuthor>
           <PostHeaderAction>
             <PostMenuButton
-              onPress={() => setMenuOpen(true)}
+              onPress={() => menu.current?.present()}
               accessibilityLabel={t('moderateCommentBy', { name: author })}
             />
           </PostHeaderAction>
@@ -108,14 +107,12 @@ export function FeedComment({ courseId, feedId, comment }: FeedCommentProps) {
         <PostBody html={comment.content} preserveLineBreaks />
       </Post>
 
-      <OptionSheet open={menuOpen} onOpenChange={setMenuOpen}>
-        <OptionSheetContent>
-          <OptionSheetTitle>{t('commentBy', { name: author })}</OptionSheetTitle>
-          <OptionSheetItem icon={TrashIcon} destructive onSelect={() => afterSheetCloses(() => setConfirming(true))}>
-            {t('deleteComment')}
-          </OptionSheetItem>
-          <OptionSheetCancel />
-        </OptionSheetContent>
+      <OptionSheet ref={menu}>
+        <OptionSheetTitle>{t('commentBy', { name: author })}</OptionSheetTitle>
+        <OptionSheetItem icon={TrashIcon} destructive onSelect={() => setConfirming(true)}>
+          {t('deleteComment')}
+        </OptionSheetItem>
+        <OptionSheetCancel />
       </OptionSheet>
 
       <AlertDialog open={confirming} onOpenChange={setConfirming} busy={deleteComment.isPending}>

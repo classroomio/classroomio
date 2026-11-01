@@ -2,13 +2,13 @@ import { ArrowSquareOutIcon } from 'phosphor-react-native/src/icons/ArrowSquareO
 import { EnvelopeOpenIcon } from 'phosphor-react-native/src/icons/EnvelopeOpen';
 import { EnvelopeSimpleIcon } from 'phosphor-react-native/src/icons/EnvelopeSimple';
 import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
-import { createContext, use, useState, type ReactNode } from 'react';
+import { createContext, use, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, StyleSheet } from 'react-native';
 
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
@@ -62,6 +62,7 @@ export function NotificationActions({ children }: { children: ReactNode }) {
   const deletion = useDeleteNotification();
   const { organizations } = useActiveOrg();
   const [menuItem, setMenuItem] = useState<NotificationItem | null>(null);
+  const menu = useRef<SheetRef>(null);
 
   const announceOffline = () => AccessibilityInfo.announceForAccessibility(t('unavailableOffline'));
 
@@ -93,28 +94,20 @@ export function NotificationActions({ children }: { children: ReactNode }) {
       });
       showToast({ title: t('deleted'), action: undo });
     },
-    showMenu: setMenuItem
+    showMenu: (item) => {
+      setMenuItem(item);
+      menu.current?.present();
+    }
   };
 
   return (
     <NotificationActionsContext value={value}>
       {children}
-      <NotificationActionSheet item={menuItem} onClose={() => setMenuItem(null)} />
-    </NotificationActionsContext>
-  );
-}
-
-function NotificationActionSheet({ item, onClose }: { item: NotificationItem | null; onClose: () => void }) {
-  const [shown, setShown] = useState<NotificationItem | null>(item);
-  if (item && item !== shown) setShown(item);
-
-  return (
-    <OptionSheet open={item !== null} onOpenChange={(open) => !open && onClose()}>
-      <OptionSheetContent>
-        {shown ? <NotificationActionSheetItems item={shown} /> : null}
+      <OptionSheet ref={menu} onDismiss={() => setMenuItem(null)}>
+        {menuItem ? <NotificationActionSheetItems item={menuItem} /> : null}
         <OptionSheetCancel />
-      </OptionSheetContent>
-    </OptionSheet>
+      </OptionSheet>
+    </NotificationActionsContext>
   );
 }
 

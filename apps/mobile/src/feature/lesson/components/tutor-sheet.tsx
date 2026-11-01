@@ -1,21 +1,21 @@
 import { SparkleIcon } from 'phosphor-react-native/src/icons/Sparkle';
 import { SquareIcon } from 'phosphor-react-native/src/icons/Square';
 import { BottomSheetScrollView as SheetScrollView, type BottomSheetScrollViewMethods } from '@gorhom/bottom-sheet';
-import { useRef, useState } from 'react';
+import { useRef, useState, type Ref } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useWindowInsets } from '@/feature/common/helpers/use-window-insets';
 
 import {
-  BottomSheet,
-  BottomSheetClose,
-  BottomSheetContent,
-  BottomSheetDescription,
-  BottomSheetHeader,
-  BottomSheetHeading,
-  BottomSheetTitle,
-  useBottomSheetClose
+  Sheet,
+  SheetClose,
+  SheetDescription,
+  SheetHeader,
+  SheetHeading,
+  SheetTitle,
+  useSheetDismiss,
+  type SheetRef
 } from '@/feature/common/components/bottom-sheet';
 import { Button, ButtonText } from '@/feature/common/components/button';
 import { Composer, ComposerInput, ComposerRow, ComposerSend } from '@/feature/common/components/composer';
@@ -41,8 +41,7 @@ const UNAVAILABLE_KEYS = {
 export type TutorAllowance = { remaining: number; cap: number } | null;
 
 type TutorSheetProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  ref: Ref<SheetRef>;
   courseId: string;
   lessonId: string;
   lessonTitle: string;
@@ -52,13 +51,30 @@ type TutorSheetProps = {
   onOpenTranscript?: () => void;
 };
 
-export function TutorSheet({ open, onOpenChange, ...props }: TutorSheetProps) {
+export function TutorSheet({ ref, onOpenTranscript, ...props }: TutorSheetProps) {
+  const afterDismiss = useRef<(() => void) | null>(null);
+
   return (
-    <BottomSheet open={open} onOpenChange={onOpenChange}>
-      <BottomSheetContent size="tall">
-        <TutorConversation {...props} />
-      </BottomSheetContent>
-    </BottomSheet>
+    <Sheet
+      ref={ref}
+      size="tall"
+      onDismiss={() => {
+        const action = afterDismiss.current;
+        afterDismiss.current = null;
+        action?.();
+      }}
+    >
+      <TutorConversation
+        {...props}
+        onOpenTranscript={
+          onOpenTranscript
+            ? () => {
+                afterDismiss.current = onOpenTranscript;
+              }
+            : undefined
+        }
+      />
+    </Sheet>
   );
 }
 
@@ -69,14 +85,14 @@ function TutorConversation({
   allowance,
   unavailable: statusUnavailable,
   onOpenTranscript
-}: Omit<TutorSheetProps, 'open' | 'onOpenChange'>) {
+}: Omit<TutorSheetProps, 'ref'>) {
   const { colors } = useTheme();
   const t = useTranslations(lessonCatalog);
   const chat = useTutorChat(courseId, lessonId);
   const [draft, setDraft] = useState('');
   const scroll = useRef<BottomSheetScrollViewMethods>(null);
   const unavailable = chat.unavailable ?? (allowance && allowance.remaining <= 0 ? 'cap_reached' : statusUnavailable);
-  const close = useBottomSheetClose();
+  const close = useSheetDismiss();
 
   const submit = () => {
     const text = draft;
@@ -86,20 +102,20 @@ function TutorConversation({
 
   return (
     <>
-      <BottomSheetHeader>
+      <SheetHeader>
         <View style={[styles.badge, { backgroundColor: colors.primaryTint }]}>
           <Icon icon={SparkleIcon} size={17} tone="primary" />
         </View>
-        <BottomSheetHeading>
-          <BottomSheetTitle>{t('tutorTitle')}</BottomSheetTitle>
-          <BottomSheetDescription>
+        <SheetHeading>
+          <SheetTitle>{t('tutorTitle')}</SheetTitle>
+          <SheetDescription>
             {allowance
               ? `${t('tutorAboutLesson')} · ${t('tutorQuestionsLeft', { remaining: allowance.remaining, count: allowance.cap })}`
               : t('tutorAboutLesson')}
-          </BottomSheetDescription>
-        </BottomSheetHeading>
-        <BottomSheetClose />
-      </BottomSheetHeader>
+          </SheetDescription>
+        </SheetHeading>
+        <SheetClose />
+      </SheetHeader>
 
       <SheetScrollView
         ref={scroll}
@@ -138,8 +154,8 @@ function TutorConversation({
                 <Button
                   variant="outline"
                   onPress={() => {
-                    close();
                     onOpenTranscript();
+                    close();
                   }}
                 >
                   <ButtonText>{t('openTranscript')}</ButtonText>
@@ -212,7 +228,7 @@ function TutorBubble({ message, pending }: { message: TutorMessage; pending: boo
 }
 
 function KeyboardSpacer() {
-  const insets = useSafeAreaInsets();
+  const insets = useWindowInsets();
   const { height } = useReanimatedKeyboardAnimation();
   const animatedStyle = useAnimatedStyle(() => ({ height: Math.max(0, Math.abs(height.get()) - insets.bottom) }));
 

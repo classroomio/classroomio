@@ -4,6 +4,8 @@ import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
 import { EyeSlashIcon } from 'phosphor-react-native/src/icons/EyeSlash';
 import { StyleSheet, View } from 'react-native';
 
+import { Text } from '@/feature/common/components/text';
+
 import {
   Post,
   PostAction,
@@ -17,7 +19,7 @@ import {
   PostMeta,
   PostTitle
 } from '@/feature/common/components/post';
-import { SPACING } from '@/feature/common/constants/layout';
+import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { timeAgo } from '@/feature/common/helpers/time-ago';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { communityCatalog } from '@/feature/community/translations/catalog';
@@ -82,60 +84,76 @@ export function QuestionPost({ question, voted, disabled, onUpvote, onOpenMenu }
 
 type AnswerPostProps = VoteProps & { answer: CommunityAnswer; accepted: boolean; onOpenMenu?: () => void };
 
+/** One answer as a conversation row: avatar beside the author line, with the body and votes aligned under the name. */
 export function AnswerPost({ answer, accepted, voted, disabled, onUpvote, onOpenMenu }: AnswerPostProps) {
   const t = useTranslations(communityCatalog);
   const { colors } = useTheme();
   const locale = useLocale();
   const author = answer.author.fullname || t('formerMember');
   const votes = answer.votes ?? 0;
+  const panel = accepted ? colors.successTint : answer.isHidden ? colors.muted : null;
 
   return (
-    <Post
-      density="compact"
-      style={[
-        accepted && { borderColor: colors.success },
-        answer.isHidden && { backgroundColor: colors.muted, shadowOpacity: 0 }
-      ]}
-    >
-      {accepted || answer.isHidden ? (
-        <View style={styles.statuses}>
-          {accepted ? (
-            <QuestionStatus icon={CheckCircleIcon} tone="success">
-              {t('acceptedAnswer')}
-            </QuestionStatus>
-          ) : null}
-          {answer.isHidden ? (
-            <QuestionStatus icon={EyeSlashIcon} tone="warning">
-              {t('hiddenFromLearners')}
-            </QuestionStatus>
-          ) : null}
-        </View>
-      ) : null}
-      <PostHeader>
+    <View style={[styles.answer, { borderTopColor: colors.border }]}>
+      <View style={[styles.answerInner, panel ? [styles.panel, { backgroundColor: panel }] : null]}>
         <PostAvatar name={author} uri={answer.author.avatarUrl} />
-        <PostAuthor>
-          <PostAuthorName>{author}</PostAuthorName>
-          <PostMeta>{timeAgo(answer.createdAt, undefined, locale)}</PostMeta>
-        </PostAuthor>
-        {onOpenMenu ? <PostMenuButton onPress={onOpenMenu} accessibilityLabel={t('answerActions')} /> : null}
-      </PostHeader>
-      <PostBody html={answer.body} />
-      <PostActions>
-        <PostAction
-          icon={ArrowFatUpIcon}
-          active={voted}
-          disabled={disabled || voted}
-          onPress={onUpvote}
-          accessibilityLabel={upvoteLabel(t, votes, voted)}
-        >
-          {votes}
-        </PostAction>
-      </PostActions>
-    </Post>
+        <View style={styles.answerContent}>
+          <View style={styles.answerHeader}>
+            <Text variant="captionStrong" numberOfLines={1} style={styles.answerAuthor}>
+              {author}
+            </Text>
+            <Text variant="caption" tone="muted">
+              {timeAgo(answer.createdAt, undefined, locale)}
+            </Text>
+            {onOpenMenu ? (
+              <View style={styles.answerMenu}>
+                <PostMenuButton onPress={onOpenMenu} accessibilityLabel={t('answerActions')} />
+              </View>
+            ) : null}
+          </View>
+          {accepted || answer.isHidden ? (
+            <View style={styles.statuses}>
+              {accepted ? (
+                <QuestionStatus icon={CheckCircleIcon} tone="success">
+                  {t('acceptedAnswer')}
+                </QuestionStatus>
+              ) : null}
+              {answer.isHidden ? (
+                <QuestionStatus icon={EyeSlashIcon} tone="warning">
+                  {t('hiddenFromLearners')}
+                </QuestionStatus>
+              ) : null}
+            </View>
+          ) : null}
+          <Post variant="plain" density="compact">
+            <PostBody html={answer.body} />
+          </Post>
+          <View style={styles.answerActions}>
+            <PostAction
+              icon={ArrowFatUpIcon}
+              active={voted}
+              disabled={disabled || voted}
+              onPress={onUpvote}
+              accessibilityLabel={upvoteLabel(t, votes, voted)}
+            >
+              {votes}
+            </PostAction>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   trailing: { flex: 1, alignItems: 'flex-end' },
+  answer: { borderTopWidth: StyleSheet.hairlineWidth, paddingTop: SPACING.sm },
+  answerInner: { flexDirection: 'row', alignItems: 'flex-start', gap: SPACING.sm },
+  panel: { padding: SPACING.sm, borderRadius: RADII.lg, borderCurve: 'continuous' },
+  answerContent: { flex: 1, minWidth: 0, gap: SPACING.xxs },
+  answerHeader: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, minHeight: 28 },
+  answerAuthor: { flexShrink: 1 },
+  answerMenu: { marginLeft: 'auto', marginRight: -SPACING.xs },
+  answerActions: { flexDirection: 'row', marginLeft: -SPACING.xs },
   statuses: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: SPACING.md }
 });

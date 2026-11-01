@@ -7,6 +7,7 @@ import { createContext, use, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Banner, BannerContent, BannerDescription, BannerIcon } from '@/feature/common/components/banner';
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { ComposerAttachments } from '@/feature/common/components/composer';
 import { Field, FieldError, FieldLabel } from '@/feature/common/components/field';
@@ -15,7 +16,6 @@ import { Input, InputGroup, InputGroupInput } from '@/feature/common/components/
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
@@ -179,7 +179,7 @@ export function QuestionFormCourse() {
   const { courseId, setCourseId, courses, coursesLoading, errors, disabled } = useQuestionForm();
   const t = useTranslations(communityCatalog);
   const error = useFieldError('courseId');
-  const [open, setOpen] = useState(false);
+  const picker = useRef<SheetRef>(null);
   const selected = courses.find((course) => course.id === courseId);
   const placeholder = coursesLoading
     ? t('coursesLoading')
@@ -194,7 +194,7 @@ export function QuestionFormCourse() {
         accessibilityRole="button"
         accessibilityLabel={t('fieldCourseLabel', { course: selected?.title ?? placeholder })}
         disabled={disabled || courses.length === 0}
-        onPress={() => setOpen(true)}
+        onPress={() => picker.current?.present()}
         style={[
           styles.select,
           { backgroundColor: colors.surface, borderColor: errors.courseId ? colors.danger : colors.border },
@@ -207,16 +207,14 @@ export function QuestionFormCourse() {
         <Icon icon={CaretDownIcon} size={18} tone="muted" />
       </Pressable>
       <FieldError>{error}</FieldError>
-      <OptionSheet open={open} onOpenChange={setOpen}>
-        <OptionSheetContent>
-          <OptionSheetTitle>{t('fieldCourse')}</OptionSheetTitle>
-          {courses.map((course) => (
-            <OptionSheetItem key={course.id} selected={course.id === courseId} onSelect={() => setCourseId(course.id)}>
-              {course.title}
-            </OptionSheetItem>
-          ))}
-          <OptionSheetCancel />
-        </OptionSheetContent>
+      <OptionSheet ref={picker}>
+        <OptionSheetTitle>{t('fieldCourse')}</OptionSheetTitle>
+        {courses.map((course) => (
+          <OptionSheetItem key={course.id} selected={course.id === courseId} onSelect={() => setCourseId(course.id)}>
+            {course.title}
+          </OptionSheetItem>
+        ))}
+        <OptionSheetCancel />
       </OptionSheet>
     </Field>
   );

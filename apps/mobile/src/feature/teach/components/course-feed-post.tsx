@@ -3,7 +3,7 @@ import { ChatsCircleIcon } from 'phosphor-react-native/src/icons/ChatsCircle';
 import { PushPinIcon } from 'phosphor-react-native/src/icons/PushPin';
 import { PushPinSlashIcon } from 'phosphor-react-native/src/icons/PushPinSlash';
 import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import {
   AlertDialog,
@@ -17,7 +17,6 @@ import {
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
@@ -34,13 +33,13 @@ import {
   PostMenuButton,
   PostMeta
 } from '@/feature/common/components/post';
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { Icon } from '@/feature/common/components/icon';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { showToast } from '@/feature/toast/helpers/toast-store';
 import { useDeletePostMutation, usePinPostMutation } from '@/feature/teach/api/course-newsfeed';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
-import { afterSheetCloses } from '@/feature/teach/helpers/after-sheet';
 import { AGO_KEYS, elapsedCopy } from '@/feature/teach/helpers/relative-time';
 import { teachCatalog } from '@/feature/teach/translations/catalog';
 import type { NewsfeedPost } from '@/feature/teach/types/teach';
@@ -50,7 +49,7 @@ type CourseFeedPostProps = { courseId: string; post: NewsfeedPost; onOpenComment
 export function CourseFeedPost({ courseId, post, onOpenComments }: CourseFeedPostProps) {
   const t = useTranslations(teachCatalog);
   const common = useTranslations(commonCatalog);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const menu = useRef<SheetRef>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const pinPost = usePinPostMutation(courseId);
   const deletePost = useDeletePostMutation(courseId);
@@ -93,7 +92,7 @@ export function CourseFeedPost({ courseId, post, onOpenComments }: CourseFeedPos
           </PostAuthor>
           <PostHeaderAction>
             {post.isPinned && <Icon icon={PushPinIcon} size={15} tone="muted" />}
-            <PostMenuButton onPress={() => setMenuOpen(true)} accessibilityLabel={t('moderatePost')} />
+            <PostMenuButton onPress={() => menu.current?.present()} accessibilityLabel={t('moderatePost')} />
           </PostHeaderAction>
         </PostHeader>
         <PostBody html={post.content} />
@@ -108,24 +107,18 @@ export function CourseFeedPost({ courseId, post, onOpenComments }: CourseFeedPos
         </PostActions>
       </Post>
 
-      <OptionSheet open={menuOpen} onOpenChange={setMenuOpen}>
-        <OptionSheetContent>
-          <OptionSheetTitle>{t('postBy', { name: author })}</OptionSheetTitle>
-          <OptionSheetItem icon={post.isPinned ? PushPinSlashIcon : PushPinIcon} onSelect={togglePin}>
-            {post.isPinned ? t('unpinPost') : t('pinToTop')}
-          </OptionSheetItem>
-          <OptionSheetItem icon={ChatsCircleIcon} onSelect={() => afterSheetCloses(() => onOpenComments(post))}>
-            {t('moderateComments')}
-          </OptionSheetItem>
-          <OptionSheetItem
-            icon={TrashIcon}
-            destructive
-            onSelect={() => afterSheetCloses(() => setConfirmingDelete(true))}
-          >
-            {t('deletePost')}
-          </OptionSheetItem>
-          <OptionSheetCancel />
-        </OptionSheetContent>
+      <OptionSheet ref={menu}>
+        <OptionSheetTitle>{t('postBy', { name: author })}</OptionSheetTitle>
+        <OptionSheetItem icon={post.isPinned ? PushPinSlashIcon : PushPinIcon} onSelect={togglePin}>
+          {post.isPinned ? t('unpinPost') : t('pinToTop')}
+        </OptionSheetItem>
+        <OptionSheetItem icon={ChatsCircleIcon} onSelect={() => onOpenComments(post)}>
+          {t('moderateComments')}
+        </OptionSheetItem>
+        <OptionSheetItem icon={TrashIcon} destructive onSelect={() => setConfirmingDelete(true)}>
+          {t('deletePost')}
+        </OptionSheetItem>
+        <OptionSheetCancel />
       </OptionSheet>
 
       <AlertDialog open={confirmingDelete} onOpenChange={setConfirmingDelete} busy={deletePost.isPending}>

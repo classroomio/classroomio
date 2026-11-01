@@ -44,5 +44,10 @@ export const da: TranslatedMessages<typeof en> = {
   joinedOn: 'Medlem siden {date}',
   notifications: 'Notifikationer',
   orgRole: '{org} · {role}',
-  appVersion: 'ClassroomIO {version}'
+  appVersion: 'ClassroomIO {version}',
+  statInProgressEmpty: 'Du har ingen igangværende kurser.',
+  statCompletedEmpty: 'Du har ikke gennemført et kursus endnu.',
+  statCertificatesEmpty: 'Du har ikke fået et certifikat endnu.',
+  statCourseCount: { one: '{count} kursus', other: '{count} kurser' },
+  statEarnedOn: 'Opnået {date}'
 };

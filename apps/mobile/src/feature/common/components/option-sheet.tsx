@@ -1,95 +1,79 @@
 import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
-import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { createContext, use, useRef, type ReactNode } from 'react';
-import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { createContext, use, useRef, type ReactNode, type Ref } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { selectionHaptic } from '@/feature/common/helpers/haptics';
-import { useModalPresentation } from '@/feature/common/helpers/use-modal-presentation';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
-import { SheetBackdrop, SheetContainer } from './bottom-sheet';
+import { Sheet, useSheetDismiss, type SheetRef } from './bottom-sheet';
 import { Icon, type AppIcon } from './icon';
 import { Text } from './text';
 
-type OptionSheetContextValue = {
-  open: boolean;
-  close: () => void;
-  /** Closes the sheet and runs `action` once it has finished dismissing, so a dialog it opens doesn't collide. */
-  select: (action: () => void) => void;
-  runPending: () => void;
-};
+const OptionSheetSelectContext = createContext<((action: () => void) => void) | null>(null);
 
-const OptionSheetContext = createContext<OptionSheetContextValue | null>(null);
+function useOptionSelect() {
+  const select = use(OptionSheetSelectContext);
+  if (!select) throw new Error('OptionSheet parts must be used inside OptionSheet');
 
-function useOptionSheet() {
-  const context = use(OptionSheetContext);
-  if (!context) throw new Error('OptionSheet parts must be used inside OptionSheet');
-
-  return context;
+  return select;
 }
 
-type OptionSheetProps = { open: boolean; onOpenChange: (open: boolean) => void; children: ReactNode };
+type OptionSheetProps = {
+  ref?: Ref<SheetRef>;
+  /** Runs once the sheet has closed, after any chosen action. */
+  onDismiss?: () => void;
+  children: ReactNode;
+};
 
-/** A list of actions in a gorhom bottom sheet; choosing one closes the sheet before the action runs. */
-export function OptionSheet({ open, onOpenChange, children }: OptionSheetProps) {
+/**
+ * A list of actions in a gorhom sheet. Present it through its ref. Choosing an action closes the sheet first and runs
+ * the action once it has closed, so a dialog or screen it opens doesn't collide with the sheet.
+ */
+export function OptionSheet({ ref, onDismiss, children }: OptionSheetProps) {
   const pending = useRef<(() => void) | null>(null);
-  const close = () => onOpenChange(false);
+
+  return (
+    <Sheet
+      ref={ref}
+      onDismiss={() => {
+        const action = pending.current;
+        pending.current = null;
+        action?.();
+        onDismiss?.();
+      }}
+    >
+      <OptionSheetSelector pending={pending}>{children}</OptionSheetSelector>
+    </Sheet>
+  );
+}
+
+function OptionSheetSelector({
+  pending,
+  children
+}: {
+  pending: React.RefObject<(() => void) | null>;
+  children: ReactNode;
+}) {
+  const dismiss = useSheetDismiss();
 
   const select = (action: () => void) => {
     pending.current = action;
-    close();
+    dismiss();
   };
-
-  const runPending = () => {
-    const action = pending.current;
-    pending.current = null;
-    action?.();
-  };
-
-  return <OptionSheetContext value={{ open, close, select, runPending }}>{children}</OptionSheetContext>;
-}
-
-export function OptionSheetContent({ children }: { children: ReactNode }) {
-  const { colors } = useTheme();
-  const context = useOptionSheet();
-  const { open, close, runPending } = context;
-  const insets = useSafeAreaInsets();
-  const { height } = useWindowDimensions();
-  const { modal, markDismissed } = useModalPresentation(open);
 
   return (
-    <BottomSheetModal
-      ref={modal}
-      enableDynamicSizing
-      maxDynamicContentSize={height * 0.7}
-      enablePanDownToClose
-      onDismiss={() => {
-        markDismissed();
-        close();
-        runPending();
-      }}
-      backdropComponent={SheetBackdrop}
-      containerComponent={SheetContainer}
-      backgroundStyle={[styles.background, { backgroundColor: colors.surface, borderColor: colors.border }]}
-      handleIndicatorStyle={[styles.indicator, { backgroundColor: colors.borderStrong }]}
-      accessibilityViewIsModal
-    >
-      <OptionSheetContext value={context}>
-        <BottomSheetScrollView bounces={false} contentContainerStyle={{ paddingBottom: insets.bottom + SPACING.xs }}>
-          {children}
-        </BottomSheetScrollView>
-      </OptionSheetContext>
-    </BottomSheetModal>
+    <OptionSheetSelectContext value={select}>
+      <View style={styles.list}>{children}</View>
+    </OptionSheetSelectContext>
   );
 }
 
 export function OptionSheetTitle({ children }: { children: ReactNode }) {
   return (
-    <Text variant="captionStrong" tone="muted" accessibilityRole="header" style={styles.title}>
+    <Text variant="captionStrong" tone="muted" accessibilityRole="header" numberOfLines={2} style={styles.title}>
       {children}
     </Text>
   );
@@ -113,7 +97,7 @@ export function OptionSheetItem({
   children
 }: OptionSheetItemProps) {
   const { colors } = useTheme();
-  const { select } = useOptionSheet();
+  const select = useOptionSelect();
   const tone = destructive ? 'danger' : 'ink';
 
   return (
@@ -127,11 +111,11 @@ export function OptionSheetItem({
       }}
       style={({ pressed }) => [styles.item, pressed && { backgroundColor: colors.muted }, disabled && styles.disabled]}
     >
-      {icon ? <Icon icon={icon} size={19} tone={tone} /> : null}
-      <Text variant="bodyStrong" tone={tone} numberOfLines={2} style={styles.label}>
+      {icon ? <Icon icon={icon} size={20} tone={tone} /> : null}
+      <Text variant="body" tone={tone} numberOfLines={2} style={styles.label}>
         {children}
       </Text>
-      {selected ? <Icon icon={CheckIcon} size={18} tone="primary" /> : null}
+      {selected ? <Icon icon={CheckIcon} size={18} tone="primary" weight="bold" /> : null}
     </Pressable>
   );
 }
@@ -145,43 +129,42 @@ export function OptionSheetSeparator() {
 export function OptionSheetCancel({ children }: { children?: string }) {
   const t = useTranslations(commonCatalog);
   const { colors } = useTheme();
-  const { close } = useOptionSheet();
+  const dismiss = useSheetDismiss();
 
   return (
-    <>
-      <View style={[styles.separator, { backgroundColor: colors.border }]} />
+    <View style={styles.cancelWrap}>
       <Pressable
         accessibilityRole="button"
-        onPress={close}
-        style={({ pressed }) => [styles.item, styles.cancel, pressed && { backgroundColor: colors.muted }]}
+        onPress={dismiss}
+        style={({ pressed }) => [styles.cancel, { backgroundColor: pressed ? colors.mutedStrong : colors.muted }]}
       >
-        <Text variant="label" tone="muted">
+        <Text variant="label" tone="ink">
           {children ?? t('cancel')}
         </Text>
       </Pressable>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
-    borderWidth: StyleSheet.hairlineWidth * 2,
-    borderBottomWidth: 0,
-    borderTopLeftRadius: RADII.sheet,
-    borderTopRightRadius: RADII.sheet,
-    borderCurve: 'continuous'
-  },
-  indicator: { width: 36, height: 5, borderRadius: RADII.pill },
-  title: { paddingHorizontal: SPACING.md, paddingTop: SPACING.xxs, paddingBottom: SPACING.xxs },
+  list: {},
+  title: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.xs, textAlign: 'center' },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-    minHeight: 50,
-    paddingHorizontal: SPACING.md
+    minHeight: 52,
+    paddingHorizontal: SPACING.lg
   },
   label: { flex: 1 },
-  cancel: { justifyContent: 'center' },
-  separator: { height: StyleSheet.hairlineWidth * 2, marginVertical: SPACING.xxs },
-  disabled: { opacity: 0.45 }
+  separator: { height: StyleSheet.hairlineWidth, marginHorizontal: SPACING.lg, marginVertical: SPACING.xxs },
+  cancelWrap: { paddingHorizontal: SPACING.md, paddingTop: SPACING.xs },
+  cancel: {
+    minHeight: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: RADII.lg,
+    borderCurve: 'continuous'
+  },
+  disabled: { opacity: 0.4 }
 });

@@ -12,4 +12,6 @@ export type UpdateProfileInput = InferRequestType<ApiClient['account']['profile'
 
 export type LearningStats = { inProgress: number; completed: number; certificates: number };
 
+export type LearningStatKind = 'in-progress' | 'completed' | 'certificates';
+
 export type InviteKind = 'organization' | 'link' | 'resource';

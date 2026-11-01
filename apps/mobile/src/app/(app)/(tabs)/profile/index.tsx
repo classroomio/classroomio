@@ -157,21 +157,21 @@ export default function ProfileScreen() {
               tone="primary"
               label={t('statInProgress')}
               value={stats?.inProgress}
-              onPress={() => router.push({ pathname: '/learn', params: { status: 'in-progress' } })}
+              onPress={() => router.push({ pathname: '/profile/learning', params: { kind: 'in-progress' } })}
             />
             <ProfileStat
               icon={CheckCircleIcon}
               tone="success"
               label={t('statCompleted')}
               value={stats?.completed}
-              onPress={() => router.push({ pathname: '/learn', params: { status: 'completed' } })}
+              onPress={() => router.push({ pathname: '/profile/learning', params: { kind: 'completed' } })}
             />
             <ProfileStat
               icon={MedalIcon}
               tone="warning"
               label={t('statCertificates')}
               value={stats?.certificates}
-              onPress={() => router.push('/certificates')}
+              onPress={() => router.push({ pathname: '/profile/learning', params: { kind: 'certificates' } })}
             />
           </ProfileStats>
 

@@ -1,3 +1,4 @@
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { router, Stack } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
@@ -35,15 +36,18 @@ export function QuestionFormLayout({
           )
         }}
       />
-      <KeyboardAwareScrollView
-        bottomOffset={32}
-        keyboardShouldPersistTaps="handled"
-        style={{ backgroundColor: colors.background }}
-        contentContainerStyle={styles.content}
-      >
-        {offline ? <OfflineNotice description={offlineDescription} /> : null}
-        {children}
-      </KeyboardAwareScrollView>
+      {/* The native modal covers the root sheet host, so this screen hosts its own sheets. */}
+      <BottomSheetModalProvider>
+        <KeyboardAwareScrollView
+          bottomOffset={32}
+          keyboardShouldPersistTaps="handled"
+          style={{ backgroundColor: colors.background }}
+          contentContainerStyle={styles.content}
+        >
+          {offline ? <OfflineNotice description={offlineDescription} /> : null}
+          {children}
+        </KeyboardAwareScrollView>
+      </BottomSheetModalProvider>
     </>
   );
 }

@@ -3,9 +3,10 @@ import { SparkleIcon } from 'phosphor-react-native/src/icons/Sparkle';
 import { offlineMediaKey } from '@cio/utils/functions/offline-media';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import type { VideoPlayer } from 'expo-video';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { OfflineNotice } from '@/feature/common/components/offline-notice';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { Text } from '@/feature/common/components/text';
@@ -59,7 +60,8 @@ export default function LessonScreen() {
   const view = useLessonPlayer(courseId, lessonId);
   const completion = useCompleteLessonMutation(courseId, lessonId);
   const [player, setPlayer] = useState<VideoPlayer | null>(null);
-  const [sheet, setSheet] = useState<'transcript' | 'tutor' | null>(null);
+  const transcriptSheet = useRef<SheetRef>(null);
+  const tutorSheet = useRef<SheetRef>(null);
   const [moment, setMoment] = useState<
     Omit<LessonCompleteMomentProps, 'onFinish'> & { advance: (() => void) | null }
   >();
@@ -257,7 +259,7 @@ export default function LessonScreen() {
                 description={
                   player && primaryVideo?.source.kind !== 'embed' ? t('transcriptTapToPlay') : t('transcriptReadAlong')
                 }
-                onPress={() => setSheet('transcript')}
+                onPress={() => transcriptSheet.current?.present()}
               />
             ) : null}
             {view.tutor.enabled ? (
@@ -281,7 +283,7 @@ export default function LessonScreen() {
                         title: t('tutorNeedsConnectionTitle'),
                         description: t('tutorNeedsConnectionDescription')
                       })
-                    : setSheet('tutor')
+                    : tutorSheet.current?.present()
                 }
               />
             ) : null}
@@ -311,8 +313,7 @@ export default function LessonScreen() {
 
       {view.transcript ? (
         <TranscriptSheet
-          open={sheet === 'transcript'}
-          onOpenChange={(open) => setSheet(open ? 'transcript' : null)}
+          ref={transcriptSheet}
           segments={view.transcript.segments}
           player={primaryVideo?.source.kind === 'embed' ? null : player}
         />
@@ -320,14 +321,13 @@ export default function LessonScreen() {
 
       {view.tutor.enabled ? (
         <TutorSheet
-          open={sheet === 'tutor'}
-          onOpenChange={(open) => setSheet(open ? 'tutor' : null)}
+          ref={tutorSheet}
           courseId={courseId}
           lessonId={lessonId}
           lessonTitle={title}
           allowance={view.tutor.allowance}
           unavailable={view.tutor.unavailable}
-          onOpenTranscript={view.transcript ? () => setTimeout(() => setSheet('transcript'), 280) : undefined}
+          onOpenTranscript={view.transcript ? () => transcriptSheet.current?.present() : undefined}
         />
       ) : null}
 

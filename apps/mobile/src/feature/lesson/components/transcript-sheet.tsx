@@ -2,17 +2,18 @@ import { useBottomSheetScrollableCreator } from '@gorhom/bottom-sheet';
 import { FlashList } from '@shopify/flash-list';
 import { useEvent } from 'expo';
 import type { VideoPlayer } from 'expo-video';
+import type { Ref } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useWindowInsets } from '@/feature/common/helpers/use-window-insets';
 
 import {
-  BottomSheet,
-  BottomSheetClose,
-  BottomSheetContent,
-  BottomSheetDescription,
-  BottomSheetHeader,
-  BottomSheetHeading,
-  BottomSheetTitle
+  Sheet,
+  SheetClose,
+  SheetDescription,
+  SheetHeader,
+  SheetHeading,
+  SheetTitle,
+  type SheetRef
 } from '@/feature/common/components/bottom-sheet';
 import { Text } from '@/feature/common/components/text';
 import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
@@ -24,35 +25,32 @@ import { lessonCatalog } from '@/feature/lesson/translations/catalog';
 import type { TranscriptSegment } from '@/feature/lesson/types/lesson';
 
 type TranscriptSheetProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  ref: Ref<SheetRef>;
   segments: TranscriptSegment[];
   /** The player the transcript belongs to; lines seek it when present. */
   player: VideoPlayer | null;
 };
 
-export function TranscriptSheet({ open, onOpenChange, segments, player }: TranscriptSheetProps) {
+export function TranscriptSheet({ ref, segments, player }: TranscriptSheetProps) {
   const t = useTranslations(lessonCatalog);
 
   return (
-    <BottomSheet open={open} onOpenChange={onOpenChange}>
-      <BottomSheetContent size="tall">
-        <BottomSheetHeader>
-          <BottomSheetHeading>
-            <BottomSheetTitle>{t('transcript')}</BottomSheetTitle>
-            <BottomSheetDescription>
-              {player ? t('transcriptSheetTapLine') : t('transcriptLineCount', { count: segments.length })}
-            </BottomSheetDescription>
-          </BottomSheetHeading>
-          <BottomSheetClose />
-        </BottomSheetHeader>
-        {player ? (
-          <FollowingTranscript segments={segments} player={player} />
-        ) : (
-          <TranscriptLines segments={segments} activeIndex={-1} />
-        )}
-      </BottomSheetContent>
-    </BottomSheet>
+    <Sheet ref={ref} size="tall">
+      <SheetHeader>
+        <SheetHeading>
+          <SheetTitle>{t('transcript')}</SheetTitle>
+          <SheetDescription>
+            {player ? t('transcriptSheetTapLine') : t('transcriptLineCount', { count: segments.length })}
+          </SheetDescription>
+        </SheetHeading>
+        <SheetClose />
+      </SheetHeader>
+      {player ? (
+        <FollowingTranscript segments={segments} player={player} />
+      ) : (
+        <TranscriptLines segments={segments} activeIndex={-1} />
+      )}
+    </Sheet>
   );
 }
 
@@ -80,7 +78,7 @@ function FollowingTranscript({ segments, player }: { segments: TranscriptSegment
 type TranscriptLinesProps = { segments: TranscriptSegment[]; activeIndex: number; onSeek?: (seconds: number) => void };
 
 function TranscriptLines({ segments, activeIndex, onSeek }: TranscriptLinesProps) {
-  const insets = useSafeAreaInsets();
+  const insets = useWindowInsets();
   const sheetScroll = useBottomSheetScrollableCreator();
 
   return (

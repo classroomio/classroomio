@@ -4,7 +4,7 @@ import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
 import { MagnifyingGlassIcon } from 'phosphor-react-native/src/icons/MagnifyingGlass';
 import { QrCodeIcon } from 'phosphor-react-native/src/icons/QrCode';
 import { XCircleIcon } from 'phosphor-react-native/src/icons/XCircle';
-import { createContext, use, useState, type ReactNode } from 'react';
+import { createContext, use, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
@@ -18,6 +18,7 @@ import {
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
 import { Avatar } from '@/feature/common/components/avatar';
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { Button, ButtonText } from '@/feature/common/components/button';
 import { Card } from '@/feature/common/components/card';
 import { Icon } from '@/feature/common/components/icon';
@@ -35,7 +36,6 @@ import {
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
@@ -114,13 +114,13 @@ export function AttendanceSessionPicker({ sessions, onSelect }: AttendanceSessio
   const locale = useLocale();
   const { colors } = useTheme();
   const { session } = useRoster();
-  const [open, setOpen] = useState(false);
+  const picker = useRef<SheetRef>(null);
   const live = session ? isSessionLive(session) : false;
 
   return (
     <>
       <Item
-        onPress={() => setOpen(true)}
+        onPress={() => picker.current?.present()}
         accessibilityLabel={session ? t('sessionA11y', { title: session.title }) : t('noSessionA11y')}
       >
         <ItemMedia>
@@ -142,20 +142,18 @@ export function AttendanceSessionPicker({ sessions, onSelect }: AttendanceSessio
         </ItemActions>
       </Item>
 
-      <OptionSheet open={open} onOpenChange={setOpen}>
-        <OptionSheetContent>
-          <OptionSheetTitle>{t('sessions')}</OptionSheetTitle>
-          {sessions.map((candidate) => (
-            <OptionSheetItem
-              key={candidate.id}
-              selected={candidate.id === session?.id}
-              onSelect={() => onSelect(candidate)}
-            >
-              {`${candidate.title} · ${sessionLabel(candidate, t, locale)}`}
-            </OptionSheetItem>
-          ))}
-          <OptionSheetCancel />
-        </OptionSheetContent>
+      <OptionSheet ref={picker}>
+        <OptionSheetTitle>{t('sessions')}</OptionSheetTitle>
+        {sessions.map((candidate) => (
+          <OptionSheetItem
+            key={candidate.id}
+            selected={candidate.id === session?.id}
+            onSelect={() => onSelect(candidate)}
+          >
+            {`${candidate.title} · ${sessionLabel(candidate, t, locale)}`}
+          </OptionSheetItem>
+        ))}
+        <OptionSheetCancel />
       </OptionSheet>
     </>
   );

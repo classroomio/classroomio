@@ -1,10 +1,10 @@
 import { SmileyIcon } from 'phosphor-react-native/src/icons/Smiley';
-import { createContext, use, useState, type ReactNode } from 'react';
+import { createContext, use, useRef, type ReactNode } from 'react';
 
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
@@ -63,31 +63,29 @@ export function ReactionsSummary() {
 export function ReactionsPicker() {
   const { selected, disabled, onToggle } = useReactions();
   const t = useTranslations(newsfeedCatalog);
-  const [open, setOpen] = useState(false);
+  const picker = useRef<SheetRef>(null);
 
   return (
     <>
       <PostAction
         icon={SmileyIcon}
         disabled={disabled}
-        onPress={() => setOpen(true)}
+        onPress={() => picker.current?.present()}
         accessibilityLabel={t('addReaction')}
       />
-      <OptionSheet open={open} onOpenChange={setOpen}>
-        <OptionSheetContent>
-          <OptionSheetTitle>{t('reactToPost')}</OptionSheetTitle>
-          {REACTIONS.map((option) => (
-            <OptionSheetItem
-              key={option.type}
-              icon={option.icon}
-              selected={selected === option.type}
-              onSelect={() => onToggle(option.type)}
-            >
-              {t(option.labelKey)}
-            </OptionSheetItem>
-          ))}
-          <OptionSheetCancel />
-        </OptionSheetContent>
+      <OptionSheet ref={picker}>
+        <OptionSheetTitle>{t('reactToPost')}</OptionSheetTitle>
+        {REACTIONS.map((option) => (
+          <OptionSheetItem
+            key={option.type}
+            icon={option.icon}
+            selected={selected === option.type}
+            onSelect={() => onToggle(option.type)}
+          >
+            {t(option.labelKey)}
+          </OptionSheetItem>
+        ))}
+        <OptionSheetCancel />
       </OptionSheet>
     </>
   );

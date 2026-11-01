@@ -21,7 +21,8 @@ import { stripLegacyReplyQuote } from '@/feature/newsfeed/helpers/comment-thread
 import { newsfeedCatalog } from '@/feature/newsfeed/translations/catalog';
 import type { NewsfeedComment } from '@/feature/newsfeed/types/newsfeed';
 
-const INDENT = 18;
+const INDENT = 20;
+const AVATAR = 30;
 
 function ThreadIndent({ depth, children }: { depth: number; children: ReactNode }) {
   const { colors } = useTheme();
@@ -31,7 +32,7 @@ function ThreadIndent({ depth, children }: { depth: number; children: ReactNode 
     <View style={styles.indentRow}>
       {Array.from({ length: levels }, (_, index) => (
         <View key={index} style={styles.indentLevel}>
-          <View style={[styles.threadLine, { backgroundColor: colors.border }]} />
+          <View style={[styles.threadLine, { backgroundColor: colors.mutedStrong }]} />
         </View>
       ))}
       <View style={styles.indentBody}>{children}</View>
@@ -74,12 +75,12 @@ export function CommentHeader({ children }: { children?: ReactNode }) {
 
   return (
     <View style={styles.header}>
-      <Avatar name={author} uri={comment.authorAvatarUrl} size={26} />
+      <Avatar name={author} uri={comment.authorAvatarUrl} size={AVATAR} />
       <Text variant="captionStrong" numberOfLines={1} style={styles.author}>
         {author}
       </Text>
-      <Text variant="caption" tone="muted">
-        {timeAgo(comment.createdAt, undefined, locale)}
+      <Text variant="caption" tone="subtle">
+        {`· ${timeAgo(comment.createdAt, undefined, locale)}`}
       </Text>
       <View style={styles.headerEnd}>{children}</View>
     </View>
@@ -203,12 +204,18 @@ const styles = StyleSheet.create({
   indentLevel: { width: INDENT, alignItems: 'center' },
   threadLine: { width: StyleSheet.hairlineWidth * 2, flex: 1 },
   indentBody: { flex: 1, minWidth: 0 },
-  comment: { gap: SPACING.xxs + 2, paddingVertical: SPACING.sm },
-  header: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
+  comment: { gap: SPACING.xxs, paddingVertical: SPACING.sm },
+  header: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, minHeight: AVATAR },
   author: { flexShrink: 1 },
   headerEnd: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
-  body: { paddingLeft: 26 + SPACING.xs, gap: 2 },
-  actions: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md, paddingLeft: 26 + SPACING.xs, minHeight: 24 },
+  body: { paddingLeft: AVATAR + SPACING.xs, gap: SPACING.xxs / 2, marginTop: -SPACING.xs },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.lg,
+    paddingLeft: AVATAR + SPACING.xs,
+    minHeight: 28
+  },
   toggle: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   more: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, minHeight: 40 },
   disabled: { opacity: 0.45 }

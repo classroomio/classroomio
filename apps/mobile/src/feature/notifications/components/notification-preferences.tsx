@@ -4,9 +4,10 @@ import { GlobeIcon } from 'phosphor-react-native/src/icons/Globe';
 import { MoonIcon } from 'phosphor-react-native/src/icons/Moon';
 import { SlidersHorizontalIcon } from 'phosphor-react-native/src/icons/SlidersHorizontal';
 import type { TNotificationCategory } from '@cio/utils/constants/notifications';
-import { createContext, use, useState, type ReactNode } from 'react';
+import { createContext, use, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
 import { Icon } from '@/feature/common/components/icon';
@@ -23,7 +24,6 @@ import {
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
@@ -229,10 +229,16 @@ export function QuietHoursSection() {
   const { colors } = useTheme();
   const { channel, preferences, update } = useNotificationPreferences();
   const [editing, setEditing] = useState<QuietHoursField | null>(null);
+  const picker = useRef<SheetRef>(null);
   if (!preferences || channel !== 'push' || !preferences.pushAvailable) return null;
 
   const quietHours = preferences.quietHours;
   const timezone = quietHours?.timezone ?? deviceTimezone();
+
+  const edit = (field: QuietHoursField) => {
+    setEditing(field);
+    picker.current?.present();
+  };
 
   const setField = (field: QuietHoursField, minute: number) => {
     const current = quietHours ?? { ...DEFAULT_QUIET_HOURS, timezone };
@@ -262,7 +268,7 @@ export function QuietHoursSection() {
           </ItemActions>
         </Item>
         {quietHours ? (
-          <Item onPress={() => setEditing('startMinute')}>
+          <Item onPress={() => edit('startMinute')}>
             <ItemContent>
               <ItemTitle>{t('quietFrom')}</ItemTitle>
             </ItemContent>
@@ -273,7 +279,7 @@ export function QuietHoursSection() {
           </Item>
         ) : null}
         {quietHours ? (
-          <Item onPress={() => setEditing('endMinute')}>
+          <Item onPress={() => edit('endMinute')}>
             <ItemContent>
               <ItemTitle>{t('quietUntil')}</ItemTitle>
             </ItemContent>
@@ -298,20 +304,18 @@ export function QuietHoursSection() {
         ) : null}
       </ItemGroup>
 
-      <OptionSheet open={editing !== null} onOpenChange={(open) => !open && setEditing(null)}>
-        <OptionSheetContent>
-          <OptionSheetTitle>{editing === 'endMinute' ? t('quietEnd') : t('quietStart')}</OptionSheetTitle>
-          {QUIET_HOURS_OPTIONS.map((minute) => (
-            <OptionSheetItem
-              key={minute}
-              selected={editing !== null && quietHours?.[editing] === minute}
-              onSelect={() => editing && setField(editing, minute)}
-            >
-              {formatMinuteOfDay(minute, locale)}
-            </OptionSheetItem>
-          ))}
-          <OptionSheetCancel />
-        </OptionSheetContent>
+      <OptionSheet ref={picker} onDismiss={() => setEditing(null)}>
+        <OptionSheetTitle>{editing === 'endMinute' ? t('quietEnd') : t('quietStart')}</OptionSheetTitle>
+        {QUIET_HOURS_OPTIONS.map((minute) => (
+          <OptionSheetItem
+            key={minute}
+            selected={editing !== null && quietHours?.[editing] === minute}
+            onSelect={() => editing && setField(editing, minute)}
+          >
+            {formatMinuteOfDay(minute, locale)}
+          </OptionSheetItem>
+        ))}
+        <OptionSheetCancel />
       </OptionSheet>
     </ScreenSection>
   );

@@ -27,6 +27,7 @@ import { OfflineSupport } from '@/feature/offline/components/offline-support';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { useSyncCurrentLocale } from '@/feature/i18n/helpers/use-sync-current-locale';
 import { orgBrandOf } from '@/feature/org/helpers/org-brand';
+import { useTabIcons } from '@/feature/common/helpers/use-tab-icons';
 import { useActiveOrg } from '@/feature/org/helpers/use-active-org';
 import { ServerProvider } from '@/feature/server/components/server-provider';
 import { Toaster } from '@/feature/toast/components/toaster';
@@ -67,7 +68,8 @@ export default function RootLayout() {
 function BrandedApp({ fontsLoaded }: { fontsLoaded: boolean }) {
   const { org } = useActiveOrg();
   const { isPending } = useAuth();
-  const ready = fontsLoaded && !isPending;
+  const tabIcons = useTabIcons();
+  const ready = fontsLoaded && tabIcons !== null && !isPending;
   useSyncCurrentLocale();
   const brand = useMemo(() => orgBrandOf(org?.theme), [org?.theme]);
 

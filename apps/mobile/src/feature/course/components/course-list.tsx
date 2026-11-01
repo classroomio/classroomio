@@ -4,13 +4,13 @@ import { LinkIcon } from 'phosphor-react-native/src/icons/Link';
 import { FlashList } from '@shopify/flash-list';
 import * as Clipboard from 'expo-clipboard';
 import { Link, router } from 'expo-router';
-import { useState, type ReactElement } from 'react';
+import { useRef, useState, type ReactElement } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
@@ -113,20 +113,24 @@ export function CourseList({ courses, header, empty, onRefresh }: CourseListProp
   const { colors } = useTheme();
   const webUrl = useCourseWebUrl();
   const [downloadCourseId, setDownloadCourseId] = useState<string | null>(null);
-  const [downloadOpen, setDownloadOpen] = useState(false);
+  const downloadSheet = useRef<SheetRef>(null);
   const [menuCourse, setMenuCourse] = useState<EnrolledCourse | null>(null);
+  const menu = useRef<SheetRef>(null);
   const menuUrl = menuCourse ? webUrl(menuCourse.id) : null;
 
   const actions: CourseActions = {
     webUrl,
     onDownload: (courseId) => {
       setDownloadCourseId(courseId);
-      setDownloadOpen(true);
+      downloadSheet.current?.present();
     },
     onCopyLink: (url) => {
       void Clipboard.setStringAsync(url).then(() => showToast({ tone: 'success', title: t('linkCopied') }));
     },
-    onOpenMenu: setMenuCourse
+    onOpenMenu: (course) => {
+      setMenuCourse(course);
+      menu.current?.present();
+    }
   };
 
   return (
@@ -145,29 +149,26 @@ export function CourseList({ courses, header, empty, onRefresh }: CourseListProp
         contentContainerStyle={styles.content}
       />
 
-      {downloadCourseId ? (
-        <DownloadSheet open={downloadOpen} onOpenChange={setDownloadOpen} courseId={downloadCourseId} />
-      ) : null}
+      <DownloadSheet ref={downloadSheet} courseId={downloadCourseId} onDismiss={() => setDownloadCourseId(null)} />
 
-      <OptionSheet open={menuCourse !== null} onOpenChange={(open) => !open && setMenuCourse(null)}>
-        <OptionSheetContent>
-          {menuCourse ? <OptionSheetTitle>{menuCourse.title}</OptionSheetTitle> : null}
-          <OptionSheetItem
-            icon={ArrowSquareOutIcon}
-            onSelect={() => menuCourse && router.push(courseHref(menuCourse.id))}
-          >
-            {common('open')}
-          </OptionSheetItem>
-          <OptionSheetItem icon={DownloadSimpleIcon} onSelect={() => menuCourse && actions.onDownload(menuCourse.id)}>
-            {t('menuDownload')}
-          </OptionSheetItem>
-          {menuUrl ? (
-            <OptionSheetItem icon={LinkIcon} onSelect={() => actions.onCopyLink(menuUrl)}>
-              {t('menuCopyLink')}
+      <OptionSheet ref={menu} onDismiss={() => setMenuCourse(null)}>
+        {menuCourse ? (
+          <>
+            <OptionSheetTitle>{menuCourse.title}</OptionSheetTitle>
+            <OptionSheetItem icon={ArrowSquareOutIcon} onSelect={() => router.push(courseHref(menuCourse.id))}>
+              {common('open')}
             </OptionSheetItem>
-          ) : null}
-          <OptionSheetCancel />
-        </OptionSheetContent>
+            <OptionSheetItem icon={DownloadSimpleIcon} onSelect={() => actions.onDownload(menuCourse.id)}>
+              {t('menuDownload')}
+            </OptionSheetItem>
+            {menuUrl ? (
+              <OptionSheetItem icon={LinkIcon} onSelect={() => actions.onCopyLink(menuUrl)}>
+                {t('menuCopyLink')}
+              </OptionSheetItem>
+            ) : null}
+          </>
+        ) : null}
+        <OptionSheetCancel />
       </OptionSheet>
     </>
   );

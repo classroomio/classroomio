@@ -44,5 +44,10 @@ export const vi: TranslatedMessages<typeof en> = {
   joinedOn: 'Tham gia từ {date}',
   notifications: 'Thông báo',
   orgRole: '{org} · {role}',
-  appVersion: 'ClassroomIO {version}'
+  appVersion: 'ClassroomIO {version}',
+  statInProgressEmpty: 'Bạn không có khóa học nào đang học.',
+  statCompletedEmpty: 'Bạn chưa hoàn thành khóa học nào.',
+  statCertificatesEmpty: 'Bạn chưa nhận được chứng chỉ nào.',
+  statCourseCount: { one: '{count} khóa học', other: '{count} khóa học' },
+  statEarnedOn: 'Nhận ngày {date}'
 };

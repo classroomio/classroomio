@@ -5,6 +5,8 @@ import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
+export const unstable_settings = { anchor: 'index' };
+
 export default function ComplianceLayout() {
   const { colors } = useTheme();
   const t = useTranslations(commonCatalog);

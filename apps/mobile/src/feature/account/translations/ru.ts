@@ -54,5 +54,10 @@ export const ru: TranslatedMessages<typeof en> = {
   joinedOn: 'Дата регистрации: {date}',
   notifications: 'Уведомления',
   orgRole: '{org} · {role}',
-  appVersion: 'ClassroomIO {version}'
+  appVersion: 'ClassroomIO {version}',
+  statInProgressEmpty: 'У вас нет курсов в процессе.',
+  statCompletedEmpty: 'Вы ещё не завершили ни одного курса.',
+  statCertificatesEmpty: 'Вы ещё не получили ни одного сертификата.',
+  statCourseCount: { one: '{count} курс', few: '{count} курса', many: '{count} курсов', other: '{count} курса' },
+  statEarnedOn: 'Получен {date}'
 };

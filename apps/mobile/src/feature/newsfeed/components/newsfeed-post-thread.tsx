@@ -17,6 +17,7 @@ import {
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
 import { Button, ButtonSpinner, ButtonText } from '@/feature/common/components/button';
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import {
   Composer,
   ComposerInput,
@@ -28,12 +29,7 @@ import {
   type ComposerHandle
 } from '@/feature/common/components/composer';
 import { Empty, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
-import {
-  OptionSheet,
-  OptionSheetCancel,
-  OptionSheetContent,
-  OptionSheetItem
-} from '@/feature/common/components/option-sheet';
+import { OptionSheet, OptionSheetCancel, OptionSheetItem } from '@/feature/common/components/option-sheet';
 import { FlashHighlight } from '@/feature/common/components/flash-highlight';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { Text } from '@/feature/common/components/text';
@@ -105,6 +101,7 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
   const [mode, setMode] = useState<ComposerMode>({ kind: 'new' });
   const [collapsed, setCollapsed] = useState<ReadonlySet<number>>(new Set());
   const [menu, setMenu] = useState<NewsfeedComment | null>(null);
+  const menuSheet = useRef<SheetRef>(null);
   const [confirming, setConfirming] = useState<NewsfeedComment | null>(null);
 
   const threadData = thread.data ?? EMPTY_THREAD;
@@ -131,6 +128,11 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
   const startReply = (comment: NewsfeedComment) => {
     setMode({ kind: 'reply', comment });
     composer.current?.focus();
+  };
+
+  const openMenu = (comment: NewsfeedComment) => {
+    setMenu(comment);
+    menuSheet.current?.present();
   };
 
   const startEdit = (comment: NewsfeedComment) => {
@@ -223,7 +225,7 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
     return (
       <FlashHighlight active={newComment.highlightedId === String(comment.id)}>
         <Comment comment={comment} depth={item.depth}>
-          <CommentHeader>{canDelete ? <CommentMenuButton onPress={() => setMenu(comment)} /> : null}</CommentHeader>
+          <CommentHeader>{canDelete ? <CommentMenuButton onPress={() => openMenu(comment)} /> : null}</CommentHeader>
           <CommentBody />
           <CommentActions>
             <CommentAction disabled={offline} onPress={() => startReply(comment)}>
@@ -359,18 +361,18 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
         </Composer>
       ) : null}
 
-      <OptionSheet open={menu !== null} onOpenChange={(open) => !open && setMenu(null)}>
-        <OptionSheetContent>
-          {menu && isAuthor(menu) ? (
-            <OptionSheetItem icon={PencilSimpleIcon} disabled={offline} onSelect={() => startEdit(menu)}>
-              {t('editComment')}
-            </OptionSheetItem>
-          ) : null}
+      <OptionSheet ref={menuSheet} onDismiss={() => setMenu(null)}>
+        {menu && isAuthor(menu) ? (
+          <OptionSheetItem icon={PencilSimpleIcon} disabled={offline} onSelect={() => startEdit(menu)}>
+            {t('editComment')}
+          </OptionSheetItem>
+        ) : null}
+        {menu ? (
           <OptionSheetItem icon={TrashIcon} destructive disabled={offline} onSelect={() => setConfirming(menu)}>
             {t('deleteComment')}
           </OptionSheetItem>
-          <OptionSheetCancel />
-        </OptionSheetContent>
+        ) : null}
+        <OptionSheetCancel />
       </OptionSheet>
 
       <AlertDialog

@@ -5,15 +5,15 @@ import { SubtitlesSlashIcon } from 'phosphor-react-native/src/icons/SubtitlesSla
 import { VideoCameraSlashIcon } from 'phosphor-react-native/src/icons/VideoCameraSlash';
 import { useEvent } from 'expo';
 import { VideoView, useVideoPlayer, type SubtitleTrack, type VideoPlayer, type VideoSource } from 'expo-video';
-import { createContext, use, useEffect, useState, type ReactNode } from 'react';
+import { createContext, use, useEffect, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Icon } from '@/feature/common/components/icon';
 import {
   OptionSheet,
   OptionSheetCancel,
-  OptionSheetContent,
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
@@ -206,7 +206,7 @@ export function NativeVideoControls({ children }: { children: ReactNode }) {
 export function NativeVideoSpeed() {
   const { player, enforced } = useNativeVideo();
   const { playbackRate } = useEvent(player, 'playbackRateChange', { playbackRate: player.playbackRate });
-  const [open, setOpen] = useState(false);
+  const sheet = useRef<SheetRef>(null);
   const t = useTranslations(lessonCatalog);
   const format = useFormatters();
   const rateLabel = (rate: number) => `${format.number(rate)}×`;
@@ -220,27 +220,25 @@ export function NativeVideoSpeed() {
         accessibilityLabel={
           enforced ? t('playbackSpeedFixed') : t('playbackSpeedValue', { rate: rateLabel(playbackRate) })
         }
-        onPress={() => setOpen(true)}
+        onPress={() => sheet.current?.present()}
       >
         <ButtonIcon icon={GaugeIcon} />
         <ButtonText>{rateLabel(playbackRate)}</ButtonText>
       </Button>
-      <OptionSheet open={open} onOpenChange={setOpen}>
-        <OptionSheetContent>
-          <OptionSheetTitle>{t('playbackSpeed')}</OptionSheetTitle>
-          {PLAYBACK_RATES.map((rate) => (
-            <OptionSheetItem
-              key={rate}
-              selected={rate === playbackRate}
-              onSelect={() => {
-                player.playbackRate = rate;
-              }}
-            >
-              {rate === 1 ? t('speedNormal') : rateLabel(rate)}
-            </OptionSheetItem>
-          ))}
-          <OptionSheetCancel />
-        </OptionSheetContent>
+      <OptionSheet ref={sheet}>
+        <OptionSheetTitle>{t('playbackSpeed')}</OptionSheetTitle>
+        {PLAYBACK_RATES.map((rate) => (
+          <OptionSheetItem
+            key={rate}
+            selected={rate === playbackRate}
+            onSelect={() => {
+              player.playbackRate = rate;
+            }}
+          >
+            {rate === 1 ? t('speedNormal') : rateLabel(rate)}
+          </OptionSheetItem>
+        ))}
+        <OptionSheetCancel />
       </OptionSheet>
     </>
   );
@@ -248,7 +246,7 @@ export function NativeVideoSpeed() {
 
 export function NativeVideoCaptions() {
   const { captions, setCaptions, subtitleTracks, segments } = useNativeVideo();
-  const [open, setOpen] = useState(false);
+  const sheet = useRef<SheetRef>(null);
   const t = useTranslations(lessonCatalog);
   if (subtitleTracks.length === 0 && segments.length === 0) return null;
 
@@ -262,37 +260,35 @@ export function NativeVideoCaptions() {
         accessibilityState={{ selected: on }}
         onPress={() => {
           if (subtitleTracks.length === 0) setCaptions(on ? { kind: 'off' } : { kind: 'transcript' });
-          else setOpen(true);
+          else sheet.current?.present();
         }}
       >
         <ButtonIcon icon={on ? SubtitlesIcon : SubtitlesSlashIcon} />
         <ButtonText>{t('captions')}</ButtonText>
       </Button>
-      <OptionSheet open={open} onOpenChange={setOpen}>
-        <OptionSheetContent>
-          <OptionSheetTitle>{t('captions')}</OptionSheetTitle>
-          <OptionSheetItem selected={captions.kind === 'off'} onSelect={() => setCaptions({ kind: 'off' })}>
-            {t('captionsOff')}
+      <OptionSheet ref={sheet}>
+        <OptionSheetTitle>{t('captions')}</OptionSheetTitle>
+        <OptionSheetItem selected={captions.kind === 'off'} onSelect={() => setCaptions({ kind: 'off' })}>
+          {t('captionsOff')}
+        </OptionSheetItem>
+        {subtitleTracks.map((track, index) => (
+          <OptionSheetItem
+            key={track.id ?? `${track.language}-${index}`}
+            selected={captions.kind === 'track' && captions.track === track}
+            onSelect={() => setCaptions({ kind: 'track', track })}
+          >
+            {track.label || track.name || track.language || t('trackNumbered', { number: index + 1 })}
           </OptionSheetItem>
-          {subtitleTracks.map((track, index) => (
-            <OptionSheetItem
-              key={track.id ?? `${track.language}-${index}`}
-              selected={captions.kind === 'track' && captions.track === track}
-              onSelect={() => setCaptions({ kind: 'track', track })}
-            >
-              {track.label || track.name || track.language || t('trackNumbered', { number: index + 1 })}
-            </OptionSheetItem>
-          ))}
-          {segments.length > 0 ? (
-            <OptionSheetItem
-              selected={captions.kind === 'transcript'}
-              onSelect={() => setCaptions({ kind: 'transcript' })}
-            >
-              {t('captionsFromTranscript')}
-            </OptionSheetItem>
-          ) : null}
-          <OptionSheetCancel />
-        </OptionSheetContent>
+        ))}
+        {segments.length > 0 ? (
+          <OptionSheetItem
+            selected={captions.kind === 'transcript'}
+            onSelect={() => setCaptions({ kind: 'transcript' })}
+          >
+            {t('captionsFromTranscript')}
+          </OptionSheetItem>
+        ) : null}
+        <OptionSheetCancel />
       </OptionSheet>
     </>
   );

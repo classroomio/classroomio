@@ -1,20 +1,34 @@
-import { XIcon } from 'phosphor-react-native/src/icons/X';
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
-  BottomSheetScrollView as GorhomScrollView,
-  BottomSheetView,
-  type BottomSheetBackdropProps
+  BottomSheetScrollView,
+  type BottomSheetBackdropProps,
+  type BottomSheetModalProps
 } from '@gorhom/bottom-sheet';
-import { createContext, use, type ComponentProps, type ReactNode } from 'react';
-import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FullWindowOverlay } from 'react-native-screens';
+import { useFocusEffect } from 'expo-router';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
+import {
+  createContext,
+  use,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+  type ReactNode,
+  type Ref,
+  type RefObject
+} from 'react';
+import {
+  BackHandler,
+  Pressable,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+  type NativeEventSubscription
+} from 'react-native';
 
 import { GUTTER, HIT_SLOP, RADII, SPACING } from '@/feature/common/constants/layout';
-import { useModalPresentation } from '@/feature/common/helpers/use-modal-presentation';
 import { useTheme } from '@/feature/common/helpers/use-theme';
+import { useWindowInsets } from '@/feature/common/helpers/use-window-insets';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
@@ -23,61 +37,87 @@ import { Text } from './text';
 
 const TALL_SNAP_POINTS = ['90%'];
 
-type BottomSheetContextValue = { open: boolean; close: () => void };
+export type SheetRef = { present: () => void; dismiss: () => void };
 
-const BottomSheetContext = createContext<BottomSheetContextValue | null>(null);
+const SheetDismissContext = createContext<(() => void) | null>(null);
 
-function useBottomSheet() {
-  const context = use(BottomSheetContext);
-  if (!context) throw new Error('BottomSheet parts must be used inside BottomSheet');
+/** Dismisses the enclosing sheet, for parts that close it after an action. */
+export function useSheetDismiss() {
+  const dismiss = use(SheetDismissContext);
+  if (!dismiss) throw new Error('useSheetDismiss must be used inside Sheet');
 
-  return context;
-}
-
-type BottomSheetProps = { open: boolean; onOpenChange: (open: boolean) => void; children: ReactNode };
-
-/** A modal sheet (gorhom bottom sheet) that closes on backdrop tap, back press or a downward drag. */
-export function BottomSheet({ open, onOpenChange, children }: BottomSheetProps) {
-  return <BottomSheetContext value={{ open, close: () => onOpenChange(false) }}>{children}</BottomSheetContext>;
+  return dismiss;
 }
 
 export function SheetBackdrop(props: BottomSheetBackdropProps) {
   return (
-    <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={0.45} pressBehavior="close" />
+    <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={0.5} pressBehavior="close" />
   );
 }
 
-/** Presents sheets above native tab and stack views, which otherwise cover the portal host on iOS. */
-export function SheetContainer({ children }: { children?: ReactNode }) {
-  if (Platform.OS !== 'ios') return children;
+/** Tracks whether the sheet is open, and while it is, closes it on the Android back button or when its screen loses focus. */
+function useSheetLifecycle(modal: RefObject<BottomSheetModal | null>) {
+  const subscription = useRef<NativeEventSubscription | null>(null);
+  const isOpen = useRef(false);
 
-  return (
-    <FullWindowOverlay>
-      <GestureHandlerRootView style={StyleSheet.absoluteFill}>{children}</GestureHandlerRootView>
-    </FullWindowOverlay>
+  useFocusEffect(
+    useCallback(
+      () => () => {
+        if (isOpen.current) modal.current?.dismiss();
+      },
+      [modal]
+    )
   );
+
+  const onChange: NonNullable<BottomSheetModalProps['onChange']> = (index) => {
+    isOpen.current = index >= 0;
+
+    if (index >= 0 && !subscription.current) {
+      subscription.current = BackHandler.addEventListener('hardwareBackPress', () => {
+        modal.current?.dismiss();
+        return true;
+      });
+      return;
+    }
+
+    if (index < 0) {
+      subscription.current?.remove();
+      subscription.current = null;
+    }
+  };
+
+  return onChange;
 }
 
-type BottomSheetContentProps = {
-  /** `fit` grows with its content up to 90% of the screen; `tall` always takes 90%, for lists and chats that fill the space. */
+type SheetProps = {
+  ref?: Ref<SheetRef>;
+  /** `fit` sizes to its content and scrolls past 90% of the screen; `tall` always takes 90%, for lists and chats that fill the space. */
   size?: 'fit' | 'tall';
+  /** Runs once the sheet has finished closing, however it was closed. */
+  onDismiss?: () => void;
   children: ReactNode;
 };
 
-export function BottomSheetContent({ size = 'fit', children }: BottomSheetContentProps) {
+/**
+ * A gorhom modal sheet. Present and dismiss it through its ref (`sheet.current?.present()`). It closes on a backdrop
+ * tap, a downward drag or the Android back button.
+ */
+export function Sheet({ ref, size = 'fit', onDismiss, children }: SheetProps) {
   const { colors } = useTheme();
-  const { open, close } = useBottomSheet();
   const { height } = useWindowDimensions();
-  const insets = useSafeAreaInsets();
-  const { modal, markDismissed } = useModalPresentation(open);
+  const insets = useWindowInsets();
+  const modal = useRef<BottomSheetModal>(null);
+  const onChange = useSheetLifecycle(modal);
+  const dismiss = () => modal.current?.dismiss();
+
+  useImperativeHandle(ref, () => ({
+    present: () => modal.current?.present(),
+    dismiss: () => modal.current?.dismiss()
+  }));
 
   return (
     <BottomSheetModal
       ref={modal}
-      onDismiss={() => {
-        markDismissed();
-        close();
-      }}
       enableDynamicSizing={size === 'fit'}
       snapPoints={size === 'tall' ? TALL_SNAP_POINTS : undefined}
       maxDynamicContentSize={height * 0.9 - insets.top}
@@ -86,106 +126,85 @@ export function BottomSheetContent({ size = 'fit', children }: BottomSheetConten
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
+      onChange={onChange}
+      onDismiss={onDismiss}
       backdropComponent={SheetBackdrop}
-      containerComponent={SheetContainer}
-      backgroundStyle={[styles.background, { backgroundColor: colors.background, borderColor: colors.border }]}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={[styles.indicator, { backgroundColor: colors.borderStrong }]}
       accessibilityViewIsModal
     >
-      <BottomSheetContext value={{ open, close }}>
+      <SheetDismissContext value={dismiss}>
         {size === 'tall' ? (
           <View style={styles.fill}>{children}</View>
         ) : (
-          <BottomSheetView style={{ paddingBottom: insets.bottom }}>{children}</BottomSheetView>
+          <BottomSheetScrollView
+            alwaysBounceVertical={false}
+            contentInsetAdjustmentBehavior="never"
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, SPACING.md) }}
+          >
+            {children}
+          </BottomSheetScrollView>
         )}
-      </BottomSheetContext>
+      </SheetDismissContext>
     </BottomSheetModal>
   );
 }
 
-export function BottomSheetHeader({ children }: { children: ReactNode }) {
-  return (
-    <View style={styles.header}>
-      <View style={styles.headerRow}>{children}</View>
-    </View>
-  );
+export function SheetHeader({ children }: { children: ReactNode }) {
+  return <View style={styles.header}>{children}</View>;
 }
 
-export function BottomSheetHeading({ children }: { children: ReactNode }) {
+export function SheetHeading({ children }: { children: ReactNode }) {
   return <View style={styles.heading}>{children}</View>;
 }
 
-export function BottomSheetTitle({ children }: { children: ReactNode }) {
+export function SheetTitle({ children }: { children: ReactNode }) {
   return (
-    <Text variant="heading" accessibilityRole="header" numberOfLines={1}>
+    <Text variant="heading" accessibilityRole="header" numberOfLines={2}>
       {children}
     </Text>
   );
 }
 
-export function BottomSheetDescription({ children }: { children: ReactNode }) {
+export function SheetDescription({ children }: { children: ReactNode }) {
   return (
-    <Text variant="caption" tone="muted" numberOfLines={2}>
+    <Text variant="caption" tone="muted" numberOfLines={3}>
       {children}
     </Text>
   );
 }
 
-export function BottomSheetClose() {
+export function SheetClose() {
   const t = useTranslations(commonCatalog);
   const { colors } = useTheme();
-  const { close } = useBottomSheet();
+  const dismiss = useSheetDismiss();
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={t('close')}
       hitSlop={HIT_SLOP}
-      onPress={close}
+      onPress={dismiss}
       style={({ pressed }) => [styles.close, { backgroundColor: pressed ? colors.mutedStrong : colors.muted }]}
     >
-      <Icon icon={XIcon} size={17} tone="muted" />
+      <Icon icon={XIcon} size={16} tone="muted" weight="bold" />
     </Pressable>
   );
 }
 
-type BottomSheetScrollViewProps = ComponentProps<typeof GorhomScrollView>;
-
-/** Scrolls inside a sheet and hands the drag to the sheet at the top edge. */
-export function BottomSheetScrollView({ contentContainerStyle, ...props }: BottomSheetScrollViewProps) {
-  const insets = useSafeAreaInsets();
-
-  return (
-    <GorhomScrollView
-      keyboardShouldPersistTaps="handled"
-      {...props}
-      contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + SPACING.lg }, contentContainerStyle]}
-    />
-  );
-}
-
-export function BottomSheetBody({ children }: { children: ReactNode }) {
-  return <View style={styles.fill}>{children}</View>;
-}
-
-/** Closes the sheet from inside a custom part, for example after an action that leaves the sheet. */
-export function useBottomSheetClose() {
-  return useBottomSheet().close;
-}
-
 const styles = StyleSheet.create({
-  background: {
-    borderWidth: StyleSheet.hairlineWidth * 2,
-    borderBottomWidth: 0,
-    borderTopLeftRadius: RADII.sheet,
-    borderTopRightRadius: RADII.sheet,
-    borderCurve: 'continuous'
+  background: { borderRadius: RADII.sheet + 6, borderCurve: 'continuous' },
+  indicator: { width: 36, height: 4, borderRadius: RADII.pill },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: SPACING.sm,
+    paddingTop: SPACING.xs,
+    paddingBottom: SPACING.md,
+    paddingHorizontal: GUTTER
   },
-  indicator: { width: 36, height: 5, borderRadius: RADII.pill },
-  header: { paddingTop: SPACING.xxs, paddingBottom: SPACING.sm, paddingHorizontal: GUTTER },
-  headerRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
-  heading: { flex: 1, gap: 1 },
+  heading: { flex: 1, gap: SPACING.xxs / 2 },
   close: { width: 30, height: 30, borderRadius: RADII.pill, alignItems: 'center', justifyContent: 'center' },
-  body: { paddingHorizontal: GUTTER, gap: SPACING.xs },
   fill: { flex: 1 }
 });

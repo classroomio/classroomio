@@ -6,6 +6,8 @@ import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { settingsCatalog } from '@/feature/settings/translations/catalog';
 
+export const unstable_settings = { anchor: 'index' };
+
 export default function ProfileLayout() {
   const { colors } = useTheme();
   const t = useTranslations(commonCatalog);
@@ -23,6 +25,17 @@ export default function ProfileLayout() {
       />
       <Stack.Screen name="settings" options={{ title: t('settings'), headerLargeTitleEnabled: false }} />
       <Stack.Screen name="language" options={{ title: ts('language'), headerLargeTitleEnabled: false }} />
+      <Stack.Screen
+        name="learning"
+        options={{
+          presentation: 'formSheet',
+          headerShown: false,
+          sheetAllowedDetents: 'fitToContents',
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 28,
+          contentStyle: { backgroundColor: colors.background }
+        }}
+      />
       <Stack.Screen
         name="edit-name"
         options={{
