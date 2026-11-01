@@ -5,7 +5,9 @@ import { SPLASH } from './src/feature/brand/constants/splash.ts';
 function requiredEnv(name: string) {
   const value = process.env[name]?.trim();
   if (!value)
-    throw new Error(`${name} is not set. Add it to apps/mobile/.env (see .env.example) or to the build environment.`);
+    throw new Error(
+      `${name} is not set. Add it to apps/mobile/.env, or .env.production for store builds (see .env.example), or to the build environment.`
+    );
 
   return value;
 }

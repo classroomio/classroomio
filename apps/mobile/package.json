@@ -71,7 +71,11 @@
     "lint": "expo lint",
     "eas": "set -a && . ./.env && set +a && npx eas-cli",
     "build:ios:dev": "set -a && . ./.env && set +a && npx eas-cli build --platform ios --profile development --local --output build/classroomio-dev.ipa",
-    "install:ios:dev": "xcrun devicectl device install app --device \"$DEVICE_ID\" build/classroomio-dev.ipa"
+    "install:ios:dev": "xcrun devicectl device install app --device \"$DEVICE_ID\" build/classroomio-dev.ipa",
+    "build:ios": "set -a && . ./.env.production && set +a && npx eas-cli build --platform ios --profile production --local --output build/classroomio.ipa",
+    "build:android": "set -a && . ./.env.production && set +a && npx eas-cli build --platform android --profile production --local --output build/classroomio.aab",
+    "deploy:ios": "npm run build:ios && set -a && . ./.env.production && set +a && npx eas-cli submit --platform ios --profile production --path build/classroomio.ipa",
+    "deploy:android": "npm run build:android && set -a && . ./.env.production && set +a && npx eas-cli submit --platform android --profile production --path build/classroomio.aab"
   },
   "private": true
 }
