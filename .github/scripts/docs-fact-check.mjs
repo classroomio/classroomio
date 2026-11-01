@@ -260,9 +260,9 @@ async function main() {
   try {
     git('worktree', 'add', '--detach', worktree, headSha);
     worktreeAdded = true;
-    writeFileSync(resolve(worktree, '.docs-review-diff.patch'), diff);
+    writeFileSync(resolve(worktree, '.docs-review-diff.patch'), diff, { flag: 'wx' });
     const imageInventory = buildImageInventory(worktree);
-    writeFileSync(resolve(worktree, '.docs-review-images.json'), JSON.stringify(imageInventory));
+    writeFileSync(resolve(worktree, '.docs-review-images.json'), JSON.stringify(imageInventory), { flag: 'wx' });
 
     const instructions = readFileSync('.github/prompts/docs-fact-check.md', 'utf8');
     const conversation = replyContext

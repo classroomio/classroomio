@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   relay:
+    if: github.event.comment.in_reply_to_id != null && github.event.comment.user.type != 'Bot'
     runs-on: ubuntu-latest
     steps:
       - name: Prepare review reply event
