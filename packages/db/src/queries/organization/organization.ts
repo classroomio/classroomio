@@ -518,8 +518,8 @@ export const checkEmailsExistInOrg = async (orgId: string, emails: string[]): Pr
  * @param memberId Member ID to delete
  * @returns Deleted member or null if not found
  */
-export const deleteOrganizationMember = async (orgId: string, memberId: number) => {
-  const [deleted] = await db
+export const deleteOrganizationMember = async (orgId: string, memberId: number, dbClient: DbOrTxClient = db) => {
+  const [deleted] = await dbClient
     .delete(schema.organizationmember)
     .where(and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.id, memberId)))
     .returning();

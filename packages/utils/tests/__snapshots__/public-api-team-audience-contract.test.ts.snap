@@ -207,6 +207,216 @@ exports[`public API team and audience update contract > ZPublicApiCreateAudience
 }
 `;
 
+exports[`public API team and audience update contract > ZPublicApiCreateTeamInviteLink keeps its published shape > ZPublicApiCreateTeamInviteLink 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "roleId": {
+      "anyOf": [
+        {
+          "const": 1,
+          "type": "number",
+        },
+        {
+          "const": 2,
+          "type": "number",
+        },
+      ],
+      "description": "1 = admin, 2 = tutor. Each role has its own link",
+    },
+  },
+  "required": [
+    "roleId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiInviteTeamMembers keeps its published shape > ZPublicApiInviteTeamMembers 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "confirmedStudentEmails": {
+      "default": [],
+      "description": "Addresses that already belong to students and should be promoted to this role. If any student in emails is missing here, nothing is sent and the response lists them in studentEmails.",
+      "items": {
+        "format": "email",
+        "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+        "type": "string",
+      },
+      "maxItems": 50,
+      "type": "array",
+    },
+    "emails": {
+      "description": "Up to 50 addresses, all invited with the same role",
+      "items": {
+        "format": "email",
+        "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+        "type": "string",
+      },
+      "maxItems": 50,
+      "minItems": 1,
+      "type": "array",
+    },
+    "roleId": {
+      "anyOf": [
+        {
+          "const": 1,
+          "type": "number",
+        },
+        {
+          "const": 2,
+          "type": "number",
+        },
+      ],
+      "description": "1 = admin, 2 = tutor",
+    },
+  },
+  "required": [
+    "emails",
+    "roleId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiInviteTeamMembersResponse keeps its published response shape > ZPublicApiInviteTeamMembersResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "existingTeamMembers": {
+      "description": "Addresses already on the team; when this is not empty, nothing was sent",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+          },
+          "roleId": {
+            "type": "number",
+          },
+        },
+        "required": [
+          "email",
+          "roleId",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "failedEmails": {
+      "description": "Addresses whose invite could not be created or queued",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "queuedCount": {
+      "description": "Invite emails queued for sending",
+      "type": "number",
+    },
+    "requiresConfirmation": {
+      "description": "true when a student address is missing from confirmedStudentEmails; nothing was sent",
+      "type": "boolean",
+    },
+    "studentEmails": {
+      "description": "Addresses that already belong to students in this organization",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "requiresConfirmation",
+    "studentEmails",
+    "existingTeamMembers",
+    "queuedCount",
+    "failedEmails",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiRemoveTeamMemberResponse keeps its published response shape > ZPublicApiRemoveTeamMemberResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "email": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "id": {
+      "type": "number",
+    },
+    "roleId": {
+      "description": "The role the member had: 1 = admin, 2 = tutor",
+      "type": "number",
+    },
+  },
+  "required": [
+    "id",
+    "email",
+    "roleId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiTeamInviteLinkQuery keeps its published shape > ZPublicApiTeamInviteLinkQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "roleId": {
+      "description": "1 = admin, 2 = tutor. Each role has its own link",
+      "type": "number",
+    },
+  },
+  "required": [
+    "roleId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiTeamInviteLinkResponse keeps its published response shape > ZPublicApiTeamInviteLinkResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+    },
+    "id": {
+      "type": "string",
+    },
+    "roleId": {
+      "description": "1 = admin, 2 = tutor",
+      "type": "number",
+    },
+    "url": {
+      "description": "Anyone who opens this link and signs in joins the organization with this role",
+      "type": "string",
+    },
+  },
+  "required": [
+    "id",
+    "roleId",
+    "enabled",
+    "url",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`public API team and audience update contract > ZPublicApiTeamMemberParam keeps its published shape > ZPublicApiTeamMemberParam 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -319,6 +529,36 @@ exports[`public API team and audience update contract > ZPublicApiUpdateAudience
       "type": "boolean",
     },
   },
+  "type": "object",
+}
+`;
+
+exports[`public API team and audience update contract > ZPublicApiUpdateTeamInviteLink keeps its published shape > ZPublicApiUpdateTeamInviteLink 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "enabled": {
+      "description": "false turns the link off so it stops working; true turns the same link back on",
+      "type": "boolean",
+    },
+    "roleId": {
+      "anyOf": [
+        {
+          "const": 1,
+          "type": "number",
+        },
+        {
+          "const": 2,
+          "type": "number",
+        },
+      ],
+      "description": "1 = admin, 2 = tutor. Each role has its own link",
+    },
+  },
+  "required": [
+    "roleId",
+    "enabled",
+  ],
   "type": "object",
 }
 `;
