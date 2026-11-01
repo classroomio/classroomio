@@ -5,6 +5,13 @@ import { seedCompliance } from '@db/utils/seed/compliance';
 import { MVC_SECTION_ID, PANDAS_SECTION_ID, REACT_SECTION_ID, seedCourseSections } from '@db/utils/seed/courseSection';
 import { seedCourseraDummyCourses } from '@db/utils/seed/courseraDummyCourses';
 import { seedCourses } from '@db/utils/seed/course';
+import { seedDemoCohorts } from '@db/utils/seed/demoCohorts';
+import { seedDemoCommunity } from '@db/utils/seed/demoCommunity';
+import { seedDemoCourses } from '@db/utils/seed/demoCourses';
+import { seedDemoEnrollments } from '@db/utils/seed/demoEnrollments';
+import { seedDemoNewsfeed } from '@db/utils/seed/demoNewsfeed';
+import { seedDemoNotifications } from '@db/utils/seed/demoNotifications';
+import { type DemoAccounts, seedDemoPeople } from '@db/utils/seed/demoPeople';
 import { seedExercise } from '@db/utils/seed/exercise';
 import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
 import { seedGroup } from '@db/utils/seed/group';
@@ -43,6 +50,18 @@ const EARLY_ADOPTER_ADMIN_USER_ID = '6e0163ff-9161-4d4b-be9f-3e7fbd913c5e';
 const EARLY_ADOPTER_STUDENT_USER_ID = '7fb274aa-a272-4e5c-cf0a-4f8cce024d6f';
 const EARLY_ADOPTER_GROUP_ID = '8ac385bb-b383-4f6d-d01b-5a9ddf135e7a';
 
+const DEMO_ACCOUNTS: DemoAccounts = {
+  udemyOrgId: TEST_ORG_ID,
+  courseraOrgId: ENTERPRISE_ORG_ID,
+  skillshareOrgId: EARLY_ADOPTER_ORG_ID,
+  admin: ADMIN_USER_ID,
+  student: STUDENT_USER_ID,
+  enterpriseAdmin: ENTERPRISE_ADMIN_USER_ID,
+  enterpriseStudent: ENTERPRISE_STUDENT_USER_ID,
+  earlyAdopterAdmin: EARLY_ADOPTER_ADMIN_USER_ID,
+  earlyAdopterStudent: EARLY_ADOPTER_STUDENT_USER_ID
+};
+
 const orderedSeeds = [
   'roles',
   'submissions',
@@ -60,13 +79,20 @@ const orderedSeeds = [
   'lessons',
   'exercises',
   'questions',
+  'demo-people',
+  'demo-courses',
   'templates',
   'coursera-dummy-courses',
   'compliance',
   'react-people-progress',
   'learner-lifecycle',
   'newsfeed-threads',
-  'launch-templates'
+  'launch-templates',
+  'demo-enrollments',
+  'demo-community',
+  'demo-newsfeed',
+  'demo-cohorts',
+  'demo-notifications'
 ] as const;
 
 type SeedName = (typeof orderedSeeds)[number];
@@ -90,6 +116,16 @@ const COMMON_ORGANIZATION_SEEDS: SeedName[] = [
   'organization-members'
 ];
 
+const DEMO_CONTENT_SEEDS: SeedName[] = [
+  'demo-people',
+  'demo-courses',
+  'demo-enrollments',
+  'demo-community',
+  'demo-newsfeed',
+  'demo-cohorts',
+  'demo-notifications'
+];
+
 const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeedConfig> = {
   'udemy-test': {
     organizationId: TEST_ORG_ID,
@@ -105,7 +141,8 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
       'exercises',
       'questions',
       'react-people-progress',
-      'learner-lifecycle'
+      'learner-lifecycle',
+      ...DEMO_CONTENT_SEEDS
     ]
   },
   'coursera-test': {
@@ -118,14 +155,22 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
       'coursera-dummy-courses',
       'compliance',
       'newsfeed-threads',
-      'launch-templates'
+      'launch-templates',
+      ...DEMO_CONTENT_SEEDS
     ]
   },
   'skillshare-test': {
     organizationId: EARLY_ADOPTER_ORG_ID,
     userIds: [EARLY_ADOPTER_ADMIN_USER_ID, EARLY_ADOPTER_STUDENT_USER_ID],
     groupIds: [EARLY_ADOPTER_GROUP_ID],
-    seedNames: [...COMMON_ORGANIZATION_SEEDS, 'organization-plan', 'groups', 'group-members', 'courses']
+    seedNames: [
+      ...COMMON_ORGANIZATION_SEEDS,
+      'organization-plan',
+      'groups',
+      'group-members',
+      'courses',
+      ...DEMO_CONTENT_SEEDS
+    ]
   }
 };
 
@@ -215,6 +260,13 @@ Flags:
   --launch-templates         Seed ClassroomIO launch templates into coursera-test
   --reset                    With --launch-templates, retire the previously seeded templates first
   --react-people-progress    Seed React course students with varied progress (udemy-test)
+  --demo-people              Seed the demo learner and tutor pool
+  --demo-courses             Seed the demo course catalog (lessons, content, exercises)
+  --demo-enrollments         Seed demo enrolments, progress, submissions, certificates and attendance
+  --demo-community           Seed demo community questions and answers
+  --demo-newsfeed            Seed demo course newsfeed posts and threads
+  --demo-cohorts             Seed demo cohorts with goals and posts (udemy-test)
+  --demo-notifications       Seed demo notifications for student@test.com
   --help, -h                  Show this help message
 
 Examples:
@@ -396,6 +448,55 @@ const seedFunctions = {
 
     console.log('📝 Seeding ClassroomIO launch templates (coursera-test)...');
     await seedLaunchTemplates(ENTERPRISE_ORG_ID);
+  },
+  'demo-people': async () => {
+    console.log('📝 Seeding demo people...');
+    await seedDemoPeople({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-courses': async () => {
+    console.log('📝 Seeding demo course catalog...');
+    await seedDemoCourses({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-enrollments': async () => {
+    console.log('📝 Seeding demo enrolments and progress...');
+    await seedDemoEnrollments({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-community': async () => {
+    console.log('📝 Seeding demo community...');
+    await seedDemoCommunity({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-newsfeed': async () => {
+    console.log('📝 Seeding demo course newsfeeds...');
+    await seedDemoNewsfeed({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-cohorts': async () => {
+    console.log('📝 Seeding demo cohorts...');
+    await seedDemoCohorts({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-notifications': async () => {
+    console.log('📝 Seeding demo notifications...');
+    await seedDemoNotifications({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
   },
   'react-people-progress': async () => {
     console.log('📝 Seeding React course people progress demo (udemy-test)...');
