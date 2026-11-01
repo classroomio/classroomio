@@ -39,21 +39,19 @@ async function notifyAdminsOfPaymentFailure(plan: TOrganizationPlan): Promise<vo
 }
 
 /**
- * Records a failed subscription payment for the plan and emails the org admins the first time it fails.
- * Throws `ORG_PLAN_NOT_FOUND` when no plan has the subscription ID. Email errors are logged, never thrown.
+ * Records a failed subscription payment and queues the admin email.
+ * The email key is derived from the first failure, so repeated or retried events never send it twice,
+ * and a queue failure is thrown so the delivery is retried.
+ * Throws `ORG_PLAN_NOT_FOUND` when no plan has the subscription ID.
  */
 export async function markOrgPlanPastDue(subscriptionId: string, payload: TOrganizationPlan['payload']) {
-  const result = await markOrganizationPlanPastDue(subscriptionId, payload);
+  const plan = await markOrganizationPlanPastDue(subscriptionId, payload);
 
-  if (!result) {
+  if (!plan) {
     throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
   }
 
-  if (result.isNewFailure) {
-    await notifyAdminsOfPaymentFailure(result.plan).catch((error) => {
-      console.error('notifyAdminsOfPaymentFailure error:', error);
-    });
-  }
+  await notifyAdminsOfPaymentFailure(plan);
 
-  return result.plan;
+  return plan;
 }

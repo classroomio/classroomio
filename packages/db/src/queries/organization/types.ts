@@ -1,10 +1,7 @@
 import { TOrganization, TOrganizationPlan } from '@db/types';
 import type { OrgUsageLimits } from '@cio/utils/plans';
 
-export type OrganizationPlan = Pick<
-  TOrganizationPlan,
-  'planName' | 'isActive' | 'provider' | 'subscriptionId' | 'paymentFailedAt'
-> & {
+export type OrganizationPlan = Pick<TOrganizationPlan, 'planName' | 'isActive' | 'provider' | 'subscriptionId'> & {
   customerId: string | null;
 };
 
@@ -13,6 +10,7 @@ export type OrganizationWithMemberAndPlans = TOrganization & {
   roleId?: number;
   plans: OrganizationPlan[];
   limits?: OrgUsageLimits;
+  paymentFailedAt?: string | null;
 };
 
 export type OrganizationWithPlans = TOrganization & {

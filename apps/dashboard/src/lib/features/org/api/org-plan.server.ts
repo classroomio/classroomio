@@ -100,7 +100,7 @@ export class OrgPlanApiServer {
   /**
    * Records a failed subscription payment (server-side)
    * @param params Subscription ID and Polar payload
-   * @returns Response data or null on error
+   * @returns `recorded` with the plan, `not_found` when no plan has the subscription, or `failed` on any other error
    */
   static async markOrgPlanPastDue(params: TMarkOrgPlanPastDue) {
     const result = await safeServerApi<MarkOrgPlanPastDueSuccess>(() =>
@@ -112,12 +112,17 @@ export class OrgPlanApiServer {
       )
     );
 
-    if (!result.ok) {
-      console.error('Error recording failed payment (server):', result);
-      return null;
+    if (result.ok) {
+      return { status: 'recorded' as const, plan: result.body.data };
     }
 
-    return result.body.data;
+    if (result.status === 404) {
+      return { status: 'not_found' as const };
+    }
+
+    console.error('Error recording failed payment (server):', result);
+
+    return { status: 'failed' as const };
   }
 
   /**

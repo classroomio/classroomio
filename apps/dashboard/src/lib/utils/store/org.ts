@@ -9,7 +9,6 @@ import {
   canUsePublicApi,
   getActiveOrgPlan,
   getPaymentBlockDate,
-  isPaymentBlocked,
   getStudentLimit,
   isOrgOnFreePlan,
   isResourceLimitReached,
@@ -33,7 +32,6 @@ export function mergeAccountOrgFromServer(org: AccountOrg | PublicOrg): AccountO
   const plans = org.plans.map((plan) => ({
     provider: null,
     subscriptionId: null,
-    paymentFailedAt: null,
     customerId: null,
     ...plan
   }));
@@ -44,6 +42,8 @@ export function mergeAccountOrgFromServer(org: AccountOrg | PublicOrg): AccountO
     customization: merge({}, DEFAULT_ORG_CUSTOMIZATION, org.customization ?? {}) as AccountOrg['customization']
   } as AccountOrg;
 }
+
+const MAX_TIMEOUT_MS = 2 ** 31 - 1;
 
 export const orgs = writable<AccountOrg[]>([]);
 
@@ -169,13 +169,31 @@ export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => getOrgPublicOrigin($currentOrg));
 
-export const orgPaymentBlockDate = derived(currentOrgPlan, ($plan) =>
-  $plan?.provider === 'polar' ? getPaymentBlockDate($plan) : null
+export const orgPaymentBlockDate = derived(currentOrg, ($currentOrg) =>
+  getPaymentBlockDate({ isActive: true, paymentFailedAt: $currentOrg.paymentFailedAt })
 );
 
 export const isOrgPaymentPastDue = derived(orgPaymentBlockDate, ($blockDate) => $blockDate !== null);
 
-export const isOrgPaymentBlocked = derived(currentOrgPlan, ($plan) => isPaymentBlocked($plan));
+export const isOrgPaymentBlocked = derived(orgPaymentBlockDate, ($blockDate, set) => {
+  if (!$blockDate) {
+    set(false);
+
+    return;
+  }
+
+  const millisecondsUntilBlock = $blockDate.getTime() - Date.now();
+
+  set(millisecondsUntilBlock <= 0);
+
+  if (millisecondsUntilBlock <= 0) {
+    return;
+  }
+
+  const timer = setTimeout(() => set(true), Math.min(millisecondsUntilBlock, MAX_TIMEOUT_MS));
+
+  return () => clearTimeout(timer);
+});
 
 export const isFreePlan = derived(currentOrg, ($currentOrg) =>
   isOrgOnFreePlan({

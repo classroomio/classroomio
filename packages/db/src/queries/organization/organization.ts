@@ -20,6 +20,7 @@ import {
   ilike,
   inArray,
   isNotNull,
+  isNull,
   ne,
   not,
   notInArray,
@@ -70,7 +71,6 @@ export const getOrganizationByProfileId = async (
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
-        paymentFailedAt: schema.organizationPlan.paymentFailedAt,
         customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
       }
     })
@@ -117,7 +117,6 @@ export const getOrganizationByProfileId = async (
         isActive: row.plan.isActive,
         provider: row.plan.provider,
         subscriptionId: row.plan.subscriptionId,
-        paymentFailedAt: row.plan.paymentFailedAt,
         customerId: row.plan.customerId as string | null
       });
     }
@@ -1009,7 +1008,6 @@ export const getOrganizations = async (filters?: {
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
-        paymentFailedAt: schema.organizationPlan.paymentFailedAt,
         customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
       }
     })
@@ -1051,7 +1049,6 @@ export const getOrganizations = async (filters?: {
         isActive: row.plan.isActive,
         provider: row.plan.provider,
         subscriptionId: row.plan.subscriptionId,
-        paymentFailedAt: row.plan.paymentFailedAt,
         customerId: row.plan.customerId as string | null
       });
     }
@@ -1135,7 +1132,6 @@ export const getFirstOrganizationWithPlans = async (): Promise<
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
-        paymentFailedAt: schema.organizationPlan.paymentFailedAt,
         customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
       }
     })
@@ -1172,7 +1168,6 @@ export const getFirstOrganizationWithPlans = async (): Promise<
         isActive: row.plan.isActive,
         provider: row.plan.provider,
         subscriptionId: row.plan.subscriptionId,
-        paymentFailedAt: row.plan.paymentFailedAt,
         customerId: row.plan.customerId as string | null
       });
     }
@@ -1275,43 +1270,91 @@ export const updateOrganizationPlan = async (
   return plan ?? null;
 };
 
+function getEventModifiedAt(payload: TOrganizationPlan['payload']): string | null {
+  const modifiedAt = (payload as { modifiedAt?: unknown } | null)?.modifiedAt;
+
+  if (typeof modifiedAt !== 'string') {
+    return null;
+  }
+
+  const parsed = new Date(modifiedAt);
+
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+function isNotNewerThanEvent(payload: TOrganizationPlan['payload']) {
+  const eventModifiedAt = getEventModifiedAt(payload);
+
+  if (!eventModifiedAt) {
+    return sql`true`;
+  }
+
+  return sql`(${schema.organizationPlan.payload}->>'modifiedAt' is null or (${schema.organizationPlan.payload}->>'modifiedAt')::timestamptz <= ${eventModifiedAt}::timestamptz)`;
+}
+
 /**
  * Records a failed payment on an organization plan by subscription ID.
- * The first failure timestamp is kept so retries of the same failure never move the block date.
+ * The first failure timestamp is claimed in one conditional update and kept for later events of the same failure.
+ * An event older than the stored subscription state is ignored and the plan is returned unchanged.
  * @param subscriptionId Subscription ID
  * @param payload Payload data to update
- * @returns The plan and whether this call recorded a new failure, or null when the plan does not exist
+ * @returns The plan, or null when the plan does not exist
  */
 export const markOrganizationPlanPastDue = async (
   subscriptionId: string,
   payload: TOrganizationPlan['payload'],
   dbClient: DbOrTxClient = db
-): Promise<{ plan: TOrganizationPlan; isNewFailure: boolean } | null> => {
+): Promise<TOrganizationPlan | null> => {
+  const notStale = isNotNewerThanEvent(payload);
+
+  const [firstFailure] = await dbClient
+    .update(schema.organizationPlan)
+    .set({
+      payload,
+      paymentFailedAt: sql`now()`,
+      updatedAt: sql`timezone('utc'::text, now())`
+    })
+    .where(
+      and(
+        eq(schema.organizationPlan.subscriptionId, subscriptionId),
+        isNull(schema.organizationPlan.paymentFailedAt),
+        notStale
+      )
+    )
+    .returning();
+
+  if (firstFailure) {
+    return firstFailure;
+  }
+
+  const [ongoingFailure] = await dbClient
+    .update(schema.organizationPlan)
+    .set({ payload, updatedAt: sql`timezone('utc'::text, now())` })
+    .where(
+      and(
+        eq(schema.organizationPlan.subscriptionId, subscriptionId),
+        isNotNull(schema.organizationPlan.paymentFailedAt),
+        notStale
+      )
+    )
+    .returning();
+
+  if (ongoingFailure) {
+    return ongoingFailure;
+  }
+
   const [existing] = await dbClient
-    .select({ paymentFailedAt: schema.organizationPlan.paymentFailedAt })
+    .select()
     .from(schema.organizationPlan)
     .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
     .limit(1);
 
-  if (!existing) {
-    return null;
-  }
-
-  const [plan] = await dbClient
-    .update(schema.organizationPlan)
-    .set({
-      payload,
-      paymentFailedAt: existing.paymentFailedAt ?? sql`timezone('utc'::text, now())`,
-      updatedAt: sql`timezone('utc'::text, now())`
-    })
-    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
-    .returning();
-
-  return { plan, isNewFailure: existing.paymentFailedAt === null };
+  return existing ?? null;
 };
 
 /**
- * Activates an organization plan by subscription ID.
+ * Activates an organization plan by subscription ID and clears any recorded payment failure.
+ * An event older than the stored subscription state is ignored and the plan is returned unchanged.
  * @param subscriptionId Subscription ID
  * @param payload Payload data to update
  * @returns Activated organization plan record, or null when it does not exist
@@ -1330,10 +1373,20 @@ export const activateOrganizationPlan = async (
       payload,
       updatedAt: sql`timezone('utc'::text, now())`
     })
-    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .where(and(eq(schema.organizationPlan.subscriptionId, subscriptionId), isNotNewerThanEvent(payload)))
     .returning();
 
-  return plan ?? null;
+  if (plan) {
+    return plan;
+  }
+
+  const [existing] = await dbClient
+    .select()
+    .from(schema.organizationPlan)
+    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .limit(1);
+
+  return existing ?? null;
 };
 
 /**
