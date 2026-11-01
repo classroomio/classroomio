@@ -178,6 +178,7 @@ function runOpenCode(worktree, prompt) {
         steps: 30,
         permissions: [
           { action: '*', resource: '*', effect: 'deny' },
+          { action: 'external_directory', resource: `${worktree}/*`, effect: 'allow' },
           { action: 'read', resource: '*', effect: 'allow' },
           { action: 'glob', resource: '*', effect: 'allow' },
           { action: 'grep', resource: '*', effect: 'allow' }
@@ -187,7 +188,17 @@ function runOpenCode(worktree, prompt) {
   };
   const result = spawnSync(
     'opencode',
-    ['run', '--standalone', '--agent', 'docs-review', '--model', 'opencode-go/deepseek-v4.1-flash', prompt],
+    [
+      'run',
+      '--standalone',
+      '--dir',
+      worktree,
+      '--agent',
+      'docs-review',
+      '--model',
+      'opencode-go/deepseek-v4.1-flash',
+      `Review the PR checkout at ${worktree}. Read ${resolve(worktree, '.docs-review-diff.patch')} and ${resolve(worktree, '.docs-review-images.json')} first. Resolve every repository path under this checkout.\n\n${prompt}`
+    ],
     {
       cwd: worktree,
       encoding: 'utf8',
