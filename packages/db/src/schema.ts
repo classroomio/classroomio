@@ -1238,6 +1238,10 @@ export const lesson = pgTable(
     completionPolicy: varchar('completion_policy').default('manual').notNull(),
     videoWatchThreshold: integer('video_watch_threshold').default(95),
     commentsEnabled: boolean('comments_enabled').default(true).notNull(),
+    readingDensity: varchar('reading_density')
+      .$type<'compact' | 'comfortable' | 'spacious'>()
+      .default('comfortable')
+      .notNull(),
     /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     videos: jsonb().default([]).$type<
       {

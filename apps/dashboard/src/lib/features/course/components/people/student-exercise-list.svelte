@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Card from '@cio/ui/base/card';
-  import * as Empty from '@cio/ui/custom/empty';
+  import { Empty } from '@cio/ui/custom/empty';
   import * as ResourceListRow from '@cio/ui/custom/resource-list-row';
   import * as Separator from '@cio/ui/base/separator';
   import { Badge } from '@cio/ui/base/badge';
@@ -63,15 +63,12 @@
   <Separator.Root />
 
   {#if totalExercises === 0}
-    <Empty.Root class="ui:py-10">
-      <Empty.Header>
-        <Empty.Media variant="icon">
-          <ListChecksIcon />
-        </Empty.Media>
-        <Empty.Title>{$t('audience.user_analytics.no_exercises_title')}</Empty.Title>
-        <Empty.Description>{$t('audience.user_analytics.no_exercises_description')}</Empty.Description>
-      </Empty.Header>
-    </Empty.Root>
+    <Empty
+      title={$t('audience.user_analytics.no_exercises_title')}
+      description={$t('audience.user_analytics.no_exercises_description')}
+      icon={ListChecksIcon}
+      class="ui:py-10"
+    />
   {:else}
     <ResourceListRow.Group class="ui:rounded-none ui:border-0">
       {#each exercises as exercise (exercise.id)}

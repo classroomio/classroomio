@@ -160,7 +160,8 @@
   {@const editor = editors[surface]}
   <div
     class={cn(
-      'ui:relative ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
+      'ui:relative ui:bg-background ui:flex ui:size-full ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
+      surface === 'expanded' ? 'ui:z-50' : 'ui:z-0',
       wrapperClass
     )}
   >
