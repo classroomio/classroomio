@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
+import { withModalSafeArea } from '@/feature/common/components/modal-safe-area';
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
 import { ItemGroup } from '@/feature/common/components/item';
@@ -125,7 +126,7 @@ function AttendanceSheet({ course, initialSessionId }: { course: TeachCourse; in
   );
 }
 
-export default function AttendanceScreen() {
+function AttendanceScreen() {
   const t = useTranslations(teachCatalog);
   const common = useTranslations(commonCatalog);
   const { colors } = useTheme();
@@ -175,3 +176,5 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: GUTTER, paddingTop: SPACING.lg, paddingBottom: SPACING.xxxl, gap: SPACING.lg },
   section: { gap: SPACING.sm }
 });
+
+export default withModalSafeArea(AttendanceScreen);

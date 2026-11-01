@@ -2,6 +2,7 @@ import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
+import { withModalSafeArea } from '@/feature/common/components/modal-safe-area';
 import { Empty, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { SPACING } from '@/feature/common/constants/layout';
@@ -26,7 +27,7 @@ import { QuestionFormLayout } from '@/feature/community/components/question-form
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { showToast } from '@/feature/toast/helpers/toast-store';
 
-export default function EditQuestionScreen() {
+function EditQuestionScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const question = useCommunityQuestionQuery(slug);
   const courses = useAskableCoursesQuery();
@@ -88,3 +89,5 @@ export default function EditQuestionScreen() {
 const styles = StyleSheet.create({
   skeleton: { gap: SPACING.md }
 });
+
+export default withModalSafeArea(EditQuestionScreen);

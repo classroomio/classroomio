@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
+import { withModalSafeArea } from '@/feature/common/components/modal-safe-area';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -165,7 +166,7 @@ function SubmissionReview({ submission }: { submission: GradingSubmission }) {
   );
 }
 
-export default function SubmissionScreen() {
+function SubmissionScreen() {
   const t = useTranslations(teachCatalog);
   const common = useTranslations(commonCatalog);
   const { colors } = useTheme();
@@ -215,3 +216,5 @@ const styles = StyleSheet.create({
   },
   delete: { alignSelf: 'center' }
 });
+
+export default withModalSafeArea(SubmissionScreen);

@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
+import { withModalSafeArea } from '@/feature/common/components/modal-safe-area';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
@@ -21,7 +22,7 @@ import { QuestionFormLayout } from '@/feature/community/components/question-form
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { showToast } from '@/feature/toast/helpers/toast-store';
 
-export default function AskQuestionScreen() {
+function AskQuestionScreen() {
   const courses = useAskableCoursesQuery();
   const ask = useAskQuestionMutation();
   const offline = useIsOffline();
@@ -70,3 +71,5 @@ export default function AskQuestionScreen() {
 const styles = StyleSheet.create({
   skeleton: { gap: SPACING.md }
 });
+
+export default withModalSafeArea(AskQuestionScreen);

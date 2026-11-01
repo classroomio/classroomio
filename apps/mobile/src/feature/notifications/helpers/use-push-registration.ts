@@ -1,7 +1,7 @@
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
-import { AppState, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import { useAuth } from '@/feature/auth/components/auth-provider';
 import { useApi } from '@/feature/common/components/api-provider';
@@ -11,7 +11,8 @@ import { usePushPermission } from '@/feature/notifications/helpers/push-permissi
 import { setRegisteredPushToken } from '@/feature/notifications/helpers/push-registration-store';
 import { appVersionOf } from '@/feature/settings/helpers/app-version';
 
-const REFRESH_INTERVAL_MS = 60 * 60 * 1000;
+// A token request can hang on flaky networks, so it gets a deadline.
+const TOKEN_TIMEOUT_MS = 10_000;
 
 function deviceLocale() {
   try {
@@ -21,9 +22,16 @@ function deviceLocale() {
   }
 }
 
+function expoPushToken(projectId: string) {
+  const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), TOKEN_TIMEOUT_MS));
+  const token = Notifications.getExpoPushTokenAsync({ projectId }).then((result) => result.data);
+
+  return Promise.race([token, timeout]);
+}
+
 /**
- * Registers this device's Expo push token with the API once notifications are allowed, and again when the token
- * changes or the app returns to the foreground. Builds without an EAS project id skip registration.
+ * Registers this device's Expo push token with the API on launch, on sign-in, and when notifications become allowed.
+ * Builds without an EAS project id skip registration.
  */
 export function usePushRegistration() {
   const api = useApi();
@@ -35,13 +43,10 @@ export function usePushRegistration() {
     if (!userId || permission !== 'granted' || !projectId) return;
 
     let cancelled = false;
-    let lastToken: string | null = null;
-    let lastRegisteredAt = 0;
 
-    const register = async (force: boolean) => {
-      const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
-      if (cancelled) return;
-      if (!force && token === lastToken && Date.now() - lastRegisteredAt < REFRESH_INTERVAL_MS) return;
+    const register = async () => {
+      const token = await expoPushToken(projectId);
+      if (cancelled || !token) return;
 
       await registerDeviceToken(api, {
         token,
@@ -50,23 +55,15 @@ export function usePushRegistration() {
         deviceName: Device.deviceName ?? Device.modelName ?? undefined,
         locale: deviceLocale()
       });
-      lastToken = token;
-      lastRegisteredAt = Date.now();
       setRegisteredPushToken(token, async () => {
         await unregisterDeviceToken(api, token);
       });
     };
 
-    void register(true).catch(() => {});
-    const tokenSubscription = Notifications.addPushTokenListener(() => void register(true).catch(() => {}));
-    const appStateSubscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active') void register(false).catch(() => {});
-    });
+    void register().catch(() => {});
 
     return () => {
       cancelled = true;
-      tokenSubscription.remove();
-      appStateSubscription.remove();
     };
   }, [api, userId, permission]);
 }

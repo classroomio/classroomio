@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
+import { withModalSafeArea } from '@/feature/common/components/modal-safe-area';
 import { Field, FieldDescription, FieldLabel } from '@/feature/common/components/field';
 import { InputGroup, InputGroupInput } from '@/feature/common/components/input';
 import { Spinner } from '@/feature/common/components/spinner';
@@ -20,7 +21,7 @@ import { revealAnnouncement } from '@/feature/teach/helpers/announcement-reveal'
 import { plainTextToEditorHtml } from '@/feature/common/helpers/editor-html';
 import { teachCatalog } from '@/feature/teach/translations/catalog';
 
-export default function AnnounceScreen() {
+function AnnounceScreen() {
   const t = useTranslations(teachCatalog);
   const { colors, elevation } = useTheme();
   const { courseId = '' } = useLocalSearchParams<{ courseId: string }>();
@@ -117,3 +118,5 @@ const styles = StyleSheet.create({
   },
   toggleCopy: { flex: 1, gap: 2 }
 });
+
+export default withModalSafeArea(AnnounceScreen);

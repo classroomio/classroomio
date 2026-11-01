@@ -1,8 +1,9 @@
-import { useNetworkState } from 'expo-network';
+import { onlineManager } from '@tanstack/react-query';
+import { useSyncExternalStore } from 'react';
 
-/** True only when the device reports no connection or no internet; unknown states count as online. */
+const subscribe = (listener: () => void) => onlineManager.subscribe(listener);
+
+/** True while React Query considers the device offline; the same state that pauses fetches and mutations. */
 export function useIsOffline() {
-  const network = useNetworkState();
-
-  return network.isConnected === false || network.isInternetReachable === false;
+  return !useSyncExternalStore(subscribe, () => onlineManager.isOnline());
 }
