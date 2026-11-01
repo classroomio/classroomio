@@ -79,5 +79,12 @@ export const vi: TranslatedMessages<typeof en> = {
   discardQuestionTitle: 'Bỏ câu hỏi này?',
   discardQuestionDescription: 'Nội dung bạn đã viết sẽ không được lưu.',
   keepEditing: 'Tiếp tục chỉnh sửa',
-  discardQuestion: 'Bỏ'
+  discardQuestion: 'Bỏ',
+  upvote: 'Bình chọn',
+  upvoted: 'Đã bình chọn',
+  copyLink: 'Sao chép liên kết',
+  linkCopied: 'Đã sao chép liên kết',
+  searchPlaceholder: 'Tìm câu hỏi',
+  searchEmptyTitle: 'Không có câu hỏi phù hợp',
+  searchEmptyDescription: 'Không có tiêu đề câu hỏi, tác giả hay khóa học nào chứa “{query}”.'
 };

@@ -73,5 +73,6 @@ export const pt: TranslatedMessages<typeof en> = {
   timeZone: 'Fuso horário',
   quietStart: 'Início do horário de silêncio',
   quietEnd: 'Fim do horário de silêncio',
-  footnote: 'Os alertas de treinamento atrasado continuam ativos no push e no app porque o treinamento é obrigatório.'
+  footnote: 'Os alertas de treinamento atrasado continuam ativos no push e no app porque o treinamento é obrigatório.',
+  markRead: 'Marcar como lida'
 };

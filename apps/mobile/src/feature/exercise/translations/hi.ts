@@ -36,6 +36,10 @@ export const hi: TranslatedMessages<typeof en> = {
   confirmSubmitTitle: 'अपने जवाब सबमिट करें?',
   confirmSubmitMultiple: 'आपके ट्यूटर यह प्रयास देखेंगे। बाद में आप यह अभ्यास दोबारा कर सकते हैं।',
   confirmSubmitSingle: 'इस अभ्यास में एक ही प्रयास है। सबमिट करने के बाद आप अपने जवाब नहीं बदल सकते।',
+  confirmAnsweredCount: {
+    one: 'आपने {count} में से {answered} प्रश्न का उत्तर दिया।',
+    other: 'आपने {count} में से {answered} प्रश्नों के उत्तर दिए।'
+  },
   submit: 'सबमिट करें',
   saved: 'सहेजा गया',
   savedAccessibilityLabel: 'जवाब इस डिवाइस पर सहेजे गए',
@@ -174,6 +178,8 @@ export const hi: TranslatedMessages<typeof en> = {
   outcomeGraded: 'ग्रेड दिया गया',
   outcomePassed: 'उत्तीर्ण',
   outcomeFailed: 'उत्तीर्ण नहीं',
+  failedRetakeHint: 'प्रश्न के अनुसार परिणाम देखें, फिर तैयार होने पर अभ्यास दोबारा करें।',
+  failedReviewHint: 'प्रश्न के अनुसार परिणाम दिखाता है कि आपके अंक कहाँ कटे।',
   scoreOfTotal: { one: '{total} में से {score} अंक', other: '{total} में से {score} अंक' },
   passMarkInline: 'उत्तीर्ण अंक {percent}',
   awaitingGradeDescription: 'आपके ट्यूटर ने अभी यह प्रयास ग्रेड नहीं किया है। ग्रेड मिलते ही आपका स्कोर यहां दिखेगा।',

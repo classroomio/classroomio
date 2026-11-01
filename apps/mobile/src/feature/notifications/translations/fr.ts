@@ -76,5 +76,6 @@ export const fr: TranslatedMessages<typeof en> = {
   quietStart: 'Début des heures calmes',
   quietEnd: 'Fin des heures calmes',
   footnote:
-    'Les alertes de formation en retard restent actives en push et dans l’app, car la formation est obligatoire.'
+    'Les alertes de formation en retard restent actives en push et dans l’app, car la formation est obligatoire.',
+  markRead: 'Marquer comme lue'
 };

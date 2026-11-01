@@ -1,61 +1,77 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { ArrowRight, Award, BookOpen, Megaphone, RotateCcw, WifiOff } from 'lucide-react-native';
+import { ArrowRight, Award, BookOpen, Megaphone, RotateCcw } from 'lucide-react-native';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
-import { ScreenScrollView } from '@/feature/common/components/screen';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle
+} from '@/feature/common/components/empty';
 import { Text } from '@/feature/common/components/text';
 import { SPACING } from '@/feature/common/constants/layout';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
+import { useTheme } from '@/feature/common/helpers/use-theme';
+import { AnimatedScreenScrollView } from '@/feature/course/components/animated-screen-scroll-view';
+import { CourseActionBar } from '@/feature/course/components/course-action-bar';
 import { CourseComplianceBanner } from '@/feature/course/components/course-compliance-banner';
 import { CourseContentRow } from '@/feature/course/components/course-content-row';
 import { CourseDetailSkeleton } from '@/feature/course/components/course-detail-skeleton';
+import { CourseHero } from '@/feature/course/components/course-hero';
 import { CourseLink, CourseLinks } from '@/feature/course/components/course-links';
 import { OutlineList, OutlineSection, OutlineSectionHeader } from '@/feature/course/components/course-outline';
-import { CourseSummary, CourseSummaryActions, CourseSummaryProgress } from '@/feature/course/components/course-summary';
+import { CourseSummary, CourseSummaryProgress } from '@/feature/course/components/course-summary';
 import { courseTypeKey } from '@/feature/course/constants/course-type';
 import { itemState } from '@/feature/course/helpers/course-content';
 import { formatDay } from '@/feature/course/helpers/format-date';
 import { openContentItem } from '@/feature/course/helpers/open-content';
 import { useCourseOutline } from '@/feature/course/helpers/use-course-outline';
+import { useScrollThreshold } from '@/feature/course/helpers/use-scroll-threshold';
 import { courseCatalog } from '@/feature/course/translations/catalog';
 import { CourseDownloadStatus } from '@/feature/downloads/components/course-download-status';
 import { CourseDownloadHeaderButton } from '@/feature/downloads/components/download-header-button';
 import { useLocale } from '@/feature/i18n/helpers/use-locale';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
-const TITLE_THRESHOLD = 48;
+const TITLE_LINE = 28;
 
 export default function CourseDetailScreen() {
   const { courseId } = useLocalSearchParams<{ courseId: string }>();
   const t = useTranslations(courseCatalog);
   const common = useTranslations(commonCatalog);
   const locale = useLocale();
+  const { colors } = useTheme();
+  const { width } = useWindowDimensions();
   const { course, outline, enrollment } = useCourseOutline(courseId);
-  const [titleVisible, setTitleVisible] = useState(false);
+  const [titleThreshold, setTitleThreshold] = useState(Math.round((width * 9) / 16) + TITLE_LINE);
+  const { onScroll, offset, past } = useScrollThreshold(titleThreshold);
   const offline = useIsOffline();
   const data = course.data;
+  const bannerUri = data?.bannerImage || data?.logo || enrollment?.bannerImage || enrollment?.logo;
 
   const header = (
     <Stack.Screen
       options={{
-        title: titleVisible && data ? data.title : '',
+        title: past && data ? data.title : '',
         headerRight: data ? () => <CourseDownloadHeaderButton courseId={courseId} /> : undefined
       }}
     />
   );
+  const hero = <CourseHero uri={bannerUri} scrollOffset={offset} />;
 
   if (course.isPending && offline) {
     return (
       <>
         {header}
-        <ScreenScrollView>
+        <AnimatedScreenScrollView>
           <Empty>
-            <EmptyMedia icon={WifiOff} />
+            <EmptyIllustration name="offline" />
             <EmptyTitle>{t('courseNeedsConnectionTitle')}</EmptyTitle>
             <EmptyDescription>{t('courseNeedsConnectionDescription')}</EmptyDescription>
             <EmptyContent>
@@ -64,7 +80,7 @@ export default function CourseDetailScreen() {
               </Button>
             </EmptyContent>
           </Empty>
-        </ScreenScrollView>
+        </AnimatedScreenScrollView>
       </>
     );
   }
@@ -73,9 +89,10 @@ export default function CourseDetailScreen() {
     return (
       <>
         {header}
-        <ScreenScrollView scrollEnabled={false}>
+        <AnimatedScreenScrollView scrollEnabled={false}>
+          {hero}
           <CourseDetailSkeleton />
-        </ScreenScrollView>
+        </AnimatedScreenScrollView>
       </>
     );
   }
@@ -84,7 +101,7 @@ export default function CourseDetailScreen() {
     return (
       <>
         {header}
-        <ScreenScrollView refreshing={course.isRefetching} onRefresh={() => course.refetch()}>
+        <AnimatedScreenScrollView refreshing={course.isRefetching} onRefresh={() => course.refetch()}>
           <Empty>
             <EmptyMedia icon={BookOpen} />
             <EmptyTitle>{t('courseLoadError')}</EmptyTitle>
@@ -95,7 +112,7 @@ export default function CourseDetailScreen() {
               </Button>
             </EmptyContent>
           </Empty>
-        </ScreenScrollView>
+        </AnimatedScreenScrollView>
       </>
     );
   }
@@ -114,19 +131,30 @@ export default function CourseDetailScreen() {
   const firstItem = outline.items[0] ?? null;
   const certificateEarnedAt = enrollment?.certificateEarnedAt ?? null;
 
+  const primaryAction = resume ? (
+    <Button size="lg" onPress={() => openContentItem(courseId, resume)}>
+      <ButtonText>{outline.completed > 0 ? common('continue') : t('startCourse')}</ButtonText>
+      <ButtonIcon icon={ArrowRight} />
+    </Button>
+  ) : finished && firstItem ? (
+    <Button size="lg" variant="outline" onPress={() => openContentItem(courseId, firstItem)}>
+      <ButtonIcon icon={RotateCcw} />
+      <ButtonText>{t('reviewCourse')}</ButtonText>
+    </Button>
+  ) : null;
+
   return (
-    <>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
       {header}
-      <ScreenScrollView
+      <AnimatedScreenScrollView
         refreshing={course.isRefetching}
         onRefresh={() => course.refetch()}
-        scrollEventThrottle={32}
-        onScroll={(event) => {
-          const visible = event.nativeEvent.contentOffset.y > TITLE_THRESHOLD;
-          if (visible !== titleVisible) setTitleVisible(visible);
-        }}
+        scrollEventThrottle={16}
+        onScroll={onScroll}
       >
-        <View style={styles.heading}>
+        {hero}
+
+        <View style={styles.heading} onLayout={(event) => setTitleThreshold(event.nativeEvent.layout.y + TITLE_LINE)}>
           <Text variant="title" accessibilityRole="header">
             {data.title}
           </Text>
@@ -144,19 +172,6 @@ export default function CourseDetailScreen() {
             detail={finished ? t('finishedEverything') : resume ? t('nextItem', { title: resume.title }) : undefined}
           />
           <CourseDownloadStatus courseId={courseId} />
-          <CourseSummaryActions>
-            {resume ? (
-              <Button size="lg" onPress={() => openContentItem(courseId, resume)}>
-                <ButtonText>{outline.completed > 0 ? common('continue') : t('startCourse')}</ButtonText>
-                <ButtonIcon icon={ArrowRight} />
-              </Button>
-            ) : finished && firstItem ? (
-              <Button size="lg" variant="outline" onPress={() => openContentItem(courseId, firstItem)}>
-                <ButtonIcon icon={RotateCcw} />
-                <ButtonText>{t('reviewCourse')}</ButtonText>
-              </Button>
-            ) : null}
-          </CourseSummaryActions>
         </CourseSummary>
 
         <CourseLinks>
@@ -214,11 +229,13 @@ export default function CourseDetailScreen() {
             );
           })
         )}
-      </ScreenScrollView>
-    </>
+      </AnimatedScreenScrollView>
+      {primaryAction ? <CourseActionBar>{primaryAction}</CourseActionBar> : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1 },
   heading: { gap: SPACING.xxs }
 });

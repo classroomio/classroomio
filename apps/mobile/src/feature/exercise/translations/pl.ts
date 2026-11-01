@@ -43,6 +43,12 @@ export const pl: TranslatedMessages<typeof en> = {
   confirmSubmitTitle: 'Przesłać odpowiedzi?',
   confirmSubmitMultiple: 'Prowadzący zobaczy tę próbę. Później możesz podejść do ćwiczenia ponownie.',
   confirmSubmitSingle: 'To ćwiczenie pozwala na jedną próbę. Po przesłaniu nie można zmienić odpowiedzi.',
+  confirmAnsweredCount: {
+    one: 'Odpowiedziano na {answered} z {count} pytania.',
+    few: 'Odpowiedziano na {answered} z {count} pytań.',
+    many: 'Odpowiedziano na {answered} z {count} pytań.',
+    other: 'Odpowiedziano na {answered} z {count} pytania.'
+  },
   submit: 'Prześlij',
   saved: 'Zapisano',
   savedAccessibilityLabel: 'Odpowiedzi zapisane na tym urządzeniu',
@@ -207,6 +213,8 @@ export const pl: TranslatedMessages<typeof en> = {
   outcomeGraded: 'Ocenione',
   outcomePassed: 'Zaliczone',
   outcomeFailed: 'Niezaliczone',
+  failedRetakeHint: 'Sprawdź wyniki według pytań, a potem podejdź ponownie w dogodnym momencie.',
+  failedReviewHint: 'Wyniki według pytań pokazują, gdzie stracono punkty.',
   scoreOfTotal: {
     one: '{score} z {total} punktu',
     few: '{score} z {total} punktów',

@@ -1,36 +1,48 @@
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Check, type LucideIcon } from 'lucide-react-native';
 import { createContext, use, useRef, type ReactNode } from 'react';
-import { Modal, Platform, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
-import Animated, { Keyframe } from 'react-native-reanimated';
+import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
-import { EASE_OUT } from '@/feature/common/constants/motion';
+import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { selectionHaptic } from '@/feature/common/helpers/haptics';
+import { useModalPresentation } from '@/feature/common/helpers/use-modal-presentation';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
+import { SheetBackdrop, SheetContainer } from './bottom-sheet';
 import { Icon } from './icon';
 import { Text } from './text';
 
-const sheetEntering = new Keyframe({
-  0: { opacity: 0, transform: [{ translateY: 24 }] },
-  100: { opacity: 1, transform: [{ translateY: 0 }], easing: EASE_OUT }
-}).duration(220);
+type OptionSheetContextValue = {
+  open: boolean;
+  close: () => void;
+  /** Closes the sheet and runs `action` once it has finished dismissing, so a dialog it opens doesn't collide. */
+  select: (action: () => void) => void;
+  runPending: () => void;
+};
 
-const OptionSheetContext = createContext<{ close: () => void; select: (action: () => void) => void }>({
-  close: () => {},
-  select: () => {}
-});
+const OptionSheetContext = createContext<OptionSheetContextValue | null>(null);
+
+function useOptionSheet() {
+  const context = use(OptionSheetContext);
+  if (!context) throw new Error('OptionSheet parts must be used inside OptionSheet');
+
+  return context;
+}
 
 type OptionSheetProps = { open: boolean; onOpenChange: (open: boolean) => void; children: ReactNode };
 
+/** A list of actions in a gorhom bottom sheet; choosing one closes the sheet before the action runs. */
 export function OptionSheet({ open, onOpenChange, children }: OptionSheetProps) {
-  const t = useTranslations(commonCatalog);
-  const { colors } = useTheme();
   const pending = useRef<(() => void) | null>(null);
   const close = () => onOpenChange(false);
+
+  const select = (action: () => void) => {
+    pending.current = action;
+    close();
+  };
 
   const runPending = () => {
     const action = pending.current;
@@ -38,61 +50,40 @@ export function OptionSheet({ open, onOpenChange, children }: OptionSheetProps) 
     action?.();
   };
 
-  const select = (action: () => void) => {
-    close();
-    // iOS cannot present another modal (such as a confirmation) until this one has finished dismissing.
-    if (Platform.OS === 'ios') pending.current = action;
-    else action();
-  };
-
-  return (
-    <Modal
-      visible={open}
-      transparent
-      animationType="fade"
-      statusBarTranslucent
-      navigationBarTranslucent
-      onRequestClose={close}
-      onDismiss={runPending}
-    >
-      <OptionSheetContext value={{ close, select }}>
-        <Pressable
-          accessibilityLabel={t('dismiss')}
-          onPress={close}
-          style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim }]}
-        />
-        <View pointerEvents="box-none" style={styles.bottom}>
-          {children}
-        </View>
-      </OptionSheetContext>
-    </Modal>
-  );
+  return <OptionSheetContext value={{ open, close, select, runPending }}>{children}</OptionSheetContext>;
 }
 
 export function OptionSheetContent({ children }: { children: ReactNode }) {
-  const { colors, elevation } = useTheme();
+  const { colors } = useTheme();
+  const context = useOptionSheet();
+  const { open, close, runPending } = context;
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
+  const { modal, markDismissed } = useModalPresentation(open);
 
   return (
-    <Animated.View
-      entering={sheetEntering}
+    <BottomSheetModal
+      ref={modal}
+      enableDynamicSizing
+      maxDynamicContentSize={height * 0.7}
+      enablePanDownToClose
+      onDismiss={() => {
+        markDismissed();
+        close();
+        runPending();
+      }}
+      backdropComponent={SheetBackdrop}
+      containerComponent={SheetContainer}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      handleIndicatorStyle={[styles.indicator, { backgroundColor: colors.borderStrong }]}
       accessibilityViewIsModal
-      style={[
-        styles.content,
-        elevation.floating,
-        {
-          maxHeight: height * 0.7,
-          marginBottom: insets.bottom + SPACING.xs,
-          backgroundColor: colors.surface,
-          borderColor: colors.border
-        }
-      ]}
     >
-      <ScrollView bounces={false} contentContainerStyle={styles.scroll}>
-        {children}
-      </ScrollView>
-    </Animated.View>
+      <OptionSheetContext value={context}>
+        <BottomSheetScrollView bounces={false} contentContainerStyle={{ paddingBottom: insets.bottom + SPACING.xs }}>
+          {children}
+        </BottomSheetScrollView>
+      </OptionSheetContext>
+    </BottomSheetModal>
   );
 }
 
@@ -122,7 +113,7 @@ export function OptionSheetItem({
   children
 }: OptionSheetItemProps) {
   const { colors } = useTheme();
-  const { select } = use(OptionSheetContext);
+  const { select } = useOptionSheet();
   const tone = destructive ? 'danger' : 'ink';
 
   return (
@@ -154,7 +145,7 @@ export function OptionSheetSeparator() {
 export function OptionSheetCancel({ children }: { children?: string }) {
   const t = useTranslations(commonCatalog);
   const { colors } = useTheme();
-  const { close } = use(OptionSheetContext);
+  const { close } = useOptionSheet();
 
   return (
     <>
@@ -173,15 +164,15 @@ export function OptionSheetCancel({ children }: { children?: string }) {
 }
 
 const styles = StyleSheet.create({
-  bottom: { flex: 1, justifyContent: 'flex-end', paddingHorizontal: GUTTER - SPACING.xs },
-  content: {
+  background: {
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderRadius: RADII.sheet,
-    borderCurve: 'continuous',
-    overflow: 'hidden'
+    borderBottomWidth: 0,
+    borderTopLeftRadius: RADII.sheet,
+    borderTopRightRadius: RADII.sheet,
+    borderCurve: 'continuous'
   },
-  scroll: { paddingVertical: SPACING.xxs },
-  title: { paddingHorizontal: SPACING.md, paddingTop: SPACING.sm, paddingBottom: SPACING.xxs },
+  indicator: { width: 36, height: 5, borderRadius: RADII.pill },
+  title: { paddingHorizontal: SPACING.md, paddingTop: SPACING.xxs, paddingBottom: SPACING.xxs },
   item: {
     flexDirection: 'row',
     alignItems: 'center',

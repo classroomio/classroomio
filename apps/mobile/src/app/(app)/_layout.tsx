@@ -19,11 +19,11 @@ export default function SignedInLayout() {
 
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
-      <Stack.Screen name="invite" />
       <Stack.Protected guard={!org}>
         <Stack.Screen name="select-org" />
       </Stack.Protected>
       <Stack.Protected guard={Boolean(org)}>
+        <Stack.Screen name="index" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="course" />
         <Stack.Screen name="certificates" />

@@ -74,5 +74,12 @@ export const en = {
   discardQuestionTitle: 'Discard this question?',
   discardQuestionDescription: 'What you have written is not saved.',
   keepEditing: 'Keep editing',
-  discardQuestion: 'Discard'
+  discardQuestion: 'Discard',
+  upvote: 'Upvote',
+  upvoted: 'Upvoted',
+  copyLink: 'Copy link',
+  linkCopied: 'Link copied',
+  searchPlaceholder: 'Search questions',
+  searchEmptyTitle: 'No matching questions',
+  searchEmptyDescription: 'No question title, author or course contains “{query}”.'
 };

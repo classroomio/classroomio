@@ -38,6 +38,10 @@ export const fr: TranslatedMessages<typeof en> = {
   confirmSubmitMultiple: 'Votre tuteur verra cette tentative. Vous pourrez refaire l’exercice ensuite.',
   confirmSubmitSingle:
     'Cet exercice n’autorise qu’une tentative. Vous ne pourrez plus modifier vos réponses après l’envoi.',
+  confirmAnsweredCount: {
+    one: 'Vous avez répondu à {answered} question sur {count}.',
+    other: 'Vous avez répondu à {answered} questions sur {count}.'
+  },
   submit: 'Envoyer',
   saved: 'Enregistré',
   savedAccessibilityLabel: 'Réponses enregistrées sur cet appareil',
@@ -181,6 +185,8 @@ export const fr: TranslatedMessages<typeof en> = {
   outcomeGraded: 'Noté',
   outcomePassed: 'Réussi',
   outcomeFailed: 'Non réussi',
+  failedRetakeHint: 'Consultez le détail par question, puis refaites l’exercice quand vous le souhaitez.',
+  failedReviewHint: 'Le détail par question indique où vous avez perdu des points.',
   scoreOfTotal: { one: '{score} sur {total} point', other: '{score} sur {total} points' },
   passMarkInline: 'seuil de réussite {percent}',
   awaitingGradeDescription:

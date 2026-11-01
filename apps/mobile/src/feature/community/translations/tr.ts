@@ -79,5 +79,12 @@ export const tr: TranslatedMessages<typeof en> = {
   discardQuestionTitle: 'Soru taslağı silinsin mi?',
   discardQuestionDescription: 'Yazdıklarınız kaydedilmeyecek.',
   keepEditing: 'Düzenlemeye devam et',
-  discardQuestion: 'Taslağı sil'
+  discardQuestion: 'Taslağı sil',
+  upvote: 'Olumlu oy ver',
+  upvoted: 'Olumlu oy verildi',
+  copyLink: 'Bağlantıyı kopyala',
+  linkCopied: 'Bağlantı kopyalandı',
+  searchPlaceholder: 'Soru ara',
+  searchEmptyTitle: 'Eşleşen soru yok',
+  searchEmptyDescription: 'Hiçbir soru başlığı, yazar veya kurs “{query}” içermiyor.'
 };

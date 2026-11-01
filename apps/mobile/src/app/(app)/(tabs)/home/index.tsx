@@ -1,96 +1,103 @@
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { BookOpen } from 'lucide-react-native';
 import { useMemo } from 'react';
+import { Pressable } from 'react-native';
 
-import { Empty, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
-import { ItemGroup } from '@/feature/common/components/item';
-import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
-import { Skeleton } from '@/feature/common/components/skeleton';
+import { Empty, EmptyDescription, EmptyIllustration, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
+import { ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { Text } from '@/feature/common/components/text';
+import { HIT_SLOP } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
+import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useComplianceQuery } from '@/feature/compliance/api/compliance';
 import { ComplianceAlertBand } from '@/feature/compliance/components/compliance-alert-band';
 import { useEnrolledCoursesQuery } from '@/feature/course/api/enrolled-courses';
+import { AnimatedScreenScrollView } from '@/feature/course/components/animated-screen-scroll-view';
 import { ContinueLearningCard } from '@/feature/course/components/continue-learning-card';
-import { CourseRow } from '@/feature/course/components/course-row';
+import { CourseCarousel } from '@/feature/course/components/course-carousel';
+import { HomeSkeleton } from '@/feature/course/components/course-skeletons';
+import { HomeGreeting } from '@/feature/course/components/home-greeting';
+import { homeStatusOf } from '@/feature/course/helpers/home-status';
 import { courseToResume, learningStatusOf } from '@/feature/course/helpers/learning-status';
+import { useScrollThreshold } from '@/feature/course/helpers/use-scroll-threshold';
 import { courseCatalog } from '@/feature/course/translations/catalog';
-import type { EnrolledCourse } from '@/feature/course/types/course';
-import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
-function openCourse(course: EnrolledCourse) {
-  router.push({ pathname: '/course/[courseId]', params: { courseId: course.id } });
-}
+const GREETING_HEIGHT = 44;
 
 export default function HomeScreen() {
   const t = useTranslations(courseCatalog);
-  const format = useFormatters();
+  const common = useTranslations(commonCatalog);
   const courses = useEnrolledCoursesQuery();
   const compliance = useComplianceQuery();
+  const { onScroll, past } = useScrollThreshold(GREETING_HEIGHT);
   const resume = useMemo(() => courseToResume(courses.data ?? []), [courses.data]);
+  const status = useMemo(() => (courses.data ? homeStatusOf(courses.data) : null), [courses.data]);
   const unfinished = useMemo(
-    () => (courses.data ?? []).filter((course) => course.id !== resume?.id && learningStatusOf(course) !== 'completed'),
+    () =>
+      (courses.data ?? [])
+        .filter((course) => course.id !== resume?.id && learningStatusOf(course) !== 'completed')
+        .sort((a, b) => Number(learningStatusOf(a) === 'not-started') - Number(learningStatusOf(b) === 'not-started')),
     [courses.data, resume]
   );
 
   return (
-    <ScreenScrollView
-      refreshing={courses.isRefetching}
-      onRefresh={() => {
-        void courses.refetch();
-        void compliance.refetch();
-      }}
-    >
-      <ComplianceAlertBand />
+    <>
+      <Stack.Screen options={{ title: past ? common('tabHome') : '' }} />
+      <AnimatedScreenScrollView
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+        refreshing={courses.isRefetching}
+        onRefresh={() => {
+          void courses.refetch();
+          void compliance.refetch();
+        }}
+      >
+        <HomeGreeting status={status} />
 
-      {courses.isPending && (
-        <ScreenSection>
-          <Skeleton height={168} radius={10} />
-          <Skeleton height={220} radius={14} />
-        </ScreenSection>
-      )}
+        <ComplianceAlertBand />
 
-      {courses.isError && (
-        <Empty>
-          <EmptyMedia icon={BookOpen} />
-          <EmptyTitle>{t('coursesLoadError')}</EmptyTitle>
-          <EmptyDescription>{errorMessage(courses.error)}</EmptyDescription>
-        </Empty>
-      )}
+        {courses.isPending && <HomeSkeleton />}
 
-      {courses.isSuccess && courses.data.length === 0 && (
-        <Empty>
-          <EmptyMedia icon={BookOpen} />
-          <EmptyTitle>{t('homeNoCoursesTitle')}</EmptyTitle>
-          <EmptyDescription>{t('homeNoCoursesDescription')}</EmptyDescription>
-        </Empty>
-      )}
+        {courses.isError && (
+          <Empty>
+            <EmptyMedia icon={BookOpen} />
+            <EmptyTitle>{t('coursesLoadError')}</EmptyTitle>
+            <EmptyDescription>{errorMessage(courses.error)}</EmptyDescription>
+          </Empty>
+        )}
 
-      {resume && (
-        <ScreenSection>
-          <ScreenSectionHeader title={t('continueLearning')} />
-          <ContinueLearningCard course={resume} onContinue={openCourse} />
-        </ScreenSection>
-      )}
+        {courses.isSuccess && courses.data.length === 0 && (
+          <Empty>
+            <EmptyIllustration name="courses" />
+            <EmptyTitle>{t('homeNoCoursesTitle')}</EmptyTitle>
+            <EmptyDescription>{t('homeNoCoursesDescription')}</EmptyDescription>
+          </Empty>
+        )}
 
-      {unfinished.length > 0 && (
-        <ScreenSection>
-          <ScreenSectionHeader
-            title={resume ? t('upNext') : t('yourCourses')}
-            action={
-              <Text variant="caption" tone="muted">
-                {format.number(unfinished.length)}
-              </Text>
-            }
-          />
-          <ItemGroup>
-            {unfinished.map((course) => (
-              <CourseRow key={course.id} course={course} onPress={openCourse} />
-            ))}
-          </ItemGroup>
-        </ScreenSection>
-      )}
-    </ScreenScrollView>
+        {resume && (
+          <ScreenSection>
+            <ScreenSectionHeader title={t('continueLearning')} />
+            <ContinueLearningCard course={resume} />
+          </ScreenSection>
+        )}
+
+        {unfinished.length > 0 && (
+          <ScreenSection>
+            <ScreenSectionHeader
+              title={resume ? t('upNext') : t('yourCourses')}
+              action={
+                <Pressable accessibilityRole="link" hitSlop={HIT_SLOP} onPress={() => router.navigate('/learn')}>
+                  <Text variant="captionStrong" tone="primary">
+                    {t('seeAll')}
+                  </Text>
+                </Pressable>
+              }
+            />
+            <CourseCarousel courses={unfinished} />
+          </ScreenSection>
+        )}
+      </AnimatedScreenScrollView>
+    </>
   );
 }

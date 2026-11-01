@@ -85,5 +85,27 @@ export const hi: TranslatedMessages<typeof en> = {
   noLessonsTitle: 'अभी कोई पाठ नहीं',
   noLessonsDescription: 'आपके प्रशिक्षक ने इस कोर्स में अभी कोई पाठ प्रकाशित नहीं किया है।',
   sectionMore: 'अन्य',
-  sectionContent: 'सामग्री'
+  sectionContent: 'सामग्री',
+  greetingMorning: 'सुप्रभात, {name}',
+  greetingAfternoon: 'नमस्ते, {name}',
+  greetingEvening: 'शुभ संध्या, {name}',
+  greetingMorningNoName: 'सुप्रभात',
+  greetingAfternoonNoName: 'नमस्ते',
+  greetingEveningNoName: 'शुभ संध्या',
+  homeStatusOverdue: {
+    one: '{count} अनिवार्य कोर्स की समय-सीमा निकल चुकी है।',
+    other: '{count} अनिवार्य कोर्स की समय-सीमा निकल चुकी है।'
+  },
+  homeStatusDue: '{title} की नियत तिथि {relative} है।',
+  homeStatusInProgress: { one: 'आपका {count} कोर्स जारी है।', other: 'आपके {count} कोर्स जारी हैं।' },
+  homeStatusNotStarted: { one: 'आपको {count} कोर्स शुरू करना है।', other: 'आपको {count} कोर्स शुरू करने हैं।' },
+  homeStatusAllDone: 'आपने अपने लिए असाइन किया गया हर कोर्स पूरा कर लिया है।',
+  seeAll: 'सभी देखें',
+  searchCourses: 'कोर्स खोजें',
+  searchNoResultsTitle: 'कोई मेल खाता कोर्स नहीं',
+  searchNoResultsDescription: 'किसी भी कोर्स के शीर्षक में “{query}” नहीं है।',
+  menuDownload: 'डाउनलोड करें',
+  menuManageDownload: 'डाउनलोड प्रबंधित करें',
+  menuCopyLink: 'लिंक कॉपी करें',
+  linkCopied: 'लिंक कॉपी हो गया'
 };

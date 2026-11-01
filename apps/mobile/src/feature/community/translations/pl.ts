@@ -86,5 +86,12 @@ export const pl: TranslatedMessages<typeof en> = {
   discardQuestionTitle: 'Odrzucić to pytanie?',
   discardQuestionDescription: 'Wpisany tekst nie zostanie zapisany.',
   keepEditing: 'Kontynuuj edycję',
-  discardQuestion: 'Odrzuć'
+  discardQuestion: 'Odrzuć',
+  upvote: 'Zagłosuj za',
+  upvoted: 'Zagłosowano za',
+  copyLink: 'Kopiuj link',
+  linkCopied: 'Skopiowano link',
+  searchPlaceholder: 'Szukaj pytań',
+  searchEmptyTitle: 'Brak pasujących pytań',
+  searchEmptyDescription: 'Żaden tytuł pytania, autor ani kurs nie zawiera „{query}”.'
 };

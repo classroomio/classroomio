@@ -1,6 +1,7 @@
+import { BottomSheetScrollView as SheetScrollView, type BottomSheetScrollViewMethods } from '@gorhom/bottom-sheet';
 import { Sparkles, Square } from 'lucide-react-native';
-import { useRef, useState, type ComponentRef } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -72,7 +73,7 @@ function TutorConversation({
   const t = useTranslations(lessonCatalog);
   const chat = useTutorChat(courseId, lessonId);
   const [draft, setDraft] = useState('');
-  const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
+  const scroll = useRef<BottomSheetScrollViewMethods>(null);
   const unavailable = chat.unavailable ?? (allowance && allowance.remaining <= 0 ? 'cap_reached' : statusUnavailable);
   const close = useBottomSheetClose();
 
@@ -99,7 +100,7 @@ function TutorConversation({
         <BottomSheetClose />
       </BottomSheetHeader>
 
-      <ScrollView
+      <SheetScrollView
         ref={scroll}
         style={styles.fill}
         contentContainerStyle={styles.messages}
@@ -147,7 +148,7 @@ function TutorConversation({
           </Empty>
         ) : null}
         <KeyboardSpacer />
-      </ScrollView>
+      </SheetScrollView>
 
       {unavailable ? null : (
         <Composer value={draft} onChangeText={setDraft} onSubmit={submit} submitting={chat.streaming}>

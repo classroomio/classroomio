@@ -73,5 +73,6 @@ export const da: TranslatedMessages<typeof en> = {
   timeZone: 'Tidszone',
   quietStart: 'Stille timer starter',
   quietEnd: 'Stille timer slutter',
-  footnote: 'Beskeder om forsinket træning forbliver slået til for push og i appen, fordi træningen er obligatorisk.'
+  footnote: 'Beskeder om forsinket træning forbliver slået til for push og i appen, fordi træningen er obligatorisk.',
+  markRead: 'Markér som læst'
 };

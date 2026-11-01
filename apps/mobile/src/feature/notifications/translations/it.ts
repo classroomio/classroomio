@@ -73,5 +73,6 @@ export const it: TranslatedMessages<typeof en> = {
   timeZone: 'Fuso orario',
   quietStart: 'Inizio ore di silenzio',
   quietEnd: 'Fine ore di silenzio',
-  footnote: 'Gli avvisi di formazione scaduta restano attivi per push e app perché la formazione è obbligatoria.'
+  footnote: 'Gli avvisi di formazione scaduta restano attivi per push e app perché la formazione è obbligatoria.',
+  markRead: 'Segna come letta'
 };

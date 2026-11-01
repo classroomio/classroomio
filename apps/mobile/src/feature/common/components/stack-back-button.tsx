@@ -20,7 +20,7 @@ export function StackBackButton({ tintColor }: { tintColor?: string }) {
       accessibilityLabel={t('back')}
       hitSlop={HIT_SLOP}
       onPress={() => router.back()}
-      style={styles.button}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
     >
       <Icon icon={ChevronLeft} size={26} color={tintColor ?? colors.primary} strokeWidth={2.2} />
     </Pressable>
@@ -28,5 +28,6 @@ export function StackBackButton({ tintColor }: { tintColor?: string }) {
 }
 
 const styles = StyleSheet.create({
-  button: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }
+  button: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+  pressed: { opacity: 0.45 }
 });

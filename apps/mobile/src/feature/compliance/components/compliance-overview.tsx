@@ -2,12 +2,18 @@ import { router } from 'expo-router';
 import { Award, ShieldCheck } from 'lucide-react-native';
 
 import { Button, ButtonText } from '@/feature/common/components/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle
+} from '@/feature/common/components/empty';
 import { Icon } from '@/feature/common/components/icon';
 import { Item, ItemChevron, ItemContent, ItemGroup, ItemMedia, ItemTitle } from '@/feature/common/components/item';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
-import { Skeleton } from '@/feature/common/components/skeleton';
-import { RADII } from '@/feature/common/constants/layout';
+import { SkeletonBlock, SkeletonList, SkeletonText } from '@/feature/common/components/skeleton';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useComplianceQuery } from '@/feature/compliance/api/compliance';
@@ -44,6 +50,18 @@ function RequirementRowsSection({ title, requirements }: { title: string; requir
   );
 }
 
+function ComplianceOverviewSkeleton() {
+  return (
+    <>
+      <SkeletonBlock lines={3} />
+      <ScreenSection>
+        <SkeletonText variant="subheading" lines={1} width={120} />
+        <SkeletonList count={3} media="none" />
+      </ScreenSection>
+    </>
+  );
+}
+
 /** The learner's compliance status and every requirement behind it. Used by the Compliance tab and the staff screen. */
 export function ComplianceOverview() {
   const t = useTranslations(complianceCatalog);
@@ -57,13 +75,7 @@ export function ComplianceOverview() {
 
   return (
     <ScreenScrollView refreshing={compliance.isRefetching} onRefresh={() => compliance.refetch()}>
-      {compliance.isPending && (
-        <ScreenSection>
-          <Skeleton height={132} radius={RADII.md} />
-          <Skeleton height={196} radius={RADII.xl} />
-          <Skeleton height={148} radius={RADII.xl} />
-        </ScreenSection>
-      )}
+      {compliance.isPending && <ComplianceOverviewSkeleton />}
 
       {compliance.isError && (
         <Empty>
@@ -80,7 +92,7 @@ export function ComplianceOverview() {
 
       {compliance.data?.status === 'none' && (
         <Empty>
-          <EmptyMedia icon={ShieldCheck} />
+          <EmptyIllustration name="calendar" />
           <EmptyTitle>{t('emptyTitle')}</EmptyTitle>
           <EmptyDescription>{t('summaryNone')}</EmptyDescription>
         </Empty>

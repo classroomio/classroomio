@@ -229,5 +229,6 @@ export const es: TranslatedMessages<typeof en> = {
     one: 'La publicación y su {count} comentario se eliminan de las noticias del curso para todos. Esta acción no se puede deshacer.',
     other:
       'La publicación y sus {count} comentarios se eliminan de las noticias del curso para todos. Esta acción no se puede deshacer.'
-  }
+  },
+  gradeAction: 'Calificar'
 };

@@ -25,7 +25,7 @@ export function HeaderIconButton({ icon, accessibilityLabel, onPress, disabled =
         tapHaptic();
         onPress();
       }}
-      style={[styles.button, disabled && styles.disabled]}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed, disabled && styles.disabled]}
     >
       <Icon icon={icon} size={22} tone="primary" strokeWidth={2} />
     </Pressable>
@@ -34,5 +34,6 @@ export function HeaderIconButton({ icon, accessibilityLabel, onPress, disabled =
 
 const styles = StyleSheet.create({
   button: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
+  pressed: { opacity: 0.45 },
   disabled: { opacity: 0.4 }
 });

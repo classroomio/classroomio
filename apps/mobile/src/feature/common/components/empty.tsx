@@ -2,6 +2,8 @@ import type { LucideIcon } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { Illustration } from '@/feature/brand/components/illustration';
+import type { IllustrationName } from '@/feature/brand/constants/illustration-scenes';
 import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 
@@ -20,6 +22,20 @@ export function EmptyMedia({ icon }: { icon: LucideIcon }) {
       <Icon icon={icon} size={22} tone="ink" />
     </View>
   );
+}
+
+type EmptyIllustrationProps = {
+  name: IllustrationName;
+  /** Height in points. */
+  size?: number;
+  /** Colour behind the empty state when it is not the screen background, such as a card or sheet. */
+  surface?: string;
+  animated?: boolean;
+};
+
+/** A brand line illustration in place of `EmptyMedia`, for first-run and all-clear states. */
+export function EmptyIllustration({ name, size = 132, surface, animated = true }: EmptyIllustrationProps) {
+  return <Illustration name={name} size={size} surface={surface} animated={animated} style={styles.illustration} />;
 }
 
 export function EmptyTitle({ children }: { children: ReactNode }) {
@@ -54,6 +70,7 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     marginBottom: SPACING.xxs
   },
+  illustration: { marginBottom: SPACING.xs },
   centered: { textAlign: 'center', maxWidth: 300 },
   content: { marginTop: SPACING.sm, alignSelf: 'stretch', alignItems: 'center' }
 });

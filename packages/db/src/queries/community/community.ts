@@ -2,6 +2,8 @@ import { TCommunityAnswer, TCommunityQuestion, TNewCommunityQuestion } from '@db
 import { communityAnswer, communityQuestion, course, db, desc, eq, inArray, profile, sql } from '@db/drizzle';
 
 export type CommunityQuestionQueryResult = {
+  id: TCommunityQuestion['id'];
+  authorId: TCommunityQuestion['authorProfileId'];
   organizationId: TCommunityQuestion['organizationId'];
   courseId: TCommunityQuestion['courseId'];
   title: TCommunityQuestion['title'];
@@ -26,6 +28,8 @@ export async function getCommunityQuestions(
 
   return db
     .select({
+      id: communityQuestion.id,
+      authorId: communityQuestion.authorProfileId,
       organizationId: communityQuestion.organizationId,
       courseId: communityQuestion.courseId,
       title: communityQuestion.title,
@@ -42,6 +46,8 @@ export async function getCommunityQuestions(
     .leftJoin(profile, eq(profile.id, communityQuestion.authorProfileId))
     .where(whereCondition)
     .groupBy(
+      communityQuestion.id,
+      communityQuestion.authorProfileId,
       communityQuestion.organizationId,
       communityQuestion.courseId,
       communityQuestion.title,

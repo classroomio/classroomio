@@ -83,5 +83,12 @@ export const de: TranslatedMessages<typeof en> = {
   discardQuestionTitle: 'Frage verwerfen?',
   discardQuestionDescription: 'Ihre Eingaben werden nicht gespeichert.',
   keepEditing: 'Weiter bearbeiten',
-  discardQuestion: 'Verwerfen'
+  discardQuestion: 'Verwerfen',
+  upvote: 'Positiv bewerten',
+  upvoted: 'Positiv bewertet',
+  copyLink: 'Link kopieren',
+  linkCopied: 'Link kopiert',
+  searchPlaceholder: 'Fragen durchsuchen',
+  searchEmptyTitle: 'Keine passenden Fragen',
+  searchEmptyDescription: 'Kein Fragentitel, Autor oder Kurs enthält „{query}“.'
 };

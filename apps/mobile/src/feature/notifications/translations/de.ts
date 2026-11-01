@@ -77,5 +77,6 @@ export const de: TranslatedMessages<typeof en> = {
   quietStart: 'Beginn der Ruhezeit',
   quietEnd: 'Ende der Ruhezeit',
   footnote:
-    'Hinweise zu überfälligen Schulungen bleiben für Push und In-App aktiv, weil die Schulung verpflichtend ist.'
+    'Hinweise zu überfälligen Schulungen bleiben für Push und In-App aktiv, weil die Schulung verpflichtend ist.',
+  markRead: 'Als gelesen markieren'
 };

@@ -1,7 +1,7 @@
-import { FlashList } from '@shopify/flash-list';
+import { FlashList, type FlashListRef } from '@shopify/flash-list';
 import { router, Stack } from 'expo-router';
 import { CircleAlert, Pencil, Trash2 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
 import { useAuth } from '@/feature/auth/components/auth-provider';
@@ -31,6 +31,7 @@ import {
   OptionSheetContent,
   OptionSheetItem
 } from '@/feature/common/components/option-sheet';
+import { FlashHighlight } from '@/feature/common/components/flash-highlight';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { Text } from '@/feature/common/components/text';
 import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
@@ -39,6 +40,7 @@ import { errorMessage } from '@/feature/common/helpers/error-message';
 import { successHaptic } from '@/feature/common/helpers/haptics';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
 import { useImageAttachments } from '@/feature/common/helpers/use-image-attachments';
+import { useRevealNewItem } from '@/feature/common/helpers/use-reveal-new-item';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -61,6 +63,8 @@ import { AnswerPost, QuestionPost } from './question-thread-posts';
 
 type MenuTarget = { kind: 'question' } | { kind: 'answer'; answer: CommunityAnswer };
 
+const isAnswer = (answer: CommunityAnswer, id: string) => String(answer.id) === id;
+
 export function QuestionThread({ slug }: { slug: string }) {
   const { colors } = useTheme();
   const t = useTranslations(communityCatalog);
@@ -70,7 +74,7 @@ export function QuestionThread({ slug }: { slug: string }) {
   const offline = useIsOffline();
   const question = useCommunityQuestionQuery(slug);
   const voted = useVotedPosts();
-  const upvote = useUpvoteMutation(slug);
+  const upvote = useUpvoteMutation();
   const answerMutation = useAnswerQuestionMutation(slug);
   const deleteQuestion = useDeleteQuestionMutation();
   const deleteAnswer = useDeleteAnswerMutation(slug);
@@ -81,12 +85,17 @@ export function QuestionThread({ slug }: { slug: string }) {
 
   const data = question.data;
   const answers = data?.comments ?? [];
+  const listRef = useRef<FlashListRef<CommunityAnswer>>(null);
+  const newAnswer = useRevealNewItem({ listRef, data: answers, matches: isAnswer });
   const canManage = (authorId: string | null | undefined) => Boolean(userId && (authorId === userId || isStaff));
 
-  const runUpvote = (input: Parameters<typeof upvote.mutate>[0]) =>
-    upvote.mutate(input, {
-      onError: (error) => showToast({ title: t('upvoteFailed'), description: errorMessage(error), tone: 'danger' })
-    });
+  const runUpvote = (input: { kind: 'question'; id: number } | { kind: 'answer'; id: string }) =>
+    upvote.mutate(
+      { ...input, slug },
+      {
+        onError: (error) => showToast({ title: t('upvoteFailed'), description: errorMessage(error), tone: 'danger' })
+      }
+    );
 
   const submitAnswer = () => {
     if (!data) return;
@@ -95,10 +104,11 @@ export function QuestionThread({ slug }: { slug: string }) {
     answerMutation.mutate(
       { questionId: data.id, body },
       {
-        onSuccess: () => {
+        onSuccess: (answer) => {
           successHaptic();
           setDraft('');
           attachments.reset();
+          newAnswer.reveal(answer.id);
         },
         onError: (error) => showToast({ title: t('answerFailed'), description: errorMessage(error), tone: 'danger' })
       }
@@ -169,16 +179,19 @@ export function QuestionThread({ slug }: { slug: string }) {
 
       {data ? (
         <FlashList
+          ref={listRef}
           data={answers}
           keyExtractor={(answer) => answer.id}
           renderItem={({ item }) => (
-            <AnswerPost
-              answer={item}
-              voted={voted.has(answerVoteKey(item.id))}
-              disabled={offline}
-              onUpvote={() => runUpvote({ kind: 'answer', id: item.id })}
-              onOpenMenu={canManage(item.author.id) ? () => setMenu({ kind: 'answer', answer: item }) : undefined}
-            />
+            <FlashHighlight active={newAnswer.highlightedId === String(item.id)}>
+              <AnswerPost
+                answer={item}
+                voted={voted.has(answerVoteKey(item.id))}
+                disabled={offline}
+                onUpvote={() => runUpvote({ kind: 'answer', id: item.id })}
+                onOpenMenu={canManage(item.author.id) ? () => setMenu({ kind: 'answer', answer: item }) : undefined}
+              />
+            </FlashHighlight>
           )}
           ItemSeparatorComponent={Separator}
           ListHeaderComponent={header}

@@ -1,10 +1,10 @@
 import { FlashList } from '@shopify/flash-list';
-import { MessagesSquare } from 'lucide-react-native';
+import {} from 'lucide-react-native';
 import type { ReactElement } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
-import { Empty, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
-import { Skeleton } from '@/feature/common/components/skeleton';
+import { Empty, EmptyDescription, EmptyIllustration, EmptyTitle } from '@/feature/common/components/empty';
+import { Skeleton, SkeletonAvatar, SkeletonCard, SkeletonText } from '@/feature/common/components/skeleton';
 import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { communityCatalog } from '@/feature/community/translations/catalog';
@@ -50,9 +50,22 @@ function Separator() {
 function QuestionListSkeleton() {
   return (
     <View style={styles.skeleton}>
-      <Skeleton height={132} radius={RADII.xl} />
-      <Skeleton height={132} radius={RADII.xl} />
-      <Skeleton height={132} radius={RADII.xl} />
+      {[0, 1, 2].map((index) => (
+        <SkeletonCard key={index}>
+          <View style={styles.skeletonHeader}>
+            <SkeletonAvatar size={36} />
+            <View style={styles.skeletonAuthor}>
+              <SkeletonText variant="label" lines={1} width="40%" />
+              <SkeletonText variant="caption" lines={1} width="62%" />
+            </View>
+          </View>
+          <SkeletonText variant="heading" lines={2} lastLineWidth="55%" />
+          <View style={styles.skeletonActions}>
+            <Skeleton width={36} height={14} radius={RADII.xs} />
+            <Skeleton width={36} height={14} radius={RADII.xs} />
+          </View>
+        </SkeletonCard>
+      ))}
     </View>
   );
 }
@@ -62,7 +75,7 @@ export function QuestionListEmpty({ filtered }: { filtered: boolean }) {
 
   return (
     <Empty>
-      <EmptyMedia icon={MessagesSquare} />
+      <EmptyIllustration name="questions" />
       <EmptyTitle>{filtered ? t('emptyFilteredTitle') : t('emptyTitle')}</EmptyTitle>
       <EmptyDescription>{filtered ? t('emptyFilteredDescription') : t('emptyDescription')}</EmptyDescription>
     </Empty>
@@ -72,5 +85,8 @@ export function QuestionListEmpty({ filtered }: { filtered: boolean }) {
 const styles = StyleSheet.create({
   content: { paddingHorizontal: GUTTER, paddingTop: SPACING.xs, paddingBottom: SPACING.xxxl },
   separator: { height: SPACING.sm },
-  skeleton: { gap: SPACING.sm }
+  skeleton: { gap: SPACING.sm },
+  skeletonHeader: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+  skeletonAuthor: { flex: 1 },
+  skeletonActions: { flexDirection: 'row', gap: SPACING.md, paddingVertical: 9 }
 });

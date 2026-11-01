@@ -43,6 +43,12 @@ export const ru: TranslatedMessages<typeof en> = {
   confirmSubmitTitle: 'Отправить ответы?',
   confirmSubmitMultiple: 'Преподаватель увидит эту попытку. После этого упражнение можно пройти снова.',
   confirmSubmitSingle: 'В этом упражнении одна попытка. После отправки изменить ответы будет нельзя.',
+  confirmAnsweredCount: {
+    one: 'Вы ответили на {answered} из {count} вопроса.',
+    few: 'Вы ответили на {answered} из {count} вопросов.',
+    many: 'Вы ответили на {answered} из {count} вопросов.',
+    other: 'Вы ответили на {answered} из {count} вопроса.'
+  },
   submit: 'Отправить',
   saved: 'Сохранено',
   savedAccessibilityLabel: 'Ответы сохранены на этом устройстве',
@@ -213,6 +219,8 @@ export const ru: TranslatedMessages<typeof en> = {
   outcomeGraded: 'Оценено',
   outcomePassed: 'Пройдено',
   outcomeFailed: 'Не пройдено',
+  failedRetakeHint: 'Посмотрите результаты по вопросам и пройдите упражнение заново, когда будете готовы.',
+  failedReviewHint: 'Результаты по вопросам показывают, где вы потеряли баллы.',
   scoreOfTotal: {
     one: '{score} из {total} балла',
     few: '{score} из {total} баллов',

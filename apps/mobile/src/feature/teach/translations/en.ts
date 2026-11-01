@@ -213,5 +213,6 @@ export const en = {
   deletePostDescription: {
     one: 'The post and its {count} comment are removed from the course newsfeed for everyone. This cannot be undone.',
     other: 'The post and its {count} comments are removed from the course newsfeed for everyone. This cannot be undone.'
-  }
+  },
+  gradeAction: 'Grade'
 };

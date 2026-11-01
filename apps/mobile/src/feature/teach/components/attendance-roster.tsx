@@ -26,6 +26,7 @@ import {
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
 import { SegmentedControl, SegmentedControlItem } from '@/feature/common/components/segmented-control';
+import { SwipeActionRow } from '@/feature/common/components/swipe-action-row';
 import { Text } from '@/feature/common/components/text';
 import { GUTTER, SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
@@ -216,27 +217,38 @@ export function AttendanceRow({ learner }: { learner: TeachCourseMember }) {
   const changed = changes.some((change) => change.studentId === learner.id);
 
   return (
-    <Item accessibilityLabel={[name, statusText, changed ? t('notSaved') : null].filter(Boolean).join(', ')}>
-      <ItemMedia>
-        <Avatar name={name} uri={learner.profile?.avatarUrl} size={36} />
-      </ItemMedia>
-      <ItemContent>
-        <ItemTitle numberOfLines={1}>{name}</ItemTitle>
-        <ItemDescription numberOfLines={1}>
-          {statusText}
-          {changed ? ` · ${t('notSaved')}` : ''}
-        </ItemDescription>
-      </ItemContent>
-      <View style={styles.toggle}>
-        <SegmentedControl<AttendanceStatus | ''>
-          value={status ?? ''}
-          onValueChange={(next) => next && setStatus(learner.id, next)}
-        >
-          <SegmentedControlItem value="present">{t('present')}</SegmentedControlItem>
-          <SegmentedControlItem value="absent">{t('absent')}</SegmentedControlItem>
-        </SegmentedControl>
-      </View>
-    </Item>
+    <SwipeActionRow
+      resetKey={learner.id}
+      leading={{
+        label: t('present'),
+        icon: CircleCheck,
+        tone: 'success',
+        onCommit: () => setStatus(learner.id, 'present')
+      }}
+      trailing={{ label: t('absent'), icon: CircleX, tone: 'danger', onCommit: () => setStatus(learner.id, 'absent') }}
+    >
+      <Item accessibilityLabel={[name, statusText, changed ? t('notSaved') : null].filter(Boolean).join(', ')}>
+        <ItemMedia>
+          <Avatar name={name} uri={learner.profile?.avatarUrl} size={36} />
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle numberOfLines={1}>{name}</ItemTitle>
+          <ItemDescription numberOfLines={1}>
+            {statusText}
+            {changed ? ` · ${t('notSaved')}` : ''}
+          </ItemDescription>
+        </ItemContent>
+        <View style={styles.toggle}>
+          <SegmentedControl<AttendanceStatus | ''>
+            value={status ?? ''}
+            onValueChange={(next) => next && setStatus(learner.id, next)}
+          >
+            <SegmentedControlItem value="present">{t('present')}</SegmentedControlItem>
+            <SegmentedControlItem value="absent">{t('absent')}</SegmentedControlItem>
+          </SegmentedControl>
+        </View>
+      </Item>
+    </SwipeActionRow>
   );
 }
 

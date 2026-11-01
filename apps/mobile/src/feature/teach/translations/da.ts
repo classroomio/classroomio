@@ -220,5 +220,6 @@ export const da: TranslatedMessages<typeof en> = {
   deletePostDescription: {
     one: 'Opslaget og dets {count} kommentar fjernes fra kursets nyhedsfeed for alle. Det kan ikke fortrydes.',
     other: 'Opslaget og dets {count} kommentarer fjernes fra kursets nyhedsfeed for alle. Det kan ikke fortrydes.'
-  }
+  },
+  gradeAction: 'Bedøm'
 };

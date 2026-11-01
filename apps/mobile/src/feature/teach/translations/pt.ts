@@ -224,5 +224,6 @@ export const pt: TranslatedMessages<typeof en> = {
     one: 'A publicação e seu {count} comentário são removidos do feed de notícias do curso para todos. Não é possível desfazer.',
     other:
       'A publicação e seus {count} comentários são removidos do feed de notícias do curso para todos. Não é possível desfazer.'
-  }
+  },
+  gradeAction: 'Avaliar'
 };

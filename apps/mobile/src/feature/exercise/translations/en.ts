@@ -29,6 +29,10 @@ export const en = {
   confirmSubmitTitle: 'Submit your answers?',
   confirmSubmitMultiple: 'Your tutor sees this attempt. You can take the exercise again afterwards.',
   confirmSubmitSingle: 'This exercise allows one attempt. You cannot change your answers after you submit.',
+  confirmAnsweredCount: {
+    one: 'You answered {answered} of {count} question.',
+    other: 'You answered {answered} of {count} questions.'
+  },
   submit: 'Submit',
   saved: 'Saved',
   savedAccessibilityLabel: 'Answers saved on this device',
@@ -169,6 +173,8 @@ export const en = {
   outcomeGraded: 'Graded',
   outcomePassed: 'Passed',
   outcomeFailed: 'Not passed',
+  failedRetakeHint: 'Check the question breakdown, then retake the exercise when you are ready.',
+  failedReviewHint: 'The question breakdown shows where you lost points.',
   scoreOfTotal: { one: '{score} of {total} point', other: '{score} of {total} points' },
   passMarkInline: 'pass mark {percent}',
   awaitingGradeDescription: 'Your tutor has not graded this attempt yet. Your score appears here once it is graded.',

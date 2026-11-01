@@ -341,5 +341,6 @@ export const pl: TranslatedMessages<typeof en> = {
     many: 'Wpis i {count} komentarzy zostaną usunięte z aktualności kursu dla wszystkich. Tej operacji nie można cofnąć.',
     other:
       'Wpis i {count} komentarza zostaną usunięte z aktualności kursu dla wszystkich. Tej operacji nie można cofnąć.'
-  }
+  },
+  gradeAction: 'Oceń'
 };

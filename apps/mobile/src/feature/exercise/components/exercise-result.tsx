@@ -5,9 +5,19 @@ import {
   CircleMinus,
   CircleX,
   Clock,
+  Target,
   type LucideIcon
 } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming
+} from 'react-native-reanimated';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Card, CardContent } from '@/feature/common/components/card';
@@ -15,13 +25,16 @@ import { HtmlContent } from '@/feature/common/components/html-content';
 import { Icon } from '@/feature/common/components/icon';
 import { Item, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from '@/feature/common/components/item';
 import { NotchCard } from '@/feature/common/components/notch-card';
-import { ProgressRing } from '@/feature/common/components/progress';
 import { ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { Text, type TextTone } from '@/feature/common/components/text';
 import { SPACING } from '@/feature/common/constants/layout';
+import { DURATION, EASE_IN_OUT, EASE_OUT } from '@/feature/common/constants/motion';
+import { successHaptic } from '@/feature/common/helpers/haptics';
+import { ScoreRing } from '@/feature/exercise/components/score-ring';
 import { answerSummaryOf } from '@/feature/exercise/helpers/answer-summary';
 import { formatDateTime, formatScore } from '@/feature/exercise/helpers/format';
 import { plainTextOf, questionKeyOf } from '@/feature/exercise/helpers/question-model';
+import { isUnrevealedResult, markResultRevealed } from '@/feature/exercise/helpers/result-reveal';
 import type {
   AttemptOutcome,
   ExerciseAttempt,
@@ -37,15 +50,60 @@ const OUTCOME_COPY: Record<AttemptOutcome, { title: ExerciseMessageKey; tone: Te
   awaiting_grade: { title: 'outcomeAwaitingGrade', tone: 'muted', icon: Clock },
   graded: { title: 'outcomeGraded', tone: 'ink', icon: CircleCheck },
   passed: { title: 'outcomePassed', tone: 'success', icon: CircleCheck },
-  failed: { title: 'outcomeFailed', tone: 'danger', icon: CircleX }
+  failed: { title: 'outcomeFailed', tone: 'ink', icon: Target }
 };
 
-type ResultSummaryProps = { attempt: ExerciseAttempt; summary: ExerciseAttempts };
+type ResultSummaryProps = { attempt: ExerciseAttempt; summary: ExerciseAttempts; isLatest: boolean };
 
-export function ResultSummary({ attempt, summary }: ResultSummaryProps) {
+/**
+ * The attempt's score and outcome. The first time a graded result is shown in a session the ring fills and counts
+ * up; a passed latest attempt then lands with a success haptic. A result that is not passed settles quietly.
+ */
+export function ResultSummary({ attempt, summary, isLatest }: ResultSummaryProps) {
   const t = useTranslations(exerciseCatalog);
   const format = useFormatters();
+  const reducedMotion = useReducedMotion();
   const copy = OUTCOME_COPY[attempt.outcome];
+  const [reveal] = useState(() => attempt.outcome !== 'awaiting_grade' && isUnrevealedResult(attempt.id));
+  const celebrate = reveal && isLatest && attempt.outcome === 'passed';
+  const outcomeOpacity = useSharedValue(reveal ? 0 : 1);
+  const outcomeY = useSharedValue(reveal && !reducedMotion ? 6 : 0);
+  const ringScale = useSharedValue(1);
+  const outcomeStyle = useAnimatedStyle(() => ({
+    opacity: outcomeOpacity.get(),
+    transform: [{ translateY: outcomeY.get() }]
+  }));
+  const ringStyle = useAnimatedStyle(() => ({ transform: [{ scale: ringScale.get() }] }));
+
+  useEffect(() => {
+    if (attempt.outcome !== 'awaiting_grade') markResultRevealed(attempt.id);
+  }, [attempt.id, attempt.outcome]);
+
+  const settle = () => {
+    if (!reveal) return;
+
+    outcomeOpacity.set(withTiming(1, { duration: DURATION.fast, easing: EASE_OUT }));
+    if (!celebrate) {
+      outcomeY.set(withTiming(0, { duration: DURATION.base, easing: EASE_OUT }));
+      return;
+    }
+
+    successHaptic();
+    if (reducedMotion) return;
+
+    ringScale.set(
+      withSequence(
+        withTiming(1.06, { duration: 140, easing: EASE_OUT }),
+        withSpring(1, { duration: 360, dampingRatio: 0.55 })
+      )
+    );
+    outcomeY.set(
+      withSequence(
+        withTiming(-4, { duration: 170, easing: EASE_OUT }),
+        withTiming(0, { duration: 130, easing: EASE_IN_OUT })
+      )
+    );
+  };
   const graded = attempt.outcome !== 'awaiting_grade';
   const percent = attempt.scorePercent ?? 0;
   const details = [
@@ -62,29 +120,27 @@ export function ResultSummary({ attempt, summary }: ResultSummaryProps) {
   return (
     <NotchCard style={styles.summary}>
       {graded ? (
-        <View style={styles.ring}>
-          <ProgressRing value={percent} size={92} strokeWidth={6} />
-          <View style={StyleSheet.absoluteFill}>
-            <View style={styles.ringLabel}>
-              <Text variant="heading" style={styles.tabular}>
-                {format.percent(percent)}
-              </Text>
-            </View>
-          </View>
-        </View>
+        <Animated.View style={ringStyle}>
+          <ScoreRing percent={percent} reveal={reveal} onFilled={settle} />
+        </Animated.View>
       ) : (
         <Icon icon={Clock} size={32} tone="muted" />
       )}
       <View style={styles.summaryText}>
-        <View style={styles.outcome}>
+        <Animated.View style={[styles.outcome, outcomeStyle]}>
           <Icon icon={copy.icon} size={18} tone={copy.tone} />
           <Text variant="heading" tone={copy.tone}>
             {t(copy.title)}
           </Text>
-        </View>
+        </Animated.View>
         <Text variant="caption" tone="muted" style={styles.center}>
           {graded ? details.join(' · ') : t('awaitingGradeDescription')}
         </Text>
+        {attempt.outcome === 'failed' ? (
+          <Text variant="caption" tone="body" style={styles.center}>
+            {summary.canRetake && isLatest ? t('failedRetakeHint') : t('failedReviewHint')}
+          </Text>
+        ) : null}
         <Text variant="micro" tone="subtle">
           {t('attemptSubmitted', {
             number: attempt.attemptNumber,
@@ -216,9 +272,6 @@ export function ResultActions({ canRetake, isLatest, onRetake, onDone }: ResultA
 
 const styles = StyleSheet.create({
   summary: { alignItems: 'center', gap: SPACING.sm, paddingVertical: SPACING.xl },
-  ring: { width: 92, height: 92 },
-  ringLabel: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  tabular: { fontVariant: ['tabular-nums'] },
   summaryText: { alignItems: 'center', gap: SPACING.xxs },
   outcome: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   center: { textAlign: 'center' },

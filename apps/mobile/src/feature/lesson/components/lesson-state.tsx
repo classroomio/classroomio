@@ -1,9 +1,16 @@
 import { router } from 'expo-router';
-import { Lock, TriangleAlert, WifiOff } from 'lucide-react-native';
+import { Lock, TriangleAlert } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonText } from '@/feature/common/components/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle
+} from '@/feature/common/components/empty';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { commonCatalog } from '@/feature/common/translations/catalog';
@@ -51,7 +58,7 @@ export function LessonNeedsConnection({ onRetry }: { onRetry: () => void }) {
 
   return (
     <Empty>
-      <EmptyMedia icon={WifiOff} />
+      <EmptyIllustration name="offline" />
       <EmptyTitle>{t('needsConnectionTitle')}</EmptyTitle>
       <EmptyDescription>{t('needsConnectionDescription')}</EmptyDescription>
       <EmptyContent>

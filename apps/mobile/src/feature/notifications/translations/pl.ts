@@ -78,5 +78,6 @@ export const pl: TranslatedMessages<typeof en> = {
   timeZone: 'Strefa czasowa',
   quietStart: 'Początek godzin ciszy',
   quietEnd: 'Koniec godzin ciszy',
-  footnote: 'Alerty o zaległych szkoleniach pozostają włączone dla push i aplikacji, bo szkolenie jest obowiązkowe.'
+  footnote: 'Alerty o zaległych szkoleniach pozostają włączone dla push i aplikacji, bo szkolenie jest obowiązkowe.',
+  markRead: 'Oznacz jako przeczytane'
 };

@@ -105,5 +105,39 @@ export const ru: TranslatedMessages<typeof en> = {
   noLessonsTitle: 'Уроков пока нет',
   noLessonsDescription: 'Преподаватель ещё не опубликовал уроки в этом курсе.',
   sectionMore: 'Другое',
-  sectionContent: 'Содержание'
+  sectionContent: 'Содержание',
+  greetingMorning: 'Доброе утро, {name}',
+  greetingAfternoon: 'Добрый день, {name}',
+  greetingEvening: 'Добрый вечер, {name}',
+  greetingMorningNoName: 'Доброе утро',
+  greetingAfternoonNoName: 'Добрый день',
+  greetingEveningNoName: 'Добрый вечер',
+  homeStatusOverdue: {
+    one: '{count} обязательный курс просрочен.',
+    few: '{count} обязательных курса просрочены.',
+    many: '{count} обязательных курсов просрочены.',
+    other: '{count} обязательного курса просрочено.'
+  },
+  homeStatusDue: 'Срок курса «{title}» истекает {relative}.',
+  homeStatusInProgress: {
+    one: 'У вас {count} курс в процессе.',
+    few: 'У вас {count} курса в процессе.',
+    many: 'У вас {count} курсов в процессе.',
+    other: 'У вас {count} курса в процессе.'
+  },
+  homeStatusNotStarted: {
+    one: 'У вас {count} не начатый курс.',
+    few: 'У вас {count} не начатых курса.',
+    many: 'У вас {count} не начатых курсов.',
+    other: 'У вас {count} не начатого курса.'
+  },
+  homeStatusAllDone: 'Вы завершили все назначенные вам курсы.',
+  seeAll: 'Показать все',
+  searchCourses: 'Поиск курсов',
+  searchNoResultsTitle: 'Подходящих курсов нет',
+  searchNoResultsDescription: 'Ни одно название курса не содержит «{query}».',
+  menuDownload: 'Скачать',
+  menuManageDownload: 'Управлять загрузкой',
+  menuCopyLink: 'Копировать ссылку',
+  linkCopied: 'Ссылка скопирована'
 };

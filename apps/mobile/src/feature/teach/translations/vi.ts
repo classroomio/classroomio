@@ -212,5 +212,6 @@ export const vi: TranslatedMessages<typeof en> = {
   deletePostDescription: {
     other:
       'Bài đăng và {count} bình luận sẽ bị xóa khỏi bảng tin khóa học với mọi người. Không thể hoàn tác thao tác này.'
-  }
+  },
+  gradeAction: 'Chấm điểm'
 };

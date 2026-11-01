@@ -1,4 +1,4 @@
-import { Clock } from 'lucide-react-native';
+import { ClipboardCheck, Clock } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/feature/common/components/avatar';
@@ -12,6 +12,7 @@ import {
   ItemMedia,
   ItemTitle
 } from '@/feature/common/components/item';
+import { SwipeActionRow } from '@/feature/common/components/swipe-action-row';
 import { Text } from '@/feature/common/components/text';
 import { useLocale } from '@/feature/i18n/helpers/use-locale';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -33,41 +34,46 @@ export function GradingQueueRow({ item, onPress }: GradingQueueRowProps) {
   const kinds = answerKindsLabel(item.answerTypes, t, locale);
 
   return (
-    <Item
-      onPress={() => onPress(item)}
-      accessibilityLabel={[learner, item.exerciseTitle, item.courseTitle, waiting, item.isLate && t('submittedLate')]
-        .filter(Boolean)
-        .join(', ')}
+    <SwipeActionRow
+      resetKey={item.id}
+      trailing={{ label: t('gradeAction'), icon: ClipboardCheck, onCommit: () => onPress(item) }}
     >
-      <ItemMedia>
-        <Avatar name={learner} uri={item.student?.avatarUrl} size={40} />
-      </ItemMedia>
-      <ItemContent>
-        <ItemTitle numberOfLines={1}>{learner}</ItemTitle>
-        <ItemDescription numberOfLines={1}>
-          {item.courseTitle} · {item.exerciseTitle}
-        </ItemDescription>
-        <View style={styles.meta}>
-          <Icon icon={Clock} size={13} tone={longWait ? 'warning' : 'subtle'} />
-          <Text variant="micro" tone={longWait ? 'warning' : 'muted'}>
-            {waiting ?? t('waiting')}
-          </Text>
-          {kinds ? (
-            <Text variant="micro" tone="muted" numberOfLines={1} style={styles.kinds}>
-              · {kinds}
+      <Item
+        onPress={() => onPress(item)}
+        accessibilityLabel={[learner, item.exerciseTitle, item.courseTitle, waiting, item.isLate && t('submittedLate')]
+          .filter(Boolean)
+          .join(', ')}
+      >
+        <ItemMedia>
+          <Avatar name={learner} uri={item.student?.avatarUrl} size={40} />
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle numberOfLines={1}>{learner}</ItemTitle>
+          <ItemDescription numberOfLines={1}>
+            {item.courseTitle} · {item.exerciseTitle}
+          </ItemDescription>
+          <View style={styles.meta}>
+            <Icon icon={Clock} size={13} tone={longWait ? 'warning' : 'subtle'} />
+            <Text variant="micro" tone={longWait ? 'warning' : 'muted'}>
+              {waiting ?? t('waiting')}
             </Text>
-          ) : null}
-          {item.isLate && (
-            <Text variant="micro" tone="danger">
-              · {t('late')}
-            </Text>
-          )}
-        </View>
-      </ItemContent>
-      <ItemActions>
-        <ItemChevron />
-      </ItemActions>
-    </Item>
+            {kinds ? (
+              <Text variant="micro" tone="muted" numberOfLines={1} style={styles.kinds}>
+                · {kinds}
+              </Text>
+            ) : null}
+            {item.isLate && (
+              <Text variant="micro" tone="danger">
+                · {t('late')}
+              </Text>
+            )}
+          </View>
+        </ItemContent>
+        <ItemActions>
+          <ItemChevron />
+        </ItemActions>
+      </Item>
+    </SwipeActionRow>
   );
 }
 

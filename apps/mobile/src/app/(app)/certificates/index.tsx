@@ -7,7 +7,14 @@ import { certificatesSummaryText, useCertificateCopy } from '@/feature/certifica
 import { useCertificateWallet } from '@/feature/certificate/helpers/certificate-wallet';
 import type { Certificate, PendingCertificate } from '@/feature/certificate/types/certificate';
 import { Button, ButtonText } from '@/feature/common/components/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle
+} from '@/feature/common/components/empty';
 import { ItemGroup } from '@/feature/common/components/item';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { Skeleton } from '@/feature/common/components/skeleton';
@@ -50,7 +57,7 @@ export default function CertificatesScreen() {
 
       {certificates.isSuccess && earned.length === 0 && (
         <Empty>
-          <EmptyMedia icon={Award} />
+          <EmptyIllustration name="certificate" />
           <EmptyTitle>{t('emptyTitle')}</EmptyTitle>
           <EmptyDescription>{t('emptyDescription')}</EmptyDescription>
         </Empty>

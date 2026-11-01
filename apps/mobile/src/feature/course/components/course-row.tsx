@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type PressableProps } from 'react-native';
 
 import {
   Item,
@@ -20,9 +20,10 @@ import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
 import { CourseThumbnail } from './course-thumbnail';
 
-type CourseRowProps = { course: EnrolledCourse; onPress: (course: EnrolledCourse) => void };
+type CourseRowProps = Pick<PressableProps, 'onPress' | 'onLongPress'> & { course: EnrolledCourse };
 
-export function CourseRow({ course, onPress }: CourseRowProps) {
+/** A course in a list; press handlers come from the wrapping `Link`. */
+export function CourseRow({ course, onPress, onLongPress }: CourseRowProps) {
   const t = useTranslations(courseCatalog);
   const format = useFormatters();
   const progress = progressPercentOf(course);
@@ -34,7 +35,8 @@ export function CourseRow({ course, onPress }: CourseRowProps) {
 
   return (
     <Item
-      onPress={() => onPress(course)}
+      onPress={onPress ?? undefined}
+      onLongPress={onLongPress ?? undefined}
       accessibilityLabel={[course.title, t('percentComplete', { percent }), downloaded ? t('downloaded') : null]
         .filter(Boolean)
         .join(', ')}

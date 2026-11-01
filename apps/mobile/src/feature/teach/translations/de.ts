@@ -228,5 +228,6 @@ export const de: TranslatedMessages<typeof en> = {
     one: 'Der Beitrag und sein {count} Kommentar werden für alle aus dem Kurs-Newsfeed entfernt. Das lässt sich nicht rückgängig machen.',
     other:
       'Der Beitrag und seine {count} Kommentare werden für alle aus dem Kurs-Newsfeed entfernt. Das lässt sich nicht rückgängig machen.'
-  }
+  },
+  gradeAction: 'Bewerten'
 };

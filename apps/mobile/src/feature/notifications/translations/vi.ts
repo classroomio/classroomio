@@ -72,5 +72,6 @@ export const vi: TranslatedMessages<typeof en> = {
   timeZone: 'Múi giờ',
   quietStart: 'Bắt đầu giờ yên lặng',
   quietEnd: 'Kết thúc giờ yên lặng',
-  footnote: 'Cảnh báo đào tạo quá hạn luôn bật cho thông báo đẩy và trong ứng dụng vì đây là đào tạo bắt buộc.'
+  footnote: 'Cảnh báo đào tạo quá hạn luôn bật cho thông báo đẩy và trong ứng dụng vì đây là đào tạo bắt buộc.',
+  markRead: 'Đánh dấu là đã đọc'
 };

@@ -82,5 +82,12 @@ export const ru: TranslatedMessages<typeof en> = {
   discardQuestionTitle: 'Удалить черновик вопроса?',
   discardQuestionDescription: 'Введённый текст не сохранится.',
   keepEditing: 'Продолжить редактирование',
-  discardQuestion: 'Удалить'
+  discardQuestion: 'Удалить',
+  upvote: 'Проголосовать за',
+  upvoted: 'Вы проголосовали за',
+  copyLink: 'Скопировать ссылку',
+  linkCopied: 'Ссылка скопирована',
+  searchPlaceholder: 'Поиск вопросов',
+  searchEmptyTitle: 'Подходящих вопросов нет',
+  searchEmptyDescription: 'Ни название вопроса, ни автор, ни курс не содержат «{query}».'
 };

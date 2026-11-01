@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { Download } from 'lucide-react-native';
+import {} from 'lucide-react-native';
 import { useState } from 'react';
 
 import {
@@ -12,7 +12,7 @@ import {
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
 import { Button } from '@/feature/common/components/button';
-import { Empty, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
+import { Empty, EmptyDescription, EmptyIllustration, EmptyTitle } from '@/feature/common/components/empty';
 import { ItemGroup } from '@/feature/common/components/item';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { Text } from '@/feature/common/components/text';
@@ -64,7 +64,7 @@ export default function DownloadsScreen() {
       <ScreenScrollView>
         {courseIds.length === 0 ? (
           <Empty>
-            <EmptyMedia icon={Download} />
+            <EmptyIllustration name="downloads" />
             <EmptyTitle>{t('noDownloadsTitle')}</EmptyTitle>
             <EmptyDescription>{t('noDownloadsDescription')}</EmptyDescription>
           </Empty>

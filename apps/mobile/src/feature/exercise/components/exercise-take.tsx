@@ -26,7 +26,7 @@ import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
 import { DURATION, EASE_OUT } from '@/feature/common/constants/motion';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
-import { successHaptic, warningHaptic } from '@/feature/common/helpers/haptics';
+import { warningHaptic } from '@/feature/common/helpers/haptics';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { showToast } from '@/feature/toast/helpers/toast-store';
@@ -50,15 +50,22 @@ import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
 const FOOTER_HEIGHT = 120;
 
+const QUESTION_SHIFT = 16;
+
 const enterFromRight = new Keyframe({
-  0: { opacity: 0, transform: [{ translateX: 24 }] },
+  0: { opacity: 0, transform: [{ translateX: QUESTION_SHIFT }] },
   100: { opacity: 1, transform: [{ translateX: 0 }], easing: EASE_OUT }
-}).duration(220);
+}).duration(200);
 
 const enterFromLeft = new Keyframe({
-  0: { opacity: 0, transform: [{ translateX: -24 }] },
+  0: { opacity: 0, transform: [{ translateX: -QUESTION_SHIFT }] },
   100: { opacity: 1, transform: [{ translateX: 0 }], easing: EASE_OUT }
-}).duration(220);
+}).duration(200);
+
+const exitQuestion = new Keyframe({
+  0: { opacity: 1 },
+  100: { opacity: 0, easing: EASE_OUT }
+}).duration(DURATION.press);
 
 type ExerciseTakeProps = { onSubmitted: () => void };
 
@@ -81,6 +88,7 @@ export function ExerciseTake({ onSubmitted }: ExerciseTakeProps) {
     questions.map((item) => [questionKeyOf(item), answerProblemOf(item, answers[questionKeyOf(item)], t)])
   );
   const unansweredRequired = questions.filter((item) => problems[questionKeyOf(item)] !== null).length;
+  const answeredCount = questions.filter((item) => hasAnswerValue(answers[questionKeyOf(item)])).length;
 
   const goTo = (index: number) => {
     setDirection(index >= currentIndex ? 'forward' : 'back');
@@ -119,7 +127,6 @@ export function ExerciseTake({ onSubmitted }: ExerciseTakeProps) {
 
     submit.mutate(payload, {
       onSuccess: () => {
-        successHaptic();
         setConfirmOpen(false);
         onSubmitted();
       },
@@ -161,7 +168,11 @@ export function ExerciseTake({ onSubmitted }: ExerciseTakeProps) {
                 return item ? hasAnswerValue(answers[questionKeyOf(item)]) : false;
               }}
             />
-            <Animated.View key={currentIndex} entering={direction === 'forward' ? enterFromRight : enterFromLeft}>
+            <Animated.View
+              key={currentIndex}
+              entering={direction === 'forward' ? enterFromRight : enterFromLeft}
+              exiting={exitQuestion}
+            >
               <QuestionShell
                 question={question}
                 number={currentIndex + 1}
@@ -227,7 +238,14 @@ export function ExerciseTake({ onSubmitted }: ExerciseTakeProps) {
         <AlertDialogContent>
           <AlertDialogTitle>{t('confirmSubmitTitle')}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t(exercise.allowMultipleAttempts ? 'confirmSubmitMultiple' : 'confirmSubmitSingle')}
+            {[
+              answeredCount < questions.length
+                ? t('confirmAnsweredCount', { count: questions.length, answered: answeredCount })
+                : null,
+              t(exercise.allowMultipleAttempts ? 'confirmSubmitMultiple' : 'confirmSubmitSingle')
+            ]
+              .filter(Boolean)
+              .join(' ')}
           </AlertDialogDescription>
           <AlertDialogFooter>
             <AlertDialogCancel />

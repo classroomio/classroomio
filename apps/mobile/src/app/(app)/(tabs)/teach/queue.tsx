@@ -1,12 +1,19 @@
 import { FlashList } from '@shopify/flash-list';
 import { router, useLocalSearchParams } from 'expo-router';
-import { CircleCheck, Inbox, RefreshCw } from 'lucide-react-native';
+import { Inbox, RefreshCw } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle
+} from '@/feature/common/components/empty';
 import { ItemGroup } from '@/feature/common/components/item';
-import { Skeleton } from '@/feature/common/components/skeleton';
+import { SkeletonList, SkeletonText } from '@/feature/common/components/skeleton';
 import { Text } from '@/feature/common/components/text';
 import { GUTTER, SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
@@ -39,9 +46,11 @@ export default function GradingQueueScreen() {
   if (queue.isPending) {
     return (
       <View style={[styles.fill, styles.padded, { backgroundColor: colors.background }]}>
-        <Skeleton height={20} width="60%" />
-        {[0, 1, 2, 3].map((index) => (
-          <Skeleton key={index} height={84} radius={14} />
+        <View style={styles.skeletonHeader}>
+          <SkeletonText variant="caption" lines={1} width="60%" />
+        </View>
+        {[0, 1, 2, 3, 4].map((index) => (
+          <SkeletonList key={index} count={1} />
         ))}
       </View>
     );
@@ -93,7 +102,7 @@ export default function GradingQueueScreen() {
           </Empty>
         ) : (
           <Empty>
-            <EmptyMedia icon={CircleCheck} />
+            <EmptyIllustration name="grading" />
             <EmptyTitle>{t('allGradedTitle')}</EmptyTitle>
             <EmptyDescription>
               {courseTitle ? t('allGradedCourseDescription', { course: courseTitle }) : t('allGradedDescription')}
@@ -107,7 +116,8 @@ export default function GradingQueueScreen() {
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
-  padded: { paddingHorizontal: GUTTER, paddingTop: SPACING.md, gap: SPACING.xs },
+  padded: { paddingHorizontal: GUTTER, paddingTop: SPACING.xs, gap: SPACING.xs },
+  skeletonHeader: { paddingBottom: SPACING.xxs },
   content: { paddingHorizontal: GUTTER, paddingTop: SPACING.xs, paddingBottom: SPACING.xxxl },
   header: { gap: SPACING.xxs, paddingBottom: SPACING.sm },
   separator: { height: SPACING.xs }

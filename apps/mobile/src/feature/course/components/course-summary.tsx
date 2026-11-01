@@ -45,15 +45,10 @@ export function CourseSummaryProgress({ percent, label, detail }: CourseSummaryP
   );
 }
 
-export function CourseSummaryActions({ children }: { children: ReactNode }) {
-  return <View style={styles.actions}>{children}</View>;
-}
-
 const styles = StyleSheet.create({
   card: { padding: SPACING.md, gap: SPACING.md },
   progress: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   ring: { alignItems: 'center', justifyContent: 'center' },
   ringLabel: { position: 'absolute', fontSize: 11, letterSpacing: -0.2 },
-  copy: { flex: 1, gap: 2 },
-  actions: { gap: SPACING.xs }
+  copy: { flex: 1, gap: 2 }
 });

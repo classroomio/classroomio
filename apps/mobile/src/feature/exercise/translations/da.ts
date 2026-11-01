@@ -36,6 +36,10 @@ export const da: TranslatedMessages<typeof en> = {
   confirmSubmitTitle: 'Indsend dine svar?',
   confirmSubmitMultiple: 'Din underviser kan se dette forsøg. Du kan tage øvelsen igen bagefter.',
   confirmSubmitSingle: 'Øvelsen tillader ét forsøg. Du kan ikke ændre dine svar, når du har indsendt dem.',
+  confirmAnsweredCount: {
+    one: 'Du har besvaret {answered} af {count} spørgsmål.',
+    other: 'Du har besvaret {answered} af {count} spørgsmål.'
+  },
   submit: 'Indsend',
   saved: 'Gemt',
   savedAccessibilityLabel: 'Svar gemt på denne enhed',
@@ -171,6 +175,8 @@ export const da: TranslatedMessages<typeof en> = {
   outcomeGraded: 'Bedømt',
   outcomePassed: 'Bestået',
   outcomeFailed: 'Ikke bestået',
+  failedRetakeHint: 'Se resultatet pr. spørgsmål, og tag øvelsen igen, når du er klar.',
+  failedReviewHint: 'Resultatet pr. spørgsmål viser, hvor du mistede point.',
   scoreOfTotal: { one: '{score} af {total} point', other: '{score} af {total} point' },
   passMarkInline: 'beståelseskrav {percent}',
   awaitingGradeDescription: 'Din underviser har ikke bedømt forsøget endnu. Din score vises her, når det er bedømt.',

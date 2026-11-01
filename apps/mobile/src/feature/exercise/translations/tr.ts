@@ -36,6 +36,10 @@ export const tr: TranslatedMessages<typeof en> = {
   confirmSubmitTitle: 'Yanıtlarınız gönderilsin mi?',
   confirmSubmitMultiple: 'Eğitmeniniz bu denemeyi görür. Alıştırmayı daha sonra tekrar çözebilirsiniz.',
   confirmSubmitSingle: 'Bu alıştırmada tek deneme hakkı var. Gönderdikten sonra yanıtlarınızı değiştiremezsiniz.',
+  confirmAnsweredCount: {
+    one: '{count} sorudan {answered} tanesini yanıtladınız.',
+    other: '{count} sorudan {answered} tanesini yanıtladınız.'
+  },
   submit: 'Gönder',
   saved: 'Kaydedildi',
   savedAccessibilityLabel: 'Yanıtlar bu cihaza kaydedildi',
@@ -174,6 +178,8 @@ export const tr: TranslatedMessages<typeof en> = {
   outcomeGraded: 'Notlandırıldı',
   outcomePassed: 'Geçti',
   outcomeFailed: 'Geçemedi',
+  failedRetakeHint: 'Soru bazında sonuçları inceleyin, hazır olduğunuzda alıştırmayı tekrar çözün.',
+  failedReviewHint: 'Soru bazında sonuçlar, puan kaybettiğiniz yerleri gösterir.',
   scoreOfTotal: { one: '{score}/{total} puan', other: '{score}/{total} puan' },
   passMarkInline: 'geçme notu {percent}',
   awaitingGradeDescription: 'Eğitmeniniz bu denemeyi henüz notlandırmadı. Puanınız notlandırıldığında burada görünür.',

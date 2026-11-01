@@ -81,5 +81,12 @@ export const pt: TranslatedMessages<typeof en> = {
   discardQuestionTitle: 'Descartar esta pergunta?',
   discardQuestionDescription: 'O que você escreveu não será salvo.',
   keepEditing: 'Continuar editando',
-  discardQuestion: 'Descartar'
+  discardQuestion: 'Descartar',
+  upvote: 'Votar a favor',
+  upvoted: 'Votado a favor',
+  copyLink: 'Copiar link',
+  linkCopied: 'Link copiado',
+  searchPlaceholder: 'Pesquisar perguntas',
+  searchEmptyTitle: 'Nenhuma pergunta corresponde',
+  searchEmptyDescription: 'Nenhum título de pergunta, autor ou curso contém “{query}”.'
 };

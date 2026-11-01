@@ -3,7 +3,14 @@ import { Bell, RefreshCw, Settings2 } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle
+} from '@/feature/common/components/empty';
 import { HeaderIconButton } from '@/feature/common/components/header-icon-button';
 import { OfflineNotice } from '@/feature/common/components/offline-notice';
 import { SPACING } from '@/feature/common/constants/layout';
@@ -99,7 +106,7 @@ export default function NotificationsScreen() {
             </Empty>
           ) : (
             <Empty>
-              <EmptyMedia icon={Bell} />
+              <EmptyIllustration name="notifications" />
               <EmptyTitle>{t('emptyTitle')}</EmptyTitle>
               <EmptyDescription>{t('emptyDescription')}</EmptyDescription>
             </Empty>
@@ -110,6 +117,7 @@ export default function NotificationsScreen() {
           if (notifications.hasNextPage && !notifications.isFetchingNextPage) void notifications.fetchNextPage();
         }}
         onOpen={open}
+        onMarkRead={offline ? undefined : (item) => markRead.mutate(item.id)}
         onMarkAllRead={() => markAllRead.mutate()}
       />
     </>

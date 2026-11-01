@@ -71,5 +71,6 @@ export const tr: TranslatedMessages<typeof en> = {
   timeZone: 'Saat dilimi',
   quietStart: 'Sessiz saatlerin başlangıcı',
   quietEnd: 'Sessiz saatlerin bitişi',
-  footnote: 'Eğitim zorunlu olduğu için gecikmiş eğitim uyarıları anlık ve uygulama içi bildirimlerde açık kalır.'
+  footnote: 'Eğitim zorunlu olduğu için gecikmiş eğitim uyarıları anlık ve uygulama içi bildirimlerde açık kalır.',
+  markRead: 'Okundu işaretle'
 };

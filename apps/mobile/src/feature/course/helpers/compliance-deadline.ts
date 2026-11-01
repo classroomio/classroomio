@@ -9,7 +9,7 @@ export type ComplianceDeadlineCopy = { tone: BannerTone; title: string; descript
 
 type CourseTranslator = Translator<typeof en>;
 
-function relativeDays(days: number, t: CourseTranslator) {
+export function relativeDays(days: number, t: CourseTranslator) {
   if (days === 0) return t('relativeToday');
   if (days === 1) return t('relativeTomorrow');
   if (days === -1) return t('relativeYesterday');

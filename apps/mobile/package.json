@@ -6,6 +6,7 @@
     "@better-auth/expo": "^1.7.14",
     "@cio/utils": "workspace:*",
     "@expo-google-fonts/geist": "^0.4.2",
+    "@gorhom/bottom-sheet": "^5.2.14",
     "@shopify/flash-list": "2.3.2",
     "@tanstack/react-query": "^5.105.0",
     "better-auth": "^1.7.13",

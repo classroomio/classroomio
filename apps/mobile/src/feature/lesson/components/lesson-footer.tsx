@@ -1,7 +1,8 @@
 import { ContentType } from '@cio/utils/constants/content';
 import { ArrowLeft, ArrowRight, Check, CircleCheck, CloudUpload, Eye } from 'lucide-react-native';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { Keyframe } from 'react-native-reanimated';
 
 import { Banner, BannerContent, BannerDescription, BannerIcon, BannerTitle } from '@/feature/common/components/banner';
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@/feature/common/components/button';
@@ -9,6 +10,7 @@ import { Icon } from '@/feature/common/components/icon';
 import { Progress } from '@/feature/common/components/progress';
 import { Text } from '@/feature/common/components/text';
 import { SPACING } from '@/feature/common/constants/layout';
+import { EASE_OUT } from '@/feature/common/constants/motion';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { lockReasonOf } from '@/feature/course/helpers/content-copy';
 import { isAccessible } from '@/feature/course/helpers/course-content';
@@ -17,6 +19,11 @@ import type { CourseContentItem } from '@/feature/course/types/course-detail';
 import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { lessonCatalog } from '@/feature/lesson/translations/catalog';
+
+const COMPLETED_ENTER = new Keyframe({
+  0: { opacity: 0, transform: [{ scale: 0.94 }] },
+  100: { opacity: 1, transform: [{ scale: 1 }], easing: EASE_OUT }
+}).duration(220);
 
 export function LessonFooter({ children }: { children: ReactNode }) {
   const { colors } = useTheme();
@@ -51,11 +58,13 @@ export function LessonCompletion({
 }: LessonCompletionProps) {
   const t = useTranslations(lessonCatalog);
   const format = useFormatters();
+  const [completeOnOpen] = useState(complete);
 
   if (complete) {
     return (
       <View style={styles.completed}>
-        <View
+        <Animated.View
+          entering={completeOnOpen ? undefined : COMPLETED_ENTER}
           style={styles.completedLabel}
           accessible
           accessibilityLabel={syncPending ? t('completedSyncPendingLabel') : t('completedLabel')}
@@ -71,7 +80,7 @@ export function LessonCompletion({
               </Text>
             ) : null}
           </View>
-        </View>
+        </Animated.View>
         {policy === 'manual' && !syncPending ? (
           <Button size="sm" variant="ghost" disabled={pending} onPress={onUndo}>
             <ButtonText>{t('markNotComplete')}</ButtonText>

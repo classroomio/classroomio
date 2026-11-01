@@ -165,7 +165,12 @@ export function ExerciseFlow({ courseId, exerciseId }: ExerciseFlowProps) {
       <ScreenScrollView refreshing={attemptsQuery.isRefetching} onRefresh={() => void attemptsQuery.refetch()}>
         {header}
         <AttemptSwitcher index={shownIndex} total={attempts.length} onChange={setAttemptIndex} />
-        <ResultSummary attempt={attempt} summary={summary} />
+        <ResultSummary
+          key={attempt.id}
+          attempt={attempt}
+          summary={summary}
+          isLatest={shownIndex === attempts.length - 1}
+        />
         <ResultFeedback feedback={attempt.feedback} />
         <ResultBreakdown attempt={attempt} questions={activeQuestionsOf(exercise)} />
         <View style={styles.actions}>

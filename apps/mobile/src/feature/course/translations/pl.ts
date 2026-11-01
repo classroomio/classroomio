@@ -100,5 +100,39 @@ export const pl: TranslatedMessages<typeof en> = {
   noLessonsTitle: 'Brak lekcji',
   noLessonsDescription: 'Prowadzący nie opublikował jeszcze żadnych lekcji w tym kursie.',
   sectionMore: 'Więcej',
-  sectionContent: 'Treść'
+  sectionContent: 'Treść',
+  greetingMorning: 'Dzień dobry, {name}',
+  greetingAfternoon: 'Dzień dobry, {name}',
+  greetingEvening: 'Dobry wieczór, {name}',
+  greetingMorningNoName: 'Dzień dobry',
+  greetingAfternoonNoName: 'Dzień dobry',
+  greetingEveningNoName: 'Dobry wieczór',
+  homeStatusOverdue: {
+    one: '{count} szkolenie obowiązkowe jest zaległe.',
+    few: '{count} szkolenia obowiązkowe są zaległe.',
+    many: '{count} szkoleń obowiązkowych jest zaległych.',
+    other: '{count} szkolenia obowiązkowego jest zaległe.'
+  },
+  homeStatusDue: 'Termin kursu „{title}” mija {relative}.',
+  homeStatusInProgress: {
+    one: '{count} kurs w toku.',
+    few: '{count} kursy w toku.',
+    many: '{count} kursów w toku.',
+    other: '{count} kursu w toku.'
+  },
+  homeStatusNotStarted: {
+    one: '{count} kurs do rozpoczęcia.',
+    few: '{count} kursy do rozpoczęcia.',
+    many: '{count} kursów do rozpoczęcia.',
+    other: '{count} kursu do rozpoczęcia.'
+  },
+  homeStatusAllDone: 'Ukończono wszystkie przypisane Ci kursy.',
+  seeAll: 'Zobacz wszystkie',
+  searchCourses: 'Szukaj kursów',
+  searchNoResultsTitle: 'Brak pasujących kursów',
+  searchNoResultsDescription: 'Żaden tytuł kursu nie zawiera „{query}”.',
+  menuDownload: 'Pobierz',
+  menuManageDownload: 'Zarządzaj pobieraniem',
+  menuCopyLink: 'Kopiuj link',
+  linkCopied: 'Skopiowano link'
 };

@@ -85,5 +85,27 @@ export const es: TranslatedMessages<typeof en> = {
   noLessonsTitle: 'Aún no hay lecciones',
   noLessonsDescription: 'Tu instructor no ha publicado lecciones en este curso.',
   sectionMore: 'Más',
-  sectionContent: 'Contenido'
+  sectionContent: 'Contenido',
+  greetingMorning: 'Buenos días, {name}',
+  greetingAfternoon: 'Buenas tardes, {name}',
+  greetingEvening: 'Buenas noches, {name}',
+  greetingMorningNoName: 'Buenos días',
+  greetingAfternoonNoName: 'Buenas tardes',
+  greetingEveningNoName: 'Buenas noches',
+  homeStatusOverdue: {
+    one: '{count} curso obligatorio está vencido.',
+    other: '{count} cursos obligatorios están vencidos.'
+  },
+  homeStatusDue: '{title} vence {relative}.',
+  homeStatusInProgress: { one: 'Tienes {count} curso empezado.', other: 'Tienes {count} cursos empezados.' },
+  homeStatusNotStarted: { one: 'Tienes {count} curso por empezar.', other: 'Tienes {count} cursos por empezar.' },
+  homeStatusAllDone: 'Has terminado todos los cursos que tienes asignados.',
+  seeAll: 'Ver todos',
+  searchCourses: 'Buscar cursos',
+  searchNoResultsTitle: 'Ningún curso coincide',
+  searchNoResultsDescription: 'Ningún título de curso contiene «{query}».',
+  menuDownload: 'Descargar',
+  menuManageDownload: 'Gestionar descarga',
+  menuCopyLink: 'Copiar enlace',
+  linkCopied: 'Enlace copiado'
 };

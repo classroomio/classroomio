@@ -235,5 +235,6 @@ export const fr: TranslatedMessages<typeof en> = {
     one: 'La publication et son {count} commentaire sont supprimés du fil d’actualité du cours pour tout le monde. Cette action est irréversible.',
     other:
       'La publication et ses {count} commentaires sont supprimés du fil d’actualité du cours pour tout le monde. Cette action est irréversible.'
-  }
+  },
+  gradeAction: 'Noter'
 };

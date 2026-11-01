@@ -67,5 +67,6 @@ export const en = {
   timeZone: 'Time zone',
   quietStart: 'Quiet hours start',
   quietEnd: 'Quiet hours end',
-  footnote: 'Overdue training alerts stay on for push and in-app because the training is required.'
+  footnote: 'Overdue training alerts stay on for push and in-app because the training is required.',
+  markRead: 'Mark as read'
 };

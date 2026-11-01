@@ -37,6 +37,10 @@ export const es: TranslatedMessages<typeof en> = {
   confirmSubmitTitle: '¿Enviar tus respuestas?',
   confirmSubmitMultiple: 'Tu tutor verá este intento. Después puedes volver a hacer el ejercicio.',
   confirmSubmitSingle: 'Este ejercicio permite un intento. No podrás cambiar tus respuestas después de enviarlas.',
+  confirmAnsweredCount: {
+    one: 'Respondiste {answered} de {count} pregunta.',
+    other: 'Respondiste {answered} de {count} preguntas.'
+  },
   submit: 'Enviar',
   saved: 'Guardado',
   savedAccessibilityLabel: 'Respuestas guardadas en este dispositivo',
@@ -180,6 +184,8 @@ export const es: TranslatedMessages<typeof en> = {
   outcomeGraded: 'Calificado',
   outcomePassed: 'Aprobado',
   outcomeFailed: 'No aprobado',
+  failedRetakeHint: 'Revisa el desglose por pregunta y repite el ejercicio cuando quieras.',
+  failedReviewHint: 'El desglose por pregunta muestra dónde perdiste puntos.',
   scoreOfTotal: { one: '{score} de {total} punto', other: '{score} de {total} puntos' },
   passMarkInline: 'nota para aprobar: {percent}',
   awaitingGradeDescription:

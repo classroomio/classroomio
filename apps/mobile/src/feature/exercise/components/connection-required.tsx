@@ -1,7 +1,13 @@
-import { WifiOff } from 'lucide-react-native';
+import {} from 'lucide-react-native';
 
 import { Button, ButtonText } from '@/feature/common/components/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyIllustration,
+  EmptyTitle
+} from '@/feature/common/components/empty';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { exerciseCatalog } from '@/feature/exercise/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -14,7 +20,7 @@ export function ConnectionRequired({ hasDraft, onRetry }: ConnectionRequiredProp
 
   return (
     <Empty>
-      <EmptyMedia icon={WifiOff} />
+      <EmptyIllustration name="offline" />
       <EmptyTitle>{t('connectionRequiredTitle')}</EmptyTitle>
       <EmptyDescription>
         {t(hasDraft ? 'connectionRequiredWithDraft' : 'connectionRequiredDescription')}

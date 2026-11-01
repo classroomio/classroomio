@@ -6,11 +6,11 @@ import type { GradingQueueItem, GradingSubmission, SaveGradesInput, TeachingCour
 
 import { teachKeys, useTeachScope } from './teach-scope';
 
-export function useGradingQueueQuery() {
+function useGradingQueueOptions() {
   const api = useApi();
   const { userId, orgId, enabled } = useTeachScope();
 
-  return useQuery({
+  return {
     queryKey: teachKeys.queue(userId, orgId),
     queryFn: async () => {
       const response = await request(api.account['grading-queue'].$get());
@@ -18,7 +18,20 @@ export function useGradingQueueQuery() {
       return response.data;
     },
     enabled
-  });
+  };
+}
+
+export function useGradingQueueQuery() {
+  return useQuery(useGradingQueueOptions());
+}
+
+const countOf = (queue: GradingQueueItem[]) => queue.length;
+
+/** Submissions waiting for a grade, from the same cache as the queue. Pass `active: false` for non-staff. */
+export function useGradingQueueCount(active: boolean) {
+  const options = useGradingQueueOptions();
+
+  return useQuery({ ...options, enabled: options.enabled && active, select: countOf });
 }
 
 export function useGradingSubmissionQuery(submissionId: string) {

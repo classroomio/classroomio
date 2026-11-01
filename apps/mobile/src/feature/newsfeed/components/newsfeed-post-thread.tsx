@@ -1,4 +1,4 @@
-import { FlashList } from '@shopify/flash-list';
+import { FlashList, type FlashListRef } from '@shopify/flash-list';
 import { router, Stack } from 'expo-router';
 import { CircleAlert, Pencil, Trash2 } from 'lucide-react-native';
 import { useRef, useState } from 'react';
@@ -32,12 +32,14 @@ import {
   OptionSheetContent,
   OptionSheetItem
 } from '@/feature/common/components/option-sheet';
+import { FlashHighlight } from '@/feature/common/components/flash-highlight';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { Text } from '@/feature/common/components/text';
 import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { successHaptic } from '@/feature/common/helpers/haptics';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
+import { useRevealNewItem } from '@/feature/common/helpers/use-reveal-new-item';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -79,6 +81,8 @@ type ComposerMode =
   | { kind: 'reply'; comment: NewsfeedComment }
   | { kind: 'edit'; comment: NewsfeedComment };
 
+const isCommentRow = (row: ThreadRow, id: string) => row.type === 'comment' && String(row.comment.id) === id;
+
 export function NewsfeedPostThread({ courseId, postId }: { courseId: string; postId: string }) {
   const { colors } = useTheme();
   const t = useTranslations(newsfeedCatalog);
@@ -102,6 +106,8 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
 
   const threadData = thread.data ?? EMPTY_THREAD;
   const rows = flattenThread(threadData, collapsed);
+  const listRef = useRef<FlashListRef<ThreadRow>>(null);
+  const newComment = useRevealNewItem({ listRef, data: rows, matches: isCommentRow });
   const canModerate = viewer.data?.canModerate ?? false;
   const isAuthor = (comment: NewsfeedComment) => Boolean(userId && comment.authorProfileId === userId);
   const loadingParentId =
@@ -168,11 +174,12 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
     createComment.mutate(
       { content, parent },
       {
-        onSuccess: () => {
+        onSuccess: (created) => {
           successHaptic();
           if (parent) setCollapsed((current) => new Set([...current].filter((id) => id !== parent.id)));
           resetComposer();
           composer.current?.blur();
+          newComment.reveal(created.id);
         },
         onError: (error) => showToast({ title: t('commentFailed'), description: errorMessage(error), tone: 'danger' })
       }
@@ -211,16 +218,18 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
     const canDelete = isAuthor(comment) || canModerate;
 
     return (
-      <Comment comment={comment} depth={item.depth}>
-        <CommentHeader>{canDelete ? <CommentMenuButton onPress={() => setMenu(comment)} /> : null}</CommentHeader>
-        <CommentBody />
-        <CommentActions>
-          <CommentAction disabled={offline} onPress={() => startReply(comment)}>
-            {t('reply')}
-          </CommentAction>
-          <CommentCollapseToggle collapsed={collapsed.has(comment.id)} onToggle={() => toggleCollapsed(comment.id)} />
-        </CommentActions>
-      </Comment>
+      <FlashHighlight active={newComment.highlightedId === String(comment.id)}>
+        <Comment comment={comment} depth={item.depth}>
+          <CommentHeader>{canDelete ? <CommentMenuButton onPress={() => setMenu(comment)} /> : null}</CommentHeader>
+          <CommentBody />
+          <CommentActions>
+            <CommentAction disabled={offline} onPress={() => startReply(comment)}>
+              {t('reply')}
+            </CommentAction>
+            <CommentCollapseToggle collapsed={collapsed.has(comment.id)} onToggle={() => toggleCollapsed(comment.id)} />
+          </CommentActions>
+        </Comment>
+      </FlashHighlight>
     );
   };
 
@@ -280,6 +289,7 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
 
       {postData ? (
         <FlashList
+          ref={listRef}
           data={rows}
           keyExtractor={(row) => row.key}
           getItemType={(row) => row.type}

@@ -82,5 +82,12 @@ export const da: TranslatedMessages<typeof en> = {
   discardQuestionTitle: 'Kassér spørgsmålet?',
   discardQuestionDescription: 'Det, du har skrevet, bliver ikke gemt.',
   keepEditing: 'Fortsæt redigering',
-  discardQuestion: 'Kassér'
+  discardQuestion: 'Kassér',
+  upvote: 'Stem op',
+  upvoted: 'Stemt op',
+  copyLink: 'Kopiér link',
+  linkCopied: 'Link kopieret',
+  searchPlaceholder: 'Søg i spørgsmål',
+  searchEmptyTitle: 'Ingen spørgsmål matcher',
+  searchEmptyDescription: 'Ingen spørgsmålstitel, forfatter eller kursus indeholder “{query}”.'
 };

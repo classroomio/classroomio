@@ -2,7 +2,14 @@ import { router } from 'expo-router';
 import { GraduationCap, RefreshCw } from 'lucide-react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle
+} from '@/feature/common/components/empty';
 import { ItemGroup } from '@/feature/common/components/item';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { Skeleton } from '@/feature/common/components/skeleton';
@@ -61,7 +68,7 @@ export default function TeachScreen() {
     return (
       <ScreenScrollView refreshing={refreshing} onRefresh={refresh}>
         <Empty>
-          <EmptyMedia icon={GraduationCap} />
+          <EmptyIllustration name="courses" />
           <EmptyTitle>{t('noCoursesTitle')}</EmptyTitle>
           <EmptyDescription>{t('noCoursesDescription')}</EmptyDescription>
         </Empty>

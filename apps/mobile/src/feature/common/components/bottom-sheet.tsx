@@ -1,30 +1,19 @@
-import { X } from 'lucide-react-native';
-import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 import {
-  Keyboard,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-  type ScrollViewProps
-} from 'react-native';
-import { GestureDetector, GestureHandlerRootView, usePanGesture, type PanGesture } from 'react-native-gesture-handler';
-import Animated, {
-  interpolate,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withSpring,
-  withTiming,
-  type SharedValue
-} from 'react-native-reanimated';
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetScrollView as GorhomScrollView,
+  BottomSheetView,
+  type BottomSheetBackdropProps
+} from '@gorhom/bottom-sheet';
+import { X } from 'lucide-react-native';
+import { createContext, use, type ComponentProps, type ReactNode } from 'react';
+import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { scheduleOnRN } from 'react-native-worklets';
+import { FullWindowOverlay } from 'react-native-screens';
 
 import { GUTTER, HIT_SLOP, RADII, SPACING } from '@/feature/common/constants/layout';
-import { EASE_OUT } from '@/feature/common/constants/motion';
+import { useModalPresentation } from '@/feature/common/helpers/use-modal-presentation';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -32,20 +21,11 @@ import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { Icon } from './icon';
 import { Text } from './text';
 
-const OPEN_DURATION = 300;
-const CLOSE_DURATION = 220;
-const DISMISS_DISTANCE = 120;
-const DISMISS_VELOCITY = 900;
+const TALL_SNAP_POINTS = ['90%'];
 
-type BottomSheetContextValue = {
-  open: boolean;
-  close: () => void;
-  unmount: () => void;
-};
+type BottomSheetContextValue = { open: boolean; close: () => void };
 
 const BottomSheetContext = createContext<BottomSheetContextValue | null>(null);
-
-const BottomSheetDragContext = createContext<PanGesture | null>(null);
 
 function useBottomSheet() {
   const context = use(BottomSheetContext);
@@ -56,26 +36,25 @@ function useBottomSheet() {
 
 type BottomSheetProps = { open: boolean; onOpenChange: (open: boolean) => void; children: ReactNode };
 
-/** A modal sheet that slides up from the bottom edge and closes on scrim tap, back press or a downward drag on its header. */
+/** A modal sheet (gorhom bottom sheet) that closes on backdrop tap, back press or a downward drag. */
 export function BottomSheet({ open, onOpenChange, children }: BottomSheetProps) {
-  const [mounted, setMounted] = useState(open);
-  if (open && !mounted) setMounted(true);
+  return <BottomSheetContext value={{ open, close: () => onOpenChange(false) }}>{children}</BottomSheetContext>;
+}
 
-  const close = () => onOpenChange(false);
+export function SheetBackdrop(props: BottomSheetBackdropProps) {
+  return (
+    <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={0.45} pressBehavior="close" />
+  );
+}
+
+/** Presents sheets above native tab and stack views, which otherwise cover the portal host on iOS. */
+export function SheetContainer({ children }: { children?: ReactNode }) {
+  if (Platform.OS !== 'ios') return children;
 
   return (
-    <Modal
-      visible={mounted}
-      transparent
-      animationType="none"
-      statusBarTranslucent
-      navigationBarTranslucent
-      onRequestClose={close}
-    >
-      <GestureHandlerRootView style={styles.root}>
-        <BottomSheetContext value={{ open, close, unmount: () => setMounted(false) }}>{children}</BottomSheetContext>
-      </GestureHandlerRootView>
-    </Modal>
+    <FullWindowOverlay>
+      <GestureHandlerRootView style={StyleSheet.absoluteFill}>{children}</GestureHandlerRootView>
+    </FullWindowOverlay>
   );
 }
 
@@ -86,111 +65,50 @@ type BottomSheetContentProps = {
 };
 
 export function BottomSheetContent({ size = 'fit', children }: BottomSheetContentProps) {
-  const { colors, elevation } = useTheme();
-  const { open, close, unmount } = useBottomSheet();
+  const { colors } = useTheme();
+  const { open, close } = useBottomSheet();
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const reducedMotion = useReducedMotion();
-  const translateY = useSharedValue(height);
-  const maxHeight = height * 0.9 - insets.top;
-
-  useEffect(() => {
-    if (open) {
-      translateY.set(withTiming(0, { duration: reducedMotion ? 0 : OPEN_DURATION, easing: EASE_OUT }));
-      return;
-    }
-
-    Keyboard.dismiss();
-    translateY.set(
-      withTiming(height, { duration: reducedMotion ? 0 : CLOSE_DURATION, easing: EASE_OUT }, (finished) => {
-        if (finished) scheduleOnRN(unmount);
-      })
-    );
-  }, [open, height, reducedMotion, translateY, unmount]);
-
-  const drag = usePanGesture({
-    activeOffsetY: 8,
-    onUpdate: (event) => {
-      'worklet';
-      translateY.set(Math.max(0, event.translationY));
-    },
-    onDeactivate: (event) => {
-      'worklet';
-      if (event.translationY > DISMISS_DISTANCE || event.velocityY > DISMISS_VELOCITY) {
-        scheduleOnRN(close);
-        return;
-      }
-
-      translateY.set(withSpring(0, { damping: 28, stiffness: 320 }));
-    }
-  });
+  const { modal, markDismissed } = useModalPresentation(open);
 
   return (
-    <>
-      <Scrim translateY={translateY} distance={height} onPress={close} />
-      <View pointerEvents="box-none" style={styles.anchor}>
-        <BottomSheetDragContext value={drag}>
-          <SheetSurface translateY={translateY}>
-            <View
-              accessibilityViewIsModal
-              style={[
-                styles.sheet,
-                elevation.floating,
-                {
-                  maxHeight,
-                  height: size === 'tall' ? maxHeight : undefined,
-                  backgroundColor: colors.background,
-                  borderColor: colors.border
-                }
-              ]}
-            >
-              {children}
-            </View>
-          </SheetSurface>
-        </BottomSheetDragContext>
-      </View>
-    </>
+    <BottomSheetModal
+      ref={modal}
+      onDismiss={() => {
+        markDismissed();
+        close();
+      }}
+      enableDynamicSizing={size === 'fit'}
+      snapPoints={size === 'tall' ? TALL_SNAP_POINTS : undefined}
+      maxDynamicContentSize={height * 0.9 - insets.top}
+      topInset={insets.top}
+      enablePanDownToClose
+      keyboardBehavior="interactive"
+      keyboardBlurBehavior="restore"
+      android_keyboardInputMode="adjustResize"
+      backdropComponent={SheetBackdrop}
+      containerComponent={SheetContainer}
+      backgroundStyle={[styles.background, { backgroundColor: colors.background, borderColor: colors.border }]}
+      handleIndicatorStyle={[styles.indicator, { backgroundColor: colors.borderStrong }]}
+      accessibilityViewIsModal
+    >
+      <BottomSheetContext value={{ open, close }}>
+        {size === 'tall' ? (
+          <View style={styles.fill}>{children}</View>
+        ) : (
+          <BottomSheetView style={{ paddingBottom: insets.bottom }}>{children}</BottomSheetView>
+        )}
+      </BottomSheetContext>
+    </BottomSheetModal>
   );
-}
-
-function Scrim({
-  translateY,
-  distance,
-  onPress
-}: {
-  translateY: SharedValue<number>;
-  distance: number;
-  onPress: () => void;
-}) {
-  const { colors } = useTheme();
-  const t = useTranslations(commonCatalog);
-  const animatedStyle = useAnimatedStyle(() => ({ opacity: interpolate(translateY.get(), [0, distance], [1, 0]) }));
-
-  return (
-    <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim }, animatedStyle]}>
-      <Pressable accessibilityLabel={t('dismiss')} onPress={onPress} style={StyleSheet.absoluteFill} />
-    </Animated.View>
-  );
-}
-
-function SheetSurface({ translateY, children }: { translateY: SharedValue<number>; children: ReactNode }) {
-  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ translateY: translateY.get() }] }));
-
-  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 }
 
 export function BottomSheetHeader({ children }: { children: ReactNode }) {
-  const { colors } = useTheme();
-  const drag = use(BottomSheetDragContext);
-
-  const header = (
+  return (
     <View style={styles.header}>
-      <View style={[styles.grabber, { backgroundColor: colors.borderStrong }]} />
       <View style={styles.headerRow}>{children}</View>
     </View>
   );
-
-  return drag ? <GestureDetector gesture={drag}>{header}</GestureDetector> : header;
 }
 
 export function BottomSheetHeading({ children }: { children: ReactNode }) {
@@ -231,11 +149,14 @@ export function BottomSheetClose() {
   );
 }
 
-export function BottomSheetScrollView({ contentContainerStyle, ...props }: ScrollViewProps) {
+type BottomSheetScrollViewProps = ComponentProps<typeof GorhomScrollView>;
+
+/** Scrolls inside a sheet and hands the drag to the sheet at the top edge. */
+export function BottomSheetScrollView({ contentContainerStyle, ...props }: BottomSheetScrollViewProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView
+    <GorhomScrollView
       keyboardShouldPersistTaps="handled"
       {...props}
       contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + SPACING.lg }, contentContainerStyle]}
@@ -253,18 +174,15 @@ export function useBottomSheetClose() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
-  anchor: { flex: 1, justifyContent: 'flex-end' },
-  sheet: {
+  background: {
     borderWidth: StyleSheet.hairlineWidth * 2,
     borderBottomWidth: 0,
     borderTopLeftRadius: RADII.sheet,
     borderTopRightRadius: RADII.sheet,
-    borderCurve: 'continuous',
-    overflow: 'hidden'
+    borderCurve: 'continuous'
   },
-  header: { paddingTop: SPACING.xs, paddingBottom: SPACING.sm, paddingHorizontal: GUTTER },
-  grabber: { alignSelf: 'center', width: 36, height: 5, borderRadius: RADII.pill, marginBottom: SPACING.sm },
+  indicator: { width: 36, height: 5, borderRadius: RADII.pill },
+  header: { paddingTop: SPACING.xxs, paddingBottom: SPACING.sm, paddingHorizontal: GUTTER },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   heading: { flex: 1, gap: 1 },
   close: { width: 30, height: 30, borderRadius: RADII.pill, alignItems: 'center', justifyContent: 'center' },

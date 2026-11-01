@@ -1,3 +1,4 @@
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import {
   Geist_400Regular,
   Geist_500Medium,
@@ -72,7 +73,9 @@ function BrandedApp({ fontsLoaded }: { fontsLoaded: boolean }) {
 
   return (
     <ThemeProvider brand={brand}>
-      <RootNavigator ready={ready} />
+      <BottomSheetModalProvider>
+        <RootNavigator ready={ready} />
+      </BottomSheetModalProvider>
       <Toaster />
       <AnimatedSplash ready={ready} />
     </ThemeProvider>

@@ -83,5 +83,12 @@ export const fr: TranslatedMessages<typeof en> = {
   discardQuestionTitle: 'Abandonner cette question ?',
   discardQuestionDescription: 'Ce que vous avez saisi ne sera pas enregistré.',
   keepEditing: 'Continuer la saisie',
-  discardQuestion: 'Abandonner'
+  discardQuestion: 'Abandonner',
+  upvote: 'Voter pour',
+  upvoted: 'Vote enregistré',
+  copyLink: 'Copier le lien',
+  linkCopied: 'Lien copié',
+  searchPlaceholder: 'Rechercher des questions',
+  searchEmptyTitle: 'Aucune question correspondante',
+  searchEmptyDescription: 'Aucun titre de question, auteur ou cours ne contient « {query} ».'
 };

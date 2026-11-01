@@ -79,5 +79,12 @@ export const hi: TranslatedMessages<typeof en> = {
   discardQuestionTitle: 'यह प्रश्न छोड़ दें?',
   discardQuestionDescription: 'आपने जो लिखा है वह सेव नहीं होगा।',
   keepEditing: 'संपादन जारी रखें',
-  discardQuestion: 'छोड़ दें'
+  discardQuestion: 'छोड़ दें',
+  upvote: 'अपवोट करें',
+  upvoted: 'अपवोट किया',
+  copyLink: 'लिंक कॉपी करें',
+  linkCopied: 'लिंक कॉपी हो गया',
+  searchPlaceholder: 'सवाल खोजें',
+  searchEmptyTitle: 'कोई मिलता-जुलता सवाल नहीं',
+  searchEmptyDescription: 'किसी सवाल के शीर्षक, लेखक या कोर्स में “{query}” नहीं है।'
 };

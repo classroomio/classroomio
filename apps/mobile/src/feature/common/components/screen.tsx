@@ -1,5 +1,12 @@
-import type { ReactNode } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
+import type { ReactNode, Ref } from 'react';
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+  type ScrollViewInstance,
+  type ScrollViewProps
+} from 'react-native';
 
 import { GUTTER, SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
@@ -7,6 +14,7 @@ import { useTheme } from '@/feature/common/helpers/use-theme';
 import { Text } from './text';
 
 type ScreenScrollViewProps = ScrollViewProps & {
+  ref?: Ref<ScrollViewInstance>;
   refreshing?: boolean;
   onRefresh?: () => void;
 };

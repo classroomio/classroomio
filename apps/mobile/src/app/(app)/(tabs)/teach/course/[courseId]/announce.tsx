@@ -16,6 +16,7 @@ import { showToast } from '@/feature/toast/helpers/toast-store';
 import { useCreateAnnouncementMutation } from '@/feature/teach/api/course-newsfeed';
 import { useTeachingCoursesQuery } from '@/feature/teach/api/teaching-courses';
 import { HeaderTextButton } from '@/feature/teach/components/header-text-button';
+import { revealAnnouncement } from '@/feature/teach/helpers/announcement-reveal';
 import { plainTextToEditorHtml } from '@/feature/common/helpers/editor-html';
 import { teachCatalog } from '@/feature/teach/translations/catalog';
 
@@ -35,7 +36,8 @@ export default function AnnounceScreen() {
     createAnnouncement.mutate(
       { content: plainTextToEditorHtml(message), isPinned: pinned },
       {
-        onSuccess: () => {
+        onSuccess: (created) => {
+          revealAnnouncement(courseId, created.id);
           showToast({ tone: 'success', title: t('announcementPosted'), description: course?.title });
           router.back();
         },

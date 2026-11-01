@@ -74,5 +74,6 @@ export const es: TranslatedMessages<typeof en> = {
   timeZone: 'Zona horaria',
   quietStart: 'Inicio de las horas de silencio',
   quietEnd: 'Fin de las horas de silencio',
-  footnote: 'Los avisos de formación vencida siguen activos en push y en la app porque la formación es obligatoria.'
+  footnote: 'Los avisos de formación vencida siguen activos en push y en la app porque la formación es obligatoria.',
+  markRead: 'Marcar como leída'
 };

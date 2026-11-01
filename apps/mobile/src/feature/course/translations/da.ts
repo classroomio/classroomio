@@ -86,5 +86,30 @@ export const da: TranslatedMessages<typeof en> = {
   noLessonsTitle: 'Ingen lektioner endnu',
   noLessonsDescription: 'Din underviser har ikke udgivet nogen lektioner i dette kursus.',
   sectionMore: 'Mere',
-  sectionContent: 'Indhold'
+  sectionContent: 'Indhold',
+  greetingMorning: 'God morgen, {name}',
+  greetingAfternoon: 'God eftermiddag, {name}',
+  greetingEvening: 'God aften, {name}',
+  greetingMorningNoName: 'God morgen',
+  greetingAfternoonNoName: 'God eftermiddag',
+  greetingEveningNoName: 'God aften',
+  homeStatusOverdue: {
+    one: '{count} obligatorisk kursus har overskredet fristen.',
+    other: '{count} obligatoriske kurser har overskredet fristen.'
+  },
+  homeStatusDue: '{title} har frist {relative}.',
+  homeStatusInProgress: { one: 'Du har {count} kursus i gang.', other: 'Du har {count} kurser i gang.' },
+  homeStatusNotStarted: {
+    one: 'Du har {count} kursus, du ikke har startet.',
+    other: 'Du har {count} kurser, du ikke har startet.'
+  },
+  homeStatusAllDone: 'Du har gennemført alle kurser, der er tildelt dig.',
+  seeAll: 'Se alle',
+  searchCourses: 'Søg i kurser',
+  searchNoResultsTitle: 'Ingen matchende kurser',
+  searchNoResultsDescription: 'Ingen kursustitel indeholder “{query}”.',
+  menuDownload: 'Download',
+  menuManageDownload: 'Administrer download',
+  menuCopyLink: 'Kopiér link',
+  linkCopied: 'Link kopieret'
 };

@@ -212,5 +212,6 @@ export const tr: TranslatedMessages<typeof en> = {
   deletePostTitle: 'Bu gönderi silinsin mi?',
   deletePostDescription: {
     other: 'Gönderi ve {count} yorumu kurs haber akışından herkes için kaldırılır. Bu işlem geri alınamaz.'
-  }
+  },
+  gradeAction: 'Notlandır'
 };

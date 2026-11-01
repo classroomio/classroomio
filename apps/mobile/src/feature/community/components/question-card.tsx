@@ -1,5 +1,6 @@
+import { Link } from 'expo-router';
 import { ArrowBigUp, MessageSquare } from 'lucide-react-native';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type PressableProps } from 'react-native';
 
 import {
   Post,
@@ -14,14 +15,76 @@ import {
 } from '@/feature/common/components/post';
 import { Text } from '@/feature/common/components/text';
 import { timeAgo } from '@/feature/common/helpers/time-ago';
+import { commonCatalog } from '@/feature/common/translations/catalog';
 import { communityCatalog } from '@/feature/community/translations/catalog';
 import type { CommunityQuestionSummary } from '@/feature/community/types/community';
 import { useLocale } from '@/feature/i18n/helpers/use-locale';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
+import { useQuestionActions } from './question-actions';
+
 type QuestionCardProps = { question: CommunityQuestionSummary; onPress: (question: CommunityQuestionSummary) => void };
 
 export function QuestionCard({ question, onPress }: QuestionCardProps) {
+  const t = useTranslations(communityCatalog);
+  const tc = useTranslations(commonCatalog);
+  const actions = useQuestionActions();
+  if (!actions || !question.slug) return <QuestionCardContent question={question} onPress={() => onPress(question)} />;
+
+  const voted = actions.isVoted(question);
+  const manage = actions.canManage(question);
+  const link = actions.linkOf(question);
+
+  return (
+    <Link href={{ pathname: '/community/[slug]', params: { slug: question.slug } }} asChild>
+      <Link.Trigger>
+        <QuestionCardContent question={question} />
+      </Link.Trigger>
+      <Link.Preview />
+      <Link.Menu>
+        <Link.MenuAction icon="arrow.up.forward" onPress={() => actions.open(question)}>
+          {tc('open')}
+        </Link.MenuAction>
+        <Link.MenuAction
+          icon={voted ? 'arrowshape.up.fill' : 'arrowshape.up'}
+          isOn={voted}
+          disabled={!actions.canUpvote(question)}
+          onPress={() => actions.upvote(question)}
+        >
+          {voted ? t('upvoted') : t('upvote')}
+        </Link.MenuAction>
+        <Link.MenuAction icon="link" hidden={!link} onPress={() => actions.copyLink(question)}>
+          {t('copyLink')}
+        </Link.MenuAction>
+        <Link.MenuAction
+          icon="pencil"
+          hidden={!manage}
+          disabled={actions.offline}
+          onPress={() => actions.edit(question)}
+        >
+          {t('editQuestion')}
+        </Link.MenuAction>
+        <Link.MenuAction
+          icon="trash"
+          destructive
+          hidden={!manage}
+          disabled={actions.offline}
+          onPress={() => actions.remove(question)}
+        >
+          {t('deleteQuestion')}
+        </Link.MenuAction>
+      </Link.Menu>
+    </Link>
+  );
+}
+
+type QuestionCardContentProps = {
+  question: CommunityQuestionSummary;
+  /** Supplied by `Link.Trigger` when the card is a link. */
+  onPress?: PressableProps['onPress'];
+};
+
+function QuestionCardContent({ question, onPress }: QuestionCardContentProps) {
   const t = useTranslations(communityCatalog);
   const locale = useLocale();
   const author = question.authorFullname || t('formerMember');
@@ -33,7 +96,7 @@ export function QuestionCard({ question, onPress }: QuestionCardProps) {
     : t('questionCardLabelNoCourse', { title: question.title, author, ...counts });
 
   return (
-    <Post onPress={() => onPress(question)} accessibilityLabel={label}>
+    <Post onPress={onPress} accessibilityLabel={label}>
       <PostHeader>
         <PostAvatar name={author} />
         <PostAuthor>

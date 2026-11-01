@@ -2,7 +2,7 @@ import { FlashList } from '@shopify/flash-list';
 import type { ReactElement } from 'react';
 import { Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 
-import { Skeleton } from '@/feature/common/components/skeleton';
+import { SkeletonList, SkeletonText } from '@/feature/common/components/skeleton';
 import { Spinner } from '@/feature/common/components/spinner';
 import { Text } from '@/feature/common/components/text';
 import { GUTTER, HIT_SLOP, RADII, SPACING } from '@/feature/common/constants/layout';
@@ -25,6 +25,7 @@ type NotificationListProps = {
   onRefresh: () => void;
   onEndReached: () => void;
   onOpen: (item: NotificationItem) => void;
+  onMarkRead?: (item: NotificationItem) => void;
   onMarkAllRead: () => void;
 };
 
@@ -39,6 +40,7 @@ export function NotificationList({
   onRefresh,
   onEndReached,
   onOpen,
+  onMarkRead,
   onMarkAllRead
 }: NotificationListProps) {
   const t = useTranslations(notificationsCatalog);
@@ -57,7 +59,7 @@ export function NotificationList({
             first={entry.first}
           />
         ) : (
-          <NotificationRow item={entry.item} position={entry.position} onPress={onOpen} />
+          <NotificationRow item={entry.item} position={entry.position} onPress={onOpen} onMarkRead={onMarkRead} />
         )
       }
       ListHeaderComponent={header}
@@ -111,9 +113,11 @@ function MarkAllReadButton({ onPress }: { onPress: () => void }) {
 
 function NotificationListSkeleton() {
   return (
-    <View style={styles.skeleton}>
-      <Skeleton width={72} height={18} radius={RADII.xs} />
-      <Skeleton height={248} radius={RADII.xl} />
+    <View>
+      <View style={styles.sectionHeader}>
+        <SkeletonText variant="subheading" lines={1} width={72} />
+      </View>
+      <SkeletonList count={5} media="thumbnail" />
     </View>
   );
 }
@@ -137,6 +141,5 @@ const styles = StyleSheet.create({
   },
   sectionGap: { marginTop: SPACING.xl },
   pressed: { opacity: 0.5 },
-  skeleton: { gap: SPACING.sm },
   footer: { paddingVertical: SPACING.lg, alignItems: 'center' }
 });

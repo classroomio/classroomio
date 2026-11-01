@@ -1,6 +1,16 @@
-import { createContext, use, useEffect, type ReactNode } from 'react';
+import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 import { Keyboard, Modal, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
-import Animated, { Keyframe } from 'react-native-reanimated';
+import Animated, {
+  interpolate,
+  makeMutable,
+  ReduceMotion,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withTiming,
+  type SharedValue
+} from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
 import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { EASE_OUT } from '@/feature/common/constants/motion';
@@ -11,12 +21,22 @@ import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { Button, ButtonSpinner, ButtonText, type ButtonVariant } from './button';
 import { Text } from './text';
 
-const contentEntering = new Keyframe({
-  0: { opacity: 0, transform: [{ scale: 0.96 }] },
-  100: { opacity: 1, transform: [{ scale: 1 }], easing: EASE_OUT }
-}).duration(200);
+const ENTER_DURATION = 200;
+const EXIT_DURATION = 150;
 
-const AlertDialogContext = createContext<{ close: () => void; busy: boolean }>({ close: () => {}, busy: false });
+type AlertDialogContextValue = {
+  close: () => void;
+  busy: boolean;
+  progress: SharedValue<number>;
+  reducedMotion: boolean;
+};
+
+const AlertDialogContext = createContext<AlertDialogContextValue>({
+  close: () => {},
+  busy: false,
+  progress: makeMutable(1),
+  reducedMotion: false
+});
 
 type AlertDialogProps = {
   open: boolean;
@@ -29,27 +49,46 @@ type AlertDialogProps = {
 export function AlertDialog({ open, onOpenChange, busy = false, children }: AlertDialogProps) {
   const { colors } = useTheme();
   const t = useTranslations(commonCatalog);
+  const reducedMotion = useReducedMotion();
+  const progress = useSharedValue(0);
+  const [mounted, setMounted] = useState(open);
+  if (open && !mounted) setMounted(true);
+
   const close = () => onOpenChange(false);
 
   useEffect(() => {
-    if (open) Keyboard.dismiss();
-  }, [open]);
+    if (open) {
+      Keyboard.dismiss();
+      progress.set(withTiming(1, { duration: ENTER_DURATION, easing: EASE_OUT, reduceMotion: ReduceMotion.Never }));
+      return;
+    }
+
+    progress.set(
+      withTiming(0, { duration: EXIT_DURATION, easing: EASE_OUT, reduceMotion: ReduceMotion.Never }, (finished) => {
+        if (finished) scheduleOnRN(setMounted, false);
+      })
+    );
+  }, [open, progress]);
+
+  const scrimStyle = useAnimatedStyle(() => ({ opacity: progress.get() }));
 
   return (
     <Modal
-      visible={open}
+      visible={mounted}
       transparent
-      animationType="fade"
+      animationType="none"
       statusBarTranslucent
       onRequestClose={busy ? undefined : close}
     >
-      <AlertDialogContext value={{ close, busy }}>
-        <Pressable
-          accessibilityLabel={t('dismiss')}
-          onPress={busy ? undefined : close}
-          style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim }]}
-        />
-        <View pointerEvents="box-none" style={styles.center}>
+      <AlertDialogContext value={{ close, busy, progress, reducedMotion }}>
+        <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim }, scrimStyle]}>
+          <Pressable
+            accessibilityLabel={t('dismiss')}
+            onPress={busy ? undefined : close}
+            style={StyleSheet.absoluteFill}
+          />
+        </Animated.View>
+        <View pointerEvents={open ? 'box-none' : 'none'} style={styles.center}>
           {children}
         </View>
       </AlertDialogContext>
@@ -60,15 +99,20 @@ export function AlertDialog({ open, onOpenChange, busy = false, children }: Aler
 export function AlertDialogContent({ children }: { children: ReactNode }) {
   const { colors, elevation } = useTheme();
   const { width } = useWindowDimensions();
+  const { progress, reducedMotion } = use(AlertDialogContext);
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: progress.get(),
+    transform: [{ scale: reducedMotion ? 1 : interpolate(progress.get(), [0, 1], [0.96, 1]) }]
+  }));
 
   return (
     <Animated.View
-      entering={contentEntering}
       accessibilityViewIsModal
       style={[
         styles.content,
         elevation.floating,
-        { width: Math.min(360, width - SPACING.xl * 2), backgroundColor: colors.surface, borderColor: colors.border }
+        { width: Math.min(360, width - SPACING.xl * 2), backgroundColor: colors.surface, borderColor: colors.border },
+        animatedStyle
       ]}
     >
       {children}

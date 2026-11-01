@@ -171,7 +171,7 @@ export function useVotedPosts() {
 export const questionVoteKey = (questionId: number) => `question:${questionId}`;
 export const answerVoteKey = (answerId: string) => `answer:${answerId}`;
 
-type UpvoteInput = { kind: 'question'; id: number } | { kind: 'answer'; id: string };
+type UpvoteInput = { slug: string } & ({ kind: 'question'; id: number } | { kind: 'answer'; id: string });
 
 function voteKeyOf(input: UpvoteInput) {
   return input.kind === 'question' ? questionVoteKey(input.id) : answerVoteKey(input.id);
@@ -192,11 +192,10 @@ function withVotes(
   };
 }
 
-export function useUpvoteMutation(slug: string) {
+export function useUpvoteMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
   const keys = useCommunityKeys();
-  const detailKey = keys.detail(slug);
 
   return useMutation({
     mutationFn: async (input: UpvoteInput) => {
@@ -210,6 +209,8 @@ export function useUpvoteMutation(slug: string) {
       return response.data?.votes ?? null;
     },
     onMutate: async (input) => {
+      const { slug } = input;
+      const detailKey = keys.detail(slug);
       await queryClient.cancelQueries({ queryKey: detailKey });
       const previousQuestion = queryClient.getQueryData<CommunityQuestion>(detailKey);
       const previousList = queryClient.getQueryData<CommunityQuestionSummary[]>(keys.list);
@@ -228,13 +229,14 @@ export function useUpvoteMutation(slug: string) {
     },
     onError: (_error, input, context) => {
       queryClient.setQueryData<string[]>(keys.votes, (current) => current?.filter((key) => key !== voteKeyOf(input)));
-      queryClient.setQueryData(detailKey, context?.previousQuestion);
+      queryClient.setQueryData(keys.detail(input.slug), context?.previousQuestion);
       queryClient.setQueryData(keys.list, context?.previousList);
     },
     onSuccess: (votes, input) => {
       if (votes === null) return;
 
-      queryClient.setQueryData<CommunityQuestion>(detailKey, (current) =>
+      const { slug } = input;
+      queryClient.setQueryData<CommunityQuestion>(keys.detail(slug), (current) =>
         current ? withVotes(current, input, () => votes) : current
       );
       if (input.kind === 'question') {

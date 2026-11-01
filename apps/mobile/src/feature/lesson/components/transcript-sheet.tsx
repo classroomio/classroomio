@@ -1,3 +1,4 @@
+import { useBottomSheetScrollableCreator } from '@gorhom/bottom-sheet';
 import { FlashList } from '@shopify/flash-list';
 import { useEvent } from 'expo';
 import type { VideoPlayer } from 'expo-video';
@@ -80,9 +81,11 @@ type TranscriptLinesProps = { segments: TranscriptSegment[]; activeIndex: number
 
 function TranscriptLines({ segments, activeIndex, onSeek }: TranscriptLinesProps) {
   const insets = useSafeAreaInsets();
+  const sheetScroll = useBottomSheetScrollableCreator();
 
   return (
     <FlashList
+      renderScrollComponent={sheetScroll}
       data={segments}
       extraData={activeIndex}
       keyExtractor={(segment, index) => `${segment.start}-${index}`}

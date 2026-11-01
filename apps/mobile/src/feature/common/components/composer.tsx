@@ -128,7 +128,13 @@ export function ComposerReplyTarget({ name, onCancel }: { name: string; onCancel
         <Text variant="captionStrong">{name}</Text>
         {after}
       </Text>
-      <Pressable accessibilityRole="button" accessibilityLabel={t('cancelReply')} hitSlop={HIT_SLOP} onPress={onCancel}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('cancelReply')}
+        hitSlop={HIT_SLOP}
+        onPress={onCancel}
+        style={({ pressed }) => pressed && styles.pressed}
+      >
         <Icon icon={X} size={16} tone="muted" />
       </Pressable>
     </View>
@@ -195,7 +201,7 @@ export function ComposerAttach({ onPress, disabled = false }: { onPress: () => v
         tapHaptic();
         onPress();
       }}
-      style={[styles.iconButton, blocked && styles.disabled]}
+      style={({ pressed }) => [styles.iconButton, pressed && styles.pressed, blocked && styles.disabled]}
     >
       <Icon icon={ImagePlus} size={21} tone="muted" />
     </Pressable>
@@ -215,7 +221,11 @@ export function ComposerSend({ accessibilityLabel }: { accessibilityLabel?: stri
       disabled={!canSubmit}
       hitSlop={HIT_SLOP}
       onPress={submit}
-      style={[styles.send, { backgroundColor: canSubmit || submitting ? colors.primary : colors.sandStrong }]}
+      style={({ pressed }) => [
+        styles.send,
+        { backgroundColor: canSubmit || submitting ? colors.primary : colors.sandStrong },
+        pressed && styles.pressed
+      ]}
     >
       {submitting ? (
         <Spinner tone="onPrimary" />
@@ -254,7 +264,10 @@ export function ComposerAttachments({
               accessibilityLabel={t('removeImage')}
               hitSlop={HIT_SLOP}
               onPress={() => onRemove(item.key)}
-              style={[styles.remove, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              style={({ pressed }) => [
+                styles.remove,
+                { backgroundColor: pressed ? colors.sand : colors.surface, borderColor: colors.border }
+              ]}
             >
               <Icon icon={X} size={12} tone="ink" strokeWidth={2.4} />
             </Pressable>
@@ -304,6 +317,7 @@ const styles = StyleSheet.create({
   },
   iconButton: { width: 36, height: 40, alignItems: 'center', justifyContent: 'center' },
   send: { width: 36, height: 36, marginBottom: 2, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  pressed: { opacity: 0.6 },
   disabled: { opacity: 0.45 },
   attachments: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs, paddingHorizontal: SPACING.xxs },
   thumb: {

@@ -227,5 +227,6 @@ export const it: TranslatedMessages<typeof en> = {
     one: 'Il post e il suo {count} commento vengono rimossi dalla bacheca del corso per tutti. L’azione non può essere annullata.',
     other:
       'Il post e i suoi {count} commenti vengono rimossi dalla bacheca del corso per tutti. L’azione non può essere annullata.'
-  }
+  },
+  gradeAction: 'Valuta'
 };

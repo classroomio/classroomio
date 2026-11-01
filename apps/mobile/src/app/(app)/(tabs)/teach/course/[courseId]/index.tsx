@@ -8,9 +8,11 @@ import {
   RefreshCw,
   Users
 } from 'lucide-react-native';
-import { StyleSheet, View } from 'react-native';
+import { useRef } from 'react';
+import { StyleSheet, View, type ScrollViewInstance } from 'react-native';
 
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@/feature/common/components/button';
+import { FlashHighlight } from '@/feature/common/components/flash-highlight';
 import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
 import { ItemGroup } from '@/feature/common/components/item';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
@@ -28,6 +30,7 @@ import { useCourseAnalyticsQuery } from '@/feature/teach/api/teach-course';
 import { useTeachingCoursesQuery } from '@/feature/teach/api/teaching-courses';
 import { CourseFeedPost } from '@/feature/teach/components/course-feed-post';
 import { LearnerProgressRow } from '@/feature/teach/components/learner-progress-row';
+import { useRevealAnnouncement } from '@/feature/teach/helpers/announcement-reveal';
 import { Stat, StatGrid } from '@/feature/teach/components/stat-grid';
 import { teachCatalog } from '@/feature/teach/translations/catalog';
 import type { NewsfeedPost } from '@/feature/teach/types/teach';
@@ -45,6 +48,12 @@ export default function TeachCourseScreen() {
   const newsfeed = useCourseNewsfeedQuery(courseId);
   const course = courses.data?.find((candidate) => candidate.id === courseId);
   const posts = newsfeed.data?.pages.flatMap((page) => page.items) ?? [];
+  const scrollRef = useRef<ScrollViewInstance>(null);
+  const announcement = useRevealAnnouncement(
+    courseId,
+    posts.map((post) => post.id),
+    scrollRef
+  );
   const learners = [...(analytics.data?.students ?? [])]
     .sort((first, second) => first.progressPercentage - second.progressPercentage)
     .slice(0, LEARNER_PREVIEW);
@@ -71,7 +80,7 @@ export default function TeachCourseScreen() {
   }
 
   return (
-    <ScreenScrollView refreshing={courses.isRefetching || newsfeed.isRefetching} onRefresh={refresh}>
+    <ScreenScrollView ref={scrollRef} refreshing={courses.isRefetching || newsfeed.isRefetching} onRefresh={refresh}>
       <View style={styles.heading}>
         <Text variant="title" accessibilityRole="header">
           {course?.title ?? title}
@@ -194,7 +203,11 @@ export default function TeachCourseScreen() {
           </Empty>
         )}
         {posts.map((post) => (
-          <CourseFeedPost key={post.id} courseId={courseId} post={post} onOpenComments={openComments} />
+          <View key={post.id} ref={announcement.postRef(post.id)}>
+            <FlashHighlight active={announcement.highlightedId === post.id}>
+              <CourseFeedPost courseId={courseId} post={post} onOpenComments={openComments} />
+            </FlashHighlight>
+          </View>
         ))}
         {newsfeed.hasNextPage && (
           <Button variant="ghost" disabled={newsfeed.isFetchingNextPage} onPress={() => newsfeed.fetchNextPage()}>
