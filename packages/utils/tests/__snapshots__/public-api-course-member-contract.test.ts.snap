@@ -73,12 +73,19 @@ exports[`public API course member request contract > ZPublicApiCourseMemberAnaly
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "includeProgressImpact": {
-      "default": "false",
-      "enum": [
-        "true",
-        "false",
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "enum": [
+            "true",
+            "false",
+          ],
+          "type": "string",
+        },
       ],
-      "type": "string",
+      "default": false,
     },
   },
   "type": "object",
@@ -89,12 +96,56 @@ exports[`public API course member request contract > ZPublicApiCourseMembersQuer
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
+    "certificateEarned": {
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "enum": [
+            "true",
+            "false",
+          ],
+          "type": "string",
+        },
+      ],
+      "description": "true = has earned the course certificate, false = has not.",
+    },
+    "enrolledWithin": {
+      "description": "Added to the course within the last N days.",
+      "enum": [
+        "7d",
+        "30d",
+        "90d",
+        "180d",
+      ],
+      "type": "string",
+    },
+    "lastLoginBefore": {
+      "description": "Not logged in for N days or more (including never); never = no login recorded.",
+      "enum": [
+        "7d",
+        "30d",
+        "90d",
+        "180d",
+        "never",
+      ],
+      "type": "string",
+    },
     "limit": {
       "default": 20,
       "description": "Items per page, 1-100. Default: 20.",
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
+    },
+    "membership": {
+      "description": "invited = the invite has not been accepted yet.",
+      "enum": [
+        "joined",
+        "invited",
+      ],
+      "type": "string",
     },
     "page": {
       "default": 1,
@@ -103,13 +154,46 @@ exports[`public API course member request contract > ZPublicApiCourseMembersQuer
       "minimum": 1,
       "type": "integer",
     },
+    "progress": {
+      "description": "Joined students only; tutors, admins and pending invites never match.",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed",
+      ],
+      "type": "string",
+    },
     "roleId": {
-      "maximum": 9007199254740991,
+      "description": "1 = admin, 2 = tutor, 3 = student",
+      "maximum": 3,
       "minimum": 1,
       "type": "integer",
     },
     "search": {
+      "description": "Matches name or email.",
       "maxLength": 200,
+      "type": "string",
+    },
+    "sortBy": {
+      "default": "role",
+      "description": "Default: role.",
+      "enum": [
+        "name",
+        "role",
+        "progress",
+        "lastLogin",
+        "enrolledAt",
+        "certificate",
+      ],
+      "type": "string",
+    },
+    "sortOrder": {
+      "default": "asc",
+      "description": "Default: asc.",
+      "enum": [
+        "asc",
+        "desc",
+      ],
       "type": "string",
     },
   },

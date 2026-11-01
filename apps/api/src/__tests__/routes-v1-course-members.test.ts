@@ -83,6 +83,50 @@ describe('v1CoursesRouter nested course-member/course-invite mounts', () => {
     });
   });
 
+  it('defaults the member list to role order and passes the dashboard filters through', async () => {
+    vi.mocked(listCourseMembersService).mockResolvedValue(
+      emptyPage as Awaited<ReturnType<typeof listCourseMembersService>>
+    );
+
+    await app.request(`/${COURSE_ID}/members`);
+    expect(vi.mocked(listCourseMembersService).mock.calls[0]![3]).toEqual({
+      page: 1,
+      limit: 20,
+      sortBy: 'role',
+      sortOrder: 'asc'
+    });
+
+    await app.request(
+      `/${COURSE_ID}/members?progress=not_started&membership=joined&enrolledWithin=30d&lastLoginBefore=90d&certificateEarned=false&roleId=3&sortBy=lastLogin&sortOrder=desc`
+    );
+    expect(vi.mocked(listCourseMembersService).mock.calls[1]![3]).toEqual({
+      page: 1,
+      limit: 20,
+      roleId: 3,
+      progress: 'not_started',
+      membership: 'joined',
+      enrolledWithin: '30d',
+      lastLoginBefore: '90d',
+      certificateEarned: false,
+      sortBy: 'lastLogin',
+      sortOrder: 'desc'
+    });
+  });
+
+  it.each([
+    ['roleId=9'],
+    ['sortBy=email'],
+    ['progress=done'],
+    ['enrolledWithin=never'],
+    ['certificateEarned=yes'],
+    [`search=${'a'.repeat(201)}`]
+  ])('rejects an out-of-range member list param: %s', async (query) => {
+    const response = await app.request(`/${COURSE_ID}/members?${query}`);
+
+    expect(response.status).toBe(400);
+    expect(listCourseMembersService).not.toHaveBeenCalled();
+  });
+
   it('lists invites with the actor', async () => {
     vi.mocked(listCourseInvitesService).mockResolvedValue(
       emptyPage as Awaited<ReturnType<typeof listCourseInvitesService>>

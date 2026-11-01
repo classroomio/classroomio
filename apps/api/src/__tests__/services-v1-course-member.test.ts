@@ -31,6 +31,7 @@ vi.mock('@cio/core/services/course/course', () => ({
 
 import { AppError } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
+import { ZPublicApiCourseMembersQuery } from '@cio/utils/validation/public-api';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseMember } from '@cio/db/queries/course/people';
@@ -63,7 +64,7 @@ const ACTOR_ID = 'actor-1';
 
 const courseParams = { courseId: COURSE_ID };
 const memberParams = { courseId: COURSE_ID, memberId: MEMBER_ID };
-const firstPage = { page: 1, limit: 20 };
+const firstPage = ZPublicApiCourseMembersQuery.parse({});
 
 describe('services/v1/courses/members', () => {
   beforeEach(() => {

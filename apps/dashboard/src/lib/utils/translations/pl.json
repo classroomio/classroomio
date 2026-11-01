@@ -3220,7 +3220,9 @@
       "date_created": "Data utworzenia",
       "last_updated_at": "Ostatnia aktualizacja",
       "published": "Opublikowano",
-      "lessons": "Lekcje"
+      "lessons": "Lekcje",
+      "name": "Nazwa",
+      "price": "Cena"
     },
     "tag_filters": {
       "filter": "Filtruj",

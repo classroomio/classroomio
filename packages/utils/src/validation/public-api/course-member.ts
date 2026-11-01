@@ -1,5 +1,13 @@
 import * as z from 'zod';
 
+import {
+  CoursePeopleActivityWindow,
+  CoursePeopleEnrolledWindow,
+  CoursePeopleMembership,
+  CoursePeopleProgress,
+  CoursePeopleSortBy,
+  CoursePeopleSortOrder
+} from '../course/people';
 import { ROLE } from '../../constants/roles';
 import { ZPublicApiCourseParam } from './course';
 import { ZPublicApiPaginationQuery } from './pagination';
@@ -14,8 +22,29 @@ export const ZPublicApiCourseMemberParam = ZPublicApiCourseParam.extend({
 export type TPublicApiCourseMemberParam = z.infer<typeof ZPublicApiCourseMemberParam>;
 
 export const ZPublicApiCourseMembersQuery = ZPublicApiPaginationQuery.extend({
-  search: z.string().trim().max(200).optional(),
-  roleId: z.coerce.number().int().min(1).optional()
+  search: z.string().trim().max(200).optional().describe('Matches name or email.'),
+  roleId: z.coerce
+    .number()
+    .int()
+    .min(ROLE.ADMIN)
+    .max(ROLE.STUDENT)
+    .optional()
+    .describe('1 = admin, 2 = tutor, 3 = student'),
+  sortBy: CoursePeopleSortBy.default('role').describe('Default: role.'),
+  sortOrder: CoursePeopleSortOrder.default('asc').describe('Default: asc.'),
+  progress: CoursePeopleProgress.optional().describe(
+    'Joined students only; tutors, admins and pending invites never match.'
+  ),
+  membership: CoursePeopleMembership.optional().describe('invited = the invite has not been accepted yet.'),
+  enrolledWithin: CoursePeopleEnrolledWindow.optional().describe('Added to the course within the last N days.'),
+  lastLoginBefore: CoursePeopleActivityWindow.optional().describe(
+    'Not logged in for N days or more (including never); never = no login recorded.'
+  ),
+  certificateEarned: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .describe('true = has earned the course certificate, false = has not.')
+    .transform((value) => (value == null ? undefined : value === true || value === 'true'))
 });
 export type TPublicApiCourseMembersQuery = z.infer<typeof ZPublicApiCourseMembersQuery>;
 
@@ -47,9 +76,8 @@ export type TPublicApiUpdateCourseMember = z.infer<typeof ZPublicApiUpdateCourse
 
 export const ZPublicApiCourseMemberAnalyticsQuery = z.object({
   includeProgressImpact: z
-    .enum(['true', 'false'])
-    .optional()
-    .default('false')
-    .transform((value) => value === 'true')
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .default(false)
+    .transform((value) => value === true || value === 'true')
 });
 export type TPublicApiCourseMemberAnalyticsQuery = z.infer<typeof ZPublicApiCourseMemberAnalyticsQuery>;

@@ -2,9 +2,20 @@ import * as z from 'zod';
 
 import { ZCourseCreateBase, ZCourseUpdateBase } from '../course/course';
 import { ZCourseImportDraftPayload } from '../course-import/course-import';
-import { ZGetOrganizationCoursesQuery } from '../organization';
+import { ZCourseType } from '../course/course-type';
+import { ZOrganizationCourseSort } from '../organization';
+import { ZPublicApiPaginationQuery } from './pagination';
 
-export const ZPublicApiCoursesQuery = ZGetOrganizationCoursesQuery;
+export const ZPublicApiCoursesQuery = ZPublicApiPaginationQuery.extend({
+  search: z.string().trim().max(200).optional().describe('Matches the course title.'),
+  tags: z.string().max(2000).optional().describe('Comma-separated tag slugs; returns courses with any of them.'),
+  type: ZCourseType.optional(),
+  status: z.enum(['published', 'unpublished']).optional(),
+  sort: ZOrganizationCourseSort.optional().describe(
+    'price sorts on the stored cost, with free courses as 0. Default: date_created.'
+  ),
+  order: z.enum(['asc', 'desc']).optional().describe('Default: desc.')
+});
 export type TPublicApiCoursesQuery = z.infer<typeof ZPublicApiCoursesQuery>;
 
 export const ZPublicApiCourseParam = z.object({

@@ -4,7 +4,8 @@ import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from 
 import type {
   TCourseReorder,
   TGetAudienceQuery,
-  TGetOrganizationCoursesQuery
+  TGetOrganizationCoursesQuery,
+  TOrganizationCourseSort
 } from '@cio/utils/validation/organization';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import {
@@ -572,9 +573,16 @@ export async function getUserEnrolledCourses(orgId: string, userId: string) {
  * @param userId - User ID to exclude enrolled courses
  * @returns Array of recommended courses
  */
-export async function getRecommendedCourses(orgId: string, userId: string, limit?: number, page?: number) {
+export async function getRecommendedCourses(
+  orgId: string,
+  userId: string,
+  limit?: number,
+  page?: number,
+  sort?: TOrganizationCourseSort,
+  order?: 'asc' | 'desc'
+) {
   try {
-    return getExploreCourses({ orgId, profileId: userId, limit, page });
+    return getExploreCourses({ orgId, profileId: userId, limit, page, sortKey: sort, order });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
