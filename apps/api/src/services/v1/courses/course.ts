@@ -45,8 +45,6 @@ import {
 } from '@api/services/v1/shared';
 import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
 import { updateCourseWithTags } from '@api/services/course/update-course';
-import { getCourseTagsForOrganization } from '@cio/db/queries/tag';
-import type { TTag } from '@cio/db/types';
 
 export async function listCoursesService(orgId: string, query: TPublicApiCoursesQuery) {
   return getOrganizationCourses(orgId, '', ROLE.ADMIN, query);

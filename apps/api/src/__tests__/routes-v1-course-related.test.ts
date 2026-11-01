@@ -61,7 +61,7 @@ const requestAs = (type: 'mcp' | 'api', scopes: string[], path: string) => {
     scopes
   });
 
-  return app.request(`/public-api/v1${path}`, { headers: { Authorization: 'Bearer key' } });
+  return app.request(`/public-api/v1${path}`, { headers: { Authorization: 'Bearer cio_mcp_test' } });
 };
 
 beforeEach(() => {

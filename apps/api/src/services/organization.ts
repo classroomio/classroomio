@@ -53,7 +53,6 @@ import { countCohortsByOrgForProfile } from '@cio/db/queries/cohort';
 import { countAssetsByOrg } from '@cio/db/queries/assets';
 import { countTagsByOrg, getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { getAccountPrimary } from '@cio/db/queries/account';
-import { db } from '@cio/db/drizzle';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
