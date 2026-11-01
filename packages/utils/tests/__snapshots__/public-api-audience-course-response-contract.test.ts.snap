@@ -72,6 +72,17 @@ exports[`public API audience and course response contract > ZPublicApiAudienceMe
         },
       ],
     },
+    "locale": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Language ClassroomIO is shown in for them; null until they create an account",
+    },
     "memberStatus": {
       "description": "Lifecycle state of the membership",
       "enum": [
@@ -110,13 +121,26 @@ exports[`public API audience and course response contract > ZPublicApiAudienceMe
       ],
       "type": "string",
     },
+    "username": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "null until the invited person creates an account",
+    },
   },
   "required": [
     "id",
     "profileId",
     "name",
+    "username",
     "email",
     "avatarUrl",
+    "locale",
     "createdAt",
     "status",
     "memberStatus",

@@ -11,10 +11,14 @@ import {
   getProfileByEmail,
   getProfileById,
   syncProfileEmailVerificationFromAuthUser,
+  updateAuthUserProfile,
   updateProfile
 } from '@cio/db/queries/auth';
 
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
+import { getPostgresError } from '@cio/utils/errors';
 import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
+import { sendProfileUpdatedEmail } from './profile-updated-email';
 import { ROLE } from '@cio/utils/constants';
 import type { TProfile } from '@cio/db/types';
 import type { TUpdateProfile } from '@cio/utils/validation/account';
@@ -106,29 +110,82 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
   };
 }
 
+export type TProfileField = 'fullname' | 'username' | 'avatarUrl' | 'locale';
+
+/** Who changed a profile. Decides the wording and branding of the profile-updated email. */
+export type TProfileChangeActor =
+  | { kind: 'self'; orgId?: string }
+  | { kind: 'org_admin'; orgId: string; actorId: string };
+
+export type TAppliedProfileUpdate = {
+  profile: TProfile;
+  previous: TProfile;
+  changedFields: TProfileField[];
+};
+
 /**
- * Updates profile data for a user
- * @param userId - The user ID to update profile for
- * @param data - Partial profile data to update (excluding email, id, createdAt, updatedAt)
+ * The one write path for profile edits (dashboard, public API, MCP). Writes only the fields whose value
+ * changes and keeps the auth user's name and image in step. Pass a transaction to join a larger write,
+ * then call `sendProfileUpdatedEmail` once it commits.
+ */
+export async function applyProfileUpdate(
+  userId: string,
+  data: TUpdateProfile,
+  dbClient: DbOrTxClient = db
+): Promise<TAppliedProfileUpdate> {
+  const previous = await getProfileById(userId, dbClient);
+  if (!previous) {
+    throw new AppError(`Profile not found for user ID: ${userId}`, ErrorCodes.PROFILE_NOT_FOUND, 404);
+  }
+
+  const changes: TUpdateProfile = {};
+  if (data.fullname !== undefined && data.fullname !== previous.fullname) changes.fullname = data.fullname;
+  if (data.username !== undefined && data.username !== previous.username) changes.username = data.username;
+  if (data.avatarUrl !== undefined && data.avatarUrl !== previous.avatarUrl) changes.avatarUrl = data.avatarUrl;
+  if (data.locale !== undefined && data.locale !== previous.locale) changes.locale = data.locale;
+
+  const changedFields = Object.keys(changes) as TProfileField[];
+  if (changedFields.length === 0) {
+    return { profile: previous, previous, changedFields };
+  }
+
+  let profile: TProfile | undefined;
+  try {
+    profile = await updateProfile(userId, changes, dbClient);
+  } catch (error) {
+    if (getPostgresError(error)?.constraint === 'profile_username_key') {
+      throw new AppError('Username already exists', ErrorCodes.VALIDATION_ERROR, 400, 'username');
+    }
+    throw error;
+  }
+
+  if (!profile) {
+    throw new AppError(`Profile not found for user ID: ${userId}`, ErrorCodes.PROFILE_NOT_FOUND, 404);
+  }
+
+  if (changes.fullname !== undefined || changes.avatarUrl !== undefined) {
+    await updateAuthUserProfile(userId, { name: changes.fullname, image: changes.avatarUrl }, dbClient);
+  }
+
+  return { profile, previous, changedFields };
+}
+
+/**
+ * Updates a user's profile and emails them about it.
+ * @param userId - The user whose profile changes
+ * @param data - The profile fields to set
+ * @param actor - Who made the change; defaults to the user themselves
  * @returns Updated profile data
  */
-export async function updateUser(userId: string, data: TUpdateProfile) {
+export async function updateUser(userId: string, data: TUpdateProfile, actor: TProfileChangeActor = { kind: 'self' }) {
   try {
-    const updatedProfile = await updateProfile(userId, data);
+    const update = await db.transaction((tx) => applyProfileUpdate(userId, data, tx));
+    await sendProfileUpdatedEmail(update, actor);
 
-    if (!updatedProfile) {
-      throw new AppError(`Profile not found for user ID: ${userId}`, ErrorCodes.PROFILE_NOT_FOUND, 404);
-    }
-
-    return updatedProfile;
+    return update.profile;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
-    }
-
-    // Handle unique constraint violations
-    if (error instanceof Error && error.message.includes('profile_username_key')) {
-      throw new AppError('Username already exists', ErrorCodes.VALIDATION_ERROR, 400, 'username');
     }
 
     throw new AppError(
