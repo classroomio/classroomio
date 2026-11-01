@@ -131,7 +131,7 @@ export function LessonPager({ previous, next, onNavigate, onRefresh, children }:
       x.set(
         withSpring(0, {
           duration: 400,
-          dampingRatio: 0.8,
+          dampingRatio: 1,
           velocity: event.velocityX,
           reduceMotion: ReduceMotion.System
         })

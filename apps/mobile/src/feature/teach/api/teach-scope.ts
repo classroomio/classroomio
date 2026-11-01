@@ -21,6 +21,8 @@ export const teachKeys = {
     ['teach', userId, orgId, 'course', courseId, 'analytics'] as const,
   newsfeed: (userId: string | null, orgId: string | null, courseId: string) =>
     ['teach', userId, orgId, 'course', courseId, 'newsfeed'] as const,
+  checkInCode: (userId: string | null, orgId: string | null, courseId: string, lessonId: string) =>
+    ['teach', userId, orgId, 'course', courseId, 'check-in', lessonId] as const,
   comments: (userId: string | null, orgId: string | null, courseId: string, feedId: string) =>
     ['teach', userId, orgId, 'course', courseId, 'newsfeed', feedId, 'comments'] as const
 };

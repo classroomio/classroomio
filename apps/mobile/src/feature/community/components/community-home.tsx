@@ -12,17 +12,23 @@ import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@
 import { HeaderIconButton } from '@/feature/common/components/header-icon-button';
 import { OfflineNotice } from '@/feature/common/components/offline-notice';
 import { ScreenScrollView } from '@/feature/common/components/screen';
+import { SegmentedControl, SegmentedControlItem } from '@/feature/common/components/segmented-control';
 import { Text } from '@/feature/common/components/text';
 import { SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
+import { useCommunityForYouQuery } from '@/feature/community/api/community-for-you';
 import { useCommunityQuestionsQuery } from '@/feature/community/api/community-questions';
 import { coursesWithQuestions } from '@/feature/community/helpers/course-filter';
 import { searchQuestions } from '@/feature/community/helpers/question-search';
 import { communityCatalog } from '@/feature/community/translations/catalog';
-import type { CommunityQuestionSummary } from '@/feature/community/types/community';
+import type {
+  CommunityListQuestion,
+  CommunityQuestionSummary,
+  CommunitySegment
+} from '@/feature/community/types/community';
 import { useLocale } from '@/feature/i18n/helpers/use-locale';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { useActiveOrg } from '@/feature/org/helpers/use-active-org';
@@ -65,16 +71,22 @@ function CommunityQuestions() {
   const { colors } = useTheme();
   const locale = useLocale();
   const questions = useCommunityQuestionsQuery();
+  const forYou = useCommunityForYouQuery();
   const offline = useIsOffline();
+  const [segment, setSegment] = useState<CommunitySegment>('all');
   const [courseId, setCourseId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const query = useDeferredValue(search.trim());
+  const active = segment === 'all' ? questions : forYou;
   const all = questions.data ?? [];
-  const courses = coursesWithQuestions(all, t('untitledCourse'));
+  const followed = forYou.data ?? [];
+  const source: CommunityListQuestion[] = active.data ?? [];
+  const courses = coursesWithQuestions([...all, ...followed], t('untitledCourse'));
   const activeCourseId = courses.some((course) => course.id === courseId) ? courseId : null;
-  const inCourse = activeCourseId ? all.filter((question) => question.courseId === activeCourseId) : all;
+  const inCourse = activeCourseId ? source.filter((question) => question.courseId === activeCourseId) : source;
   const visible = searchQuestions(inCourse, query, locale);
-  const failedWithoutData = questions.isError && !questions.data;
+  const failedWithoutData = active.isError && !active.data;
+  const hasQuestions = all.length > 0 || followed.length > 0;
 
   return (
     <>
@@ -102,22 +114,28 @@ function CommunityQuestions() {
       />
       <QuestionList
         questions={visible}
-        loading={questions.isPending && !failedWithoutData}
-        onRefresh={() => questions.refetch()}
+        loading={active.isPending && !failedWithoutData}
+        onRefresh={() => Promise.all([questions.refetch(), forYou.refetch()])}
         onOpen={openQuestion}
         header={
           <View style={styles.header}>
             {offline ? <OfflineNotice description={t('offlineList')} /> : null}
-            {questions.isError && questions.data && !offline ? (
+            {active.isError && active.data && !offline ? (
               <Banner tone="danger">
                 <BannerIcon icon={WarningCircleIcon} />
                 <BannerContent>
                   <BannerTitle>{t('refreshFailed')}</BannerTitle>
-                  <BannerDescription>{errorMessage(questions.error)}</BannerDescription>
+                  <BannerDescription>{errorMessage(active.error)}</BannerDescription>
                 </BannerContent>
               </Banner>
             ) : null}
-            {all.length > 0 ? (
+            {hasQuestions ? (
+              <SegmentedControl value={segment} onValueChange={setSegment}>
+                <SegmentedControlItem value="all">{t('segmentAll')}</SegmentedControlItem>
+                <SegmentedControlItem value="for-you">{t('segmentForYou')}</SegmentedControlItem>
+              </SegmentedControl>
+            ) : null}
+            {hasQuestions ? (
               <CourseFilter courseId={activeCourseId} onCourseChange={setCourseId} courses={courses}>
                 <View style={styles.filterRow}>
                   <CourseFilterTrigger />
@@ -135,9 +153,9 @@ function CommunityQuestions() {
             <Empty>
               <EmptyMedia icon={WarningCircleIcon} />
               <EmptyTitle>{t('loadFailed')}</EmptyTitle>
-              <EmptyDescription>{errorMessage(questions.error)}</EmptyDescription>
+              <EmptyDescription>{errorMessage(active.error)}</EmptyDescription>
               <EmptyContent>
-                <Button variant="outline" onPress={() => questions.refetch()}>
+                <Button variant="outline" onPress={() => active.refetch()}>
                   <ButtonText>{tc('retry')}</ButtonText>
                 </Button>
               </EmptyContent>
@@ -149,7 +167,7 @@ function CommunityQuestions() {
               <EmptyDescription>{t('searchEmptyDescription', { query })}</EmptyDescription>
             </Empty>
           ) : (
-            <QuestionListEmpty filtered={activeCourseId !== null} />
+            <QuestionListEmpty segment={segment} filtered={activeCourseId !== null} />
           )
         }
       />
@@ -158,6 +176,6 @@ function CommunityQuestions() {
 }
 
 const styles = StyleSheet.create({
-  header: { gap: SPACING.sm, paddingBottom: SPACING.sm },
+  header: { gap: SPACING.sm + 2, paddingBottom: SPACING.sm },
   filterRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SPACING.sm }
 });

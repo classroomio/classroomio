@@ -9,8 +9,8 @@ import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { parseTimestamp } from '@/feature/common/helpers/time-ago';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { formatSessionTime } from '@/feature/course/helpers/format-date';
-import type { NextLiveClass } from '@/feature/course/helpers/home-sections';
 import { courseCatalog } from '@/feature/course/translations/catalog';
+import type { NextLiveClass } from '@/feature/course/types/home-digest';
 import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { useOpenLink } from '@/feature/lesson/helpers/open-external';
@@ -21,19 +21,19 @@ export function NextLiveClassCard({ next }: { next: NextLiveClass }) {
   const format = useFormatters();
   const { colors } = useTheme();
   const { openInSystem } = useOpenLink();
-  const { course, session, live } = next;
-  const startsAt = new Date(parseTimestamp(session.lessonAt));
-  const time = formatSessionTime(session.lessonAt, format.locale);
+  const live = next.isLive;
+  const startsAt = new Date(parseTimestamp(next.lessonAt));
+  const time = formatSessionTime(next.lessonAt, format.locale);
 
   return (
     <PressableScale
       accessibilityRole="button"
-      accessibilityLabel={`${live ? t('liveNow') : t('nextLiveClass')}, ${session.lessonTitle}, ${course.title}, ${time}`}
+      accessibilityLabel={`${live ? t('liveNow') : t('nextLiveClass')}, ${next.lessonTitle}, ${next.courseTitle}, ${time}`}
       scaleTo={0.985}
       onPress={() =>
         router.push({
           pathname: '/course/[courseId]/lesson/[lessonId]',
-          params: { courseId: course.id, lessonId: session.lessonId }
+          params: { courseId: next.courseId, lessonId: next.lessonId }
         })
       }
     >
@@ -51,13 +51,13 @@ export function NextLiveClassCard({ next }: { next: NextLiveClass }) {
             {live ? t('liveNow') : time}
           </Text>
           <Text variant="bodyStrong" numberOfLines={1}>
-            {session.lessonTitle}
+            {next.lessonTitle}
           </Text>
           <Text variant="caption" tone="muted" numberOfLines={1}>
-            {course.title}
+            {next.courseTitle}
           </Text>
         </View>
-        <Button size="sm" variant={live ? 'primary' : 'outline'} onPress={() => openInSystem(session.callUrl)}>
+        <Button size="sm" variant={live ? 'primary' : 'outline'} onPress={() => openInSystem(next.callUrl)}>
           <ButtonText>{t('joinSession')}</ButtonText>
         </Button>
       </Card>

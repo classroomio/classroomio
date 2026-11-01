@@ -35,6 +35,7 @@ import {
   type TNotificationEntityType,
   type TNotificationType
 } from '@cio/utils/constants/notifications';
+import { ATTENDANCE_STATUS_VALUES } from '@cio/utils/constants/attendance';
 import {
   LIVE_SESSION_REMINDER_STATUS_VALUES,
   type TLiveSessionReminderSkipReason
@@ -546,6 +547,8 @@ export const group = pgTable(
   ]
 );
 
+export const attendanceStatus = pgEnum('ATTENDANCE_STATUS', [...ATTENDANCE_STATUS_VALUES]);
+
 export const groupAttendance = pgTable(
   'group_attendance',
   {
@@ -562,6 +565,8 @@ export const groupAttendance = pgTable(
     courseId: uuid('course_id'),
     studentId: uuid('student_id'),
     isPresent: boolean('is_present').default(false),
+    status: attendanceStatus('status').default('absent').notNull(),
+    checkedInAt: timestamp('checked_in_at', { withTimezone: true, mode: 'string' }),
     lessonId: uuid('lesson_id').notNull()
   },
   (table) => [
@@ -1862,7 +1867,8 @@ export const communityAnswer = pgTable(
     authorId: bigint('author_id', { mode: 'number' }),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     votes: bigint({ mode: 'number' }),
-    authorProfileId: uuid('author_profile_id')
+    authorProfileId: uuid('author_profile_id'),
+    isHidden: boolean('is_hidden').default(false).notNull()
   },
   (table) => [
     foreignKey({
@@ -1904,7 +1910,11 @@ export const communityQuestion = pgTable(
     organizationId: uuid('organization_id'),
     slug: text(),
     authorProfileId: uuid('author_profile_id'),
-    courseId: uuid('course_id').notNull()
+    courseId: uuid('course_id').notNull(),
+    isHidden: boolean('is_hidden').default(false).notNull(),
+    acceptedAnswerId: uuid('accepted_answer_id').references((): AnyPgColumn => communityAnswer.id, {
+      onDelete: 'set null'
+    })
   },
   (table) => [
     foreignKey({
@@ -4718,5 +4728,54 @@ export const deviceToken = pgTable(
     unique('device_token_token_key').on(table.token),
     index('idx_device_token_profile').on(table.profileId),
     index('idx_device_token_profile_disabled').on(table.profileId, table.disabledAt)
+  ]
+);
+
+export const communityQuestionSubscription = pgTable(
+  'community_question_subscription',
+  {
+    questionId: bigint('question_id', { mode: 'number' }).notNull(),
+    profileId: uuid('profile_id').notNull(),
+    isFollowing: boolean('is_following').default(false).notNull(),
+    lastReadAt: timestamp('last_read_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    primaryKey({ columns: [table.questionId, table.profileId], name: 'community_question_subscription_pkey' }),
+    foreignKey({
+      columns: [table.questionId],
+      foreignColumns: [communityQuestion.id],
+      name: 'community_question_subscription_question_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'community_question_subscription_profile_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_community_question_subscription_profile').on(table.profileId)
+  ]
+);
+
+export const lessonCheckInCode = pgTable(
+  'lesson_check_in_code',
+  {
+    lessonId: uuid('lesson_id').primaryKey().notNull(),
+    code: varchar('code', { length: 16 }).notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'lesson_check_in_code_lesson_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'lesson_check_in_code_created_by_profile_id_fkey'
+    }).onDelete('set null')
   ]
 );

@@ -24,7 +24,7 @@ import { useTheme } from '@/feature/common/helpers/use-theme';
 import { Icon } from './icon';
 import { PressableScale } from './pressable-scale';
 
-const SETTLE_SPRING = { duration: 400, dampingRatio: 0.8, reduceMotion: ReduceMotion.System } as const;
+const SETTLE_SPRING = { duration: 400, dampingRatio: 1, reduceMotion: ReduceMotion.System } as const;
 const LONG_PRESS_MS = 180;
 const LIFT_SCALE = 1.03;
 const EDGE_RESISTANCE = 0.35;

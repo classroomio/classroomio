@@ -1,6 +1,5 @@
 import { StyleSheet, View } from 'react-native';
 
-import { ItemGroup } from '@/feature/common/components/item';
 import { NotchCard } from '@/feature/common/components/notch-card';
 import {
   Skeleton,
@@ -13,6 +12,7 @@ import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 
 import { COURSE_CARD_WIDTH } from './course-card';
+import { COURSE_ROW_ARTWORK_RATIO, COURSE_ROW_ARTWORK_WIDTH } from './course-row';
 
 const CARD_COVER_HEIGHT = Math.round((COURSE_CARD_WIDTH * 9) / 16);
 
@@ -49,19 +49,28 @@ export function HomeSkeleton() {
 
 /** Rows shaped like the Learn list while it loads. */
 export function CourseListSkeleton({ rows = 5 }: { rows?: number }) {
+  const { colors } = useTheme();
+
   return (
-    <ItemGroup>
+    <SkeletonGroup>
       {Array.from({ length: rows }, (_, index) => (
-        <SkeletonGroup key={index} style={styles.listRow}>
-          <SkeletonThumbnail width={52} height={52} />
-          <View style={styles.listCopy}>
-            <SkeletonText variant="bodyStrong" lines={1} width="75%" />
-            <SkeletonText variant="caption" lines={1} width="45%" />
+        <View key={index}>
+          {index > 0 ? <View style={[styles.listSeparator, { backgroundColor: colors.border }]} /> : null}
+          <View style={styles.listRow}>
+            <SkeletonThumbnail
+              width={COURSE_ROW_ARTWORK_WIDTH}
+              height={Math.round(COURSE_ROW_ARTWORK_WIDTH / COURSE_ROW_ARTWORK_RATIO)}
+              radius={RADII.lg}
+            />
+            <View style={styles.listCopy}>
+              <SkeletonText variant="subheading" lines={1} width="80%" />
+              <SkeletonText variant="caption" lines={1} width="50%" />
+              <Skeleton height={4} radius={RADII.pill} style={styles.listProgress} />
+            </View>
           </View>
-          <Skeleton width={34} height={34} radius={RADII.pill} />
-        </SkeletonGroup>
+        </View>
       ))}
-    </ItemGroup>
+    </SkeletonGroup>
   );
 }
 
@@ -71,13 +80,8 @@ const styles = StyleSheet.create({
   heroBanner: { height: undefined, aspectRatio: 16 / 9 },
   row: { flexDirection: 'row', gap: SPACING.sm, marginRight: -GUTTER, overflow: 'hidden' },
   card: { width: COURSE_CARD_WIDTH },
-  listRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    minHeight: 76,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm
-  },
-  listCopy: { flex: 1 }
+  listRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md, paddingVertical: SPACING.sm },
+  listCopy: { flex: 1, gap: 2 },
+  listProgress: { marginTop: SPACING.xs, width: '70%' },
+  listSeparator: { height: StyleSheet.hairlineWidth, marginLeft: COURSE_ROW_ARTWORK_WIDTH + SPACING.md }
 });

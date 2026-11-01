@@ -12,6 +12,7 @@ import { Text } from '@/feature/common/components/text';
 import { SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
+import { useTheme } from '@/feature/common/helpers/use-theme';
 import { CourseLink, CourseLinks } from '@/feature/course/components/course-links';
 import { lessonKindLabel } from '@/feature/course/helpers/content-copy';
 import { isAccessible } from '@/feature/course/helpers/course-content';
@@ -54,6 +55,7 @@ export default function LessonScreen() {
   const { courseId, lessonId, from } = useLocalSearchParams<{ courseId: string; lessonId: string; from?: string }>();
   const t = useTranslations(lessonCatalog);
   const courseT = useTranslations(courseCatalog);
+  const { colors } = useTheme();
   const view = useLessonPlayer(courseId, lessonId);
   const completion = useCompleteLessonMutation(courseId, lessonId);
   const [player, setPlayer] = useState<VideoPlayer | null>(null);
@@ -214,14 +216,14 @@ export default function LessonScreen() {
         />
 
         <View style={styles.heading}>
-          <Text variant="title" accessibilityRole="header">
-            {title}
-          </Text>
           {meta ? (
-            <Text variant="caption" tone="muted">
+            <Text variant="captionStrong" tone="muted">
               {meta}
             </Text>
           ) : null}
+          <Text variant="display" accessibilityRole="header">
+            {title}
+          </Text>
         </View>
 
         {view.body && content.html ? <LessonContent html={content.html} lang={view.body.locale} /> : null}
@@ -340,5 +342,5 @@ export default function LessonScreen() {
 }
 
 const styles = StyleSheet.create({
-  heading: { gap: SPACING.xxs }
+  heading: { gap: SPACING.xs }
 });

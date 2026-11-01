@@ -1,0 +1,40 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const tr: TranslatedMessages<typeof en> = {
+  screenTitle: 'Giriş yap',
+  checkIn: 'Giriş yap',
+  checkingIn: 'Girişiniz yapılıyor',
+  checkedInTitle: 'Giriş yaptınız',
+  checkedInLateTitle: 'Geç kaldı olarak giriş yaptınız',
+  checkedInAt: 'Giriş saati {time}',
+  openLesson: 'Dersi aç',
+  scanAgain: 'Yeniden tara',
+  scanTitle: 'Giriş kodunu tarayın',
+  scanDescription: 'Kamerayı eğitmeninizin gösterdiği QR koduna doğrultun.',
+  viewfinderA11y: 'Giriş QR kodunu taramak için kamera görüntüsü',
+  typeCodeTitle: 'Veya kodu yazın',
+  codeLabel: 'Giriş kodu',
+  codeDescription: 'QR kodunun altında gösterilen 6 harf ve rakam.',
+  typeCodeFromLesson: "Kod yazmak için oturumun dersini açın ve Giriş yap'ı seçin.",
+  cameraTitle: 'Kamera erişimine izin verin',
+  cameraExplanation: 'Kamera giriş QR kodunu okur. Fotoğraf çekilmez veya kayıt yapılmaz.',
+  cameraBlocked: "ClassroomIO için kamera erişimi kapalı. Ayarlar'dan açın veya kodu yazın.",
+  allowCamera: 'Kameraya izin ver',
+  openSettings: "Ayarlar'ı aç",
+  notCheckInCode: 'Bu QR kodu bir ClassroomIO giriş kodu değil.',
+  errorInvalidTitle: 'Bu kod çalışmadı',
+  errorInvalid: 'Kodu eğitmeninizle kontrol edin. Eğitmen yeni bir kod oluşturduğunda eski kod çalışmaz.',
+  errorExpiredTitle: 'Bu kodun süresi doldu',
+  errorExpired: 'Eğitmeninizden yeni bir kod göstermesini isteyin.',
+  errorNotEnrolledTitle: 'Bu kursun katılımcısı değilsiniz',
+  errorNotEnrolled: 'Yalnızca kursa kayıtlı katılımcılar giriş yapabilir.',
+  errorNotFoundTitle: 'Oturum bulunamadı',
+  errorNotFound: "Oturum mevcut kuruluşunuza ait değil. Profil'den kuruluşu değiştirip yeniden tarayın.",
+  errorRateLimitedTitle: 'Çok fazla deneme',
+  errorRateLimited: 'Birkaç dakika bekleyip yeniden deneyin.',
+  errorGenericTitle: 'Giriş tamamlanamadı',
+  errorLinkTitle: 'Bu bağlantı bir giriş kodu değil',
+  errorLink: 'Eğitmeninizin gösterdiği QR kodunu tarayın veya kodu dersten yazın.'
+};

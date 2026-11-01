@@ -1,5 +1,6 @@
 import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
 import { CalendarCheckIcon } from 'phosphor-react-native/src/icons/CalendarCheck';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
 import { ClipboardTextIcon } from 'phosphor-react-native/src/icons/ClipboardText';
 import { MegaphoneIcon } from 'phosphor-react-native/src/icons/Megaphone';
 import { NewspaperIcon } from 'phosphor-react-native/src/icons/Newspaper';
@@ -7,17 +8,28 @@ import { UsersIcon } from 'phosphor-react-native/src/icons/Users';
 import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useRef } from 'react';
-import { StyleSheet, View, type ScrollViewInstance } from 'react-native';
+import { View, type ScrollViewInstance } from 'react-native';
 
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@/feature/common/components/button';
 import { FlashHighlight } from '@/feature/common/components/flash-highlight';
 import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
-import { ItemGroup } from '@/feature/common/components/item';
+import {
+  Item,
+  ItemActions,
+  ItemChevron,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle
+} from '@/feature/common/components/item';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { Skeleton } from '@/feature/common/components/skeleton';
+import { IconTile } from '@/feature/common/components/icon-tile';
 import { Text } from '@/feature/common/components/text';
-import { SPACING } from '@/feature/common/constants/layout';
+import { RADII } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
+import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { COURSE_TYPE_KEYS } from '@/feature/course/constants/course-type';
 import { courseCatalog } from '@/feature/course/translations/catalog';
@@ -30,6 +42,8 @@ import { CourseFeedPost } from '@/feature/teach/components/course-feed-post';
 import { LearnerProgressRow } from '@/feature/teach/components/learner-progress-row';
 import { useRevealAnnouncement } from '@/feature/teach/helpers/announcement-reveal';
 import { Stat, StatGrid } from '@/feature/teach/components/stat-grid';
+import { TeachCourseArtwork } from '@/feature/teach/components/teach-course-artwork';
+import { TeachSessionCard } from '@/feature/teach/components/teach-session-card';
 import { teachCatalog } from '@/feature/teach/translations/catalog';
 import type { NewsfeedPost } from '@/feature/teach/types/teach';
 
@@ -40,6 +54,7 @@ export default function TeachCourseScreen() {
   const common = useTranslations(commonCatalog);
   const courseCopy = useTranslations(courseCatalog);
   const format = useFormatters();
+  const { colors } = useTheme();
   const { courseId = '', title } = useLocalSearchParams<{ courseId: string; title?: string }>();
   const courses = useTeachingCoursesQuery();
   const analytics = useCourseAnalyticsQuery(courseId);
@@ -73,29 +88,30 @@ export default function TeachCourseScreen() {
     );
   }
 
+  const typeLabel = course?.type
+    ? course.type in COURSE_TYPE_KEYS
+      ? courseCopy(COURSE_TYPE_KEYS[course.type as keyof typeof COURSE_TYPE_KEYS])
+      : course.type
+    : null;
+
   return (
     <ScreenScrollView ref={scrollRef} onRefresh={refresh}>
-      <View style={styles.heading}>
-        <Text variant="title" accessibilityRole="header">
-          {course?.title ?? title}
-        </Text>
-        {course?.type ? (
-          <Text variant="caption" tone="muted">
-            {course.type in COURSE_TYPE_KEYS
-              ? courseCopy(COURSE_TYPE_KEYS[course.type as keyof typeof COURSE_TYPE_KEYS])
-              : course.type}
-          </Text>
-        ) : null}
-      </View>
+      <TeachCourseArtwork
+        uri={course?.bannerImage || course?.logo}
+        recyclingKey={courseId}
+        title={course?.title ?? title ?? null}
+        meta={typeLabel}
+      />
 
       {!course ? (
-        <Skeleton height={92} radius={12} />
+        <Skeleton height={124} radius={RADII.xl} />
       ) : (
         <StatGrid>
-          <Stat label={t('statEnrolled')} icon={UsersIcon} value={format.number(course.enrolled)} />
+          <Stat label={t('statEnrolled')} icon={UsersIcon} tone="primary" value={format.number(course.enrolled)} />
           <Stat
             label={t('statCompleted')}
-            icon={CalendarCheckIcon}
+            icon={CheckCircleIcon}
+            tone="success"
             value={format.percent(course.completionRate)}
             detail={t('statCompletedDetail', { completed: course.completed, enrolled: course.enrolled })}
           />
@@ -103,52 +119,70 @@ export default function TeachCourseScreen() {
             <Stat
               label={t('statOverdue')}
               icon={WarningCircleIcon}
+              tone={course.overdue > 0 ? 'danger' : 'neutral'}
               value={format.number(course.overdue)}
-              tone={course.overdue > 0 ? 'danger' : 'ink'}
               detail={t('statOverdueDetail')}
             />
           ) : (
             <Stat
               label={t('statToGrade')}
               icon={ClipboardTextIcon}
+              tone={course.toGrade > 0 ? 'warning' : 'neutral'}
               value={format.number(course.toGrade)}
-              tone={course.toGrade > 0 ? 'primary' : 'ink'}
             />
           )}
         </StatGrid>
       )}
 
+      {course?.type === 'LIVE_CLASS' && <TeachSessionCard courseId={courseId} />}
+
       {course && (
-        <ScreenSection>
-          {course.toGrade > 0 && (
-            <Button
-              onPress={() => router.push({ pathname: '/teach/queue', params: { courseId, courseTitle: course.title } })}
+        <ItemGroup>
+          <Item
+            onPress={() => router.push({ pathname: '/teach/queue', params: { courseId, courseTitle: course.title } })}
+          >
+            <ItemMedia>
+              <IconTile icon={ClipboardTextIcon} />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>{t('gradeSubmissionsTitle')}</ItemTitle>
+              <ItemDescription numberOfLines={1}>
+                {course.toGrade > 0 ? t('toGradeCount', { count: course.toGrade }) : t('allGradedShort')}
+              </ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <ItemChevron />
+            </ItemActions>
+          </Item>
+          {course.type === 'LIVE_CLASS' ? (
+            <Item
+              onPress={() => router.push({ pathname: '/teach/course/[courseId]/attendance', params: { courseId } })}
             >
-              <ButtonIcon icon={ClipboardTextIcon} />
-              <ButtonText>{t('gradeSubmissions', { count: course.toGrade })}</ButtonText>
-            </Button>
-          )}
-          <View style={styles.actions}>
-            {course.type === 'LIVE_CLASS' && (
-              <Button
-                variant="outline"
-                style={styles.action}
-                onPress={() => router.push({ pathname: '/teach/course/[courseId]/attendance', params: { courseId } })}
-              >
-                <ButtonIcon icon={CalendarCheckIcon} />
-                <ButtonText>{t('attendance')}</ButtonText>
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              style={styles.action}
-              onPress={() => router.push({ pathname: '/teach/course/[courseId]/announce', params: { courseId } })}
-            >
-              <ButtonIcon icon={MegaphoneIcon} />
-              <ButtonText>{t('announce')}</ButtonText>
-            </Button>
-          </View>
-        </ScreenSection>
+              <ItemMedia>
+                <IconTile icon={CalendarCheckIcon} />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>{t('attendance')}</ItemTitle>
+                <ItemDescription numberOfLines={2}>{t('attendanceDescription')}</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <ItemChevron />
+              </ItemActions>
+            </Item>
+          ) : null}
+          <Item onPress={() => router.push({ pathname: '/teach/course/[courseId]/announce', params: { courseId } })}>
+            <ItemMedia>
+              <IconTile icon={MegaphoneIcon} />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>{t('announce')}</ItemTitle>
+              <ItemDescription numberOfLines={2}>{t('announceDescription')}</ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <ItemChevron />
+            </ItemActions>
+          </Item>
+        </ItemGroup>
       )}
 
       <ScreenSection>
@@ -212,9 +246,3 @@ export default function TeachCourseScreen() {
     </ScreenScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  heading: { gap: 2, marginTop: SPACING.xs },
-  actions: { flexDirection: 'row', gap: SPACING.xs },
-  action: { flex: 1 }
-});

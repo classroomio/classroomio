@@ -1,8 +1,9 @@
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Card } from '@/feature/common/components/card';
-import { ProgressRing } from '@/feature/common/components/progress';
+import { Icon } from '@/feature/common/components/icon';
+import { Progress } from '@/feature/common/components/progress';
 import { Text } from '@/feature/common/components/text';
 import { SPACING } from '@/feature/common/constants/layout';
 import { courseCatalog } from '@/feature/course/translations/catalog';
@@ -10,12 +11,12 @@ import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
 export function CourseSummary({ children }: { children: ReactNode }) {
-  return <Card style={styles.card}>{children}</Card>;
+  return <View style={styles.summary}>{children}</View>;
 }
 
-type CourseSummaryProgressProps = { percent: number; label: string; detail?: string };
+type CourseSummaryProgressProps = { percent: number; label: string; detail?: string; finished?: boolean };
 
-export function CourseSummaryProgress({ percent, label, detail }: CourseSummaryProgressProps) {
+export function CourseSummaryProgress({ percent, label, detail, finished = false }: CourseSummaryProgressProps) {
   const t = useTranslations(courseCatalog);
   const format = useFormatters();
   const rounded = Math.round(percent);
@@ -27,28 +28,33 @@ export function CourseSummaryProgress({ percent, label, detail }: CourseSummaryP
       accessible
       accessibilityLabel={[t('percentComplete', { percent: percentLabel }), label, detail].filter(Boolean).join(', ')}
     >
-      <View style={styles.ring}>
-        <ProgressRing value={rounded} size={48} strokeWidth={4} />
-        <Text variant="micro" style={styles.ringLabel}>
+      <View style={styles.headline}>
+        <Text variant="title" style={styles.percent}>
           {percentLabel}
         </Text>
+        <Text variant="captionStrong" tone="muted" style={styles.label}>
+          {label}
+        </Text>
       </View>
-      <View style={styles.copy}>
-        <Text variant="bodyStrong">{label}</Text>
-        {detail ? (
-          <Text variant="caption" tone="muted" numberOfLines={2}>
+      <Progress value={rounded} />
+      {detail ? (
+        <View style={styles.detail}>
+          {finished ? <Icon icon={CheckCircleIcon} size={16} tone="success" weight="fill" /> : null}
+          <Text variant="caption" tone={finished ? 'success' : 'muted'} numberOfLines={2} style={styles.detailText}>
             {detail}
           </Text>
-        ) : null}
-      </View>
+        </View>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { padding: SPACING.md, gap: SPACING.md },
-  progress: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
-  ring: { alignItems: 'center', justifyContent: 'center' },
-  ringLabel: { position: 'absolute', fontSize: 11, letterSpacing: -0.2 },
-  copy: { flex: 1, gap: 2 }
+  summary: { gap: SPACING.md },
+  progress: { gap: SPACING.xs },
+  headline: { flexDirection: 'row', alignItems: 'baseline', gap: SPACING.xs },
+  percent: { fontVariant: ['tabular-nums'] },
+  label: { flex: 1 },
+  detail: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xxs + 2 },
+  detailText: { flex: 1 }
 });

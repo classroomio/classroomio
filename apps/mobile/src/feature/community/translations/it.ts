@@ -61,8 +61,6 @@ export const it: TranslatedMessages<typeof en> = {
     'Per fare una domanda serve una connessione. Ciò che scrivi non viene salvato finché non ti riconnetti e la pubblichi.',
   editOffline:
     'Per salvare le modifiche serve una connessione. Le modifiche restano in questa schermata finché non ti riconnetti e salvi.',
-  postQuestion: 'Pubblica domanda',
-  saveChanges: 'Salva modifiche',
   fieldTitle: 'Titolo',
   fieldTitlePlaceholder: 'Cosa vuoi sapere?',
   fieldCourse: 'Corso',
@@ -88,5 +86,29 @@ export const it: TranslatedMessages<typeof en> = {
   linkCopied: 'Link copiato',
   searchPlaceholder: 'Cerca domande',
   searchEmptyTitle: 'Nessuna domanda corrispondente',
-  searchEmptyDescription: 'Nessun titolo di domanda, autore o corso contiene “{query}”.'
+  searchEmptyDescription: 'Nessun titolo di domanda, autore o corso contiene “{query}”.',
+  segmentAll: 'Tutte',
+  segmentForYou: 'Per te',
+  forYouEmptyTitle: 'Nessuna domanda seguita',
+  forYouEmptyDescription:
+    'Le domande che fai, a cui rispondi o che segui compaiono in Per te. Un punto indica le domande con risposte che non hai letto.',
+  forYouEmptyFilteredDescription: 'Non hai fatto, risposto o seguito domande in questo corso.',
+  newAnswers: 'Nuove risposte',
+  following: 'Seguita',
+  followQuestion: 'Segui la domanda',
+  unfollowQuestion: 'Non seguire più la domanda',
+  followedTitle: 'Segui questa domanda',
+  followedDescription: 'Ricevi una notifica quando qualcuno risponde.',
+  followFailed: 'La preferenza non è stata salvata',
+  acceptedAnswer: 'Risposta accettata',
+  markAccepted: 'Segna come accettata',
+  unmarkAccepted: 'Rimuovi accettazione',
+  acceptFailed: 'La risposta accettata non è stata salvata',
+  hiddenFromLearners: 'Nascosta ai partecipanti',
+  hiddenQuestionDescription:
+    'I partecipanti non vedono questa domanda né le sue risposte. Tutor e amministratori continuano a vederle.',
+  hideFromLearners: 'Nascondi ai partecipanti',
+  showToLearners: 'Mostra ai partecipanti',
+  visibilityFailed: 'La visibilità non è stata modificata',
+  post: 'Pubblica'
 };

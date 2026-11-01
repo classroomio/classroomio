@@ -22,5 +22,18 @@ export const tr: TranslatedMessages<typeof en> = {
   version: 'Sürüm',
   versionUnknown: 'Bilinmiyor',
   server: 'Sunucu',
-  serverDescription: 'Başka bir sunucuya bağlanmak için oturumu kapatın.'
+  serverDescription: 'Başka bir sunucuya bağlanmak için oturumu kapatın.',
+  appearance: 'Görünüm',
+  general: 'Genel',
+  videoAndDownloads: 'Video ve indirmeler',
+  videoQuality: 'Akış kalitesi',
+  videoQualityAuto: 'Otomatik',
+  videoQualityAutoDescription: 'Bağlantınızın izin verdiği en iyi kalite',
+  videoQualityStandard: "720p'ye kadar",
+  videoQualityStandardDescription: 'Daha az mobil veri kullanır',
+  videoQualityDataSaver: 'Veri tasarrufu',
+  videoQualityDataSaverDescription: "480p'ye kadar, en az mobil veriyi kullanır",
+  videoQualityFooter:
+    'Kuruluşunuzun yayınladığı videolar için en yüksek çözünürlüğü belirler. İndirilen dersler ile YouTube veya Vimeo videoları etkilenmez.',
+  downloads: 'İndirilenler'
 };

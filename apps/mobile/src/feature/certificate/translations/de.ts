@@ -47,5 +47,7 @@ export const de: TranslatedMessages<typeof en> = {
   savedDescription: 'Die PDF-Datei liegt im ausgewählten Ordner.',
   saveFailed: 'Das Zertifikat konnte nicht gespeichert werden',
   idCopied: 'Zertifikat-ID kopiert',
-  recipientFallback: 'Empfänger'
+  recipientFallback: 'Empfänger',
+  copyId: 'ID kopieren',
+  openCourse: 'Kurs öffnen'
 };

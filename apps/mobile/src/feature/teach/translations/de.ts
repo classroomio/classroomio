@@ -126,7 +126,6 @@ export const de: TranslatedMessages<typeof en> = {
   statOverdue: 'Überfällig',
   statOverdueDetail: 'Fälligkeit überschritten',
   statToGrade: 'Zu bewerten',
-  gradeSubmissions: { one: '{count} Abgabe bewerten', other: '{count} Abgaben bewerten' },
   attendance: 'Anwesenheit',
   announce: 'Ankündigen',
   lowestProgress: 'Geringster Fortschritt',
@@ -164,8 +163,6 @@ export const de: TranslatedMessages<typeof en> = {
     one: '{count} Eintrag wurde nicht gespeichert',
     other: '{count} Einträge wurden nicht gespeichert'
   },
-  attendanceSaved: 'Anwesenheit gespeichert',
-  attendanceNotSaved: 'Die Anwesenheit wurde nicht gespeichert',
   noLearnersEnrolledTitle: 'Keine Teilnehmer eingeschrieben',
   noLearnersEnrolledDescription: 'Bisher ist niemand diesem Kurs als Teilnehmer beigetreten.',
   noLearnerMatches: 'Kein Teilnehmer passt zu „{query}“.',
@@ -176,19 +173,13 @@ export const de: TranslatedMessages<typeof en> = {
   noSessionA11y: 'Kein Termin gewählt. Termin ändern',
   chooseSession: 'Termin wählen',
   change: 'Ändern',
-  unsavedNote: 'Ungespeicherte Änderungen bleiben bei diesem Termin erhalten, wenn Sie zu einem anderen wechseln.',
   sessions: 'Termine',
   present: 'Anwesend',
   absent: 'Abwesend',
   notMarked: 'Nicht erfasst',
-  notSaved: 'nicht gespeichert',
   markAllPresent: 'Alle anwesend',
   markAllAbsent: 'Alle abwesend',
-  undo: 'Rückgängig',
   findLearner: 'Teilnehmer suchen',
-  noChangesToSave: 'Keine Änderungen zum Speichern',
-  saveChanges: { one: '{count} Änderung speichern', other: '{count} Änderungen speichern' },
-  learnerCount: { one: '{count} Teilnehmer', other: '{count} Teilnehmer' },
   courseTeam: 'Kursteam',
   courseMember: 'Kursmitglied',
   comments: 'Kommentare',
@@ -229,5 +220,57 @@ export const de: TranslatedMessages<typeof en> = {
     other:
       'Der Beitrag und seine {count} Kommentare werden für alle aus dem Kurs-Newsfeed entfernt. Das lässt sich nicht rückgängig machen.'
   },
-  gradeAction: 'Bewerten'
+  gradeAction: 'Bewerten',
+  sessionLiveNow: 'Jetzt live',
+  statusLate: 'Verspätet',
+  markedOf: { one: '{marked} von {count} erfasst', other: '{marked} von {count} erfasst' },
+  markRestAbsent: {
+    one: 'Den {count} nicht erfassten Teilnehmer als abwesend erfassen',
+    other: 'Die {count} nicht erfassten Teilnehmer als abwesend erfassen'
+  },
+  confirmAllPresentTitle: {
+    one: '{count} Teilnehmer als anwesend erfassen?',
+    other: 'Alle {count} Teilnehmer als anwesend erfassen?'
+  },
+  confirmAllAbsentTitle: {
+    one: '{count} Teilnehmer als abwesend erfassen?',
+    other: 'Alle {count} Teilnehmer als abwesend erfassen?'
+  },
+  confirmReplaceMarks: {
+    one: 'Dadurch wird {count} bereits gespeicherter Eintrag für diesen Termin ersetzt, einschließlich Check-ins.',
+    other: 'Dadurch werden {count} bereits gespeicherte Einträge für diesen Termin ersetzt, einschließlich Check-ins.'
+  },
+  checkedInAt: 'eingecheckt um {time}',
+  checkedInTime: 'Eingecheckt um {time}',
+  markLearner: 'Anwesenheit von {name}',
+  attendanceHint:
+    'Wischen Sie bei einem Teilnehmer nach rechts, um ihn als anwesend zu erfassen, oder nach links für abwesend.',
+  titleCheckIn: 'Check-in',
+  startCheckIn: 'Check-in starten',
+  startCheckInDescription: 'Einen Code anzeigen, mit dem sich Teilnehmer als anwesend erfassen',
+  checkInOpen: 'Check-in geöffnet',
+  checkInOpenDetail: 'Code {code} · noch {time}',
+  showCode: 'Code anzeigen',
+  startingCheckIn: 'Check-in wird gestartet',
+  checkInInstructions:
+    'Teilnehmer scannen den QR-Code in der ClassroomIO-App oder öffnen die Lektion, wählen Einchecken und geben den Code ein. Wer mehr als {minutes} Minuten nach Beginn eincheckt, wird als verspätet erfasst.',
+  expiresIn: 'Läuft ab in {time}',
+  codeExpired: 'Dieser Code ist abgelaufen',
+  newCode: 'Neuer Code',
+  endCheckIn: 'Check-in beenden',
+  checkedInProgress: {
+    one: '{checked} von {count} Teilnehmer eingecheckt',
+    other: '{checked} von {count} Teilnehmern eingecheckt'
+  },
+  noCheckInsYet: 'Noch hat niemand eingecheckt.',
+  checkInNotStarted: 'Check-in wurde nicht gestartet',
+  checkInNotEnded: 'Check-in wurde nicht beendet',
+  checkInEnded: 'Check-in beendet',
+  codeA11y: 'Check-in-Code {code}',
+  qrA11y: 'QR-Code zum Einchecken bei {title}',
+  nextSession: 'Nächster Termin',
+  gradeSubmissionsTitle: 'Einreichungen bewerten',
+  allGradedShort: 'Nichts wartet auf eine Bewertung',
+  attendanceDescription: 'Teilnehmer pro Termin als anwesend, verspätet oder abwesend erfassen',
+  announceDescription: 'Im Newsfeed des Kurses veröffentlichen'
 };

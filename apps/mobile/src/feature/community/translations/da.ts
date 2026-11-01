@@ -62,8 +62,6 @@ export const da: TranslatedMessages<typeof en> = {
     'Du skal have forbindelse for at stille et spørgsmål. Det, du skriver, gemmes først, når du har forbindelse igen og sender det.',
   editOffline:
     'Du skal have forbindelse for at gemme ændringer. Dine ændringer bliver på denne skærm, indtil du har forbindelse igen og gemmer.',
-  postQuestion: 'Send spørgsmål',
-  saveChanges: 'Gem ændringer',
   fieldTitle: 'Titel',
   fieldTitlePlaceholder: 'Hvad vil du vide?',
   fieldCourse: 'Kursus',
@@ -89,5 +87,29 @@ export const da: TranslatedMessages<typeof en> = {
   linkCopied: 'Link kopieret',
   searchPlaceholder: 'Søg i spørgsmål',
   searchEmptyTitle: 'Ingen spørgsmål matcher',
-  searchEmptyDescription: 'Ingen spørgsmålstitel, forfatter eller kursus indeholder “{query}”.'
+  searchEmptyDescription: 'Ingen spørgsmålstitel, forfatter eller kursus indeholder “{query}”.',
+  segmentAll: 'Alle',
+  segmentForYou: 'Til dig',
+  forYouEmptyTitle: 'Ingen fulgte spørgsmål',
+  forYouEmptyDescription:
+    'Spørgsmål, du stiller, besvarer eller følger, står under Til dig. En prik markerer spørgsmål med svar, du ikke har læst.',
+  forYouEmptyFilteredDescription: 'Du har ikke stillet, besvaret eller fulgt et spørgsmål i dette kursus.',
+  newAnswers: 'Nye svar',
+  following: 'Følger',
+  followQuestion: 'Følg spørgsmål',
+  unfollowQuestion: 'Stop med at følge spørgsmål',
+  followedTitle: 'Du følger dette spørgsmål',
+  followedDescription: 'Du får en notifikation, når nogen svarer.',
+  followFailed: 'Indstillingen for at følge blev ikke gemt',
+  acceptedAnswer: 'Accepteret svar',
+  markAccepted: 'Markér som accepteret',
+  unmarkAccepted: 'Fjern markering som accepteret',
+  acceptFailed: 'Accepteret svar blev ikke gemt',
+  hiddenFromLearners: 'Skjult for deltagere',
+  hiddenQuestionDescription:
+    'Deltagere kan ikke se dette spørgsmål eller svarene. Undervisere og administratorer kan stadig se dem.',
+  hideFromLearners: 'Skjul for deltagere',
+  showToLearners: 'Vis for deltagere',
+  visibilityFailed: 'Synligheden blev ikke ændret',
+  post: 'Slå op'
 };

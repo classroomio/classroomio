@@ -13,8 +13,10 @@ import {
   ItemMedia,
   ItemTitle
 } from '@/feature/common/components/item';
+import { IconTile } from '@/feature/common/components/icon-tile';
 import { Spinner } from '@/feature/common/components/spinner';
 import { HIT_SLOP } from '@/feature/common/constants/layout';
+import { useTheme } from '@/feature/common/helpers/use-theme';
 import { formatBytes } from '@/feature/downloads/helpers/format-bytes';
 import { useLocale } from '@/feature/i18n/helpers/use-locale';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -34,6 +36,7 @@ type LessonDocumentsProps = { documents: LessonDocument[]; localFiles?: Readonly
 export function LessonDocuments({ documents, localFiles }: LessonDocumentsProps) {
   const t = useTranslations(lessonCatalog);
   const locale = useLocale();
+  const { colors } = useTheme();
   const { open, share, openingKey } = useOpenDocument(localFiles);
 
   return (
@@ -52,8 +55,8 @@ export function LessonDocuments({ documents, localFiles }: LessonDocumentsProps)
             accessibilityLabel={`${document.name}, ${detail}`}
             accessibilityHint={t('opensDocument')}
           >
-            <ItemMedia variant="tile">
-              <Icon icon={FileTextIcon} size={19} tone="ink" />
+            <ItemMedia>
+              <IconTile icon={FileTextIcon} size={36} />
             </ItemMedia>
             <ItemContent>
               <ItemTitle numberOfLines={1}>{document.name}</ItemTitle>

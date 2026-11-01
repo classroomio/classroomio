@@ -1,19 +1,17 @@
 import { useEffect, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
-  Easing,
   useAnimatedProps,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
   withDelay,
-  withSequence,
   withTiming,
   type SharedValue
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
-import { DURATION, EASE_IN_OUT, EASE_OUT } from '@/feature/common/constants/motion';
+import { DURATION, EASE_OUT } from '@/feature/common/constants/motion';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 
 const NOTCH_PATH = 'M0 0 H46 Q41.6 0 40.4 2.6 L38 8.4 Q36.9 11 34.2 11 H11.8 Q9.1 11 8 8.4 L5.6 2.6 Q4.4 0 0 0 Z';
@@ -24,8 +22,6 @@ const BLOCK = { width: 104, height: 28, radius: 7, gap: 3 } as const;
 const NOTCH = { width: 29, height: 7, inset: 14 } as const;
 const TAB = { width: 25, height: BLOCK.gap + 5 } as const;
 
-// The design system's block drop: a gravity fall, then a small bounce.
-const FALL = Easing.bezier(0.55, 0, 0.9, 0.45);
 const FALL_DISTANCE = 32;
 const FALL_DURATION = 260;
 const STAGGER = 80;
@@ -54,16 +50,7 @@ function Block({ index, fill, cutoutColor, withTab, reducedMotion, children }: B
     opacity.set(withDelay(delay, withTiming(1, { duration: reducedMotion ? DURATION.fast : 120, easing: EASE_OUT })));
     if (reducedMotion) return;
 
-    y.set(
-      withDelay(
-        delay,
-        withSequence(
-          withTiming(0, { duration: FALL_DURATION, easing: FALL }),
-          withTiming(-5, { duration: 90, easing: EASE_OUT }),
-          withTiming(0, { duration: 110, easing: EASE_IN_OUT })
-        )
-      )
-    );
+    y.set(withDelay(delay, withTiming(0, { duration: FALL_DURATION, easing: EASE_OUT })));
   }, [index, opacity, reducedMotion, y]);
 
   return (

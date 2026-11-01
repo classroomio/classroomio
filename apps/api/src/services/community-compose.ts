@@ -2,7 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { createComment, createQuestion } from '@api/services/community';
 import { getQuestionAuthorAndCourse } from '@cio/db/queries/community';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
-import { isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { isCourseTeamMemberOrOrgAdmin, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { generateSlug } from '@cio/utils/functions';
 import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
 import type { TCommunityAnswerCreate, TCommunityQuestionCreate } from '@cio/utils/validation/community';
@@ -51,6 +51,10 @@ export async function answerCommunityQuestion(
 ) {
   const question = await getQuestionAuthorAndCourse(questionId);
   if (!question || question.organizationId !== orgId) {
+    throw new AppError('Question not found', ErrorCodes.COMMUNITY_QUESTION_NOT_FOUND, 404);
+  }
+
+  if (question.isHidden && !(await isCourseTeamMemberOrOrgAdmin(question.courseId, profileId))) {
     throw new AppError('Question not found', ErrorCodes.COMMUNITY_QUESTION_NOT_FOUND, 404);
   }
 

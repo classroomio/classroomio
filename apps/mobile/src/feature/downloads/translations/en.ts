@@ -80,10 +80,8 @@ export const en = {
   downloadSize: 'Download {size}',
   download: 'Download',
   notNow: 'Not now',
-  otherCourses: 'Other courses',
   storageOnDevice: 'Storage on this device',
   usedSize: '{size} used',
-  freeSize: '{size} free',
   downloadsTitle: 'Downloads',
   noDownloadsTitle: 'No downloads yet',
   noDownloadsDescription: 'Download a course or a lesson from its page to open it without a connection.',
@@ -97,5 +95,9 @@ export const en = {
   },
   removeAll: 'Remove all',
   removeAllError: 'Downloads were not removed',
-  notReady: 'Downloads are not ready yet. Try again.'
+  notReady: 'Downloads are not ready yet. Try again.',
+  usedByDownloads: 'Used by downloads',
+  legendDownloads: 'Downloads',
+  legendOther: 'Other apps and data',
+  legendFree: 'Free'
 };

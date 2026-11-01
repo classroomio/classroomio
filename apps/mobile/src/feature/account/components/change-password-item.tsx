@@ -12,7 +12,6 @@ import {
   AlertDialogFooter,
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
-import { Icon } from '@/feature/common/components/icon';
 import {
   Item,
   ItemActions,
@@ -23,13 +22,16 @@ import {
   ItemTitle
 } from '@/feature/common/components/item';
 import { errorMessage } from '@/feature/common/helpers/error-message';
+import { useTheme } from '@/feature/common/helpers/use-theme';
 import { showToast } from '@/feature/toast/helpers/toast-store';
+import { IconTile } from '@/feature/common/components/icon-tile';
 import { accountCatalog } from '@/feature/account/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
 export function ChangePasswordItem({ email }: { email: string }) {
   const { client } = useAuth();
   const t = useTranslations(accountCatalog);
+  const { colors } = useTheme();
   const [confirming, setConfirming] = useState(false);
   const [sending, setSending] = useState(false);
 
@@ -50,8 +52,8 @@ export function ChangePasswordItem({ email }: { email: string }) {
   return (
     <>
       <Item onPress={() => setConfirming(true)}>
-        <ItemMedia variant="tile">
-          <Icon icon={KeyIcon} size={20} tone="ink" />
+        <ItemMedia>
+          <IconTile icon={KeyIcon} />
         </ItemMedia>
         <ItemContent>
           <ItemTitle>{t('changePassword')}</ItemTitle>

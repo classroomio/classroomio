@@ -72,3 +72,81 @@ CREATE INDEX "idx_notification_profile_org_created" ON "notification" USING btre
 CREATE INDEX "idx_notification_profile_unread" ON "notification" USING btree ("profile_id","organization_id") WHERE "notification"."read_at" IS NULL;
 --> statement-breakpoint
 CREATE UNIQUE INDEX "notification_profile_dedupe_key_unique" ON "notification" USING btree ("profile_id","dedupe_key") WHERE "notification"."dedupe_key" IS NOT NULL;
+--> statement-breakpoint
+DO $$ BEGIN
+	CREATE TYPE "public"."ATTENDANCE_STATUS" AS ENUM('present', 'absent', 'late');
+EXCEPTION
+	WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+ALTER TABLE "group_attendance" ADD COLUMN IF NOT EXISTS "status" "ATTENDANCE_STATUS" DEFAULT 'absent' NOT NULL;
+--> statement-breakpoint
+ALTER TABLE "group_attendance" ADD COLUMN IF NOT EXISTS "checked_in_at" timestamp with time zone;
+--> statement-breakpoint
+UPDATE "group_attendance" SET "status" = 'present' WHERE "is_present" = true AND "status" = 'absent';
+--> statement-breakpoint
+ALTER TABLE "community_question" ADD COLUMN IF NOT EXISTS "is_hidden" boolean DEFAULT false NOT NULL;
+--> statement-breakpoint
+ALTER TABLE "community_question" ADD COLUMN IF NOT EXISTS "accepted_answer_id" uuid;
+--> statement-breakpoint
+ALTER TABLE "community_answer" ADD COLUMN IF NOT EXISTS "is_hidden" boolean DEFAULT false NOT NULL;
+--> statement-breakpoint
+DO $$ BEGIN
+	ALTER TABLE "community_question" ADD CONSTRAINT "community_question_accepted_answer_id_community_answer_id_fk" FOREIGN KEY ("accepted_answer_id") REFERENCES "public"."community_answer"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+	WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "community_question_subscription" (
+	"question_id" bigint NOT NULL,
+	"profile_id" uuid NOT NULL,
+	"is_following" boolean DEFAULT false NOT NULL,
+	"last_read_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "community_question_subscription_pkey" PRIMARY KEY("question_id","profile_id")
+);
+--> statement-breakpoint
+DO $$ BEGIN
+	ALTER TABLE "community_question_subscription" ADD CONSTRAINT "community_question_subscription_question_id_fkey" FOREIGN KEY ("question_id") REFERENCES "public"."community_question"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+	WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+	ALTER TABLE "community_question_subscription" ADD CONSTRAINT "community_question_subscription_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+	WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_community_question_subscription_profile" ON "community_question_subscription" USING btree ("profile_id");
+--> statement-breakpoint
+INSERT INTO "community_question_subscription" ("question_id", "profile_id", "is_following", "last_read_at")
+SELECT DISTINCT ON (participant.question_id, participant.profile_id) participant.question_id, participant.profile_id, true, now()
+FROM (
+	SELECT "id" AS question_id, "author_profile_id" AS profile_id FROM "community_question" WHERE "author_profile_id" IS NOT NULL
+	UNION
+	SELECT "question_id", "author_profile_id" FROM "community_answer" WHERE "question_id" IS NOT NULL AND "author_profile_id" IS NOT NULL
+) AS participant
+INNER JOIN "profile" ON "profile"."id" = participant.profile_id
+ON CONFLICT DO NOTHING;
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "lesson_check_in_code" (
+	"lesson_id" uuid PRIMARY KEY NOT NULL,
+	"code" varchar(16) NOT NULL,
+	"expires_at" timestamp with time zone NOT NULL,
+	"created_by_profile_id" uuid,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+DO $$ BEGIN
+	ALTER TABLE "lesson_check_in_code" ADD CONSTRAINT "lesson_check_in_code_lesson_id_fkey" FOREIGN KEY ("lesson_id") REFERENCES "public"."lesson"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+	WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+	ALTER TABLE "lesson_check_in_code" ADD CONSTRAINT "lesson_check_in_code_created_by_profile_id_fkey" FOREIGN KEY ("created_by_profile_id") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+	WHEN duplicate_object THEN null;
+END $$;

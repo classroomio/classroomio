@@ -27,12 +27,6 @@ export const de: TranslatedMessages<typeof en> = {
   detailWaiverEnds: 'Befreiung endet am {date}',
   detailLastCompleted: 'Zuletzt abgeschlossen am {date}',
   detailRenewsEvery: { one: 'Wird jeden Monat erneuert', other: 'Wird alle {count} Monate erneuert' },
-  countOverdue: { other: '{count} überfällig' },
-  countInGracePeriod: { other: '{count} in der Schonfrist' },
-  countDueSoon: { other: '{count} bald fällig' },
-  countToDo: { other: '{count} offen' },
-  countCompliant: { other: '{count} konform' },
-  countWaived: { other: '{count} befreit' },
   summaryOutOf: { one: '{count} Anforderung', other: '{count} Anforderungen' },
   summaryOverdue: { one: '{count} von {total} ist überfällig.', other: '{count} von {total} sind überfällig.' },
   summaryInGracePeriod: {
@@ -76,5 +70,7 @@ export const de: TranslatedMessages<typeof en> = {
   resumeCourse: 'Kurs fortsetzen',
   startCourse: 'Kurs starten',
   proof: 'Nachweis',
-  proofLabel: 'Zertifikat für {course}'
+  proofLabel: 'Zertifikat für {course}',
+  standingOnTrack: 'Im Plan',
+  nextDeadline: 'Nächste Frist'
 };

@@ -1,3 +1,4 @@
+import { parseTimestamp } from '@/feature/common/helpers/time-ago';
 import type { Locale } from '@/feature/i18n/types/i18n';
 import type { Translator } from '@/feature/i18n/helpers/translate';
 import type { en } from '@/feature/teach/translations/en';
@@ -34,7 +35,10 @@ export const OLDEST_WAITED_KEYS = {
 export function elapsedSince(iso: string | null | undefined, now = Date.now()): Elapsed | null {
   if (!iso) return null;
 
-  const elapsed = Math.max(0, now - new Date(iso).getTime());
+  const time = parseTimestamp(iso);
+  if (!Number.isFinite(time)) return null;
+
+  const elapsed = Math.max(0, now - time);
   if (elapsed >= DAY) return { unit: 'days', count: Math.floor(elapsed / DAY) };
   if (elapsed >= HOUR) return { unit: 'hours', count: Math.floor(elapsed / HOUR) };
 
@@ -56,11 +60,15 @@ export function elapsedCopy(
 export function daysSince(iso: string | null | undefined, now = Date.now()) {
   if (!iso) return 0;
 
-  return Math.floor(Math.max(0, now - new Date(iso).getTime()) / DAY);
+  const time = parseTimestamp(iso);
+  if (!Number.isFinite(time)) return 0;
+
+  return Math.floor(Math.max(0, now - time) / DAY);
 }
 
 export function formatDateTime(iso: string | null | undefined, locale: Locale) {
-  if (!iso) return '';
+  const time = iso ? parseTimestamp(iso) : Number.NaN;
+  if (!Number.isFinite(time)) return '';
 
   return new Intl.DateTimeFormat(locale, {
     weekday: 'short',
@@ -68,5 +76,5 @@ export function formatDateTime(iso: string | null | undefined, locale: Locale) {
     month: 'short',
     hour: 'numeric',
     minute: '2-digit'
-  }).format(new Date(iso));
+  }).format(new Date(time));
 }

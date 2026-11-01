@@ -2,9 +2,11 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { buildNotificationDeepLink } from '@cio/core/services/notification/deep-link';
 import {
   countUnreadNotifications,
+  deleteNotificationForProfile,
   listNotificationsForProfile,
   markAllNotificationsRead,
-  markNotificationRead
+  markNotificationRead,
+  markNotificationUnread
 } from '@cio/db/queries/notifications/notification';
 import { listNotificationPreferences } from '@cio/db/queries/notifications/notification-preferences';
 import { loadNotificationSubjects } from '@cio/db/queries/notifications/notification-subjects';
@@ -68,6 +70,7 @@ export async function listNotifications(profileId: string, organizationId: strin
       readAt: row.readAt,
       createdAt: row.createdAt,
       courseTitle: subject?.courseTitle ?? null,
+      courseImage: subject?.courseImage ?? null,
       actorName: subject?.actorName ?? null,
       actorAvatarUrl: subject?.actorAvatarUrl ?? null,
       subjectTitle: subject?.subjectTitle ?? null,
@@ -95,6 +98,30 @@ export async function readNotification(profileId: string, organizationId: string
   const unreadCount = await countUnreadNotifications({ profileId, organizationId, hiddenTypes });
 
   return { id: row.id, readAt: row.readAt, unreadCount };
+}
+
+export async function unreadNotification(profileId: string, organizationId: string, notificationId: string) {
+  const row = await markNotificationUnread({ notificationId, profileId, organizationId });
+  if (!row) {
+    throw new AppError('Notification not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  const hiddenTypes = await hiddenNotificationTypes(profileId);
+  const unreadCount = await countUnreadNotifications({ profileId, organizationId, hiddenTypes });
+
+  return { id: row.id, readAt: row.readAt, unreadCount };
+}
+
+export async function deleteNotification(profileId: string, organizationId: string, notificationId: string) {
+  const deleted = await deleteNotificationForProfile({ notificationId, profileId, organizationId });
+  if (!deleted) {
+    throw new AppError('Notification not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  const hiddenTypes = await hiddenNotificationTypes(profileId);
+  const unreadCount = await countUnreadNotifications({ profileId, organizationId, hiddenTypes });
+
+  return { id: notificationId, unreadCount };
 }
 
 export async function readAllNotifications(profileId: string, organizationId: string) {

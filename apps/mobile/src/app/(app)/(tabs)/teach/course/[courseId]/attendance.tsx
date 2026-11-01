@@ -11,19 +11,18 @@ import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@
 import { ItemGroup } from '@/feature/common/components/item';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { Text } from '@/feature/common/components/text';
-import { GUTTER, SPACING } from '@/feature/common/constants/layout';
+import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { showToast } from '@/feature/toast/helpers/toast-store';
-import { useSaveAttendanceMutation } from '@/feature/teach/api/attendance';
 import { useTeachCourseQuery } from '@/feature/teach/api/teach-course';
 import {
   AttendanceBulkActions,
+  AttendanceCheckInItem,
   AttendanceRoster,
-  AttendanceRow,
-  AttendanceSaveBar,
+  AttendanceRows,
   AttendanceSearch,
   AttendanceSessionPicker,
   AttendanceSummary
@@ -32,15 +31,17 @@ import { defaultSessionOf, learnerName, sessionsOf } from '@/feature/teach/helpe
 import { teachCatalog } from '@/feature/teach/translations/catalog';
 import type { TeachCourse } from '@/feature/teach/types/teach';
 
-const SAVE_BAR_HEIGHT = 84;
+const SEARCH_THRESHOLD = 8;
 
-function AttendanceSheet({ course }: { course: TeachCourse }) {
+function AttendanceSheet({ course, initialSessionId }: { course: TeachCourse; initialSessionId?: string }) {
   const t = useTranslations(teachCatalog);
+  const common = useTranslations(commonCatalog);
   const { colors } = useTheme();
   const sessions = sessionsOf(course);
-  const [sessionId, setSessionId] = useState(() => defaultSessionOf(sessions)?.id ?? null);
+  const [sessionId, setSessionId] = useState(
+    () => sessions.find((session) => session.id === initialSessionId)?.id ?? defaultSessionOf(sessions)?.id ?? null
+  );
   const [search, setSearch] = useState('');
-  const saveAttendance = useSaveAttendanceMutation();
   const session = sessions.find((candidate) => candidate.id === sessionId) ?? null;
 
   if (sessions.length === 0) {
@@ -55,83 +56,68 @@ function AttendanceSheet({ course }: { course: TeachCourse }) {
     );
   }
 
+  const reportSaveError = (error: unknown, marks: unknown[], retry: () => void) =>
+    showToast({
+      tone: 'danger',
+      title: t('marksNotSaved', { count: marks.length }),
+      description: errorMessage(error),
+      action: { label: common('retry'), onPress: retry }
+    });
+
   return (
-    <AttendanceRoster course={course} session={session}>
+    <AttendanceRoster course={course} session={session} onSaveError={reportSaveError}>
       {(roster) => {
         const query = search.trim().toLowerCase();
         const visible = query
           ? roster.learners.filter((learner) => (learnerName(learner) ?? '').toLowerCase().includes(query))
           : roster.learners;
 
-        const save = () => {
-          if (!session) return;
-
-          saveAttendance.mutate(
-            { courseId: course.id, lessonId: session.id, changes: roster.changes },
-            {
-              onSuccess: ({ saved, failedCount, firstError }) => {
-                roster.clearSaved(saved.flatMap((record) => (record.studentId ? [record.studentId] : [])));
-                if (failedCount > 0) {
-                  showToast({
-                    tone: 'warning',
-                    title: t('marksNotSaved', { count: failedCount }),
-                    description: errorMessage(firstError)
-                  });
-                  return;
-                }
-
-                showToast({ tone: 'success', title: t('attendanceSaved'), description: session.title });
-              },
-              onError: (error) =>
-                showToast({ tone: 'danger', title: t('attendanceNotSaved'), description: errorMessage(error) })
-            }
-          );
-        };
-
         return (
-          <View style={[styles.fill, { backgroundColor: colors.background }]}>
-            <KeyboardAwareScrollView
-              bottomOffset={SAVE_BAR_HEIGHT + SPACING.md}
-              keyboardShouldPersistTaps="handled"
-              keyboardDismissMode="interactive"
-              style={{ backgroundColor: colors.background }}
-              contentContainerStyle={styles.content}
-            >
-              <View style={styles.section}>
-                <Text variant="caption" tone="muted">
-                  {course.title}
-                </Text>
+          <KeyboardAwareScrollView
+            bottomOffset={SPACING.xl}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            style={{ backgroundColor: colors.background }}
+            contentContainerStyle={styles.content}
+          >
+            <View style={styles.section}>
+              <Text variant="caption" tone="muted" numberOfLines={1}>
+                {course.title}
+              </Text>
+              <ItemGroup>
                 <AttendanceSessionPicker sessions={sessions} onSelect={(next) => setSessionId(next.id)} />
-              </View>
+                <AttendanceCheckInItem />
+              </ItemGroup>
+            </View>
 
-              <AttendanceSummary />
-
-              {roster.learners.length === 0 ? (
-                <Empty>
-                  <EmptyMedia icon={UserMinusIcon} />
-                  <EmptyTitle>{t('noLearnersEnrolledTitle')}</EmptyTitle>
-                  <EmptyDescription>{t('noLearnersEnrolledDescription')}</EmptyDescription>
-                </Empty>
-              ) : (
+            {roster.learners.length === 0 ? (
+              <Empty>
+                <EmptyMedia icon={UserMinusIcon} />
+                <EmptyTitle>{t('noLearnersEnrolledTitle')}</EmptyTitle>
+                <EmptyDescription>{t('noLearnersEnrolledDescription')}</EmptyDescription>
+              </Empty>
+            ) : (
+              <>
+                <AttendanceSummary />
                 <View style={styles.section}>
                   <AttendanceBulkActions />
-                  {roster.learners.length > 8 && <AttendanceSearch value={search} onChangeText={setSearch} />}
+                  {roster.learners.length > SEARCH_THRESHOLD && (
+                    <AttendanceSearch value={search} onChangeText={setSearch} />
+                  )}
                   {visible.length === 0 ? (
                     <Text variant="caption" tone="muted">
                       {t('noLearnerMatches', { query: search.trim() })}
                     </Text>
                   ) : (
-                    <ItemGroup>
-                      {visible.map((learner) => (
-                        <AttendanceRow key={learner.id} learner={learner} />
-                      ))}
-                    </ItemGroup>
+                    <AttendanceRows learners={visible} />
                   )}
+                  <Text variant="caption" tone="muted">
+                    {t('attendanceHint')}
+                  </Text>
                 </View>
-              )}
-            </KeyboardAwareScrollView>
-            <AttendanceSaveBar saving={saveAttendance.isPending} onSave={save} />
-          </View>
+              </>
+            )}
+          </KeyboardAwareScrollView>
         );
       }}
     </AttendanceRoster>
@@ -142,15 +128,15 @@ export default function AttendanceScreen() {
   const t = useTranslations(teachCatalog);
   const common = useTranslations(commonCatalog);
   const { colors } = useTheme();
-  const { courseId = '' } = useLocalSearchParams<{ courseId: string }>();
+  const { courseId = '', lessonId } = useLocalSearchParams<{ courseId: string; lessonId?: string }>();
   const course = useTeachCourseQuery(courseId);
 
   if (course.isPending) {
     return (
       <View style={[styles.fill, styles.loading, { backgroundColor: colors.background }]}>
-        <Skeleton height={64} radius={14} />
-        <Skeleton height={76} radius={12} />
-        <Skeleton height={320} radius={14} />
+        <Skeleton height={128} radius={RADII.xl} />
+        <Skeleton height={124} radius={RADII.xl} />
+        <Skeleton height={320} radius={RADII.xl} />
       </View>
     );
   }
@@ -173,18 +159,13 @@ export default function AttendanceScreen() {
     );
   }
 
-  return <AttendanceSheet course={course.data} />;
+  return <AttendanceSheet course={course.data} initialSessionId={lessonId} />;
 }
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   centered: { justifyContent: 'center' },
   loading: { paddingHorizontal: GUTTER, paddingTop: SPACING.lg, gap: SPACING.md },
-  content: {
-    paddingHorizontal: GUTTER,
-    paddingTop: SPACING.lg,
-    paddingBottom: SAVE_BAR_HEIGHT + SPACING.xl,
-    gap: SPACING.lg
-  },
+  content: { paddingHorizontal: GUTTER, paddingTop: SPACING.lg, paddingBottom: SPACING.xxxl, gap: SPACING.lg },
   section: { gap: SPACING.sm }
 });

@@ -129,7 +129,6 @@ export const it: TranslatedMessages<typeof en> = {
   statOverdue: 'In ritardo',
   statOverdueDetail: 'Scadenza superata',
   statToGrade: 'Da valutare',
-  gradeSubmissions: { one: 'Valuta {count} consegna', other: 'Valuta {count} consegne' },
   attendance: 'Presenze',
   announce: 'Annuncia',
   lowestProgress: 'Progresso più basso',
@@ -163,8 +162,6 @@ export const it: TranslatedMessages<typeof en> = {
   noSessionsTitle: 'Nessuna sessione da registrare',
   noSessionsDescription: 'Le presenze si registrano per lezione. Questo corso non ha ancora lezioni.',
   marksNotSaved: { one: '{count} presenza non è stata salvata', other: '{count} presenze non sono state salvate' },
-  attendanceSaved: 'Presenze salvate',
-  attendanceNotSaved: 'Le presenze non sono state salvate',
   noLearnersEnrolledTitle: 'Nessun partecipante iscritto',
   noLearnersEnrolledDescription: 'Nessuno si è ancora iscritto a questo corso come partecipante.',
   noLearnerMatches: 'Nessun partecipante corrisponde a «{query}».',
@@ -175,19 +172,13 @@ export const it: TranslatedMessages<typeof en> = {
   noSessionA11y: 'Nessuna sessione scelta. Cambia sessione',
   chooseSession: 'Scegli una sessione',
   change: 'Cambia',
-  unsavedNote: 'Le modifiche non salvate restano associate a questa sessione quando cambi.',
   sessions: 'Sessioni',
   present: 'Presente',
   absent: 'Assente',
   notMarked: 'Non registrato',
-  notSaved: 'non salvato',
   markAllPresent: 'Tutti presenti',
   markAllAbsent: 'Tutti assenti',
-  undo: 'Annulla',
   findLearner: 'Cerca un partecipante',
-  noChangesToSave: 'Nessuna modifica da salvare',
-  saveChanges: { one: 'Salva {count} modifica', other: 'Salva {count} modifiche' },
-  learnerCount: { one: '{count} partecipante', other: '{count} partecipanti' },
   courseTeam: 'Team del corso',
   courseMember: 'Membro del corso',
   comments: 'Commenti',
@@ -228,5 +219,56 @@ export const it: TranslatedMessages<typeof en> = {
     other:
       'Il post e i suoi {count} commenti vengono rimossi dalla bacheca del corso per tutti. L’azione non può essere annullata.'
   },
-  gradeAction: 'Valuta'
+  gradeAction: 'Valuta',
+  sessionLiveNow: 'In diretta',
+  statusLate: 'In ritardo',
+  markedOf: { one: '{marked} su {count} registrato', other: '{marked} su {count} registrati' },
+  markRestAbsent: {
+    one: 'Segna assente il {count} partecipante non registrato',
+    other: 'Segna assenti i {count} partecipanti non registrati'
+  },
+  confirmAllPresentTitle: {
+    one: 'Segnare {count} partecipante come presente?',
+    other: 'Segnare tutti i {count} partecipanti come presenti?'
+  },
+  confirmAllAbsentTitle: {
+    one: 'Segnare {count} partecipante come assente?',
+    other: 'Segnare tutti i {count} partecipanti come assenti?'
+  },
+  confirmReplaceMarks: {
+    one: 'Sostituisce {count} registrazione già salvata per questa sessione, check-in inclusi.',
+    other: 'Sostituisce {count} registrazioni già salvate per questa sessione, check-in inclusi.'
+  },
+  checkedInAt: 'check-in alle {time}',
+  checkedInTime: 'Check-in alle {time}',
+  markLearner: 'Presenza di {name}',
+  attendanceHint: 'Scorri a destra su un partecipante per segnarlo presente, o a sinistra per segnarlo assente.',
+  titleCheckIn: 'Check-in',
+  startCheckIn: 'Avvia check-in',
+  startCheckInDescription: 'Mostra un codice che i partecipanti usano per segnarsi presenti',
+  checkInOpen: 'Check-in aperto',
+  checkInOpenDetail: 'Codice {code} · mancano {time}',
+  showCode: 'Mostra codice',
+  startingCheckIn: 'Avvio del check-in',
+  checkInInstructions:
+    'I partecipanti scansionano il codice QR nell’app ClassroomIO, oppure aprono la lezione, scelgono Fai il check-in e digitano il codice. Chi fa il check-in più di {minutes} minuti dopo l’inizio viene segnato in ritardo.',
+  expiresIn: 'Scade tra {time}',
+  codeExpired: 'Questo codice è scaduto',
+  newCode: 'Nuovo codice',
+  endCheckIn: 'Chiudi check-in',
+  checkedInProgress: {
+    one: '{checked} partecipante su {count} ha fatto il check-in',
+    other: '{checked} partecipanti su {count} hanno fatto il check-in'
+  },
+  noCheckInsYet: 'Nessuno ha ancora fatto il check-in.',
+  checkInNotStarted: 'Il check-in non è stato avviato',
+  checkInNotEnded: 'Il check-in non è stato chiuso',
+  checkInEnded: 'Check-in chiuso',
+  codeA11y: 'Codice di check-in {code}',
+  qrA11y: 'Codice QR per il check-in a {title}',
+  nextSession: 'Prossima sessione',
+  gradeSubmissionsTitle: 'Valuta consegne',
+  allGradedShort: 'Nulla in attesa di valutazione',
+  attendanceDescription: 'Segna i partecipanti presenti, in ritardo o assenti per ogni sessione',
+  announceDescription: 'Pubblica nel feed del corso'
 };

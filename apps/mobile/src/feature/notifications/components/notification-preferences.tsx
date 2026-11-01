@@ -13,6 +13,7 @@ import { Icon } from '@/feature/common/components/icon';
 import {
   Item,
   ItemActions,
+  ItemChevron,
   ItemContent,
   ItemDescription,
   ItemGroup,
@@ -29,10 +30,12 @@ import {
 import { ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { SegmentedControl, SegmentedControlItem } from '@/feature/common/components/segmented-control';
 import { Skeleton } from '@/feature/common/components/skeleton';
+import { IconTile } from '@/feature/common/components/icon-tile';
 import { Switch } from '@/feature/common/components/switch';
 import { Text } from '@/feature/common/components/text';
 import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
+import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useLocale } from '@/feature/i18n/helpers/use-locale';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -190,6 +193,7 @@ export function NotificationCategorySection({
 
 function NotificationCategorySwitch({ row }: { row: CategoryPreference }) {
   const t = useTranslations(notificationsCatalog);
+  const { colors } = useTheme();
   const { channel, preferences, update } = useNotificationPreferences();
   const display = NOTIFICATION_CATEGORY_DISPLAY[row.category];
   const label = t(display.label);
@@ -198,8 +202,8 @@ function NotificationCategorySwitch({ row }: { row: CategoryPreference }) {
 
   return (
     <Item>
-      <ItemMedia variant="tile">
-        <Icon icon={display.icon} size={20} tone="ink" />
+      <ItemMedia>
+        <IconTile icon={display.icon} tone={display.tone} />
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{label}</ItemTitle>
@@ -222,6 +226,7 @@ type QuietHoursField = 'startMinute' | 'endMinute';
 export function QuietHoursSection() {
   const t = useTranslations(notificationsCatalog);
   const locale = useLocale();
+  const { colors } = useTheme();
   const { channel, preferences, update } = useNotificationPreferences();
   const [editing, setEditing] = useState<QuietHoursField | null>(null);
   if (!preferences || channel !== 'push' || !preferences.pushAvailable) return null;
@@ -239,8 +244,8 @@ export function QuietHoursSection() {
       <ScreenSectionHeader title={t('quietHours')} />
       <ItemGroup>
         <Item>
-          <ItemMedia variant="tile">
-            <Icon icon={MoonIcon} size={20} tone="ink" />
+          <ItemMedia>
+            <IconTile icon={MoonIcon} />
           </ItemMedia>
           <ItemContent>
             <ItemTitle>{t('pausePush')}</ItemTitle>
@@ -263,6 +268,7 @@ export function QuietHoursSection() {
             </ItemContent>
             <ItemActions>
               <SettingValue>{formatMinuteOfDay(quietHours.startMinute, locale)}</SettingValue>
+              <ItemChevron />
             </ItemActions>
           </Item>
         ) : null}
@@ -273,13 +279,14 @@ export function QuietHoursSection() {
             </ItemContent>
             <ItemActions>
               <SettingValue>{formatMinuteOfDay(quietHours.endMinute, locale)}</SettingValue>
+              <ItemChevron />
             </ItemActions>
           </Item>
         ) : null}
         {quietHours ? (
           <Item>
-            <ItemMedia variant="tile">
-              <Icon icon={GlobeIcon} size={20} tone="ink" />
+            <ItemMedia>
+              <IconTile icon={GlobeIcon} />
             </ItemMedia>
             <ItemContent>
               <ItemTitle>{t('timeZone')}</ItemTitle>

@@ -59,8 +59,6 @@ export const tr: TranslatedMessages<typeof en> = {
   askOffline: 'Soru sormak için bağlantı gerekir. Yeniden bağlanıp gönderene kadar yazdıklarınız kaydedilmez.',
   editOffline:
     'Değişiklikleri kaydetmek için bağlantı gerekir. Yeniden bağlanıp kaydedene kadar düzenlemeleriniz bu ekranda kalır.',
-  postQuestion: 'Soruyu gönder',
-  saveChanges: 'Değişiklikleri kaydet',
   fieldTitle: 'Başlık',
   fieldTitlePlaceholder: 'Ne öğrenmek istiyorsunuz?',
   fieldCourse: 'Kurs',
@@ -86,5 +84,29 @@ export const tr: TranslatedMessages<typeof en> = {
   linkCopied: 'Bağlantı kopyalandı',
   searchPlaceholder: 'Soru ara',
   searchEmptyTitle: 'Eşleşen soru yok',
-  searchEmptyDescription: 'Hiçbir soru başlığı, yazar veya kurs “{query}” içermiyor.'
+  searchEmptyDescription: 'Hiçbir soru başlığı, yazar veya kurs “{query}” içermiyor.',
+  segmentAll: 'Tümü',
+  segmentForYou: 'Size özel',
+  forYouEmptyTitle: 'Takip edilen soru yok',
+  forYouEmptyDescription:
+    'Sorduğunuz, yanıtladığınız veya takip ettiğiniz sorular Size özel bölümünde yer alır. Okumadığınız yanıtları olan sorular bir noktayla işaretlenir.',
+  forYouEmptyFilteredDescription: 'Bu kursta soru sormadınız, yanıtlamadınız veya takip etmediniz.',
+  newAnswers: 'Yeni yanıtlar',
+  following: 'Takip ediliyor',
+  followQuestion: 'Soruyu takip et',
+  unfollowQuestion: 'Soruyu takipten çık',
+  followedTitle: 'Bu soruyu takip ediyorsunuz',
+  followedDescription: 'Biri yanıtladığında bildirim alırsınız.',
+  followFailed: 'Takip ayarı kaydedilmedi',
+  acceptedAnswer: 'Kabul edilen yanıt',
+  markAccepted: 'Kabul edildi olarak işaretle',
+  unmarkAccepted: 'Kabul işaretini kaldır',
+  acceptFailed: 'Kabul edilen yanıt kaydedilmedi',
+  hiddenFromLearners: 'Öğrencilerden gizli',
+  hiddenQuestionDescription:
+    'Öğrenciler bu soruyu ve yanıtlarını göremez. Eğitmenler ve yöneticiler görmeye devam eder.',
+  hideFromLearners: 'Öğrencilerden gizle',
+  showToLearners: 'Öğrencilere göster',
+  visibilityFailed: 'Görünürlük değişmedi',
+  post: 'Paylaş'
 };

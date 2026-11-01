@@ -63,8 +63,6 @@ export const fr: TranslatedMessages<typeof en> = {
     'Poser une question nécessite une connexion. Rien de ce que vous saisissez n’est enregistré tant que vous ne vous êtes pas reconnecté et n’avez pas publié.',
   editOffline:
     'Enregistrer les modifications nécessite une connexion. Vos modifications restent sur cet écran jusqu’à ce que vous vous reconnectiez et enregistriez.',
-  postQuestion: 'Publier la question',
-  saveChanges: 'Enregistrer les modifications',
   fieldTitle: 'Titre',
   fieldTitlePlaceholder: 'Que voulez-vous savoir ?',
   fieldCourse: 'Cours',
@@ -90,5 +88,29 @@ export const fr: TranslatedMessages<typeof en> = {
   linkCopied: 'Lien copié',
   searchPlaceholder: 'Rechercher des questions',
   searchEmptyTitle: 'Aucune question correspondante',
-  searchEmptyDescription: 'Aucun titre de question, auteur ou cours ne contient « {query} ».'
+  searchEmptyDescription: 'Aucun titre de question, auteur ou cours ne contient « {query} ».',
+  segmentAll: 'Toutes',
+  segmentForYou: 'Pour vous',
+  forYouEmptyTitle: 'Aucune question suivie',
+  forYouEmptyDescription:
+    'Les questions que vous posez, auxquelles vous répondez ou que vous suivez figurent dans Pour vous. Un point signale les questions ayant des réponses non lues.',
+  forYouEmptyFilteredDescription: 'Vous n’avez posé, suivi ni répondu à aucune question dans ce cours.',
+  newAnswers: 'Nouvelles réponses',
+  following: 'Vous suivez',
+  followQuestion: 'Suivre la question',
+  unfollowQuestion: 'Ne plus suivre la question',
+  followedTitle: 'Vous suivez cette question',
+  followedDescription: 'Vous recevez une notification quand quelqu’un répond.',
+  followFailed: 'Le suivi n’a pas été enregistré',
+  acceptedAnswer: 'Réponse acceptée',
+  markAccepted: 'Marquer comme acceptée',
+  unmarkAccepted: 'Retirer la mention acceptée',
+  acceptFailed: 'La réponse acceptée n’a pas été enregistrée',
+  hiddenFromLearners: 'Masquée pour les apprenants',
+  hiddenQuestionDescription:
+    'Les apprenants ne voient ni cette question ni ses réponses. Les formateurs et les administrateurs les voient toujours.',
+  hideFromLearners: 'Masquer pour les apprenants',
+  showToLearners: 'Afficher pour les apprenants',
+  visibilityFailed: 'La visibilité n’a pas été modifiée',
+  post: 'Publier'
 };

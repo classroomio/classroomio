@@ -75,5 +75,10 @@ export const es: TranslatedMessages<typeof en> = {
   quietStart: 'Inicio de las horas de silencio',
   quietEnd: 'Fin de las horas de silencio',
   footnote: 'Los avisos de formación vencida siguen activos en push y en la app porque la formación es obligatoria.',
-  markRead: 'Marcar como leída'
+  markRead: 'Marcar como leída',
+  markUnread: 'Marcar como no leída',
+  undo: 'Deshacer',
+  deleted: 'Notificación eliminada',
+  deleteFailed: 'No se eliminó la notificación',
+  unavailableOffline: 'Disponible cuando vuelvas a estar en línea'
 };

@@ -33,6 +33,7 @@ export const da: TranslatedMessages<typeof en> = {
   uploadBlocker: 'Vent, til uploads er færdige, før du indsender.',
   submitAnswers: 'Indsend svar',
   nextQuestion: 'Næste spørgsmål',
+  previousQuestion: 'Forrige spørgsmål',
   confirmSubmitTitle: 'Indsend dine svar?',
   confirmSubmitMultiple: 'Din underviser kan se dette forsøg. Du kan tage øvelsen igen bagefter.',
   confirmSubmitSingle: 'Øvelsen tillader ét forsøg. Du kan ikke ændre dine svar, når du har indsendt dem.',

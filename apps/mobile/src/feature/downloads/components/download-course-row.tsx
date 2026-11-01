@@ -15,12 +15,18 @@ import {
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
 import { Icon, type AppIcon } from '@/feature/common/components/icon';
-import { Item, ItemActions, ItemContent, ItemTitle } from '@/feature/common/components/item';
+import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from '@/feature/common/components/item';
 import { Progress } from '@/feature/common/components/progress';
 import { Text } from '@/feature/common/components/text';
 import { HIT_SLOP, SPACING } from '@/feature/common/constants/layout';
 import { tapHaptic } from '@/feature/common/helpers/haptics';
-import { courseDownloadPercent, courseDownloadSummary } from '@/feature/downloads/helpers/download-copy';
+import { useEnrolledCoursesQuery } from '@/feature/course/api/enrolled-courses';
+import { CourseThumbnail } from '@/feature/course/components/course-thumbnail';
+import {
+  courseDownloadPercent,
+  courseDownloadSummary,
+  downloadStatusIconOf
+} from '@/feature/downloads/helpers/download-copy';
 import { useDownloadErrorMessage } from '@/feature/downloads/helpers/download-error';
 import {
   pauseCourseDownload,
@@ -57,6 +63,8 @@ export function DownloadCourseRow({ courseId }: { courseId: string }) {
   const downloadErrorMessage = useDownloadErrorMessage();
   const locale = useLocale();
   const course = useCourseDownload(courseId);
+  const enrolled = useEnrolledCoursesQuery();
+  const artwork = enrolled.data?.find((item) => item.id === courseId);
   const [confirming, setConfirming] = useState(false);
   const [removing, setRemoving] = useState(false);
   if (!course) return null;
@@ -64,6 +72,7 @@ export function DownloadCourseRow({ courseId }: { courseId: string }) {
   const active = course.status === 'downloading' || course.status === 'queued' || course.status === 'waiting';
   const resumable = course.status === 'paused' || course.status === 'failed';
   const summary = courseDownloadSummary(course, t, locale);
+  const status = downloadStatusIconOf(course);
 
   const remove = async () => {
     setRemoving(true);
@@ -84,16 +93,27 @@ export function DownloadCourseRow({ courseId }: { courseId: string }) {
         accessibilityLabel={`${course.title}, ${summary}`}
         accessibilityHint={t('opensCourse')}
       >
+        <ItemMedia>
+          <CourseThumbnail uri={artwork?.bannerImage || artwork?.logo} size={48} recyclingKey={courseId} />
+        </ItemMedia>
         <ItemContent>
           <ItemTitle numberOfLines={2}>{course.title}</ItemTitle>
-          <Text
-            variant="caption"
-            tone={course.status === 'failed' ? 'danger' : 'muted'}
-            numberOfLines={1}
-            style={styles.numbers}
-          >
-            {summary}
-          </Text>
+          <View style={styles.status}>
+            <Icon
+              icon={status.icon}
+              size={14}
+              tone={status.tone}
+              weight={course.status === 'complete' ? 'fill' : 'regular'}
+            />
+            <Text
+              variant="caption"
+              tone={course.status === 'failed' ? 'danger' : 'muted'}
+              numberOfLines={1}
+              style={styles.numbers}
+            >
+              {summary}
+            </Text>
+          </View>
           {active || course.status === 'paused' ? (
             <View style={styles.progress}>
               <Progress value={courseDownloadPercent(course)} />
@@ -142,7 +162,8 @@ export function DownloadCourseRow({ courseId }: { courseId: string }) {
 }
 
 const styles = StyleSheet.create({
-  numbers: { fontVariant: ['tabular-nums'] },
+  status: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xxs + 1 },
+  numbers: { flexShrink: 1, fontVariant: ['tabular-nums'] },
   progress: { marginTop: SPACING.xs },
   iconButton: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }
 });

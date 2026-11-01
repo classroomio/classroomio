@@ -1,16 +1,10 @@
 import { calendarDaysUntil } from '@/feature/common/helpers/calendar-date';
 import { complianceCatalog } from '@/feature/compliance/translations/catalog';
 import type { en } from '@/feature/compliance/translations/en';
-import type {
-  ComplianceOverview,
-  ComplianceRequirement,
-  ComplianceStanding
-} from '@/feature/compliance/types/compliance';
+import type { ComplianceOverview, ComplianceRequirement } from '@/feature/compliance/types/compliance';
 import type { Translator } from '@/feature/i18n/helpers/translate';
 import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
-
-type ComplianceMessageKey = keyof typeof en;
 
 /** Translator and date formatter for compliance copy, in the app language. */
 export type ComplianceCopy = { t: Translator<typeof en>; date: (iso: string) => string };
@@ -94,24 +88,6 @@ export function requirementDetails(requirement: ComplianceRequirement, { t, date
   }
 
   return details;
-}
-
-const COUNT_LABELS: Array<[ComplianceStanding[], ComplianceMessageKey]> = [
-  [['overdue'], 'countOverdue'],
-  [['in_grace_period'], 'countInGracePeriod'],
-  [['due_soon'], 'countDueSoon'],
-  [['open', 'unscheduled'], 'countToDo'],
-  [['compliant'], 'countCompliant'],
-  [['waived'], 'countWaived']
-];
-
-export function complianceCountsText(counts: ComplianceOverview['counts'], { t }: ComplianceCopy) {
-  return COUNT_LABELS.map(
-    ([standings, key]) => [standings.reduce((sum, standing) => sum + counts[standing], 0), key] as const
-  )
-    .filter(([count]) => count > 0)
-    .map(([count, key]) => t(key, { count }))
-    .join(' · ');
 }
 
 export function complianceSummaryText(overview: ComplianceOverview, { t }: ComplianceCopy) {

@@ -56,11 +56,11 @@ export default function AskQuestionScreen() {
             )
           }
         >
-          <QuestionFormTitle />
           <QuestionFormCourse />
+          <QuestionFormTitle />
           <QuestionFormBody />
           <QuestionFormImages />
-          <QuestionFormSubmit>{t('postQuestion')}</QuestionFormSubmit>
+          <QuestionFormSubmit>{t('post')}</QuestionFormSubmit>
         </QuestionForm>
       )}
     </QuestionFormLayout>

@@ -81,10 +81,8 @@ export const hi: TranslatedMessages<typeof en> = {
   downloadSize: '{size} डाउनलोड करें',
   download: 'डाउनलोड करें',
   notNow: 'अभी नहीं',
-  otherCourses: 'दूसरे कोर्स',
   storageOnDevice: 'इस डिवाइस पर स्टोरेज',
   usedSize: '{size} इस्तेमाल हुआ',
-  freeSize: '{size} खाली',
   downloadsTitle: 'डाउनलोड',
   noDownloadsTitle: 'अभी कोई डाउनलोड नहीं',
   noDownloadsDescription: 'बिना कनेक्शन के खोलने के लिए किसी कोर्स या पाठ को उसके पेज से डाउनलोड करें।',
@@ -98,5 +96,9 @@ export const hi: TranslatedMessages<typeof en> = {
   },
   removeAll: 'सभी हटाएं',
   removeAllError: 'डाउनलोड हटाए नहीं गए',
-  notReady: 'डाउनलोड अभी तैयार नहीं हैं। फिर कोशिश करें।'
+  notReady: 'डाउनलोड अभी तैयार नहीं हैं। फिर कोशिश करें।',
+  usedByDownloads: 'डाउनलोड द्वारा उपयोग किया गया',
+  legendDownloads: 'डाउनलोड',
+  legendOther: 'अन्य ऐप्स और डेटा',
+  legendFree: 'खाली'
 };

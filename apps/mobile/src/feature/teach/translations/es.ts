@@ -130,7 +130,6 @@ export const es: TranslatedMessages<typeof en> = {
   statOverdue: 'Vencidos',
   statOverdueDetail: 'Fecha límite pasada',
   statToGrade: 'Por calificar',
-  gradeSubmissions: { one: 'Calificar {count} entrega', other: 'Calificar {count} entregas' },
   attendance: 'Asistencia',
   announce: 'Anunciar',
   lowestProgress: 'Menor progreso',
@@ -165,8 +164,6 @@ export const es: TranslatedMessages<typeof en> = {
   noSessionsTitle: 'No hay sesiones para registrar',
   noSessionsDescription: 'La asistencia se registra por lección. Este curso aún no tiene lecciones.',
   marksNotSaved: { one: '{count} registro no se guardó', other: '{count} registros no se guardaron' },
-  attendanceSaved: 'Asistencia guardada',
-  attendanceNotSaved: 'La asistencia no se guardó',
   noLearnersEnrolledTitle: 'No hay participantes inscritos',
   noLearnersEnrolledDescription: 'Nadie se ha unido a este curso como participante todavía.',
   noLearnerMatches: 'Ningún participante coincide con «{query}».',
@@ -177,19 +174,13 @@ export const es: TranslatedMessages<typeof en> = {
   noSessionA11y: 'Ninguna sesión elegida. Cambiar sesión',
   chooseSession: 'Elige una sesión',
   change: 'Cambiar',
-  unsavedNote: 'Los cambios sin guardar se mantienen en esta sesión cuando cambias de sesión.',
   sessions: 'Sesiones',
   present: 'Presente',
   absent: 'Ausente',
   notMarked: 'Sin registrar',
-  notSaved: 'sin guardar',
   markAllPresent: 'Todos presentes',
   markAllAbsent: 'Todos ausentes',
-  undo: 'Deshacer',
   findLearner: 'Buscar participante',
-  noChangesToSave: 'No hay cambios que guardar',
-  saveChanges: { one: 'Guardar {count} cambio', other: 'Guardar {count} cambios' },
-  learnerCount: { one: '{count} participante', other: '{count} participantes' },
   courseTeam: 'Equipo del curso',
   courseMember: 'Miembro del curso',
   comments: 'Comentarios',
@@ -230,5 +221,57 @@ export const es: TranslatedMessages<typeof en> = {
     other:
       'La publicación y sus {count} comentarios se eliminan de las noticias del curso para todos. Esta acción no se puede deshacer.'
   },
-  gradeAction: 'Calificar'
+  gradeAction: 'Calificar',
+  sessionLiveNow: 'En directo',
+  statusLate: 'Con retraso',
+  markedOf: { one: '{marked} de {count} registrado', other: '{marked} de {count} registrados' },
+  markRestAbsent: {
+    one: 'Marcar como ausente al {count} participante sin registrar',
+    other: 'Marcar como ausentes a los {count} participantes sin registrar'
+  },
+  confirmAllPresentTitle: {
+    one: '¿Marcar a {count} participante como presente?',
+    other: '¿Marcar a los {count} participantes como presentes?'
+  },
+  confirmAllAbsentTitle: {
+    one: '¿Marcar a {count} participante como ausente?',
+    other: '¿Marcar a los {count} participantes como ausentes?'
+  },
+  confirmReplaceMarks: {
+    one: 'Esto reemplaza {count} registro ya guardado para esta sesión, incluidos los registros de entrada.',
+    other: 'Esto reemplaza {count} registros ya guardados para esta sesión, incluidos los registros de entrada.'
+  },
+  checkedInAt: 'entrada a las {time}',
+  checkedInTime: 'Entrada a las {time}',
+  markLearner: 'Asistencia de {name}',
+  attendanceHint:
+    'Desliza a la derecha sobre un participante para marcarlo presente, o a la izquierda para marcarlo ausente.',
+  titleCheckIn: 'Registro de entrada',
+  startCheckIn: 'Iniciar registro de entrada',
+  startCheckInDescription: 'Muestra un código que los participantes usan para marcarse como presentes',
+  checkInOpen: 'Registro de entrada abierto',
+  checkInOpenDetail: 'Código {code} · quedan {time}',
+  showCode: 'Mostrar código',
+  startingCheckIn: 'Iniciando el registro de entrada',
+  checkInInstructions:
+    'Los participantes escanean el código QR en la app de ClassroomIO, o abren la lección, eligen Registrar entrada y escriben el código. Quien registre su entrada más de {minutes} minutos después del inicio queda marcado con retraso.',
+  expiresIn: 'Caduca en {time}',
+  codeExpired: 'Este código ha caducado',
+  newCode: 'Nuevo código',
+  endCheckIn: 'Terminar registro de entrada',
+  checkedInProgress: {
+    one: '{checked} de {count} participante registrado',
+    other: '{checked} de {count} participantes registrados'
+  },
+  noCheckInsYet: 'Nadie ha registrado su entrada todavía.',
+  checkInNotStarted: 'No se inició el registro de entrada',
+  checkInNotEnded: 'No se terminó el registro de entrada',
+  checkInEnded: 'Registro de entrada terminado',
+  codeA11y: 'Código de entrada {code}',
+  qrA11y: 'Código QR para registrar la entrada en {title}',
+  nextSession: 'Próxima sesión',
+  gradeSubmissionsTitle: 'Calificar entregas',
+  allGradedShort: 'Nada pendiente de calificar',
+  attendanceDescription: 'Marca a los participantes como presentes, con retraso o ausentes en cada sesión',
+  announceDescription: 'Publicar en las novedades del curso'
 };

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Icon, type AppIcon } from '@/feature/common/components/icon';
+import type { AppIcon } from '@/feature/common/components/icon';
 import {
   Item,
   ItemActions,
@@ -11,18 +11,26 @@ import {
   ItemMedia,
   ItemTitle
 } from '@/feature/common/components/item';
+import { IconTile, type IconTileTone } from '@/feature/common/components/icon-tile';
 
 export function CourseLinks({ children }: { children: ReactNode }) {
   return <ItemGroup>{children}</ItemGroup>;
 }
 
-type CourseLinkProps = { icon: AppIcon; title: string; description?: string; onPress: () => void };
+type CourseLinkProps = {
+  icon: AppIcon;
+  /** Fill of the icon tile, a theme colour. */
+  tone?: IconTileTone;
+  title: string;
+  description?: string;
+  onPress: () => void;
+};
 
-export function CourseLink({ icon, title, description, onPress }: CourseLinkProps) {
+export function CourseLink({ icon, tone, title, description, onPress }: CourseLinkProps) {
   return (
     <Item onPress={onPress} accessibilityLabel={description ? `${title}, ${description}` : title}>
-      <ItemMedia variant="tile">
-        <Icon icon={icon} size={19} tone="ink" />
+      <ItemMedia>
+        <IconTile icon={icon} tone={tone} />
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{title}</ItemTitle>

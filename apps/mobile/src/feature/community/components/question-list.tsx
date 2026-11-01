@@ -7,14 +7,19 @@ import { Skeleton, SkeletonAvatar, SkeletonCard, SkeletonText } from '@/feature/
 import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { communityCatalog } from '@/feature/community/translations/catalog';
-import type { CommunityQuestionSummary } from '@/feature/community/types/community';
+import type {
+  CommunityListQuestion,
+  CommunityQuestionSummary,
+  CommunitySegment
+} from '@/feature/community/types/community';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
-import { QuestionCard } from './question-card';
 import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
 
+import { QuestionCard } from './question-card';
+
 type QuestionListProps = {
-  questions: CommunityQuestionSummary[];
+  questions: CommunityListQuestion[];
   loading: boolean;
   onRefresh: RefreshHandler;
   onOpen: (question: CommunityQuestionSummary) => void;
@@ -29,7 +34,7 @@ export function QuestionList({ questions, loading, onRefresh, onOpen, header, em
     <FlashList
       data={questions}
       keyExtractor={(question) => question.slug ?? question.title ?? ''}
-      renderItem={({ item }) => <QuestionCard question={item} onPress={onOpen} />}
+      renderItem={({ item }) => <QuestionCard question={item} unread={Boolean(item.hasUnread)} onPress={onOpen} />}
       ItemSeparatorComponent={Separator}
       ListHeaderComponent={header}
       ListEmptyComponent={loading ? <QuestionListSkeleton /> : empty}
@@ -69,8 +74,22 @@ function QuestionListSkeleton() {
   );
 }
 
-export function QuestionListEmpty({ filtered }: { filtered: boolean }) {
+type QuestionListEmptyProps = { segment: CommunitySegment; filtered: boolean };
+
+export function QuestionListEmpty({ segment, filtered }: QuestionListEmptyProps) {
   const t = useTranslations(communityCatalog);
+
+  if (segment === 'for-you') {
+    return (
+      <Empty>
+        <EmptyIllustration name="questions" />
+        <EmptyTitle>{filtered ? t('emptyFilteredTitle') : t('forYouEmptyTitle')}</EmptyTitle>
+        <EmptyDescription>
+          {filtered ? t('forYouEmptyFilteredDescription') : t('forYouEmptyDescription')}
+        </EmptyDescription>
+      </Empty>
+    );
+  }
 
   return (
     <Empty>

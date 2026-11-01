@@ -27,12 +27,6 @@ export const tr: TranslatedMessages<typeof en> = {
   detailWaiverEnds: 'Muafiyet bitişi: {date}',
   detailLastCompleted: 'Son tamamlama: {date}',
   detailRenewsEvery: { one: 'Her ay yenilenir', other: '{count} ayda bir yenilenir' },
-  countOverdue: { other: '{count} gecikmiş' },
-  countInGracePeriod: { other: '{count} ek sürede' },
-  countDueSoon: { other: '{count} son tarihi yaklaşan' },
-  countToDo: { other: '{count} yapılacak' },
-  countCompliant: { other: '{count} uyumlu' },
-  countWaived: { other: '{count} muaf' },
   summaryOutOf: { one: '{count} gereksinimden', other: '{count} gereksinimden' },
   summaryOverdue: { one: '{total} {count} tanesi gecikmiş.', other: '{total} {count} tanesi gecikmiş.' },
   summaryInGracePeriod: {
@@ -88,5 +82,7 @@ export const tr: TranslatedMessages<typeof en> = {
   resumeCourse: 'Kursa devam et',
   startCourse: 'Kursa başla',
   proof: 'Belge',
-  proofLabel: '{course} sertifikası'
+  proofLabel: '{course} sertifikası',
+  standingOnTrack: 'Yolunda',
+  nextDeadline: 'Sonraki son tarih'
 };

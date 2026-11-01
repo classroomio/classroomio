@@ -1,10 +1,3 @@
-import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
-import { ClipboardTextIcon } from 'phosphor-react-native/src/icons/ClipboardText';
-import { FileTextIcon } from 'phosphor-react-native/src/icons/FileText';
-import { PlayCircleIcon } from 'phosphor-react-native/src/icons/PlayCircle';
-import { PresentationIcon } from 'phosphor-react-native/src/icons/Presentation';
-import { VideoCameraIcon } from 'phosphor-react-native/src/icons/VideoCamera';
-import type { AppIcon } from '@/feature/common/components/icon';
 import { ContentType } from '@cio/utils/constants/content';
 
 import { Button, ButtonText } from '@/feature/common/components/button';
@@ -15,6 +8,7 @@ import {
   liveSessionPhaseOf,
   lockReasonOf
 } from '@/feature/course/helpers/content-copy';
+import { contentIconOf } from '@/feature/course/helpers/content-icon';
 import { courseCatalog } from '@/feature/course/translations/catalog';
 import type { ContentItemState, CourseContentItem } from '@/feature/course/types/course-detail';
 import { useLessonDownloadStatus } from '@/feature/downloads/helpers/download-store';
@@ -31,16 +25,6 @@ import {
   OutlineRowIndicator,
   OutlineRowTitle
 } from './course-outline';
-
-function iconOf(item: CourseContentItem): AppIcon {
-  if (item.type === ContentType.Exercise) return ClipboardTextIcon;
-  if (item.callUrl) return VideoCameraIcon;
-  if ((item.videosCount ?? 0) > 0) return PlayCircleIcon;
-  if (item.hasSlideContent) return PresentationIcon;
-  if ((item.documentsCount ?? 0) > 0) return FileTextIcon;
-
-  return BookOpenIcon;
-}
 
 type CourseContentRowProps = {
   courseId: string;
@@ -76,8 +60,8 @@ export function CourseContentRow({
   if (state === 'locked') description = lockReasonOf(item, items, t);
   else if (session) description = session;
   else if (isExercise) description = exerciseDetail(item, t, locale);
-  else
-    description = state === 'complete' ? `${lessonKindLabel(item, t)} · ${t('completed')}` : lessonKindLabel(item, t);
+  else description = lessonKindLabel(item, t);
+  if (state === 'current' && !session) description = `${t('upNext')} · ${description}`;
 
   const offlineNote =
     state === 'locked'
@@ -103,7 +87,7 @@ export function CourseContentRow({
       accessibilityLabel={[item.title, status, description].filter(Boolean).join(', ')}
       accessibilityHint={isExercise ? t('opensExercise') : t('opensLesson')}
     >
-      <OutlineRowIndicator icon={iconOf(item)} />
+      <OutlineRowIndicator icon={contentIconOf(item)} />
       <OutlineRowContent>
         <OutlineRowTitle>{item.title || (isExercise ? t('untitledExercise') : t('untitledLesson'))}</OutlineRowTitle>
         <OutlineRowDescription tone={phase === 'live' && state !== 'locked' ? 'primary' : undefined}>

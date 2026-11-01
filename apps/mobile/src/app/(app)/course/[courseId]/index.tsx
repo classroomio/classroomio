@@ -3,9 +3,12 @@ import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
 import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
 import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
 import { MegaphoneIcon } from 'phosphor-react-native/src/icons/Megaphone';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useHeaderHeight } from 'expo-router/react-navigation';
+import { setStatusBarStyle } from 'expo-status-bar';
+import { useCallback, type ReactNode } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import {
@@ -16,7 +19,7 @@ import {
   EmptyMedia,
   EmptyTitle
 } from '@/feature/common/components/empty';
-import { Text } from '@/feature/common/components/text';
+import { PullRefreshControl } from '@/feature/common/components/pull-refresh-control';
 import { SPACING } from '@/feature/common/constants/layout';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { errorMessage } from '@/feature/common/helpers/error-message';
@@ -27,7 +30,14 @@ import { CourseActionBar } from '@/feature/course/components/course-action-bar';
 import { CourseComplianceBanner } from '@/feature/course/components/course-compliance-banner';
 import { CourseContentRow } from '@/feature/course/components/course-content-row';
 import { CourseDetailSkeleton } from '@/feature/course/components/course-detail-skeleton';
-import { CourseHero } from '@/feature/course/components/course-hero';
+import {
+  CourseHeaderBackdrop,
+  CourseHero,
+  CourseHeroMeta,
+  CourseHeroSkeleton,
+  CourseHeroTitle,
+  useCourseHeroHeight
+} from '@/feature/course/components/course-hero';
 import { CourseLink, CourseLinks } from '@/feature/course/components/course-links';
 import { OutlineList, OutlineSection, OutlineSectionHeader } from '@/feature/course/components/course-outline';
 import { CourseSummary, CourseSummaryProgress } from '@/feature/course/components/course-summary';
@@ -43,31 +53,89 @@ import { CourseDownloadHeaderButton } from '@/feature/downloads/components/downl
 import { useLocale } from '@/feature/i18n/helpers/use-locale';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
-const TITLE_LINE = 28;
-
 export default function CourseDetailScreen() {
   const { courseId } = useLocalSearchParams<{ courseId: string }>();
   const t = useTranslations(courseCatalog);
   const common = useTranslations(commonCatalog);
   const locale = useLocale();
-  const { colors } = useTheme();
-  const { width } = useWindowDimensions();
+  const { colors, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
   const { course, outline, enrollment } = useCourseOutline(courseId);
-  const [titleThreshold, setTitleThreshold] = useState(Math.round((width * 9) / 16) + TITLE_LINE);
-  const { onScroll, offset, past } = useScrollThreshold(titleThreshold);
+  const heroHeight = useCourseHeroHeight();
+  const headerHeight = useHeaderHeight();
+  const collapseAt = heroHeight - headerHeight;
+  const { onScroll, offset, past } = useScrollThreshold(collapseAt);
   const offline = useIsOffline();
   const data = course.data;
+  const title = data?.title ?? enrollment?.title;
   const bannerUri = data?.bannerImage || data?.logo || enrollment?.bannerImage || enrollment?.logo;
+  const showsHero = course.isPending ? !offline : Boolean(data && outline);
+  const themeStatusBar = isDark ? 'light' : 'dark';
+  const typeKey = data ? courseTypeKey(data.type) : null;
+  const meta = outline
+    ? [
+        typeKey ? t(typeKey) : null,
+        t('lessonCount', { count: outline.lessonCount }),
+        outline.exerciseCount > 0 ? t('exerciseCount', { count: outline.exerciseCount }) : null
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    : null;
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!showsHero) return;
+
+      setStatusBarStyle(past ? themeStatusBar : 'light', true);
+
+      return () => setStatusBarStyle(themeStatusBar, true);
+    }, [showsHero, past, themeStatusBar])
+  );
 
   const header = (
     <Stack.Screen
       options={{
-        title: past && data ? data.title : '',
+        headerTransparent: true,
+        headerStyle: { backgroundColor: 'transparent' },
+        headerLargeStyle: { backgroundColor: 'transparent' },
+        title: past && title ? title : '',
         headerRight: data ? () => <CourseDownloadHeaderButton courseId={courseId} /> : undefined
       }}
     />
   );
-  const hero = <CourseHero uri={bannerUri} scrollOffset={offset} />;
+
+  const heroScreen = (children: ReactNode, footer?: ReactNode) => (
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+      {header}
+      <AnimatedScreenScrollView
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+        scrollEnabled={!course.isPending}
+        contentInsetAdjustmentBehavior="never"
+        scrollIndicatorInsets={{ top: headerHeight }}
+        refreshControl={
+          course.isPending ? undefined : (
+            <PullRefreshControl onRefresh={() => course.refetch()} tintColor={colors.onSolid} />
+          )
+        }
+        contentContainerStyle={[styles.content, { paddingBottom: (footer ? 0 : insets.bottom) + SPACING.xxxl }]}
+      >
+        <CourseHero uri={bannerUri} scrollOffset={offset} collapseAt={collapseAt}>
+          {title ? (
+            <>
+              {meta ? <CourseHeroMeta>{meta}</CourseHeroMeta> : null}
+              <CourseHeroTitle>{title}</CourseHeroTitle>
+            </>
+          ) : (
+            <CourseHeroSkeleton />
+          )}
+        </CourseHero>
+        {children}
+      </AnimatedScreenScrollView>
+      <CourseHeaderBackdrop scrollOffset={offset} collapseAt={collapseAt} />
+      {footer}
+    </View>
+  );
 
   if (course.isPending && offline) {
     return (
@@ -89,17 +157,7 @@ export default function CourseDetailScreen() {
     );
   }
 
-  if (course.isPending) {
-    return (
-      <>
-        {header}
-        <AnimatedScreenScrollView scrollEnabled={false}>
-          {hero}
-          <CourseDetailSkeleton />
-        </AnimatedScreenScrollView>
-      </>
-    );
-  }
+  if (course.isPending) return heroScreen(<CourseDetailSkeleton />);
 
   if (!data || !outline) {
     return (
@@ -122,14 +180,6 @@ export default function CourseDetailScreen() {
   }
 
   const isLiveClass = data.type === 'LIVE_CLASS';
-  const typeKey = courseTypeKey(data.type);
-  const meta = [
-    typeKey ? t(typeKey) : null,
-    t('lessonCount', { count: outline.lessonCount }),
-    outline.exerciseCount > 0 ? t('exerciseCount', { count: outline.exerciseCount }) : null
-  ]
-    .filter(Boolean)
-    .join(' · ');
   const finished = outline.items.length > 0 && outline.completed === outline.items.length;
   const resume = outline.current;
   const firstItem = outline.items[0] ?? null;
@@ -147,94 +197,81 @@ export default function CourseDetailScreen() {
     </Button>
   ) : null;
 
-  return (
-    <View style={[styles.screen, { backgroundColor: colors.background }]}>
-      {header}
-      <AnimatedScreenScrollView onRefresh={() => course.refetch()} scrollEventThrottle={16} onScroll={onScroll}>
-        {hero}
+  return heroScreen(
+    <>
+      {data.type === 'COMPLIANCE' && enrollment ? <CourseComplianceBanner course={enrollment} /> : null}
 
-        <View style={styles.heading} onLayout={(event) => setTitleThreshold(event.nativeEvent.layout.y + TITLE_LINE)}>
-          <Text variant="title" accessibilityRole="header">
-            {data.title}
-          </Text>
-          <Text variant="caption" tone="muted">
-            {meta}
-          </Text>
-        </View>
+      <CourseSummary>
+        <CourseSummaryProgress
+          percent={outline.percent}
+          label={t('completedOfTotal', { completed: outline.completed, total: outline.items.length })}
+          detail={finished ? t('finishedEverything') : resume ? t('nextItem', { title: resume.title }) : undefined}
+          finished={finished}
+        />
+        <CourseDownloadStatus courseId={courseId} />
+      </CourseSummary>
 
-        {data.type === 'COMPLIANCE' && enrollment ? <CourseComplianceBanner course={enrollment} /> : null}
-
-        <CourseSummary>
-          <CourseSummaryProgress
-            percent={outline.percent}
-            label={t('completedOfTotal', { completed: outline.completed, total: outline.items.length })}
-            detail={finished ? t('finishedEverything') : resume ? t('nextItem', { title: resume.title }) : undefined}
-          />
-          <CourseDownloadStatus courseId={courseId} />
-        </CourseSummary>
-
-        <CourseLinks>
+      <CourseLinks>
+        <CourseLink
+          icon={MegaphoneIcon}
+          title={t('newsfeed')}
+          description={t('newsfeedDescription')}
+          onPress={() => router.push({ pathname: '/course/[courseId]/newsfeed', params: { courseId } })}
+        />
+        {data.certificate ? (
           <CourseLink
-            icon={MegaphoneIcon}
-            title={t('newsfeed')}
-            description={t('newsfeedDescription')}
-            onPress={() => router.push({ pathname: '/course/[courseId]/newsfeed', params: { courseId } })}
+            icon={MedalIcon}
+            title={t('certificate')}
+            description={
+              certificateEarnedAt
+                ? t('certificateEarnedOn', { date: formatDay(certificateEarnedAt, locale) })
+                : t('certificateOnFinish')
+            }
+            onPress={() => router.push({ pathname: '/certificates/[courseId]', params: { courseId } })}
           />
-          {data.certificate ? (
-            <CourseLink
-              icon={MedalIcon}
-              title={t('certificate')}
-              description={
-                certificateEarnedAt
-                  ? t('certificateEarnedOn', { date: formatDay(certificateEarnedAt, locale) })
-                  : t('certificateOnFinish')
-              }
-              onPress={() => router.push({ pathname: '/certificates/[courseId]', params: { courseId } })}
-            />
-          ) : null}
-        </CourseLinks>
+        ) : null}
+      </CourseLinks>
 
-        {outline.items.length === 0 ? (
-          <Empty>
-            <EmptyMedia icon={BookOpenIcon} />
-            <EmptyTitle>{t('noLessonsTitle')}</EmptyTitle>
-            <EmptyDescription>{t('noLessonsDescription')}</EmptyDescription>
-          </Empty>
-        ) : (
-          outline.sections.map((section) => {
-            const done = section.items.filter((item) => item.isComplete).length;
+      {outline.items.length === 0 ? (
+        <Empty>
+          <EmptyMedia icon={BookOpenIcon} />
+          <EmptyTitle>{t('noLessonsTitle')}</EmptyTitle>
+          <EmptyDescription>{t('noLessonsDescription')}</EmptyDescription>
+        </Empty>
+      ) : (
+        outline.sections.map((section) => {
+          const done = section.items.filter((item) => item.isComplete).length;
 
-            return (
-              <OutlineSection key={section.id}>
-                <OutlineSectionHeader
-                  title={section.title ?? (outline.sections.length > 1 ? t('sectionMore') : t('sectionContent'))}
-                  meta={`${done}/${section.items.length}`}
-                />
-                <OutlineList>
-                  {section.items.map((item) => (
-                    <CourseContentRow
-                      key={item.id}
-                      courseId={courseId}
-                      item={item}
-                      items={outline.items}
-                      state={itemState(item, resume?.id ?? null)}
-                      isLiveClass={isLiveClass}
-                      offline={offline}
-                      onOpen={(target) => openContentItem(courseId, target)}
-                    />
-                  ))}
-                </OutlineList>
-              </OutlineSection>
-            );
-          })
-        )}
-      </AnimatedScreenScrollView>
-      {primaryAction ? <CourseActionBar>{primaryAction}</CourseActionBar> : null}
-    </View>
+          return (
+            <OutlineSection key={section.id}>
+              <OutlineSectionHeader
+                title={section.title ?? (outline.sections.length > 1 ? t('sectionMore') : t('sectionContent'))}
+                meta={t('completedOfTotal', { completed: done, total: section.items.length })}
+              />
+              <OutlineList>
+                {section.items.map((item) => (
+                  <CourseContentRow
+                    key={item.id}
+                    courseId={courseId}
+                    item={item}
+                    items={outline.items}
+                    state={itemState(item, resume?.id ?? null)}
+                    isLiveClass={isLiveClass}
+                    offline={offline}
+                    onOpen={(target) => openContentItem(courseId, target)}
+                  />
+                ))}
+              </OutlineList>
+            </OutlineSection>
+          );
+        })
+      )}
+    </>,
+    primaryAction ? <CourseActionBar>{primaryAction}</CourseActionBar> : null
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  heading: { gap: SPACING.xxs }
+  content: { paddingTop: 0 }
 });

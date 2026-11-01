@@ -10,113 +10,114 @@ import { downloadsCatalog } from '@/feature/downloads/translations/catalog';
 import { useLocale } from '@/feature/i18n/helpers/use-locale';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
-export type StorageSegment = { id: string; label: string; bytes: number };
+const MIN_DOWNLOADS_SHARE = 0.015;
 
-const SEGMENT_OPACITY = [1, 0.62, 0.4, 0.24];
-const MAX_SEGMENTS = SEGMENT_OPACITY.length;
+type StorageValue = { usedBytes: number; freeBytes: number | null; totalBytes: number | null };
 
-type StorageSummaryValue = { segments: StorageSegment[]; usedBytes: number };
+const StorageSummaryContext = createContext<StorageValue>({ usedBytes: 0, freeBytes: null, totalBytes: null });
 
-const StorageSummaryContext = createContext<StorageSummaryValue>({ segments: [], usedBytes: 0 });
+type StorageSummaryProps = StorageValue & { children: ReactNode };
 
-/** Folds the smallest entries into one "Other" segment so the bar and legend stay readable. */
-function segmentsOf(items: StorageSegment[], otherLabel: string): StorageSegment[] {
-  const sorted = [...items].filter((item) => item.bytes > 0).sort((a, b) => b.bytes - a.bytes);
-  if (sorted.length <= MAX_SEGMENTS) return sorted;
-
-  const kept = sorted.slice(0, MAX_SEGMENTS - 1);
-  const rest = sorted.slice(MAX_SEGMENTS - 1).reduce((total, item) => total + item.bytes, 0);
-
-  return [...kept, { id: 'other', label: otherLabel, bytes: rest }];
-}
-
-export function StorageSummary({ items, children }: { items: StorageSegment[]; children: ReactNode }) {
-  const t = useTranslations(downloadsCatalog);
-  const segments = segmentsOf(items, t('otherCourses'));
-  const usedBytes = items.reduce((total, item) => total + item.bytes, 0);
-
+/** Space used by downloads against the rest of the device, when the device reports its capacity. */
+export function StorageSummary({ usedBytes, freeBytes, totalBytes, children }: StorageSummaryProps) {
   return (
-    <StorageSummaryContext value={{ segments, usedBytes }}>
+    <StorageSummaryContext value={{ usedBytes, freeBytes, totalBytes }}>
       <Card style={styles.card}>{children}</Card>
     </StorageSummaryContext>
   );
 }
 
-export function StorageSummaryHeader({ freeBytes }: { freeBytes: number | null }) {
+export function StorageSummaryHeader() {
   const { usedBytes } = use(StorageSummaryContext);
   const t = useTranslations(downloadsCatalog);
   const locale = useLocale();
-  const used = t('usedSize', { size: formatBytes(usedBytes, locale) });
 
   return (
     <View style={styles.header}>
-      <Text variant="captionStrong">{t('storageOnDevice')}</Text>
-      <Text variant="caption" tone="muted" style={styles.numbers}>
-        {freeBytes === null ? used : `${used} · ${t('freeSize', { size: formatBytes(freeBytes, locale) })}`}
+      <Text variant="captionStrong" tone="muted">
+        {t('storageOnDevice')}
+      </Text>
+      <Text
+        variant="display"
+        style={styles.numbers}
+        accessibilityLabel={t('usedSize', { size: formatBytes(usedBytes, locale) })}
+      >
+        {formatBytes(usedBytes, locale)}
+      </Text>
+      <Text variant="caption" tone="muted">
+        {t('usedByDownloads')}
       </Text>
     </View>
   );
 }
 
-export function StorageBar() {
+function useBreakdown() {
+  const { usedBytes, freeBytes, totalBytes } = use(StorageSummaryContext);
+  if (freeBytes === null || totalBytes === null || totalBytes <= 0) return null;
+
+  const otherBytes = Math.max(0, totalBytes - freeBytes - usedBytes);
+  const downloadsShare = usedBytes > 0 ? Math.max(MIN_DOWNLOADS_SHARE, usedBytes / totalBytes) : 0;
+
+  return { usedBytes, otherBytes, freeBytes, downloadsShare, otherShare: otherBytes / totalBytes };
+}
+
+export function StorageMeter() {
   const { colors } = useTheme();
-  const { segments, usedBytes } = use(StorageSummaryContext);
+  const breakdown = useBreakdown();
+  if (!breakdown) return null;
 
   return (
     <View
-      style={[styles.bar, { backgroundColor: colors.mutedStrong }]}
+      style={[styles.meter, { backgroundColor: colors.mutedStrong }]}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
     >
-      {segments.map((segment, index) => (
-        <View
-          key={segment.id}
-          style={{
-            flex: usedBytes > 0 ? segment.bytes / usedBytes : 0,
-            backgroundColor: colors.primary,
-            opacity: SEGMENT_OPACITY[index]
-          }}
-        />
-      ))}
+      <View style={{ flex: breakdown.downloadsShare, backgroundColor: colors.primary }} />
+      <View style={{ flex: breakdown.otherShare, backgroundColor: colors.inkSubtle }} />
+      <View style={{ flex: Math.max(0, 1 - breakdown.downloadsShare - breakdown.otherShare) }} />
+    </View>
+  );
+}
+
+function LegendItem({ color, label, bytes }: { color: string; label: string; bytes: number }) {
+  const locale = useLocale();
+  const size = formatBytes(bytes, locale);
+
+  return (
+    <View style={styles.legendItem} accessible accessibilityLabel={`${label}, ${size}`}>
+      <View style={[styles.swatch, { backgroundColor: color }]} />
+      <Text variant="caption" tone="muted" numberOfLines={1} style={styles.legendLabel}>
+        {label}
+      </Text>
+      <Text variant="captionStrong" style={styles.numbers}>
+        {size}
+      </Text>
     </View>
   );
 }
 
 export function StorageLegend() {
   const { colors } = useTheme();
-  const { segments } = use(StorageSummaryContext);
-  const locale = useLocale();
-  if (segments.length === 0) return null;
+  const t = useTranslations(downloadsCatalog);
+  const breakdown = useBreakdown();
+  if (!breakdown) return null;
 
   return (
     <View style={styles.legend}>
-      {segments.map((segment, index) => (
-        <View
-          key={segment.id}
-          style={styles.legendItem}
-          accessible
-          accessibilityLabel={`${segment.label}, ${formatBytes(segment.bytes, locale)}`}
-        >
-          <View style={[styles.swatch, { backgroundColor: colors.primary, opacity: SEGMENT_OPACITY[index] }]} />
-          <Text variant="caption" tone="muted" numberOfLines={1} style={styles.legendLabel}>
-            {segment.label}
-          </Text>
-          <Text variant="caption" style={styles.numbers}>
-            {formatBytes(segment.bytes, locale)}
-          </Text>
-        </View>
-      ))}
+      <LegendItem color={colors.primary} label={t('legendDownloads')} bytes={breakdown.usedBytes} />
+      <LegendItem color={colors.inkSubtle} label={t('legendOther')} bytes={breakdown.otherBytes} />
+      <LegendItem color={colors.mutedStrong} label={t('legendFree')} bytes={breakdown.freeBytes} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { padding: SPACING.md, gap: SPACING.sm },
-  header: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: SPACING.sm },
+  card: { padding: SPACING.md, gap: SPACING.md },
+  header: { gap: 2 },
   numbers: { fontVariant: ['tabular-nums'] },
-  bar: { flexDirection: 'row', height: 8, borderRadius: RADII.pill, overflow: 'hidden', gap: 2 },
-  legend: { gap: SPACING.xxs },
+  meter: { flexDirection: 'row', height: 10, borderRadius: RADII.pill, overflow: 'hidden', gap: 2 },
+  legend: { gap: SPACING.xs },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
-  swatch: { width: 8, height: 8, borderRadius: 2 },
+  swatch: { width: 10, height: 10, borderRadius: 3 },
   legendLabel: { flex: 1 }
 });

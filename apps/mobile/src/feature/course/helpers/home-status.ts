@@ -1,8 +1,7 @@
 import { daysUntil } from '@/feature/course/helpers/format-date';
 import { learningStatusOf } from '@/feature/course/helpers/learning-status';
 import type { EnrolledCourse } from '@/feature/course/types/course';
-
-const DUE_WINDOW_DAYS = 14;
+import type { HomeDigest } from '@/feature/course/types/home-digest';
 
 export type HomeStatus =
   | { kind: 'overdue'; count: number }
@@ -11,25 +10,21 @@ export type HomeStatus =
   | { kind: 'not-started'; count: number }
   | { kind: 'all-done' };
 
-/** The one fact most worth a learner's attention: overdue requirements, then the nearest deadline, then what is left to do. */
-export function homeStatusOf(courses: EnrolledCourse[], now = new Date()): HomeStatus | null {
+/**
+ * The one fact most worth a learner's attention: the server's overdue count, then its nearest deadline, then what is
+ * left to do across the learner's courses.
+ */
+export function homeStatusOf(
+  courses: EnrolledCourse[],
+  digest: HomeDigest | undefined,
+  now = new Date()
+): HomeStatus | null {
   if (courses.length === 0) return null;
 
-  const overdue = courses.filter(
-    (course) => course.complianceStatus === 'non_compliant' || course.complianceStatus === 'in_grace_period'
-  ).length;
-  if (overdue > 0) return { kind: 'overdue', count: overdue };
+  if (digest && digest.overdueCount > 0) return { kind: 'overdue', count: digest.overdueCount };
 
-  let nearest: { title: string; days: number } | null = null;
-  for (const course of courses) {
-    if (!course.complianceDueDate || learningStatusOf(course) === 'completed') continue;
-    if (course.complianceStatus === 'compliant' || course.complianceStatus === 'waived') continue;
-
-    const days = daysUntil(course.complianceDueDate, now);
-    if (days < 0 || days > DUE_WINDOW_DAYS) continue;
-    if (!nearest || days < nearest.days) nearest = { title: course.title, days };
-  }
-  if (nearest) return { kind: 'due', ...nearest };
+  const nearest = digest?.dueSoon[0];
+  if (nearest) return { kind: 'due', title: nearest.courseTitle, days: Math.max(0, daysUntil(nearest.dueDate, now)) };
 
   const inProgress = courses.filter((course) => learningStatusOf(course) === 'in-progress').length;
   if (inProgress > 0) return { kind: 'in-progress', count: inProgress };

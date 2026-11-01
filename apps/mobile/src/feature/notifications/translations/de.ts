@@ -78,5 +78,10 @@ export const de: TranslatedMessages<typeof en> = {
   quietEnd: 'Ende der Ruhezeit',
   footnote:
     'Hinweise zu überfälligen Schulungen bleiben für Push und In-App aktiv, weil die Schulung verpflichtend ist.',
-  markRead: 'Als gelesen markieren'
+  markRead: 'Als gelesen markieren',
+  markUnread: 'Als ungelesen markieren',
+  undo: 'Rückgängig',
+  deleted: 'Benachrichtigung gelöscht',
+  deleteFailed: 'Die Benachrichtigung wurde nicht gelöscht',
+  unavailableOffline: 'Verfügbar, sobald Sie wieder online sind'
 };

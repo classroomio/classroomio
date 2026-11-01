@@ -1,3 +1,6 @@
+import { WifiHighIcon } from 'phosphor-react-native/src/icons/WifiHigh';
+
+import { DOWNLOAD_STATUS_ICON } from '@/feature/downloads/constants/download-status';
 import type { en } from '@/feature/downloads/translations/en';
 import type { CourseDownload } from '@/feature/downloads/types/downloads';
 import type { Translator } from '@/feature/i18n/helpers/translate';
@@ -35,4 +38,10 @@ export function courseDownloadPercent(course: CourseDownload) {
   const done = course.lessons.filter((lesson) => lesson.status === 'complete').length;
 
   return course.lessons.length > 0 ? (done / course.lessons.length) * 100 : 0;
+}
+
+export function downloadStatusIconOf(course: Pick<CourseDownload, 'status' | 'waitReason'>) {
+  const display = DOWNLOAD_STATUS_ICON[course.status];
+
+  return course.status === 'waiting' && course.waitReason === 'wifi' ? { ...display, icon: WifiHighIcon } : display;
 }

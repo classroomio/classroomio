@@ -61,8 +61,6 @@ export const pt: TranslatedMessages<typeof en> = {
     'Fazer uma pergunta precisa de conexão. Nada do que você digitar é salvo até você se conectar de novo e publicar.',
   editOffline:
     'Salvar as alterações precisa de conexão. Suas edições ficam nesta tela até você se conectar de novo e salvar.',
-  postQuestion: 'Publicar pergunta',
-  saveChanges: 'Salvar alterações',
   fieldTitle: 'Título',
   fieldTitlePlaceholder: 'O que você quer saber?',
   fieldCourse: 'Curso',
@@ -88,5 +86,29 @@ export const pt: TranslatedMessages<typeof en> = {
   linkCopied: 'Link copiado',
   searchPlaceholder: 'Pesquisar perguntas',
   searchEmptyTitle: 'Nenhuma pergunta corresponde',
-  searchEmptyDescription: 'Nenhum título de pergunta, autor ou curso contém “{query}”.'
+  searchEmptyDescription: 'Nenhum título de pergunta, autor ou curso contém “{query}”.',
+  segmentAll: 'Todas',
+  segmentForYou: 'Para você',
+  forYouEmptyTitle: 'Nenhuma pergunta seguida',
+  forYouEmptyDescription:
+    'As perguntas que você faz, responde ou segue ficam em Para você. Um ponto marca as perguntas com respostas que você não leu.',
+  forYouEmptyFilteredDescription: 'Você não fez, respondeu nem seguiu nenhuma pergunta neste curso.',
+  newAnswers: 'Novas respostas',
+  following: 'Seguindo',
+  followQuestion: 'Seguir pergunta',
+  unfollowQuestion: 'Deixar de seguir pergunta',
+  followedTitle: 'Você segue esta pergunta',
+  followedDescription: 'Você recebe uma notificação quando alguém responde.',
+  followFailed: 'O acompanhamento não foi salvo',
+  acceptedAnswer: 'Resposta aceita',
+  markAccepted: 'Marcar como aceita',
+  unmarkAccepted: 'Remover marcação de aceita',
+  acceptFailed: 'A resposta aceita não foi salva',
+  hiddenFromLearners: 'Oculta para os alunos',
+  hiddenQuestionDescription:
+    'Os alunos não veem esta pergunta nem as respostas. Tutores e administradores continuam vendo.',
+  hideFromLearners: 'Ocultar dos alunos',
+  showToLearners: 'Mostrar aos alunos',
+  visibilityFailed: 'A visibilidade não foi alterada',
+  post: 'Publicar'
 };

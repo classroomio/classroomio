@@ -1,5 +1,8 @@
+import { ArrowLeftIcon } from 'phosphor-react-native/src/icons/ArrowLeft';
+import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
 import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
 import { CloudSlashIcon } from 'phosphor-react-native/src/icons/CloudSlash';
+import { PaperPlaneTiltIcon } from 'phosphor-react-native/src/icons/PaperPlaneTilt';
 import { UploadSimpleIcon } from 'phosphor-react-native/src/icons/UploadSimple';
 import { Stack } from 'expo-router';
 import { useRef, useState } from 'react';
@@ -21,7 +24,7 @@ import {
   AlertDialogFooter,
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
-import { Button, ButtonText } from '@/feature/common/components/button';
+import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Icon } from '@/feature/common/components/icon';
 import { Text } from '@/feature/common/components/text';
 import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
@@ -30,7 +33,6 @@ import { errorMessage } from '@/feature/common/helpers/error-message';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
 import { warningHaptic } from '@/feature/common/helpers/haptics';
 import { useTheme } from '@/feature/common/helpers/use-theme';
-import { commonCatalog } from '@/feature/common/translations/catalog';
 import { showToast } from '@/feature/toast/helpers/toast-store';
 import { useSubmitExerciseMutation } from '@/feature/exercise/api/exercise';
 import { useExerciseSession } from '@/feature/exercise/components/exercise-session';
@@ -74,7 +76,6 @@ type ExerciseTakeProps = { onSubmitted: () => void };
 export function ExerciseTake({ onSubmitted }: ExerciseTakeProps) {
   const { colors } = useTheme();
   const t = useTranslations(exerciseCatalog);
-  const tc = useTranslations(commonCatalog);
   const insets = useSafeAreaInsets();
   const session = useExerciseSession();
   const { courseId, exerciseId, exercise, questions, answers, currentIndex, setCurrentIndex, showProblems } = session;
@@ -201,7 +202,7 @@ export function ExerciseTake({ onSubmitted }: ExerciseTakeProps) {
             {
               backgroundColor: colors.background,
               borderTopColor: colors.border,
-              paddingBottom: insets.bottom + SPACING.sm
+              paddingBottom: Math.max(insets.bottom, SPACING.sm) + SPACING.xxs
             }
           ]}
         >
@@ -215,21 +216,24 @@ export function ExerciseTake({ onSubmitted }: ExerciseTakeProps) {
           )}
           <View style={styles.actions}>
             <Button
-              variant="outline"
+              variant="secondary"
               size="lg"
+              accessibilityLabel={t('previousQuestion')}
               style={styles.back}
               disabled={currentIndex === 0}
               onPress={() => goTo(currentIndex - 1)}
             >
-              <ButtonText>{tc('back')}</ButtonText>
+              <ButtonIcon icon={ArrowLeftIcon} />
             </Button>
             {isLast ? (
               <Button size="lg" style={styles.next} disabled={Boolean(blocker)} onPress={requestSubmit}>
+                <ButtonIcon icon={PaperPlaneTiltIcon} />
                 <ButtonText>{t('submitAnswers')}</ButtonText>
               </Button>
             ) : (
               <Button size="lg" style={styles.next} onPress={() => goTo(currentIndex + 1)}>
                 <ButtonText>{t('nextQuestion')}</ButtonText>
+                <ButtonIcon icon={ArrowRightIcon} />
               </Button>
             )}
           </View>
@@ -313,8 +317,8 @@ function ProgressSegments({ total, current, isAnswered }: ProgressSegmentsProps)
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { paddingHorizontal: GUTTER, paddingTop: SPACING.sm, gap: SPACING.lg },
-  segments: { flexDirection: 'row', gap: 3 },
-  segment: { flex: 1, height: 4, borderRadius: RADII.xs },
+  segments: { flexDirection: 'row', gap: 4 },
+  segment: { flex: 1, height: 4, borderRadius: RADII.pill },
   footer: {
     gap: SPACING.xs,
     paddingHorizontal: GUTTER,
@@ -324,7 +328,7 @@ const styles = StyleSheet.create({
   blocker: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   blockerText: { flex: 1 },
   actions: { flexDirection: 'row', gap: SPACING.xs },
-  back: { flex: 1 },
-  next: { flex: 2 },
+  back: { width: 52, paddingHorizontal: 0 },
+  next: { flex: 1 },
   saved: { flexDirection: 'row', alignItems: 'center', gap: 4 }
 });

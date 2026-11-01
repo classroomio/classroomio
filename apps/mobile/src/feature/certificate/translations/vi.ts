@@ -47,5 +47,7 @@ export const vi: TranslatedMessages<typeof en> = {
   savedDescription: 'Tệp PDF nằm trong thư mục bạn đã chọn.',
   saveFailed: 'Không lưu được chứng chỉ',
   idCopied: 'Đã sao chép mã chứng chỉ',
-  recipientFallback: 'Người nhận'
+  recipientFallback: 'Người nhận',
+  copyId: 'Sao chép ID',
+  openCourse: 'Mở khóa học'
 };

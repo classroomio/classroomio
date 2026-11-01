@@ -50,5 +50,7 @@ export const tr: TranslatedMessages<typeof en> = {
   savedDescription: 'PDF, seçtiğiniz klasörde.',
   saveFailed: 'Sertifika kaydedilemedi',
   idCopied: 'Sertifika kimliği kopyalandı',
-  recipientFallback: 'Alıcı'
+  recipientFallback: 'Alıcı',
+  copyId: 'Kimliği kopyala',
+  openCourse: 'Kursu aç'
 };

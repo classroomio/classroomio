@@ -14,6 +14,9 @@ import { accountCertificatesRouter } from '@api/routes/account/certificates';
 import { accountNotificationsRouter } from '@api/routes/account/notifications';
 import { accountNotificationPreferencesRouter } from '@api/routes/account/notification-preferences';
 import { accountDeviceTokensRouter } from '@api/routes/account/device-tokens';
+import { accountHomeDigestRouter } from '@api/routes/account/home-digest';
+import { accountCheckInRouter } from '@api/routes/account/check-in';
+import { accountCohortsRouter } from '@api/routes/account/cohorts';
 import { authMiddleware } from '@api/middlewares/auth';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { extractClientIp } from '@api/utils/redis/key-generators';
@@ -39,6 +42,9 @@ export const accountRouter = new Hono()
   .route('/', accountNotificationsRouter)
   .route('/', accountNotificationPreferencesRouter)
   .route('/', accountDeviceTokensRouter)
+  .route('/', accountHomeDigestRouter)
+  .route('/', accountCheckInRouter)
+  .route('/', accountCohortsRouter)
   .get('/', authMiddleware, async (c) => {
     const user = c.get('user')!;
 

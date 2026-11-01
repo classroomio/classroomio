@@ -1,8 +1,8 @@
 import { ShieldCheckIcon } from 'phosphor-react-native/src/icons/ShieldCheck';
 import { WifiHighIcon } from 'phosphor-react-native/src/icons/WifiHigh';
 
+import { IconTile } from '@/feature/common/components/icon-tile';
 import { useAuth } from '@/feature/auth/components/auth-provider';
-import { Icon } from '@/feature/common/components/icon';
 import {
   Item,
   ItemActions,
@@ -13,6 +13,7 @@ import {
   ItemTitle
 } from '@/feature/common/components/item';
 import { Switch } from '@/feature/common/components/switch';
+import { useTheme } from '@/feature/common/helpers/use-theme';
 import { pumpDownloads } from '@/feature/downloads/helpers/download-manager';
 import { updateDownloadSettings, useDownloadSettings } from '@/feature/downloads/helpers/download-settings';
 import { resetAutoDownloadBaseline } from '@/feature/downloads/helpers/use-auto-download';
@@ -22,6 +23,7 @@ import { useActiveOrgId } from '@/feature/org/helpers/active-org-store';
 
 export function DownloadSettingsGroup() {
   const t = useTranslations(downloadsCatalog);
+  const { colors } = useTheme();
   const settings = useDownloadSettings();
   const { userId } = useAuth();
   const orgId = useActiveOrgId();
@@ -29,8 +31,8 @@ export function DownloadSettingsGroup() {
   return (
     <ItemGroup>
       <Item>
-        <ItemMedia variant="tile">
-          <Icon icon={WifiHighIcon} size={20} tone="ink" />
+        <ItemMedia>
+          <IconTile icon={WifiHighIcon} />
         </ItemMedia>
         <ItemContent>
           <ItemTitle>{t('wifiOnly')}</ItemTitle>
@@ -48,8 +50,8 @@ export function DownloadSettingsGroup() {
         </ItemActions>
       </Item>
       <Item>
-        <ItemMedia variant="tile">
-          <Icon icon={ShieldCheckIcon} size={20} tone="ink" />
+        <ItemMedia>
+          <IconTile icon={ShieldCheckIcon} />
         </ItemMedia>
         <ItemContent>
           <ItemTitle>{t('autoDownload')}</ItemTitle>

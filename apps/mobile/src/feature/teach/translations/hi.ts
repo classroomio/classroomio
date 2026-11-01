@@ -132,7 +132,6 @@ export const hi: TranslatedMessages<typeof en> = {
   statOverdue: 'समय-सीमा पार',
   statOverdueDetail: 'नियत तारीख निकल गई',
   statToGrade: 'ग्रेड करना है',
-  gradeSubmissions: { one: '{count} सबमिशन ग्रेड करें', other: '{count} सबमिशन ग्रेड करें' },
   attendance: 'उपस्थिति',
   announce: 'घोषणा करें',
   lowestProgress: 'सबसे कम प्रगति',
@@ -166,8 +165,6 @@ export const hi: TranslatedMessages<typeof en> = {
   noSessionsTitle: 'दर्ज करने के लिए कोई सत्र नहीं',
   noSessionsDescription: 'उपस्थिति हर पाठ के लिए दर्ज होती है। इस कोर्स में अभी कोई पाठ नहीं है।',
   marksNotSaved: { one: '{count} उपस्थिति सेव नहीं हुई', other: '{count} उपस्थितियां सेव नहीं हुईं' },
-  attendanceSaved: 'उपस्थिति सेव हो गई',
-  attendanceNotSaved: 'उपस्थिति सेव नहीं हुई',
   noLearnersEnrolledTitle: 'कोई शिक्षार्थी नामांकित नहीं',
   noLearnersEnrolledDescription: 'अभी तक किसी ने इस कोर्स में शिक्षार्थी के रूप में भाग नहीं लिया है।',
   noLearnerMatches: '“{query}” से कोई शिक्षार्थी मेल नहीं खाता।',
@@ -178,19 +175,13 @@ export const hi: TranslatedMessages<typeof en> = {
   noSessionA11y: 'कोई सत्र नहीं चुना गया। सत्र बदलें',
   chooseSession: 'सत्र चुनें',
   change: 'बदलें',
-  unsavedNote: 'सत्र बदलने पर बिना सेव किए बदलाव इसी सत्र के साथ रहते हैं।',
   sessions: 'सत्र',
   present: 'उपस्थित',
   absent: 'अनुपस्थित',
   notMarked: 'दर्ज नहीं',
-  notSaved: 'सेव नहीं हुआ',
   markAllPresent: 'सभी उपस्थित',
   markAllAbsent: 'सभी अनुपस्थित',
-  undo: 'पहले जैसा करें',
   findLearner: 'शिक्षार्थी खोजें',
-  noChangesToSave: 'सेव करने के लिए कोई बदलाव नहीं',
-  saveChanges: { one: '{count} बदलाव सेव करें', other: '{count} बदलाव सेव करें' },
-  learnerCount: { one: '{count} शिक्षार्थी', other: '{count} शिक्षार्थी' },
   courseTeam: 'कोर्स टीम',
   courseMember: 'कोर्स सदस्य',
   comments: 'टिप्पणियां',
@@ -231,5 +222,56 @@ export const hi: TranslatedMessages<typeof en> = {
     other:
       'पोस्ट और उसकी {count} टिप्पणियां कोर्स न्यूज़फ़ीड से सभी के लिए हटा दी जाती हैं। इसे पहले जैसा नहीं किया जा सकता।'
   },
-  gradeAction: 'ग्रेड करें'
+  gradeAction: 'ग्रेड करें',
+  sessionLiveNow: 'अभी लाइव',
+  statusLate: 'देर से',
+  markedOf: { one: '{count} में से {marked} दर्ज', other: '{count} में से {marked} दर्ज' },
+  markRestAbsent: {
+    one: 'बिना दर्ज {count} शिक्षार्थी को अनुपस्थित दर्ज करें',
+    other: 'बिना दर्ज {count} शिक्षार्थियों को अनुपस्थित दर्ज करें'
+  },
+  confirmAllPresentTitle: {
+    one: '{count} शिक्षार्थी को उपस्थित दर्ज करें?',
+    other: 'सभी {count} शिक्षार्थियों को उपस्थित दर्ज करें?'
+  },
+  confirmAllAbsentTitle: {
+    one: '{count} शिक्षार्थी को अनुपस्थित दर्ज करें?',
+    other: 'सभी {count} शिक्षार्थियों को अनुपस्थित दर्ज करें?'
+  },
+  confirmReplaceMarks: {
+    one: 'इससे इस सत्र के लिए पहले से दर्ज {count} उपस्थिति बदल जाएगी, चेक-इन सहित।',
+    other: 'इससे इस सत्र के लिए पहले से दर्ज {count} उपस्थितियां बदल जाएंगी, चेक-इन सहित।'
+  },
+  checkedInAt: '{time} पर चेक-इन',
+  checkedInTime: '{time} पर चेक-इन किया',
+  markLearner: '{name} की उपस्थिति',
+  attendanceHint: 'किसी शिक्षार्थी को उपस्थित दर्ज करने के लिए दाईं ओर स्वाइप करें, या अनुपस्थित के लिए बाईं ओर।',
+  titleCheckIn: 'चेक-इन',
+  startCheckIn: 'चेक-इन शुरू करें',
+  startCheckInDescription: 'एक कोड दिखाएं जिससे शिक्षार्थी खुद को उपस्थित दर्ज करते हैं',
+  checkInOpen: 'चेक-इन खुला है',
+  checkInOpenDetail: 'कोड {code} · {time} बाकी',
+  showCode: 'कोड दिखाएं',
+  startingCheckIn: 'चेक-इन शुरू हो रहा है',
+  checkInInstructions:
+    'शिक्षार्थी ClassroomIO ऐप में QR कोड स्कैन करते हैं, या लेसन खोलकर चेक इन चुनते हैं और कोड टाइप करते हैं। शुरुआत के {minutes} मिनट से ज़्यादा बाद चेक-इन करने वाले को देर से दर्ज किया जाता है।',
+  expiresIn: '{time} में समाप्त',
+  codeExpired: 'यह कोड समाप्त हो गया है',
+  newCode: 'नया कोड',
+  endCheckIn: 'चेक-इन बंद करें',
+  checkedInProgress: {
+    one: '{count} में से {checked} शिक्षार्थी ने चेक-इन किया',
+    other: '{count} में से {checked} शिक्षार्थियों ने चेक-इन किया'
+  },
+  noCheckInsYet: 'अभी तक किसी ने चेक-इन नहीं किया है।',
+  checkInNotStarted: 'चेक-इन शुरू नहीं हुआ',
+  checkInNotEnded: 'चेक-इन बंद नहीं हुआ',
+  checkInEnded: 'चेक-इन बंद हुआ',
+  codeA11y: 'चेक-इन कोड {code}',
+  qrA11y: '{title} में चेक-इन के लिए QR कोड',
+  nextSession: 'अगला सत्र',
+  gradeSubmissionsTitle: 'सबमिशन ग्रेड करें',
+  allGradedShort: 'कुछ भी ग्रेड के लिए बाकी नहीं',
+  attendanceDescription: 'हर सत्र में शिक्षार्थियों को उपस्थित, देर से या अनुपस्थित दर्ज करें',
+  announceDescription: 'कोर्स न्यूज़फ़ीड में पोस्ट करें'
 };

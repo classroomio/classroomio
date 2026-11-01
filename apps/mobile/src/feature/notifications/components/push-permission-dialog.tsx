@@ -13,9 +13,10 @@ import {
   AlertDialogFooter,
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
-import { Icon, type AppIcon } from '@/feature/common/components/icon';
+import type { AppIcon } from '@/feature/common/components/icon';
+import { IconTile } from '@/feature/common/components/icon-tile';
 import { Text } from '@/feature/common/components/text';
-import { RADII, SPACING } from '@/feature/common/constants/layout';
+import { SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { notificationsCatalog } from '@/feature/notifications/translations/catalog';
@@ -29,6 +30,7 @@ type PushPermissionDialogProps = {
 
 export function PushPermissionDialog({ open, orgName, onOpenChange, onAllow }: PushPermissionDialogProps) {
   const t = useTranslations(notificationsCatalog);
+  const { colors } = useTheme();
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -56,13 +58,9 @@ function PushPermissionReasons({ children }: { children: ReactNode }) {
 }
 
 function PushPermissionReason({ icon, children }: { icon: AppIcon; children: string }) {
-  const { colors } = useTheme();
-
   return (
     <View style={styles.reason}>
-      <View style={[styles.reasonIcon, { backgroundColor: colors.primaryTint }]}>
-        <Icon icon={icon} size={16} tone="primary" />
-      </View>
+      <IconTile icon={icon} size={30} />
       <Text variant="captionStrong" style={styles.reasonText}>
         {children}
       </Text>
@@ -71,15 +69,7 @@ function PushPermissionReason({ icon, children }: { icon: AppIcon; children: str
 }
 
 const styles = StyleSheet.create({
-  reasons: { gap: SPACING.xs, marginTop: SPACING.md },
+  reasons: { gap: SPACING.sm, marginTop: SPACING.md },
   reason: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
-  reasonIcon: {
-    width: 30,
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: RADII.sm,
-    borderCurve: 'continuous'
-  },
   reasonText: { flex: 1 }
 });

@@ -1,0 +1,40 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const pt: TranslatedMessages<typeof en> = {
+  screenTitle: 'Fazer check-in',
+  checkIn: 'Fazer check-in',
+  checkingIn: 'Fazendo seu check-in',
+  checkedInTitle: 'Check-in feito',
+  checkedInLateTitle: 'Check-in feito com atraso',
+  checkedInAt: 'Check-in às {time}',
+  openLesson: 'Abrir lição',
+  scanAgain: 'Ler novamente',
+  scanTitle: 'Leia o código de check-in',
+  scanDescription: 'Aponte a câmera para o QR code que seu tutor está mostrando.',
+  viewfinderA11y: 'Visor da câmera para ler o QR code de check-in',
+  typeCodeTitle: 'Ou digite o código',
+  codeLabel: 'Código de check-in',
+  codeDescription: '6 letras e números, mostrados abaixo do QR code.',
+  typeCodeFromLesson: 'Para digitar um código, abra a lição da sessão e escolha Fazer check-in.',
+  cameraTitle: 'Permita o acesso à câmera',
+  cameraExplanation: 'A câmera lê o QR code de check-in. Nada é fotografado ou gravado.',
+  cameraBlocked: 'O acesso à câmera está desativado para o ClassroomIO. Ative-o em Ajustes ou digite o código.',
+  allowCamera: 'Permitir câmera',
+  openSettings: 'Abrir Ajustes',
+  notCheckInCode: 'Este QR code não é um código de check-in do ClassroomIO.',
+  errorInvalidTitle: 'Esse código não funcionou',
+  errorInvalid: 'Confira o código com seu tutor. Um código deixa de funcionar quando o tutor cria um novo.',
+  errorExpiredTitle: 'Este código expirou',
+  errorExpired: 'Peça ao seu tutor para mostrar um novo código.',
+  errorNotEnrolledTitle: 'Você não é participante deste curso',
+  errorNotEnrolled: 'Só participantes inscritos no curso podem fazer check-in.',
+  errorNotFoundTitle: 'Sessão não encontrada',
+  errorNotFound: 'A sessão não pertence à sua organização atual. Troque de organização em Perfil e leia novamente.',
+  errorRateLimitedTitle: 'Tentativas demais',
+  errorRateLimited: 'Aguarde alguns minutos e tente novamente.',
+  errorGenericTitle: 'O check-in não foi concluído',
+  errorLinkTitle: 'Este link não é um código de check-in',
+  errorLink: 'Leia o QR code que seu tutor mostra ou digite o código pela lição.'
+};

@@ -1271,8 +1271,17 @@ export async function getLearnerComplianceOverview(
   orgId: string,
   profileId: string
 ): Promise<LearnerComplianceOverview> {
-  const now = new Date();
   const enrolledCourses = await getEnrolledCourses({ orgId, profileId });
+
+  return buildLearnerComplianceOverview(enrolledCourses, profileId);
+}
+
+/** {@link getLearnerComplianceOverview} for a learner whose enrolled courses are already loaded. */
+export async function buildLearnerComplianceOverview(
+  enrolledCourses: TStudentCourse[],
+  profileId: string
+): Promise<LearnerComplianceOverview> {
+  const now = new Date();
   const complianceCourses = enrolledCourses.filter((course) => course.type === 'COMPLIANCE' && course.compliance);
 
   const rows = await Promise.all(

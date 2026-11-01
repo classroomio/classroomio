@@ -74,5 +74,10 @@ export const da: TranslatedMessages<typeof en> = {
   quietStart: 'Stille timer starter',
   quietEnd: 'Stille timer slutter',
   footnote: 'Beskeder om forsinket træning forbliver slået til for push og i appen, fordi træningen er obligatorisk.',
-  markRead: 'Markér som læst'
+  markRead: 'Markér som læst',
+  markUnread: 'Markér som ulæst',
+  undo: 'Fortryd',
+  deleted: 'Notifikation slettet',
+  deleteFailed: 'Notifikationen blev ikke slettet',
+  unavailableOffline: 'Tilgængelig, når du er online igen'
 };

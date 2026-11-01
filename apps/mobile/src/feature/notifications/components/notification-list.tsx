@@ -2,6 +2,7 @@ import { FlashList } from '@shopify/flash-list';
 import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
 import { SkeletonList, SkeletonText } from '@/feature/common/components/skeleton';
 import { Spinner } from '@/feature/common/components/spinner';
 import { Text } from '@/feature/common/components/text';
@@ -10,10 +11,8 @@ import { useTheme } from '@/feature/common/helpers/use-theme';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import type { NotificationListEntry } from '@/feature/notifications/helpers/notification-groups';
 import { notificationsCatalog } from '@/feature/notifications/translations/catalog';
-import type { NotificationItem } from '@/feature/notifications/types/notifications';
 
 import { NotificationRow } from './notification-row';
-import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
 
 type NotificationListProps = {
   entries: NotificationListEntry[];
@@ -24,8 +23,6 @@ type NotificationListProps = {
   empty: ReactElement;
   onRefresh: RefreshHandler;
   onEndReached: () => void;
-  onOpen: (item: NotificationItem) => void;
-  onMarkRead?: (item: NotificationItem) => void;
   onMarkAllRead: () => void;
 };
 
@@ -38,8 +35,6 @@ export function NotificationList({
   empty,
   onRefresh,
   onEndReached,
-  onOpen,
-  onMarkRead,
   onMarkAllRead
 }: NotificationListProps) {
   const t = useTranslations(notificationsCatalog);
@@ -58,7 +53,7 @@ export function NotificationList({
             first={entry.first}
           />
         ) : (
-          <NotificationRow item={entry.item} position={entry.position} onPress={onOpen} onMarkRead={onMarkRead} />
+          <NotificationRow item={entry.item} position={entry.position} />
         )
       }
       ListHeaderComponent={header}

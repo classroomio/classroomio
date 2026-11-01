@@ -72,5 +72,10 @@ export const hi: TranslatedMessages<typeof en> = {
   quietStart: 'शांत समय की शुरुआत',
   quietEnd: 'शांत समय का अंत',
   footnote: 'समय-सीमा पार प्रशिक्षण के अलर्ट पुश और ऐप में चालू रहते हैं, क्योंकि प्रशिक्षण अनिवार्य है।',
-  markRead: 'पढ़ा हुआ मार्क करें'
+  markRead: 'पढ़ा हुआ मार्क करें',
+  markUnread: 'अपठित मार्क करें',
+  undo: 'पहले जैसा करें',
+  deleted: 'सूचना हटाई गई',
+  deleteFailed: 'सूचना नहीं हटाई गई',
+  unavailableOffline: 'ऑनलाइन वापस आने पर उपलब्ध'
 };

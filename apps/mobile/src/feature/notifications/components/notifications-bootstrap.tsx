@@ -10,6 +10,7 @@ import { ANDROID_NOTIFICATION_CHANNEL_ID } from '@/feature/notifications/constan
 import { refreshPushPermission } from '@/feature/notifications/helpers/push-permission-store';
 import { useBadgeSync } from '@/feature/notifications/helpers/use-badge-sync';
 import { useNotificationResponses } from '@/feature/notifications/helpers/use-notification-responses';
+import { usePendingDeleteSender } from '@/feature/notifications/helpers/use-pending-delete-sender';
 import { usePushPrompt } from '@/feature/notifications/helpers/use-push-prompt';
 import { usePushRegistration } from '@/feature/notifications/helpers/use-push-registration';
 import { notificationsCatalog } from '@/feature/notifications/translations/catalog';
@@ -59,6 +60,7 @@ function SignedInNotifications() {
   usePushRegistration();
   useNotificationResponses();
   useBadgeSync();
+  usePendingDeleteSender();
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (state) => {

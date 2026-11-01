@@ -40,6 +40,7 @@ export const pl: TranslatedMessages<typeof en> = {
   uploadBlocker: 'Zaczekaj na zakończenie przesyłania plików, zanim prześlesz odpowiedzi.',
   submitAnswers: 'Prześlij odpowiedzi',
   nextQuestion: 'Następne pytanie',
+  previousQuestion: 'Poprzednie pytanie',
   confirmSubmitTitle: 'Przesłać odpowiedzi?',
   confirmSubmitMultiple: 'Prowadzący zobaczy tę próbę. Później możesz podejść do ćwiczenia ponownie.',
   confirmSubmitSingle: 'To ćwiczenie pozwala na jedną próbę. Po przesłaniu nie można zmienić odpowiedzi.',

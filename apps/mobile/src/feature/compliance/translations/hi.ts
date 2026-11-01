@@ -27,12 +27,6 @@ export const hi: TranslatedMessages<typeof en> = {
   detailWaiverEnds: 'छूट {date} को समाप्त होगी',
   detailLastCompleted: 'पिछली बार {date} को पूरा किया',
   detailRenewsEvery: { one: 'हर {count} महीने में नवीनीकरण', other: 'हर {count} महीने में नवीनीकरण' },
-  countOverdue: { one: '{count} समय-सीमा पार', other: '{count} समय-सीमा पार' },
-  countInGracePeriod: { one: '{count} अनुग्रह अवधि में', other: '{count} अनुग्रह अवधि में' },
-  countDueSoon: { one: '{count} जल्द देय', other: '{count} जल्द देय' },
-  countToDo: { one: '{count} बाकी', other: '{count} बाकी' },
-  countCompliant: { one: '{count} अनुपालन में', other: '{count} अनुपालन में' },
-  countWaived: { one: '{count} छूट प्राप्त', other: '{count} छूट प्राप्त' },
   summaryOutOf: { one: '{count} आवश्यकता', other: '{count} आवश्यकताओं' },
   summaryOverdue: {
     one: '{total} में से {count} की समय-सीमा पार हो चुकी है।',
@@ -79,5 +73,7 @@ export const hi: TranslatedMessages<typeof en> = {
   resumeCourse: 'कोर्स जारी रखें',
   startCourse: 'कोर्स शुरू करें',
   proof: 'प्रमाण',
-  proofLabel: '{course} का प्रमाणपत्र'
+  proofLabel: '{course} का प्रमाणपत्र',
+  standingOnTrack: 'समय पर',
+  nextDeadline: 'अगली समय-सीमा'
 };

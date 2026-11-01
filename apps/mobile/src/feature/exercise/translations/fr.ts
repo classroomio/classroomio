@@ -34,6 +34,7 @@ export const fr: TranslatedMessages<typeof en> = {
   uploadBlocker: 'Attendez la fin des envois de fichiers avant d’envoyer vos réponses.',
   submitAnswers: 'Envoyer les réponses',
   nextQuestion: 'Question suivante',
+  previousQuestion: 'Question précédente',
   confirmSubmitTitle: 'Envoyer vos réponses ?',
   confirmSubmitMultiple: 'Votre tuteur verra cette tentative. Vous pourrez refaire l’exercice ensuite.',
   confirmSubmitSingle:

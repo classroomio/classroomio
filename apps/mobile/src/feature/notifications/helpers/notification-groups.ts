@@ -9,7 +9,8 @@ export type NotificationListEntry =
   | { kind: 'header'; key: string; section: NotificationSection; first: boolean }
   | { kind: 'row'; key: string; item: NotificationItem; position: NotificationRowPosition };
 
-function positionOf(index: number, count: number): NotificationRowPosition {
+/** Where row `index` of `count` sits in its grouped card. */
+export function positionOf(index: number, count: number): NotificationRowPosition {
   if (count === 1) return 'only';
   if (index === 0) return 'first';
 

@@ -59,8 +59,6 @@ export const vi: TranslatedMessages<typeof en> = {
   askOffline: 'Cần kết nối để đặt câu hỏi. Nội dung bạn nhập sẽ không được lưu cho đến khi bạn kết nối lại và đăng.',
   editOffline:
     'Cần kết nối để lưu thay đổi. Nội dung đã sửa vẫn ở trên màn hình này cho đến khi bạn kết nối lại và lưu.',
-  postQuestion: 'Đăng câu hỏi',
-  saveChanges: 'Lưu thay đổi',
   fieldTitle: 'Tiêu đề',
   fieldTitlePlaceholder: 'Bạn muốn biết điều gì?',
   fieldCourse: 'Khóa học',
@@ -86,5 +84,29 @@ export const vi: TranslatedMessages<typeof en> = {
   linkCopied: 'Đã sao chép liên kết',
   searchPlaceholder: 'Tìm câu hỏi',
   searchEmptyTitle: 'Không có câu hỏi phù hợp',
-  searchEmptyDescription: 'Không có tiêu đề câu hỏi, tác giả hay khóa học nào chứa “{query}”.'
+  searchEmptyDescription: 'Không có tiêu đề câu hỏi, tác giả hay khóa học nào chứa “{query}”.',
+  segmentAll: 'Tất cả',
+  segmentForYou: 'Dành cho bạn',
+  forYouEmptyTitle: 'Chưa theo dõi câu hỏi nào',
+  forYouEmptyDescription:
+    'Các câu hỏi bạn đặt, trả lời hoặc theo dõi nằm trong mục Dành cho bạn. Dấu chấm đánh dấu câu hỏi có câu trả lời bạn chưa đọc.',
+  forYouEmptyFilteredDescription: 'Bạn chưa đặt, trả lời hoặc theo dõi câu hỏi nào trong khóa học này.',
+  newAnswers: 'Câu trả lời mới',
+  following: 'Đang theo dõi',
+  followQuestion: 'Theo dõi câu hỏi',
+  unfollowQuestion: 'Bỏ theo dõi câu hỏi',
+  followedTitle: 'Bạn đang theo dõi câu hỏi này',
+  followedDescription: 'Bạn nhận thông báo khi có người trả lời.',
+  followFailed: 'Chưa lưu được cài đặt theo dõi',
+  acceptedAnswer: 'Câu trả lời được chấp nhận',
+  markAccepted: 'Đánh dấu là được chấp nhận',
+  unmarkAccepted: 'Bỏ đánh dấu chấp nhận',
+  acceptFailed: 'Chưa lưu được câu trả lời được chấp nhận',
+  hiddenFromLearners: 'Đã ẩn với học viên',
+  hiddenQuestionDescription:
+    'Học viên không thấy câu hỏi này và các câu trả lời. Giảng viên và quản trị viên vẫn thấy.',
+  hideFromLearners: 'Ẩn với học viên',
+  showToLearners: 'Hiện cho học viên',
+  visibilityFailed: 'Chưa thay đổi được chế độ hiển thị',
+  post: 'Đăng'
 };

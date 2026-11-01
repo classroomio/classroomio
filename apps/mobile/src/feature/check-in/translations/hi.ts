@@ -1,0 +1,40 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const hi: TranslatedMessages<typeof en> = {
+  screenTitle: 'चेक इन',
+  checkIn: 'चेक इन',
+  checkingIn: 'आपका चेक-इन हो रहा है',
+  checkedInTitle: 'आपका चेक-इन हो गया',
+  checkedInLateTitle: 'आपका चेक-इन देर से दर्ज हुआ',
+  checkedInAt: '{time} पर चेक-इन किया',
+  openLesson: 'लेसन खोलें',
+  scanAgain: 'फिर से स्कैन करें',
+  scanTitle: 'चेक-इन कोड स्कैन करें',
+  scanDescription: 'कैमरे को अपने ट्यूटर द्वारा दिखाए गए QR कोड की ओर करें।',
+  viewfinderA11y: 'चेक-इन QR कोड स्कैन करने के लिए कैमरा व्यू',
+  typeCodeTitle: 'या कोड टाइप करें',
+  codeLabel: 'चेक-इन कोड',
+  codeDescription: '6 अक्षर और अंक, QR कोड के नीचे दिखाए गए।',
+  typeCodeFromLesson: 'कोड टाइप करने के लिए सत्र का लेसन खोलें और चेक इन चुनें।',
+  cameraTitle: 'कैमरे की अनुमति दें',
+  cameraExplanation: 'कैमरा चेक-इन QR कोड पढ़ता है। कोई फ़ोटो या रिकॉर्डिंग नहीं ली जाती।',
+  cameraBlocked: 'ClassroomIO के लिए कैमरा एक्सेस बंद है। इसे सेटिंग्स में चालू करें, या कोड टाइप करें।',
+  allowCamera: 'कैमरे की अनुमति दें',
+  openSettings: 'सेटिंग्स खोलें',
+  notCheckInCode: 'यह QR कोड ClassroomIO का चेक-इन कोड नहीं है।',
+  errorInvalidTitle: 'यह कोड काम नहीं किया',
+  errorInvalid: 'अपने ट्यूटर से कोड जांचें। ट्यूटर के नया कोड बनाने पर पुराना कोड काम करना बंद कर देता है।',
+  errorExpiredTitle: 'यह कोड समाप्त हो गया है',
+  errorExpired: 'अपने ट्यूटर से नया कोड दिखाने को कहें।',
+  errorNotEnrolledTitle: 'आप इस कोर्स के शिक्षार्थी नहीं हैं',
+  errorNotEnrolled: 'केवल कोर्स में नामांकित शिक्षार्थी चेक इन कर सकते हैं।',
+  errorNotFoundTitle: 'सत्र नहीं मिला',
+  errorNotFound: 'यह सत्र आपके मौजूदा संगठन में नहीं है। प्रोफ़ाइल में संगठन बदलें, फिर दोबारा स्कैन करें।',
+  errorRateLimitedTitle: 'बहुत ज़्यादा प्रयास',
+  errorRateLimited: 'कुछ मिनट रुकें, फिर दोबारा कोशिश करें।',
+  errorGenericTitle: 'चेक-इन नहीं हो सका',
+  errorLinkTitle: 'यह लिंक चेक-इन कोड नहीं है',
+  errorLink: 'अपने ट्यूटर द्वारा दिखाया गया QR कोड स्कैन करें, या लेसन से कोड टाइप करें।'
+};

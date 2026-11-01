@@ -72,5 +72,10 @@ export const tr: TranslatedMessages<typeof en> = {
   quietStart: 'Sessiz saatlerin başlangıcı',
   quietEnd: 'Sessiz saatlerin bitişi',
   footnote: 'Eğitim zorunlu olduğu için gecikmiş eğitim uyarıları anlık ve uygulama içi bildirimlerde açık kalır.',
-  markRead: 'Okundu işaretle'
+  markRead: 'Okundu işaretle',
+  markUnread: 'Okunmadı işaretle',
+  undo: 'Geri al',
+  deleted: 'Bildirim silindi',
+  deleteFailed: 'Bildirim silinemedi',
+  unavailableOffline: 'Tekrar çevrimiçi olduğunuzda kullanılabilir'
 };

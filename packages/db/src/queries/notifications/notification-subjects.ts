@@ -6,6 +6,7 @@ import { db } from '@db/drizzle';
 
 export type NotificationSubject = {
   courseTitle: string | null;
+  courseImage: string | null;
   actorName: string | null;
   actorAvatarUrl: string | null;
   subjectTitle: string | null;
@@ -29,7 +30,7 @@ function uuidsOnly(ids: Array<string | null>) {
 }
 
 /**
- * Loads the live display data each notification refers to (course and actor names, entity titles, due and start
+ * Loads the live display data each notification refers to (course name and image, actor name, entity titles, due and start
  * times) in one query per entity type, keyed by notification id. Missing rows (deleted since) resolve to nulls.
  */
 export async function loadNotificationSubjects(refs: SubjectRef[]): Promise<Map<string, NotificationSubject>> {
@@ -49,7 +50,12 @@ export async function loadNotificationSubjects(refs: SubjectRef[]): Promise<Map<
     const [courses, actors, lessons, exercises, records, assignments, questions] = await Promise.all([
       courseIds.length
         ? db
-            .select({ id: schema.course.id, title: schema.course.title })
+            .select({
+              id: schema.course.id,
+              title: schema.course.title,
+              bannerImage: schema.course.bannerImage,
+              logo: schema.course.logo
+            })
             .from(schema.course)
             .where(inArray(schema.course.id, courseIds))
         : [],
@@ -122,6 +128,7 @@ export async function loadNotificationSubjects(refs: SubjectRef[]): Promise<Map<
 
         const subject: NotificationSubject = {
           courseTitle: course?.title ?? null,
+          courseImage: course?.bannerImage || course?.logo || null,
           actorName: actor?.fullname || null,
           actorAvatarUrl: actor?.avatarUrl ?? null,
           subjectTitle: lesson?.title ?? exercise?.title ?? question?.title ?? assignment?.title ?? null,

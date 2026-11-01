@@ -22,5 +22,18 @@ export const it: TranslatedMessages<typeof en> = {
   version: 'Versione',
   versionUnknown: 'Sconosciuta',
   server: 'Server',
-  serverDescription: 'Esci per connetterti a un altro server.'
+  serverDescription: 'Esci per connetterti a un altro server.',
+  appearance: 'Aspetto',
+  general: 'Generali',
+  videoAndDownloads: 'Video e download',
+  videoQuality: 'Qualità dello streaming',
+  videoQualityAuto: 'Automatica',
+  videoQualityAutoDescription: 'La qualità migliore consentita dalla tua connessione',
+  videoQualityStandard: 'Fino a 720p',
+  videoQualityStandardDescription: 'Usa meno dati mobili',
+  videoQualityDataSaver: 'Risparmio dati',
+  videoQualityDataSaverDescription: 'Fino a 480p, usa meno dati mobili possibile',
+  videoQualityFooter:
+    'Imposta la risoluzione massima dei video trasmessi dalla tua organizzazione. Le lezioni scaricate e i video di YouTube o Vimeo non sono interessati.',
+  downloads: 'Download'
 };

@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountQuery } from '@/feature/account/api/account';
 import { PROFILE_COVER_HEIGHT, ProfileHero, ProfileMeta } from '@/feature/account/components/profile-hero';
-import { ProfileMenuIcon } from '@/feature/account/components/profile-menu-icon';
+import { IconTile } from '@/feature/common/components/icon-tile';
 import { ProfileStat, ProfileStats } from '@/feature/account/components/profile-stats';
 import { learningStatsOf } from '@/feature/account/helpers/learning-stats';
 import { accountCatalog } from '@/feature/account/translations/catalog';
@@ -194,7 +194,7 @@ export default function ProfileScreen() {
           <ItemGroup>
             <Item onPress={() => router.push('/certificates')}>
               <ItemMedia>
-                <ProfileMenuIcon icon={MedalIcon} color={colors.warning} />
+                <IconTile icon={MedalIcon} />
               </ItemMedia>
               <ItemContent>
                 <ItemTitle>{t('certificates')}</ItemTitle>
@@ -208,7 +208,7 @@ export default function ProfileScreen() {
             </Item>
             <Item onPress={() => router.push('/profile/downloads')}>
               <ItemMedia>
-                <ProfileMenuIcon icon={DownloadSimpleIcon} color={colors.primary} />
+                <IconTile icon={DownloadSimpleIcon} />
               </ItemMedia>
               <ItemContent>
                 <ItemTitle>{t('downloads')}</ItemTitle>
@@ -227,7 +227,7 @@ export default function ProfileScreen() {
           <ItemGroup>
             <Item onPress={() => router.push('/notifications/preferences')}>
               <ItemMedia>
-                <ProfileMenuIcon icon={BellIcon} color={colors.danger} />
+                <IconTile icon={BellIcon} />
               </ItemMedia>
               <ItemContent>
                 <ItemTitle>{t('notifications')}</ItemTitle>
@@ -239,7 +239,7 @@ export default function ProfileScreen() {
             </Item>
             <Item onPress={() => router.push('/profile/settings')}>
               <ItemMedia>
-                <ProfileMenuIcon icon={GearIcon} color={colors.inkSubtle} />
+                <IconTile icon={GearIcon} />
               </ItemMedia>
               <ItemContent>
                 <ItemTitle>{tc('settings')}</ItemTitle>

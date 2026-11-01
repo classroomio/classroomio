@@ -182,12 +182,6 @@ export const pl: TranslatedMessages<typeof en> = {
   statOverdue: 'Po terminie',
   statOverdueDetail: 'Termin minął',
   statToGrade: 'Do oceny',
-  gradeSubmissions: {
-    one: 'Oceń {count} pracę',
-    few: 'Oceń {count} prace',
-    many: 'Oceń {count} prac',
-    other: 'Oceń {count} pracy'
-  },
   attendance: 'Obecność',
   announce: 'Ogłoś',
   lowestProgress: 'Najmniejsze postępy',
@@ -256,8 +250,6 @@ export const pl: TranslatedMessages<typeof en> = {
     many: 'Nie zapisano {count} wpisów obecności',
     other: 'Nie zapisano {count} wpisu obecności'
   },
-  attendanceSaved: 'Obecność zapisana',
-  attendanceNotSaved: 'Nie udało się zapisać obecności',
   noLearnersEnrolledTitle: 'Brak zapisanych uczestników',
   noLearnersEnrolledDescription: 'Nikt jeszcze nie dołączył do tego kursu jako uczestnik.',
   noLearnerMatches: 'Brak uczestników pasujących do „{query}”.',
@@ -268,29 +260,13 @@ export const pl: TranslatedMessages<typeof en> = {
   noSessionA11y: 'Nie wybrano zajęć. Zmień zajęcia',
   chooseSession: 'Wybierz zajęcia',
   change: 'Zmień',
-  unsavedNote: 'Niezapisane zmiany pozostają przy tych zajęciach, gdy przełączysz się na inne.',
   sessions: 'Zajęcia',
   present: 'Obecny',
   absent: 'Nieobecny',
   notMarked: 'Nieoznaczony',
-  notSaved: 'niezapisane',
   markAllPresent: 'Wszyscy obecni',
   markAllAbsent: 'Wszyscy nieobecni',
-  undo: 'Cofnij',
   findLearner: 'Znajdź uczestnika',
-  noChangesToSave: 'Brak zmian do zapisania',
-  saveChanges: {
-    one: 'Zapisz {count} zmianę',
-    few: 'Zapisz {count} zmiany',
-    many: 'Zapisz {count} zmian',
-    other: 'Zapisz {count} zmiany'
-  },
-  learnerCount: {
-    one: '{count} uczestnik',
-    few: '{count} uczestnicy',
-    many: '{count} uczestników',
-    other: '{count} uczestnika'
-  },
   courseTeam: 'Zespół kursu',
   courseMember: 'Członek kursu',
   comments: 'Komentarze',
@@ -342,5 +318,72 @@ export const pl: TranslatedMessages<typeof en> = {
     other:
       'Wpis i {count} komentarza zostaną usunięte z aktualności kursu dla wszystkich. Tej operacji nie można cofnąć.'
   },
-  gradeAction: 'Oceń'
+  gradeAction: 'Oceń',
+  sessionLiveNow: 'Teraz na żywo',
+  statusLate: 'Spóźniony',
+  markedOf: {
+    one: 'Oznaczono {marked} z {count}',
+    few: 'Oznaczono {marked} z {count}',
+    many: 'Oznaczono {marked} z {count}',
+    other: 'Oznaczono {marked} z {count}'
+  },
+  markRestAbsent: {
+    one: 'Oznacz {count} nieoznaczonego uczestnika jako nieobecnego',
+    few: 'Oznacz {count} nieoznaczonych uczestników jako nieobecnych',
+    many: 'Oznacz {count} nieoznaczonych uczestników jako nieobecnych',
+    other: 'Oznacz {count} nieoznaczonego uczestnika jako nieobecnego'
+  },
+  confirmAllPresentTitle: {
+    one: 'Oznaczyć {count} uczestnika jako obecnego?',
+    few: 'Oznaczyć wszystkich {count} uczestników jako obecnych?',
+    many: 'Oznaczyć wszystkich {count} uczestników jako obecnych?',
+    other: 'Oznaczyć wszystkich {count} uczestnika jako obecnych?'
+  },
+  confirmAllAbsentTitle: {
+    one: 'Oznaczyć {count} uczestnika jako nieobecnego?',
+    few: 'Oznaczyć wszystkich {count} uczestników jako nieobecnych?',
+    many: 'Oznaczyć wszystkich {count} uczestników jako nieobecnych?',
+    other: 'Oznaczyć wszystkich {count} uczestnika jako nieobecnych?'
+  },
+  confirmReplaceMarks: {
+    one: 'To zastąpi {count} wpis już zapisany dla tych zajęć, w tym zameldowania.',
+    few: 'To zastąpi {count} wpisy już zapisane dla tych zajęć, w tym zameldowania.',
+    many: 'To zastąpi {count} wpisów już zapisanych dla tych zajęć, w tym zameldowania.',
+    other: 'To zastąpi {count} wpisu już zapisanego dla tych zajęć, w tym zameldowania.'
+  },
+  checkedInAt: 'zameldowano o {time}',
+  checkedInTime: 'Zameldowano o {time}',
+  markLearner: 'Obecność: {name}',
+  attendanceHint:
+    'Przesuń uczestnika w prawo, aby oznaczyć go jako obecnego, lub w lewo, aby oznaczyć jako nieobecnego.',
+  titleCheckIn: 'Zameldowanie',
+  startCheckIn: 'Rozpocznij zameldowanie',
+  startCheckInDescription: 'Pokaż kod, którym uczestnicy oznaczają swoją obecność',
+  checkInOpen: 'Zameldowanie otwarte',
+  checkInOpenDetail: 'Kod {code} · zostało {time}',
+  showCode: 'Pokaż kod',
+  startingCheckIn: 'Rozpoczynanie zameldowania',
+  checkInInstructions:
+    'Uczestnicy skanują kod QR w aplikacji ClassroomIO albo otwierają lekcję, wybierają Zamelduj się i wpisują kod. Osoby meldujące się później niż {minutes} minut po rozpoczęciu są oznaczane jako spóźnione.',
+  expiresIn: 'Wygasa za {time}',
+  codeExpired: 'Ten kod wygasł',
+  newCode: 'Nowy kod',
+  endCheckIn: 'Zakończ zameldowanie',
+  checkedInProgress: {
+    one: 'Zameldowano {checked} z {count} uczestnika',
+    few: 'Zameldowano {checked} z {count} uczestników',
+    many: 'Zameldowano {checked} z {count} uczestników',
+    other: 'Zameldowano {checked} z {count} uczestnika'
+  },
+  noCheckInsYet: 'Nikt się jeszcze nie zameldował.',
+  checkInNotStarted: 'Nie rozpoczęto zameldowania',
+  checkInNotEnded: 'Nie zakończono zameldowania',
+  checkInEnded: 'Zameldowanie zakończone',
+  codeA11y: 'Kod zameldowania {code}',
+  qrA11y: 'Kod QR do zameldowania na {title}',
+  nextSession: 'Następne zajęcia',
+  gradeSubmissionsTitle: 'Oceń prace',
+  allGradedShort: 'Nic nie czeka na ocenę',
+  attendanceDescription: 'Oznaczaj uczestników jako obecnych, spóźnionych lub nieobecnych na każdych zajęciach',
+  announceDescription: 'Opublikuj w aktualnościach kursu'
 };

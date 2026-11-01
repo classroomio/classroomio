@@ -47,5 +47,7 @@ export const hi: TranslatedMessages<typeof en> = {
   savedDescription: 'PDF आपके चुने हुए फ़ोल्डर में है।',
   saveFailed: 'प्रमाणपत्र सहेजा नहीं जा सका',
   idCopied: 'प्रमाणपत्र आईडी कॉपी हुई',
-  recipientFallback: 'प्राप्तकर्ता'
+  recipientFallback: 'प्राप्तकर्ता',
+  copyId: 'ID कॉपी करें',
+  openCourse: 'कोर्स खोलें'
 };

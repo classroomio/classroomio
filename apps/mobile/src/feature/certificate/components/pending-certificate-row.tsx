@@ -1,12 +1,12 @@
-import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
 import { StyleSheet, View } from 'react-native';
 
 import { certificateCatalog } from '@/feature/certificate/translations/catalog';
 import type { PendingCertificate } from '@/feature/certificate/types/certificate';
-import { Icon } from '@/feature/common/components/icon';
-import { Item, ItemChevron, ItemContent, ItemMedia, ItemTitle } from '@/feature/common/components/item';
+import { Item, ItemActions, ItemChevron, ItemContent, ItemMedia, ItemTitle } from '@/feature/common/components/item';
 import { Progress } from '@/feature/common/components/progress';
 import { Text } from '@/feature/common/components/text';
+import { SPACING } from '@/feature/common/constants/layout';
+import { CourseThumbnail } from '@/feature/course/components/course-thumbnail';
 import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
@@ -22,29 +22,30 @@ export function PendingCertificateRow({ pending, onPress }: PendingCertificateRo
   const progress = t('progressComplete', { percent: formatters.percent(pending.progressPercent) });
 
   return (
-    <Item
-      onPress={() => onPress(pending)}
-      accessibilityLabel={`${pending.courseTitle}, ${progress}`}
-      style={styles.item}
-    >
-      <ItemMedia variant="tile">
-        <Icon icon={MedalIcon} size={20} tone="subtle" />
+    <Item onPress={() => onPress(pending)} accessibilityLabel={`${pending.courseTitle}, ${progress}`}>
+      <ItemMedia>
+        <CourseThumbnail uri={pending.courseImage} size={52} recyclingKey={pending.courseId} />
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{pending.courseTitle}</ItemTitle>
         <View style={styles.progress}>
-          <Progress value={pending.progressPercent} />
-          <Text variant="caption" tone="muted">
+          <View style={styles.track}>
+            <Progress value={pending.progressPercent} />
+          </View>
+          <Text variant="micro" tone="muted" style={styles.percent}>
             {progress}
           </Text>
         </View>
       </ItemContent>
-      <ItemChevron />
+      <ItemActions>
+        <ItemChevron />
+      </ItemActions>
     </Item>
   );
 }
 
 const styles = StyleSheet.create({
-  item: { alignItems: 'flex-start' },
-  progress: { gap: 6, marginTop: 6 }
+  progress: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, marginTop: SPACING.xxs },
+  track: { flex: 1 },
+  percent: { fontVariant: ['tabular-nums'] }
 });

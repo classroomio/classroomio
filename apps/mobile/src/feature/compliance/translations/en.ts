@@ -23,12 +23,6 @@ export const en = {
   detailWaiverEnds: 'Waiver ends {date}',
   detailLastCompleted: 'Last completed {date}',
   detailRenewsEvery: { one: 'Renews every {count} month', other: 'Renews every {count} months' },
-  countOverdue: { other: '{count} overdue' },
-  countInGracePeriod: { other: '{count} in grace period' },
-  countDueSoon: { other: '{count} due soon' },
-  countToDo: { other: '{count} to do' },
-  countCompliant: { other: '{count} compliant' },
-  countWaived: { other: '{count} waived' },
   summaryOutOf: { one: '{count} requirement', other: '{count} requirements' },
   summaryOverdue: { one: '{count} of {total} is overdue.', other: '{count} of {total} are overdue.' },
   summaryInGracePeriod: {
@@ -72,5 +66,7 @@ export const en = {
   resumeCourse: 'Resume course',
   startCourse: 'Start course',
   proof: 'Proof',
-  proofLabel: 'Certificate for {course}'
+  proofLabel: 'Certificate for {course}',
+  standingOnTrack: 'On track',
+  nextDeadline: 'Next deadline'
 };

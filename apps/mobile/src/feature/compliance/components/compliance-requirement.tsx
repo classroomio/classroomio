@@ -17,6 +17,7 @@ import {
   useComplianceCopy
 } from '@/feature/compliance/helpers/compliance-copy';
 import type { ComplianceRequirement as Requirement } from '@/feature/compliance/types/compliance';
+import { CourseThumbnail } from '@/feature/course/components/course-thumbnail';
 import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
 
 const RequirementContext = createContext<Requirement | null>(null);
@@ -35,6 +36,12 @@ export function openRequirementCourse(requirement: Requirement) {
 /** Shares one requirement with the parts inside it. */
 export function ComplianceRequirement({ requirement, children }: { requirement: Requirement; children: ReactNode }) {
   return <RequirementContext value={requirement}>{children}</RequirementContext>;
+}
+
+export function ComplianceRequirementArtwork({ size = 52 }: { size?: number }) {
+  const requirement = useRequirement();
+
+  return <CourseThumbnail uri={requirement.courseImage} size={size} recyclingKey={requirement.courseId} />;
 }
 
 export function ComplianceRequirementTitle({ variant = 'bodyStrong' }: { variant?: 'bodyStrong' | 'heading' }) {
@@ -101,8 +108,10 @@ export function ComplianceRequirementProgress() {
 
   return (
     <View style={styles.progress}>
-      <Progress value={requirement.progressPercent} />
-      <Text variant="micro" tone="muted">
+      <View style={styles.progressTrack}>
+        <Progress value={requirement.progressPercent} />
+      </View>
+      <Text variant="micro" tone="muted" style={styles.progressLabel}>
         {t('progressComplete', { percent: formatters.percent(requirement.progressPercent) })}
       </Text>
     </View>
@@ -182,7 +191,9 @@ const styles = StyleSheet.create({
   status: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   statusText: { flexShrink: 1 },
   details: { gap: 2 },
-  progress: { gap: 6 },
+  progress: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
+  progressTrack: { flex: 1 },
+  progressLabel: { fontVariant: ['tabular-nums'] },
   countdown: { alignItems: 'flex-end', minWidth: 56 },
   countdownValue: { fontVariant: ['tabular-nums'] }
 });

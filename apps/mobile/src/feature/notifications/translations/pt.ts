@@ -74,5 +74,10 @@ export const pt: TranslatedMessages<typeof en> = {
   quietStart: 'Início do horário de silêncio',
   quietEnd: 'Fim do horário de silêncio',
   footnote: 'Os alertas de treinamento atrasado continuam ativos no push e no app porque o treinamento é obrigatório.',
-  markRead: 'Marcar como lida'
+  markRead: 'Marcar como lida',
+  markUnread: 'Marcar como não lida',
+  undo: 'Desfazer',
+  deleted: 'Notificação excluída',
+  deleteFailed: 'A notificação não foi excluída',
+  unavailableOffline: 'Disponível quando você estiver online novamente'
 };

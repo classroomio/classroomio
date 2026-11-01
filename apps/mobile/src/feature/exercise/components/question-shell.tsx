@@ -57,10 +57,10 @@ export function QuestionHeader() {
 
   return (
     <View style={styles.header}>
-      <Text variant="caption" tone="muted">
+      <Text variant="captionStrong" tone="muted">
         {meta.join(' · ')}
       </Text>
-      <Text variant="heading" accessibilityRole="header">
+      <Text variant="title" accessibilityRole="header">
         {plainTextOf(question.title)}
       </Text>
     </View>
@@ -117,8 +117,8 @@ export function QuestionProblem() {
 }
 
 const styles = StyleSheet.create({
-  shell: { gap: SPACING.md },
-  header: { gap: SPACING.xxs + 2 },
+  shell: { gap: SPACING.lg },
+  header: { gap: SPACING.xs },
   media: { gap: SPACING.xs },
   image: {
     width: '100%',

@@ -3,9 +3,11 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import {
+  deleteNotification,
   listNotifications,
   readAllNotifications,
-  readNotification
+  readNotification,
+  unreadNotification
 } from '@api/services/notification/notification-center';
 import { zValidator } from '@hono/zod-validator';
 import { ZNotificationIdParam, ZNotificationListQuery } from '@cio/utils/validation/notifications';
@@ -67,6 +69,50 @@ export const accountNotificationsRouter = new Hono()
         return c.json({ success: true, data }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to mark notification read');
+      }
+    }
+  )
+  /**
+   * POST /account/notifications/:notificationId/unread
+   * Marks one notification unread and returns the new unread count.
+   */
+  .post(
+    '/notifications/:notificationId/unread',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNotificationIdParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgId = c.req.header('cio-org-id')!;
+        const { notificationId } = c.req.valid('param');
+        const data = await unreadNotification(user.id, orgId, notificationId);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to mark notification unread');
+      }
+    }
+  )
+  /**
+   * DELETE /account/notifications/:notificationId
+   * Deletes one of the signed-in user's notifications and returns the new unread count.
+   */
+  .delete(
+    '/notifications/:notificationId',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNotificationIdParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgId = c.req.header('cio-org-id')!;
+        const { notificationId } = c.req.valid('param');
+        const data = await deleteNotification(user.id, orgId, notificationId);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to delete notification');
       }
     }
   );

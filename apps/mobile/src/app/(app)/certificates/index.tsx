@@ -1,7 +1,12 @@
 import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
 import { router } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
 
-import { CertificateRow } from '@/feature/certificate/components/certificate-row';
+import {
+  CertificateCard,
+  CertificateCardBody,
+  CertificateCardHeader
+} from '@/feature/certificate/components/certificate-card';
 import { PendingCertificateRow } from '@/feature/certificate/components/pending-certificate-row';
 import { certificatesSummaryText, useCertificateCopy } from '@/feature/certificate/helpers/certificate-copy';
 import { useCertificateWallet } from '@/feature/certificate/helpers/certificate-wallet';
@@ -16,13 +21,15 @@ import {
   EmptyTitle
 } from '@/feature/common/components/empty';
 import { ItemGroup } from '@/feature/common/components/item';
+import { SkeletonList } from '@/feature/common/components/skeleton';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { Text } from '@/feature/common/components/text';
-import { RADII } from '@/feature/common/constants/layout';
+import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
+import { useActiveOrg } from '@/feature/org/helpers/use-active-org';
 
 function openCertificate(certificate: Certificate) {
   router.push({ pathname: '/certificates/[courseId]', params: { courseId: certificate.courseId } });
@@ -36,13 +43,19 @@ export default function CertificatesScreen() {
   const { query: certificates, earned, pending, offline, savedCourseIds, refresh } = useCertificateWallet();
   const copy = useCertificateCopy();
   const tc = useTranslations(commonCatalog);
+  const { org } = useActiveOrg();
   const { t } = copy;
 
   return (
     <ScreenScrollView onRefresh={refresh}>
-      {certificates.isPending && <Skeleton height={232} radius={RADII.xl} />}
+      {certificates.isPending && (
+        <>
+          <Skeleton height={216} radius={RADII.sheet} />
+          <SkeletonList count={2} media="thumbnail" />
+        </>
+      )}
 
-      {certificates.isError && !offline && (
+      {certificates.isError && earned.length === 0 && (
         <Empty>
           <EmptyMedia icon={MedalIcon} />
           <EmptyTitle>{t('listLoadError')}</EmptyTitle>
@@ -68,16 +81,14 @@ export default function CertificatesScreen() {
           <Text variant="caption" tone="muted">
             {offline ? t('offlineNotice') : certificatesSummaryText(earned, copy)}
           </Text>
-          <ItemGroup>
+          <View style={styles.wallet}>
             {earned.map((certificate) => (
-              <CertificateRow
-                key={certificate.courseId}
-                certificate={certificate}
-                saved={savedCourseIds.has(certificate.courseId)}
-                onPress={openCertificate}
-              />
+              <CertificateCard key={certificate.courseId} certificate={certificate} onPress={openCertificate}>
+                <CertificateCardHeader issuer={org?.name} saved={savedCourseIds.has(certificate.courseId)} />
+                <CertificateCardBody />
+              </CertificateCard>
             ))}
-          </ItemGroup>
+          </View>
         </ScreenSection>
       )}
 
@@ -94,3 +105,7 @@ export default function CertificatesScreen() {
     </ScreenScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  wallet: { gap: SPACING.md }
+});

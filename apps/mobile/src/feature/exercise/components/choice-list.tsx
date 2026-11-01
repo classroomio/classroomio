@@ -121,11 +121,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-    minHeight: 56,
+    minHeight: 58,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderWidth: 1,
-    borderRadius: RADII.lg,
+    borderRadius: RADII.xl,
     borderCurve: 'continuous'
   },
   indicator: { width: 22, height: 22, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },

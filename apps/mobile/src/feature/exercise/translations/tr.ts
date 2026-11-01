@@ -33,6 +33,7 @@ export const tr: TranslatedMessages<typeof en> = {
   uploadBlocker: 'Göndermeden önce yüklemelerin bitmesini bekleyin.',
   submitAnswers: 'Yanıtları gönder',
   nextQuestion: 'Sonraki soru',
+  previousQuestion: 'Önceki soru',
   confirmSubmitTitle: 'Yanıtlarınız gönderilsin mi?',
   confirmSubmitMultiple: 'Eğitmeniniz bu denemeyi görür. Alıştırmayı daha sonra tekrar çözebilirsiniz.',
   confirmSubmitSingle: 'Bu alıştırmada tek deneme hakkı var. Gönderdikten sonra yanıtlarınızı değiştiremezsiniz.',

@@ -8,7 +8,6 @@ import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Item, ItemActions, ItemChevron, ItemContent, ItemGroup } from '@/feature/common/components/item';
 import { ScreenSection } from '@/feature/common/components/screen';
 import { Text } from '@/feature/common/components/text';
-import type { ThemeColors } from '@/feature/common/constants/colors';
 import { RADII } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import type { ContentItemState } from '@/feature/course/types/course-detail';
@@ -44,7 +43,8 @@ type OutlineRowProps = Pick<PressableProps, 'onPress' | 'accessibilityLabel' | '
 };
 
 export function OutlineRow({ state, onPress, accessibilityLabel, accessibilityHint, children }: OutlineRowProps) {
-  const style = state === 'current' ? styles.current : undefined;
+  const { colors } = useTheme();
+  const style = state === 'current' ? [styles.current, { backgroundColor: colors.primaryTint }] : undefined;
 
   return (
     <OutlineRowContext value={state}>
@@ -67,27 +67,30 @@ export function OutlineRow({ state, onPress, accessibilityLabel, accessibilityHi
   );
 }
 
-const INDICATOR: Record<
-  ContentItemState,
-  { surface: keyof ThemeColors; tone: 'success' | 'primary' | 'subtle' | 'muted' }
-> = {
-  complete: { surface: 'successTint', tone: 'success' },
-  current: { surface: 'primaryTint', tone: 'primary' },
-  locked: { surface: 'muted', tone: 'subtle' },
-  available: { surface: 'muted', tone: 'muted' }
-};
-
-/** The leading tile: a check, play or lock glyph for those states, otherwise the item's own icon. */
+/** The leading tile: a check, play or lock glyph for those states, otherwise the item's own icon. Only the next item is solid. */
 export function OutlineRowIndicator({ icon }: { icon: AppIcon }) {
   const { colors } = useTheme();
   const state = use(OutlineRowContext);
-  const { surface, tone } = INDICATOR[state];
-  const glyph =
-    state === 'complete' ? CheckIcon : state === 'current' ? PlayIcon : state === 'locked' ? LockIcon : icon;
+
+  if (state === 'current') {
+    return (
+      <View style={[styles.indicator, { backgroundColor: colors.primary }]}>
+        <Icon icon={PlayIcon} size={16} color={colors.onPrimary} weight="fill" />
+      </View>
+    );
+  }
+
+  if (state === 'complete') {
+    return (
+      <View style={[styles.indicator, { backgroundColor: colors.successTint }]}>
+        <Icon icon={CheckIcon} size={17} tone="success" weight="bold" />
+      </View>
+    );
+  }
 
   return (
-    <View style={[styles.indicator, { backgroundColor: colors[surface] }]}>
-      <Icon icon={glyph} size={17} tone={tone} weight={state === 'complete' ? 'bold' : 'regular'} />
+    <View style={[styles.indicator, { backgroundColor: colors.muted }]}>
+      <Icon icon={state === 'locked' ? LockIcon : icon} size={17} tone={state === 'locked' ? 'subtle' : 'muted'} />
     </View>
   );
 }
@@ -136,10 +139,10 @@ export function OutlineRowActions({ children }: { children?: ReactNode }) {
 const styles = StyleSheet.create({
   sectionHeader: { flexDirection: 'row', alignItems: 'baseline', gap: 12, minHeight: 24 },
   sectionTitle: { flex: 1 },
-  current: { minHeight: 64 },
+  current: { minHeight: 68 },
   indicator: {
-    width: 36,
-    height: 36,
+    width: 34,
+    height: 34,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: RADII.md,

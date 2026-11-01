@@ -84,10 +84,8 @@ export const it: TranslatedMessages<typeof en> = {
   downloadSize: 'Scarica {size}',
   download: 'Scarica',
   notNow: 'Non ora',
-  otherCourses: 'Altri corsi',
   storageOnDevice: 'Spazio su questo dispositivo',
   usedSize: '{size} usati',
-  freeSize: '{size} liberi',
   downloadsTitle: 'Download',
   noDownloadsTitle: 'Nessun download',
   noDownloadsDescription: 'Scarica un corso o una lezione dalla relativa pagina per aprirli senza connessione.',
@@ -101,5 +99,9 @@ export const it: TranslatedMessages<typeof en> = {
   },
   removeAll: 'Rimuovi tutto',
   removeAllError: 'I download non sono stati rimossi',
-  notReady: 'I download non sono ancora pronti. Riprova.'
+  notReady: 'I download non sono ancora pronti. Riprova.',
+  usedByDownloads: 'Usato dai download',
+  legendDownloads: 'Download',
+  legendOther: 'Altre app e dati',
+  legendFree: 'Libero'
 };

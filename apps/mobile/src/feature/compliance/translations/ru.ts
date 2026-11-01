@@ -52,42 +52,6 @@ export const ru: TranslatedMessages<typeof en> = {
     many: 'Продлевается раз в {count} месяцев',
     other: 'Продлевается раз в {count} месяца'
   },
-  countOverdue: {
-    one: '{count} просрочено',
-    few: '{count} просрочено',
-    many: '{count} просрочено',
-    other: '{count} просрочено'
-  },
-  countInGracePeriod: {
-    one: '{count} в льготном периоде',
-    few: '{count} в льготном периоде',
-    many: '{count} в льготном периоде',
-    other: '{count} в льготном периоде'
-  },
-  countDueSoon: {
-    one: '{count} со скорым сроком',
-    few: '{count} со скорым сроком',
-    many: '{count} со скорым сроком',
-    other: '{count} со скорым сроком'
-  },
-  countToDo: {
-    one: '{count} к выполнению',
-    few: '{count} к выполнению',
-    many: '{count} к выполнению',
-    other: '{count} к выполнению'
-  },
-  countCompliant: {
-    one: '{count} соответствует',
-    few: '{count} соответствуют',
-    many: '{count} соответствуют',
-    other: '{count} соответствуют'
-  },
-  countWaived: {
-    one: '{count} с освобождением',
-    few: '{count} с освобождением',
-    many: '{count} с освобождением',
-    other: '{count} с освобождением'
-  },
   summaryOutOf: {
     one: '{count} требования',
     few: '{count} требований',
@@ -202,5 +166,7 @@ export const ru: TranslatedMessages<typeof en> = {
   resumeCourse: 'Продолжить курс',
   startCourse: 'Начать курс',
   proof: 'Подтверждение',
-  proofLabel: 'Сертификат по курсу «{course}»'
+  proofLabel: 'Сертификат по курсу «{course}»',
+  standingOnTrack: 'Всё по плану',
+  nextDeadline: 'Ближайший срок'
 };

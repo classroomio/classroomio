@@ -85,10 +85,8 @@ export const fr: TranslatedMessages<typeof en> = {
   downloadSize: 'Télécharger {size}',
   download: 'Télécharger',
   notNow: 'Plus tard',
-  otherCourses: 'Autres cours',
   storageOnDevice: 'Stockage sur cet appareil',
   usedSize: '{size} utilisés',
-  freeSize: '{size} libres',
   downloadsTitle: 'Téléchargements',
   noDownloadsTitle: 'Aucun téléchargement',
   noDownloadsDescription: 'Téléchargez un cours ou une leçon depuis sa page pour l’ouvrir sans connexion.',
@@ -102,5 +100,9 @@ export const fr: TranslatedMessages<typeof en> = {
   },
   removeAll: 'Tout supprimer',
   removeAllError: 'Les téléchargements n’ont pas été supprimés',
-  notReady: 'Les téléchargements ne sont pas encore prêts. Réessayez.'
+  notReady: 'Les téléchargements ne sont pas encore prêts. Réessayez.',
+  usedByDownloads: 'Utilisé par les téléchargements',
+  legendDownloads: 'Téléchargements',
+  legendOther: 'Autres apps et données',
+  legendFree: 'Libre'
 };

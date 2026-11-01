@@ -66,8 +66,6 @@ export const pl: TranslatedMessages<typeof en> = {
     'Zadanie pytania wymaga połączenia. Nic, co tu wpiszesz, nie zostanie zapisane, dopóki nie połączysz się ponownie i nie opublikujesz pytania.',
   editOffline:
     'Zapisanie zmian wymaga połączenia. Zmiany pozostaną na tym ekranie, dopóki nie połączysz się ponownie i ich nie zapiszesz.',
-  postQuestion: 'Opublikuj pytanie',
-  saveChanges: 'Zapisz zmiany',
   fieldTitle: 'Tytuł',
   fieldTitlePlaceholder: 'Czego chcesz się dowiedzieć?',
   fieldCourse: 'Kurs',
@@ -93,5 +91,29 @@ export const pl: TranslatedMessages<typeof en> = {
   linkCopied: 'Skopiowano link',
   searchPlaceholder: 'Szukaj pytań',
   searchEmptyTitle: 'Brak pasujących pytań',
-  searchEmptyDescription: 'Żaden tytuł pytania, autor ani kurs nie zawiera „{query}”.'
+  searchEmptyDescription: 'Żaden tytuł pytania, autor ani kurs nie zawiera „{query}”.',
+  segmentAll: 'Wszystkie',
+  segmentForYou: 'Dla Ciebie',
+  forYouEmptyTitle: 'Brak obserwowanych pytań',
+  forYouEmptyDescription:
+    'Pytania, które zadajesz, na które odpowiadasz lub które obserwujesz, są w sekcji Dla Ciebie. Kropka oznacza pytania z nieprzeczytanymi odpowiedziami.',
+  forYouEmptyFilteredDescription: 'W tym kursie nie zadajesz, nie odpowiadasz ani nie obserwujesz żadnych pytań.',
+  newAnswers: 'Nowe odpowiedzi',
+  following: 'Obserwujesz',
+  followQuestion: 'Obserwuj pytanie',
+  unfollowQuestion: 'Przestań obserwować pytanie',
+  followedTitle: 'Obserwujesz to pytanie',
+  followedDescription: 'Otrzymasz powiadomienie, gdy ktoś odpowie.',
+  followFailed: 'Nie zapisano obserwowania',
+  acceptedAnswer: 'Zaakceptowana odpowiedź',
+  markAccepted: 'Oznacz jako zaakceptowaną',
+  unmarkAccepted: 'Usuń oznaczenie akceptacji',
+  acceptFailed: 'Nie zapisano zaakceptowanej odpowiedzi',
+  hiddenFromLearners: 'Ukryte przed uczestnikami',
+  hiddenQuestionDescription:
+    'Uczestnicy nie widzą tego pytania ani odpowiedzi. Prowadzący i administratorzy nadal je widzą.',
+  hideFromLearners: 'Ukryj przed uczestnikami',
+  showToLearners: 'Pokaż uczestnikom',
+  visibilityFailed: 'Nie zmieniono widoczności',
+  post: 'Opublikuj'
 };

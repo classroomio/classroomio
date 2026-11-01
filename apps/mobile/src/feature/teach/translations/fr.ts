@@ -133,7 +133,6 @@ export const fr: TranslatedMessages<typeof en> = {
   statOverdue: 'En retard',
   statOverdueDetail: 'Date limite dépassée',
   statToGrade: 'À noter',
-  gradeSubmissions: { one: 'Noter {count} soumission', other: 'Noter {count} soumissions' },
   attendance: 'Présences',
   announce: 'Annoncer',
   lowestProgress: 'Progression la plus faible',
@@ -171,8 +170,6 @@ export const fr: TranslatedMessages<typeof en> = {
     one: '{count} pointage n’a pas été enregistré',
     other: '{count} pointages n’ont pas été enregistrés'
   },
-  attendanceSaved: 'Présences enregistrées',
-  attendanceNotSaved: 'Les présences n’ont pas été enregistrées',
   noLearnersEnrolledTitle: 'Aucun apprenant inscrit',
   noLearnersEnrolledDescription: 'Personne n’a encore rejoint ce cours en tant qu’apprenant.',
   noLearnerMatches: 'Aucun apprenant ne correspond à « {query} ».',
@@ -183,19 +180,13 @@ export const fr: TranslatedMessages<typeof en> = {
   noSessionA11y: 'Aucune séance choisie. Changer de séance',
   chooseSession: 'Choisir une séance',
   change: 'Changer',
-  unsavedNote: 'Les modifications non enregistrées restent liées à cette séance si vous en changez.',
   sessions: 'Séances',
   present: 'Présent',
   absent: 'Absent',
   notMarked: 'Non pointé',
-  notSaved: 'non enregistré',
   markAllPresent: 'Tous présents',
   markAllAbsent: 'Tous absents',
-  undo: 'Annuler',
   findLearner: 'Rechercher un apprenant',
-  noChangesToSave: 'Aucune modification à enregistrer',
-  saveChanges: { one: 'Enregistrer {count} modification', other: 'Enregistrer {count} modifications' },
-  learnerCount: { one: '{count} apprenant', other: '{count} apprenants' },
   courseTeam: 'Équipe du cours',
   courseMember: 'Membre du cours',
   comments: 'Commentaires',
@@ -236,5 +227,57 @@ export const fr: TranslatedMessages<typeof en> = {
     other:
       'La publication et ses {count} commentaires sont supprimés du fil d’actualité du cours pour tout le monde. Cette action est irréversible.'
   },
-  gradeAction: 'Noter'
+  gradeAction: 'Noter',
+  sessionLiveNow: 'En direct',
+  statusLate: 'En retard',
+  markedOf: { one: '{marked} sur {count} pointé', other: '{marked} sur {count} pointés' },
+  markRestAbsent: {
+    one: 'Pointer absent l’apprenant non pointé ({count})',
+    other: 'Pointer absents les {count} apprenants non pointés'
+  },
+  confirmAllPresentTitle: {
+    one: 'Pointer {count} apprenant présent ?',
+    other: 'Pointer les {count} apprenants présents ?'
+  },
+  confirmAllAbsentTitle: {
+    one: 'Pointer {count} apprenant absent ?',
+    other: 'Pointer les {count} apprenants absents ?'
+  },
+  confirmReplaceMarks: {
+    one: 'Cela remplace {count} pointage déjà enregistré pour cette séance, enregistrements d’arrivée compris.',
+    other: 'Cela remplace {count} pointages déjà enregistrés pour cette séance, enregistrements d’arrivée compris.'
+  },
+  checkedInAt: 'arrivé à {time}',
+  checkedInTime: 'Arrivé à {time}',
+  markLearner: 'Présence de {name}',
+  attendanceHint:
+    'Balayez un apprenant vers la droite pour le pointer présent, ou vers la gauche pour le pointer absent.',
+  titleCheckIn: 'Enregistrement',
+  startCheckIn: 'Lancer l’enregistrement',
+  startCheckInDescription: 'Afficher un code que les apprenants utilisent pour se pointer présents',
+  checkInOpen: 'Enregistrement ouvert',
+  checkInOpenDetail: 'Code {code} · {time} restantes',
+  showCode: 'Afficher le code',
+  startingCheckIn: 'Lancement de l’enregistrement',
+  checkInInstructions:
+    'Les apprenants scannent le code QR dans l’app ClassroomIO, ou ouvrent la leçon, choisissent S’enregistrer et saisissent le code. Toute personne qui s’enregistre plus de {minutes} minutes après le début est pointée en retard.',
+  expiresIn: 'Expire dans {time}',
+  codeExpired: 'Ce code a expiré',
+  newCode: 'Nouveau code',
+  endCheckIn: 'Clore l’enregistrement',
+  checkedInProgress: {
+    one: '{checked} apprenant sur {count} enregistré',
+    other: '{checked} apprenants sur {count} enregistrés'
+  },
+  noCheckInsYet: 'Personne ne s’est encore enregistré.',
+  checkInNotStarted: 'L’enregistrement n’a pas démarré',
+  checkInNotEnded: 'L’enregistrement n’a pas été clos',
+  checkInEnded: 'Enregistrement clos',
+  codeA11y: 'Code d’enregistrement {code}',
+  qrA11y: 'Code QR pour s’enregistrer à {title}',
+  nextSession: 'Prochaine séance',
+  gradeSubmissionsTitle: 'Noter les travaux',
+  allGradedShort: 'Rien en attente de note',
+  attendanceDescription: 'Pointer les apprenants présents, en retard ou absents à chaque séance',
+  announceDescription: 'Publier dans le fil d’actualité du cours'
 };

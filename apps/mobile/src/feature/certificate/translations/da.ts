@@ -47,5 +47,7 @@ export const da: TranslatedMessages<typeof en> = {
   savedDescription: 'PDF-filen ligger i den mappe, du valgte.',
   saveFailed: 'Certifikatet kunne ikke gemmes',
   idCopied: 'Certifikat-id kopieret',
-  recipientFallback: 'Modtager'
+  recipientFallback: 'Modtager',
+  copyId: 'Kopiér ID',
+  openCourse: 'Åbn kursus'
 };

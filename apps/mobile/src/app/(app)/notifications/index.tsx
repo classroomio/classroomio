@@ -21,28 +21,20 @@ import { useIsOffline } from '@/feature/common/helpers/network-status';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { useNotificationPreferencesQuery } from '@/feature/notifications/api/notification-preferences';
-import {
-  useMarkAllNotificationsRead,
-  useMarkNotificationRead,
-  useNotificationsQuery
-} from '@/feature/notifications/api/notifications';
+import { useMarkAllNotificationsRead, useNotificationsQuery } from '@/feature/notifications/api/notifications';
+import { NotificationActions } from '@/feature/notifications/components/notification-actions';
 import { NotificationList } from '@/feature/notifications/components/notification-list';
 import { PushStatusBanner } from '@/feature/notifications/components/push-status-banner';
 import { groupNotifications } from '@/feature/notifications/helpers/notification-groups';
-import { openNotificationTarget } from '@/feature/notifications/helpers/open-notification';
 import { usePushPermission } from '@/feature/notifications/helpers/push-permission-store';
 import { notificationsCatalog } from '@/feature/notifications/translations/catalog';
-import type { NotificationItem } from '@/feature/notifications/types/notifications';
-import { useActiveOrg } from '@/feature/org/helpers/use-active-org';
 
 export default function NotificationsScreen() {
   const t = useTranslations(notificationsCatalog);
   const common = useTranslations(commonCatalog);
   const notifications = useNotificationsQuery();
   const preferences = useNotificationPreferencesQuery();
-  const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
-  const { organizations } = useActiveOrg();
   const offline = useIsOffline();
   const permission = usePushPermission();
 
@@ -50,11 +42,6 @@ export default function NotificationsScreen() {
   const items = pages.flatMap((page) => page.items);
   const unreadCount = pages[0]?.unreadCount ?? 0;
   const entries = groupNotifications(items);
-
-  const open = (item: NotificationItem) => {
-    if (!item.readAt) markRead.mutate(item.id);
-    openNotificationTarget({ deepLink: item.deepLink, memberOrgIds: organizations.map((org) => org.id) });
-  };
 
   const refresh = () => Promise.all([notifications.refetch(), preferences.refetch()]);
 
@@ -64,7 +51,7 @@ export default function NotificationsScreen() {
   const showOffline = offline && items.length > 0;
 
   return (
-    <>
+    <NotificationActions>
       <Stack.Screen
         options={{
           headerRight: () => (
@@ -114,14 +101,12 @@ export default function NotificationsScreen() {
         onEndReached={() => {
           if (notifications.hasNextPage && !notifications.isFetchingNextPage) void notifications.fetchNextPage();
         }}
-        onOpen={open}
-        onMarkRead={offline ? undefined : (item) => markRead.mutate(item.id)}
         onMarkAllRead={() => markAllRead.mutate()}
       />
-    </>
+    </NotificationActions>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { gap: SPACING.sm, marginBottom: SPACING.md }
+  header: { gap: SPACING.sm, marginBottom: SPACING.lg }
 });

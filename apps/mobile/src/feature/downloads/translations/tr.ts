@@ -81,10 +81,8 @@ export const tr: TranslatedMessages<typeof en> = {
   downloadSize: '{size} indir',
   download: 'İndir',
   notNow: 'Şimdi değil',
-  otherCourses: 'Diğer kurslar',
   storageOnDevice: 'Bu cihazdaki depolama',
   usedSize: '{size} kullanılıyor',
-  freeSize: '{size} boş',
   downloadsTitle: 'İndirilenler',
   noDownloadsTitle: 'Henüz indirme yok',
   noDownloadsDescription: 'Bağlantı olmadan açmak için bir kursu veya dersi kendi sayfasından indirin.',
@@ -98,5 +96,9 @@ export const tr: TranslatedMessages<typeof en> = {
   },
   removeAll: 'Tümünü kaldır',
   removeAllError: 'İndirmeler kaldırılamadı',
-  notReady: 'İndirmeler henüz hazır değil. Yeniden deneyin.'
+  notReady: 'İndirmeler henüz hazır değil. Yeniden deneyin.',
+  usedByDownloads: 'İndirmelerin kullandığı alan',
+  legendDownloads: 'İndirilenler',
+  legendOther: 'Diğer uygulamalar ve veriler',
+  legendFree: 'Boş'
 };

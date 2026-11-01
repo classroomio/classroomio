@@ -33,6 +33,7 @@ export const hi: TranslatedMessages<typeof en> = {
   uploadBlocker: 'सबमिट करने से पहले अपलोड पूरे होने दें।',
   submitAnswers: 'जवाब सबमिट करें',
   nextQuestion: 'अगला प्रश्न',
+  previousQuestion: 'पिछला प्रश्न',
   confirmSubmitTitle: 'अपने जवाब सबमिट करें?',
   confirmSubmitMultiple: 'आपके ट्यूटर यह प्रयास देखेंगे। बाद में आप यह अभ्यास दोबारा कर सकते हैं।',
   confirmSubmitSingle: 'इस अभ्यास में एक ही प्रयास है। सबमिट करने के बाद आप अपने जवाब नहीं बदल सकते।',

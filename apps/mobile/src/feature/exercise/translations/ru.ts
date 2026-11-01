@@ -40,6 +40,7 @@ export const ru: TranslatedMessages<typeof en> = {
   uploadBlocker: 'Перед отправкой дождитесь окончания загрузки файлов.',
   submitAnswers: 'Отправить ответы',
   nextQuestion: 'Следующий вопрос',
+  previousQuestion: 'Предыдущий вопрос',
   confirmSubmitTitle: 'Отправить ответы?',
   confirmSubmitMultiple: 'Преподаватель увидит эту попытку. После этого упражнение можно пройти снова.',
   confirmSubmitSingle: 'В этом упражнении одна попытка. После отправки изменить ответы будет нельзя.',

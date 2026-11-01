@@ -8,6 +8,7 @@ import { SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { successHaptic } from '@/feature/common/helpers/haptics';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
+import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useAskableCoursesQuery } from '@/feature/community/api/askable-courses';
 import { useCommunityQuestionQuery } from '@/feature/community/api/community-question';
 import { useUpdateQuestionMutation } from '@/feature/community/api/community-mutations';
@@ -32,6 +33,7 @@ export default function EditQuestionScreen() {
   const update = useUpdateQuestionMutation(question.data);
   const offline = useIsOffline();
   const t = useTranslations(communityCatalog);
+  const tc = useTranslations(commonCatalog);
   const data = question.data;
   const courseOptions = courses.data ?? [];
   const options =
@@ -72,11 +74,11 @@ export default function EditQuestionScreen() {
           }
         >
           <QuestionFormFormattingNotice />
-          <QuestionFormTitle />
           <QuestionFormCourse />
+          <QuestionFormTitle />
           <QuestionFormBody />
           <QuestionFormImages />
-          <QuestionFormSubmit>{t('saveChanges')}</QuestionFormSubmit>
+          <QuestionFormSubmit>{tc('save')}</QuestionFormSubmit>
         </QuestionForm>
       )}
     </QuestionFormLayout>

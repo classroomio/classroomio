@@ -6,6 +6,7 @@ import type { ComplianceRequirement as Requirement } from '@/feature/compliance/
 
 import {
   ComplianceRequirement,
+  ComplianceRequirementArtwork,
   ComplianceRequirementCountdown,
   ComplianceRequirementCourseButton,
   ComplianceRequirementDetails,
@@ -22,6 +23,7 @@ export function ComplianceRequirementCard({ requirement }: { requirement: Requir
       <Card>
         <CardContent style={styles.content}>
           <View style={styles.header}>
+            <ComplianceRequirementArtwork size={56} />
             <View style={styles.heading}>
               <ComplianceRequirementTitle variant="heading" />
               <ComplianceRequirementStatus />

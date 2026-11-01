@@ -30,12 +30,6 @@ export const es: TranslatedMessages<typeof en> = {
   detailWaiverEnds: 'La exención termina el {date}',
   detailLastCompleted: 'Completado por última vez el {date}',
   detailRenewsEvery: { one: 'Se renueva cada mes', other: 'Se renueva cada {count} meses' },
-  countOverdue: { one: '{count} vencido', other: '{count} vencidos' },
-  countInGracePeriod: { one: '{count} en periodo de gracia', other: '{count} en periodo de gracia' },
-  countDueSoon: { one: '{count} vence pronto', other: '{count} vencen pronto' },
-  countToDo: { one: '{count} pendiente', other: '{count} pendientes' },
-  countCompliant: { one: '{count} cumple', other: '{count} cumplen' },
-  countWaived: { one: '{count} eximido', other: '{count} eximidos' },
   summaryOutOf: { one: '{count} requisito', other: '{count} requisitos' },
   summaryOverdue: { one: '{count} de {total} está vencido.', other: '{count} de {total} están vencidos.' },
   summaryInGracePeriod: {
@@ -82,5 +76,7 @@ export const es: TranslatedMessages<typeof en> = {
   resumeCourse: 'Continuar curso',
   startCourse: 'Empezar curso',
   proof: 'Comprobante',
-  proofLabel: 'Certificado de {course}'
+  proofLabel: 'Certificado de {course}',
+  standingOnTrack: 'Al día',
+  nextDeadline: 'Próxima fecha límite'
 };

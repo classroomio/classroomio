@@ -82,3 +82,11 @@ export function availableDiskSpace() {
     return null;
   }
 }
+
+export function totalDiskSpace() {
+  try {
+    return Paths.totalDiskSpace;
+  } catch {
+    return null;
+  }
+}

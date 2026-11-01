@@ -30,12 +30,6 @@ export const da: TranslatedMessages<typeof en> = {
   detailWaiverEnds: 'Fritagelsen slutter {date}',
   detailLastCompleted: 'Senest gennemført {date}',
   detailRenewsEvery: { one: 'Fornyes hver måned', other: 'Fornyes hver {count}. måned' },
-  countOverdue: { one: '{count} overskredet', other: '{count} overskredet' },
-  countInGracePeriod: { one: '{count} i henstandsperiode', other: '{count} i henstandsperiode' },
-  countDueSoon: { one: '{count} med frist snart', other: '{count} med frist snart' },
-  countToDo: { one: '{count} mangler', other: '{count} mangler' },
-  countCompliant: { one: '{count} overholdt', other: '{count} overholdt' },
-  countWaived: { one: '{count} fritaget', other: '{count} fritaget' },
   summaryOutOf: { one: '{count} krav', other: '{count} krav' },
   summaryOverdue: { one: '{count} af {total} er overskredet.', other: '{count} af {total} er overskredet.' },
   summaryInGracePeriod: {
@@ -79,5 +73,7 @@ export const da: TranslatedMessages<typeof en> = {
   resumeCourse: 'Fortsæt kursus',
   startCourse: 'Start kursus',
   proof: 'Bevis',
-  proofLabel: 'Certifikat for {course}'
+  proofLabel: 'Certifikat for {course}',
+  standingOnTrack: 'På rette spor',
+  nextDeadline: 'Næste frist'
 };

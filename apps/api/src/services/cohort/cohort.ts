@@ -608,6 +608,11 @@ export async function getEnrolledCohorts(profileId: string) {
   }
 }
 
+/** Cohorts the profile belongs to in one organization, newest first, with course and student counts. */
+export async function getOrgEnrolledCohorts(organizationId: string, profileId: string) {
+  return getEnrolledCohortsByProfile(profileId, organizationId);
+}
+
 // ─── Cohort Courses ──────────────────────────────────────────────────────────
 
 async function seesOnlyPublishedCohortCourses(cohortId: string, profileId: string) {

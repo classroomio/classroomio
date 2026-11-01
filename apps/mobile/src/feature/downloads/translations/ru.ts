@@ -96,10 +96,8 @@ export const ru: TranslatedMessages<typeof en> = {
   downloadSize: 'Скачать {size}',
   download: 'Скачать',
   notNow: 'Не сейчас',
-  otherCourses: 'Другие курсы',
   storageOnDevice: 'Память устройства',
   usedSize: 'Занято {size}',
-  freeSize: 'Свободно {size}',
   downloadsTitle: 'Загрузки',
   noDownloadsTitle: 'Загрузок пока нет',
   noDownloadsDescription: 'Скачайте курс или урок на его странице, чтобы открывать его без подключения.',
@@ -115,5 +113,9 @@ export const ru: TranslatedMessages<typeof en> = {
   },
   removeAll: 'Удалить все',
   removeAllError: 'Загрузки не удалены',
-  notReady: 'Загрузки ещё не готовы. Повторите попытку.'
+  notReady: 'Загрузки ещё не готовы. Повторите попытку.',
+  usedByDownloads: 'Занято загрузками',
+  legendDownloads: 'Загрузки',
+  legendOther: 'Другие приложения и данные',
+  legendFree: 'Свободно'
 };

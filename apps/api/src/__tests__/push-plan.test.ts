@@ -47,6 +47,7 @@ function input(overrides: Partial<PushPlanInput> = {}): PushPlanInput {
         'n-1',
         {
           courseTitle: 'React',
+          courseImage: null,
           actorName: null,
           actorAvatarUrl: null,
           subjectTitle: 'Section 2 check',

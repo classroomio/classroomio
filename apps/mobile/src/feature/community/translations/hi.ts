@@ -59,8 +59,6 @@ export const hi: TranslatedMessages<typeof en> = {
   askOffline: 'सवाल पूछने के लिए कनेक्शन ज़रूरी है। फिर से कनेक्ट करके पोस्ट करने तक आपका लिखा कुछ भी सहेजा नहीं जाता।',
   editOffline:
     'बदलाव सहेजने के लिए कनेक्शन ज़रूरी है। फिर से कनेक्ट करके सहेजने तक आपके बदलाव इसी स्क्रीन पर रहते हैं।',
-  postQuestion: 'सवाल पोस्ट करें',
-  saveChanges: 'बदलाव सहेजें',
   fieldTitle: 'शीर्षक',
   fieldTitlePlaceholder: 'आप क्या जानना चाहते हैं?',
   fieldCourse: 'कोर्स',
@@ -86,5 +84,29 @@ export const hi: TranslatedMessages<typeof en> = {
   linkCopied: 'लिंक कॉपी हो गया',
   searchPlaceholder: 'सवाल खोजें',
   searchEmptyTitle: 'कोई मिलता-जुलता सवाल नहीं',
-  searchEmptyDescription: 'किसी सवाल के शीर्षक, लेखक या कोर्स में “{query}” नहीं है।'
+  searchEmptyDescription: 'किसी सवाल के शीर्षक, लेखक या कोर्स में “{query}” नहीं है।',
+  segmentAll: 'सभी',
+  segmentForYou: 'आपके लिए',
+  forYouEmptyTitle: 'कोई फ़ॉलो किया गया सवाल नहीं',
+  forYouEmptyDescription:
+    'आपके पूछे, जवाब दिए या फ़ॉलो किए गए सवाल “आपके लिए” में रहते हैं। जिन सवालों के जवाब आपने नहीं पढ़े, उन पर एक बिंदु लगा होता है।',
+  forYouEmptyFilteredDescription: 'आपने इस कोर्स में कोई सवाल नहीं पूछा, जवाब नहीं दिया या फ़ॉलो नहीं किया।',
+  newAnswers: 'नए जवाब',
+  following: 'फ़ॉलो कर रहे हैं',
+  followQuestion: 'सवाल फ़ॉलो करें',
+  unfollowQuestion: 'सवाल अनफ़ॉलो करें',
+  followedTitle: 'आप यह सवाल फ़ॉलो कर रहे हैं',
+  followedDescription: 'कोई जवाब देने पर आपको सूचना मिलती है।',
+  followFailed: 'फ़ॉलो सेटिंग सेव नहीं हुई',
+  acceptedAnswer: 'स्वीकृत जवाब',
+  markAccepted: 'स्वीकृत के रूप में चिह्नित करें',
+  unmarkAccepted: 'स्वीकृत चिह्न हटाएँ',
+  acceptFailed: 'स्वीकृत जवाब सेव नहीं हुआ',
+  hiddenFromLearners: 'शिक्षार्थियों से छिपा हुआ',
+  hiddenQuestionDescription:
+    'शिक्षार्थी यह सवाल और इसके जवाब नहीं देख सकते। ट्यूटर और एडमिन अब भी इन्हें देख सकते हैं।',
+  hideFromLearners: 'शिक्षार्थियों से छिपाएँ',
+  showToLearners: 'शिक्षार्थियों को दिखाएँ',
+  visibilityFailed: 'दृश्यता नहीं बदली',
+  post: 'पोस्ट करें'
 };

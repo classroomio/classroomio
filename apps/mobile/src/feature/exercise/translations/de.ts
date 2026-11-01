@@ -34,6 +34,7 @@ export const de: TranslatedMessages<typeof en> = {
   uploadBlocker: 'Warten Sie, bis alle Uploads abgeschlossen sind, bevor Sie einreichen.',
   submitAnswers: 'Antworten einreichen',
   nextQuestion: 'Nächste Frage',
+  previousQuestion: 'Vorherige Frage',
   confirmSubmitTitle: 'Antworten einreichen?',
   confirmSubmitMultiple: 'Ihr Tutor sieht diesen Versuch. Sie können die Übung danach erneut bearbeiten.',
   confirmSubmitSingle:

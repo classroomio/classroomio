@@ -2,11 +2,12 @@ import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
 import { ImageSquareIcon } from 'phosphor-react-native/src/icons/ImageSquare';
 import { InfoIcon } from 'phosphor-react-native/src/icons/Info';
 import { ZCommunityQuestionCreate } from '@cio/utils/validation/community';
+import { Stack } from 'expo-router';
 import { createContext, use, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Banner, BannerContent, BannerDescription, BannerIcon } from '@/feature/common/components/banner';
-import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@/feature/common/components/button';
+import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { ComposerAttachments } from '@/feature/common/components/composer';
 import { Field, FieldError, FieldLabel } from '@/feature/common/components/field';
 import { Icon } from '@/feature/common/components/icon';
@@ -18,8 +19,9 @@ import {
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
+import { Spinner } from '@/feature/common/components/spinner';
 import { Text } from '@/feature/common/components/text';
-import { RADII, SPACING } from '@/feature/common/constants/layout';
+import { HIT_SLOP, RADII, SPACING } from '@/feature/common/constants/layout';
 import { editorHtmlToDraft, plainTextToEditorHtml } from '@/feature/common/helpers/editor-html';
 import { useImageAttachments } from '@/feature/common/helpers/use-image-attachments';
 import { useTheme } from '@/feature/common/helpers/use-theme';
@@ -281,13 +283,33 @@ export function QuestionFormFormattingNotice() {
   );
 }
 
+/** The form's submit action, placed in the navigation bar so it stays reachable above the keyboard. */
 export function QuestionFormSubmit({ children }: { children: string }) {
   const { submit, submitting, disabled, attachments } = useQuestionForm();
+  const blocked = disabled || submitting || attachments.uploading;
 
   return (
-    <Button size="lg" disabled={disabled || submitting || attachments.uploading} onPress={submit}>
-      {submitting ? <ButtonSpinner /> : <ButtonText>{children}</ButtonText>}
-    </Button>
+    <Stack.Screen
+      options={{
+        headerRight: () =>
+          submitting ? (
+            <Spinner tone="primary" />
+          ) : (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: blocked }}
+              disabled={blocked}
+              hitSlop={HIT_SLOP}
+              onPress={submit}
+              style={({ pressed }) => [styles.headerAction, (pressed || blocked) && styles.disabled]}
+            >
+              <Text variant="label" tone="primary">
+                {children}
+              </Text>
+            </Pressable>
+          )
+      }}
+    />
   );
 }
 
@@ -305,6 +327,7 @@ const styles = StyleSheet.create({
   },
   selectLabel: { flex: 1 },
   disabled: { opacity: 0.55 },
+  headerAction: { paddingHorizontal: SPACING.xxs },
   bodyGroup: { alignItems: 'stretch' },
   bodyInput: { minHeight: 160 },
   images: { gap: SPACING.sm },

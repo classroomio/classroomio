@@ -14,7 +14,9 @@ import {
   OptionSheetItem,
   OptionSheetTitle
 } from '@/feature/common/components/option-sheet';
-import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
+import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
+import { GUTTER, SPACING } from '@/feature/common/constants/layout';
+import { useScreenReaderEnabled } from '@/feature/common/helpers/use-screen-reader-enabled';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useCourseWebUrl } from '@/feature/course/helpers/course-web-url';
@@ -25,8 +27,7 @@ import { useCourseAvailableOffline } from '@/feature/downloads/helpers/download-
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { showToast } from '@/feature/toast/helpers/toast-store';
 
-import { CourseRow } from './course-row';
-import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
+import { COURSE_ROW_ARTWORK_WIDTH, CourseRow } from './course-row';
 
 type CourseActions = {
   webUrl: (courseId: string) => string | null;
@@ -39,50 +40,63 @@ function courseHref(courseId: string) {
   return { pathname: '/course/[courseId]', params: { courseId } } as const;
 }
 
-type CourseListRowProps = { course: EnrolledCourse; first: boolean; last: boolean; actions: CourseActions };
+type CourseListRowProps = { course: EnrolledCourse; actions: CourseActions };
 
-function CourseListRow({ course, first, last, actions }: CourseListRowProps) {
+function CourseListRow({ course, actions }: CourseListRowProps) {
   const t = useTranslations(courseCatalog);
   const common = useTranslations(commonCatalog);
-  const { colors } = useTheme();
   const downloaded = useCourseAvailableOffline(course.id);
   const url = actions.webUrl(course.id);
+  const screenReader = useScreenReaderEnabled();
+
+  if (screenReader || Platform.OS === 'android') {
+    // The native preview and menu remove the row from the iOS accessibility tree.
+    return (
+      <Link href={courseHref(course.id)} push asChild>
+        <CourseRow
+          course={course}
+          onLongPress={() => actions.onOpenMenu(course)}
+          accessibilityActions={[
+            { name: 'download', label: downloaded ? t('menuManageDownload') : t('menuDownload') },
+            ...(url ? [{ name: 'copyLink', label: t('menuCopyLink') }] : [])
+          ]}
+          onAccessibilityAction={(event) => {
+            if (event.nativeEvent.actionName === 'download') actions.onDownload(course.id);
+            if (event.nativeEvent.actionName === 'copyLink' && url) actions.onCopyLink(url);
+          }}
+        />
+      </Link>
+    );
+  }
 
   return (
-    <View
-      style={[
-        styles.row,
-        { backgroundColor: colors.surface, borderColor: colors.border },
-        first && styles.first,
-        last && styles.last
-      ]}
-    >
-      {first ? null : <View style={[styles.separator, { backgroundColor: colors.border }]} />}
-      <Link href={courseHref(course.id)} push asChild>
-        <Link.Trigger>
-          <CourseRow
-            course={course}
-            onLongPress={Platform.OS === 'android' ? () => actions.onOpenMenu(course) : undefined}
-          />
-        </Link.Trigger>
-        <Link.Preview />
-        <Link.Menu>
-          <Link.MenuAction icon="arrow.up.right.square" onPress={() => router.push(courseHref(course.id))}>
-            {common('open')}
-          </Link.MenuAction>
-          <Link.MenuAction
-            icon={downloaded ? 'checkmark.circle' : 'arrow.down.circle'}
-            onPress={() => actions.onDownload(course.id)}
-          >
-            {downloaded ? t('menuManageDownload') : t('menuDownload')}
-          </Link.MenuAction>
-          <Link.MenuAction icon="link" hidden={!url} onPress={() => url && actions.onCopyLink(url)}>
-            {t('menuCopyLink')}
-          </Link.MenuAction>
-        </Link.Menu>
-      </Link>
-    </View>
+    <Link href={courseHref(course.id)} push asChild>
+      <Link.Trigger>
+        <CourseRow course={course} />
+      </Link.Trigger>
+      <Link.Preview />
+      <Link.Menu>
+        <Link.MenuAction icon="arrow.up.right.square" onPress={() => router.push(courseHref(course.id))}>
+          {common('open')}
+        </Link.MenuAction>
+        <Link.MenuAction
+          icon={downloaded ? 'checkmark.circle' : 'arrow.down.circle'}
+          onPress={() => actions.onDownload(course.id)}
+        >
+          {downloaded ? t('menuManageDownload') : t('menuDownload')}
+        </Link.MenuAction>
+        <Link.MenuAction icon="link" hidden={!url} onPress={() => url && actions.onCopyLink(url)}>
+          {t('menuCopyLink')}
+        </Link.MenuAction>
+      </Link.Menu>
+    </Link>
   );
+}
+
+function CourseListSeparator() {
+  const { colors } = useTheme();
+
+  return <View style={[styles.separator, { backgroundColor: colors.border }]} />;
 }
 
 type CourseListProps = {
@@ -92,7 +106,7 @@ type CourseListProps = {
   onRefresh: RefreshHandler;
 };
 
-/** The learner's courses as one grouped list. Long-press a row for a preview and Open, Download and Copy link. */
+/** The learner's courses as a list of artwork rows. Long-press a row for a preview and Open, Download and Copy link. */
 export function CourseList({ courses, header, empty, onRefresh }: CourseListProps) {
   const t = useTranslations(courseCatalog);
   const common = useTranslations(commonCatalog);
@@ -120,9 +134,8 @@ export function CourseList({ courses, header, empty, onRefresh }: CourseListProp
       <FlashList
         data={courses}
         keyExtractor={(course) => course.id}
-        renderItem={({ item, index }) => (
-          <CourseListRow course={item} first={index === 0} last={index === courses.length - 1} actions={actions} />
-        )}
+        renderItem={({ item }) => <CourseListRow course={item} actions={actions} />}
+        ItemSeparatorComponent={CourseListSeparator}
         ListHeaderComponent={header}
         ListEmptyComponent={empty}
         contentInsetAdjustmentBehavior="automatic"
@@ -162,20 +175,5 @@ export function CourseList({ courses, header, empty, onRefresh }: CourseListProp
 
 const styles = StyleSheet.create({
   content: { paddingHorizontal: GUTTER, paddingTop: SPACING.xs, paddingBottom: SPACING.xxxl },
-  row: { borderLeftWidth: StyleSheet.hairlineWidth * 2, borderRightWidth: StyleSheet.hairlineWidth * 2 },
-  first: {
-    borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderTopLeftRadius: RADII.xl,
-    borderTopRightRadius: RADII.xl,
-    borderCurve: 'continuous',
-    overflow: 'hidden'
-  },
-  last: {
-    borderBottomWidth: StyleSheet.hairlineWidth * 2,
-    borderBottomLeftRadius: RADII.xl,
-    borderBottomRightRadius: RADII.xl,
-    borderCurve: 'continuous',
-    overflow: 'hidden'
-  },
-  separator: { height: StyleSheet.hairlineWidth * 2, marginLeft: SPACING.md }
+  separator: { height: StyleSheet.hairlineWidth, marginLeft: COURSE_ROW_ARTWORK_WIDTH + SPACING.md }
 });

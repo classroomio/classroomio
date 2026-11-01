@@ -1,7 +1,11 @@
 import type { CommunityQuestionSummary } from '@/feature/community/types/community';
 
 /** Questions whose title, author or course contains every word of `query`, ignoring case and accents. */
-export function searchQuestions(questions: CommunityQuestionSummary[], query: string, locale: string) {
+export function searchQuestions<Question extends CommunityQuestionSummary>(
+  questions: Question[],
+  query: string,
+  locale: string
+): Question[] {
   const fold = (value: string) =>
     value
       .normalize('NFD')

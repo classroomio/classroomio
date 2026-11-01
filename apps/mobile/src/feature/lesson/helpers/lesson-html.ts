@@ -49,7 +49,7 @@ true;
 `;
 
 function stylesheet({ colors, isDark, fontScale }: Omit<LessonDocumentOptions, 'html'>) {
-  const base = 16 * fontScale;
+  const base = 17 * fontScale;
 
   return `
 :root { color-scheme: ${isDark ? 'dark' : 'light'}; }
@@ -58,7 +58,7 @@ html, body { margin: 0; padding: 0; background: ${colors.background}; }
 body {
   font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: ${base}px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: ${colors.inkBody};
   -webkit-text-size-adjust: 100%;
   overflow-wrap: anywhere;
@@ -68,7 +68,7 @@ body {
 #lesson > :last-child { margin-bottom: 0; }
 h1, h2, h3, h4, h5, h6 { color: ${colors.ink}; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; margin: 1.5em 0 0.5em; }
 h1 { font-size: 1.5em; } h2 { font-size: 1.3em; } h3 { font-size: 1.12em; } h4, h5, h6 { font-size: 1em; }
-p { margin: 0 0 1em; }
+p { margin: 0 0 1.1em; }
 strong, b { color: ${colors.ink}; font-weight: 600; }
 a { color: ${colors.primaryText}; text-decoration: underline; text-underline-offset: 2px; }
 ul, ol { margin: 0 0 1em; padding-left: 1.4em; }

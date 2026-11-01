@@ -30,6 +30,7 @@ export const vi: TranslatedMessages<typeof en> = {
   uploadBlocker: 'Hãy đợi tải lên xong trước khi nộp bài.',
   submitAnswers: 'Nộp bài',
   nextQuestion: 'Câu tiếp theo',
+  previousQuestion: 'Câu hỏi trước',
   confirmSubmitTitle: 'Nộp câu trả lời?',
   confirmSubmitMultiple: 'Giảng viên sẽ xem lần làm bài này. Sau đó bạn có thể làm lại bài tập.',
   confirmSubmitSingle: 'Bài tập này chỉ cho phép làm một lần. Bạn không thể sửa câu trả lời sau khi nộp.',

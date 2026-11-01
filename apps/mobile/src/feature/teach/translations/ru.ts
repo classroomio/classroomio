@@ -182,12 +182,6 @@ export const ru: TranslatedMessages<typeof en> = {
   statOverdue: 'Просрочено',
   statOverdueDetail: 'Срок истёк',
   statToGrade: 'На проверку',
-  gradeSubmissions: {
-    one: 'Проверить {count} работу',
-    few: 'Проверить {count} работы',
-    many: 'Проверить {count} работ',
-    other: 'Проверить {count} работы'
-  },
   attendance: 'Посещаемость',
   announce: 'Объявление',
   lowestProgress: 'Наименьший прогресс',
@@ -251,8 +245,6 @@ export const ru: TranslatedMessages<typeof en> = {
     many: 'Не удалось сохранить {count} отметок',
     other: 'Не удалось сохранить {count} отметки'
   },
-  attendanceSaved: 'Посещаемость сохранена',
-  attendanceNotSaved: 'Не удалось сохранить посещаемость',
   noLearnersEnrolledTitle: 'Нет записанных участников',
   noLearnersEnrolledDescription: 'На этот курс пока никто не записался как участник.',
   noLearnerMatches: 'Нет участников по запросу «{query}».',
@@ -263,29 +255,13 @@ export const ru: TranslatedMessages<typeof en> = {
   noSessionA11y: 'Занятие не выбрано. Сменить занятие',
   chooseSession: 'Выберите занятие',
   change: 'Сменить',
-  unsavedNote: 'Несохранённые изменения остаются в этом занятии, когда вы переключаетесь.',
   sessions: 'Занятия',
   present: 'Присутствует',
   absent: 'Отсутствует',
   notMarked: 'Не отмечен',
-  notSaved: 'не сохранено',
   markAllPresent: 'Все присутствуют',
   markAllAbsent: 'Все отсутствуют',
-  undo: 'Отменить',
   findLearner: 'Найти участника',
-  noChangesToSave: 'Нет изменений для сохранения',
-  saveChanges: {
-    one: 'Сохранить {count} изменение',
-    few: 'Сохранить {count} изменения',
-    many: 'Сохранить {count} изменений',
-    other: 'Сохранить {count} изменения'
-  },
-  learnerCount: {
-    one: '{count} участник',
-    few: '{count} участника',
-    many: '{count} участников',
-    other: '{count} участника'
-  },
   courseTeam: 'Команда курса',
   courseMember: 'Участник курса',
   comments: 'Комментарии',
@@ -336,5 +312,71 @@ export const ru: TranslatedMessages<typeof en> = {
     many: 'Публикация и {count} комментариев к ней будут удалены из ленты курса для всех. Это действие нельзя отменить.',
     other: 'Публикация и {count} комментария к ней будут удалены из ленты курса для всех. Это действие нельзя отменить.'
   },
-  gradeAction: 'Оценить'
+  gradeAction: 'Оценить',
+  sessionLiveNow: 'Сейчас в эфире',
+  statusLate: 'Опоздал',
+  markedOf: {
+    one: 'Отмечено {marked} из {count}',
+    few: 'Отмечено {marked} из {count}',
+    many: 'Отмечено {marked} из {count}',
+    other: 'Отмечено {marked} из {count}'
+  },
+  markRestAbsent: {
+    one: 'Отметить {count} неотмеченного участника как отсутствующего',
+    few: 'Отметить {count} неотмеченных участников как отсутствующих',
+    many: 'Отметить {count} неотмеченных участников как отсутствующих',
+    other: 'Отметить {count} неотмеченного участника как отсутствующих'
+  },
+  confirmAllPresentTitle: {
+    one: 'Отметить {count} участника как присутствующего?',
+    few: 'Отметить всех {count} участников как присутствующих?',
+    many: 'Отметить всех {count} участников как присутствующих?',
+    other: 'Отметить всех {count} участника как присутствующих?'
+  },
+  confirmAllAbsentTitle: {
+    one: 'Отметить {count} участника как отсутствующего?',
+    few: 'Отметить всех {count} участников как отсутствующих?',
+    many: 'Отметить всех {count} участников как отсутствующих?',
+    other: 'Отметить всех {count} участника как отсутствующих?'
+  },
+  confirmReplaceMarks: {
+    one: 'Это заменит {count} отметку, уже сохранённую для этого занятия, включая отметки о прибытии.',
+    few: 'Это заменит {count} отметки, уже сохранённые для этого занятия, включая отметки о прибытии.',
+    many: 'Это заменит {count} отметок, уже сохранённых для этого занятия, включая отметки о прибытии.',
+    other: 'Это заменит {count} отметки, уже сохранённые для этого занятия, включая отметки о прибытии.'
+  },
+  checkedInAt: 'отметился в {time}',
+  checkedInTime: 'Отметился в {time}',
+  markLearner: 'Посещаемость: {name}',
+  attendanceHint: 'Проведите по участнику вправо, чтобы отметить его присутствующим, или влево — отсутствующим.',
+  titleCheckIn: 'Отметка о прибытии',
+  startCheckIn: 'Начать отметку',
+  startCheckInDescription: 'Показать код, которым участники отмечают своё присутствие',
+  checkInOpen: 'Отметка открыта',
+  checkInOpenDetail: 'Код {code} · осталось {time}',
+  showCode: 'Показать код',
+  startingCheckIn: 'Запуск отметки',
+  checkInInstructions:
+    'Участники сканируют QR-код в приложении ClassroomIO или открывают урок, выбирают «Отметиться» и вводят код. Тех, кто отмечается позже чем через {minutes} минут после начала, отмечают как опоздавших.',
+  expiresIn: 'Истекает через {time}',
+  codeExpired: 'Срок действия кода истёк',
+  newCode: 'Новый код',
+  endCheckIn: 'Завершить отметку',
+  checkedInProgress: {
+    one: 'Отметился {checked} из {count} участника',
+    few: 'Отметились {checked} из {count} участников',
+    many: 'Отметились {checked} из {count} участников',
+    other: 'Отметились {checked} из {count} участника'
+  },
+  noCheckInsYet: 'Пока никто не отметился.',
+  checkInNotStarted: 'Не удалось начать отметку',
+  checkInNotEnded: 'Не удалось завершить отметку',
+  checkInEnded: 'Отметка завершена',
+  codeA11y: 'Код отметки {code}',
+  qrA11y: 'QR-код для отметки на занятии {title}',
+  nextSession: 'Следующее занятие',
+  gradeSubmissionsTitle: 'Проверить работы',
+  allGradedShort: 'Нет работ на проверку',
+  attendanceDescription: 'Отмечайте участников присутствующими, опоздавшими или отсутствующими на каждом занятии',
+  announceDescription: 'Опубликовать в ленте курса'
 };

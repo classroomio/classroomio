@@ -1,3 +1,4 @@
+import { parseTimestamp } from '@/feature/common/helpers/time-ago';
 import type { ExerciseTranslator } from '@/feature/exercise/types/exercise';
 import type { Formatters } from '@/feature/i18n/helpers/use-formatters';
 import type { Locale } from '@/feature/i18n/types/i18n';
@@ -34,9 +35,9 @@ export function formatDuration(totalSeconds: number) {
 function parseDate(value: string | null | undefined) {
   if (!value) return null;
 
-  const date = new Date(value.includes('T') ? value : value.replace(' ', 'T'));
+  const time = parseTimestamp(value);
 
-  return Number.isNaN(date.getTime()) ? null : date;
+  return Number.isNaN(time) ? null : new Date(time);
 }
 
 export function formatDateTime(value: string | null | undefined, locale: Locale) {

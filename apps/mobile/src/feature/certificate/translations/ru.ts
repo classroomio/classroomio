@@ -62,5 +62,7 @@ export const ru: TranslatedMessages<typeof en> = {
   savedDescription: 'PDF-файл находится в выбранной папке.',
   saveFailed: 'Не удалось сохранить сертификат',
   idCopied: 'ID сертификата скопирован',
-  recipientFallback: 'Получатель'
+  recipientFallback: 'Получатель',
+  copyId: 'Копировать ID',
+  openCourse: 'Открыть курс'
 };

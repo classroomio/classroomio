@@ -174,3 +174,52 @@ export async function markAllNotificationsRead(params: { profileId: string; orga
     throw new Error('Failed to mark notifications read');
   }
 }
+
+export async function markNotificationUnread(params: {
+  notificationId: string;
+  profileId: string;
+  organizationId: string;
+}): Promise<TNotification | null> {
+  try {
+    const [row] = await db
+      .update(schema.notification)
+      .set({ readAt: null })
+      .where(
+        and(
+          eq(schema.notification.id, params.notificationId),
+          eq(schema.notification.profileId, params.profileId),
+          eq(schema.notification.organizationId, params.organizationId)
+        )
+      )
+      .returning();
+
+    return row ?? null;
+  } catch (error) {
+    console.error('markNotificationUnread error:', error);
+    throw new Error('Failed to mark notification unread');
+  }
+}
+
+export async function deleteNotificationForProfile(params: {
+  notificationId: string;
+  profileId: string;
+  organizationId: string;
+}): Promise<boolean> {
+  try {
+    const rows = await db
+      .delete(schema.notification)
+      .where(
+        and(
+          eq(schema.notification.id, params.notificationId),
+          eq(schema.notification.profileId, params.profileId),
+          eq(schema.notification.organizationId, params.organizationId)
+        )
+      )
+      .returning({ id: schema.notification.id });
+
+    return rows.length > 0;
+  } catch (error) {
+    console.error('deleteNotificationForProfile error:', error);
+    throw new Error('Failed to delete notification');
+  }
+}

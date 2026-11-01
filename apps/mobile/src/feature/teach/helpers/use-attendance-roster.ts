@@ -1,11 +1,21 @@
 import { ContentType } from '@cio/utils/constants/content';
+import { DEFAULT_SESSION_DURATION_MINUTES } from '@cio/utils/functions/live-session';
 import { ROLE } from '@cio/utils/constants/roles';
 import { useState } from 'react';
 
 import { parseTimestamp } from '@/feature/common/helpers/time-ago';
+import { useSaveAttendanceMutation, type AttendanceMark } from '@/feature/teach/api/attendance';
 import type { AttendanceStatus, TeachCourse, TeachCourseMember } from '@/feature/teach/types/teach';
 
-export type AttendanceSession = { id: string; title: string; lessonAt: string | null; number: number };
+const MINUTE = 60 * 1000;
+
+export type AttendanceSession = {
+  id: string;
+  title: string;
+  lessonAt: string | null;
+  sessionDurationMinutes: number | null;
+  number: number;
+};
 
 export function sessionsOf(course: TeachCourse): AttendanceSession[] {
   const items = course.content.grouped
@@ -14,7 +24,13 @@ export function sessionsOf(course: TeachCourse): AttendanceSession[] {
 
   return items
     .filter((item) => item.type === ContentType.Lesson)
-    .map((item, index) => ({ id: item.id, title: item.title, lessonAt: item.lessonAt, number: index + 1 }));
+    .map((item, index) => ({
+      id: item.id,
+      title: item.title,
+      lessonAt: item.lessonAt,
+      sessionDurationMinutes: item.sessionDurationMinutes,
+      number: index + 1
+    }));
 }
 
 /** The session closest to now: the latest one already started, otherwise the first upcoming one. */
@@ -25,6 +41,28 @@ export function defaultSessionOf(sessions: AttendanceSession[], now = Date.now()
     .sort((first, second) => parseTimestamp(second.lessonAt!) - parseTimestamp(first.lessonAt!));
 
   return started[0] ?? dated[0] ?? sessions[0] ?? null;
+}
+
+/** True between a session's start and its end, whether or not it has a call link. */
+export function isSessionLive(session: AttendanceSession, now = Date.now()) {
+  if (!session.lessonAt) return false;
+
+  const start = parseTimestamp(session.lessonAt);
+  const end = start + (session.sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES) * MINUTE;
+
+  return now >= start && now < end;
+}
+
+/** The live session, otherwise the next one to start; null when no session is live or upcoming. */
+export function currentSessionOf(sessions: AttendanceSession[], now = Date.now()) {
+  const live = sessions.find((session) => isSessionLive(session, now));
+  if (live) return { session: live, live: true };
+
+  const next = sessions
+    .filter((session) => session.lessonAt && parseTimestamp(session.lessonAt) > now)
+    .sort((first, second) => parseTimestamp(first.lessonAt!) - parseTimestamp(second.lessonAt!))[0];
+
+  return next ? { session: next, live: false } : null;
 }
 
 export function learnersOf(course: TeachCourse) {
@@ -38,65 +76,83 @@ export function learnerName(member: TeachCourseMember) {
   return member.profile?.fullname || member.profile?.username || member.email || null;
 }
 
-type Drafts = Record<string, Record<string, AttendanceStatus>>;
+export function attendanceRecordOf(course: TeachCourse, sessionId: string | null, memberId: string) {
+  return course.attendance.find((item) => item.studentId === memberId && item.lessonId === sessionId) ?? null;
+}
+
+export type AttendanceCounts = Record<AttendanceStatus | 'unmarked', number>;
+
+type Pending = Record<string, AttendanceStatus>;
+
+const pendingKey = (sessionId: string, memberId: string) => `${sessionId}:${memberId}`;
+
+type RosterOptions = { onSaveError: (error: unknown, marks: AttendanceMark[], retry: () => void) => void };
 
 /**
- * Attendance marks for one session: what is saved, the unsaved changes on top of it, and bulk edits.
- * Drafts are kept per session so switching sessions does not discard them.
+ * Attendance for one session. Marks save as soon as they are made and show at once; a mark that fails to save
+ * reverts and is reported through `onSaveError`.
  */
-export function useAttendanceRoster(course: TeachCourse, sessionId: string | null) {
-  const [drafts, setDrafts] = useState<Drafts>({});
+export function useAttendanceRoster(course: TeachCourse, sessionId: string | null, { onSaveError }: RosterOptions) {
+  const save = useSaveAttendanceMutation();
+  const [pending, setPending] = useState<Pending>({});
   const learners = learnersOf(course);
-  const draft = (sessionId && drafts[sessionId]) || {};
 
-  const savedStatusOf = (memberId: string): AttendanceStatus | null => {
-    const record = course.attendance.find((item) => item.studentId === memberId && item.lessonId === sessionId);
-    if (!record) return null;
+  const recordOf = (memberId: string) => attendanceRecordOf(course, sessionId, memberId);
 
-    return record.isPresent ? 'present' : 'absent';
+  const statusOf = (memberId: string): AttendanceStatus | null => {
+    if (!sessionId) return null;
+
+    return pending[pendingKey(sessionId, memberId)] ?? recordOf(memberId)?.status ?? null;
   };
 
-  const statusOf = (memberId: string) => draft[memberId] ?? savedStatusOf(memberId);
-
-  const update = (next: (current: Record<string, AttendanceStatus>) => Record<string, AttendanceStatus>) => {
+  const mark = (marks: AttendanceMark[]) => {
     if (!sessionId) return;
 
-    setDrafts((current) => {
-      const updated = next({ ...(current[sessionId] ?? {}) });
-      for (const [memberId, status] of Object.entries(updated)) {
-        if (savedStatusOf(memberId) === status) delete updated[memberId];
-      }
+    const changed = marks.filter((item) => statusOf(item.studentId) !== item.status);
+    if (changed.length === 0) return;
 
-      return { ...current, [sessionId]: updated };
-    });
+    const sent = Object.fromEntries(changed.map((item) => [pendingKey(sessionId, item.studentId), item.status]));
+    setPending((current) => ({ ...current, ...sent }));
+
+    const settle = () =>
+      setPending((current) => {
+        const next = { ...current };
+        for (const [key, status] of Object.entries(sent)) {
+          if (next[key] === status) delete next[key];
+        }
+
+        return next;
+      });
+
+    save
+      .mutateAsync({ courseId: course.id, lessonId: sessionId, records: changed })
+      .then(settle)
+      .catch((error: unknown) => {
+        settle();
+        onSaveError(error, changed, () => mark(changed));
+      });
   };
 
-  const changes = Object.entries(draft).map(([studentId, status]) => ({ studentId, isPresent: status === 'present' }));
-  const counts = { present: 0, absent: 0, unmarked: 0 };
+  const counts: AttendanceCounts = { present: 0, late: 0, absent: 0, unmarked: 0 };
   for (const learner of learners) {
-    const status = statusOf(learner.id);
-    counts[status ?? 'unmarked'] += 1;
+    counts[statusOf(learner.id) ?? 'unmarked'] += 1;
   }
 
   return {
     learners,
-    statusOf,
     counts,
-    changes,
-    setStatus: (memberId: string, status: AttendanceStatus) =>
-      update((current) => ({ ...current, [memberId]: status })),
-    markAll: (status: AttendanceStatus) =>
-      update(() => Object.fromEntries(learners.map((learner) => [learner.id, status] as const))),
-    discard: () => update(() => ({})),
-    clearSaved: (savedIds: string[]) => {
-      if (!sessionId) return;
+    statusOf,
+    recordOf,
+    setStatus: (memberId: string, status: AttendanceStatus) => mark([{ studentId: memberId, status }]),
+    markAll: (status: AttendanceStatus) => mark(learners.map((learner) => ({ studentId: learner.id, status }))),
+    markUnmarked: (status: AttendanceStatus) =>
+      mark(learners.filter((learner) => !statusOf(learner.id)).map((learner) => ({ studentId: learner.id, status }))),
+    /** Learners whose existing mark `markAll(status)` would replace. */
+    overwrittenBy: (status: AttendanceStatus) =>
+      learners.filter((learner) => {
+        const current = statusOf(learner.id);
 
-      setDrafts((current) => {
-        const remaining = { ...(current[sessionId] ?? {}) };
-        savedIds.forEach((id) => delete remaining[id]);
-
-        return { ...current, [sessionId]: remaining };
-      });
-    }
+        return current !== null && current !== status;
+      }).length
   };
 }

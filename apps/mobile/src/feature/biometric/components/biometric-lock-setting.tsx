@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
+import { IconTile } from '@/feature/common/components/icon-tile';
 import { useAuth } from '@/feature/auth/components/auth-provider';
 import { biometricIconOf } from '@/feature/biometric/helpers/biometric-icon';
 import { setBiometricPreference, useBiometricPreference } from '@/feature/biometric/helpers/biometric-preference-store';
 import { authenticateWithBiometrics } from '@/feature/biometric/helpers/biometric-support';
 import { useBiometricSupport } from '@/feature/biometric/helpers/use-biometric-support';
-import { Icon } from '@/feature/common/components/icon';
 import {
   Item,
   ItemActions,
@@ -15,11 +15,13 @@ import {
   ItemTitle
 } from '@/feature/common/components/item';
 import { Switch } from '@/feature/common/components/switch';
+import { useTheme } from '@/feature/common/helpers/use-theme';
 import { showToast } from '@/feature/toast/helpers/toast-store';
 import { useBiometricCopy } from '@/feature/biometric/helpers/use-biometric-copy';
 
 export function BiometricLockSetting() {
   const { userId } = useAuth();
+  const { colors } = useTheme();
   const preference = useBiometricPreference(userId);
   const support = useBiometricSupport();
   const [confirming, setConfirming] = useState(false);
@@ -52,8 +54,8 @@ export function BiometricLockSetting() {
 
   return (
     <Item>
-      <ItemMedia variant="tile">
-        <Icon icon={biometricIconOf(support.data?.kind)} size={20} tone="ink" />
+      <ItemMedia>
+        <IconTile icon={biometricIconOf(support.data?.kind)} />
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{t('unlockWith')}</ItemTitle>

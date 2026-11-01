@@ -29,6 +29,7 @@ import { activeSegmentIndex } from '@/feature/lesson/helpers/transcript';
 import { useWatchEnforcement } from '@/feature/lesson/helpers/use-watch-enforcement';
 import { lessonCatalog } from '@/feature/lesson/translations/catalog';
 import type { LessonWatchProgress, TranscriptSegment } from '@/feature/lesson/types/lesson';
+import { maxResolutionOf, useVideoQuality } from '@/feature/settings/helpers/video-quality-store';
 
 type CaptionChoice = { kind: 'off' } | { kind: 'track'; track: SubtitleTrack } | { kind: 'transcript' };
 
@@ -85,16 +86,22 @@ export function NativeVideo({
   children
 }: NativeVideoProps) {
   const source: VideoSource = { uri, contentType, metadata: { title, artist, artwork: poster ?? undefined } };
+  const videoQuality = useVideoQuality();
   const player = useVideoPlayer(source, (instance) => {
     instance.timeUpdateEventInterval = 0.5;
     instance.staysActiveInBackground = true;
     instance.showNowPlayingNotification = true;
+    instance.maxResolution = maxResolutionOf(videoQuality);
   });
   const { enforced } = useWatchEnforcement(player, watch);
   const [captions, setCaptions] = useState<CaptionChoice>({ kind: 'off' });
   const { availableSubtitleTracks } = useEvent(player, 'availableSubtitleTracksChange', {
     availableSubtitleTracks: player.availableSubtitleTracks
   });
+
+  useEffect(() => {
+    player.maxResolution = maxResolutionOf(videoQuality);
+  }, [player, videoQuality]);
 
   useEffect(() => {
     onPlayerChange?.(player);

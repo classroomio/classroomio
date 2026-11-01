@@ -62,5 +62,7 @@ export const pl: TranslatedMessages<typeof en> = {
   savedDescription: 'Plik PDF jest w wybranym folderze.',
   saveFailed: 'Nie udało się zapisać certyfikatu',
   idCopied: 'Skopiowano identyfikator certyfikatu',
-  recipientFallback: 'Odbiorca'
+  recipientFallback: 'Odbiorca',
+  copyId: 'Kopiuj ID',
+  openCourse: 'Otwórz kurs'
 };

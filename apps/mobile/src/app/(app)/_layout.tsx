@@ -28,6 +28,7 @@ export default function SignedInLayout() {
         <Stack.Screen name="course" />
         <Stack.Screen name="certificates" />
         <Stack.Screen name="notifications" />
+        <Stack.Screen name="check-in" />
       </Stack.Protected>
     </Stack>
   );

@@ -82,10 +82,8 @@ export const vi: TranslatedMessages<typeof en> = {
   downloadSize: 'Tải xuống {size}',
   download: 'Tải xuống',
   notNow: 'Để sau',
-  otherCourses: 'Khóa học khác',
   storageOnDevice: 'Bộ nhớ trên thiết bị',
   usedSize: 'Đã dùng {size}',
-  freeSize: 'Còn trống {size}',
   downloadsTitle: 'Tải xuống',
   noDownloadsTitle: 'Chưa có bản tải xuống',
   noDownloadsDescription: 'Tải xuống khóa học hoặc bài học từ trang của nó để mở khi không có kết nối.',
@@ -98,5 +96,9 @@ export const vi: TranslatedMessages<typeof en> = {
   },
   removeAll: 'Xóa tất cả',
   removeAllError: 'Không xóa được các bản tải xuống',
-  notReady: 'Tính năng tải xuống chưa sẵn sàng. Hãy thử lại.'
+  notReady: 'Tính năng tải xuống chưa sẵn sàng. Hãy thử lại.',
+  usedByDownloads: 'Dung lượng tải xuống đã dùng',
+  legendDownloads: 'Tải xuống',
+  legendOther: 'Ứng dụng và dữ liệu khác',
+  legendFree: 'Còn trống'
 };

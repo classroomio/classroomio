@@ -123,7 +123,6 @@ export const da: TranslatedMessages<typeof en> = {
   statOverdue: 'Forsinket',
   statOverdueDetail: 'Fristen er overskredet',
   statToGrade: 'Skal bedømmes',
-  gradeSubmissions: { one: 'Bedøm {count} aflevering', other: 'Bedøm {count} afleveringer' },
   attendance: 'Fremmøde',
   announce: 'Meddel',
   lowestProgress: 'Laveste fremgang',
@@ -157,8 +156,6 @@ export const da: TranslatedMessages<typeof en> = {
   noSessionsTitle: 'Ingen sessioner at registrere',
   noSessionsDescription: 'Fremmøde registreres pr. lektion. Dette kursus har ingen lektioner endnu.',
   marksNotSaved: { one: '{count} registrering blev ikke gemt', other: '{count} registreringer blev ikke gemt' },
-  attendanceSaved: 'Fremmøde gemt',
-  attendanceNotSaved: 'Fremmødet blev ikke gemt',
   noLearnersEnrolledTitle: 'Ingen deltagere tilmeldt',
   noLearnersEnrolledDescription: 'Ingen har tilmeldt sig dette kursus som deltager endnu.',
   noLearnerMatches: 'Ingen deltager matcher “{query}”.',
@@ -169,19 +166,13 @@ export const da: TranslatedMessages<typeof en> = {
   noSessionA11y: 'Ingen session valgt. Skift session',
   chooseSession: 'Vælg en session',
   change: 'Skift',
-  unsavedNote: 'Ikke-gemte ændringer bliver ved denne session, når du skifter.',
   sessions: 'Sessioner',
   present: 'Til stede',
   absent: 'Fraværende',
   notMarked: 'Ikke registreret',
-  notSaved: 'ikke gemt',
   markAllPresent: 'Alle til stede',
   markAllAbsent: 'Alle fraværende',
-  undo: 'Fortryd',
   findLearner: 'Find en deltager',
-  noChangesToSave: 'Ingen ændringer at gemme',
-  saveChanges: { one: 'Gem {count} ændring', other: 'Gem {count} ændringer' },
-  learnerCount: { one: '{count} deltager', other: '{count} deltagere' },
   courseTeam: 'Kursusteam',
   courseMember: 'Kursusmedlem',
   comments: 'Kommentarer',
@@ -221,5 +212,56 @@ export const da: TranslatedMessages<typeof en> = {
     one: 'Opslaget og dets {count} kommentar fjernes fra kursets nyhedsfeed for alle. Det kan ikke fortrydes.',
     other: 'Opslaget og dets {count} kommentarer fjernes fra kursets nyhedsfeed for alle. Det kan ikke fortrydes.'
   },
-  gradeAction: 'Bedøm'
+  gradeAction: 'Bedøm',
+  sessionLiveNow: 'Live nu',
+  statusLate: 'For sent',
+  markedOf: { one: '{marked} af {count} registreret', other: '{marked} af {count} registreret' },
+  markRestAbsent: {
+    one: 'Registrér den {count} uregistrerede deltager som fraværende',
+    other: 'Registrér de {count} uregistrerede deltagere som fraværende'
+  },
+  confirmAllPresentTitle: {
+    one: 'Registrér {count} deltager som til stede?',
+    other: 'Registrér alle {count} deltagere som til stede?'
+  },
+  confirmAllAbsentTitle: {
+    one: 'Registrér {count} deltager som fraværende?',
+    other: 'Registrér alle {count} deltagere som fraværende?'
+  },
+  confirmReplaceMarks: {
+    one: 'Det erstatter {count} registrering, der allerede er gemt for denne session, inklusive check-ins.',
+    other: 'Det erstatter {count} registreringer, der allerede er gemt for denne session, inklusive check-ins.'
+  },
+  checkedInAt: 'tjekket ind {time}',
+  checkedInTime: 'Tjekket ind {time}',
+  markLearner: 'Fremmøde for {name}',
+  attendanceHint: 'Stryg til højre på en deltager for at registrere til stede, eller til venstre for fraværende.',
+  titleCheckIn: 'Check-in',
+  startCheckIn: 'Start check-in',
+  startCheckInDescription: 'Vis en kode, som deltagerne bruger til at registrere sig som til stede',
+  checkInOpen: 'Check-in er åben',
+  checkInOpenDetail: 'Kode {code} · {time} tilbage',
+  showCode: 'Vis kode',
+  startingCheckIn: 'Starter check-in',
+  checkInInstructions:
+    'Deltagerne scanner QR-koden i ClassroomIO-appen eller åbner lektionen, vælger Tjek ind og skriver koden. Den, der tjekker ind mere end {minutes} minutter efter start, registreres som for sent.',
+  expiresIn: 'Udløber om {time}',
+  codeExpired: 'Koden er udløbet',
+  newCode: 'Ny kode',
+  endCheckIn: 'Afslut check-in',
+  checkedInProgress: {
+    one: '{checked} af {count} deltager tjekket ind',
+    other: '{checked} af {count} deltagere tjekket ind'
+  },
+  noCheckInsYet: 'Ingen har tjekket ind endnu.',
+  checkInNotStarted: 'Check-in blev ikke startet',
+  checkInNotEnded: 'Check-in blev ikke afsluttet',
+  checkInEnded: 'Check-in afsluttet',
+  codeA11y: 'Check-in-kode {code}',
+  qrA11y: 'QR-kode til check-in på {title}',
+  nextSession: 'Næste session',
+  gradeSubmissionsTitle: 'Bedøm afleveringer',
+  allGradedShort: 'Intet venter på bedømmelse',
+  attendanceDescription: 'Registrér deltagere som til stede, for sent eller fraværende pr. session',
+  announceDescription: 'Opslå i kursets nyhedsfeed'
 };

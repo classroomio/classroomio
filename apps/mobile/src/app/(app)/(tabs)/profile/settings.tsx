@@ -1,14 +1,14 @@
 import { BellIcon } from 'phosphor-react-native/src/icons/Bell';
-import { EnvelopeIcon } from 'phosphor-react-native/src/icons/Envelope';
+import { DownloadSimpleIcon } from 'phosphor-react-native/src/icons/DownloadSimple';
 import { HardDrivesIcon } from 'phosphor-react-native/src/icons/HardDrives';
 import { InfoIcon } from 'phosphor-react-native/src/icons/Info';
-import { UserIcon } from 'phosphor-react-native/src/icons/User';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 
 import { useAccountQuery } from '@/feature/account/api/account';
 import { ChangePasswordItem } from '@/feature/account/components/change-password-item';
+import { IconTile } from '@/feature/common/components/icon-tile';
 import { BiometricLockSetting } from '@/feature/biometric/components/biometric-lock-setting';
-import { Icon } from '@/feature/common/components/icon';
+import { Avatar } from '@/feature/common/components/avatar';
 import {
   Item,
   ItemActions,
@@ -20,115 +20,138 @@ import {
   ItemTitle
 } from '@/feature/common/components/item';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
+import { useTheme } from '@/feature/common/helpers/use-theme';
+import { useDownloadedBytes } from '@/feature/downloads/helpers/download-store';
+import { formatBytes } from '@/feature/downloads/helpers/format-bytes';
+import { downloadsCatalog } from '@/feature/downloads/translations/catalog';
+import { useLocale } from '@/feature/i18n/helpers/use-locale';
+import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { useServer } from '@/feature/server/components/server-provider';
 import { LanguageSetting } from '@/feature/settings/components/language-setting';
 import { SettingValue } from '@/feature/settings/components/setting-value';
-import { ThemePreferenceControl } from '@/feature/settings/components/theme-preference-control';
+import { ThemePreferencePicker } from '@/feature/settings/components/theme-preference-picker';
+import { VideoQualitySetting } from '@/feature/settings/components/video-quality-setting';
 import { installedAppVersion } from '@/feature/settings/helpers/app-version';
-import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { settingsCatalog } from '@/feature/settings/translations/catalog';
 
 export default function SettingsScreen() {
+  const { colors } = useTheme();
   const account = useAccountQuery();
   const { serverUrl, isCustom } = useServer();
+  const downloadedBytes = useDownloadedBytes();
+  const locale = useLocale();
   const profile = account.data?.profile;
   const t = useTranslations(settingsCatalog);
+  const td = useTranslations(downloadsCatalog);
+  const name = profile?.fullname || t('notSet');
 
   return (
-    <ScreenScrollView>
-      <ScreenSection>
-        <ScreenSectionHeader title={t('account')} />
+    <>
+      <Stack.Screen options={{ headerLargeTitleEnabled: true }} />
+      <ScreenScrollView>
         <ItemGroup>
-          <Item onPress={() => router.push('/profile/edit-name')}>
-            <ItemMedia variant="tile">
-              <Icon icon={UserIcon} size={20} tone="ink" />
+          <Item
+            onPress={() => router.push('/profile/edit-name')}
+            accessibilityLabel={`${t('name')}, ${name}`}
+            accessibilityHint={profile?.email ?? undefined}
+          >
+            <ItemMedia>
+              <Avatar name={profile?.fullname || profile?.email || ''} uri={profile?.avatarUrl} size={48} />
             </ItemMedia>
             <ItemContent>
-              <ItemTitle>{t('name')}</ItemTitle>
-              <ItemDescription numberOfLines={1}>{profile?.fullname || t('notSet')}</ItemDescription>
+              <ItemTitle numberOfLines={1}>{name}</ItemTitle>
+              <ItemDescription numberOfLines={1}>{profile?.email ?? ''}</ItemDescription>
             </ItemContent>
             <ItemActions>
               <ItemChevron />
             </ItemActions>
-          </Item>
-          <Item>
-            <ItemMedia variant="tile">
-              <Icon icon={EnvelopeIcon} size={20} tone="ink" />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>{t('email')}</ItemTitle>
-              <ItemDescription numberOfLines={1}>{profile?.email ?? ''}</ItemDescription>
-            </ItemContent>
           </Item>
           {profile?.email ? <ChangePasswordItem email={profile.email} /> : null}
         </ItemGroup>
-      </ScreenSection>
 
-      <ScreenSection>
-        <ScreenSectionHeader title={t('notifications')} />
-        <ItemGroup>
-          <Item onPress={() => router.push('/notifications/preferences')}>
-            <ItemMedia variant="tile">
-              <Icon icon={BellIcon} size={20} tone="ink" />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>{t('notifications')}</ItemTitle>
-              <ItemDescription numberOfLines={1}>{t('notificationsDescription')}</ItemDescription>
-            </ItemContent>
-            <ItemActions>
-              <ItemChevron />
-            </ItemActions>
-          </Item>
-        </ItemGroup>
-      </ScreenSection>
+        <ScreenSection>
+          <ScreenSectionHeader title={t('appearance')} />
+          <ItemGroup>
+            <ThemePreferencePicker />
+          </ItemGroup>
+        </ScreenSection>
 
-      <ScreenSection>
-        <ScreenSectionHeader title={t('security')} />
-        <ItemGroup>
-          <BiometricLockSetting />
-        </ItemGroup>
-      </ScreenSection>
-
-      <ScreenSection>
-        <ScreenSectionHeader title={t('language')} />
-        <ItemGroup>
-          <LanguageSetting />
-        </ItemGroup>
-      </ScreenSection>
-
-      <ScreenSection>
-        <ScreenSectionHeader title={t('theme')} />
-        <ThemePreferenceControl />
-      </ScreenSection>
-
-      <ScreenSection>
-        <ScreenSectionHeader title={t('about')} />
-        <ItemGroup>
-          <Item>
-            <ItemMedia variant="tile">
-              <Icon icon={InfoIcon} size={20} tone="ink" />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>{t('version')}</ItemTitle>
-            </ItemContent>
-            <ItemActions>
-              <SettingValue>{installedAppVersion() ?? t('versionUnknown')}</SettingValue>
-            </ItemActions>
-          </Item>
-          {isCustom ? (
-            <Item>
-              <ItemMedia variant="tile">
-                <Icon icon={HardDrivesIcon} size={20} tone="ink" />
+        <ScreenSection>
+          <ScreenSectionHeader title={t('general')} />
+          <ItemGroup>
+            <LanguageSetting />
+            <Item onPress={() => router.push('/notifications/preferences')}>
+              <ItemMedia>
+                <IconTile icon={BellIcon} />
               </ItemMedia>
               <ItemContent>
-                <ItemTitle>{t('server')}</ItemTitle>
-                <ItemDescription numberOfLines={1}>{new URL(serverUrl).host}</ItemDescription>
-                <ItemDescription>{t('serverDescription')}</ItemDescription>
+                <ItemTitle numberOfLines={1}>{t('notifications')}</ItemTitle>
+                <ItemDescription numberOfLines={1}>{t('notificationsDescription')}</ItemDescription>
               </ItemContent>
+              <ItemActions>
+                <ItemChevron />
+              </ItemActions>
             </Item>
-          ) : null}
-        </ItemGroup>
-      </ScreenSection>
-    </ScreenScrollView>
+          </ItemGroup>
+        </ScreenSection>
+
+        <ScreenSection>
+          <ScreenSectionHeader title={t('security')} />
+          <ItemGroup>
+            <BiometricLockSetting />
+          </ItemGroup>
+        </ScreenSection>
+
+        <ScreenSection>
+          <ScreenSectionHeader title={t('videoAndDownloads')} />
+          <ItemGroup>
+            <VideoQualitySetting />
+            <Item onPress={() => router.push('/profile/downloads')}>
+              <ItemMedia>
+                <IconTile icon={DownloadSimpleIcon} />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle numberOfLines={1}>{t('downloads')}</ItemTitle>
+              </ItemContent>
+              <ItemActions>
+                {downloadedBytes > 0 ? (
+                  <SettingValue>{td('usedSize', { size: formatBytes(downloadedBytes, locale) })}</SettingValue>
+                ) : null}
+                <ItemChevron />
+              </ItemActions>
+            </Item>
+          </ItemGroup>
+        </ScreenSection>
+
+        <ScreenSection>
+          <ScreenSectionHeader title={t('about')} />
+          <ItemGroup>
+            <Item>
+              <ItemMedia>
+                <IconTile icon={InfoIcon} />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle numberOfLines={1}>{t('version')}</ItemTitle>
+              </ItemContent>
+              <ItemActions>
+                <SettingValue>{installedAppVersion() ?? t('versionUnknown')}</SettingValue>
+              </ItemActions>
+            </Item>
+            {isCustom ? (
+              <Item>
+                <ItemMedia>
+                  <IconTile icon={HardDrivesIcon} />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle numberOfLines={1}>{t('server')}</ItemTitle>
+                  <ItemDescription numberOfLines={1}>{new URL(serverUrl).host}</ItemDescription>
+                  <ItemDescription>{t('serverDescription')}</ItemDescription>
+                </ItemContent>
+              </Item>
+            ) : null}
+          </ItemGroup>
+        </ScreenSection>
+      </ScreenScrollView>
+    </>
   );
 }

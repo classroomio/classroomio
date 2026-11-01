@@ -22,5 +22,18 @@ export const vi: TranslatedMessages<typeof en> = {
   version: 'Phiên bản',
   versionUnknown: 'Không rõ',
   server: 'Máy chủ',
-  serverDescription: 'Đăng xuất để kết nối với máy chủ khác.'
+  serverDescription: 'Đăng xuất để kết nối với máy chủ khác.',
+  appearance: 'Giao diện',
+  general: 'Chung',
+  videoAndDownloads: 'Video và tải xuống',
+  videoQuality: 'Chất lượng phát trực tuyến',
+  videoQualityAuto: 'Tự động',
+  videoQualityAutoDescription: 'Chất lượng tốt nhất mà kết nối của bạn cho phép',
+  videoQualityStandard: 'Tối đa 720p',
+  videoQualityStandardDescription: 'Dùng ít dữ liệu di động hơn',
+  videoQualityDataSaver: 'Tiết kiệm dữ liệu',
+  videoQualityDataSaverDescription: 'Tối đa 480p, dùng ít dữ liệu di động nhất',
+  videoQualityFooter:
+    'Đặt độ phân giải cao nhất cho video mà tổ chức của bạn phát trực tuyến. Không áp dụng cho bài học đã tải xuống và video từ YouTube hoặc Vimeo.',
+  downloads: 'Tải xuống'
 };

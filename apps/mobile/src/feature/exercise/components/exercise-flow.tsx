@@ -7,15 +7,16 @@ import { useAuth } from '@/feature/auth/components/auth-provider';
 import { Button, ButtonText } from '@/feature/common/components/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
 import { ScreenScrollView } from '@/feature/common/components/screen';
-import { Skeleton } from '@/feature/common/components/skeleton';
+import { Skeleton, SkeletonGroup, SkeletonList } from '@/feature/common/components/skeleton';
 import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
 import { useTheme } from '@/feature/common/helpers/use-theme';
+import { CourseActionBar } from '@/feature/course/components/course-action-bar';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useExerciseAttemptsQuery, useExerciseQuery } from '@/feature/exercise/api/exercise';
 import { ConnectionRequired } from '@/feature/exercise/components/connection-required';
-import { ExerciseIntro } from '@/feature/exercise/components/exercise-intro';
+import { ExerciseIntro, ExerciseIntroStart } from '@/feature/exercise/components/exercise-intro';
 import {
   AttemptSwitcher,
   ResultActions,
@@ -79,12 +80,14 @@ export function ExerciseFlow({ courseId, exerciseId }: ExerciseFlowProps) {
     }
 
     return (
-      <ScreenScrollView>
+      <ScreenScrollView scrollEnabled={false}>
         {header}
-        <Skeleton height={190} radius={RADII.md} />
-        <Skeleton height={20} width="80%" />
-        <Skeleton height={20} width="60%" />
-        <Skeleton height={52} radius={RADII.md} />
+        <SkeletonGroup style={styles.skeletonHeading}>
+          <Skeleton width={52} height={52} radius={RADII.input} />
+          <Skeleton height={26} width="80%" radius={RADII.xs} />
+          <Skeleton height={26} width="50%" radius={RADII.xs} />
+        </SkeletonGroup>
+        <SkeletonList count={3} media="thumbnail" lines={1} />
       </ScreenScrollView>
     );
   }
@@ -158,38 +161,43 @@ export function ExerciseFlow({ courseId, exerciseId }: ExerciseFlowProps) {
   const attempt = attempts[shownIndex];
 
   if (mode === 'result' && attempt) {
+    const isLatest = shownIndex === attempts.length - 1;
+
     return (
-      <ScreenScrollView onRefresh={() => attemptsQuery.refetch()}>
-        {header}
-        <AttemptSwitcher index={shownIndex} total={attempts.length} onChange={setAttemptIndex} />
-        <ResultSummary
-          key={attempt.id}
-          attempt={attempt}
-          summary={summary}
-          isLatest={shownIndex === attempts.length - 1}
-        />
-        <ResultFeedback feedback={attempt.feedback} />
-        <ResultBreakdown attempt={attempt} questions={activeQuestionsOf(exercise)} />
-        <View style={styles.actions}>
+      <View style={[styles.screen, { backgroundColor: colors.background }]}>
+        <ScreenScrollView onRefresh={() => attemptsQuery.refetch()}>
+          {header}
+          <AttemptSwitcher index={shownIndex} total={attempts.length} onChange={setAttemptIndex} />
+          <ResultSummary key={attempt.id} attempt={attempt} summary={summary} isLatest={isLatest} />
+          <ResultFeedback feedback={attempt.feedback} />
+          <ResultBreakdown attempt={attempt} questions={activeQuestionsOf(exercise)} />
+        </ScreenScrollView>
+        <CourseActionBar>
           <ResultActions
             canRetake={summary.canRetake}
-            isLatest={shownIndex === attempts.length - 1}
+            isLatest={isLatest}
             onRetake={() => startAttempt(true)}
             onDone={() => (router.canGoBack() ? router.back() : router.replace('/'))}
           />
-        </View>
-      </ScreenScrollView>
+        </CourseActionBar>
+      </View>
     );
   }
 
   return (
-    <ScreenScrollView style={{ backgroundColor: colors.background }}>
-      {header}
-      <ExerciseIntro exercise={exercise} onStart={() => startAttempt(false)} />
-    </ScreenScrollView>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+      <ScreenScrollView>
+        {header}
+        <ExerciseIntro exercise={exercise} />
+      </ScreenScrollView>
+      <CourseActionBar>
+        <ExerciseIntroStart exercise={exercise} onStart={() => startAttempt(false)} />
+      </CourseActionBar>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  actions: { marginTop: SPACING.xs }
+  screen: { flex: 1 },
+  skeletonHeading: { gap: SPACING.md }
 });

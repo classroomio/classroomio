@@ -1,0 +1,40 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const da: TranslatedMessages<typeof en> = {
+  screenTitle: 'Tjek ind',
+  checkIn: 'Tjek ind',
+  checkingIn: 'Tjekker dig ind',
+  checkedInTitle: 'Du er tjekket ind',
+  checkedInLateTitle: 'Du er tjekket ind som for sent',
+  checkedInAt: 'Tjekket ind kl. {time}',
+  openLesson: 'Åbn lektion',
+  scanAgain: 'Scan igen',
+  scanTitle: 'Scan check-in-koden',
+  scanDescription: 'Ret kameraet mod den QR-kode, din underviser viser.',
+  viewfinderA11y: 'Kameravisning til scanning af check-in-QR-koden',
+  typeCodeTitle: 'Eller skriv koden',
+  codeLabel: 'Check-in-kode',
+  codeDescription: '6 bogstaver og tal, vist under QR-koden.',
+  typeCodeFromLesson: 'Vil du skrive en kode i stedet, så åbn sessionens lektion og vælg Tjek ind.',
+  cameraTitle: 'Giv adgang til kameraet',
+  cameraExplanation: 'Kameraet læser check-in-QR-koden. Der bliver ikke taget billeder eller optaget noget.',
+  cameraBlocked: 'Kameraadgang er slået fra for ClassroomIO. Slå den til i Indstillinger, eller skriv koden.',
+  allowCamera: 'Giv kameraadgang',
+  openSettings: 'Åbn Indstillinger',
+  notCheckInCode: 'Denne QR-kode er ikke en check-in-kode fra ClassroomIO.',
+  errorInvalidTitle: 'Koden virkede ikke',
+  errorInvalid: 'Tjek koden med din underviser. En kode holder op med at virke, når underviseren laver en ny.',
+  errorExpiredTitle: 'Koden er udløbet',
+  errorExpired: 'Bed din underviser om at vise en ny kode.',
+  errorNotEnrolledTitle: 'Du er ikke deltager på dette kursus',
+  errorNotEnrolled: 'Kun deltagere, der er tilmeldt kurset, kan tjekke ind.',
+  errorNotFoundTitle: 'Sessionen blev ikke fundet',
+  errorNotFound: 'Sessionen hører ikke til din nuværende organisation. Skift organisation under Profil, og scan igen.',
+  errorRateLimitedTitle: 'For mange forsøg',
+  errorRateLimited: 'Vent et par minutter, og prøv så igen.',
+  errorGenericTitle: 'Check-in gik ikke igennem',
+  errorLinkTitle: 'Linket er ikke en check-in-kode',
+  errorLink: 'Scan den QR-kode, din underviser viser, eller skriv koden fra lektionen.'
+};

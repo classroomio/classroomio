@@ -63,8 +63,6 @@ export const de: TranslatedMessages<typeof en> = {
     'Zum Stellen einer Frage benötigen Sie eine Verbindung. Ihre Eingaben werden erst gespeichert, wenn Sie wieder verbunden sind und die Frage posten.',
   editOffline:
     'Zum Speichern benötigen Sie eine Verbindung. Ihre Änderungen bleiben auf diesem Bildschirm erhalten, bis Sie wieder verbunden sind und speichern.',
-  postQuestion: 'Frage posten',
-  saveChanges: 'Änderungen speichern',
   fieldTitle: 'Titel',
   fieldTitlePlaceholder: 'Was möchten Sie wissen?',
   fieldCourse: 'Kurs',
@@ -90,5 +88,29 @@ export const de: TranslatedMessages<typeof en> = {
   linkCopied: 'Link kopiert',
   searchPlaceholder: 'Fragen durchsuchen',
   searchEmptyTitle: 'Keine passenden Fragen',
-  searchEmptyDescription: 'Kein Fragentitel, Autor oder Kurs enthält „{query}“.'
+  searchEmptyDescription: 'Kein Fragentitel, Autor oder Kurs enthält „{query}“.',
+  segmentAll: 'Alle',
+  segmentForYou: 'Für Sie',
+  forYouEmptyTitle: 'Keine abonnierten Fragen',
+  forYouEmptyDescription:
+    'Fragen, die Sie stellen, beantworten oder abonnieren, stehen unter „Für Sie“. Ein Punkt markiert Fragen mit Antworten, die Sie noch nicht gelesen haben.',
+  forYouEmptyFilteredDescription: 'Sie haben in diesem Kurs keine Frage gestellt, beantwortet oder abonniert.',
+  newAnswers: 'Neue Antworten',
+  following: 'Abonniert',
+  followQuestion: 'Frage abonnieren',
+  unfollowQuestion: 'Abo der Frage beenden',
+  followedTitle: 'Sie haben diese Frage abonniert',
+  followedDescription: 'Sie erhalten eine Benachrichtigung, wenn jemand antwortet.',
+  followFailed: 'Abo-Einstellung wurde nicht gespeichert',
+  acceptedAnswer: 'Akzeptierte Antwort',
+  markAccepted: 'Als akzeptiert markieren',
+  unmarkAccepted: 'Markierung als akzeptiert entfernen',
+  acceptFailed: 'Akzeptierte Antwort wurde nicht gespeichert',
+  hiddenFromLearners: 'Für Lernende ausgeblendet',
+  hiddenQuestionDescription:
+    'Lernende sehen diese Frage und ihre Antworten nicht. Lehrkräfte und Admins sehen sie weiterhin.',
+  hideFromLearners: 'Für Lernende ausblenden',
+  showToLearners: 'Für Lernende einblenden',
+  visibilityFailed: 'Sichtbarkeit wurde nicht geändert',
+  post: 'Posten'
 };

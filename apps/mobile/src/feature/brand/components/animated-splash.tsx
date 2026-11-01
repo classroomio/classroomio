@@ -3,14 +3,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View, type LayoutChangeEvent } from 'react-native';
 import Animated, {
-  Easing,
   useAnimatedProps,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
   withDelay,
-  withSequence,
-  withSpring,
   withTiming
 } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
@@ -24,7 +21,6 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const MARK_RATIO = 666 / 916;
 const DOT_RADIUS = 173;
-const DOT_POP_RADIUS = 204;
 const LOCKUP_SCALE = SPLASH_LOCKUP.markWidth / SPLASH.markWidth;
 
 function SplashGlow({ width, height }: { width: number; height: number }) {
@@ -98,10 +94,7 @@ export function AnimatedSplash({ ready }: AnimatedSplashProps) {
     dotRadius.set(
       withDelay(
         SPLASH_TIMING.dotPopDelay,
-        withSequence(
-          withTiming(DOT_POP_RADIUS, { duration: SPLASH_TIMING.dotPop, easing: Easing.out(Easing.quad) }),
-          withSpring(DOT_RADIUS, { duration: 420, dampingRatio: 0.55 })
-        )
+        withTiming(DOT_RADIUS, { duration: SPLASH_TIMING.dotPop + 160, easing: EASE_OUT })
       )
     );
     lockup.set(

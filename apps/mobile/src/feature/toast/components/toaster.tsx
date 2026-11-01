@@ -156,7 +156,7 @@ function ToastCard({ toast }: { toast: ToastMessage }) {
         return;
       }
 
-      translateY.set(withSpring(0, { duration: 400, dampingRatio: 0.8, velocity: event.velocityY }));
+      translateY.set(withSpring(0, { duration: 400, dampingRatio: 1, velocity: event.velocityY }));
     },
     onFinalize: () => {
       'worklet';

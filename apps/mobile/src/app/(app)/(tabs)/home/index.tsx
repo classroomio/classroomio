@@ -12,6 +12,7 @@ import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useComplianceQuery } from '@/feature/compliance/api/compliance';
 import { ComplianceAlertBand } from '@/feature/compliance/components/compliance-alert-band';
 import { useEnrolledCoursesQuery } from '@/feature/course/api/enrolled-courses';
+import { useHomeDigestQuery } from '@/feature/course/api/home-digest';
 import { AnimatedScreenScrollView } from '@/feature/course/components/animated-screen-scroll-view';
 import { ContinueLearningCard } from '@/feature/course/components/continue-learning-card';
 import { CourseCarousel } from '@/feature/course/components/course-carousel';
@@ -19,7 +20,6 @@ import { HomeSkeleton } from '@/feature/course/components/course-skeletons';
 import { DueSoonList } from '@/feature/course/components/due-soon-list';
 import { HomeGreeting } from '@/feature/course/components/home-greeting';
 import { NextLiveClassCard } from '@/feature/course/components/next-live-class-card';
-import { dueSoonOf, nextLiveClassOf } from '@/feature/course/helpers/home-sections';
 import { homeStatusOf } from '@/feature/course/helpers/home-status';
 import { courseToResume, learningStatusOf } from '@/feature/course/helpers/learning-status';
 import { useScrollThreshold } from '@/feature/course/helpers/use-scroll-threshold';
@@ -38,11 +38,12 @@ export default function HomeScreen() {
   const compliance = useComplianceQuery();
   const { onScroll, past } = useScrollThreshold(GREETING_HEIGHT);
   const resume = useMemo(() => courseToResume(courses.data ?? []), [courses.data]);
-  const nextLive = nextLiveClassOf(courses.data ?? []);
-  const dueSoon = dueSoonOf(courses.data ?? []);
+  const digest = useHomeDigestQuery();
+  const nextLive = digest.data?.nextLiveClass ?? null;
+  const dueSoon = digest.data?.dueSoon ?? [];
   const notifications = useNotificationsQuery();
   const updates = notifications.data?.pages[0]?.items.slice(0, RECENT_UPDATES_LIMIT) ?? [];
-  const status = useMemo(() => (courses.data ? homeStatusOf(courses.data) : null), [courses.data]);
+  const status = courses.data ? homeStatusOf(courses.data, digest.data) : null;
   const unfinished = useMemo(
     () =>
       (courses.data ?? [])
@@ -57,7 +58,9 @@ export default function HomeScreen() {
       <AnimatedScreenScrollView
         onScroll={onScroll}
         scrollEventThrottle={16}
-        onRefresh={() => Promise.all([courses.refetch(), compliance.refetch(), notifications.refetch()])}
+        onRefresh={() =>
+          Promise.all([courses.refetch(), digest.refetch(), compliance.refetch(), notifications.refetch()])
+        }
       >
         <HomeGreeting status={status} />
 
@@ -83,7 +86,7 @@ export default function HomeScreen() {
 
         {nextLive && (
           <ScreenSection>
-            <ScreenSectionHeader title={nextLive.live ? t('liveNow') : t('nextLiveClass')} />
+            <ScreenSectionHeader title={nextLive.isLive ? t('liveNow') : t('nextLiveClass')} />
             <NextLiveClassCard next={nextLive} />
           </ScreenSection>
         )}

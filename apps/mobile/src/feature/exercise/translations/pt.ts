@@ -33,6 +33,7 @@ export const pt: TranslatedMessages<typeof en> = {
   uploadBlocker: 'Aguarde os envios de arquivos terminarem antes de enviar.',
   submitAnswers: 'Enviar respostas',
   nextQuestion: 'Próxima pergunta',
+  previousQuestion: 'Pergunta anterior',
   confirmSubmitTitle: 'Enviar suas respostas?',
   confirmSubmitMultiple: 'Seu tutor verá esta tentativa. Depois, você pode fazer o exercício de novo.',
   confirmSubmitSingle: 'Este exercício permite uma tentativa. Você não poderá alterar suas respostas depois de enviar.',

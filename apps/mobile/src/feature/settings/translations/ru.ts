@@ -22,5 +22,18 @@ export const ru: TranslatedMessages<typeof en> = {
   version: 'Версия',
   versionUnknown: 'Неизвестна',
   server: 'Сервер',
-  serverDescription: 'Чтобы подключиться к другому серверу, выйдите из аккаунта.'
+  serverDescription: 'Чтобы подключиться к другому серверу, выйдите из аккаунта.',
+  appearance: 'Оформление',
+  general: 'Общие',
+  videoAndDownloads: 'Видео и загрузки',
+  videoQuality: 'Качество трансляции',
+  videoQualityAuto: 'Автоматически',
+  videoQualityAutoDescription: 'Лучшее качество, которое позволяет подключение',
+  videoQualityStandard: 'До 720p',
+  videoQualityStandardDescription: 'Расходует меньше мобильного трафика',
+  videoQualityDataSaver: 'Экономия трафика',
+  videoQualityDataSaverDescription: 'До 480p, расходует меньше всего мобильного трафика',
+  videoQualityFooter:
+    'Задаёт максимальное разрешение видео, которые транслирует ваша организация. Не влияет на загруженные уроки и видео с YouTube или Vimeo.',
+  downloads: 'Загрузки'
 };

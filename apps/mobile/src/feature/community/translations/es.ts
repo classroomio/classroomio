@@ -61,8 +61,6 @@ export const es: TranslatedMessages<typeof en> = {
     'Hacer una pregunta necesita conexión. Nada de lo que escribas se guarda hasta que vuelvas a conectarte y la publiques.',
   editOffline:
     'Guardar los cambios necesita conexión. Tus cambios se mantienen en esta pantalla hasta que vuelvas a conectarte y guardes.',
-  postQuestion: 'Publicar pregunta',
-  saveChanges: 'Guardar cambios',
   fieldTitle: 'Título',
   fieldTitlePlaceholder: '¿Qué quieres saber?',
   fieldCourse: 'Curso',
@@ -88,5 +86,29 @@ export const es: TranslatedMessages<typeof en> = {
   linkCopied: 'Enlace copiado',
   searchPlaceholder: 'Buscar preguntas',
   searchEmptyTitle: 'No hay preguntas que coincidan',
-  searchEmptyDescription: 'Ningún título de pregunta, autor ni curso contiene «{query}».'
+  searchEmptyDescription: 'Ningún título de pregunta, autor ni curso contiene «{query}».',
+  segmentAll: 'Todas',
+  segmentForYou: 'Para ti',
+  forYouEmptyTitle: 'No sigues ninguna pregunta',
+  forYouEmptyDescription:
+    'Las preguntas que haces, respondes o sigues aparecen en Para ti. Un punto marca las preguntas con respuestas que no has leído.',
+  forYouEmptyFilteredDescription: 'No has hecho, respondido ni seguido ninguna pregunta en este curso.',
+  newAnswers: 'Respuestas nuevas',
+  following: 'Siguiendo',
+  followQuestion: 'Seguir pregunta',
+  unfollowQuestion: 'Dejar de seguir pregunta',
+  followedTitle: 'Sigues esta pregunta',
+  followedDescription: 'Recibes una notificación cuando alguien responde.',
+  followFailed: 'No se guardó el seguimiento',
+  acceptedAnswer: 'Respuesta aceptada',
+  markAccepted: 'Marcar como aceptada',
+  unmarkAccepted: 'Quitar marca de aceptada',
+  acceptFailed: 'No se guardó la respuesta aceptada',
+  hiddenFromLearners: 'Oculta para los alumnos',
+  hiddenQuestionDescription:
+    'Los alumnos no pueden ver esta pregunta ni sus respuestas. Los tutores y administradores sí pueden verlas.',
+  hideFromLearners: 'Ocultar a los alumnos',
+  showToLearners: 'Mostrar a los alumnos',
+  visibilityFailed: 'No se cambió la visibilidad',
+  post: 'Publicar'
 };

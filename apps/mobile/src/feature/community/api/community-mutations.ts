@@ -1,45 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { useAccountQuery } from '@/feature/account/api/account';
-import { useAuth } from '@/feature/auth/components/auth-provider';
 import { request } from '@/feature/common/api/request';
 import { useApi } from '@/feature/common/components/api-provider';
 import { removeQuerySnapshot } from '@/feature/common/helpers/query-snapshot';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
-import { useActiveOrgId } from '@/feature/org/helpers/active-org-store';
 import { communityCatalog } from '@/feature/community/translations/catalog';
-import type {
-  CommunityAnswer,
-  CommunityQuestion,
-  CommunityQuestionSummary,
-  QuestionFields
-} from '@/feature/community/types/community';
+import type { CommunityAnswer, CommunityQuestion, QuestionFields } from '@/feature/community/types/community';
 
-import { communityQuestionQueryKey, communityQuestionsQueryKey, communityVotesQueryKey } from './query-keys';
-
-function useCommunityKeys() {
-  const { userId } = useAuth();
-  const orgId = useActiveOrgId();
-
-  return {
-    list: communityQuestionsQueryKey(userId, orgId),
-    detail: (slug: string) => communityQuestionQueryKey(userId, orgId, slug),
-    votes: communityVotesQueryKey(userId, orgId)
-  };
-}
-
-function updateSummary(
-  questions: CommunityQuestionSummary[] | undefined,
-  slug: string,
-  update: (question: CommunityQuestionSummary) => CommunityQuestionSummary
-) {
-  return questions?.map((question) => (question.slug === slug ? update(question) : question));
-}
+import { useCommunityCache } from './community-cache';
 
 export function useAskQuestionMutation() {
   const api = useApi();
-  const queryClient = useQueryClient();
-  const keys = useCommunityKeys();
+  const cache = useCommunityCache();
 
   return useMutation({
     mutationFn: async (fields: QuestionFields) => {
@@ -47,7 +20,11 @@ export function useAskQuestionMutation() {
 
       return response.data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.list })
+    onSuccess: () =>
+      Promise.all([
+        cache.queryClient.invalidateQueries({ queryKey: cache.keys.list }),
+        cache.queryClient.invalidateQueries({ queryKey: cache.keys.forYou })
+      ])
   });
 }
 
@@ -55,8 +32,7 @@ type UpdateQuestionInput = QuestionFields & { courseTitle: string };
 
 export function useUpdateQuestionMutation(question: Pick<CommunityQuestion, 'id' | 'slug'> | undefined) {
   const api = useApi();
-  const queryClient = useQueryClient();
-  const keys = useCommunityKeys();
+  const cache = useCommunityCache();
   const t = useTranslations(communityCatalog);
 
   return useMutation({
@@ -68,21 +44,15 @@ export function useUpdateQuestionMutation(question: Pick<CommunityQuestion, 'id'
     onSuccess: (_result, { title, body, courseId, courseTitle }) => {
       if (!question?.slug) return;
 
-      const slug = question.slug;
-      queryClient.setQueryData<CommunityQuestion>(keys.detail(slug), (current) =>
-        current ? { ...current, title, body, courseId, courseTitle } : current
-      );
-      queryClient.setQueryData<CommunityQuestionSummary[]>(keys.list, (current) =>
-        updateSummary(current, slug, (summary) => ({ ...summary, title, courseId, courseTitle }))
-      );
+      cache.patchQuestion(question.slug, () => ({ title, body, courseId, courseTitle }));
+      cache.patchSummaries(question.slug, () => ({ title, courseId, courseTitle }));
     }
   });
 }
 
 export function useDeleteQuestionMutation() {
   const api = useApi();
-  const queryClient = useQueryClient();
-  const keys = useCommunityKeys();
+  const cache = useCommunityCache();
 
   return useMutation({
     mutationFn: async (question: Pick<CommunityQuestion, 'id' | 'slug'>) => {
@@ -91,20 +61,17 @@ export function useDeleteQuestionMutation() {
     onSuccess: (_result, question) => {
       if (!question.slug) return;
 
-      const slug = question.slug;
-      queryClient.setQueryData<CommunityQuestionSummary[]>(keys.list, (current) =>
-        current?.filter((summary) => summary.slug !== slug)
-      );
-      queryClient.removeQueries({ queryKey: keys.detail(slug), exact: true });
-      removeQuerySnapshot(keys.detail(slug));
+      const detailKey = cache.keys.detail(question.slug);
+      cache.removeSummaries(question.slug);
+      cache.queryClient.removeQueries({ queryKey: detailKey, exact: true });
+      removeQuerySnapshot(detailKey);
     }
   });
 }
 
 export function useAnswerQuestionMutation(slug: string) {
   const api = useApi();
-  const queryClient = useQueryClient();
-  const keys = useCommunityKeys();
+  const cache = useCommunityCache();
   const account = useAccountQuery();
 
   return useMutation({
@@ -122,44 +89,155 @@ export function useAnswerQuestionMutation(slug: string) {
         body: answer.body,
         votes: answer.votes,
         createdAt: answer.createdAt,
+        isHidden: false,
         author: { id: answer.authorId, fullname: profile?.fullname ?? null, avatarUrl: profile?.avatarUrl ?? null }
       };
+      const activityAt = answer.createdAt ?? new Date().toISOString();
 
-      queryClient.setQueryData<CommunityQuestion>(keys.detail(slug), (current) =>
-        current ? { ...current, comments: [...current.comments, created] } : current
-      );
-      queryClient.setQueryData<CommunityQuestionSummary[]>(keys.list, (current) =>
-        updateSummary(current, slug, (summary) => ({ ...summary, comments: Number(summary.comments) + 1 }))
-      );
+      cache.patchQuestion(slug, (current) => ({ comments: [...current.comments, created], isFollowing: true }));
+      cache.patchSummaries(slug, (summary) => ({
+        comments: Number(summary.comments) + 1,
+        isFollowing: true,
+        lastActivityAt: activityAt
+      }));
+      void cache.queryClient.invalidateQueries({ queryKey: cache.keys.forYou });
     }
   });
 }
 
 export function useDeleteAnswerMutation(slug: string) {
   const api = useApi();
-  const queryClient = useQueryClient();
-  const keys = useCommunityKeys();
+  const cache = useCommunityCache();
 
   return useMutation({
     mutationFn: async (answerId: string) => {
       await request(api.community[':id'].comment.$delete({ param: { id: answerId } }));
     },
     onSuccess: (_result, answerId) => {
-      queryClient.setQueryData<CommunityQuestion>(keys.detail(slug), (current) =>
-        current ? { ...current, comments: current.comments.filter((answer) => answer.id !== answerId) } : current
-      );
-      queryClient.setQueryData<CommunityQuestionSummary[]>(keys.list, (current) =>
-        updateSummary(current, slug, (summary) => ({ ...summary, comments: Math.max(0, Number(summary.comments) - 1) }))
-      );
+      cache.patchQuestion(slug, (current) => ({
+        comments: current.comments.filter((answer) => answer.id !== answerId),
+        acceptedAnswerId: current.acceptedAnswerId === answerId ? null : current.acceptedAnswerId
+      }));
+      cache.patchSummaries(slug, (summary) => ({
+        comments: Math.max(0, Number(summary.comments) - 1),
+        acceptedAnswerId: summary.acceptedAnswerId === answerId ? null : summary.acceptedAnswerId
+      }));
     }
+  });
+}
+
+type FollowInput = { id: number; slug: string; follow: boolean };
+
+export function useFollowQuestionMutation() {
+  const api = useApi();
+  const cache = useCommunityCache();
+
+  return useMutation({
+    mutationFn: async ({ id, follow }: FollowInput) => {
+      const param = { id: String(id) };
+      const response = await request(
+        follow ? api.community[':id'].follow.$post({ param }) : api.community[':id'].follow.$delete({ param })
+      );
+
+      return response.data;
+    },
+    onMutate: async ({ slug, follow }) => {
+      const saved = await cache.snapshot(slug);
+      cache.patchQuestion(slug, () => ({ isFollowing: follow }));
+      cache.patchSummaries(slug, () => ({ isFollowing: follow }));
+
+      return saved;
+    },
+    onError: (_error, { slug }, saved) => cache.restore(slug, saved),
+    onSettled: () => cache.queryClient.invalidateQueries({ queryKey: cache.keys.forYou })
+  });
+}
+
+type QuestionVisibilityInput = { id: number; slug: string; hidden: boolean };
+
+export function useQuestionVisibilityMutation() {
+  const api = useApi();
+  const cache = useCommunityCache();
+
+  return useMutation({
+    mutationFn: async ({ id, hidden }: QuestionVisibilityInput) => {
+      const param = { id: String(id) };
+      const response = await request(
+        hidden ? api.community[':id'].hide.$post({ param }) : api.community[':id'].hide.$delete({ param })
+      );
+
+      return response.data;
+    },
+    onMutate: async ({ slug, hidden }) => {
+      const saved = await cache.snapshot(slug);
+      cache.patchQuestion(slug, () => ({ isHidden: hidden }));
+      cache.patchSummaries(slug, () => ({ isHidden: hidden }));
+
+      return saved;
+    },
+    onError: (_error, { slug }, saved) => cache.restore(slug, saved)
+  });
+}
+
+type AnswerVisibilityInput = { answerId: string; hidden: boolean };
+
+export function useAnswerVisibilityMutation(slug: string) {
+  const api = useApi();
+  const cache = useCommunityCache();
+
+  return useMutation({
+    mutationFn: async ({ answerId, hidden }: AnswerVisibilityInput) => {
+      const param = { answerId };
+      const response = await request(
+        hidden
+          ? api.community.answer[':answerId'].hide.$post({ param })
+          : api.community.answer[':answerId'].hide.$delete({ param })
+      );
+
+      return response.data;
+    },
+    onMutate: async ({ answerId, hidden }) => {
+      const saved = await cache.snapshot(slug);
+      cache.patchQuestion(slug, (current) => ({
+        comments: current.comments.map((answer) => (answer.id === answerId ? { ...answer, isHidden: hidden } : answer))
+      }));
+
+      return saved;
+    },
+    onError: (_error, _input, saved) => cache.restore(slug, saved)
+  });
+}
+
+type AcceptAnswerInput = { questionId: number; answerId: string | null };
+
+export function useAcceptAnswerMutation(slug: string) {
+  const api = useApi();
+  const cache = useCommunityCache();
+
+  return useMutation({
+    mutationFn: async ({ questionId, answerId }: AcceptAnswerInput) => {
+      const response = await request(
+        api.community[':id']['accepted-answer'].$put({ param: { id: String(questionId) }, json: { answerId } })
+      );
+
+      return response.data;
+    },
+    onMutate: async ({ answerId }) => {
+      const saved = await cache.snapshot(slug);
+      cache.patchQuestion(slug, () => ({ acceptedAnswerId: answerId }));
+      cache.patchSummaries(slug, () => ({ acceptedAnswerId: answerId }));
+
+      return saved;
+    },
+    onError: (_error, _input, saved) => cache.restore(slug, saved)
   });
 }
 
 /** Posts upvoted this session. The API records no voters, so this mirrors the web's one-vote-per-visit guard. */
 export function useVotedPosts() {
-  const keys = useCommunityKeys();
+  const cache = useCommunityCache();
   const votes = useQuery({
-    queryKey: keys.votes,
+    queryKey: cache.keys.votes,
     queryFn: () => [] as string[],
     staleTime: Infinity,
     gcTime: Infinity
@@ -181,11 +259,10 @@ function withVotes(
   question: CommunityQuestion,
   input: UpvoteInput,
   votes: (current: number) => number
-): CommunityQuestion {
-  if (input.kind === 'question') return { ...question, votes: votes(question.votes ?? 0) };
+): Partial<CommunityQuestion> {
+  if (input.kind === 'question') return { votes: votes(question.votes ?? 0) };
 
   return {
-    ...question,
     comments: question.comments.map((answer) =>
       answer.id === input.id ? { ...answer, votes: votes(answer.votes ?? 0) } : answer
     )
@@ -194,8 +271,7 @@ function withVotes(
 
 export function useUpvoteMutation() {
   const api = useApi();
-  const queryClient = useQueryClient();
-  const keys = useCommunityKeys();
+  const cache = useCommunityCache();
 
   return useMutation({
     mutationFn: async (input: UpvoteInput) => {
@@ -209,41 +285,27 @@ export function useUpvoteMutation() {
       return response.data?.votes ?? null;
     },
     onMutate: async (input) => {
-      const { slug } = input;
-      const detailKey = keys.detail(slug);
-      await queryClient.cancelQueries({ queryKey: detailKey });
-      const previousQuestion = queryClient.getQueryData<CommunityQuestion>(detailKey);
-      const previousList = queryClient.getQueryData<CommunityQuestionSummary[]>(keys.list);
+      const saved = await cache.snapshot(input.slug);
 
-      queryClient.setQueryData<string[]>(keys.votes, (current) => [...(current ?? []), voteKeyOf(input)]);
-      queryClient.setQueryData<CommunityQuestion>(detailKey, (current) =>
-        current ? withVotes(current, input, (votes) => votes + 1) : current
-      );
+      cache.queryClient.setQueryData<string[]>(cache.keys.votes, (current) => [...(current ?? []), voteKeyOf(input)]);
+      cache.patchQuestion(input.slug, (current) => withVotes(current, input, (votes) => votes + 1));
       if (input.kind === 'question') {
-        queryClient.setQueryData<CommunityQuestionSummary[]>(keys.list, (current) =>
-          updateSummary(current, slug, (summary) => ({ ...summary, votes: (summary.votes ?? 0) + 1 }))
-        );
+        cache.patchSummaries(input.slug, (summary) => ({ votes: (summary.votes ?? 0) + 1 }));
       }
 
-      return { previousQuestion, previousList };
+      return saved;
     },
-    onError: (_error, input, context) => {
-      queryClient.setQueryData<string[]>(keys.votes, (current) => current?.filter((key) => key !== voteKeyOf(input)));
-      queryClient.setQueryData(keys.detail(input.slug), context?.previousQuestion);
-      queryClient.setQueryData(keys.list, context?.previousList);
+    onError: (_error, input, saved) => {
+      cache.queryClient.setQueryData<string[]>(cache.keys.votes, (current) =>
+        current?.filter((key) => key !== voteKeyOf(input))
+      );
+      cache.restore(input.slug, saved);
     },
     onSuccess: (votes, input) => {
       if (votes === null) return;
 
-      const { slug } = input;
-      queryClient.setQueryData<CommunityQuestion>(keys.detail(slug), (current) =>
-        current ? withVotes(current, input, () => votes) : current
-      );
-      if (input.kind === 'question') {
-        queryClient.setQueryData<CommunityQuestionSummary[]>(keys.list, (current) =>
-          updateSummary(current, slug, (summary) => ({ ...summary, votes }))
-        );
-      }
+      cache.patchQuestion(input.slug, (current) => withVotes(current, input, () => votes));
+      if (input.kind === 'question') cache.patchSummaries(input.slug, () => ({ votes }));
     }
   });
 }

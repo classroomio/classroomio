@@ -48,5 +48,7 @@ export const it: TranslatedMessages<typeof en> = {
   savedDescription: 'Il PDF si trova nella cartella che hai scelto.',
   saveFailed: 'Non è stato possibile salvare il certificato',
   idCopied: 'ID certificato copiato',
-  recipientFallback: 'Destinatario'
+  recipientFallback: 'Destinatario',
+  copyId: 'Copia ID',
+  openCourse: 'Apri corso'
 };

@@ -7,26 +7,19 @@ import { TargetIcon } from 'phosphor-react-native/src/icons/Target';
 import { XCircleIcon } from 'phosphor-react-native/src/icons/XCircle';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withSequence,
-  withSpring,
-  withTiming
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Card, CardContent } from '@/feature/common/components/card';
 import { HtmlContent } from '@/feature/common/components/html-content';
 import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Item, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from '@/feature/common/components/item';
-import { NotchCard } from '@/feature/common/components/notch-card';
 import { ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { Text, type TextTone } from '@/feature/common/components/text';
-import { SPACING } from '@/feature/common/constants/layout';
-import { DURATION, EASE_IN_OUT, EASE_OUT } from '@/feature/common/constants/motion';
+import { RADII, SPACING } from '@/feature/common/constants/layout';
+import { DURATION, EASE_OUT } from '@/feature/common/constants/motion';
 import { successHaptic } from '@/feature/common/helpers/haptics';
+import { useTheme } from '@/feature/common/helpers/use-theme';
 import { ScoreRing } from '@/feature/exercise/components/score-ring';
 import { answerSummaryOf } from '@/feature/exercise/helpers/answer-summary';
 import { formatDateTime, formatScore } from '@/feature/exercise/helpers/format';
@@ -60,17 +53,16 @@ export function ResultSummary({ attempt, summary, isLatest }: ResultSummaryProps
   const t = useTranslations(exerciseCatalog);
   const format = useFormatters();
   const reducedMotion = useReducedMotion();
+  const { colors } = useTheme();
   const copy = OUTCOME_COPY[attempt.outcome];
   const [reveal] = useState(() => attempt.outcome !== 'awaiting_grade' && isUnrevealedResult(attempt.id));
   const celebrate = reveal && isLatest && attempt.outcome === 'passed';
   const outcomeOpacity = useSharedValue(reveal ? 0 : 1);
   const outcomeY = useSharedValue(reveal && !reducedMotion ? 6 : 0);
-  const ringScale = useSharedValue(1);
   const outcomeStyle = useAnimatedStyle(() => ({
     opacity: outcomeOpacity.get(),
     transform: [{ translateY: outcomeY.get() }]
   }));
-  const ringStyle = useAnimatedStyle(() => ({ transform: [{ scale: ringScale.get() }] }));
 
   useEffect(() => {
     if (attempt.outcome !== 'awaiting_grade') markResultRevealed(attempt.id);
@@ -88,18 +80,7 @@ export function ResultSummary({ attempt, summary, isLatest }: ResultSummaryProps
     successHaptic();
     if (reducedMotion) return;
 
-    ringScale.set(
-      withSequence(
-        withTiming(1.06, { duration: 140, easing: EASE_OUT }),
-        withSpring(1, { duration: 360, dampingRatio: 0.55 })
-      )
-    );
-    outcomeY.set(
-      withSequence(
-        withTiming(-4, { duration: 170, easing: EASE_OUT }),
-        withTiming(0, { duration: 130, easing: EASE_IN_OUT })
-      )
-    );
+    outcomeY.set(withTiming(0, { duration: DURATION.base, easing: EASE_OUT }));
   };
   const graded = attempt.outcome !== 'awaiting_grade';
   const percent = attempt.scorePercent ?? 0;
@@ -114,38 +95,40 @@ export function ResultSummary({ attempt, summary, isLatest }: ResultSummaryProps
     summary.passThreshold !== null ? t('passMarkInline', { percent: format.percent(summary.passThreshold) }) : null
   ].filter(Boolean);
 
+  const ringColor = attempt.outcome === 'passed' ? colors.success : colors.primary;
+
   return (
-    <NotchCard style={styles.summary}>
+    <Card style={styles.summary}>
       {graded ? (
-        <Animated.View style={ringStyle}>
-          <ScoreRing percent={percent} reveal={reveal} onFilled={settle} />
-        </Animated.View>
+        <ScoreRing percent={percent} reveal={reveal} onFilled={settle} size={136} strokeWidth={10} color={ringColor} />
       ) : (
-        <Icon icon={ClockIcon} size={32} tone="muted" />
+        <View style={[styles.pending, { backgroundColor: colors.muted }]}>
+          <Icon icon={ClockIcon} size={36} tone="muted" />
+        </View>
       )}
       <View style={styles.summaryText}>
         <Animated.View style={[styles.outcome, outcomeStyle]}>
-          <Icon icon={copy.icon} size={18} tone={copy.tone} />
-          <Text variant="heading" tone={copy.tone}>
+          <Icon icon={copy.icon} size={22} tone={copy.tone} weight="fill" />
+          <Text variant="title" tone={copy.tone}>
             {t(copy.title)}
           </Text>
         </Animated.View>
-        <Text variant="caption" tone="muted" style={styles.center}>
+        <Text variant="body" tone="muted" style={styles.center}>
           {graded ? details.join(' · ') : t('awaitingGradeDescription')}
         </Text>
         {attempt.outcome === 'failed' ? (
-          <Text variant="caption" tone="body" style={styles.center}>
+          <Text variant="body" tone="body" style={styles.center}>
             {summary.canRetake && isLatest ? t('failedRetakeHint') : t('failedReviewHint')}
           </Text>
         ) : null}
-        <Text variant="micro" tone="subtle">
+        <Text variant="caption" tone="subtle" style={styles.submitted}>
           {t('attemptSubmitted', {
             number: attempt.attemptNumber,
             date: formatDateTime(attempt.submittedAt, format.locale)
           })}
         </Text>
       </View>
-    </NotchCard>
+    </Card>
   );
 }
 
@@ -201,7 +184,7 @@ export function ResultBreakdown({ attempt, questions }: ResultBreakdownProps) {
           return (
             <Item key={questionKeyOf(question)}>
               <ItemMedia>
-                <Icon icon={icon} size={20} tone={tone} />
+                <Icon icon={icon} size={24} tone={tone} weight="fill" />
               </ItemMedia>
               <ItemContent>
                 <ItemTitle>{`${index + 1}. ${plainTextOf(question.title)}`}</ItemTitle>
@@ -268,8 +251,10 @@ export function ResultActions({ canRetake, isLatest, onRetake, onDone }: ResultA
 }
 
 const styles = StyleSheet.create({
-  summary: { alignItems: 'center', gap: SPACING.sm, paddingVertical: SPACING.xl },
-  summaryText: { alignItems: 'center', gap: SPACING.xxs },
+  summary: { alignItems: 'center', gap: SPACING.lg, paddingVertical: SPACING.xxl, paddingHorizontal: SPACING.lg },
+  pending: { width: 88, height: 88, alignItems: 'center', justifyContent: 'center', borderRadius: RADII.pill },
+  submitted: { marginTop: SPACING.xs, textAlign: 'center' },
+  summaryText: { alignItems: 'center', gap: SPACING.xs },
   outcome: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   center: { textAlign: 'center' },
   switcher: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACING.xs },

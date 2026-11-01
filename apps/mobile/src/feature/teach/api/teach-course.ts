@@ -5,7 +5,10 @@ import { useApi } from '@/feature/common/components/api-provider';
 
 import { teachKeys, useTeachScope } from './teach-scope';
 
-export function useTeachCourseQuery(courseId: string) {
+export const ROSTER_POLL_MS = 5000;
+
+/** The full course with its roster and attendance; `pollMs` refetches on an interval, as while check-in is open. */
+export function useTeachCourseQuery(courseId: string, { pollMs }: { pollMs?: number } = {}) {
   const api = useApi();
   const { userId, orgId, enabled } = useTeachScope();
 
@@ -16,7 +19,8 @@ export function useTeachCourseQuery(courseId: string) {
 
       return response.data;
     },
-    enabled: enabled && Boolean(courseId)
+    enabled: enabled && Boolean(courseId),
+    refetchInterval: pollMs ?? false
   });
 }
 

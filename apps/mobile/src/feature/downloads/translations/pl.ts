@@ -96,10 +96,8 @@ export const pl: TranslatedMessages<typeof en> = {
   downloadSize: 'Pobierz {size}',
   download: 'Pobierz',
   notNow: 'Nie teraz',
-  otherCourses: 'Inne kursy',
   storageOnDevice: 'Pamięć na tym urządzeniu',
   usedSize: 'Zajęte: {size}',
-  freeSize: 'Wolne: {size}',
   downloadsTitle: 'Pobrane',
   noDownloadsTitle: 'Brak pobranych plików',
   noDownloadsDescription: 'Pobierz kurs lub lekcję z ich strony, aby otwierać je bez połączenia.',
@@ -115,5 +113,9 @@ export const pl: TranslatedMessages<typeof en> = {
   },
   removeAll: 'Usuń wszystko',
   removeAllError: 'Nie usunięto pobranych plików',
-  notReady: 'Pobieranie nie jest jeszcze gotowe. Spróbuj ponownie.'
+  notReady: 'Pobieranie nie jest jeszcze gotowe. Spróbuj ponownie.',
+  usedByDownloads: 'Zajęte przez pobrane',
+  legendDownloads: 'Pobrane',
+  legendOther: 'Inne aplikacje i dane',
+  legendFree: 'Wolne'
 };

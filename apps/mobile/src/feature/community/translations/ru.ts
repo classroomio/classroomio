@@ -62,8 +62,6 @@ export const ru: TranslatedMessages<typeof en> = {
     'Чтобы задать вопрос, нужно подключение. Введённый текст не сохранится, пока вы не подключитесь и не опубликуете вопрос.',
   editOffline:
     'Чтобы сохранить изменения, нужно подключение. Изменения останутся на этом экране, пока вы не подключитесь и не сохраните их.',
-  postQuestion: 'Опубликовать вопрос',
-  saveChanges: 'Сохранить изменения',
   fieldTitle: 'Заголовок',
   fieldTitlePlaceholder: 'Что вы хотите узнать?',
   fieldCourse: 'Курс',
@@ -89,5 +87,29 @@ export const ru: TranslatedMessages<typeof en> = {
   linkCopied: 'Ссылка скопирована',
   searchPlaceholder: 'Поиск вопросов',
   searchEmptyTitle: 'Подходящих вопросов нет',
-  searchEmptyDescription: 'Ни название вопроса, ни автор, ни курс не содержат «{query}».'
+  searchEmptyDescription: 'Ни название вопроса, ни автор, ни курс не содержат «{query}».',
+  segmentAll: 'Все',
+  segmentForYou: 'Для вас',
+  forYouEmptyTitle: 'Нет отслеживаемых вопросов',
+  forYouEmptyDescription:
+    'Вопросы, которые вы задали, на которые ответили или которые отслеживаете, собраны в разделе «Для вас». Точкой отмечены вопросы с непрочитанными ответами.',
+  forYouEmptyFilteredDescription: 'В этом курсе вы не задавали, не отвечали и не отслеживали вопросы.',
+  newAnswers: 'Новые ответы',
+  following: 'Отслеживается',
+  followQuestion: 'Отслеживать вопрос',
+  unfollowQuestion: 'Не отслеживать вопрос',
+  followedTitle: 'Вы отслеживаете этот вопрос',
+  followedDescription: 'Вы получаете уведомление, когда кто-нибудь отвечает.',
+  followFailed: 'Настройка отслеживания не сохранена',
+  acceptedAnswer: 'Принятый ответ',
+  markAccepted: 'Отметить как принятый',
+  unmarkAccepted: 'Снять отметку о принятии',
+  acceptFailed: 'Принятый ответ не сохранён',
+  hiddenFromLearners: 'Скрыто от учащихся',
+  hiddenQuestionDescription:
+    'Учащиеся не видят этот вопрос и ответы на него. Преподаватели и администраторы по-прежнему их видят.',
+  hideFromLearners: 'Скрыть от учащихся',
+  showToLearners: 'Показать учащимся',
+  visibilityFailed: 'Видимость не изменена',
+  post: 'Опубликовать'
 };

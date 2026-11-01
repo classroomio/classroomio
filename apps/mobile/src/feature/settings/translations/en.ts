@@ -18,5 +18,18 @@ export const en = {
   version: 'Version',
   versionUnknown: 'Unknown',
   server: 'Server',
-  serverDescription: 'Sign out to connect to a different server.'
+  serverDescription: 'Sign out to connect to a different server.',
+  appearance: 'Appearance',
+  general: 'General',
+  videoAndDownloads: 'Video and downloads',
+  videoQuality: 'Streaming quality',
+  videoQualityAuto: 'Automatic',
+  videoQualityAutoDescription: 'The best quality your connection allows',
+  videoQualityStandard: 'Up to 720p',
+  videoQualityStandardDescription: 'Uses less mobile data',
+  videoQualityDataSaver: 'Data saver',
+  videoQualityDataSaverDescription: 'Up to 480p, uses the least mobile data',
+  videoQualityFooter:
+    'Sets the highest resolution for videos your organization streams. Downloaded lessons and videos from YouTube or Vimeo are not affected.',
+  downloads: 'Downloads'
 };

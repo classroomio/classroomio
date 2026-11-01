@@ -73,5 +73,10 @@ export const vi: TranslatedMessages<typeof en> = {
   quietStart: 'Bắt đầu giờ yên lặng',
   quietEnd: 'Kết thúc giờ yên lặng',
   footnote: 'Cảnh báo đào tạo quá hạn luôn bật cho thông báo đẩy và trong ứng dụng vì đây là đào tạo bắt buộc.',
-  markRead: 'Đánh dấu là đã đọc'
+  markRead: 'Đánh dấu là đã đọc',
+  markUnread: 'Đánh dấu là chưa đọc',
+  undo: 'Hoàn tác',
+  deleted: 'Đã xóa thông báo',
+  deleteFailed: 'Không xóa được thông báo',
+  unavailableOffline: 'Khả dụng khi bạn có kết nối mạng trở lại'
 };

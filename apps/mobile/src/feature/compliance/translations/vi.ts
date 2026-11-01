@@ -27,12 +27,6 @@ export const vi: TranslatedMessages<typeof en> = {
   detailWaiverEnds: 'Miễn trừ kết thúc vào {date}',
   detailLastCompleted: 'Hoàn thành gần nhất vào {date}',
   detailRenewsEvery: { other: 'Gia hạn mỗi {count} tháng' },
-  countOverdue: { other: '{count} quá hạn' },
-  countInGracePeriod: { other: '{count} trong thời gian ân hạn' },
-  countDueSoon: { other: '{count} sắp đến hạn' },
-  countToDo: { other: '{count} cần làm' },
-  countCompliant: { other: '{count} đã tuân thủ' },
-  countWaived: { other: '{count} được miễn' },
   summaryOutOf: { other: '{count} yêu cầu' },
   summaryOverdue: { other: '{count} trong số {total} đã quá hạn.' },
   summaryInGracePeriod: { other: '{count} trong số {total} đã quá hạn chót và đang trong thời gian ân hạn.' },
@@ -69,5 +63,7 @@ export const vi: TranslatedMessages<typeof en> = {
   resumeCourse: 'Học tiếp',
   startCourse: 'Bắt đầu khóa học',
   proof: 'Chứng nhận',
-  proofLabel: 'Chứng chỉ của {course}'
+  proofLabel: 'Chứng chỉ của {course}',
+  standingOnTrack: 'Đúng tiến độ',
+  nextDeadline: 'Hạn chót tiếp theo'
 };

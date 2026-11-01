@@ -1,4 +1,5 @@
 import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { BellIcon } from 'phosphor-react-native/src/icons/Bell';
 import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
 import { ChatCircleIcon } from 'phosphor-react-native/src/icons/ChatCircle';
 import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
@@ -8,50 +9,90 @@ import { MegaphoneIcon } from 'phosphor-react-native/src/icons/Megaphone';
 import { TargetIcon } from 'phosphor-react-native/src/icons/Target';
 import { VideoCameraIcon } from 'phosphor-react-native/src/icons/VideoCamera';
 import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
-import type { AppIcon } from '@/feature/common/components/icon';
 import type { TNotificationCategory } from '@cio/utils/constants/notifications';
+
+import type { AppIcon } from '@/feature/common/components/icon';
+import type { IconTileTone } from '@/feature/common/components/icon-tile';
 
 import type { en } from '@/feature/notifications/translations/en';
 import type { NotificationChannel } from '@/feature/notifications/types/notifications';
 
 type NotificationsKey = keyof typeof en;
 
-/** Icon and `notificationsCatalog` keys for each preference category. */
+export type NotificationCategoryDisplay = {
+  label: NotificationsKey;
+  description: NotificationsKey;
+  icon: AppIcon;
+  /** Tinted only where the category signals urgency; everything else stays neutral. */
+  tone: IconTileTone;
+};
+
+/** Icon, tile tone and `notificationsCatalog` keys for each preference category. */
 export const NOTIFICATION_CATEGORY_DISPLAY = {
   course_assigned: {
     label: 'categoryCourseAssigned',
     description: 'categoryCourseAssignedDescription',
-    icon: BookOpenIcon
+    icon: BookOpenIcon,
+    tone: 'neutral'
   },
   deadline_reminder: {
     label: 'categoryDeadlineReminder',
     description: 'categoryDeadlineReminderDescription',
-    icon: ClockIcon
+    icon: ClockIcon,
+    tone: 'warning'
   },
-  overdue: { label: 'categoryOverdue', description: 'categoryOverdueDescription', icon: WarningIcon },
-  renewal_due: { label: 'categoryRenewalDue', description: 'categoryRenewalDueDescription', icon: ArrowsClockwiseIcon },
-  new_content: { label: 'categoryNewContent', description: 'categoryNewContentDescription', icon: MegaphoneIcon },
+  overdue: { label: 'categoryOverdue', description: 'categoryOverdueDescription', icon: WarningIcon, tone: 'danger' },
+  renewal_due: {
+    label: 'categoryRenewalDue',
+    description: 'categoryRenewalDueDescription',
+    icon: ArrowsClockwiseIcon,
+    tone: 'warning'
+  },
+  new_content: {
+    label: 'categoryNewContent',
+    description: 'categoryNewContentDescription',
+    icon: MegaphoneIcon,
+    tone: 'neutral'
+  },
   exercise_graded: {
     label: 'categoryExerciseGraded',
     description: 'categoryExerciseGradedDescription',
-    icon: CheckCircleIcon
+    icon: CheckCircleIcon,
+    tone: 'neutral'
   },
   community_reply: {
     label: 'categoryCommunityReply',
     description: 'categoryCommunityReplyDescription',
-    icon: ChatCircleIcon
+    icon: ChatCircleIcon,
+    tone: 'neutral'
   },
   certificate_issued: {
     label: 'categoryCertificateIssued',
     description: 'categoryCertificateIssuedDescription',
-    icon: MedalIcon
+    icon: MedalIcon,
+    tone: 'neutral'
   },
-  cohort_goal: { label: 'categoryCohortGoal', description: 'categoryCohortGoalDescription', icon: TargetIcon },
-  live_session: { label: 'categoryLiveSession', description: 'categoryLiveSessionDescription', icon: VideoCameraIcon }
-} as const satisfies Record<
-  TNotificationCategory,
-  { label: NotificationsKey; description: NotificationsKey; icon: AppIcon }
->;
+  cohort_goal: {
+    label: 'categoryCohortGoal',
+    description: 'categoryCohortGoalDescription',
+    icon: TargetIcon,
+    tone: 'neutral'
+  },
+  live_session: {
+    label: 'categoryLiveSession',
+    description: 'categoryLiveSessionDescription',
+    icon: VideoCameraIcon,
+    tone: 'neutral'
+  }
+} as const satisfies Record<TNotificationCategory, NotificationCategoryDisplay>;
+
+/** Shown for a category this app version does not know, which a newer server can send. */
+export const FALLBACK_CATEGORY_DISPLAY = {
+  label: 'title',
+  description: 'title',
+  icon: BellIcon,
+  tone: 'neutral'
+} as const satisfies NotificationCategoryDisplay;
 
 export const NOTIFICATION_PREFERENCE_SECTIONS: Array<{ title: NotificationsKey; categories: TNotificationCategory[] }> =
   [

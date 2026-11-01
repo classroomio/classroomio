@@ -74,5 +74,10 @@ export const it: TranslatedMessages<typeof en> = {
   quietStart: 'Inizio ore di silenzio',
   quietEnd: 'Fine ore di silenzio',
   footnote: 'Gli avvisi di formazione scaduta restano attivi per push e app perché la formazione è obbligatoria.',
-  markRead: 'Segna come letta'
+  markRead: 'Segna come letta',
+  markUnread: 'Segna come da leggere',
+  undo: 'Annulla',
+  deleted: 'Notifica eliminata',
+  deleteFailed: 'La notifica non è stata eliminata',
+  unavailableOffline: 'Disponibile quando torni online'
 };

@@ -277,3 +277,5 @@ export type TProfileQuietHours = typeof schema.profileQuietHours.$inferSelect;
 export type TNewProfileQuietHours = typeof schema.profileQuietHours.$inferInsert;
 export type TDeviceToken = typeof schema.deviceToken.$inferSelect;
 export type TNewDeviceToken = typeof schema.deviceToken.$inferInsert;
+export type TCommunityQuestionSubscription = typeof schema.communityQuestionSubscription.$inferSelect;
+export type TLessonCheckInCode = typeof schema.lessonCheckInCode.$inferSelect;

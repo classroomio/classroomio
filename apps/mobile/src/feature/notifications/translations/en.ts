@@ -68,5 +68,10 @@ export const en = {
   quietStart: 'Quiet hours start',
   quietEnd: 'Quiet hours end',
   footnote: 'Overdue training alerts stay on for push and in-app because the training is required.',
-  markRead: 'Mark as read'
+  markRead: 'Mark as read',
+  markUnread: 'Mark as unread',
+  undo: 'Undo',
+  deleted: 'Notification deleted',
+  deleteFailed: 'The notification was not deleted',
+  unavailableOffline: 'Available when you are back online'
 };

@@ -52,42 +52,6 @@ export const pl: TranslatedMessages<typeof en> = {
     many: 'Odnawiane co {count} miesięcy',
     other: 'Odnawiane co {count} miesiąca'
   },
-  countOverdue: {
-    one: '{count} po terminie',
-    few: '{count} po terminie',
-    many: '{count} po terminie',
-    other: '{count} po terminie'
-  },
-  countInGracePeriod: {
-    one: '{count} w okresie karencji',
-    few: '{count} w okresie karencji',
-    many: '{count} w okresie karencji',
-    other: '{count} w okresie karencji'
-  },
-  countDueSoon: {
-    one: '{count} z bliskim terminem',
-    few: '{count} z bliskim terminem',
-    many: '{count} z bliskim terminem',
-    other: '{count} z bliskim terminem'
-  },
-  countToDo: {
-    one: '{count} do zrobienia',
-    few: '{count} do zrobienia',
-    many: '{count} do zrobienia',
-    other: '{count} do zrobienia'
-  },
-  countCompliant: {
-    one: '{count} spełnione',
-    few: '{count} spełnione',
-    many: '{count} spełnionych',
-    other: '{count} spełnionego'
-  },
-  countWaived: {
-    one: '{count} ze zwolnieniem',
-    few: '{count} ze zwolnieniem',
-    many: '{count} ze zwolnieniem',
-    other: '{count} ze zwolnieniem'
-  },
   summaryOutOf: {
     one: '{count} wymagania',
     few: '{count} wymagań',
@@ -201,5 +165,7 @@ export const pl: TranslatedMessages<typeof en> = {
   resumeCourse: 'Wznów kurs',
   startCourse: 'Rozpocznij kurs',
   proof: 'Potwierdzenie',
-  proofLabel: 'Certyfikat za kurs {course}'
+  proofLabel: 'Certyfikat za kurs {course}',
+  standingOnTrack: 'Zgodnie z planem',
+  nextDeadline: 'Najbliższy termin'
 };

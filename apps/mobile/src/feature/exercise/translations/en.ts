@@ -26,6 +26,7 @@ export const en = {
   uploadBlocker: 'Wait for uploads to finish before you submit.',
   submitAnswers: 'Submit answers',
   nextQuestion: 'Next question',
+  previousQuestion: 'Previous question',
   confirmSubmitTitle: 'Submit your answers?',
   confirmSubmitMultiple: 'Your tutor sees this attempt. You can take the exercise again afterwards.',
   confirmSubmitSingle: 'This exercise allows one attempt. You cannot change your answers after you submit.',

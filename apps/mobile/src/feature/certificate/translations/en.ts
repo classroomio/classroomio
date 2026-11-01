@@ -43,5 +43,7 @@ export const en = {
   savedDescription: 'The PDF is in the folder you chose.',
   saveFailed: 'The certificate could not be saved',
   idCopied: 'Certificate ID copied',
-  recipientFallback: 'Recipient'
+  recipientFallback: 'Recipient',
+  copyId: 'Copy ID',
+  openCourse: 'Open course'
 };

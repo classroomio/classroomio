@@ -1,4 +1,4 @@
-import { getQuestionAuthorAndCourse } from '@cio/db/queries/community/community';
+import { getQuestionAuthorAndCourse, listCommunityQuestionRecipientIds } from '@cio/db/queries/community/community';
 import { getNewsfeedById, getNewsfeedCommentById } from '@cio/db/queries/newsfeed/newsfeed';
 import {
   getCourseOrganization,
@@ -152,14 +152,17 @@ export function notifyExerciseGraded(params: {
 export function notifyCommunityAnswer(params: { questionId: number; answerId: string; authorProfileId: string }) {
   return safely('community_answer', async () => {
     const question = await getQuestionAuthorAndCourse(params.questionId);
-    if (!question?.authorId) return;
+    // Learners cannot open a hidden question, so its followers get nothing to act on.
+    if (!question || question.isHidden) return;
 
     const organizationId = question.organizationId ?? (await getCourseOrganization(question.courseId));
     if (!organizationId) return;
 
+    const recipientProfileIds = await listCommunityQuestionRecipientIds(params.questionId);
+
     await notify({
       organizationId,
-      recipientProfileIds: [question.authorId],
+      recipientProfileIds,
       type: 'community_answer',
       entityId: String(params.questionId),
       courseId: question.courseId,

@@ -40,4 +40,8 @@ export type NewsfeedPost = NewsfeedPage['items'][number];
 type NewsfeedCommentsResponse = Success<InferResponseType<NewsfeedRoute[':feedId']['comments']['$get'], 200>>;
 export type NewsfeedCommentThread = NewsfeedCommentsResponse['data'];
 
-export type AttendanceStatus = 'present' | 'absent';
+export type AttendanceStatus = TeachCourseAttendance['status'];
+
+type CheckInCodeRoute = ApiClient['course'][':courseId']['attendance'][':lessonId']['check-in-code'];
+type CheckInCodeResponse = Success<InferResponseType<CheckInCodeRoute['$post'], 201>>;
+export type CheckInCode = CheckInCodeResponse['data'];

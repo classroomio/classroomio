@@ -80,3 +80,13 @@ export const ZCommunityAnswerCreate = z.object({
 
 export type TCommunityQuestionCreate = z.infer<typeof ZCommunityQuestionCreate>;
 export type TCommunityAnswerCreate = z.infer<typeof ZCommunityAnswerCreate>;
+
+export const ZCommunityAnswerParam = z.object({
+  answerId: z.uuid()
+});
+export type TCommunityAnswerParam = z.infer<typeof ZCommunityAnswerParam>;
+
+export const ZCommunityAcceptedAnswer = z.object({
+  answerId: z.uuid().nullable()
+});
+export type TCommunityAcceptedAnswer = z.infer<typeof ZCommunityAcceptedAnswer>;

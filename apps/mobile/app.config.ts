@@ -31,6 +31,8 @@ const appVariant = appVariantOf(requiredEnv('APP_VARIANT'));
 const easProjectId = requiredEnv('EAS_PROJECT_ID');
 
 const FACE_ID_REASON = 'ClassroomIO uses Face ID to unlock the app without signing in again.';
+const CAMERA_REASON =
+  'ClassroomIO uses the camera to scan check-in codes for live classes, record video answers and photograph documents you attach.';
 const MICROPHONE_REASON = 'ClassroomIO records audio with video answers you submit to exercises.';
 
 const config: ExpoConfig = {
@@ -85,8 +87,7 @@ const config: ExpoConfig = {
     [
       'expo-camera',
       {
-        cameraPermission:
-          'ClassroomIO uses the camera when you record a video answer or photograph a document for an exercise.',
+        cameraPermission: CAMERA_REASON,
         microphonePermission: MICROPHONE_REASON,
         recordAudioAndroid: true
       }
@@ -96,7 +97,7 @@ const config: ExpoConfig = {
       {
         photosPermission:
           'ClassroomIO opens the photos you choose to attach to an exercise answer or a community post.',
-        cameraPermission: 'ClassroomIO uses the camera when you photograph something to attach to an answer or post.'
+        cameraPermission: CAMERA_REASON
       }
     ],
     ['expo-audio', { microphonePermission: MICROPHONE_REASON }],

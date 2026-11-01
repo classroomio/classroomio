@@ -30,10 +30,12 @@ type ScoreRingProps = {
   onFilled?: () => void;
   size?: number;
   strokeWidth?: number;
+  /** Arc colour; the theme primary when omitted. */
+  color?: string;
 };
 
 /** The exercise score as a ring with the percentage in the middle. */
-export function ScoreRing({ percent, reveal, onFilled, size = 92, strokeWidth = 6 }: ScoreRingProps) {
+export function ScoreRing({ percent, reveal, onFilled, size = 92, strokeWidth = 6, color }: ScoreRingProps) {
   const { colors } = useTheme();
   const format = useFormatters();
   const reducedMotion = useReducedMotion();
@@ -95,7 +97,7 @@ export function ScoreRing({ percent, reveal, onFilled, size = 92, strokeWidth = 
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={colors.primary}
+          stroke={color ?? colors.primary}
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
           strokeLinecap="round"
@@ -113,7 +115,7 @@ export function ScoreRing({ percent, reveal, onFilled, size = 92, strokeWidth = 
           maxFontSizeMultiplier={1.4}
           importantForAccessibility="no"
           accessibilityElementsHidden
-          style={[TEXT_VARIANTS.heading, styles.label, { color: colors.ink }]}
+          style={[size >= 120 ? TEXT_VARIANTS.display : TEXT_VARIANTS.heading, styles.label, { color: colors.ink }]}
         />
       </View>
     </View>
@@ -122,5 +124,5 @@ export function ScoreRing({ percent, reveal, onFilled, size = 92, strokeWidth = 
 
 const styles = StyleSheet.create({
   center: { alignItems: 'center', justifyContent: 'center' },
-  label: { fontVariant: ['tabular-nums'], textAlign: 'center', padding: 0, minWidth: 64 }
+  label: { fontVariant: ['tabular-nums'], textAlign: 'center', padding: 0, minWidth: 96 }
 });

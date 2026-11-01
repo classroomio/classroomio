@@ -90,10 +90,8 @@ export const de: TranslatedMessages<typeof en> = {
   downloadSize: '{size} herunterladen',
   download: 'Herunterladen',
   notNow: 'Nicht jetzt',
-  otherCourses: 'Andere Kurse',
   storageOnDevice: 'Speicher auf diesem Gerät',
   usedSize: '{size} belegt',
-  freeSize: '{size} frei',
   downloadsTitle: 'Downloads',
   noDownloadsTitle: 'Noch keine Downloads',
   noDownloadsDescription:
@@ -109,5 +107,9 @@ export const de: TranslatedMessages<typeof en> = {
   },
   removeAll: 'Alle entfernen',
   removeAllError: 'Die Downloads wurden nicht entfernt',
-  notReady: 'Downloads sind noch nicht bereit. Versuchen Sie es erneut.'
+  notReady: 'Downloads sind noch nicht bereit. Versuchen Sie es erneut.',
+  usedByDownloads: 'Von Downloads belegt',
+  legendDownloads: 'Downloads',
+  legendOther: 'Andere Apps und Daten',
+  legendFree: 'Frei'
 };

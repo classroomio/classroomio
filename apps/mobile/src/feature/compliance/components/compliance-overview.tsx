@@ -11,11 +11,21 @@ import {
   EmptyMedia,
   EmptyTitle
 } from '@/feature/common/components/empty';
-import { Icon } from '@/feature/common/components/icon';
-import { Item, ItemChevron, ItemContent, ItemGroup, ItemMedia, ItemTitle } from '@/feature/common/components/item';
+import { IconTile } from '@/feature/common/components/icon-tile';
+import {
+  Item,
+  ItemActions,
+  ItemChevron,
+  ItemContent,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle
+} from '@/feature/common/components/item';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
-import { SkeletonBlock, SkeletonList, SkeletonText } from '@/feature/common/components/skeleton';
+import { Skeleton, SkeletonList, SkeletonText } from '@/feature/common/components/skeleton';
+import { RADII } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
+import { useTheme } from '@/feature/common/helpers/use-theme';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useComplianceQuery } from '@/feature/compliance/api/compliance';
 import { ATTENTION_STANDINGS, TODO_STANDINGS } from '@/feature/compliance/constants/compliance-standing';
@@ -28,7 +38,7 @@ import { ComplianceRequirementRow } from './compliance-requirement-row';
 import {
   ComplianceSummary,
   ComplianceSummaryCounts,
-  ComplianceSummaryDescription,
+  ComplianceSummaryNextDeadline,
   ComplianceSummaryStatus
 } from './compliance-summary';
 
@@ -54,10 +64,10 @@ function RequirementRowsSection({ title, requirements }: { title: string; requir
 function ComplianceOverviewSkeleton() {
   return (
     <>
-      <SkeletonBlock lines={3} />
+      <Skeleton height={232} radius={RADII.xl} />
       <ScreenSection>
         <SkeletonText variant="subheading" lines={1} width={120} />
-        <SkeletonList count={3} media="none" />
+        <SkeletonList count={3} media="thumbnail" />
       </ScreenSection>
     </>
   );
@@ -67,6 +77,7 @@ function ComplianceOverviewSkeleton() {
 export function ComplianceOverview() {
   const t = useTranslations(complianceCatalog);
   const tc = useTranslations(commonCatalog);
+  const { colors } = useTheme();
   const compliance = useComplianceQuery();
   const requirements = compliance.data?.requirements ?? [];
   const attention = withStanding(requirements, ATTENTION_STANDINGS);
@@ -78,7 +89,7 @@ export function ComplianceOverview() {
     <ScreenScrollView onRefresh={() => compliance.refetch()}>
       {compliance.isPending && <ComplianceOverviewSkeleton />}
 
-      {compliance.isError && (
+      {compliance.isError && !compliance.data && (
         <Empty>
           <EmptyMedia icon={ShieldCheckIcon} />
           <EmptyTitle>{t('loadError')}</EmptyTitle>
@@ -102,7 +113,7 @@ export function ComplianceOverview() {
       {compliance.data && (
         <ComplianceSummary overview={compliance.data}>
           <ComplianceSummaryStatus />
-          <ComplianceSummaryDescription />
+          <ComplianceSummaryNextDeadline />
           <ComplianceSummaryCounts />
         </ComplianceSummary>
       )}
@@ -123,13 +134,15 @@ export function ComplianceOverview() {
       {requirements.length > 0 && (
         <ItemGroup>
           <Item onPress={() => router.push('/certificates')}>
-            <ItemMedia variant="tile">
-              <Icon icon={MedalIcon} size={20} tone="ink" />
+            <ItemMedia>
+              <IconTile icon={MedalIcon} />
             </ItemMedia>
             <ItemContent>
               <ItemTitle>{t('certificates')}</ItemTitle>
             </ItemContent>
-            <ItemChevron />
+            <ItemActions>
+              <ItemChevron />
+            </ItemActions>
           </Item>
         </ItemGroup>
       )}

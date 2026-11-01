@@ -84,10 +84,8 @@ export const da: TranslatedMessages<typeof en> = {
   downloadSize: 'Download {size}',
   download: 'Download',
   notNow: 'Ikke nu',
-  otherCourses: 'Andre kurser',
   storageOnDevice: 'Lagerplads på denne enhed',
   usedSize: '{size} brugt',
-  freeSize: '{size} ledig',
   downloadsTitle: 'Downloads',
   noDownloadsTitle: 'Ingen downloads endnu',
   noDownloadsDescription: 'Download et kursus eller en lektion fra dens side for at åbne den uden forbindelse.',
@@ -101,5 +99,9 @@ export const da: TranslatedMessages<typeof en> = {
   },
   removeAll: 'Fjern alle',
   removeAllError: 'Downloads blev ikke fjernet',
-  notReady: 'Downloads er ikke klar endnu. Prøv igen.'
+  notReady: 'Downloads er ikke klar endnu. Prøv igen.',
+  usedByDownloads: 'Brugt af downloads',
+  legendDownloads: 'Downloads',
+  legendOther: 'Andre apps og data',
+  legendFree: 'Ledig'
 };
