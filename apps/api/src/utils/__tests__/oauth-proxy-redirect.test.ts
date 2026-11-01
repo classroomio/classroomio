@@ -5,7 +5,8 @@ import {
   rewriteAuthRequestUrl,
   rewriteOAuthProxyCallbackLocation,
   shouldRewriteOAuthProxyCallbackLocation,
-  stripBackendPortFromHost
+  stripBackendPortFromHost,
+  restoreAuthorizeNavigationMode
 } from '../oauth-proxy-redirect';
 
 const ORIGINAL_ENV = { ...process.env };
@@ -82,5 +83,29 @@ describe('rewriteOAuthProxyCallbackLocation', () => {
     expect(rewriteOAuthProxyCallbackLocation(location, 'https://my.fastlearner.io')).toBe(
       'https://my.fastlearner.io/api/auth/oauth-proxy-callback?callbackURL=https%3A%2F%2Fmy.fastlearner.io%2Fcourse%2Ffoo%2Fenroll&token=abc'
     );
+  });
+});
+
+describe('restoreAuthorizeNavigationMode', () => {
+  const authorizeUrl = 'https://api.example.com/api/auth/oauth2/authorize?client_id=abc';
+
+  it('restores navigate for HTML navigations that were relayed as cors fetches', () => {
+    const request = new Request(authorizeUrl, { headers: { accept: 'text/html', 'sec-fetch-mode': 'cors' } });
+
+    expect(restoreAuthorizeNavigationMode(request).headers.get('sec-fetch-mode')).toBe('navigate');
+  });
+
+  it('leaves JSON clients untouched', () => {
+    const request = new Request(authorizeUrl, { headers: { accept: 'application/json', 'sec-fetch-mode': 'cors' } });
+
+    expect(restoreAuthorizeNavigationMode(request)).toBe(request);
+  });
+
+  it('leaves other auth endpoints untouched', () => {
+    const request = new Request('https://api.example.com/api/auth/oauth2/token', {
+      headers: { accept: 'text/html', 'sec-fetch-mode': 'cors' }
+    });
+
+    expect(restoreAuthorizeNavigationMode(request)).toBe(request);
   });
 });

@@ -21,6 +21,7 @@ export const FILE_UPLOAD_SUPPORTED_TYPES = [
     label: 'Excel (.xlsx)',
     aliases: ['xlsx', '.xlsx']
   },
+  { value: 'application/vnd.ms-excel', label: 'Excel 97-2003 (.xls)', aliases: ['xls', '.xls'] },
   {
     value: 'text/x-python',
     label: 'Python (.py)',
@@ -43,6 +44,7 @@ export const LESSON_DOCUMENT_ACCEPTED_TYPES = [
   'text/csv',
   'application/x-ipynb+json',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-excel',
   'text/x-python'
 ] as const;
 

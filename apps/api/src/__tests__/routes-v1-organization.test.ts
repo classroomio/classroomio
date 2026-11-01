@@ -64,7 +64,7 @@ const requestAs = (type: 'mcp' | 'api', scopes: string[], method: 'GET' | 'PATCH
   return app.request('/public-api/v1/organization', {
     method,
     body: method === 'GET' ? undefined : JSON.stringify(payload),
-    headers: { Authorization: 'Bearer key', 'content-type': 'application/json' }
+    headers: { Authorization: 'Bearer cio_key', 'content-type': 'application/json' }
   });
 };
 

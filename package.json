@@ -74,6 +74,10 @@
     ],
     "overrides": {
       "zod": "4.2.1",
+      "better-auth>zod": "4.6.1",
+      "@better-auth/core>zod": "4.6.1",
+      "@better-auth/sso>zod": "4.6.1",
+      "@better-auth/oauth-provider>zod": "4.6.1",
       "miniflare>zod": "3.22.3",
       "blume>zod": "^4.3.6",
       "vite-plugin-mkcert>undici": "^7.24.8"

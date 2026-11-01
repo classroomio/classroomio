@@ -26,7 +26,10 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
       { tag: 'Audience' },
       { tag: 'Team' },
       { tag: 'Organization Email Templates', label: 'Email Templates' },
-      { tag: 'Organization Landing Page', label: 'Landing Page' }
+      { tag: 'Organization Landing Page', label: 'Landing Page' },
+      { tag: 'Tags' },
+      { tag: 'Organization Domain', label: 'Domain' },
+      { tag: 'Organization Customization', label: 'Customization' }
     ]
   },
   {
@@ -242,10 +245,12 @@ export default defineConfig({
             items: [
               '/developers/mcp',
               '/developers/mcp/setup',
+              '/developers/mcp/remote',
               '/developers/mcp/access-and-limits',
               '/developers/mcp/course-editing'
             ]
           },
+          '/developers/oauth',
           '/developers/webhooks',
           '/developers/token-auth'
         ]

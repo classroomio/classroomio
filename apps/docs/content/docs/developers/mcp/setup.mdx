@@ -1,30 +1,24 @@
 ---
 title: Connect an MCP client
-description: Configure Claude Code, Codex, Cursor, or OpenCode to use the ClassroomIO MCP server.
+description: Connect Claude Code, Codex, Cursor, OpenCode, VS Code, Gemini CLI, Amp, Kiro, Grok, or another MCP client to ClassroomIO by signing in with your ClassroomIO account.
 ---
 
-Create an MCP key in **Automation → MCP** and install Node.js so your client can run `npx -y @classroomio/mcp`. Set `CLASSROOMIO_API_KEY` in the environment that starts your client. The examples pass that variable to the server without putting the key in a config file.
+Connect to the hosted ClassroomIO MCP server at `https://mcp.classroomio.com`. Your client opens a ClassroomIO sign-in page, you choose the workspace and approve the permissions, and the client receives access. You do not create or paste a key, and you do not install anything.
 
-The server also needs `CLASSROOMIO_API_URL=https://api.classroomio.com`. For a self-hosted installation, use your API URL instead.
+You must be an admin of the workspace you connect. To connect Claude or ChatGPT, see [Connect from Claude or ChatGPT](/developers/mcp/remote).
 
+:::note[MCP keys]
+New MCP keys can no longer be created. Keys you already have keep working until you revoke them, and you can rotate or revoke them in **Automation → MCP**. To connect a client, sign in using the steps on this page.
+:::
 ## Claude Code
 
-Add a `classroomio` entry to your `.mcp.json`:
+Add the server, then sign in from the `/mcp` menu inside Claude Code:
 
-```json
-{
-  "mcpServers": {
-    "classroomio": {
-      "command": "npx",
-      "args": ["-y", "@classroomio/mcp"],
-      "env": {
-        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
-        "CLASSROOMIO_API_KEY": "${CLASSROOMIO_API_KEY}"
-      }
-    }
-  }
-}
+```bash
+claude mcp add --transport http classroomio https://mcp.classroomio.com
 ```
+
+Run `/mcp`, select `classroomio`, and follow the browser prompt.
 
 ## Codex
 
@@ -32,32 +26,30 @@ Add this entry to `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.classroomio]
-command = "npx"
-args = ["-y", "@classroomio/mcp"]
-env_vars = ["CLASSROOMIO_API_KEY"]
+url = "https://mcp.classroomio.com"
+```
 
-[mcp_servers.classroomio.env]
-CLASSROOMIO_API_URL = "https://api.classroomio.com"
+Then sign in:
+
+```bash
+codex mcp login classroomio
 ```
 
 ## Cursor
 
-Add this entry to `~/.cursor/mcp.json`:
+Add this entry to `~/.cursor/mcp.json`, or to `.cursor/mcp.json` for one project:
 
 ```json
 {
   "mcpServers": {
     "classroomio": {
-      "command": "npx",
-      "args": ["-y", "@classroomio/mcp"],
-      "env": {
-        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
-        "CLASSROOMIO_API_KEY": "${env:CLASSROOMIO_API_KEY}"
-      }
+      "url": "https://mcp.classroomio.com"
     }
   }
 }
 ```
+
+Cursor shows a sign-in prompt for the server the first time it connects.
 
 ## OpenCode
 
@@ -67,22 +59,231 @@ Put this entry in your project's `opencode.json`, or in `~/.config/opencode/open
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "servers": {
-      "classroomio": {
-        "type": "local",
-        "command": ["npx", "-y", "@classroomio/mcp"],
-        "environment": {
-          "CLASSROOMIO_API_URL": "https://api.classroomio.com",
-          "CLASSROOMIO_API_KEY": "{env:CLASSROOMIO_API_KEY}"
-        }
-      }
+    "classroomio": {
+      "type": "remote",
+      "url": "https://mcp.classroomio.com"
     }
   }
 }
 ```
 
+OpenCode starts the sign-in the first time the server needs it. You can also run `opencode mcp auth classroomio`.
+
+## VS Code (GitHub Copilot)
+
+Open the Command Palette, run **MCP: Add Server**, choose **HTTP (HTTP or Server-Sent Events)**, and enter `https://mcp.classroomio.com`. Or add this to `.vscode/mcp.json` in your workspace:
+
+```json
+{
+  "servers": {
+    "classroomio": {
+      "type": "http",
+      "url": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+VS Code uses `servers` as the top-level key, not `mcpServers`. Follow the sign-in prompt when VS Code starts the server.
+
+## Gemini CLI
+
+Add the server, then sign in from inside Gemini CLI:
+
+```bash
+gemini mcp add --transport http --scope user classroomio https://mcp.classroomio.com
+```
+
+Run `/mcp auth classroomio` and follow the browser prompt. You can also add this entry to `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "httpUrl": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+Gemini CLI uses `httpUrl` for Streamable HTTP servers. A `url` key means the older SSE transport.
+
+## Goose
+
+Run `goose configure`, choose **Add Extension**, then **Remote Extension (Streamable HTTP)**, and enter `https://mcp.classroomio.com`. To try it in one session, run:
+
+```bash
+goose session --with-streamable-http-extension "https://mcp.classroomio.com"
+```
+
+Or add this to `~/.config/goose/config.yaml`:
+
+```yaml
+extensions:
+  classroomio:
+    name: ClassroomIO
+    type: streamable_http
+    uri: https://mcp.classroomio.com
+    enabled: true
+    timeout: 300
+```
+
+Goose obtains a client ID automatically using dynamic client registration, which ClassroomIO supports. Complete the sign-in when Goose prompts you.
+
+## Factory Droid
+
+Add the server, then sign in from the `/mcp` menu inside droid:
+
+```bash
+droid mcp add classroomio https://mcp.classroomio.com --type http
+```
+
+Run `/mcp`, select `classroomio`, and choose **Authenticate**.
+
+## Zed
+
+Open **Settings → AI → MCP Servers**, choose **Add Server**, then **Add Remote Server**. Or add this to your Zed settings file:
+
+```json
+{
+  "context_servers": {
+    "classroomio": {
+      "url": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+Do not add an `Authorization` header. Without one, Zed prompts you to sign in.
+
+## Warp
+
+Open **Settings → Agents → MCP servers**, choose **Add**, and paste this:
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "url": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+Warp opens a browser sign-in when the server starts.
+
+## Devin (Windsurf)
+
+Windsurf's MCP documentation now redirects to Devin's. In Devin Desktop, open the Customize page from the Agents window and click **MCPs**. With the Devin CLI, add the server, then sign in:
+
+```bash
+devin mcp add classroomio https://mcp.classroomio.com
+devin mcp login classroomio
+```
+
+Devin registers itself with the server automatically. You can also add this entry to `~/.config/devin/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "url": "https://mcp.classroomio.com",
+      "transport": "http"
+    }
+  }
+}
+```
+
+## Amp
+
+Add the server. Amp opens the ClassroomIO sign-in page in your browser the next time you start it:
+
+```bash
+amp mcp add classroomio https://mcp.classroomio.com
+```
+
+Or add this to `~/.config/amp/settings.json`:
+
+```json
+{
+  "amp.mcpServers": {
+    "classroomio": {
+      "url": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+## Kiro
+
+Make sure MCP is turned on in Kiro's settings, then add this to `~/.kiro/settings/mcp.json`, or to `.kiro/settings/mcp.json` for one workspace:
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "url": "https://mcp.classroomio.com",
+      "oauthScopes": []
+    }
+  }
+}
+```
+
+Kiro opens the sign-in page when it connects. Keep `"oauthScopes": []`. Without it, Kiro asks for a default set of scopes that includes `openid`, `email` and `profile`, and ClassroomIO rejects them.
+
+## Cline (CLI)
+
+Add the server. Without `--yes`, the command opens the add wizard with these values filled in. Then run `cline mcp` and choose **Authorize OAuth** to sign in:
+
+```bash
+cline mcp add classroomio https://mcp.classroomio.com --transport http
+```
+
+## Grok
+
+For Grok Build, the terminal agent, add the server. Open `/mcps` and press `i` to sign in, or let it open the browser the first time the server is used:
+
+```bash
+grok mcp add --transport http classroomio https://mcp.classroomio.com
+```
+
+Or add this to `~/.grok/config.toml`:
+
+```toml
+[mcp_servers.classroomio]
+url = "https://mcp.classroomio.com"
+```
+
+For Grok on the web, go to grok.com/connectors, choose **New Connector**, then **Custom**, enter `https://mcp.classroomio.com`, and complete any authentication it asks for. On Grok Business and Enterprise, a team admin must first add the connector in the cloud console (console.x.ai).
+
+## Muse Code
+
+Add this to `~/.config/muse/settings.json`, then sign in:
+
+```json
+{
+  "schema_version": 1,
+  "mcp_servers": {
+    "classroomio": {
+      "transport": "streamable_http",
+      "url": "https://mcp.classroomio.com"
+    }
+  }
+}
+```
+
+```bash
+muse mcp login classroomio
+```
+
+Muse Code registers a client with the server automatically. The settings file must set `schema_version` to `1`.
+
+## Other MCP clients
+
+Any client that supports remote MCP servers over Streamable HTTP with OAuth can connect. Point it at `https://mcp.classroomio.com`. The server uses the OAuth 2.1 authorization code flow with PKCE (S256) and dynamic client registration, and it publishes protected resource metadata at `https://mcp.classroomio.com/.well-known/oauth-protected-resource` so clients find the sign-in server themselves. A client that can only run local stdio servers cannot connect to the hosted server.
+
 ## Check the connection
 
-Restart the client and check that ClassroomIO tools appear. Ask it to list courses in the intended organization. If the tools are missing, check that Node.js can run the package and that the client loaded the config. If the request is unauthorized, check the API URL, key status, scopes, and key creator's permissions.
+Restart the client, check that ClassroomIO tools appear, and ask it to list the courses in your workspace. If the tools are missing, check that the client loaded the config. If the client says it is unauthorized, sign in again, and confirm that you are still an admin of the workspace. You can see and remove connected apps in **Automation → MCP → Connected apps**.
 
-Client config formats can change. If an example no longer matches your installed client, check its [Claude Code](https://code.claude.com/docs/en/mcp), [Codex](https://developers.openai.com/codex/config-reference), [Cursor](https://docs.cursor.com/context/model-context-protocol), or [OpenCode](https://opencode.ai/v2/docs/mcp-servers) documentation.
+Client config formats can change. If an example no longer matches your installed client, check its documentation, such as [Claude Code](https://code.claude.com/docs/en/mcp), [Codex](https://developers.openai.com/codex/mcp), [Cursor](https://cursor.com/docs/mcp), or [OpenCode](https://opencode.ai/docs/mcp-servers) documentation.

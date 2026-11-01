@@ -5,7 +5,19 @@ vi.mock('@cio/db/queries/organization', () => ({
 }));
 
 vi.mock('@api/services/organization', () => ({
-  getOrgTeam: vi.fn()
+  getOrgTeam: vi.fn(),
+  removeTeamMember: vi.fn()
+}));
+
+vi.mock('@api/services/organization/invite', () => ({
+  fetchOrgLinkInvite: vi.fn(),
+  getOrCreateLinkInvite: vi.fn(),
+  inviteTeamMembers: vi.fn(),
+  toggleOrgLinkInvite: vi.fn()
+}));
+
+vi.mock('@cio/core/config/dashboard-url', () => ({
+  getAppBaseUrl: () => 'https://app.example.com'
 }));
 
 vi.mock('@api/services/organization/team-role', () => ({
@@ -13,8 +25,12 @@ vi.mock('@api/services/organization/team-role', () => ({
   reconcileAfterTeamRoleChange: vi.fn()
 }));
 
-vi.mock('@cio/db/queries/auth', () => ({
-  updateProfile: vi.fn()
+vi.mock('@api/services/account/profile', () => ({
+  applyProfileUpdate: vi.fn()
+}));
+
+vi.mock('@api/services/account/profile-updated-email', () => ({
+  sendProfileUpdatedEmail: vi.fn()
 }));
 
 const TX = { tx: true };
@@ -25,10 +41,26 @@ vi.mock('@cio/db/drizzle', () => ({
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import { getOrganizationMemberRoleId } from '@cio/db/queries/organization';
-import { getOrgTeam } from '@api/services/organization';
+import { getOrgTeam, removeTeamMember } from '@api/services/organization';
+import {
+  fetchOrgLinkInvite,
+  getOrCreateLinkInvite,
+  inviteTeamMembers,
+  toggleOrgLinkInvite
+} from '@api/services/organization/invite';
 import { applyTeamMemberRoleChange, reconcileAfterTeamRoleChange } from '@api/services/organization/team-role';
-import { updateProfile } from '@cio/db/queries/auth';
-import { getTeamMemberService, listTeamService, updateTeamMemberService } from '@api/services/v1/team';
+import { applyProfileUpdate } from '@api/services/account/profile';
+import { sendProfileUpdatedEmail } from '@api/services/account/profile-updated-email';
+import {
+  createTeamInviteLinkService,
+  getTeamInviteLinkService,
+  getTeamMemberService,
+  inviteTeamMembersService,
+  listTeamService,
+  removeTeamMemberService,
+  updateTeamInviteLinkService,
+  updateTeamMemberService
+} from '@api/services/v1/team';
 
 const ORG_ID = 'org-1';
 const ACTOR_ID = 'actor-1';
@@ -40,7 +72,10 @@ const admin = {
   verified: true,
   roleId: ROLE.ADMIN,
   profileId: ACTOR_ID,
-  fullname: 'Ada Admin'
+  fullname: 'Ada Admin',
+  username: 'ada',
+  avatarUrl: 'https://cdn.example.com/ada.png',
+  locale: 'en'
 };
 const tutor = {
   id: 11,
@@ -48,7 +83,10 @@ const tutor = {
   verified: true,
   roleId: ROLE.TUTOR,
   profileId: 'profile-2',
-  fullname: 'Tim Tutor'
+  fullname: 'Tim Tutor',
+  username: 'tim',
+  avatarUrl: '',
+  locale: 'fr'
 };
 const pending = {
   id: 12,
@@ -56,15 +94,19 @@ const pending = {
   verified: false,
   roleId: ROLE.TUTOR,
   profileId: undefined,
-  fullname: ''
+  fullname: '',
+  username: null,
+  avatarUrl: '',
+  locale: null
 };
+const APPLIED = { profile: { id: 'profile-2' }, previous: { id: 'profile-2' }, changedFields: ['fullname'] };
 
 describe('services/v1/team', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getOrganizationMemberRoleId).mockResolvedValue(ROLE.ADMIN);
     vi.mocked(getOrgTeam).mockResolvedValue([admin, tutor, pending] as never);
-    vi.mocked(updateProfile).mockResolvedValue({ id: 'profile' } as never);
+    vi.mocked(applyProfileUpdate).mockResolvedValue(APPLIED as never);
     vi.mocked(applyTeamMemberRoleChange).mockResolvedValue({ roleChanged: true } as never);
   });
 
@@ -73,7 +115,18 @@ describe('services/v1/team', () => {
       list: (actorId: string | null) => listTeamService(ORG_ID, actorId, firstPage),
       get: (actorId: string | null) => getTeamMemberService(ORG_ID, actorId, { memberId: tutor.id }),
       update: (actorId: string | null) =>
-        updateTeamMemberService(ORG_ID, actorId, { memberId: tutor.id }, { roleId: ROLE.ADMIN })
+        updateTeamMemberService(ORG_ID, actorId, { memberId: tutor.id }, { roleId: ROLE.ADMIN }),
+      invite: (actorId: string | null) =>
+        inviteTeamMembersService(ORG_ID, actorId, {
+          emails: ['new@example.com'],
+          roleId: ROLE.TUTOR,
+          confirmedStudentEmails: []
+        }),
+      remove: (actorId: string | null) => removeTeamMemberService(ORG_ID, actorId, { memberId: tutor.id }),
+      getLink: (actorId: string | null) => getTeamInviteLinkService(ORG_ID, actorId, { roleId: ROLE.TUTOR }),
+      createLink: (actorId: string | null) => createTeamInviteLinkService(ORG_ID, actorId, { roleId: ROLE.TUTOR }),
+      updateLink: (actorId: string | null) =>
+        updateTeamInviteLinkService(ORG_ID, actorId, { roleId: ROLE.TUTOR, enabled: false })
     };
 
     it.each(Object.entries(calls))('%s rejects a key with no actor with 401', async (_name, call) => {
@@ -87,6 +140,11 @@ describe('services/v1/team', () => {
       await expect(call(ACTOR_ID)).rejects.toMatchObject({ statusCode: 403 });
       expect(getOrgTeam).not.toHaveBeenCalled();
       expect(applyTeamMemberRoleChange).not.toHaveBeenCalled();
+      expect(inviteTeamMembers).not.toHaveBeenCalled();
+      expect(removeTeamMember).not.toHaveBeenCalled();
+      expect(fetchOrgLinkInvite).not.toHaveBeenCalled();
+      expect(getOrCreateLinkInvite).not.toHaveBeenCalled();
+      expect(toggleOrgLinkInvite).not.toHaveBeenCalled();
     });
 
     it.each(Object.entries(calls))('%s rejects an actor from another organization with 403', async (_name, call) => {
@@ -107,7 +165,10 @@ describe('services/v1/team', () => {
           id: 10,
           profileId: ACTOR_ID,
           name: 'Ada Admin',
+          username: 'ada',
           email: 'admin@example.com',
+          avatarUrl: 'https://cdn.example.com/ada.png',
+          locale: 'en',
           roleId: ROLE.ADMIN,
           verified: true
         },
@@ -115,18 +176,31 @@ describe('services/v1/team', () => {
           id: 11,
           profileId: 'profile-2',
           name: 'Tim Tutor',
+          username: 'tim',
           email: 'tutor@example.com',
+          avatarUrl: '',
+          locale: 'fr',
           roleId: ROLE.TUTOR,
           verified: true
         }
       ]);
     });
 
-    it('shows a pending member with a null profileId', async () => {
+    it('shows a pending member with a null profileId, username and locale', async () => {
       const result = await listTeamService(ORG_ID, ACTOR_ID, { page: 2, limit: 2 });
 
       expect(result.items).toEqual([
-        { id: 12, profileId: null, name: '', email: 'pending@example.com', roleId: ROLE.TUTOR, verified: false }
+        {
+          id: 12,
+          profileId: null,
+          name: '',
+          username: null,
+          email: 'pending@example.com',
+          avatarUrl: '',
+          locale: null,
+          roleId: ROLE.TUTOR,
+          verified: false
+        }
       ]);
     });
   });
@@ -153,13 +227,13 @@ describe('services/v1/team', () => {
 
       expect(applyTeamMemberRoleChange).toHaveBeenCalledWith(ORG_ID, tutor.id, ROLE.ADMIN, ACTOR_ID, TX);
       expect(reconcileAfterTeamRoleChange).toHaveBeenCalledWith(ORG_ID, { roleChanged: true }, ACTOR_ID);
-      expect(updateProfile).not.toHaveBeenCalled();
+      expect(applyProfileUpdate).not.toHaveBeenCalled();
     });
 
     it('renames a joined member and leaves the role alone', async () => {
       await updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: tutor.id }, { name: 'Timothy Tutor' });
 
-      expect(updateProfile).toHaveBeenCalledWith('profile-2', { fullname: 'Timothy Tutor' }, TX);
+      expect(applyProfileUpdate).toHaveBeenCalledWith('profile-2', { fullname: 'Timothy Tutor' }, TX);
       expect(applyTeamMemberRoleChange).not.toHaveBeenCalled();
     });
 
@@ -169,7 +243,7 @@ describe('services/v1/team', () => {
         order.push('role');
         return {} as never;
       });
-      vi.mocked(updateProfile).mockImplementation(async () => {
+      vi.mocked(applyProfileUpdate).mockImplementation(async () => {
         order.push('name');
         return {} as never;
       });
@@ -195,7 +269,7 @@ describe('services/v1/team', () => {
       ).rejects.toMatchObject({ statusCode: 404 });
 
       expect(applyTeamMemberRoleChange).not.toHaveBeenCalled();
-      expect(updateProfile).not.toHaveBeenCalled();
+      expect(applyProfileUpdate).not.toHaveBeenCalled();
     });
 
     it('refuses to rename a pending member and changes nothing, even when a role is sent too', async () => {
@@ -204,7 +278,7 @@ describe('services/v1/team', () => {
       ).rejects.toMatchObject({ statusCode: 400, field: 'name' });
 
       expect(applyTeamMemberRoleChange).not.toHaveBeenCalled();
-      expect(updateProfile).not.toHaveBeenCalled();
+      expect(applyProfileUpdate).not.toHaveBeenCalled();
     });
 
     it('lets a pending member have their role changed', async () => {
@@ -222,25 +296,172 @@ describe('services/v1/team', () => {
         updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: admin.id }, { roleId: ROLE.TUTOR, name: 'Ada A' })
       ).rejects.toMatchObject({ statusCode: 400, code: ErrorCodes.ORG_TEAM_ROLE_SELF });
 
-      expect(updateProfile).not.toHaveBeenCalled();
+      expect(applyProfileUpdate).not.toHaveBeenCalled();
     });
 
     it('writes the role and the name in one transaction and schedules no reconcile when the name write fails', async () => {
-      vi.mocked(updateProfile).mockRejectedValue(new Error('db down'));
+      vi.mocked(applyProfileUpdate).mockRejectedValue(new Error('db down'));
 
       await expect(
         updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: tutor.id }, { roleId: ROLE.ADMIN, name: 'Tim T' })
       ).rejects.toThrow('db down');
 
       expect(applyTeamMemberRoleChange).toHaveBeenCalledWith(ORG_ID, tutor.id, ROLE.ADMIN, ACTOR_ID, TX);
-      expect(updateProfile).toHaveBeenCalledWith('profile-2', { fullname: 'Tim T' }, TX);
+      expect(applyProfileUpdate).toHaveBeenCalledWith('profile-2', { fullname: 'Tim T' }, TX);
       expect(reconcileAfterTeamRoleChange).not.toHaveBeenCalled();
+      expect(sendProfileUpdatedEmail).not.toHaveBeenCalled();
     });
 
     it('lets an admin correct their own name', async () => {
       await updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: admin.id }, { name: 'Ada Lovelace' });
 
-      expect(updateProfile).toHaveBeenCalledWith(ACTOR_ID, { fullname: 'Ada Lovelace' }, TX);
+      expect(applyProfileUpdate).toHaveBeenCalledWith(ACTOR_ID, { fullname: 'Ada Lovelace' }, TX);
+    });
+
+    it('sets username, avatar and language in the same transaction', async () => {
+      await updateTeamMemberService(
+        ORG_ID,
+        ACTOR_ID,
+        { memberId: tutor.id },
+        { username: 'timothy', avatarUrl: 'https://cdn.example.com/tim.png', locale: 'de' }
+      );
+
+      expect(applyProfileUpdate).toHaveBeenCalledWith(
+        'profile-2',
+        { username: 'timothy', avatarUrl: 'https://cdn.example.com/tim.png', locale: 'de' },
+        TX
+      );
+    });
+
+    it('emails the person after the write, as an org admin change', async () => {
+      await updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: tutor.id }, { name: 'Timothy Tutor' });
+
+      expect(sendProfileUpdatedEmail).toHaveBeenCalledWith(APPLIED, {
+        kind: 'org_admin',
+        orgId: ORG_ID,
+        actorId: ACTOR_ID
+      });
+    });
+
+    it('sends no profile email when only the role changes', async () => {
+      await updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: tutor.id }, { roleId: ROLE.ADMIN });
+
+      expect(sendProfileUpdatedEmail).not.toHaveBeenCalled();
+    });
+
+    it('refuses a username change on a pending member and names the field', async () => {
+      await expect(
+        updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: pending.id }, { username: 'newuser' })
+      ).rejects.toMatchObject({ statusCode: 400, field: 'username' });
+
+      expect(applyProfileUpdate).not.toHaveBeenCalled();
+    });
+
+    it('passes on a taken username as 400 and rolls back a role sent with it', async () => {
+      vi.mocked(applyProfileUpdate).mockRejectedValue(
+        new AppError('Username already exists', ErrorCodes.VALIDATION_ERROR, 400, 'username')
+      );
+
+      await expect(
+        updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: tutor.id }, { roleId: ROLE.ADMIN, username: 'ada' })
+      ).rejects.toMatchObject({ statusCode: 400, field: 'username', message: 'Username already exists' });
+
+      expect(reconcileAfterTeamRoleChange).not.toHaveBeenCalled();
+      expect(sendProfileUpdatedEmail).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('inviteTeamMembersService', () => {
+    it('invites through the dashboard service as the actor, passing the confirmed students on', async () => {
+      const result = {
+        requiresConfirmation: false,
+        studentEmails: [],
+        existingTeamMembers: [],
+        queuedCount: 1,
+        failedEmails: []
+      };
+      vi.mocked(inviteTeamMembers).mockResolvedValue(result);
+
+      await expect(
+        inviteTeamMembersService(ORG_ID, ACTOR_ID, {
+          emails: ['student@example.com'],
+          roleId: ROLE.ADMIN,
+          confirmedStudentEmails: ['student@example.com']
+        })
+      ).resolves.toEqual(result);
+
+      expect(inviteTeamMembers).toHaveBeenCalledWith(ORG_ID, ['student@example.com'], ROLE.ADMIN, ACTOR_ID, [
+        'student@example.com'
+      ]);
+    });
+  });
+
+  describe('removeTeamMemberService', () => {
+    it('removes through the dashboard service as the actor and returns the removed member', async () => {
+      vi.mocked(removeTeamMember).mockResolvedValue({ id: tutor.id, email: tutor.email, roleId: ROLE.TUTOR } as never);
+
+      await expect(removeTeamMemberService(ORG_ID, ACTOR_ID, { memberId: tutor.id })).resolves.toEqual({
+        id: tutor.id,
+        email: tutor.email,
+        roleId: ROLE.TUTOR
+      });
+      expect(removeTeamMember).toHaveBeenCalledWith(ORG_ID, tutor.id, ACTOR_ID);
+    });
+
+    it('passes on the dashboard rules (yourself, last admin)', async () => {
+      vi.mocked(removeTeamMember).mockRejectedValue(
+        new AppError('You cannot remove yourself from the team', ErrorCodes.ORG_TEAM_REMOVE_SELF, 400)
+      );
+
+      await expect(removeTeamMemberService(ORG_ID, ACTOR_ID, { memberId: admin.id })).rejects.toMatchObject({
+        statusCode: 400,
+        code: ErrorCodes.ORG_TEAM_REMOVE_SELF
+      });
+    });
+  });
+
+  describe('team invite link', () => {
+    const link = { id: 'invite-1', token: 'tok/en', roleId: ROLE.TUTOR, isRevoked: false };
+    const publicLink = {
+      id: 'invite-1',
+      roleId: ROLE.TUTOR,
+      enabled: true,
+      url: 'https://app.example.com/invite/link/tok%2Fen'
+    };
+
+    it('returns the link with a full URL and no raw token', async () => {
+      vi.mocked(fetchOrgLinkInvite).mockResolvedValue(link);
+
+      await expect(getTeamInviteLinkService(ORG_ID, ACTOR_ID, { roleId: ROLE.TUTOR })).resolves.toEqual(publicLink);
+      expect(fetchOrgLinkInvite).toHaveBeenCalledWith(ORG_ID, ROLE.TUTOR);
+    });
+
+    it('returns null when the role has no active link', async () => {
+      vi.mocked(fetchOrgLinkInvite).mockResolvedValue(null);
+
+      await expect(getTeamInviteLinkService(ORG_ID, ACTOR_ID, { roleId: ROLE.ADMIN })).resolves.toBeNull();
+    });
+
+    it('gets or creates the link as the actor', async () => {
+      vi.mocked(getOrCreateLinkInvite).mockResolvedValue(link);
+
+      await expect(createTeamInviteLinkService(ORG_ID, ACTOR_ID, { roleId: ROLE.TUTOR })).resolves.toEqual(publicLink);
+      expect(getOrCreateLinkInvite).toHaveBeenCalledWith(ORG_ID, ROLE.TUTOR, ACTOR_ID);
+    });
+
+    it('maps enabled to the dashboard revoke flag', async () => {
+      vi.mocked(toggleOrgLinkInvite).mockResolvedValue({ ...link, isRevoked: true });
+
+      await expect(
+        updateTeamInviteLinkService(ORG_ID, ACTOR_ID, { roleId: ROLE.TUTOR, enabled: false })
+      ).resolves.toMatchObject({ enabled: false });
+      expect(toggleOrgLinkInvite).toHaveBeenCalledWith(ORG_ID, ROLE.TUTOR, true, ACTOR_ID);
+
+      await updateTeamInviteLinkService(ORG_ID, ACTOR_ID, { roleId: ROLE.TUTOR, enabled: true });
+      expect(toggleOrgLinkInvite).toHaveBeenLastCalledWith(ORG_ID, ROLE.TUTOR, false, ACTOR_ID);
+
+      await updateTeamInviteLinkService(ORG_ID, ACTOR_ID, { roleId: ROLE.ADMIN, enabled: true });
+      expect(toggleOrgLinkInvite).toHaveBeenLastCalledWith(ORG_ID, ROLE.ADMIN, false, ACTOR_ID);
     });
   });
 });

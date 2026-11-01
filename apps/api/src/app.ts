@@ -2,17 +2,26 @@ import 'dotenv/config';
 
 import * as Sentry from '@sentry/node';
 import { consumeHandoffPayload, storeHandoffPayload } from '@api/utils/redis/oauth-handoff';
-import { isPublicCorsPath, sessionCors } from '@api/middlewares/cors';
+import {
+  isMcpPath,
+  isPublicCorsPath,
+  isPublicOAuthPath,
+  mcpCors,
+  publicApiCors,
+  sessionCors
+} from '@api/middlewares/cors';
 import { randomBytes } from 'crypto';
 
 import { API_SERVER_URL } from '@api/constants';
 import {
   resolveOAuthBrowserOrigin,
+  restoreAuthorizeNavigationMode,
   rewriteAuthRequestUrl,
   rewriteOAuthProxyCallbackLocation,
   shouldRewriteOAuthProxyCallbackLocation
 } from '@api/utils/oauth-proxy-redirect';
 import { Hono } from '@api/utils/hono';
+import { setInternalDispatch } from '@api/utils/internal-dispatch';
 import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
 import { accountRouter } from '@api/routes/account';
 import { agentRouter } from '@api/routes/agent';
@@ -33,6 +42,13 @@ import { mediaRouter } from '@api/routes/media';
 import { transcriptsRouter } from '@api/routes/transcripts';
 import { mountQueueDashboard } from '@api/routes/admin/queues';
 import { onboardingRouter } from '@api/routes/onboarding';
+import { mcpRouter } from '@api/routes/mcp';
+import {
+  buildAuthorizationServerMetadata,
+  isAuthServerDiscoveryPath,
+  oauthRouter,
+  wellKnownRouter
+} from '@api/routes/oauth';
 import { organizationRouter } from '@api/routes/organization';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
@@ -45,6 +61,7 @@ import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
 import { signupGuard } from '@api/middlewares/signup-guard';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
+import { upgradeRequiredEvent } from '@api/middlewares/upgrade-required-event';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 
@@ -61,6 +78,10 @@ export const app = new Hono()
   // `cross-origin`. CORS still gates which origins can read the bytes.
   .use('*', secureHeaders({ crossOriginResourcePolicy: 'cross-origin' }))
   .use('*', async (c, next) => {
+    if (isPublicOAuthPath(c.req.path)) return publicApiCors(c, next);
+
+    if (isMcpPath(c.req.path)) return mcpCors(c, next);
+
     if (isPublicCorsPath(c.req.path)) return next();
 
     return sessionCors(c, next);
@@ -104,6 +125,7 @@ export const app = new Hono()
     await next();
   })
   .use('*', rateLimiter)
+  .use('*', upgradeRequiredEvent)
 
   // Routes
   .get('/', (c) =>
@@ -113,6 +135,10 @@ export const app = new Hono()
   )
   .use('/api/auth/sign-up/*', signupGuard)
   .on(['POST', 'GET'], '/api/auth/*', async (c) => {
+    if (c.req.method === 'GET' && isAuthServerDiscoveryPath(c.req.path)) {
+      return c.json(buildAuthorizationServerMetadata());
+    }
+
     // Behind the Cloudflare Worker proxy the raw Request URL points at the
     // upstream `.onrender.com` host. Better Auth (and the oauth-proxy plugin)
     // need the original tenant/admin host to construct correct OAuth callback
@@ -167,7 +193,7 @@ export const app = new Hono()
       }
     }
 
-    const response = await auth.handler(request);
+    const response = await auth.handler(restoreAuthorizeNavigationMode(request));
 
     // Outbound: if the OAuth callback redirected to
     // `/oauth-proxy-callback?cookies=…<huge>`, stash the cookies payload
@@ -257,6 +283,7 @@ export const app = new Hono()
   .route('/report', reportRouter)
   .route('/internal', internalRouter)
   .route('/agent', agentRouter)
+  .route('/oauth', oauthRouter)
 
   // Error handling
   .onError((err, c) => {
@@ -274,6 +301,10 @@ export const app = new Hono()
 // typed RPC chain so its routes stay out of the client type, which tsc can no longer serialize
 // once they are included (TS7056).
 app.route('/public-api/v1', v1Router);
+app.route('/mcp', mcpRouter);
+app.route('/.well-known', wellKnownRouter);
+
+setInternalDispatch((request, env) => app.fetch(request, env));
 
 // Dev-only BullMQ dashboard at /admin/queues. Mounted after the typed RPC
 // chain so it doesn't pollute the client type.

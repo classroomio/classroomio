@@ -1,15 +1,33 @@
 import type {
+  TPublicApiCreateTeamInviteLink,
+  TPublicApiInviteTeamMembers,
+  TPublicApiTeamInviteLinkQuery,
   TPublicApiTeamMemberParam,
   TPublicApiTeamQuery,
+  TPublicApiUpdateTeamInviteLink,
   TPublicApiUpdateTeamMember
 } from '@cio/utils/validation/public-api';
 
 import { db } from '@cio/db/drizzle';
-import { updateProfile } from '@cio/db/queries/auth';
-import { getOrgTeam } from '@api/services/organization';
+import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
+import { applyProfileUpdate } from '@api/services/account/profile';
+import { sendProfileUpdatedEmail } from '@api/services/account/profile-updated-email';
+import { getOrgTeam, removeTeamMember } from '@api/services/organization';
+import {
+  fetchOrgLinkInvite,
+  getOrCreateLinkInvite,
+  inviteTeamMembers,
+  toggleOrgLinkInvite
+} from '@api/services/organization/invite';
 import { applyTeamMemberRoleChange, reconcileAfterTeamRoleChange } from '@api/services/organization/team-role';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { assertAutomationActor, assertMemberHasJoined, assertOrgAdmin, paginateInMemory } from './shared';
+import {
+  assertAutomationActor,
+  assertMemberHasJoined,
+  assertOrgAdmin,
+  paginateInMemory,
+  toProfileUpdate
+} from './shared';
 
 type TOrgTeamMember = Awaited<ReturnType<typeof getOrgTeam>>[number];
 
@@ -18,9 +36,25 @@ function toPublicTeamMember(member: TOrgTeamMember) {
     id: member.id,
     profileId: member.profileId ?? null,
     name: member.fullname,
+    username: member.username,
     email: member.email,
+    avatarUrl: member.avatarUrl,
+    locale: member.locale,
     roleId: member.roleId,
     verified: member.verified ?? false
+  };
+}
+
+type TLinkInvite = { id: string; token: string; roleId: number; isRevoked: boolean };
+
+function toPublicInviteLink(invite: TLinkInvite) {
+  const url = `${getAppBaseUrl()}/invite/link/${encodeURIComponent(invite.token)}`;
+
+  return {
+    id: invite.id,
+    roleId: invite.roleId,
+    enabled: !invite.isRevoked,
+    url
   };
 }
 
@@ -59,31 +93,88 @@ export async function updateTeamMemberService(
   await assertOrgAdmin(orgId, actorId);
 
   const member = await getTeamMember(orgId, params.memberId);
+  const profileUpdate = toProfileUpdate(payload);
 
-  if (payload.name !== undefined) {
-    assertMemberHasJoined(member.profileId);
+  if (profileUpdate) {
+    assertMemberHasJoined(member.profileId, payload);
   }
 
-  const { roleId, name } = payload;
+  const { roleId } = payload;
   const profileId = member.profileId;
 
-  const appliedRole = await db.transaction(async (tx) => {
-    const applied =
+  const { appliedRole, appliedProfile } = await db.transaction(async (tx) => {
+    const appliedRole =
       roleId !== undefined ? await applyTeamMemberRoleChange(orgId, params.memberId, roleId, actorId, tx) : null;
+    const appliedProfile = profileUpdate && profileId ? await applyProfileUpdate(profileId, profileUpdate, tx) : null;
 
-    if (name !== undefined && profileId) {
-      const updatedProfile = await updateProfile(profileId, { fullname: name }, tx);
-      if (!updatedProfile) {
-        throw new AppError('Team member profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
-      }
-    }
-
-    return applied;
+    return { appliedRole, appliedProfile };
   });
 
   if (appliedRole) {
     await reconcileAfterTeamRoleChange(orgId, appliedRole, actorId);
   }
 
+  if (appliedProfile) {
+    await sendProfileUpdatedEmail(appliedProfile, { kind: 'org_admin', orgId, actorId });
+  }
+
   return toPublicTeamMember(await getTeamMember(orgId, params.memberId));
+}
+
+export async function inviteTeamMembersService(
+  orgId: string,
+  actorId: string | null,
+  payload: TPublicApiInviteTeamMembers
+) {
+  assertAutomationActor(actorId);
+  await assertOrgAdmin(orgId, actorId);
+
+  return inviteTeamMembers(orgId, payload.emails, payload.roleId, actorId, payload.confirmedStudentEmails);
+}
+
+export async function removeTeamMemberService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiTeamMemberParam
+) {
+  assertAutomationActor(actorId);
+  await assertOrgAdmin(orgId, actorId);
+
+  const removed = await removeTeamMember(orgId, params.memberId, actorId);
+
+  return { id: removed.id, email: removed.email, roleId: removed.roleId };
+}
+
+export async function getTeamInviteLinkService(
+  orgId: string,
+  actorId: string | null,
+  query: TPublicApiTeamInviteLinkQuery
+) {
+  await assertOrgAdmin(orgId, actorId);
+
+  const invite = await fetchOrgLinkInvite(orgId, query.roleId);
+
+  return invite ? toPublicInviteLink(invite) : null;
+}
+
+export async function createTeamInviteLinkService(
+  orgId: string,
+  actorId: string | null,
+  payload: TPublicApiCreateTeamInviteLink
+) {
+  assertAutomationActor(actorId);
+  await assertOrgAdmin(orgId, actorId);
+
+  return toPublicInviteLink(await getOrCreateLinkInvite(orgId, payload.roleId, actorId));
+}
+
+export async function updateTeamInviteLinkService(
+  orgId: string,
+  actorId: string | null,
+  payload: TPublicApiUpdateTeamInviteLink
+) {
+  assertAutomationActor(actorId);
+  await assertOrgAdmin(orgId, actorId);
+
+  return toPublicInviteLink(await toggleOrgLinkInvite(orgId, payload.roleId, !payload.enabled, actorId));
 }

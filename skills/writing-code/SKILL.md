@@ -79,9 +79,14 @@ Good — the one allowed inline comment, one line, external constraint:
 export const prerender = false;
 ```
 
+## Fact-check before you commit
+
+Before every commit, spin up a sub agent to fact-check the code in that commit against our docs. "The code" means the changes in that commit (`git diff --cached`), not the whole repo. The sub agent verifies every documentation statement about the behavior you changed (what a page shows, limits, flows, endpoints, error codes, commands) against the code and lists stale screenshots. Fix what it finds in the same commit. The full procedure, including what to hand the sub agent, is step 4 of `skills/stage-and-commit/SKILL.md`.
+
 ## Before you commit
 
 - [ ] No comment narrates what the code does.
 - [ ] No comment explains an internal design choice.
 - [ ] Every JSDoc states a contract, not an implementation.
 - [ ] The only inline comments left record an external constraint, in one line.
+- [ ] A sub agent fact-checked this commit's changes against the docs, and every inaccurate statement and stale screenshot it found is fixed.

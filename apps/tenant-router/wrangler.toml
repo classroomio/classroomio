@@ -10,7 +10,8 @@ routes = [
   { pattern = "*.myclassroomio.com/*", zone_name = "myclassroomio.com" },
   { pattern = "myclassroomio.com/*", zone_name = "myclassroomio.com" },
   { pattern = "app.classroomio.com/*", zone_name = "classroomio.com" },
-  { pattern = "embed.classroomio.com/*", zone_name = "classroomio.com" }
+  { pattern = "embed.classroomio.com/*", zone_name = "classroomio.com" },
+  { pattern = "mcp.classroomio.com/*", zone_name = "classroomio.com" }
 ]
 
 # Override per environment. Both values are the `.onrender.com` hostnames
@@ -22,6 +23,8 @@ DASHBOARD_UPSTREAM_HOST = "cio-api.onrender.com"
 API_UPSTREAM_HOST = "cio-api-vymh.onrender.com"
 APEX_REDIRECT_TARGET = "https://classroomio.com"
 EMBED_HOST = "embed.classroomio.com"
+ADMIN_HOST = "app.classroomio.com"
+MCP_HOST = "mcp.classroomio.com"
 API_URL = "https://api.classroomio.com"
 
 # R2 bucket binding so /hls/* can stream segments directly from Cloudflare,

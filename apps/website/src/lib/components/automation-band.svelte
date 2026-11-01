@@ -23,7 +23,8 @@
     {
       Icon: Sparkles,
       title: 'MCP server',
-      description: 'Course authoring as agent tools. Works with Cursor, Claude Code, Codex, OpenCode.'
+      description:
+        'Course authoring as agent tools. Works with Cursor, Claude Code, Codex, OpenCode, VS Code, Gemini CLI, and more.'
     }
   ];
 </script>

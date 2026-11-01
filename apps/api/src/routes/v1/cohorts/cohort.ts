@@ -2,6 +2,7 @@ import {
   ZPublicApiCohortListItemResponse,
   ZPublicApiCohortParam,
   ZPublicApiCohortResponse,
+  ZPublicApiCohortsQuery,
   ZPublicApiCreateCohort,
   ZPublicApiEnrolledCohortResponse,
   ZPublicApiPaginationQuery,
@@ -38,7 +39,7 @@ export const v1CohortRouter = new Hono()
         403: cohortForbiddenResponses.scope
       }
     }),
-    validator('query', ZPublicApiPaginationQuery),
+    validator('query', ZPublicApiCohortsQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;

@@ -14,7 +14,7 @@ import {
 import { getOrgAudience, getOrgAudienceMember, removeAudienceMember } from '@api/services/organization';
 import type { TEventSource } from '@cio/core/services/posthog';
 import { updateUser } from '@api/services/account/profile';
-import { assertAutomationActor, assertMemberHasJoined, assertOrgAdmin } from './shared';
+import { assertAutomationActor, assertMemberHasJoined, assertOrgAdmin, toProfileUpdate } from './shared';
 
 export async function listAudienceService(orgId: string, actorId: string | null, query: TPublicApiAudienceQuery) {
   await assertOrgAdmin(orgId, actorId);
@@ -86,9 +86,10 @@ export async function updateAudienceService(
   await assertOrgAdmin(orgId, actorId);
 
   const member = await getOrgAudienceMember(orgId, memberId);
+  const profileUpdate = toProfileUpdate(payload);
 
-  if (payload.name !== undefined) {
-    assertMemberHasJoined(member.profileId);
+  if (profileUpdate) {
+    assertMemberHasJoined(member.profileId, payload);
   }
 
   if (payload.email !== undefined) {
@@ -100,8 +101,8 @@ export async function updateAudienceService(
     );
   }
 
-  if (payload.name !== undefined && member.profileId) {
-    await updateUser(member.profileId, { fullname: payload.name });
+  if (profileUpdate && member.profileId) {
+    await updateUser(member.profileId, profileUpdate, { kind: 'org_admin', orgId, actorId });
   }
 
   return getOrgAudienceMember(orgId, memberId);

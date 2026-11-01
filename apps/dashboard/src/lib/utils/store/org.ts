@@ -8,24 +8,25 @@ import {
   canUseBasicAuthSettings,
   canUsePublicApi,
   getActiveOrgPlan,
+  getPaymentBlockDate,
   getStudentLimit,
   isOrgOnFreePlan,
   isResourceLimitReached,
   PLAN
 } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { BRAND_ROOT_DOMAIN, ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+import {
+  BRAND_ROOT_DOMAIN,
+  DEFAULT_ORG_CUSTOMIZATION as SHARED_DEFAULT_ORG_CUSTOMIZATION,
+  ROLE,
+  TENANT_ROOT_DOMAIN
+} from '@cio/utils/constants';
 import { isLocalOrPrivateHost } from '@cio/utils/functions';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 
 /** Deep-merge with this when hydrating an org from the API so nested `customization` keys stay stable. */
-export const DEFAULT_ORG_CUSTOMIZATION = {
-  apps: { comments: true },
-  course: { grading: true, newsfeed: true },
-  dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' },
-  auth: { backgroundImage: '' }
-} as NonNullable<AccountOrg['customization']>;
+export const DEFAULT_ORG_CUSTOMIZATION = SHARED_DEFAULT_ORG_CUSTOMIZATION as NonNullable<AccountOrg['customization']>;
 
 export function mergeAccountOrgFromServer(org: AccountOrg | PublicOrg): AccountOrg {
   const plans = org.plans.map((plan) => ({
@@ -41,6 +42,8 @@ export function mergeAccountOrgFromServer(org: AccountOrg | PublicOrg): AccountO
     customization: merge({}, DEFAULT_ORG_CUSTOMIZATION, org.customization ?? {}) as AccountOrg['customization']
   } as AccountOrg;
 }
+
+const MAX_TIMEOUT_MS = 2 ** 31 - 1;
 
 export const orgs = writable<AccountOrg[]>([]);
 
@@ -165,6 +168,32 @@ export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
 }
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => getOrgPublicOrigin($currentOrg));
+
+export const orgPaymentBlockDate = derived(currentOrg, ($currentOrg) =>
+  getPaymentBlockDate({ isActive: true, paymentFailedAt: $currentOrg.paymentFailedAt })
+);
+
+export const isOrgPaymentPastDue = derived(orgPaymentBlockDate, ($blockDate) => $blockDate !== null);
+
+export const isOrgPaymentBlocked = derived(orgPaymentBlockDate, ($blockDate, set) => {
+  if (!$blockDate) {
+    set(false);
+
+    return;
+  }
+
+  const millisecondsUntilBlock = $blockDate.getTime() - Date.now();
+
+  set(millisecondsUntilBlock <= 0);
+
+  if (millisecondsUntilBlock <= 0) {
+    return;
+  }
+
+  const timer = setTimeout(() => set(true), Math.min(millisecondsUntilBlock, MAX_TIMEOUT_MS));
+
+  return () => clearTimeout(timer);
+});
 
 export const isFreePlan = derived(currentOrg, ($currentOrg) =>
   isOrgOnFreePlan({

@@ -90,7 +90,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'update_audience_member',
-    `Correct a pending student's email or set a joined student's name; ${ORG_ADMIN_RULE}. To change an admin's or tutor's role, use update_team_member.`,
+    `Correct a pending student's email, or set a joined student's name, username, avatar or language (they are emailed what changed); ${ORG_ADMIN_RULE}. To change an admin's or tutor's role, use update_team_member.`,
     updateAudienceMemberShape,
     WRITE,
     async (args) => {

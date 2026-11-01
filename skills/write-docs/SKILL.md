@@ -118,13 +118,13 @@ Blume renders `title` as the page H1, so body headings start at `##`.
 Use globally available Blume syntax without imports:
 
 - `:::note`, `:::info`, `:::tip`, `:::success`, `:::warning`, and `:::danger` callouts;
-- numbered `###` action headings for procedures;
+- numbered `###` action headings, or a numbered list, for every step-by-step procedure;
 - `<Tabs>` only for equivalent variants of the same task;
 - `<Accordion>` only for optional or FAQ material that does not hide a required step;
 - `<CardGroup>` and `<Card>` for overview/index navigation;
 - `<YouTube id="..." title="..." />` for approved video embeds.
 
-Do not use `<Steps>` for help procedures. Numbered Markdown headings create visible, linkable anchors and survive CMS editing and plain-Markdown export more reliably.
+Every step-by-step process is numbered, in help articles and in `apps/docs`. Never write steps as a prose paragraph, even for a connector or client setup with only a few actions, and never as bullets. Do not use `<Steps>` for help procedures. Numbered Markdown headings create visible, linkable anchors and survive CMS editing and plain-Markdown export more reliably.
 
 ### 7. Connect the article
 

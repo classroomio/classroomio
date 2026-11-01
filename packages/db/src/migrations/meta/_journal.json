@@ -295,6 +295,34 @@
       "when": 1792960500700,
       "tag": "0041_mcp_key_organization_scopes",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1793103932290,
+      "tag": "0042_oauth_provider",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793489857066,
+      "tag": "0043_lesson_at_no_default",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1793493380393,
+      "tag": "0044_organization_plan_payment_failed_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1793493957846,
+      "tag": "0045_mcp_key_domain_scope",
+      "breakpoints": true
     }
   ]
 }
