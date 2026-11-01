@@ -83,6 +83,7 @@ export function useLessonPlayer(courseId: string, lessonId: string) {
     previous,
     next,
     position,
+    section,
     locked,
     lockReason,
     body,

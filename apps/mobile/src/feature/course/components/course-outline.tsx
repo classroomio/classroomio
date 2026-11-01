@@ -67,7 +67,10 @@ export function OutlineRow({ state, onPress, accessibilityLabel, accessibilityHi
   );
 }
 
-/** The leading tile: a check, play or lock glyph for those states, otherwise the item's own icon. Only the next item is solid. */
+/**
+ * The leading tile: a check, play or lock glyph for those states, otherwise the item's own icon. Only the current item
+ * is solid: the next one up in the course outline, the open lesson in a lesson's section list.
+ */
 export function OutlineRowIndicator({ icon }: { icon: AppIcon }) {
   const { colors } = useTheme();
   const state = use(OutlineRowContext);

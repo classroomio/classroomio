@@ -9,7 +9,7 @@ import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/butt
 import { Icon } from '@/feature/common/components/icon';
 import { Spinner } from '@/feature/common/components/spinner';
 import { Text } from '@/feature/common/components/text';
-import { RADII, SPACING } from '@/feature/common/constants/layout';
+import { SPACING } from '@/feature/common/constants/layout';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -123,7 +123,7 @@ export function NativeVideoSurface() {
   };
 
   return (
-    <View style={[styles.surface, { borderColor: colors.border }]}>
+    <View style={styles.surface}>
       {fullscreen ? null : (
         <VideoView
           player={player}
@@ -172,10 +172,7 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 16 / 9,
     overflow: 'hidden',
-    backgroundColor: VIDEO_COLORS.letterbox,
-    borderWidth: StyleSheet.hairlineWidth * 2,
-    borderRadius: RADII.lg,
-    borderCurve: 'continuous'
+    backgroundColor: VIDEO_COLORS.letterbox
   },
   center: { alignItems: 'center', justifyContent: 'center' },
   unavailable: { gap: SPACING.xs, padding: SPACING.lg },

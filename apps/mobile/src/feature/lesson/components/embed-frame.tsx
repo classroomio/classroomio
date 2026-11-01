@@ -20,9 +20,11 @@ type EmbedFrameProps = {
   /** Wraps the URL in an iframe page so providers that check the embedding origin (YouTube) see one. */
   framed?: boolean;
   aspectRatio?: number;
+  /** Full width with no frame, for the video at the top of a lesson. */
+  edgeToEdge?: boolean;
 };
 
-export function EmbedFrame({ uri, title, framed = false, aspectRatio = 16 / 9 }: EmbedFrameProps) {
+export function EmbedFrame({ uri, title, framed = false, aspectRatio = 16 / 9, edgeToEdge = false }: EmbedFrameProps) {
   const { colors } = useTheme();
   const { serverUrl } = useServer();
   const { openExternal } = useOpenLink();
@@ -38,7 +40,11 @@ export function EmbedFrame({ uri, title, framed = false, aspectRatio = 16 / 9 }:
   return (
     <View
       accessibilityLabel={title}
-      style={[styles.frame, { aspectRatio, backgroundColor: colors.mutedStrong, borderColor: colors.border }]}
+      style={[
+        styles.frame,
+        { aspectRatio, backgroundColor: colors.mutedStrong, borderColor: colors.border },
+        edgeToEdge && styles.edgeToEdge
+      ]}
     >
       <WebView
         source={framed ? { html: iframeDocument(uri, colors.mutedStrong), baseUrl: serverUrl } : { uri }}
@@ -85,6 +91,7 @@ const styles = StyleSheet.create({
     borderRadius: RADII.lg,
     borderCurve: 'continuous'
   },
+  edgeToEdge: { borderWidth: 0, borderRadius: 0 },
   webview: { flex: 1, backgroundColor: 'transparent' },
   loading: { alignItems: 'center', justifyContent: 'center' }
 });

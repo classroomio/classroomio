@@ -8,7 +8,7 @@ import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/butt
 import { Icon } from '@/feature/common/components/icon';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { Text } from '@/feature/common/components/text';
-import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
+import { GUTTER, SPACING } from '@/feature/common/constants/layout';
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -82,8 +82,10 @@ export function LessonVideo({
   if (source.kind === 'embed') {
     return (
       <View style={styles.embed}>
-        <EmbedFrame uri={source.uri} title={source.title} framed={source.provider === 'youtube'} />
-        <EmbedSource provider={source.provider} link={source.link} />
+        <EmbedFrame uri={source.uri} title={source.title} framed={source.provider === 'youtube'} edgeToEdge />
+        <View style={styles.embedSource}>
+          <EmbedSource provider={source.provider} link={source.link} />
+        </View>
       </View>
     );
   }
@@ -137,7 +139,7 @@ function HlsVideo({
   const playback = useHlsPlaybackUrlQuery(source.assetId);
   const { width } = useWindowDimensions();
 
-  if (playback.isPending) return <Skeleton height={((width - GUTTER * 2) * 9) / 16} radius={RADII.lg} />;
+  if (playback.isPending) return <Skeleton height={(width * 9) / 16} radius={0} />;
 
   if (!playback.data) return <VideoUnavailable onRetry={() => playback.refetch()} />;
 
@@ -165,7 +167,7 @@ function VideoUnavailable({ onRetry }: { onRetry: () => void }) {
   const common = useTranslations(commonCatalog);
 
   return (
-    <View style={[styles.unavailable, { backgroundColor: colors.muted, borderColor: colors.border }]}>
+    <View style={[styles.unavailable, { backgroundColor: colors.muted }]}>
       <Icon icon={VideoCameraSlashIcon} size={24} tone="muted" />
       <Text variant="captionStrong">{t('videoUnavailable')}</Text>
       <Text variant="caption" tone="muted" style={styles.centerText}>
@@ -188,7 +190,7 @@ function VideoNeedsConnection({ description }: { description: string }) {
     <View
       accessible
       accessibilityLabel={`${title}. ${description}`}
-      style={[styles.unavailable, { backgroundColor: colors.muted, borderColor: colors.border }]}
+      style={[styles.unavailable, { backgroundColor: colors.muted }]}
     >
       <Icon icon={WifiSlashIcon} size={24} tone="muted" />
       <Text variant="captionStrong">{title}</Text>
@@ -201,16 +203,14 @@ function VideoNeedsConnection({ description }: { description: string }) {
 
 const styles = StyleSheet.create({
   embed: { gap: SPACING.xs },
+  embedSource: { paddingHorizontal: GUTTER },
   unavailable: {
     width: '100%',
     aspectRatio: 16 / 9,
     alignItems: 'center',
     justifyContent: 'center',
     gap: SPACING.xs,
-    padding: SPACING.lg,
-    borderWidth: StyleSheet.hairlineWidth * 2,
-    borderRadius: RADII.lg,
-    borderCurve: 'continuous'
+    padding: SPACING.lg
   },
   centerText: { textAlign: 'center', maxWidth: 280 }
 });

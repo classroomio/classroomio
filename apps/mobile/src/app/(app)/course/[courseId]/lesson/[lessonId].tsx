@@ -9,13 +9,12 @@ import { StyleSheet, View } from 'react-native';
 import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { OfflineNotice } from '@/feature/common/components/offline-notice';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
+import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Text } from '@/feature/common/components/text';
-import { SPACING } from '@/feature/common/constants/layout';
+import { GUTTER, SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
-import { useTheme } from '@/feature/common/helpers/use-theme';
-import { CourseLink, CourseLinks } from '@/feature/course/components/course-links';
-import { lessonKindLabel } from '@/feature/course/helpers/content-copy';
+import { lessonKindLabel, lockReasonOf } from '@/feature/course/helpers/content-copy';
 import { isAccessible } from '@/feature/course/helpers/course-content';
 import { courseCatalog } from '@/feature/course/translations/catalog';
 import type { CourseContentItem } from '@/feature/course/types/course-detail';
@@ -29,9 +28,10 @@ import {
   LessonCompleteMoment,
   type LessonCompleteMomentProps
 } from '@/feature/lesson/components/lesson-complete-moment';
-import { LessonCompletion, LessonFooter, LessonNavigation } from '@/feature/lesson/components/lesson-footer';
+import { LessonBottomBar } from '@/feature/lesson/components/lesson-bottom-bar';
 import { LessonHeaderTitle } from '@/feature/lesson/components/lesson-header-title';
 import { LessonPager, LessonSwipeExclusion } from '@/feature/lesson/components/lesson-pager';
+import { LessonSectionList } from '@/feature/lesson/components/lesson-section-list';
 import { LessonSlides } from '@/feature/lesson/components/lesson-slides';
 import {
   LessonError,
@@ -56,7 +56,6 @@ export default function LessonScreen() {
   const { courseId, lessonId, from } = useLocalSearchParams<{ courseId: string; lessonId: string; from?: string }>();
   const t = useTranslations(lessonCatalog);
   const courseT = useTranslations(courseCatalog);
-  const { colors } = useTheme();
   const view = useLessonPlayer(courseId, lessonId);
   const completion = useCompleteLessonMutation(courseId, lessonId);
   const [player, setPlayer] = useState<VideoPlayer | null>(null);
@@ -82,7 +81,7 @@ export default function LessonScreen() {
     <Stack.Screen
       options={{
         animationTypeForReplace: replaceAnimationOf(from),
-        headerTitle: () => <LessonHeaderTitle position={view.position} title={title} />,
+        headerTitle: () => <LessonHeaderTitle position={view.position} title={view.course.data?.title ?? title} />,
         headerRight: lesson ? () => <LessonDownloadHeaderButton courseId={courseId} lessonId={lessonId} /> : undefined
       }}
     />
@@ -182,32 +181,65 @@ export default function LessonScreen() {
     });
   };
 
+  const openTutor = () =>
+    offline
+      ? showToast({
+          tone: 'info',
+          title: t('tutorNeedsConnectionTitle'),
+          description: t('tutorNeedsConnectionDescription')
+        })
+      : tutorSheet.current?.present();
+
   return (
     <>
       {header}
-      <LessonPager previous={view.previous} next={next} onNavigate={openItem} onRefresh={() => view.lesson.refetch()}>
-        {view.videos.map(({ source, video }, index) => (
-          <LessonSwipeExclusion key={`${source.kind}-${index}`}>
-            <LessonVideo
-              source={source}
-              courseId={courseId}
-              lessonId={lessonId}
-              lessonTitle={title}
-              courseTitle={view.course.data?.title}
-              localUri={
-                local.files.get(
-                  source.kind === 'hls'
-                    ? offlineMediaKey({ assetId: source.assetId, link: video.link })
-                    : offlineMediaKey(video)
-                )?.uri ?? null
-              }
-              offline={offline}
-              watchProgress={lesson.watchProgress}
-              segments={index === 0 ? view.transcript?.segments : undefined}
-              onPlayerChange={index === 0 ? setPlayer : undefined}
-            />
-          </LessonSwipeExclusion>
-        ))}
+      <LessonPager
+        previous={view.previous}
+        next={next}
+        onNavigate={openItem}
+        onRefresh={() => view.lesson.refetch()}
+        footer={
+          <LessonBottomBar
+            policy={lesson.completionPolicy}
+            complete={complete}
+            threshold={lesson.videoWatchThreshold}
+            watchedPercent={lesson.watchProgress?.watchedPercent ?? null}
+            next={next}
+            nextLockReason={next && !isAccessible(next) ? lockReasonOf(next, items, courseT) : null}
+            pending={completion.isPending}
+            syncPending={completionPending && !view.item?.isComplete}
+            onComplete={() => setComplete(true)}
+            onUndo={() => setComplete(false)}
+            onNext={(target) => openItem(target, 'next')}
+          />
+        }
+      >
+        {view.videos.length > 0 ? (
+          <View style={styles.media}>
+            {view.videos.map(({ source, video }, index) => (
+              <LessonSwipeExclusion key={`${source.kind}-${index}`}>
+                <LessonVideo
+                  source={source}
+                  courseId={courseId}
+                  lessonId={lessonId}
+                  lessonTitle={title}
+                  courseTitle={view.course.data?.title}
+                  localUri={
+                    local.files.get(
+                      source.kind === 'hls'
+                        ? offlineMediaKey({ assetId: source.assetId, link: video.link })
+                        : offlineMediaKey(video)
+                    )?.uri ?? null
+                  }
+                  offline={offline}
+                  watchProgress={lesson.watchProgress}
+                  segments={index === 0 ? view.transcript?.segments : undefined}
+                  onPlayerChange={index === 0 ? setPlayer : undefined}
+                />
+              </LessonSwipeExclusion>
+            ))}
+          </View>
+        ) : null}
 
         <LiveSessionCard
           callUrl={lesson.callUrl}
@@ -218,14 +250,53 @@ export default function LessonScreen() {
         />
 
         <View style={styles.heading}>
+          <Text variant="title" accessibilityRole="header">
+            {title}
+          </Text>
           {meta ? (
-            <Text variant="captionStrong" tone="muted">
+            <Text variant="caption" tone="muted">
               {meta}
             </Text>
           ) : null}
-          <Text variant="display" accessibilityRole="header">
-            {title}
-          </Text>
+          {view.transcript || view.tutor.enabled ? (
+            <View style={styles.actions}>
+              {view.transcript ? (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  accessibilityHint={
+                    player && primaryVideo?.source.kind !== 'embed'
+                      ? t('transcriptTapToPlay')
+                      : t('transcriptReadAlong')
+                  }
+                  onPress={() => transcriptSheet.current?.present()}
+                >
+                  <ButtonIcon icon={ScrollIcon} />
+                  <ButtonText>{t('transcript')}</ButtonText>
+                </Button>
+              ) : null}
+              {view.tutor.enabled ? (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  accessibilityHint={
+                    offline
+                      ? t('needsConnection')
+                      : view.tutor.allowance
+                        ? t('tutorQuestionsLeft', {
+                            remaining: view.tutor.allowance.remaining,
+                            count: view.tutor.allowance.cap
+                          })
+                        : t('tutorAboutLesson')
+                  }
+                  onPress={openTutor}
+                >
+                  <ButtonIcon icon={SparkleIcon} />
+                  <ButtonText>{t('askTutor')}</ButtonText>
+                </Button>
+              ) : null}
+            </View>
+          ) : null}
         </View>
 
         {view.body && content.html ? <LessonContent html={content.html} lang={view.body.locale} /> : null}
@@ -250,65 +321,19 @@ export default function LessonScreen() {
           </ScreenSection>
         ) : null}
 
-        {view.transcript || view.tutor.enabled ? (
-          <CourseLinks>
-            {view.transcript ? (
-              <CourseLink
-                icon={ScrollIcon}
-                title={t('transcript')}
-                description={
-                  player && primaryVideo?.source.kind !== 'embed' ? t('transcriptTapToPlay') : t('transcriptReadAlong')
-                }
-                onPress={() => transcriptSheet.current?.present()}
-              />
-            ) : null}
-            {view.tutor.enabled ? (
-              <CourseLink
-                icon={SparkleIcon}
-                title={t('askTutor')}
-                description={
-                  offline
-                    ? t('needsConnection')
-                    : view.tutor.allowance
-                      ? t('tutorQuestionsLeft', {
-                          remaining: view.tutor.allowance.remaining,
-                          count: view.tutor.allowance.cap
-                        })
-                      : t('tutorAboutLesson')
-                }
-                onPress={() =>
-                  offline
-                    ? showToast({
-                        tone: 'info',
-                        title: t('tutorNeedsConnectionTitle'),
-                        description: t('tutorNeedsConnectionDescription')
-                      })
-                    : tutorSheet.current?.present()
-                }
-              />
-            ) : null}
-          </CourseLinks>
+        {view.section ? (
+          <LessonSectionList
+            title={view.section.title}
+            items={view.section.items}
+            allItems={items}
+            currentId={lessonId}
+            onOpen={(target) => {
+              const targetIndex = items.findIndex((entry) => entry.id === target.id);
+              const currentIndex = items.findIndex((entry) => entry.id === lessonId);
+              openItem(target, targetIndex < currentIndex ? 'previous' : 'next');
+            }}
+          />
         ) : null}
-
-        <LessonFooter>
-          <LessonCompletion
-            policy={lesson.completionPolicy}
-            complete={complete}
-            threshold={lesson.videoWatchThreshold}
-            watchedPercent={lesson.watchProgress?.watchedPercent ?? null}
-            hasNext={Boolean(view.next)}
-            pending={completion.isPending}
-            syncPending={completionPending && !view.item?.isComplete}
-            onComplete={() => setComplete(true)}
-            onUndo={() => setComplete(false)}
-          />
-          <LessonNavigation
-            previous={view.previous}
-            next={next}
-            items={items}
-            onOpen={(target) => openItem(target, target.id === view.previous?.id ? 'previous' : 'next')}
-          />
-        </LessonFooter>
       </LessonPager>
 
       {view.transcript ? (
@@ -342,5 +367,7 @@ export default function LessonScreen() {
 }
 
 const styles = StyleSheet.create({
-  heading: { gap: SPACING.xs }
+  media: { marginHorizontal: -GUTTER, marginTop: -SPACING.xs, gap: SPACING.md },
+  heading: { gap: SPACING.xxs },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs, marginTop: SPACING.sm }
 });

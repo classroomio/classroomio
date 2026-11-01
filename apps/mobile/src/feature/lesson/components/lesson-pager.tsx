@@ -61,6 +61,8 @@ type LessonPagerProps = {
   next: CourseContentItem | null;
   onNavigate: (item: CourseContentItem, direction: LessonDirection) => void;
   onRefresh: RefreshHandler;
+  /** Pinned below the scroll view, above the home indicator. */
+  footer?: ReactNode;
   children: ReactNode;
 };
 
@@ -68,7 +70,7 @@ type LessonPagerProps = {
  * The lesson reader: a scroll view with a reading-progress bar under the header, where a horizontal swipe on the
  * content moves to the previous or next course item. Media inside `LessonSwipeExclusion` keeps its own gestures.
  */
-export function LessonPager({ previous, next, onNavigate, onRefresh, children }: LessonPagerProps) {
+export function LessonPager({ previous, next, onNavigate, onRefresh, footer, children }: LessonPagerProps) {
   const { colors } = useTheme();
   const { width } = useWindowDimensions();
   const x = useSharedValue(0);
@@ -182,6 +184,8 @@ export function LessonPager({ previous, next, onNavigate, onRefresh, children }:
           </GestureDetector>
         </LessonPagerContext>
       </Animated.ScrollView>
+
+      {footer}
 
       <Animated.View
         pointerEvents="none"
