@@ -13,6 +13,7 @@ describe('shouldForwardToApi', () => {
   it('forwards OAuth discovery documents', () => {
     expect(shouldForwardToApi('/.well-known/oauth-authorization-server')).toBe(true);
     expect(shouldForwardToApi('/.well-known/oauth-protected-resource')).toBe(true);
+    expect(shouldForwardToApi('/.well-known/openid-configuration/api/auth')).toBe(true);
   });
 
   it('forwards the remote MCP endpoint', () => {

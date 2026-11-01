@@ -10,6 +10,7 @@
 const PROXY_PREFIX = '/proxy';
 const AUTH_PREFIX = '/api/auth';
 const OAUTH_DISCOVERY_PREFIX = '/.well-known/oauth-';
+const OIDC_DISCOVERY_PREFIX = '/.well-known/openid-configuration';
 const MCP_PREFIX = '/mcp';
 
 /** Hop-by-hop, connection-specific, and encoding headers that must not be forwarded to the browser (forbidden in HTTP/2). */
@@ -34,6 +35,7 @@ export function shouldForwardToApi(pathname: string): boolean {
     pathname === AUTH_PREFIX ||
     pathname.startsWith(`${AUTH_PREFIX}/`) ||
     pathname.startsWith(OAUTH_DISCOVERY_PREFIX) ||
+    pathname.startsWith(OIDC_DISCOVERY_PREFIX) ||
     pathname === MCP_PREFIX ||
     pathname.startsWith(`${MCP_PREFIX}/`)
   );
