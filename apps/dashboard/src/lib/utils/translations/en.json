@@ -2680,6 +2680,11 @@
           "activate": "Activate",
           "cancel": "Cancel"
         },
+        "header": {
+          "mode_label": "Lesson mode",
+          "mode_edit": "Edit",
+          "mode_preview": "Preview"
+        },
         "add_lesson": {
           "button_title": "Add",
           "start_reorder": "Reorder",
@@ -3036,7 +3041,69 @@
               "reorder_file": "Reorder file"
             }
           },
-          "button_done": "Done"
+          "button_done": "Done",
+          "blocks": {
+            "add_content": "Add content",
+            "types": {
+              "note": "Note",
+              "video": "Video",
+              "slides": "Slides",
+              "document": "Document",
+              "image": "Image"
+            },
+            "ai": {
+              "title": "Draft a note with AI",
+              "prompt_label": "Prompt",
+              "prompt_placeholder": "e.g. A short introduction to the water cycle for beginners"
+            },
+            "example": "Example",
+            "change_type": "Change {type}",
+            "edit_type": "Edit {type}",
+            "remove": "Remove block",
+            "move_up": "Move up",
+            "move_down": "Move down",
+            "actions": "Block actions",
+            "drag": "Drag to reorder",
+            "drag_hint": "Drag the handle on a block to reorder it. You can also use Move up and Move down from its menu.",
+            "dismiss_hint": "Dismiss reorder hint",
+            "empty_title": "Start building this lesson",
+            "empty_description": "Add a note, video, slides, document, or image. You can add as many blocks as you need, in any order.",
+            "empty_note": "This note is empty.",
+            "note_style": "Style",
+            "styles": {
+              "default": "Default",
+              "info": "Info",
+              "tip": "Tip",
+              "important": "Important",
+              "warning": "Warning",
+              "highlight": "Highlight"
+            },
+            "preview_label": "In-app learner experience",
+            "scroll_rail": "Lesson blocks",
+            "go_to_block": "Go to block {index}",
+            "reading_density": {
+              "title": "Reading density",
+              "description": "Controls the spacing between blocks for learners. It does not change the editing canvas.",
+              "compact": "Compact",
+              "comfortable": "Comfortable",
+              "spacious": "Spacious"
+            },
+            "settings": {
+              "title": "Lesson settings",
+              "description": "Manage this lesson without leaving the content canvas."
+            },
+            "image": {
+              "upload": "Upload image",
+              "upload_error": "Failed to upload image. Please try again.",
+              "change": "Change image",
+              "settings": "Image settings",
+              "alt": "Alt text",
+              "alt_placeholder": "Describe the image for learners using assistive technology",
+              "fit": "Fit",
+              "fit_cover": "Fill",
+              "fit_contain": "Fit"
+            }
+          }
         },
         "exercises": {
           "heading": "All Exercises",

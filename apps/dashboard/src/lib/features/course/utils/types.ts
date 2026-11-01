@@ -554,6 +554,61 @@ export type WaiveCourseComplianceSuccess = Extract<WaiveCourseComplianceResponse
 export type LessonVideoType = NonNullable<Lesson['videos']>[number]['type'];
 export type LessonDocument = NonNullable<Lesson['documents']>[number];
 
+export type LessonBlockType = 'video' | 'note' | 'slide' | 'document' | 'image';
+export type LessonBlockInsertType = LessonBlockType;
+
+/** A block as returned by the lesson blocks API. */
+export type ServerLessonBlock = Extract<InferResponseType<ListLessonBlocksRequest>, { success: true }>['data'][number];
+
+export type ServerBlockType = ServerLessonBlock['type'];
+
+export type LessonNoteBlockStyle = 'default' | 'info' | 'tip' | 'important' | 'warning' | 'highlight';
+export type LessonImageFit = 'cover' | 'contain';
+export type LessonReadingDensity = 'compact' | 'comfortable' | 'spacious';
+
+interface LessonBlockBase {
+  id: string;
+  isExample?: boolean;
+}
+
+export interface LessonNoteBlock extends LessonBlockBase {
+  type: 'note';
+  style: LessonNoteBlockStyle;
+}
+
+export interface LessonVideoBlock extends LessonBlockBase {
+  type: 'video';
+  sourceKey: string;
+  data?: Record<string, unknown>;
+}
+
+export interface LessonSlideBlock extends LessonBlockBase {
+  type: 'slide';
+  sourceKey: string;
+  data?: Record<string, unknown>;
+}
+
+export interface LessonDocumentBlock extends LessonBlockBase {
+  type: 'document';
+  sourceKey: string;
+  data?: Record<string, unknown>;
+}
+
+export interface LessonImageBlock extends LessonBlockBase {
+  type: 'image';
+  url: string;
+  fileKey?: string;
+  alt: string;
+  fit: LessonImageFit;
+}
+
+export type LessonBlock =
+  | LessonNoteBlock
+  | LessonVideoBlock
+  | LessonSlideBlock
+  | LessonDocumentBlock
+  | LessonImageBlock;
+
 // Derived types from Course metadata
 export type Tabs = NonNullable<NonNullable<Course['metadata']>['lessonTabsOrder']>[number];
 export type Review = NonNullable<NonNullable<Course['metadata']>['reviews']>[number];
@@ -715,3 +770,15 @@ export type DocumentUploadItem = {
   position: number;
   errorMessage: string | null;
 };
+
+type LessonBlocksRoute = (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['blocks'];
+
+export type ListLessonBlocksRequest = LessonBlocksRoute['$get'];
+export type CreateLessonBlockRequest = LessonBlocksRoute['$post'];
+export type AttachLessonBlockRequest = LessonBlocksRoute['attach']['$post'];
+export type UpdateLessonPlacementRequest = LessonBlocksRoute['placements'][':placementId']['$patch'];
+export type MoveLessonPlacementRequest = LessonBlocksRoute['placements'][':placementId']['move']['$put'];
+export type RemoveLessonPlacementRequest = LessonBlocksRoute['placements'][':placementId']['$delete'];
+export type UpdateLessonBlockRequest = LessonBlocksRoute[':blockId']['$patch'];
+export type UpdateLessonBlockLocaleRequest = LessonBlocksRoute[':blockId']['locale'][':locale']['$put'];
+export type DuplicateLessonBlockRequest = LessonBlocksRoute[':blockId']['duplicate']['$post'];

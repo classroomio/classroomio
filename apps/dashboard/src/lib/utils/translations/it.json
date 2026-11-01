@@ -1940,6 +1940,20 @@
       "all": "Tutto",
       "unpublished": "Inedito",
       "course_type": "Tipo di corso"
+    },
+    "filters": {
+      "filter": "Filtro",
+      "popover_title": "Filtri",
+      "clear_all": "Cancella tutto",
+      "search_placeholder": "Cerca per nome",
+      "status": "Stato",
+      "layout_type": "Tipo di layout",
+      "selection_mode": "Modalità di selezione",
+      "no_results_title": "Nessun widget corrisponde ai tuoi filtri",
+      "no_results_description": "Prova a utilizzare un termine di ricerca diverso o a cancellare i filtri per visualizzare nuovamente tutti i risultati.",
+      "no_results_page_title": "Niente in questa pagina",
+      "no_results_page_description": "Questi filtri corrispondono a un numero di widget inferiore rispetto a quello iniziale di questa pagina.",
+      "back_to_first_page": "Torna alla prima pagina"
     }
   },
   "setup": {
@@ -3022,7 +3036,69 @@
               "reorder_file": "Riordina il file"
             }
           },
-          "button_done": "Fatto"
+          "button_done": "Fatto",
+          "blocks": {
+            "add_content": "Aggiungi contenuto",
+            "example": "Esempio",
+            "change_type": "Modifica {type}",
+            "edit_type": "Modifica {type}",
+            "remove": "Rimuovi il blocco",
+            "move_up": "Salire",
+            "move_down": "Scendendo",
+            "actions": "Azioni di blocco",
+            "drag": "Trascina per riordinare",
+            "drag_hint": "Trascina la maniglia su un blocco per riordinarlo. Puoi anche usare le opzioni Sposta su e Sposta giù dal relativo menu.",
+            "dismiss_hint": "Ignora suggerimento di riordino",
+            "empty_title": "Inizia a costruire questa lezione",
+            "empty_description": "Aggiungi una nota, un video, delle diapositive, un documento o un'immagine. Puoi aggiungere tutti i blocchi che ti servono, in qualsiasi ordine.",
+            "empty_note": "Questa banconota è vuota.",
+            "note_style": "Stile",
+            "preview_label": "Esperienza di apprendimento all'interno dell'app",
+            "scroll_rail": "Blocchi di lezione",
+            "go_to_block": "Vai al blocco {index}",
+            "image": {
+              "upload": "Carica immagine",
+              "upload_error": "Impossibile caricare l'immagine. Riprova.",
+              "change": "Cambia immagine",
+              "settings": "Impostazioni immagine",
+              "alt": "Testo alternativo",
+              "alt_placeholder": "Descrivi l'immagine per gli studenti che utilizzano tecnologie assistive",
+              "fit": "Adatto",
+              "fit_cover": "Riempire",
+              "fit_contain": "Adatto"
+            },
+            "settings": {
+              "title": "Impostazioni della lezione",
+              "description": "Gestisci questa lezione senza uscire dalla schermata dei contenuti."
+            },
+            "reading_density": {
+              "title": "diversità di lettura",
+              "description": "Controlla la spaziatura tra i blocchi per gli studenti. Non modifica l'area di modifica.",
+              "compact": "Compatto",
+              "comfortable": "Comodo",
+              "spacious": "Elegante"
+            },
+            "styles": {
+              "default": "Predefinito",
+              "info": "Informazioni",
+              "tip": "Mancia",
+              "important": "Importante",
+              "warning": "Avvertimento",
+              "highlight": "Evidenziare"
+            },
+            "ai": {
+              "title": "Redigi una nota con l'IA",
+              "prompt_label": "Richiesta",
+              "prompt_placeholder": "Ad esempio, una breve introduzione al ciclo dell'acqua per principianti."
+            },
+            "types": {
+              "note": "Nota",
+              "video": "Video",
+              "slides": "diapositive",
+              "document": "Documento",
+              "image": "Immagine"
+            }
+          }
         },
         "exercises": {
           "heading": "Tutti gli esercizi",
@@ -3635,7 +3711,12 @@
           "by_author": "di {name}",
           "empty": "Nessuna versione ancora"
         },
-        "no_section": "Nessuna sezione"
+        "no_section": "Nessuna sezione",
+        "header": {
+          "mode_label": "Modalità lezione",
+          "mode_edit": "Modificare",
+          "mode_preview": "Anteprima"
+        }
       },
       "attendance": {
         "title": "Partecipazione",

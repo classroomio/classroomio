@@ -1950,6 +1950,20 @@
       "all": "Tüm",
       "unpublished": "Yayınlanmamış",
       "course_type": "Ders Türü"
+    },
+    "filters": {
+      "filter": "Filtrele",
+      "popover_title": "Filtreler",
+      "clear_all": "Tümünü temizle",
+      "search_placeholder": "İsimle ara",
+      "status": "Durum",
+      "layout_type": "Yerleşim türü",
+      "selection_mode": "Seçim modu",
+      "no_results_title": "Filtrelerinize uyan hiçbir widget bulunamadı.",
+      "no_results_description": "Farklı bir arama terimi deneyin veya filtrelerinizi temizleyerek her şeyi tekrar görüntüleyin.",
+      "no_results_page_title": "Bu sayfada hiçbir şey yok.",
+      "no_results_page_description": "Bu filtreler, bu sayfanın başlangıcındaki değerlerden daha az sayıda widget ile eşleşiyor.",
+      "back_to_first_page": "İlk sayfaya geri dön"
     }
   },
   "setup": {
@@ -3030,7 +3044,69 @@
               "reorder_file": "Dosyayı yeniden sırala"
             }
           },
-          "button_done": "Done"
+          "button_done": "Done",
+          "blocks": {
+            "add_content": "İçerik ekle",
+            "example": "Örnek",
+            "change_type": "{type} türünü değiştir",
+            "edit_type": "{type} düzenle",
+            "remove": "Bloku kaldır",
+            "move_up": "Yukarı çık",
+            "move_down": "Aşağıya doğru hareket edin",
+            "actions": "Blok eylemleri",
+            "drag": "Sırayı değiştirmek için sürükleyin",
+            "drag_hint": "Bir bloğun üzerindeki tutamacı sürükleyerek bloğun sırasını değiştirebilirsiniz. Ayrıca menüsünden Yukarı Taşı ve Aşağı Taşı seçeneklerini de kullanabilirsiniz.",
+            "dismiss_hint": "Yeniden sipariş ipucunu göz ardı et",
+            "empty_title": "Bu dersi oluşturmaya başlayın.",
+            "empty_description": "Not, video, slayt, belge veya resim ekleyin. İstediğiniz kadar blok ekleyebilir ve istediğiniz sırayla düzenleyebilirsiniz.",
+            "empty_note": "Bu not boş.",
+            "note_style": "Stil",
+            "preview_label": "Uygulama içi öğrenci deneyimi",
+            "scroll_rail": "Ders blokları",
+            "go_to_block": "{index} bloğuna git",
+            "image": {
+              "upload": "Resim yükle",
+              "upload_error": "Resim yüklenemedi. Lütfen tekrar deneyin.",
+              "change": "Resmi değiştir",
+              "settings": "Görüntü ayarları",
+              "alt": "Alternatif metin",
+              "alt_placeholder": "Yardımcı teknoloji kullanan öğrenciler için görseli açıklayın.",
+              "fit": "Yerleştirmek",
+              "fit_cover": "Doldurmak",
+              "fit_contain": "Yerleştirmek"
+            },
+            "settings": {
+              "title": "Ders ayarları",
+              "description": "Bu dersi içerik tuvalinden ayrılmadan yönetin."
+            },
+            "reading_density": {
+              "title": "Okuma yoğunluğu",
+              "description": "Öğrenciler için bloklar arasındaki boşluğu kontrol eder. Düzenleme alanını değiştirmez.",
+              "compact": "Kompakt",
+              "comfortable": "Rahat",
+              "spacious": "Ferah"
+            },
+            "styles": {
+              "default": "Varsayılan",
+              "info": "Bilgi",
+              "tip": "Uç",
+              "important": "Önemli",
+              "warning": "Uyarı",
+              "highlight": "Öne çıkanlar"
+            },
+            "ai": {
+              "title": "Yapay zekâ ile bir not taslağı oluşturun.",
+              "prompt_label": "Çabuk",
+              "prompt_placeholder": "Örneğin, yeni başlayanlar için su döngüsüne kısa bir giriş."
+            },
+            "types": {
+              "note": "Not",
+              "video": "Video",
+              "slides": "Slaytlar",
+              "document": "Belge",
+              "image": "Görüntü"
+            }
+          }
         },
         "exercises": {
           "heading": "Tüm Egzersizler",
@@ -3645,7 +3721,12 @@
         },
         "expand_content": "İçeriği genişlet",
         "collapse_content": "İçeriği daralt",
-        "no_section": "Bölüm yok"
+        "no_section": "Bölüm yok",
+        "header": {
+          "mode_label": "Ders modu",
+          "mode_edit": "Düzenlemek",
+          "mode_preview": "Önizleme"
+        }
       },
       "attendance": {
         "title": "Attendance",

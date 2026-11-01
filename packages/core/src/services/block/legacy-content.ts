@@ -32,6 +32,10 @@ export interface LegacyLessonContent {
   videos: LessonVideo[];
   documents: LessonDocument[];
   slides: TLessonSlide[];
+  /** Deprecated single-slide column, derived from the first slide block so it can never outlive its block. */
+  slideUrl: string | null;
+  /** Deprecated single-video column; nothing reads it any more. */
+  videoUrl: null;
 }
 
 export interface LegacyLessonContentPatch {
@@ -65,6 +69,9 @@ export function splitLegacyContent<T extends Partial<Record<LegacyContentKey, un
  */
 export function blocksToLegacyContent(blocks: LessonBlock[], locale: TLocale = DEFAULT_LOCALE): LegacyLessonContent {
   const firstNote = blocks.find((block) => block.type === 'note');
+  const slides = blocks
+    .filter((block) => block.type === 'slides')
+    .map((block) => ({ ...(block.data as Omit<TLessonSlide, 'id'>), id: block.id }));
 
   return {
     note: firstNote ? (firstNote.contents[locale] ?? null) : null,
@@ -72,9 +79,9 @@ export function blocksToLegacyContent(blocks: LessonBlock[], locale: TLocale = D
       .filter((block) => block.type === 'video')
       .map((block) => ({ ...(block.data as LessonVideo), watchEnforced: block.required })),
     documents: blocks.filter((block) => block.type === 'document').map((block) => block.data as LessonDocument),
-    slides: blocks
-      .filter((block) => block.type === 'slides')
-      .map((block) => ({ ...(block.data as Omit<TLessonSlide, 'id'>), id: block.id }))
+    slides,
+    slideUrl: slides[0]?.src ?? null,
+    videoUrl: null
   };
 }
 

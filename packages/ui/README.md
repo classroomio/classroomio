@@ -84,6 +84,8 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/attention-highlight/` - Prop-driven focus pulse and smooth scroll wrapper to draw user attention to specific items
 - `custom/question-type-picker/` - Question type picker modal and QuestionTypeIcon glyph/icon component
 - `custom/org-landing-page/` - 11-theme org and course landing page system, including `LearnerMenu` authenticated popover
+- `custom/block-list/`, `custom/block-shell/`, `custom/add-content-menu/`, `custom/add-content-row/` - reusable lesson block container (ordering, gap menus, rail, AI row)
+- `custom/blocks/` - presentational lesson blocks (image, document, slide, video, note)
 
 ### Question type icon (`src/custom/question-type-picker/question-type-icon.svelte`)
 
@@ -239,6 +241,34 @@ One compact row (about 52px) for a file that is uploading or has uploaded, meant
 ### Slide embed (`src/custom/slide-embed/`)
 
 Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
+
+### Lesson blocks (`src/custom/block-list/`, `block-shell/`, `add-content-menu/`, `add-content-row/`, `blocks/`)
+
+The lesson block canvas is split into a reusable **container** and **block bodies**, so any host can render an ordered, draggable list of mixed content.
+
+**Container**
+
+- `BlockList` owns ordering (drag and drop via `svelte-dnd-action`), the gap `+` rows, the scroll rail and active-block tracking, the insert highlight, and the drag hint. It is generic over `T extends { id: string }` and takes `items`, `editable`, `spacingClass`, `addChoices`, `onAdd(type, index)`, `onReorder(items)`, and a `renderItem({ item, index, total, highlighted })` snippet. Pass `emptyAction` for the editable empty state, and `showRail={false}` when the list is embedded in a narrow panel.
+- `BlockShell` renders a single block's frame: optional drag handle, type label, example badge, actions dropdown (`menuItems`), and the `highlighted` ring.
+- `AddContentMenu` is the between-block `+` row that expands into a choices toolbar; the trigger stays hidden until the row is hovered or focused.
+- `AddContentRow` is the empty-state / toolbar row: Ask AI trigger, choice buttons, and the AI panel shell. `aiOpen` drives an animated clip-path reveal of the `aiPanel` snippet, keeps the toolbar `inert` while open, and restores focus to the trigger on close.
+
+Labels are individual props with English defaults, so the dashboard overrides them with translated copy. All blocks live in `src/custom/blocks/`:
+
+| Block                                  | Props worth knowing                                                                                                                                       | Story                      |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `ImageBlock` (+ `ImageSettingsDialog`) | `url`, `alt`, `fit`, `editable`, `changeLabel`, `onChangeFile`, `onSaveSettings`                                                                          | `Blocks/ImageBlock`        |
+| `DocumentBlock`                        | `files`, `editable`, `labels`, `changeLabel`, `onView`, `onDownload`, `onChange`                                                                          | `Blocks/DocumentBlock`     |
+| `SlideBlock`                           | `slide`, `isExample`, `editable`, `frameTitle`, `changeLabel`, `onChange`                                                                                 | `Blocks/SlideBlock`        |
+| `VideoBlock`                           | `title`, `thumbnailUrl`, `durationLabel`, `channelLine`, `metaLine`, `changeLabel`, `onChange`, plus `actions`, `status`, `notice`, and `player` snippets | `Blocks/VideoBlock`        |
+| `NoteBlock`                            | `style` (`default` / `info` / `tip` / `important` / `warning` / `highlight`), `contentHtml`, `empty`, plus `editor` and `view` snippets                   | `Blocks/NoteBlock`         |
+| `BlockChangeButton`                    | `label`, `onclick`, `disabled` — the hover "Change …" action the source blocks overlay on their media                                                     | `Blocks/BlockChangeButton` |
+
+`VideoBlock` and `NoteBlock` are presentational: the host injects its own player, editor, dropdown, and math-rendering wrapper through snippets, while the block owns layout, chrome, and the example states.
+
+### Reading density (`src/custom/density-control/`)
+
+`DensityControl` pairs a compact segmented toggle with a live gap swatch, mirroring the lesson-editor prototype: picking Compact / Comfortable / Spacious updates the swatch gaps (4 / 7 / 11px) with a short transition. It takes `value`, `options` (`{ value, label }[]`, labels injected by the host so copy stays translated), `onChange`, `groupLabel`, and an optional `testIdPrefix` for per-option hooks. See `Molecules/DensityControl` in Storybook.
 
 ### Public course Copy Page (`src/custom/public-course/copy-page-button.svelte`)
 

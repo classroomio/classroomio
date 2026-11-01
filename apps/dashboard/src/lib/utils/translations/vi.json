@@ -2690,6 +2690,68 @@
                 "activities": "Tạo hoạt động bài học"
               }
             }
+          },
+          "blocks": {
+            "add_content": "Thêm nội dung",
+            "example": "Ví dụ",
+            "change_type": "Thay đổi {type}",
+            "edit_type": "Chỉnh sửa {type}",
+            "remove": "Xóa khối",
+            "move_up": "Tiến lên",
+            "move_down": "Di chuyển xuống",
+            "actions": "Chặn hành động",
+            "drag": "Kéo để sắp xếp lại",
+            "drag_hint": "Kéo cần điều khiển trên một khối để sắp xếp lại thứ tự. Bạn cũng có thể sử dụng chức năng Di chuyển lên và Di chuyển xuống từ menu của nó.",
+            "dismiss_hint": "Bỏ qua gợi ý sắp xếp lại",
+            "empty_title": "Hãy bắt đầu xây dựng bài học này.",
+            "empty_description": "Thêm ghi chú, video, slide, tài liệu hoặc hình ảnh. Bạn có thể thêm bao nhiêu khối tùy thích, theo bất kỳ thứ tự nào.",
+            "empty_note": "Ghi chú này trống.",
+            "note_style": "Phong cách",
+            "preview_label": "Trải nghiệm người học trong ứng dụng",
+            "scroll_rail": "Khối bài học",
+            "go_to_block": "Đi đến khối {index}",
+            "image": {
+              "upload": "Tải ảnh lên",
+              "upload_error": "Tải ảnh lên không thành công. Vui lòng thử lại.",
+              "change": "Thay đổi hình ảnh",
+              "settings": "Cài đặt hình ảnh",
+              "alt": "Văn bản thay thế",
+              "alt_placeholder": "Mô tả hình ảnh cho người học sử dụng công nghệ hỗ trợ.",
+              "fit": "Phù hợp",
+              "fit_cover": "Đổ đầy",
+              "fit_contain": "Phù hợp"
+            },
+            "settings": {
+              "title": "Cài đặt bài học",
+              "description": "Quản lý bài học này mà không cần rời khỏi khung nội dung."
+            },
+            "reading_density": {
+              "title": "Mật độ đọc",
+              "description": "Công cụ này điều chỉnh khoảng cách giữa các khối dành cho người học. Nó không thay đổi khung chỉnh sửa.",
+              "compact": "Nhỏ gọn",
+              "comfortable": "Thoải mái",
+              "spacious": "Rộng rãi"
+            },
+            "styles": {
+              "default": "Mặc định",
+              "info": "Thông tin",
+              "tip": "Mẹo",
+              "important": "Quan trọng",
+              "warning": "Cảnh báo",
+              "highlight": "Điểm nổi bật"
+            },
+            "ai": {
+              "title": "Soạn thảo ghi chú bằng AI",
+              "prompt_label": "Lời nhắc",
+              "prompt_placeholder": "Ví dụ: Giới thiệu ngắn gọn về chu trình nước dành cho người mới bắt đầu"
+            },
+            "types": {
+              "note": "Ghi chú",
+              "video": "Băng hình",
+              "slides": "Các slide",
+              "document": "Tài liệu",
+              "image": "Hình ảnh"
+            }
           }
         },
         "lesson_nav": {
@@ -2839,7 +2901,12 @@
         "add_content_add_to_section": "Thêm nội dung",
         "expand_content": "Mở rộng nội dung",
         "collapse_content": "Thu gọn nội dung",
-        "no_section": "Không có phần nào"
+        "no_section": "Không có phần nào",
+        "header": {
+          "mode_label": "Chế độ bài học",
+          "mode_edit": "Biên tập",
+          "mode_preview": "Xem trước"
+        }
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
