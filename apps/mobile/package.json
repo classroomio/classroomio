@@ -75,6 +75,7 @@
     "build:ios": "set -a && . ./.env.production && set +a && npx eas-cli build --platform ios --profile production --local --output build/classroomio.ipa",
     "build:android": "set -a && . ./.env.production && set +a && npx eas-cli build --platform android --profile production --local --output build/classroomio.aab",
     "deploy:ios": "npm run build:ios && set -a && . ./.env.production && set +a && npx eas-cli submit --platform ios --profile production --path build/classroomio.ipa",
+    "eas-build-post-install": "pnpm --filter @cio/utils... build",
     "deploy:android": "npm run build:android && set -a && . ./.env.production && set +a && npx eas-cli submit --platform android --profile production --path build/classroomio.aab"
   },
   "private": true
