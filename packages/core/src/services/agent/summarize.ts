@@ -1,4 +1,5 @@
 import { generateText } from 'ai';
+import { createAiTelemetry } from '@cio/ai-assistant/telemetry';
 import { createModel, pickAnyConfiguredProvider } from '@cio/ai-assistant/providers';
 import { AppError } from '@cio/utils/errors';
 
@@ -132,9 +133,12 @@ export async function summarizeConversation(options: SummarizeOptions): Promise<
       ? conversationText.slice(conversationText.length - MAX_CONVERSATION_CHARS)
       : conversationText;
 
+  const summarizeTelemetry = createAiTelemetry('agent.summarize');
+
   const result = await generateText({
     model,
     system: SUMMARIZE_SYSTEM_PROMPT,
+    experimental_telemetry: summarizeTelemetry,
     prompt: `Here is the conversation to summarize. Tool calls appear as [tool:name] input=… output=… lines.\n\n${truncatedText}\n\nReturn the structured handoff message described in the system prompt.`,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
     maxRetries: 0
@@ -174,9 +178,12 @@ export async function summarizeConversationDelta(options: SummarizeDeltaOptions)
       ? conversationText.slice(conversationText.length - MAX_CONVERSATION_CHARS)
       : conversationText;
 
+  const summarizeDeltaTelemetry = createAiTelemetry('agent.summarize-delta');
+
   const result = await generateText({
     model,
     system: SUMMARIZE_SYSTEM_PROMPT,
+    experimental_telemetry: summarizeDeltaTelemetry,
     prompt: `Existing structured handoff summary:\n\n${options.existingSummary.trim()}\n\nNew conversation messages to merge into that summary:\n\n${truncatedText}\n\nReturn one updated structured handoff message using the required section headings. Preserve concrete plan status, template answers, fetched documentation URLs/source identifiers, created course items, open decisions, and the next action.`,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
     maxRetries: 0

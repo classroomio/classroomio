@@ -1,5 +1,6 @@
 import { generateText } from 'ai';
 import { AIProvider, type AIProviderConfig, createModel } from '@cio/ai-assistant';
+import { createAiTelemetry } from '@cio/ai-assistant/telemetry';
 
 const TEXT_GEN_MODELS: Record<AIProvider, string> = {
   [AIProvider.OPENAI]: 'gpt-4o-mini',
@@ -38,6 +39,8 @@ export async function generateFieldText(
     .filter(Boolean)
     .join(' ');
 
+  const fieldTextTelemetry = createAiTelemetry('agent.field-text', { tone, format });
+
   const { text, usage } = await generateText(
     providerConfig.provider === AIProvider.GOOGLE
       ? {
@@ -46,6 +49,7 @@ export async function generateFieldText(
           prompt: prompt.slice(0, 1000),
           maxOutputTokens: 512,
           maxRetries: 0,
+          experimental_telemetry: fieldTextTelemetry,
           providerOptions: {
             google: { thinkingConfig: { thinkingBudget: 0 } }
           }
@@ -55,7 +59,8 @@ export async function generateFieldText(
           system: systemPrompt,
           prompt: prompt.slice(0, 1000),
           maxOutputTokens: 512,
-          maxRetries: 0
+          maxRetries: 0,
+          experimental_telemetry: fieldTextTelemetry
         }
   );
 

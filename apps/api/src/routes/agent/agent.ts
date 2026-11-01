@@ -56,6 +56,7 @@ import {
   type AgentStatus
 } from '@cio/ai-assistant';
 import { createModel, getProviderConfigForProvider, pickAnyConfiguredProvider } from '@cio/ai-assistant/providers';
+import { createAiTelemetry } from '@cio/ai-assistant/telemetry';
 import { AGENT_MODELS, DEFAULT_PICKER_MODEL_ID } from '@cio/utils/agent-models';
 import { buildSystemPrompt, buildContextMessage } from '@cio/ai-assistant/prompt';
 import { trackAgentEvent, AgentEvent } from '@cio/core/utils/tinybird';
@@ -620,6 +621,15 @@ const agentCoreRouter = new Hono()
         };
       }
 
+      const chatTelemetry = createAiTelemetry('agent.chat', {
+        userId: user.id,
+        sessionId: conversationId,
+        orgId,
+        courseId,
+        role,
+        modelId
+      });
+
       const result = streamText({
         model,
         maxRetries: 2,
@@ -628,6 +638,7 @@ const agentCoreRouter = new Hono()
         tools: agentTools,
         providerOptions: moonshotProviderOptions,
         stopWhen: stepCountIs(MAX_STEPS_PER_ROUND),
+        experimental_telemetry: chatTelemetry,
         onStepFinish: () => {
           completedStepCount += 1;
         },

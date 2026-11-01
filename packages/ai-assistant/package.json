@@ -24,6 +24,10 @@
       "types": "./dist/prompt/index.d.ts",
       "default": "./dist/prompt/index.js"
     },
+    "./telemetry": {
+      "types": "./dist/telemetry/index.d.ts",
+      "default": "./dist/telemetry/index.js"
+    },
     "./tutor-config": {
       "types": "./dist/tutor-config/index.d.ts",
       "default": "./dist/tutor-config/index.js"
@@ -40,6 +44,7 @@
     "@ai-sdk/moonshotai": "^2.0.21",
     "@ai-sdk/openai": "^3.0.52",
     "@cio/question-types": "workspace:*",
+    "@telemetry-dev/ai-sdk": "^0.1.10",
     "ai": "^6.0.158",
     "zod": "^3.24.4"
   },

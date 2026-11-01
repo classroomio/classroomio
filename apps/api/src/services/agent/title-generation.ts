@@ -1,6 +1,7 @@
 import { generateText, generateObject } from 'ai';
 import { z } from 'zod';
 import { AIProvider, type AIProviderConfig, createModel } from '@cio/ai-assistant';
+import { createAiTelemetry } from '@cio/ai-assistant/telemetry';
 
 /**
  * Cheap models used specifically for title generation to minimize token cost.
@@ -30,6 +31,7 @@ export async function generateConversationTitle(
     "Generate a short, descriptive title (2–5 words) for a chat conversation based on the user's first message. The title must be at least 2 words — never a single word. Return ONLY the title, no quotes, no punctuation at the end.";
 
   const truncatedMessage = firstMessageText.slice(0, 1000);
+  const titleTelemetry = createAiTelemetry('agent.conversation-title');
 
   // Gemini 3.x counts thinking toward maxOutputTokens; disable thinking and allow headroom for the title text.
   const { text } = await generateText(
@@ -40,6 +42,7 @@ export async function generateConversationTitle(
           prompt: truncatedMessage,
           maxOutputTokens: 256,
           maxRetries: 0,
+          experimental_telemetry: titleTelemetry,
           providerOptions: {
             google: { thinkingConfig: { thinkingBudget: 0 } }
           }
@@ -49,7 +52,8 @@ export async function generateConversationTitle(
           system: systemPrompt,
           prompt: truncatedMessage,
           maxOutputTokens: 96,
-          maxRetries: 0
+          maxRetries: 0,
+          experimental_telemetry: titleTelemetry
         }
   );
 

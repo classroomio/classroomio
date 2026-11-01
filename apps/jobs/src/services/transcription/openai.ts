@@ -2,6 +2,7 @@ import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 
 import OpenAI from 'openai';
+import { wrapOpenAI } from '@telemetry-dev/openai';
 
 import { normalizeWhisperLanguage } from '@cio/utils/functions';
 
@@ -44,7 +45,7 @@ export async function transcribeAudioFile(params: {
     throw new AudioFileTooLargeError(fileStat.size);
   }
 
-  const client = new OpenAI({ apiKey: params.apiKey });
+  const client = wrapOpenAI(new OpenAI({ apiKey: params.apiKey }));
 
   const response = await client.audio.transcriptions.create({
     file: createReadStream(params.localPath),

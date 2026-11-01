@@ -43,6 +43,8 @@
     "@cio/email": "workspace:*",
     "@cio/jobs": "workspace:*",
     "@cio/utils": "workspace:*",
+    "@telemetry-dev/openai": "^0.1.13",
+    "@telemetry-dev/sdk": "^0.1.12",
     "bullmq": "^5.34.0",
     "dotenv": "^16.3.1",
     "ioredis": "^5.4.1",

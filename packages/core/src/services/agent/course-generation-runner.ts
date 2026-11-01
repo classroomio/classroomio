@@ -13,6 +13,7 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { AgentRole, AIProvider, MAX_STEPS_PER_ROUND, getCourseTemplate, type AgentContext } from '@cio/ai-assistant';
 import { createModel, getProviderConfigForProvider } from '@cio/ai-assistant/providers';
 import { buildContextMessage, buildSystemPrompt } from '@cio/ai-assistant/prompt';
+import { createAiTelemetry } from '@cio/ai-assistant/telemetry';
 import { AGENT_MODELS, DEFAULT_PICKER_MODEL_ID, type AgentModelId } from '@cio/utils/agent-models';
 import { AppError } from '@cio/utils/errors';
 import { isOrgOnPaidPlan, recordTokenUsage } from './usage';
@@ -259,13 +260,23 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
         }
       });
 
+      const roundTelemetry = createAiTelemetry('agent.course-generation', {
+        userId: initialRun.userId,
+        sessionId: initialRun.id,
+        orgId: initialRun.orgId,
+        courseId: initialRun.courseId,
+        modelId,
+        workerRound: roundIndex
+      });
+
       const result = await generateText({
         model,
         maxRetries: 2,
         system: systemPrompt,
         messages: modelMessages,
         tools: agentTools,
-        stopWhen: stepCountIs(MAX_STEPS_PER_ROUND)
+        stopWhen: stepCountIs(MAX_STEPS_PER_ROUND),
+        experimental_telemetry: roundTelemetry
       });
 
       if (result.usage) {

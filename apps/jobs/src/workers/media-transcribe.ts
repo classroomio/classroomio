@@ -1,6 +1,7 @@
 import './../bootstrap';
 
 import { Worker } from 'bullmq';
+import { init as initTelemetry, shutdown as shutdownTelemetry } from '@telemetry-dev/sdk';
 
 import { recordDeadLetterJob, updateMediaJob } from '@cio/db/queries';
 import { JOB_NAMES, QUEUE_NAMES, createRedisConnection } from '@cio/jobs';
@@ -9,6 +10,11 @@ import { JobCanceledError, errorMessage } from '../utils/cancel';
 import { env } from '../config/env';
 import { log } from '../utils/logger';
 import { processTranscribeAudio } from '../processors/media';
+
+initTelemetry({
+  serviceName: process.env.OTEL_SERVICE_NAME ?? 'classroomio-jobs',
+  onError: (error) => log.warn('telemetry-export-failed', { error: error.message })
+});
 
 const concurrency = Number.parseInt(env.TRANSCRIBE_WORKER_CONCURRENCY ?? '1', 10) || 1;
 const connection = createRedisConnection();
@@ -78,6 +84,7 @@ worker.on('error', (err) => log.error('transcribe-worker-error', { error: errorM
 const shutdown = async (signal: string) => {
   log.info('transcribe-worker-shutdown', { signal });
   await worker.close();
+  await shutdownTelemetry();
   await connection.quit();
   process.exit(0);
 };
