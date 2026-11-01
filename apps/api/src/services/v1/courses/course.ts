@@ -158,7 +158,8 @@ export async function updatePublicApiCourseService(
 
   if (tagIds === undefined && addTagIds === undefined) {
     const result = await updateCourseService(params.courseId, courseData);
-    updated = { ...result, tags: await getCourseTagsForOrganization(orgId, params.courseId) };
+    const courseTags = await getCourseTagsForOrganization(orgId, params.courseId);
+    updated = { ...result, tags: courseTags };
   } else {
     assertAutomationActor(actorId);
 

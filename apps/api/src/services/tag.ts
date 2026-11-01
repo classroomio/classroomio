@@ -226,13 +226,16 @@ export async function createOrganizationTag(orgId: string, data: TTagCreate, dbC
 
     const slug = await generateUniqueTagSlug(orgId, data.name, dbClient);
 
+    const name = data.name.trim();
+    const description = normalizeOptionalText(data.description);
+
     return createTag(
       {
         organizationId: orgId,
         groupId: data.groupId,
-        name: data.name.trim(),
+        name,
         slug,
-        description: normalizeOptionalText(data.description),
+        description,
         color: data.color
       },
       dbClient

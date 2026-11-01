@@ -23,6 +23,7 @@ export class CoursesApi extends BaseApiWithErrors {
   orgCoursesPagination = $state<OrgCoursesPagination | null>(null);
   enrolledCourses = $state<UserEnrolledCourses>([]);
   recommendedCourses = $state<RecommendedCourses>([]);
+  private recommendedRequestId = 0;
   recommendedCoursesPagination = $state<{ page: number; limit: number; total: number; totalPages: number } | null>(
     null
   );
@@ -152,6 +153,8 @@ export class CoursesApi extends BaseApiWithErrors {
       order: options.order
     };
 
+    const requestId = ++this.recommendedRequestId;
+
     await this.execute<GetRecommendedCoursesRequest>({
       requestFn: () =>
         classroomio.organization.courses.recommended.$get({
@@ -159,6 +162,8 @@ export class CoursesApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching recommended courses',
       onSuccess: (response) => {
+        if (requestId !== this.recommendedRequestId) return;
+
         if (response.data) {
           this.recommendedCourses = response.data;
         }

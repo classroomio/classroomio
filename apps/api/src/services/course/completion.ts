@@ -150,6 +150,8 @@ export async function evaluateCourseCertification(
     const didClaimCompletion = await claimMemberCompleted(groupMemberId, completedAt);
 
     if (didClaimCompletion) {
+      const daysToComplete = daysBetween(progress.enrolledAt, completedAt);
+
       captureServerEvent({
         event: 'course_completed',
         distinctId: profileId,
@@ -157,7 +159,7 @@ export async function evaluateCourseCertification(
         properties: {
           course_id: courseId,
           course_type: courseRow.type,
-          days_to_complete: daysBetween(progress.enrolledAt, completedAt)
+          days_to_complete: daysToComplete
         }
       });
 
