@@ -19,13 +19,7 @@ import type { LessonVideoSource, LessonWatchProgress, TranscriptSegment } from '
 
 import { EmbedFrame } from './embed-frame';
 import { EmbedSource } from './embed-source';
-import {
-  NativeVideo,
-  NativeVideoCaptions,
-  NativeVideoControls,
-  NativeVideoSpeed,
-  NativeVideoSurface
-} from './native-video';
+import { NativeVideo, NativeVideoSurface } from './native-video';
 
 type LessonVideoProps = {
   source: LessonVideoSource;
@@ -69,10 +63,6 @@ export function LessonVideo({
         onPlayerChange={onPlayerChange}
       >
         <NativeVideoSurface />
-        <NativeVideoControls>
-          <NativeVideoSpeed />
-          <NativeVideoCaptions />
-        </NativeVideoControls>
       </NativeVideo>
     );
   }
@@ -126,10 +116,6 @@ export function LessonVideo({
       onPlayerChange={onPlayerChange}
     >
       <NativeVideoSurface />
-      <NativeVideoControls>
-        <NativeVideoSpeed />
-        <NativeVideoCaptions />
-      </NativeVideoControls>
     </NativeVideo>
   );
 }
@@ -169,10 +155,6 @@ function HlsVideo({
       onRetry={() => playback.refetch()}
     >
       <NativeVideoSurface />
-      <NativeVideoControls>
-        <NativeVideoSpeed />
-        <NativeVideoCaptions />
-      </NativeVideoControls>
     </NativeVideo>
   );
 }

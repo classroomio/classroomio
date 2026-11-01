@@ -22,7 +22,9 @@ import { NotificationsBootstrap } from '@/feature/notifications/components/notif
 import { ApiProvider } from '@/feature/common/components/api-provider';
 import { ThemeProvider } from '@/feature/common/components/theme-provider';
 import { FONT_FAMILY } from '@/feature/common/constants/typography';
+import { connectQueryAppFocus, useRefetchOnNavigation } from '@/feature/common/helpers/query-focus';
 import { connectQueryNetworkStatus } from '@/feature/common/helpers/query-network';
+import { restorePortrait } from '@/feature/lesson/helpers/fullscreen-orientation';
 import { OfflineSupport } from '@/feature/offline/components/offline-support';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { useSyncCurrentLocale } from '@/feature/i18n/helpers/use-sync-current-locale';
@@ -34,6 +36,8 @@ import { Toaster } from '@/feature/toast/components/toaster';
 
 void SplashScreen.preventAutoHideAsync();
 connectQueryNetworkStatus();
+connectQueryAppFocus();
+void restorePortrait().catch(() => {});
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 60 * 1000 } }
@@ -87,6 +91,7 @@ function BrandedApp({ fontsLoaded }: { fontsLoaded: boolean }) {
 function RootNavigator({ ready }: { ready: boolean }) {
   const { isDark, colors } = useTheme();
   const { userId } = useAuth();
+  useRefetchOnNavigation();
 
   const navigationTheme = useMemo(() => {
     const base = isDark ? DarkTheme : DefaultTheme;

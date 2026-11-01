@@ -40,7 +40,8 @@ const config: ExpoConfig = {
   slug: 'classroomio',
   scheme: 'classroomio',
   version: '1.0.0',
-  orientation: 'portrait',
+  // Landscape stays available for fullscreen video; screens are locked to portrait with expo-screen-orientation once JS starts.
+  orientation: 'default',
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
   ios: {
@@ -84,6 +85,7 @@ const config: ExpoConfig = {
       }
     ],
     ['expo-video', { supportsBackgroundPlayback: true, supportsPictureInPicture: true }],
+    ['expo-screen-orientation', { initialOrientation: 'PORTRAIT_UP' }],
     [
       'expo-camera',
       {
