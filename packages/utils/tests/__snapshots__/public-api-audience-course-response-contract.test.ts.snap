@@ -1663,6 +1663,35 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
     "studentLimitReached": {
       "type": "boolean",
     },
+    "tags": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "color": {
+            "type": "string",
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+          "slug": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "color",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
     "templateId": {
       "anyOf": [
         {
@@ -1730,6 +1759,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
     "status",
     "type",
     "callout",
+    "tags",
     "group",
     "attendance",
     "content",

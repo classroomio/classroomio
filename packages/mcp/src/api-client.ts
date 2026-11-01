@@ -56,6 +56,7 @@ import type {
   TPublicApiLessonLocale,
   TPublicApiReorderCourseContent,
   TPublicApiCloneCourse,
+  TPublicApiRelatedCoursesQuery,
   TPublicApiSetFeaturedCourses,
   TPublicApiUpdateDomain,
   TPublicApiConnectCustomDomain,
@@ -723,6 +724,10 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/comments/${commentId}`, {
       method: 'DELETE'
     });
+  }
+
+  async listRelatedCourses(courseId: string, query: Partial<TPublicApiRelatedCoursesQuery> = {}) {
+    return this.request(`/public-api/v1/courses/${courseId}/related${toQuerySuffix(query)}`, { method: 'GET' });
   }
 
   async cloneCourse(courseId: string, payload: TPublicApiCloneCourse) {

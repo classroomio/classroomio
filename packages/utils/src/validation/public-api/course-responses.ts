@@ -108,6 +108,13 @@ const ZCourseCallout = z.object({
   animation: z.enum(['waves', 'dotted', 'none']).optional()
 });
 
+const ZCourseTagPreview = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  slug: z.string(),
+  color: z.string()
+});
+
 export const ZPublicApiCourseResponse = z.object({
   id: z.string().uuid(),
   title: z.string(),
@@ -139,14 +146,20 @@ export const ZPublicApiCourseListItemResponse = ZPublicApiCourseResponse.extend(
   lessonCount: z.number(),
   totalStudents: z.number(),
   exerciseCount: z.number(),
-  tags: z.array(
-    z.object({
-      id: z.string().uuid(),
-      name: z.string(),
-      slug: z.string(),
-      color: z.string()
-    })
-  )
+  tags: z.array(ZCourseTagPreview)
+});
+
+export const ZPublicApiRelatedCourseResponse = ZPublicApiCourseResponse.pick({
+  id: true,
+  title: true,
+  slug: true,
+  type: true,
+  cost: true,
+  currency: true,
+  bannerImage: true
+}).extend({
+  tags: z.array(ZCourseTagPreview),
+  sharedTags: z.array(ZCourseTagPreview).describe('Tags this course has in common with the requested course')
 });
 
 const ZCourseContentItem = z.object({
@@ -171,6 +184,7 @@ const ZCourseContentItem = z.object({
 });
 
 export const ZPublicApiCourseDetailResponse = ZPublicApiCourseResponse.extend({
+  tags: z.array(ZCourseTagPreview),
   group: z
     .object({
       id: z.string().uuid(),
