@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { describe, expect, it } from 'vitest';
 
-import { ZCertificationSettings } from '../src/validation/course/course';
+import { ZCertificatePresentationDocument, ZCertificationSettings } from '../src/validation/course/course';
 import {
   PUBLIC_API_CERTIFICATE_FIELDS,
   ZPublicApiCertificateDesign,
@@ -111,6 +111,34 @@ describe('public certificate contract', () => {
     const parsed = ZPublicApiUpdateCourseCertificate.parse(fullPayload);
 
     expect(ZCertificationSettings.parse(parsed)).toEqual(parsed);
+  });
+});
+
+describe('certificate presentation provenance', () => {
+  it('preserves the trusted plugin source used for uninstall cleanup', () => {
+    const source = {
+      kind: 'plugin' as const,
+      pluginId: 'com.classroomio.certificate-studio',
+      installationId: '11111111-1111-4111-8111-111111111111',
+      pluginVersion: '1.0.0',
+      templateSourceId: 'template-1',
+      templateName: 'Executive'
+    };
+
+    const presentation = ZCertificatePresentationDocument.parse({
+      kind: 'document',
+      source,
+      document: {
+        version: 1,
+        accentColor: '#112233',
+        title: 'Certificate of completion',
+        subtitle: 'Awarded for completing the course',
+        idFormat: 'CIO-{year}-{seq}',
+        signatories: []
+      }
+    });
+
+    expect(presentation.source).toEqual(source);
   });
 });
 

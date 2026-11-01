@@ -844,6 +844,14 @@ export const course = pgTable(
             kind: 'document';
             schema: 'classroomio.certificate-document';
             version: 1;
+            source?: {
+              kind: 'plugin';
+              pluginId: string;
+              installationId: string;
+              pluginVersion: string;
+              templateSourceId?: string;
+              templateName?: string;
+            };
             document: Record<string, unknown>;
           }
         | null;

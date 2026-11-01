@@ -3,6 +3,7 @@ import { AppError } from '@api/utils/errors';
 import {
   createInstallation,
   getInstallationById,
+  getPluginUninstallDataImpact,
   getOrganizationInstallation,
   getPluginById,
   getPluginByIdOrSlug,
@@ -17,7 +18,8 @@ import {
   updateInstallationSettings as updateInstallationSettingsQuery,
   updateInstallationStatus as updateInstallationStatusQuery,
   updateOrgApprovalStatus as updateOrgApprovalStatusQuery,
-  getInstallationGrants
+  getInstallationGrants,
+  uninstallPluginInstallation
 } from '@cio/db/queries/plugin';
 import {
   getPluginCoursesList,
@@ -319,6 +321,54 @@ export async function changeInstallationStatus(
   });
 
   return updatedInstallation;
+}
+
+async function requireUninstallableOrganizationInstallation(installationId: string, organizationId: string) {
+  const installation = await getInstallationById(installationId);
+  if (!installation || installation.organizationId !== organizationId || installation.ownerType !== 'organization') {
+    throw new AppError('Plugin installation not found', 'INSTALLATION_NOT_FOUND', 404);
+  }
+
+  if (installation.status === 'uninstalled' || installation.status === 'revoked') {
+    throw new AppError('Plugin is not installed', 'INSTALLATION_NOT_ACTIVE', 409);
+  }
+
+  return installation;
+}
+
+export async function getPluginUninstallImpact(installationId: string, organizationId: string) {
+  await requireUninstallableOrganizationInstallation(installationId, organizationId);
+
+  return getPluginUninstallDataImpact(installationId, organizationId);
+}
+
+export async function uninstallPlugin(
+  installationId: string,
+  organizationId: string,
+  options: { deletePluginStorage: boolean; removePublishedOutputs: boolean },
+  actorProfileId?: string
+) {
+  const installation = await requireUninstallableOrganizationInstallation(installationId, organizationId);
+  const result = await uninstallPluginInstallation(installationId, organizationId, options);
+  if (!result?.installation) {
+    throw new AppError('Plugin installation not found', 'INSTALLATION_NOT_FOUND', 404);
+  }
+
+  await recordPluginAuditEvent({
+    installationId,
+    organizationId,
+    actorProfileId,
+    action: 'plugin.uninstalled',
+    resource: installation.pluginId,
+    outcome: 'success',
+    metadata: {
+      ...options,
+      storageRecordsDeleted: result.storageRecordsDeleted,
+      publishedOutputsRemoved: result.publishedOutputsRemoved
+    }
+  });
+
+  return result;
 }
 
 export async function changeInstallationSettings(

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PluginIcon, pluginsApi } from '$features/plugins';
-  import { PluginInstallModal } from '$features/plugins/components';
+  import { PluginInstallModal, PluginUninstallModal } from '$features/plugins/components';
   import { summarizePluginPermissions } from '$features/plugins/utils/permissions';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -24,6 +24,8 @@
   let processingPluginId = $state<string | null>(null);
   let installTargetPlugin = $state<DisplayPluginCard | null>(null);
   let isInstallModalOpen = $state(false);
+  let uninstallTargetPlugin = $state<DisplayPluginCard | null>(null);
+  let isUninstallModalOpen = $state(false);
 
   $effect(() => {
     const organizationId = $currentOrg.id;
@@ -169,14 +171,26 @@
     installTargetPlugin = null;
   }
 
-  async function handleUninstall(plugin: DisplayPluginCard) {
-    if (!$currentOrg.id || !plugin.installationId || processingPluginId) return;
+  function promptUninstall(plugin: DisplayPluginCard) {
+    uninstallTargetPlugin = plugin;
+    isUninstallModalOpen = true;
+  }
+
+  function handleCloseUninstallModal() {
+    isUninstallModalOpen = false;
+    uninstallTargetPlugin = null;
+  }
+
+  async function handleConfirmUninstall(options: { deletePluginStorage: boolean; removePublishedOutputs: boolean }) {
+    const plugin = uninstallTargetPlugin;
+    if (!$currentOrg.id || !plugin?.installationId || processingPluginId) return;
 
     processingPluginId = plugin.id;
     try {
-      const result = await pluginsApi.updateStatus(plugin.installationId, 'uninstalled', $currentOrg.id);
+      const result = await pluginsApi.uninstall(plugin.installationId, $currentOrg.id, options);
       if (result) {
         snackbar.success('plugins.uninstalled_success');
+        handleCloseUninstallModal();
       } else {
         snackbar.error('plugins.failed_uninstall');
       }
@@ -412,7 +426,7 @@
                       {/if}
                       <button
                         type="button"
-                        onclick={() => handleUninstall(plugin)}
+                        onclick={() => promptUninstall(plugin)}
                         disabled={isProcessing}
                         title={$t('plugins.uninstall')}
                         class="flex size-7 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400"
@@ -442,6 +456,16 @@
     {/snippet}
   </Page.Body>
 </Page.Root>
+
+<PluginUninstallModal
+  bind:open={isUninstallModalOpen}
+  plugin={uninstallTargetPlugin?.installationId
+    ? { installationId: uninstallTargetPlugin.installationId, name: uninstallTargetPlugin.name }
+    : null}
+  isUninstalling={Boolean(uninstallTargetPlugin && processingPluginId === uninstallTargetPlugin.id)}
+  onConfirm={handleConfirmUninstall}
+  onClose={handleCloseUninstallModal}
+/>
 
 <PluginInstallModal
   open={isInstallModalOpen}

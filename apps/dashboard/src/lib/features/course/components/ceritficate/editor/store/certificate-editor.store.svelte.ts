@@ -5,6 +5,7 @@ import {
   resolveStoredCertificatePresentation,
   type CertificateDesign,
   type CertificateDocumentV1,
+  type CertificatePluginSource,
   type CertificatePresentationV1,
   type CertificateTemplateId,
   type StoredCertificateRecord
@@ -93,7 +94,9 @@ export class CertificateEditorStore {
   draft = $state<CertificateEditorDraft>(toDraft(DEFAULT_CERTIFICATE_DESIGN));
   initial = $state<CertificateEditorDraft>(toDraft(DEFAULT_CERTIFICATE_DESIGN));
   customDocument = $state<CertificateDocumentV1 | null>(null);
+  customDocumentSource = $state<CertificatePluginSource | null>(null);
   #initialCustomDocument: CertificateDocumentV1 | null = null;
+  #initialCustomDocumentSource: CertificatePluginSource | null = null;
   presentationMode = $state<'preset' | 'document'>('preset');
   #initialPresentationMode: 'preset' | 'document' = 'preset';
   isSaving = $state(false);
@@ -103,6 +106,7 @@ export class CertificateEditorStore {
   readonly isDirty = $derived(
     this.presentationMode !== this.#initialPresentationMode ||
       JSON.stringify(this.customDocument) !== JSON.stringify(this.#initialCustomDocument) ||
+      JSON.stringify(this.customDocumentSource) !== JSON.stringify(this.#initialCustomDocumentSource) ||
       JSON.stringify(this.draft) !== JSON.stringify(this.initial)
   );
 
@@ -120,13 +124,17 @@ export class CertificateEditorStore {
 
     if (presentation.kind === 'document') {
       this.customDocument = presentation.document;
+      this.customDocumentSource = presentation.source ?? null;
       this.#initialCustomDocument = presentation.document;
+      this.#initialCustomDocumentSource = presentation.source ?? null;
       this.presentationMode = 'document';
       this.#initialPresentationMode = 'document';
       this.activePanel = 'templates';
     } else {
       this.customDocument = null;
+      this.customDocumentSource = null;
       this.#initialCustomDocument = null;
+      this.#initialCustomDocumentSource = null;
       this.presentationMode = 'preset';
       this.#initialPresentationMode = 'preset';
     }
@@ -135,17 +143,20 @@ export class CertificateEditorStore {
   reset() {
     this.draft = toDraft(fromDraft(this.initial));
     this.customDocument = this.#initialCustomDocument;
+    this.customDocumentSource = this.#initialCustomDocumentSource;
     this.presentationMode = this.#initialPresentationMode;
   }
 
   setTemplate(templateId: CertificateTemplateId) {
     this.presentationMode = 'preset';
     this.customDocument = null;
+    this.customDocumentSource = null;
     this.draft.templateId = templateId;
   }
 
-  setCustomDocument(doc: CertificateDocumentV1) {
+  setCustomDocument(doc: CertificateDocumentV1, source?: CertificatePluginSource) {
     this.customDocument = doc;
+    this.customDocumentSource = source ?? null;
     this.presentationMode = 'document';
     this.activePanel = 'templates';
     if (doc.templateId && CERTIFICATE_TEMPLATE_IDS.includes(doc.templateId as CertificateTemplateId)) {
@@ -182,6 +193,7 @@ export class CertificateEditorStore {
         kind: 'document',
         schema: 'classroomio.certificate-document',
         version: 1,
+        source: this.customDocumentSource ?? undefined,
         document: this.customDocument
       };
     }
@@ -224,6 +236,7 @@ export class CertificateEditorStore {
 
         this.initial = toDraft(design);
         this.#initialCustomDocument = this.customDocument;
+        this.#initialCustomDocumentSource = this.customDocumentSource;
         this.#initialPresentationMode = this.presentationMode;
         snackbar.success(t.get('course.navItem.certificates.editor.saved'));
         return;

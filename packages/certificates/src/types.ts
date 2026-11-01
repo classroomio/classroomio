@@ -94,6 +94,15 @@ export interface CertificateDocumentV1 {
   [key: string]: unknown;
 }
 
+export interface CertificatePluginSource {
+  kind: 'plugin';
+  pluginId: string;
+  installationId: string;
+  pluginVersion: string;
+  templateSourceId?: string;
+  templateName?: string;
+}
+
 export type CertificatePresentationV1 =
   | {
       kind: 'preset';
@@ -104,6 +113,7 @@ export type CertificatePresentationV1 =
       kind: 'document';
       schema: 'classroomio.certificate-document';
       version: 1;
+      source?: CertificatePluginSource;
       document: CertificateDocumentV1;
     };
 

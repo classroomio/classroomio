@@ -479,6 +479,16 @@ export const ZCertificatePresentationDocument = z.object({
   kind: z.literal('document'),
   schema: z.literal('classroomio.certificate-document').default('classroomio.certificate-document'),
   version: z.literal(1).default(1),
+  source: z
+    .object({
+      kind: z.literal('plugin'),
+      pluginId: z.string().trim().min(1),
+      installationId: z.string().uuid(),
+      pluginVersion: z.string().trim().min(1),
+      templateSourceId: z.string().trim().min(1).optional(),
+      templateName: z.string().trim().min(1).optional()
+    })
+    .optional(),
   document: ZCertificateDocumentV1
 });
 

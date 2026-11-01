@@ -34,6 +34,13 @@ export type UpdateInstallationSettingsRequest =
   (typeof classroomio.plugins.installations)[':installationId']['settings']['$patch'];
 export type UpdateOrgApprovalRequest =
   (typeof classroomio.plugins.installations)[':installationId']['approval']['$patch'];
+export type GetPluginUninstallImpactRequest =
+  (typeof classroomio.plugins.installations)[':installationId']['uninstall-impact']['$get'];
+export type GetPluginUninstallImpactResponse = InferResponseType<GetPluginUninstallImpactRequest>;
+export type GetPluginUninstallImpactSuccess = Extract<GetPluginUninstallImpactResponse, { success: true }>;
+export type PluginUninstallImpact = GetPluginUninstallImpactSuccess['data'];
+export type UninstallPluginRequest =
+  (typeof classroomio.plugins.installations)[':installationId']['uninstall']['$post'];
 
 export interface PluginResourceContext {
   type: 'lesson' | 'course' | 'certificate' | 'organization';

@@ -31,9 +31,15 @@ export const ZInstallPlugin = z.object({
 export type TInstallPlugin = z.infer<typeof ZInstallPlugin>;
 
 export const ZUpdateInstallationStatus = z.object({
-  status: z.enum(['active', 'disabled', 'uninstalled'])
+  status: z.enum(['active', 'disabled'])
 });
 export type TUpdateInstallationStatus = z.infer<typeof ZUpdateInstallationStatus>;
+
+export const ZUninstallPlugin = z.object({
+  deletePluginStorage: z.boolean(),
+  removePublishedOutputs: z.boolean()
+});
+export type TUninstallPlugin = z.infer<typeof ZUninstallPlugin>;
 
 export const ZUpdateOrgApprovalStatus = z.object({
   approval: ZPluginOrgApprovalStatus

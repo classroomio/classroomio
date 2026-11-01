@@ -7,6 +7,7 @@ const dbMocks = vi.hoisted(() => ({
   createInstallation: vi.fn(),
   getInstallationById: vi.fn(),
   getInstallationGrants: vi.fn(),
+  getPluginUninstallDataImpact: vi.fn(),
   getOrganizationInstallation: vi.fn(),
   getPluginById: vi.fn(),
   getPluginByIdOrSlug: vi.fn(),
@@ -20,12 +21,18 @@ const dbMocks = vi.hoisted(() => ({
   replaceInstallationGrants: vi.fn(),
   updateInstallationSettings: vi.fn(),
   updateInstallationStatus: vi.fn(),
-  updateOrgApprovalStatus: vi.fn()
+  updateOrgApprovalStatus: vi.fn(),
+  uninstallPluginInstallation: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/plugin', () => dbMocks);
 
-import { installPlugin, resolveOrgContributions } from '@api/services/plugin/installation';
+import {
+  getPluginUninstallImpact,
+  installPlugin,
+  resolveOrgContributions,
+  uninstallPlugin
+} from '@api/services/plugin/installation';
 
 const manifestPath = path.resolve(__dirname, './fixtures/plugins/linkedin-sharing.json');
 const linkedinManifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as TPluginManifest;
@@ -117,6 +124,79 @@ describe('Plugin Installation Service', () => {
       })
     );
     expect(dbMocks.createInstallation).not.toHaveBeenCalled();
+  });
+
+  it('reports retained data before uninstalling', async () => {
+    dbMocks.getInstallationById.mockResolvedValueOnce({
+      id: 'installation-1',
+      pluginVersionId: 'version-1',
+      organizationId: 'organization-1',
+      ownerType: 'organization',
+      status: 'disabled'
+    });
+    dbMocks.getPluginUninstallDataImpact.mockResolvedValueOnce({
+      storageRecords: 3,
+      storageBytes: 512,
+      publishedOutputs: 2
+    });
+
+    await expect(getPluginUninstallImpact('installation-1', 'organization-1')).resolves.toEqual({
+      storageRecords: 3,
+      storageBytes: 512,
+      publishedOutputs: 2
+    });
+  });
+
+  it('uninstalls with the administrator cleanup choices and audits the result', async () => {
+    const installation = {
+      id: 'installation-1',
+      pluginId: linkedinManifest.id,
+      organizationId: 'organization-1',
+      ownerType: 'organization',
+      status: 'active'
+    };
+    const options = { deletePluginStorage: true, removePublishedOutputs: true };
+
+    dbMocks.getInstallationById.mockResolvedValueOnce(installation);
+    dbMocks.uninstallPluginInstallation.mockResolvedValueOnce({
+      installation: { ...installation, status: 'uninstalled' },
+      storageRecordsDeleted: 3,
+      publishedOutputsRemoved: 2
+    });
+
+    await expect(uninstallPlugin('installation-1', 'organization-1', options, 'profile-1')).resolves.toEqual(
+      expect.objectContaining({ storageRecordsDeleted: 3, publishedOutputsRemoved: 2 })
+    );
+    expect(dbMocks.uninstallPluginInstallation).toHaveBeenCalledWith('installation-1', 'organization-1', options);
+    expect(dbMocks.recordPluginAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'plugin.uninstalled',
+        actorProfileId: 'profile-1',
+        metadata: expect.objectContaining({
+          deletePluginStorage: true,
+          removePublishedOutputs: true,
+          storageRecordsDeleted: 3,
+          publishedOutputsRemoved: 2
+        })
+      })
+    );
+  });
+
+  it('does not allow an already uninstalled plugin to be uninstalled again', async () => {
+    dbMocks.getInstallationById.mockResolvedValueOnce({
+      id: 'installation-1',
+      organizationId: 'organization-1',
+      ownerType: 'organization',
+      status: 'uninstalled'
+    });
+
+    await expect(
+      uninstallPlugin('installation-1', 'organization-1', {
+        deletePluginStorage: false,
+        removePublishedOutputs: false
+      })
+    ).rejects.toThrow('Plugin is not installed');
+    expect(dbMocks.uninstallPluginInstallation).not.toHaveBeenCalled();
   });
 
   it('resolves the LinkedIn action only for an active, approved installation', async () => {

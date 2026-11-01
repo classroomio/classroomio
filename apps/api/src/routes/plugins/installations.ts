@@ -13,6 +13,7 @@ import {
   ZPluginStorageNamespaceParam,
   ZPluginStorageQuery,
   ZPluginStoragePut,
+  ZUninstallPlugin,
   ZUpdateInstallationSettings,
   ZUpdateInstallationStatus,
   ZUpdateOrgApprovalStatus
@@ -22,6 +23,7 @@ import {
   changeInstallationStatus,
   changeOrgApproval,
   getInstallation,
+  getPluginUninstallImpact,
   installPlugin,
   listInstallationCourses,
   listInstallationExercises,
@@ -31,7 +33,8 @@ import {
   deleteStorageValue,
   getStorageValue,
   listStorageRecords,
-  setStorageValue
+  setStorageValue,
+  uninstallPlugin
 } from '@api/services/plugin';
 
 /**
@@ -87,6 +90,43 @@ export const pluginInstallationsRouter = new Hono()
       return handleError(c, error, 'Failed to install plugin');
     }
   })
+  .get(
+    '/:installationId/uninstall-impact',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZPluginInstallationParam),
+    async (c) => {
+      const orgId = c.get('orgId') as string;
+      const { installationId } = c.req.valid('param');
+
+      try {
+        const impact = await getPluginUninstallImpact(installationId, orgId);
+        return c.json({ success: true, data: impact }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to calculate plugin uninstall impact');
+      }
+    }
+  )
+  .post(
+    '/:installationId/uninstall',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZPluginInstallationParam),
+    zValidator('json', ZUninstallPlugin),
+    async (c) => {
+      const user = c.get('user')!;
+      const orgId = c.get('orgId') as string;
+      const { installationId } = c.req.valid('param');
+      const options = c.req.valid('json');
+
+      try {
+        const result = await uninstallPlugin(installationId, orgId, options, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to uninstall plugin');
+      }
+    }
+  )
   .get('/:installationId', authMiddleware, orgMemberMiddleware, async (c) => {
     const installationId = c.req.param('installationId');
     const orgId = c.get('orgId') as string;

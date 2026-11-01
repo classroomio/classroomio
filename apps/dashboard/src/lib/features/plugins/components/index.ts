@@ -4,3 +4,4 @@ export { default as PluginActionRenderer } from './plugin-action-renderer.svelte
 export { default as PluginIcon } from './plugin-icon.svelte';
 export { default as PluginPopover } from './plugin-popover.svelte';
 export { default as PluginInstallModal } from './plugin-install-modal.svelte';
+export { default as PluginUninstallModal } from './plugin-uninstall-modal.svelte';

@@ -4,6 +4,7 @@ import type {
   CatalogPluginItem,
   GetCatalogPluginDetailsRequest,
   GetInstallationRequest,
+  GetPluginUninstallImpactRequest,
   InstallationDetails,
   InstalledPluginItem,
   InstallPluginRequest,
@@ -14,7 +15,8 @@ import type {
   UpdateInstallationStatusRequest,
   UpdateOrgApprovalRequest,
   PluginInstallationStatus,
-  PluginOrgApprovalStatus
+  PluginOrgApprovalStatus,
+  UninstallPluginRequest
 } from '../utils/types';
 
 export class PluginsApi extends BaseApiWithErrors {
@@ -125,6 +127,37 @@ export class PluginsApi extends BaseApiWithErrors {
           }
         ),
       logContext: 'updating plugin installation status',
+      onSuccess: () => {
+        void this.listOrgInstallations(orgId);
+      }
+    });
+  }
+
+  async getUninstallImpact(installationId: string, orgId: string) {
+    const response = await this.execute<GetPluginUninstallImpactRequest>({
+      requestFn: () =>
+        classroomio.plugins.installations[':installationId']['uninstall-impact'].$get(
+          { param: { installationId } },
+          { headers: { 'cio-org-id': orgId } }
+        ),
+      logContext: 'calculating plugin uninstall impact'
+    });
+
+    return response?.data ?? null;
+  }
+
+  async uninstall(
+    installationId: string,
+    orgId: string,
+    options: { deletePluginStorage: boolean; removePublishedOutputs: boolean }
+  ) {
+    return this.execute<UninstallPluginRequest>({
+      requestFn: () =>
+        classroomio.plugins.installations[':installationId'].uninstall.$post(
+          { param: { installationId }, json: options },
+          { headers: { 'cio-org-id': orgId } }
+        ),
+      logContext: 'uninstalling plugin',
       onSuccess: () => {
         void this.listOrgInstallations(orgId);
       }
