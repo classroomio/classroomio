@@ -31,6 +31,8 @@ function buildApp(scopes: string[]) {
     )
     .put('/courses/:courseId/members/:memberId', (c) => c.json({ success: true }))
     .get('/courses/:courseId', (c) => c.json({ success: true }))
+    .get('/courses', (c) => c.json({ success: true }))
+    .post('/courses', (c) => c.json({ success: true }, 201))
     .post('/assets', (c) => c.json({ success: true }, 201))
     .get('/assets', (c) => c.json({ success: true }))
     .get('/tags', (c) => c.json({ success: true }))
@@ -145,6 +147,19 @@ describe('publicApiScopesMiddleware', () => {
     const app = buildApp(COHORT_SCOPES);
 
     expect((await app.request('/public-api/v1/assets', { method: 'POST' })).status).toBe(403);
+  });
+
+  it('lets course:read list courses but not create one', async () => {
+    const app = buildApp(['course:read']);
+
+    expect((await app.request('/public-api/v1/courses')).status).toBe(200);
+    expect((await app.request('/public-api/v1/courses', { method: 'POST' })).status).toBe(403);
+  });
+
+  it('keeps a key without course:read out of the course list', async () => {
+    const app = buildApp(COHORT_SCOPES);
+
+    expect((await app.request('/public-api/v1/courses')).status).toBe(403);
   });
 
   it('lets course:read list tags but not write them', async () => {

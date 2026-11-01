@@ -17,13 +17,13 @@ import type {
 } from '@cio/utils/validation/course-import';
 
 import type { McpServerConfig } from './config';
-import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type {
   TPublicApiAddExerciseQuestion,
   TPublicApiAddExerciseSection,
   TPublicApiUpdateExerciseQuestionFields,
   TPublicApiUpdateExerciseSectionFields,
   TPublicApiCourseExercisesQuery,
+  TPublicApiCoursesQuery,
   TPublicApiCourseMarksQuery,
   TPublicApiCourseSubmissionsQuery,
   TPublicApiCreateCourseExercise,
@@ -234,8 +234,8 @@ export class ClassroomIoApiClient {
     });
   }
 
-  async listOrganizationCourses(query: Partial<TGetOrganizationCoursesQuery> = {}) {
-    return this.request(`/organization/courses${toQuerySuffix(query)}`, {
+  async listOrganizationCourses(query: Partial<TPublicApiCoursesQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses${toQuerySuffix(query)}`, {
       method: 'GET'
     });
   }

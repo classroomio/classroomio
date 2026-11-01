@@ -22,6 +22,7 @@ const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/a
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
 const TAG_PATH = /^(?:\/public-api\/v1)?\/tags(?:\/|$)/;
 const COURSE_ITEM_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/?$/;
+const COURSE_LIST_PATH = /^(?:\/public-api\/v1)?\/courses\/?$/;
 
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
   const isRead = method === 'GET' || method === 'HEAD';
@@ -70,7 +71,7 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return isRead ? null : 'course:write';
   }
 
-  if (COURSE_RELATED_PATH.test(path)) {
+  if (COURSE_RELATED_PATH.test(path) || COURSE_LIST_PATH.test(path)) {
     return isRead ? 'course:read' : null;
   }
 

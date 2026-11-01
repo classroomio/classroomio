@@ -50,15 +50,16 @@ export const v1CourseRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the organization's courses; ${ANY_KEY_RULE}.`,
+      description: "List the organization's courses; any key with the public_api:* or course:read scope may call it.",
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
           'Courses returned successfully',
           paginatedResponse(ZPublicApiCourseListItemResponse, CoursesListEnvelope)
         ),
+        400: { description: 'Invalid query parameters' },
         401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' }
+        403: { description: 'The key has neither the public_api:* nor the course:read scope' }
       }
     }),
     validator('query', ZPublicApiCoursesQuery),
