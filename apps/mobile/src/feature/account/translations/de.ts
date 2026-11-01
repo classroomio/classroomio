@@ -43,5 +43,10 @@ export const de: TranslatedMessages<typeof en> = {
   settingsDescription: 'Name, Sprache, App-Sperre, Design',
   signOutTitle: 'Von ClassroomIO abmelden?',
   signOutDescription:
-    'Heruntergeladene Lektionen und nicht synchronisierter Fortschritt werden von diesem Gerät entfernt.'
+    'Heruntergeladene Lektionen und nicht synchronisierter Fortschritt werden von diesem Gerät entfernt.',
+  editName: 'Namen bearbeiten',
+  joinedOn: 'Dabei seit {date}',
+  notifications: 'Benachrichtigungen',
+  orgRole: '{org} · {role}',
+  appVersion: 'ClassroomIO {version}'
 };

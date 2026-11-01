@@ -1,5 +1,7 @@
+import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
+import { ImageSquareIcon } from 'phosphor-react-native/src/icons/ImageSquare';
+import { InfoIcon } from 'phosphor-react-native/src/icons/Info';
 import { ZCommunityQuestionCreate } from '@cio/utils/validation/community';
-import { ChevronDown, ImagePlus, Info } from 'lucide-react-native';
 import { createContext, use, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -200,7 +202,7 @@ export function QuestionFormCourse() {
         <Text tone={selected ? 'ink' : 'subtle'} numberOfLines={1} style={styles.selectLabel}>
           {selected?.title ?? placeholder}
         </Text>
-        <Icon icon={ChevronDown} size={18} tone="muted" />
+        <Icon icon={CaretDownIcon} size={18} tone="muted" />
       </Pressable>
       <FieldError>{error}</FieldError>
       <OptionSheet open={open} onOpenChange={setOpen}>
@@ -256,7 +258,7 @@ export function QuestionFormImages() {
         onPress={() => void attachments.pick()}
         style={styles.addImage}
       >
-        <ButtonIcon icon={ImagePlus} />
+        <ButtonIcon icon={ImageSquareIcon} />
         <ButtonText>{t('addImages')}</ButtonText>
       </Button>
     </View>
@@ -271,7 +273,7 @@ export function QuestionFormFormattingNotice() {
 
   return (
     <Banner tone="info">
-      <BannerIcon icon={Info} />
+      <BannerIcon icon={InfoIcon} />
       <BannerContent>
         <BannerDescription>{t('formattingNotice')}</BannerDescription>
       </BannerContent>

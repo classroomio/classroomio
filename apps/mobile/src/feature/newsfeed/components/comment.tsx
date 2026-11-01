@@ -1,4 +1,7 @@
-import { ChevronDown, ChevronRight, CornerDownRight, Ellipsis } from 'lucide-react-native';
+import { ArrowElbowDownRightIcon } from 'phosphor-react-native/src/icons/ArrowElbowDownRight';
+import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
+import { DotsThreeIcon } from 'phosphor-react-native/src/icons/DotsThree';
 import { createContext, use, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -146,7 +149,7 @@ export function CommentCollapseToggle({ collapsed, onToggle }: { collapsed: bool
       onPress={onToggle}
       style={styles.toggle}
     >
-      <Icon icon={collapsed ? ChevronRight : ChevronDown} size={14} tone="muted" />
+      <Icon icon={collapsed ? CaretRightIcon : CaretDownIcon} size={14} tone="muted" />
       <Text variant="captionStrong" tone="muted">
         {collapsed ? t('showReplies', { count }) : t('hideReplies')}
       </Text>
@@ -159,7 +162,7 @@ export function CommentMenuButton({ onPress }: { onPress: () => void }) {
 
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={t('commentActions')} hitSlop={HIT_SLOP} onPress={onPress}>
-      <Icon icon={Ellipsis} size={17} tone="muted" />
+      <Icon icon={DotsThreeIcon} size={17} tone="muted" />
     </Pressable>
   );
 }
@@ -186,7 +189,7 @@ export function MoreRepliesRow({ depth, remaining, loading, disabled, onPress }:
         onPress={onPress}
         style={[styles.more, disabled && styles.disabled]}
       >
-        {loading ? <Spinner /> : <Icon icon={CornerDownRight} size={15} tone="primary" />}
+        {loading ? <Spinner /> : <Icon icon={ArrowElbowDownRightIcon} size={15} tone="primary" />}
         <Text variant="captionStrong" tone="primary">
           {label}
         </Text>

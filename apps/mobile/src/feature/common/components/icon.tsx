@@ -1,19 +1,19 @@
-import type { LucideIcon } from 'lucide-react-native';
-
-import { ICON_STROKE } from '@/feature/common/constants/layout';
+import type { IconWeight, Icon as PhosphorIcon } from 'phosphor-react-native';
 
 import { useTextColor, type TextTone } from './text';
 
+export type AppIcon = PhosphorIcon;
+
 type IconProps = {
-  icon: LucideIcon;
+  icon: AppIcon;
   size?: number;
   tone?: TextTone;
   color?: string;
-  strokeWidth?: number;
+  weight?: IconWeight;
 };
 
-export function Icon({ icon: Glyph, size = 20, tone, color, strokeWidth = ICON_STROKE }: IconProps) {
+export function Icon({ icon: Glyph, size = 20, tone, color, weight = 'regular' }: IconProps) {
   const resolvedColor = useTextColor(tone, color);
 
-  return <Glyph size={size} color={resolvedColor} strokeWidth={strokeWidth} absoluteStrokeWidth />;
+  return <Glyph size={size} color={resolvedColor} weight={weight} />;
 }

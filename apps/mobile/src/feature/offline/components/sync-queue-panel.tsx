@@ -1,9 +1,13 @@
-import { CircleCheck, CloudUpload, PlayCircle, RefreshCw, TriangleAlert, type LucideIcon } from 'lucide-react-native';
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { CloudArrowUpIcon } from 'phosphor-react-native/src/icons/CloudArrowUp';
+import { PlayCircleIcon } from 'phosphor-react-native/src/icons/PlayCircle';
+import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
 import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@/feature/common/components/button';
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import {
   Item,
   ItemActions,
@@ -66,16 +70,16 @@ function formatPosition(seconds: number) {
   return `${minutes}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 }
 
-function statusOf(entry: SyncEntry, t: OfflineTranslator): { icon: LucideIcon; tone: TextTone; label: string } {
-  if (entry.status === 'synced') return { icon: CircleCheck, tone: 'success', label: t('synced') };
-  if (entry.status === 'syncing') return { icon: RefreshCw, tone: 'primary', label: t('syncing') };
-  if (entry.status === 'queued') return { icon: CloudUpload, tone: 'muted', label: t('waitingToSync') };
+function statusOf(entry: SyncEntry, t: OfflineTranslator): { icon: AppIcon; tone: TextTone; label: string } {
+  if (entry.status === 'synced') return { icon: CheckCircleIcon, tone: 'success', label: t('synced') };
+  if (entry.status === 'syncing') return { icon: ArrowsClockwiseIcon, tone: 'primary', label: t('syncing') };
+  if (entry.status === 'queued') return { icon: CloudArrowUpIcon, tone: 'muted', label: t('waitingToSync') };
   if (entry.retryable) {
-    return { icon: RefreshCw, tone: 'warning', label: t('retryingAttempt', { attempt: entry.attempts + 1 }) };
+    return { icon: ArrowsClockwiseIcon, tone: 'warning', label: t('retryingAttempt', { attempt: entry.attempts + 1 }) };
   }
 
   return {
-    icon: TriangleAlert,
+    icon: WarningIcon,
     tone: 'danger',
     label: entry.error ? t('notAcceptedReason', { reason: entry.error }) : t('notAccepted')
   };
@@ -101,7 +105,7 @@ function SyncQueueRow({ row }: { row: SyncRow }) {
   return (
     <Item accessibilityLabel={[title, context, status.label].filter(Boolean).join(', ')}>
       <ItemMedia variant="tile">
-        <Icon icon={entry.type === 'lesson.complete' ? CircleCheck : PlayCircle} size={19} tone="ink" />
+        <Icon icon={entry.type === 'lesson.complete' ? CheckCircleIcon : PlayCircleIcon} size={19} tone="ink" />
       </ItemMedia>
       <ItemContent>
         <ItemTitle numberOfLines={1}>{title}</ItemTitle>
@@ -155,7 +159,7 @@ export function SyncQueuePanel() {
               <ButtonSpinner />
             ) : (
               <>
-                <ButtonIcon icon={RefreshCw} />
+                <ButtonIcon icon={ArrowsClockwiseIcon} />
                 <ButtonText>{t('syncNow')}</ButtonText>
               </>
             )}

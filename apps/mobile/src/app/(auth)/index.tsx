@@ -1,5 +1,5 @@
+import { HardDrivesIcon } from 'phosphor-react-native/src/icons/HardDrives';
 import { Link } from 'expo-router';
-import { Server } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -60,7 +60,7 @@ export default function SignInScreen() {
 
       <Link href="/server" asChild>
         <Pressable accessibilityRole="button" hitSlop={HIT_SLOP} style={styles.serverRow}>
-          <Icon icon={Server} size={15} tone="muted" />
+          <Icon icon={HardDrivesIcon} size={15} tone="muted" />
           <Text variant="caption" tone="muted" numberOfLines={1}>
             {new URL(serverUrl).host}
           </Text>

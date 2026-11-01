@@ -1,4 +1,4 @@
-import { WifiOff } from 'lucide-react-native';
+import { WifiSlashIcon } from 'phosphor-react-native/src/icons/WifiSlash';
 
 import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -10,7 +10,7 @@ export function OfflineNotice({ title, description }: { title?: string; descript
 
   return (
     <Banner tone="neutral">
-      <BannerIcon icon={WifiOff} />
+      <BannerIcon icon={WifiSlashIcon} />
       <BannerContent>
         <BannerTitle>{title ?? t('offlineTitle')}</BannerTitle>
         <BannerDescription>{description ?? t('offlineDescription')}</BannerDescription>

@@ -1,4 +1,6 @@
-import { PlayCircle, Video, WifiOff } from 'lucide-react-native';
+import { PlayCircleIcon } from 'phosphor-react-native/src/icons/PlayCircle';
+import { VideoCameraIcon } from 'phosphor-react-native/src/icons/VideoCamera';
+import { WifiSlashIcon } from 'phosphor-react-native/src/icons/WifiSlash';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
@@ -42,8 +44,8 @@ export function LiveSessionCard({
   return (
     <Card style={styles.card}>
       <View style={styles.row}>
-        <View style={[styles.icon, { backgroundColor: phase === 'live' ? colors.primaryTint : colors.sand }]}>
-          <Icon icon={Video} size={19} tone={phase === 'live' ? 'primary' : 'ink'} />
+        <View style={[styles.icon, { backgroundColor: phase === 'live' ? colors.primaryTint : colors.muted }]}>
+          <Icon icon={VideoCameraIcon} size={19} tone={phase === 'live' ? 'primary' : 'ink'} />
         </View>
         <View style={styles.copy}>
           <Text variant="bodyStrong" tone={phase === 'live' ? 'primary' : 'ink'}>
@@ -68,13 +70,13 @@ export function LiveSessionCard({
       ) : null}
       {recordingUrl ? (
         <Button variant="outline" disabled={offline} onPress={() => openExternal(recordingUrl)}>
-          <ButtonIcon icon={PlayCircle} />
+          <ButtonIcon icon={PlayCircleIcon} />
           <ButtonText>{t('watchRecording')}</ButtonText>
         </Button>
       ) : null}
       {offline && ((callUrl && (phase === 'live' || phase === 'upcoming')) || recordingUrl) ? (
         <View style={styles.offline}>
-          <Icon icon={WifiOff} size={14} tone="muted" />
+          <Icon icon={WifiSlashIcon} size={14} tone="muted" />
           <Text variant="caption" tone="muted">
             {t('needsConnection')}
           </Text>

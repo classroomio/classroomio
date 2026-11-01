@@ -1,8 +1,10 @@
+import { PencilSimpleIcon } from 'phosphor-react-native/src/icons/PencilSimple';
+import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
+import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { FlashList, type FlashListRef } from '@shopify/flash-list';
 import { router, Stack } from 'expo-router';
-import { CircleAlert, Pencil, Trash2 } from 'lucide-react-native';
 import { useRef, useState } from 'react';
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useAuth } from '@/feature/auth/components/auth-provider';
 import {
@@ -75,6 +77,7 @@ import {
   MoreRepliesRow
 } from './comment';
 import { NewsfeedPost } from './newsfeed-post';
+import { PullRefreshControl } from '@/feature/common/components/pull-refresh-control';
 
 type ComposerMode =
   | { kind: 'new' }
@@ -278,7 +281,7 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
 
       {!postData && post.isError ? (
         <Empty>
-          <EmptyMedia icon={CircleAlert} />
+          <EmptyMedia icon={WarningCircleIcon} />
           <EmptyTitle>{t('postLoadFailed')}</EmptyTitle>
           <EmptyDescription>{errorMessage(post.error)}</EmptyDescription>
           <Button variant="outline" onPress={() => router.back()}>
@@ -312,16 +315,7 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
           renderScrollComponent={ComposerScrollView}
           keyboardDismissMode="interactive"
           keyboardShouldPersistTaps="handled"
-          refreshControl={
-            <RefreshControl
-              refreshing={thread.isRefetching}
-              onRefresh={() => {
-                void post.refetch();
-                void thread.refetch();
-              }}
-              tintColor={colors.inkMuted}
-            />
-          }
+          refreshControl={<PullRefreshControl onRefresh={() => Promise.all([post.refetch(), thread.refetch()])} />}
           contentContainerStyle={styles.content}
         />
       ) : null}
@@ -368,11 +362,11 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
       <OptionSheet open={menu !== null} onOpenChange={(open) => !open && setMenu(null)}>
         <OptionSheetContent>
           {menu && isAuthor(menu) ? (
-            <OptionSheetItem icon={Pencil} disabled={offline} onSelect={() => startEdit(menu)}>
+            <OptionSheetItem icon={PencilSimpleIcon} disabled={offline} onSelect={() => startEdit(menu)}>
               {t('editComment')}
             </OptionSheetItem>
           ) : null}
-          <OptionSheetItem icon={Trash2} destructive disabled={offline} onSelect={() => setConfirming(menu)}>
+          <OptionSheetItem icon={TrashIcon} destructive disabled={offline} onSelect={() => setConfirming(menu)}>
             {t('deleteComment')}
           </OptionSheetItem>
           <OptionSheetCancel />

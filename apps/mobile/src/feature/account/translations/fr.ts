@@ -39,5 +39,10 @@ export const fr: TranslatedMessages<typeof en> = {
   downloadsDescription: 'Leçons hors ligne et synchronisation',
   settingsDescription: 'Nom, langue, verrouillage, thème',
   signOutTitle: 'Se déconnecter de ClassroomIO ?',
-  signOutDescription: 'Les leçons téléchargées et la progression non synchronisée sont supprimées de cet appareil.'
+  signOutDescription: 'Les leçons téléchargées et la progression non synchronisée sont supprimées de cet appareil.',
+  editName: 'Modifier le nom',
+  joinedOn: 'Membre depuis {date}',
+  notifications: 'Notifications',
+  orgRole: '{org} · {role}',
+  appVersion: 'ClassroomIO {version}'
 };

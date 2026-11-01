@@ -1,17 +1,15 @@
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
+import { ChatCircleIcon } from 'phosphor-react-native/src/icons/ChatCircle';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { ClockIcon } from 'phosphor-react-native/src/icons/Clock';
+import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
+import { MegaphoneIcon } from 'phosphor-react-native/src/icons/Megaphone';
+import { TargetIcon } from 'phosphor-react-native/src/icons/Target';
+import { VideoCameraIcon } from 'phosphor-react-native/src/icons/VideoCamera';
+import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
+import type { AppIcon } from '@/feature/common/components/icon';
 import type { TNotificationCategory } from '@cio/utils/constants/notifications';
-import {
-  Award,
-  BookOpen,
-  CircleCheck,
-  Clock,
-  Megaphone,
-  MessageCircle,
-  RefreshCw,
-  Target,
-  TriangleAlert,
-  Video,
-  type LucideIcon
-} from 'lucide-react-native';
 
 import type { en } from '@/feature/notifications/translations/en';
 import type { NotificationChannel } from '@/feature/notifications/types/notifications';
@@ -23,36 +21,36 @@ export const NOTIFICATION_CATEGORY_DISPLAY = {
   course_assigned: {
     label: 'categoryCourseAssigned',
     description: 'categoryCourseAssignedDescription',
-    icon: BookOpen
+    icon: BookOpenIcon
   },
   deadline_reminder: {
     label: 'categoryDeadlineReminder',
     description: 'categoryDeadlineReminderDescription',
-    icon: Clock
+    icon: ClockIcon
   },
-  overdue: { label: 'categoryOverdue', description: 'categoryOverdueDescription', icon: TriangleAlert },
-  renewal_due: { label: 'categoryRenewalDue', description: 'categoryRenewalDueDescription', icon: RefreshCw },
-  new_content: { label: 'categoryNewContent', description: 'categoryNewContentDescription', icon: Megaphone },
+  overdue: { label: 'categoryOverdue', description: 'categoryOverdueDescription', icon: WarningIcon },
+  renewal_due: { label: 'categoryRenewalDue', description: 'categoryRenewalDueDescription', icon: ArrowsClockwiseIcon },
+  new_content: { label: 'categoryNewContent', description: 'categoryNewContentDescription', icon: MegaphoneIcon },
   exercise_graded: {
     label: 'categoryExerciseGraded',
     description: 'categoryExerciseGradedDescription',
-    icon: CircleCheck
+    icon: CheckCircleIcon
   },
   community_reply: {
     label: 'categoryCommunityReply',
     description: 'categoryCommunityReplyDescription',
-    icon: MessageCircle
+    icon: ChatCircleIcon
   },
   certificate_issued: {
     label: 'categoryCertificateIssued',
     description: 'categoryCertificateIssuedDescription',
-    icon: Award
+    icon: MedalIcon
   },
-  cohort_goal: { label: 'categoryCohortGoal', description: 'categoryCohortGoalDescription', icon: Target },
-  live_session: { label: 'categoryLiveSession', description: 'categoryLiveSessionDescription', icon: Video }
+  cohort_goal: { label: 'categoryCohortGoal', description: 'categoryCohortGoalDescription', icon: TargetIcon },
+  live_session: { label: 'categoryLiveSession', description: 'categoryLiveSessionDescription', icon: VideoCameraIcon }
 } as const satisfies Record<
   TNotificationCategory,
-  { label: NotificationsKey; description: NotificationsKey; icon: LucideIcon }
+  { label: NotificationsKey; description: NotificationsKey; icon: AppIcon }
 >;
 
 export const NOTIFICATION_PREFERENCE_SECTIONS: Array<{ title: NotificationsKey; categories: TNotificationCategory[] }> =

@@ -1,5 +1,5 @@
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { Check, type LucideIcon } from 'lucide-react-native';
 import { createContext, use, useRef, type ReactNode } from 'react';
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,7 +12,7 @@ import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
 import { SheetBackdrop, SheetContainer } from './bottom-sheet';
-import { Icon } from './icon';
+import { Icon, type AppIcon } from './icon';
 import { Text } from './text';
 
 type OptionSheetContextValue = {
@@ -97,7 +97,7 @@ export function OptionSheetTitle({ children }: { children: ReactNode }) {
 
 type OptionSheetItemProps = {
   onSelect: () => void;
-  icon?: LucideIcon;
+  icon?: AppIcon;
   selected?: boolean;
   destructive?: boolean;
   disabled?: boolean;
@@ -125,13 +125,13 @@ export function OptionSheetItem({
         selectionHaptic();
         select(onSelect);
       }}
-      style={({ pressed }) => [styles.item, pressed && { backgroundColor: colors.sand }, disabled && styles.disabled]}
+      style={({ pressed }) => [styles.item, pressed && { backgroundColor: colors.muted }, disabled && styles.disabled]}
     >
       {icon ? <Icon icon={icon} size={19} tone={tone} /> : null}
       <Text variant="bodyStrong" tone={tone} numberOfLines={2} style={styles.label}>
         {children}
       </Text>
-      {selected ? <Icon icon={Check} size={18} tone="primary" /> : null}
+      {selected ? <Icon icon={CheckIcon} size={18} tone="primary" /> : null}
     </Pressable>
   );
 }
@@ -153,7 +153,7 @@ export function OptionSheetCancel({ children }: { children?: string }) {
       <Pressable
         accessibilityRole="button"
         onPress={close}
-        style={({ pressed }) => [styles.item, styles.cancel, pressed && { backgroundColor: colors.sand }]}
+        style={({ pressed }) => [styles.item, styles.cancel, pressed && { backgroundColor: colors.muted }]}
       >
         <Text variant="label" tone="muted">
           {children ?? t('cancel')}

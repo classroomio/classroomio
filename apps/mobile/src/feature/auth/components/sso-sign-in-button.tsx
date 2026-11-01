@@ -1,5 +1,5 @@
+import { KeyIcon } from 'phosphor-react-native/src/icons/Key';
 import { router } from 'expo-router';
-import { KeyRound } from 'lucide-react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { authCatalog } from '@/feature/auth/translations/catalog';
@@ -10,7 +10,7 @@ export function SsoSignInButton() {
 
   return (
     <Button variant="outline" size="lg" onPress={() => router.push('/sso')}>
-      <ButtonIcon icon={KeyRound} />
+      <ButtonIcon icon={KeyIcon} />
       <ButtonText>{t('signInWithSso')}</ButtonText>
     </Button>
   );

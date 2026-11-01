@@ -1,4 +1,4 @@
-import { Building2 } from 'lucide-react-native';
+import { BuildingsIcon } from 'phosphor-react-native/src/icons/Buildings';
 import { useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,7 +35,7 @@ export default function SelectOrgScreen() {
     return (
       <View style={[styles.centered, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <Empty>
-          <EmptyMedia icon={Building2} />
+          <EmptyMedia icon={BuildingsIcon} />
           <EmptyTitle>{account.isError ? t('loadError') : t('noOrgTitle')}</EmptyTitle>
           <EmptyDescription>{account.isError ? errorMessage(account.error) : t('noOrgDescription')}</EmptyDescription>
           <EmptyContent>

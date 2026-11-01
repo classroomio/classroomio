@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react-native';
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
 
 import { Icon } from '@/feature/common/components/icon';
 import {
@@ -36,7 +36,7 @@ export function LanguageList() {
           <ItemTitle>{t('languageSystem')}</ItemTitle>
           <ItemDescription>{t('languageSystemDescription')}</ItemDescription>
         </ItemContent>
-        <ItemActions>{preference === 'system' ? <Icon icon={Check} size={18} tone="primary" /> : null}</ItemActions>
+        <ItemActions>{preference === 'system' ? <Icon icon={CheckIcon} size={18} tone="primary" /> : null}</ItemActions>
       </Item>
       {LANGUAGE_OPTIONS.map((option) => (
         <Item
@@ -48,7 +48,7 @@ export function LanguageList() {
             <ItemTitle>{option.name}</ItemTitle>
           </ItemContent>
           <ItemActions>
-            {preference === option.locale ? <Icon icon={Check} size={18} tone="primary" /> : null}
+            {preference === option.locale ? <Icon icon={CheckIcon} size={18} tone="primary" /> : null}
           </ItemActions>
         </Item>
       ))}

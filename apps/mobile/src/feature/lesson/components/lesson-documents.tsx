@@ -1,5 +1,6 @@
+import { ExportIcon } from 'phosphor-react-native/src/icons/Export';
+import { FileTextIcon } from 'phosphor-react-native/src/icons/FileText';
 import type { File } from 'expo-file-system';
-import { FileText, Share } from 'lucide-react-native';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { Icon } from '@/feature/common/components/icon';
@@ -52,7 +53,7 @@ export function LessonDocuments({ documents, localFiles }: LessonDocumentsProps)
             accessibilityHint={t('opensDocument')}
           >
             <ItemMedia variant="tile">
-              <Icon icon={FileText} size={19} tone="ink" />
+              <Icon icon={FileTextIcon} size={19} tone="ink" />
             </ItemMedia>
             <ItemContent>
               <ItemTitle numberOfLines={1}>{document.name}</ItemTitle>
@@ -69,7 +70,7 @@ export function LessonDocuments({ documents, localFiles }: LessonDocumentsProps)
                   onPress={() => share(document)}
                   style={styles.share}
                 >
-                  <Icon icon={Share} size={18} tone="muted" />
+                  <Icon icon={ExportIcon} size={18} tone="muted" />
                 </Pressable>
               )}
             </ItemActions>

@@ -1,5 +1,7 @@
+import { ArrowSquareOutIcon } from 'phosphor-react-native/src/icons/ArrowSquareOut';
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
+import { SquareIcon } from 'phosphor-react-native/src/icons/Square';
 import { Image } from 'expo-image';
-import { Check, ExternalLink, Square } from 'lucide-react-native';
 import { useState, type ReactNode } from 'react';
 import { Linking, Text as NativeText, Pressable, StyleSheet, View, type TextStyle } from 'react-native';
 
@@ -146,7 +148,7 @@ function renderInline(node: HtmlNode, key: string, format: InlineFormat, context
     case 'code':
     case 'kbd':
       return (
-        <NativeText key={key} style={{ fontFamily: FONT_FAMILY.medium, backgroundColor: context.colors.sandStrong }}>
+        <NativeText key={key} style={{ fontFamily: FONT_FAMILY.medium, backgroundColor: context.colors.mutedStrong }}>
           {children(format)}
         </NativeText>
       );
@@ -281,7 +283,7 @@ function renderBlock(node: HtmlElement, key: string, context: RenderContext): Re
       );
     case 'pre':
       return (
-        <View key={key} style={[styles.pre, { backgroundColor: colors.sand, borderColor: colors.border }]}>
+        <View key={key} style={[styles.pre, { backgroundColor: colors.muted, borderColor: colors.border }]}>
           <Text selectable tone={context.tone} style={[BASE_STYLE.compact, styles.preText]}>
             {textContent(node.children).replace(/\n$/, '')}
           </Text>
@@ -371,7 +373,7 @@ function HtmlList({ node, keyPrefix, context }: { node: HtmlElement; keyPrefix: 
         const checked = item.attrs['data-checked'] === 'true';
         const marker = isTaskList ? (
           <View style={[styles.marker, { height: lineHeight }]}>
-            <Icon icon={checked ? Check : Square} size={16} tone={checked ? 'success' : 'muted'} />
+            <Icon icon={checked ? CheckIcon : SquareIcon} size={16} tone={checked ? 'success' : 'muted'} />
           </View>
         ) : (
           <View style={[styles.marker, { height: lineHeight }]}>
@@ -412,7 +414,7 @@ function HtmlImage({ src, alt }: { src: string; alt?: string }) {
         const { width, height } = event.source;
         if (width > 0 && height > 0) setAspectRatio(width / height);
       }}
-      style={[styles.image, { aspectRatio, backgroundColor: colors.sand }]}
+      style={[styles.image, { aspectRatio, backgroundColor: colors.muted }]}
     />
   );
 }
@@ -432,9 +434,9 @@ function HtmlEmbed({ src, kind }: { src: string; kind: string }) {
     <Pressable
       accessibilityRole="link"
       onPress={() => openLink(src)}
-      style={[styles.embed, { backgroundColor: colors.sand, borderColor: colors.border }]}
+      style={[styles.embed, { backgroundColor: colors.muted, borderColor: colors.border }]}
     >
-      <Icon icon={ExternalLink} size={16} tone="muted" />
+      <Icon icon={ArrowSquareOutIcon} size={16} tone="muted" />
       <Text variant="captionStrong" numberOfLines={1} style={styles.embedLabel}>
         {t(EMBED_LABEL_KEYS[kind] ?? 'openLink')}
       </Text>

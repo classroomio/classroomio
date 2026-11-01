@@ -1,4 +1,6 @@
-import { CalendarClock, CircleCheck, Clock } from 'lucide-react-native';
+import { CalendarDotsIcon } from 'phosphor-react-native/src/icons/CalendarDots';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { ClockIcon } from 'phosphor-react-native/src/icons/Clock';
 import { StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/feature/common/components/avatar';
@@ -34,14 +36,14 @@ export function SubmissionHeader({ submission }: { submission: GradingSubmission
 
       <View style={styles.meta}>
         <View style={styles.metaItem}>
-          <Icon icon={CalendarClock} size={14} tone="subtle" />
+          <Icon icon={CalendarDotsIcon} size={14} tone="subtle" />
           <Text variant="caption" tone="muted">
             {t('submittedAt', { date: formatDateTime(submission.submittedAt, locale) })}
           </Text>
         </View>
         {!graded && (
           <View style={styles.metaItem}>
-            <Icon icon={Clock} size={14} tone="subtle" />
+            <Icon icon={ClockIcon} size={14} tone="subtle" />
             <Text variant="caption" tone="muted">
               {elapsedCopy(t, WAITING_KEYS, submission.submittedAt)}
             </Text>
@@ -51,7 +53,7 @@ export function SubmissionHeader({ submission }: { submission: GradingSubmission
 
       {submission.isLate && (
         <Banner tone="warning">
-          <BannerIcon icon={Clock} />
+          <BannerIcon icon={ClockIcon} />
           <BannerContent>
             <BannerTitle>{t('submittedAfterDue')}</BannerTitle>
           </BannerContent>
@@ -60,7 +62,7 @@ export function SubmissionHeader({ submission }: { submission: GradingSubmission
 
       {graded && (
         <Banner tone="info">
-          <BannerIcon icon={CircleCheck} />
+          <BannerIcon icon={CheckCircleIcon} />
           <BannerContent>
             <BannerTitle>{t('alreadyGraded')}</BannerTitle>
             <BannerDescription>

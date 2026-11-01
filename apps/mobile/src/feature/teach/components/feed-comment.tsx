@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react-native';
+import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -111,7 +111,7 @@ export function FeedComment({ courseId, feedId, comment }: FeedCommentProps) {
       <OptionSheet open={menuOpen} onOpenChange={setMenuOpen}>
         <OptionSheetContent>
           <OptionSheetTitle>{t('commentBy', { name: author })}</OptionSheetTitle>
-          <OptionSheetItem icon={Trash2} destructive onSelect={() => afterSheetCloses(() => setConfirming(true))}>
+          <OptionSheetItem icon={TrashIcon} destructive onSelect={() => afterSheetCloses(() => setConfirming(true))}>
             {t('deleteComment')}
           </OptionSheetItem>
           <OptionSheetCancel />

@@ -1,5 +1,5 @@
+import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { router, useLocalSearchParams } from 'expo-router';
-import { CircleAlert } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Empty, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
@@ -43,7 +43,7 @@ export default function EditQuestionScreen() {
     <QuestionFormLayout offlineDescription={t('editOffline')}>
       {!data && question.isError ? (
         <Empty>
-          <EmptyMedia icon={CircleAlert} />
+          <EmptyMedia icon={WarningCircleIcon} />
           <EmptyTitle>{t('questionLoadFailed')}</EmptyTitle>
           <EmptyDescription>{errorMessage(question.error)}</EmptyDescription>
         </Empty>

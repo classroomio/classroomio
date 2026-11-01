@@ -1,5 +1,5 @@
+import type { AppIcon } from '@/feature/common/components/icon';
 import type { InferResponseType } from '@cio/api/rpc-types';
-import type { LucideIcon } from 'lucide-react-native';
 
 import type { ApiClient } from '@/feature/common/api/api-client';
 import type { en } from '@/feature/newsfeed/translations/en';
@@ -29,7 +29,7 @@ export type ReactionType = 'clap' | 'smile' | 'thumbsup' | 'thumbsdown';
 
 export type ReactionRecord = Record<ReactionType, string[]>;
 
-export type ReactionOption = { type: ReactionType; labelKey: keyof typeof en; icon: LucideIcon };
+export type ReactionOption = { type: ReactionType; labelKey: keyof typeof en; icon: AppIcon };
 
 /** Comments of one post, normalised so pages of roots and replies can be merged in place. */
 export type CommentThread = {

@@ -1,4 +1,4 @@
-import { Award } from 'lucide-react-native';
+import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
 import { StyleSheet, View } from 'react-native';
 
 import { certificateCatalog } from '@/feature/certificate/translations/catalog';
@@ -28,7 +28,7 @@ export function PendingCertificateRow({ pending, onPress }: PendingCertificateRo
       style={styles.item}
     >
       <ItemMedia variant="tile">
-        <Icon icon={Award} size={20} tone="subtle" />
+        <Icon icon={MedalIcon} size={20} tone="subtle" />
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{pending.courseTitle}</ItemTitle>

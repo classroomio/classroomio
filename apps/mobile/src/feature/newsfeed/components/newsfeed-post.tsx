@@ -1,4 +1,5 @@
-import { MessageSquare, Pin } from 'lucide-react-native';
+import { ChatIcon } from 'phosphor-react-native/src/icons/Chat';
+import { PushPinIcon } from 'phosphor-react-native/src/icons/PushPin';
 import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/feature/common/components/icon';
@@ -63,7 +64,7 @@ export function NewsfeedPost({
         {post.isPinned ? (
           <PostHeaderAction>
             <View style={styles.pinned} accessibilityLabel={t('pinnedPost')}>
-              <Icon icon={Pin} size={14} tone="primary" />
+              <Icon icon={PushPinIcon} size={14} tone="primary" />
               <Text variant="captionStrong" tone="primary">
                 {t('pinned')}
               </Text>
@@ -84,7 +85,7 @@ export function NewsfeedPost({
         </Reactions>
         <View style={styles.comments}>
           <PostAction
-            icon={MessageSquare}
+            icon={ChatIcon}
             onPress={onOpen ? () => onOpen(post) : undefined}
             accessibilityLabel={t('commentCount', { count: comments })}
           >

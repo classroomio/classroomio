@@ -1,5 +1,6 @@
+import { ArrowFatUpIcon } from 'phosphor-react-native/src/icons/ArrowFatUp';
+import { ChatIcon } from 'phosphor-react-native/src/icons/Chat';
 import { Link } from 'expo-router';
-import { ArrowBigUp, MessageSquare } from 'lucide-react-native';
 import { StyleSheet, View, type PressableProps } from 'react-native';
 
 import {
@@ -108,8 +109,8 @@ function QuestionCardContent({ question, onPress }: QuestionCardContentProps) {
       </PostHeader>
       <PostTitle numberOfLines={3}>{question.title}</PostTitle>
       <PostActions>
-        <PostAction icon={ArrowBigUp}>{votes}</PostAction>
-        <PostAction icon={MessageSquare}>{answers}</PostAction>
+        <PostAction icon={ArrowFatUpIcon}>{votes}</PostAction>
+        <PostAction icon={ChatIcon}>{answers}</PostAction>
         {answers === 0 ? (
           <View style={styles.status}>
             <Text variant="caption" tone="muted">

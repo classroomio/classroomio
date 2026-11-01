@@ -1,5 +1,8 @@
+import { ArrowUpIcon } from 'phosphor-react-native/src/icons/ArrowUp';
+import { ImageSquareIcon } from 'phosphor-react-native/src/icons/ImageSquare';
+import { WifiSlashIcon } from 'phosphor-react-native/src/icons/WifiSlash';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { Image } from 'expo-image';
-import { ArrowUp, ImagePlus, WifiOff, X } from 'lucide-react-native';
 import {
   createContext,
   use,
@@ -135,7 +138,7 @@ export function ComposerReplyTarget({ name, onCancel }: { name: string; onCancel
         onPress={onCancel}
         style={({ pressed }) => pressed && styles.pressed}
       >
-        <Icon icon={X} size={16} tone="muted" />
+        <Icon icon={XIcon} size={16} tone="muted" />
       </Pressable>
     </View>
   );
@@ -146,8 +149,8 @@ export function ComposerNotice({ title, description }: { title: string; descript
   const { colors } = useTheme();
 
   return (
-    <View style={[styles.notice, { backgroundColor: colors.sand, borderColor: colors.border }]}>
-      <Icon icon={WifiOff} size={18} tone="muted" />
+    <View style={[styles.notice, { backgroundColor: colors.muted, borderColor: colors.border }]}>
+      <Icon icon={WifiSlashIcon} size={18} tone="muted" />
       <View style={styles.noticeCopy}>
         <Text variant="captionStrong">{title}</Text>
         <Text variant="caption" tone="muted">
@@ -203,7 +206,7 @@ export function ComposerAttach({ onPress, disabled = false }: { onPress: () => v
       }}
       style={({ pressed }) => [styles.iconButton, pressed && styles.pressed, blocked && styles.disabled]}
     >
-      <Icon icon={ImagePlus} size={21} tone="muted" />
+      <Icon icon={ImageSquareIcon} size={21} tone="muted" />
     </Pressable>
   );
 }
@@ -223,14 +226,14 @@ export function ComposerSend({ accessibilityLabel }: { accessibilityLabel?: stri
       onPress={submit}
       style={({ pressed }) => [
         styles.send,
-        { backgroundColor: canSubmit || submitting ? colors.primary : colors.sandStrong },
+        { backgroundColor: canSubmit || submitting ? colors.primary : colors.mutedStrong },
         pressed && styles.pressed
       ]}
     >
       {submitting ? (
         <Spinner tone="onPrimary" />
       ) : (
-        <Icon icon={ArrowUp} size={19} tone={canSubmit ? 'onPrimary' : 'subtle'} strokeWidth={2.2} />
+        <Icon icon={ArrowUpIcon} size={19} tone={canSubmit ? 'onPrimary' : 'subtle'} weight="bold" />
       )}
     </Pressable>
   );
@@ -252,7 +255,7 @@ export function ComposerAttachments({
   return (
     <View style={styles.attachments}>
       {items.map((item) => (
-        <View key={item.key} style={[styles.thumb, { backgroundColor: colors.sand, borderColor: colors.border }]}>
+        <View key={item.key} style={[styles.thumb, { backgroundColor: colors.muted, borderColor: colors.border }]}>
           <Image source={{ uri: item.uri }} contentFit="cover" style={StyleSheet.absoluteFill} />
           {item.uploading ? (
             <View style={[StyleSheet.absoluteFill, styles.thumbOverlay, { backgroundColor: colors.scrim }]}>
@@ -266,10 +269,10 @@ export function ComposerAttachments({
               onPress={() => onRemove(item.key)}
               style={({ pressed }) => [
                 styles.remove,
-                { backgroundColor: pressed ? colors.sand : colors.surface, borderColor: colors.border }
+                { backgroundColor: pressed ? colors.muted : colors.surface, borderColor: colors.border }
               ]}
             >
-              <Icon icon={X} size={12} tone="ink" strokeWidth={2.4} />
+              <Icon icon={XIcon} size={12} tone="ink" weight="bold" />
             </Pressable>
           )}
         </View>

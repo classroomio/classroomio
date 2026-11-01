@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react-native';
 import { createContext, use, type ReactNode } from 'react';
 import { StyleSheet, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 
@@ -6,7 +5,7 @@ import { HIT_SLOP, RADII } from '@/feature/common/constants/layout';
 import { tapHaptic } from '@/feature/common/helpers/haptics';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 
-import { Icon } from './icon';
+import { Icon, type AppIcon } from './icon';
 import { PressableScale } from './pressable-scale';
 import { Spinner } from './spinner';
 import { Text, TextStyleContext, type TextTone } from './text';
@@ -48,7 +47,7 @@ export function Button({
 
   const surface: Record<ButtonVariant, ViewStyle> = {
     primary: { backgroundColor: colors.primary, ...elevation.raised },
-    secondary: { backgroundColor: colors.sandStrong },
+    secondary: { backgroundColor: colors.mutedStrong },
     outline: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, ...elevation.raised },
     ghost: { backgroundColor: 'transparent' },
     destructive: { backgroundColor: colors.danger, ...elevation.raised }
@@ -80,7 +79,7 @@ export function ButtonText({ children }: { children: ReactNode }) {
   return <Text numberOfLines={1}>{children}</Text>;
 }
 
-export function ButtonIcon({ icon }: { icon: LucideIcon }) {
+export function ButtonIcon({ icon }: { icon: AppIcon }) {
   const { size } = use(ButtonContext);
 
   return <Icon icon={icon} size={ICON_SIZE[size]} />;

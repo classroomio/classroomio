@@ -1,5 +1,5 @@
+import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
 import { router } from 'expo-router';
-import { Award } from 'lucide-react-native';
 
 import { CertificateRow } from '@/feature/certificate/components/certificate-row';
 import { PendingCertificateRow } from '@/feature/certificate/components/pending-certificate-row';
@@ -39,12 +39,12 @@ export default function CertificatesScreen() {
   const { t } = copy;
 
   return (
-    <ScreenScrollView refreshing={certificates.isRefetching} onRefresh={refresh}>
+    <ScreenScrollView onRefresh={refresh}>
       {certificates.isPending && <Skeleton height={232} radius={RADII.xl} />}
 
       {certificates.isError && !offline && (
         <Empty>
-          <EmptyMedia icon={Award} />
+          <EmptyMedia icon={MedalIcon} />
           <EmptyTitle>{t('listLoadError')}</EmptyTitle>
           <EmptyDescription>{errorMessage(certificates.error)}</EmptyDescription>
           <EmptyContent>

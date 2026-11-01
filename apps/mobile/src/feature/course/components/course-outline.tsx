@@ -1,8 +1,10 @@
-import { Check, Lock, Play, type LucideIcon } from 'lucide-react-native';
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
+import { LockIcon } from 'phosphor-react-native/src/icons/Lock';
+import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
 import { createContext, use, type ReactNode } from 'react';
 import { StyleSheet, View, type PressableProps } from 'react-native';
 
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Item, ItemActions, ItemChevron, ItemContent, ItemGroup } from '@/feature/common/components/item';
 import { ScreenSection } from '@/feature/common/components/screen';
 import { Text } from '@/feature/common/components/text';
@@ -71,20 +73,21 @@ const INDICATOR: Record<
 > = {
   complete: { surface: 'successTint', tone: 'success' },
   current: { surface: 'primaryTint', tone: 'primary' },
-  locked: { surface: 'sand', tone: 'subtle' },
-  available: { surface: 'sand', tone: 'muted' }
+  locked: { surface: 'muted', tone: 'subtle' },
+  available: { surface: 'muted', tone: 'muted' }
 };
 
 /** The leading tile: a check, play or lock glyph for those states, otherwise the item's own icon. */
-export function OutlineRowIndicator({ icon }: { icon: LucideIcon }) {
+export function OutlineRowIndicator({ icon }: { icon: AppIcon }) {
   const { colors } = useTheme();
   const state = use(OutlineRowContext);
   const { surface, tone } = INDICATOR[state];
-  const glyph = state === 'complete' ? Check : state === 'current' ? Play : state === 'locked' ? Lock : icon;
+  const glyph =
+    state === 'complete' ? CheckIcon : state === 'current' ? PlayIcon : state === 'locked' ? LockIcon : icon;
 
   return (
     <View style={[styles.indicator, { backgroundColor: colors[surface] }]}>
-      <Icon icon={glyph} size={17} tone={tone} strokeWidth={state === 'complete' ? 2.4 : undefined} />
+      <Icon icon={glyph} size={17} tone={tone} weight={state === 'complete' ? 'bold' : 'regular'} />
     </View>
   );
 }

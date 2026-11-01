@@ -1,4 +1,5 @@
-import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
+import { ThumbsDownIcon } from 'phosphor-react-native/src/icons/ThumbsDown';
+import { ThumbsUpIcon } from 'phosphor-react-native/src/icons/ThumbsUp';
 
 import { ChoiceIcon, ChoiceItem, ChoiceLabel, ChoiceList } from '@/feature/exercise/components/choice-list';
 import { useQuestionAnswer } from '@/feature/exercise/components/exercise-session';
@@ -26,11 +27,11 @@ export function ThumbsQuestion({ question }: { question: ExerciseQuestion }) {
   return (
     <ChoiceList mode="single" direction="row">
       <ChoiceItem selected={answer?.value === true} onPress={() => setAnswer({ type: 'THUMBS', value: true })}>
-        <ChoiceIcon icon={ThumbsUp} />
+        <ChoiceIcon icon={ThumbsUpIcon} />
         <ChoiceLabel>{optionLabel(question, true, t('yes'))}</ChoiceLabel>
       </ChoiceItem>
       <ChoiceItem selected={answer?.value === false} onPress={() => setAnswer({ type: 'THUMBS', value: false })}>
-        <ChoiceIcon icon={ThumbsDown} />
+        <ChoiceIcon icon={ThumbsDownIcon} />
         <ChoiceLabel>{optionLabel(question, false, t('no'))}</ChoiceLabel>
       </ChoiceItem>
     </ChoiceList>

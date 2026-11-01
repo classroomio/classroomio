@@ -1,5 +1,5 @@
+import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
 import { Image } from 'expo-image';
-import { BookOpen } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/feature/common/components/icon';
@@ -10,12 +10,12 @@ type CourseThumbnailProps = { uri?: string | null; size?: number; recyclingKey?:
 
 export function CourseThumbnail({ uri, size = 52, recyclingKey }: CourseThumbnailProps) {
   const { colors } = useTheme();
-  const frame = { width: size, height: size, backgroundColor: colors.sand, borderColor: colors.border };
+  const frame = { width: size, height: size, backgroundColor: colors.muted, borderColor: colors.border };
 
   if (!uri) {
     return (
       <View style={[styles.frame, styles.placeholder, frame]}>
-        <Icon icon={BookOpen} size={size * 0.4} tone="muted" />
+        <Icon icon={BookOpenIcon} size={size * 0.4} tone="muted" />
       </View>
     );
   }

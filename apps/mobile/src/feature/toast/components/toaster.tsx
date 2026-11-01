@@ -1,4 +1,7 @@
-import { CircleAlert, CircleCheck, Info, TriangleAlert, type LucideIcon } from 'lucide-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { InfoIcon } from 'phosphor-react-native/src/icons/Info';
+import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
+import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { useEffect, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { GestureDetector, GestureHandlerRootView, usePanGesture } from 'react-native-gesture-handler';
@@ -17,7 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Text, type TextTone } from '@/feature/common/components/text';
 import { GUTTER, HIT_SLOP, RADII, SPACING } from '@/feature/common/constants/layout';
 import { EASE_OUT } from '@/feature/common/constants/motion';
@@ -71,11 +74,11 @@ function rubberband(overshoot: number, dimension: number) {
   return (overshoot * dimension * constant) / (dimension + constant * Math.abs(overshoot));
 }
 
-const TONES: Record<ToastTone, { icon: LucideIcon; tone: TextTone; haptic: () => void }> = {
-  success: { icon: CircleCheck, tone: 'success', haptic: successHaptic },
-  info: { icon: Info, tone: 'primary', haptic: selectionHaptic },
-  warning: { icon: TriangleAlert, tone: 'warning', haptic: warningHaptic },
-  danger: { icon: CircleAlert, tone: 'danger', haptic: errorHaptic }
+const TONES: Record<ToastTone, { icon: AppIcon; tone: TextTone; haptic: () => void }> = {
+  success: { icon: CheckCircleIcon, tone: 'success', haptic: successHaptic },
+  info: { icon: InfoIcon, tone: 'primary', haptic: selectionHaptic },
+  warning: { icon: WarningIcon, tone: 'warning', haptic: warningHaptic },
+  danger: { icon: WarningCircleIcon, tone: 'danger', haptic: errorHaptic }
 };
 
 function Overlay({ children }: { children: ReactNode }) {
@@ -197,7 +200,7 @@ function ToastCard({ toast }: { toast: ToastMessage }) {
                   action.onPress();
                   dismissToast(toast.id);
                 }}
-                style={({ pressed }) => [styles.action, pressed && { backgroundColor: colors.sand }]}
+                style={({ pressed }) => [styles.action, pressed && { backgroundColor: colors.muted }]}
               >
                 <Text variant="captionStrong" tone="primary" numberOfLines={1}>
                   {action.label}

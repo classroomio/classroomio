@@ -39,5 +39,10 @@ export const da: TranslatedMessages<typeof en> = {
   downloadsDescription: 'Offline-lektioner og synkronisering',
   settingsDescription: 'Navn, sprog, app-lås, tema',
   signOutTitle: 'Vil du logge ud af ClassroomIO?',
-  signOutDescription: 'Downloadede lektioner og fremskridt, der ikke er synkroniseret, fjernes fra denne enhed.'
+  signOutDescription: 'Downloadede lektioner og fremskridt, der ikke er synkroniseret, fjernes fra denne enhed.',
+  editName: 'Rediger navn',
+  joinedOn: 'Medlem siden {date}',
+  notifications: 'Notifikationer',
+  orgRole: '{org} · {role}',
+  appVersion: 'ClassroomIO {version}'
 };

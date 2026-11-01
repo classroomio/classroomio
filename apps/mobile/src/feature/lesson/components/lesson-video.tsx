@@ -1,5 +1,7 @@
+import { ArrowCounterClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowCounterClockwise';
+import { VideoCameraSlashIcon } from 'phosphor-react-native/src/icons/VideoCameraSlash';
+import { WifiSlashIcon } from 'phosphor-react-native/src/icons/WifiSlash';
 import type { VideoPlayer } from 'expo-video';
-import { RotateCcw, VideoOff, WifiOff } from 'lucide-react-native';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
@@ -181,14 +183,14 @@ function VideoUnavailable({ onRetry }: { onRetry: () => void }) {
   const common = useTranslations(commonCatalog);
 
   return (
-    <View style={[styles.unavailable, { backgroundColor: colors.sand, borderColor: colors.border }]}>
-      <Icon icon={VideoOff} size={24} tone="muted" />
+    <View style={[styles.unavailable, { backgroundColor: colors.muted, borderColor: colors.border }]}>
+      <Icon icon={VideoCameraSlashIcon} size={24} tone="muted" />
       <Text variant="captionStrong">{t('videoUnavailable')}</Text>
       <Text variant="caption" tone="muted" style={styles.centerText}>
         {t('videoPrepareError')}
       </Text>
       <Button size="sm" variant="outline" onPress={onRetry}>
-        <ButtonIcon icon={RotateCcw} />
+        <ButtonIcon icon={ArrowCounterClockwiseIcon} />
         <ButtonText>{common('retry')}</ButtonText>
       </Button>
     </View>
@@ -204,9 +206,9 @@ function VideoNeedsConnection({ description }: { description: string }) {
     <View
       accessible
       accessibilityLabel={`${title}. ${description}`}
-      style={[styles.unavailable, { backgroundColor: colors.sand, borderColor: colors.border }]}
+      style={[styles.unavailable, { backgroundColor: colors.muted, borderColor: colors.border }]}
     >
-      <Icon icon={WifiOff} size={24} tone="muted" />
+      <Icon icon={WifiSlashIcon} size={24} tone="muted" />
       <Text variant="captionStrong">{title}</Text>
       <Text variant="caption" tone="muted" style={styles.centerText}>
         {description}

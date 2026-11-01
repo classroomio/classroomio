@@ -1,8 +1,10 @@
+import { darken } from '@/feature/common/helpers/color';
+
 export type ThemeColors = {
   background: string;
   surface: string;
-  sand: string;
-  sandStrong: string;
+  muted: string;
+  mutedStrong: string;
   border: string;
   borderStrong: string;
   ink: string;
@@ -22,59 +24,70 @@ export type ThemeColors = {
   warning: string;
   warningTint: string;
   scrim: string;
+  /** Glyphs and text on saturated fills and course artwork, white in both themes. */
+  onSolid: string;
+  /** The darkening behind text laid over course artwork. */
+  artworkScrim: string;
   shadow: string;
 };
 
+const LIGHT_PRIMARY = '#1447E6';
+const DARK_PRIMARY = '#2B5BEA';
+
 export const LIGHT_COLORS: ThemeColors = {
-  background: '#FDFBF7',
+  background: '#FFFFFF',
   surface: '#FFFFFF',
-  sand: '#F6F2E9',
-  sandStrong: '#F1EEE7',
-  border: '#E3DACA',
-  borderStrong: '#CFC5B3',
-  ink: '#17140F',
-  inkBody: '#2A251D',
-  inkMuted: '#6B6152',
-  inkSubtle: '#8C8272',
-  primary: '#0233BD',
-  primaryPressed: '#022A9C',
+  muted: '#F5F5F5',
+  mutedStrong: '#EBEBEB',
+  border: '#E5E5E5',
+  borderStrong: '#D4D4D4',
+  ink: '#0A0A0A',
+  inkBody: '#262626',
+  inkMuted: '#737373',
+  inkSubtle: '#8F8F8F',
+  primary: LIGHT_PRIMARY,
+  primaryPressed: darken(LIGHT_PRIMARY, 0.12),
   onPrimary: '#FFFFFF',
-  primaryText: '#0233BD',
-  primaryTint: '#EEF2FF',
-  ring: '#ADC3FF',
-  danger: '#DC2626',
+  primaryText: LIGHT_PRIMARY,
+  primaryTint: '#EFF6FF',
+  ring: '#8EC5FF',
+  danger: '#E7000B',
   dangerTint: '#FEF2F2',
-  success: '#15803D',
+  success: '#00A63E',
   successTint: '#F0FDF4',
-  warning: '#B45309',
+  warning: '#E17100',
   warningTint: '#FFFBEB',
-  scrim: 'rgba(23, 20, 15, 0.5)',
-  shadow: '#17140F'
+  scrim: 'rgba(0, 0, 0, 0.5)',
+  onSolid: '#FFFFFF',
+  artworkScrim: '#000000',
+  shadow: '#000000'
 };
 
 export const DARK_COLORS: ThemeColors = {
-  background: '#14120E',
-  surface: '#1C1915',
-  sand: '#221E18',
-  sandStrong: '#2A251E',
-  border: '#3B342B',
-  borderStrong: '#4F473A',
-  ink: '#F5F1E9',
-  inkBody: '#DDD6C9',
-  inkMuted: '#A69B8A',
-  inkSubtle: '#857B6C',
-  primary: '#2F5BE0',
-  primaryPressed: '#2650CC',
+  background: '#0A0A0A',
+  surface: '#171717',
+  muted: '#262626',
+  mutedStrong: '#303030',
+  border: '#2E2E2E',
+  borderStrong: '#404040',
+  ink: '#FAFAFA',
+  inkBody: '#E5E5E5',
+  inkMuted: '#A1A1A1',
+  inkSubtle: '#737373',
+  primary: DARK_PRIMARY,
+  primaryPressed: darken(DARK_PRIMARY, 0.12),
   onPrimary: '#FFFFFF',
-  primaryText: '#8FA8FF',
-  primaryTint: 'rgba(47, 91, 224, 0.18)',
-  ring: '#5A7BE6',
-  danger: '#F87171',
-  dangerTint: 'rgba(248, 113, 113, 0.14)',
-  success: '#4ADE80',
-  successTint: 'rgba(74, 222, 128, 0.12)',
-  warning: '#FBBF24',
-  warningTint: 'rgba(251, 191, 36, 0.12)',
+  primaryText: '#51A2FF',
+  primaryTint: 'rgba(43, 127, 255, 0.16)',
+  ring: '#2B7FFF',
+  danger: '#FF6467',
+  dangerTint: 'rgba(255, 100, 103, 0.14)',
+  success: '#05DF72',
+  successTint: 'rgba(5, 223, 114, 0.12)',
+  warning: '#FFB900',
+  warningTint: 'rgba(255, 185, 0, 0.12)',
   scrim: 'rgba(0, 0, 0, 0.6)',
+  onSolid: '#FFFFFF',
+  artworkScrim: '#000000',
   shadow: '#000000'
 };

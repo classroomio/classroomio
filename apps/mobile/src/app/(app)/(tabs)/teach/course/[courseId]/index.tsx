@@ -1,13 +1,11 @@
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { CalendarCheckIcon } from 'phosphor-react-native/src/icons/CalendarCheck';
+import { ClipboardTextIcon } from 'phosphor-react-native/src/icons/ClipboardText';
+import { MegaphoneIcon } from 'phosphor-react-native/src/icons/Megaphone';
+import { NewspaperIcon } from 'phosphor-react-native/src/icons/Newspaper';
+import { UsersIcon } from 'phosphor-react-native/src/icons/Users';
+import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { router, useLocalSearchParams } from 'expo-router';
-import {
-  CalendarCheck,
-  CircleAlert,
-  ClipboardCheck,
-  Megaphone,
-  Newspaper,
-  RefreshCw,
-  Users
-} from 'lucide-react-native';
 import { useRef } from 'react';
 import { StyleSheet, View, type ScrollViewInstance } from 'react-native';
 
@@ -61,17 +59,13 @@ export default function TeachCourseScreen() {
   const openComments = (post: NewsfeedPost) =>
     router.push({ pathname: '/teach/course/[courseId]/post/[feedId]', params: { courseId, feedId: post.id } });
 
-  const refresh = () => {
-    void courses.refetch();
-    void analytics.refetch();
-    void newsfeed.refetch();
-  };
+  const refresh = () => Promise.all([courses.refetch(), analytics.refetch(), newsfeed.refetch()]);
 
   if (courses.isSuccess && !course) {
     return (
       <ScreenScrollView>
         <Empty>
-          <EmptyMedia icon={CircleAlert} />
+          <EmptyMedia icon={WarningCircleIcon} />
           <EmptyTitle>{t('courseUnavailableTitle')}</EmptyTitle>
           <EmptyDescription>{t('courseUnavailableDescription')}</EmptyDescription>
         </Empty>
@@ -80,7 +74,7 @@ export default function TeachCourseScreen() {
   }
 
   return (
-    <ScreenScrollView ref={scrollRef} refreshing={courses.isRefetching || newsfeed.isRefetching} onRefresh={refresh}>
+    <ScreenScrollView ref={scrollRef} onRefresh={refresh}>
       <View style={styles.heading}>
         <Text variant="title" accessibilityRole="header">
           {course?.title ?? title}
@@ -98,17 +92,17 @@ export default function TeachCourseScreen() {
         <Skeleton height={92} radius={12} />
       ) : (
         <StatGrid>
-          <Stat label={t('statEnrolled')} icon={Users} value={format.number(course.enrolled)} />
+          <Stat label={t('statEnrolled')} icon={UsersIcon} value={format.number(course.enrolled)} />
           <Stat
             label={t('statCompleted')}
-            icon={CalendarCheck}
+            icon={CalendarCheckIcon}
             value={format.percent(course.completionRate)}
             detail={t('statCompletedDetail', { completed: course.completed, enrolled: course.enrolled })}
           />
           {course.overdue !== null ? (
             <Stat
               label={t('statOverdue')}
-              icon={CircleAlert}
+              icon={WarningCircleIcon}
               value={format.number(course.overdue)}
               tone={course.overdue > 0 ? 'danger' : 'ink'}
               detail={t('statOverdueDetail')}
@@ -116,7 +110,7 @@ export default function TeachCourseScreen() {
           ) : (
             <Stat
               label={t('statToGrade')}
-              icon={ClipboardCheck}
+              icon={ClipboardTextIcon}
               value={format.number(course.toGrade)}
               tone={course.toGrade > 0 ? 'primary' : 'ink'}
             />
@@ -130,7 +124,7 @@ export default function TeachCourseScreen() {
             <Button
               onPress={() => router.push({ pathname: '/teach/queue', params: { courseId, courseTitle: course.title } })}
             >
-              <ButtonIcon icon={ClipboardCheck} />
+              <ButtonIcon icon={ClipboardTextIcon} />
               <ButtonText>{t('gradeSubmissions', { count: course.toGrade })}</ButtonText>
             </Button>
           )}
@@ -141,7 +135,7 @@ export default function TeachCourseScreen() {
                 style={styles.action}
                 onPress={() => router.push({ pathname: '/teach/course/[courseId]/attendance', params: { courseId } })}
               >
-                <ButtonIcon icon={CalendarCheck} />
+                <ButtonIcon icon={CalendarCheckIcon} />
                 <ButtonText>{t('attendance')}</ButtonText>
               </Button>
             )}
@@ -150,7 +144,7 @@ export default function TeachCourseScreen() {
               style={styles.action}
               onPress={() => router.push({ pathname: '/teach/course/[courseId]/announce', params: { courseId } })}
             >
-              <ButtonIcon icon={Megaphone} />
+              <ButtonIcon icon={MegaphoneIcon} />
               <ButtonText>{t('announce')}</ButtonText>
             </Button>
           </View>
@@ -184,12 +178,12 @@ export default function TeachCourseScreen() {
         {newsfeed.isPending && <Skeleton height={160} radius={14} />}
         {newsfeed.isError && (
           <Empty>
-            <EmptyMedia icon={Newspaper} />
+            <EmptyMedia icon={NewspaperIcon} />
             <EmptyTitle>{t('newsfeedLoadError')}</EmptyTitle>
             <EmptyDescription>{errorMessage(newsfeed.error)}</EmptyDescription>
             <EmptyContent>
               <Button variant="outline" onPress={() => newsfeed.refetch()}>
-                <ButtonIcon icon={RefreshCw} />
+                <ButtonIcon icon={ArrowsClockwiseIcon} />
                 <ButtonText>{common('retry')}</ButtonText>
               </Button>
             </EmptyContent>
@@ -197,7 +191,7 @@ export default function TeachCourseScreen() {
         )}
         {newsfeed.isSuccess && posts.length === 0 && (
           <Empty>
-            <EmptyMedia icon={Newspaper} />
+            <EmptyMedia icon={NewspaperIcon} />
             <EmptyTitle>{t('noPostsTitle')}</EmptyTitle>
             <EmptyDescription>{t('noPostsDescription')}</EmptyDescription>
           </Empty>

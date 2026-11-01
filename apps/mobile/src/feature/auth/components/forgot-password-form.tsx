@@ -1,4 +1,4 @@
-import { MailCheck } from 'lucide-react-native';
+import { EnvelopeSimpleIcon } from 'phosphor-react-native/src/icons/EnvelopeSimple';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -92,7 +92,7 @@ function ResetEmailSent({ email, onDone, onRetry }: ResetEmailSentProps) {
     <View style={styles.form}>
       <View style={styles.sent} accessibilityLiveRegion="polite">
         <View style={[styles.sentIcon, { backgroundColor: colors.successTint }]}>
-          <Icon icon={MailCheck} size={20} tone="success" />
+          <Icon icon={EnvelopeSimpleIcon} size={20} tone="success" />
         </View>
         <View style={styles.sentCopy}>
           <Text variant="heading">{t('checkEmailTitle')}</Text>

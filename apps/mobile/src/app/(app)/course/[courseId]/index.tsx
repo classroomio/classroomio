@@ -1,5 +1,9 @@
+import { ArrowCounterClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowCounterClockwise';
+import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
+import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
+import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
+import { MegaphoneIcon } from 'phosphor-react-native/src/icons/Megaphone';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { ArrowRight, Award, BookOpen, Megaphone, RotateCcw } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
@@ -101,9 +105,9 @@ export default function CourseDetailScreen() {
     return (
       <>
         {header}
-        <AnimatedScreenScrollView refreshing={course.isRefetching} onRefresh={() => course.refetch()}>
+        <AnimatedScreenScrollView onRefresh={() => course.refetch()}>
           <Empty>
-            <EmptyMedia icon={BookOpen} />
+            <EmptyMedia icon={BookOpenIcon} />
             <EmptyTitle>{t('courseLoadError')}</EmptyTitle>
             <EmptyDescription>{errorMessage(course.error)}</EmptyDescription>
             <EmptyContent>
@@ -134,11 +138,11 @@ export default function CourseDetailScreen() {
   const primaryAction = resume ? (
     <Button size="lg" onPress={() => openContentItem(courseId, resume)}>
       <ButtonText>{outline.completed > 0 ? common('continue') : t('startCourse')}</ButtonText>
-      <ButtonIcon icon={ArrowRight} />
+      <ButtonIcon icon={ArrowRightIcon} />
     </Button>
   ) : finished && firstItem ? (
     <Button size="lg" variant="outline" onPress={() => openContentItem(courseId, firstItem)}>
-      <ButtonIcon icon={RotateCcw} />
+      <ButtonIcon icon={ArrowCounterClockwiseIcon} />
       <ButtonText>{t('reviewCourse')}</ButtonText>
     </Button>
   ) : null;
@@ -146,12 +150,7 @@ export default function CourseDetailScreen() {
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
       {header}
-      <AnimatedScreenScrollView
-        refreshing={course.isRefetching}
-        onRefresh={() => course.refetch()}
-        scrollEventThrottle={16}
-        onScroll={onScroll}
-      >
+      <AnimatedScreenScrollView onRefresh={() => course.refetch()} scrollEventThrottle={16} onScroll={onScroll}>
         {hero}
 
         <View style={styles.heading} onLayout={(event) => setTitleThreshold(event.nativeEvent.layout.y + TITLE_LINE)}>
@@ -176,14 +175,14 @@ export default function CourseDetailScreen() {
 
         <CourseLinks>
           <CourseLink
-            icon={Megaphone}
+            icon={MegaphoneIcon}
             title={t('newsfeed')}
             description={t('newsfeedDescription')}
             onPress={() => router.push({ pathname: '/course/[courseId]/newsfeed', params: { courseId } })}
           />
           {data.certificate ? (
             <CourseLink
-              icon={Award}
+              icon={MedalIcon}
               title={t('certificate')}
               description={
                 certificateEarnedAt
@@ -197,7 +196,7 @@ export default function CourseDetailScreen() {
 
         {outline.items.length === 0 ? (
           <Empty>
-            <EmptyMedia icon={BookOpen} />
+            <EmptyMedia icon={BookOpenIcon} />
             <EmptyTitle>{t('noLessonsTitle')}</EmptyTitle>
             <EmptyDescription>{t('noLessonsDescription')}</EmptyDescription>
           </Empty>

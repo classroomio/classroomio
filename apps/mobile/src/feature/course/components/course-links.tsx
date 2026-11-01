@@ -1,7 +1,6 @@
-import type { LucideIcon } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import {
   Item,
   ItemActions,
@@ -17,7 +16,7 @@ export function CourseLinks({ children }: { children: ReactNode }) {
   return <ItemGroup>{children}</ItemGroup>;
 }
 
-type CourseLinkProps = { icon: LucideIcon; title: string; description?: string; onPress: () => void };
+type CourseLinkProps = { icon: AppIcon; title: string; description?: string; onPress: () => void };
 
 export function CourseLink({ icon, title, description, onPress }: CourseLinkProps) {
   return (

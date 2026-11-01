@@ -1,6 +1,6 @@
 # ClassroomIO mobile
 
-Expo SDK 58 (React Native 0.88, React 19.3, Expo Router 58, Reanimated 4) app in the ClassroomIO monorepo. Product scope: `prd/mobile-app/README.md`. UX reference: `prototypes/mobile-app/`. Visual source of truth: `skills/classroomio-design/` (tokens in `tokens/`, rules in `docs/visual.md`, copy rules in `docs/content.md`).
+Expo SDK 58 (React Native 0.88, React 19.3, Expo Router 58, Reanimated 4) app in the ClassroomIO monorepo. Product scope: `prd/mobile-app/README.md`. UX reference: `prototypes/mobile-app/`. Neutral, light-mode primary and destructive colours follow the dashboard's theme tokens (`packages/ui/src/index.css`), not the warm marketing palette; the dark primary, dark success, the ring and warning colours (both modes) and the tint colours are mobile-specific. The splash and app icon keep the marketing brand blue. `skills/classroomio-design/` remains the reference for the brand mark, the notch motif and copy rules (`docs/content.md`).
 
 ## Expo has changed — do not trust training data
 
@@ -18,7 +18,7 @@ Before touching an Expo, EAS or React Native API, read the installed package's `
 - `type`, never `interface`.
 - No comments except a one-line note about an external constraint, or JSDoc stating a function's contract when the signature doesn't.
 - Composable components in the shadcn style: a root that owns state and shares it through context, plus small parts (`AlertDialog`, `AlertDialogContent`, `AlertDialogTitle`, `AlertDialogAction`). Don't prop-drill configuration into one large component.
-- React Compiler is on. Don't add `useMemo`/`useCallback`/`memo` unless profiling shows a need or the code is in a hot list cell.
+- React Compiler is on. Don't add `useMemo`/`useCallback`/`memo` unless profiling shows a need or the code is in a hot list cell. `useFocusEffect` callbacks are the exception: Expo Router's docs say to wrap them in `useCallback` so the effect does not re-run on every render.
 - Shared values use `.get()`/`.set()`. Animations run on the UI thread with Reanimated; never `setState` per frame.
 - Use `react-native-keyboard-controller` (`KeyboardAwareScrollView`, `KeyboardStickyView`) for any screen with text input. Never the core `KeyboardAvoidingView`.
 - Long or growing lists use `@shopify/flash-list`. Images use `expo-image`.
@@ -37,8 +37,8 @@ Before touching an Expo, EAS or React Native API, read the installed package's `
 
 - Colours, type, spacing, radii and motion come from `src/feature/common/constants/`. Read colours through `useTheme()`; never hard-code hex values in components.
 - Geist only, via `Text` variants (`display`, `title`, `heading`, `subheading`, `body`, `bodyStrong`, `label`, `caption`, `captionStrong`, `micro`). No monospace font anywhere. No uppercase letter-spaced labels. No pill badges around short labels; state status as plain text, optionally with an icon.
-- Surfaces are paper with sand hairline borders and at most the `elevation.raised` shadow. Use `elevation.floating` only for overlays (dialogs, toasts). The `NotchCard` is the signature block for featured content.
-- Icons: `lucide-react-native` through the `Icon` component (stroke 1.8). Tab bar icons are SF Symbols / Material Symbols through native tabs.
+- Surfaces use `colors.surface` (white in light mode, `#171717` in dark) with thin neutral borders (`colors.border`) and at most the `elevation.raised` shadow. Neutral tiles (`ItemMedia variant="tile"`) use `colors.muted`; the profile menu marks its navigation rows with `ProfileMenuIcon`, a filled `colors.onSolid` glyph on a solid theme colour, and sign out uses a `dangerTint` tile. Use `elevation.floating` only for overlays (dialogs, toasts). The `NotchCard` is the signature block for featured content.
+- Icons: `phosphor-react-native` through the `Icon` component (`weight`, default `regular`; `weight="fill"` for selected or emphasised glyphs). Import each glyph from its own file (`phosphor-react-native/src/icons/<Name>`) so the bundle does not load the whole set, and type icon props as `AppIcon`. Tab bar icons are Phosphor glyphs pre-rendered to PNG in `assets/tab-icons/` (regular, and filled when selected), listed in `src/feature/common/constants/tab-icons.ts` and passed to native tabs with `renderingMode="template"`.
 - The org's brand colour replaces the primary colour at runtime. Use `colors.primary` and `colors.primaryText`, never the ClassroomIO blue directly.
 
 ## Copy

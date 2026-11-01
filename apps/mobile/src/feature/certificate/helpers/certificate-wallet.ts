@@ -15,10 +15,7 @@ export function useCertificateWallet() {
     pending: certificates.data?.pending ?? [],
     offline,
     savedCourseIds: new Set(savedCertificates.map((item) => item.certificate.courseId)),
-    refresh: () => {
-      void certificates.refetch();
-      void saved.refetch();
-    }
+    refresh: () => Promise.all([certificates.refetch(), saved.refetch()])
   };
 }
 

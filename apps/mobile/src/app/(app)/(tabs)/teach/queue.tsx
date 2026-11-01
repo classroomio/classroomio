@@ -1,6 +1,7 @@
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { TrayIcon } from 'phosphor-react-native/src/icons/Tray';
 import { FlashList } from '@shopify/flash-list';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Inbox, RefreshCw } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
@@ -67,7 +68,6 @@ export default function GradingQueueScreen() {
       )}
       ItemSeparatorComponent={Separator}
       contentInsetAdjustmentBehavior="automatic"
-      refreshing={queue.isRefetching}
       onRefresh={() => queue.refetch()}
       style={{ backgroundColor: colors.background }}
       contentContainerStyle={styles.content}
@@ -90,12 +90,12 @@ export default function GradingQueueScreen() {
       ListEmptyComponent={
         queue.isError ? (
           <Empty>
-            <EmptyMedia icon={Inbox} />
+            <EmptyMedia icon={TrayIcon} />
             <EmptyTitle>{t('queueLoadError')}</EmptyTitle>
             <EmptyDescription>{errorMessage(queue.error)}</EmptyDescription>
             <EmptyContent>
               <Button variant="outline" onPress={() => queue.refetch()}>
-                <ButtonIcon icon={RefreshCw} />
+                <ButtonIcon icon={ArrowsClockwiseIcon} />
                 <ButtonText>{common('retry')}</ButtonText>
               </Button>
             </EmptyContent>

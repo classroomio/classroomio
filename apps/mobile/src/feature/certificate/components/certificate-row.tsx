@@ -1,4 +1,5 @@
-import { ArrowDownToLine, Award } from 'lucide-react-native';
+import { DownloadSimpleIcon } from 'phosphor-react-native/src/icons/DownloadSimple';
+import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
 import { StyleSheet, View } from 'react-native';
 
 import { certificateStatusText, useCertificateCopy } from '@/feature/certificate/helpers/certificate-copy';
@@ -33,7 +34,7 @@ export function CertificateRow({ certificate, saved, onPress }: CertificateRowPr
       style={styles.item}
     >
       <ItemMedia variant="tile">
-        <Icon icon={Award} size={20} tone={certificate.status === 'expired' ? 'muted' : 'ink'} />
+        <Icon icon={MedalIcon} size={20} tone={certificate.status === 'expired' ? 'muted' : 'ink'} />
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{certificate.courseTitle}</ItemTitle>
@@ -44,7 +45,7 @@ export function CertificateRow({ certificate, saved, onPress }: CertificateRowPr
           <CertificateStatus certificate={certificate} />
           {saved && (
             <View style={styles.saved}>
-              <Icon icon={ArrowDownToLine} size={13} tone="muted" />
+              <Icon icon={DownloadSimpleIcon} size={13} tone="muted" />
               <Text variant="micro" tone="muted">
                 {copy.t('savedOnThisDevice')}
               </Text>

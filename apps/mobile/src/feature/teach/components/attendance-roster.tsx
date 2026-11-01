@@ -1,4 +1,8 @@
-import { CalendarDays, CircleCheck, CircleDashed, CircleX, Search } from 'lucide-react-native';
+import { CalendarDotsIcon } from 'phosphor-react-native/src/icons/CalendarDots';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { CircleDashedIcon } from 'phosphor-react-native/src/icons/CircleDashed';
+import { MagnifyingGlassIcon } from 'phosphor-react-native/src/icons/MagnifyingGlass';
+import { XCircleIcon } from 'phosphor-react-native/src/icons/XCircle';
 import { createContext, use, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -93,7 +97,7 @@ export function AttendanceSessionPicker({ sessions, onSelect }: AttendanceSessio
           accessibilityLabel={session ? t('sessionA11y', { title: session.title }) : t('noSessionA11y')}
         >
           <ItemMedia variant="tile">
-            <Icon icon={CalendarDays} size={20} tone="ink" />
+            <Icon icon={CalendarDotsIcon} size={20} tone="ink" />
           </ItemMedia>
           <ItemContent>
             <ItemTitle numberOfLines={1}>{session?.title ?? t('chooseSession')}</ItemTitle>
@@ -140,17 +144,17 @@ export function AttendanceSummary() {
     <StatGrid>
       <Stat
         label={t('present')}
-        icon={CircleCheck}
+        icon={CheckCircleIcon}
         value={String(counts.present)}
         tone={counts.present > 0 ? 'success' : 'ink'}
       />
       <Stat
         label={t('absent')}
-        icon={CircleX}
+        icon={XCircleIcon}
         value={String(counts.absent)}
         tone={counts.absent > 0 ? 'danger' : 'ink'}
       />
-      <Stat label={t('notMarked')} icon={CircleDashed} value={String(counts.unmarked)} />
+      <Stat label={t('notMarked')} icon={CircleDashedIcon} value={String(counts.unmarked)} />
     </StatGrid>
   );
 }
@@ -184,7 +188,7 @@ export function AttendanceSearch({ value, onChangeText }: { value: string; onCha
     <InputGroup>
       <InputGroupAddon>
         <View style={styles.searchIcon}>
-          <Icon icon={Search} size={17} tone="muted" />
+          <Icon icon={MagnifyingGlassIcon} size={17} tone="muted" />
         </View>
       </InputGroupAddon>
       <InputGroupInput
@@ -221,11 +225,16 @@ export function AttendanceRow({ learner }: { learner: TeachCourseMember }) {
       resetKey={learner.id}
       leading={{
         label: t('present'),
-        icon: CircleCheck,
+        icon: CheckCircleIcon,
         tone: 'success',
         onCommit: () => setStatus(learner.id, 'present')
       }}
-      trailing={{ label: t('absent'), icon: CircleX, tone: 'danger', onCommit: () => setStatus(learner.id, 'absent') }}
+      trailing={{
+        label: t('absent'),
+        icon: XCircleIcon,
+        tone: 'danger',
+        onCommit: () => setStatus(learner.id, 'absent')
+      }}
     >
       <Item accessibilityLabel={[name, statusText, changed ? t('notSaved') : null].filter(Boolean).join(', ')}>
         <ItemMedia>

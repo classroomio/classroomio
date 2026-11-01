@@ -7,6 +7,7 @@ function createFormatters(locale: Locale) {
   const dateFormat = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric' });
   const shortDateFormat = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' });
   const timeFormat = new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' });
+  const monthYearFormat = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
   const numberFormat = new Intl.NumberFormat(locale);
   const percentFormat = new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 });
 
@@ -15,6 +16,7 @@ function createFormatters(locale: Locale) {
     date: (value: Date) => dateFormat.format(value),
     shortDate: (value: Date) => shortDateFormat.format(value),
     time: (value: Date) => timeFormat.format(value),
+    monthYear: (value: Date) => monthYearFormat.format(value),
     number: (value: number) => numberFormat.format(value),
     /** `value` is a 0–100 percentage. */
     percent: (value: number) => percentFormat.format(value / 100)

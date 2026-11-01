@@ -1,4 +1,5 @@
-import { Minus, Plus } from 'lucide-react-native';
+import { MinusIcon } from 'phosphor-react-native/src/icons/Minus';
+import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon } from '@/feature/common/components/button';
@@ -38,7 +39,7 @@ export function ScoreStepper({ value, max, onChange, accessibilityLabel }: Score
         disabled={numeric !== null && numeric <= 0}
         onPress={() => step(-1)}
       >
-        <ButtonIcon icon={Minus} />
+        <ButtonIcon icon={MinusIcon} />
       </Button>
       <InputGroup style={styles.field}>
         <InputGroupInput
@@ -62,7 +63,7 @@ export function ScoreStepper({ value, max, onChange, accessibilityLabel }: Score
         disabled={numeric !== null && numeric >= max}
         onPress={() => step(1)}
       >
-        <ButtonIcon icon={Plus} />
+        <ButtonIcon icon={PlusIcon} />
       </Button>
       <Text variant="caption" tone="muted" style={styles.max}>
         {t('ofMax', { max })}

@@ -16,7 +16,7 @@ export function Progress({ value }: { value: number }) {
     <View
       accessibilityRole="progressbar"
       accessibilityValue={{ min: 0, max: 100, now: Math.round(percent) }}
-      style={[styles.track, { backgroundColor: colors.sandStrong }]}
+      style={[styles.track, { backgroundColor: colors.mutedStrong }]}
     >
       <View style={[styles.fill, { width: `${percent}%`, backgroundColor: colors.primary }]} />
     </View>
@@ -38,7 +38,14 @@ export function ProgressRing({ value, size = 36, strokeWidth = 3.5 }: ProgressRi
       accessibilityRole="progressbar"
       accessibilityValue={{ min: 0, max: 100, now: Math.round(clamp(value)) }}
     >
-      <Circle cx={size / 2} cy={size / 2} r={radius} stroke={colors.sandStrong} strokeWidth={strokeWidth} fill="none" />
+      <Circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        stroke={colors.mutedStrong}
+        strokeWidth={strokeWidth}
+        fill="none"
+      />
       <Circle
         cx={size / 2}
         cy={size / 2}

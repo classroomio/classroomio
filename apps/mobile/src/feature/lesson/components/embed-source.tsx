@@ -1,4 +1,5 @@
-import { ArrowUpRight, PlayCircle } from 'lucide-react-native';
+import { ArrowUpRightIcon } from 'phosphor-react-native/src/icons/ArrowUpRight';
+import { PlayCircleIcon } from 'phosphor-react-native/src/icons/PlayCircle';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { BrandMarkIcon } from '@/feature/brand/components/brand-mark-icon';
@@ -22,7 +23,11 @@ export function EmbedSource({ provider, link }: EmbedSourceProps) {
   return (
     <View style={styles.row}>
       <View style={styles.source}>
-        {brand.mark ? <BrandMarkIcon name={brand.mark} size={16} /> : <Icon icon={PlayCircle} size={16} tone="muted" />}
+        {brand.mark ? (
+          <BrandMarkIcon name={brand.mark} size={16} />
+        ) : (
+          <Icon icon={PlayCircleIcon} size={16} tone="muted" />
+        )}
         <Text variant="caption" tone="muted">
           {brand.name}
         </Text>
@@ -37,7 +42,7 @@ export function EmbedSource({ provider, link }: EmbedSourceProps) {
         <Text variant="captionStrong" tone="primary">
           {openLabel}
         </Text>
-        <Icon icon={ArrowUpRight} size={15} tone="primary" />
+        <Icon icon={ArrowUpRightIcon} size={15} tone="primary" />
       </Pressable>
     </View>
   );

@@ -1,6 +1,7 @@
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { ChatCircleIcon } from 'phosphor-react-native/src/icons/ChatCircle';
 import { useQueryClient, type InfiniteData } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
-import { MessageCircle, RefreshCw } from 'lucide-react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from '@/feature/common/components/empty';
@@ -48,7 +49,7 @@ export default function PostCommentsScreen() {
   const author = post?.authorFullname || post?.authorUsername || t('courseTeam');
 
   return (
-    <ScreenScrollView refreshing={comments.isRefetching} onRefresh={() => comments.refetch()}>
+    <ScreenScrollView onRefresh={() => comments.refetch()}>
       {post && (
         <Post>
           <PostHeader>
@@ -76,12 +77,12 @@ export default function PostCommentsScreen() {
         {comments.isPending && <Skeleton height={200} radius={14} />}
         {comments.isError && (
           <Empty>
-            <EmptyMedia icon={MessageCircle} />
+            <EmptyMedia icon={ChatCircleIcon} />
             <EmptyTitle>{t('commentsLoadError')}</EmptyTitle>
             <EmptyDescription>{errorMessage(comments.error)}</EmptyDescription>
             <EmptyContent>
               <Button variant="outline" onPress={() => comments.refetch()}>
-                <ButtonIcon icon={RefreshCw} />
+                <ButtonIcon icon={ArrowsClockwiseIcon} />
                 <ButtonText>{common('retry')}</ButtonText>
               </Button>
             </EmptyContent>
@@ -89,7 +90,7 @@ export default function PostCommentsScreen() {
         )}
         {comments.isSuccess && items.length === 0 && (
           <Empty>
-            <EmptyMedia icon={MessageCircle} />
+            <EmptyMedia icon={ChatCircleIcon} />
             <EmptyTitle>{t('noCommentsTitle')}</EmptyTitle>
             <EmptyDescription>{t('noCommentsDescription')}</EmptyDescription>
           </Empty>

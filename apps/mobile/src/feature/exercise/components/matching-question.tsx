@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react-native';
+import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
 import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/feature/common/components/icon';
@@ -67,12 +67,12 @@ export function MatchingQuestion({ question }: { question: ExerciseQuestion }) {
           {lefts.map((left, index) => (
             <View
               key={`${left}-${index}`}
-              style={[styles.leftCell, { backgroundColor: colors.sand, borderColor: colors.border }]}
+              style={[styles.leftCell, { backgroundColor: colors.muted, borderColor: colors.border }]}
             >
               <Text variant="captionStrong" numberOfLines={3} maxFontSizeMultiplier={1.3} style={styles.leftText}>
                 {left}
               </Text>
-              <Icon icon={ArrowRight} size={14} tone="subtle" />
+              <Icon icon={ArrowRightIcon} size={14} tone="subtle" />
             </View>
           ))}
         </View>

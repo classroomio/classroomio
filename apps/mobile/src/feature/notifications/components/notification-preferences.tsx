@@ -1,5 +1,9 @@
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { BellRingingIcon } from 'phosphor-react-native/src/icons/BellRinging';
+import { GlobeIcon } from 'phosphor-react-native/src/icons/Globe';
+import { MoonIcon } from 'phosphor-react-native/src/icons/Moon';
+import { SlidersHorizontalIcon } from 'phosphor-react-native/src/icons/SlidersHorizontal';
 import type { TNotificationCategory } from '@cio/utils/constants/notifications';
-import { BellRing, Globe, Moon, RefreshCw, Settings2 } from 'lucide-react-native';
 import { createContext, use, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -104,12 +108,12 @@ export function NotificationPreferencesStatus() {
   if (query.isError) {
     return (
       <Empty>
-        <EmptyMedia icon={Settings2} />
+        <EmptyMedia icon={SlidersHorizontalIcon} />
         <EmptyTitle>{t('settingsLoadError')}</EmptyTitle>
         <EmptyDescription>{errorMessage(query.error)}</EmptyDescription>
         <EmptyContent>
           <Button variant="outline" onPress={() => void query.refetch()}>
-            <ButtonIcon icon={RefreshCw} />
+            <ButtonIcon icon={ArrowsClockwiseIcon} />
             <ButtonText>{common('retry')}</ButtonText>
           </Button>
         </EmptyContent>
@@ -236,7 +240,7 @@ export function QuietHoursSection() {
       <ItemGroup>
         <Item>
           <ItemMedia variant="tile">
-            <Icon icon={Moon} size={20} tone="ink" />
+            <Icon icon={MoonIcon} size={20} tone="ink" />
           </ItemMedia>
           <ItemContent>
             <ItemTitle>{t('pausePush')}</ItemTitle>
@@ -275,7 +279,7 @@ export function QuietHoursSection() {
         {quietHours ? (
           <Item>
             <ItemMedia variant="tile">
-              <Icon icon={Globe} size={20} tone="ink" />
+              <Icon icon={GlobeIcon} size={20} tone="ink" />
             </ItemMedia>
             <ItemContent>
               <ItemTitle>{t('timeZone')}</ItemTitle>
@@ -313,7 +317,7 @@ export function NotificationPreferencesFootnote() {
 
   return (
     <View style={styles.footnote}>
-      <Icon icon={BellRing} size={16} tone="subtle" />
+      <Icon icon={BellRingingIcon} size={16} tone="subtle" />
       <Text variant="caption" tone="muted" style={styles.footnoteText}>
         {t('footnote')}
       </Text>

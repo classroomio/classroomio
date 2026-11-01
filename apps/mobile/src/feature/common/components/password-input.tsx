@@ -1,4 +1,5 @@
-import { Eye, EyeOff } from 'lucide-react-native';
+import { EyeIcon } from 'phosphor-react-native/src/icons/Eye';
+import { EyeSlashIcon } from 'phosphor-react-native/src/icons/EyeSlash';
 import { useState, type ComponentRef, type Ref } from 'react';
 import { Pressable, StyleSheet, type TextInput, type TextInputProps } from 'react-native';
 
@@ -33,7 +34,7 @@ export function PasswordInput(props: PasswordInputProps) {
           onPress={() => setVisible((current) => !current)}
           style={styles.toggle}
         >
-          <Icon icon={visible ? EyeOff : Eye} size={19} tone="muted" />
+          <Icon icon={visible ? EyeSlashIcon : EyeIcon} size={19} tone="muted" />
         </Pressable>
       </InputGroupAddon>
     </InputGroup>

@@ -125,7 +125,7 @@ function TranscriptLine({ segment, active, onSeek }: TranscriptLineProps) {
       style={({ pressed }) => [
         styles.line,
         active && { backgroundColor: colors.primaryTint },
-        pressed && !active && { backgroundColor: colors.sand }
+        pressed && !active && { backgroundColor: colors.muted }
       ]}
     >
       {content}

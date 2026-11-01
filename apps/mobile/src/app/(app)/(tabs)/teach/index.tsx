@@ -1,5 +1,6 @@
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { GraduationCapIcon } from 'phosphor-react-native/src/icons/GraduationCap';
 import { router } from 'expo-router';
-import { GraduationCap, RefreshCw } from 'lucide-react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import {
@@ -40,22 +41,18 @@ export default function TeachScreen() {
   const common = useTranslations(commonCatalog);
   const courses = useTeachingCoursesQuery();
   const queue = useGradingQueueQuery();
-  const refreshing = courses.isRefetching || queue.isRefetching;
-  const refresh = () => {
-    void courses.refetch();
-    void queue.refetch();
-  };
+  const refresh = () => Promise.all([courses.refetch(), queue.refetch()]);
 
   if (courses.isError) {
     return (
-      <ScreenScrollView refreshing={refreshing} onRefresh={refresh}>
+      <ScreenScrollView onRefresh={refresh}>
         <Empty>
-          <EmptyMedia icon={GraduationCap} />
+          <EmptyMedia icon={GraduationCapIcon} />
           <EmptyTitle>{t('coursesLoadError')}</EmptyTitle>
           <EmptyDescription>{errorMessage(courses.error)}</EmptyDescription>
           <EmptyContent>
             <Button variant="outline" onPress={refresh}>
-              <ButtonIcon icon={RefreshCw} />
+              <ButtonIcon icon={ArrowsClockwiseIcon} />
               <ButtonText>{common('retry')}</ButtonText>
             </Button>
           </EmptyContent>
@@ -66,7 +63,7 @@ export default function TeachScreen() {
 
   if (courses.isSuccess && courses.data.length === 0) {
     return (
-      <ScreenScrollView refreshing={refreshing} onRefresh={refresh}>
+      <ScreenScrollView onRefresh={refresh}>
         <Empty>
           <EmptyIllustration name="courses" />
           <EmptyTitle>{t('noCoursesTitle')}</EmptyTitle>
@@ -79,7 +76,7 @@ export default function TeachScreen() {
   const waiting = (queue.data ?? []).slice(0, WAITING_PREVIEW);
 
   return (
-    <ScreenScrollView refreshing={refreshing} onRefresh={refresh}>
+    <ScreenScrollView onRefresh={refresh}>
       <ScreenSection>
         {queue.isPending && <Skeleton height={172} radius={10} />}
         {queue.isError && (

@@ -1,5 +1,8 @@
+import { CopyIcon } from 'phosphor-react-native/src/icons/Copy';
+import { DownloadSimpleIcon } from 'phosphor-react-native/src/icons/DownloadSimple';
+import { ExportIcon } from 'phosphor-react-native/src/icons/Export';
+import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Award, Copy, Download, Share } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useAccountQuery } from '@/feature/account/api/account';
@@ -51,7 +54,7 @@ export default function CertificateScreen() {
     return (
       <ScreenScrollView>
         <Empty>
-          <EmptyMedia icon={Award} />
+          <EmptyMedia icon={MedalIcon} />
           <EmptyTitle>{query.isError ? t('detailLoadError') : t('notFoundTitle')}</EmptyTitle>
           <EmptyDescription>{query.isError ? errorMessage(query.error) : t('notFoundDescription')}</EmptyDescription>
           {query.isError && (
@@ -85,11 +88,11 @@ export default function CertificateScreen() {
         {certificate.canDownload && (
           <View style={styles.actions}>
             <Button disabled={!pdfUri || busy !== null} onPress={share} style={styles.action}>
-              {busy === 'share' ? <ButtonSpinner /> : <ButtonIcon icon={Share} />}
+              {busy === 'share' ? <ButtonSpinner /> : <ButtonIcon icon={ExportIcon} />}
               <ButtonText>{t('sharePdf')}</ButtonText>
             </Button>
             <Button variant="outline" disabled={!pdfUri || busy !== null} onPress={save} style={styles.action}>
-              {busy === 'save' ? <ButtonSpinner /> : <ButtonIcon icon={Download} />}
+              {busy === 'save' ? <ButtonSpinner /> : <ButtonIcon icon={DownloadSimpleIcon} />}
               <ButtonText>{t('saveToDevice')}</ButtonText>
             </Button>
           </View>
@@ -125,7 +128,7 @@ export default function CertificateScreen() {
               hitSlop={HIT_SLOP}
               onPress={copyId}
             >
-              <Icon icon={Copy} size={17} tone="muted" />
+              <Icon icon={CopyIcon} size={17} tone="muted" />
             </Pressable>
           }
         />

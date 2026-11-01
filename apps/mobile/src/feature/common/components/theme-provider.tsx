@@ -2,6 +2,7 @@ import { createContext, useMemo, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { DARK_THEME, LIGHT_THEME, type Theme } from '@/feature/common/constants/theme';
+import { darken, withAlpha } from '@/feature/common/helpers/color';
 import type { OrgBrand } from '@/feature/org/types/org';
 import { useThemePreference } from '@/feature/settings/helpers/theme-preference-store';
 
@@ -21,10 +22,10 @@ export function ThemeProvider({ brand, children }: ThemeProviderProps) {
     const colors = {
       ...base.colors,
       primary: brand.primary,
-      primaryPressed: brand.primary,
+      primaryPressed: darken(brand.primary, 0.12),
       onPrimary: brand.onPrimary,
       primaryText: base.isDark ? base.colors.ink : brand.primary,
-      primaryTint: `${brand.primary}${base.isDark ? '2E' : '14'}`
+      primaryTint: withAlpha(brand.primary, base.isDark ? 0.18 : 0.08)
     };
 
     return { ...base, colors };

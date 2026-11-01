@@ -1,6 +1,10 @@
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { InfoIcon } from 'phosphor-react-native/src/icons/Info';
+import { LockIcon } from 'phosphor-react-native/src/icons/Lock';
+import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
+import { WifiSlashIcon } from 'phosphor-react-native/src/icons/WifiSlash';
 import { useQuery } from '@tanstack/react-query';
 import { NetworkStateType, useNetworkState } from 'expo-network';
-import { CircleCheck, Info, Lock, TriangleAlert, WifiOff } from 'lucide-react-native';
 import { Children, Fragment, isValidElement, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -162,7 +166,7 @@ function DownloadSheetBody({ courseId, lessonId }: { courseId: string; lessonId?
       <BottomSheetScrollView contentContainerStyle={styles.body}>
         {offline && !data ? (
           <Banner tone="neutral">
-            <BannerIcon icon={WifiOff} />
+            <BannerIcon icon={WifiSlashIcon} />
             <BannerContent>
               <BannerTitle>{t('needConnectionTitle')}</BannerTitle>
               <BannerDescription>{t('needConnectionDescription')}</BannerDescription>
@@ -176,7 +180,7 @@ function DownloadSheetBody({ courseId, lessonId }: { courseId: string; lessonId?
           </View>
         ) : !data ? (
           <Banner tone="danger">
-            <BannerIcon icon={TriangleAlert} />
+            <BannerIcon icon={WarningIcon} />
             <BannerContent>
               <BannerTitle>{t('planLoadError')}</BannerTitle>
               <BannerDescription>{downloadErrorMessage(plan.error)}</BannerDescription>
@@ -184,7 +188,7 @@ function DownloadSheetBody({ courseId, lessonId }: { courseId: string; lessonId?
           </Banner>
         ) : data.lessons.length === 0 && !stored ? (
           <Banner tone="neutral">
-            <BannerIcon icon={Lock} />
+            <BannerIcon icon={LockIcon} />
             <BannerContent>
               <BannerTitle>
                 {data.lockedCount > 0 ? (lessonId ? t('lessonLocked') : t('noLessonsOpen')) : t('nothingToDownload')}
@@ -197,7 +201,7 @@ function DownloadSheetBody({ courseId, lessonId }: { courseId: string; lessonId?
         ) : data.lessons.length === 0 ? (
           <>
             <Banner tone="success">
-              <BannerIcon icon={CircleCheck} />
+              <BannerIcon icon={CheckCircleIcon} />
               <BannerContent>
                 <BannerTitle>{lessonId ? t('lessonOnDevice') : t('everythingOnDevice')}</BannerTitle>
                 {existing ? (
@@ -247,7 +251,7 @@ function DownloadSheetBody({ courseId, lessonId }: { courseId: string; lessonId?
 
             {data.onlineOnlyCount > 0 || data.lockedCount > 0 ? (
               <Banner tone="neutral">
-                <BannerIcon icon={Info} />
+                <BannerIcon icon={InfoIcon} />
                 <BannerContent>
                   <BannerDescription>
                     {[

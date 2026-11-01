@@ -1,4 +1,5 @@
-import { ClipboardCheck, Clock } from 'lucide-react-native';
+import { ClipboardTextIcon } from 'phosphor-react-native/src/icons/ClipboardText';
+import { ClockIcon } from 'phosphor-react-native/src/icons/Clock';
 import { StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/feature/common/components/avatar';
@@ -36,7 +37,7 @@ export function GradingQueueRow({ item, onPress }: GradingQueueRowProps) {
   return (
     <SwipeActionRow
       resetKey={item.id}
-      trailing={{ label: t('gradeAction'), icon: ClipboardCheck, onCommit: () => onPress(item) }}
+      trailing={{ label: t('gradeAction'), icon: ClipboardTextIcon, onCommit: () => onPress(item) }}
     >
       <Item
         onPress={() => onPress(item)}
@@ -53,7 +54,7 @@ export function GradingQueueRow({ item, onPress }: GradingQueueRowProps) {
             {item.courseTitle} · {item.exerciseTitle}
           </ItemDescription>
           <View style={styles.meta}>
-            <Icon icon={Clock} size={13} tone={longWait ? 'warning' : 'subtle'} />
+            <Icon icon={ClockIcon} size={13} tone={longWait ? 'warning' : 'subtle'} />
             <Text variant="micro" tone={longWait ? 'warning' : 'muted'}>
               {waiting ?? t('waiting')}
             </Text>

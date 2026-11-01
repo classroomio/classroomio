@@ -1,5 +1,5 @@
+import { GlobeIcon } from 'phosphor-react-native/src/icons/Globe';
 import * as WebBrowser from 'expo-web-browser';
-import { Globe } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
@@ -21,7 +21,7 @@ export function UnsupportedQuestion({ reason }: UnsupportedQuestionProps) {
   const { courseId, exerciseId } = useExerciseSession();
 
   return (
-    <View style={[styles.box, { backgroundColor: colors.sand, borderColor: colors.border }]}>
+    <View style={[styles.box, { backgroundColor: colors.muted, borderColor: colors.border }]}>
       <Text variant="label">{t('unsupportedTitle')}</Text>
       <Text variant="caption" tone="muted">
         {`${reason ?? t('unsupportedReason')} ${t('unsupportedInstruction')}`}
@@ -32,7 +32,7 @@ export function UnsupportedQuestion({ reason }: UnsupportedQuestionProps) {
         style={styles.button}
         onPress={() => void WebBrowser.openBrowserAsync(exerciseWebUrlOf(org, courseId, exerciseId))}
       >
-        <ButtonIcon icon={Globe} />
+        <ButtonIcon icon={GlobeIcon} />
         <ButtonText>{t('openInBrowser')}</ButtonText>
       </Button>
     </View>

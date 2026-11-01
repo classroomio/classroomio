@@ -22,7 +22,7 @@ function createElevation(colors: ThemeColors, isDark: boolean): Elevation {
           offsetY: 1,
           blurRadius: 2,
           spreadDistance: 0,
-          color: isDark ? 'rgba(0, 0, 0, 0.32)' : 'rgba(23, 20, 15, 0.06)'
+          color: isDark ? 'rgba(0, 0, 0, 0.32)' : 'rgba(0, 0, 0, 0.05)'
         }
       ]
     },
@@ -33,14 +33,14 @@ function createElevation(colors: ThemeColors, isDark: boolean): Elevation {
           offsetY: 1,
           blurRadius: 2,
           spreadDistance: 0,
-          color: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(23, 20, 15, 0.06)'
+          color: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.05)'
         },
         {
           offsetX: 0,
           offsetY: 8,
           blurRadius: 24,
           spreadDistance: -6,
-          color: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(23, 20, 15, 0.12)'
+          color: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)'
         }
       ],
       borderColor: colors.border

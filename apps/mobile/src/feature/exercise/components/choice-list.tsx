@@ -1,9 +1,9 @@
-import { Check, type LucideIcon } from 'lucide-react-native';
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
 import { createContext, use, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { PressableScale } from '@/feature/common/components/pressable-scale';
 import { Text } from '@/feature/common/components/text';
 import { RADII, SPACING } from '@/feature/common/constants/layout';
@@ -94,12 +94,12 @@ export function ChoiceIndicator() {
         }
       ]}
     >
-      {selected && <Icon icon={Check} size={14} color={colors.onPrimary} strokeWidth={2.6} />}
+      {selected && <Icon icon={CheckIcon} size={14} color={colors.onPrimary} weight="bold" />}
     </Animated.View>
   );
 }
 
-export function ChoiceIcon({ icon }: { icon: LucideIcon }) {
+export function ChoiceIcon({ icon }: { icon: AppIcon }) {
   const { selected } = use(ChoiceItemContext);
 
   return <Icon icon={icon} size={22} tone={selected ? 'primary' : 'muted'} />;

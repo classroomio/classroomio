@@ -10,8 +10,8 @@ export function Switch({ onValueChange, ...props }: SwitchProps) {
 
   return (
     <NativeSwitch
-      trackColor={{ false: colors.sandStrong, true: colors.primary }}
-      ios_backgroundColor={colors.sandStrong}
+      trackColor={{ false: colors.mutedStrong, true: colors.primary }}
+      ios_backgroundColor={colors.mutedStrong}
       {...props}
       onValueChange={(value) => {
         selectionHaptic();

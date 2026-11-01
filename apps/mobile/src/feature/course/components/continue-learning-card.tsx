@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react-native';
+import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
 import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/feature/common/components/icon';
@@ -50,7 +50,7 @@ export function ContinueLearningCard({ course }: { course: EnrolledCourse }) {
             <Text variant="label" tone="onPrimary">
               {common('continue')}
             </Text>
-            <Icon icon={ArrowRight} size={18} tone="onPrimary" />
+            <Icon icon={ArrowRightIcon} size={18} tone="onPrimary" />
           </View>
         </NotchCard>
       </PressableScale>

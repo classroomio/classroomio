@@ -7,13 +7,13 @@ import { useTheme } from '@/feature/common/helpers/use-theme';
 
 type CourseBannerProps = { uri?: string | null; recyclingKey?: string; style?: StyleProp<ViewStyle> };
 
-/** A course's banner image, or stacked notch blocks on sand when the course has none. Size it through `style`. */
+/** A course's banner image, or stacked notch blocks on a muted surface when the course has none. Size it through `style`. */
 export function CourseBanner({ uri, recyclingKey, style }: CourseBannerProps) {
   const { colors } = useTheme();
 
   if (uri) {
     return (
-      <View style={[styles.frame, { backgroundColor: colors.sand }, style]}>
+      <View style={[styles.frame, { backgroundColor: colors.muted }, style]}>
         <Image
           source={{ uri }}
           recyclingKey={recyclingKey}
@@ -27,15 +27,15 @@ export function CourseBanner({ uri, recyclingKey, style }: CourseBannerProps) {
   }
 
   return (
-    <View style={[styles.frame, { backgroundColor: colors.sand }, style]}>
+    <View style={[styles.frame, { backgroundColor: colors.muted }, style]}>
       <View style={styles.stack}>
-        <NotchCard cutoutColor={colors.sand} style={[styles.block, styles.top, { backgroundColor: colors.ring }]} />
+        <NotchCard cutoutColor={colors.muted} style={[styles.block, styles.top, { backgroundColor: colors.ring }]} />
         <NotchCard
-          cutoutColor={colors.sand}
+          cutoutColor={colors.muted}
           style={[styles.block, styles.middle, { backgroundColor: colors.border }]}
         />
         <NotchCard
-          cutoutColor={colors.sand}
+          cutoutColor={colors.muted}
           style={[styles.block, styles.bottom, { backgroundColor: colors.border }]}
         />
       </View>

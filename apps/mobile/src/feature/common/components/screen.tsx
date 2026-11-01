@@ -1,42 +1,25 @@
 import type { ReactNode, Ref } from 'react';
-import {
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-  type ScrollViewInstance,
-  type ScrollViewProps
-} from 'react-native';
+import { ScrollView, StyleSheet, View, type ScrollViewInstance, type ScrollViewProps } from 'react-native';
 
 import { GUTTER, SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 
 import { Text } from './text';
+import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
 
 type ScreenScrollViewProps = ScrollViewProps & {
   ref?: Ref<ScrollViewInstance>;
-  refreshing?: boolean;
-  onRefresh?: () => void;
+  onRefresh?: RefreshHandler;
 };
 
-export function ScreenScrollView({
-  refreshing,
-  onRefresh,
-  contentContainerStyle,
-  style,
-  ...props
-}: ScreenScrollViewProps) {
+export function ScreenScrollView({ onRefresh, contentContainerStyle, style, ...props }: ScreenScrollViewProps) {
   const { colors } = useTheme();
 
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       keyboardDismissMode="on-drag"
-      refreshControl={
-        onRefresh ? (
-          <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh} tintColor={colors.inkMuted} />
-        ) : undefined
-      }
+      refreshControl={onRefresh ? <PullRefreshControl onRefresh={onRefresh} /> : undefined}
       {...props}
       style={[{ backgroundColor: colors.background }, style]}
       contentContainerStyle={[styles.content, contentContainerStyle]}

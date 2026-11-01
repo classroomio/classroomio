@@ -1,4 +1,6 @@
-import { ChevronDown, ChevronUp, GripVertical } from 'lucide-react-native';
+import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
+import { CaretUpIcon } from 'phosphor-react-native/src/icons/CaretUp';
+import { DotsSixVerticalIcon } from 'phosphor-react-native/src/icons/DotsSixVertical';
 import { createContext, use, useEffect, type ReactNode } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
@@ -258,7 +260,7 @@ export function SortableItem({ id, accessibilityLabel, style, children }: Sortab
 export function SortableHandle() {
   return (
     <View accessibilityElementsHidden importantForAccessibility="no" style={styles.handle}>
-      <Icon icon={GripVertical} size={18} tone="subtle" />
+      <Icon icon={DotsSixVerticalIcon} size={18} tone="subtle" />
     </View>
   );
 }
@@ -275,7 +277,7 @@ export function SortableMoveButtons() {
         onPress={() => move(id, -1)}
         style={[styles.move, (disabled || index === 0) && styles.moveDisabled]}
       >
-        <Icon icon={ChevronUp} size={18} tone="muted" />
+        <Icon icon={CaretUpIcon} size={18} tone="muted" />
       </PressableScale>
       <PressableScale
         hitSlop={HIT_SLOP}
@@ -283,7 +285,7 @@ export function SortableMoveButtons() {
         onPress={() => move(id, 1)}
         style={[styles.move, (disabled || index === total - 1) && styles.moveDisabled]}
       >
-        <Icon icon={ChevronDown} size={18} tone="muted" />
+        <Icon icon={CaretDownIcon} size={18} tone="muted" />
       </PressableScale>
     </View>
   );

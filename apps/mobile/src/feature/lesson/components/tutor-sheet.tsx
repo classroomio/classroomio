@@ -1,5 +1,6 @@
+import { SparkleIcon } from 'phosphor-react-native/src/icons/Sparkle';
+import { SquareIcon } from 'phosphor-react-native/src/icons/Square';
 import { BottomSheetScrollView as SheetScrollView, type BottomSheetScrollViewMethods } from '@gorhom/bottom-sheet';
-import { Sparkles, Square } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
@@ -87,7 +88,7 @@ function TutorConversation({
     <>
       <BottomSheetHeader>
         <View style={[styles.badge, { backgroundColor: colors.primaryTint }]}>
-          <Icon icon={Sparkles} size={17} tone="primary" />
+          <Icon icon={SparkleIcon} size={17} tone="primary" />
         </View>
         <BottomSheetHeading>
           <BottomSheetTitle>{t('tutorTitle')}</BottomSheetTitle>
@@ -110,7 +111,7 @@ function TutorConversation({
       >
         {chat.messages.length === 0 && !unavailable ? (
           <Empty>
-            <EmptyMedia icon={Sparkles} />
+            <EmptyMedia icon={SparkleIcon} />
             <EmptyTitle>{t('tutorEmptyTitle')}</EmptyTitle>
             <EmptyDescription>{t('tutorEmptyDescription', { title: lessonTitle })}</EmptyDescription>
           </Empty>
@@ -129,7 +130,7 @@ function TutorConversation({
         ) : null}
         {unavailable ? (
           <Empty>
-            <EmptyMedia icon={Sparkles} />
+            <EmptyMedia icon={SparkleIcon} />
             <EmptyTitle>{t(UNAVAILABLE_KEYS[unavailable].title)}</EmptyTitle>
             <EmptyDescription>{t(UNAVAILABLE_KEYS[unavailable].description)}</EmptyDescription>
             {onOpenTranscript ? (
@@ -166,9 +167,9 @@ function TutorConversation({
                 accessibilityLabel={t('tutorStop')}
                 hitSlop={HIT_SLOP}
                 onPress={chat.stop}
-                style={[styles.stop, { backgroundColor: colors.sandStrong }]}
+                style={[styles.stop, { backgroundColor: colors.mutedStrong }]}
               >
-                <Icon icon={Square} size={14} tone="ink" strokeWidth={2.4} />
+                <Icon icon={SquareIcon} size={14} tone="ink" weight="fill" />
               </Pressable>
             ) : (
               <ComposerSend accessibilityLabel={t('tutorAsk')} />

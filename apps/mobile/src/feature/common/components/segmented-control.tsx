@@ -80,7 +80,7 @@ export function SegmentedControl<T extends string>({ value, onValueChange, child
         register
       }}
     >
-      <View accessibilityRole="tablist" style={[styles.track, { backgroundColor: colors.sandStrong }]}>
+      <View accessibilityRole="tablist" style={[styles.track, { backgroundColor: colors.mutedStrong }]}>
         {selected ? (
           <Animated.View
             pointerEvents="none"

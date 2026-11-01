@@ -13,7 +13,14 @@ export default function ProfileLayout() {
 
   return (
     <Stack screenOptions={tabStackScreenOptions(colors)}>
-      <Stack.Screen name="index" options={{ title: t('tabProfile') }} />
+      <Stack.Screen
+        name="index"
+        options={{
+          title: t('tabProfile'),
+          headerShown: false,
+          headerLargeTitleEnabled: false
+        }}
+      />
       <Stack.Screen name="settings" options={{ title: t('settings'), headerLargeTitleEnabled: false }} />
       <Stack.Screen name="language" options={{ title: ts('language'), headerLargeTitleEnabled: false }} />
       <Stack.Screen

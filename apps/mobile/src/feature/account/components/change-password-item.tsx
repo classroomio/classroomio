@@ -1,4 +1,4 @@
-import { KeyRound } from 'lucide-react-native';
+import { KeyIcon } from 'phosphor-react-native/src/icons/Key';
 import { useState } from 'react';
 
 import { requestPasswordReset } from '@/feature/auth/api/password-reset';
@@ -51,7 +51,7 @@ export function ChangePasswordItem({ email }: { email: string }) {
     <>
       <Item onPress={() => setConfirming(true)}>
         <ItemMedia variant="tile">
-          <Icon icon={KeyRound} size={20} tone="ink" />
+          <Icon icon={KeyIcon} size={20} tone="ink" />
         </ItemMedia>
         <ItemContent>
           <ItemTitle>{t('changePassword')}</ItemTitle>

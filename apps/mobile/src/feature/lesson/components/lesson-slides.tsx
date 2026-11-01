@@ -1,4 +1,4 @@
-import { Maximize2 } from 'lucide-react-native';
+import { ArrowsOutIcon } from 'phosphor-react-native/src/icons/ArrowsOut';
 import { StyleSheet, View } from 'react-native';
 
 import { BrandMarkIcon } from '@/feature/brand/components/brand-mark-icon';
@@ -19,7 +19,7 @@ function OpenDeckButton({ deck }: { deck: SlideDeck }) {
 
   return (
     <Button size="sm" variant="ghost" onPress={() => openExternal(deck.src)} style={styles.open}>
-      {brand?.mark ? <BrandMarkIcon name={brand.mark} size={16} /> : <ButtonIcon icon={Maximize2} />}
+      {brand?.mark ? <BrandMarkIcon name={brand.mark} size={16} /> : <ButtonIcon icon={ArrowsOutIcon} />}
       <ButtonText>{brand ? t('openIn', { name: brand.name }) : t('openFullScreen')}</ButtonText>
     </Button>
   );

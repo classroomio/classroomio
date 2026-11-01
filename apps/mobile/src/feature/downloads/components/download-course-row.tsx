@@ -1,5 +1,7 @@
+import { PauseCircleIcon } from 'phosphor-react-native/src/icons/PauseCircle';
+import { PlayCircleIcon } from 'phosphor-react-native/src/icons/PlayCircle';
+import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
 import { router } from 'expo-router';
-import { CirclePause, CirclePlay, Trash2, type LucideIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -12,7 +14,7 @@ import {
   AlertDialogFooter,
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Item, ItemActions, ItemContent, ItemTitle } from '@/feature/common/components/item';
 import { Progress } from '@/feature/common/components/progress';
 import { Text } from '@/feature/common/components/text';
@@ -32,7 +34,7 @@ import { useLocale } from '@/feature/i18n/helpers/use-locale';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { showToast } from '@/feature/toast/helpers/toast-store';
 
-function RowIconButton({ icon, label, onPress }: { icon: LucideIcon; label: string; onPress: () => void }) {
+function RowIconButton({ icon, label, onPress }: { icon: AppIcon; label: string; onPress: () => void }) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -101,20 +103,20 @@ export function DownloadCourseRow({ courseId }: { courseId: string }) {
         <ItemActions>
           {active ? (
             <RowIconButton
-              icon={CirclePause}
+              icon={PauseCircleIcon}
               label={t('pauseItem', { title: course.title })}
               onPress={() => void pauseCourseDownload(courseId)}
             />
           ) : null}
           {resumable ? (
             <RowIconButton
-              icon={CirclePlay}
+              icon={PlayCircleIcon}
               label={t('resumeItem', { title: course.title })}
               onPress={() => void resumeCourseDownload(courseId)}
             />
           ) : null}
           <RowIconButton
-            icon={Trash2}
+            icon={TrashIcon}
             label={t('removeItem', { title: course.title })}
             onPress={() => setConfirming(true)}
           />

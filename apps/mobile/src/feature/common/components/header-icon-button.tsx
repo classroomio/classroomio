@@ -1,13 +1,12 @@
-import type { LucideIcon } from 'lucide-react-native';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { HIT_SLOP } from '@/feature/common/constants/layout';
 import { tapHaptic } from '@/feature/common/helpers/haptics';
 
-import { Icon } from './icon';
+import { Icon, type AppIcon } from './icon';
 
 type HeaderIconButtonProps = {
-  icon: LucideIcon;
+  icon: AppIcon;
   accessibilityLabel: string;
   onPress: () => void;
   disabled?: boolean;
@@ -27,7 +26,7 @@ export function HeaderIconButton({ icon, accessibilityLabel, onPress, disabled =
       }}
       style={({ pressed }) => [styles.button, pressed && styles.pressed, disabled && styles.disabled]}
     >
-      <Icon icon={icon} size={22} tone="primary" strokeWidth={2} />
+      <Icon icon={icon} size={22} tone="primary" />
     </Pressable>
   );
 }

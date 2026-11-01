@@ -1,25 +1,22 @@
+import { ArrowSquareOutIcon } from 'phosphor-react-native/src/icons/ArrowSquareOut';
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
+import { CheckSquareIcon } from 'phosphor-react-native/src/icons/CheckSquare';
+import { CircleIcon } from 'phosphor-react-native/src/icons/Circle';
+import { FileTextIcon } from 'phosphor-react-native/src/icons/FileText';
+import { RadioButtonIcon } from 'phosphor-react-native/src/icons/RadioButton';
+import { SquareIcon } from 'phosphor-react-native/src/icons/Square';
+import { StarIcon } from 'phosphor-react-native/src/icons/Star';
+import { ThumbsDownIcon } from 'phosphor-react-native/src/icons/ThumbsDown';
+import { ThumbsUpIcon } from 'phosphor-react-native/src/icons/ThumbsUp';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { Image } from 'expo-image';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as WebBrowser from 'expo-web-browser';
-import {
-  Check,
-  Circle,
-  CircleDot,
-  ExternalLink,
-  FileText,
-  Square,
-  SquareCheck,
-  Star,
-  ThumbsDown,
-  ThumbsUp,
-  X,
-  type LucideIcon
-} from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Text } from '@/feature/common/components/text';
 import { HIT_SLOP, RADII, SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
@@ -66,7 +63,9 @@ function formatDuration(seconds: number) {
 export function AnswerSurface({ children }: { children: ReactNode }) {
   const { colors } = useTheme();
 
-  return <View style={[styles.surface, { backgroundColor: colors.sand, borderColor: colors.border }]}>{children}</View>;
+  return (
+    <View style={[styles.surface, { backgroundColor: colors.muted, borderColor: colors.border }]}>{children}</View>
+  );
 }
 
 function AnswerText({ children }: { children: ReactNode }) {
@@ -99,11 +98,17 @@ type ChoiceRowProps = {
 function ChoiceRow({ label, selected, correct, multiple = false }: ChoiceRowProps) {
   const t = useTranslations(teachCatalog);
   const { colors } = useTheme();
-  const marker: LucideIcon = multiple ? (selected ? SquareCheck : Square) : selected ? CircleDot : Circle;
-  const verdict = correct
-    ? { icon: Check, tone: 'success' as const, text: selected ? t('correct') : t('correctAnswer') }
+  const marker: AppIcon = multiple
+    ? selected
+      ? CheckSquareIcon
+      : SquareIcon
     : selected
-      ? { icon: X, tone: 'danger' as const, text: t('incorrect') }
+      ? RadioButtonIcon
+      : CircleIcon;
+  const verdict = correct
+    ? { icon: CheckIcon, tone: 'success' as const, text: selected ? t('correct') : t('correctAnswer') }
+    : selected
+      ? { icon: XIcon, tone: 'danger' as const, text: t('incorrect') }
       : null;
   const state = [selected ? t('chosenByLearner') : null, verdict?.text].filter(Boolean).join(', ');
 
@@ -115,7 +120,7 @@ function ChoiceRow({ label, selected, correct, multiple = false }: ChoiceRowProp
         styles.choice,
         {
           borderColor: selected ? colors.borderStrong : colors.border,
-          backgroundColor: selected ? colors.sand : colors.surface
+          backgroundColor: selected ? colors.muted : colors.surface
         }
       ]}
     >
@@ -157,12 +162,12 @@ function FileAnswer({ answer }: { answer: GradingAnswerOf<'FILE_UPLOAD'> }) {
           contentFit="contain"
           transition={120}
           accessibilityLabel={answer.fileName}
-          style={[styles.preview, { backgroundColor: colors.sand, borderColor: colors.border }]}
+          style={[styles.preview, { backgroundColor: colors.muted, borderColor: colors.border }]}
         />
       )}
       <AnswerSurface>
         <View style={styles.fileRow}>
-          <Icon icon={FileText} size={22} tone="muted" />
+          <Icon icon={FileTextIcon} size={22} tone="muted" />
           <View style={styles.fileCopy}>
             <Text variant="captionStrong" numberOfLines={2}>
               {answer.fileName}
@@ -246,7 +251,7 @@ function LinkAnswer({ urls }: { urls: string[] }) {
           <Text variant="captionStrong" tone="primary" numberOfLines={2} style={styles.linkText}>
             {url}
           </Text>
-          <Icon icon={ExternalLink} size={15} tone="primary" />
+          <Icon icon={ArrowSquareOutIcon} size={15} tone="primary" />
         </Pressable>
       ))}
     </View>
@@ -330,7 +335,7 @@ export function AnswerView({ question }: { question: GradingQuestion }) {
       return (
         <AnswerSurface>
           <View style={styles.inline}>
-            <Icon icon={answer.value ? ThumbsUp : ThumbsDown} size={18} tone="ink" />
+            <Icon icon={answer.value ? ThumbsUpIcon : ThumbsDownIcon} size={18} tone="ink" />
             <Text variant="body">{answer.value ? t('thumbsUp') : t('thumbsDown')}</Text>
           </View>
         </AnswerSurface>
@@ -339,7 +344,7 @@ export function AnswerView({ question }: { question: GradingQuestion }) {
       return (
         <AnswerSurface>
           <View style={styles.inline}>
-            <Icon icon={Star} size={18} tone="warning" />
+            <Icon icon={StarIcon} size={18} tone="warning" />
             <Text variant="body">{t('stars', { count: answer.value })}</Text>
           </View>
         </AnswerSurface>

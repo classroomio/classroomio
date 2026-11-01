@@ -1,8 +1,7 @@
-import type { LucideIcon } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Text, type TextTone } from '@/feature/common/components/text';
 import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
@@ -11,7 +10,7 @@ export function StatGrid({ children }: { children: ReactNode }) {
   return <View style={styles.grid}>{children}</View>;
 }
 
-type StatProps = { label: string; value: string; icon?: LucideIcon; tone?: TextTone; detail?: string };
+type StatProps = { label: string; value: string; icon?: AppIcon; tone?: TextTone; detail?: string };
 
 export function Stat({ label, value, icon, tone = 'ink', detail }: StatProps) {
   const { colors, elevation } = useTheme();

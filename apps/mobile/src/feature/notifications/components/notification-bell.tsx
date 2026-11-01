@@ -1,5 +1,5 @@
+import { BellIcon } from 'phosphor-react-native/src/icons/Bell';
 import { router } from 'expo-router';
-import { Bell } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/feature/common/components/icon';
@@ -29,7 +29,7 @@ export function NotificationBell() {
       }}
       style={styles.button}
     >
-      <Icon icon={Bell} size={22} tone="primary" strokeWidth={2} />
+      <Icon icon={BellIcon} size={22} tone="primary" />
       {count > 0 ? (
         <View
           accessibilityElementsHidden

@@ -1,3 +1,4 @@
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -5,7 +6,6 @@ import {
   BottomSheetView,
   type BottomSheetBackdropProps
 } from '@gorhom/bottom-sheet';
-import { X } from 'lucide-react-native';
 import { createContext, use, type ComponentProps, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -142,9 +142,9 @@ export function BottomSheetClose() {
       accessibilityLabel={t('close')}
       hitSlop={HIT_SLOP}
       onPress={close}
-      style={({ pressed }) => [styles.close, { backgroundColor: pressed ? colors.sandStrong : colors.sand }]}
+      style={({ pressed }) => [styles.close, { backgroundColor: pressed ? colors.mutedStrong : colors.muted }]}
     >
-      <Icon icon={X} size={17} tone="muted" />
+      <Icon icon={XIcon} size={17} tone="muted" />
     </Pressable>
   );
 }

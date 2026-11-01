@@ -39,5 +39,10 @@ export const es: TranslatedMessages<typeof en> = {
   downloadsDescription: 'Lecciones sin conexión y sincronización',
   settingsDescription: 'Nombre, idioma, bloqueo, tema',
   signOutTitle: '¿Cerrar sesión en ClassroomIO?',
-  signOutDescription: 'Las lecciones descargadas y el progreso sin sincronizar se eliminan de este dispositivo.'
+  signOutDescription: 'Las lecciones descargadas y el progreso sin sincronizar se eliminan de este dispositivo.',
+  editName: 'Editar nombre',
+  joinedOn: 'Se unió en {date}',
+  notifications: 'Notificaciones',
+  orgRole: '{org} · {role}',
+  appVersion: 'ClassroomIO {version}'
 };

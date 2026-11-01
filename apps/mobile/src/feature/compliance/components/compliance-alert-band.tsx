@@ -1,5 +1,7 @@
+import { CalendarDotsIcon } from 'phosphor-react-native/src/icons/CalendarDots';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
+import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
 import { router } from 'expo-router';
-import { CalendarClock, ChevronRight, TriangleAlert } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Banner, BannerContent, BannerDescription, BannerIcon, BannerTitle } from '@/feature/common/components/banner';
@@ -38,13 +40,13 @@ export function ComplianceAlertBand() {
       onPress={open}
     >
       <Banner tone={urgent ? 'danger' : 'warning'}>
-        <BannerIcon icon={urgent ? TriangleAlert : CalendarClock} />
+        <BannerIcon icon={urgent ? WarningIcon : CalendarDotsIcon} />
         <BannerContent>
           <BannerTitle>{copy.title}</BannerTitle>
           <BannerDescription>{copy.description}</BannerDescription>
         </BannerContent>
         <View style={styles.chevron}>
-          <Icon icon={ChevronRight} size={17} tone="muted" />
+          <Icon icon={CaretRightIcon} size={17} tone="muted" />
         </View>
       </Banner>
     </PressableScale>

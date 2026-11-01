@@ -1,5 +1,6 @@
-import { Stack } from 'expo-router';
-import { BookOpen, Search } from 'lucide-react-native';
+import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
+import { MagnifyingGlassIcon } from 'phosphor-react-native/src/icons/MagnifyingGlass';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -23,12 +24,17 @@ const EMPTY_KEYS = {
   completed: { title: 'emptyCompletedTitle', description: 'emptyCompletedDescription' }
 } as const satisfies Record<LearningStatus, { title: string; description: string }>;
 
+function isLearningStatus(value: string | undefined): value is LearningStatus {
+  return value === 'in-progress' || value === 'not-started' || value === 'completed';
+}
+
 export default function LearnScreen() {
   const t = useTranslations(courseCatalog);
   const locale = useLocale();
   const { colors } = useTheme();
   const courses = useEnrolledCoursesQuery();
-  const [status, setStatus] = useState<LearningStatus>('in-progress');
+  const params = useLocalSearchParams<{ status?: string }>();
+  const status: LearningStatus = isLearningStatus(params.status) ? params.status : 'in-progress';
   const [query, setQuery] = useState('');
   const search = useDeferredValue(query.trim().toLocaleLowerCase(locale));
   const visible = useMemo(
@@ -42,7 +48,7 @@ export default function LearnScreen() {
   const header = (
     <View style={styles.header}>
       {search ? null : (
-        <SegmentedControl value={status} onValueChange={setStatus}>
+        <SegmentedControl value={status} onValueChange={(next) => router.setParams({ status: next })}>
           <SegmentedControlItem value="in-progress">{t('filterInProgress')}</SegmentedControlItem>
           <SegmentedControlItem value="not-started">{t('filterNotStarted')}</SegmentedControlItem>
           <SegmentedControlItem value="completed">{t('filterCompleted')}</SegmentedControlItem>
@@ -54,13 +60,13 @@ export default function LearnScreen() {
 
   const empty = courses.isError ? (
     <Empty>
-      <EmptyMedia icon={BookOpen} />
+      <EmptyMedia icon={BookOpenIcon} />
       <EmptyTitle>{t('coursesLoadError')}</EmptyTitle>
       <EmptyDescription>{errorMessage(courses.error)}</EmptyDescription>
     </Empty>
   ) : !courses.isSuccess ? undefined : search ? (
     <Empty>
-      <EmptyMedia icon={Search} />
+      <EmptyMedia icon={MagnifyingGlassIcon} />
       <EmptyTitle>{t('searchNoResultsTitle')}</EmptyTitle>
       <EmptyDescription>{t('searchNoResultsDescription', { query: query.trim() })}</EmptyDescription>
     </Empty>
@@ -82,13 +88,7 @@ export default function LearnScreen() {
         onChangeText={(event) => setQuery(event.nativeEvent.text)}
         onCancelButtonPress={() => setQuery('')}
       />
-      <CourseList
-        courses={visible}
-        header={header}
-        empty={empty}
-        refreshing={courses.isRefetching}
-        onRefresh={() => void courses.refetch()}
-      />
+      <CourseList courses={visible} header={header} empty={empty} onRefresh={() => courses.refetch()} />
     </>
   );
 }

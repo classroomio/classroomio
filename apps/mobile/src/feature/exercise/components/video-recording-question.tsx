@@ -1,5 +1,8 @@
+import { ArrowCounterClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowCounterClockwise';
+import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
+import { VideoCameraIcon } from 'phosphor-react-native/src/icons/VideoCamera';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { File } from 'expo-file-system';
-import { RotateCcw, Trash2, Video, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -84,7 +87,7 @@ export function VideoRecordingQuestion({ question }: { question: ExerciseQuestio
     return (
       <MediaAttachment>
         <MediaAttachmentRow>
-          <MediaAttachmentThumb icon={Video} />
+          <MediaAttachmentThumb icon={VideoCameraIcon} />
           <MediaAttachmentContent
             title={t('videoAnswer')}
             description={
@@ -101,14 +104,14 @@ export function VideoRecordingQuestion({ question }: { question: ExerciseQuestio
               accessibilityLabel={t('cancelUpload')}
               onPress={() => cancelUpload(key)}
             >
-              <ButtonIcon icon={X} />
+              <ButtonIcon icon={XIcon} />
             </Button>
           )}
         </MediaAttachmentRow>
         {failed ? (
           <MediaAttachmentActions>
             <Button variant="outline" size="sm" onPress={() => retryUpload(key)}>
-              <ButtonIcon icon={RotateCcw} />
+              <ButtonIcon icon={ArrowCounterClockwiseIcon} />
               <ButtonText>{t('retryUpload')}</ButtonText>
             </Button>
             <Button variant="ghost" size="sm" onPress={() => cancelUpload(key)}>
@@ -127,7 +130,7 @@ export function VideoRecordingQuestion({ question }: { question: ExerciseQuestio
       <View style={styles.wrap}>
         <MediaAttachment>
           <MediaAttachmentRow>
-            <MediaAttachmentThumb icon={Video} />
+            <MediaAttachmentThumb icon={VideoCameraIcon} />
             <MediaAttachmentContent
               title={t('videoAnswer')}
               description={[
@@ -139,12 +142,12 @@ export function VideoRecordingQuestion({ question }: { question: ExerciseQuestio
                 .join(' · ')}
             />
             <Button variant="ghost" size="icon" accessibilityLabel={t('removeVideo')} onPress={() => setAnswer(null)}>
-              <ButtonIcon icon={Trash2} />
+              <ButtonIcon icon={TrashIcon} />
             </Button>
           </MediaAttachmentRow>
           <MediaAttachmentActions>
             <Button variant="outline" size="sm" onPress={() => setRecorderOpen(true)}>
-              <ButtonIcon icon={RotateCcw} />
+              <ButtonIcon icon={ArrowCounterClockwiseIcon} />
               <ButtonText>{t('recordAgain')}</ButtonText>
             </Button>
           </MediaAttachmentActions>
@@ -160,7 +163,7 @@ export function VideoRecordingQuestion({ question }: { question: ExerciseQuestio
   return (
     <View style={styles.wrap}>
       <Button variant="outline" size="lg" onPress={() => setRecorderOpen(true)}>
-        <ButtonIcon icon={Video} />
+        <ButtonIcon icon={VideoCameraIcon} />
         <ButtonText>{t('recordVideo')}</ButtonText>
       </Button>
       <Text variant="caption" tone="muted">

@@ -1,5 +1,7 @@
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { CalendarXIcon } from 'phosphor-react-native/src/icons/CalendarX';
+import { UserMinusIcon } from 'phosphor-react-native/src/icons/UserMinus';
 import { useLocalSearchParams } from 'expo-router';
-import { CalendarX, RefreshCw, UserX } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -45,7 +47,7 @@ function AttendanceSheet({ course }: { course: TeachCourse }) {
     return (
       <View style={[styles.fill, styles.centered, { backgroundColor: colors.background }]}>
         <Empty>
-          <EmptyMedia icon={CalendarX} />
+          <EmptyMedia icon={CalendarXIcon} />
           <EmptyTitle>{t('noSessionsTitle')}</EmptyTitle>
           <EmptyDescription>{t('noSessionsDescription')}</EmptyDescription>
         </Empty>
@@ -106,7 +108,7 @@ function AttendanceSheet({ course }: { course: TeachCourse }) {
 
               {roster.learners.length === 0 ? (
                 <Empty>
-                  <EmptyMedia icon={UserX} />
+                  <EmptyMedia icon={UserMinusIcon} />
                   <EmptyTitle>{t('noLearnersEnrolledTitle')}</EmptyTitle>
                   <EmptyDescription>{t('noLearnersEnrolledDescription')}</EmptyDescription>
                 </Empty>
@@ -157,12 +159,12 @@ export default function AttendanceScreen() {
     return (
       <View style={[styles.fill, styles.centered, { backgroundColor: colors.background }]}>
         <Empty>
-          <EmptyMedia icon={CalendarX} />
+          <EmptyMedia icon={CalendarXIcon} />
           <EmptyTitle>{t('rosterLoadError')}</EmptyTitle>
           <EmptyDescription>{errorMessage(course.error)}</EmptyDescription>
           <EmptyContent>
             <Button variant="outline" onPress={() => course.refetch()}>
-              <ButtonIcon icon={RefreshCw} />
+              <ButtonIcon icon={ArrowsClockwiseIcon} />
               <ButtonText>{common('retry')}</ButtonText>
             </Button>
           </EmptyContent>

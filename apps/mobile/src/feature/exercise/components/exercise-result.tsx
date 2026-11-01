@@ -1,13 +1,10 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  CircleCheck,
-  CircleMinus,
-  CircleX,
-  Clock,
-  Target,
-  type LucideIcon
-} from 'lucide-react-native';
+import { CaretLeftIcon } from 'phosphor-react-native/src/icons/CaretLeft';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { ClockIcon } from 'phosphor-react-native/src/icons/Clock';
+import { MinusCircleIcon } from 'phosphor-react-native/src/icons/MinusCircle';
+import { TargetIcon } from 'phosphor-react-native/src/icons/Target';
+import { XCircleIcon } from 'phosphor-react-native/src/icons/XCircle';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -22,7 +19,7 @@ import Animated, {
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Card, CardContent } from '@/feature/common/components/card';
 import { HtmlContent } from '@/feature/common/components/html-content';
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Item, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from '@/feature/common/components/item';
 import { NotchCard } from '@/feature/common/components/notch-card';
 import { ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
@@ -46,11 +43,11 @@ import { exerciseCatalog } from '@/feature/exercise/translations/catalog';
 import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
-const OUTCOME_COPY: Record<AttemptOutcome, { title: ExerciseMessageKey; tone: TextTone; icon: LucideIcon }> = {
-  awaiting_grade: { title: 'outcomeAwaitingGrade', tone: 'muted', icon: Clock },
-  graded: { title: 'outcomeGraded', tone: 'ink', icon: CircleCheck },
-  passed: { title: 'outcomePassed', tone: 'success', icon: CircleCheck },
-  failed: { title: 'outcomeFailed', tone: 'ink', icon: Target }
+const OUTCOME_COPY: Record<AttemptOutcome, { title: ExerciseMessageKey; tone: TextTone; icon: AppIcon }> = {
+  awaiting_grade: { title: 'outcomeAwaitingGrade', tone: 'muted', icon: ClockIcon },
+  graded: { title: 'outcomeGraded', tone: 'ink', icon: CheckCircleIcon },
+  passed: { title: 'outcomePassed', tone: 'success', icon: CheckCircleIcon },
+  failed: { title: 'outcomeFailed', tone: 'ink', icon: TargetIcon }
 };
 
 type ResultSummaryProps = { attempt: ExerciseAttempt; summary: ExerciseAttempts; isLatest: boolean };
@@ -124,7 +121,7 @@ export function ResultSummary({ attempt, summary, isLatest }: ResultSummaryProps
           <ScoreRing percent={percent} reveal={reveal} onFilled={settle} />
         </Animated.View>
       ) : (
-        <Icon icon={Clock} size={32} tone="muted" />
+        <Icon icon={ClockIcon} size={32} tone="muted" />
       )}
       <View style={styles.summaryText}>
         <Animated.View style={[styles.outcome, outcomeStyle]}>
@@ -186,12 +183,12 @@ export function ResultBreakdown({ attempt, questions }: ResultBreakdownProps) {
           const points = row?.points ?? null;
           const { icon, tone } =
             points === null
-              ? { icon: Clock, tone: 'subtle' as const }
+              ? { icon: ClockIcon, tone: 'subtle' as const }
               : points >= maxPoints && maxPoints > 0
-                ? { icon: CircleCheck, tone: 'success' as const }
+                ? { icon: CheckCircleIcon, tone: 'success' as const }
                 : points <= 0
-                  ? { icon: CircleX, tone: 'danger' as const }
-                  : { icon: CircleMinus, tone: 'warning' as const };
+                  ? { icon: XCircleIcon, tone: 'danger' as const }
+                  : { icon: MinusCircleIcon, tone: 'warning' as const };
           const score =
             points === null
               ? t('pointsNotGraded', { count: maxPoints, points: formatScore(maxPoints, format) })
@@ -233,7 +230,7 @@ export function AttemptSwitcher({ index, total, onChange }: AttemptSwitcherProps
         disabled={index === 0}
         onPress={() => onChange(index - 1)}
       >
-        <ButtonIcon icon={ChevronLeft} />
+        <ButtonIcon icon={CaretLeftIcon} />
       </Button>
       <Text variant="captionStrong" tone="muted">
         {t('attemptPosition', { current: index + 1, total })}
@@ -245,7 +242,7 @@ export function AttemptSwitcher({ index, total, onChange }: AttemptSwitcherProps
         disabled={index === total - 1}
         onPress={() => onChange(index + 1)}
       >
-        <ButtonIcon icon={ChevronRight} />
+        <ButtonIcon icon={CaretRightIcon} />
       </Button>
     </View>
   );

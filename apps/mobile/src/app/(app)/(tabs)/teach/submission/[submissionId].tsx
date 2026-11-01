@@ -1,5 +1,7 @@
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { FileXIcon } from 'phosphor-react-native/src/icons/FileX';
+import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { FileWarning, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -135,7 +137,7 @@ function SubmissionReview({ submission }: { submission: GradingSubmission }) {
           <GradingFeedbackField />
 
           <Button variant="ghost" onPress={() => setConfirmingDelete(true)} style={styles.delete}>
-            <ButtonIcon icon={Trash2} />
+            <ButtonIcon icon={TrashIcon} />
             <ButtonText>{t('deleteSubmission')}</ButtonText>
           </Button>
         </KeyboardAwareScrollView>
@@ -184,12 +186,12 @@ export default function SubmissionScreen() {
     return (
       <View style={[styles.fill, styles.centered, { backgroundColor: colors.background }]}>
         <Empty>
-          <EmptyMedia icon={FileWarning} />
+          <EmptyMedia icon={FileXIcon} />
           <EmptyTitle>{t('submissionLoadError')}</EmptyTitle>
           <EmptyDescription>{errorMessage(submission.error)}</EmptyDescription>
           <EmptyContent>
             <Button variant="outline" onPress={() => submission.refetch()}>
-              <ButtonIcon icon={RefreshCw} />
+              <ButtonIcon icon={ArrowsClockwiseIcon} />
               <ButtonText>{common('retry')}</ButtonText>
             </Button>
           </EmptyContent>

@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react-native';
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
@@ -16,7 +16,7 @@ export function ArrangeStatus({ answered, confirmLabel, onConfirm }: ArrangeStat
   if (answered) {
     return (
       <View style={styles.row}>
-        <Icon icon={Check} size={16} tone="success" />
+        <Icon icon={CheckIcon} size={16} tone="success" />
         <Text variant="caption" tone="muted">
           {t('orderSaved')}
         </Text>
@@ -30,7 +30,7 @@ export function ArrangeStatus({ answered, confirmLabel, onConfirm }: ArrangeStat
         {t('arrangeHint')}
       </Text>
       <Button variant="secondary" size="sm" onPress={onConfirm}>
-        <ButtonIcon icon={Check} />
+        <ButtonIcon icon={CheckIcon} />
         <ButtonText>{confirmLabel}</ButtonText>
       </Button>
     </View>

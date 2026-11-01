@@ -12,6 +12,6 @@ export const NAMED_THEME_BRANDS: Record<string, OrgBrand> = {
   teal: { primary: '#009689', onPrimary: WHITE },
   mono: { primary: '#57534D', onPrimary: WHITE },
   red: { primary: '#E7000B', onPrimary: WHITE },
-  yellow: { primary: '#FDC700', onPrimary: '#17140F' },
+  yellow: { primary: '#FDC700', onPrimary: '#0A0A0A' },
   violet: { primary: '#7F22FE', onPrimary: WHITE }
 };

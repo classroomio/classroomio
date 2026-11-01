@@ -1,4 +1,5 @@
-import { Award, CloudOff } from 'lucide-react-native';
+import { CloudSlashIcon } from 'phosphor-react-native/src/icons/CloudSlash';
+import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
 import { StyleSheet } from 'react-native';
 
 import type { useCertificateFilesQuery } from '@/feature/certificate/helpers/certificate-files';
@@ -42,7 +43,7 @@ export function CertificateFilePreview({ certificate, files }: CertificateFilePr
     return (
       <CertificatePreview>
         <CertificatePreviewMessage
-          icon={Award}
+          icon={MedalIcon}
           title={t('downloadUnavailableTitle')}
           description={t('downloadUnavailableDescription')}
         />
@@ -54,7 +55,7 @@ export function CertificateFilePreview({ certificate, files }: CertificateFilePr
     return (
       <CertificatePreview>
         <CertificatePreviewMessage
-          icon={CloudOff}
+          icon={CloudSlashIcon}
           title={t('downloadFailedTitle')}
           description={errorMessage(files.error)}
         >

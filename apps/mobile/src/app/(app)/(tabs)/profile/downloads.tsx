@@ -1,5 +1,4 @@
 import { Stack } from 'expo-router';
-import {} from 'lucide-react-native';
 import { useState } from 'react';
 
 import {

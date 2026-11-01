@@ -1,5 +1,5 @@
+import { EnvelopeOpenIcon } from 'phosphor-react-native/src/icons/EnvelopeOpen';
 import { router } from 'expo-router';
-import { MailOpen } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -54,7 +54,7 @@ export function InviteAcceptance({ kind, token }: { kind: InviteKind; token: str
       ]}
     >
       <Empty>
-        <EmptyMedia icon={MailOpen} />
+        <EmptyMedia icon={EnvelopeOpenIcon} />
         <EmptyTitle>{t('inviteTitle')}</EmptyTitle>
         <EmptyDescription>
           {t(DESCRIPTION_KEYS[kind])}

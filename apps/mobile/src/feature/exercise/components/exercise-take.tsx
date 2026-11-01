@@ -1,5 +1,7 @@
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
+import { CloudSlashIcon } from 'phosphor-react-native/src/icons/CloudSlash';
+import { UploadSimpleIcon } from 'phosphor-react-native/src/icons/UploadSimple';
 import { Stack } from 'expo-router';
-import { Check, CloudOff, Upload } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
@@ -140,9 +142,9 @@ export function ExerciseTake({ onSubmitted }: ExerciseTakeProps) {
   if (!question) return null;
 
   const blocker = !online
-    ? { icon: CloudOff, text: t('offlineBlocker') }
+    ? { icon: CloudSlashIcon, text: t('offlineBlocker') }
     : session.isUploading
-      ? { icon: Upload, text: t('uploadBlocker') }
+      ? { icon: UploadSimpleIcon, text: t('uploadBlocker') }
       : null;
 
   return (
@@ -265,7 +267,7 @@ function SavedIndicator({ savedAt }: { savedAt: number | null }) {
 
   return (
     <View style={styles.saved} accessibilityLabel={t('savedAccessibilityLabel')}>
-      <Icon icon={Check} size={14} tone="muted" />
+      <Icon icon={CheckIcon} size={14} tone="muted" />
       <Text variant="caption" tone="muted">
         {t('saved')}
       </Text>
@@ -296,7 +298,7 @@ function ProgressSegments({ total, current, isAnswered }: ProgressSegmentsProps)
             style={[
               styles.segment,
               {
-                backgroundColor: isCurrent ? colors.primary : done ? colors.ring : colors.sandStrong,
+                backgroundColor: isCurrent ? colors.primary : done ? colors.ring : colors.mutedStrong,
                 transitionProperty: 'backgroundColor',
                 transitionDuration: DURATION.fast
               }

@@ -1,7 +1,8 @@
+import { MegaphoneIcon } from 'phosphor-react-native/src/icons/Megaphone';
+import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { FlashList } from '@shopify/flash-list';
 import { router, Stack } from 'expo-router';
-import { CircleAlert, Megaphone } from 'lucide-react-native';
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Banner, BannerContent, BannerDescription, BannerIcon, BannerTitle } from '@/feature/common/components/banner';
 import { Button, ButtonText } from '@/feature/common/components/button';
@@ -27,6 +28,7 @@ import { newsfeedCatalog } from '@/feature/newsfeed/translations/catalog';
 import type { NewsfeedPost as NewsfeedPostData, ReactionType } from '@/feature/newsfeed/types/newsfeed';
 
 import { NewsfeedPost } from './newsfeed-post';
+import { PullRefreshControl } from '@/feature/common/components/pull-refresh-control';
 
 export function NewsfeedFeed({ courseId }: { courseId: string }) {
   const { org, isStaff } = useActiveOrg();
@@ -37,7 +39,7 @@ export function NewsfeedFeed({ courseId }: { courseId: string }) {
         <Stack.Screen options={{ title: t('screenTitleNewsfeed') }} />
         <ScreenScrollView>
           <Empty>
-            <EmptyMedia icon={Megaphone} />
+            <EmptyMedia icon={MegaphoneIcon} />
             <EmptyTitle>{t('turnedOffTitle')}</EmptyTitle>
             <EmptyDescription>{t('turnedOffDescription')}</EmptyDescription>
           </Empty>
@@ -100,7 +102,7 @@ function NewsfeedPosts({ courseId }: { courseId: string }) {
             {offline ? <OfflineNotice description={t('offlineFeed')} /> : null}
             {posts.isError && posts.data && !offline ? (
               <Banner tone="danger">
-                <BannerIcon icon={CircleAlert} />
+                <BannerIcon icon={WarningCircleIcon} />
                 <BannerContent>
                   <BannerTitle>{t('refreshFailed')}</BannerTitle>
                   <BannerDescription>{errorMessage(posts.error)}</BannerDescription>
@@ -124,31 +126,25 @@ function NewsfeedPosts({ courseId }: { courseId: string }) {
             </View>
           ) : failedWithoutData ? (
             <Empty>
-              <EmptyMedia icon={CircleAlert} />
+              <EmptyMedia icon={WarningCircleIcon} />
               <EmptyTitle>{t('loadFailed')}</EmptyTitle>
               <EmptyDescription>{errorMessage(posts.error)}</EmptyDescription>
               <EmptyContent>
-                <Button variant="outline" onPress={() => void posts.refetch()}>
+                <Button variant="outline" onPress={() => posts.refetch()}>
                   <ButtonText>{tc('retry')}</ButtonText>
                 </Button>
               </EmptyContent>
             </Empty>
           ) : (
             <Empty>
-              <EmptyMedia icon={Megaphone} />
+              <EmptyMedia icon={MegaphoneIcon} />
               <EmptyTitle>{t('emptyTitle')}</EmptyTitle>
               <EmptyDescription>{t('emptyDescription')}</EmptyDescription>
             </Empty>
           )
         }
         contentInsetAdjustmentBehavior="automatic"
-        refreshControl={
-          <RefreshControl
-            refreshing={posts.isRefetching && !posts.isFetchingNextPage}
-            onRefresh={() => void posts.refetch()}
-            tintColor={colors.inkMuted}
-          />
-        }
+        refreshControl={<PullRefreshControl onRefresh={() => posts.refetch()} />}
         contentContainerStyle={styles.content}
         style={{ backgroundColor: colors.background }}
       />

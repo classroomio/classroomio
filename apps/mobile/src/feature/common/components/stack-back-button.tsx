@@ -1,5 +1,5 @@
+import { CaretLeftIcon } from 'phosphor-react-native/src/icons/CaretLeft';
 import { router } from 'expo-router';
-import { ChevronLeft } from 'lucide-react-native';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { HIT_SLOP } from '@/feature/common/constants/layout';
@@ -22,7 +22,7 @@ export function StackBackButton({ tintColor }: { tintColor?: string }) {
       onPress={() => router.back()}
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
     >
-      <Icon icon={ChevronLeft} size={26} color={tintColor ?? colors.primary} strokeWidth={2.2} />
+      <Icon icon={CaretLeftIcon} size={26} color={tintColor ?? colors.primary} weight="bold" />
     </Pressable>
   );
 }

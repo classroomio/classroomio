@@ -1,4 +1,4 @@
-import { Sparkles } from 'lucide-react-native';
+import { SparkleIcon } from 'phosphor-react-native/src/icons/Sparkle';
 import { createContext, use, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -144,7 +144,7 @@ export function GradingQuestionScore() {
           <FieldError>{t(SCORE_ERROR_KEYS[error], { max: maxPointsOf(question) })}</FieldError>
         ) : automatic ? (
           <View style={styles.automatic}>
-            <Icon icon={Sparkles} size={13} tone="muted" />
+            <Icon icon={SparkleIcon} size={13} tone="muted" />
             <FieldDescription>{t('scoredAutomatically')}</FieldDescription>
           </View>
         ) : null}

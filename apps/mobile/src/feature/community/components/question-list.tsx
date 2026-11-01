@@ -1,7 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
-import {} from 'lucide-react-native';
 import type { ReactElement } from 'react';
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Empty, EmptyDescription, EmptyIllustration, EmptyTitle } from '@/feature/common/components/empty';
 import { Skeleton, SkeletonAvatar, SkeletonCard, SkeletonText } from '@/feature/common/components/skeleton';
@@ -12,18 +11,18 @@ import type { CommunityQuestionSummary } from '@/feature/community/types/communi
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
 import { QuestionCard } from './question-card';
+import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
 
 type QuestionListProps = {
   questions: CommunityQuestionSummary[];
   loading: boolean;
-  refreshing: boolean;
-  onRefresh: () => void;
+  onRefresh: RefreshHandler;
   onOpen: (question: CommunityQuestionSummary) => void;
   header?: ReactElement;
   empty: ReactElement;
 };
 
-export function QuestionList({ questions, loading, refreshing, onRefresh, onOpen, header, empty }: QuestionListProps) {
+export function QuestionList({ questions, loading, onRefresh, onOpen, header, empty }: QuestionListProps) {
   const { colors } = useTheme();
 
   return (
@@ -36,7 +35,7 @@ export function QuestionList({ questions, loading, refreshing, onRefresh, onOpen
       ListEmptyComponent={loading ? <QuestionListSkeleton /> : empty}
       contentInsetAdjustmentBehavior="automatic"
       keyboardDismissMode="on-drag"
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.inkMuted} />}
+      refreshControl={<PullRefreshControl onRefresh={onRefresh} />}
       contentContainerStyle={styles.content}
       style={{ backgroundColor: colors.background }}
     />

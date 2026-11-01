@@ -1,10 +1,9 @@
 import { Image } from 'expo-image';
-import type { LucideIcon } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { CERTIFICATE_ASPECT_RATIO } from '@/feature/certificate/constants/certificate-layout';
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { Text } from '@/feature/common/components/text';
 import { RADII, SPACING } from '@/feature/common/constants/layout';
@@ -38,13 +37,13 @@ export function CertificatePreviewLoading() {
   return <Skeleton height={0} radius={0} style={styles.fill} />;
 }
 
-type CertificatePreviewMessageProps = { icon: LucideIcon; title: string; description?: string; children?: ReactNode };
+type CertificatePreviewMessageProps = { icon: AppIcon; title: string; description?: string; children?: ReactNode };
 
 export function CertificatePreviewMessage({ icon, title, description, children }: CertificatePreviewMessageProps) {
   const { colors } = useTheme();
 
   return (
-    <View style={[StyleSheet.absoluteFill, styles.message, { backgroundColor: colors.sand }]}>
+    <View style={[StyleSheet.absoluteFill, styles.message, { backgroundColor: colors.muted }]}>
       <Icon icon={icon} size={22} tone="muted" />
       <Text variant="captionStrong" style={styles.centered}>
         {title}

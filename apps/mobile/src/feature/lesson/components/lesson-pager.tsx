@@ -1,7 +1,8 @@
+import { ArrowLeftIcon } from 'phosphor-react-native/src/icons/ArrowLeft';
+import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
 import { ContentType } from '@cio/utils/constants/content';
-import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import { createContext, use, type ReactNode } from 'react';
-import { RefreshControl, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { GestureDetector, useManualGesture, usePanGesture, type PanGesture } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
@@ -28,6 +29,7 @@ import type { CourseContentItem } from '@/feature/course/types/course-detail';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import type { LessonDirection } from '@/feature/lesson/helpers/open-neighbor';
 import { lessonCatalog } from '@/feature/lesson/translations/catalog';
+import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
 
 const ACTIVATE_DISTANCE = 18;
 const VERTICAL_TOLERANCE = 12;
@@ -58,8 +60,7 @@ type LessonPagerProps = {
   previous: CourseContentItem | null;
   next: CourseContentItem | null;
   onNavigate: (item: CourseContentItem, direction: LessonDirection) => void;
-  refreshing: boolean;
-  onRefresh: () => void;
+  onRefresh: RefreshHandler;
   children: ReactNode;
 };
 
@@ -67,7 +68,7 @@ type LessonPagerProps = {
  * The lesson reader: a scroll view with a reading-progress bar under the header, where a horizontal swipe on the
  * content moves to the previous or next course item. Media inside `LessonSwipeExclusion` keeps its own gestures.
  */
-export function LessonPager({ previous, next, onNavigate, refreshing, onRefresh, children }: LessonPagerProps) {
+export function LessonPager({ previous, next, onNavigate, onRefresh, children }: LessonPagerProps) {
   const { colors } = useTheme();
   const { width } = useWindowDimensions();
   const x = useSharedValue(0);
@@ -171,7 +172,7 @@ export function LessonPager({ previous, next, onNavigate, refreshing, onRefresh,
         keyboardDismissMode="on-drag"
         scrollEventThrottle={16}
         onScroll={onScroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.inkMuted} />}
+        refreshControl={<PullRefreshControl onRefresh={onRefresh} />}
         style={{ backgroundColor: colors.background }}
         contentContainerStyle={styles.scrollContent}
       >
@@ -223,7 +224,7 @@ function SwipeHint({ side, item, x, width }: SwipeHintProps) {
   const armedStyle = useAnimatedStyle(() => ({
     opacity: withTiming(x.get() * sign > armAt ? 1 : 0, { duration: DURATION.press, easing: EASE_OUT })
   }));
-  const arrow = side === 'next' ? ArrowRight : ArrowLeft;
+  const arrow = side === 'next' ? ArrowRightIcon : ArrowLeftIcon;
 
   return (
     <Animated.View

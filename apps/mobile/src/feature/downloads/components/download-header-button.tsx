@@ -1,8 +1,9 @@
-import { CircleCheck, Download, type LucideIcon } from 'lucide-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { DownloadSimpleIcon } from 'phosphor-react-native/src/icons/DownloadSimple';
 import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { ProgressRing } from '@/feature/common/components/progress';
 import { HIT_SLOP } from '@/feature/common/constants/layout';
 import { tapHaptic } from '@/feature/common/helpers/haptics';
@@ -22,9 +23,9 @@ function HeaderGlyph({ status, percent }: HeaderGlyphProps) {
     return <ProgressRing value={status === 'downloading' ? percent : 0} size={22} strokeWidth={2.5} />;
   }
 
-  const icon: LucideIcon = status === 'complete' ? CircleCheck : Download;
+  const icon: AppIcon = status === 'complete' ? CheckCircleIcon : DownloadSimpleIcon;
 
-  return <Icon icon={icon} size={22} tone={status === 'complete' ? 'success' : 'primary'} strokeWidth={2} />;
+  return <Icon icon={icon} size={22} tone={status === 'complete' ? 'success' : 'primary'} />;
 }
 
 const STATUS_LABEL_KEYS = {

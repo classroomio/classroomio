@@ -1,4 +1,6 @@
-import { CircleCheck, Clock, MessageCircle, type LucideIcon } from 'lucide-react-native';
+import { ChatCircleIcon } from 'phosphor-react-native/src/icons/ChatCircle';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { ClockIcon } from 'phosphor-react-native/src/icons/Clock';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -11,7 +13,7 @@ import {
   AlertDialogFooter,
   AlertDialogTitle
 } from '@/feature/common/components/alert-dialog';
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Text } from '@/feature/common/components/text';
 import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { useTheme } from '@/feature/common/helpers/use-theme';
@@ -36,9 +38,9 @@ export function PushPermissionDialog({ open, orgName, onOpenChange, onAllow }: P
           {t('promptDescription', { orgName: orgName ?? t('promptOrgFallback') })}
         </AlertDialogDescription>
         <PushPermissionReasons>
-          <PushPermissionReason icon={Clock}>{t('promptReasonDeadlines')}</PushPermissionReason>
-          <PushPermissionReason icon={CircleCheck}>{t('promptReasonGrades')}</PushPermissionReason>
-          <PushPermissionReason icon={MessageCircle}>{t('promptReasonReplies')}</PushPermissionReason>
+          <PushPermissionReason icon={ClockIcon}>{t('promptReasonDeadlines')}</PushPermissionReason>
+          <PushPermissionReason icon={CheckCircleIcon}>{t('promptReasonGrades')}</PushPermissionReason>
+          <PushPermissionReason icon={ChatCircleIcon}>{t('promptReasonReplies')}</PushPermissionReason>
         </PushPermissionReasons>
         <AlertDialogFooter>
           <AlertDialogCancel>{t('promptNotNow')}</AlertDialogCancel>
@@ -53,7 +55,7 @@ function PushPermissionReasons({ children }: { children: ReactNode }) {
   return <View style={styles.reasons}>{children}</View>;
 }
 
-function PushPermissionReason({ icon, children }: { icon: LucideIcon; children: string }) {
+function PushPermissionReason({ icon, children }: { icon: AppIcon; children: string }) {
   const { colors } = useTheme();
 
   return (

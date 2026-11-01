@@ -1,9 +1,12 @@
-import { CalendarClock, ListChecks, Repeat, Target, type LucideIcon } from 'lucide-react-native';
+import { CalendarDotsIcon } from 'phosphor-react-native/src/icons/CalendarDots';
+import { ListChecksIcon } from 'phosphor-react-native/src/icons/ListChecks';
+import { RepeatIcon } from 'phosphor-react-native/src/icons/Repeat';
+import { TargetIcon } from 'phosphor-react-native/src/icons/Target';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonText } from '@/feature/common/components/button';
 import { HtmlContent } from '@/feature/common/components/html-content';
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { NotchCard } from '@/feature/common/components/notch-card';
 import { Text, type TextTone } from '@/feature/common/components/text';
 import { SPACING } from '@/feature/common/constants/layout';
@@ -14,7 +17,7 @@ import { exerciseCatalog } from '@/feature/exercise/translations/catalog';
 import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
-function IntroFact({ icon, children, tone }: { icon: LucideIcon; children: string; tone?: TextTone }) {
+function IntroFact({ icon, children, tone }: { icon: AppIcon; children: string; tone?: TextTone }) {
   return (
     <View style={styles.fact}>
       <Icon icon={icon} size={18} tone={tone ?? 'muted'} />
@@ -41,19 +44,19 @@ export function ExerciseIntro({ exercise, onStart }: ExerciseIntroProps) {
           {exercise.title}
         </Text>
         <View style={styles.facts}>
-          <IntroFact icon={ListChecks}>
+          <IntroFact icon={ListChecksIcon}>
             {`${t('questionCount', { count: questions.length })} · ${formatPoints(totalPointsOf(questions), t, format)}`}
           </IntroFact>
           {exercise.dueBy ? (
-            <IntroFact icon={CalendarClock} tone={overdue ? 'danger' : undefined}>
+            <IntroFact icon={CalendarDotsIcon} tone={overdue ? 'danger' : undefined}>
               {t(overdue ? 'wasDueOn' : 'dueOn', { date: formatDateTime(exercise.dueBy, format.locale) })}
             </IntroFact>
           ) : null}
-          <IntroFact icon={Repeat}>
+          <IntroFact icon={RepeatIcon}>
             {t(exercise.allowMultipleAttempts ? 'multipleAttempts' : 'singleAttempt')}
           </IntroFact>
           {exercise.completionPolicy === 'passed' ? (
-            <IntroFact icon={Target}>
+            <IntroFact icon={TargetIcon}>
               {t('passMark', { percent: format.percent(Number(exercise.passThreshold ?? 100)) })}
             </IntroFact>
           ) : null}

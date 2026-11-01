@@ -1,4 +1,4 @@
-import { ShieldCheck } from 'lucide-react-native';
+import { ShieldCheckIcon } from 'phosphor-react-native/src/icons/ShieldCheck';
 import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/feature/common/components/icon';
@@ -19,7 +19,7 @@ export function SsoRequiredNotice({ domain, providerName }: SsoRequiredNoticePro
       accessibilityLiveRegion="polite"
       style={[styles.notice, { backgroundColor: colors.primaryTint, borderColor: colors.border }]}
     >
-      <Icon icon={ShieldCheck} size={18} tone="primary" />
+      <Icon icon={ShieldCheckIcon} size={18} tone="primary" />
       <View style={styles.copy}>
         <Text variant="captionStrong">{t('ssoRequiredTitle')}</Text>
         <Text variant="caption" tone="muted">

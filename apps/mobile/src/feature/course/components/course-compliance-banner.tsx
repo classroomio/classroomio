@@ -1,4 +1,7 @@
-import { CalendarClock, CircleCheck, ShieldOff, TriangleAlert } from 'lucide-react-native';
+import { CalendarDotsIcon } from 'phosphor-react-native/src/icons/CalendarDots';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { ShieldSlashIcon } from 'phosphor-react-native/src/icons/ShieldSlash';
+import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
 
 import { Banner, BannerContent, BannerDescription, BannerIcon, BannerTitle } from '@/feature/common/components/banner';
 import { complianceDeadlineCopy } from '@/feature/course/helpers/compliance-deadline';
@@ -18,12 +21,12 @@ export function CourseComplianceBanner({ course }: CourseComplianceBannerProps) 
   if (!copy) return null;
 
   const icon = copy.urgent
-    ? TriangleAlert
+    ? WarningIcon
     : copy.tone === 'success'
-      ? CircleCheck
+      ? CheckCircleIcon
       : copy.tone === 'neutral'
-        ? ShieldOff
-        : CalendarClock;
+        ? ShieldSlashIcon
+        : CalendarDotsIcon;
 
   return (
     <Banner tone={copy.tone} accessibilityLabel={`${copy.title}. ${copy.description}`}>

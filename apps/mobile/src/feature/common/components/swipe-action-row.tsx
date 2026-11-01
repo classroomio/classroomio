@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react-native';
 import { useEffect, type ReactNode } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
@@ -20,14 +19,14 @@ import { DURATION, EASE_OUT } from '@/feature/common/constants/motion';
 import { tapHaptic } from '@/feature/common/helpers/haptics';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 
-import { Icon } from './icon';
+import { Icon, type AppIcon } from './icon';
 import { Text } from './text';
 
 export type SwipeActionTone = 'primary' | 'success' | 'danger';
 
 export type SwipeAction = {
   label: string;
-  icon: LucideIcon;
+  icon: AppIcon;
   tone?: SwipeActionTone;
   onCommit: () => void;
 };
@@ -196,7 +195,7 @@ function SwipeActionLayer({ side, action, x, armed }: SwipeActionLayerProps) {
       pointerEvents="none"
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={[StyleSheet.absoluteFill, { backgroundColor: colors.sandStrong }, layerStyle]}
+      style={[StyleSheet.absoluteFill, { backgroundColor: colors.mutedStrong }, layerStyle]}
     >
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: fill }, fillStyle]} />
       <Animated.View style={[styles.content, side === 'leading' ? styles.leading : styles.trailing, contentStyle]}>

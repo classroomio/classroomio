@@ -87,7 +87,7 @@ export function ScoreRing({ percent, reveal, onFilled, size = 92, strokeWidth = 
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={colors.sandStrong}
+          stroke={colors.mutedStrong}
           strokeWidth={strokeWidth}
           fill="none"
         />

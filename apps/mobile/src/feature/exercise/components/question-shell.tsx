@@ -1,5 +1,5 @@
+import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { Image } from 'expo-image';
-import { CircleAlert } from 'lucide-react-native';
 import { createContext, use, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -91,7 +91,7 @@ export function QuestionMedia() {
           contentFit="contain"
           transition={150}
           accessibilityLabel={t('questionImage')}
-          style={[styles.image, { backgroundColor: colors.sand, borderColor: colors.border }]}
+          style={[styles.image, { backgroundColor: colors.muted, borderColor: colors.border }]}
         />
       ))}
     </View>
@@ -108,7 +108,7 @@ export function QuestionProblem() {
 
   return (
     <View style={styles.problem} accessibilityLiveRegion="polite">
-      <Icon icon={CircleAlert} size={16} tone="danger" />
+      <Icon icon={WarningCircleIcon} size={16} tone="danger" />
       <Text variant="caption" tone="danger" style={styles.problemText}>
         {problem}
       </Text>

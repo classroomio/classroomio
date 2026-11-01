@@ -1,9 +1,11 @@
+import { ArrowSquareOutIcon } from 'phosphor-react-native/src/icons/ArrowSquareOut';
+import { DownloadSimpleIcon } from 'phosphor-react-native/src/icons/DownloadSimple';
+import { LinkIcon } from 'phosphor-react-native/src/icons/Link';
 import { FlashList } from '@shopify/flash-list';
 import * as Clipboard from 'expo-clipboard';
 import { Link, router } from 'expo-router';
-import { Download, Link as LinkIcon, SquareArrowOutUpRight } from 'lucide-react-native';
 import { useState, type ReactElement } from 'react';
-import { Platform, RefreshControl, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import {
   OptionSheet,
@@ -24,6 +26,7 @@ import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { showToast } from '@/feature/toast/helpers/toast-store';
 
 import { CourseRow } from './course-row';
+import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
 
 type CourseActions = {
   webUrl: (courseId: string) => string | null;
@@ -86,12 +89,11 @@ type CourseListProps = {
   courses: EnrolledCourse[];
   header?: ReactElement;
   empty?: ReactElement;
-  refreshing: boolean;
-  onRefresh: () => void;
+  onRefresh: RefreshHandler;
 };
 
 /** The learner's courses as one grouped list. Long-press a row for a preview and Open, Download and Copy link. */
-export function CourseList({ courses, header, empty, refreshing, onRefresh }: CourseListProps) {
+export function CourseList({ courses, header, empty, onRefresh }: CourseListProps) {
   const t = useTranslations(courseCatalog);
   const common = useTranslations(commonCatalog);
   const { colors } = useTheme();
@@ -125,7 +127,7 @@ export function CourseList({ courses, header, empty, refreshing, onRefresh }: Co
         ListEmptyComponent={empty}
         contentInsetAdjustmentBehavior="automatic"
         keyboardDismissMode="on-drag"
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.inkMuted} />}
+        refreshControl={<PullRefreshControl onRefresh={onRefresh} />}
         style={{ backgroundColor: colors.background }}
         contentContainerStyle={styles.content}
       />
@@ -138,12 +140,12 @@ export function CourseList({ courses, header, empty, refreshing, onRefresh }: Co
         <OptionSheetContent>
           {menuCourse ? <OptionSheetTitle>{menuCourse.title}</OptionSheetTitle> : null}
           <OptionSheetItem
-            icon={SquareArrowOutUpRight}
+            icon={ArrowSquareOutIcon}
             onSelect={() => menuCourse && router.push(courseHref(menuCourse.id))}
           >
             {common('open')}
           </OptionSheetItem>
-          <OptionSheetItem icon={Download} onSelect={() => menuCourse && actions.onDownload(menuCourse.id)}>
+          <OptionSheetItem icon={DownloadSimpleIcon} onSelect={() => menuCourse && actions.onDownload(menuCourse.id)}>
             {t('menuDownload')}
           </OptionSheetItem>
           {menuUrl ? (

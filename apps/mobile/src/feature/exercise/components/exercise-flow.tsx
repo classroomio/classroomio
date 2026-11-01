@@ -1,5 +1,5 @@
+import { FileMagnifyingGlassIcon } from 'phosphor-react-native/src/icons/FileMagnifyingGlass';
 import { router, Stack } from 'expo-router';
-import { FileQuestion } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -60,10 +60,7 @@ export function ExerciseFlow({ courseId, exerciseId }: ExerciseFlowProps) {
     setDraft(null);
   }, [draftIsStale, userId, exerciseId]);
 
-  const retry = () => {
-    void exerciseQuery.refetch();
-    void attemptsQuery.refetch();
-  };
+  const retry = () => Promise.all([exerciseQuery.refetch(), attemptsQuery.refetch()]);
 
   const header = (
     <Stack.Screen
@@ -100,7 +97,7 @@ export function ExerciseFlow({ courseId, exerciseId }: ExerciseFlowProps) {
         {header}
         {online ? (
           <Empty>
-            <EmptyMedia icon={FileQuestion} />
+            <EmptyMedia icon={FileMagnifyingGlassIcon} />
             <EmptyTitle>{t('loadErrorTitle')}</EmptyTitle>
             <EmptyDescription>{errorMessage(error)}</EmptyDescription>
             <EmptyContent>
@@ -162,7 +159,7 @@ export function ExerciseFlow({ courseId, exerciseId }: ExerciseFlowProps) {
 
   if (mode === 'result' && attempt) {
     return (
-      <ScreenScrollView refreshing={attemptsQuery.isRefetching} onRefresh={() => void attemptsQuery.refetch()}>
+      <ScreenScrollView onRefresh={() => attemptsQuery.refetch()}>
         {header}
         <AttemptSwitcher index={shownIndex} total={attempts.length} onChange={setAttemptIndex} />
         <ResultSummary

@@ -1,4 +1,4 @@
-import { ChevronRight, type LucideIcon } from 'lucide-react-native';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
 import { createContext, use, type ReactNode } from 'react';
 import { StyleSheet, View, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 
@@ -7,7 +7,7 @@ import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { tapHaptic } from '@/feature/common/helpers/haptics';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 
-import { Icon } from './icon';
+import { Icon, type AppIcon } from './icon';
 import { PressableScale } from './pressable-scale';
 import { Text, type TextTone } from './text';
 
@@ -22,7 +22,7 @@ const TONE_TEXT: Record<BannerTone, TextTone> = {
 };
 
 const TONE_SURFACE: Record<BannerTone, keyof ThemeColors> = {
-  neutral: 'sand',
+  neutral: 'muted',
   info: 'primaryTint',
   warning: 'warningTint',
   danger: 'dangerTint',
@@ -78,7 +78,7 @@ export function Banner({
   );
 }
 
-export function BannerIcon({ icon }: { icon: LucideIcon }) {
+export function BannerIcon({ icon }: { icon: AppIcon }) {
   const tone = use(BannerContext);
 
   return (
@@ -113,7 +113,7 @@ export function BannerDescription({ children }: { children: ReactNode }) {
 export function BannerChevron() {
   return (
     <View style={styles.chevron}>
-      <Icon icon={ChevronRight} size={18} tone="subtle" />
+      <Icon icon={CaretRightIcon} size={18} tone="subtle" />
     </View>
   );
 }

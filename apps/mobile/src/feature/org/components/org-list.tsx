@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react-native';
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
 
 import type { AccountOrganization } from '@/feature/account/types/account';
 import { Avatar } from '@/feature/common/components/avatar';
@@ -38,7 +38,7 @@ export function OrgList({ organizations, activeOrgId, onSelect }: OrgListProps) 
             <ItemDescription>{t((org.roleId && ROLE_NAME_KEYS[org.roleId]) || 'roleMember')}</ItemDescription>
           </ItemContent>
           <ItemActions>
-            {org.id === activeOrgId ? <Icon icon={Check} size={18} tone="primary" /> : <ItemChevron />}
+            {org.id === activeOrgId ? <Icon icon={CheckIcon} size={18} tone="primary" /> : <ItemChevron />}
           </ItemActions>
         </Item>
       ))}

@@ -1,5 +1,5 @@
+import { ArrowCounterClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowCounterClockwise';
 import { Image } from 'expo-image';
-import { RotateCcw } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
@@ -75,7 +75,7 @@ export function HotspotQuestion({ question }: { question: ExerciseQuestion }) {
           accessibilityLabel={t('hotspotAccessibilityLabel', { count: points.length })}
           accessibilityHint={t('hotspotAccessibilityHint')}
           onLayout={(event) => setSize(event.nativeEvent.layout)}
-          style={[styles.frame, { aspectRatio, backgroundColor: colors.sand, borderColor: colors.border }]}
+          style={[styles.frame, { aspectRatio, backgroundColor: colors.muted, borderColor: colors.border }]}
         >
           <Image
             source={{ uri: imageUrl }}
@@ -116,7 +116,7 @@ export function HotspotQuestion({ question }: { question: ExerciseQuestion }) {
         </Text>
         {points.length > 0 && (
           <Button variant="ghost" size="sm" onPress={() => commit([])}>
-            <ButtonIcon icon={RotateCcw} />
+            <ButtonIcon icon={ArrowCounterClockwiseIcon} />
             <ButtonText>{t('clear')}</ButtonText>
           </Button>
         )}

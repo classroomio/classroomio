@@ -1,5 +1,5 @@
+import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
 import { router } from 'expo-router';
-import { Award } from 'lucide-react-native';
 import { createContext, use, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -172,7 +172,7 @@ export function ComplianceRequirementProofButton({ size = 'sm' }: { size?: 'sm' 
       accessibilityLabel={t('proofLabel', { course: requirement.courseTitle })}
       onPress={() => router.push({ pathname: '/certificates/[courseId]', params: { courseId: requirement.courseId } })}
     >
-      <ButtonIcon icon={Award} />
+      <ButtonIcon icon={MedalIcon} />
       <ButtonText>{t('proof')}</ButtonText>
     </Button>
   );

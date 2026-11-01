@@ -58,7 +58,7 @@ type SkeletonGroupValue = { grouped: boolean; color?: string };
 const SkeletonGroupContext = createContext<SkeletonGroupValue>({ grouped: false });
 
 type SkeletonGroupProps = {
-  /** Bone colour for placeholders on a sand surface. */
+  /** Bone colour for placeholders on a muted surface. */
   color?: string;
   style?: StyleProp<ViewStyle>;
   children: ReactNode;
@@ -108,7 +108,7 @@ type SkeletonProps = {
 export function Skeleton({ width = '100%', height, radius = RADII.input, style }: SkeletonProps) {
   const { colors, isDark } = useTheme();
   const group = use(SkeletonGroupContext);
-  const color = group.color ?? (isDark ? colors.border : colors.sandStrong);
+  const color = group.color ?? (isDark ? colors.border : colors.mutedStrong);
   const boneStyle = [{ width, height, borderRadius: radius, backgroundColor: color }, style];
 
   if (group.grouped) return <View style={boneStyle} />;

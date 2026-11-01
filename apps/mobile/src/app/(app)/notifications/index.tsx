@@ -1,5 +1,7 @@
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { BellIcon } from 'phosphor-react-native/src/icons/Bell';
+import { SlidersHorizontalIcon } from 'phosphor-react-native/src/icons/SlidersHorizontal';
 import { router, Stack } from 'expo-router';
-import { Bell, RefreshCw, Settings2 } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
@@ -54,10 +56,7 @@ export default function NotificationsScreen() {
     openNotificationTarget({ deepLink: item.deepLink, memberOrgIds: organizations.map((org) => org.id) });
   };
 
-  const refresh = () => {
-    void notifications.refetch();
-    void preferences.refetch();
-  };
+  const refresh = () => Promise.all([notifications.refetch(), preferences.refetch()]);
 
   const showError = notifications.isError && items.length === 0;
   const pushAvailable = preferences.data?.pushAvailable === true;
@@ -70,7 +69,7 @@ export default function NotificationsScreen() {
         options={{
           headerRight: () => (
             <HeaderIconButton
-              icon={Settings2}
+              icon={SlidersHorizontalIcon}
               accessibilityLabel={t('settingsTitle')}
               onPress={() => router.push('/notifications/preferences')}
             />
@@ -80,7 +79,6 @@ export default function NotificationsScreen() {
       <NotificationList
         entries={entries}
         loading={notifications.isPending}
-        refreshing={notifications.isRefetching && !notifications.isFetchingNextPage}
         loadingMore={notifications.isFetchingNextPage}
         canMarkAllRead={unreadCount > 0 && !offline}
         header={
@@ -94,12 +92,12 @@ export default function NotificationsScreen() {
         empty={
           showError ? (
             <Empty>
-              <EmptyMedia icon={Bell} />
+              <EmptyMedia icon={BellIcon} />
               <EmptyTitle>{t('loadError')}</EmptyTitle>
               <EmptyDescription>{errorMessage(notifications.error)}</EmptyDescription>
               <EmptyContent>
                 <Button variant="outline" onPress={refresh}>
-                  <ButtonIcon icon={RefreshCw} />
+                  <ButtonIcon icon={ArrowsClockwiseIcon} />
                   <ButtonText>{common('retry')}</ButtonText>
                 </Button>
               </EmptyContent>

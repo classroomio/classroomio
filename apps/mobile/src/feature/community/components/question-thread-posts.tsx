@@ -1,4 +1,4 @@
-import { ArrowBigUp } from 'lucide-react-native';
+import { ArrowFatUpIcon } from 'phosphor-react-native/src/icons/ArrowFatUp';
 
 import {
   Post,
@@ -52,7 +52,7 @@ export function QuestionPost({ question, voted, disabled, onUpvote, onOpenMenu }
       <PostBody html={question.body} />
       <PostActions>
         <PostAction
-          icon={ArrowBigUp}
+          icon={ArrowFatUpIcon}
           active={voted}
           disabled={disabled || voted}
           onPress={onUpvote}
@@ -86,7 +86,7 @@ export function AnswerPost({ answer, voted, disabled, onUpvote, onOpenMenu }: An
       <PostBody html={answer.body} />
       <PostActions>
         <PostAction
-          icon={ArrowBigUp}
+          icon={ArrowFatUpIcon}
           active={voted}
           disabled={disabled || voted}
           onPress={onUpvote}

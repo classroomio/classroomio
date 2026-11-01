@@ -1,4 +1,5 @@
-import { ShieldCheck, Wifi } from 'lucide-react-native';
+import { ShieldCheckIcon } from 'phosphor-react-native/src/icons/ShieldCheck';
+import { WifiHighIcon } from 'phosphor-react-native/src/icons/WifiHigh';
 
 import { useAuth } from '@/feature/auth/components/auth-provider';
 import { Icon } from '@/feature/common/components/icon';
@@ -29,7 +30,7 @@ export function DownloadSettingsGroup() {
     <ItemGroup>
       <Item>
         <ItemMedia variant="tile">
-          <Icon icon={Wifi} size={20} tone="ink" />
+          <Icon icon={WifiHighIcon} size={20} tone="ink" />
         </ItemMedia>
         <ItemContent>
           <ItemTitle>{t('wifiOnly')}</ItemTitle>
@@ -48,7 +49,7 @@ export function DownloadSettingsGroup() {
       </Item>
       <Item>
         <ItemMedia variant="tile">
-          <Icon icon={ShieldCheck} size={20} tone="ink" />
+          <Icon icon={ShieldCheckIcon} size={20} tone="ink" />
         </ItemMedia>
         <ItemContent>
           <ItemTitle>{t('autoDownload')}</ItemTitle>

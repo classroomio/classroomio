@@ -49,5 +49,10 @@ export const ru: TranslatedMessages<typeof en> = {
   downloadsDescription: 'Офлайн-уроки и синхронизация',
   settingsDescription: 'Имя, язык, блокировка, тема',
   signOutTitle: 'Выйти из ClassroomIO?',
-  signOutDescription: 'Скачанные уроки и несинхронизированный прогресс будут удалены с этого устройства.'
+  signOutDescription: 'Скачанные уроки и несинхронизированный прогресс будут удалены с этого устройства.',
+  editName: 'Изменить имя',
+  joinedOn: 'Дата регистрации: {date}',
+  notifications: 'Уведомления',
+  orgRole: '{org} · {role}',
+  appVersion: 'ClassroomIO {version}'
 };

@@ -1,9 +1,8 @@
 import { Image } from 'expo-image';
-import type { LucideIcon } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Icon } from '@/feature/common/components/icon';
+import { Icon, type AppIcon } from '@/feature/common/components/icon';
 import { Progress } from '@/feature/common/components/progress';
 import { Text, type TextTone } from '@/feature/common/components/text';
 import { RADII, SPACING } from '@/feature/common/constants/layout';
@@ -24,11 +23,11 @@ export function MediaAttachmentRow({ children }: { children: ReactNode }) {
   return <View style={styles.row}>{children}</View>;
 }
 
-export function MediaAttachmentThumb({ uri, icon }: { uri?: string | null; icon: LucideIcon }) {
+export function MediaAttachmentThumb({ uri, icon }: { uri?: string | null; icon: AppIcon }) {
   const { colors } = useTheme();
 
   return (
-    <View style={[styles.thumb, { backgroundColor: colors.sand }]}>
+    <View style={[styles.thumb, { backgroundColor: colors.muted }]}>
       {uri ? (
         <Image source={{ uri }} contentFit="cover" transition={120} style={StyleSheet.absoluteFill} />
       ) : (

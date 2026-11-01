@@ -19,7 +19,7 @@ function relativeLuminance(hex: string) {
 export function orgBrandOf(theme: string | null | undefined): OrgBrand | null {
   const value = theme?.trim() ?? '';
   if (HEX_COLOR.test(value)) {
-    return { primary: value, onPrimary: relativeLuminance(value) > 0.45 ? '#17140F' : '#FFFFFF' };
+    return { primary: value, onPrimary: relativeLuminance(value) > 0.45 ? '#0A0A0A' : '#FFFFFF' };
   }
 
   return NAMED_THEME_BRANDS[value] ?? null;

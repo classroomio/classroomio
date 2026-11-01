@@ -1,4 +1,5 @@
-import { ArrowRight, CircleCheck } from 'lucide-react-native';
+import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
@@ -23,7 +24,7 @@ export function GradingSummaryCard({ queue, onOpen }: GradingSummaryCardProps) {
     return (
       <NotchCard style={styles.card}>
         <View style={styles.row}>
-          <Icon icon={CircleCheck} size={22} tone="success" />
+          <Icon icon={CheckCircleIcon} size={22} tone="success" />
           <View style={styles.copy}>
             <Text variant="heading">{t('allGradedTitle')}</Text>
             <Text variant="caption" tone="muted">
@@ -60,7 +61,7 @@ export function GradingSummaryCard({ queue, onOpen }: GradingSummaryCardProps) {
       </Text>
       <Button onPress={onOpen}>
         <ButtonText>{t('startGrading')}</ButtonText>
-        <ButtonIcon icon={ArrowRight} />
+        <ButtonIcon icon={ArrowRightIcon} />
       </Button>
     </NotchCard>
   );

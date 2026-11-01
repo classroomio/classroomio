@@ -1,5 +1,5 @@
+import { WifiSlashIcon } from 'phosphor-react-native/src/icons/WifiSlash';
 import { useSegments } from 'expo-router';
-import { WifiOff } from 'lucide-react-native';
 import { useEffect } from 'react';
 import { AccessibilityInfo, Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
@@ -54,7 +54,7 @@ export function OfflineBanner() {
           accessibilityLabel={`${t('offline')}. ${syncLine(unsynced, t)}`}
           style={[styles.strip, elevation.floating, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
-          <Icon icon={WifiOff} size={15} tone="muted" />
+          <Icon icon={WifiSlashIcon} size={15} tone="muted" />
           <Text variant="captionStrong">{t('offline')}</Text>
           <Text variant="caption" tone="muted" numberOfLines={1} style={styles.detail}>
             {syncLine(unsynced, t)}

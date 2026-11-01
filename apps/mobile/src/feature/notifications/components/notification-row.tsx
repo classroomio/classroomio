@@ -1,5 +1,5 @@
+import { EnvelopeOpenIcon } from 'phosphor-react-native/src/icons/EnvelopeOpen';
 import { renderNotificationCopy } from '@cio/utils/functions/notification-copy';
-import { MailOpen } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/feature/common/components/icon';
@@ -55,7 +55,9 @@ export function NotificationRow({ item, position, onPress, onMarkRead }: Notific
       <SwipeActionRow
         resetKey={item.id}
         enabled={canMarkRead}
-        trailing={canMarkRead ? { label: t('markRead'), icon: MailOpen, onCommit: () => onMarkRead(item) } : undefined}
+        trailing={
+          canMarkRead ? { label: t('markRead'), icon: EnvelopeOpenIcon, onCommit: () => onMarkRead(item) } : undefined
+        }
       >
         <PressableScale
           accessibilityRole="button"
@@ -78,7 +80,7 @@ export function NotificationRow({ item, position, onPress, onMarkRead }: Notific
           }}
           style={styles.row}
         >
-          <View style={[styles.tile, { backgroundColor: colors.sand }]}>
+          <View style={[styles.tile, { backgroundColor: colors.muted }]}>
             <Icon icon={display.icon} size={19} tone={ICON_TONE[item.category] ?? 'ink'} />
           </View>
           <View style={styles.content}>

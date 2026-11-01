@@ -38,10 +38,10 @@ export function EmbedFrame({ uri, title, framed = false, aspectRatio = 16 / 9 }:
   return (
     <View
       accessibilityLabel={title}
-      style={[styles.frame, { aspectRatio, backgroundColor: colors.sandStrong, borderColor: colors.border }]}
+      style={[styles.frame, { aspectRatio, backgroundColor: colors.mutedStrong, borderColor: colors.border }]}
     >
       <WebView
-        source={framed ? { html: iframeDocument(uri, colors.sandStrong), baseUrl: serverUrl } : { uri }}
+        source={framed ? { html: iframeDocument(uri, colors.mutedStrong), baseUrl: serverUrl } : { uri }}
         originWhitelist={['*']}
         allowsInlineMediaPlayback
         allowsFullscreenVideo

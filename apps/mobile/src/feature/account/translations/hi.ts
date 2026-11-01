@@ -39,5 +39,10 @@ export const hi: TranslatedMessages<typeof en> = {
   downloadsDescription: 'ऑफ़लाइन पाठ और सिंक',
   settingsDescription: 'नाम, भाषा, ऐप लॉक, थीम',
   signOutTitle: 'ClassroomIO से साइन आउट करें?',
-  signOutDescription: 'डाउनलोड किए गए पाठ और सिंक न हुई प्रगति इस डिवाइस से हटा दी जाती है।'
+  signOutDescription: 'डाउनलोड किए गए पाठ और सिंक न हुई प्रगति इस डिवाइस से हटा दी जाती है।',
+  editName: 'नाम संपादित करें',
+  joinedOn: '{date} से सदस्य',
+  notifications: 'सूचनाएं',
+  orgRole: '{org} · {role}',
+  appVersion: 'ClassroomIO {version}'
 };

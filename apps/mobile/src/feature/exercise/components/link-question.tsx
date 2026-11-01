@@ -1,4 +1,5 @@
-import { Plus, X } from 'lucide-react-native';
+import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -49,7 +50,7 @@ export function LinkQuestion({ question }: { question: ExerciseQuestion }) {
                     accessibilityLabel={t('removeLink', { number: index + 1 })}
                     onPress={() => commit(rows.filter((_, position) => position !== index))}
                   >
-                    <ButtonIcon icon={X} />
+                    <ButtonIcon icon={XIcon} />
                   </Button>
                 </InputGroupAddon>
               )}
@@ -59,7 +60,7 @@ export function LinkQuestion({ question }: { question: ExerciseQuestion }) {
         );
       })}
       <Button variant="secondary" size="sm" style={styles.add} onPress={() => setRows([...rows, ''])}>
-        <ButtonIcon icon={Plus} />
+        <ButtonIcon icon={PlusIcon} />
         <ButtonText>{t('addLink')}</ButtonText>
       </Button>
     </View>

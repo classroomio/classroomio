@@ -83,12 +83,12 @@ img { height: auto; display: block; margin: 1em 0; border: 1px solid ${colors.bo
 iframe { width: 100%; aspect-ratio: 16 / 9; height: auto; border: 1px solid ${colors.border}; }
 figure { margin: 1em 0; }
 figcaption { font-size: 0.85em; color: ${colors.inkMuted}; margin-top: 0.4em; }
-code { font-family: inherit; font-size: 0.92em; background: ${colors.sand}; border: 1px solid ${colors.border}; border-radius: 6px; padding: 0.1em 0.35em; }
-pre { background: ${colors.sand}; border: 1px solid ${colors.border}; border-radius: 10px; padding: 0.9em 1em; overflow-x: auto; font-size: 0.9em; line-height: 1.5; }
+code { font-family: inherit; font-size: 0.92em; background: ${colors.muted}; border: 1px solid ${colors.border}; border-radius: 6px; padding: 0.1em 0.35em; }
+pre { background: ${colors.muted}; border: 1px solid ${colors.border}; border-radius: 10px; padding: 0.9em 1em; overflow-x: auto; font-size: 0.9em; line-height: 1.5; }
 pre code { background: none; border: 0; padding: 0; }
 table { width: 100%; border-collapse: collapse; margin: 1em 0; display: block; overflow-x: auto; font-size: 0.94em; }
 th, td { border: 1px solid ${colors.border}; padding: 0.5em 0.65em; text-align: left; vertical-align: top; }
-th { background: ${colors.sand}; color: ${colors.ink}; font-weight: 600; }
+th { background: ${colors.muted}; color: ${colors.ink}; font-weight: 600; }
 mark { background: ${colors.warningTint}; color: inherit; padding: 0 0.15em; border-radius: 3px; }
 [data-type="block-math"] { display: block; margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
 .katex { font-size: 1.05em; color: ${colors.ink}; }

@@ -1,5 +1,10 @@
+import { ArrowLeftIcon } from 'phosphor-react-native/src/icons/ArrowLeft';
+import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
+import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { CloudArrowUpIcon } from 'phosphor-react-native/src/icons/CloudArrowUp';
+import { EyeIcon } from 'phosphor-react-native/src/icons/Eye';
 import { ContentType } from '@cio/utils/constants/content';
-import { ArrowLeft, ArrowRight, Check, CircleCheck, CloudUpload, Eye } from 'lucide-react-native';
 import { useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { Keyframe } from 'react-native-reanimated';
@@ -69,7 +74,7 @@ export function LessonCompletion({
           accessible
           accessibilityLabel={syncPending ? t('completedSyncPendingLabel') : t('completedLabel')}
         >
-          <Icon icon={syncPending ? CloudUpload : CircleCheck} size={20} tone="success" />
+          <Icon icon={syncPending ? CloudArrowUpIcon : CheckCircleIcon} size={20} tone="success" />
           <View>
             <Text variant="bodyStrong" tone="success">
               {t('completed')}
@@ -95,7 +100,7 @@ export function LessonCompletion({
 
     return (
       <Banner tone="info">
-        <BannerIcon icon={Eye} />
+        <BannerIcon icon={EyeIcon} />
         <BannerContent>
           <BannerTitle>{t('watchToComplete', { percent: format.percent(percent) })}</BannerTitle>
           <BannerDescription>
@@ -121,7 +126,7 @@ export function LessonCompletion({
         <ButtonSpinner />
       ) : (
         <>
-          <ButtonIcon icon={Check} />
+          <ButtonIcon icon={CheckIcon} />
           <ButtonText>{hasNext ? t('completeAndContinue') : t('markComplete')}</ButtonText>
         </>
       )}
@@ -155,7 +160,7 @@ export function LessonNavigation({ previous, next, items, onOpen }: LessonNaviga
             onPress={() => onOpen(previous)}
             style={styles.navigationButton}
           >
-            <ButtonIcon icon={ArrowLeft} />
+            <ButtonIcon icon={ArrowLeftIcon} />
             <ButtonText>{t('previous')}</ButtonText>
           </Button>
         ) : null}
@@ -168,7 +173,7 @@ export function LessonNavigation({ previous, next, items, onOpen }: LessonNaviga
             style={styles.navigationButton}
           >
             <ButtonText>{nextIsExercise ? t('nextExercise') : t('nextLesson')}</ButtonText>
-            <ButtonIcon icon={ArrowRight} />
+            <ButtonIcon icon={ArrowRightIcon} />
           </Button>
         ) : null}
       </View>

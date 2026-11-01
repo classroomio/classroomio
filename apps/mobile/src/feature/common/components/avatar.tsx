@@ -30,7 +30,7 @@ export function Avatar({ name, uri, size = 40, shape = 'circle' }: AvatarProps) 
     return (
       <Image
         source={{ uri }}
-        style={[frame, { backgroundColor: colors.sand }]}
+        style={[frame, { backgroundColor: colors.muted }]}
         contentFit="cover"
         transition={120}
         accessibilityLabel={name}

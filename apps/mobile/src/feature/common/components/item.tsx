@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react-native';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
 import { Children, Fragment, isValidElement, type ReactNode } from 'react';
 import { StyleSheet, View, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 
@@ -56,7 +56,7 @@ export function ItemMedia({ children, variant = 'plain' }: { children: ReactNode
   const { colors } = useTheme();
 
   return (
-    <View style={variant === 'tile' ? [styles.tile, { backgroundColor: colors.sand }] : styles.media}>{children}</View>
+    <View style={variant === 'tile' ? [styles.tile, { backgroundColor: colors.muted }] : styles.media}>{children}</View>
   );
 }
 
@@ -77,7 +77,7 @@ export function ItemActions({ children }: { children: ReactNode }) {
 }
 
 export function ItemChevron() {
-  return <Icon icon={ChevronRight} size={18} tone="subtle" />;
+  return <Icon icon={CaretRightIcon} size={18} tone="subtle" />;
 }
 
 const styles = StyleSheet.create({

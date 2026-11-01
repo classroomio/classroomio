@@ -1,7 +1,7 @@
 import type { ThemeColors } from '@/feature/common/constants/colors';
 import { FONT_FAMILY } from '@/feature/common/constants/typography';
 
-/** Native stack options shared by every tab: large titles in Geist on the paper background. */
+/** Native stack options shared by every tab: large titles in Geist on the screen background. */
 export function tabStackScreenOptions(colors: ThemeColors) {
   return {
     headerLargeTitleEnabled: true,

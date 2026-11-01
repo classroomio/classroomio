@@ -1,4 +1,4 @@
-import { SmilePlus } from 'lucide-react-native';
+import { SmileyIcon } from 'phosphor-react-native/src/icons/Smiley';
 import { createContext, use, useState, type ReactNode } from 'react';
 
 import {
@@ -68,7 +68,7 @@ export function ReactionsPicker() {
   return (
     <>
       <PostAction
-        icon={SmilePlus}
+        icon={SmileyIcon}
         disabled={disabled}
         onPress={() => setOpen(true)}
         accessibilityLabel={t('addReaction')}

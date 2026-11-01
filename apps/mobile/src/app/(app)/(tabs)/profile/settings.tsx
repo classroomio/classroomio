@@ -1,5 +1,9 @@
+import { BellIcon } from 'phosphor-react-native/src/icons/Bell';
+import { EnvelopeIcon } from 'phosphor-react-native/src/icons/Envelope';
+import { HardDrivesIcon } from 'phosphor-react-native/src/icons/HardDrives';
+import { InfoIcon } from 'phosphor-react-native/src/icons/Info';
+import { UserIcon } from 'phosphor-react-native/src/icons/User';
 import { router } from 'expo-router';
-import { Bell, Info, Mail, Server, UserRound } from 'lucide-react-native';
 
 import { useAccountQuery } from '@/feature/account/api/account';
 import { ChangePasswordItem } from '@/feature/account/components/change-password-item';
@@ -37,7 +41,7 @@ export default function SettingsScreen() {
         <ItemGroup>
           <Item onPress={() => router.push('/profile/edit-name')}>
             <ItemMedia variant="tile">
-              <Icon icon={UserRound} size={20} tone="ink" />
+              <Icon icon={UserIcon} size={20} tone="ink" />
             </ItemMedia>
             <ItemContent>
               <ItemTitle>{t('name')}</ItemTitle>
@@ -49,7 +53,7 @@ export default function SettingsScreen() {
           </Item>
           <Item>
             <ItemMedia variant="tile">
-              <Icon icon={Mail} size={20} tone="ink" />
+              <Icon icon={EnvelopeIcon} size={20} tone="ink" />
             </ItemMedia>
             <ItemContent>
               <ItemTitle>{t('email')}</ItemTitle>
@@ -65,7 +69,7 @@ export default function SettingsScreen() {
         <ItemGroup>
           <Item onPress={() => router.push('/notifications/preferences')}>
             <ItemMedia variant="tile">
-              <Icon icon={Bell} size={20} tone="ink" />
+              <Icon icon={BellIcon} size={20} tone="ink" />
             </ItemMedia>
             <ItemContent>
               <ItemTitle>{t('notifications')}</ItemTitle>
@@ -102,7 +106,7 @@ export default function SettingsScreen() {
         <ItemGroup>
           <Item>
             <ItemMedia variant="tile">
-              <Icon icon={Info} size={20} tone="ink" />
+              <Icon icon={InfoIcon} size={20} tone="ink" />
             </ItemMedia>
             <ItemContent>
               <ItemTitle>{t('version')}</ItemTitle>
@@ -114,7 +118,7 @@ export default function SettingsScreen() {
           {isCustom ? (
             <Item>
               <ItemMedia variant="tile">
-                <Icon icon={Server} size={20} tone="ink" />
+                <Icon icon={HardDrivesIcon} size={20} tone="ink" />
               </ItemMedia>
               <ItemContent>
                 <ItemTitle>{t('server')}</ItemTitle>

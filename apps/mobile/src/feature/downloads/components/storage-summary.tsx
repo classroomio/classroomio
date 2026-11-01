@@ -64,7 +64,7 @@ export function StorageBar() {
 
   return (
     <View
-      style={[styles.bar, { backgroundColor: colors.sandStrong }]}
+      style={[styles.bar, { backgroundColor: colors.mutedStrong }]}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
     >

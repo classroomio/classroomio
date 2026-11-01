@@ -1,7 +1,13 @@
+import { ArrowCounterClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowCounterClockwise';
+import { CameraIcon } from 'phosphor-react-native/src/icons/Camera';
+import { FileTextIcon } from 'phosphor-react-native/src/icons/FileText';
+import { FolderOpenIcon } from 'phosphor-react-native/src/icons/FolderOpen';
+import { ImageIcon } from 'phosphor-react-native/src/icons/Image';
+import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { normalizeAcceptedFileTypes, formatAcceptedFileTypes, resolveFileUploadMimeType } from '@cio/utils/file-upload';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera, FileText, FolderOpen, Image as ImageIcon, RotateCcw, Trash2, X } from 'lucide-react-native';
 import { Linking, StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
@@ -121,7 +127,7 @@ export function FileUploadQuestion({ question }: { question: ExerciseQuestion })
     return (
       <MediaAttachment>
         <MediaAttachmentRow>
-          <MediaAttachmentThumb uri={upload.previewUri} icon={FileText} />
+          <MediaAttachmentThumb uri={upload.previewUri} icon={FileTextIcon} />
           <MediaAttachmentContent
             title={upload.fileName}
             description={
@@ -138,14 +144,14 @@ export function FileUploadQuestion({ question }: { question: ExerciseQuestion })
               accessibilityLabel={t('cancelUpload')}
               onPress={() => cancelUpload(key)}
             >
-              <ButtonIcon icon={X} />
+              <ButtonIcon icon={XIcon} />
             </Button>
           )}
         </MediaAttachmentRow>
         {failed ? (
           <MediaAttachmentActions>
             <Button variant="outline" size="sm" onPress={() => retryUpload(key)}>
-              <ButtonIcon icon={RotateCcw} />
+              <ButtonIcon icon={ArrowCounterClockwiseIcon} />
               <ButtonText>{t('retryUpload')}</ButtonText>
             </Button>
             <Button variant="ghost" size="sm" onPress={() => cancelUpload(key)}>
@@ -166,14 +172,14 @@ export function FileUploadQuestion({ question }: { question: ExerciseQuestion })
           <MediaAttachmentRow>
             <MediaAttachmentThumb
               uri={answer.mimeType?.startsWith('image/') ? answer.fileUrl : undefined}
-              icon={FileText}
+              icon={FileTextIcon}
             />
             <MediaAttachmentContent
               title={answer.fileName}
               description={[formatFileSize(answer.size, t, format), t('uploaded')].filter(Boolean).join(' · ')}
             />
             <Button variant="ghost" size="icon" accessibilityLabel={t('removeFile')} onPress={() => setAnswer(null)}>
-              <ButtonIcon icon={Trash2} />
+              <ButtonIcon icon={TrashIcon} />
             </Button>
           </MediaAttachmentRow>
         </MediaAttachment>
@@ -181,7 +187,7 @@ export function FileUploadQuestion({ question }: { question: ExerciseQuestion })
 
       <View style={styles.sources}>
         <Button variant="outline" style={styles.source} onPress={() => void pickDocument()}>
-          <ButtonIcon icon={FolderOpen} />
+          <ButtonIcon icon={FolderOpenIcon} />
           <ButtonText>{t('sourceFiles')}</ButtonText>
         </Button>
         {allowsImages && (
@@ -192,7 +198,7 @@ export function FileUploadQuestion({ question }: { question: ExerciseQuestion })
         )}
         {allowsImages && (
           <Button variant="outline" style={styles.source} onPress={() => void pickImage('camera')}>
-            <ButtonIcon icon={Camera} />
+            <ButtonIcon icon={CameraIcon} />
             <ButtonText>{t('sourceCamera')}</ButtonText>
           </Button>
         )}

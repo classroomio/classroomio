@@ -83,7 +83,7 @@ export function WordBankQuestion({ question }: { question: ExerciseQuestion }) {
                 styles.blank,
                 {
                   borderColor: active ? colors.primary : placed ? colors.primary : colors.borderStrong,
-                  backgroundColor: placed ? colors.primaryTint : active ? colors.sand : colors.surface,
+                  backgroundColor: placed ? colors.primaryTint : active ? colors.muted : colors.surface,
                   borderStyle: placed ? 'solid' : 'dashed'
                 }
               ]}
@@ -119,7 +119,7 @@ export function WordBankQuestion({ question }: { question: ExerciseQuestion }) {
               style={[
                 styles.chip,
                 { backgroundColor: colors.surface, borderColor: colors.border },
-                used && { backgroundColor: colors.sand, borderColor: colors.sand }
+                used && { backgroundColor: colors.muted, borderColor: colors.muted }
               ]}
             >
               <Text variant="captionStrong" tone={used ? 'subtle' : 'ink'}>

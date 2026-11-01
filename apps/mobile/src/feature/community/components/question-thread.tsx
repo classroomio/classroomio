@@ -1,8 +1,10 @@
+import { PencilSimpleIcon } from 'phosphor-react-native/src/icons/PencilSimple';
+import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
+import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { FlashList, type FlashListRef } from '@shopify/flash-list';
 import { router, Stack } from 'expo-router';
-import { CircleAlert, Pencil, Trash2 } from 'lucide-react-native';
 import { useRef, useState } from 'react';
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useAuth } from '@/feature/auth/components/auth-provider';
 import {
@@ -60,6 +62,7 @@ import { communityCatalog } from '@/feature/community/translations/catalog';
 import type { CommunityAnswer } from '@/feature/community/types/community';
 
 import { AnswerPost, QuestionPost } from './question-thread-posts';
+import { PullRefreshControl } from '@/feature/common/components/pull-refresh-control';
 
 type MenuTarget = { kind: 'question' } | { kind: 'answer'; answer: CommunityAnswer };
 
@@ -171,7 +174,7 @@ export function QuestionThread({ slug }: { slug: string }) {
 
       {!data && question.isError ? (
         <Empty>
-          <EmptyMedia icon={CircleAlert} />
+          <EmptyMedia icon={WarningCircleIcon} />
           <EmptyTitle>{t('questionLoadFailed')}</EmptyTitle>
           <EmptyDescription>{errorMessage(question.error)}</EmptyDescription>
         </Empty>
@@ -203,13 +206,7 @@ export function QuestionThread({ slug }: { slug: string }) {
           renderScrollComponent={ComposerScrollView}
           keyboardDismissMode="interactive"
           keyboardShouldPersistTaps="handled"
-          refreshControl={
-            <RefreshControl
-              refreshing={question.isRefetching}
-              onRefresh={() => void question.refetch()}
-              tintColor={colors.inkMuted}
-            />
-          }
+          refreshControl={<PullRefreshControl onRefresh={() => question.refetch()} />}
           contentContainerStyle={styles.content}
         />
       ) : null}
@@ -242,14 +239,14 @@ export function QuestionThread({ slug }: { slug: string }) {
         <OptionSheetContent>
           {menu?.kind === 'question' ? (
             <OptionSheetItem
-              icon={Pencil}
+              icon={PencilSimpleIcon}
               disabled={offline}
               onSelect={() => router.push({ pathname: '/community/edit/[slug]', params: { slug } })}
             >
               {t('editQuestion')}
             </OptionSheetItem>
           ) : null}
-          <OptionSheetItem icon={Trash2} destructive disabled={offline} onSelect={() => setConfirming(menu)}>
+          <OptionSheetItem icon={TrashIcon} destructive disabled={offline} onSelect={() => setConfirming(menu)}>
             {menu?.kind === 'question' ? t('deleteQuestion') : t('deleteAnswer')}
           </OptionSheetItem>
           <OptionSheetCancel />

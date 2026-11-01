@@ -1,5 +1,8 @@
+import { ChatsCircleIcon } from 'phosphor-react-native/src/icons/ChatsCircle';
+import { MagnifyingGlassIcon } from 'phosphor-react-native/src/icons/MagnifyingGlass';
+import { NotePencilIcon } from 'phosphor-react-native/src/icons/NotePencil';
+import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { router, Stack } from 'expo-router';
-import { CircleAlert, MessagesSquare, Search, SquarePen } from 'lucide-react-native';
 import { useDeferredValue, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -41,7 +44,7 @@ export function CommunityHome() {
     return (
       <ScreenScrollView>
         <Empty>
-          <EmptyMedia icon={MessagesSquare} />
+          <EmptyMedia icon={ChatsCircleIcon} />
           <EmptyTitle>{t('turnedOffTitle')}</EmptyTitle>
           <EmptyDescription>{t('turnedOffDescription')}</EmptyDescription>
         </Empty>
@@ -89,7 +92,7 @@ function CommunityQuestions() {
           },
           headerRight: () => (
             <HeaderIconButton
-              icon={SquarePen}
+              icon={NotePencilIcon}
               accessibilityLabel={offline ? t('askQuestionOffline') : t('askQuestion')}
               disabled={offline}
               onPress={() => router.push('/community/ask')}
@@ -100,15 +103,14 @@ function CommunityQuestions() {
       <QuestionList
         questions={visible}
         loading={questions.isPending && !failedWithoutData}
-        refreshing={questions.isRefetching}
-        onRefresh={() => void questions.refetch()}
+        onRefresh={() => questions.refetch()}
         onOpen={openQuestion}
         header={
           <View style={styles.header}>
             {offline ? <OfflineNotice description={t('offlineList')} /> : null}
             {questions.isError && questions.data && !offline ? (
               <Banner tone="danger">
-                <BannerIcon icon={CircleAlert} />
+                <BannerIcon icon={WarningCircleIcon} />
                 <BannerContent>
                   <BannerTitle>{t('refreshFailed')}</BannerTitle>
                   <BannerDescription>{errorMessage(questions.error)}</BannerDescription>
@@ -131,18 +133,18 @@ function CommunityQuestions() {
         empty={
           failedWithoutData ? (
             <Empty>
-              <EmptyMedia icon={CircleAlert} />
+              <EmptyMedia icon={WarningCircleIcon} />
               <EmptyTitle>{t('loadFailed')}</EmptyTitle>
               <EmptyDescription>{errorMessage(questions.error)}</EmptyDescription>
               <EmptyContent>
-                <Button variant="outline" onPress={() => void questions.refetch()}>
+                <Button variant="outline" onPress={() => questions.refetch()}>
                   <ButtonText>{tc('retry')}</ButtonText>
                 </Button>
               </EmptyContent>
             </Empty>
           ) : query && inCourse.length > 0 ? (
             <Empty>
-              <EmptyMedia icon={Search} />
+              <EmptyMedia icon={MagnifyingGlassIcon} />
               <EmptyTitle>{t('searchEmptyTitle')}</EmptyTitle>
               <EmptyDescription>{t('searchEmptyDescription', { query })}</EmptyDescription>
             </Empty>

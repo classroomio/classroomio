@@ -1,4 +1,4 @@
-import { KeyRound } from 'lucide-react-native';
+import { KeyIcon } from 'phosphor-react-native/src/icons/Key';
 
 import { Icon } from '@/feature/common/components/icon';
 import type { TextTone } from '@/feature/common/components/text';
@@ -20,5 +20,5 @@ export function SsoProviderMark({ providerType, size = 18, tone }: SsoProviderMa
   if (providerType === 'OKTA') return <BrandMarkIcon name="okta" size={size} tone={tone} />;
   if (providerType === 'AUTH0') return <BrandMarkIcon name="auth0" size={size} tone={tone} />;
 
-  return <Icon icon={KeyRound} size={size} tone={tone} />;
+  return <Icon icon={KeyIcon} size={size} tone={tone} />;
 }

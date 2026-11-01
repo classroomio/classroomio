@@ -1,6 +1,10 @@
+import { ArrowCounterClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowCounterClockwise';
+import { GaugeIcon } from 'phosphor-react-native/src/icons/Gauge';
+import { SubtitlesIcon } from 'phosphor-react-native/src/icons/Subtitles';
+import { SubtitlesSlashIcon } from 'phosphor-react-native/src/icons/SubtitlesSlash';
+import { VideoCameraSlashIcon } from 'phosphor-react-native/src/icons/VideoCameraSlash';
 import { useEvent } from 'expo';
 import { VideoView, useVideoPlayer, type SubtitleTrack, type VideoPlayer, type VideoSource } from 'expo-video';
-import { Captions, CaptionsOff, Gauge, RotateCcw, VideoOff } from 'lucide-react-native';
 import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -147,16 +151,16 @@ export function NativeVideoSurface() {
       ) : null}
       {status === 'error' ? (
         <View
-          style={[StyleSheet.absoluteFill, styles.center, styles.unavailable, { backgroundColor: colors.sandStrong }]}
+          style={[StyleSheet.absoluteFill, styles.center, styles.unavailable, { backgroundColor: colors.mutedStrong }]}
         >
-          <Icon icon={VideoOff} size={24} tone="muted" />
+          <Icon icon={VideoCameraSlashIcon} size={24} tone="muted" />
           <Text variant="captionStrong">{t('videoUnavailable')}</Text>
           <Text variant="caption" tone="muted" style={styles.centerText}>
             {t('videoLoadError')}
           </Text>
           {onRetry ? (
             <Button size="sm" variant="outline" onPress={onRetry}>
-              <ButtonIcon icon={RotateCcw} />
+              <ButtonIcon icon={ArrowCounterClockwiseIcon} />
               <ButtonText>{common('retry')}</ButtonText>
             </Button>
           ) : null}
@@ -211,7 +215,7 @@ export function NativeVideoSpeed() {
         }
         onPress={() => setOpen(true)}
       >
-        <ButtonIcon icon={Gauge} />
+        <ButtonIcon icon={GaugeIcon} />
         <ButtonText>{rateLabel(playbackRate)}</ButtonText>
       </Button>
       <OptionSheet open={open} onOpenChange={setOpen}>
@@ -254,7 +258,7 @@ export function NativeVideoCaptions() {
           else setOpen(true);
         }}
       >
-        <ButtonIcon icon={on ? Captions : CaptionsOff} />
+        <ButtonIcon icon={on ? SubtitlesIcon : SubtitlesSlashIcon} />
         <ButtonText>{t('captions')}</ButtonText>
       </Button>
       <OptionSheet open={open} onOpenChange={setOpen}>

@@ -1,4 +1,4 @@
-import { Ellipsis, type LucideIcon } from 'lucide-react-native';
+import { DotsThreeIcon } from 'phosphor-react-native/src/icons/DotsThree';
 import { createContext, use, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 
@@ -10,7 +10,7 @@ import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
 import { Avatar } from './avatar';
 import { HtmlContent } from './html-content';
-import { Icon } from './icon';
+import { Icon, type AppIcon } from './icon';
 import { PressableScale } from './pressable-scale';
 import { Text } from './text';
 
@@ -21,7 +21,7 @@ const PostContext = createContext<{ density: PostDensity }>({ density: 'regular'
 const AVATAR_SIZE: Record<PostDensity, number> = { regular: 36, compact: 28 };
 
 type PostProps = {
-  /** `card` sits on a paper surface with a hairline border; `plain` is flush with the screen. */
+  /** `card` sits on a surface with a hairline border; `plain` is flush with the screen. */
   variant?: 'card' | 'plain';
   density?: PostDensity;
   onPress?: PressableProps['onPress'];
@@ -137,7 +137,7 @@ export function PostActions({ children }: { children: ReactNode }) {
 }
 
 type PostActionProps = {
-  icon?: LucideIcon;
+  icon?: AppIcon;
   active?: boolean;
   disabled?: boolean;
   onPress?: () => void;
@@ -157,7 +157,7 @@ export function PostAction({
   const tone = active ? 'primary' : 'muted';
   const content = (
     <>
-      {icon ? <Icon icon={icon} size={17} tone={tone} strokeWidth={active ? 2.2 : undefined} /> : null}
+      {icon ? <Icon icon={icon} size={17} tone={tone} weight={active ? 'fill' : 'regular'} /> : null}
       {children !== undefined ? (
         <Text variant="captionStrong" tone={tone}>
           {children}
@@ -189,7 +189,7 @@ export function PostAction({
         styles.action,
         styles.pressableAction,
         active && { backgroundColor: colors.primaryTint },
-        pressed && !active && { backgroundColor: colors.sand },
+        pressed && !active && { backgroundColor: colors.muted },
         disabled && !active && styles.disabled
       ]}
     >
@@ -209,7 +209,7 @@ export function PostMenuButton({ onPress, accessibilityLabel }: { onPress: () =>
       onPress={onPress}
       style={styles.menu}
     >
-      <Icon icon={Ellipsis} size={18} tone="muted" />
+      <Icon icon={DotsThreeIcon} size={18} tone="muted" />
     </Pressable>
   );
 }

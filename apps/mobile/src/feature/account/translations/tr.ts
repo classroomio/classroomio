@@ -39,5 +39,10 @@ export const tr: TranslatedMessages<typeof en> = {
   downloadsDescription: 'Çevrimdışı dersler ve eşitleme',
   settingsDescription: 'Ad, dil, uygulama kilidi, tema',
   signOutTitle: 'ClassroomIO oturumu kapatılsın mı?',
-  signOutDescription: 'İndirilen dersler ve eşitlenmemiş ilerleme bu cihazdan kaldırılır.'
+  signOutDescription: 'İndirilen dersler ve eşitlenmemiş ilerleme bu cihazdan kaldırılır.',
+  editName: 'Adı düzenle',
+  joinedOn: 'Katılma: {date}',
+  notifications: 'Bildirimler',
+  orgRole: '{org} · {role}',
+  appVersion: 'ClassroomIO {version}'
 };

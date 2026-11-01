@@ -1,4 +1,4 @@
-import { BellOff } from 'lucide-react-native';
+import { BellSlashIcon } from 'phosphor-react-native/src/icons/BellSlash';
 
 import {
   Banner,
@@ -26,7 +26,7 @@ export function PushStatusBanner({ pushAvailable }: { pushAvailable: boolean }) 
       accessibilityHint={denied ? t('pushOffDeniedHint') : t('pushOffHint')}
       onPress={() => void requestPushPermission()}
     >
-      <BannerIcon icon={BellOff} />
+      <BannerIcon icon={BellSlashIcon} />
       <BannerContent>
         <BannerTitle>{t('pushOffTitle')}</BannerTitle>
         <BannerDescription>{denied ? t('pushOffDeniedDescription') : t('pushOffDescription')}</BannerDescription>

@@ -1,9 +1,10 @@
-import { Star } from 'lucide-react-native';
+import { StarIcon } from 'phosphor-react-native/src/icons/Star';
 import { StyleSheet, View } from 'react-native';
 
+import { Icon } from '@/feature/common/components/icon';
 import { PressableScale } from '@/feature/common/components/pressable-scale';
 import { Text } from '@/feature/common/components/text';
-import { HIT_SLOP, ICON_STROKE, SPACING } from '@/feature/common/constants/layout';
+import { HIT_SLOP, SPACING } from '@/feature/common/constants/layout';
 import { selectionHaptic } from '@/feature/common/helpers/haptics';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { useQuestionAnswer } from '@/feature/exercise/components/exercise-session';
@@ -41,12 +42,11 @@ export function StarQuestion({ question }: { question: ExerciseQuestion }) {
               }}
               style={styles.star}
             >
-              <Star
+              <Icon
+                icon={StarIcon}
                 size={size}
+                weight={filled ? 'fill' : 'regular'}
                 color={filled ? colors.primary : colors.borderStrong}
-                fill={filled ? colors.primary : 'transparent'}
-                strokeWidth={ICON_STROKE}
-                absoluteStrokeWidth
               />
             </PressableScale>
           );

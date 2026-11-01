@@ -1,5 +1,3 @@
-import {} from 'lucide-react-native';
-
 import { Button, ButtonText } from '@/feature/common/components/button';
 import {
   Empty,

@@ -1,5 +1,5 @@
+import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
 import { router, Stack } from 'expo-router';
-import { BookOpen } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { Pressable } from 'react-native';
 
@@ -47,11 +47,7 @@ export default function HomeScreen() {
       <AnimatedScreenScrollView
         onScroll={onScroll}
         scrollEventThrottle={16}
-        refreshing={courses.isRefetching}
-        onRefresh={() => {
-          void courses.refetch();
-          void compliance.refetch();
-        }}
+        onRefresh={() => Promise.all([courses.refetch(), compliance.refetch()])}
       >
         <HomeGreeting status={status} />
 
@@ -61,7 +57,7 @@ export default function HomeScreen() {
 
         {courses.isError && (
           <Empty>
-            <EmptyMedia icon={BookOpen} />
+            <EmptyMedia icon={BookOpenIcon} />
             <EmptyTitle>{t('coursesLoadError')}</EmptyTitle>
             <EmptyDescription>{errorMessage(courses.error)}</EmptyDescription>
           </Empty>

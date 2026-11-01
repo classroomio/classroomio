@@ -151,7 +151,7 @@ type IllustrationProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-/** An isometric line drawing from the brand's Machines family: sand-ink hairlines with one accent part. */
+/** An isometric line drawing from the brand's Machines family: neutral hairlines with one accent part. */
 export function Illustration({ name, size = 140, surface, animated = true, style }: IllustrationProps) {
   const { colors, isDark } = useTheme();
   const reducedMotion = useReducedMotion();

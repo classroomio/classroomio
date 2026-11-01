@@ -39,5 +39,10 @@ export const vi: TranslatedMessages<typeof en> = {
   downloadsDescription: 'Bài học ngoại tuyến và đồng bộ',
   settingsDescription: 'Tên, ngôn ngữ, khóa ứng dụng, giao diện',
   signOutTitle: 'Đăng xuất khỏi ClassroomIO?',
-  signOutDescription: 'Bài học đã tải và tiến độ chưa đồng bộ sẽ bị xóa khỏi thiết bị này.'
+  signOutDescription: 'Bài học đã tải và tiến độ chưa đồng bộ sẽ bị xóa khỏi thiết bị này.',
+  editName: 'Sửa tên',
+  joinedOn: 'Tham gia từ {date}',
+  notifications: 'Thông báo',
+  orgRole: '{org} · {role}',
+  appVersion: 'ClassroomIO {version}'
 };

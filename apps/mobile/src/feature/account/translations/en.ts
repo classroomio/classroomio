@@ -35,5 +35,10 @@ export const en = {
   downloadsDescription: 'Offline lessons and sync',
   settingsDescription: 'Name, language, app lock, theme',
   signOutTitle: 'Sign out of ClassroomIO?',
-  signOutDescription: 'Downloaded lessons and any progress that has not synced are removed from this device.'
+  signOutDescription: 'Downloaded lessons and any progress that has not synced are removed from this device.',
+  editName: 'Edit name',
+  joinedOn: 'Joined {date}',
+  notifications: 'Notifications',
+  orgRole: '{org} · {role}',
+  appVersion: 'ClassroomIO {version}'
 };

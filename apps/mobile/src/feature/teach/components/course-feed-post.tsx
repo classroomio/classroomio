@@ -1,4 +1,8 @@
-import { MessageCircle, MessagesSquare, Pin, PinOff, Trash2 } from 'lucide-react-native';
+import { ChatCircleIcon } from 'phosphor-react-native/src/icons/ChatCircle';
+import { ChatsCircleIcon } from 'phosphor-react-native/src/icons/ChatsCircle';
+import { PushPinIcon } from 'phosphor-react-native/src/icons/PushPin';
+import { PushPinSlashIcon } from 'phosphor-react-native/src/icons/PushPinSlash';
+import { TrashIcon } from 'phosphor-react-native/src/icons/Trash';
 import { useState } from 'react';
 
 import {
@@ -88,14 +92,14 @@ export function CourseFeedPost({ courseId, post, onOpenComments }: CourseFeedPos
             </PostMeta>
           </PostAuthor>
           <PostHeaderAction>
-            {post.isPinned && <Icon icon={Pin} size={15} tone="muted" />}
+            {post.isPinned && <Icon icon={PushPinIcon} size={15} tone="muted" />}
             <PostMenuButton onPress={() => setMenuOpen(true)} accessibilityLabel={t('moderatePost')} />
           </PostHeaderAction>
         </PostHeader>
         <PostBody html={post.content} />
         <PostActions>
           <PostAction
-            icon={MessageCircle}
+            icon={ChatCircleIcon}
             onPress={() => onOpenComments(post)}
             accessibilityLabel={`${comments}, ${common('open')}`}
           >
@@ -107,13 +111,17 @@ export function CourseFeedPost({ courseId, post, onOpenComments }: CourseFeedPos
       <OptionSheet open={menuOpen} onOpenChange={setMenuOpen}>
         <OptionSheetContent>
           <OptionSheetTitle>{t('postBy', { name: author })}</OptionSheetTitle>
-          <OptionSheetItem icon={post.isPinned ? PinOff : Pin} onSelect={togglePin}>
+          <OptionSheetItem icon={post.isPinned ? PushPinSlashIcon : PushPinIcon} onSelect={togglePin}>
             {post.isPinned ? t('unpinPost') : t('pinToTop')}
           </OptionSheetItem>
-          <OptionSheetItem icon={MessagesSquare} onSelect={() => afterSheetCloses(() => onOpenComments(post))}>
+          <OptionSheetItem icon={ChatsCircleIcon} onSelect={() => afterSheetCloses(() => onOpenComments(post))}>
             {t('moderateComments')}
           </OptionSheetItem>
-          <OptionSheetItem icon={Trash2} destructive onSelect={() => afterSheetCloses(() => setConfirmingDelete(true))}>
+          <OptionSheetItem
+            icon={TrashIcon}
+            destructive
+            onSelect={() => afterSheetCloses(() => setConfirmingDelete(true))}
+          >
             {t('deletePost')}
           </OptionSheetItem>
           <OptionSheetCancel />

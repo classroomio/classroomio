@@ -1,5 +1,6 @@
+import { LockIcon } from 'phosphor-react-native/src/icons/Lock';
+import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
 import { router } from 'expo-router';
-import { Lock, TriangleAlert } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonText } from '@/feature/common/components/button';
@@ -22,7 +23,7 @@ export function LessonLocked({ reason }: { reason: string }) {
 
   return (
     <Empty>
-      <EmptyMedia icon={Lock} />
+      <EmptyMedia icon={LockIcon} />
       <EmptyTitle>{t('lockedTitle')}</EmptyTitle>
       <EmptyDescription>{reason}</EmptyDescription>
       <EmptyContent>
@@ -40,7 +41,7 @@ export function LessonError({ message, onRetry }: { message: string; onRetry: ()
 
   return (
     <Empty>
-      <EmptyMedia icon={TriangleAlert} />
+      <EmptyMedia icon={WarningIcon} />
       <EmptyTitle>{t('loadErrorTitle')}</EmptyTitle>
       <EmptyDescription>{message}</EmptyDescription>
       <EmptyContent>

@@ -1,6 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
 import type { ReactElement } from 'react';
-import { Pressable, RefreshControl, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { SkeletonList, SkeletonText } from '@/feature/common/components/skeleton';
 import { Spinner } from '@/feature/common/components/spinner';
@@ -13,16 +13,16 @@ import { notificationsCatalog } from '@/feature/notifications/translations/catal
 import type { NotificationItem } from '@/feature/notifications/types/notifications';
 
 import { NotificationRow } from './notification-row';
+import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
 
 type NotificationListProps = {
   entries: NotificationListEntry[];
   loading: boolean;
-  refreshing: boolean;
   loadingMore: boolean;
   canMarkAllRead: boolean;
   header?: ReactElement;
   empty: ReactElement;
-  onRefresh: () => void;
+  onRefresh: RefreshHandler;
   onEndReached: () => void;
   onOpen: (item: NotificationItem) => void;
   onMarkRead?: (item: NotificationItem) => void;
@@ -32,7 +32,6 @@ type NotificationListProps = {
 export function NotificationList({
   entries,
   loading,
-  refreshing,
   loadingMore,
   canMarkAllRead,
   header,
@@ -68,7 +67,7 @@ export function NotificationList({
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
       contentInsetAdjustmentBehavior="automatic"
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.inkMuted} />}
+      refreshControl={<PullRefreshControl onRefresh={onRefresh} />}
       contentContainerStyle={styles.content}
       style={{ backgroundColor: colors.background }}
     />

@@ -1,4 +1,5 @@
-import { ChevronDown, ListFilter } from 'lucide-react-native';
+import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
+import { FunnelSimpleIcon } from 'phosphor-react-native/src/icons/FunnelSimple';
 import { createContext, use, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
@@ -67,11 +68,11 @@ export function CourseFilterTrigger() {
       }}
       style={styles.trigger}
     >
-      <Icon icon={ListFilter} size={17} tone={selected ? 'primary' : 'muted'} />
+      <Icon icon={FunnelSimpleIcon} size={17} tone={selected ? 'primary' : 'muted'} />
       <Text variant="captionStrong" tone={selected ? 'primary' : 'body'} numberOfLines={1} style={styles.label}>
         {label}
       </Text>
-      <Icon icon={ChevronDown} size={16} tone="muted" />
+      <Icon icon={CaretDownIcon} size={16} tone="muted" />
     </Pressable>
   );
 }

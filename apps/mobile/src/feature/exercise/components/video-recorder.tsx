@@ -1,6 +1,7 @@
+import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { RefreshCw, X } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { Linking, Modal, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -107,7 +108,7 @@ function CloseButton({ onPress, tone = 'onPrimary' }: { onPress: () => void; ton
       style={styles.close}
     >
       <Icon
-        icon={X}
+        icon={XIcon}
         size={24}
         tone={tone === 'ink' ? 'ink' : undefined}
         color={tone === 'ink' ? undefined : CAMERA_CHROME.foreground}
@@ -232,7 +233,7 @@ function Camera({
                 }}
                 style={styles.flip}
               >
-                <Icon icon={RefreshCw} size={22} color={CAMERA_CHROME.foreground} />
+                <Icon icon={ArrowsClockwiseIcon} size={22} color={CAMERA_CHROME.foreground} />
               </PressableScale>
             )}
           </View>
@@ -274,7 +275,7 @@ function TakePreview({
       </View>
       <View style={[styles.previewActions, { paddingBottom: insets.bottom + SPACING.lg }]}>
         <Button variant="secondary" size="lg" style={styles.grow} onPress={onRetake}>
-          <ButtonIcon icon={RefreshCw} />
+          <ButtonIcon icon={ArrowsClockwiseIcon} />
           <ButtonText>{t('retake')}</ButtonText>
         </Button>
         <Button size="lg" style={styles.grow} onPress={onUse}>

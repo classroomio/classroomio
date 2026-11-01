@@ -1,7 +1,8 @@
+import { ScrollIcon } from 'phosphor-react-native/src/icons/Scroll';
+import { SparkleIcon } from 'phosphor-react-native/src/icons/Sparkle';
 import { offlineMediaKey } from '@cio/utils/functions/offline-media';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import type { VideoPlayer } from 'expo-video';
-import { ScrollText, Sparkles } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -180,13 +181,7 @@ export default function LessonScreen() {
   return (
     <>
       {header}
-      <LessonPager
-        previous={view.previous}
-        next={next}
-        onNavigate={openItem}
-        refreshing={view.lesson.isRefetching}
-        onRefresh={() => view.lesson.refetch()}
-      >
+      <LessonPager previous={view.previous} next={next} onNavigate={openItem} onRefresh={() => view.lesson.refetch()}>
         {view.videos.map(({ source, video }, index) => (
           <LessonSwipeExclusion key={`${source.kind}-${index}`}>
             <LessonVideo
@@ -255,7 +250,7 @@ export default function LessonScreen() {
           <CourseLinks>
             {view.transcript ? (
               <CourseLink
-                icon={ScrollText}
+                icon={ScrollIcon}
                 title={t('transcript')}
                 description={
                   player && primaryVideo?.source.kind !== 'embed' ? t('transcriptTapToPlay') : t('transcriptReadAlong')
@@ -265,7 +260,7 @@ export default function LessonScreen() {
             ) : null}
             {view.tutor.enabled ? (
               <CourseLink
-                icon={Sparkles}
+                icon={SparkleIcon}
                 title={t('askTutor')}
                 description={
                   offline

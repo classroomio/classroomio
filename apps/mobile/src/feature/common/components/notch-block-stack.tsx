@@ -131,7 +131,7 @@ export function NotchBlockStack({ cutoutColor }: NotchBlockStackProps) {
     >
       <Block
         index={0}
-        fill={colors.sandStrong}
+        fill={colors.mutedStrong}
         cutoutColor={cutoutColor}
         withTab={false}
         reducedMotion={reducedMotion}

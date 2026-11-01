@@ -1,5 +1,6 @@
+import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
+import { ShieldCheckIcon } from 'phosphor-react-native/src/icons/ShieldCheck';
 import { router } from 'expo-router';
-import { Award, ShieldCheck } from 'lucide-react-native';
 
 import { Button, ButtonText } from '@/feature/common/components/button';
 import {
@@ -74,12 +75,12 @@ export function ComplianceOverview() {
   const waived = withStanding(requirements, ['waived']);
 
   return (
-    <ScreenScrollView refreshing={compliance.isRefetching} onRefresh={() => compliance.refetch()}>
+    <ScreenScrollView onRefresh={() => compliance.refetch()}>
       {compliance.isPending && <ComplianceOverviewSkeleton />}
 
       {compliance.isError && (
         <Empty>
-          <EmptyMedia icon={ShieldCheck} />
+          <EmptyMedia icon={ShieldCheckIcon} />
           <EmptyTitle>{t('loadError')}</EmptyTitle>
           <EmptyDescription>{errorMessage(compliance.error)}</EmptyDescription>
           <EmptyContent>
@@ -123,7 +124,7 @@ export function ComplianceOverview() {
         <ItemGroup>
           <Item onPress={() => router.push('/certificates')}>
             <ItemMedia variant="tile">
-              <Icon icon={Award} size={20} tone="ink" />
+              <Icon icon={MedalIcon} size={20} tone="ink" />
             </ItemMedia>
             <ItemContent>
               <ItemTitle>{t('certificates')}</ItemTitle>
