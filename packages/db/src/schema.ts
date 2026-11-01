@@ -1220,7 +1220,7 @@ export const lesson = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     title: varchar().notNull(),
     public: boolean().default(false),
-    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }),
     teacherId: uuid('teacher_id'),
     isComplete: boolean('is_complete').default(false),
     callUrl: text('call_url'),

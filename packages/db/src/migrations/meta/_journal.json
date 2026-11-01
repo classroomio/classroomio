@@ -306,8 +306,15 @@
     {
       "idx": 43,
       "version": "7",
-      "when": 1793431872796,
-      "tag": "0043_organization_plan_payment_failed_at",
+      "when": 1793489857066,
+      "tag": "0043_lesson_at_no_default",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1793493380393,
+      "tag": "0044_organization_plan_payment_failed_at",
       "breakpoints": true
     }
   ]

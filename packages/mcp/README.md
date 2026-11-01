@@ -184,6 +184,7 @@ They call `/public-api/v1/courses/:id/{sections,lessons,content}` with the key's
 - `reorder_course_content`, `set_course_content_unlocked` and `delete_course_content` are all or nothing: one id outside the course fails the whole call with 404.
 - Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
 - Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`. Restoring a lesson version is not covered.
+- `update_lesson` also accepts `lessonAt`, the live-session start time as an ISO 8601 timestamp with a UTC offset (`null` clears it). Lessons created with `create_lesson` start with no date, and there is no field for the join link, so set that in the dashboard. Students see a live session, and get reminders, only when the lesson has both a date and a join link; reminders also need a published Live class course.
 
 Course copy and landing page tools:
 
