@@ -1,0 +1,22 @@
+name: Docs fact check reply event
+
+on:
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  contents: read
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare review reply event
+        run: cp "$GITHUB_EVENT_PATH" "$RUNNER_TEMP/event.json"
+
+      - name: Save review reply event
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-fact-check-reply
+          path: ${{ runner.temp }}/event.json
+          retention-days: 1
