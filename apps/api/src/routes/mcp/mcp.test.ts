@@ -128,6 +128,24 @@ describe('POST /mcp', () => {
     expect(names).not.toContain('upload_video');
   });
 
+  it('serves a request that names a protocol version newer than the SDK knows', async () => {
+    const response = await rpc(
+      'tools/list',
+      {},
+      { Authorization: 'Bearer eyJhbGciOi', 'Mcp-Protocol-Version': '2026-07-28' }
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.result.tools.length).toBeGreaterThan(0);
+  });
+
+  it('accepts a client that only lists application/json', async () => {
+    const response = await rpc('tools/list', {}, { Authorization: 'Bearer eyJhbGciOi', accept: 'application/json' });
+
+    expect(response.status).toBe(200);
+  });
+
   it('runs a tool call through the internal dispatch with the caller credential', async () => {
     const response = await rpc(
       'tools/call',
