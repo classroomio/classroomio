@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   captureServerEvent: vi.fn(),
@@ -118,57 +118,86 @@ describe('course_completed', () => {
     lessonsCount: 2,
     exercisesCompleted: 0,
     exercisesCount: 0,
+    enrolledAt: '2026-10-01T09:00:00.000Z',
+    completedAt: null,
     certificateEarnedAt: null
   };
 
   beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-04T12:00:00.000Z'));
     vi.clearAllMocks();
     mocks.getCourseCertificationRow.mockResolvedValue({ orgId: 'org-1', type: 'SELF_PACED', certificate: {} });
     mocks.claimMemberCertificateEarned.mockResolvedValue(true);
     mocks.claimMemberCompleted.mockResolvedValue(true);
   });
 
-  it('fires when the certificate is first claimed', async () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('fires when the course is first completed, with the days since enrolment', async () => {
     mocks.getCourseProgress.mockResolvedValue(completedProgress);
     mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
 
     await evaluateCourseCertification('course-1', 'student-1');
 
+    expect(mocks.captureServerEvent).toHaveBeenCalledTimes(1);
     expect(mocks.captureServerEvent).toHaveBeenCalledWith({
       event: 'course_completed',
       distinctId: 'student-1',
       orgId: 'org-1',
-      properties: { course_id: 'course-1', course_type: 'SELF_PACED' }
+      properties: { course_id: 'course-1', course_type: 'SELF_PACED', days_to_complete: 3 }
     });
   });
 
-  it('does not fire on a plan without certificates', async () => {
+  it('fires on a plan without certificates', async () => {
     mocks.getCourseProgress.mockResolvedValue(completedProgress);
     mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'BASIC' });
 
     await evaluateCourseCertification('course-1', 'student-1');
 
-    expect(mocks.captureServerEvent).not.toHaveBeenCalled();
+    expect(mocks.captureServerEvent).toHaveBeenCalledWith(expect.objectContaining({ event: 'course_completed' }));
   });
 
-  it('still fires when a step after the certificate claim fails', async () => {
+  it('sends a null days_to_complete when the enrolment date is unknown', async () => {
+    mocks.getCourseProgress.mockResolvedValue({ ...completedProgress, enrolledAt: null });
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'BASIC' });
+
+    await evaluateCourseCertification('course-1', 'student-1');
+
+    expect(mocks.captureServerEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ properties: expect.objectContaining({ days_to_complete: null }) })
+    );
+  });
+
+  it('still fires when a step after the completion claim fails', async () => {
     mocks.getCourseProgress.mockResolvedValue(completedProgress);
     mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
-    mocks.emitWebhookEvent
-      .mockResolvedValueOnce(undefined)
-      .mockRejectedValueOnce(new Error('webhook store unavailable'));
+    mocks.emitWebhookEvent.mockRejectedValueOnce(new Error('webhook store unavailable'));
 
     await expect(evaluateCourseCertification('course-1', 'student-1')).rejects.toThrow('webhook store unavailable');
 
     expect(mocks.captureServerEvent).toHaveBeenCalledWith(expect.objectContaining({ event: 'course_completed' }));
   });
 
-  it('does not fire again once the certificate is earned', async () => {
+  it('does not fire again once the course is completed', async () => {
     mocks.getCourseProgress.mockResolvedValue({
       ...completedProgress,
-      certificateEarnedAt: '2026-10-01T00:00:00.000Z'
+      completedAt: '2026-10-02T00:00:00.000Z',
+      certificateEarnedAt: '2026-10-02T00:00:00.000Z'
     });
     mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
+
+    await evaluateCourseCertification('course-1', 'student-1');
+
+    expect(mocks.captureServerEvent).not.toHaveBeenCalled();
+  });
+
+  it('does not fire when another request already claimed the completion', async () => {
+    mocks.getCourseProgress.mockResolvedValue(completedProgress);
+    mocks.getActiveOrganizationPlan.mockResolvedValue({ planName: 'EARLY_ADOPTER' });
+    mocks.claimMemberCompleted.mockResolvedValue(false);
 
     await evaluateCourseCertification('course-1', 'student-1');
 

@@ -654,6 +654,7 @@ export async function getCourseProgress(
   exercisesCompleted: number;
   groupMemberId: string | null;
   roleId: number | null;
+  enrolledAt: string | null;
   completedAt: string | null;
   certificateEarnedAt: string | null;
   certificationEmailSentAt: string | null;
@@ -664,6 +665,7 @@ export async function getCourseProgress(
       .select({
         id: schema.groupmember.id,
         roleId: schema.groupmember.roleId,
+        enrolledAt: schema.groupmember.createdAt,
         completedAt: schema.groupmember.completedAt,
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
         certificationEmailSentAt: schema.groupmember.certificationEmailSentAt
@@ -682,6 +684,7 @@ export async function getCourseProgress(
         exercisesCompleted: 0,
         groupMemberId: null,
         roleId: null,
+        enrolledAt: null,
         completedAt: null,
         certificateEarnedAt: null,
         certificationEmailSentAt: null
@@ -690,6 +693,7 @@ export async function getCourseProgress(
 
     const groupMemberId = groupMemberResult[0].id;
     const roleId = groupMemberResult[0].roleId;
+    const enrolledAt = groupMemberResult[0].enrolledAt ?? null;
     const completedAt = groupMemberResult[0].completedAt ?? null;
     const certificateEarnedAt = groupMemberResult[0].certificateEarnedAt ?? null;
     const certificationEmailSentAt = groupMemberResult[0].certificationEmailSentAt ?? null;
@@ -736,6 +740,7 @@ export async function getCourseProgress(
       exercisesCompleted: completedRow?.exercisesCompleted ?? 0,
       groupMemberId,
       roleId,
+      enrolledAt,
       completedAt,
       certificateEarnedAt,
       certificationEmailSentAt

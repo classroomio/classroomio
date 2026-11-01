@@ -84,6 +84,14 @@ async function buildCertificationEvaluation(
   };
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function daysBetween(start: string | null, end: string): number | null {
+  if (!start) return null;
+
+  return Math.max(0, Math.floor((new Date(end).getTime() - new Date(start).getTime()) / DAY_MS));
+}
+
 /**
  * Builds the `certificate` of a `course.certificate.issued` event. Standard courses store no certificate
  * row, so they have no `id`, and the printed id is the one the PDF shows.
@@ -142,6 +150,17 @@ export async function evaluateCourseCertification(
     const didClaimCompletion = await claimMemberCompleted(groupMemberId, completedAt);
 
     if (didClaimCompletion) {
+      captureServerEvent({
+        event: 'course_completed',
+        distinctId: profileId,
+        orgId: courseRow.orgId,
+        properties: {
+          course_id: courseId,
+          course_type: courseRow.type,
+          days_to_complete: daysBetween(progress.enrolledAt, completedAt)
+        }
+      });
+
       await invalidateOrgStats(courseRow.orgId);
 
       if (courseRow.type !== 'COMPLIANCE') {
@@ -175,13 +194,6 @@ export async function evaluateCourseCertification(
 
   if (didClaimCertificate) {
     isNewCompletion = true;
-
-    captureServerEvent({
-      event: 'course_completed',
-      distinctId: profileId,
-      orgId: courseRow.orgId,
-      properties: { course_id: courseId, course_type: courseRow.type }
-    });
 
     if (courseRow.type !== 'COMPLIANCE') {
       const certificate = buildCertificateWebhookInput({ courseRow, profileId, issuedAt: earnedAt });
