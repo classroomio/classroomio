@@ -4,6 +4,7 @@ import {
   getOrganizationSsoConfig,
   getOrganizationSsoConfigByDomain
 } from '@cio/db/queries/organization/sso';
+import type { TOrganizationSsoConfig } from '@cio/db/types';
 
 // Extract domain from email
 function getDomainFromEmail(email: string): string {
@@ -22,6 +23,7 @@ interface SsoDiscoveryResult {
   allowPassword: boolean;
   providerName: string | null;
   providerId: string | null;
+  providerType: TOrganizationSsoConfig['provider'] | null;
 }
 
 // Discover SSO for email
@@ -39,7 +41,8 @@ export async function discoverSso(email: string): Promise<SsoDiscoveryResult> {
       redirectUrl: null,
       allowPassword: true,
       providerName: null,
-      providerId: null
+      providerId: null,
+      providerType: null
     };
   }
 
@@ -56,7 +59,8 @@ export async function discoverSso(email: string): Promise<SsoDiscoveryResult> {
     redirectUrl,
     allowPassword: !(policy?.forceSso ?? false),
     providerName: config.displayName,
-    providerId: config.betterAuthProviderId
+    providerId: config.betterAuthProviderId,
+    providerType: config.provider
   };
 }
 

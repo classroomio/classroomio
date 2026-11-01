@@ -1,0 +1,83 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const hi: TranslatedMessages<typeof en> = {
+  screenTitle: 'अनुपालन',
+  standingOverdue: 'समय-सीमा पार',
+  standingInGracePeriod: 'अनुग्रह अवधि में',
+  standingDueSoon: 'जल्द देय',
+  standingOpen: 'अभी देय नहीं',
+  standingUnscheduled: 'कोई समय-सीमा तय नहीं',
+  standingCompliant: 'अनुपालन में',
+  standingWaived: 'छूट प्राप्त',
+  statusOverdueByDays: { one: 'समय-सीमा {count} दिन पहले पार हुई', other: 'समय-सीमा {count} दिन पहले पार हुई' },
+  statusGraceEndsToday: 'अनुग्रह अवधि में, आज समाप्त होगी',
+  statusGraceDaysLeft: { one: 'अनुग्रह अवधि में, {count} दिन बाकी', other: 'अनुग्रह अवधि में, {count} दिन बाकी' },
+  statusDueToday: 'आज देय',
+  statusDueInDays: { one: '{count} दिन में देय', other: '{count} दिन में देय' },
+  statusExpiresToday: 'आज समाप्त हो रहा है',
+  statusExpiresInDays: { one: '{count} दिन में समाप्त होगा', other: '{count} दिन में समाप्त होगा' },
+  statusInProgress: 'जारी',
+  statusNotStarted: 'शुरू नहीं हुआ',
+  detailDeadline: 'समय-सीमा {date}',
+  detailGracePeriodEnds: 'अनुग्रह अवधि {date} को समाप्त होगी',
+  detailGracePeriodEnded: 'अनुग्रह अवधि {date} को समाप्त हो गई',
+  detailValidUntil: '{date} तक मान्य',
+  detailWaiverEnds: 'छूट {date} को समाप्त होगी',
+  detailLastCompleted: 'पिछली बार {date} को पूरा किया',
+  detailRenewsEvery: { one: 'हर {count} महीने में नवीनीकरण', other: 'हर {count} महीने में नवीनीकरण' },
+  countOverdue: { one: '{count} समय-सीमा पार', other: '{count} समय-सीमा पार' },
+  countInGracePeriod: { one: '{count} अनुग्रह अवधि में', other: '{count} अनुग्रह अवधि में' },
+  countDueSoon: { one: '{count} जल्द देय', other: '{count} जल्द देय' },
+  countToDo: { one: '{count} बाकी', other: '{count} बाकी' },
+  countCompliant: { one: '{count} अनुपालन में', other: '{count} अनुपालन में' },
+  countWaived: { one: '{count} छूट प्राप्त', other: '{count} छूट प्राप्त' },
+  summaryOutOf: { one: '{count} आवश्यकता', other: '{count} आवश्यकताओं' },
+  summaryOverdue: {
+    one: '{total} में से {count} की समय-सीमा पार हो चुकी है।',
+    other: '{total} में से {count} की समय-सीमा पार हो चुकी है।'
+  },
+  summaryInGracePeriod: {
+    one: '{total} में से {count} की समय-सीमा निकल चुकी है और वह अनुग्रह अवधि में है।',
+    other: '{total} में से {count} की समय-सीमा निकल चुकी है और वे अनुग्रह अवधि में हैं।'
+  },
+  summaryDueSoon: { one: '{total} में से {count} जल्द देय है।', other: '{total} में से {count} जल्द देय हैं।' },
+  summaryCompliantWithToDo: {
+    one: 'कुछ भी समय-सीमा पार या जल्द देय नहीं है। {count} आवश्यकता अभी पूरी करनी है।',
+    other: 'कुछ भी समय-सीमा पार या जल्द देय नहीं है। {count} आवश्यकताएं अभी पूरी करनी हैं।'
+  },
+  summaryCompliantOne: 'आपकी आवश्यकता पूरी है।',
+  summaryCompliantAll: { other: 'सभी {count} आवश्यकताएं पूरी हैं।' },
+  summaryNone: 'आपके संगठन ने आपको कोई अनिवार्य प्रशिक्षण असाइन नहीं किया है।',
+  alertOverdueTitle: { one: '{count} आवश्यकता की समय-सीमा पार', other: '{count} आवश्यकताओं की समय-सीमा पार' },
+  alertInGracePeriodTitle: { one: '{count} आवश्यकता अनुग्रह अवधि में', other: '{count} आवश्यकताएं अनुग्रह अवधि में' },
+  alertDueSoonTitle: { one: '{count} आवश्यकता जल्द देय', other: '{count} आवश्यकताएं जल्द देय' },
+  alertWasDue: { one: '{course} की समय-सीमा {count} दिन पहले थी।', other: '{course} की समय-सीमा {count} दिन पहले थी।' },
+  alertGraceLeft: { one: 'अनुग्रह अवधि के {count} दिन बाकी हैं।', other: 'अनुग्रह अवधि के {count} दिन बाकी हैं।' },
+  alertDueToday: '{course} आज देय है।',
+  alertDueInDays: { one: '{course} {count} दिन में देय है।', other: '{course} {count} दिन में देय है।' },
+  alertDueSoon: '{course} जल्द देय है।',
+  alertExpiresToday: '{course} की मान्यता आज समाप्त हो रही है।',
+  alertExpiresInDays: {
+    one: '{course} की मान्यता {count} दिन में समाप्त होगी।',
+    other: '{course} की मान्यता {count} दिन में समाप्त होगी।'
+  },
+  alertExpiresSoon: '{course} की मान्यता जल्द समाप्त होगी।',
+  alertHint: 'अनुपालन खोलता है',
+  loadError: 'आपकी अनुपालन स्थिति लोड नहीं हुई',
+  emptyTitle: 'कोई अनुपालन आवश्यकता नहीं',
+  sectionNeedsAttention: 'ध्यान देने की ज़रूरत',
+  sectionToDo: 'बाकी',
+  certificates: 'प्रमाणपत्र',
+  progressComplete: '{percent} पूरा',
+  countdownLeft: { one: 'दिन बाकी', other: 'दिन बाकी' },
+  countdownUntilRenewal: { one: 'दिन नवीनीकरण तक', other: 'दिन नवीनीकरण तक' },
+  countdownLeftLabel: { one: '{count} दिन बाकी', other: '{count} दिन बाकी' },
+  countdownUntilRenewalLabel: { one: 'नवीनीकरण में {count} दिन बाकी', other: 'नवीनीकरण में {count} दिन बाकी' },
+  openCourse: 'कोर्स खोलें',
+  resumeCourse: 'कोर्स जारी रखें',
+  startCourse: 'कोर्स शुरू करें',
+  proof: 'प्रमाण',
+  proofLabel: '{course} का प्रमाणपत्र'
+};

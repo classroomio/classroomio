@@ -54,6 +54,7 @@ import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member'
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { enrollInCourse } from '@api/services/course/invite';
 import { exerciseRouter } from '@api/routes/course/exercise';
+import { exerciseAttemptRouter } from '@api/routes/course/exercise-attempt';
 import { extractClientIp } from '@api/utils/redis/key-generators';
 import { generateCertificatePdf, generateCertificatePng, slugifyForFilename } from '@api/utils/certificate';
 import { assembleCertificateRender, assembleOwnerPreviewRender } from '@api/services/course/certificate';
@@ -68,6 +69,8 @@ import { lessonRouter } from '@api/routes/course/lesson';
 import { markRouter } from '@api/routes/course/mark';
 import { membersRouter } from '@api/routes/course/people';
 import { newsfeedRouter } from '@api/routes/course/newsfeed';
+import { newsfeedViewerRouter } from '@api/routes/course/newsfeed-viewer';
+import { offlineRouter } from '@api/routes/course/offline';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
@@ -691,10 +694,13 @@ export const courseRouter = new Hono()
   .route('/:courseId/section', sectionRouter)
   .route('/:courseId/lesson', lessonRouter)
   .route('/:courseId/exercise', exerciseRouter)
+  .route('/:courseId/exercise', exerciseAttemptRouter)
   .route('/:courseId/submission', submissionRouter)
   .route('/:courseId/attendance', attendanceRouter)
   .route('/:courseId/mark', markRouter)
   .route('/:courseId/newsfeed', newsfeedRouter)
+  .route('/:courseId/newsfeed-viewer', newsfeedViewerRouter)
+  .route('/:courseId', offlineRouter)
   .route('/:courseId/members', membersRouter)
   .route('/:courseId/invites', invitesRouter)
   .route('/:courseId/ai-tutor', courseAiTutorRouter)

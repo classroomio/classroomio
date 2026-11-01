@@ -3,7 +3,12 @@ import type { JobsOptions } from 'bullmq';
 import { JOB_NAMES, QUEUE_NAMES } from '../queues/names';
 import { QUEUE_DEFAULTS } from '../queues/defaults';
 import { getQueue } from '../queues/factories';
-import type { TNotifyCourseExercisePayload, TNotifyCourseSessionUpdatePayload } from '../payloads/notifications';
+import type {
+  TNotifyCourseExercisePayload,
+  TNotifyCourseSessionUpdatePayload,
+  TSendPushPayload,
+  TCheckPushReceiptsPayload
+} from '../payloads/notifications';
 
 /**
  * Enqueue a `notifications:notify-course-exercise` job. Returns the BullMQ
@@ -46,6 +51,32 @@ export async function enqueueNotifyCourseSessionUpdate(
       ...options
     }
   );
+
+  return job.id;
+}
+
+/** Enqueue push delivery for notification rows. Pass `delay` to hold it until a recipient's quiet hours end. */
+export async function enqueueSendPush(
+  payload: TSendPushPayload,
+  options: JobsOptions = {}
+): Promise<string | undefined> {
+  const job = await getQueue(QUEUE_NAMES.notifications).add(JOB_NAMES.notifications.sendPush, payload, {
+    ...QUEUE_DEFAULTS[QUEUE_NAMES.notifications],
+    ...options
+  });
+
+  return job.id;
+}
+
+/** Enqueue a receipt check for sent pushes; Expo publishes receipts some minutes after sending. */
+export async function enqueueCheckPushReceipts(
+  payload: TCheckPushReceiptsPayload,
+  options: JobsOptions = {}
+): Promise<string | undefined> {
+  const job = await getQueue(QUEUE_NAMES.notifications).add(JOB_NAMES.notifications.checkPushReceipts, payload, {
+    ...QUEUE_DEFAULTS[QUEUE_NAMES.notifications],
+    ...options
+  });
 
   return job.id;
 }

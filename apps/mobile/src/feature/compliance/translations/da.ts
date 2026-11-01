@@ -1,0 +1,83 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const da: TranslatedMessages<typeof en> = {
+  screenTitle: 'Overholdelse',
+  standingOverdue: 'Overskredet',
+  standingInGracePeriod: 'I henstandsperiode',
+  standingDueSoon: 'Frist snart',
+  standingOpen: 'Fristen er ikke nået',
+  standingUnscheduled: 'Ingen frist angivet',
+  standingCompliant: 'Overholdt',
+  standingWaived: 'Fritaget',
+  statusOverdueByDays: { one: 'Overskredet med {count} dag', other: 'Overskredet med {count} dage' },
+  statusGraceEndsToday: 'I henstandsperiode, slutter i dag',
+  statusGraceDaysLeft: {
+    one: 'I henstandsperiode, {count} dag tilbage',
+    other: 'I henstandsperiode, {count} dage tilbage'
+  },
+  statusDueToday: 'Frist i dag',
+  statusDueInDays: { one: 'Frist om {count} dag', other: 'Frist om {count} dage' },
+  statusExpiresToday: 'Udløber i dag',
+  statusExpiresInDays: { one: 'Udløber om {count} dag', other: 'Udløber om {count} dage' },
+  statusInProgress: 'I gang',
+  statusNotStarted: 'Ikke startet',
+  detailDeadline: 'Frist {date}',
+  detailGracePeriodEnds: 'Henstandsperioden slutter {date}',
+  detailGracePeriodEnded: 'Henstandsperioden sluttede {date}',
+  detailValidUntil: 'Gyldig til {date}',
+  detailWaiverEnds: 'Fritagelsen slutter {date}',
+  detailLastCompleted: 'Senest gennemført {date}',
+  detailRenewsEvery: { one: 'Fornyes hver måned', other: 'Fornyes hver {count}. måned' },
+  countOverdue: { one: '{count} overskredet', other: '{count} overskredet' },
+  countInGracePeriod: { one: '{count} i henstandsperiode', other: '{count} i henstandsperiode' },
+  countDueSoon: { one: '{count} med frist snart', other: '{count} med frist snart' },
+  countToDo: { one: '{count} mangler', other: '{count} mangler' },
+  countCompliant: { one: '{count} overholdt', other: '{count} overholdt' },
+  countWaived: { one: '{count} fritaget', other: '{count} fritaget' },
+  summaryOutOf: { one: '{count} krav', other: '{count} krav' },
+  summaryOverdue: { one: '{count} af {total} er overskredet.', other: '{count} af {total} er overskredet.' },
+  summaryInGracePeriod: {
+    one: '{count} af {total} har overskredet fristen og er i henstandsperioden.',
+    other: '{count} af {total} har overskredet fristen og er i henstandsperioden.'
+  },
+  summaryDueSoon: { one: '{count} af {total} har frist snart.', other: '{count} af {total} har frist snart.' },
+  summaryCompliantWithToDo: {
+    one: 'Intet er overskredet eller har frist snart. {count} krav mangler stadig.',
+    other: 'Intet er overskredet eller har frist snart. {count} krav mangler stadig.'
+  },
+  summaryCompliantOne: 'Dit krav er opfyldt.',
+  summaryCompliantAll: { other: 'Alle {count} krav er opfyldt.' },
+  summaryNone: 'Din organisation har ikke tildelt dig nogen obligatorisk træning.',
+  alertOverdueTitle: { one: '{count} krav overskredet', other: '{count} krav overskredet' },
+  alertInGracePeriodTitle: { one: '{count} krav i henstandsperiode', other: '{count} krav i henstandsperiode' },
+  alertDueSoonTitle: { one: '{count} krav med frist snart', other: '{count} krav med frist snart' },
+  alertWasDue: {
+    one: 'Fristen for {course} var for {count} dag siden.',
+    other: 'Fristen for {course} var for {count} dage siden.'
+  },
+  alertGraceLeft: { one: '{count} dags henstand tilbage.', other: '{count} dages henstand tilbage.' },
+  alertDueToday: 'Fristen for {course} er i dag.',
+  alertDueInDays: { one: 'Fristen for {course} er om {count} dag.', other: 'Fristen for {course} er om {count} dage.' },
+  alertDueSoon: 'Fristen for {course} er snart.',
+  alertExpiresToday: '{course} udløber i dag.',
+  alertExpiresInDays: { one: '{course} udløber om {count} dag.', other: '{course} udløber om {count} dage.' },
+  alertExpiresSoon: '{course} udløber snart.',
+  alertHint: 'Åbner overholdelse',
+  loadError: 'Din overholdelsesstatus blev ikke indlæst',
+  emptyTitle: 'Ingen overholdelseskrav',
+  sectionNeedsAttention: 'Kræver handling',
+  sectionToDo: 'Mangler',
+  certificates: 'Certifikater',
+  progressComplete: '{percent} gennemført',
+  countdownLeft: { one: 'dag tilbage', other: 'dage tilbage' },
+  countdownUntilRenewal: { one: 'dag til fornyelse', other: 'dage til fornyelse' },
+  countdownLeftLabel: { one: '{count} dag tilbage', other: '{count} dage tilbage' },
+  countdownUntilRenewalLabel: { one: '{count} dag til fornyelse', other: '{count} dage til fornyelse' },
+  openCourse: 'Åbn kursus',
+  resumeCourse: 'Fortsæt kursus',
+  startCourse: 'Start kursus',
+  proof: 'Bevis',
+  proofLabel: 'Certifikat for {course}'
+};

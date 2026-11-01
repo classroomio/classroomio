@@ -4,6 +4,7 @@ import {
   computeProgressionAccess,
   flattenNavigableItems,
   type CourseProgressionMode,
+  type ProgressionAccess,
   type ProgressionLockReason
 } from '@cio/utils/functions/course-progression';
 import type { CourseContentItemRow } from '@cio/db/queries/course/content';
@@ -22,6 +23,7 @@ import { buildCourseContent, type CourseContent, type CourseContentItem } from '
 export type AnnotatedCourseContentItem = CourseContentItem & {
   accessible?: boolean;
   lockReason?: ProgressionLockReason | null;
+  blockedById?: string | null;
   completionPolicy?: string | null;
   videoWatchThreshold?: number | null;
   passThreshold?: number | null;
@@ -44,7 +46,7 @@ function annotateNavigableAccess(params: {
   progressionMode: CourseProgressionMode;
   completedLessonIds: Set<string>;
   completedExerciseIds: Set<string>;
-}): Map<string, { accessible: boolean; lockReason: ProgressionLockReason | null }> {
+}): Map<string, ProgressionAccess> {
   return computeProgressionAccess({
     navigableItems: params.navigableItems,
     progressionMode: params.progressionMode,
@@ -68,7 +70,7 @@ function annotateNavigableAccess(params: {
 
 function applyAccessToContent(
   content: CourseContent,
-  accessById: Map<string, { accessible: boolean; lockReason: ProgressionLockReason | null }>,
+  accessById: Map<string, ProgressionAccess>,
   lessonPolicyById: Map<string, LessonProgressionPolicy>,
   exercisePolicyById: Map<string, ExerciseProgressionPolicy>
 ): AnnotatedCourseContent {
@@ -84,6 +86,7 @@ function applyAccessToContent(
       recordingUrl,
       accessible,
       lockReason: access?.lockReason ?? null,
+      blockedById: access?.blockedById ?? null,
       completionPolicy: lessonPolicy?.completionPolicy ?? exercisePolicy?.completionPolicy ?? null,
       videoWatchThreshold: lessonPolicy?.videoWatchThreshold ?? null,
       passThreshold: exercisePolicy?.passThreshold ?? null
@@ -126,7 +129,7 @@ export async function annotateCourseContentWithProgression(params: {
 
     const lessonPolicyById = new Map(lessonPolicies.map((policy) => [policy.id, policy]));
     const exercisePolicyById = new Map(exercisePolicies.map((policy) => [policy.id, policy]));
-    const accessById = new Map<string, { accessible: boolean; lockReason: ProgressionLockReason | null }>();
+    const accessById = new Map<string, ProgressionAccess>();
 
     for (const item of flattenNavigableItems(content)) {
       accessById.set(item.id, { accessible: true, lockReason: null });

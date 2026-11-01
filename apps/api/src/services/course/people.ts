@@ -35,6 +35,7 @@ import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
 import type { TEventSource } from '@cio/core/services/posthog';
 import { captureLearnersEnrolled } from '@api/services/product-events';
+import { notifyCourseEnrollment } from '@cio/core/services/notification/course-events';
 
 /**
  * Attaches only `stage` to a page of members.
@@ -157,6 +158,7 @@ export async function addMember(
 
     if (data.roleId === ROLE.STUDENT && data.profileId) {
       await ensureComplianceEnrollmentRecordsForProfiles([courseId], [data.profileId]);
+      void notifyCourseEnrollment({ courseId, profileIds: [data.profileId], actorProfileId: context.actorProfileId });
     }
 
     // Send emails when a student joins

@@ -1,5 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { notify } from '@cio/core/services/notification/notify';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { buildEmailBranding } from '@cio/email';
 import {
@@ -464,7 +465,6 @@ export async function runCohortGoalReminderScan(): Promise<{
 
   for (const row of rows) {
     if (!row.assignment.dueDate) continue;
-    if (!row.email) continue;
 
     const dueDate = new Date(row.assignment.dueDate);
     if (Number.isNaN(dueDate.getTime())) continue;
@@ -475,6 +475,16 @@ export async function runCohortGoalReminderScan(): Promise<{
     const matchesReminder = (daysUntilDue > 0 && reminderDays.includes(daysUntilDue)) || isOverdueDay;
 
     if (!matchesReminder) continue;
+
+    await notify({
+      organizationId: row.organizationId,
+      recipientProfileIds: [row.profileId],
+      type: 'cohort_goal_due',
+      entityId: row.assignment.id,
+      dedupeKey: `cohort_goal_due:${row.assignment.id}:${daysUntilDue}`
+    });
+
+    if (!row.email) continue;
 
     const loginUrl = getDashboardBaseUrl({
       siteName: row.organizationSiteName,

@@ -1,0 +1,43 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const tr: TranslatedMessages<typeof en> = {
+  changePassword: 'Şifreyi değiştir',
+  changePasswordDescription: 'Yeni şifre belirlemeniz için bağlantı gönderir',
+  changePasswordTitle: 'Şifrenizi değiştirmek istiyor musunuz?',
+  changePasswordBody:
+    '{email} adresine bir sıfırlama bağlantısı göndeririz. Tarayıcınızda yeni şifre seçmek için bağlantıyı açın. Bu cihazda oturumunuz açık kalır.',
+  sendLink: 'Bağlantı gönder',
+  resetSent: 'Sıfırlama bağlantısı gönderildi',
+  resetSentDescription: 'Bağlantı için {email} adresini kontrol edin.',
+  resetFailed: 'Sıfırlama bağlantısı gönderilmedi',
+  editNameTitle: 'Adınız',
+  fullNameLabel: 'Ad soyad',
+  fullNamePlaceholder: 'Adınız ve soyadınız',
+  nameTooShort: { other: 'En az {count} karakter kullanın.' },
+  nameDescription: 'Adınız kurslarınızda ve sertifikalarınızda görünür.',
+  nameUpdated: 'Ad güncellendi',
+  inviteTitle: 'Bir davetiniz var',
+  inviteOrganization: 'Sizi davet eden kuruluşa katılmak için kabul edin.',
+  inviteLink: 'Bu bağlantıyı paylaşan kuruluşa katılmak için kabul edin.',
+  inviteResource: 'Sizinle paylaşılan kursa veya gruba katılmak için kabul edin.',
+  inviteJoinAs: '{email} olarak katılacaksınız.',
+  acceptInvite: 'Daveti kabul et',
+  inviteAccepted: 'Davet kabul edildi',
+  notNow: 'Şimdi değil',
+  addYourName: 'Adınızı ekleyin',
+  statInProgress: 'Devam eden',
+  statCompleted: 'Tamamlanan',
+  statCertificates: 'Sertifikalar',
+  organization: 'Kuruluş',
+  certificates: 'Sertifikalar',
+  certificatesEarned: { other: '{count} kazanıldı' },
+  certificatesDescription: 'Kazandığınız sertifikalar',
+  downloads: 'İndirilenler',
+  downloadsOnDevice: 'Bu cihazda {size}',
+  downloadsDescription: 'Çevrimdışı dersler ve eşitleme',
+  settingsDescription: 'Ad, dil, uygulama kilidi, tema',
+  signOutTitle: 'ClassroomIO oturumu kapatılsın mı?',
+  signOutDescription: 'İndirilen dersler ve eşitlenmemiş ilerleme bu cihazdan kaldırılır.'
+};

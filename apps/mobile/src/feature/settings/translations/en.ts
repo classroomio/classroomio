@@ -1,0 +1,22 @@
+export const en = {
+  account: 'Account',
+  name: 'Name',
+  notSet: 'Not set',
+  email: 'Email',
+  notifications: 'Notifications',
+  notificationsDescription: 'Push, in-app, email and quiet hours',
+  security: 'Security',
+  theme: 'Theme',
+  themeSystem: 'System',
+  themeLight: 'Light',
+  themeDark: 'Dark',
+  language: 'Language',
+  languageSystem: 'System',
+  languageSystemDescription: 'Matches your device language',
+  languageNotSaved: 'Language not saved to your account',
+  about: 'About',
+  version: 'Version',
+  versionUnknown: 'Unknown',
+  server: 'Server',
+  serverDescription: 'Sign out to connect to a different server.'
+};

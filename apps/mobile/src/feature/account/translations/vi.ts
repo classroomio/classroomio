@@ -1,0 +1,43 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const vi: TranslatedMessages<typeof en> = {
+  changePassword: 'Đổi mật khẩu',
+  changePasswordDescription: 'Gửi cho bạn liên kết để đặt mật khẩu mới',
+  changePasswordTitle: 'Đổi mật khẩu?',
+  changePasswordBody:
+    'Chúng tôi gửi liên kết đặt lại đến {email}. Mở liên kết để chọn mật khẩu mới trong trình duyệt. Bạn vẫn được đăng nhập trên thiết bị này.',
+  sendLink: 'Gửi liên kết',
+  resetSent: 'Đã gửi liên kết đặt lại',
+  resetSentDescription: 'Kiểm tra {email} để lấy liên kết.',
+  resetFailed: 'Chưa gửi được liên kết đặt lại',
+  editNameTitle: 'Tên của bạn',
+  fullNameLabel: 'Họ và tên',
+  fullNamePlaceholder: 'Họ và tên của bạn',
+  nameTooShort: { other: 'Dùng ít nhất {count} ký tự.' },
+  nameDescription: 'Tên của bạn hiển thị trong khóa học và trên chứng chỉ.',
+  nameUpdated: 'Đã cập nhật tên',
+  inviteTitle: 'Bạn có một lời mời',
+  inviteOrganization: 'Chấp nhận để tham gia tổ chức đã mời bạn.',
+  inviteLink: 'Chấp nhận để tham gia tổ chức đã chia sẻ liên kết này.',
+  inviteResource: 'Chấp nhận để tham gia khóa học hoặc nhóm đã được chia sẻ với bạn.',
+  inviteJoinAs: 'Bạn sẽ tham gia với tư cách {email}.',
+  acceptInvite: 'Chấp nhận lời mời',
+  inviteAccepted: 'Đã chấp nhận lời mời',
+  notNow: 'Để sau',
+  addYourName: 'Thêm tên của bạn',
+  statInProgress: 'Đang học',
+  statCompleted: 'Hoàn thành',
+  statCertificates: 'Chứng chỉ',
+  organization: 'Tổ chức',
+  certificates: 'Chứng chỉ',
+  certificatesEarned: { other: 'Đã nhận {count}' },
+  certificatesDescription: 'Chứng chỉ bạn đã nhận',
+  downloads: 'Bản tải xuống',
+  downloadsOnDevice: '{size} trên thiết bị này',
+  downloadsDescription: 'Bài học ngoại tuyến và đồng bộ',
+  settingsDescription: 'Tên, ngôn ngữ, khóa ứng dụng, giao diện',
+  signOutTitle: 'Đăng xuất khỏi ClassroomIO?',
+  signOutDescription: 'Bài học đã tải và tiến độ chưa đồng bộ sẽ bị xóa khỏi thiết bị này.'
+};

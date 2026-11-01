@@ -16,3 +16,4 @@ export * from './section';
 export * from './invite';
 export * from './people';
 export * from './live-session-reminder';
+export * from './offline';

@@ -26,6 +26,7 @@ export type CourseContentItem = {
   dueBy: string | null;
   accessible?: boolean;
   lockReason?: 'teacher_locked' | 'progression_blocked' | null;
+  blockedById?: string | null;
   completionPolicy?: string | null;
   videoWatchThreshold?: number | null;
   passThreshold?: number | null;

@@ -1007,7 +1007,10 @@ async function hmacSha256(secret: string, message: string): Promise<string> {
  * base64url(`{aid, exp}`). No entitlement check — callers must verify
  * access before calling this.
  */
-export async function mintHlsToken(assetId: string): Promise<{
+export async function mintHlsToken(
+  assetId: string,
+  ttlSeconds: number = HLS_COOKIE_TTL_SECONDS
+): Promise<{
   token: string;
   expiresAt: string;
   cookieName: string;
@@ -1019,7 +1022,7 @@ export async function mintHlsToken(assetId: string): Promise<{
   }
 
   const now = Math.floor(Date.now() / 1000);
-  const exp = now + HLS_COOKIE_TTL_SECONDS;
+  const exp = now + ttlSeconds;
   const payload = base64UrlEncode(Buffer.from(JSON.stringify({ aid: assetId, exp })));
   const signature = await hmacSha256(secret, payload);
 
@@ -1027,7 +1030,7 @@ export async function mintHlsToken(assetId: string): Promise<{
     token: `${payload}.${signature}`,
     expiresAt: new Date(exp * 1000).toISOString(),
     cookieName: `${HLS_COOKIE_NAME}_${assetId}`,
-    maxAgeSeconds: HLS_COOKIE_TTL_SECONDS
+    maxAgeSeconds: ttlSeconds
   };
 }
 
@@ -1083,6 +1086,40 @@ export async function issueHlsCookieService(orgId: string, assetId: string) {
     if (error instanceof AppError) throw error;
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to issue HLS cookie',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+/** Native players cannot carry the per-asset cookie, so the token rides in the URL and must outlast a long video. */
+export const HLS_PLAYBACK_TOKEN_TTL_SECONDS = 4 * 60 * 60;
+
+/**
+ * Mints the same HMAC token as the cookie for transport as a `?t=` query parameter.
+ * The caller must have verified org membership; the asset must belong to `orgId` and have an HLS manifest.
+ */
+export async function issueHlsPlaybackTokenService(orgId: string, assetId: string) {
+  try {
+    const asset = assertAssetExists(await getAssetById(assetId, orgId));
+    if (!asset.hlsManifestKey) {
+      throw new AppError('Asset has no HLS manifest', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    const { token, expiresAt } = await mintHlsToken(assetId, HLS_PLAYBACK_TOKEN_TTL_SECONDS);
+    const manifestPath = asset.hlsManifestKey.startsWith(`${assetId}/`)
+      ? asset.hlsManifestKey.slice(assetId.length + 1)
+      : 'master.m3u8';
+
+    return {
+      url: `/hls/${assetId}/${manifestPath}?t=${encodeURIComponent(token)}`,
+      expiresAt,
+      expiresIn: HLS_PLAYBACK_TOKEN_TTL_SECONDS
+    };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to issue HLS playback token',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

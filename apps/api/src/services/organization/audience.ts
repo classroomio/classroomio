@@ -50,6 +50,7 @@ import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/complian
 import { getWelcomeSessionIcs } from '../course/session-invite';
 import type { TEventSource } from '@cio/core/services/posthog';
 import { captureLearnerInvited, captureLearnersEnrolled } from '@api/services/product-events';
+import { notifyCourseEnrollment } from '@cio/core/services/notification/course-events';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ORG_INVITE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
@@ -177,6 +178,13 @@ async function enrollAudienceStudentProfilesInCourses(
 
     await invalidateOrgStats(orgId);
     captureLearnersEnrolled(enrolledMembers, 'audience', source);
+
+    for (const courseGroup of courseGroups) {
+      const enrolledProfileIds = toInsert.filter((p) => p.groupId === courseGroup.groupId).map((p) => p.profileId);
+      if (enrolledProfileIds.length > 0) {
+        void notifyCourseEnrollment({ courseId: courseGroup.courseId, profileIds: enrolledProfileIds });
+      }
+    }
   }
 
   if (validProfiles.length > 0) {

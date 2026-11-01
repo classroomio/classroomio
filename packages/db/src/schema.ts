@@ -29,6 +29,13 @@ import type { CourseProgressionMode } from '@cio/utils/functions/course-progress
 import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import {
+  DEVICE_PLATFORMS,
+  PUSH_PROVIDERS,
+  type TNotificationCategory,
+  type TNotificationEntityType,
+  type TNotificationType
+} from '@cio/utils/constants/notifications';
+import {
   LIVE_SESSION_REMINDER_STATUS_VALUES,
   type TLiveSessionReminderSkipReason
 } from '@cio/utils/constants/live-session-reminder';
@@ -4622,5 +4629,94 @@ export const webhookDelivery = pgTable(
     index('idx_webhook_delivery_webhook_created_at').on(table.webhookId, table.createdAt),
     index('idx_webhook_delivery_status_next_attempt').on(table.status, table.nextAttemptAt),
     index('idx_webhook_delivery_event_id').on(table.eventId)
+  ]
+);
+
+export const devicePlatform = pgEnum('DEVICE_PLATFORM', [...DEVICE_PLATFORMS]);
+export const pushProvider = pgEnum('PUSH_PROVIDER', [...PUSH_PROVIDERS]);
+
+export const notification = pgTable(
+  'notification',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    profileId: uuid('profile_id')
+      .notNull()
+      .references(() => profile.id, { onDelete: 'cascade' }),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    type: varchar('type', { length: 64 }).notNull().$type<TNotificationType>(),
+    entityType: varchar('entity_type', { length: 64 }).notNull().$type<TNotificationEntityType>(),
+    entityId: varchar('entity_id', { length: 64 }).notNull(),
+    courseId: uuid('course_id').references(() => course.id, { onDelete: 'cascade' }),
+    actorProfileId: uuid('actor_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    dedupeKey: varchar('dedupe_key', { length: 255 }),
+    readAt: timestamp('read_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_notification_profile_org_created').on(table.profileId, table.organizationId, table.createdAt),
+    index('idx_notification_profile_unread')
+      .on(table.profileId, table.organizationId)
+      .where(sql`${table.readAt} IS NULL`),
+    uniqueIndex('notification_profile_dedupe_key_unique')
+      .on(table.profileId, table.dedupeKey)
+      .where(sql`${table.dedupeKey} IS NOT NULL`)
+  ]
+);
+
+export const notificationPreference = pgTable(
+  'notification_preference',
+  {
+    profileId: uuid('profile_id')
+      .notNull()
+      .references(() => profile.id, { onDelete: 'cascade' }),
+    category: varchar('category', { length: 64 }).notNull().$type<TNotificationCategory>(),
+    push: boolean('push').default(true).notNull(),
+    inApp: boolean('in_app').default(true).notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [primaryKey({ columns: [table.profileId, table.category], name: 'notification_preference_pkey' })]
+);
+
+export const profileQuietHours = pgTable('profile_quiet_hours', {
+  profileId: uuid('profile_id')
+    .primaryKey()
+    .notNull()
+    .references(() => profile.id, { onDelete: 'cascade' }),
+  startMinute: integer('start_minute').notNull(),
+  endMinute: integer('end_minute').notNull(),
+  timezone: varchar('timezone', { length: 64 }).notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+});
+
+export const deviceToken = pgTable(
+  'device_token',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    profileId: uuid('profile_id')
+      .notNull()
+      .references(() => profile.id, { onDelete: 'cascade' }),
+    token: varchar('token', { length: 255 }).notNull(),
+    platform: devicePlatform('platform').notNull(),
+    provider: pushProvider('provider').default('expo').notNull(),
+    appVersion: varchar('app_version', { length: 32 }),
+    deviceName: varchar('device_name', { length: 120 }),
+    locale: varchar('locale', { length: 35 }),
+    lastSeenAt: timestamp('last_seen_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    disabledAt: timestamp('disabled_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('device_token_token_key').on(table.token),
+    index('idx_device_token_profile').on(table.profileId),
+    index('idx_device_token_profile_disabled').on(table.profileId, table.disabledAt)
   ]
 );

@@ -1,0 +1,43 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const fr: TranslatedMessages<typeof en> = {
+  changePassword: 'Changer le mot de passe',
+  changePasswordDescription: 'Vous envoie un lien pour en définir un nouveau',
+  changePasswordTitle: 'Changer votre mot de passe ?',
+  changePasswordBody:
+    'Nous envoyons un lien de réinitialisation à {email}. Ouvrez-le pour choisir un nouveau mot de passe dans votre navigateur. Vous restez connecté sur cet appareil.',
+  sendLink: 'Envoyer le lien',
+  resetSent: 'Lien de réinitialisation envoyé',
+  resetSentDescription: 'Consultez {email} pour trouver le lien.',
+  resetFailed: "Le lien de réinitialisation n'a pas été envoyé",
+  editNameTitle: 'Votre nom',
+  fullNameLabel: 'Nom complet',
+  fullNamePlaceholder: 'Votre nom complet',
+  nameTooShort: { one: 'Utilisez au moins {count} caractère.', other: 'Utilisez au moins {count} caractères.' },
+  nameDescription: 'Votre nom apparaît dans vos cours et sur vos certificats.',
+  nameUpdated: 'Nom mis à jour',
+  inviteTitle: 'Vous avez une invitation',
+  inviteOrganization: "Acceptez pour rejoindre l'organisation qui vous a invité.",
+  inviteLink: "Acceptez pour rejoindre l'organisation qui a partagé ce lien.",
+  inviteResource: 'Acceptez pour rejoindre le cours ou le groupe partagé avec vous.',
+  inviteJoinAs: 'Vous rejoindrez en tant que {email}.',
+  acceptInvite: "Accepter l'invitation",
+  inviteAccepted: 'Invitation acceptée',
+  notNow: 'Plus tard',
+  addYourName: 'Ajoutez votre nom',
+  statInProgress: 'En cours',
+  statCompleted: 'Terminés',
+  statCertificates: 'Certificats',
+  organization: 'Organisation',
+  certificates: 'Certificats',
+  certificatesEarned: { one: '{count} obtenu', other: '{count} obtenus' },
+  certificatesDescription: 'Vos certificats obtenus',
+  downloads: 'Téléchargements',
+  downloadsOnDevice: '{size} sur cet appareil',
+  downloadsDescription: 'Leçons hors ligne et synchronisation',
+  settingsDescription: 'Nom, langue, verrouillage, thème',
+  signOutTitle: 'Se déconnecter de ClassroomIO ?',
+  signOutDescription: 'Les leçons téléchargées et la progression non synchronisée sont supprimées de cet appareil.'
+};

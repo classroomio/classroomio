@@ -1,0 +1,114 @@
+import type { ExpoConfig } from 'expo/config';
+
+import { SPLASH } from './src/feature/brand/constants/splash.ts';
+
+function requiredEnv(name: string) {
+  const value = process.env[name]?.trim();
+  if (!value)
+    throw new Error(`${name} is not set. Add it to apps/mobile/.env (see .env.example) or to the build environment.`);
+
+  return value;
+}
+
+const APP_VARIANTS = ['development', 'preview', 'production'] as const;
+type AppVariant = (typeof APP_VARIANTS)[number];
+
+const APP_NAMES: Record<AppVariant, string> = {
+  development: 'ClassroomIO Dev',
+  preview: 'ClassroomIO Preview',
+  production: 'ClassroomIO'
+};
+
+function appVariantOf(value: string): AppVariant {
+  const variant = APP_VARIANTS.find((candidate) => candidate === value);
+  if (!variant) throw new Error(`APP_VARIANT must be one of ${APP_VARIANTS.join(', ')}; received "${value}".`);
+
+  return variant;
+}
+
+const appId = requiredEnv('APP_ID');
+const appVariant = appVariantOf(requiredEnv('APP_VARIANT'));
+const easProjectId = requiredEnv('EAS_PROJECT_ID');
+
+const FACE_ID_REASON = 'ClassroomIO uses Face ID to unlock the app without signing in again.';
+const MICROPHONE_REASON = 'ClassroomIO records audio with video answers you submit to exercises.';
+
+const config: ExpoConfig = {
+  name: APP_NAMES[appVariant],
+  slug: 'classroomio',
+  scheme: 'classroomio',
+  version: '1.0.0',
+  orientation: 'portrait',
+  icon: './assets/icon.png',
+  userInterfaceStyle: 'automatic',
+  ios: {
+    bundleIdentifier: appId,
+    supportsTablet: false,
+    icon: {
+      light: './assets/icon.png',
+      dark: './assets/icon-dark.png',
+      tinted: './assets/icon-tinted.png'
+    },
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+      CADisableMinimumFrameDurationOnPhone: true,
+      NSFaceIDUsageDescription: FACE_ID_REASON
+    }
+  },
+  android: {
+    package: appId,
+    adaptiveIcon: {
+      backgroundColor: '#0233BD',
+      foregroundImage: './assets/android-icon-foreground.png',
+      backgroundImage: './assets/android-icon-background.png',
+      monochromeImage: './assets/android-icon-monochrome.png'
+    },
+    predictiveBackGestureEnabled: false
+  },
+  plugins: [
+    'expo-router',
+    'expo-secure-store',
+    'expo-web-browser',
+    'expo-font',
+    ['expo-local-authentication', { faceIDPermission: FACE_ID_REASON }],
+    [
+      'expo-splash-screen',
+      {
+        image: './assets/splash-icon.png',
+        imageWidth: SPLASH.markWidth,
+        resizeMode: 'contain',
+        backgroundColor: SPLASH.background,
+        dark: { image: './assets/splash-icon.png', backgroundColor: SPLASH.background }
+      }
+    ],
+    ['expo-video', { supportsBackgroundPlayback: true, supportsPictureInPicture: true }],
+    [
+      'expo-camera',
+      {
+        cameraPermission:
+          'ClassroomIO uses the camera when you record a video answer or photograph a document for an exercise.',
+        microphonePermission: MICROPHONE_REASON,
+        recordAudioAndroid: true
+      }
+    ],
+    [
+      'expo-image-picker',
+      {
+        photosPermission:
+          'ClassroomIO opens the photos you choose to attach to an exercise answer or a community post.',
+        cameraPermission: 'ClassroomIO uses the camera when you photograph something to attach to an answer or post.'
+      }
+    ],
+    ['expo-audio', { microphonePermission: MICROPHONE_REASON }],
+    ['expo-notifications', { color: '#0233BD' }],
+    'expo-sqlite',
+    'expo-localization'
+  ],
+  extra: { appVariant, eas: { projectId: easProjectId } },
+  experiments: {
+    typedRoutes: true,
+    reactCompiler: true
+  }
+};
+
+export default config;

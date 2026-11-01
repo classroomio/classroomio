@@ -1,0 +1,43 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const hi: TranslatedMessages<typeof en> = {
+  changePassword: 'पासवर्ड बदलें',
+  changePasswordDescription: 'नया पासवर्ड सेट करने का लिंक ईमेल करता है',
+  changePasswordTitle: 'अपना पासवर्ड बदलें?',
+  changePasswordBody:
+    'हम {email} पर रीसेट लिंक भेजते हैं। ब्राउज़र में नया पासवर्ड चुनने के लिए उसे खोलें। इस डिवाइस पर आप साइन इन रहेंगे।',
+  sendLink: 'लिंक भेजें',
+  resetSent: 'रीसेट लिंक भेज दिया गया',
+  resetSentDescription: 'लिंक के लिए {email} देखें।',
+  resetFailed: 'रीसेट लिंक नहीं भेजा गया',
+  editNameTitle: 'आपका नाम',
+  fullNameLabel: 'पूरा नाम',
+  fullNamePlaceholder: 'आपका पूरा नाम',
+  nameTooShort: { other: 'कम से कम {count} अक्षर इस्तेमाल करें।' },
+  nameDescription: 'आपका नाम आपके कोर्स और प्रमाणपत्रों पर दिखता है।',
+  nameUpdated: 'नाम अपडेट हो गया',
+  inviteTitle: 'आपके लिए एक आमंत्रण है',
+  inviteOrganization: 'आपको आमंत्रित करने वाले संगठन से जुड़ने के लिए स्वीकार करें।',
+  inviteLink: 'यह लिंक शेयर करने वाले संगठन से जुड़ने के लिए स्वीकार करें।',
+  inviteResource: 'आपके साथ शेयर किए गए कोर्स या ग्रुप से जुड़ने के लिए स्वीकार करें।',
+  inviteJoinAs: 'आप {email} के रूप में जुड़ेंगे।',
+  acceptInvite: 'आमंत्रण स्वीकार करें',
+  inviteAccepted: 'आमंत्रण स्वीकार हो गया',
+  notNow: 'अभी नहीं',
+  addYourName: 'अपना नाम जोड़ें',
+  statInProgress: 'जारी',
+  statCompleted: 'पूरे हुए',
+  statCertificates: 'प्रमाणपत्र',
+  organization: 'संगठन',
+  certificates: 'प्रमाणपत्र',
+  certificatesEarned: { other: '{count} मिले' },
+  certificatesDescription: 'आपके हासिल किए गए प्रमाणपत्र',
+  downloads: 'डाउनलोड',
+  downloadsOnDevice: 'इस डिवाइस पर {size}',
+  downloadsDescription: 'ऑफ़लाइन पाठ और सिंक',
+  settingsDescription: 'नाम, भाषा, ऐप लॉक, थीम',
+  signOutTitle: 'ClassroomIO से साइन आउट करें?',
+  signOutDescription: 'डाउनलोड किए गए पाठ और सिंक न हुई प्रगति इस डिवाइस से हटा दी जाती है।'
+};

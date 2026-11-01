@@ -268,3 +268,12 @@ export type TWebhookEvent = typeof schema.webhookEvent.$inferSelect;
 export type TNewWebhookEvent = typeof schema.webhookEvent.$inferInsert;
 export type TWebhookDelivery = typeof schema.webhookDelivery.$inferSelect;
 export type TNewWebhookDelivery = typeof schema.webhookDelivery.$inferInsert;
+
+export type TNotification = typeof schema.notification.$inferSelect;
+export type TNewNotification = typeof schema.notification.$inferInsert;
+export type TNotificationPreference = typeof schema.notificationPreference.$inferSelect;
+export type TNewNotificationPreference = typeof schema.notificationPreference.$inferInsert;
+export type TProfileQuietHours = typeof schema.profileQuietHours.$inferSelect;
+export type TNewProfileQuietHours = typeof schema.profileQuietHours.$inferInsert;
+export type TDeviceToken = typeof schema.deviceToken.$inferSelect;
+export type TNewDeviceToken = typeof schema.deviceToken.$inferInsert;

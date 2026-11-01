@@ -18,6 +18,11 @@ export const ZNewsfeedReactionUpdate = z.object({
 });
 export type TNewsfeedReactionUpdate = z.infer<typeof ZNewsfeedReactionUpdate>;
 
+export const ZNewsfeedReactionToggle = z.object({
+  type: z.enum(['clap', 'smile', 'thumbsup', 'thumbsdown'])
+});
+export type TNewsfeedReactionToggle = z.infer<typeof ZNewsfeedReactionToggle>;
+
 export const ZNewsfeedGetParam = z.object({
   feedId: z.string().min(1)
 });

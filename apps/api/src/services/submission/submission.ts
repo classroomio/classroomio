@@ -21,6 +21,7 @@ import type {
 } from '@cio/utils/validation/submission';
 import { buildEmailBranding, buildEmailFromName } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { notifyExerciseGraded } from '@cio/core/services/notification/course-events';
 import {
   createSubmission,
   deleteSubmission,
@@ -1007,6 +1008,16 @@ export async function updateSubmissionService(
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
     }
 
+    if (gradingStateChanged && updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
+      void notifyExerciseGraded({
+        submissionId,
+        exerciseId: updated.exerciseId,
+        courseId: updated.courseId,
+        submittedByGroupMemberId: updated.submittedBy,
+        actorProfileId: options.actorProfileId
+      });
+    }
+
     if (statusChanged || gradingStateChanged) {
       await emitSubmissionStatusChangedWebhookEvent(
         updated,
@@ -1126,6 +1137,16 @@ export async function updateSubmissionGradesBatch(
 
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
+    }
+
+    if (currentGradingState !== targetGradingState && updated.courseId && updated.submittedBy) {
+      void notifyExerciseGraded({
+        submissionId,
+        exerciseId: updated.exerciseId,
+        courseId: updated.courseId,
+        submittedByGroupMemberId: updated.submittedBy,
+        actorProfileId: options.actorProfileId
+      });
     }
 
     if (statusChanged || currentGradingState !== targetGradingState) {

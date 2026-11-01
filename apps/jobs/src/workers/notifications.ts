@@ -13,6 +13,7 @@ import {
   processNotifyCourseSessionUpdate,
   processSessionReminderScan
 } from '../processors/notifications';
+import { processCheckPushReceipts, processSendPush } from '../processors/notifications/send-push';
 
 const concurrency = Number.parseInt(env.EMAIL_WORKER_CONCURRENCY ?? '5', 10) || 5;
 const connection = createRedisConnection();
@@ -33,6 +34,10 @@ const worker = new Worker(
         return processSessionReminderScan();
       case JOB_NAMES.notifications.notifyCourseSessionUpdate:
         return processNotifyCourseSessionUpdate(job.data);
+      case JOB_NAMES.notifications.sendPush:
+        return processSendPush(job.data);
+      case JOB_NAMES.notifications.checkPushReceipts:
+        return processCheckPushReceipts(job.data);
       default:
         throw new Error(`Unknown notifications job: ${job.name}`);
     }

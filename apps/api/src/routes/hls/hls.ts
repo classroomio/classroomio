@@ -19,10 +19,13 @@ import { GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { getAssetById } from '@cio/db/queries/assets';
 import { getS3Client, getStorageConfig } from '@cio/core/config/storage';
 import { HLS_COOKIE_NAME, verifyHlsToken } from '@cio/core/services/assets/assets';
+import { appendTokenToPlaylist, isPlaylistPath } from '@api/utils/hls-playlist';
 import { resolveTrustedBrowserOriginForCors } from '@api/utils/origins';
 import { getCookie } from 'hono/cookie';
 
 import { Hono } from '@api/utils/hono';
+import { hlsPlaybackTokenRouter } from './playback-token';
+import { hlsOfflineVideoRouter } from './offline-video';
 
 const HLS_CONTENT_TYPES: Record<string, string> = {
   m3u8: 'application/vnd.apple.mpegurl',
@@ -51,6 +54,8 @@ function cacheControlFor(relativePath: string): string {
 }
 
 export const hlsRouter = new Hono()
+  .route('/', hlsPlaybackTokenRouter)
+  .route('/', hlsOfflineVideoRouter)
   .options('/:assetId/*', (c) => {
     const origin = c.req.header('origin');
     let corsHeaders: Record<string, string> = {};
@@ -73,8 +78,8 @@ export const hlsRouter = new Hono()
    * GET/HEAD /hls/:assetId/* — stream an HLS manifest or segment from R2.
    *
    * No `authMiddleware` here — public lessons play through the same route
-   * using only the HMAC cookie. The handler validates either the cookie
-   * or org-member session itself.
+   * using only the HMAC cookie. The handler validates, in order, a `t` query
+   * token (native players), the cookie, or an org-member session itself.
    */
   .on(['GET', 'HEAD'], '/:assetId/*', async (c) => {
     const origin = c.req.header('origin');
@@ -111,7 +116,18 @@ export const hlsRouter = new Hono()
     let authorized = false;
     let denyReason: 'no_token_or_session' | 'token_invalid' | 'session_no_role' | 'asset_missing' =
       'no_token_or_session';
-    const token = getCookie(c, `${HLS_COOKIE_NAME}_${assetId}`);
+    const queryToken = c.req.query('t');
+    let authorizedByQueryToken = false;
+    if (queryToken) {
+      const verified = await verifyHlsToken(queryToken);
+      if (verified?.assetId === assetId) {
+        authorized = true;
+        authorizedByQueryToken = true;
+      } else {
+        denyReason = 'token_invalid';
+      }
+    }
+    const token = authorized ? undefined : getCookie(c, `${HLS_COOKIE_NAME}_${assetId}`);
     if (token) {
       const verified = await verifyHlsToken(token);
       if (verified?.assetId === assetId) {
@@ -138,7 +154,7 @@ export const hlsRouter = new Hono()
     if (!authorized) {
       if (process.env.NODE_ENV !== 'production') {
         console.warn(
-          `[hls] 403 for asset=${assetId} reason=${denyReason} cookiePresent=${Boolean(token)} hasSession=${Boolean(c.get('user'))}`
+          `[hls] 403 for asset=${assetId} reason=${denyReason} queryTokenPresent=${Boolean(queryToken)} cookiePresent=${Boolean(token)} hasSession=${Boolean(c.get('user'))}`
         );
       }
       return withCors(null, 403, { 'Content-Type': 'application/json' });
@@ -147,21 +163,32 @@ export const hlsRouter = new Hono()
     const config = getStorageConfig();
     const client = getS3Client();
     const objectKey = `${assetId}/${relative}`;
+    // Playlists fetched with `?t=` carry the token into every child URI; players drop query strings otherwise.
+    const rewritesPlaylist = authorizedByQueryToken && isPlaylistPath(relative);
 
     try {
       if (c.req.method === 'HEAD') {
         const head = await client.send(new HeadObjectCommand({ Bucket: config.bucketVideos, Key: objectKey }));
         const headHeaders: Record<string, string> = {
           'Content-Type': contentTypeFor(relative),
-          'Cache-Control': cacheControlFor(relative)
+          'Cache-Control': rewritesPlaylist ? 'private, no-cache' : cacheControlFor(relative)
         };
-        if (head.ContentLength != null) headHeaders['Content-Length'] = String(head.ContentLength);
+        if (head.ContentLength != null && !rewritesPlaylist) headHeaders['Content-Length'] = String(head.ContentLength);
         return withCors(null, 200, headHeaders);
       }
 
       const result = await client.send(new GetObjectCommand({ Bucket: config.bucketVideos, Key: objectKey }));
       if (!result.Body) {
         return withCors(null, 502);
+      }
+
+      if (rewritesPlaylist && queryToken) {
+        const playlist = appendTokenToPlaylist(await result.Body.transformToString('utf-8'), queryToken);
+
+        return withCors(playlist, 200, {
+          'Content-Type': contentTypeFor(relative),
+          'Cache-Control': 'private, no-cache'
+        });
       }
 
       const headers: Record<string, string> = {

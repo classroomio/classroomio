@@ -16,6 +16,7 @@ import {
 import { getEnrolledCourses, getOrgCourses } from '@cio/db/queries/course';
 
 import { ROLE } from '@cio/utils/constants';
+import { notifyCommunityAnswer } from '@cio/core/services/notification/course-events';
 
 export async function fetchCommunityQuestions(
   orgId: string,
@@ -169,6 +170,8 @@ export async function createComment({ body, questionId, authorProfileId, votes }
     if (!result) {
       throw new AppError('Comment submission failed', ErrorCodes.COMMENT_SUBMISSION_FAILED, 404);
     }
+
+    void notifyCommunityAnswer({ questionId: Number(questionId), answerId: result.id, authorProfileId });
 
     return {
       id: result.id,

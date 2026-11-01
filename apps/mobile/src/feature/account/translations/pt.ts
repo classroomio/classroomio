@@ -1,0 +1,43 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const pt: TranslatedMessages<typeof en> = {
+  changePassword: 'Alterar senha',
+  changePasswordDescription: 'Envia um link para definir uma nova',
+  changePasswordTitle: 'Alterar sua senha?',
+  changePasswordBody:
+    'Enviamos um link de redefinição para {email}. Abra-o para escolher uma nova senha no navegador. Você continua conectado neste dispositivo.',
+  sendLink: 'Enviar link',
+  resetSent: 'Link de redefinição enviado',
+  resetSentDescription: 'Procure o link em {email}.',
+  resetFailed: 'O link de redefinição não foi enviado',
+  editNameTitle: 'Seu nome',
+  fullNameLabel: 'Nome completo',
+  fullNamePlaceholder: 'Seu nome completo',
+  nameTooShort: { one: 'Use pelo menos {count} caractere.', other: 'Use pelo menos {count} caracteres.' },
+  nameDescription: 'Seu nome aparece nos seus cursos e certificados.',
+  nameUpdated: 'Nome atualizado',
+  inviteTitle: 'Você tem um convite',
+  inviteOrganization: 'Aceite para entrar na organização que convidou você.',
+  inviteLink: 'Aceite para entrar na organização que compartilhou este link.',
+  inviteResource: 'Aceite para entrar no curso ou grupo compartilhado com você.',
+  inviteJoinAs: 'Você vai entrar como {email}.',
+  acceptInvite: 'Aceitar convite',
+  inviteAccepted: 'Convite aceito',
+  notNow: 'Agora não',
+  addYourName: 'Adicione seu nome',
+  statInProgress: 'Em andamento',
+  statCompleted: 'Concluídos',
+  statCertificates: 'Certificados',
+  organization: 'Organização',
+  certificates: 'Certificados',
+  certificatesEarned: { one: '{count} obtido', other: '{count} obtidos' },
+  certificatesDescription: 'Seus certificados obtidos',
+  downloads: 'Downloads',
+  downloadsOnDevice: '{size} neste dispositivo',
+  downloadsDescription: 'Aulas offline e sincronização',
+  settingsDescription: 'Nome, idioma, bloqueio, tema',
+  signOutTitle: 'Sair do ClassroomIO?',
+  signOutDescription: 'As aulas baixadas e o progresso não sincronizado são removidos deste dispositivo.'
+};

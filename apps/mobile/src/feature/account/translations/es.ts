@@ -1,0 +1,43 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const es: TranslatedMessages<typeof en> = {
+  changePassword: 'Cambiar contraseña',
+  changePasswordDescription: 'Te envía un enlace para crear una nueva',
+  changePasswordTitle: '¿Cambiar tu contraseña?',
+  changePasswordBody:
+    'Enviamos un enlace a {email}. Ábrelo para elegir una contraseña nueva en el navegador. Tu sesión sigue iniciada en este dispositivo.',
+  sendLink: 'Enviar enlace',
+  resetSent: 'Enlace enviado',
+  resetSentDescription: 'Busca el enlace en {email}.',
+  resetFailed: 'No se envió el enlace',
+  editNameTitle: 'Tu nombre',
+  fullNameLabel: 'Nombre completo',
+  fullNamePlaceholder: 'Tu nombre completo',
+  nameTooShort: { one: 'Usa al menos {count} carácter.', other: 'Usa al menos {count} caracteres.' },
+  nameDescription: 'Tu nombre aparece en tus cursos y en tus certificados.',
+  nameUpdated: 'Nombre actualizado',
+  inviteTitle: 'Tienes una invitación',
+  inviteOrganization: 'Acepta para unirte a la organización que te invitó.',
+  inviteLink: 'Acepta para unirte a la organización que compartió este enlace.',
+  inviteResource: 'Acepta para unirte al curso o grupo que se compartió contigo.',
+  inviteJoinAs: 'Te unirás como {email}.',
+  acceptInvite: 'Aceptar invitación',
+  inviteAccepted: 'Invitación aceptada',
+  notNow: 'Ahora no',
+  addYourName: 'Añade tu nombre',
+  statInProgress: 'En curso',
+  statCompleted: 'Completados',
+  statCertificates: 'Certificados',
+  organization: 'Organización',
+  certificates: 'Certificados',
+  certificatesEarned: { one: '{count} obtenido', other: '{count} obtenidos' },
+  certificatesDescription: 'Tus certificados obtenidos',
+  downloads: 'Descargas',
+  downloadsOnDevice: '{size} en este dispositivo',
+  downloadsDescription: 'Lecciones sin conexión y sincronización',
+  settingsDescription: 'Nombre, idioma, bloqueo, tema',
+  signOutTitle: '¿Cerrar sesión en ClassroomIO?',
+  signOutDescription: 'Las lecciones descargadas y el progreso sin sincronizar se eliminan de este dispositivo.'
+};
