@@ -181,7 +181,7 @@
       }
 
       if (isNormalOrgSiteSignup) {
-        const joinResult = await orgApi.joinAcademy(org.id, getPostJoinRedirect(data.org, redirectUrl));
+        const joinResult = await orgApi.joinAcademy(org.id, getPostJoinRedirect(redirectUrl));
         const joinRetryPathname = newUserCallbackPathname;
 
         if (!joinResult && joinRetryPathname) {

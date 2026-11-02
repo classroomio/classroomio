@@ -86,6 +86,9 @@ export const LMS_DESTINATIONS: readonly LmsDestination[] = [
 
 export const LMS_FALLBACK_PATH = '/lms';
 
+/** Dashboard route that sends a signed-in student to their student home, or to `/lms`. */
+export const STUDENT_HOME_ENTRY_PATH = '/student-home';
+
 /**
  * Finds a destination by its registry key.
  */

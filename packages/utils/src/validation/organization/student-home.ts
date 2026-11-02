@@ -15,3 +15,7 @@ export const ZStudentHomeCourseOptionsQuery = z.object({
 });
 
 export type TStudentHomeCourseOptionsQuery = z.infer<typeof ZStudentHomeCourseOptionsQuery>;
+
+export const ZStudentHomeResolveHeaders = z.object({
+  'cio-org-id': z.uuid()
+});

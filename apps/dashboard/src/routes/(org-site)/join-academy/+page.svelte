@@ -28,7 +28,7 @@
     }
 
     hasFailed = false;
-    const redirectTo = getPostJoinRedirect(data.org, page.url.searchParams.get('redirect'));
+    const redirectTo = getPostJoinRedirect(page.url.searchParams.get('redirect'));
     const result = await orgApi.joinAcademy(orgId, redirectTo);
     if (!result) {
       hasFailed = true;

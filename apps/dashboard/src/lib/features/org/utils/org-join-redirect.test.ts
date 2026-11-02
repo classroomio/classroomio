@@ -25,17 +25,12 @@ describe('resolveOrgJoinRedirect', () => {
 
 describe('getPostJoinRedirect', () => {
   it('prefers an explicit redirect', () => {
-    expect(getPostJoinRedirect({ hasStudentHome: true }, '/lms/certificates')).toBe('/lms/certificates');
-    expect(getPostJoinRedirect(null, '/lms')).toBe('/lms');
+    expect(getPostJoinRedirect('/lms/certificates')).toBe('/lms/certificates');
+    expect(getPostJoinRedirect('/lms')).toBe('/lms');
   });
 
-  it('sends students without a redirect through the student home', () => {
-    expect(getPostJoinRedirect({ hasStudentHome: true }, null)).toBe('/');
-  });
-
-  it('keeps /lms without a student home', () => {
-    expect(getPostJoinRedirect({ hasStudentHome: false }, null)).toBe('/lms');
-    expect(getPostJoinRedirect(null, null)).toBe('/lms');
-    expect(getPostJoinRedirect(undefined, null)).toBe('/lms');
+  it('sends students without a redirect through the student-home entry route', () => {
+    expect(getPostJoinRedirect(null)).toBe('/student-home');
+    expect(getPostJoinRedirect('')).toBe('/student-home');
   });
 });

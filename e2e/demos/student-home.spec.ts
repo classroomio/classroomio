@@ -42,6 +42,32 @@ test.describe.serial('authenticated student home', () => {
     await expect(page).toHaveURL(/\/lms\/mylearning\/?$/, { timeout: 30_000 });
   });
 
+  test('the student-home entry route sends students to their home', async ({ page }) => {
+    test.setTimeout(90_000);
+
+    await signInViaApi(page, STUDENT.email, STUDENT.password);
+    await page.goto(`/student-home?org=${ORG_SITE_NAME}`);
+
+    await expect(page).toHaveURL(/\/lms\/mylearning\/?$/, { timeout: 30_000 });
+  });
+
+  test('the student-home entry route falls back to /lms without a student home', async ({ page }) => {
+    test.setTimeout(90_000);
+
+    await signInViaApi(page, FREE_PLAN_STUDENT.email, FREE_PLAN_STUDENT.password);
+    await page.goto(`/student-home?org=${FREE_PLAN_ORG}`);
+
+    await expect(page).toHaveURL(/\/lms\/?(\?.*)?$/, { timeout: 30_000 });
+  });
+
+  test('the student-home entry route asks signed-out visitors to log in first', async ({ page }) => {
+    test.setTimeout(90_000);
+
+    await page.goto(`/student-home?org=${ORG_SITE_NAME}`);
+
+    await expect(page).toHaveURL(/\/login\?redirect=%2Fstudent-home/, { timeout: 30_000 });
+  });
+
   test('anonymous visitors still see the landing page', async ({ page }) => {
     test.setTimeout(90_000);
 

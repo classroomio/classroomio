@@ -2,6 +2,7 @@ import type { AccountOrg, PublicOrg } from '$features/app/types';
 import { t } from '$lib/utils/functions/translations';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE } from '@cio/utils/constants';
+import { STUDENT_HOME_ENTRY_PATH } from '@cio/utils/lms';
 import type { LandingNavAuthAction } from '@cio/ui/custom/org-landing-page';
 
 type OrganizationMembership = {
@@ -47,7 +48,7 @@ export function getOrgLandingAuthAction({
       return { label: t.get('navigation.goto_dashboard'), href: `/org/${membership.siteName}` };
     }
 
-    return { label: t.get('landing.learner_menu.continue_learning'), href: '/lms' };
+    return { label: t.get('landing.learner_menu.continue_learning'), href: STUDENT_HOME_ENTRY_PATH };
   }
 
   if (PUBLIC_IS_SELFHOSTED === 'true') {

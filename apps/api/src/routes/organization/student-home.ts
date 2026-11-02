@@ -1,11 +1,10 @@
-import { ZStudentHomeCourseOptionsQuery } from '@cio/utils/validation/organization';
+import { ZStudentHomeCourseOptionsQuery, ZStudentHomeResolveHeaders } from '@cio/utils/validation/organization';
 import { listStudentHomeOptions, resolveStudentHomePath } from '@api/services/organization/student-home';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
-import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { zValidator } from '@hono/zod-validator';
 
 export const organizationStudentHomeRouter = new Hono()
@@ -26,9 +25,9 @@ export const organizationStudentHomeRouter = new Hono()
       }
     }
   )
-  .get('/resolve', authMiddleware, orgMemberMiddleware, async (c) => {
+  .get('/resolve', authMiddleware, zValidator('header', ZStudentHomeResolveHeaders), async (c) => {
     try {
-      const orgId = c.req.header('cio-org-id')!;
+      const orgId = c.req.valid('header')['cio-org-id'];
       const user = c.get('user')!;
       const path = await resolveStudentHomePath(orgId, user.id);
 

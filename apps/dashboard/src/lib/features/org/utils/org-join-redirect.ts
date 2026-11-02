@@ -1,3 +1,5 @@
+import { STUDENT_HOME_ENTRY_PATH } from '@cio/utils/lms';
+
 const DEFAULT_JOIN_REDIRECT = '/lms';
 
 export function resolveOrgJoinRedirect(redirectTo: string, origin: string): string {
@@ -14,17 +16,9 @@ export function resolveOrgJoinRedirect(redirectTo: string, origin: string): stri
 }
 
 /**
- * Picks the post-join destination: an explicit redirect wins, otherwise orgs
- * with a student home send new students through `/` so the server redirect
- * resolves it, and everyone else keeps `/lms`.
+ * Picks the post-join destination: an explicit redirect wins, otherwise the
+ * student-home entry route, which falls back to `/lms`.
  */
-export function getPostJoinRedirect(
-  org: { hasStudentHome?: boolean } | null | undefined,
-  redirectParam: string | null
-): string {
-  if (redirectParam) {
-    return redirectParam;
-  }
-
-  return org?.hasStudentHome ? '/' : DEFAULT_JOIN_REDIRECT;
+export function getPostJoinRedirect(redirectParam: string | null): string {
+  return redirectParam || STUDENT_HOME_ENTRY_PATH;
 }
