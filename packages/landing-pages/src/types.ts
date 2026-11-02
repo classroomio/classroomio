@@ -31,6 +31,10 @@ export interface LandingPageNavigation {
   customLinks: LandingPageCustomLink[];
 }
 
+export type LandingPageHeroElement = 'badge' | 'headline' | 'subheadline' | 'actions';
+export type LandingPageHeroMediaPosition = 'left' | 'right' | 'bottom';
+export type LandingPageHeroAlignment = 'left' | 'center' | 'right';
+
 export interface LandingPageHero {
   badge?: string;
   headline: string;
@@ -45,6 +49,10 @@ export interface LandingPageHero {
   };
   mediaType: 'image' | 'none';
   mediaUrl?: string;
+  elementOrder?: LandingPageHeroElement[];
+  mediaPosition?: LandingPageHeroMediaPosition;
+  alignment?: LandingPageHeroAlignment;
+  reverseActions?: boolean;
 }
 
 export interface LandingPageFeatureItem {

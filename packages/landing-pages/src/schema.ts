@@ -72,6 +72,10 @@ export const ZLandingPageNavigation = z.object({
   customLinks: z.array(ZLandingPageCustomLink).max(10).default([])
 });
 
+export const ZLandingPageHeroElement = z.enum(['badge', 'headline', 'subheadline', 'actions']);
+export const ZLandingPageHeroMediaPosition = z.enum(['left', 'right', 'bottom']);
+export const ZLandingPageHeroAlignment = z.enum(['left', 'center', 'right']);
+
 export const ZLandingPageHero = z.object({
   badge: z.string().trim().max(50).optional(),
   headline: z.string().trim().min(1).max(150),
@@ -97,7 +101,11 @@ export const ZLandingPageHero = z.object({
     .string()
     .trim()
     .optional()
-    .transform((val) => sanitizeImageUrl(val))
+    .transform((val) => sanitizeImageUrl(val)),
+  elementOrder: z.array(ZLandingPageHeroElement).optional(),
+  mediaPosition: ZLandingPageHeroMediaPosition.optional(),
+  alignment: ZLandingPageHeroAlignment.optional(),
+  reverseActions: z.boolean().optional()
 });
 
 export const ZLandingPageFeatureItem = z.object({

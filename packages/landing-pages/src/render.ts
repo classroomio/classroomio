@@ -2,6 +2,7 @@ import { FONT_STACK_MAP, getFontGoogleUrl } from './defaults';
 import type {
   LandingPageCourse,
   LandingPageDocumentV1,
+  LandingPageHeroElement,
   LandingPageRenderData,
   LandingPageRenderResult,
   LandingPageSectionV1
@@ -66,13 +67,42 @@ function renderNavigation(doc: LandingPageDocumentV1, data: LandingPageRenderDat
 
 function renderHero(doc: LandingPageDocumentV1): string {
   const hero = doc.hero;
+  const order: LandingPageHeroElement[] =
+    hero.elementOrder && hero.elementOrder.length > 0
+      ? hero.elementOrder
+      : ['badge', 'headline', 'subheadline', 'actions'];
+  const mediaPos = hero.mediaPosition ?? 'right';
+  const align = hero.alignment ?? 'left';
+  const reverseActions = !!hero.reverseActions;
+
   const badgeHtml = hero.badge
     ? `<div class="cio-lp-hero-badge"><span class="cio-lp-badge-text">${escapeHtml(hero.badge)}</span></div>`
     : '';
 
-  const secondaryActionHtml = hero.secondaryAction
+  const primaryBtnHtml = `<a href="${escapeHtml(hero.primaryAction.href)}" class="cio-lp-btn-primary cio-lp-btn-lg">${escapeHtml(hero.primaryAction.label)}</a>`;
+  const secondaryBtnHtml = hero.secondaryAction
     ? `<a href="${escapeHtml(hero.secondaryAction.href)}" class="cio-lp-btn-secondary">${escapeHtml(hero.secondaryAction.label)}</a>`
     : '';
+
+  const actionsInner = reverseActions ? `${secondaryBtnHtml}${primaryBtnHtml}` : `${primaryBtnHtml}${secondaryBtnHtml}`;
+
+  const actionsHtml = `<div class="cio-lp-hero-actions">${actionsInner}</div>`;
+
+  const blocks: Record<LandingPageHeroElement, string> = {
+    badge: badgeHtml,
+    headline: `<h1 class="cio-lp-hero-title">${escapeHtml(hero.headline)}</h1>`,
+    subheadline: hero.subheadline ? `<p class="cio-lp-hero-sub">${escapeHtml(hero.subheadline)}</p>` : '',
+    actions: actionsHtml
+  };
+
+  const contentHtml = `
+    <div class="cio-lp-hero-content">
+      ${order
+        .map((key) => blocks[key] || '')
+        .filter(Boolean)
+        .join('\n')}
+    </div>
+  `;
 
   const mediaHtml =
     hero.mediaType === 'image' && hero.mediaUrl
@@ -81,19 +111,29 @@ function renderHero(doc: LandingPageDocumentV1): string {
       </div>`
       : '';
 
+  const hasMedia = hero.mediaType !== 'none' && !!hero.mediaUrl;
+  let gridModifier = '';
+  let innerGrid = '';
+
+  if (!hasMedia) {
+    gridModifier = 'no-media';
+    innerGrid = contentHtml;
+  } else if (mediaPos === 'left') {
+    gridModifier = 'media-left';
+    innerGrid = `${mediaHtml}\n${contentHtml}`;
+  } else if (mediaPos === 'bottom') {
+    gridModifier = 'media-bottom';
+    innerGrid = `${contentHtml}\n${mediaHtml}`;
+  } else {
+    innerGrid = `${contentHtml}\n${mediaHtml}`;
+  }
+
+  const alignClass = align === 'center' ? 'align-center' : align === 'right' ? 'align-right' : '';
+
   return `
-    <section class="cio-lp-hero">
-      <div class="cio-lp-container cio-lp-hero-grid ${hero.mediaType === 'none' || !hero.mediaUrl ? 'no-media' : ''}">
-        <div class="cio-lp-hero-content">
-          ${badgeHtml}
-          <h1 class="cio-lp-hero-title">${escapeHtml(hero.headline)}</h1>
-          ${hero.subheadline ? `<p class="cio-lp-hero-sub">${escapeHtml(hero.subheadline)}</p>` : ''}
-          <div class="cio-lp-hero-actions">
-            <a href="${escapeHtml(hero.primaryAction.href)}" class="cio-lp-btn-primary cio-lp-btn-lg">${escapeHtml(hero.primaryAction.label)}</a>
-            ${secondaryActionHtml}
-          </div>
-        </div>
-        ${mediaHtml}
+    <section class="cio-lp-hero ${alignClass}">
+      <div class="cio-lp-container cio-lp-hero-grid ${gridModifier}">
+        ${innerGrid}
       </div>
     </section>
   `;
@@ -633,6 +673,33 @@ export function generateLandingPageCss(doc: LandingPageDocumentV1): string {
       text-align: center;
       max-width: 800px;
       margin: 0 auto;
+    }
+
+    .cio-lp-hero-grid.media-left {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .cio-lp-hero-grid.media-bottom {
+      grid-template-columns: 1fr;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .cio-lp-hero.align-center .cio-lp-hero-content {
+      text-align: center;
+    }
+
+    .cio-lp-hero.align-center .cio-lp-hero-actions {
+      justify-content: center;
+    }
+
+    .cio-lp-hero.align-right .cio-lp-hero-content {
+      text-align: right;
+    }
+
+    .cio-lp-hero.align-right .cio-lp-hero-actions {
+      justify-content: flex-end;
     }
 
     .cio-lp-hero-badge {

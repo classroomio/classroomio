@@ -251,5 +251,28 @@ describe('@cio/landing-pages', () => {
       expect(result.html).toContain('Course Two');
       expect(result.html).not.toContain('Course One');
     });
+
+    it('renders hero with custom elementOrder, mediaPosition, and reversed action buttons', () => {
+      const doc = getDefaultDocumentForTemplate('modern');
+      doc.hero.elementOrder = ['headline', 'subheadline', 'badge', 'actions'];
+      doc.hero.mediaPosition = 'left';
+      doc.hero.alignment = 'center';
+      doc.hero.reverseActions = true;
+      doc.hero.mediaType = 'image';
+      doc.hero.mediaUrl = 'https://example.com/hero.png';
+      doc.hero.secondaryAction = { label: 'Secondary Tour', href: '/tour' };
+
+      const validation = validateLandingPageDocument(doc);
+      expect(validation.success).toBe(true);
+
+      const result = renderLandingPage(doc, mockRenderData);
+      expect(result.html).toContain('media-left');
+      expect(result.html).toContain('align-center');
+      // Secondary action button should come before primary when reverseActions is true
+      const secIdx = result.html.indexOf('Secondary Tour');
+      const primIdx = result.html.indexOf(doc.hero.primaryAction.label);
+      expect(secIdx).toBeGreaterThan(0);
+      expect(primIdx).toBeGreaterThan(secIdx);
+    });
   });
 });
