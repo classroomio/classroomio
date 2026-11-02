@@ -78,6 +78,7 @@ export const STABLE_CONTRIBUTION_TARGETS = [
   'lesson.after',
   'certificate.actions',
   'certificate.templates',
+  'landing.templates',
   'organization.navigation',
   'plugin.page'
 ] as const;

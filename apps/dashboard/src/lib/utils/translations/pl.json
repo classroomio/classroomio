@@ -4146,16 +4146,20 @@
         "course": "Kurs"
       },
       "studio": {
-        "active_title": "Published via Landing Page Studio",
-        "active_description": "Your academy homepage is currently rendered using a custom design published from Landing Page Studio.",
+        "active_title": "Landing Page Studio design active",
+        "active_description": "Your academy homepage is currently using a template selected from Landing Page Studio.",
         "template": "Template: {name}",
-        "revision_info": "Revision {revision} • Published {date}",
+        "revision_info": "Revision {revision} • Applied {date}",
         "open_studio": "Customize in Landing Page Studio",
         "switch_to_builtin": "Switch to built-in design",
         "switch_modal_title": "Switch to built-in design?",
         "switch_modal_description": "Your academy homepage will immediately display the built-in theme. Your drafts in Landing Page Studio will be preserved.",
         "switch_confirm": "Switch to built-in",
-        "switched_success": "Switched back to built-in design"
+        "switched_success": "Switched back to built-in design",
+        "templates_heading": "Organization templates",
+        "templates_description": "Select a landing page created in Landing Page Studio to use it as your academy homepage.",
+        "invalid_template": "The selected landing page template is invalid.",
+        "applied_success": "Landing page template applied"
       }
     },
     "organization": {

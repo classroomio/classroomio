@@ -47,17 +47,10 @@ function renderNavigation(doc: LandingPageDocumentV1, data: LandingPageRenderDat
       : '';
 
   let authHtml = '';
-  if (nav.showAuthAction) {
-    if (auth.isAuthenticated) {
-      authHtml = `<div class="cio-lp-nav-auth">
-        <a href="${escapeHtml(auth.dashboardUrl)}" class="cio-lp-btn-primary">Dashboard</a>
-      </div>`;
-    } else {
-      authHtml = `<div class="cio-lp-nav-auth">
-        <a href="${escapeHtml(auth.loginUrl)}" class="cio-lp-nav-link">Sign In</a>
-        <a href="${escapeHtml(auth.signupUrl)}" class="cio-lp-btn-primary">Get Started</a>
-      </div>`;
-    }
+  if (nav.showAuthAction && auth.action?.href && auth.action?.label) {
+    authHtml = `<div class="cio-lp-nav-auth">
+      <a href="${escapeHtml(auth.action.href)}" class="cio-lp-btn-primary">${escapeHtml(auth.action.label)}</a>
+    </div>`;
   }
 
   return `
@@ -164,11 +157,11 @@ function renderCourseCard(course: LandingPageCourse): string {
           ${lessonsHtml}
         </div>
         <h3 class="cio-lp-course-title">
-          <a href="/courses/${escapeHtml(course.slug)}">${escapeHtml(course.title)}</a>
+          <a href="/course/${escapeHtml(course.slug)}">${escapeHtml(course.title)}</a>
         </h3>
         ${course.description ? `<p class="cio-lp-course-desc">${escapeHtml(course.description)}</p>` : ''}
         <div class="cio-lp-course-footer">
-          <a href="/courses/${escapeHtml(course.slug)}" class="cio-lp-btn-secondary cio-lp-btn-sm">View Course</a>
+          <a href="/course/${escapeHtml(course.slug)}" class="cio-lp-btn-secondary cio-lp-btn-sm">View Course</a>
         </div>
       </div>
     </div>

@@ -202,9 +202,10 @@ export interface LandingPageAuth {
     name?: string;
     email?: string;
   } | null;
-  dashboardUrl: string;
-  loginUrl: string;
-  signupUrl: string;
+  action?: {
+    label: string;
+    href: string;
+  };
 }
 
 export interface LandingPageOrganization {

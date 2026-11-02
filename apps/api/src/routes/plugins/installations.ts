@@ -13,7 +13,8 @@ import {
   ZPluginStorageNamespaceParam,
   ZPluginStorageQuery,
   ZPluginStoragePut,
-  ZPublishLandingPage,
+  ZApplyLandingPageTemplate,
+  ZRemoveLandingPageTemplate,
   ZUninstallPlugin,
   ZUpdateInstallationSettings,
   ZUpdateInstallationStatus,
@@ -30,14 +31,14 @@ import {
   listInstallationExercises,
   listInstallationLessons,
   listOrgPlugins,
-  publishLandingPage,
+  applyLandingPageTemplate,
+  removeLandingPageTemplate,
   resolveOrgContributions,
   deleteStorageValue,
   getStorageValue,
   listStorageRecords,
   setStorageValue,
-  uninstallPlugin,
-  unpublishLandingPage
+  uninstallPlugin
 } from '@api/services/plugin';
 
 /**
@@ -393,11 +394,11 @@ export const pluginInstallationsRouter = new Hono()
     }
   )
   .post(
-    '/:installationId/landing-page/publish',
+    '/:installationId/landing-page-template/apply',
     authMiddleware,
     orgAdminMiddleware,
     zValidator('param', ZPluginInstallationParam),
-    zValidator('json', ZPublishLandingPage),
+    zValidator('json', ZApplyLandingPageTemplate),
     async (c) => {
       const user = c.get('user')!;
       const orgId = c.get('orgId') as string;
@@ -405,28 +406,28 @@ export const pluginInstallationsRouter = new Hono()
       const payload = c.req.valid('json');
 
       try {
-        const result = await publishLandingPage(installationId, orgId, payload, user.id);
+        const result = await applyLandingPageTemplate(installationId, orgId, payload, user.id);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
-        return handleError(c, error, 'Failed to publish landing page');
+        return handleError(c, error, 'Failed to apply landing page template');
       }
     }
   )
   .post(
-    '/:installationId/landing-page/unpublish',
+    '/landing-page-template/remove',
     authMiddleware,
     orgAdminMiddleware,
-    zValidator('param', ZPluginInstallationParam),
+    zValidator('json', ZRemoveLandingPageTemplate),
     async (c) => {
       const user = c.get('user')!;
       const orgId = c.get('orgId') as string;
-      const { installationId } = c.req.valid('param');
+      const payload = c.req.valid('json');
 
       try {
-        const result = await unpublishLandingPage(installationId, orgId, user.id);
+        const result = await removeLandingPageTemplate(orgId, payload.expectedRevision, user.id);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
-        return handleError(c, error, 'Failed to unpublish landing page');
+        return handleError(c, error, 'Failed to remove landing page template');
       }
     }
   );

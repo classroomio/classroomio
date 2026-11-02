@@ -1,5 +1,7 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
+  ApplyLandingPageTemplateRequest,
+  ApplyLandingPageTemplateInput,
   CatalogPluginDetails,
   CatalogPluginItem,
   GetCatalogPluginDetailsRequest,
@@ -16,7 +18,8 @@ import type {
   UpdateOrgApprovalRequest,
   PluginInstallationStatus,
   PluginOrgApprovalStatus,
-  UninstallPluginRequest
+  UninstallPluginRequest,
+  RemoveLandingPageTemplateRequest
 } from '../utils/types';
 
 export class PluginsApi extends BaseApiWithErrors {
@@ -196,6 +199,31 @@ export class PluginsApi extends BaseApiWithErrors {
       onSuccess: () => {
         void this.listOrgInstallations(orgId);
       }
+    });
+  }
+
+  async applyLandingPageTemplate(installationId: string, orgId: string, input: ApplyLandingPageTemplateInput) {
+    return this.execute<ApplyLandingPageTemplateRequest>({
+      requestFn: () =>
+        classroomio.plugins.installations[':installationId']['landing-page-template'].apply.$post(
+          {
+            param: { installationId },
+            json: input
+          },
+          { headers: { 'cio-org-id': orgId } }
+        ),
+      logContext: 'applying landing page template'
+    });
+  }
+
+  async removeLandingPageTemplate(orgId: string, expectedRevision: number) {
+    return this.execute<RemoveLandingPageTemplateRequest>({
+      requestFn: () =>
+        classroomio.plugins.installations['landing-page-template'].remove.$post(
+          { json: { expectedRevision } },
+          { headers: { 'cio-org-id': orgId } }
+        ),
+      logContext: 'removing landing page template'
     });
   }
 }

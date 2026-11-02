@@ -10,7 +10,12 @@
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import ZapIcon from '@lucide/svelte/icons/zap';
   import { isFreeLandingPageTheme } from '@cio/utils/constants';
-  import { isLandingPagePresentationV1, type LandingPagePresentationV1 } from '@cio/landing-pages';
+  import {
+    validateLandingPageDocument,
+    validateLandingPagePresentation,
+    type LandingPagePresentationV1,
+    type LandingPageRenderData
+  } from '@cio/landing-pages';
 
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
@@ -18,9 +23,13 @@
   import { user, profile } from '$lib/utils/store/user';
   import type { AccountOrg } from '$features/app/types';
   import { orgApi } from '$features/org/api/org.svelte';
+  import StudioLandingPage from '$features/org/components/landing-page/studio-landing-page.svelte';
   import { getPreviewOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
   import { getPreviewOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { PluginSlotRenderer } from '$features/plugins/components';
+  import { pluginsApi } from '$features/plugins/api/plugins.svelte';
+  import type { PluginActionEvent } from '$features/plugins/utils/types';
 
   import { Button } from '@cio/ui/base/button';
   import { Badge } from '@cio/ui/base/badge';
@@ -35,6 +44,7 @@
   import {
     createDefaultLandingPageSettings,
     landingPageThemes,
+    mapPublicCoursesToStudioLandingPageCourses,
     normalizeLandingPageSettings,
     buildOrgLandingPageProps
   } from '$features/org/utils/landing-page';
@@ -46,35 +56,85 @@
   let hasInitialized = $state(false);
   let isSwitchingModalOpen = $state(false);
   let isSwitching = $state(false);
+  const authAction = $derived(getPreviewOrgLandingAuthAction($user.isLoggedIn));
 
   const activePresentation = $derived.by<LandingPagePresentationV1 | null>(() => {
     const raw = ($currentOrg.landingpage as Record<string, unknown> | null)?.presentation;
-    return isLandingPagePresentationV1(raw) ? raw : null;
+    return validateLandingPagePresentation(raw).data ?? null;
   });
+
+  const studioPreviewData = $derived.by<LandingPageRenderData>(() => ({
+    organization: {
+      id: $currentOrg.id,
+      name: $currentOrg.name ?? '',
+      logoUrl: $currentOrg.avatarUrl ?? null,
+      slug: $currentOrg.siteName ?? ''
+    },
+    courses: mapPublicCoursesToStudioLandingPageCourses(orgApi.publicCourses),
+    auth: {
+      isAuthenticated: $user.isLoggedIn,
+      user: $user.id ? { id: $user.id, name: $profile?.fullname, email: $user.email } : null,
+      action: authAction.label ? { label: authAction.label, href: authAction.href } : undefined
+    }
+  }));
+
+  function updateActivePresentation(presentation: LandingPagePresentationV1 | null) {
+    currentOrg.update((organization) => ({
+      ...organization,
+      landingpage: {
+        ...((organization.landingpage ?? {}) as Record<string, unknown>),
+        presentation
+      } as AccountOrg['landingpage']
+    }));
+  }
+
+  async function removeActivePresentation(): Promise<boolean> {
+    if (!activePresentation || !$currentOrg.id) return true;
+
+    const response = await pluginsApi.removeLandingPageTemplate($currentOrg.id, activePresentation.revision);
+    if (!response) return false;
+
+    updateActivePresentation(null);
+    return true;
+  }
 
   async function handleSwitchToBuiltin() {
     if (!$currentOrg.id || isSwitching) return;
     isSwitching = true;
     try {
-      const currentLp = ($currentOrg.landingpage ?? {}) as Record<string, unknown>;
-      await orgApi.update(
-        $currentOrg.id,
-        {
-          landingpage: {
-            ...currentLp,
-            presentation: null
-          }
-        },
-        {
-          onSuccess: () => {
-            isSwitchingModalOpen = false;
-            snackbar.success($t('settings.landing_page.studio.switched_success'));
-          }
-        }
-      );
+      const removed = await removeActivePresentation();
+      if (!removed) return;
+
+      isSwitchingModalOpen = false;
+      snackbar.success($t('settings.landing_page.studio.switched_success'));
     } finally {
       isSwitching = false;
     }
+  }
+
+  async function handlePluginAction(detail: PluginActionEvent) {
+    if (detail.target !== 'landing.templates' || detail.action !== 'apply' || !$currentOrg.id) {
+      return;
+    }
+
+    const payload = detail.data && typeof detail.data === 'object' ? (detail.data as Record<string, unknown>) : {};
+    const document = payload.document ?? payload.design;
+    const validation = validateLandingPageDocument(document);
+    if (!validation.success || !validation.data) {
+      snackbar.error('settings.landing_page.studio.invalid_template');
+      return;
+    }
+
+    const response = await pluginsApi.applyLandingPageTemplate(detail.installationId, $currentOrg.id, {
+      document: validation.data as unknown as Record<string, unknown>,
+      templateSourceId: typeof payload.id === 'string' ? payload.id : undefined,
+      templateName: typeof payload.name === 'string' ? payload.name : undefined,
+      expectedRevision: activePresentation?.revision ?? 0
+    });
+    if (!response) return;
+
+    updateActivePresentation(response.data);
+    snackbar.success('settings.landing_page.studio.applied_success');
   }
 
   $effect(() => {
@@ -169,8 +229,6 @@
     return !isFreeLandingPageTheme(theme);
   }
 
-  const authAction = $derived(getPreviewOrgLandingAuthAction($user.isLoggedIn));
-
   const previewSiteName = $derived($currentOrg.siteName || page.params.slug || '');
 
   const coursesLoaded = $derived(!previewSiteName || orgApi.publicCoursesLoadedSiteName === previewSiteName);
@@ -210,6 +268,9 @@
       openUpgradeModal();
       return;
     }
+
+    const removed = await removeActivePresentation();
+    if (!removed) return;
 
     const updatedLandingPage = normalizeLandingPageSettings({
       ...normalized,
@@ -304,7 +365,11 @@
             0.625}px; transform: scale({previewScale});"
         >
           {#if $currentOrg.id}
-            <ThemeComponent {...previewProps} disableCourseLinks={true} />
+            {#if activePresentation}
+              <StudioLandingPage presentation={activePresentation} renderData={studioPreviewData} manageHead={false} />
+            {:else}
+              <ThemeComponent {...previewProps} disableCourseLinks={true} />
+            {/if}
           {/if}
         </div>
         <div
@@ -323,28 +388,36 @@
               {$t('settings.landing_page.current.field_theme')}
             </span>
             <Badge variant="secondary" class="text-[10px] uppercase">
-              {$t(currentThemeCard.titleKey)}
+              {activePresentation?.source.templateName ?? $t(currentThemeCard.titleKey)}
             </Badge>
           </div>
           <div class="flex items-start justify-between gap-3">
             <span class="ui:text-muted-foreground shrink-0 text-xs tracking-wider uppercase">
               {$t('settings.landing_page.current.field_hero')}
             </span>
-            <span class="line-clamp-1 text-right text-xs font-medium">{heroHeading}</span>
+            <span class="line-clamp-1 text-right text-xs font-medium">
+              {activePresentation?.document.hero.headline ?? heroHeading}
+            </span>
           </div>
           <div class="flex items-center justify-between gap-3">
             <span class="ui:text-muted-foreground text-xs tracking-wider uppercase">
               {$t('settings.landing_page.current.field_nav')}
             </span>
-            <span class="text-xs font-medium">{navCountLabel}</span>
+            <span class="text-xs font-medium">
+              {activePresentation ? activePresentation.document.navigation.customLinks.length : navCountLabel}
+            </span>
           </div>
         </Card.Content>
         <Card.Footer class="mt-auto">
           <Button
             class="w-full justify-center"
-            href={customizeLocked ? undefined : customizeHref}
+            href={activePresentation
+              ? `/org/${$currentOrg.siteName}/plugins/landing-studio`
+              : customizeLocked
+                ? undefined
+                : customizeHref}
             disabled={!$currentOrg.id}
-            onclick={customizeLocked ? () => openUpgradeModal() : undefined}
+            onclick={!activePresentation && customizeLocked ? () => openUpgradeModal() : undefined}
           >
             {#if customizeLocked}
               <ZapIcon class="size-4" />
@@ -354,6 +427,35 @@
           </Button>
         </Card.Footer>
       </Card.Root>
+    </div>
+  </section>
+
+  <section>
+    <div class="mb-6 flex items-start gap-4">
+      <div class="ui:bg-primary/10 ui:text-primary flex size-12 shrink-0 items-center justify-center rounded-lg">
+        <SparklesIcon class="size-6" />
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold">{$t('settings.landing_page.studio.templates_heading')}</h2>
+        <p class="ui:text-muted-foreground text-sm">
+          {$t('settings.landing_page.studio.templates_description')}
+        </p>
+      </div>
+    </div>
+
+    <div class="ui:border-border ui:bg-background rounded-xl border p-5">
+      <PluginSlotRenderer
+        target="landing.templates"
+        resource={{
+          type: 'organization',
+          id: $currentOrg.id,
+          selectedTemplateId: activePresentation?.source.templateSourceId,
+          selectedTemplateName: activePresentation?.source.templateName,
+          selectedTemplateDocument: activePresentation?.document,
+          selectedTemplateRevision: activePresentation?.revision ?? 0
+        }}
+        onAction={handlePluginAction}
+      />
     </div>
   </section>
 

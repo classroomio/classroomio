@@ -240,31 +240,6 @@
             return responseData(response);
           }
 
-          if (payload.action === 'landing-page:publish') {
-            const orgId = requireOrganizationId();
-            const rawData =
-              payload.data && typeof payload.data === 'object' ? (payload.data as Record<string, unknown>) : {};
-            const response = await classroomio.plugins.installations[':installationId']['landing-page'].publish.$post(
-              {
-                param: { installationId },
-                json: rawData as any
-              },
-              { headers: { 'cio-org-id': orgId } }
-            );
-            return responseData(response);
-          }
-
-          if (payload.action === 'landing-page:unpublish') {
-            const orgId = requireOrganizationId();
-            const response = await classroomio.plugins.installations[':installationId']['landing-page'].unpublish.$post(
-              {
-                param: { installationId }
-              },
-              { headers: { 'cio-org-id': orgId } }
-            );
-            return responseData(response);
-          }
-
           throw {
             code: 'NOT_SUPPORTED',
             message: `Host action "${payload.action}" is not supported in this surface context`

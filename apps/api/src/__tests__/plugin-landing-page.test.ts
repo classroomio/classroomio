@@ -7,157 +7,160 @@ const dbPluginMocks = vi.hoisted(() => ({
   recordPluginAuditEvent: vi.fn()
 }));
 
-const dbOrgMocks = vi.hoisted(() => ({
-  getOrganizationById: vi.fn(),
-  updateOrganization: vi.fn()
-}));
+const dbOrgMocks = vi.hoisted(() => {
+  class RevisionConflictError extends Error {
+    constructor(
+      public readonly expectedRevision: number,
+      public readonly currentRevision: number
+    ) {
+      super(`Landing page revision changed from ${expectedRevision} to ${currentRevision}`);
+    }
+  }
+
+  return {
+    getOrganizationById: vi.fn(),
+    setOrganizationLandingPagePresentation: vi.fn(),
+    OrganizationLandingPageRevisionConflictError: RevisionConflictError
+  };
+});
 
 vi.mock('@cio/db/queries/plugin', () => dbPluginMocks);
 vi.mock('@cio/db/queries/organization', () => dbOrgMocks);
 
-import {
-  clearOrganizationLandingPagePresentation,
-  publishLandingPage,
-  unpublishLandingPage
-} from '@api/services/plugin/landing-page';
+import { applyLandingPageTemplate, removeLandingPageTemplate } from '@api/services/plugin/landing-page';
 
-describe('Plugin Landing Page Service', () => {
-  const orgId = 'org-123';
-  const installationId = 'inst-456';
+describe('Plugin landing page template service', () => {
+  const organizationId = '3cb50bb9-7621-43a3-a0fc-d942f70b487b';
+  const installationId = 'c1c1c1c1-1111-4111-8111-111111111111';
   const actorProfileId = 'actor-789';
-
-  const mockActiveInstallation = {
-    id: installationId,
-    pluginId: 'com.classroomio.landing-studio',
-    pluginVersionId: 'version-1',
-    organizationId: orgId,
-    ownerType: 'organization',
-    status: 'active'
-  };
-
-  const mockOrganization = {
-    id: orgId,
-    name: 'Acme Academy',
-    siteName: 'acme',
-    landingpage: {
-      theme: 'quartz',
-      hero: { heading: 'Original built-in headline' },
-      footer: { copyright: 'Original footer' }
+  const document = getDefaultDocumentForTemplate('bootcamp') as unknown as Record<string, unknown>;
+  const manifest = {
+    manifestVersion: 1,
+    id: 'com.classroomio.landing-studio',
+    name: 'Landing Page Studio',
+    version: '1.0.0',
+    description: 'Landing pages',
+    publisher: 'ClassroomIO',
+    license: 'Apache-2.0',
+    engines: { classroomio: '>=2.0.0', pluginApi: '2026-10-08' },
+    runtime: {
+      ui: {
+        entrypoints: {
+          picker: { renderMode: 'custom', resource: 'dist/picker.html' }
+        }
+      }
+    },
+    contributes: {
+      slots: [
+        {
+          id: 'landing-picker',
+          target: 'landing.templates',
+          renderMode: 'custom',
+          entrypoint: 'picker',
+          title: 'Landing templates'
+        }
+      ]
+    },
+    permissions: { required: ['plugin.storage:read'] },
+    dataPolicy: {
+      storesCustomerData: true,
+      retentionAfterUninstallDays: 30,
+      privacyPolicyUrl: 'https://classroomio.com/privacy'
     }
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    dbPluginMocks.getInstallationById.mockResolvedValue(mockActiveInstallation);
-    dbPluginMocks.getPluginVersionById.mockResolvedValue({ id: 'version-1', version: '1.2.0' });
-    dbOrgMocks.getOrganizationById.mockResolvedValue({ ...mockOrganization });
-    dbOrgMocks.updateOrganization.mockResolvedValue({});
+    dbPluginMocks.getInstallationById.mockResolvedValue({
+      id: installationId,
+      pluginId: 'com.classroomio.landing-studio',
+      pluginVersionId: 'version-1',
+      organizationId,
+      ownerType: 'organization',
+      status: 'active'
+    });
+    dbPluginMocks.getPluginVersionById.mockResolvedValue({ id: 'version-1', version: '1.2.0', manifest });
     dbPluginMocks.recordPluginAuditEvent.mockResolvedValue({});
+    dbOrgMocks.setOrganizationLandingPagePresentation.mockResolvedValue({ id: organizationId });
   });
 
-  it('publishes a landing page document and creates LandingPagePresentationV1', async () => {
-    const doc = getDefaultDocumentForTemplate('bootcamp');
-    const result = await publishLandingPage(
+  it('applies a template contributed through landing.templates', async () => {
+    const presentation = await applyLandingPageTemplate(
       installationId,
-      orgId,
+      organizationId,
       {
-        document: doc,
-        templateSourceId: 'bootcamp',
-        templateName: 'Bootcamp'
+        document,
+        templateSourceId: 'template-1',
+        templateName: 'Academy launch',
+        expectedRevision: 2
       },
       actorProfileId
     );
 
-    expect(result.success).toBe(true);
-    expect(result.presentation.kind).toBe('document');
-    expect(result.presentation.version).toBe(1);
-    expect(result.presentation.revision).toBe(1);
-    expect(result.presentation.source).toEqual({
-      kind: 'plugin',
+    expect(presentation.revision).toBe(3);
+    expect(presentation.source).toMatchObject({
       pluginId: 'com.classroomio.landing-studio',
       installationId,
-      pluginVersion: '1.2.0',
-      templateSourceId: 'bootcamp',
-      templateName: 'Bootcamp'
+      templateSourceId: 'template-1',
+      templateName: 'Academy launch'
     });
-    expect(result.presentation.publishedBy).toBe(actorProfileId);
-
-    // Verify updateOrganization called preserving existing landingpage keys
-    expect(dbOrgMocks.updateOrganization).toHaveBeenCalledTimes(1);
-    const updateArg = dbOrgMocks.updateOrganization.mock.calls[0][1];
-    expect(updateArg.landingpage.theme).toBe('quartz');
-    expect(updateArg.landingpage.hero).toEqual({ heading: 'Original built-in headline' });
-    expect(updateArg.landingpage.presentation).toEqual(result.presentation);
-
-    // Verify audit event
-    expect(dbPluginMocks.recordPluginAuditEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        installationId,
-        organizationId: orgId,
-        action: 'plugin.landing_page.published',
-        outcome: 'success'
-      })
+    expect(dbOrgMocks.setOrganizationLandingPagePresentation).toHaveBeenCalledWith(
+      organizationId,
+      expect.objectContaining({ revision: 3, document }),
+      2
     );
   });
 
-  it('increments revision when publishing over an existing presentation', async () => {
-    const existingOrgWithPresentation = {
-      ...mockOrganization,
+  it('rejects a plugin without a landing.templates contribution', async () => {
+    dbPluginMocks.getPluginVersionById.mockResolvedValue({
+      id: 'version-1',
+      version: '1.2.0',
+      manifest: { ...manifest, contributes: { slots: [] } }
+    });
+
+    await expect(
+      applyLandingPageTemplate(installationId, organizationId, { document, expectedRevision: 0 }, actorProfileId)
+    ).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  it('returns a conflict when the active revision changed', async () => {
+    dbOrgMocks.setOrganizationLandingPagePresentation.mockRejectedValue(
+      new dbOrgMocks.OrganizationLandingPageRevisionConflictError(2, 3)
+    );
+
+    await expect(
+      applyLandingPageTemplate(installationId, organizationId, { document, expectedRevision: 2 }, actorProfileId)
+    ).rejects.toMatchObject({ statusCode: 409 });
+  });
+
+  it('removes the active template without deleting built-in landing page settings', async () => {
+    dbOrgMocks.getOrganizationById.mockResolvedValue({
+      id: organizationId,
       landingpage: {
-        ...mockOrganization.landingpage,
+        theme: 'quartz',
         presentation: {
-          revision: 3
+          kind: 'document',
+          schema: 'classroomio.landing-page',
+          version: 1,
+          source: {
+            kind: 'plugin',
+            pluginId: 'com.classroomio.landing-studio',
+            installationId,
+            pluginVersion: '1.2.0'
+          },
+          document,
+          revision: 4,
+          publishedAt: new Date().toISOString(),
+          publishedBy: actorProfileId
         }
       }
-    };
-    dbOrgMocks.getOrganizationById.mockResolvedValue(existingOrgWithPresentation);
+    });
 
-    const doc = getDefaultDocumentForTemplate('modern');
-    const result = await publishLandingPage(installationId, orgId, { document: doc }, actorProfileId);
+    await removeLandingPageTemplate(organizationId, 4, actorProfileId);
 
-    expect(result.presentation.revision).toBe(4);
-  });
-
-  it('rejects publishing when document is invalid', async () => {
-    const invalidDoc = {
-      ...getDefaultDocumentForTemplate('modern'),
-      theme: { primaryColor: 'invalid-color' }
-    };
-
-    await expect(publishLandingPage(installationId, orgId, { document: invalidDoc }, actorProfileId)).rejects.toThrow();
-  });
-
-  it('unpublishes landing page by setting presentation to null while preserving settings', async () => {
-    const orgWithPresentation = {
-      ...mockOrganization,
-      landingpage: {
-        ...mockOrganization.landingpage,
-        presentation: { revision: 1 }
-      }
-    };
-    dbOrgMocks.getOrganizationById.mockResolvedValue(orgWithPresentation);
-
-    const result = await unpublishLandingPage(installationId, orgId, actorProfileId);
-    expect(result.success).toBe(true);
-
-    const updateArg = dbOrgMocks.updateOrganization.mock.calls[0][1];
-    expect(updateArg.landingpage.presentation).toBeNull();
-    expect(updateArg.landingpage.theme).toBe('quartz');
-    expect(updateArg.landingpage.hero).toEqual({ heading: 'Original built-in headline' });
-
+    expect(dbOrgMocks.setOrganizationLandingPagePresentation).toHaveBeenCalledWith(organizationId, null, 4);
     expect(dbPluginMocks.recordPluginAuditEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        action: 'plugin.landing_page.unpublished',
-        outcome: 'success'
-      })
+      expect.objectContaining({ action: 'plugin.landing_page_template.removed', installationId })
     );
-  });
-
-  it('clears presentation via clearOrganizationLandingPagePresentation', async () => {
-    const result = await clearOrganizationLandingPagePresentation(orgId);
-    expect(result.success).toBe(true);
-
-    const updateArg = dbOrgMocks.updateOrganization.mock.calls[0][1];
-    expect(updateArg.landingpage.presentation).toBeNull();
   });
 });

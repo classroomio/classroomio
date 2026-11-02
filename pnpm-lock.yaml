@@ -1373,6 +1373,9 @@ importers:
       '@cio/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@cio/utils':
+        specifier: workspace:*
+        version: link:../utils
       zod:
         specifier: 4.2.1
         version: 4.2.1

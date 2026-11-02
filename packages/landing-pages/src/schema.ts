@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isAllowedHref } from '@cio/utils/validation/shared';
 import {
   LANDING_PAGE_FONT_FAMILIES,
   LANDING_PAGE_TEMPLATE_IDS,
@@ -6,7 +7,6 @@ import {
   type LandingPagePresentationV1
 } from './types';
 
-const SAFE_PROTOCOL_PATTERN = /^https?:\/\//i;
 const HEX_COLOR_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 
 export function sanitizeHref(url: unknown, fallback = '#'): string {
@@ -14,22 +14,7 @@ export function sanitizeHref(url: unknown, fallback = '#'): string {
   const trimmed = url.trim();
   if (!trimmed) return fallback;
 
-  if (trimmed.startsWith('/') || trimmed.startsWith('#')) {
-    return trimmed;
-  }
-
-  if (SAFE_PROTOCOL_PATTERN.test(trimmed)) {
-    try {
-      const parsed = new URL(trimmed);
-      if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
-        return parsed.toString();
-      }
-    } catch {
-      return fallback;
-    }
-  }
-
-  return fallback;
+  return isAllowedHref(trimmed) ? trimmed : fallback;
 }
 
 export function sanitizeImageUrl(url: unknown): string | undefined {
@@ -41,7 +26,7 @@ export function sanitizeImageUrl(url: unknown): string | undefined {
     return trimmed;
   }
 
-  if (SAFE_PROTOCOL_PATTERN.test(trimmed)) {
+  if (/^https?:\/\//i.test(trimmed)) {
     try {
       const parsed = new URL(trimmed);
       if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {

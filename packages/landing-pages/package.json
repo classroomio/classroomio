@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@cio/tsconfig": "workspace:*",
+    "@cio/utils": "workspace:*",
     "zod": "^4.1.8"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 
 export type ListCatalogPluginsRequest = typeof classroomio.plugins.catalog.$get;
 export type ListCatalogPluginsResponse = InferResponseType<ListCatalogPluginsRequest>;
@@ -41,6 +41,11 @@ export type GetPluginUninstallImpactSuccess = Extract<GetPluginUninstallImpactRe
 export type PluginUninstallImpact = GetPluginUninstallImpactSuccess['data'];
 export type UninstallPluginRequest =
   (typeof classroomio.plugins.installations)[':installationId']['uninstall']['$post'];
+export type ApplyLandingPageTemplateRequest =
+  (typeof classroomio.plugins.installations)[':installationId']['landing-page-template']['apply']['$post'];
+export type ApplyLandingPageTemplateInput = InferRequestType<ApplyLandingPageTemplateRequest>['json'];
+export type RemoveLandingPageTemplateRequest =
+  (typeof classroomio.plugins.installations)['landing-page-template']['remove']['$post'];
 
 export interface PluginResourceContext {
   type: 'lesson' | 'course' | 'certificate' | 'organization';
@@ -48,6 +53,7 @@ export interface PluginResourceContext {
   selectedTemplateId?: string;
   selectedTemplateName?: string;
   selectedTemplateDocument?: unknown;
+  selectedTemplateRevision?: number;
 }
 
 export interface PluginActionEvent {

@@ -42,7 +42,9 @@ describe('@cio/landing-pages', () => {
     it('sanitizes hrefs safely', () => {
       expect(sanitizeHref('/courses')).toBe('/courses');
       expect(sanitizeHref('#faq')).toBe('#faq');
-      expect(sanitizeHref('https://classroomio.com')).toBe('https://classroomio.com/');
+      expect(sanitizeHref('https://classroomio.com')).toBe('https://classroomio.com');
+      expect(sanitizeHref('mailto:help@classroomio.com')).toBe('mailto:help@classroomio.com');
+      expect(sanitizeHref('../courses')).toBe('../courses');
       expect(sanitizeHref('javascript:alert(1)')).toBe('#');
       expect(sanitizeHref('data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==')).toBe('#');
       expect(sanitizeHref(null)).toBe('#');
@@ -143,9 +145,7 @@ describe('@cio/landing-pages', () => {
       auth: {
         isAuthenticated: false,
         user: null,
-        dashboardUrl: '/dashboard',
-        loginUrl: '/login',
-        signupUrl: '/signup'
+        action: { label: 'Sign in', href: '/login' }
       }
     };
 
@@ -158,6 +158,7 @@ describe('@cio/landing-pages', () => {
       expect(result.html).toContain('Fullstack TypeScript');
       expect(result.html).toContain('$49.99');
       expect(result.html).toContain('24 lessons');
+      expect(result.html).toContain('/course/fullstack-ts');
       expect(result.css).toContain('--cio-lp-primary: #4f46e5');
       expect(result.fontsHref).toContain('Plus+Jakarta+Sans');
       expect(result.meta.title).toContain('Code Bootcamp');
@@ -183,16 +184,14 @@ describe('@cio/landing-pages', () => {
         auth: {
           isAuthenticated: true,
           user: { id: 'u1', name: 'John Doe', email: 'john@example.com' },
-          dashboardUrl: '/org/acme',
-          loginUrl: '/login',
-          signupUrl: '/signup'
+          action: { label: 'Continue learning', href: '/lms' }
         }
       };
 
       const result = renderLandingPage(doc, authData);
-      expect(result.html).toContain('Dashboard');
-      expect(result.html).toContain('/org/acme');
-      expect(result.html).not.toContain('Sign In');
+      expect(result.html).toContain('Continue learning');
+      expect(result.html).toContain('/lms');
+      expect(result.html).not.toContain('Sign in');
     });
   });
 });

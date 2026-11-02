@@ -41,12 +41,18 @@ export const ZUninstallPlugin = z.object({
 });
 export type TUninstallPlugin = z.infer<typeof ZUninstallPlugin>;
 
-export const ZPublishLandingPage = z.object({
+export const ZApplyLandingPageTemplate = z.object({
   document: z.record(z.string(), z.unknown()),
-  templateSourceId: z.string().trim().optional(),
-  templateName: z.string().trim().optional()
+  templateSourceId: z.string().trim().min(1).max(128).optional(),
+  templateName: z.string().trim().min(1).max(200).optional(),
+  expectedRevision: z.number().int().min(0)
 });
-export type TPublishLandingPage = z.infer<typeof ZPublishLandingPage>;
+export type TApplyLandingPageTemplate = z.infer<typeof ZApplyLandingPageTemplate>;
+
+export const ZRemoveLandingPageTemplate = z.object({
+  expectedRevision: z.number().int().min(0)
+});
+export type TRemoveLandingPageTemplate = z.infer<typeof ZRemoveLandingPageTemplate>;
 
 export const ZUpdateOrgApprovalStatus = z.object({
   approval: ZPluginOrgApprovalStatus

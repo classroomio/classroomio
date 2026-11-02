@@ -13,6 +13,7 @@ import type {
 } from '$lib/utils/types/org';
 import type { OrgPublicCourses } from './types';
 import type { OrgLandingPageProps, LandingPageThemeBundle } from '@cio/ui/custom/org-landing-page/types';
+import type { LandingPageCourse } from '@cio/landing-pages';
 import { resolveLandingPageLinkIcon } from '@cio/ui/custom/org-landing-page/landing-page-link-icons';
 import {
   labelMatchesSocialPlatform,
@@ -739,6 +740,37 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       duration,
       level
     };
+  });
+}
+
+export function mapPublicCoursesToStudioLandingPageCourses(courses: OrgPublicCourses): LandingPageCourse[] {
+  return courses.flatMap((course) => {
+    const courseRecord = course as Record<string, unknown>;
+    const slug = typeof courseRecord.slug === 'string' ? courseRecord.slug : '';
+    if (!slug) return [];
+
+    const metadata = isRecord(courseRecord.metadata) ? courseRecord.metadata : undefined;
+    const cost = typeof courseRecord.cost === 'number' ? courseRecord.cost : null;
+    const paymentEnabled =
+      typeof metadata?.paymentEnabled === 'boolean' ? metadata.paymentEnabled : cost !== null && cost > 0;
+    const image = resolveCourseBannerImage({
+      bannerImage: typeof courseRecord.bannerImage === 'string' ? courseRecord.bannerImage : null,
+      logo: typeof courseRecord.logo === 'string' ? courseRecord.logo : null
+    });
+
+    return [
+      {
+        id: course.id,
+        title: typeof courseRecord.title === 'string' ? courseRecord.title : '',
+        description: typeof courseRecord.description === 'string' ? courseRecord.description : null,
+        slug,
+        image,
+        isPricing: paymentEnabled,
+        cost,
+        currency: typeof courseRecord.currency === 'string' ? courseRecord.currency : '$',
+        totalLessons: typeof courseRecord.lessonCount === 'number' ? courseRecord.lessonCount : 0
+      }
+    ];
   });
 }
 
