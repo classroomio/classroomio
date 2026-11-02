@@ -14,6 +14,7 @@ export const AUTOMATION_USAGE_CATEGORY = {
 
 export const MCP_TOOL_CREDIT_COST = {
   list_org_courses: 0,
+  list_related_courses: 0,
   get_course_structure: 0,
   get_course_draft: 0,
   list_course_exercises: 0,
@@ -134,13 +135,30 @@ export const MCP_TOOL_CREDIT_COST = {
   list_team_members: 0,
   get_team_member: 0,
   update_team_member: 1,
+  invite_team_members: 1,
+  remove_team_member: 1,
+  get_team_invite_link: 0,
+  set_team_invite_link: 1,
   list_email_templates: 0,
   get_email_template: 0,
   update_email_template: 1,
   reset_email_template: 1,
   send_test_email_template: 1,
   get_organization: 0,
-  update_organization: 1
+  update_organization: 1,
+  list_tags: 0,
+  create_tag: 1,
+  update_tag: 1,
+  create_tag_group: 1,
+  update_tag_group: 1,
+  set_course_tags: 1,
+  get_domain: 0,
+  update_domain: 1,
+  connect_custom_domain: 1,
+  refresh_custom_domain: 1,
+  remove_custom_domain: 1,
+  get_organization_customization: 0,
+  update_organization_customization: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -215,6 +233,7 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_course_structure' ||
     toolName === 'get_course_draft' ||
     toolName === 'list_org_courses' ||
+    toolName === 'list_related_courses' ||
     toolName === 'list_course_exercises' ||
     toolName === 'get_course_exercise' ||
     toolName === 'list_org_cohorts' ||
@@ -259,9 +278,13 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_audience_member' ||
     toolName === 'list_team_members' ||
     toolName === 'get_team_member' ||
+    toolName === 'get_team_invite_link' ||
     toolName === 'list_email_templates' ||
     toolName === 'get_email_template' ||
-    toolName === 'get_organization'
+    toolName === 'get_organization' ||
+    toolName === 'list_tags' ||
+    toolName === 'get_domain' ||
+    toolName === 'get_organization_customization'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

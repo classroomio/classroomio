@@ -15,7 +15,7 @@ The Worker forwards each request to one of two Render services based on path:
 | ------------- | ------------------------------------------------------------------------------ |
 | `embed.*`     | R2 `assets` bucket — `/{widget}` maps to internal keys (`src/embed-assets.ts`) |
 | `mcp.*`       | API service — `/mcp` and `/.well-known/*` only, any other path is a 404       |
-| `/.well-known/oauth-*` on `ADMIN_HOST` | API service — OAuth authorization server metadata       |
+| `/.well-known/*` on `ADMIN_HOST` | API service — OAuth and OpenID discovery metadata       |
 | `/proxy/*`    | API service (`/proxy` prefix stripped, rest forwarded as-is)                   |
 | anything else | Dashboard service                                                              |
 

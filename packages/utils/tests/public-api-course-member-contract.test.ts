@@ -34,4 +34,22 @@ describe('public API course member request contract', () => {
     expect(ZPublicApiCreateCourseInvite.safeParse({ recipientCsv: '  ' }).success).toBe(false);
     expect(ZPublicApiCreateCourseInvite.safeParse({ recipientEmails: ['a@example.com'] }).success).toBe(true);
   });
+
+  // The MCP SDK parses tool input before the handler parses it again, so the output must parse too.
+  it.each([
+    [{ certificateEarned: 'true' }, true],
+    [{ certificateEarned: 'false' }, false],
+    [{}, undefined]
+  ])('reparses certificateEarned from %o', (input, expected) => {
+    const once = ZPublicApiCourseMembersQuery.parse(input);
+    expect(ZPublicApiCourseMembersQuery.parse(once).certificateEarned).toBe(expected);
+  });
+
+  it.each([
+    [{ includeProgressImpact: 'true' }, true],
+    [{}, false]
+  ])('reparses includeProgressImpact from %o', (input, expected) => {
+    const once = ZPublicApiCourseMemberAnalyticsQuery.parse(input);
+    expect(ZPublicApiCourseMemberAnalyticsQuery.parse(once).includeProgressImpact).toBe(expected);
+  });
 });

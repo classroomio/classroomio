@@ -1,7 +1,14 @@
 import * as z from 'zod';
 
 import { ROLE } from '@cio/utils/constants';
+import {
+  CohortPeopleActivityWindow,
+  CohortPeopleMembership,
+  CohortPeopleSortBy,
+  CohortPeopleSortOrder
+} from '../cohort/people';
 import { ZPublicApiCohortParam } from './cohort';
+import { ZPublicApiPaginationQuery } from './pagination';
 
 const ZPublicApiCohortMemberRole = z
   .union([z.literal(ROLE.TUTOR), z.literal(ROLE.STUDENT)])
@@ -11,6 +18,18 @@ export const ZPublicApiCohortMemberParam = ZPublicApiCohortParam.extend({
   memberId: z.string().uuid()
 });
 export type TPublicApiCohortMemberParam = z.infer<typeof ZPublicApiCohortMemberParam>;
+
+export const ZPublicApiCohortMembersQuery = ZPublicApiPaginationQuery.extend({
+  search: z.string().trim().max(200).optional().describe('Matches name or email.'),
+  roleId: z.coerce.number().int().min(ROLE.TUTOR).max(ROLE.STUDENT).optional().describe('2 = tutor, 3 = student'),
+  sortBy: CohortPeopleSortBy.default('joined').describe('joined = when they were added. Default: joined.'),
+  sortOrder: CohortPeopleSortOrder.default('asc').describe('Default: asc.'),
+  membership: CohortPeopleMembership.optional().describe('invited = the invite has not been accepted yet.'),
+  lastLoginBefore: CohortPeopleActivityWindow.optional().describe(
+    'Not logged in for N days or more (including never); never = no login recorded.'
+  )
+});
+export type TPublicApiCohortMembersQuery = z.infer<typeof ZPublicApiCohortMembersQuery>;
 
 export const ZPublicApiAddCohortMembers = z.object({
   members: z

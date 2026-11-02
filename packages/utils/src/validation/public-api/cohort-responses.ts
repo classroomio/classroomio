@@ -47,7 +47,8 @@ export const ZPublicApiCohortMemberListItemResponse = ZPublicApiCohortMemberResp
       avatarUrl: z.string().nullable(),
       email: z.string().nullable()
     })
-    .nullable()
+    .nullable(),
+  lastLoginAt: nullableTimestamp.describe('Null if no login was ever recorded')
 });
 
 export const ZPublicApiAddCohortMembersResponse = z.object({

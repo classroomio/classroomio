@@ -1,0 +1,70 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API course request contract > ZPublicApiCoursesQuery keeps its published shape > ZPublicApiCoursesQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "order": {
+      "description": "Default: desc.",
+      "enum": [
+        "asc",
+        "desc",
+      ],
+      "type": "string",
+    },
+    "page": {
+      "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "search": {
+      "description": "Matches the course title.",
+      "maxLength": 200,
+      "type": "string",
+    },
+    "sort": {
+      "description": "price sorts on the stored cost, with free courses as 0. Default: date_created.",
+      "enum": [
+        "date_created",
+        "last_updated_at",
+        "published",
+        "lessons",
+        "name",
+        "price",
+      ],
+      "type": "string",
+    },
+    "status": {
+      "enum": [
+        "published",
+        "unpublished",
+      ],
+      "type": "string",
+    },
+    "tags": {
+      "description": "Comma-separated tag slugs; returns courses with any of them.",
+      "maxLength": 2000,
+      "type": "string",
+    },
+    "type": {
+      "enum": [
+        "SELF_PACED",
+        "LIVE_CLASS",
+        "COMPLIANCE",
+        "PUBLIC",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;

@@ -9,6 +9,7 @@ import type {
   ZPublicApiCourseStructureResponse,
   ZPublicApiCreateCourseResponse,
   ZPublicApiRemoveAudienceMemberResponse,
+  ZPublicApiUpdateCourseResponse,
   ZPublicApiUpdateCourseStructureResponse
 } from '@cio/utils/validation/public-api';
 import type {
@@ -59,7 +60,7 @@ describe('public API response schemas match what the services return', () => {
       DocumentedKeys<typeof ZPublicApiCreateCourseResponse>
     >();
     expectTypeOf<KeysOf<Returned<typeof updatePublicApiCourseService>['course']>>().toEqualTypeOf<
-      DocumentedKeys<typeof ZPublicApiCourseResponse>
+      DocumentedKeys<typeof ZPublicApiUpdateCourseResponse>
     >();
     expectTypeOf<KeysOf<Returned<typeof deletePublicApiCourseService>>>().toEqualTypeOf<
       DocumentedKeys<typeof ZPublicApiCourseResponse>

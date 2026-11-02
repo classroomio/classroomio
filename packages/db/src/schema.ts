@@ -1232,7 +1232,7 @@ export const lesson = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     title: varchar().notNull(),
     public: boolean().default(false),
-    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }),
     teacherId: uuid('teacher_id'),
     isComplete: boolean('is_complete').default(false),
     callUrl: text('call_url'),
@@ -2032,6 +2032,7 @@ export const organizationPlan = pgTable(
     planName: plan('plan_name'),
     isActive: boolean('is_active'),
     deactivatedAt: timestamp('deactivated_at', { withTimezone: true, mode: 'string' }),
+    paymentFailedAt: timestamp('payment_failed_at', { withTimezone: true, mode: 'string' }),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     payload: jsonb(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -2595,6 +2596,9 @@ export const organization = pgTable(
         };
         apps: {
           comments: boolean;
+        };
+        auth?: {
+          backgroundImage: string;
         };
       }>()
       .notNull(),

@@ -1,13 +1,14 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
   import { resolve } from '$app/paths';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isOrgPaymentPastDue } from '$lib/utils/store/org';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { appInitApi } from '$features/app/init.svelte';
-  import { AppHeader } from '$features/ui';
+  import { AppHeader, PaymentFailedBanner } from '$features/ui';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
   import { OrgSidebar } from '$features/ui/sidebar/org-sidebar';
@@ -15,6 +16,8 @@
   import { AddOrgModal } from '$features/org';
 
   let { data, children } = $props();
+  let paymentBannerHeight = $state(0);
+  const ACCOUNT_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
   const isSettingsRoute = $derived(/\/settings(?:\/|$)/.test(page.url.pathname));
   const isCoursesList = $derived(/\/courses\/?$/.test(page.url.pathname));
 
@@ -24,6 +27,22 @@
     const newUrl = page.url.pathname.replace('*', siteName);
     goto(newUrl + page.url.search);
   }
+
+  onMount(() => {
+    function refreshWhenVisible() {
+      if (document.visibilityState === 'visible') {
+        void appInitApi.refreshAccountData();
+      }
+    }
+
+    const refreshTimer = setInterval(refreshWhenVisible, ACCOUNT_REFRESH_INTERVAL_MS);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+
+    return () => {
+      clearInterval(refreshTimer);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  });
 
   $effect(() => {
     data.orgName === '*' && redirect($currentOrg.siteName);
@@ -42,7 +61,13 @@
   <AddOrgModal />
 {/if}
 
-<Sidebar.Provider>
+<PaymentFailedBanner bind:height={paymentBannerHeight} />
+
+<Sidebar.Provider
+  style={$isOrgPaymentPastDue
+    ? `--app-banner-height: ${paymentBannerHeight}px; padding-top: ${paymentBannerHeight}px;`
+    : ''}
+>
   {#if isSettingsRoute}
     <SettingsSidebar />
   {:else}

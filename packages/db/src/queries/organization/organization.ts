@@ -20,6 +20,7 @@ import {
   ilike,
   inArray,
   isNotNull,
+  isNull,
   ne,
   not,
   notInArray,
@@ -518,8 +519,8 @@ export const checkEmailsExistInOrg = async (orgId: string, emails: string[]): Pr
  * @param memberId Member ID to delete
  * @returns Deleted member or null if not found
  */
-export const deleteOrganizationMember = async (orgId: string, memberId: number) => {
-  const [deleted] = await db
+export const deleteOrganizationMember = async (orgId: string, memberId: number, dbClient: DbOrTxClient = db) => {
+  const [deleted] = await dbClient
     .delete(schema.organizationmember)
     .where(and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.id, memberId)))
     .returning();
@@ -726,7 +727,10 @@ export const getOrganizationTeam = async (orgId: string) => {
       profile: {
         id: schema.profile.id,
         fullname: schema.profile.fullname,
-        email: schema.profile.email
+        email: schema.profile.email,
+        username: schema.profile.username,
+        avatarUrl: schema.profile.avatarUrl,
+        locale: schema.profile.locale
       }
     })
     .from(schema.organizationmember)
@@ -745,7 +749,10 @@ export const getOrganizationTeam = async (orgId: string) => {
     verified: member.verified,
     roleId: member.roleId,
     profileId: member.profile?.id,
-    fullname: member.profile?.fullname || ''
+    fullname: member.profile?.fullname || '',
+    username: member.profile?.username ?? null,
+    avatarUrl: member.profile?.avatarUrl || '',
+    locale: member.profile?.locale ?? null
   }));
 };
 
@@ -1269,8 +1276,91 @@ export const updateOrganizationPlan = async (
   return plan ?? null;
 };
 
+function getEventModifiedAt(payload: TOrganizationPlan['payload']): string | null {
+  const modifiedAt = (payload as { modifiedAt?: unknown } | null)?.modifiedAt;
+
+  if (typeof modifiedAt !== 'string') {
+    return null;
+  }
+
+  const parsed = new Date(modifiedAt);
+
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+function isNotNewerThanEvent(payload: TOrganizationPlan['payload']) {
+  const eventModifiedAt = getEventModifiedAt(payload);
+
+  if (!eventModifiedAt) {
+    return sql`true`;
+  }
+
+  return sql`(${schema.organizationPlan.payload}->>'modifiedAt' is null or (${schema.organizationPlan.payload}->>'modifiedAt')::timestamptz <= ${eventModifiedAt}::timestamptz)`;
+}
+
 /**
- * Activates an organization plan by subscription ID.
+ * Records a failed payment on an organization plan by subscription ID.
+ * The first failure timestamp is claimed in one conditional update and kept for later events of the same failure.
+ * An event older than the stored subscription state is ignored and the plan is returned unchanged.
+ * @param subscriptionId Subscription ID
+ * @param payload Payload data to update
+ * @returns The plan, or null when the plan does not exist
+ */
+export const markOrganizationPlanPastDue = async (
+  subscriptionId: string,
+  payload: TOrganizationPlan['payload'],
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationPlan | null> => {
+  const notStale = isNotNewerThanEvent(payload);
+
+  const [firstFailure] = await dbClient
+    .update(schema.organizationPlan)
+    .set({
+      payload,
+      paymentFailedAt: sql`now()`,
+      updatedAt: sql`timezone('utc'::text, now())`
+    })
+    .where(
+      and(
+        eq(schema.organizationPlan.subscriptionId, subscriptionId),
+        isNull(schema.organizationPlan.paymentFailedAt),
+        notStale
+      )
+    )
+    .returning();
+
+  if (firstFailure) {
+    return firstFailure;
+  }
+
+  const [ongoingFailure] = await dbClient
+    .update(schema.organizationPlan)
+    .set({ payload, updatedAt: sql`timezone('utc'::text, now())` })
+    .where(
+      and(
+        eq(schema.organizationPlan.subscriptionId, subscriptionId),
+        isNotNull(schema.organizationPlan.paymentFailedAt),
+        notStale
+      )
+    )
+    .returning();
+
+  if (ongoingFailure) {
+    return ongoingFailure;
+  }
+
+  const [existing] = await dbClient
+    .select()
+    .from(schema.organizationPlan)
+    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .limit(1);
+
+  return existing ?? null;
+};
+
+/**
+ * Activates an organization plan by subscription ID and clears any recorded payment failure.
+ * An event older than the stored subscription state is ignored and the plan is returned unchanged.
  * @param subscriptionId Subscription ID
  * @param payload Payload data to update
  * @returns Activated organization plan record, or null when it does not exist
@@ -1285,13 +1375,24 @@ export const activateOrganizationPlan = async (
     .set({
       isActive: true,
       deactivatedAt: null,
+      paymentFailedAt: null,
       payload,
       updatedAt: sql`timezone('utc'::text, now())`
     })
-    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .where(and(eq(schema.organizationPlan.subscriptionId, subscriptionId), isNotNewerThanEvent(payload)))
     .returning();
 
-  return plan ?? null;
+  if (plan) {
+    return plan;
+  }
+
+  const [existing] = await dbClient
+    .select()
+    .from(schema.organizationPlan)
+    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .limit(1);
+
+  return existing ?? null;
 };
 
 /**
@@ -1310,6 +1411,7 @@ export const cancelOrganizationPlan = async (
     .set({
       isActive: false,
       deactivatedAt: sql`timezone('utc'::text, now())`,
+      paymentFailedAt: null,
       payload,
       updatedAt: sql`timezone('utc'::text, now())`
     })

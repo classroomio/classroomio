@@ -37,6 +37,11 @@ export const ZUpdateLessonToolInput = z.object({
   order: z.number().int().min(1).optional().describe(ORDER_DESCRIPTION),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
+  lessonAt: z.iso
+    .datetime({ offset: true })
+    .nullable()
+    .optional()
+    .describe('Live-session start time as an ISO 8601 timestamp with a UTC offset; null clears it.'),
   videos: z
     .array(ZLessonVideo)
     .max(20)

@@ -5,7 +5,7 @@ import type { AccountOrg } from '$features/app/types';
 import { currentOrg } from '$lib/utils/store/org';
 import { ROLE_LABELS } from '@cio/utils/constants';
 import { getActiveOrgPlan, PLAN } from '@cio/utils/plans';
-import posthog from 'posthog-js';
+import posthog, { type CaptureOptions } from 'posthog-js';
 
 const DEPLOYMENT = PUBLIC_IS_SELFHOSTED === 'true' ? 'self_hosted' : 'cloud';
 
@@ -17,10 +17,14 @@ const hasNoTracking = () => {
 
 const isTrackingOff = () => dev || hasNoTracking();
 
-export const capturePosthogEvent = (event: string, properties?: Record<string, unknown>): void => {
+export const capturePosthogEvent = (
+  event: string,
+  properties?: Record<string, unknown>,
+  options?: CaptureOptions
+): void => {
   if (isTrackingOff()) return;
 
-  posthog.capture(event, properties);
+  posthog.capture(event, properties, options);
 };
 
 export const identifyPosthogUser = (id: string, properties?: Record<string, unknown>): void => {

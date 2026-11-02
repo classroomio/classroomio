@@ -53,6 +53,8 @@ export const sessionCors = cors({
 export const PUBLIC_CORS_PATH_PREFIXES = ['/public-api/', '/widgets/', '/.well-known/'] as const;
 
 export const PUBLIC_OAUTH_PATHS = [
+  '/api/auth/.well-known/oauth-authorization-server',
+  '/api/auth/.well-known/openid-configuration',
   '/api/auth/oauth2/token',
   '/api/auth/oauth2/register',
   '/api/auth/oauth2/revoke',

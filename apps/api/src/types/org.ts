@@ -14,8 +14,12 @@ export type OrgAudienceMember = {
   id: number;
   profileId: string | null;
   name: string;
+  /** null until the invited person creates an account. */
+  username: string | null;
   email: string;
   avatarUrl: string;
+  /** null until the invited person creates an account. */
+  locale: string | null;
   createdAt: string;
   /** Derived invite state. Not the lifecycle state — that is `memberStatus`. */
   status: AudienceMemberStatus;

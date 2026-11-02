@@ -1,0 +1,60 @@
+name: Docs fact check
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+  workflow_run:
+    workflows: [Docs fact check reply event]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: docs-fact-check-${{ github.event.pull_request.number || github.event.workflow_run.id }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: github.event_name == 'pull_request_target' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request_review_comment')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout trusted review code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install OpenCode CLI
+        run: npm install --global @opencode/cli@2.2.5
+
+      - name: Download review reply event
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-fact-check-reply
+          path: ${{ runner.temp }}/docs-fact-check-reply
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set review event path
+        if: github.event_name == 'workflow_run'
+        run: echo "REVIEW_EVENT_PATH=$RUNNER_TEMP/docs-fact-check-reply/event.json" >> "$GITHUB_ENV"
+
+      - name: Fact check documentation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          REVIEW_EVENT_PATH: ${{ env.REVIEW_EVENT_PATH || github.event_path }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          REVIEW_EVENT_NAME: ${{ github.event_name == 'workflow_run' && 'pull_request_review_comment' || github.event_name }}
+        run: node .github/scripts/docs-fact-check.mjs

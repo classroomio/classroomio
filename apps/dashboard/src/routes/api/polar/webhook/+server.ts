@@ -106,6 +106,25 @@ function getOrgPlanData(data: SubscriptionData): TCreateOrgPlan | null {
   };
 }
 
+async function recordPastDue(subscriptionId: string, data: SubscriptionData) {
+  const result = await OrgPlanApiServer.markOrgPlanPastDue({
+    subscriptionId,
+    payload: data as unknown as Record<string, unknown>
+  });
+
+  if (result.status === 'failed') {
+    throw new Error('Failed payment request failed');
+  }
+
+  if (result.status === 'not_found') {
+    console.log('Past-due subscription has no organization plan yet', subscriptionId);
+
+    return;
+  }
+
+  console.log('Subscription past due recorded', result.plan);
+}
+
 async function onPayload(payload: PolarWebhookPayload) {
   console.log('Polar webhook', payload.type);
 
@@ -173,6 +192,10 @@ async function onPayload(payload: PolarWebhookPayload) {
   if (data.metadata?.kind === EARLY_ADOPTER_CLAIM_CHECKOUT_KIND) {
     if (payload.type.startsWith('subscription.')) {
       await recordEarlyAdopterPurchase(payload.type, data);
+    }
+
+    if (payload.type === 'subscription.past_due') {
+      await recordPastDue(data.id, data);
     }
 
     return;
@@ -260,6 +283,9 @@ async function onPayload(payload: PolarWebhookPayload) {
       break;
     }
     case 'subscription.past_due':
+      await recordPastDue(subscriptionId, data);
+
+      break;
     case 'subscription.canceled':
       try {
         const result = await OrgPlanApiServer.updateOrgPlan({
