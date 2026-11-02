@@ -76,6 +76,12 @@ export const ZLandingPageHeroElement = z.enum(['badge', 'headline', 'subheadline
 export const ZLandingPageHeroMediaPosition = z.enum(['left', 'right', 'bottom']);
 export const ZLandingPageHeroAlignment = z.enum(['left', 'center', 'right']);
 
+export const ZLandingPageElementStyle = z.object({
+  fontSize: z.number().int().min(8).max(140).optional(),
+  width: z.number().int().min(50).max(1600).optional(),
+  maxWidth: z.number().int().min(50).max(1600).optional()
+});
+
 export const ZLandingPageHero = z.object({
   badge: z.string().trim().max(50).optional(),
   headline: z.string().trim().min(1).max(150),
@@ -105,7 +111,11 @@ export const ZLandingPageHero = z.object({
   elementOrder: z.array(ZLandingPageHeroElement).optional(),
   mediaPosition: ZLandingPageHeroMediaPosition.optional(),
   alignment: ZLandingPageHeroAlignment.optional(),
-  reverseActions: z.boolean().optional()
+  reverseActions: z.boolean().optional(),
+  mediaWidth: z.number().int().min(100).max(1200).optional(),
+  headlineSize: z.number().int().min(12).max(120).optional(),
+  subheadlineSize: z.number().int().min(10).max(60).optional(),
+  badgeSize: z.number().int().min(9).max(30).optional()
 });
 
 export const ZLandingPageFeatureItem = z.object({
@@ -274,7 +284,8 @@ export const ZLandingPageDocumentV1 = z.object({
   navigation: ZLandingPageNavigation,
   hero: ZLandingPageHero,
   sections: z.array(ZLandingPageSectionV1).max(20).default([]),
-  footer: ZLandingPageFooter
+  footer: ZLandingPageFooter,
+  elementStyles: z.record(z.string(), ZLandingPageElementStyle).optional()
 });
 
 export const ZLandingPagePluginSource = z.object({

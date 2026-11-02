@@ -35,6 +35,12 @@ export type LandingPageHeroElement = 'badge' | 'headline' | 'subheadline' | 'act
 export type LandingPageHeroMediaPosition = 'left' | 'right' | 'bottom';
 export type LandingPageHeroAlignment = 'left' | 'center' | 'right';
 
+export interface LandingPageElementStyle {
+  fontSize?: number;
+  width?: number;
+  maxWidth?: number;
+}
+
 export interface LandingPageHero {
   badge?: string;
   headline: string;
@@ -53,6 +59,10 @@ export interface LandingPageHero {
   mediaPosition?: LandingPageHeroMediaPosition;
   alignment?: LandingPageHeroAlignment;
   reverseActions?: boolean;
+  mediaWidth?: number;
+  headlineSize?: number;
+  subheadlineSize?: number;
+  badgeSize?: number;
 }
 
 export interface LandingPageFeatureItem {
@@ -204,6 +214,7 @@ export interface LandingPageDocumentV1 {
   hero: LandingPageHero;
   sections: LandingPageSectionV1[];
   footer: LandingPageFooter;
+  elementStyles?: Record<string, LandingPageElementStyle>;
 }
 
 export interface LandingPagePluginSource {

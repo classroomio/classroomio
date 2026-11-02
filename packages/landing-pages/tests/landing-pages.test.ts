@@ -274,5 +274,22 @@ describe('@cio/landing-pages', () => {
       expect(secIdx).toBeGreaterThan(0);
       expect(primIdx).toBeGreaterThan(secIdx);
     });
+
+    it('renders elements with custom sizes and styles', () => {
+      const doc = getDefaultDocumentForTemplate('modern');
+      doc.hero.mediaWidth = 480;
+      doc.hero.headlineSize = 64;
+      doc.hero.subheadlineSize = 22;
+      doc.hero.badgeSize = 14;
+
+      const validation = validateLandingPageDocument(doc);
+      expect(validation.success).toBe(true);
+
+      const result = renderLandingPage(doc, mockRenderData);
+      expect(result.html).toContain('font-size: 64px;');
+      expect(result.html).toContain('font-size: 22px;');
+      expect(result.html).toContain('font-size: 14px;');
+      expect(result.html).toContain('max-width: 480px;');
+    });
   });
 });

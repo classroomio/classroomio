@@ -67,6 +67,7 @@ function renderNavigation(doc: LandingPageDocumentV1, data: LandingPageRenderDat
 
 function renderHero(doc: LandingPageDocumentV1): string {
   const hero = doc.hero;
+  const styles = doc.elementStyles ?? {};
   const order: LandingPageHeroElement[] =
     hero.elementOrder && hero.elementOrder.length > 0
       ? hero.elementOrder
@@ -75,8 +76,18 @@ function renderHero(doc: LandingPageDocumentV1): string {
   const align = hero.alignment ?? 'left';
   const reverseActions = !!hero.reverseActions;
 
+  const headlineSize = hero.headlineSize ?? styles['hero-headline']?.fontSize;
+  const subheadlineSize = hero.subheadlineSize ?? styles['hero-subheadline']?.fontSize;
+  const badgeSize = hero.badgeSize ?? styles['hero-badge']?.fontSize;
+  const mediaWidth = hero.mediaWidth ?? styles['hero-image']?.width ?? styles['hero-media']?.width;
+
+  const headlineStyle = headlineSize ? ` style="font-size: ${headlineSize}px;"` : '';
+  const subheadlineStyle = subheadlineSize ? ` style="font-size: ${subheadlineSize}px;"` : '';
+  const badgeStyle = badgeSize ? ` style="font-size: ${badgeSize}px;"` : '';
+  const mediaStyle = mediaWidth ? ` style="max-width: ${mediaWidth}px; width: 100%;"` : '';
+
   const badgeHtml = hero.badge
-    ? `<div class="cio-lp-hero-badge"><span class="cio-lp-badge-text">${escapeHtml(hero.badge)}</span></div>`
+    ? `<div class="cio-lp-hero-badge"><span class="cio-lp-badge-text"${badgeStyle}>${escapeHtml(hero.badge)}</span></div>`
     : '';
 
   const primaryBtnHtml = `<a href="${escapeHtml(hero.primaryAction.href)}" class="cio-lp-btn-primary cio-lp-btn-lg">${escapeHtml(hero.primaryAction.label)}</a>`;
@@ -90,8 +101,10 @@ function renderHero(doc: LandingPageDocumentV1): string {
 
   const blocks: Record<LandingPageHeroElement, string> = {
     badge: badgeHtml,
-    headline: `<h1 class="cio-lp-hero-title">${escapeHtml(hero.headline)}</h1>`,
-    subheadline: hero.subheadline ? `<p class="cio-lp-hero-sub">${escapeHtml(hero.subheadline)}</p>` : '',
+    headline: `<h1 class="cio-lp-hero-title"${headlineStyle}>${escapeHtml(hero.headline)}</h1>`,
+    subheadline: hero.subheadline
+      ? `<p class="cio-lp-hero-sub"${subheadlineStyle}>${escapeHtml(hero.subheadline)}</p>`
+      : '',
     actions: actionsHtml
   };
 
@@ -106,7 +119,7 @@ function renderHero(doc: LandingPageDocumentV1): string {
 
   const mediaHtml =
     hero.mediaType === 'image' && hero.mediaUrl
-      ? `<div class="cio-lp-hero-media">
+      ? `<div class="cio-lp-hero-media"${mediaStyle}>
         <img src="${escapeHtml(hero.mediaUrl)}" alt="${escapeHtml(hero.headline)}" class="cio-lp-hero-img" loading="eager" />
       </div>`
       : '';
