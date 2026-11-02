@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { ROLE } from '@cio/utils/constants';
 import { addGroupMember, enrollUsersInCourseGroups, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
 import { getCourseGroupIds, getCourseWithOrgData, lockCourseStatusForAccept } from '@cio/db/queries/course';
 import {
@@ -179,8 +180,10 @@ const courseHandler: InviteLinkHandler = {
     captureLearnersEnrolled(enrolledMembers ?? [], 'invite_link');
   },
 
-  redirectTo() {
-    return '/lms';
+  redirectTo(context) {
+    const course = requireCourse(context);
+
+    return `/courses/${course.id}/lessons?next=true`;
   }
 };
 
@@ -268,8 +271,11 @@ const cohortHandler: InviteLinkHandler = {
     }
   },
 
-  redirectTo() {
-    return '/lms';
+  redirectTo(context) {
+    const cohort = requireCohort(context);
+    const cohortNewsfeedPath = `/cohorts/${cohort.id}/newsfeed`;
+
+    return context.invite.roleId === ROLE.STUDENT ? `${cohortNewsfeedPath}?source=lms` : cohortNewsfeedPath;
   }
 };
 
