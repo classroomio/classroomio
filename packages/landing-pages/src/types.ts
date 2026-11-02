@@ -72,6 +72,39 @@ export interface LandingPageCoursesSection {
   viewAllLabel?: string;
   viewAllHref?: string;
   maxItems?: number;
+  selectedCourseIds?: string[];
+}
+
+export interface LandingPageVideoSection {
+  id: string;
+  type: 'video';
+  enabled: boolean;
+  title?: string;
+  subtitle?: string;
+  provider: 'youtube' | 'vimeo';
+  videoId: string;
+  aspectRatio?: '16/9' | '4/3' | '1/1';
+  autoplay?: boolean;
+}
+
+export interface LandingPageContactFormField {
+  id: string;
+  name: string;
+  label: string;
+  type: 'text' | 'email' | 'tel' | 'textarea';
+  required: boolean;
+  placeholder?: string;
+}
+
+export interface LandingPageContactSection {
+  id: string;
+  type: 'contact';
+  enabled: boolean;
+  title: string;
+  subtitle?: string;
+  submitLabel?: string;
+  successMessage?: string;
+  fields: LandingPageContactFormField[];
 }
 
 export interface LandingPageTestimonialItem {
@@ -140,7 +173,9 @@ export type LandingPageSectionV1 =
   | LandingPageTestimonialsSection
   | LandingPageFaqSection
   | LandingPageCtaSection
-  | LandingPageStatsSection;
+  | LandingPageStatsSection
+  | LandingPageVideoSection
+  | LandingPageContactSection;
 
 export interface LandingPageFooter {
   copyrightText?: string;

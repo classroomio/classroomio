@@ -128,7 +128,40 @@ export const ZLandingPageCoursesSection = z.object({
     .trim()
     .transform((val) => sanitizeHref(val))
     .optional(),
-  maxItems: z.number().int().min(1).max(24).optional()
+  maxItems: z.number().int().min(1).max(24).optional(),
+  selectedCourseIds: z.array(z.string().trim().min(1)).max(50).optional()
+});
+
+export const ZLandingPageVideoSection = z.object({
+  id: z.string().trim().min(1).max(50),
+  type: z.literal('video'),
+  enabled: z.boolean().default(true),
+  title: z.string().trim().max(120).optional(),
+  subtitle: z.string().trim().max(300).optional(),
+  provider: z.enum(['youtube', 'vimeo']).default('youtube'),
+  videoId: z.string().trim().min(1).max(100),
+  aspectRatio: z.enum(['16/9', '4/3', '1/1']).default('16/9').optional(),
+  autoplay: z.boolean().default(false).optional()
+});
+
+export const ZLandingPageContactFormField = z.object({
+  id: z.string().trim().min(1).max(50),
+  name: z.string().trim().min(1).max(50),
+  label: z.string().trim().min(1).max(100),
+  type: z.enum(['text', 'email', 'tel', 'textarea']).default('text'),
+  required: z.boolean().default(true),
+  placeholder: z.string().trim().max(100).optional()
+});
+
+export const ZLandingPageContactSection = z.object({
+  id: z.string().trim().min(1).max(50),
+  type: z.literal('contact'),
+  enabled: z.boolean().default(true),
+  title: z.string().trim().min(1).max(120),
+  subtitle: z.string().trim().max(300).optional(),
+  submitLabel: z.string().trim().max(50).default('Send Message').optional(),
+  successMessage: z.string().trim().max(200).default('Thank you! We will get back to you soon.').optional(),
+  fields: z.array(ZLandingPageContactFormField).max(10).default([])
 });
 
 export const ZLandingPageTestimonialItem = z.object({
@@ -204,7 +237,9 @@ export const ZLandingPageSectionV1 = z.discriminatedUnion('type', [
   ZLandingPageTestimonialsSection,
   ZLandingPageFaqSection,
   ZLandingPageCtaSection,
-  ZLandingPageStatsSection
+  ZLandingPageStatsSection,
+  ZLandingPageVideoSection,
+  ZLandingPageContactSection
 ]);
 
 export const ZLandingPageFooter = z.object({

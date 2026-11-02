@@ -172,8 +172,13 @@ function renderCoursesSection(
   sec: Extract<LandingPageSectionV1, { type: 'courses' }>,
   courses: LandingPageCourse[]
 ): string {
+  let visibleCourses = courses;
+  if (sec.selectedCourseIds && sec.selectedCourseIds.length > 0) {
+    const idSet = new Set(sec.selectedCourseIds);
+    visibleCourses = courses.filter((c) => idSet.has(c.id));
+  }
   const maxItems = sec.maxItems ?? 6;
-  const visibleCourses = courses.slice(0, maxItems);
+  visibleCourses = visibleCourses.slice(0, maxItems);
 
   const coursesHtml =
     visibleCourses.length > 0
@@ -308,6 +313,79 @@ function renderStatsSection(sec: Extract<LandingPageSectionV1, { type: 'stats' }
   `;
 }
 
+function renderVideoSection(sec: Extract<LandingPageSectionV1, { type: 'video' }>): string {
+  const cleanId = encodeURIComponent(sec.videoId.replace(/[^a-zA-Z0-9_-]/g, ''));
+  const embedUrl =
+    sec.provider === 'youtube'
+      ? `https://www.youtube-nocookie.com/embed/${cleanId}?rel=0&modestbranding=1`
+      : `https://player.vimeo.com/video/${cleanId}?dnt=1`;
+
+  const ratio = sec.aspectRatio || '16/9';
+
+  return `
+    <section id="${escapeHtml(sec.id)}" class="cio-lp-section cio-lp-video-section">
+      <div class="cio-lp-container">
+        ${
+          sec.title
+            ? `<div class="cio-lp-section-header">
+                <h2 class="cio-lp-section-title">${escapeHtml(sec.title)}</h2>
+                ${sec.subtitle ? `<p class="cio-lp-section-sub">${escapeHtml(sec.subtitle)}</p>` : ''}
+              </div>`
+            : ''
+        }
+        <div class="cio-lp-video-wrapper" style="max-width: 900px; margin: 0 auto; border-radius: 12px; overflow: hidden; position: relative; aspect-ratio: ${ratio}; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);">
+          <iframe
+            src="${embedUrl}"
+            title="${escapeHtml(sec.title || 'Video')}"
+            style="width: 100%; height: 100%; border: 0; position: absolute; top: 0; left: 0;"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderContactSection(sec: Extract<LandingPageSectionV1, { type: 'contact' }>): string {
+  const fieldsHtml = sec.fields
+    .map((field) => {
+      const reqStar = field.required ? '<span style="color: #ef4444;">*</span>' : '';
+      if (field.type === 'textarea') {
+        return `
+          <div class="cio-lp-form-field" style="margin-bottom: 1rem; text-align: left;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">${escapeHtml(field.label)} ${reqStar}</label>
+            <textarea name="${escapeHtml(field.name)}" placeholder="${escapeHtml(field.placeholder || '')}" style="width: 100%; min-height: 100px; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); font-family: inherit; font-size: 0.875rem;" ${field.required ? 'required' : ''}></textarea>
+          </div>
+        `;
+      }
+      return `
+        <div class="cio-lp-form-field" style="margin-bottom: 1rem; text-align: left;">
+          <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">${escapeHtml(field.label)} ${reqStar}</label>
+          <input type="${escapeHtml(field.type)}" name="${escapeHtml(field.name)}" placeholder="${escapeHtml(field.placeholder || '')}" style="width: 100%; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); font-family: inherit; font-size: 0.875rem;" ${field.required ? 'required' : ''} />
+        </div>
+      `;
+    })
+    .join('');
+
+  return `
+    <section id="${escapeHtml(sec.id)}" class="cio-lp-section cio-lp-contact-section">
+      <div class="cio-lp-container" style="max-width: 640px; margin: 0 auto;">
+        <div class="cio-lp-section-header">
+          <h2 class="cio-lp-section-title">${escapeHtml(sec.title)}</h2>
+          ${sec.subtitle ? `<p class="cio-lp-section-sub">${escapeHtml(sec.subtitle)}</p>` : ''}
+        </div>
+        <form class="cio-lp-contact-form" style="background: var(--cio-lp-card-bg, #fff); border: 1px solid var(--cio-lp-card-border, #e2e8f0); border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);" onsubmit="event.preventDefault(); this.querySelector('.cio-lp-contact-success').style.display='block';">
+          ${fieldsHtml}
+          <button type="submit" class="cio-lp-btn-primary" style="width: 100%; padding: 0.75rem 1.5rem; font-weight: 600; border-radius: 8px; border: 0; cursor: pointer; margin-top: 0.5rem;">${escapeHtml(sec.submitLabel || 'Send Message')}</button>
+          <p class="cio-lp-contact-success" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #ecfdf5; color: #065f46; border-radius: 6px; font-size: 0.875rem; text-align: center;">${escapeHtml(sec.successMessage || 'Thank you! We will get back to you soon.')}</p>
+        </form>
+      </div>
+    </section>
+  `;
+}
+
 function renderSections(sections: LandingPageSectionV1[], data: LandingPageRenderData): string {
   return sections
     .filter((sec) => sec.enabled)
@@ -325,6 +403,10 @@ function renderSections(sections: LandingPageSectionV1[], data: LandingPageRende
           return renderCtaSection(sec);
         case 'stats':
           return renderStatsSection(sec);
+        case 'video':
+          return renderVideoSection(sec);
+        case 'contact':
+          return renderContactSection(sec);
         default:
           return '';
       }

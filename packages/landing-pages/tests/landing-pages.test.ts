@@ -193,5 +193,63 @@ describe('@cio/landing-pages', () => {
       expect(result.html).toContain('/lms');
       expect(result.html).not.toContain('Sign in');
     });
+
+    it('renders video and contact sections correctly', () => {
+      const doc = getDefaultDocumentForTemplate('modern');
+      doc.sections.push({
+        id: 'sec-video',
+        type: 'video',
+        enabled: true,
+        title: 'Watch our story',
+        provider: 'youtube',
+        videoId: 'dQw4w9WgXcQ'
+      });
+      doc.sections.push({
+        id: 'sec-contact',
+        type: 'contact',
+        enabled: true,
+        title: 'Get in touch',
+        fields: [{ id: 'f1', name: 'email', label: 'Work Email', type: 'email', required: true }]
+      });
+
+      const validation = validateLandingPageDocument(doc);
+      expect(validation.success).toBe(true);
+
+      const result = renderLandingPage(doc, mockRenderData);
+      expect(result.html).toContain('Watch our story');
+      expect(result.html).toContain('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ');
+      expect(result.html).toContain('Get in touch');
+      expect(result.html).toContain('Work Email');
+    });
+
+    it('filters courses by selectedCourseIds when specified', () => {
+      const doc = getDefaultDocumentForTemplate('modern');
+      const coursesSection = doc.sections.find((s) => s.type === 'courses');
+      if (coursesSection && coursesSection.type === 'courses') {
+        coursesSection.selectedCourseIds = ['course-2'];
+      }
+
+      const multiCourseData: LandingPageRenderData = {
+        ...mockRenderData,
+        courses: [
+          {
+            id: 'course-1',
+            title: 'Course One',
+            slug: 'course-1',
+            isPricing: false
+          },
+          {
+            id: 'course-2',
+            title: 'Course Two',
+            slug: 'course-2',
+            isPricing: false
+          }
+        ]
+      };
+
+      const result = renderLandingPage(doc, multiCourseData);
+      expect(result.html).toContain('Course Two');
+      expect(result.html).not.toContain('Course One');
+    });
   });
 });
