@@ -1,6 +1,6 @@
 import { CERTIFICATE_HEIGHT, CERTIFICATE_WIDTH } from '../constants';
 import type { CertificateDocumentV1, CertificateRenderData, CertificateRenderResult } from '../types';
-import { escapeHtml, getYear } from './shared';
+import { escapeHtml, getYear, renderShapes } from './shared';
 
 const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 
@@ -135,6 +135,7 @@ export function renderModularCertificateDocument(
         ? `<div class="modular-border modular-border-${borderStyle}" ${elementAttributes(design, 'border')}><i></i><b></b><span></span><em></em></div>`
         : ''
     }
+    ${renderShapes(design.shapes)}
     <div class="modular-content">
       ${enabled(design, 'header') ? `<div class="modular-org" ${elementAttributes(design, 'header')}>${organizationName}</div>` : ''}
       ${enabled(design, 'title') ? `<h1 class="modular-title" ${elementAttributes(design, 'title')}>${title}</h1>` : ''}

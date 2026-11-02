@@ -6,7 +6,7 @@ import type {
   CertificateRenderResult
 } from './types';
 import { renderModularCertificateDocument } from './templates/modular';
-import { BASE_STYLES, escapeHtml } from './templates/shared';
+import { BASE_STYLES, escapeHtml, renderShapes } from './templates/shared';
 
 export function isCertificateDocumentV1(value: unknown): value is CertificateDocumentV1 {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
@@ -136,6 +136,7 @@ export function renderCertificateDocumentV1(
     : `<div class="studio-verification">${escapeHtml(data.certificateId)}</div>`;
   const body = `<main class="studio-certificate">
   <div class="studio-inner">
+    ${renderShapes(design.shapes)}
     ${badge}
     <header class="studio-header" style="${getElementStyle(design, 'header')}">
       <span>${escapeHtml(organizationName)}</span>

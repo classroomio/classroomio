@@ -13,13 +13,15 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "dev": "tsc --watch",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "vitest run"
   },
   "dependencies": {
     "@cio/tsconfig": "workspace:*"
   },
   "devDependencies": {
     "tsc-alias": "^1.8.16",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.2",
+    "vitest": "^1.2.2"
   }
 }

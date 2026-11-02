@@ -1,4 +1,4 @@
-import type { CertificateDesign, CertificateRenderData, CertificateSignatory } from '../types';
+import type { CertificateDesign, CertificateRenderData, CertificateShapeObject, CertificateSignatory } from '../types';
 import { CERTIFICATE_HEIGHT, CERTIFICATE_WIDTH } from '../constants';
 import { computeFieldFontSizes, computeFitFontSize, type FitFontSizeOptions } from '../font-metrics';
 
@@ -384,3 +384,91 @@ export const BASE_STYLES = `
   }
   ${SIGNATURE_IMAGE_STYLES}
 `;
+
+export function gradientCoordinates(angleDeg: number): { x1: string; y1: string; x2: string; y2: string } {
+  const angleRad = ((angleDeg - 90) * Math.PI) / 180;
+  const x = Math.cos(angleRad);
+  const y = Math.sin(angleRad);
+  const x1 = Math.round(50 - x * 50);
+  const y1 = Math.round(50 - y * 50);
+  const x2 = Math.round(50 + x * 50);
+  const y2 = Math.round(50 + y * 50);
+  return { x1: `${x1}%`, y1: `${y1}%`, x2: `${x2}%`, y2: `${y2}%` };
+}
+
+export function renderShape(shape: CertificateShapeObject): string {
+  const id = escapeHtml(shape.id);
+  const width = Math.max(1, Math.round(shape.frame.width));
+  const height = Math.max(1, Math.round(shape.frame.height));
+  const x = Math.round(shape.frame.x);
+  const y = Math.round(shape.frame.y);
+  const rotation = shape.frame.rotation ?? 0;
+  const opacity = Math.max(0, Math.min(1, shape.opacity ?? 1));
+  const zIndex = shape.zIndex ?? 0;
+  const borderRadius = Math.max(0, Math.round(shape.borderRadius ?? 0));
+
+  const strokeWidth = shape.stroke?.width ? Math.max(0, Math.round(shape.stroke.width)) : 0;
+  const strokeColor = shape.stroke?.color ?? 'none';
+  const strokeStyle = shape.stroke?.style ?? 'solid';
+  const strokeDash = strokeStyle === 'dashed' ? 'stroke-dasharray="6 4"' : '';
+  const strokeAttr =
+    strokeWidth > 0 && strokeColor !== 'none'
+      ? `stroke="${escapeHtml(strokeColor)}" stroke-width="${strokeWidth}" ${strokeDash}`
+      : 'stroke="none"';
+
+  let fillAttr = 'none';
+  let defs = '';
+
+  if (shape.fill.type === 'solid') {
+    fillAttr = escapeHtml(shape.fill.color);
+  } else if (shape.fill.type === 'linear-gradient') {
+    const gradId = `grad-${id}`;
+    const coords = gradientCoordinates(shape.fill.angle ?? 90);
+    const stops = (shape.fill.stops ?? [])
+      .map((s) => `<stop offset="${Math.round(s.offset * 100)}%" stop-color="${escapeHtml(s.color)}" />`)
+      .join('');
+    defs = `<defs><linearGradient id="${gradId}" x1="${coords.x1}" y1="${coords.y1}" x2="${coords.x2}" y2="${coords.y2}">${stops}</linearGradient></defs>`;
+    fillAttr = `url(#${gradId})`;
+  }
+
+  let svgContent = '';
+  const halfStroke = strokeWidth / 2;
+  const innerW = Math.max(0, width - strokeWidth);
+  const innerH = Math.max(0, height - strokeWidth);
+
+  switch (shape.shape) {
+    case 'rectangle':
+    case 'frame': {
+      const rx = Math.max(0, borderRadius - halfStroke);
+      svgContent = `<rect x="${halfStroke}" y="${halfStroke}" width="${innerW}" height="${innerH}" rx="${rx}" ry="${rx}" fill="${fillAttr}" ${strokeAttr} />`;
+      break;
+    }
+    case 'ellipse': {
+      const rx = Math.max(1, innerW / 2);
+      const ry = Math.max(1, innerH / 2);
+      svgContent = `<ellipse cx="${width / 2}" cy="${height / 2}" rx="${rx}" ry="${ry}" fill="${fillAttr}" ${strokeAttr} />`;
+      break;
+    }
+    case 'line': {
+      const effectiveStroke =
+        strokeWidth > 0
+          ? strokeAttr
+          : `stroke="${shape.fill.type === 'solid' ? escapeHtml(shape.fill.color) : '#000000'}" stroke-width="2"`;
+      svgContent = `<line x1="0" y1="${height / 2}" x2="${width}" y2="${height / 2}" fill="none" ${effectiveStroke} />`;
+      break;
+    }
+    default:
+      svgContent = `<rect x="${halfStroke}" y="${halfStroke}" width="${innerW}" height="${innerH}" fill="${fillAttr}" ${strokeAttr} />`;
+  }
+
+  return `<div class="studio-shape" data-certificate-element="${id}" data-shape-type="${escapeHtml(shape.shape)}" style="position:absolute;left:${x}px;top:${y}px;width:${width}px;height:${height}px;transform:rotate(${rotation}deg);transform-origin:center center;opacity:${opacity};z-index:${zIndex};pointer-events:none;"><svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block;">${defs}${svgContent}</svg></div>`;
+}
+
+export function renderShapes(shapes: CertificateShapeObject[] | undefined): string {
+  if (!shapes || !Array.isArray(shapes) || shapes.length === 0) return '';
+
+  return [...shapes]
+    .sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0))
+    .map(renderShape)
+    .join('');
+}

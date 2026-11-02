@@ -44,6 +44,43 @@ export interface CertificateDocumentSignatory {
   signatureUrl?: string;
 }
 
+export interface GradientStop {
+  offset: number;
+  color: string;
+}
+
+export type CertificateShapeFill =
+  | { type: 'none' }
+  | { type: 'solid'; color: string }
+  | { type: 'linear-gradient'; angle: number; stops: GradientStop[] };
+
+export type CertificateShapeStroke = {
+  color: string;
+  width: number;
+  style: 'solid' | 'dashed';
+} | null;
+
+export interface CertificateShapeFrame {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+}
+
+export interface CertificateShapeObject {
+  id: string;
+  objectType: 'shape';
+  shape: 'rectangle' | 'ellipse' | 'line' | 'frame';
+  frame: CertificateShapeFrame;
+  fill: CertificateShapeFill;
+  stroke: CertificateShapeStroke;
+  borderRadius: number;
+  opacity: number;
+  locked: boolean;
+  zIndex: number;
+}
+
 export interface CertificateDocumentV1 {
   version: 1;
   templateSourceId?: string;
@@ -56,6 +93,7 @@ export interface CertificateDocumentV1 {
   descriptionOverride?: string;
   idFormat: string;
   signatories: CertificateDocumentSignatory[];
+  shapes?: CertificateShapeObject[];
   elements?: Record<
     string,
     {
