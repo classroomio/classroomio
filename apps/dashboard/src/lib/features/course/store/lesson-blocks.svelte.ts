@@ -228,7 +228,9 @@ class LessonBlocksApi {
 
     if (created) {
       this.serverMeta.set(created.id, { placementId: created.placementId, version: created.version });
-      this.noteTranslations[created.id] = (created.contents as Partial<Record<TLocale, string>>) ?? translations;
+
+      const localContent = this.noteTranslations[localBlock.id] ?? translations;
+      this.noteTranslations[created.id] = { ...translations, ...localContent };
       delete this.noteTranslations[localBlock.id];
       this.blocks = upsertLessonBlock(
         this.blocks,
@@ -237,6 +239,11 @@ class LessonBlocksApi {
         localBlock.id
       );
       this.lastInsertedBlockId = created.id;
+
+      if (JSON.stringify(this.noteTranslations[created.id]) !== JSON.stringify(created.contents)) {
+        this.dirtyNotes.add(created.id);
+        this.persistSoon();
+      }
     }
 
     return this.lastInsertedBlockId;

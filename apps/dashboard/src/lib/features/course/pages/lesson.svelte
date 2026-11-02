@@ -347,15 +347,19 @@
     lessonId: string,
     versionIntent: TLessonVersionIntentRequest
   ) {
-    const content = lessonApi.translations[lessonId]?.[locale] || '';
-
     if (!courseApi.course?.id) return;
+
+    if (useBlockEditor) {
+      return;
+    }
+
+    const content = lessonApi.translations[lessonId]?.[locale] || '';
 
     // The legacy language endpoint stores content on the first note block and
     // creates one when missing. Saving an empty translation must not add a note
     // the author never created.
     const hasNoteBlock = lessonBlocksApi.blocks.some((block) => block.type === 'note');
-    if (useBlockEditor && !hasNoteBlock && isHtmlValueEmpty(content)) return;
+    if (!hasNoteBlock && isHtmlValueEmpty(content)) return;
 
     // Use API to upsert lesson language (creates if doesn't exist, updates if exists)
     await lessonApi.upsertLanguage(courseApi.course.id, lessonId, locale, content, versionIntent);
