@@ -16,6 +16,11 @@ export const ZGetRecommendedCourses = z.object({
 });
 export type TGetRecommendedCourses = z.infer<typeof ZGetRecommendedCourses>;
 
+export const ZExploreCourseParam = z.object({
+  courseId: z.uuid()
+});
+export type TExploreCourseParam = z.infer<typeof ZExploreCourseParam>;
+
 export const ZCourseClone = z.object({
   title: z.string().min(1),
   description: z.string().optional(),

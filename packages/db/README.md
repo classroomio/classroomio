@@ -125,25 +125,32 @@ pnpm seed --users --profiles
 pnpm seed --organizations --organization-members --organization-plan
 ```
 
-| Flag                     | What it seeds                                          |
-| ------------------------ | ------------------------------------------------------ |
-| `--roles`                | ADMIN, TUTOR, STUDENT roles                            |
-| `--submissions`          | Submission statuses                                    |
-| `--question-types`       | Question types                                         |
-| `--users`                | Auth users (from `users.json`)                         |
-| `--profiles`             | User profiles                                          |
-| `--accounts`             | User accounts                                          |
-| `--organizations`        | Demo organizations                                     |
-| `--organization-members` | Org membership records                                 |
-| `--organization-plan`    | Organization plan records (enterprise + early adopter) |
-| `--groups`               | Course groups                                          |
-| `--group-members`        | Group membership records                               |
-| `--courses`              | Demo courses                                           |
-| `--sections`             | Course sections                                        |
-| `--lessons`              | Lessons                                                |
-| `--exercises`            | Exercises                                              |
-| `--questions`            | Questions                                              |
-| `--templates`            | Exercise templates                                     |
+| Flag                     | What it seeds                                                       |
+| ------------------------ | ------------------------------------------------------------------- |
+| `--roles`                | ADMIN, TUTOR, STUDENT roles                                         |
+| `--submissions`          | Submission statuses                                                 |
+| `--question-types`       | Question types                                                      |
+| `--users`                | Auth users (from `users.json`)                                      |
+| `--profiles`             | User profiles                                                       |
+| `--accounts`             | User accounts                                                       |
+| `--organizations`        | Demo organizations                                                  |
+| `--organization-members` | Org membership records                                              |
+| `--organization-plan`    | Organization plan records (enterprise + early adopter)              |
+| `--groups`               | Course groups                                                       |
+| `--group-members`        | Group membership records                                            |
+| `--courses`              | Demo courses                                                        |
+| `--sections`             | Course sections                                                     |
+| `--lessons`              | Lessons                                                             |
+| `--exercises`            | Exercises                                                           |
+| `--questions`            | Questions                                                           |
+| `--templates`            | Exercise templates                                                  |
+| `--demo-people`          | Demo learners and tutors, with their org memberships                |
+| `--demo-courses`         | Demo course catalog with lessons, videos and exercises              |
+| `--demo-enrollments`     | Demo enrolments, progress, submissions, certificates and attendance |
+| `--demo-community`       | Demo community questions and answers                                |
+| `--demo-newsfeed`        | Demo course newsfeed posts and comments                             |
+| `--demo-cohorts`         | Demo cohorts with goals and posts (udemy-test)                      |
+| `--demo-notifications`   | Demo notifications for `student@test.com`                           |
 
 ### Demo accounts
 

@@ -27,6 +27,7 @@ import { accountRouter } from '@api/routes/account';
 import { agentRouter } from '@api/routes/agent';
 import { auth } from '@cio/db/auth';
 import { communityRouter } from '@api/routes/community';
+import { communityComposeRouter } from '@api/routes/community/compose';
 import { courseRouter } from '@api/routes/course';
 import { dashAnalyticsRouter } from '@api/routes/dash';
 import { domainRouter } from '@api/routes/domain/domain';
@@ -274,6 +275,7 @@ export const app = new Hono()
   .route('/sso', ssoDiscoveryRouter)
   .route('/dash', dashAnalyticsRouter)
   .route('/community', communityRouter)
+  .route('/community/compose', communityComposeRouter)
   .route('/invite', inviteRouter)
   .route('/org-site/course', publicCourseRouter)
   .route('/org-site/og', orgSiteOgRouter)

@@ -118,11 +118,13 @@ describe('computeProgressionAccess', () => {
     expect(accessById.get('section-1-lesson-2')).toEqual({ accessible: true, lockReason: null });
     expect(accessById.get('section-2-lesson-1')).toEqual({
       accessible: false,
-      lockReason: 'progression_blocked'
+      lockReason: 'progression_blocked',
+      blockedById: 'section-1-lesson-2'
     });
     expect(accessById.get('section-2-lesson-2')).toEqual({
       accessible: false,
-      lockReason: 'progression_blocked'
+      lockReason: 'progression_blocked',
+      blockedById: 'section-1-lesson-2'
     });
   });
 
@@ -181,7 +183,8 @@ describe('computeProgressionAccess', () => {
     expect(accessById.get('exercise-1')).toEqual({ accessible: true, lockReason: null });
     expect(accessById.get('lesson-2')).toEqual({
       accessible: false,
-      lockReason: 'progression_blocked'
+      lockReason: 'progression_blocked',
+      blockedById: 'exercise-1'
     });
   });
 });

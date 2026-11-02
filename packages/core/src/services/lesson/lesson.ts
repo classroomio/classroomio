@@ -34,6 +34,7 @@ import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforceme
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
 import { emitCourseWebhookEvent } from '../webhook/emit';
+import { notifyLessonPublished } from '../notification/course-events';
 import { captureCourseEvent } from '../posthog';
 
 /**
@@ -145,7 +146,8 @@ export async function updateLessonService(
   try {
     const payload: TLessonUpdate = { ...data };
     const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
-    const needsExisting = payload.slug !== undefined || payload.order !== undefined || touchesSession;
+    const needsExisting =
+      payload.slug !== undefined || payload.order !== undefined || payload.isUnlocked === true || touchesSession;
     const existing = needsExisting ? await getLessonById(lessonId) : null;
 
     if (payload.slug !== undefined) {
@@ -178,6 +180,14 @@ export async function updateLessonService(
 
     if (updated.courseId) {
       await touchCourseUpdatedAt(updated.courseId);
+    }
+
+    if (existing?.isUnlocked === false && updated.isUnlocked === true && updated.courseId) {
+      void notifyLessonPublished({
+        lessonId,
+        courseId: updated.courseId,
+        actorProfileId: options.actorProfileId
+      });
     }
 
     if (existing && hasSessionMoved(existing, updated)) {

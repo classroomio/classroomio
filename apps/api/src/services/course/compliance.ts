@@ -27,8 +27,11 @@ import type {
 import type { TCourseCompletionRecord } from '@cio/db/types';
 import { getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 import { getUserCourseRole } from '@cio/db/queries/group/group';
-import { getCourseCertificationRow } from '@cio/db/queries/course/course';
+import { getCourseCertificationRow, getEnrolledCourses, type TStudentCourse } from '@cio/db/queries/course/course';
+import { getWebhookCertificateIssue } from '@cio/db/queries/webhook/payload-details';
+import { calcCourseProgressPercent } from '@api/utils/course-completion';
 import { emitCourseWebhookEvent, emitWebhookEvent } from '@cio/core/services/webhook/emit';
+import { notifyCertificateIssued, notifyComplianceRecord } from '@cio/core/services/notification/course-events';
 import type { TWebhookComplianceTrigger } from '@cio/utils/constants/webhook';
 import { orgHasCertificatesEnabled } from './certificate-plan';
 import { buildCertificateWebhookInput, evaluateCourseCertification } from './completion';
@@ -61,9 +64,32 @@ function addMonths(isoDate: string, months: number) {
   return date.toISOString();
 }
 
-function getWholeDaysUntil(startDate: Date, endDate: Date) {
-  const millisecondsPerDay = 24 * 60 * 60 * 1000;
-  return Math.ceil((endDate.getTime() - startDate.getTime()) / millisecondsPerDay);
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const DEFAULT_REMINDER_DAYS_BEFORE = [30, 7, 1];
+
+export function getWholeDaysUntil(startDate: Date, endDate: Date) {
+  return Math.ceil((endDate.getTime() - startDate.getTime()) / MILLISECONDS_PER_DAY);
+}
+
+/** Postgres timestamps arrive as `2026-10-25 18:06:28+00`; clients get ISO 8601. */
+export function toIsoTimestamp(value: string | null | undefined) {
+  return value ? new Date(value).toISOString() : null;
+}
+
+export function getGracePeriodEndsAt(dueDate: Date, gracePeriodDays: number) {
+  return new Date(dueDate.getTime() + gracePeriodDays * MILLISECONDS_PER_DAY);
+}
+
+/**
+ * Days before a completion or certificate expires at which it counts as expiring soon: the earliest reminder.
+ */
+export function getRenewalWindowDays(compliance: { reminderDaysBefore?: number[] } | null | undefined) {
+  const reminderDays = compliance?.reminderDaysBefore?.length
+    ? compliance.reminderDaysBefore
+    : DEFAULT_REMINDER_DAYS_BEFORE;
+
+  return Math.max(...reminderDays);
 }
 
 function getStatusCounts(records: Array<{ record: TCourseCompletionRecord | null }>) {
@@ -501,6 +527,14 @@ export async function syncComplianceProgressFromSubmission(
     certificateIssue
   });
 
+  if (certificateIssue) {
+    await notifyCertificateIssued({
+      courseId,
+      profileId: profile.id,
+      dedupeKey: `certificate_issued:${certificateIssue.id}`
+    });
+  }
+
   return {
     status: 'compliant',
     completed: true,
@@ -870,6 +904,15 @@ export async function runComplianceExpiryCheck() {
 
   for (const change of newCycles) {
     await emitComplianceStatusChanged(...change);
+
+    const [record] = change;
+    await notifyComplianceRecord({
+      type: 'compliance_renewal_due',
+      recordId: record.id,
+      courseId: record.courseId,
+      profileId: record.profileId,
+      dedupeKey: `compliance_renewal_due:${record.id}`
+    });
   }
 
   return {
@@ -909,7 +952,7 @@ export async function runComplianceReminderScan() {
     let nextStatus: ComplianceStatus | null = null;
 
     if (daysUntilDue < 0) {
-      const gracePeriodEndsAt = new Date(dueDate.getTime() + gracePeriodDays * 24 * 60 * 60 * 1000);
+      const gracePeriodEndsAt = getGracePeriodEndsAt(dueDate, gracePeriodDays);
       nextStatus = gracePeriodDays > 0 && now <= gracePeriodEndsAt ? 'in_grace_period' : 'non_compliant';
     } else if ((compliance.reminderDaysBefore ?? []).includes(daysUntilDue)) {
       nextStatus = 'expiring_soon';
@@ -922,6 +965,13 @@ export async function runComplianceReminderScan() {
 
       if (createdEvent) {
         reminderEventCount += 1;
+        await notifyComplianceRecord({
+          type: row.record.cycleNumber > 1 ? 'compliance_renewal_due' : 'compliance_due_soon',
+          recordId: row.record.id,
+          courseId: row.record.courseId,
+          profileId: row.record.profileId,
+          dedupeKey: `compliance_reminder:${row.record.id}:${daysUntilDue}`
+        });
       }
     }
 
@@ -933,6 +983,16 @@ export async function runComplianceReminderScan() {
         previousStatus: row.record.status,
         trigger: 'reminder_scan'
       });
+
+      if (nextStatus === 'in_grace_period' || nextStatus === 'non_compliant') {
+        await notifyComplianceRecord({
+          type: 'compliance_overdue',
+          recordId: row.record.id,
+          courseId: row.record.courseId,
+          profileId: row.record.profileId,
+          dedupeKey: `compliance_overdue:${row.record.id}`
+        });
+      }
     }
   }
 
@@ -1046,4 +1106,210 @@ export async function getOrgComplianceOverview(orgId: string): Promise<OrgCompli
       validUntil: row.validUntil
     }))
   };
+}
+
+export type LearnerComplianceStanding =
+  | 'overdue'
+  | 'in_grace_period'
+  | 'due_soon'
+  | 'open'
+  | 'unscheduled'
+  | 'compliant'
+  | 'waived';
+
+export type LearnerComplianceOverallStatus = 'none' | 'overdue' | 'in_grace_period' | 'due_soon' | 'compliant';
+
+const LEARNER_STANDING_ORDER: LearnerComplianceStanding[] = [
+  'overdue',
+  'in_grace_period',
+  'due_soon',
+  'open',
+  'unscheduled',
+  'compliant',
+  'waived'
+];
+
+export type LearnerComplianceRequirement = {
+  courseId: string;
+  courseTitle: string;
+  courseImage: string | null;
+  framework: string | null;
+  isMandatory: boolean;
+  retakeIntervalMonths: number;
+  gracePeriodDays: number;
+  standing: LearnerComplianceStanding;
+  status: ComplianceStatus | 'no_record';
+  cycleNumber: number | null;
+  dueDate: string | null;
+  gracePeriodEndsAt: string | null;
+  completedAt: string | null;
+  validUntil: string | null;
+  lastCompletedAt: string | null;
+  score: number | null;
+  progressPercent: number;
+  waiver: { reason: string | null; expiresAt: string | null } | null;
+  certificate: { issuedAt: string; expiresAt: string | null } | null;
+};
+
+export type LearnerComplianceOverview = {
+  status: LearnerComplianceOverallStatus;
+  counts: Record<LearnerComplianceStanding, number>;
+  requirements: LearnerComplianceRequirement[];
+};
+
+function toLearnerStanding(status: ComplianceStatus | 'no_record', renewalDueSoon: boolean): LearnerComplianceStanding {
+  switch (status) {
+    case 'non_compliant':
+      return 'overdue';
+    case 'in_grace_period':
+      return 'in_grace_period';
+    case 'expiring_soon':
+      return 'due_soon';
+    case 'compliant':
+      return renewalDueSoon ? 'due_soon' : 'compliant';
+    case 'waived':
+      return 'waived';
+    case 'no_record':
+      return 'unscheduled';
+    default:
+      return 'open';
+  }
+}
+
+function toLearnerComplianceRequirement(
+  course: TStudentCourse,
+  records: TCourseCompletionRecord[],
+  certificateExpiresAt: string | null,
+  now: Date
+): LearnerComplianceRequirement {
+  const compliance = course.compliance;
+  const gracePeriodDays = compliance?.gracePeriodDays ?? 0;
+  const currentRecord = records[0] ?? null;
+  const status = (currentRecord?.status as ComplianceStatus | undefined) ?? 'no_record';
+  const dueDate = toIsoTimestamp(currentRecord?.dueDate);
+  const validUntil = toIsoTimestamp(currentRecord?.validUntil);
+  const gracePeriodEndsAt =
+    dueDate && gracePeriodDays > 0 ? getGracePeriodEndsAt(new Date(dueDate), gracePeriodDays).toISOString() : null;
+  const renewalDueSoon =
+    status === 'compliant' &&
+    validUntil !== null &&
+    getWholeDaysUntil(now, new Date(validUntil)) <= getRenewalWindowDays(compliance);
+  const lastCompletedAt = toIsoTimestamp(records.find((record) => record.completedAt)?.completedAt);
+  const progressPercent = calcCourseProgressPercent({
+    lessonsCompleted: course.progressRate,
+    totalLessons: course.lessonCount,
+    exercisesCompleted: course.exercisesCompleted,
+    exercisesCount: course.exerciseCount
+  });
+  const waiver =
+    status === 'waived'
+      ? { reason: currentRecord?.waiverReason ?? null, expiresAt: toIsoTimestamp(currentRecord?.waiverExpiresAt) }
+      : null;
+  const certificateIssuedAt = toIsoTimestamp(course.certificateEarnedAt);
+  const certificate = certificateIssuedAt
+    ? { issuedAt: certificateIssuedAt, expiresAt: toIsoTimestamp(certificateExpiresAt) }
+    : null;
+  const completedAt = toIsoTimestamp(currentRecord?.completedAt);
+  const standing = toLearnerStanding(status, renewalDueSoon);
+
+  return {
+    courseId: course.id,
+    courseTitle: course.title,
+    courseImage: course.bannerImage || course.logo || null,
+    framework: compliance?.framework ?? null,
+    isMandatory: compliance?.isMandatory ?? true,
+    retakeIntervalMonths: compliance?.retakeIntervalMonths ?? 0,
+    gracePeriodDays,
+    standing,
+    status,
+    cycleNumber: currentRecord?.cycleNumber ?? null,
+    dueDate,
+    gracePeriodEndsAt,
+    completedAt,
+    validUntil,
+    lastCompletedAt,
+    score: currentRecord?.score ?? null,
+    progressPercent,
+    waiver,
+    certificate
+  };
+}
+
+function requirementSortDate(requirement: LearnerComplianceRequirement) {
+  const date =
+    requirement.standing === 'compliant' || requirement.standing === 'due_soon'
+      ? (requirement.validUntil ?? requirement.dueDate)
+      : requirement.dueDate;
+
+  return date ? new Date(date).getTime() : Number.POSITIVE_INFINITY;
+}
+
+function compareRequirements(left: LearnerComplianceRequirement, right: LearnerComplianceRequirement) {
+  const byStanding = LEARNER_STANDING_ORDER.indexOf(left.standing) - LEARNER_STANDING_ORDER.indexOf(right.standing);
+  if (byStanding !== 0) return byStanding;
+
+  return requirementSortDate(left) - requirementSortDate(right);
+}
+
+function toOverallStatus(
+  counts: Record<LearnerComplianceStanding, number>,
+  total: number
+): LearnerComplianceOverallStatus {
+  if (total === 0) return 'none';
+  if (counts.overdue > 0) return 'overdue';
+  if (counts.in_grace_period > 0) return 'in_grace_period';
+  if (counts.due_soon > 0) return 'due_soon';
+
+  return 'compliant';
+}
+
+/**
+ * The signed-in learner's compliance across every compliance course they are a student of in the organization:
+ * the current cycle of each, with grace, renewal, waiver and certificate details, ordered by urgency.
+ */
+export async function getLearnerComplianceOverview(
+  orgId: string,
+  profileId: string
+): Promise<LearnerComplianceOverview> {
+  const enrolledCourses = await getEnrolledCourses({ orgId, profileId });
+
+  return buildLearnerComplianceOverview(enrolledCourses, profileId);
+}
+
+/** {@link getLearnerComplianceOverview} for a learner whose enrolled courses are already loaded. */
+export async function buildLearnerComplianceOverview(
+  enrolledCourses: TStudentCourse[],
+  profileId: string
+): Promise<LearnerComplianceOverview> {
+  const now = new Date();
+  const complianceCourses = enrolledCourses.filter((course) => course.type === 'COMPLIANCE' && course.compliance);
+
+  const rows = await Promise.all(
+    complianceCourses.map(async (course) => {
+      const [history, certificateIssue] = await Promise.all([
+        getCourseComplianceHistoryRows(course.id, profileId),
+        getWebhookCertificateIssue(course.id, profileId)
+      ]);
+
+      return { course, history, certificateIssue };
+    })
+  );
+
+  const requirements = rows
+    .filter((row) => row.history.member)
+    .map((row) =>
+      toLearnerComplianceRequirement(row.course, row.history.records, row.certificateIssue?.expiresAt ?? null, now)
+    )
+    .sort(compareRequirements);
+
+  const counts = Object.fromEntries(LEARNER_STANDING_ORDER.map((standing) => [standing, 0])) as Record<
+    LearnerComplianceStanding,
+    number
+  >;
+  for (const requirement of requirements) {
+    counts[requirement.standing] += 1;
+  }
+  const status = toOverallStatus(counts, requirements.length);
+
+  return { status, counts, requirements };
 }

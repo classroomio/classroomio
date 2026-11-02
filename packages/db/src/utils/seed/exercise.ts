@@ -65,7 +65,7 @@ export async function seedExercise({ mvcSectionId, reactSectionId, pandasSection
       title: 'Introduction to Python - Quiz',
       slug: 'introduction-to-python-quiz',
       lessonId: '5e5c8221-4c11-4c40-8664-11743bb79579',
-      dueBy: '2023-12-21T18:21:00.000Z',
+      dueBy: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
       sectionId: pandasSectionId,
       order: 1
     },

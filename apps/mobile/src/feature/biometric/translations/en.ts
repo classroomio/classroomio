@@ -1,0 +1,27 @@
+export const en = {
+  methodFingerprint: 'fingerprint',
+  methodFaceUnlock: 'face unlock',
+  methodBiometrics: 'biometrics',
+  lockDuration: { one: '{count} minute', other: '{count} minutes' },
+  settingDescription: 'Asks when you open the app and after {duration} in the background.',
+  settingSetUp: 'Set up {method} in your device settings to use it here.',
+  settingUnsupported: 'This device does not support biometric unlock.',
+  turnOnPrompt: 'Turn on {method}',
+  stillOff: '{method} is still off',
+  unlockWith: 'Unlock with {method}',
+  offerTitle: 'Unlock with {method}?',
+  offerDescription:
+    'ClassroomIO will ask for {method} when you open the app, and when you return after {duration} away. You stay signed in either way. You can change this in Settings.',
+  notNow: 'Not now',
+  turnOn: 'Turn on',
+  isOn: '{method} is on',
+  isOnDescription: 'You can turn it off in Settings.',
+  isOff: '{method} is off',
+  unlockPrompt: 'Unlock ClassroomIO',
+  lockedTitle: 'ClassroomIO is locked',
+  lockedDescription: 'Use {method} to continue.',
+  lockedDescriptionWithEmail: 'Signed in as {email}. Use {method} to continue.',
+  errorLockout: '{method} is locked after too many attempts. Use your device passcode.',
+  errorNotSetUp: '{method} is not set up on this device.',
+  errorNotRecognized: '{method} did not recognize you. Try again.'
+};

@@ -103,7 +103,8 @@ import { searchRouter } from '@api/routes/organization/search';
 import { tagsRouter } from '@api/routes/organization/tags';
 import { widgetsRouter } from '@api/routes/organization/widgets';
 import { zValidator } from '@hono/zod-validator';
-import { ZGetRecommendedCourses } from '@cio/utils/validation/course';
+import { ZExploreCourseParam, ZGetRecommendedCourses } from '@cio/utils/validation/course';
+import { getExploreCourse } from '@api/services/course/explore';
 import { studentEmailTemplatesRouter } from '@api/routes/organization/email-templates';
 
 const earlyAdopterClaimRateLimit = createRateLimiter({
@@ -641,6 +642,28 @@ export const organizationRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to fetch recommended courses');
+      }
+    }
+  )
+  /**
+   * GET /organization/courses/recommended/:courseId
+   * Landing details for a course the learner can open from Explore, with pricing and whether they are enrolled.
+   */
+  .get(
+    '/courses/recommended/:courseId',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZExploreCourseParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgId = c.req.header('cio-org-id')!;
+        const { courseId } = c.req.valid('param');
+        const data = await getExploreCourse(orgId, user.id, courseId);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch course');
       }
     }
   )

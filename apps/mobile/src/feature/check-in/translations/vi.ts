@@ -1,0 +1,40 @@
+import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
+
+import type { en } from './en';
+
+export const vi: TranslatedMessages<typeof en> = {
+  screenTitle: 'Điểm danh',
+  checkIn: 'Điểm danh',
+  checkingIn: 'Đang điểm danh cho bạn',
+  checkedInTitle: 'Bạn đã điểm danh',
+  checkedInLateTitle: 'Bạn đã điểm danh, được ghi là đến muộn',
+  checkedInAt: 'Điểm danh lúc {time}',
+  openLesson: 'Mở bài học',
+  scanAgain: 'Quét lại',
+  scanTitle: 'Quét mã điểm danh',
+  scanDescription: 'Hướng camera vào mã QR mà giảng viên đang hiển thị.',
+  viewfinderA11y: 'Khung camera để quét mã QR điểm danh',
+  typeCodeTitle: 'Hoặc nhập mã',
+  codeLabel: 'Mã điểm danh',
+  codeDescription: '6 chữ cái và chữ số, hiển thị dưới mã QR.',
+  typeCodeFromLesson: 'Để nhập mã, hãy mở bài học của buổi đó và chọn Điểm danh.',
+  cameraTitle: 'Cho phép truy cập camera',
+  cameraExplanation: 'Camera đọc mã QR điểm danh. Không có ảnh hay video nào được ghi lại.',
+  cameraBlocked: 'Quyền truy cập camera của ClassroomIO đang tắt. Hãy bật trong Cài đặt, hoặc nhập mã.',
+  allowCamera: 'Cho phép camera',
+  openSettings: 'Mở Cài đặt',
+  notCheckInCode: 'Mã QR này không phải mã điểm danh ClassroomIO.',
+  errorInvalidTitle: 'Mã này không dùng được',
+  errorInvalid: 'Hãy kiểm tra lại mã với giảng viên. Mã cũ ngừng hoạt động khi giảng viên tạo mã mới.',
+  errorExpiredTitle: 'Mã này đã hết hạn',
+  errorExpired: 'Hãy nhờ giảng viên hiển thị mã mới.',
+  errorNotEnrolledTitle: 'Bạn không phải học viên của khóa học này',
+  errorNotEnrolled: 'Chỉ học viên đã ghi danh vào khóa học mới điểm danh được.',
+  errorNotFoundTitle: 'Không tìm thấy buổi học',
+  errorNotFound: 'Buổi học không thuộc tổ chức hiện tại của bạn. Hãy đổi tổ chức trong Hồ sơ rồi quét lại.',
+  errorRateLimitedTitle: 'Quá nhiều lần thử',
+  errorRateLimited: 'Hãy đợi vài phút rồi thử lại.',
+  errorGenericTitle: 'Điểm danh không thành công',
+  errorLinkTitle: 'Liên kết này không phải mã điểm danh',
+  errorLink: 'Hãy quét mã QR giảng viên hiển thị, hoặc nhập mã từ bài học.'
+};

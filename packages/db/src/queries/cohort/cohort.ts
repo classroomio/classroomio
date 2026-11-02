@@ -793,7 +793,8 @@ export async function countCohortMembers(cohortId: string): Promise<number> {
 }
 
 export async function getEnrolledCohortsByProfile(
-  profileId: string
+  profileId: string,
+  organizationId?: string
 ): Promise<Array<TCohort & { roleId: number; courseCount: number; studentCount: number }>> {
   try {
     const result = await db
@@ -826,7 +827,12 @@ export async function getEnrolledCohortsByProfile(
       })
       .from(schema.cohortMember)
       .innerJoin(schema.cohort, eq(schema.cohortMember.cohortId, schema.cohort.id))
-      .where(eq(schema.cohortMember.profileId, profileId))
+      .where(
+        and(
+          eq(schema.cohortMember.profileId, profileId),
+          organizationId ? eq(schema.cohort.organizationId, organizationId) : undefined
+        )
+      )
       .orderBy(desc(schema.cohort.createdAt));
 
     return result.map((row) => ({

@@ -14,9 +14,11 @@ import { createProfileHook } from './auth/hooks/create-profile';
 import { customSession } from 'better-auth/plugins/custom-session';
 import { db } from '@db/drizzle';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { expo } from '@better-auth/expo';
 import { config as emailAndPassword } from './auth/email-password';
 import { getUserOrgRolesMap } from './queries/organization/organization';
 import { loginLink } from './auth/plugins/login-link';
+import { mobileAuth } from './auth/plugins/mobile-auth';
 import { oAuthProxy } from 'better-auth/plugins/oauth-proxy';
 import { resolveTrustedBrowserOrigin } from './utils';
 import { sso } from '@better-auth/sso';
@@ -143,6 +145,8 @@ const authInstance = betterAuth({
     ...buildOAuthProxyPlugin(),
     loginLink(),
     tokenExchange(),
+    expo(),
+    mobileAuth(),
     ...buildOAuthPlugins(),
     // Attaches the user's org memberships ({ [orgId]: roleId }) to the session
     // so org-scoped middlewares can authorize without a per-request DB query.

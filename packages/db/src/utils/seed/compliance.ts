@@ -586,7 +586,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       title: 'Handling PHI: the everyday rules',
       slug: 'handling-phi-the-everyday-rules',
       note: '<p>Minimum necessary access, secure messaging, faxing rules, and what to do if you spot a breach.</p>',
-      isUnlocked: false,
+      isUnlocked: true,
       order: 2
     },
     {
@@ -606,7 +606,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       title: 'Data classification & incident response',
       slug: 'data-classification-incident-response',
       note: '<p>What counts as confidential, who to call when something goes wrong, and how we record an incident.</p>',
-      isUnlocked: false,
+      isUnlocked: true,
       order: 2
     }
   ];

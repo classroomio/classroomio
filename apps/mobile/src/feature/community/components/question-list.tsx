@@ -1,0 +1,110 @@
+import { FlashList } from '@shopify/flash-list';
+import type { ReactElement } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { Empty, EmptyDescription, EmptyIllustration, EmptyTitle } from '@/feature/common/components/empty';
+import { Skeleton, SkeletonAvatar, SkeletonCard, SkeletonText } from '@/feature/common/components/skeleton';
+import { GUTTER, RADII, SPACING } from '@/feature/common/constants/layout';
+import { useTheme } from '@/feature/common/helpers/use-theme';
+import { communityCatalog } from '@/feature/community/translations/catalog';
+import type {
+  CommunityListQuestion,
+  CommunityQuestionSummary,
+  CommunitySegment
+} from '@/feature/community/types/community';
+import { useTranslations } from '@/feature/i18n/helpers/use-translations';
+
+import { PullRefreshControl, type RefreshHandler } from '@/feature/common/components/pull-refresh-control';
+
+import { QuestionCard } from './question-card';
+
+type QuestionListProps = {
+  questions: CommunityListQuestion[];
+  loading: boolean;
+  onRefresh: RefreshHandler;
+  onOpen: (question: CommunityQuestionSummary) => void;
+  header?: ReactElement;
+  empty: ReactElement;
+};
+
+export function QuestionList({ questions, loading, onRefresh, onOpen, header, empty }: QuestionListProps) {
+  const { colors } = useTheme();
+
+  return (
+    <FlashList
+      data={questions}
+      keyExtractor={(question) => question.slug ?? question.title ?? ''}
+      renderItem={({ item }) => <QuestionCard question={item} unread={Boolean(item.hasUnread)} onPress={onOpen} />}
+      ItemSeparatorComponent={Separator}
+      ListHeaderComponent={header}
+      ListEmptyComponent={loading ? <QuestionListSkeleton /> : empty}
+      contentInsetAdjustmentBehavior="automatic"
+      keyboardDismissMode="on-drag"
+      refreshControl={<PullRefreshControl onRefresh={onRefresh} />}
+      contentContainerStyle={styles.content}
+      style={{ backgroundColor: colors.background }}
+    />
+  );
+}
+
+function Separator() {
+  return <View style={styles.separator} />;
+}
+
+function QuestionListSkeleton() {
+  return (
+    <View style={styles.skeleton}>
+      {[0, 1, 2].map((index) => (
+        <SkeletonCard key={index}>
+          <View style={styles.skeletonHeader}>
+            <SkeletonAvatar size={36} />
+            <View style={styles.skeletonAuthor}>
+              <SkeletonText variant="label" lines={1} width="40%" />
+              <SkeletonText variant="caption" lines={1} width="62%" />
+            </View>
+          </View>
+          <SkeletonText variant="heading" lines={2} lastLineWidth="55%" />
+          <View style={styles.skeletonActions}>
+            <Skeleton width={36} height={14} radius={RADII.xs} />
+            <Skeleton width={36} height={14} radius={RADII.xs} />
+          </View>
+        </SkeletonCard>
+      ))}
+    </View>
+  );
+}
+
+type QuestionListEmptyProps = { segment: CommunitySegment; filtered: boolean };
+
+export function QuestionListEmpty({ segment, filtered }: QuestionListEmptyProps) {
+  const t = useTranslations(communityCatalog);
+
+  if (segment === 'for-you') {
+    return (
+      <Empty>
+        <EmptyIllustration name="questions" />
+        <EmptyTitle>{filtered ? t('emptyFilteredTitle') : t('forYouEmptyTitle')}</EmptyTitle>
+        <EmptyDescription>
+          {filtered ? t('forYouEmptyFilteredDescription') : t('forYouEmptyDescription')}
+        </EmptyDescription>
+      </Empty>
+    );
+  }
+
+  return (
+    <Empty>
+      <EmptyIllustration name="questions" />
+      <EmptyTitle>{filtered ? t('emptyFilteredTitle') : t('emptyTitle')}</EmptyTitle>
+      <EmptyDescription>{filtered ? t('emptyFilteredDescription') : t('emptyDescription')}</EmptyDescription>
+    </Empty>
+  );
+}
+
+const styles = StyleSheet.create({
+  content: { paddingHorizontal: GUTTER, paddingTop: SPACING.xs, paddingBottom: SPACING.xxxl },
+  separator: { height: SPACING.sm },
+  skeleton: { gap: SPACING.sm },
+  skeletonHeader: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+  skeletonAuthor: { flex: 1 },
+  skeletonActions: { flexDirection: 'row', gap: SPACING.md, paddingVertical: 9 }
+});

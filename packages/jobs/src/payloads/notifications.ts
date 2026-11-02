@@ -49,3 +49,19 @@ export const ZNotifyCourseSessionUpdatePayload = z.object({
   lessonId: z.string().min(1)
 });
 export type TNotifyCourseSessionUpdatePayload = z.infer<typeof ZNotifyCourseSessionUpdatePayload>;
+
+/**
+ * Payload for a `notifications:send-push` job: the notification rows to deliver as push. `deferred` marks a job
+ * re-queued to the end of a recipient's quiet hours, so it is not deferred twice.
+ */
+export const ZSendPushPayload = z.object({
+  notificationIds: z.array(z.uuid()).min(1),
+  deferred: z.boolean().optional()
+});
+export type TSendPushPayload = z.infer<typeof ZSendPushPayload>;
+
+/** Payload for a `notifications:check-push-receipts` job: Expo receipt ids with the token each was sent to. */
+export const ZCheckPushReceiptsPayload = z.object({
+  receipts: z.array(z.object({ receiptId: z.string().min(1), token: z.string().min(1) })).min(1)
+});
+export type TCheckPushReceiptsPayload = z.infer<typeof ZCheckPushReceiptsPayload>;

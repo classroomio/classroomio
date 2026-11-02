@@ -67,3 +67,26 @@ export type TUpvotePost = z.infer<typeof ZUpvotePost>;
 
 export type TCommunityCommentDelete = z.infer<typeof ZCommunityCommentDelete>;
 export type TGetCommunity = z.infer<typeof ZGetCommunity>;
+
+export const ZCommunityQuestionCreate = z.object({
+  title: z.string().trim().min(1, 'title is required'),
+  body: z.string().trim().min(1, 'body is required'),
+  courseId: z.string().min(1, 'courseId is required')
+});
+
+export const ZCommunityAnswerCreate = z.object({
+  body: z.string().trim().min(1, 'body is required')
+});
+
+export type TCommunityQuestionCreate = z.infer<typeof ZCommunityQuestionCreate>;
+export type TCommunityAnswerCreate = z.infer<typeof ZCommunityAnswerCreate>;
+
+export const ZCommunityAnswerParam = z.object({
+  answerId: z.uuid()
+});
+export type TCommunityAnswerParam = z.infer<typeof ZCommunityAnswerParam>;
+
+export const ZCommunityAcceptedAnswer = z.object({
+  answerId: z.uuid().nullable()
+});
+export type TCommunityAcceptedAnswer = z.infer<typeof ZCommunityAcceptedAnswer>;

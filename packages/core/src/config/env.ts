@@ -122,7 +122,11 @@ const envSchema = z.object({
   /** Supadata API key for YouTube caption fetching. Leave unset to disable YouTube transcripts. */
   SUPADATA_API_KEY: z.string().optional(),
   /** YouTube caption provider identifier (default 'supadata'). */
-  YOUTUBE_CAPTION_PROVIDER: z.string().optional()
+  YOUTUBE_CAPTION_PROVIDER: z.string().optional(),
+  /** Expo access token for push delivery. Setting it turns push on unless PUSH_NOTIFICATIONS_ENABLED is 'false'. */
+  EXPO_ACCESS_TOKEN: z.string().optional(),
+  /** 'true' sends push without an access token; 'false' turns push off. Unset with no token leaves push off. */
+  PUSH_NOTIFICATIONS_ENABLED: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);

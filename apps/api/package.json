@@ -69,6 +69,7 @@
     "isomorphic-dompurify": "^3.7.1",
     "katex": "^0.16.10",
     "marked": "^7.0.3",
+    "mediabunny": "1.62.0",
     "nanoid": "^5.1.5",
     "tldts": "^6.1.86",
     "turndown": "^7.2.4",

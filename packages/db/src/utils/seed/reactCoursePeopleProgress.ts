@@ -6,6 +6,7 @@ import {
   eq,
   groupmember,
   inArray,
+  lesson,
   lessonCompletion,
   organizationmember,
   profile,
@@ -14,6 +15,9 @@ import {
 } from '@db/drizzle';
 
 import type { TNewGroupmember, TNewProfile } from '@db/types';
+
+import { demoCourseLessonIds } from './demoCatalogTypes';
+import { UDEMY_COURSES } from './demoCatalogUdemy';
 
 interface SeedReactCoursePeopleProgressArgs {
   testOrgId: string;
@@ -27,8 +31,9 @@ const PASSWORD_HASH = '$2a$10$dgxySj.k12gDKhLx7X4x6./J.Nzhz7WQrwh5lkjLKwIwWW4o5G
 const REACT_LESSON_IDS = [
   '6f2d8142-0903-425c-8534-f5105b624752',
   '0a39ab2f-9451-4a90-902c-3030bf965637',
-  '80b79665-733b-41bf-9853-34fd8ab50496'
-] as const;
+  '80b79665-733b-41bf-9853-34fd8ab50496',
+  ...demoCourseLessonIds(UDEMY_COURSES.find((demoCourse) => demoCourse.key === 'react')!).slice(3)
+];
 
 const REACT_EXERCISE_IDS = [
   'e78bfd24-8ac3-43e9-a117-a2f9d00f74b1',
@@ -160,7 +165,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
     username: 'james.wilson',
     email: 'james.wilson@udemy-test.demo',
     progress: {
-      lessonsCompleted: 3,
+      lessonsCompleted: 5,
       exercisesCompleted: 3,
       certificateEarnedAtDaysAgo: 7,
       lastLoginDaysAgo: 7,
@@ -174,7 +179,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
     username: 'olivia.brown',
     email: 'olivia.brown@udemy-test.demo',
     progress: {
-      lessonsCompleted: 3,
+      lessonsCompleted: 5,
       exercisesCompleted: 3,
       certificateEarnedAtDaysAgo: null,
       lastLoginDaysAgo: 3,
@@ -198,8 +203,8 @@ function isoDateFromNow(now: Date, days: number): string {
   return isoDaysFromNow(now, days).slice(0, 10);
 }
 
-function lessonIdsForCount(count: number): string[] {
-  return REACT_LESSON_IDS.slice(0, count);
+function lessonIdsForCount(count: number, availableLessonIds: Set<string>): string[] {
+  return REACT_LESSON_IDS.slice(0, count).filter((lessonId) => availableLessonIds.has(lessonId));
 }
 
 function exerciseIdsForCount(count: number): string[] {
@@ -384,8 +389,11 @@ export async function seedReactCoursePeopleProgress({
     isComplete: boolean;
   }> = [];
 
+  const availableLessons = await db.select({ id: lesson.id }).from(lesson).where(inArray(lesson.id, REACT_LESSON_IDS));
+  const availableLessonIds = new Set(availableLessons.map((row) => row.id));
+
   for (const plan of progressPlans) {
-    for (const lessonId of lessonIdsForCount(plan.progress.lessonsCompleted)) {
+    for (const lessonId of lessonIdsForCount(plan.progress.lessonsCompleted, availableLessonIds)) {
       lessonCompletionsToInsert.push({
         lessonId,
         profileId: plan.profileId,

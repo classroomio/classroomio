@@ -22,6 +22,7 @@ import {
 
 import { log } from '../../utils/logger';
 import { getStudentEmailDeliveryLocale } from '@cio/core/services/email/localization';
+import { notify } from '@cio/core/services/notification/notify';
 import type { EmailLocale } from '@cio/utils/email';
 
 interface ScanResult {
@@ -181,6 +182,15 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
     }
 
     const { recipient } = dueDelivery;
+
+    await notify({
+      organizationId: recipient.organizationId,
+      recipientProfileIds: [recipient.profileId],
+      type: 'live_session_reminder',
+      entityId: recipient.lessonId,
+      courseId: recipient.courseId,
+      dedupeKey: `live_session_reminder:${recipient.lessonId}:${delivery.offsetMinutes}`
+    });
 
     try {
       const allowed = await preferenceCache.shouldSend({

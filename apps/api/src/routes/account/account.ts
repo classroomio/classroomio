@@ -8,6 +8,15 @@ import {
 import { Hono } from '@api/utils/hono';
 import { ZUpdateProfile } from '@cio/utils/validation/account';
 import { accountWorkspacesRouter } from '@api/routes/account/workspaces';
+import { accountTeachingRouter } from '@api/routes/account/teaching';
+import { accountComplianceRouter } from '@api/routes/account/compliance';
+import { accountCertificatesRouter } from '@api/routes/account/certificates';
+import { accountNotificationsRouter } from '@api/routes/account/notifications';
+import { accountNotificationPreferencesRouter } from '@api/routes/account/notification-preferences';
+import { accountDeviceTokensRouter } from '@api/routes/account/device-tokens';
+import { accountHomeDigestRouter } from '@api/routes/account/home-digest';
+import { accountCheckInRouter } from '@api/routes/account/check-in';
+import { accountCohortsRouter } from '@api/routes/account/cohorts';
 import { authMiddleware } from '@api/middlewares/auth';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { extractClientIp } from '@api/utils/redis/key-generators';
@@ -27,6 +36,15 @@ const pendingInvitesRateLimit = createRateLimiter({
 
 export const accountRouter = new Hono()
   .route('/', accountWorkspacesRouter)
+  .route('/', accountTeachingRouter)
+  .route('/', accountComplianceRouter)
+  .route('/', accountCertificatesRouter)
+  .route('/', accountNotificationsRouter)
+  .route('/', accountNotificationPreferencesRouter)
+  .route('/', accountDeviceTokensRouter)
+  .route('/', accountHomeDigestRouter)
+  .route('/', accountCheckInRouter)
+  .route('/', accountCohortsRouter)
   .get('/', authMiddleware, async (c) => {
     const user = c.get('user')!;
 

@@ -12,6 +12,9 @@ const DEFAULT_TRUSTED_ORIGINS = [
   'https://localhost:5173',
   'https://*.classroomio.com',
   'https://*.myclassroomio.com',
+  'classroomio://',
+  'classroomio-dev://',
+  'classroomio-preview://',
   // Common OIDC IdP discovery origins (SSO registration fetches .well-known/openid-configuration)
   'https://accounts.google.com',
   'https://account.google.com', // common typo for Google

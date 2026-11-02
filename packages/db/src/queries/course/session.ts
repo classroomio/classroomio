@@ -154,6 +154,7 @@ export type CourseUpcomingSession = {
   lessonTitle: string;
   callUrl: string;
   lessonAt: string;
+  durationMinutes: number;
   sessionTimezone: string | null;
 };
 
@@ -177,7 +178,8 @@ export async function getUpcomingSessionsForCourseIds(
         lessonId: schema.lesson.id,
         lessonTitle: schema.lesson.title,
         callUrl: schema.lesson.callUrl,
-        lessonAt: schema.lesson.lessonAt
+        lessonAt: schema.lesson.lessonAt,
+        sessionDurationMinutes: schema.lesson.sessionDurationMinutes
       })
       .from(schema.lesson)
       .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
@@ -202,6 +204,7 @@ export async function getUpcomingSessionsForCourseIds(
         lessonTitle: row.lessonTitle,
         callUrl: row.callUrl,
         lessonAt: row.lessonAt,
+        durationMinutes: row.sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES,
         sessionTimezone: row.courseMetadata?.sessionTimezone ?? null
       });
     }

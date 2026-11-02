@@ -85,7 +85,14 @@ type ComputeProgressionAccessParams<T extends CourseProgressionItem> = {
   getIsUnlocked?: (item: T) => boolean;
 };
 
-type AccessMap = Map<string, { accessible: boolean; lockReason: ProgressionLockReason | null }>;
+export type ProgressionAccess = {
+  accessible: boolean;
+  lockReason: ProgressionLockReason | null;
+  /** The first incomplete required item before this one, set when `lockReason` is `progression_blocked`. */
+  blockedById?: string | null;
+};
+
+type AccessMap = Map<string, ProgressionAccess>;
 
 /**
  * Computes progression access (accessible flag and lockReason) across an ordered array of navigable items.
@@ -96,6 +103,7 @@ export function computeProgressionAccess<T extends CourseProgressionItem>(
   const { navigableItems, progressionMode, isComplete, getCompletionPolicy, getIsUnlocked } = params;
   const accessById: AccessMap = new Map();
   let priorBlockingComplete = true;
+  let firstIncompleteBlockerId: string | null = null;
 
   for (const item of navigableItems) {
     const isUnlocked = getIsUnlocked ? getIsUnlocked(item) : (item.isUnlocked ?? true);
@@ -113,7 +121,11 @@ export function computeProgressionAccess<T extends CourseProgressionItem>(
       lockReason = 'progression_blocked';
     }
 
-    accessById.set(item.id, { accessible, lockReason });
+    if (lockReason === 'progression_blocked') {
+      accessById.set(item.id, { accessible, lockReason, blockedById: firstIncompleteBlockerId });
+    } else {
+      accessById.set(item.id, { accessible, lockReason });
+    }
 
     const itemComplete = isComplete ? isComplete(item) : Boolean(item.isComplete);
     const policy = getCompletionPolicy ? getCompletionPolicy(item) : item.completionPolicy;
@@ -121,6 +133,7 @@ export function computeProgressionAccess<T extends CourseProgressionItem>(
 
     if (blocks && !itemComplete) {
       priorBlockingComplete = false;
+      firstIncompleteBlockerId ??= item.id;
     }
   }
 

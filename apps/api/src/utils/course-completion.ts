@@ -7,6 +7,7 @@ import { setMemberCertificateEarned, setMemberCertificationEmailSent } from '@ci
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { notifyCertificateIssued } from '@cio/core/services/notification/course-events';
 
 export function calcCourseProgressPercent(params: {
   lessonsCompleted: number;
@@ -54,6 +55,10 @@ export function scheduleCertificationCompletionWork(params: {
       if (!latest.certificateEarnedAt) {
         await setMemberCertificateEarned(groupMemberId, earnedAt);
         latest = await getCourseProgressQuery(courseId, profileId);
+      }
+
+      if (courseRow.type !== 'COMPLIANCE') {
+        await notifyCertificateIssued({ courseId, profileId, dedupeKey: `certificate_issued:${groupMemberId}` });
       }
 
       if (latest.certificationEmailSentAt) {

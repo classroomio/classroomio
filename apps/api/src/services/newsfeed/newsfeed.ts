@@ -24,6 +24,7 @@ import {
 import { env } from '@cio/core/config/env';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { notifyNewsfeedComment, notifyNewsfeedPost } from '@cio/core/services/notification/course-events';
 
 /**
  * Bounds pathological chains. Far beyond any real conversation — nesting is not
@@ -120,6 +121,7 @@ export async function createNewsfeedService(
     sendNewsfeedPostEmail(feed.id, authorId).catch((error) => {
       console.error('Failed to send newsfeed post email:', error);
     });
+    void notifyNewsfeedPost({ feedId: feed.id, courseId, authorGroupMemberId: authorId });
 
     return feed;
   } catch (error) {
@@ -335,6 +337,12 @@ export async function createNewsfeedCommentService(
     // Send email notification to feed author (async, don't wait)
     sendNewsfeedCommentEmail(feedId, sanitizedContent, authorId).catch((error) => {
       console.error('Failed to send newsfeed comment email:', error);
+    });
+    void notifyNewsfeedComment({
+      feedId,
+      commentId: comment.id,
+      commenterGroupMemberId: authorId,
+      parentCommentId: parentId ?? null
     });
 
     return comment;
