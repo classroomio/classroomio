@@ -23,13 +23,17 @@ const mocks = vi.hoisted(() => {
       updateUnclaimedEarlyAdopterClaim: vi.fn()
     },
     getAccountPrimary: vi.fn(),
-    enqueueTransactionalEmail: vi.fn()
+    enqueueTransactionalEmail: vi.fn(),
+    tagPolarSubscriptionWithOrg: vi.fn()
   };
 });
 
 vi.mock('@cio/db/drizzle', () => ({ db: mocks.db }));
 vi.mock('@cio/db/queries/organization', () => mocks.queries);
 vi.mock('@cio/db/queries/account', () => ({ getAccountPrimary: mocks.getAccountPrimary }));
+vi.mock('@api/services/polar/subscription-metadata', () => ({
+  tagPolarSubscriptionWithOrg: mocks.tagPolarSubscriptionWithOrg
+}));
 vi.mock('@api/services/jobs', () => ({ enqueueTransactionalEmail: mocks.enqueueTransactionalEmail }));
 vi.mock('@cio/core/services/early-adopter/claim-token', () => ({
   deriveEarlyAdopterClaimToken: (subscriptionId: string) => `token-for-${subscriptionId}`,
@@ -56,13 +60,27 @@ describe('claimEarlyAdopterPlan', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.queries.lockEarlyAdopterClaimByTokenHash.mockResolvedValue(pendingClaim());
-    mocks.getAccountPrimary.mockResolvedValue({ id: 'org-primary' });
+    mocks.getAccountPrimary.mockResolvedValue({ id: 'org-primary', siteName: 'primary-site' });
     mocks.queries.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(42);
     mocks.queries.getOrganizationMemberRoleId.mockResolvedValue(1);
     mocks.queries.getActiveOrganizationPlan.mockResolvedValue(null);
     mocks.queries.getOrganizationPlanBySubscriptionId.mockResolvedValue(null);
     mocks.queries.createOrganizationPlan.mockResolvedValue({ id: 1 });
     mocks.queries.markEarlyAdopterClaimClaimed.mockResolvedValue({ id: 7 });
+  });
+
+  it('tags the Polar subscription with the org after the claim commits', async () => {
+    mocks.queries.lockEarlyAdopterClaimByTokenHash.mockResolvedValue(
+      pendingClaim({ payload: { status: 'active', metadata: { kind: 'early_adopter_claim' } } })
+    );
+
+    await claimEarlyAdopterPlan('user-1', 'org-secondary', 'tok');
+
+    expect(mocks.tagPolarSubscriptionWithOrg).toHaveBeenCalledWith(
+      'sub_1',
+      { kind: 'early_adopter_claim' },
+      { orgId: 'org-primary', orgSlug: 'primary-site', triggeredBy: 42 }
+    );
   });
 
   it('creates the plan on the primary org and marks the claim, all on the transaction client', async () => {

@@ -54,6 +54,8 @@ const envSchema = z.object({
   WEBHOOK_ALLOW_PRIVATE_NETWORKS: z.string().optional(),
   /** License key for enterprise features (SSO, token-auth, no-tracking, etc.) */
   LICENSE_KEY: z.string().optional(),
+  /** Polar API token used to tag a claimed subscription with its organization. */
+  POLAR_ACCESS_TOKEN: z.string().optional(),
   /** Reported in the self-hosted usage ping. Baked into the published jobs image; unset when run from source. */
   CIO_VERSION: z.string().optional(),
   /** How the instance was deployed (docker, railway, coolify, dokploy, digitalocean). */

@@ -1,5 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { tagPolarSubscriptionWithOrg } from '@api/services/polar/subscription-metadata';
 import {
   buildEarlyAdopterClaimUrl,
   deriveEarlyAdopterClaimToken,
@@ -34,6 +35,14 @@ export type EarlyAdopterClaimResult = {
   orgId: string;
   planName: typeof PLAN.EARLY_ADOPTER;
 };
+
+function getPayloadMetadata(payload: unknown): Record<string, unknown> {
+  if (!payload || typeof payload !== 'object' || !('metadata' in payload)) return {};
+
+  const { metadata } = payload;
+
+  return metadata && typeof metadata === 'object' ? { ...metadata } : {};
+}
 
 function isClaimableSubscription(payload: unknown): boolean {
   if (!payload || typeof payload !== 'object' || !('status' in payload)) return false;
@@ -123,7 +132,8 @@ export async function recordEarlyAdopterSubscriptionEvent(data: TEarlyAdopterSub
 /**
  * Connects an unclaimed Early Adopter purchase to the primary organization of `orgId`.
  * Runs in one transaction with the claim row locked. Repeating a successful claim for the same
- * organization returns the same result.
+ * organization returns the same result. After commit, tags the Polar subscription with the organization
+ * on a best-effort basis.
  */
 export async function claimEarlyAdopterPlan(
   userId: string,
@@ -131,7 +141,7 @@ export async function claimEarlyAdopterPlan(
   token: string
 ): Promise<EarlyAdopterClaimResult> {
   try {
-    return await db.transaction(async (tx) => {
+    const { result, polarTag } = await db.transaction(async (tx) => {
       const claim = await lockEarlyAdopterClaimByTokenHash(hashEarlyAdopterClaimToken(token), tx);
 
       if (!claim) {
@@ -146,7 +156,7 @@ export async function claimEarlyAdopterPlan(
 
       if (claim.status === 'claimed') {
         if (claim.claimedOrgId === primary.id) {
-          return { orgId: primary.id, planName: PLAN.EARLY_ADOPTER };
+          return { result: { orgId: primary.id, planName: PLAN.EARLY_ADOPTER }, polarTag: null };
         }
 
         throw new AppError('This link has already been used', ErrorCodes.EARLY_ADOPTER_CLAIM_UNAVAILABLE, 409);
@@ -206,8 +216,21 @@ export async function claimEarlyAdopterPlan(
         throw new AppError('This link has already been used', ErrorCodes.EARLY_ADOPTER_CLAIM_UNAVAILABLE, 409);
       }
 
-      return { orgId: primary.id, planName: PLAN.EARLY_ADOPTER };
+      return {
+        result: { orgId: primary.id, planName: PLAN.EARLY_ADOPTER },
+        polarTag: {
+          subscriptionId: claim.polarSubscriptionId,
+          existingMetadata: getPayloadMetadata(claim.payload),
+          orgMetadata: { orgId: primary.id, orgSlug: primary.siteName, triggeredBy: memberId }
+        }
+      };
     });
+
+    if (polarTag) {
+      await tagPolarSubscriptionWithOrg(polarTag.subscriptionId, polarTag.existingMetadata, polarTag.orgMetadata);
+    }
+
+    return result;
   } catch (error) {
     if (error instanceof AppError) throw error;
 
