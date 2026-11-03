@@ -1,14 +1,14 @@
 import { CERTIFICATE_WIDTH, DEFAULT_CERTIFICATE_DESIGN, FONTS_READY_CLASS, LEGACY_THEME_MAP } from './constants';
 import type {
   CertificateDesign,
-  CertificatePresentationV1,
+  CertificatePresentation,
   CertificateRenderData,
   CertificateRenderResult,
   CertificateTemplateId,
   StoredCertificateRecord
 } from './types';
 import { CERTIFICATE_TEMPLATE_IDS } from './types';
-import { isCertificateDocumentV1, renderCertificateDocumentV1 } from './studio';
+import { isCertificateDocument, renderStudioCertificateDocument } from './studio';
 import { renderBrutalist } from './templates/brutalist';
 import { renderClassique } from './templates/classique';
 import { renderMinimal } from './templates/minimal';
@@ -77,20 +77,17 @@ export function resolveCertificateDesign(stored?: StoredCertificateRecord | null
   };
 }
 
-export function resolveStoredCertificatePresentation(
-  stored?: StoredCertificateRecord | null
-): CertificatePresentationV1 {
+export function resolveStoredCertificatePresentation(stored?: StoredCertificateRecord | null): CertificatePresentation {
   const presentation = stored?.presentation;
   if (presentation && typeof presentation === 'object' && 'kind' in presentation) {
     if (
       presentation.kind === 'document' &&
       'document' in presentation &&
-      isCertificateDocumentV1(presentation.document)
+      isCertificateDocument(presentation.document)
     ) {
       return {
         kind: 'document',
         schema: 'classroomio.certificate-document',
-        version: 1,
         document: presentation.document
       };
     }
@@ -112,11 +109,10 @@ export function resolveStoredCertificatePresentation(
   }
 
   const customDocument = stored?.customDocument ?? stored?.studioDesign;
-  if (isCertificateDocumentV1(customDocument)) {
+  if (isCertificateDocument(customDocument)) {
     return {
       kind: 'document',
       schema: 'classroomio.certificate-document',
-      version: 1,
       document: customDocument
     };
   }
@@ -177,13 +173,13 @@ export function renderCertificateDocument(design: CertificateDesign, data: Certi
 }
 
 export function renderCertificatePresentation(
-  presentation: CertificatePresentationV1 | CertificateDesign | null | undefined,
+  presentation: CertificatePresentation | CertificateDesign | null | undefined,
   data: CertificateRenderData
 ): CertificateRenderResult {
   if (presentation && typeof presentation === 'object') {
     if ('kind' in presentation) {
       if (presentation.kind === 'document') {
-        const rendered = renderCertificateDocumentV1(presentation.document, data);
+        const rendered = renderStudioCertificateDocument(presentation.document, data);
         if (rendered) return rendered;
       } else if (presentation.kind === 'preset') {
         const base = resolveCertificateDesign({ design: { templateId: presentation.presetId } });
@@ -194,8 +190,8 @@ export function renderCertificatePresentation(
         };
         return renderCertificate(design, data);
       }
-    } else if (isCertificateDocumentV1(presentation)) {
-      const rendered = renderCertificateDocumentV1(presentation, data);
+    } else if (isCertificateDocument(presentation)) {
+      const rendered = renderStudioCertificateDocument(presentation, data);
       if (rendered) return rendered;
     } else if ('templateId' in presentation) {
       return renderCertificate(presentation as CertificateDesign, data);
@@ -206,7 +202,7 @@ export function renderCertificatePresentation(
 }
 
 export function renderCertificatePresentationDocument(
-  presentation: CertificatePresentationV1 | CertificateDesign | null | undefined,
+  presentation: CertificatePresentation | CertificateDesign | null | undefined,
   data: CertificateRenderData
 ): string {
   const { html, styles } = renderCertificatePresentation(presentation, data);

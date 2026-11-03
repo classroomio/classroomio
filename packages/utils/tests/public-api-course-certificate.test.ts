@@ -129,7 +129,6 @@ describe('certificate presentation provenance', () => {
       kind: 'document',
       source,
       document: {
-        version: 1,
         accentColor: '#112233',
         title: 'Certificate of completion',
         subtitle: 'Awarded for completing the course',

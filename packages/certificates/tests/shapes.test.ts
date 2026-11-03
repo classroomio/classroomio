@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { renderCertificateDocumentV1 } from '../src/studio';
+import { renderStudioCertificateDocument } from '../src/studio';
 import { renderModularCertificateDocument } from '../src/templates/modular';
-import type { CertificateDocumentV1, CertificateRenderData, CertificateShapeObject } from '../src/types';
+import type { CertificateDocument, CertificateRenderData, CertificateShapeObject } from '../src/types';
 
 const sampleData: CertificateRenderData = {
   recipientName: 'Ada Lovelace',
@@ -12,8 +12,7 @@ const sampleData: CertificateRenderData = {
   certificateId: 'CIO-2026-ADA'
 };
 
-const baseDesign: CertificateDocumentV1 = {
-  version: 1,
+const baseDesign: CertificateDocument = {
   accentColor: '#2563eb',
   title: 'Certificate of Excellence',
   subtitle: 'Presented to',
@@ -23,7 +22,7 @@ const baseDesign: CertificateDocumentV1 = {
 
 describe('@cio/certificates shape rendering', () => {
   it('renders backward-compatible document unchanged when no shapes present', () => {
-    const res = renderCertificateDocumentV1(baseDesign, sampleData);
+    const res = renderStudioCertificateDocument(baseDesign, sampleData);
     expect(res).not.toBeNull();
     expect(res!.html).toContain('London Academy of Science');
     expect(res!.html).toContain('Ada Lovelace');
@@ -77,7 +76,7 @@ describe('@cio/certificates shape rendering', () => {
       }
     ];
 
-    const designWithShapes: CertificateDocumentV1 = {
+    const designWithShapes: CertificateDocument = {
       ...baseDesign,
       rendererTemplateId: 'modular',
       shapes
@@ -103,12 +102,13 @@ describe('@cio/certificates shape rendering', () => {
     expect(modularRes.html).toContain('stroke-dasharray="6 4"');
     expect(modularRes.html).toContain('transform:rotate(45deg)');
 
-    // Line check
     expect(modularRes.html).toContain('<line');
     expect(modularRes.html).toContain('stroke-width="3"');
 
-    // Also verify renderCertificateDocumentV1 fallback
-    const studioRes = renderCertificateDocumentV1({ ...baseDesign, rendererTemplateId: undefined, shapes }, sampleData);
+    const studioRes = renderStudioCertificateDocument(
+      { ...baseDesign, rendererTemplateId: undefined, shapes },
+      sampleData
+    );
     expect(studioRes!.html).toContain('data-certificate-element="shape-rect-1"');
   });
 

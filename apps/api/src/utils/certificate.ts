@@ -9,7 +9,7 @@ import {
   resolveCertificateDesign,
   resolveStoredCertificatePresentation,
   type CertificateDesign,
-  type CertificatePresentationV1,
+  type CertificatePresentation,
   type CertificateRenderData
 } from '@cio/certificates';
 
@@ -24,7 +24,7 @@ export {
 
 export interface CertificateRenderInput {
   design: CertificateDesign;
-  presentation?: CertificatePresentationV1 | null;
+  presentation?: CertificatePresentation | null;
   studioDesign?: Record<string, unknown> | null;
   data: CertificateRenderData;
 }

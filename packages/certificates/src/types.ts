@@ -81,8 +81,7 @@ export interface CertificateShapeObject {
   zIndex: number;
 }
 
-export interface CertificateDocumentV1 {
-  version: 1;
+export interface CertificateDocument {
   templateSourceId?: string;
   templateName?: string;
   templateId?: string;
@@ -141,7 +140,7 @@ export interface CertificatePluginSource {
   templateName?: string;
 }
 
-export type CertificatePresentationV1 =
+export type CertificatePresentation =
   | {
       kind: 'preset';
       presetId: CertificateTemplateId;
@@ -150,9 +149,8 @@ export type CertificatePresentationV1 =
   | {
       kind: 'document';
       schema: 'classroomio.certificate-document';
-      version: 1;
       source?: CertificatePluginSource;
-      document: CertificateDocumentV1;
+      document: CertificateDocument;
     };
 
 /**
@@ -162,8 +160,8 @@ export interface StoredCertificateRecord {
   isDownloadable?: boolean;
   theme?: string | null;
   design?: StoredCertificateDesign | null;
-  customDocument?: CertificateDocumentV1 | Record<string, unknown> | null;
-  presentation?: CertificatePresentationV1 | Record<string, unknown> | null;
+  customDocument?: CertificateDocument | Record<string, unknown> | null;
+  presentation?: CertificatePresentation | Record<string, unknown> | null;
   studioDesign?: Record<string, unknown> | null;
   [key: string]: unknown;
 }

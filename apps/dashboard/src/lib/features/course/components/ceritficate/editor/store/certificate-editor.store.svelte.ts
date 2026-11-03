@@ -4,9 +4,9 @@ import {
   resolveCertificateDesign,
   resolveStoredCertificatePresentation,
   type CertificateDesign,
-  type CertificateDocumentV1,
+  type CertificateDocument,
   type CertificatePluginSource,
-  type CertificatePresentationV1,
+  type CertificatePresentation,
   type CertificateTemplateId,
   type StoredCertificateRecord
 } from '@cio/certificates';
@@ -93,9 +93,9 @@ export class CertificateEditorStore {
   activePanel = $state<CertificateEditorPanel>('templates');
   draft = $state<CertificateEditorDraft>(toDraft(DEFAULT_CERTIFICATE_DESIGN));
   initial = $state<CertificateEditorDraft>(toDraft(DEFAULT_CERTIFICATE_DESIGN));
-  customDocument = $state<CertificateDocumentV1 | null>(null);
+  customDocument = $state<CertificateDocument | null>(null);
   customDocumentSource = $state<CertificatePluginSource | null>(null);
-  #initialCustomDocument: CertificateDocumentV1 | null = null;
+  #initialCustomDocument: CertificateDocument | null = null;
   #initialCustomDocumentSource: CertificatePluginSource | null = null;
   presentationMode = $state<'preset' | 'document'>('preset');
   #initialPresentationMode: 'preset' | 'document' = 'preset';
@@ -154,7 +154,7 @@ export class CertificateEditorStore {
     this.draft.templateId = templateId;
   }
 
-  setCustomDocument(doc: CertificateDocumentV1, source?: CertificatePluginSource) {
+  setCustomDocument(doc: CertificateDocument, source?: CertificatePluginSource) {
     this.customDocument = doc;
     this.customDocumentSource = source ?? null;
     this.presentationMode = 'document';
@@ -187,12 +187,11 @@ export class CertificateEditorStore {
     return fromDraft(this.draft);
   }
 
-  toPresentation(): CertificatePresentationV1 {
+  toPresentation(): CertificatePresentation {
     if (this.presentationMode === 'document' && this.customDocument) {
       return {
         kind: 'document',
         schema: 'classroomio.certificate-document',
-        version: 1,
         source: this.customDocumentSource ?? undefined,
         document: this.customDocument
       };

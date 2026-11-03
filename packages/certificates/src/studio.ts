@@ -1,19 +1,18 @@
 import { CERTIFICATE_HEIGHT, CERTIFICATE_WIDTH } from './constants';
 import type {
   CertificateDocumentSignatory,
-  CertificateDocumentV1,
+  CertificateDocument,
   CertificateRenderData,
   CertificateRenderResult
 } from './types';
 import { renderModularCertificateDocument } from './templates/modular';
 import { BASE_STYLES, escapeHtml, renderShapes } from './templates/shared';
 
-export function isCertificateDocumentV1(value: unknown): value is CertificateDocumentV1 {
+export function isCertificateDocument(value: unknown): value is CertificateDocument {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
 
-  const candidate = value as Partial<CertificateDocumentV1>;
+  const candidate = value as Partial<CertificateDocument>;
   return (
-    candidate.version === 1 &&
     typeof candidate.accentColor === 'string' &&
     typeof candidate.title === 'string' &&
     typeof candidate.subtitle === 'string' &&
@@ -22,7 +21,7 @@ export function isCertificateDocumentV1(value: unknown): value is CertificateDoc
   );
 }
 
-export const isStudioDesign = isCertificateDocumentV1;
+export const isStudioDesign = isCertificateDocument;
 
 function getFont(value: string | undefined, fallback: string): string {
   const fonts: Record<string, string> = {
@@ -44,7 +43,7 @@ function getDimension(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 2000 ? value : null;
 }
 
-function getBackground(design: CertificateDocumentV1): string {
+function getBackground(design: CertificateDocument): string {
   const primary = getColor(design.background?.primaryColor, '#fffdf5');
   const secondary = getColor(design.background?.secondaryColor, '#f6edd3');
   if (design.background?.style === 'solid') return primary;
@@ -55,7 +54,7 @@ function getBackground(design: CertificateDocumentV1): string {
   return `linear-gradient(135deg, ${primary}, ${secondary})`;
 }
 
-function getElementStyle(design: CertificateDocumentV1, elementId: string): string {
+function getElementStyle(design: CertificateDocument, elementId: string): string {
   const layout = design.elements?.[elementId];
   if (!layout || layout.positionMode !== 'custom') return '';
 
@@ -71,15 +70,11 @@ function getElementStyle(design: CertificateDocumentV1, elementId: string): stri
   return rules.join(';');
 }
 
-function isEnabled(design: CertificateDocumentV1, elementId: string): boolean {
+function isEnabled(design: CertificateDocument, elementId: string): boolean {
   return design.elements?.[elementId]?.enabled !== false;
 }
 
-function renderSignatory(
-  signatory: CertificateDocumentSignatory,
-  design: CertificateDocumentV1,
-  index: number
-): string {
+function renderSignatory(signatory: CertificateDocumentSignatory, design: CertificateDocument, index: number): string {
   if (!signatory.enabled) return '';
 
   const signature = signatory.signatureUrl
@@ -89,11 +84,11 @@ function renderSignatory(
   return `<section class="studio-signatory" style="${style}">${signature}<strong>${escapeHtml(signatory.name)}</strong><span>${escapeHtml(signatory.role)}</span></section>`;
 }
 
-export function renderCertificateDocumentV1(
+export function renderStudioCertificateDocument(
   designValue: unknown,
   data: CertificateRenderData
 ): CertificateRenderResult | null {
-  if (!isCertificateDocumentV1(designValue)) return null;
+  if (!isCertificateDocument(designValue)) return null;
 
   const design = designValue;
   if (design.rendererTemplateId === 'modular') {
@@ -179,10 +174,10 @@ export function renderCertificateDocumentV1(
   return { html: body, styles };
 }
 
-export const renderStudioCertificate = renderCertificateDocumentV1;
+export const renderStudioCertificate = renderStudioCertificateDocument;
 
 export function getCertificateDocumentIdFormat(designValue: unknown): string | null {
-  return isCertificateDocumentV1(designValue) ? designValue.idFormat : null;
+  return isCertificateDocument(designValue) ? designValue.idFormat : null;
 }
 
 export const getStudioCertificateIdFormat = getCertificateDocumentIdFormat;

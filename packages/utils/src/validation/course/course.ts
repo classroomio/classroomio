@@ -437,9 +437,8 @@ export const ZCourseLandingPageMetadataUpdate = z.preprocess(
 );
 export type TCourseLandingPageMetadataUpdate = z.infer<typeof ZCourseLandingPageMetadataUpdate>;
 
-export const ZCertificateDocumentV1 = z
+export const ZCertificateDocument = z
   .object({
-    version: z.literal(1).default(1),
     templateSourceId: z.string().trim().min(1).optional(),
     templateName: z.string().trim().min(1).optional(),
     templateId: z.string().trim().min(1).optional(),
@@ -467,7 +466,7 @@ export const ZCertificateDocumentV1 = z
     copy: z.record(z.string(), z.unknown()).optional()
   })
   .passthrough();
-export type TCertificateDocumentV1 = z.infer<typeof ZCertificateDocumentV1>;
+export type TCertificateDocument = z.infer<typeof ZCertificateDocument>;
 
 export const ZCertificatePresentationPreset = z.object({
   kind: z.literal('preset'),
@@ -478,7 +477,6 @@ export const ZCertificatePresentationPreset = z.object({
 export const ZCertificatePresentationDocument = z.object({
   kind: z.literal('document'),
   schema: z.literal('classroomio.certificate-document').default('classroomio.certificate-document'),
-  version: z.literal(1).default(1),
   source: z
     .object({
       kind: z.literal('plugin'),
@@ -489,7 +487,7 @@ export const ZCertificatePresentationDocument = z.object({
       templateName: z.string().trim().min(1).optional()
     })
     .optional(),
-  document: ZCertificateDocumentV1
+  document: ZCertificateDocument
 });
 
 export const ZCertificatePresentation = z.discriminatedUnion('kind', [
@@ -498,10 +496,10 @@ export const ZCertificatePresentation = z.discriminatedUnion('kind', [
 ]);
 export type TCertificatePresentation = z.infer<typeof ZCertificatePresentation>;
 
-export const ZCourseCertificateCustomDesign = ZCertificateDocumentV1;
-export type TCourseCertificateCustomDesign = TCertificateDocumentV1;
-export const ZCertificateStudioDesign = ZCertificateDocumentV1;
-export type TCertificateStudioDesign = TCertificateDocumentV1;
+export const ZCourseCertificateCustomDesign = ZCertificateDocument;
+export type TCourseCertificateCustomDesign = TCertificateDocument;
+export const ZCertificateStudioDesign = ZCertificateDocument;
+export type TCertificateStudioDesign = TCertificateDocument;
 
 export const ZCertificationSettings = z.object({
   isDownloadable: z.boolean().optional(),
@@ -509,9 +507,9 @@ export const ZCertificationSettings = z.object({
   theme: z.string().optional(),
   /** Atelier-era certificate design (template, accent, signatories, subtitle, etc.). */
   design: ZCertificateDesign.optional(),
-  customDocument: ZCertificateDocumentV1.nullable().optional(),
+  customDocument: ZCertificateDocument.nullable().optional(),
   presentation: ZCertificatePresentation.nullable().optional(),
-  studioDesign: ZCertificateDocumentV1.nullable().optional(),
+  studioDesign: ZCertificateDocument.nullable().optional(),
   /** ISO 8601 datetime string or null to clear */
   deadline: z.union([z.string().min(1), z.null()]).optional(),
   emailMessage: z.string().max(5000).nullable().optional()

@@ -1,5 +1,5 @@
 import { CERTIFICATE_HEIGHT, CERTIFICATE_WIDTH } from '../constants';
-import type { CertificateDocumentV1, CertificateRenderData, CertificateRenderResult } from '../types';
+import type { CertificateDocument, CertificateRenderData, CertificateRenderResult } from '../types';
 import { escapeHtml, getYear, renderShapes } from './shared';
 
 const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
@@ -26,7 +26,7 @@ function number(value: number | undefined, fallback: number, minimum: number, ma
   return Math.max(minimum, Math.min(maximum, value as number));
 }
 
-function elementAttributes(design: CertificateDocumentV1, id: string): string {
+function elementAttributes(design: CertificateDocument, id: string): string {
   const element = design.elements?.[id];
   if (element?.positionMode !== 'custom' || element.x == null || element.y == null) {
     return `data-certificate-element="${id}" data-position-mode="auto"`;
@@ -42,11 +42,11 @@ function elementAttributes(design: CertificateDocumentV1, id: string): string {
   return `data-certificate-element="${id}" data-position-mode="custom" style="position:absolute;left:${x}px;top:${y}px;z-index:${zIndex};margin:0;transform:none;${dimensions}"`;
 }
 
-function enabled(design: CertificateDocumentV1, id: string, fallback = true): boolean {
+function enabled(design: CertificateDocument, id: string, fallback = true): boolean {
   return design.elements?.[id]?.enabled ?? fallback;
 }
 
-function renderSignatories(design: CertificateDocumentV1): string {
+function renderSignatories(design: CertificateDocument): string {
   const signatories = design.signatories
     .map((signatory, index) => ({ signatory, index }))
     .filter(({ signatory }) => signatory.enabled !== false)
@@ -72,7 +72,7 @@ function renderSignatories(design: CertificateDocumentV1): string {
     .join('');
 }
 
-function renderBadge(design: CertificateDocumentV1, data: CertificateRenderData, year: string): string {
+function renderBadge(design: CertificateDocument, data: CertificateRenderData, year: string): string {
   if (!enabled(design, 'badge') || design.badge?.style === 'none') return '';
 
   const label = escapeHtml(design.badge?.label || 'OFFICIAL');
@@ -88,7 +88,7 @@ function renderBadge(design: CertificateDocumentV1, data: CertificateRenderData,
   </div>`;
 }
 
-function renderCredential(design: CertificateDocumentV1, data: CertificateRenderData): string {
+function renderCredential(design: CertificateDocument, data: CertificateRenderData): string {
   if (!enabled(design, 'qrCode') || design.qrCode?.enabled === false) return '';
 
   const position = design.qrCode?.position ?? 'bottom_right';
@@ -99,7 +99,7 @@ function renderCredential(design: CertificateDocumentV1, data: CertificateRender
 }
 
 export function renderModularCertificateDocument(
-  design: CertificateDocumentV1,
+  design: CertificateDocument,
   data: CertificateRenderData
 ): CertificateRenderResult {
   const primary = color(design.border?.primaryColor, color(design.accentColor, '#d4af37'));
@@ -140,8 +140,8 @@ export function renderModularCertificateDocument(
       ${enabled(design, 'header') ? `<div class="modular-org" ${elementAttributes(design, 'header')}>${organizationName}</div>` : ''}
       ${enabled(design, 'title') ? `<h1 class="modular-title" ${elementAttributes(design, 'title')}>${title}</h1>` : ''}
       ${enabled(design, 'subtitle') ? `<p class="modular-presentation" ${elementAttributes(design, 'subtitle')}>${presentation}</p>` : ''}
-      <div class="modular-recipient" ${elementAttributes(design, 'recipient')}>${escapeHtml(data.recipientName)}</div>
-      <div class="modular-course" ${elementAttributes(design, 'course')}><small>${completion}</small><strong>${escapeHtml(data.courseName)}</strong></div>
+      ${enabled(design, 'recipient') ? `<div class="modular-recipient" ${elementAttributes(design, 'recipient')}>${escapeHtml(data.recipientName)}</div>` : ''}
+      ${enabled(design, 'course') ? `<div class="modular-course" ${elementAttributes(design, 'course')}><small>${completion}</small><strong>${escapeHtml(data.courseName)}</strong></div>` : ''}
       ${enabled(design, 'description') ? `<p class="modular-description" ${elementAttributes(design, 'description')}>${description}</p>` : ''}
       ${enabled(design, 'date') ? `<p class="modular-date" ${elementAttributes(design, 'date')}>${escapeHtml(design.copy?.dateLabel || 'Date of Conferment:')} <strong>${escapeHtml(data.date)}</strong></p>` : ''}
       ${renderSignatories(design)}

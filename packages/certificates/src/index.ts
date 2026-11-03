@@ -2,8 +2,8 @@ export {
   CERTIFICATE_TEMPLATE_IDS,
   type CertificateDesign,
   type CertificateDocumentSignatory,
-  type CertificateDocumentV1,
-  type CertificatePresentationV1,
+  type CertificateDocument,
+  type CertificatePresentation,
   type CertificateRenderData,
   type CertificateRenderResult,
   type CertificateSignatory,
@@ -41,9 +41,9 @@ export {
 export {
   getCertificateDocumentIdFormat,
   getStudioCertificateIdFormat,
-  isCertificateDocumentV1,
+  isCertificateDocument,
   isStudioDesign,
-  renderCertificateDocumentV1,
+  renderStudioCertificateDocument,
   renderStudioCertificate
 } from './studio';
 export {

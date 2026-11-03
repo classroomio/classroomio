@@ -1,11 +1,11 @@
 <script lang="ts">
   import {
     CERTIFICATE_TEMPLATES,
-    type CertificateDocumentV1,
+    type CertificateDocument,
     type CertificatePluginSource,
     type CertificateTemplateId
   } from '@cio/certificates';
-  import { ZCertificateDocumentV1 } from '@cio/utils/validation/course';
+  import { ZCertificateDocument } from '@cio/utils/validation/course';
   import type { CertificateEditorStore } from '../store/certificate-editor.store.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
@@ -26,14 +26,14 @@
   let { store, courseId = '', value, onSelect, disabled = false, customDesignActive = false }: Props = $props();
 
   function applyDesign(rawDesign: unknown, source: CertificatePluginSource) {
-    const parsed = ZCertificateDocumentV1.safeParse(rawDesign);
+    const parsed = ZCertificateDocument.safeParse(rawDesign);
     if (!parsed.success) {
       snackbar.error('course.navItem.certificates.editor.save_failed');
       return;
     }
 
-    const validDoc: CertificateDocumentV1 = {
-      ...(parsed.data as CertificateDocumentV1),
+    const validDoc: CertificateDocument = {
+      ...(parsed.data as CertificateDocument),
       templateSourceId: source.templateSourceId,
       templateName: source.templateName
     };

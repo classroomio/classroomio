@@ -3,7 +3,7 @@
   import {
     renderCertificatePresentationDocument,
     type CertificateDesign,
-    type CertificatePresentationV1,
+    type CertificatePresentation,
     type CertificateRenderData
   } from '@cio/certificates';
   import MinusIcon from '@lucide/svelte/icons/minus';
@@ -15,7 +15,7 @@
 
   interface Props {
     design?: CertificateDesign;
-    presentation?: CertificatePresentationV1;
+    presentation?: CertificatePresentation;
     data: CertificateRenderData;
     zoom?: ZoomMode;
     showControls?: boolean;
