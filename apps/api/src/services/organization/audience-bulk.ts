@@ -7,7 +7,11 @@ import {
   type BulkApplyOutcome,
   applyAudienceBulkActionToMembers
 } from '@cio/core/services/organization/audience-bulk';
-import { assertStudentCapacityOrThrow } from './student-limit';
+import {
+  type StudentMilestoneNotification,
+  assertStudentCapacityOrThrow,
+  notifyStudentMilestone
+} from './student-limit';
 import { ROLE } from '@cio/utils/constants';
 import { emitOrganizationMemberUpdatedWebhookEvent } from '@cio/core/services/webhook/emit';
 import { db } from '@cio/db/drizzle';
@@ -151,7 +155,6 @@ const PREVIEW_SAMPLE_SIZE = 5;
  * handed to the queue without holding one open.
  */
 async function resolveTargetIds(orgId: string, data: TBulkAudienceAction): Promise<number[]> {
-  // The applier loads only this org's students and reports every other id as NOT_FOUND.
   if (data.target.mode === 'ids') {
     return [...new Set(data.target.memberIds)];
   }
@@ -227,9 +230,9 @@ export async function applyBulkAudienceAction(
       data.action !== 'archive' &&
       data.action !== 'delete' &&
       (data.target.mode !== 'filter' || data.target.filter.status === 'ARCHIVED');
-    if (takesSeatsBack) {
-      await assertStudentCapacityOrThrow(orgId, memberIds.length);
-    }
+    const queuedMilestone = takesSeatsBack
+      ? await assertStudentCapacityOrThrow(orgId, memberIds.length, db, { deferNotification: true })
+      : null;
 
     // Ids, not the filter: the target was verified against the admin's preview
     // hash just now, and re-resolving in the worker would hit a different
@@ -248,8 +251,14 @@ export async function applyBulkAudienceAction(
       throw new AppError('Could not queue this action', ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 500);
     }
 
+    sendStudentMilestone(queuedMilestone);
     return { mode: 'queued', jobId, requested: memberIds.length };
   }
+
+  let milestone: StudentMilestoneNotification | null = null;
+  const assertSeats = async (tx: Parameters<typeof assertStudentCapacityOrThrow>[2], seats: number) => {
+    milestone = await assertStudentCapacityOrThrow(orgId, seats, tx, { deferNotification: true });
+  };
 
   try {
     const outcome = await applyAudienceBulkActionToMembers(
@@ -257,13 +266,22 @@ export async function applyBulkAudienceAction(
       memberIds,
       { action: data.action, reason: data.reason, filterSnapshot },
       actorProfileId,
-      { assertSeats: (tx, seats) => assertStudentCapacityOrThrow(orgId, seats, tx) }
+      { assertSeats }
     );
 
+    sendStudentMilestone(milestone);
     return toCompletedResult(orgId, actorProfileId, data.action, outcome);
   } catch (error) {
     throw toAppError(error);
   }
+}
+
+function sendStudentMilestone(milestone: StudentMilestoneNotification | null) {
+  if (!milestone) return;
+
+  notifyStudentMilestone(milestone).catch((error) => {
+    console.error('notifyStudentMilestone error:', error);
+  });
 }
 
 /** Applies the inverse status change to precisely the ids that succeeded. */
@@ -274,6 +292,7 @@ export async function undoBulkAudienceAction(
 ): Promise<BulkAudienceActionResult> {
   const record = consumeUndoToken(undoToken, orgId, actorProfileId);
   const revertedMembers: { id: number; profileId: string | null; email: string | null; from: string }[] = [];
+  let milestone: StudentMilestoneNotification | null = null;
 
   const result = await db.transaction(async (tx) => {
     const members = await getBulkAudienceMembersByIds(orgId, record.memberIds, tx);
@@ -284,7 +303,7 @@ export async function undoBulkAudienceAction(
     const revertableIds = stillApplied.map((member) => member.id);
 
     if (record.appliedStatus === 'ARCHIVED' && record.status === 'ACTIVE') {
-      await assertStudentCapacityOrThrow(orgId, revertableIds.length, tx);
+      milestone = await assertStudentCapacityOrThrow(orgId, revertableIds.length, tx, { deferNotification: true });
     }
 
     const changedIds = await bulkUpdateOrganizationMemberStatus(
@@ -338,6 +357,8 @@ export async function undoBulkAudienceAction(
         })
     };
   });
+
+  sendStudentMilestone(milestone);
 
   for (const member of revertedMembers) {
     await emitOrganizationMemberUpdatedWebhookEvent(

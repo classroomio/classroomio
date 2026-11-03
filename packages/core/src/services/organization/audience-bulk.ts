@@ -219,7 +219,6 @@ export async function applyAudienceBulkActionToMembers(
 
   await emitBulkOutcomeWebhookEvents(orgId, members, outcome, input.action, actorProfileId);
 
-  // An id gone by now (removed, promoted, or never in this org) is reported, not dropped.
   const loadedIds = new Set(members.map((member) => member.id));
   const notFound = memberIds
     .filter((memberId) => !loadedIds.has(memberId))

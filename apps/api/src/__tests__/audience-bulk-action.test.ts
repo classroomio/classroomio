@@ -20,7 +20,8 @@ vi.mock('@cio/jobs', () => ({
 }));
 
 vi.mock('@api/services/organization/student-limit', () => ({
-  assertStudentCapacityOrThrow: vi.fn()
+  assertStudentCapacityOrThrow: vi.fn(),
+  notifyStudentMilestone: vi.fn(async () => undefined)
 }));
 
 vi.mock('@cio/db/drizzle', () => ({
@@ -41,7 +42,7 @@ import {
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
 import { enqueueAudienceBulkAction, getQueue, getQueueJobEnvelope } from '@cio/jobs';
-import { assertStudentCapacityOrThrow } from '@api/services/organization/student-limit';
+import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '@api/services/organization/student-limit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { runQueuedAudienceBulkAction } from '@cio/core/services/organization/audience-bulk';
 import {
@@ -54,6 +55,7 @@ import {
 
 const ORG = 'org-1';
 const ACTOR = 'actor-1';
+const DEFER = { deferNotification: true };
 
 type Member = { id: number; profileId: string | null; email: string | null; status: string };
 
@@ -319,7 +321,7 @@ describe('applyBulkAudienceAction — plan seats', () => {
 
     await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1, 2, 3] }, action: 'reactivate' }, ACTOR);
 
-    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 2, {});
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 2, {}, DEFER);
   });
 
   it('changes nobody when bringing archived members back would go over the limit', async () => {
@@ -334,13 +336,31 @@ describe('applyBulkAudienceAction — plan seats', () => {
     expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
   });
 
+  it('sends the student milestone email only after the change is saved', async () => {
+    const milestone = { orgId: ORG, milestone: 'reached', studentCount: 20, studentLimit: 20 };
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED')] as never);
+    vi.mocked(assertStudentCapacityOrThrow).mockResolvedValue(milestone as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockRejectedValueOnce(new Error('write failed'));
+
+    await expect(
+      applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1] }, action: 'unarchive' }, ACTOR)
+    ).rejects.toThrow();
+    expect(notifyStudentMilestone).not.toHaveBeenCalled();
+
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+    await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1] }, action: 'unarchive' }, ACTOR);
+
+    expect(notifyStudentMilestone).toHaveBeenCalledWith(milestone);
+    vi.mocked(assertStudentCapacityOrThrow).mockReset();
+  });
+
   it('checks the limit to deactivate an archived member, which takes its seat back', async () => {
     vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED'), member(2)] as never);
     vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1, 2]);
 
     await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1, 2] }, action: 'deactivate' }, ACTOR);
 
-    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, {});
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, {}, DEFER);
   });
 
   it('reports ids that are not students of the organization at apply time as NOT_FOUND', async () => {
@@ -391,7 +411,7 @@ describe('applyBulkAudienceAction — plan seats', () => {
         ACTOR
       )
     ).rejects.toMatchObject({ code: ErrorCodes.UPGRADE_REQUIRED });
-    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 5_000);
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 5_000, expect.anything(), DEFER);
     expect(enqueueAudienceBulkAction).not.toHaveBeenCalled();
     expect(getBulkAudienceMembersByIds).not.toHaveBeenCalled();
   });
@@ -414,7 +434,7 @@ describe('applyBulkAudienceAction — plan seats', () => {
     await expect(
       undoBulkAudienceAction(ORG, applied.mode === 'completed' ? applied.undoToken! : '', ACTOR)
     ).rejects.toMatchObject({ code: ErrorCodes.UPGRADE_REQUIRED });
-    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, {});
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, {}, DEFER);
     expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
   });
 });
