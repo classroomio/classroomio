@@ -21,6 +21,14 @@ async function connect(options: { includeLocalFileTools: boolean }) {
 }
 
 describe('createMcpServer', () => {
+  it('marks set_audience_status as destructive and requires confirm', async () => {
+    const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
+    const tool = tools.find((candidate) => candidate.name === 'set_audience_status');
+
+    expect(tool?.annotations).toMatchObject({ readOnlyHint: false, destructiveHint: true });
+    expect(tool?.inputSchema.required).toContain('confirm');
+  });
+
   it('registers the local file tools for a local stdio process', async () => {
     const client = await connect({ includeLocalFileTools: true });
     const { tools } = await client.listTools();

@@ -42,6 +42,61 @@ exports[`public API team and audience update contract > ZPublicApiAssignAudience
 }
 `;
 
+exports[`public API team and audience update contract > ZPublicApiAudienceBulkStatus keeps its published shape > ZPublicApiAudienceBulkStatus 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "action": {
+      "description": "deactivate: the student loses access to every course and keeps their plan seat. reactivate: back to active from deactivated or archived. archive: the student loses access and frees their seat. unarchive: back to active from archived. Progress is kept in every case.",
+      "enum": [
+        "deactivate",
+        "reactivate",
+        "archive",
+        "unarchive",
+      ],
+      "type": "string",
+    },
+    "confirm": {
+      "const": true,
+      "description": "Must be true. Without it the request is refused and nothing changes.",
+      "type": "boolean",
+    },
+    "emails": {
+      "description": "Up to 500 student emails, matched without regard to case. Send this or memberIds, not both.",
+      "items": {
+        "format": "email",
+        "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+        "type": "string",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+    "memberIds": {
+      "description": "Up to 500 student member ids. Send this or emails, not both.",
+      "items": {
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991,
+        "type": "integer",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+    "reason": {
+      "description": "Stored in the audit log with each change.",
+      "maxLength": 500,
+      "type": "string",
+    },
+  },
+  "required": [
+    "action",
+    "confirm",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`public API team and audience update contract > ZPublicApiAudienceMemberParam keeps its published shape > ZPublicApiAudienceMemberParam 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",

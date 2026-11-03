@@ -68,6 +68,18 @@ export type BulkApplyInput = {
   filterSnapshot?: Record<string, unknown>;
 };
 
+export type BulkApplyOptions = {
+  /** Runs in the apply transaction before any change, with the seats the action takes back. */
+  assertSeats?: (tx: DbOrTxClient, seats: number) => Promise<unknown>;
+};
+
+/** Archived members free their seat, so moving them back to ACTIVE takes one again. */
+export function countSeatsTakenBack(members: Pick<BulkAudienceMemberRow, 'status'>[], action: TAudienceBulkAction) {
+  if (action !== 'reactivate' && action !== 'unarchive') return 0;
+
+  return members.filter((member) => member.status === 'ARCHIVED').length;
+}
+
 /** Resolved but unchanged — usually already in the target state. */
 function buildFailures(members: BulkAudienceMemberRow[], succeededIds: number[]) {
   return members
@@ -179,13 +191,19 @@ export async function applyAudienceBulkActionToMembers(
   orgId: string,
   memberIds: number[],
   input: BulkApplyInput,
-  actorProfileId: string
+  actorProfileId: string,
+  options: BulkApplyOptions = {}
 ): Promise<BulkApplyOutcome> {
   const { outcome, members } = await db.transaction(async (tx) => {
     const members = await getBulkAudienceMembersByIds(orgId, memberIds, tx);
 
     if (members.length === 0) {
       throw new AudienceBulkError('NO_MATCHING_MEMBERS', 'No matching learners to act on');
+    }
+
+    const seats = countSeatsTakenBack(members, input.action);
+    if (seats > 0 && options.assertSeats) {
+      await options.assertSeats(tx, seats);
     }
 
     if (input.action === 'delete') {

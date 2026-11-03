@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, count, eq, inArray, ne, sql } from 'drizzle-orm';
+import { and, count, eq, inArray, ne, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { type DbOrTxClient, db } from '@db/drizzle';
@@ -49,6 +49,55 @@ export async function getBulkAudienceMembersByIds(
   } catch (error) {
     console.error('getBulkAudienceMembersByIds error:', error);
     throw new Error('Failed to resolve audience members for bulk action');
+  }
+}
+
+/**
+ * Student members of the org whose invite or account email is in `emails`, matched
+ * case-insensitively. `matchedEmail` is the lowercased address that matched.
+ */
+export async function getBulkAudienceMemberIdsByEmails(
+  orgId: string,
+  emails: string[],
+  dbClient: DbOrTxClient = db
+): Promise<{ id: number; matchedEmail: string }[]> {
+  if (emails.length === 0) {
+    return [];
+  }
+
+  const lowered = emails.map((email) => email.toLowerCase());
+
+  try {
+    const rows = await dbClient
+      .select({
+        id: schema.organizationmember.id,
+        memberEmail: schema.organizationmember.email,
+        profileEmail: schema.profile.email
+      })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.profile.id, schema.organizationmember.profileId))
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT),
+          or(
+            inArray(sql`lower(${schema.organizationmember.email})`, lowered),
+            inArray(sql`lower(${schema.profile.email})`, lowered)
+          )
+        )
+      );
+
+    return rows.map((row) => {
+      const memberEmail = row.memberEmail?.toLowerCase();
+
+      return {
+        id: row.id,
+        matchedEmail: memberEmail && lowered.includes(memberEmail) ? memberEmail : row.profileEmail!.toLowerCase()
+      };
+    });
+  } catch (error) {
+    console.error('getBulkAudienceMemberIdsByEmails error:', error);
+    throw new Error('Failed to resolve audience members by email');
   }
 }
 

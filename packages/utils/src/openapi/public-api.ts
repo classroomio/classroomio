@@ -38,6 +38,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/audience': 'List audience members',
   'POST /public-api/v1/audience': 'Invite audience members',
   'POST /public-api/v1/audience/assign-courses': 'Assign members to courses',
+  'POST /public-api/v1/audience/bulk-status': 'Change student status in bulk',
   'GET /public-api/v1/audience/{memberId}': 'Get an audience member',
   'PUT /public-api/v1/audience/{memberId}': 'Update an audience member',
   'DELETE /public-api/v1/audience/{memberId}': 'Remove an audience member',

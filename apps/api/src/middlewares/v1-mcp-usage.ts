@@ -14,6 +14,7 @@ type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, TMcpToolName>>> = {
   '/public-api/v1/audience': { GET: 'list_audience_members', POST: 'add_audience_member' },
   '/public-api/v1/audience/assign-courses': { POST: 'assign_audience_courses' },
+  '/public-api/v1/audience/bulk-status': { POST: 'set_audience_status' },
   '/public-api/v1/audience/:memberId': {
     GET: 'get_audience_member',
     PUT: 'update_audience_member',

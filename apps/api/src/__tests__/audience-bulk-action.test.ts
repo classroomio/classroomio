@@ -19,6 +19,10 @@ vi.mock('@cio/jobs', () => ({
   getQueueJobEnvelope: vi.fn()
 }));
 
+vi.mock('@api/services/organization/student-limit', () => ({
+  assertStudentCapacityOrThrow: vi.fn()
+}));
+
 vi.mock('@cio/db/drizzle', () => ({
   // The service owns one transaction at its boundary; the tests exercise the
   // logic inside it, so the transaction is a pass-through here.
@@ -37,6 +41,8 @@ import {
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
 import { enqueueAudienceBulkAction, getQueue, getQueueJobEnvelope } from '@cio/jobs';
+import { assertStudentCapacityOrThrow } from '@api/services/organization/student-limit';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { runQueuedAudienceBulkAction } from '@cio/core/services/organization/audience-bulk';
 import {
   applyBulkAudienceAction,
@@ -298,6 +304,90 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
 
     expect(result).toEqual({ mode: 'queued', jobId: 'job-1', requested: 1001 });
     // Nothing is written on the request thread.
+    expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
+  });
+});
+
+describe('applyBulkAudienceAction — plan seats', () => {
+  it('checks the student limit, in the apply transaction, for the archived members it brings back', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([
+      member(1, 'ARCHIVED'),
+      member(2, 'DEACTIVATED'),
+      member(3, 'ARCHIVED')
+    ] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1, 2, 3]);
+
+    await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1, 2, 3] }, action: 'reactivate' }, ACTOR);
+
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 2, {});
+  });
+
+  it('changes nobody when bringing archived members back would go over the limit', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED')] as never);
+    vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(
+      new AppError('Student limit reached', ErrorCodes.UPGRADE_REQUIRED, 403)
+    );
+
+    await expect(
+      applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1] }, action: 'unarchive' }, ACTOR)
+    ).rejects.toMatchObject({ code: ErrorCodes.UPGRADE_REQUIRED });
+    expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['deactivate', 'ARCHIVED'],
+    ['archive', 'ACTIVE'],
+    ['reactivate', 'DEACTIVATED']
+  ] as const)('does not check the limit to %s a %s member', async (action, status) => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, status)] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+
+    await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1] }, action }, ACTOR);
+
+    expect(assertStudentCapacityOrThrow).not.toHaveBeenCalled();
+  });
+
+  it('checks the whole run before queueing an unarchive of archived members', async () => {
+    const many = Array.from({ length: 5_000 }, (_, index) => index + 1);
+    vi.mocked(resolveAudienceMemberIds).mockResolvedValue(many);
+    vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(
+      new AppError('Student limit reached', ErrorCodes.UPGRADE_REQUIRED, 403)
+    );
+
+    await expect(
+      applyBulkAudienceAction(
+        ORG,
+        {
+          target: filterTarget(many, { filter: { status: 'ARCHIVED', excludeRecentJoiners: true } }),
+          action: 'unarchive'
+        },
+        ACTOR
+      )
+    ).rejects.toMatchObject({ code: ErrorCodes.UPGRADE_REQUIRED });
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 5_000);
+    expect(enqueueAudienceBulkAction).not.toHaveBeenCalled();
+    expect(getBulkAudienceMembersByIds).not.toHaveBeenCalled();
+  });
+
+  it('checks the limit before undoing an archive', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1)] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+    const applied = await applyBulkAudienceAction(
+      ORG,
+      { target: { mode: 'ids', memberIds: [1] }, action: 'archive' },
+      ACTOR
+    );
+
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED')] as never);
+    vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(
+      new AppError('Student limit reached', ErrorCodes.UPGRADE_REQUIRED, 403)
+    );
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockClear();
+
+    await expect(
+      undoBulkAudienceAction(ORG, applied.mode === 'completed' ? applied.undoToken! : '', ACTOR)
+    ).rejects.toMatchObject({ code: ErrorCodes.UPGRADE_REQUIRED });
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, {});
     expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
   });
 });

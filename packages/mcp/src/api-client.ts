@@ -38,6 +38,7 @@ import type {
   TPublicApiAddCourseMember,
   TPublicApiAddCourseToCohort,
   TPublicApiAssignAudienceCourses,
+  TPublicApiAudienceBulkStatus,
   TPublicApiAssignStudentsToCohort,
   TPublicApiAudienceQuery,
   TPublicApiCertificateFileFormat,
@@ -790,6 +791,10 @@ export class ClassroomIoApiClient {
 
   async assignAudienceCourses(payload: TPublicApiAssignAudienceCourses) {
     return this.request('/public-api/v1/audience/assign-courses', { method: 'POST', body: payload });
+  }
+
+  async setAudienceStatus(payload: TPublicApiAudienceBulkStatus) {
+    return this.request('/public-api/v1/audience/bulk-status', { method: 'POST', body: payload });
   }
 
   async getAudienceMember(memberId: number) {

@@ -7,6 +7,7 @@ import {
   type BulkApplyOutcome,
   applyAudienceBulkActionToMembers
 } from '@cio/core/services/organization/audience-bulk';
+import { assertStudentCapacityOrThrow } from './student-limit';
 import { ROLE } from '@cio/utils/constants';
 import { emitOrganizationMemberUpdatedWebhookEvent } from '@cio/core/services/webhook/emit';
 import { db } from '@cio/db/drizzle';
@@ -221,6 +222,15 @@ export async function applyBulkAudienceAction(
   const filterSnapshot = data.target.mode === 'filter' ? { ...data.target.filter } : undefined;
 
   if (memberIds.length > AUDIENCE_BULK_SYNC_MAX) {
+    // The worker can't reach the plan limit, so check the whole run before queueing it. A filter
+    // matches one status, so either every member takes a seat back or none does.
+    const takesSeatsBack =
+      (data.action === 'reactivate' || data.action === 'unarchive') &&
+      (data.target.mode !== 'filter' || data.target.filter.status === 'ARCHIVED');
+    if (takesSeatsBack) {
+      await assertStudentCapacityOrThrow(orgId, memberIds.length);
+    }
+
     // Ids, not the filter: the target was verified against the admin's preview
     // hash just now, and re-resolving in the worker would hit a different
     // population because the action changes who matches.
@@ -246,7 +256,8 @@ export async function applyBulkAudienceAction(
       orgId,
       memberIds,
       { action: data.action, reason: data.reason, filterSnapshot },
-      actorProfileId
+      actorProfileId,
+      { assertSeats: (tx, seats) => assertStudentCapacityOrThrow(orgId, seats, tx) }
     );
 
     return toCompletedResult(orgId, actorProfileId, data.action, outcome);
@@ -271,6 +282,10 @@ export async function undoBulkAudienceAction(
     // have acted during the window, and that newer decision must win.
     const stillApplied = members.filter((member) => member.status === record.appliedStatus);
     const revertableIds = stillApplied.map((member) => member.id);
+
+    if (record.appliedStatus === 'ARCHIVED' && record.status === 'ACTIVE') {
+      await assertStudentCapacityOrThrow(orgId, revertableIds.length, tx);
+    }
 
     const changedIds = await bulkUpdateOrganizationMemberStatus(
       orgId,
