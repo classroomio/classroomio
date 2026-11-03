@@ -8,13 +8,27 @@ import type {
   PolarWebhookPayload,
   SubscriptionData
 } from '$lib/utils/types/polar';
-import { Webhooks } from '@polar-sh/sveltekit';
+import { verifyPolarWebhook } from '$lib/utils/functions/polar-webhook.server';
 import { env } from '$env/dynamic/private';
+import type { RequestHandler } from './$types';
 
-export const POST = Webhooks({
-  webhookSecret: env.POLAR_WEBHOOK_SECRET!,
-  onPayload
-});
+export const POST: RequestHandler = async ({ request }) => {
+  const body = await request.text();
+  const headers = {
+    'webhook-id': request.headers.get('webhook-id') ?? '',
+    'webhook-timestamp': request.headers.get('webhook-timestamp') ?? '',
+    'webhook-signature': request.headers.get('webhook-signature') ?? ''
+  };
+  const payload = verifyPolarWebhook(body, headers, env.POLAR_WEBHOOK_SECRET!);
+
+  if (!payload) {
+    return new Response(JSON.stringify({ received: false }), { status: 403 });
+  }
+
+  await onPayload(payload);
+
+  return new Response(JSON.stringify({ received: true }), { status: 200 });
+};
 
 function isSubscriptionPayload(payload: PolarWebhookPayload): payload is PolarSubscriptionWebhookPayload {
   return (
