@@ -292,6 +292,8 @@ The following are outside v1:
 * Persisting or re-surfacing the prompt used to generate an AI draft
 * Course creation, enrollment, analytics, attendance, marks, submissions, certificates, compliance, or landing-page editing
 * Changes to `CourseSidebar` or `CourseHeader`
+* Bulk move, bulk duplicate or bulk change of block type
+* Bulk delete on the mobile layout (not yet designed)
 
 ---
 
@@ -426,6 +428,31 @@ Independently of the menu, every block also has:
 * **Move up** / **move down** controls, for reordering without dragging.
 
 A dismissible hint banner introduces the drag-to-reorder affordance the first time a lesson has reorderable content; dismissing it does not reappear for that admin.
+
+---
+
+## 5a. Bulk delete
+
+An admin can delete several blocks at once instead of removing them one by one. It works on every block type, so it is a feature of the editor, not of any one block.
+
+**Deleting one block at a time stays.** Bulk delete adds to **Remove block** in each block's "..." menu (section 5); it does not replace it. An admin can always delete a single block from its own menu, whether or not select mode is on, and that removal is not affected by select mode.
+
+* A **Bulk delete** button (trash icon) sits in the toolbar next to Edit / Preview. It only shows in Edit.
+* Clicking it turns on **select mode**. A bar appears above the canvas with a master checkbox, "N selected", **Select all**, a red **Delete N** button and **Cancel**. The bar stays visible while the admin scrolls.
+* In select mode, clicking anywhere on a block selects or unselects it. Each block shows a checkbox and a highlighted outline when selected. Controls inside blocks do not react to clicks.
+* **Shift + click** selects every block between the last clicked block and this one.
+* The master checkbox shows empty, partly filled or full. Clicking it selects all or none.
+* **Delete N** is disabled while nothing is selected. It removes the selected blocks and leaves select mode. If more than 5 blocks are selected, the first click changes the button to **Confirm delete N**; a second click within 4 seconds deletes, otherwise it resets.
+* After deleting, a toast says how many blocks were deleted and offers **Undo** for 8 seconds. Undo puts the blocks back in their original order, unselected.
+* Select mode hides the drag-to-reorder hint and the scroll-position dots. Switching to Preview leaves select mode. Deleting autosaves like any other change.
+
+| Key | Action |
+| --- | --- |
+| Esc | Leave select mode and clear the selection |
+| Cmd/Ctrl + A | Select all blocks (not while typing in a field) |
+| Delete / Backspace | Delete the selected blocks (not while typing in a field) |
+
+Bulk delete removes several entries from the ordered block list in one save; Undo restores the previous list. No new fields are needed.
 
 ---
 
@@ -825,6 +852,15 @@ Manually verify:
 28. Reading density is a persisted, per-lesson setting: set once from the Settings slider, it determines block spacing in both Preview and the real in-app learner view, with no effect on the Edit canvas.
 29. The Settings slider's visibility rules match production exactly: Live class fields only for live-class-type courses; video-watch threshold and per-video enforcement only when the completion rule is "Video watch".
 30. The scroll-position indicator (dots in Edit, progress fill in Preview) reflects the block currently in view and can jump to any block on click; it does not appear on the mobile frame.
+31. A "Bulk delete" button with a trash icon shows in the toolbar in Edit only.
+32. Clicking it shows the selection bar with master checkbox, "N selected", Select all, Delete N and Cancel, and the bar stays visible on scroll.
+33. Clicking a block selects or unselects it, and controls inside blocks do not respond while select mode is on.
+34. Shift + click selects the range from the last clicked block, and the master checkbox shows none, some or all.
+35. Delete N is disabled when nothing is selected. Deleting 5 or fewer blocks removes them straight away; deleting more than 5 needs a second click on "Confirm delete N" within 4 seconds.
+36. After delete, a toast shows the count and Undo for 8 seconds; Undo restores the blocks in their original order and unselected.
+37. Deleting every block leaves an empty canvas and the lesson autosaves.
+38. Esc leaves select mode; Cmd/Ctrl + A selects all and Delete/Backspace deletes, neither while typing in a field. Switching to Preview leaves select mode.
+39. Each block can still be deleted individually from its "..." menu (Remove block), with or without using Bulk delete.
 
 ---
 
