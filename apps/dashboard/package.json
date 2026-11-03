@@ -29,7 +29,6 @@
     "@cio/api": "workspace:*",
     "@cio/certificates": "workspace:*",
     "@cio/db": "workspace:*",
-    "@cio/landing-pages": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@cio/ui": "workspace:*",
     "@cio/utils": "workspace:*",

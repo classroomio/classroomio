@@ -2508,7 +2508,6 @@ export const organization = pgTable(
       embed?: Record<string, unknown>;
       callout?: Record<string, unknown>;
       links?: Record<string, unknown>;
-      presentation?: Record<string, unknown> | null;
     }>(),
     theme: text().default('blue'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })

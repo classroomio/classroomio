@@ -1363,55 +1363,6 @@ export const updateOrganization = async (
   return organization;
 };
 
-export class OrganizationLandingPageRevisionConflictError extends Error {
-  constructor(
-    public readonly expectedRevision: number,
-    public readonly currentRevision: number
-  ) {
-    super(`Landing page revision changed from ${expectedRevision} to ${currentRevision}`);
-    this.name = 'OrganizationLandingPageRevisionConflictError';
-  }
-}
-
-export async function setOrganizationLandingPagePresentation(
-  organizationId: string,
-  presentation: Record<string, unknown> | null,
-  expectedRevision: number
-): Promise<TOrganization | null> {
-  return db.transaction(async (transaction) => {
-    const [existing] = await transaction
-      .select({ landingpage: schema.organization.landingpage })
-      .from(schema.organization)
-      .where(eq(schema.organization.id, organizationId))
-      .for('update');
-
-    if (!existing) return null;
-
-    const landingPage = (existing.landingpage ?? {}) as Record<string, unknown>;
-    const currentPresentation = landingPage.presentation;
-    const currentRevision =
-      currentPresentation && typeof currentPresentation === 'object'
-        ? Number((currentPresentation as Record<string, unknown>).revision ?? 0)
-        : 0;
-
-    if (currentRevision !== expectedRevision) {
-      throw new OrganizationLandingPageRevisionConflictError(expectedRevision, currentRevision);
-    }
-
-    const nextLandingPage = {
-      ...landingPage,
-      presentation
-    } as TOrganization['landingpage'];
-    const [organization] = await transaction
-      .update(schema.organization)
-      .set({ landingpage: nextLandingPage })
-      .where(eq(schema.organization.id, organizationId))
-      .returning();
-
-    return organization ?? null;
-  });
-}
-
 /**
  * Get organization plan status for SSO entitlement check
  * @param orgId Organization ID

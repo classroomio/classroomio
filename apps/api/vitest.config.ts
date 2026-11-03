@@ -14,14 +14,6 @@ export default defineConfig({
       { find: /^@cio\/db\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/db/src') + '/$1' },
       { find: /^@cio\/utils\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/utils/src') + '/$1' },
       { find: '@cio/utils', replacement: path.resolve(__dirname, '../../packages/utils/src/index.ts') },
-      {
-        find: /^@cio\/landing-pages\/(.*)$/,
-        replacement: path.resolve(__dirname, '../../packages/landing-pages/src') + '/$1'
-      },
-      {
-        find: /^@cio\/landing-pages$/,
-        replacement: path.resolve(__dirname, '../../packages/landing-pages/src/index.ts')
-      },
       // `@cio/db` sources refer to themselves through this alias.
       { find: /^@db\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/db/src') + '/$1' }
     ]

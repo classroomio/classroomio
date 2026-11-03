@@ -21,7 +21,6 @@ export interface PluginContext {
       selectedTemplateId?: string;
       selectedTemplateName?: string;
       selectedTemplateDocument?: unknown;
-      selectedTemplateRevision?: number;
     };
   };
 }

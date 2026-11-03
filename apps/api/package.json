@@ -49,7 +49,6 @@
     "@cio/db": "workspace:*",
     "@cio/email": "workspace:*",
     "@cio/jobs": "workspace:*",
-    "@cio/landing-pages": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@cio/utils": "workspace:*",
     "@getworkbench/hono": "0.2.1",

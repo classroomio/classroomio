@@ -13,8 +13,6 @@ import {
   ZPluginStorageNamespaceParam,
   ZPluginStorageQuery,
   ZPluginStoragePut,
-  ZApplyLandingPageTemplate,
-  ZRemoveLandingPageTemplate,
   ZUninstallPlugin,
   ZUpdateInstallationSettings,
   ZUpdateInstallationStatus,
@@ -31,8 +29,6 @@ import {
   listInstallationExercises,
   listInstallationLessons,
   listOrgPlugins,
-  applyLandingPageTemplate,
-  removeLandingPageTemplate,
   resolveOrgContributions,
   deleteStorageValue,
   getStorageValue,
@@ -390,44 +386,6 @@ export const pluginInstallationsRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to fetch exercises for plugin installation');
-      }
-    }
-  )
-  .post(
-    '/:installationId/landing-page-template/apply',
-    authMiddleware,
-    orgAdminMiddleware,
-    zValidator('param', ZPluginInstallationParam),
-    zValidator('json', ZApplyLandingPageTemplate),
-    async (c) => {
-      const user = c.get('user')!;
-      const orgId = c.get('orgId') as string;
-      const { installationId } = c.req.valid('param');
-      const payload = c.req.valid('json');
-
-      try {
-        const result = await applyLandingPageTemplate(installationId, orgId, payload, user.id);
-        return c.json({ success: true, data: result }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to apply landing page template');
-      }
-    }
-  )
-  .post(
-    '/landing-page-template/remove',
-    authMiddleware,
-    orgAdminMiddleware,
-    zValidator('json', ZRemoveLandingPageTemplate),
-    async (c) => {
-      const user = c.get('user')!;
-      const orgId = c.get('orgId') as string;
-      const payload = c.req.valid('json');
-
-      try {
-        const result = await removeLandingPageTemplate(orgId, payload.expectedRevision, user.id);
-        return c.json({ success: true, data: result }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to remove landing page template');
       }
     }
   );
