@@ -54,8 +54,8 @@ describe('createMcpServer', () => {
     ['create_course_draft', false, false],
     ['create_course_draft_from_course', false, false],
     ['update_course_draft', false, false],
-    ['tag_course_draft', false, false],
-    ['publish_course_draft', false, false],
+    ['tag_course_draft', false, true],
+    ['publish_course_draft', false, true],
     ['publish_course_draft_to_existing_course', false, true],
     ['tag_courses', false, true]
   ])('annotates %s as readOnly=%s, destructive=%s', async (name, readOnlyHint, destructiveHint) => {

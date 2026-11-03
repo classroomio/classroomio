@@ -152,7 +152,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
     'tag_course_draft',
     'Attach tags to a draft; they are applied when it is published.',
     tagCourseDraftShape,
-    WRITE,
+    DESTRUCTIVE,
     async (args) => {
       const { draftId, ...payload } = ZTagCourseDraftToolInput.parse(args);
       const result = await apiClient.tagCourseDraft(draftId, payload);
@@ -164,7 +164,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
     'publish_course_draft',
     'Publish an unpublished draft as a new live course, returning its courseId and courseUrl. Start later major edits from a fresh draft of the live course.',
     publishCourseDraftShape,
-    WRITE,
+    DESTRUCTIVE,
     async (args) => {
       const { draftId, ...payload } = ZPublishCourseDraftToolInput.parse(args);
       const result = await apiClient.publishCourseDraft(draftId, payload);
