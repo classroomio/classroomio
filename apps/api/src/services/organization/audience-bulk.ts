@@ -151,9 +151,9 @@ const PREVIEW_SAMPLE_SIZE = 5;
  * handed to the queue without holding one open.
  */
 async function resolveTargetIds(orgId: string, data: TBulkAudienceAction): Promise<number[]> {
+  // The applier loads only this org's students and reports every other id as NOT_FOUND.
   if (data.target.mode === 'ids') {
-    const members = await getBulkAudienceMembersByIds(orgId, data.target.memberIds);
-    return members.map((member) => member.id);
+    return [...new Set(data.target.memberIds)];
   }
 
   const matchedIds = await resolveAudienceMemberIds(orgId, data.target.filter);
@@ -222,10 +222,10 @@ export async function applyBulkAudienceAction(
   const filterSnapshot = data.target.mode === 'filter' ? { ...data.target.filter } : undefined;
 
   if (memberIds.length > AUDIENCE_BULK_SYNC_MAX) {
-    // The worker can't reach the plan limit, so check the whole run before queueing it. A filter
-    // matches one status, so either every member takes a seat back or none does.
+    // The worker can't reach the plan limit, so check the whole run before queueing it.
     const takesSeatsBack =
-      (data.action === 'reactivate' || data.action === 'unarchive') &&
+      data.action !== 'archive' &&
+      data.action !== 'delete' &&
       (data.target.mode !== 'filter' || data.target.filter.status === 'ARCHIVED');
     if (takesSeatsBack) {
       await assertStudentCapacityOrThrow(orgId, memberIds.length);

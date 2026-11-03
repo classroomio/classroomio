@@ -334,8 +334,35 @@ describe('applyBulkAudienceAction — plan seats', () => {
     expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
   });
 
+  it('checks the limit to deactivate an archived member, which takes its seat back', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED'), member(2)] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1, 2]);
+
+    await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1, 2] }, action: 'deactivate' }, ACTOR);
+
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, {});
+  });
+
+  it('reports ids that are not students of the organization at apply time as NOT_FOUND', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1)] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+
+    const result = await applyBulkAudienceAction(
+      ORG,
+      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'deactivate' },
+      ACTOR
+    );
+
+    expect(result).toMatchObject({
+      mode: 'completed',
+      requested: 2,
+      succeeded: 1,
+      failed: [{ memberId: 2, reason: 'NOT_FOUND' }]
+    });
+  });
+
   it.each([
-    ['deactivate', 'ARCHIVED'],
+    ['deactivate', 'ACTIVE'],
     ['archive', 'ACTIVE'],
     ['reactivate', 'DEACTIVATED']
   ] as const)('does not check the limit to %s a %s member', async (action, status) => {

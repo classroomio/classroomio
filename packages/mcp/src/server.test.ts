@@ -5,12 +5,15 @@ import { describe, expect, it } from 'vitest';
 import { ClassroomIoApiClient } from './api-client';
 import { createMcpServer } from './server';
 
-async function connect(options: { includeLocalFileTools: boolean }) {
-  const apiClient = new ClassroomIoApiClient({
-    CLASSROOMIO_API_URL: 'https://api.example.com',
-    CLASSROOMIO_API_KEY: 'cio_mcp_test',
-    CLASSROOMIO_USER_AGENT: 'test'
-  });
+async function connect(options: { includeLocalFileTools: boolean }, fetchImpl?: typeof fetch) {
+  const apiClient = new ClassroomIoApiClient(
+    {
+      CLASSROOMIO_API_URL: 'https://api.example.com',
+      CLASSROOMIO_API_KEY: 'cio_mcp_test',
+      CLASSROOMIO_USER_AGENT: 'test'
+    },
+    fetchImpl ? { fetch: fetchImpl } : undefined
+  );
   const server = createMcpServer(apiClient, options);
   const client = new Client({ name: 'test', version: '1' });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
@@ -27,6 +30,26 @@ describe('createMcpServer', () => {
 
     expect(tool?.annotations).toMatchObject({ readOnlyHint: false, destructiveHint: true });
     expect(tool?.inputSchema.required).toContain('confirm');
+  });
+
+  it('returns an API failure as a tool error with its code and status', async () => {
+    const refuse = async () =>
+      new Response(JSON.stringify({ success: false, error: 'Student limit reached', code: 'UPGRADE_REQUIRED' }), {
+        status: 403
+      });
+    const client = await connect({ includeLocalFileTools: false }, refuse);
+
+    const result = await client.callTool({
+      name: 'set_audience_status',
+      arguments: { action: 'unarchive', memberIds: [1], confirm: true }
+    });
+
+    expect(result.isError).toBe(true);
+    expect(JSON.parse((result.content as { text: string }[])[0]!.text)).toEqual({
+      error: 'Student limit reached',
+      code: 'UPGRADE_REQUIRED',
+      status: 403
+    });
   });
 
   it('registers the local file tools for a local stdio process', async () => {

@@ -54,13 +54,13 @@ export async function getBulkAudienceMembersByIds(
 
 /**
  * Student members of the org whose invite or account email is in `emails`, matched
- * case-insensitively. `matchedEmail` is the lowercased address that matched.
+ * case-insensitively. `emails` holds both of a member's addresses, lowercased.
  */
 export async function getBulkAudienceMemberIdsByEmails(
   orgId: string,
   emails: string[],
   dbClient: DbOrTxClient = db
-): Promise<{ id: number; matchedEmail: string }[]> {
+): Promise<{ id: number; emails: string[] }[]> {
   if (emails.length === 0) {
     return [];
   }
@@ -88,12 +88,9 @@ export async function getBulkAudienceMemberIdsByEmails(
       );
 
     return rows.map((row) => {
-      const memberEmail = row.memberEmail?.toLowerCase();
+      const memberEmails = [row.memberEmail, row.profileEmail].flatMap((email) => (email ? [email.toLowerCase()] : []));
 
-      return {
-        id: row.id,
-        matchedEmail: memberEmail && lowered.includes(memberEmail) ? memberEmail : row.profileEmail!.toLowerCase()
-      };
+      return { id: row.id, emails: [...new Set(memberEmails)] };
     });
   } catch (error) {
     console.error('getBulkAudienceMemberIdsByEmails error:', error);

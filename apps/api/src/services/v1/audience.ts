@@ -12,7 +12,8 @@ import {
   importAudienceMembers,
   updatePendingAudienceMemberEmail
 } from '@api/services/organization/audience';
-import { getBulkAudienceMemberIdsByEmails, getBulkAudienceMembersByIds } from '@cio/db/queries/organization';
+import { AppError, ErrorCodes } from '@api/utils/errors';
+import { getBulkAudienceMemberIdsByEmails } from '@cio/db/queries/organization';
 import { getOrgAudience, getOrgAudienceMember, removeAudienceMember } from '@api/services/organization';
 import { applyBulkAudienceAction } from '@api/services/organization/audience-bulk';
 import type { TEventSource } from '@cio/core/services/posthog';
@@ -82,59 +83,69 @@ export async function bulkUpdateAudienceStatusService(
   await assertOrgAdmin(orgId, actorId);
 
   const entries = payload.memberIds
-    ? await resolveByIds(orgId, payload.memberIds)
+    ? payload.memberIds.map((memberId) => ({ ids: [memberId], email: null }))
     : await resolveByEmails(orgId, payload.emails!);
   const memberIds = [...new Set(entries.flatMap((entry) => entry.ids))];
+  const reasonById = await applyStatusChange(orgId, actorId, payload, memberIds);
 
-  const unchangedIds = new Set<number>();
-  if (memberIds.length > 0) {
+  const rows = entries.map((entry, index) => {
+    const outcomes = entry.ids.map((id) => reasonById.get(id) ?? 'CHANGED');
+    const changedId = entry.ids.find((id) => !reasonById.has(id));
+    const foundId = entry.ids.find((id) => reasonById.get(id) !== 'NOT_FOUND');
+    const status = outcomes.includes('CHANGED')
+      ? ('changed' as const)
+      : outcomes.includes('ALREADY_IN_STATE')
+        ? ('already_in_state' as const)
+        : ('not_found' as const);
+
+    return { index, memberId: changedId ?? foundId ?? null, email: entry.email, status };
+  });
+  const changedCount = rows.filter((row) => row.status === 'changed').length;
+
+  return { action: payload.action, requested: rows.length, changed: changedCount, rows };
+}
+
+/** Each member id's failure reason from the apply itself; an id with no reason changed. */
+async function applyStatusChange(
+  orgId: string,
+  actorId: string,
+  payload: TPublicApiAudienceBulkStatus,
+  memberIds: number[]
+): Promise<Map<number, string>> {
+  const allNotFound = new Map(memberIds.map((memberId) => [memberId, 'NOT_FOUND']));
+  if (memberIds.length === 0) return allNotFound;
+
+  const target = { mode: 'ids' as const, memberIds };
+
+  try {
     const result = await applyBulkAudienceAction(
       orgId,
-      { target: { mode: 'ids', memberIds }, action: payload.action, reason: payload.reason },
+      { target, action: payload.action, reason: payload.reason },
       actorId
     );
-
     if (result.mode !== 'completed') {
       throw new Error('Bulk status change was queued unexpectedly');
     }
-    result.failed.forEach((failure) => unchangedIds.add(failure.memberId));
+
+    return new Map(result.failed.map((failure) => [failure.memberId, failure.reason]));
+  } catch (error) {
+    const noneFound =
+      error instanceof AppError && error.statusCode === 404 && error.code === ErrorCodes.ORG_AUDIENCE_BULK_FAILED;
+    if (noneFound) return allNotFound;
+
+    throw error;
   }
-
-  const rows = entries.map((entry, index) => ({
-    index,
-    memberId: entry.ids[0] ?? null,
-    email: entry.email,
-    status:
-      entry.ids.length === 0
-        ? ('not_found' as const)
-        : entry.ids.every((id) => unchangedIds.has(id))
-          ? ('already_in_state' as const)
-          : ('changed' as const)
-  }));
-
-  return {
-    action: payload.action,
-    requested: rows.length,
-    changed: rows.filter((row) => row.status === 'changed').length,
-    rows
-  };
 }
 
-type TBulkStatusEntry = { ids: number[]; email: string | null };
+async function resolveByEmails(orgId: string, emails: string[]) {
+  const matches = await getBulkAudienceMemberIdsByEmails(orgId, emails);
 
-async function resolveByIds(orgId: string, memberIds: number[]): Promise<TBulkStatusEntry[]> {
-  const found = new Set((await getBulkAudienceMembersByIds(orgId, memberIds)).map((member) => member.id));
+  return emails.map((email) => {
+    const lowered = email.toLowerCase();
+    const ids = matches.filter((match) => match.emails.includes(lowered)).map((match) => match.id);
 
-  return memberIds.map((memberId) => ({ ids: found.has(memberId) ? [memberId] : [], email: null }));
-}
-
-async function resolveByEmails(orgId: string, emails: string[]): Promise<TBulkStatusEntry[]> {
-  const idsByEmail = new Map<string, number[]>();
-  for (const match of await getBulkAudienceMemberIdsByEmails(orgId, emails)) {
-    idsByEmail.set(match.matchedEmail, [...(idsByEmail.get(match.matchedEmail) ?? []), match.id]);
-  }
-
-  return emails.map((email) => ({ ids: idsByEmail.get(email.toLowerCase()) ?? [], email }));
+    return { ids, email };
+  });
 }
 
 export async function removeAudienceService(orgId: string, memberId: number, actorId: string | null) {

@@ -169,7 +169,7 @@ export const v1AudienceRouter = new Hono()
         },
         401: errorResponses.unauthorized,
         403: {
-          description: `${audienceWriteForbidden.description} Also returned with UPGRADE_REQUIRED when reactivating or unarchiving archived students would go over the plan's student limit; nothing changes then.`
+          description: `${audienceWriteForbidden.description} Also returned with UPGRADE_REQUIRED when moving archived students out of archived would go over the plan's student limit; nothing changes then.`
         },
         429: mcpRateLimitResponse
       }

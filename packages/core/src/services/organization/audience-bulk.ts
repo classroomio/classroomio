@@ -73,9 +73,9 @@ export type BulkApplyOptions = {
   assertSeats?: (tx: DbOrTxClient, seats: number) => Promise<unknown>;
 };
 
-/** Archived members free their seat, so moving them back to ACTIVE takes one again. */
+/** Only archived members are off the seat count, so any move out of ARCHIVED takes a seat again. */
 export function countSeatsTakenBack(members: Pick<BulkAudienceMemberRow, 'status'>[], action: TAudienceBulkAction) {
-  if (action !== 'reactivate' && action !== 'unarchive') return 0;
+  if (action === 'archive' || action === 'delete') return 0;
 
   return members.filter((member) => member.status === 'ARCHIVED').length;
 }
@@ -219,7 +219,13 @@ export async function applyAudienceBulkActionToMembers(
 
   await emitBulkOutcomeWebhookEvents(orgId, members, outcome, input.action, actorProfileId);
 
-  return outcome;
+  // An id gone by now (removed, promoted, or never in this org) is reported, not dropped.
+  const loadedIds = new Set(members.map((member) => member.id));
+  const notFound = memberIds
+    .filter((memberId) => !loadedIds.has(memberId))
+    .map((memberId) => ({ memberId, reason: 'NOT_FOUND' }));
+
+  return { ...outcome, requested: memberIds.length, failed: [...outcome.failed, ...notFound] };
 }
 
 async function emitBulkOutcomeWebhookEvents(
