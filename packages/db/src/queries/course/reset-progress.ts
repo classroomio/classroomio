@@ -203,6 +203,13 @@ export async function deleteStudentCourseProgress(
 ): Promise<DeletedStudentCourseProgress> {
   const { courseId, groupMemberId, profileId } = input;
 
+  // Lock the membership before anything else, as certificate issuance does, so a certificate issued mid-reset is revoked.
+  await tx
+    .select({ id: schema.groupmember.id })
+    .from(schema.groupmember)
+    .where(eq(schema.groupmember.id, groupMemberId))
+    .for('update');
+
   const lessonIds = await getCourseLessonIds(tx, courseId);
   const newsfeedIds = await getCourseNewsfeedIds(tx, courseId);
   const studentNewsfeedPostIds = await getStudentCourseNewsfeedPostIds(tx, courseId, groupMemberId);

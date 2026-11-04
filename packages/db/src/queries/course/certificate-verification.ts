@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { TCourseCertificateVerification, TNewCourseCertificateVerification } from '@db/types';
-import { and, desc, eq, inArray, isNull, type SQL, type SQLWrapper } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, type SQL } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 
@@ -61,11 +61,11 @@ export async function revokeStudentCourseCertificateVerifications(
  * Marks every unrevoked certificate tied to the given course memberships as revoked. Returns how many were revoked.
  */
 export async function revokeCertificateVerificationsForGroupMembers(
-  groupMemberIds: string[] | SQLWrapper,
+  groupMemberIds: string[],
   revokedAt: string,
   dbClient: DbOrTxClient = db
 ): Promise<number> {
-  if (Array.isArray(groupMemberIds) && groupMemberIds.length === 0) {
+  if (groupMemberIds.length === 0) {
     return 0;
   }
 

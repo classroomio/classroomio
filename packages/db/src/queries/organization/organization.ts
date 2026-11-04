@@ -579,10 +579,13 @@ export const deleteGroupMembershipsForOrgProfiles = async (
       .select({ id: schema.group.id })
       .from(schema.group)
       .where(eq(schema.group.organizationId, orgId));
-    const removedMemberIds = dbClient
+    // Locked first, as certificate issuance does, so a certificate issued during the removal is revoked.
+    const removedMembers = await dbClient
       .select({ id: schema.groupmember.id })
       .from(schema.groupmember)
-      .where(and(inArray(schema.groupmember.profileId, profileIds), inArray(schema.groupmember.groupId, orgGroupIds)));
+      .where(and(inArray(schema.groupmember.profileId, profileIds), inArray(schema.groupmember.groupId, orgGroupIds)))
+      .for('update');
+    const removedMemberIds = removedMembers.map((member) => member.id);
     const revokedAt = new Date().toISOString();
 
     await revokeCertificateVerificationsForGroupMembers(removedMemberIds, revokedAt, dbClient);
