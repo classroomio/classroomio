@@ -53,7 +53,7 @@ export function buildPluginCsp(manifest?: { networkAccess?: { allowedDomains?: s
   const isDev = process.env.NODE_ENV !== 'production';
   const imgSrc = isDev ? "'self' data: https: http: blob:" : "'self' data: https: blob:";
 
-  return `default-src 'self'; connect-src ${connectSrc}; img-src ${imgSrc}; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; object-src 'none'; base-uri 'none';`;
+  return `default-src 'self'; connect-src ${connectSrc}; img-src ${imgSrc}; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com; object-src 'none'; base-uri 'none';`;
 }
 
 function resolveArtifactDirectory(pluginId: string, version: string, digest: string): string | null {

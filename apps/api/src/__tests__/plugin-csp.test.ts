@@ -10,6 +10,12 @@ describe('Plugin Manifest CSP Policy', () => {
     expect(csp).toContain("connect-src 'none'");
     expect(csp).toContain("script-src 'self'");
     expect(csp).toContain("object-src 'none'");
+    expect(csp).toContain(
+      "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com"
+    );
+    expect(csp).toContain(
+      "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com"
+    );
   });
 
   it('allows exact declared HTTPS origins and excludes undeclared ones', () => {

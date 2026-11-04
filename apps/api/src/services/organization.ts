@@ -1,6 +1,9 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { activateLandingTemplate } from './organization/landing-page';
+export * from './organization/landing-page';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
+  NativeLandingPageTheme,
   TCourseReorder,
   TGetAudienceQuery,
   TGetOrganizationCoursesQuery
@@ -805,14 +808,30 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
 
     if (data.landingpage && typeof data.landingpage === 'object') {
       const landingpage = data.landingpage as Record<string, unknown>;
-      const theme = landingpage.theme;
+      const appearance = landingpage.appearance as Record<string, unknown> | undefined;
 
-      if (typeof theme === 'string' && !isFreeLandingPageTheme(theme)) {
-        const activePlan = await getActiveOrganizationPlan(orgId);
-        const planName = activePlan?.planName ?? PLAN.BASIC;
+      if (appearance && appearance.kind === 'plugin') {
+        const activation = await activateLandingTemplate({
+          organizationId: orgId,
+          installationId: String(appearance.installationId),
+          templateId: String(appearance.templateId),
+          fallbackTheme: appearance.fallbackTheme as NativeLandingPageTheme | undefined,
+          skipDbUpdate: true
+        });
+        landingpage.appearance = activation.appearance;
+        const fallbackTheme =
+          activation.appearance.kind === 'plugin' ? activation.appearance.fallbackTheme : activation.appearance.theme;
+        landingpage.theme = fallbackTheme;
+      } else {
+        const theme = landingpage.theme;
 
-        if (planName === PLAN.BASIC) {
-          throw new AppError('Landing page themes require a paid plan', ErrorCodes.UPGRADE_REQUIRED, 403);
+        if (typeof theme === 'string' && !isFreeLandingPageTheme(theme)) {
+          const activePlan = await getActiveOrganizationPlan(orgId);
+          const planName = activePlan?.planName ?? PLAN.BASIC;
+
+          if (planName === PLAN.BASIC) {
+            throw new AppError('Landing page themes require a paid plan', ErrorCodes.UPGRADE_REQUIRED, 403);
+          }
         }
       }
     }

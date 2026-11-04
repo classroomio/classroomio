@@ -364,7 +364,8 @@ export async function uninstallPlugin(
     metadata: {
       ...options,
       storageRecordsDeleted: result.storageRecordsDeleted,
-      publishedOutputsRemoved: result.publishedOutputsRemoved
+      publishedOutputsRemoved: result.publishedOutputsRemoved,
+      landingTemplatesReverted: result.landingTemplatesReverted
     }
   });
 

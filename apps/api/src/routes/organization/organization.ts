@@ -12,6 +12,7 @@ import {
   ZBulkAudienceAction,
   ZGetAudienceQuery,
   ZGetCoursesBySiteName,
+  ZGetPublicLandingPageQuery,
   ZGetLinkInvite,
   ZGetOrgSetup,
   ZGetOrganizationCoursesQuery,
@@ -54,6 +55,7 @@ import {
   getOrganizationNavCounts,
   getOrganizationsWithFilters,
   getPublicCourses,
+  getPublicOrgLandingPageDescriptor,
   getRecommendedCourses,
   getUserAnalytics,
   getUserEnrolledCourses,
@@ -532,6 +534,20 @@ export const organizationRouter = new Hono()
       }
     }
   )
+  /**
+   * GET /organization/landing-page/public
+   * Resolves public landing page presentation and active creative template descriptor.
+   * No authentication required.
+   */
+  .get('/landing-page/public', zValidator('query', ZGetPublicLandingPageQuery), async (c) => {
+    try {
+      const { siteName, templateId } = c.req.valid('query');
+      const data = await getPublicOrgLandingPageDescriptor(siteName, templateId);
+      return c.json({ success: true, data });
+    } catch (error) {
+      return handleError(c, error, 'Failed to resolve landing page presentation');
+    }
+  })
   /**
    * GET /organization/courses/public
    * Gets published courses for an organization (public landing page)
