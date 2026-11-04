@@ -262,6 +262,7 @@ export type ResolveStudentHomeSuccess = Extract<InferResponseType<ResolveStudent
 export type GetStudentHomeCoursesRequest = (typeof classroomio.organization)['student-home']['courses']['$get'];
 export type GetStudentHomeCoursesSuccess = Extract<InferResponseType<GetStudentHomeCoursesRequest>, { success: true }>;
 export type StudentHomeCourseOption = GetStudentHomeCoursesSuccess['data'][number];
+export type StudentHomeCoursesPagination = GetStudentHomeCoursesSuccess['pagination'];
 export type StudentHomeOption =
   | { kind: 'default' }
   | { kind: 'page'; key: LmsDestinationKey }

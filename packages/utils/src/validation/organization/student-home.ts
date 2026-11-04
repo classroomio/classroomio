@@ -11,7 +11,9 @@ export type TStudentHomeDestination = z.infer<typeof ZStudentHomeDestination>;
 
 export const ZStudentHomeCourseOptionsQuery = z.object({
   search: z.string().trim().max(200).optional(),
-  includeCourseId: z.uuid().optional()
+  includeCourseId: z.uuid().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20)
 });
 
 export type TStudentHomeCourseOptionsQuery = z.infer<typeof ZStudentHomeCourseOptionsQuery>;

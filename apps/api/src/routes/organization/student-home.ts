@@ -17,9 +17,9 @@ export const organizationStudentHomeRouter = new Hono()
       try {
         const orgId = c.req.header('cio-org-id')!;
         const query = c.req.valid('query');
-        const options = await listStudentHomeOptions(orgId, query);
+        const result = await listStudentHomeOptions(orgId, query);
 
-        return c.json({ success: true, data: options }, 200);
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to list student home courses');
       }

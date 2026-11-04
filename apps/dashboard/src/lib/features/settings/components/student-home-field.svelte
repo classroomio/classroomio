@@ -6,6 +6,7 @@
   import * as Field from '@cio/ui/base/field';
   import * as Popover from '@cio/ui/base/popover';
   import { Skeleton } from '@cio/ui/base/skeleton';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { BookOpen, Check, ChevronsUpDown, LayoutTemplate } from '@lucide/svelte';
   import { t } from '$lib/utils/functions/translations';
   import { studentHomeApi } from '$features/org/api/student-home.svelte';
@@ -86,6 +87,15 @@
   function selectDestination(next: TStudentHomeDestination | null) {
     value = next;
     open = false;
+  }
+
+  function loadMoreCourses() {
+    if (!studentHomeApi.hasMore || studentHomeApi.loadingMore) return;
+
+    void studentHomeApi.listCourses({
+      search: search.applied || undefined,
+      page: (studentHomeApi.pagination?.page ?? 1) + 1
+    });
   }
 
   function disabledReasonText(reason: StudentHomePageOption['disabledReason']): string {
@@ -215,6 +225,17 @@
                   {/if}
                 </Command.Item>
               {/each}
+
+              {#if studentHomeApi.hasMore}
+                <Command.Item value="student-home-load-more" onSelect={loadMoreCourses} class="justify-center">
+                  {#if studentHomeApi.loadingMore}
+                    <Spinner class="size-4" />
+                  {/if}
+                  <span class="ui:text-muted-foreground text-sm">
+                    {$t('components.settings.customize_lms.student_home.load_more')}
+                  </span>
+                </Command.Item>
+              {/if}
             {/if}
           </Command.Group>
         {/if}

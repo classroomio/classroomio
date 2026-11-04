@@ -6,6 +6,7 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrganizationStudentHome: vi.fn(),
   getStudentHomeCourseCandidate: vi.fn(),
   listStudentHomeCourseOptions: vi.fn(),
+  countStudentHomeCourseOptions: vi.fn(),
   getOrganizationById: vi.fn(),
   setOrganizationStudentHome: vi.fn(),
   updateOrganization: vi.fn()
@@ -32,6 +33,7 @@ import {
   resolveStudentHomePath
 } from '@api/services/organization/student-home';
 import {
+  countStudentHomeCourseOptions,
   getOrganizationById,
   getOrganizationMemberRoleId,
   getOrganizationPlanStatus,
@@ -275,11 +277,26 @@ describe('listStudentHomeOptions', () => {
       { ...openCourse(), title: 'Open course' },
       { ...openCourse(), id: 'paid-1', title: 'Paid course', cost: 100 }
     ] as never);
+    vi.mocked(countStudentHomeCourseOptions).mockResolvedValue(2);
 
-    await expect(listStudentHomeOptions(ORG_ID, {})).resolves.toEqual([
-      { id: COURSE_ID, title: 'Open course', type: 'SELF_PACED', isAvailable: true, canSelfEnroll: true },
-      { id: 'paid-1', title: 'Paid course', type: 'SELF_PACED', isAvailable: true, canSelfEnroll: false }
-    ]);
+    await expect(listStudentHomeOptions(ORG_ID, { page: 1, limit: 20 })).resolves.toEqual({
+      items: [
+        { id: COURSE_ID, title: 'Open course', type: 'SELF_PACED', isAvailable: true, canSelfEnroll: true },
+        { id: 'paid-1', title: 'Paid course', type: 'SELF_PACED', isAvailable: true, canSelfEnroll: false }
+      ],
+      pagination: { page: 1, limit: 20, total: 2, totalPages: 1 }
+    });
+  });
+
+  it('pages through the catalog and reports the window it covered', async () => {
+    vi.mocked(listStudentHomeCourseOptions).mockResolvedValue([]);
+    vi.mocked(countStudentHomeCourseOptions).mockResolvedValue(41);
+
+    const result = await listStudentHomeOptions(ORG_ID, { page: 3, limit: 20 });
+
+    expect(listStudentHomeCourseOptions).toHaveBeenCalledWith(ORG_ID, { page: 3, limit: 20 });
+    expect(countStudentHomeCourseOptions).toHaveBeenCalledWith(ORG_ID, { search: undefined });
+    expect(result.pagination).toEqual({ page: 3, limit: 20, total: 41, totalPages: 3 });
   });
 });
 

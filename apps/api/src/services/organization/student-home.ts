@@ -2,6 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { canProfileOpenCourse } from '@api/services/course/access';
 import { env } from '@cio/core/config/env';
 import {
+  countStudentHomeCourseOptions,
   getOrganizationMemberRoleId,
   getOrganizationPlanStatus,
   getOrganizationStudentHome,
@@ -157,20 +158,38 @@ export type StudentHomeCourseOption = {
   canSelfEnroll: boolean;
 };
 
+export type StudentHomeCourseOptionsPage = {
+  items: StudentHomeCourseOption[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+};
+
 /**
- * Lists the course options for the settings picker with availability flags.
+ * Lists one page of course options for the settings picker with availability flags.
  */
 export async function listStudentHomeOptions(
   orgId: string,
-  query: { search?: string; includeCourseId?: string }
-): Promise<StudentHomeCourseOption[]> {
-  const rows = await listStudentHomeCourseOptions(orgId, query);
+  query: { search?: string; includeCourseId?: string; page: number; limit: number }
+): Promise<StudentHomeCourseOptionsPage> {
+  const [rows, total] = await Promise.all([
+    listStudentHomeCourseOptions(orgId, query),
+    countStudentHomeCourseOptions(orgId, { search: query.search })
+  ]);
 
-  return rows.map((row) => ({
+  const items = rows.map((row) => ({
     id: row.id,
     title: row.title,
     type: row.type,
     isAvailable: row.status === 'ACTIVE' && row.isPublished === true && !row.isTemplate,
     canSelfEnroll: canSelfEnrollForFree(row)
   }));
+
+  return {
+    items,
+    pagination: {
+      page: query.page,
+      limit: query.limit,
+      total,
+      totalPages: total === 0 ? 0 : Math.ceil(total / query.limit)
+    }
+  };
 }

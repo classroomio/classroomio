@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, eq, ilike, or } from 'drizzle-orm';
+import { and, asc, count, eq, ilike } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 
@@ -26,7 +26,7 @@ export type OrganizationStudentHome = {
   plans: Array<{ planName: string | null; isActive: boolean | null }>;
 };
 
-const STUDENT_HOME_COURSE_OPTION_LIMIT = 50;
+const STUDENT_HOME_COURSE_OPTION_LIMIT = 20;
 
 /**
  * Loads a course for student-home use when its group belongs to the org, else null.
@@ -61,69 +61,95 @@ export async function getStudentHomeCourseCandidate(
 }
 
 /**
- * Lists published courses for the student-home picker, plus the saved course
- * regardless of status so an unavailable choice stays visible.
+ * Filters the published courses the picker can offer, optionally by title.
+ */
+function studentHomeCourseFilter(orgId: string, search: string | undefined) {
+  const searchValue = search?.trim() ? `%${search.trim()}%` : null;
+
+  return and(
+    eq(schema.group.organizationId, orgId),
+    eq(schema.course.status, 'ACTIVE'),
+    eq(schema.course.isPublished, true),
+    eq(schema.course.isTemplate, false),
+    ...(searchValue ? [ilike(schema.course.title, searchValue)] : [])
+  );
+}
+
+const STUDENT_HOME_COURSE_COLUMNS = {
+  id: schema.course.id,
+  title: schema.course.title,
+  slug: schema.course.slug,
+  type: schema.course.type,
+  status: schema.course.status,
+  isPublished: schema.course.isPublished,
+  isTemplate: schema.course.isTemplate,
+  cost: schema.course.cost,
+  metadata: schema.course.metadata
+};
+
+/**
+ * Lists one page of published courses for the student-home picker, plus the
+ * saved course when it falls outside that page.
  */
 export async function listStudentHomeCourseOptions(
   orgId: string,
-  options: { search?: string; includeCourseId?: string; limit?: number },
+  options: { search?: string; includeCourseId?: string; page?: number; limit?: number },
   dbClient: DbOrTxClient = db
 ): Promise<StudentHomeCourseOption[]> {
   try {
     const limit = options.limit ?? STUDENT_HOME_COURSE_OPTION_LIMIT;
-    const searchValue = options.search?.trim() ? `%${options.search.trim()}%` : null;
+    const page = options.page ?? 1;
 
     const rows = await dbClient
-      .select({
-        id: schema.course.id,
-        title: schema.course.title,
-        slug: schema.course.slug,
-        type: schema.course.type,
-        status: schema.course.status,
-        isPublished: schema.course.isPublished,
-        isTemplate: schema.course.isTemplate,
-        cost: schema.course.cost,
-        metadata: schema.course.metadata
-      })
+      .select(STUDENT_HOME_COURSE_COLUMNS)
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-      .where(
-        and(
-          eq(schema.group.organizationId, orgId),
-          eq(schema.course.status, 'ACTIVE'),
-          eq(schema.course.isPublished, true),
-          eq(schema.course.isTemplate, false),
-          ...(searchValue ? [or(ilike(schema.course.title, searchValue))] : [])
-        )
-      )
+      .where(studentHomeCourseFilter(orgId, options.search))
       .orderBy(asc(schema.course.displayOrder), asc(schema.course.title))
-      .limit(limit);
+      .limit(limit)
+      .offset((page - 1) * limit);
 
-    if (!options.includeCourseId || rows.some((row) => row.id === options.includeCourseId)) {
+    const includeSavedCourse = page === 1 && !!options.includeCourseId;
+
+    if (!includeSavedCourse || rows.some((row) => row.id === options.includeCourseId)) {
       return rows;
     }
 
     const [saved] = await dbClient
-      .select({
-        id: schema.course.id,
-        title: schema.course.title,
-        slug: schema.course.slug,
-        type: schema.course.type,
-        status: schema.course.status,
-        isPublished: schema.course.isPublished,
-        isTemplate: schema.course.isTemplate,
-        cost: schema.course.cost,
-        metadata: schema.course.metadata
-      })
+      .select(STUDENT_HOME_COURSE_COLUMNS)
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-      .where(and(eq(schema.course.id, options.includeCourseId), eq(schema.group.organizationId, orgId)))
+      .where(and(eq(schema.course.id, options.includeCourseId as string), eq(schema.group.organizationId, orgId)))
       .limit(1);
 
     return saved ? [...rows, saved] : rows;
   } catch (error) {
     console.error('listStudentHomeCourseOptions error:', error);
     throw new Error(`Failed to list student home courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Counts the courses the student-home picker can page through.
+ */
+export async function countStudentHomeCourseOptions(
+  orgId: string,
+  options: { search?: string },
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const [row] = await dbClient
+      .select({ total: count() })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(studentHomeCourseFilter(orgId, options.search));
+
+    return row?.total ?? 0;
+  } catch (error) {
+    console.error('countStudentHomeCourseOptions error:', error);
+    throw new Error(
+      `Failed to count student home courses: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

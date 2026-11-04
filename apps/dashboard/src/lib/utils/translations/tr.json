@@ -2146,6 +2146,7 @@
           "reason_disabled_toggle": "Turn it on in the Dashboard section below",
           "reason_paid_plan": "Available on paid plans",
           "courses_empty": "No published courses yet",
+          "load_more": "Daha fazlasını yükle",
           "search_empty": "No pages or courses match \"{query}\"",
           "warning_unavailable": "{destination} isn’t available to students right now, so they’re sent to Dashboard instead. Choose another destination or make it available again.",
           "warning_course_missing": "The course you chose was deleted or unpublished, so students are sent to Dashboard instead.",
