@@ -239,7 +239,7 @@
 
   <section class="section sand" id="faq" aria-labelledby="faq-title">
     <div class="wrap grid grid-cols-1 items-start gap-8 overflow-visible lg:grid-cols-[4fr_8fr] lg:gap-12">
-      <div class="sticky top-[112px] grid content-start gap-4 self-start overflow-visible">
+      <div class="grid content-start gap-4 self-start overflow-visible lg:sticky lg:top-[112px]">
         <span class="eyebrow">FAQ</span>
         <h2 class="h2" id="faq-title">ClassroomIO: common questions</h2>
         <p class="lead">Short answers based on what we have verified about the product.</p>
