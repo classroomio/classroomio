@@ -416,7 +416,7 @@ describe('applyBulkAudienceAction — plan seats', () => {
     expect(getBulkAudienceMembersByIds).not.toHaveBeenCalled();
   });
 
-  it('checks the limit before undoing an archive', async () => {
+  it('checks the limit before undoing an archive, and keeps the undo available to retry', async () => {
     vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1)] as never);
     vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
     const applied = await applyBulkAudienceAction(
@@ -424,6 +424,7 @@ describe('applyBulkAudienceAction — plan seats', () => {
       { target: { mode: 'ids', memberIds: [1] }, action: 'archive' },
       ACTOR
     );
+    const token = applied.mode === 'completed' ? applied.undoToken! : '';
 
     vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED')] as never);
     vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(
@@ -431,11 +432,15 @@ describe('applyBulkAudienceAction — plan seats', () => {
     );
     vi.mocked(bulkUpdateOrganizationMemberStatus).mockClear();
 
-    await expect(
-      undoBulkAudienceAction(ORG, applied.mode === 'completed' ? applied.undoToken! : '', ACTOR)
-    ).rejects.toMatchObject({ code: ErrorCodes.UPGRADE_REQUIRED });
+    await expect(undoBulkAudienceAction(ORG, token, ACTOR)).rejects.toMatchObject({
+      code: ErrorCodes.UPGRADE_REQUIRED
+    });
     expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, {}, DEFER);
     expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
+
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+    await expect(undoBulkAudienceAction(ORG, token, ACTOR)).resolves.toMatchObject({ succeeded: 1 });
+    await expect(undoBulkAudienceAction(ORG, token, ACTOR)).rejects.toMatchObject({ statusCode: 410 });
   });
 });
 

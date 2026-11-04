@@ -294,69 +294,74 @@ export async function undoBulkAudienceAction(
   const revertedMembers: { id: number; profileId: string | null; email: string | null; from: string }[] = [];
   let milestone: StudentMilestoneNotification | null = null;
 
-  const result = await db.transaction(async (tx) => {
-    const members = await getBulkAudienceMembersByIds(orgId, record.memberIds, tx);
+  const result = await db
+    .transaction(async (tx) => {
+      const members = await getBulkAudienceMembersByIds(orgId, record.memberIds, tx);
 
-    // Only members still in the state this action applied. Another admin may
-    // have acted during the window, and that newer decision must win.
-    const stillApplied = members.filter((member) => member.status === record.appliedStatus);
-    const revertableIds = stillApplied.map((member) => member.id);
+      // Only members still in the state this action applied. Another admin may
+      // have acted during the window, and that newer decision must win.
+      const stillApplied = members.filter((member) => member.status === record.appliedStatus);
+      const revertableIds = stillApplied.map((member) => member.id);
 
-    if (record.appliedStatus === 'ARCHIVED' && record.status === 'ACTIVE') {
-      milestone = await assertStudentCapacityOrThrow(orgId, revertableIds.length, tx, { deferNotification: true });
-    }
+      if (record.appliedStatus === 'ARCHIVED' && record.status === 'ACTIVE') {
+        milestone = await assertStudentCapacityOrThrow(orgId, revertableIds.length, tx, { deferNotification: true });
+      }
 
-    const changedIds = await bulkUpdateOrganizationMemberStatus(
-      orgId,
-      revertableIds,
-      record.status,
-      actorProfileId,
-      tx
-    );
-    const changed = stillApplied.filter((member) => changedIds.includes(member.id));
-    revertedMembers.push(
-      ...changed.map((member) => ({
-        id: member.id,
-        profileId: member.profileId,
-        email: member.email,
-        from: member.status
-      }))
-    );
-
-    await recordOrganizationMemberAudit(
-      orgId,
-      changed.map((member) => ({
-        memberId: member.id,
-        profileId: member.profileId,
-        targetEmail: member.email,
-        eventType: record.status === 'ACTIVE' ? ('REACTIVATED' as const) : ('DEACTIVATED' as const),
+      const changedIds = await bulkUpdateOrganizationMemberStatus(
+        orgId,
+        revertableIds,
+        record.status,
         actorProfileId,
-        reason: 'Undo'
-      })),
-      tx
-    );
+        tx
+      );
+      const changed = stillApplied.filter((member) => changedIds.includes(member.id));
+      revertedMembers.push(
+        ...changed.map((member) => ({
+          id: member.id,
+          profileId: member.profileId,
+          email: member.email,
+          from: member.status
+        }))
+      );
 
-    return {
-      mode: 'completed' as const,
-      requested: record.memberIds.length,
-      succeeded: changedIds.length,
-      // The token's ids, not the rows returned: a deleted member yields no row.
-      failed: record.memberIds
-        .filter((memberId) => !changedIds.includes(memberId))
-        .map((memberId) => {
-          const member = members.find((candidate) => candidate.id === memberId);
+      await recordOrganizationMemberAudit(
+        orgId,
+        changed.map((member) => ({
+          memberId: member.id,
+          profileId: member.profileId,
+          targetEmail: member.email,
+          eventType: record.status === 'ACTIVE' ? ('REACTIVATED' as const) : ('DEACTIVATED' as const),
+          actorProfileId,
+          reason: 'Undo'
+        })),
+        tx
+      );
 
-          if (!member) {
-            return { memberId, reason: 'CHANGED_SINCE' };
-          }
+      return {
+        mode: 'completed' as const,
+        requested: record.memberIds.length,
+        succeeded: changedIds.length,
+        // The token's ids, not the rows returned: a deleted member yields no row.
+        failed: record.memberIds
+          .filter((memberId) => !changedIds.includes(memberId))
+          .map((memberId) => {
+            const member = members.find((candidate) => candidate.id === memberId);
 
-          return {
-            memberId,
-            reason: member.status === record.appliedStatus ? 'ALREADY_IN_STATE' : 'CHANGED_SINCE'
-          };
-        })
-    };
-  });
+            if (!member) {
+              return { memberId, reason: 'CHANGED_SINCE' };
+            }
+
+            return {
+              memberId,
+              reason: member.status === record.appliedStatus ? 'ALREADY_IN_STATE' : 'CHANGED_SINCE'
+            };
+          })
+      };
+    })
+    .catch((error: unknown) => {
+      undoTokens.set(undoToken, record);
+      throw error;
+    });
 
   sendStudentMilestone(milestone);
 
