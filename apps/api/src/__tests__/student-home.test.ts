@@ -13,7 +13,7 @@ vi.mock('@cio/db/queries/organization', () => ({
 }));
 
 vi.mock('@api/services/course/access', () => ({
-  canProfileOpenCourse: vi.fn()
+  canProfileReachCourse: vi.fn()
 }));
 
 vi.mock('@cio/db/drizzle', () => ({
@@ -24,7 +24,7 @@ vi.mock('@cio/core/config/env', () => ({
   env: { PUBLIC_IS_SELFHOSTED: 'false' }
 }));
 
-import { canProfileOpenCourse } from '@api/services/course/access';
+import { canProfileReachCourse } from '@api/services/course/access';
 import { updateOrg } from '@api/services/organization';
 import {
   assertStudentHomeDestination,
@@ -133,7 +133,7 @@ describe('resolveStudentHomePath', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getOrganizationMemberRoleId).mockResolvedValue(ROLE.STUDENT);
-    vi.mocked(canProfileOpenCourse).mockResolvedValue(false);
+    vi.mocked(canProfileReachCourse).mockResolvedValue(false);
   });
 
   it('returns null for staff and non-members without extra reads', async () => {
@@ -186,7 +186,7 @@ describe('resolveStudentHomePath', () => {
       plans: []
     } as never);
     vi.mocked(getStudentHomeCourseCandidate).mockResolvedValue(openCourse() as never);
-    vi.mocked(canProfileOpenCourse).mockResolvedValue(true);
+    vi.mocked(canProfileReachCourse).mockResolvedValue(true);
 
     await expect(resolveStudentHomePath(ORG_ID, PROFILE_ID)).resolves.toBe(`/courses/${COURSE_ID}/lessons?next=true`);
   });

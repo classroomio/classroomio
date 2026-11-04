@@ -1,5 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { canProfileOpenCourse } from '@api/services/course/access';
+import { canProfileReachCourse } from '@api/services/course/access';
 import { env } from '@cio/core/config/env';
 import {
   countStudentHomeCourseOptions,
@@ -135,7 +135,7 @@ export async function resolveStudentHomePath(orgId: string, profileId: string): 
     return LMS_FALLBACK_PATH;
   }
 
-  if (await canProfileOpenCourse(course.id, profileId)) {
+  if (await canProfileReachCourse(course.id, profileId)) {
     return `/courses/${course.id}/lessons?next=true`;
   }
 
