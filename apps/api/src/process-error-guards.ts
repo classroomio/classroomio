@@ -4,6 +4,9 @@ import { isTransientRedisError, logTransientRedisEvent } from '@cio/core/utils/r
 
 import { isTransientDatabaseError } from './utils/transient-database-error';
 
+/**
+ * Logs and reports a transient database error to Sentry without exiting the process.
+ */
 function reportTransientDatabaseError(kind: 'uncaughtException' | 'unhandledRejection', error: unknown): void {
   console.warn(`Ignoring transient database error from ${kind} (connections are re-established on next query):`, error);
   Sentry.captureException(error);
