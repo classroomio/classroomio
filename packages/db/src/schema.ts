@@ -393,7 +393,6 @@ export const analyticsLoginEvents = pgTable(
       'btree',
       table.loggedInAt.asc().nullsLast().op('timestamptz_ops')
     ),
-    index('idx_analytics_login_events_user_id').using('btree', table.userId.asc().nullsLast().op('uuid_ops')),
     index('idx_analytics_login_events_logged_in_date').using(
       'btree',
       table.loggedInDate.asc().nullsLast().op('date_ops')
@@ -627,7 +626,6 @@ export const profile = pgTable(
     }),
     unique('profile_username_key').on(table.username),
     unique('profile_email_key').on(table.email),
-    index('idx_profile_id').on(table.id),
     index('idx_profile_email').on(table.email)
   ]
 );
@@ -657,7 +655,8 @@ export const option = pgTable(
       columns: [table.questionId],
       foreignColumns: [question.id],
       name: 'option_question_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    index('idx_option_on_question_id').on(table.questionId)
   ]
 );
 
@@ -1340,7 +1339,6 @@ export const asset = pgTable(
     })
       .onUpdate('cascade')
       .onDelete('set null'),
-    index('idx_assets_organization_id').on(table.organizationId),
     index('idx_assets_organization_status').on(table.organizationId, table.status),
     index('idx_assets_organization_kind_status').on(table.organizationId, table.kind, table.status),
     index('idx_assets_organization_created_at').on(table.organizationId, table.createdAt),
@@ -2121,7 +2119,8 @@ export const lessonLanguage = pgTable(
       name: 'public_lesson_language_lesson_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade')
+      .onDelete('cascade'),
+    index('idx_lesson_language_on_lesson_id_locale').on(table.lessonId, table.locale)
   ]
 );
 
@@ -2234,8 +2233,6 @@ export const organizationmember = pgTable(
       foreignColumns: [role.id],
       name: 'organizationmember_role_id_fkey'
     }),
-    index('idx_organizationmember_profile_id').on(table.profileId),
-    index('idx_organizationmember_organization_id').on(table.organizationId),
     index('idx_organizationmember_profile_org').on(table.profileId, table.organizationId),
     index('idx_orgmember_org_role_status').on(table.organizationId, table.roleId, table.status),
     index('idx_orgmember_org_last_active').on(table.organizationId, table.lastActiveAt),
@@ -2998,8 +2995,7 @@ export const organizationAuthPolicy = pgTable(
       columns: [table.defaultRoleId],
       foreignColumns: [role.id],
       name: 'organization_auth_policy_default_role_id_fkey'
-    }),
-    index('idx_organization_auth_policy_org_id').on(table.organizationId)
+    })
   ]
 );
 
