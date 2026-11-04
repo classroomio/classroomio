@@ -1,0 +1,1242 @@
+{
+  "checked": "2026-10-21",
+  "slugs": [
+    "skilljar",
+    "learnupon",
+    "docebo",
+    "intellum",
+    "thought-industries",
+    "thinkific",
+    "teachfloor",
+    "teachable",
+    "kajabi"
+  ],
+  "competitors": {
+    "skilljar": {
+      "name": "Skilljar",
+      "kind": "Customer education platform",
+      "angle": "Start building today",
+      "blurb": "Deep CRM integrations and proctored exams, priced through sales. See what a free workspace and a $35 plan can cover first."
+    },
+    "learnupon": {
+      "name": "LearnUpon",
+      "kind": "Learning management system",
+      "angle": "Let AI draft the first course",
+      "blurb": "Built for employees, customers and associations. If you only teach customers, see how a narrower product works."
+    },
+    "docebo": {
+      "name": "Docebo",
+      "kind": "Workforce learning platform",
+      "angle": "Monthly billing, one job",
+      "blurb": "A workforce platform with a one-year minimum. See what a customer academy looks like on a monthly plan."
+    },
+    "intellum": {
+      "name": "Intellum",
+      "kind": "Customer education platform",
+      "angle": "Certificates and domain in one plan",
+      "blurb": "A modular enterprise platform for several audiences. Compare it with one plan for a single customer audience."
+    },
+    "thought-industries": {
+      "name": "Thought Industries",
+      "kind": "Learning and knowledge platform",
+      "angle": "A price for 10,000 students",
+      "blurb": "A learning and knowledge layer sold through a demo. See how an academy-first plan compares on scope and learner caps."
+    },
+    "thinkific": {
+      "name": "Thinkific",
+      "kind": "Course business platform",
+      "angle": "Every teammate can build",
+      "blurb": "Made for selling courses and memberships. See what changes when the only goal is training customers."
+    },
+    "teachfloor": {
+      "name": "Teachfloor",
+      "kind": "Cohort-based learning platform",
+      "angle": "Cohorts on your own domain",
+      "blurb": "Strong cohort learning with peer review. See where branding, domain and SSO sit in each plan."
+    },
+    "teachable": {
+      "name": "Teachable",
+      "kind": "Creator course platform",
+      "angle": "Customers or creators?",
+      "blurb": "A platform for creators selling courses. Work out whether your use case belongs there before you compare."
+    },
+    "kajabi": {
+      "name": "Kajabi",
+      "kind": "Creator business suite",
+      "angle": "Priced by students, not contacts",
+      "blurb": "A creator suite with funnels and email. See what a team that only trains customers would pay for."
+    }
+  },
+  "features": {
+    "ai": {
+      "icon": "spark",
+      "title": "AI course creation",
+      "text": "Describe the lesson you need and get a draft to edit. You review everything before it is published.",
+      "viz": "ai"
+    },
+    "tutor": {
+      "icon": "spark",
+      "title": "AI tutor for learners",
+      "text": "Learners can ask questions inside a course, so common how-to questions do not wait for your team.",
+      "viz": "tutor"
+    },
+    "domain": {
+      "icon": "globe",
+      "title": "Custom domain and branding",
+      "text": "Run the academy on your own domain with your colors and logo, from the $35 plan.",
+      "viz": "domain"
+    },
+    "certs": {
+      "icon": "award",
+      "title": "Certificates",
+      "text": "Design a certificate and issue it when a learner finishes. Included from the $35 plan.",
+      "viz": "certs"
+    },
+    "analytics": {
+      "icon": "chart",
+      "title": "Learner and course analytics",
+      "text": "See who is learning, which courses are finished and where people drop off, inside the product.",
+      "viz": "analytics"
+    },
+    "api": {
+      "icon": "plug",
+      "title": "API and webhooks",
+      "text": "Send learning events to your own tools and pull data out with the public API. Limits apply on Early Adopter.",
+      "viz": "api"
+    },
+    "mcp": {
+      "icon": "terminal",
+      "title": "MCP access on every plan",
+      "text": "Connect an AI agent to your academy to draft and manage courses, including on the free plan.",
+      "viz": "mcp"
+    },
+    "cohorts": {
+      "icon": "cohort",
+      "title": "Cohorts with goals and a news feed",
+      "text": "Run a group through a course together, set a goal and post updates to the cohort.",
+      "viz": "cohorts"
+    },
+    "seats": {
+      "icon": "users",
+      "title": "Unlimited collaborators",
+      "text": "Support, product and customer success can all contribute to courses without paying per seat.",
+      "viz": "seats"
+    },
+    "structure": {
+      "icon": "book",
+      "title": "Learning paths, cohorts and live sessions",
+      "text": "Guide customers through courses in a set order, run them together as a cohort, and add live sessions where a conversation helps.",
+      "viz": "structure"
+    },
+    "price": {
+      "icon": "tag",
+      "title": "A simple paid plan, and a free plan too",
+      "text": "Your domain, branding and certificates are all in one paid plan. Start on the free plan for up to 20 students, with no sales call.",
+      "viz": "price"
+    },
+    "capacity": {
+      "icon": "layers",
+      "title": "Capacity-based pricing",
+      "text": "Plans are sized by student capacity: 20, 10,000 or unlimited. There is no per-learner fee.",
+      "viz": "capacity"
+    },
+    "free": {
+      "icon": "tag",
+      "title": "A free plan to build on",
+      "text": "Create a course, invite up to 20 students and see how it feels before you spend anything.",
+      "viz": "free"
+    },
+    "monthly": {
+      "icon": "calendar",
+      "title": "Monthly or yearly billing",
+      "text": "Pay $35 a month, or $350 a year. Enterprise is agreed by quote.",
+      "viz": "monthly"
+    },
+    "courses": {
+      "icon": "book",
+      "title": "Unlimited courses",
+      "text": "Build as many courses as your customers need. Courses are not capped on any plan.",
+      "viz": "courses"
+    },
+    "exercises": {
+      "icon": "file",
+      "title": "Exercises with auto-grading",
+      "text": "Check understanding as people learn, without marking every answer by hand.",
+      "viz": "exercises"
+    },
+    "templates": {
+      "icon": "grid",
+      "title": "Course templates",
+      "text": "Start from a template and reuse a structure across product lines.",
+      "viz": "templates"
+    }
+  },
+  "shared": {
+    "move": {
+      "title": "Why teams move to ClassroomIO",
+      "sub": "Give your team easier ways to manage content, connect learning workflows, and create useful courses with AI.",
+      "items": [
+        [
+          "Fits into your existing workflow",
+          "Work with your favorite tools. Connect ClassroomIO to the apps your team already uses through Zapier, webhooks and the API, so learning fits the way you work."
+        ],
+        [
+          "Excellent customer support and services",
+          "Get the support you deserve from a team that puts your success first. From answering questions to helping you navigate challenges, we're here to make your ClassroomIO experience as smooth as possible."
+        ],
+        [
+          "Easily migrate your content",
+          "Moving to a new platform shouldn't mean starting over. Bring your existing courses and learning content into ClassroomIO and pick up where you left off, with a team ready to help you make the switch."
+        ]
+      ]
+    },
+    "intro": {
+      "eyebrow": "Customer education, made simple",
+      "title": "Everything You Need to Build Customer Education.",
+      "steps": [
+        [
+          "Create",
+          "Turn documentation and product knowledge into structured courses, create courses faster with AI, import existing content, and embed learning wherever your customers are, all for free."
+        ],
+        [
+          "Distribute",
+          "Publish under your own branding and domain. Send learner events to your other tools with webhooks and the API, and export your learner data when you need it."
+        ],
+        [
+          "Intelligence",
+          "An AI tutor supports learners inside lessons, and MCP lets AI agents and assistants like Claude and Cursor work with your courses."
+        ]
+      ],
+      "viz": "editor"
+    },
+    "features": {
+      "eyebrow": "Built for adoption",
+      "title": "Make Learning Part of the Customer Experience.",
+      "lead": "Customer education works best when it feels connected to the product customers already use. With ClassroomIO, you can create a branded learning destination and connect your education workflows to the wider tools and systems your team relies on.",
+      "items": [
+        {
+          "key": "structure"
+        },
+        {
+          "key": "ai",
+          "title": "Let AI draft your courses for you",
+          "text": "Turn a simple idea into structured course outlines and lesson drafts with AI. Spend less time creating from scratch and more time refining content that helps your customers learn."
+        },
+        {
+          "key": "price"
+        },
+        {
+          "key": "certs",
+          "title": "Certificates for customers who finish",
+          "text": "Design one certificate and issue it when a learner completes a course."
+        },
+        {
+          "key": "api",
+          "title": "Learner data in your own tools",
+          "text": "Webhooks, Zapier and the public API send learner events to your systems, so your team can use them where it already works."
+        }
+      ]
+    },
+    "showcase": {
+      "eyebrow": "Track every step",
+      "title": "See who is learning and where people stop",
+      "text": "Analytics are built into the product, at organization, course and learner level. Use them to find the lesson where customers drop off, and fix that one first.",
+      "points": [
+        "Completion by course and by learner",
+        "Compliance tracking with recurring cycles and expiry",
+        "Learner data available through the API and webhooks"
+      ],
+      "viz": "analytics"
+    },
+    "plans": {
+      "eyebrow": "Price",
+      "title": "Start free, then one plan at $35",
+      "lead": "Your own domain, branding, certificates and unlimited collaborators are part of the $35 plan, not add-ons.",
+      "us": {
+        "name": "ClassroomIO Early Adopter",
+        "price": "$35",
+        "unit": "a month",
+        "text": "Or $350 a year. Includes your own domain, branding and certificates, unlimited collaborators, up to 10,000 students, the API and webhooks.",
+        "foot": "Start on the free plan for up to 20 students. Enterprise, with SSO, is priced by quote.",
+        "link": ["See all plans", "/pricing"]
+      }
+    },
+    "faq": [
+      [
+        "What is ClassroomIO?",
+        "ClassroomIO is an intelligent customer education platform that helps SaaS companies use education to grow their business. You create courses, deliver them in a branded academy and track how learners progress."
+      ],
+      [
+        "How does ClassroomIO pricing work?",
+        "The free plan covers 20 students. The Early Adopter plan is $35 a month and covers up to 10,000 students, with your own domain, branding, certificates, unlimited collaborators, the API and webhooks. Enterprise is priced by quote and includes SSO."
+      ],
+      [
+        "Can I use my own domain and branding?",
+        "Yes. Your domain, logo and colors come with the $35 plan, so they are not add-ons."
+      ],
+      [
+        "How does the AI feature work in ClassroomIO?",
+        "AI helps draft outlines and lessons, and your team reviews and edits them before anything is published. MCP is available on every plan, so compatible AI assistants can work with your courses."
+      ],
+      [
+        "Can ClassroomIO connect to the tools I already use?",
+        "Yes. SCORM, Zapier, webhooks and the public API let you move courses and learner data between ClassroomIO and your other tools. There are no native Salesforce or Gainsight connectors."
+      ],
+      [
+        "Can I run ClassroomIO on my own servers?",
+        "Yes. There is a self-hosting guide and the code is open source. Some Enterprise features, such as SSO, need a licence key when you self-host. The prices on this page are for the hosted plans."
+      ],
+      [
+        "Can I move my courses from another platform?",
+        "Yes. ClassroomIO supports SCORM, so you can migrate your courses from previous LMS platforms and import them into ClassroomIO."
+      ],
+      [
+        "Is ClassroomIO a full replacement for my current platform?",
+        "Yes. ClassroomIO is built to replace most course platforms for customer education."
+      ]
+    ]
+  },
+  "cards": {
+    "skilljar": {
+      "price": "Quote only",
+      "text": "Skilljar does not publish prices. It is an annual subscription plus a fee based on active users. Third-party estimates run $30,000 or more a year (indicative only)."
+    },
+    "learnupon": {
+      "price": "Demo-led",
+      "text": "Plans are sold through a demo and list starting user counts, with Customer Education from 300 users."
+    },
+    "docebo": {
+      "price": "Custom quote",
+      "text": "Quoted by active users, AI credits and add-ons, with a one-year minimum on its pricing page."
+    },
+    "intellum": {
+      "price": "No public prices",
+      "text": "Quoted per product and audience: LMS, Evolve authoring, AI agents, e-commerce, Social and Data Connector."
+    },
+    "thought-industries": {
+      "price": "Demo only",
+      "text": "The Academy price is not listed, and its tiers cap learners at 500, 2,000 and 5,000. Lens lists $0, $499 and $999 a month."
+    },
+    "thinkific": {
+      "price": "$54",
+      "unit": "a month",
+      "text": "Basic. Start is $109, Grow $219 and Plus is a custom price, with 1, 2 and 6 admin seats on the self-serve plans. SSO is on Plus only."
+    },
+    "teachfloor": {
+      "price": "$89",
+      "unit": "a month",
+      "text": "Startup, with 50 seats and one automation. Branding and domain are in the custom-quoted Full Features plan."
+    },
+    "teachable": {
+      "price": "$39",
+      "unit": "a month",
+      "text": "Starter. Builder is $89, Growth $189 and Custom is quoted. Certificates are on Growth and Custom only."
+    },
+    "kajabi": {
+      "price": "$179",
+      "unit": "a month",
+      "text": "The entry plan. Higher plans are $249 and $499 a month, limited by contacts: 2,500, 25,000 and 100,000."
+    }
+  },
+  "pricingUrls": {
+    "skilljar": "https://www.skilljar.com/pricing",
+    "learnupon": "https://www.learnupon.com/pricing/",
+    "docebo": "https://www.docebo.com/pricing/",
+    "intellum": "https://www.intellum.com",
+    "thought-industries": "https://www.thoughtindustries.com/pricing",
+    "thinkific": "https://www.thinkific.com/pricing/",
+    "teachfloor": "https://www.teachfloor.com/pricing",
+    "teachable": "https://www.teachable.com/pricing",
+    "kajabi": "https://www.kajabi.com/pricing"
+  },
+  "pages": {
+    "skilljar": {
+      "seo": {
+        "title": "Skilljar Alternative for Customer Education | ClassroomIO",
+        "meta": "Looking for a Skilljar alternative in 2026? Create, deliver and improve customer education with AI course drafts, your own branded academy and published prices. Start free."
+      },
+      "headline": "The Skilljar alternative for customer education in 2026",
+      "mark": "customer education",
+      "sub": "Use education to help customers get more from your product. Build courses faster with AI, deliver them in a branded academy on your own domain, and see where learners get stuck.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": [
+        "Free plan, no sales call",
+        "Your domain, branding and certificates from $35 a month",
+        "Unlimited collaborators on the same plan"
+      ],
+      "pick": {
+        "lead": "Skilljar is the stronger fit for large, established programs. ClassroomIO is the lighter place to start.",
+        "them": {
+          "title": "Choose Skilljar if",
+          "points": [
+            "You want to sell paid courses with checkout built into the academy.",
+            "You need proctored certification exams.",
+            "Procurement requires published security attestations such as SOC 2."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You want to see the price before a sales call, with three published plans and a free plan to build on.",
+            "You want your domain, branding and certificates in one $35 plan, not priced as add-ons.",
+            "You want support, success and product to all write courses, with unlimited collaborators and AI drafts to start from."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "dropoff",
+        "frame": "window",
+        "floats": ["domain", "certificate"],
+        "layout": "cascade",
+        "canvas": "grid",
+        "path": "/analytics",
+        "note": "Find the lesson to fix"
+      },
+      "intro": {
+        "eyebrow": "Customer education, made simple",
+        "title": "Everything You Need to Build Customer Education. A Simpler Way to Start.",
+        "text": "Create courses faster, launch a branded academy, and connect your learning workflows with AI-powered tools and flexible integrations. With ClassroomIO, you can start free and build a customer education experience that grows with your business.",
+        "steps": [
+          [
+            "Create",
+            "Turn documentation and product knowledge into structured courses. AI writes a first draft, your team edits it, and collaborators are unlimited from $35."
+          ],
+          [
+            "Distribute",
+            "Publish in an academy on your own domain with your branding. Send learner events to your other tools through the API and webhooks."
+          ],
+          [
+            "Intelligence",
+            "AI helps draft and refine course content, and MCP is available on every plan so compatible AI assistants can work with your courses."
+          ]
+        ],
+        "viz": "editor"
+      },
+      "features": {
+        "eyebrow": "Built for adoption",
+        "title": "Make Learning Part of the Customer Experience.",
+        "lead": "Customer education works best when it feels connected to the product customers already use. With ClassroomIO, you can create a branded learning destination and connect your education workflows to the wider tools and systems your team relies on.",
+        "items": [
+          {
+            "key": "domain",
+            "title": "Give your team room to work together",
+            "text": "Make it easier for your team to build, organize, and maintain customer learning content together."
+          },
+          {
+            "key": "ai",
+            "title": "Let AI draft your courses for you",
+            "text": "Turn a simple idea into structured course outlines and lesson drafts with AI. Spend less time creating from scratch and more time refining content that helps your customers learn."
+          },
+          {
+            "key": "seats",
+            "title": "Support, success and product can all write",
+            "text": "Collaborators are unlimited from $35, so the people who answer the questions can also write the courses."
+          },
+          {
+            "key": "certs",
+            "title": "Certificates for customers who finish",
+            "text": "Design one certificate and issue it when a learner completes a course."
+          },
+          {
+            "key": "api",
+            "title": "Learner data in your own tools",
+            "text": "Webhooks, Zapier and the public API send learner events to your systems. There are no native Salesforce or Gainsight connectors, but Zapier reaches most of the tools your team already uses."
+          }
+        ]
+      },
+      "showcase": {
+        "eyebrow": "Reporting",
+        "title": "See who is learning and where people stop",
+        "text": "Analytics are built into the product, at organization, course and learner level. Use them to find the lesson where customers drop off, and fix that one first.",
+        "points": [
+          "Completion by course and by learner",
+          "Compliance tracking with recurring cycles and expiry",
+          "Learner data available through the API and webhooks"
+        ],
+        "viz": "analytics"
+      },
+      "compare": {
+        "title": "ClassroomIO and Skilljar pricing, side by side",
+        "lead": "Skilljar does not publish prices, so this compares how each is priced and what is listed. Skilljar is stronger on CRM integrations and security attestations, which this section does not cover."
+      }
+    },
+    "learnupon": {
+      "seo": {
+        "title": "LearnUpon Alternative With AI Course Drafts | ClassroomIO",
+        "meta": "Teaching only customers? ClassroomIO is a LearnUpon alternative where AI drafts the first course, and your own domain is on the $35 plan. Start free, no demo needed."
+      },
+      "headline": "A LearnUpon Alternative That Gets Your Courses Started Faster",
+      "mark": "Started Faster",
+      "sub": "If your goal is to help customers get more from your product, you don't need a platform built for every kind of training. ClassroomIO helps SaaS teams create courses with AI, refine lessons, and deliver customer education through their own academy. Start building for free.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": [
+        "Start on the free plan without a demo",
+        "Custom domain from $35 a month",
+        "AI course creation and MCP access on every plan"
+      ],
+      "pick": {
+        "lead": "LearnUpon covers more audiences. ClassroomIO covers one customer audience, and keeps it simple.",
+        "them": {
+          "title": "Choose LearnUpon if",
+          "points": [
+            "You teach employees or associations as well as customers.",
+            "You want an implementation consultant and round-the-clock support on every plan.",
+            "You need separately branded Learning Portals."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You only teach customers and want a narrower product that one person can set up.",
+            "You want to start on a free plan with prices you can read, without a demo.",
+            "You want your own domain and branding in a published $35 plan, with an AI draft to start each course."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "draft",
+        "frame": "bare",
+        "floats": ["mcp", "tutor"],
+        "layout": "column",
+        "canvas": "rings",
+        "path": "/courses/new",
+        "note": "AI writes the first draft"
+      },
+      "intro": {
+        "title": "LearnUpon serves employees, customers and associations. ClassroomIO does one job.",
+        "text": "ClassroomIO keeps the scope small, so one person can set it up. Course creation, a branded academy and learner analytics live in one product, and there is no employee or association setup to work around.",
+        "steps": [
+          [
+            "Create",
+            "Describe the lesson customers keep asking about, review the AI draft and edit it before publishing."
+          ],
+          ["Distribute", "Put the academy on your own domain and invite customers."],
+          ["Prove value", "See who is learning and issue a certificate when they finish."]
+        ],
+        "viz": "academy"
+      },
+      "features": {
+        "title": "Your first month: AI drafting, a branded academy and analytics",
+        "lead": "AI drafting, a branded academy and analytics are part of the product from the first plan you choose.",
+        "items": [
+          {
+            "key": "ai",
+            "title": "Turn product knowledge into a course draft",
+            "text": "Give it the topic and get an outline, lessons and exercise ideas to work from. You decide what is published."
+          },
+          {
+            "key": "domain",
+            "title": "Your academy on your own address"
+          },
+          {
+            "key": "mcp",
+            "title": "Let an AI agent help build courses",
+            "text": "Connect an AI agent to draft and manage courses. LearnUpon also lists an MCP server, so compare how each fits your workflow."
+          },
+          {
+            "key": "api",
+            "title": "Send learning events to your own tools"
+          },
+          {
+            "key": "certs",
+            "title": "Certificates when customers finish"
+          }
+        ]
+      },
+      "showcase": {
+        "eyebrow": "The learner view",
+        "title": "Customers can open a course and finish it, with an AI tutor beside them",
+        "text": "Learners see their progress, work through exercises and can ask the AI tutor a how-to question without leaving the lesson. That is one less ticket for your support team.",
+        "points": ["Progress tracked per lesson", "Exercises with auto-grading", "AI tutor available inside courses"],
+        "viz": "learner"
+      },
+      "compare": {
+        "title": "ClassroomIO and LearnUpon pricing, side by side",
+        "lead": "LearnUpon prices through a demo, so this compares how each is priced and what is listed. It is stronger on native CRM connectors and serves several audiences."
+      }
+    },
+    "docebo": {
+      "seo": {
+        "title": "Docebo Alternative With Monthly Billing | ClassroomIO",
+        "meta": "Need a customer academy, not a workforce platform? ClassroomIO is a Docebo alternative with monthly billing, certificates and analytics in one plan. Free to start."
+      },
+      "headline": "A Docebo Alternative that focuses on your Customers",
+      "mark": "your Customers",
+      "sub": "ClassroomIO helps SaaS teams turn product knowledge into courses, guide customers through key features, and deliver learning through a branded academy. Start creating courses with AI today.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": ["Monthly plan from $35", "Up to 10,000 students on one price", "Free plan to start"],
+      "pick": {
+        "lead": "Docebo is built for large, multi-audience programs. ClassroomIO is built for one customer academy.",
+        "them": {
+          "title": "Choose Docebo if",
+          "points": [
+            "You want to sell paid courses with eCommerce built into the academy.",
+            "You need skills intelligence or a marketplace of third-party content.",
+            "Procurement requires security certifications such as ISO 27001."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You want a monthly plan with no one-year minimum.",
+            "You want analytics and certificates inside the plan, not as add-ons.",
+            "You want a small team to run the academy without a dedicated admin."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "progress",
+        "frame": "portrait",
+        "person": "tunde",
+        "floats": ["capacity", "certificate"],
+        "layout": "ledge",
+        "canvas": "dots",
+        "path": "/courses",
+        "note": "One academy, one plan"
+      },
+      "intro": {
+        "title": "Docebo covers every audience. ClassroomIO does customers only.",
+        "text": "ClassroomIO is for SaaS teams that teach customers. There is no employee or partner setup to configure, so a small team can run the academy without a dedicated admin.",
+        "steps": [
+          ["Create", "Start from a template or an AI draft, then edit it to match how your product really works."],
+          ["Distribute", "Publish on your own domain and invite customers."],
+          ["Prove value", "See completion by course and learner, and issue a certificate at the end."]
+        ],
+        "viz": "catalog"
+      },
+      "features": {
+        "title": "Docebo's modules add up. ClassroomIO keeps analytics and certificates inside the plan.",
+        "lead": "Analytics and certificates sit inside the plan, so you are not adding modules as the academy grows.",
+        "items": [
+          {
+            "key": "monthly",
+            "title": "Pay month by month, or yearly"
+          },
+          {
+            "key": "domain",
+            "title": "Your own domain and branding"
+          },
+          {
+            "key": "certs",
+            "title": "Certificates in the plan"
+          },
+          {
+            "key": "analytics",
+            "title": "Reporting without a separate module"
+          },
+          {
+            "key": "capacity",
+            "title": "Room for 10,000 students at one price",
+            "text": "Early Adopter covers up to 10,000 students. There is no per-learner fee."
+          }
+        ]
+      },
+      "showcase": {
+        "eyebrow": "Analytics",
+        "title": "Reporting is part of the plan, not an add-on",
+        "text": "ClassroomIO includes organization, course and learner analytics. Docebo lists advanced analytics as an Enterprise add-on, so check what your plan covers before you compare reporting.",
+        "points": [
+          "Completion by course and by learner",
+          "Compliance tracking with recurring cycles and expiry",
+          "Data available through the API and webhooks"
+        ],
+        "viz": "analytics"
+      },
+      "compare": {
+        "title": "ClassroomIO and Docebo pricing, side by side",
+        "lead": "Docebo is quoted by active users with a one-year minimum. This compares how each is priced. Docebo is stronger on multi-audience management and published security certifications."
+      }
+    },
+    "intellum": {
+      "seo": {
+        "title": "Intellum Alternative With Certificates Included | ClassroomIO",
+        "meta": "Teaching one customer audience? ClassroomIO is an Intellum alternative with the course builder, certificates and custom domain in one published plan, from $35 a month."
+      },
+      "headline": "Get Started for Free With an Intellum Alternative",
+      "mark": "Get Started for Free",
+      "sub": "ClassroomIO gives SaaS teams AI-powered course creation, certificates, and a branded academy on their own domain, with a free plan to get started. Build your customer education experience for free.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": [
+        "Certificates, branding and domain from $35 a month",
+        "AI credits included on every plan",
+        "Public API on Early Adopter"
+      ],
+      "pick": {
+        "lead": "Intellum suits enterprises with several audiences. ClassroomIO suits one customer audience on one plan.",
+        "them": {
+          "title": "Choose Intellum if",
+          "points": [
+            "You need separate catalogs, sign-on and admins for each audience.",
+            "You want modular products you license separately, such as authoring, e-commerce and social.",
+            "Procurement requires SOC 2 or WCAG documents."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You want courses, branding, certificates and analytics in one plan, not quoted product by product.",
+            "You want to build on a free plan before you commit to a contract.",
+            "You want AI drafting and MCP access on every plan, so AI assistants can help build courses."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "certificate",
+        "frame": "window",
+        "floats": ["domain", "progress"],
+        "layout": "spotlight",
+        "canvas": "glow",
+        "path": "/certificates",
+        "note": "Issued on completion"
+      },
+      "intro": {
+        "title": "Intellum is an enterprise platform. ClassroomIO is one plan for one customer audience.",
+        "text": "ClassroomIO gives a SaaS team a course builder, a branded academy, certificates and analytics together. You can read the plans before you contact anyone, and try the product before you pay for it.",
+        "steps": [
+          ["Create", "Start from a template or an AI draft, then review and edit it."],
+          ["Distribute", "Publish on your domain with your branding and invite students."],
+          ["Prove value", "Track learning and issue certificates when courses are finished."]
+        ],
+        "viz": "editor"
+      },
+      "features": {
+        "title": "Intellum quotes each product separately. Here it is one plan from $35 a month.",
+        "lead": "Certificates, branding, domain and collaborators are included from $35 a month.",
+        "items": [
+          {
+            "key": "certs",
+            "title": "Certificates, included"
+          },
+          {
+            "key": "domain",
+            "title": "Your domain and branding, included"
+          },
+          {
+            "key": "seats",
+            "title": "Your whole team can contribute"
+          },
+          {
+            "key": "ai",
+            "title": "AI drafts to get courses moving"
+          },
+          {
+            "key": "api",
+            "title": "Build your own reporting",
+            "text": "A public API with limits is included on Early Adopter, so you can build your own reporting. There is no warehouse connector."
+          }
+        ]
+      },
+      "showcase": {
+        "eyebrow": "Certificates",
+        "title": "Certificates are included, not a separate module",
+        "text": "The certificate designer is part of the product, and certificates are included from the $35 plan rather than sold as a separate module.",
+        "points": [
+          "Certificate designer in the product",
+          "Included from the $35 plan",
+          "Pairs with completion tracking and compliance reports"
+        ],
+        "viz": "certificate"
+      },
+      "compare": {
+        "title": "ClassroomIO and Intellum pricing, side by side",
+        "lead": "Intellum quotes each product separately. This compares how each is priced. Intellum is stronger on audience separation and published security attestations."
+      }
+    },
+    "thought-industries": {
+      "seo": {
+        "title": "Thought Industries Alternative With a Price List | ClassroomIO",
+        "meta": "Sizing a Thought Industries alternative for your customer academy? ClassroomIO covers up to 10,000 students on a $35 plan, with a free plan to try first."
+      },
+      "headline": "Meet the Thought Industries Alternative that Understands SaaS Customer Education",
+      "mark": "SaaS Customer Education",
+      "sub": "ClassroomIO is built for SaaS teams that need to teach customers how their products work. Create courses with AI, structure learning journeys, and deliver product education through an academy that reflects your brand.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": [
+        "Up to 10,000 students on $35 a month",
+        "Published prices and a free plan",
+        "Courses, certificates and your own domain"
+      ],
+      "pick": {
+        "lead": "Thought Industries pairs learning with a knowledge layer. ClassroomIO is the focused academy.",
+        "them": {
+          "title": "Choose Thought Industries if",
+          "points": [
+            "You want a governed knowledge layer and AI answers alongside your courses.",
+            "You need content recommendations or monetization.",
+            "You want a headless front end for your academy."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You want a published price and a free start, not a demo-priced Academy.",
+            "You want up to 10,000 students on one plan, not tier caps of 500, 2,000 or 5,000.",
+            "You want a narrower product that is quick to set up."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "capacity",
+        "frame": "panel",
+        "floats": ["dropoff", "webhook"],
+        "layout": "mirror",
+        "canvas": "lines",
+        "path": "/settings/plan",
+        "note": "Up to 10,000 students"
+      },
+      "intro": {
+        "title": "Thought Industries prices Academy through a demo. ClassroomIO puts the price on the page.",
+        "text": "ClassroomIO is the academy and nothing around it. Courses, certificates, your own domain and analytics are in the plan, and the price is on the page. You can also self-host it if you want to run it yourself.",
+        "steps": [
+          ["Create", "Draft a first customer course with AI, then edit it."],
+          ["Distribute", "Publish on your own domain with your branding."],
+          ["Prove value", "Follow completions and issue certificates."]
+        ],
+        "viz": "catalog"
+      },
+      "features": {
+        "title": "Courses, certificates and your domain from $35 a month",
+        "lead": "The core of a customer academy sits in one published plan.",
+        "items": [
+          {
+            "key": "capacity",
+            "title": "Know the size of the plan before you sign"
+          },
+          {
+            "key": "domain",
+            "title": "Your academy on your own domain"
+          },
+          {
+            "key": "certs",
+            "title": "Certificates for finished courses"
+          },
+          {
+            "key": "ai",
+            "title": "AI drafts for the first version of a course"
+          },
+          {
+            "key": "api",
+            "title": "Hooks for custom workflows",
+            "text": "API, webhooks and MCP access are available for custom workflows. ClassroomIO has no headless front end option."
+          }
+        ]
+      },
+      "showcase": {
+        "eyebrow": "Course creation",
+        "title": "Get a first customer course drafted, then edit it",
+        "text": "Describe the course you need and review an AI draft in the course builder. Nothing is published until you decide.",
+        "points": [
+          "Outline, lesson text and exercise drafts",
+          "Edit everything before it goes live",
+          "Exercises with auto-grading"
+        ],
+        "viz": "editor"
+      },
+      "compare": {
+        "title": "ClassroomIO and Thought Industries pricing, side by side",
+        "lead": "Thought Industries prices its Academy through a demo and caps learners by tier. This compares how each is priced, using only what its pricing page lists."
+      }
+    },
+    "thinkific": {
+      "seo": {
+        "title": "Thinkific Alternative for Customer Training | ClassroomIO",
+        "meta": "Training customers, not selling courses? ClassroomIO is a Thinkific alternative with unlimited collaborators, certificates and your own domain from $35 a month."
+      },
+      "headline": "A Thinkific Alternative for Customer Education",
+      "mark": "Customer Education",
+      "sub": "Your product experience shouldn't end at signup. ClassroomIO helps SaaS teams guide customers from their first steps to more advanced features with structured courses and learning paths.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": [
+        "Unlimited collaborators from $35 a month",
+        "A free plan, with certificates and a custom domain at $35",
+        "AI course creation on every plan"
+      ],
+      "pick": {
+        "lead": "Thinkific is built to sell courses and communities. ClassroomIO is built to teach customers.",
+        "them": {
+          "title": "Choose Thinkific if",
+          "points": [
+            "You sell courses or memberships to the public.",
+            "You want communities or a branded mobile app.",
+            "You want a large creator ecosystem around your courses."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You want every teammate to build courses, with unlimited collaborators instead of 1, 2 or 6 admin seats.",
+            "You want AI course creation and MCP access on every plan, including the free one.",
+            "You want a free plan to build on, not a 30-day trial, with your domain, branding and certificates in one $35 plan."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "collab",
+        "frame": "portrait",
+        "person": "amara",
+        "floats": ["draft", "progress"],
+        "layout": "column",
+        "canvas": "grid",
+        "path": "/team",
+        "note": "Everyone can build"
+      },
+      "intro": {
+        "title": "Thinkific has a storefront. ClassroomIO teaches customers without one.",
+        "text": "ClassroomIO is built for customer education. Teach customers your product, publish an academy under your brand and see who learns what. Paid enrolment is documented, but selling is not the focus.",
+        "steps": [
+          ["Create", "Draft with AI or start from a template, then edit it together."],
+          ["Distribute", "Publish on your own domain and invite customers."],
+          ["Prove value", "See completions and issue certificates."]
+        ],
+        "viz": "editor"
+      },
+      "features": {
+        "title": "Every teammate can build, and the $35 plan does not cap them",
+        "lead": "Collaborators are not capped on the $35 plan, and branding, domain and certificates are in it too.",
+        "items": [
+          {
+            "key": "seats",
+            "title": "Bring in support, success and product"
+          },
+          {
+            "key": "free",
+            "title": "Try it before anyone approves a budget"
+          },
+          {
+            "key": "domain",
+            "title": "Your domain and branding"
+          },
+          {
+            "key": "certs",
+            "title": "Certificates without moving up a tier"
+          },
+          {
+            "key": "ai",
+            "title": "A first draft from AI"
+          }
+        ]
+      },
+      "showcase": {
+        "eyebrow": "The learner view",
+        "title": "A course player without a checkout in the way",
+        "text": "Customers open a course, work through lessons and exercises, and ask the AI tutor when they get stuck.",
+        "points": ["Lesson progress at a glance", "Exercises with auto-grading", "AI tutor inside the course"],
+        "viz": "learner"
+      },
+      "compare": {
+        "title": "ClassroomIO and Thinkific pricing, side by side",
+        "lead": "Both publish prices. Thinkific is stronger on payments and communities, so read these rows with the scope difference in mind."
+      }
+    },
+    "teachfloor": {
+      "seo": {
+        "title": "Teachfloor Alternative With Your Own Domain | ClassroomIO",
+        "meta": "Want cohorts and your own domain without a custom quote? ClassroomIO is a Teachfloor alternative with branding and a domain on a published $35 plan. MCP on every plan."
+      },
+      "headline": "Run cohorts on your own domain without waiting for a quote",
+      "mark": "your own domain",
+      "sub": "ClassroomIO helps SaaS teams bring customers through courses together, on your own domain and with your branding, with an AI tutor answering questions along the way. Start for free and see the price before you talk to anyone.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": [
+        "Branding and domain on a published $35 plan",
+        "MCP access on every plan",
+        "Cohorts with goals and a news feed"
+      ],
+      "pick": {
+        "lead": "Teachfloor is stronger on peer learning. ClassroomIO gives you a branded academy at a price you can see.",
+        "them": {
+          "title": "Choose Teachfloor if",
+          "points": [
+            "Peer feedback and rubric review are central to your programs.",
+            "You need community features built into your programs.",
+            "You need LTI 1.3 or a JavaScript SDK."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You want your own domain and branding on a published $35 plan, not a custom-quoted one.",
+            "You want room for up to 10,000 students on the paid plan, not 50 seats.",
+            "You want MCP access on every plan, including the free one."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "cohort",
+        "frame": "bare",
+        "floats": ["domain", "tutor"],
+        "layout": "mirror",
+        "canvas": "rings",
+        "path": "/cohorts/spring",
+        "note": "Cohorts on your domain"
+      },
+      "intro": {
+        "title": "Teachfloor quotes branding and domain. ClassroomIO publishes them from $35 a month.",
+        "text": "ClassroomIO puts branding and your domain in a published plan. Run self-paced courses, or bring a group through together with a cohort goal and a news feed to keep them moving.",
+        "steps": [
+          ["Create", "Start from a template or an AI draft, then review and edit it."],
+          ["Distribute", "Publish on your own domain, self-paced or as a cohort."],
+          ["Prove value", "Follow progress by cohort and learner, and issue certificates."]
+        ],
+        "viz": "editor"
+      },
+      "features": {
+        "title": "Your domain, branding and MCP without waiting for a quote",
+        "lead": "Cohorts are there too, so a group can learn together or each person can go at their own pace.",
+        "items": [
+          {
+            "key": "domain",
+            "title": "Your domain and branding on a listed price"
+          },
+          {
+            "key": "mcp",
+            "title": "Connect an AI agent on any plan"
+          },
+          {
+            "key": "cohorts",
+            "title": "Move a group through a course together"
+          },
+          {
+            "key": "seats",
+            "title": "Everyone on your team can contribute"
+          },
+          {
+            "key": "capacity",
+            "title": "Room to grow past a small cohort",
+            "text": "Early Adopter covers up to 10,000 students. Teachfloor Startup lists 50 seats."
+          }
+        ]
+      },
+      "showcase": {
+        "eyebrow": "Your academy, your domain",
+        "title": "Your academy on your own address",
+        "text": "Set your domain, colors and logo, and publish courses where customers expect to find you.",
+        "points": [
+          "Custom domain from $35 a month",
+          "Branding applied across the academy",
+          "Cohorts and self-paced courses side by side"
+        ],
+        "viz": "academy"
+      },
+      "compare": {
+        "title": "ClassroomIO and Teachfloor pricing, side by side",
+        "lead": "Both publish a starting price. Teachfloor overlaps on cohorts, AI and MCP, so this focuses on what sits in each plan."
+      }
+    },
+    "teachable": {
+      "seo": {
+        "title": "Teachable Alternative If You Teach Customers | ClassroomIO",
+        "meta": "Teaching customers, not selling courses? ClassroomIO is a Teachable alternative with certificates from $35 a month, unlimited courses and a branded academy. Start free."
+      },
+      "headline": "A Teachable Alternative for SaaS Customer Education",
+      "mark": "SaaS Customer Education",
+      "sub": "Online courses can teach almost anything. ClassroomIO helps you teach something specific: how to use your product. Build onboarding courses, explain features, and help customers learn at their own pace through your own academy.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": [
+        "Certificates from $35 a month",
+        "Unlimited courses on every plan",
+        "A free plan for up to 20 students"
+      ],
+      "pick": {
+        "lead": "Teachable is built for selling courses. ClassroomIO is built for teaching customers.",
+        "them": {
+          "title": "Choose Teachable if",
+          "points": [
+            "You sell courses or digital products to the public.",
+            "You need a storefront with sales pages and checkout.",
+            "You want a mature creator ecosystem with creator integrations."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You only teach customers how to use your product, so you do not need a storefront.",
+            "You want certificates and team seats without moving up to a top self-serve tier.",
+            "You want unlimited courses instead of 5, 10 or 50 products."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "tutor",
+        "frame": "panel",
+        "floats": ["progress", "dropoff"],
+        "layout": "ledge",
+        "canvas": "glow",
+        "path": "/lessons/3",
+        "note": "Help inside every lesson"
+      },
+      "intro": {
+        "title": "Teachable is built to sell courses. ClassroomIO is built to teach customers.",
+        "text": "ClassroomIO is built for customer education, so customers learn your product and get value from it. Build courses faster with AI, publish them in a branded academy and give customers a certificate when they finish.",
+        "steps": [
+          ["Create", "Draft with AI or start from a template, then edit it."],
+          ["Distribute", "Publish on your own domain with your branding."],
+          ["Prove value", "Issue certificates and see who completed each course."]
+        ],
+        "viz": "editor"
+      },
+      "features": {
+        "title": "Certificates and courses are not held back for a top-tier plan",
+        "lead": "Certificates, courses and collaborators are not held back for a top-tier plan.",
+        "items": [
+          {
+            "key": "certs",
+            "title": "Certificates from the $35 plan"
+          },
+          {
+            "key": "courses",
+            "title": "A course for every product area"
+          },
+          {
+            "key": "seats",
+            "title": "Teammates can build alongside you"
+          },
+          {
+            "key": "ai",
+            "title": "A first draft from AI"
+          },
+          {
+            "key": "domain",
+            "title": "Your own domain and branding"
+          }
+        ]
+      },
+      "showcase": {
+        "eyebrow": "Your course library",
+        "title": "Publish a course for every product area, role and release",
+        "text": "Courses are not capped on any plan, so you can add a course per product area, role or release.",
+        "points": [
+          "Unlimited courses on every plan",
+          "Draft and published states",
+          "Collaborators can build alongside you"
+        ],
+        "viz": "catalog"
+      },
+      "compare": {
+        "title": "ClassroomIO and Teachable pricing, side by side",
+        "lead": "Both publish prices. Teachable is stronger on payments and storefront features, so read these rows with the scope difference in mind."
+      }
+    },
+    "kajabi": {
+      "seo": {
+        "title": "Kajabi Alternative Priced by Student Capacity | ClassroomIO",
+        "meta": "Need training, not funnels? ClassroomIO is a Kajabi alternative priced by student capacity: free for 20 students, $35 a month for up to 10,000. No contact lists."
+      },
+      "headline": "A Free Kajabi Alternative for Teaching Your SaaS Product",
+      "mark": "Teaching Your SaaS Product",
+      "sub": "You\u2019re not trying to sell a course. You\u2019re trying to help customers succeed with your product. ClassroomIO helps SaaS teams create courses with AI, guide customers through product features, and deliver learning through their own branded academy.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": [
+        "Free plan for up to 20 students",
+        "$35 a month for up to 10,000 students",
+        "Certificates, branding and domain from $35"
+      ],
+      "pick": {
+        "lead": "Kajabi is a creator business suite. ClassroomIO is a customer academy.",
+        "them": {
+          "title": "Choose Kajabi if",
+          "points": [
+            "You sell and market digital products with funnels, email and landing pages.",
+            "You want communities or a branded mobile app.",
+            "You want selling, marketing and course hosting in one suite."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You want unlimited courses and collaborators, not product caps of 5 or 50 and 2, 11 or 26 admin users.",
+            "You want to start free and pay $35 a month, not $179.",
+            "You want AI course creation and MCP access on every plan, including the free one."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "capacity",
+        "frame": "window",
+        "floats": ["collab", "draft"],
+        "layout": "spotlight",
+        "canvas": "dots",
+        "path": "/settings/plan",
+        "note": "Priced by students"
+      },
+      "intro": {
+        "title": "Kajabi bundles marketing tools. ClassroomIO sticks to teaching.",
+        "text": "ClassroomIO sticks to teaching. There are no funnels, email campaigns or landing pages, so a training team is not paying for marketing tools it will never open.",
+        "steps": [
+          ["Create", "Draft with AI or start from a template, then edit."],
+          ["Distribute", "Publish on your own domain and invite students."],
+          ["Prove value", "See completions and issue certificates."]
+        ],
+        "viz": "catalog"
+      },
+      "features": {
+        "title": "Kajabi is priced by contacts. ClassroomIO is priced by students.",
+        "lead": "Plans are sized by how many students you have, not how many contacts are in a list.",
+        "items": [
+          {
+            "key": "capacity",
+            "title": "Pay for the students you teach"
+          },
+          {
+            "key": "free",
+            "title": "Start free, with up to 20 students"
+          },
+          {
+            "key": "certs",
+            "title": "Certificates at the end of a course"
+          },
+          {
+            "key": "domain",
+            "title": "Your domain and branding"
+          },
+          {
+            "key": "seats",
+            "title": "Add teammates without a seat count"
+          }
+        ]
+      },
+      "showcase": {
+        "eyebrow": "Your academy",
+        "title": "Your academy on your own domain, with no store attached",
+        "text": "Publish courses on your own domain and let learners sign in to see their progress. There is no store, funnel or email tool in the way.",
+        "points": [
+          "Custom domain and branding from $35 a month",
+          "Courses, progress and certificates in one place",
+          "Unlimited collaborators on the same plan"
+        ],
+        "viz": "academy"
+      },
+      "compare": {
+        "title": "ClassroomIO and Kajabi pricing, side by side",
+        "lead": "The two products do different jobs, so read the price rows with care. Kajabi includes funnels, email and communities that ClassroomIO does not."
+      }
+    }
+  }
+}

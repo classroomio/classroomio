@@ -27,7 +27,7 @@
 
 <MetaTags {...metaTags} />
 
-<div class="overflow-hidden bg-white">
+<div class="bg-white">
   <Navigation stars={data.stars} />
 
   {#if page.status === 404}
