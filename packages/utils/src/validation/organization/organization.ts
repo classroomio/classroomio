@@ -4,6 +4,7 @@ import { EMAIL_LOCALES, STUDENT_EMAIL_IDS } from '../../email';
 import { ROLE, blockedSubdomain } from '@cio/utils/constants';
 import { ZCourseType } from '../course/course-type';
 import { containsDisallowedHrefs } from '../shared';
+import { ZLandingPageAppearance } from './landing-page';
 
 export const ZGetOrganizations = z.object({
   siteName: z.string().min(1).optional(),
@@ -160,7 +161,17 @@ export const ZUpdateOrganization = z.object({
     .optional()
     .refine((val) => !val || !containsDisallowedHrefs(val), {
       message: 'URLs with javascript:, data:, or vbscript: schemes are not allowed'
-    }),
+    })
+    .refine(
+      (val) => {
+        if (!val || typeof val !== 'object' || !('appearance' in val)) return true;
+        if (val.appearance === undefined || val.appearance === null) return true;
+        return ZLandingPageAppearance.safeParse(val.appearance).success;
+      },
+      {
+        message: 'Invalid landing page appearance'
+      }
+    ),
   siteName: z.string().min(1).optional(),
   customDomain: z.string().nullable().optional(),
   isCustomDomainVerified: z.boolean().optional(),

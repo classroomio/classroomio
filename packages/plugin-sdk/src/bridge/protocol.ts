@@ -21,6 +21,8 @@ export interface PluginContext {
       selectedTemplateId?: string;
       selectedTemplateName?: string;
       selectedTemplateDocument?: unknown;
+      appearance?: unknown;
+      [key: string]: unknown;
     };
   };
 }

@@ -466,4 +466,36 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
     const result = ZPluginManifest.safeParse(manifestWithExtensions);
     expect(result.success).toBe(true);
   });
+
+  it('validates landing.templates slot contribution with declared templates metadata', () => {
+    const landingTemplatesManifest = {
+      ...validManifest,
+      contributes: {
+        slots: [
+          {
+            id: 'landing-templates-picker',
+            target: 'landing.templates',
+            renderMode: 'custom',
+            entrypoint: 'sidebarWidget',
+            title: 'Creative Landing Page Templates',
+            templates: [
+              {
+                id: 'neo-brutalism',
+                name: 'Neo-Brutalism',
+                description: 'High-contrast, bold outlines, hard drop shadows.',
+                thumbnail: 'assets/thumbnails/neo-brutalism.png'
+              },
+              {
+                id: 'midnight-aurora',
+                name: 'Midnight Aurora',
+                description: 'Obsidian dark mode, mesh gradients, glassmorphism.'
+              }
+            ]
+          }
+        ]
+      }
+    };
+    const result = ZPluginManifest.safeParse(landingTemplatesManifest);
+    expect(result.success).toBe(true);
+  });
 });

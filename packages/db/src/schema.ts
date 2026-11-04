@@ -2501,6 +2501,16 @@ export const organization = pgTable(
           };
       /** Current landing JSON shape (stored alongside legacy keys above) */
       theme?: string;
+      appearance?: {
+        kind: 'native' | 'plugin';
+        theme?: string;
+        fallbackTheme?: string;
+        installationId?: string;
+        pluginId?: string;
+        contributionId?: string;
+        templateId?: string;
+        version?: string;
+      };
       hero?: Record<string, unknown>;
       navItems?: Array<{ label: string; href: string }>;
       footerLinks?: Array<{ label: string; href: string }>;

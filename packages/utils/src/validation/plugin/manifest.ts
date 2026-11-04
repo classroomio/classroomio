@@ -78,6 +78,7 @@ export const STABLE_CONTRIBUTION_TARGETS = [
   'lesson.after',
   'certificate.actions',
   'certificate.templates',
+  'landing.templates',
   'organization.navigation',
   'plugin.page'
 ] as const;
@@ -167,13 +168,24 @@ export const ZPluginActionContribution = z
   });
 export type TPluginActionContribution = z.infer<typeof ZPluginActionContribution>;
 
+export const ZPluginDeclaredTemplate = z
+  .object({
+    id: z.string().trim().min(1).max(64),
+    name: z.string().trim().min(1).max(100),
+    description: z.string().trim().max(280).optional(),
+    thumbnail: ZSafeRelativePath.optional()
+  })
+  .strict();
+export type TPluginDeclaredTemplate = z.infer<typeof ZPluginDeclaredTemplate>;
+
 export const ZPluginSlotContribution = z
   .object({
     id: z.string().trim().min(1).max(64),
     target: ZContributionTarget,
     renderMode: z.enum(['custom', 'host']).default('custom'),
     entrypoint: z.string().trim().min(1).max(64).optional(),
-    title: z.string().trim().max(100).optional()
+    title: z.string().trim().max(100).optional(),
+    templates: z.array(ZPluginDeclaredTemplate).max(50).optional()
   })
   .strict()
   .refine(

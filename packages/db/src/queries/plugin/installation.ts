@@ -175,13 +175,24 @@ export async function getPluginUninstallDataImpact(installationId: string, organ
       )
     );
 
+  const [landingTemplates] = await db
+    .select({ count: count(schema.organization.id) })
+    .from(schema.organization)
+    .where(
+      and(
+        eq(schema.organization.id, organizationId),
+        sql`${schema.organization.landingpage}->'appearance'->>'installationId' = ${installationId}`
+      )
+    );
+
   return {
     storedData: {
       exists: Number(storage?.records ?? 0) > 0,
       bytes: Number(storage?.bytes ?? 0)
     },
     appliedContent: {
-      certificateDesigns: Number(publishedOutputs?.count ?? 0)
+      certificateDesigns: Number(publishedOutputs?.count ?? 0),
+      landingTemplates: Number(landingTemplates?.count ?? 0)
     }
   };
 }
@@ -246,6 +257,37 @@ export async function uninstallPluginInstallation(
       publishedOutputsRemoved = courses.length;
     }
 
+    const orgsWithLandingTemplate = await transaction
+      .select({ id: schema.organization.id, landingpage: schema.organization.landingpage })
+      .from(schema.organization)
+      .where(
+        and(
+          eq(schema.organization.id, organizationId),
+          sql`${schema.organization.landingpage}->'appearance'->>'installationId' = ${installationId}`
+        )
+      );
+
+    for (const org of orgsWithLandingTemplate) {
+      const landingpage = (org.landingpage ?? {}) as Record<string, unknown>;
+      const appearance = landingpage.appearance as Record<string, unknown> | undefined;
+      const fallbackTheme = (appearance?.fallbackTheme as string) || (landingpage.theme as string) || 'quartz';
+      const nextLandingPage = {
+        ...landingpage,
+        theme: fallbackTheme,
+        appearance: {
+          kind: 'native' as const,
+          theme: fallbackTheme
+        }
+      };
+
+      await transaction
+        .update(schema.organization)
+        .set({ landingpage: nextLandingPage })
+        .where(eq(schema.organization.id, org.id));
+    }
+
+    const landingTemplatesReverted = orgsWithLandingTemplate.length;
+
     const now = new Date().toISOString();
     const [updatedInstallation] = await transaction
       .update(schema.pluginInstallation)
@@ -256,7 +298,8 @@ export async function uninstallPluginInstallation(
     return {
       installation: updatedInstallation,
       storageRecordsDeleted,
-      publishedOutputsRemoved
+      publishedOutputsRemoved,
+      landingTemplatesReverted
     };
   });
 }
