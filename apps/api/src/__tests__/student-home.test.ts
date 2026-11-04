@@ -327,4 +327,38 @@ describe('updateOrg student home', () => {
     expect(setOrganizationStudentHome).not.toHaveBeenCalled();
     expect(updateOrganization).not.toHaveBeenCalled();
   });
+
+  it('saves the destination alone without sending an empty org update', async () => {
+    const saved = { id: ORG_ID, name: 'Acme Academy', studentHomePath: '/lms/mylearning' };
+
+    vi.mocked(getOrganizationById).mockResolvedValue(saved as never);
+
+    const result = await updateOrg(ORG_ID, { studentHome: { type: 'page', key: 'mylearning' } });
+
+    expect(setOrganizationStudentHome).toHaveBeenCalledWith(ORG_ID, { path: '/lms/mylearning', courseId: null }, {});
+    expect(updateOrganization).not.toHaveBeenCalled();
+    expect(result).toBe(saved);
+  });
+
+  it('clears the destination alone without sending an empty org update', async () => {
+    const saved = { id: ORG_ID, name: 'Acme Academy', studentHomePath: null };
+
+    vi.mocked(getOrganizationById).mockResolvedValue(saved as never);
+
+    const result = await updateOrg(ORG_ID, { studentHome: null });
+
+    expect(setOrganizationStudentHome).toHaveBeenCalledWith(ORG_ID, { path: null, courseId: null }, {});
+    expect(updateOrganization).not.toHaveBeenCalled();
+    expect(result).toBe(saved);
+  });
+
+  it('reports a missing organization when only the destination was sent', async () => {
+    vi.mocked(getOrganizationById).mockResolvedValue(null as never);
+
+    await expect(updateOrg(ORG_ID, { studentHome: null })).rejects.toMatchObject({
+      code: 'ORGANIZATION_NOT_FOUND'
+    });
+
+    expect(updateOrganization).not.toHaveBeenCalled();
+  });
 });

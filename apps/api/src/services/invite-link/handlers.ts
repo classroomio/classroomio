@@ -183,6 +183,10 @@ const courseHandler: InviteLinkHandler = {
   redirectTo(context) {
     const course = requireCourse(context);
 
+    if (!course.isPublished && context.invite.roleId === ROLE.STUDENT) {
+      return '/lms';
+    }
+
     return `/courses/${course.id}/lessons?next=true`;
   }
 };

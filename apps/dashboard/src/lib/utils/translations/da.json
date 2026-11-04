@@ -3361,25 +3361,25 @@
         },
         "page_subtitle": "Vælg, hvilke faner, bannere, kursusværktøjer og ekstramateriale eleverne ser.",
         "student_home": {
-          "heading": "Student home",
-          "description": "Choose where signed-in students go when they open your academy’s homepage. Visitors who aren’t signed in, and your team, still see your landing page.",
-          "label": "Authenticated student home",
-          "placeholder": "Search pages and courses",
-          "option_default": "Landing page (default)",
-          "group_pages": "Learning portal",
-          "group_courses": "Courses",
-          "reason_disabled_toggle": "Turn it on in the Dashboard section below",
-          "reason_paid_plan": "Available on paid plans",
-          "courses_empty": "No published courses yet",
+          "heading": "Studerendes startside",
+          "description": "Vælg, hvor loggede studerende skal hen, når de åbner dit akademis hjemmeside. Besøgende, der ikke er logget ind, og dit team, kan stadig se din landingsside.",
+          "label": "Startside for indloggede studerende",
+          "placeholder": "Søg på sider og kurser",
+          "option_default": "Landingsside (standard)",
+          "group_pages": "Læringsportal",
+          "group_courses": "Kurser",
+          "reason_disabled_toggle": "Slå den til i Dashboard-sektionen nedenfor",
+          "reason_paid_plan": "Tilgængelig på betalte planer",
+          "courses_empty": "Ingen offentliggjorte kurser endnu",
           "load_more": "Indlæs mere",
-          "search_empty": "No pages or courses match \"{query}\"",
-          "warning_unavailable": "{destination} isn’t available to students right now, so they’re sent to Dashboard instead. Choose another destination or make it available again.",
-          "warning_course_missing": "The course you chose was deleted or unpublished, so students are sent to Dashboard instead.",
-          "course_hint_open": "Enrolled students go straight to their next lesson. Students who aren’t enrolled can join in one click.",
-          "course_hint_restricted": "Enrolled students go straight to their next lesson. This course is paid or invite-only, so students who aren’t enrolled go to Dashboard.",
-          "unavailable_badge": "Unavailable",
-          "course_type_live": "Live",
-          "course_type_compliance": "Compliance"
+          "search_empty": "Ingen sider eller kurser matcher \"{query}\"",
+          "warning_unavailable": "{destination} er ikke tilgængelig for elever lige nu, så de sendes til betjeningspanelet i stedet. Vælg en anden destination, eller gør den tilgængelig igen.",
+          "warning_course_missing": "Det kursus, du valgte, blev slettet eller ikke offentliggjort, så eleverne sendes til Dashboard i stedet.",
+          "course_hint_open": "Tilmeldte elever går direkte til deres næste lektion. Studerende, der ikke er tilmeldt, kan deltage med et enkelt klik.",
+          "course_hint_restricted": "Tilmeldte elever går direkte til deres næste lektion. Dette kursus er betalt eller kun for invitationer, så studerende, der ikke er tilmeldt, går til Dashboard.",
+          "unavailable_badge": "Ikke tilgængelig",
+          "course_type_live": "Live klasse",
+          "course_type_compliance": "Overholdelse"
         }
       },
       "domains": {
@@ -3430,8 +3430,8 @@
       },
       "landing_page": {
         "student_home_notice": {
-          "notice": "Signed-in students skip this page and go to {destination}.",
-          "change": "Change"
+          "notice": "Studerende, der er logget ind, springer denne side over og går til {destination}.",
+          "change": "Skift"
         }
       }
     },

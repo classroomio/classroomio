@@ -72,6 +72,39 @@ describe('invite link redirects', () => {
     expect(getInviteLinkHandler('COURSE').redirectTo(context)).toBe(`/courses/${COURSE_ID}/lessons?next=true`);
   });
 
+  it('falls back to the learning portal for a student joining an unpublished course', () => {
+    const context = buildContext({
+      course: {
+        id: COURSE_ID,
+        title: 'SOC 2 Basics',
+        description: null,
+        slug: 'soc2',
+        status: 'ACTIVE',
+        isPublished: false
+      }
+    });
+
+    expect(getInviteLinkHandler('COURSE').redirectTo(context)).toBe('/lms');
+  });
+
+  it('still opens an unpublished course for staff invite links', () => {
+    const context = buildContext(
+      {
+        course: {
+          id: COURSE_ID,
+          title: 'SOC 2 Basics',
+          description: null,
+          slug: 'soc2',
+          status: 'ACTIVE',
+          isPublished: false
+        }
+      },
+      ROLE.TUTOR
+    );
+
+    expect(getInviteLinkHandler('COURSE').redirectTo(context)).toBe(`/courses/${COURSE_ID}/lessons?next=true`);
+  });
+
   it('opens a cohort link in the student view for students', () => {
     const context = buildContext({
       cohort: { id: COHORT_ID, name: 'Spring cohort', description: null, coverImage: null, status: 'ACTIVE' }

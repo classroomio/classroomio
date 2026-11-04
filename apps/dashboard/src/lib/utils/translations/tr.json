@@ -2136,31 +2136,31 @@
           "preview_alt": "Oturum açma arka planı önizlemesi"
         },
         "student_home": {
-          "heading": "Student home",
-          "description": "Choose where signed-in students go when they open your academy’s homepage. Visitors who aren’t signed in, and your team, still see your landing page.",
-          "label": "Authenticated student home",
-          "placeholder": "Search pages and courses",
-          "option_default": "Landing page (default)",
-          "group_pages": "Learning portal",
-          "group_courses": "Courses",
-          "reason_disabled_toggle": "Turn it on in the Dashboard section below",
-          "reason_paid_plan": "Available on paid plans",
-          "courses_empty": "No published courses yet",
+          "heading": "Öğrenci ana sayfası",
+          "description": "Oturum açan öğrencilerin akademinizin ana sayfasını açtıklarında nereye gideceklerini seçin. Oturum açmamış ziyaretçiler ve ekibiniz açılış sayfanızı görmeye devam eder.",
+          "label": "Oturum açmış öğrenci ana sayfası",
+          "placeholder": "Sayfaları ve kursları arayın",
+          "option_default": "Açılış sayfası (varsayılan)",
+          "group_pages": "Öğrenim portalı",
+          "group_courses": "Kurslar",
+          "reason_disabled_toggle": "Aşağıdaki Kontrol Paneli bölümünde bu özelliği açın",
+          "reason_paid_plan": "Ücretli planlarda mevcut",
+          "courses_empty": "Henüz yayınlanmış kurs yok",
           "load_more": "Daha fazlasını yükle",
-          "search_empty": "No pages or courses match \"{query}\"",
-          "warning_unavailable": "{destination} isn’t available to students right now, so they’re sent to Dashboard instead. Choose another destination or make it available again.",
-          "warning_course_missing": "The course you chose was deleted or unpublished, so students are sent to Dashboard instead.",
-          "course_hint_open": "Enrolled students go straight to their next lesson. Students who aren’t enrolled can join in one click.",
-          "course_hint_restricted": "Enrolled students go straight to their next lesson. This course is paid or invite-only, so students who aren’t enrolled go to Dashboard.",
-          "unavailable_badge": "Unavailable",
-          "course_type_live": "Live",
-          "course_type_compliance": "Compliance"
+          "search_empty": "\"{query}\" ile eşleşen sayfa veya kurs yok",
+          "warning_unavailable": "{destination} şu anda öğrencilere sunulmadığından bunun yerine Kontrol Paneline gönderiliyorlar. Başka bir hedef seçin veya onu tekrar kullanılabilir hale getirin.",
+          "warning_course_missing": "Seçtiğiniz kurs silindi veya yayından kaldırıldı, dolayısıyla öğrenciler onun yerine Kontrol Paneli'ne yönlendiriliyor.",
+          "course_hint_open": "Kayıtlı öğrenciler doğrudan bir sonraki derse geçerler. Kayıtlı olmayan öğrenciler tek tıklamayla katılabilir.",
+          "course_hint_restricted": "Kayıtlı öğrenciler doğrudan bir sonraki derse geçerler. Bu kurs ücretlidir veya yalnızca davetle yapılabilir; dolayısıyla kayıtlı olmayan öğrenciler Kontrol Paneli'ne gider.",
+          "unavailable_badge": "Kullanılamıyor",
+          "course_type_live": "Canlı",
+          "course_type_compliance": "Uyumluluk"
         }
       },
       "landing_page": {
         "student_home_notice": {
-          "notice": "Signed-in students skip this page and go to {destination}.",
-          "change": "Change"
+          "notice": "Oturum açan öğrenciler bu sayfayı atlayıp {destination} adresine gider.",
+          "change": "Değiştir"
         }
       }
     }

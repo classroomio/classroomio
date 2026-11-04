@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildStudentHomePageOptions, getStudentHomeWarning, toStudentHomeDestination } from './student-home-utils';
+import {
+  appendStudentHomeCourses,
+  buildStudentHomePageOptions,
+  getStudentHomeWarning,
+  toStudentHomeDestination
+} from './student-home-utils';
 import type { StudentHomeCourseOption } from './types';
 
 const translate = (key: string) => key;
@@ -80,5 +85,32 @@ describe('getStudentHomeWarning', () => {
         courseOption({ isAvailable: false })
       ])
     ).toBe('course-missing');
+  });
+
+  it('warns when the loaded options no longer contain the saved course', () => {
+    const pageOptions = buildStudentHomePageOptions(translate, {
+      orgId: 'org-1',
+      plans: [{ planName: 'BASIC', isActive: true }],
+      isSelfHosted: false,
+      customization: { dashboard: {} }
+    });
+
+    expect(getStudentHomeWarning({ type: 'course', courseId: 'deleted-course' }, pageOptions, [courseOption()])).toBe(
+      'course-missing'
+    );
+  });
+});
+
+describe('appendStudentHomeCourses', () => {
+  it('keeps the saved course that page one appends ahead of later pages', () => {
+    const firstPage = [courseOption({ id: 'course-1' }), courseOption({ id: 'saved-course' })];
+
+    const merged = appendStudentHomeCourses(firstPage, [
+      courseOption({ id: 'course-2' }),
+      courseOption({ id: 'saved-course' }),
+      courseOption({ id: 'course-1' })
+    ]);
+
+    expect(merged.map((course) => course.id)).toEqual(['course-1', 'saved-course', 'course-2']);
   });
 });

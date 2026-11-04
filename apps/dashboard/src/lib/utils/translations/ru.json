@@ -3361,25 +3361,25 @@
         },
         "page_subtitle": "Выбирайте, какие вкладки, баннеры, инструменты курса и дополнительные материалы будут видеть учащиеся.",
         "student_home": {
-          "heading": "Student home",
-          "description": "Choose where signed-in students go when they open your academy’s homepage. Visitors who aren’t signed in, and your team, still see your landing page.",
-          "label": "Authenticated student home",
-          "placeholder": "Search pages and courses",
-          "option_default": "Landing page (default)",
-          "group_pages": "Learning portal",
-          "group_courses": "Courses",
-          "reason_disabled_toggle": "Turn it on in the Dashboard section below",
-          "reason_paid_plan": "Available on paid plans",
-          "courses_empty": "No published courses yet",
+          "heading": "Главная страница студента",
+          "description": "Выберите, куда перейдут вошедшие в систему студенты, когда они откроют домашнюю страницу вашей академии. Посетители, не вошедшие в систему, и ваша команда по-прежнему будут видеть вашу целевую страницу.",
+          "label": "Главная страница авторизованного студента",
+          "placeholder": "Поиск страниц и курсов",
+          "option_default": "Целевая страница (по умолчанию)",
+          "group_pages": "Учебный портал",
+          "group_courses": "Курсы",
+          "reason_disabled_toggle": "Включите его в разделе «Панель управления» ниже.",
+          "reason_paid_plan": "Доступно на платных планах",
+          "courses_empty": "Опубликованных курсов пока нет.",
           "load_more": "Загрузить больше",
-          "search_empty": "No pages or courses match \"{query}\"",
-          "warning_unavailable": "{destination} isn’t available to students right now, so they’re sent to Dashboard instead. Choose another destination or make it available again.",
-          "warning_course_missing": "The course you chose was deleted or unpublished, so students are sent to Dashboard instead.",
-          "course_hint_open": "Enrolled students go straight to their next lesson. Students who aren’t enrolled can join in one click.",
-          "course_hint_restricted": "Enrolled students go straight to their next lesson. This course is paid or invite-only, so students who aren’t enrolled go to Dashboard.",
-          "unavailable_badge": "Unavailable",
-          "course_type_live": "Live",
-          "course_type_compliance": "Compliance"
+          "search_empty": "Нет страниц или курсов, соответствующих запросу \"{query}\".",
+          "warning_unavailable": "{destination} сейчас недоступен для учащихся, поэтому вместо этого они отправляются на панель управления. Выберите другой пункт назначения или сделайте его доступным снова.",
+          "warning_course_missing": "Выбранный вами курс был удален или неопубликован, поэтому вместо этого учащиеся перенаправляются на панель управления.",
+          "course_hint_open": "Зачисленные студенты сразу переходят к следующему уроку. Студенты, которые не зачислены, могут присоединиться в один клик.",
+          "course_hint_restricted": "Зачисленные студенты сразу переходят к следующему уроку. Этот курс платный или доступен только по приглашению, поэтому незарегистрированные студенты переходят на панель управления.",
+          "unavailable_badge": "Недоступно",
+          "course_type_live": "Вживую",
+          "course_type_compliance": "Соответствие требованиям"
         }
       },
       "domains": {
@@ -3430,8 +3430,8 @@
       },
       "landing_page": {
         "student_home_notice": {
-          "notice": "Signed-in students skip this page and go to {destination}.",
-          "change": "Change"
+          "notice": "Выполнившие вход учащиеся пропускают эту страницу и переходят к {destination}.",
+          "change": "Изменить"
         }
       }
     },

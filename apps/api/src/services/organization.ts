@@ -868,6 +868,8 @@ export async function updateOrg(
       updateData = { ...orgData, customization };
     }
 
+    const hasOrgUpdates = Object.values(updateData).some((value) => value !== undefined);
+
     const writeOrganization = async (client: DbOrTxClient) => {
       if (studentHome !== undefined) {
         const existing = await getOrganizationById(orgId, client);
@@ -878,6 +880,10 @@ export async function updateOrg(
           client
         );
         await setOrganizationStudentHome(orgId, home, client);
+      }
+
+      if (!hasOrgUpdates) {
+        return getOrganizationById(orgId, client);
       }
 
       return updateOrganization(orgId, updateData, client);

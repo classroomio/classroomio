@@ -36,20 +36,22 @@ Students also land on the student home when they:
 - Click **Continue Learning** on your course catalog or a course page.
 - Sign in at `app.classroomio.com` when your academy is their only one, and are sent on to it.
 
-Students who open an explicit link — a course, a lesson, an invite link to a course or cohort, or a page under `/lms` — always go where the link points.
+Students who open an explicit link — a course, a lesson, an invite link, or a page under `/lms` — go where the link points. The one exception is an invite link to a course that is not published yet: a student who joins lands on their **Dashboard** instead, while staff invite links still open the draft course.
 
 ## What students see for a course destination
 
 When you pick a course, each student lands as close to it as they are allowed:
 
-| Student                                                | Destination                                                                  |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| Already enrolled in the course                         | Their first unfinished lesson or exercise                                    |
-| New to a free course that is open for self-enrollment  | A focused **Join course** screen — one click, then straight into the lessons |
-| New to a course that is already public in your catalog | The course itself — public courses open without a join step                  |
-| New to a paid, invite-only, or closed course           | The Dashboard                                                                |
+| Student                                                    | Destination                                                                  |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Already enrolled in the course                             | Their first unfinished lesson or exercise                                    |
+| Not enrolled, and the course type is **Public**            | Straight into its first lesson — public courses open without a join step     |
+| Not enrolled, free course that is open for self-enrollment | A focused **Join course** screen — one click, then straight into the lessons |
+| Not enrolled, paid, invite-only, or closed course          | The Dashboard                                                                |
 
-New students confirm with **Join course**, so teachers are not emailed about enrollments nobody asked for. The exception is a course that is already public in your catalog: students go straight into it.
+The course type decides before the price does: a **Public** course always opens straight away, even when it is free to join. Every other course type offers the **Join course** screen when it is free and open for self-enrollment. New students confirm there, so nobody is enrolled without asking.
+
+Courses appear in the picker once they are published. Unavailable courses are greyed out, and the course you saved stays in the list even after it becomes unavailable, so you can see and replace it.
 
 ## When a destination becomes unavailable
 
@@ -59,7 +61,7 @@ If a saved destination later breaks, students go to the **Dashboard** instead of
 - Exercises or Community is turned off in **Customize LMS → Dashboard**.
 - Certificates is picked and the academy moves to the free plan.
 
-The control keeps the saved choice and shows an **Unavailable** badge, with a note under it explaining the fallback, so you can pick another destination or turn the page back on. When the saved course was deleted, the badge still appears but the control can no longer show its name. To stop redirecting entirely, pick **Landing page (default)** and save.
+The control keeps the saved choice and shows an **Unavailable** badge, with a note under it explaining the fallback, so you can pick another destination or turn the page back on. A deleted course keeps its name in the list, greyed out, so you can still tell which course was saved. To stop redirecting entirely, pick **Landing page (default)** and save.
 
 :::info[Turned-off pages also close by direct link]
 Turning off Exercises or Community in **Customize LMS → Dashboard** hides the sidebar link and also closes those pages to anyone who opens them by a saved link or bookmark — they land on the Dashboard instead. The same applies to Certificates on the free plan.

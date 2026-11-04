@@ -3,6 +3,7 @@ import type {
   StudentHomeCourseOption,
   StudentHomeCoursesPagination
 } from '../utils/types';
+import { appendStudentHomeCourses } from '../utils/student-home-utils';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 
 class StudentHomeApi extends BaseApiWithErrors {
@@ -41,7 +42,7 @@ class StudentHomeApi extends BaseApiWithErrors {
         onSuccess: (response) => {
           if (requestId !== this.#requestId) return;
 
-          this.courses = isFirstPage ? response.data : [...(this.courses ?? []), ...response.data];
+          this.courses = isFirstPage ? response.data : appendStudentHomeCourses(this.courses ?? [], response.data);
           this.pagination = response.pagination;
         }
       });

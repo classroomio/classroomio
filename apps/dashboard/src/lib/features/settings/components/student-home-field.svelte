@@ -207,6 +207,7 @@
               {#each courses as course (course.id)}
                 <Command.Item
                   value={course.title}
+                  disabled={!course.isAvailable}
                   onSelect={() => selectDestination({ type: 'course', courseId: course.id })}
                 >
                   <BookOpen class="size-4" />
@@ -218,6 +219,11 @@
                       {course.type === 'LIVE_CLASS'
                         ? $t('components.settings.customize_lms.student_home.course_type_live')
                         : $t('components.settings.customize_lms.student_home.course_type_compliance')}
+                    </Badge>
+                  {/if}
+                  {#if !course.isAvailable}
+                    <Badge variant="secondary">
+                      {$t('components.settings.customize_lms.student_home.unavailable_badge')}
                     </Badge>
                   {/if}
                   {#if value?.type === 'course' && value.courseId === course.id}

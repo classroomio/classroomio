@@ -78,5 +78,17 @@ export function getStudentHomeWarning(
 
   const course = courseOptions.find((option) => option.id === destination.courseId);
 
-  return course && !course.isAvailable ? 'course-missing' : null;
+  return course?.isAvailable ? null : 'course-missing';
+}
+
+/**
+ * Appends a later page of course options, dropping ids already listed.
+ */
+export function appendStudentHomeCourses(
+  current: StudentHomeCourseOption[],
+  next: StudentHomeCourseOption[]
+): StudentHomeCourseOption[] {
+  const listedIds = new Set(current.map((course) => course.id));
+
+  return [...current, ...next.filter((course) => !listedIds.has(course.id))];
 }

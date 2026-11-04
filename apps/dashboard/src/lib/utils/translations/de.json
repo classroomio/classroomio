@@ -3361,24 +3361,24 @@
         },
         "page_subtitle": "Wählen Sie aus, welche Registerkarten, Banner, Kurstools und Extras den Studierenden angezeigt werden.",
         "student_home": {
-          "heading": "Student home",
-          "description": "Choose where signed-in students go when they open your academy’s homepage. Visitors who aren’t signed in, and your team, still see your landing page.",
-          "label": "Authenticated student home",
-          "placeholder": "Search pages and courses",
-          "option_default": "Landing page (default)",
-          "group_pages": "Learning portal",
-          "group_courses": "Courses",
-          "reason_disabled_toggle": "Turn it on in the Dashboard section below",
-          "reason_paid_plan": "Available on paid plans",
-          "courses_empty": "No published courses yet",
+          "heading": "Startseite für Studierende",
+          "description": "Wählen Sie aus, wohin angemeldete Studierende gehen, wenn sie die Homepage Ihrer Akademie öffnen. Besucher, die nicht angemeldet sind, und Ihr Team sehen weiterhin Ihre Zielseite.",
+          "label": "Startseite für angemeldete Studierende",
+          "placeholder": "Durchsuchen Sie Seiten und Kurse",
+          "option_default": "Landingpage (Standard)",
+          "group_pages": "Lernportal",
+          "group_courses": "Kurse",
+          "reason_disabled_toggle": "Aktivieren Sie es im Dashboard-Bereich unten",
+          "reason_paid_plan": "Verfügbar für kostenpflichtige Pläne",
+          "courses_empty": "Noch keine veröffentlichten Kurse",
           "load_more": "Mehr laden",
-          "search_empty": "No pages or courses match \"{query}\"",
-          "warning_unavailable": "{destination} isn’t available to students right now, so they’re sent to Dashboard instead. Choose another destination or make it available again.",
-          "warning_course_missing": "The course you chose was deleted or unpublished, so students are sent to Dashboard instead.",
-          "course_hint_open": "Enrolled students go straight to their next lesson. Students who aren’t enrolled can join in one click.",
-          "course_hint_restricted": "Enrolled students go straight to their next lesson. This course is paid or invite-only, so students who aren’t enrolled go to Dashboard.",
-          "unavailable_badge": "Unavailable",
-          "course_type_live": "Live",
+          "search_empty": "Keine Seiten oder Kurse stimmen mit „{query}“ überein.",
+          "warning_unavailable": "{destination} ist derzeit für Studierende nicht verfügbar, daher werden sie stattdessen an das Dashboard weitergeleitet. Wählen Sie ein anderes Ziel oder machen Sie es erneut verfügbar.",
+          "warning_course_missing": "Der von Ihnen ausgewählte Kurs wurde gelöscht oder nicht veröffentlicht, daher werden die Studierenden stattdessen an das Dashboard weitergeleitet.",
+          "course_hint_open": "Eingeschriebene Schüler gehen direkt zur nächsten Unterrichtsstunde. Studierende, die nicht eingeschrieben sind, können mit einem Klick beitreten.",
+          "course_hint_restricted": "Eingeschriebene Schüler gehen direkt zur nächsten Unterrichtsstunde. Dieser Kurs ist kostenpflichtig oder nur auf Einladung möglich. Studierende, die nicht eingeschrieben sind, gehen also zum Dashboard.",
+          "unavailable_badge": "Nicht verfügbar",
+          "course_type_live": "Live-Klasse",
           "course_type_compliance": "Compliance"
         }
       },
@@ -3430,8 +3430,8 @@
       },
       "landing_page": {
         "student_home_notice": {
-          "notice": "Signed-in students skip this page and go to {destination}.",
-          "change": "Change"
+          "notice": "Angemeldete Schüler überspringen diese Seite und gehen zu {destination}.",
+          "change": "Ändern"
         }
       }
     },

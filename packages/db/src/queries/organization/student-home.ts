@@ -105,7 +105,7 @@ export async function listStudentHomeCourseOptions(
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
       .where(studentHomeCourseFilter(orgId, options.search))
-      .orderBy(asc(schema.course.displayOrder), asc(schema.course.title))
+      .orderBy(asc(schema.course.displayOrder), asc(schema.course.title), asc(schema.course.id))
       .limit(limit)
       .offset((page - 1) * limit);
 
