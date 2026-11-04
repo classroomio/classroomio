@@ -22,7 +22,6 @@ import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { mcpRateLimitResponse } from '../courses/docs';
 import {
-  DELIVERY_NOTE,
   EMAIL_TEMPLATES_CACHE_CONTROL,
   EMAIL_TEMPLATES_TAG,
   ORG_ADMIN_RULE,
@@ -107,7 +106,7 @@ export const v1EmailTemplatesRouter = new Hono()
       description: `Save the body and, optionally, the subject of a student email in one language; ${ORG_ADMIN_RULE}.`,
       tags: [EMAIL_TEMPLATES_TAG],
       responses: {
-        200: jsonResponse(`Template saved, with unsafe HTML removed; ${DELIVERY_NOTE}`, EmailTemplateResponse),
+        200: jsonResponse('Template saved, with unsafe HTML removed', EmailTemplateResponse),
         400: {
           description:
             'Invalid path or body, a placeholder this email does not allow, or an action link on an email that has none'
@@ -177,7 +176,8 @@ export const v1EmailTemplatesRouter = new Hono()
         401: errorResponses.unauthorized,
         403: organizationPlanForbiddenResponse,
         429: {
-          description: `More than 5 test emails in 15 minutes for the organization (shared with the dashboard), or: ${mcpRateLimitResponse.description}`
+          description:
+            'More than 5 test emails per organization in 15 minutes (dashboard included), or the MCP rate limit (MCP keys only)'
         },
         503: {
           description:

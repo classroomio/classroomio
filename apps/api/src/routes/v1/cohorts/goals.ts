@@ -304,8 +304,7 @@ export const v1OrgCohortGoalsRouter = new Hono()
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: {
-          description:
-            'The key lacks the public_api:* or cohort:read/write scope, or the actor is not an org admin or tutor'
+          description: 'Missing the cohort:read/write scope, or the key creator is not an org admin or tutor'
         }
       }
     }),

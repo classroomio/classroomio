@@ -32,7 +32,7 @@ export const v1CourseAnalyticsRouter = new Hono()
       tags: [TAG],
       responses: {
         200: jsonResponse(
-          `Course analytics returned; ${CACHE_NOTE}. List the students with GET /courses/{courseId}/analytics/students.`,
+          `Course analytics returned; ${CACHE_NOTE}`,
           itemWithMetaResponse(ZPublicApiCourseAnalyticsResponse, ZPublicApiCourseAnalyticsMeta)
         ),
         400: errorResponses.badRequest,

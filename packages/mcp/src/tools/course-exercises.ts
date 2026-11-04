@@ -14,7 +14,8 @@ import {
   ZPublicApiCreateCourseExercise,
   ZPublicApiExerciseTemplateParam,
   ZPublicApiExerciseTemplatesQuery,
-  ZPublicApiUpdateCourseExercise
+  ZPublicApiUpdateCourseExercise,
+  PUBLIC_API_QUESTION_TYPES_NOTE
 } from '@cio/utils/validation/public-api';
 
 import type { ClassroomIoApiClient } from '../api-client';
@@ -90,7 +91,7 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'create_course_exercise',
-    `Create an exercise on a live course from your own questions or from a templateId (from list_exercise_templates); ${COURSE_TEAM_RULE}. ${LIVE_EDIT_NOTE}`,
+    `Create an exercise on a live course from your own questions or from a templateId (from list_exercise_templates); ${COURSE_TEAM_RULE}. ${LIVE_EDIT_NOTE} ${PUBLIC_API_QUESTION_TYPES_NOTE}`,
     shape(ZCreateCourseExerciseToolInput),
     CREATE,
     async (args) => {
@@ -101,7 +102,7 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'update_course_exercise',
-    `Partially update an exercise on a live course, or change many of its questions and sections at once; ${COURSE_TEAM_RULE}. Read ids with get_course_exercise first, and ask the user before setting force.`,
+    `Partially update an exercise on a live course, or change many of its questions and sections at once; ${COURSE_TEAM_RULE}. Read ids with get_course_exercise first, and ask the user before setting force. ${PUBLIC_API_QUESTION_TYPES_NOTE}`,
     shape(ZUpdateCourseExerciseToolInput),
     UPDATE,
     async (args) => {
@@ -123,7 +124,7 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'add_exercise_question',
-    `Add one question, with its options, to an exercise on a live course; ${COURSE_TEAM_RULE}. ${LIVE_EDIT_NOTE}`,
+    `Add one question, with its options, to an exercise on a live course; ${COURSE_TEAM_RULE}. ${LIVE_EDIT_NOTE} ${PUBLIC_API_QUESTION_TYPES_NOTE}`,
     shape(ZAddExerciseQuestionToolInput),
     CREATE,
     async (args) => {
@@ -134,7 +135,7 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'update_exercise_question',
-    `Edit one question and its options; ${COURSE_TEAM_RULE}. Read ids with get_course_exercise first.`,
+    `Edit one question and its options; ${COURSE_TEAM_RULE}. Read ids with get_course_exercise first. ${PUBLIC_API_QUESTION_TYPES_NOTE}`,
     shape(ZUpdateExerciseQuestionToolInput),
     UPDATE,
     async (args) => {

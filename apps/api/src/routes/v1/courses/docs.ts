@@ -10,16 +10,14 @@ export const COURSE_TEAM_RULE = 'the key creator must be a course tutor/admin or
 export const ANY_KEY_RULE = 'any key with the public_api:* scope may call it';
 export const ORG_TEAM_RULE = 'the key creator must be an org admin or tutor';
 
-const ROLE_CHECKED_NOTE = "The key creator's role is checked on every call, so losing access ends it for the key too.";
-
 const MEMBER_FORBIDDEN =
-  'the automation actor is not a course member (directly or through a program) or org admin, or program access would exceed the Free plan student limit';
-const TEAM_FORBIDDEN = 'the automation actor is not a course tutor/admin or org admin';
+  'the key creator is not a course member or org admin, or the Free plan student limit is reached';
+const TEAM_FORBIDDEN = 'the key creator is not a course tutor/admin or org admin';
 
-const COMMENTS_OFF = 'comments are turned off for the organization, course or lesson (COMMENTS_DISABLED)';
+const COMMENTS_OFF = 'comments are off (COMMENTS_DISABLED)';
 
 const forbidden = (scope: string, actorRule: string) => ({
-  description: `The key has neither the public_api:* nor the ${scope} scope, or ${actorRule}. ${ROLE_CHECKED_NOTE}`
+  description: `Missing the ${scope} scope, or ${actorRule}`
 });
 
 export const courseForbiddenResponses = {
@@ -27,7 +25,7 @@ export const courseForbiddenResponses = {
   team: forbidden('course:certificate:read', TEAM_FORBIDDEN),
   teamWrite: forbidden(
     'course:certificate:write',
-    `${TEAM_FORBIDDEN}, or the organization is on the Basic (free) plan, where certificates are locked (UPGRADE_REQUIRED)`
+    `${TEAM_FORBIDDEN}, or the plan has no certificates (UPGRADE_REQUIRED)`
   )
 };
 
@@ -38,17 +36,17 @@ export const contentForbiddenResponses = {
   commentWrite: forbidden('course:write', `${TEAM_FORBIDDEN}, or ${COMMENTS_OFF}`),
   commentEdit: forbidden(
     'course:write',
-    `${TEAM_FORBIDDEN}, ${COMMENTS_OFF}, or the actor may not change this comment (only its author can edit it)`
+    `${COMMENTS_OFF}, or the key creator is not a course tutor/admin or org admin who wrote the comment`
   ),
   commentDelete: forbidden(
     'course:write',
-    `${TEAM_FORBIDDEN}, or ${COMMENTS_OFF}. The comment's author, a course tutor/admin or an org admin may delete it`
+    `the key creator is not the comment's author, a course tutor/admin or an org admin, or ${COMMENTS_OFF}`
   )
 };
 
 export const cloneForbiddenResponse = forbidden(
   'course:write',
-  'the automation actor is not an org admin or tutor, or the course is a template (copy templates with Use template)'
+  'the key creator is not an org admin or tutor, or the course is a template'
 );
 
 export const exerciseForbiddenResponses = {
@@ -56,7 +54,7 @@ export const exerciseForbiddenResponses = {
   write: forbidden('course:exercise:write', TEAM_FORBIDDEN),
   writeWithPlan: forbidden(
     'course:exercise:write',
-    `${TEAM_FORBIDDEN}, or a premium question type is used on the Basic plan (UPGRADE_REQUIRED)`
+    `${TEAM_FORBIDDEN}, or a question type needs a paid plan (UPGRADE_REQUIRED)`
   )
 };
 
@@ -68,7 +66,7 @@ export const submissionForbiddenResponses = {
 
 export const studentForbiddenResponse = forbidden(
   'course:student:write',
-  `${TEAM_FORBIDDEN}, or the content is still locked for the student`
+  `${TEAM_FORBIDDEN}, or the content is locked for the student`
 );
 
 export const mcpRateLimitResponse = {
@@ -76,7 +74,7 @@ export const mcpRateLimitResponse = {
 };
 
 export const forbiddenResponse = {
-  description: `The key lacks the public_api:* or course:member:read/write scope, or the automation actor is not a course tutor/admin or org admin. ${ROLE_CHECKED_NOTE}`
+  description: `Missing the course:member:read/write scope, or ${TEAM_FORBIDDEN}`
 };
 
 export const CertificateSettingsResponse = itemResponse(ZPublicApiCertificateSettingsResponse);
@@ -91,8 +89,7 @@ export const CertificateFileResponse = {
   }
 };
 
-export const LIVE_EDIT_NOTE =
-  'Changes apply immediately, also on published courses. Submissions already made are not regraded, and students submit against the current questions.';
+export const LIVE_EDIT_NOTE = 'Applies immediately, even on published courses; past submissions are not regraded.';
 
 export const studentWorkConflictResponse = {
   description: 'Students have submissions or lesson completions here; pass force=true to delete them too'

@@ -1,0 +1,50 @@
+---
+title: Exercise questions
+description: Question type ids, which ones need a paid plan, and the answer format for each type when you submit for a student.
+last_reviewed: '2026-11-04'
+---
+
+Exercises are made of questions. When you create or edit a question, its `questionTypeId` says what kind it is. When you submit an exercise for a student, each `answer` uses the format for that question's type.
+
+## Question types
+
+| `questionTypeId` | Type | Auto-graded |
+| --- | --- | --- |
+| `1` | Single choice | Yes |
+| `2` | Multiple choice | Yes |
+| `3` | Paragraph | No |
+| `4` | True/false | Yes, with `settings.correctValue` (boolean) |
+| `5` | Short answer | No |
+| `6` | Numeric | Yes |
+| `7` | Fill in the blank | Yes |
+| `8` | File upload | No |
+| `9` | Ordering | Yes |
+| `10` | Link | No |
+| `11` | Word bank | Yes |
+| `12` | Star rating | Yes |
+| `13` | Video recording | No |
+| `14` | Thumbs up/down | No, it is open-ended |
+
+- File upload, ordering, link, star rating and video recording need a paid plan. On the Basic plan they return `403` with `UPGRADE_REQUIRED`.
+- `PUBLIC` courses only accept auto-graded types.
+- A new question is single choice (`1`) unless you set a type.
+
+## Answer formats
+
+Single choice answers use `optionId`. Every other type uses `answer`:
+
+| Type | `answer` |
+| --- | --- |
+| True/false | `"true"` or `"false"` |
+| Short answer, paragraph | The plain text |
+| Multiple choice | `{"type":"CHECKBOX","optionIds":[30,31]}` |
+| Numeric | `{"type":"NUMERIC","value":2}` |
+| Fill in the blank | `{"type":"FILL_BLANK","answers":["Paris"]}` |
+| Word bank | `{"type":"WORD_BANK","filledBlanks":["Paris"]}` |
+| Matching | `{"type":"MATCHING","value":[{"left":"A","right":"1"}]}` |
+| Ordering | `{"type":"ORDERING","value":["first","second"]}` |
+| Link | `{"type":"LINK","links":["https://example.com"]}` |
+| Hotspot | `{"type":"HOTSPOT","value":[{"x":10,"y":20}]}` |
+| Star rating | `{"type":"STAR","value":4}` |
+
+The JSON formats are sent as a JSON string inside `answer`.

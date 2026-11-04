@@ -20,6 +20,8 @@ Authorization: Bearer cio_api_your_key_here
 
 The key decides which organization the request acts on, so you never pass an organization ID.
 
+The key also acts as the person who created it. Each endpoint checks that person's role on every request, so if they lose access, the key does too, and the endpoint returns `403`.
+
 ## Get your API key
 
 1. Sign in to [ClassroomIO](https://app.classroomio.com) as an **organization admin**.

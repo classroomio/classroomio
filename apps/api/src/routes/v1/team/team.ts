@@ -238,7 +238,7 @@ export const v1TeamRouter = new Hono()
         200: jsonResponse('Team member updated', TeamMemberResponse),
         400: {
           description:
-            'Invalid path or body, no fields to update, changing your own role, removing the last admin, a profile change on a pending member, or a username that is already taken'
+            'Invalid path or body, nothing to update, changing your own role, removing the last admin, a profile change on a pending member, or a taken username'
         },
         401: errorResponses.unauthorized,
         403: teamForbiddenResponse('team:write'),

@@ -14,15 +14,12 @@ export const EMAIL_TEMPLATES_CACHE_CONTROL = 'private, no-store';
 /** Admins can rename or rebrand the organization at any time, so no cache may store it. */
 export const ORGANIZATION_CACHE_CONTROL = 'private, no-store';
 
-export const DELIVERY_NOTE =
-  'students get a saved template only on a paid plan, and a non-English one only when the organization enforces that language';
-
 export const organizationForbiddenResponse = (
   scope: 'organization:read' | 'organization:write' | 'organization:domain:write'
 ) => ({
-  description: `The key has neither the public_api:* nor the ${scope} scope, or ${ORG_ADMIN_FORBIDDEN}`
+  description: `Missing the ${scope} scope, or ${ORG_ADMIN_FORBIDDEN}`
 });
 
 export const organizationPlanForbiddenResponse = {
-  description: `${organizationForbiddenResponse('organization:write').description} Also returned with code UPGRADE_REQUIRED when the organization is on the free plan.`
+  description: `${organizationForbiddenResponse('organization:write').description}, or the plan doesn't include it (UPGRADE_REQUIRED)`
 };

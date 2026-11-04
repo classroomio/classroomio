@@ -65,7 +65,7 @@ export const v1CourseStudentRouter = new Hono()
       tags: [TAG],
       responses: {
         201: jsonResponse(
-          'Submission created. It is already graded (gradingState completed, with a total) when every question can be auto-graded. Tutors are emailed, as when a student submits in the dashboard. Read the answers with GET /courses/{courseId}/submissions/{submissionId}.',
+          'Submission created; read its answers with GET /courses/{courseId}/submissions/{submissionId}.',
           itemResponse(ZPublicApiCourseSubmissionResponse)
         ),
         400: {

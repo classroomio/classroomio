@@ -9,12 +9,10 @@ export const ORG_MEMBER_RULE = 'the key creator must be a member of the organiza
 
 export const tagForbiddenResponses = {
   read: {
-    description:
-      'The key has neither the public_api:* nor the course:read scope, or the key creator is not an org member'
+    description: 'Missing the course:read scope, or the key creator is not an org member'
   },
   write: {
-    description:
-      'The key has neither the public_api:* nor the course:tag:write scope, or the key creator is not an org admin'
+    description: 'Missing the course:tag:write scope, or the key creator is not an org admin'
   }
 };
 

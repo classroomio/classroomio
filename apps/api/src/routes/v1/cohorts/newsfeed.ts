@@ -75,7 +75,7 @@ export const v1CohortNewsfeedRouter = new Hono()
         401: errorResponses.unauthorized,
         403: {
           description:
-            'The key lacks the public_api:* or cohort:read/write scope, or the actor is not a cohort tutor/admin and cohort member'
+            'Missing the cohort:read/write scope, or the key creator is not a cohort tutor/admin and cohort member'
         },
         404: { description: 'Cohort not found' }
       }
@@ -136,8 +136,7 @@ export const v1CohortNewsfeedRouter = new Hono()
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: {
-          description:
-            'The key lacks the public_api:* or cohort:read/write scope, or the actor is not a member of the cohort'
+          description: 'Missing the cohort:read/write scope, or the key creator is not a member of the cohort'
         },
         404: { description: 'Cohort or newsfeed post not found' }
       }
@@ -259,7 +258,7 @@ export const v1CohortNewsfeedRouter = new Hono()
         401: errorResponses.unauthorized,
         403: {
           description:
-            'The key lacks the public_api:* or cohort:read/write scope, or the actor is not the author, a cohort team member, or an org admin'
+            'Missing the cohort:read/write scope, or the key creator is not the author, a cohort team member, or an org admin'
         },
         404: { description: 'Cohort, newsfeed post, or comment not found' }
       }

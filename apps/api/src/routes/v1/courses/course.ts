@@ -166,7 +166,7 @@ export const v1CourseRouter = new Hono()
         ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: { description: 'The key has neither the public_api:* nor the course:read scope' },
+        403: { description: 'Missing the course:read scope' },
         404: { description: 'Course not found, or the profileId is not in your organization' }
       }
     }),
@@ -378,7 +378,7 @@ export const v1CourseRouter = new Hono()
         401: errorResponses.unauthorized,
         403: {
           description:
-            'The key lacks public_api:*, or it only holds course:tag:write and the body has fields other than tagIds or addTagIds, or tags were sent and the key creator is not an org admin'
+            'Missing the public_api:* scope (a course:tag:write key may send only tagIds or addTagIds), or a non-admin sent tags'
         },
         404: { description: 'Course not found' },
         429: mcpRateLimitResponse

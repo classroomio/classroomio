@@ -34,7 +34,7 @@ const ZPublicApiCertificateSettingsFields = z.object({
     .describe('Controls learner downloads only; the download endpoint works either way.'),
   theme: z.string().min(1).max(40).optional(),
   design: ZPublicApiCertificateDesign.optional().describe(
-    'Replaces the whole stored design instead of merging, so read it first and send the full object. Sent without theme, it sets theme to design.templateId, as the dashboard editor does.'
+    'Replaces the whole stored design, so send the full object. Without theme, theme becomes design.templateId.'
   ),
   deadline: ZPublicApiCertificateDeadline.nullable()
     .optional()

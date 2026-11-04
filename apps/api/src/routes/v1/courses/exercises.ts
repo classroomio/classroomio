@@ -188,7 +188,7 @@ export const v1CourseExercisesRouter = new Hono()
       tags: [TAG],
       responses: {
         202: jsonResponse(
-          'Notification job queued; poll GET /courses/{courseId}/exercises/{exerciseId}/notify/{jobId} with the jobId. Students without an email or who turned these emails off are skipped, and each call sends the emails again.',
+          'Notification job queued; poll GET /courses/{courseId}/exercises/{exerciseId}/notify/{jobId} with the jobId.',
           itemResponse(ZPublicApiCourseExerciseNotifyResponse)
         ),
         400: { description: 'Invalid path, or a PUBLIC course/exercise has no slug to link to' },

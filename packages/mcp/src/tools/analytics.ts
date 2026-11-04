@@ -4,23 +4,30 @@ import {
   ZPublicApiCourseAnalyticsStudentsQuery,
   ZPublicApiCourseParam,
   ZPublicApiOrgAnalyticsQuery,
-  ZPublicApiPaginationQuery
+  ZPublicApiPaginationQuery,
+  PUBLIC_API_COURSE_ANALYTICS_SECTION_NOTES,
+  PUBLIC_API_ORG_ANALYTICS_SECTION_NOTES
 } from '@cio/utils/validation/public-api';
 
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
-import { READ_ONLY, jsonContent } from './cohort-tool-text';
+import { READ_ONLY, jsonContent, withNotes } from './cohort-tool-text';
 
 const ORG_TEAM_RULE = 'the API key creator must be an org admin or tutor';
 const ORG_ADMIN_RULE = 'the API key creator must be an org admin';
 const COURSE_TEAM_RULE = 'the API key creator must be a course tutor/admin or an org admin';
 const FRESHNESS = 'each section may be up to 10 minutes old (login activity: 24 hours), and meta.generatedAt says when';
 
-export const ZOrgAnalyticsToolInput = ZPublicApiOrgAnalyticsQuery;
+export const ZOrgAnalyticsToolInput = ZPublicApiOrgAnalyticsQuery.extend({
+  include: withNotes(ZPublicApiOrgAnalyticsQuery.shape.include, PUBLIC_API_ORG_ANALYTICS_SECTION_NOTES)
+});
 export const ZListComplianceLearnersToolInput = ZPublicApiPaginationQuery;
 export const ZLearnerAnalyticsToolInput = ZPublicApiLearnerAnalyticsParam;
-export const ZCourseAnalyticsToolInput = ZPublicApiCourseParam.extend(ZPublicApiCourseAnalyticsQuery.shape);
+export const ZCourseAnalyticsToolInput = ZPublicApiCourseParam.extend({
+  ...ZPublicApiCourseAnalyticsQuery.shape,
+  include: withNotes(ZPublicApiCourseAnalyticsQuery.shape.include, PUBLIC_API_COURSE_ANALYTICS_SECTION_NOTES)
+});
 export const ZListCourseAnalyticsStudentsToolInput = ZPublicApiCourseParam.extend(
   ZPublicApiCourseAnalyticsStudentsQuery.shape
 );

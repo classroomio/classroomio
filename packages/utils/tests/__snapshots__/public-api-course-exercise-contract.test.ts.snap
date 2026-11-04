@@ -111,7 +111,7 @@ exports[`public API course exercise request contract > ZPublicApiAddExerciseQues
         },
       ],
       "default": 1,
-      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
+      "description": "Question type id from 1 to 14; the Exercise questions guide lists each type.",
     },
     "settings": {
       "additionalProperties": {},
@@ -469,7 +469,7 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
               },
             ],
             "default": 1,
-            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
+            "description": "Question type id from 1 to 14; the Exercise questions guide lists each type.",
           },
           "settings": {
             "additionalProperties": {},
@@ -501,7 +501,7 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
       "type": "string",
     },
     "templateId": {
-      "description": "A built-in template from GET /exercise-templates. The template supplies the title, description and questions, so only sectionId, lessonId and order may be sent with it.",
+      "description": "A template from GET /exercise-templates; it supplies the title, description and questions, so send only sectionId, lessonId and order with it.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
@@ -717,7 +717,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
       "type": "integer",
     },
     "questions": {
-      "description": "A diff, like the dashboard editor: send a question with its id to edit it, with id and delete: true to remove it, or without an id to add it. Options follow the same rules inside their question, and ids must belong to this exercise. Questions you leave out are unchanged. Deleting a question students have answered returns 409 unless force=true.",
+      "description": "Questions with an id are edited, or removed with delete: true; questions without an id are added; the rest stay unchanged.",
       "items": {
         "properties": {
           "delete": {
@@ -848,7 +848,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
                 "type": "number",
               },
             ],
-            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types. Defaults to 1 for a new question.",
+            "description": "Question type id from 1 to 14; the Exercise questions guide lists each type. Defaults to 1 for a new question.",
           },
           "settings": {
             "additionalProperties": {},
@@ -876,7 +876,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
       "type": "string",
     },
     "sections": {
-      "description": "Same rules as questions. A new section may carry a UUID you generate, so new questions can reference it by exerciseSectionId. A removed section must not still hold questions or be another section's go_to_section target (409).",
+      "description": "Same rules as questions; a new section may take a UUID you choose, so new questions can reference it by exerciseSectionId.",
       "items": {
         "properties": {
           "afterBehavior": {
@@ -1127,7 +1127,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateExerciseQ
           "type": "number",
         },
       ],
-      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
+      "description": "Question type id from 1 to 14; the Exercise questions guide lists each type.",
     },
     "removeOptionIds": {
       "description": "Options to remove; options you do not name are kept",
@@ -1503,7 +1503,7 @@ exports[`public API exercise question and section contract > ZPublicApiCourseExe
                 "type": "number",
               },
             ],
-            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
+            "description": "Question type id from 1 to 14; the Exercise questions guide lists each type.",
           },
           "settings": {
             "additionalProperties": {},
@@ -1837,7 +1837,7 @@ exports[`public API exercise question and section contract > ZPublicApiExerciseQ
           "type": "number",
         },
       ],
-      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
+      "description": "Question type id from 1 to 14; the Exercise questions guide lists each type.",
     },
     "settings": {
       "additionalProperties": {},

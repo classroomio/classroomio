@@ -17,7 +17,7 @@ export const ZPublicApiEmailTemplateQuery = ZPublicApiPaginationQuery.extend({
 export type TPublicApiEmailTemplateQuery = z.infer<typeof ZPublicApiEmailTemplateQuery>;
 
 const TEMPLATE_CONTENT_DESCRIPTION =
-  'HTML body. Use only the {{placeholders}} in the template\'s variables. An <a href="{{action_url}}"> link is allowed only when hasActionLink is true. Unsafe HTML is removed before saving.';
+  "HTML body using only the template's {{placeholders}}; an {{action_url}} link only when hasActionLink is true.";
 
 export const ZPublicApiSaveEmailTemplate = z.object({
   content: z.string().min(1).max(50_000).describe(TEMPLATE_CONTENT_DESCRIPTION),
@@ -40,7 +40,7 @@ export const ZPublicApiSendTestEmailTemplate = z.object({
     .min(1)
     .max(50_000)
     .optional()
-    .describe(`Draft body to test. Omit to test the current template. ${TEMPLATE_CONTENT_DESCRIPTION}`),
+    .describe('Draft HTML body to test, with the same rules as saving; omit to test the current template.'),
   subject: z.string().min(1).max(200).optional().describe('Draft subject to test. Omit to test the current subject.')
 });
 export type TPublicApiSendTestEmailTemplate = z.infer<typeof ZPublicApiSendTestEmailTemplate>;

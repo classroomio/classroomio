@@ -42,9 +42,7 @@ export const ZPublicApiReorderCourseContent = z
       .min(1)
       .max(MAX_ITEMS)
       .optional()
-      .describe(
-        "Sets each item's order and, with sectionId, moves it to another section (null for no section). Orders must be 1, 2, 3, … within each group; an id may appear once per type."
-      )
+      .describe('New order for each item; sectionId moves it (null for none). Orders run 1, 2, 3… within each group.')
   })
   // Same ordering rules as the dashboard.
   .superRefine((data, ctx) => {

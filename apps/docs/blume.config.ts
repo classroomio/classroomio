@@ -325,7 +325,7 @@ export default defineConfig({
           {
             label: 'Getting started',
             display: 'flat',
-            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination']
+            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination', '/api/exercise-questions']
           },
           { label: 'Reference', display: 'flat', items: [API_REFERENCE_ROUTE] },
           ...apiSidebarSections
