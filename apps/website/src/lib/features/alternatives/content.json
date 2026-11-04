@@ -415,38 +415,6 @@
         ],
         "viz": "editor"
       },
-      "features": {
-        "eyebrow": "Built for adoption",
-        "title": "Make Learning Part of the Customer Experience.",
-        "lead": "Customer education works best when it feels connected to the product customers already use. With ClassroomIO, you can create a branded learning destination and connect your education workflows to the wider tools and systems your team relies on.",
-        "items": [
-          {
-            "key": "domain",
-            "title": "Give your team room to work together",
-            "text": "Make it easier for your team to build, organize, and maintain customer learning content together."
-          },
-          {
-            "key": "ai",
-            "title": "Let AI draft your courses for you",
-            "text": "Turn a simple idea into structured course outlines and lesson drafts with AI. Spend less time creating from scratch and more time refining content that helps your customers learn."
-          },
-          {
-            "key": "seats",
-            "title": "Support, success and product can all write",
-            "text": "Collaborators are unlimited from $35, so the people who answer the questions can also write the courses."
-          },
-          {
-            "key": "certs",
-            "title": "Certificates for customers who finish",
-            "text": "Design one certificate and issue it when a learner completes a course."
-          },
-          {
-            "key": "api",
-            "title": "Learner data in your own tools",
-            "text": "Webhooks, Zapier and the public API send learner events to your systems. There are no native Salesforce or Gainsight connectors, but Zapier reaches most of the tools your team already uses."
-          }
-        ]
-      },
       "showcase": {
         "eyebrow": "Reporting",
         "title": "See who is learning and where people stop",
@@ -521,34 +489,6 @@
         ],
         "viz": "academy"
       },
-      "features": {
-        "title": "Your first month: AI drafting, a branded academy and analytics",
-        "lead": "AI drafting, a branded academy and analytics are part of the product from the first plan you choose.",
-        "items": [
-          {
-            "key": "ai",
-            "title": "Turn product knowledge into a course draft",
-            "text": "Give it the topic and get an outline, lessons and exercise ideas to work from. You decide what is published."
-          },
-          {
-            "key": "domain",
-            "title": "Your academy on your own address"
-          },
-          {
-            "key": "mcp",
-            "title": "Let an AI agent help build courses",
-            "text": "Connect an AI agent to draft and manage courses. LearnUpon also lists an MCP server, so compare how each fits your workflow."
-          },
-          {
-            "key": "api",
-            "title": "Send learning events to your own tools"
-          },
-          {
-            "key": "certs",
-            "title": "Certificates when customers finish"
-          }
-        ]
-      },
       "showcase": {
         "eyebrow": "The learner view",
         "title": "Customers can open a course and finish it, with an AI tutor beside them",
@@ -612,33 +552,6 @@
           ["Prove value", "See completion by course and learner, and issue a certificate at the end."]
         ],
         "viz": "catalog"
-      },
-      "features": {
-        "title": "Docebo's modules add up. ClassroomIO keeps analytics and certificates inside the plan.",
-        "lead": "Analytics and certificates sit inside the plan, so you are not adding modules as the academy grows.",
-        "items": [
-          {
-            "key": "monthly",
-            "title": "Pay month by month, or yearly"
-          },
-          {
-            "key": "domain",
-            "title": "Your own domain and branding"
-          },
-          {
-            "key": "certs",
-            "title": "Certificates in the plan"
-          },
-          {
-            "key": "analytics",
-            "title": "Reporting without a separate module"
-          },
-          {
-            "key": "capacity",
-            "title": "Room for 10,000 students at one price",
-            "text": "Early Adopter covers up to 10,000 students. There is no per-learner fee."
-          }
-        ]
       },
       "showcase": {
         "eyebrow": "Analytics",
@@ -711,33 +624,6 @@
         ],
         "viz": "editor"
       },
-      "features": {
-        "title": "Intellum quotes each product separately. Here it is one plan from $35 a month.",
-        "lead": "Certificates, branding, domain and collaborators are included from $35 a month.",
-        "items": [
-          {
-            "key": "certs",
-            "title": "Certificates, included"
-          },
-          {
-            "key": "domain",
-            "title": "Your domain and branding, included"
-          },
-          {
-            "key": "seats",
-            "title": "Your whole team can contribute"
-          },
-          {
-            "key": "ai",
-            "title": "AI drafts to get courses moving"
-          },
-          {
-            "key": "api",
-            "title": "Build your own reporting",
-            "text": "A public API with limits is included on Early Adopter, so you can build your own reporting. There is no warehouse connector."
-          }
-        ]
-      },
       "showcase": {
         "eyebrow": "Certificates",
         "title": "Certificates are included, not a separate module",
@@ -808,33 +694,6 @@
           ["Prove value", "Follow completions and issue certificates."]
         ],
         "viz": "catalog"
-      },
-      "features": {
-        "title": "Courses, certificates and your domain from $35 a month",
-        "lead": "The core of a customer academy sits in one published plan.",
-        "items": [
-          {
-            "key": "capacity",
-            "title": "Know the size of the plan before you sign"
-          },
-          {
-            "key": "domain",
-            "title": "Your academy on your own domain"
-          },
-          {
-            "key": "certs",
-            "title": "Certificates for finished courses"
-          },
-          {
-            "key": "ai",
-            "title": "AI drafts for the first version of a course"
-          },
-          {
-            "key": "api",
-            "title": "Hooks for custom workflows",
-            "text": "API, webhooks and MCP access are available for custom workflows. ClassroomIO has no headless front end option."
-          }
-        ]
       },
       "showcase": {
         "eyebrow": "Course creation",
@@ -908,32 +767,6 @@
         ],
         "viz": "editor"
       },
-      "features": {
-        "title": "Every teammate can build, and the $35 plan does not cap them",
-        "lead": "Collaborators are not capped on the $35 plan, and branding, domain and certificates are in it too.",
-        "items": [
-          {
-            "key": "seats",
-            "title": "Bring in support, success and product"
-          },
-          {
-            "key": "free",
-            "title": "Try it before anyone approves a budget"
-          },
-          {
-            "key": "domain",
-            "title": "Your domain and branding"
-          },
-          {
-            "key": "certs",
-            "title": "Certificates without moving up a tier"
-          },
-          {
-            "key": "ai",
-            "title": "A first draft from AI"
-          }
-        ]
-      },
       "showcase": {
         "eyebrow": "The learner view",
         "title": "A course player without a checkout in the way",
@@ -1000,33 +833,6 @@
           ["Prove value", "Follow progress by cohort and learner, and issue certificates."]
         ],
         "viz": "editor"
-      },
-      "features": {
-        "title": "Your domain, branding and MCP without waiting for a quote",
-        "lead": "Cohorts are there too, so a group can learn together or each person can go at their own pace.",
-        "items": [
-          {
-            "key": "domain",
-            "title": "Your domain and branding on a listed price"
-          },
-          {
-            "key": "mcp",
-            "title": "Connect an AI agent on any plan"
-          },
-          {
-            "key": "cohorts",
-            "title": "Move a group through a course together"
-          },
-          {
-            "key": "seats",
-            "title": "Everyone on your team can contribute"
-          },
-          {
-            "key": "capacity",
-            "title": "Room to grow past a small cohort",
-            "text": "Early Adopter covers up to 10,000 students. Teachfloor Startup lists 50 seats."
-          }
-        ]
       },
       "showcase": {
         "eyebrow": "Your academy, your domain",
@@ -1099,32 +905,6 @@
         ],
         "viz": "editor"
       },
-      "features": {
-        "title": "Certificates and courses are not held back for a top-tier plan",
-        "lead": "Certificates, courses and collaborators are not held back for a top-tier plan.",
-        "items": [
-          {
-            "key": "certs",
-            "title": "Certificates from the $35 plan"
-          },
-          {
-            "key": "courses",
-            "title": "A course for every product area"
-          },
-          {
-            "key": "seats",
-            "title": "Teammates can build alongside you"
-          },
-          {
-            "key": "ai",
-            "title": "A first draft from AI"
-          },
-          {
-            "key": "domain",
-            "title": "Your own domain and branding"
-          }
-        ]
-      },
       "showcase": {
         "eyebrow": "Your course library",
         "title": "Publish a course for every product area, role and release",
@@ -1148,7 +928,7 @@
       },
       "headline": "A Free Kajabi Alternative for Teaching Your SaaS Product",
       "mark": "Teaching Your SaaS Product",
-      "sub": "You\u2019re not trying to sell a course. You\u2019re trying to help customers succeed with your product. ClassroomIO helps SaaS teams create courses with AI, guide customers through product features, and deliver learning through their own branded academy.",
+      "sub": "You’re not trying to sell a course. You’re trying to help customers succeed with your product. ClassroomIO helps SaaS teams create courses with AI, guide customers through product features, and deliver learning through their own branded academy.",
       "cta": {
         "primary": ["Get started for free", "/signup"],
         "secondary": ["Book a demo", "/demo"]
@@ -1195,32 +975,6 @@
           ["Prove value", "See completions and issue certificates."]
         ],
         "viz": "catalog"
-      },
-      "features": {
-        "title": "Kajabi is priced by contacts. ClassroomIO is priced by students.",
-        "lead": "Plans are sized by how many students you have, not how many contacts are in a list.",
-        "items": [
-          {
-            "key": "capacity",
-            "title": "Pay for the students you teach"
-          },
-          {
-            "key": "free",
-            "title": "Start free, with up to 20 students"
-          },
-          {
-            "key": "certs",
-            "title": "Certificates at the end of a course"
-          },
-          {
-            "key": "domain",
-            "title": "Your domain and branding"
-          },
-          {
-            "key": "seats",
-            "title": "Add teammates without a seat count"
-          }
-        ]
       },
       "showcase": {
         "eyebrow": "Your academy",

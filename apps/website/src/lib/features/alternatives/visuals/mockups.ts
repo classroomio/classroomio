@@ -212,6 +212,14 @@ export function viz(name: string): string {
 
 export function featureViz(name: string): string {
   const strip = (inner: string) => `<div class="m-pad">${inner}</div>`;
+  const domainBlock = strip(mini('domain'));
+  const certsBlock = strip(mini('certificate'));
+  const seatsBlock = strip(mini('team'));
+  const structureBlock = strip(mini('structure'));
+  const priceBlock = strip(mini('price'));
+  const capacityBlock = strip(mini('capacity'));
+  const monthlyBlock = strip(mini('billing'));
+  const plansBlock = strip(mini('plans'));
   const table: Record<string, string> = {
     ai: strip(
       `<div class="m-chat you">Draft a lesson on importing a CSV</div><div class="m-block drafted"><span class="m-label">Draft ready · review before publishing</span><div class="m-lines"><i></i><i></i><i></i></div></div>`
@@ -219,8 +227,8 @@ export function featureViz(name: string): string {
     tutor: strip(
       `<div class="m-chat you">What triggers a run?</div><div class="m-chat">A run starts when the trigger in step 1 fires.</div>`
     ),
-    domain: strip(mini('domain')),
-    certs: strip(mini('certificate')),
+    domain: domainBlock,
+    certs: certsBlock,
     analytics: strip(
       `<div class="m-stat"><small>Completion rate</small><b>68%</b><em>Sample data</em></div><div class="m-bars" style="height:46px">${[30, 44, 38, 56, 62, 72].map((height, index) => `<i class="${index > 3 ? 'hi' : ''}" style="height:${height}%"></i>`).join('')}</div>`
     ),
@@ -230,14 +238,14 @@ export function featureViz(name: string): string {
     cohorts: strip(
       `<div class="m-meter"><i style="width:75%"></i></div><span>18 of 24 finished module 2</span><div class="m-block"><b>News feed: office hours Thursday</b></div>`
     ),
-    seats: strip(mini('team')),
-    structure: strip(mini('structure')),
-    price: strip(mini('price')),
-    capacity: strip(mini('capacity')),
+    seats: seatsBlock,
+    structure: structureBlock,
+    price: priceBlock,
+    capacity: capacityBlock,
     free: strip(
       `<div class="m-plan"><span class="m-label">Free</span><b>$0</b><span>Up to 20 students · 500K AI credits</span></div>`
     ),
-    monthly: strip(mini('billing')),
+    monthly: monthlyBlock,
     courses: strip(
       `<div class="m-line"><b>Set up your workspace</b><span class="m-pill">Published</span></div><div class="m-line"><b>Automations basics</b><span class="m-pill">Published</span></div><span class="m-pill sand" style="width:fit-content">Unlimited courses</span>`
     ),
@@ -247,7 +255,7 @@ export function featureViz(name: string): string {
     templates: strip(
       `<div class="m-block"><span class="m-label">Template</span><b>Onboarding course</b></div><span class="muted">Reuse it for each product line.</span>`
     ),
-    plans: strip(mini('plans'))
+    plans: plansBlock
   };
 
   return table[name] ?? '';
