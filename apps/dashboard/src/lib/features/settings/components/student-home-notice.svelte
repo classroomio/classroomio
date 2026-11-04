@@ -41,12 +41,14 @@
   <Alert.Root variant="information">
     <InfoIcon />
     <Alert.Description>
-      {$t('components.settings.landing_page.student_home_notice.notice', {
-        destination: destinationLabel
-      })}
-      <a class="ui:text-primary ml-1 underline" href={resolve(`${$currentOrgPath}/settings/customize-lms`, {})}>
-        {$t('components.settings.landing_page.student_home_notice.change')}
-      </a>
+      <p>
+        {$t('components.settings.landing_page.student_home_notice.notice', {
+          destination: destinationLabel
+        })}
+        <a class="ui:text-primary ml-1 underline" href={resolve(`${$currentOrgPath}/settings/customize-lms`, {})}>
+          {$t('components.settings.landing_page.student_home_notice.change')}
+        </a>
+      </p>
     </Alert.Description>
   </Alert.Root>
 {/if}
