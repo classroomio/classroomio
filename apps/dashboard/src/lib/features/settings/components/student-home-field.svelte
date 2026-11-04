@@ -6,7 +6,7 @@
   import * as Field from '@cio/ui/base/field';
   import * as Popover from '@cio/ui/base/popover';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import { BookOpen, Check, ChevronsUpDown } from '@lucide/svelte';
+  import { BookOpen, Check, ChevronsUpDown, LayoutTemplate } from '@lucide/svelte';
   import { t } from '$lib/utils/functions/translations';
   import { studentHomeApi } from '$features/org/api/student-home.svelte';
   import { LMS_DESTINATION_ICONS } from '$features/ui/navigation/lms-navigation';
@@ -34,10 +34,19 @@
   const selectedCourse = $derived(
     selectedCourseId ? (courses?.find((course) => course.id === selectedCourseId) ?? null) : null
   );
+  const defaultLabel = $derived($t('components.settings.customize_lms.student_home.option_default'));
   const normalizedQuery = $derived(query.trim().toLowerCase());
   const filteredPages = $derived(pageOptions.filter((option) => option.label.toLowerCase().includes(normalizedQuery)));
+  const showDefaultOption = $derived(normalizedQuery === '' || defaultLabel.toLowerCase().includes(normalizedQuery));
+  const showPagesGroup = $derived(filteredPages.length > 0);
+  const showCoursesGroup = $derived(normalizedQuery === '' || courses === null || courses.length > 0);
+  const hasFollowingOptions = $derived(showPagesGroup || showCoursesGroup);
   const showSearchEmpty = $derived(
-    normalizedQuery.length > 0 && filteredPages.length === 0 && (courses?.length ?? 0) === 0 && !studentHomeApi.loading
+    normalizedQuery.length > 0 &&
+      !showDefaultOption &&
+      filteredPages.length === 0 &&
+      (courses?.length ?? 0) === 0 &&
+      !studentHomeApi.loading
   );
   const courseHint = $derived(!selectedCourse ? null : selectedCourse.canSelfEnroll ? 'open' : 'restricted');
   const warningTitle = $derived(selectedPage?.label ?? selectedCourse?.title ?? '');
@@ -132,82 +141,83 @@
           </Command.Empty>
         {/if}
 
-        <Command.Group heading={$t('components.settings.customize_lms.student_home.option_default')}>
-          <Command.Item
-            value={$t('components.settings.customize_lms.student_home.option_default')}
-            onSelect={() => selectDestination(null)}
-          >
+        {#if showDefaultOption}
+          <Command.Item value={defaultLabel} onSelect={() => selectDestination(null)}>
+            <LayoutTemplate class="size-4" />
             <div class="min-w-0 flex-1">
-              <div class="truncate font-medium">
-                {$t('components.settings.customize_lms.student_home.option_default')}
-              </div>
-              <div class="ui:text-muted-foreground truncate text-xs">
-                {$t('components.settings.customize_lms.student_home.option_default_hint')}
-              </div>
+              <div class="truncate font-medium">{defaultLabel}</div>
             </div>
             {#if value === null}
               <Check class="size-4 shrink-0" />
             {/if}
           </Command.Item>
-        </Command.Group>
 
-        <Command.Group heading={$t('components.settings.customize_lms.student_home.group_pages')}>
-          {#each filteredPages as option (option.key)}
-            {@const Icon = LMS_DESTINATION_ICONS[option.key]}
-            <Command.Item
-              value={option.label}
-              disabled={option.disabled}
-              onSelect={() => selectDestination({ type: 'page', key: option.key })}
-            >
-              <Icon class="size-4" />
-              <div class="min-w-0 flex-1">
-                <div class="truncate font-medium">{option.label}</div>
-              </div>
-              {#if option.disabled && option.disabledReason}
-                <span class="ui:text-muted-foreground truncate text-xs">
-                  {disabledReasonText(option.disabledReason)}
-                </span>
-              {:else if value?.type === 'page' && value.key === option.key}
-                <Check class="size-4 shrink-0" />
-              {/if}
-            </Command.Item>
-          {/each}
-        </Command.Group>
+          {#if hasFollowingOptions}
+            <Command.Separator />
+          {/if}
+        {/if}
 
-        <Command.Group heading={$t('components.settings.customize_lms.student_home.group_courses')}>
-          {#if courses === null}
-            <div class="flex flex-col gap-2 px-2 py-1.5" aria-hidden="true">
-              <Skeleton class="h-8 w-full" />
-              <Skeleton class="h-8 w-full" />
-            </div>
-          {:else if courses.length === 0}
-            <div class="ui:text-muted-foreground px-2 py-3 text-sm">
-              {$t('components.settings.customize_lms.student_home.courses_empty')}
-            </div>
-          {:else}
-            {#each courses as course (course.id)}
+        {#if showPagesGroup}
+          <Command.Group heading={$t('components.settings.customize_lms.student_home.group_pages')}>
+            {#each filteredPages as option (option.key)}
+              {@const Icon = LMS_DESTINATION_ICONS[option.key]}
               <Command.Item
-                value={course.title}
-                onSelect={() => selectDestination({ type: 'course', courseId: course.id })}
+                value={option.label}
+                disabled={option.disabled}
+                onSelect={() => selectDestination({ type: 'page', key: option.key })}
               >
-                <BookOpen class="size-4" />
+                <Icon class="size-4" />
                 <div class="min-w-0 flex-1">
-                  <div class="truncate font-medium">{course.title}</div>
+                  <div class="truncate font-medium">{option.label}</div>
                 </div>
-                {#if course.type === 'LIVE_CLASS' || course.type === 'COMPLIANCE'}
-                  <Badge variant="secondary">
-                    {course.type === 'LIVE_CLASS'
-                      ? $t('components.settings.customize_lms.student_home.course_type_live')
-                      : $t('components.settings.customize_lms.student_home.course_type_compliance')}
-                  </Badge>
-                {/if}
-                {#if value?.type === 'course' && value.courseId === course.id}
+                {#if option.disabled && option.disabledReason}
+                  <span class="ui:text-muted-foreground truncate text-xs">
+                    {disabledReasonText(option.disabledReason)}
+                  </span>
+                {:else if value?.type === 'page' && value.key === option.key}
                   <Check class="size-4 shrink-0" />
                 {/if}
               </Command.Item>
             {/each}
-          {/if}
-        </Command.Group>
+          </Command.Group>
+        {/if}
+
+        {#if showCoursesGroup}
+          <Command.Group heading={$t('components.settings.customize_lms.student_home.group_courses')}>
+            {#if courses === null}
+              <div class="flex flex-col gap-2 px-2 py-1.5" aria-hidden="true">
+                <Skeleton class="h-8 w-full" />
+                <Skeleton class="h-8 w-full" />
+              </div>
+            {:else if courses.length === 0}
+              <div class="ui:text-muted-foreground px-2 py-3 text-sm">
+                {$t('components.settings.customize_lms.student_home.courses_empty')}
+              </div>
+            {:else}
+              {#each courses as course (course.id)}
+                <Command.Item
+                  value={course.title}
+                  onSelect={() => selectDestination({ type: 'course', courseId: course.id })}
+                >
+                  <BookOpen class="size-4" />
+                  <div class="min-w-0 flex-1">
+                    <div class="truncate font-medium">{course.title}</div>
+                  </div>
+                  {#if course.type === 'LIVE_CLASS' || course.type === 'COMPLIANCE'}
+                    <Badge variant="secondary">
+                      {course.type === 'LIVE_CLASS'
+                        ? $t('components.settings.customize_lms.student_home.course_type_live')
+                        : $t('components.settings.customize_lms.student_home.course_type_compliance')}
+                    </Badge>
+                  {/if}
+                  {#if value?.type === 'course' && value.courseId === course.id}
+                    <Check class="size-4 shrink-0" />
+                  {/if}
+                </Command.Item>
+              {/each}
+            {/if}
+          </Command.Group>
+        {/if}
       </Command.List>
     </Command.Root>
   </Popover.Content>

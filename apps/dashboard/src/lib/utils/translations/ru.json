@@ -3366,7 +3366,6 @@
           "label": "Authenticated student home",
           "placeholder": "Search pages and courses",
           "option_default": "Landing page (default)",
-          "option_default_hint": "Students see your landing page first",
           "group_pages": "Learning portal",
           "group_courses": "Courses",
           "reason_disabled_toggle": "Turn it on in the Dashboard section below",
