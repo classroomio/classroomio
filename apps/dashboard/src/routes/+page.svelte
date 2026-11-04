@@ -8,6 +8,8 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { SimpleLogoNav } from '@cio/ui/custom/simple-logo-nav';
   import { buildOrgLandingPageProps, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
+  import { PublicPluginLandingFrame } from '$features/org';
+  import { projectPublicLandingPageViewModel } from '@cio/utils/validation/organization';
   import { user, profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { resolveOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
@@ -57,6 +59,21 @@
     );
   });
 
+  const pluginViewModel = $derived.by(() => {
+    if (!data.isOrgSite || !data.org || !data.pluginDescriptor) return null;
+
+    return projectPublicLandingPageViewModel({
+      theme: data.pluginDescriptor.templateId,
+      templateId: data.pluginDescriptor.templateId,
+      org: data.org,
+      landingpage: data.org.landingpage,
+      courses: data.courses,
+      hasMoreCourses: data.hasMoreCourses,
+      isAuthenticated: Boolean($user),
+      signInLabel: authAction?.label
+    });
+  });
+
   onMount(() => {
     if (!data.isOrgSite || !data.org) {
       if (!appInitApi.loading) {
@@ -74,7 +91,9 @@
 </svelte:head>
 
 {#if data.isOrgSite && data.org}
-  {#if ThemeComponent && landingPageProps}
+  {#if data.pluginDescriptor && pluginViewModel}
+    <PublicPluginLandingFrame srcUrl={data.pluginDescriptor.entrypointUrl} viewModel={pluginViewModel} />
+  {:else if ThemeComponent && landingPageProps}
     <ThemeComponent {...landingPageProps} />
   {/if}
 {:else if hasSetupError}

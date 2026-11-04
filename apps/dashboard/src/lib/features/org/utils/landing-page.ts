@@ -19,6 +19,7 @@ import {
   resolveFooterSocialPlatform
 } from '@cio/ui/custom/org-landing-page/footer-social-platform';
 import { isAllowedHref } from '@cio/utils/validation/shared';
+import { normalizeLandingPageAppearance } from '@cio/utils/validation/organization';
 import { t } from '$lib/utils/functions/translations';
 import { resolveCourseBannerImage } from '@cio/utils/functions';
 
@@ -564,10 +565,12 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
   }
 
   const landingPage = value as LegacyLandingPageJson & Record<string, unknown>;
+  const resolvedAppearance = normalizeLandingPageAppearance(landingPage.appearance, landingPage.theme ?? 'quartz');
 
   if (landingPage.hero && landingPage.navItems && landingPage.theme) {
     return {
       theme: landingPage.theme,
+      appearance: resolvedAppearance,
       hero: normalizeHero(landingPage.hero),
       navItems: landingPage.navItems
         .map((navItem) => ({
@@ -598,6 +601,7 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
   if (landingPage.hero) {
     return {
       theme: landingPage.theme ?? 'quartz',
+      appearance: resolvedAppearance,
       hero: {
         ...normalizeHero(landingPage.hero),
         secondaryAction: landingPage.hero.secondaryAction
@@ -642,6 +646,7 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
 
   return {
     ...defaultSettings,
+    appearance: resolvedAppearance,
     hero: {
       heading: fallbackHighlight ? `${fallbackHeading} ${fallbackHighlight}` : fallbackHeading,
       subheading: fallbackSubheading,

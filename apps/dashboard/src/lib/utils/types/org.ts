@@ -1,3 +1,5 @@
+import type { LandingPageAppearance } from '@cio/utils/validation/organization';
+
 export type OrgLandingPageTheme =
   | 'minimal'
   | 'bold'
@@ -124,6 +126,7 @@ export interface OrgLandingPageHero {
 
 export interface OrgLandingPageJson {
   theme: OrgLandingPageTheme;
+  appearance?: LandingPageAppearance;
   hero: OrgLandingPageHero;
   navItems: OrgLandingPageNavItem[];
   footer: OrgLandingPageFooterConfig;

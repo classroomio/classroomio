@@ -48,6 +48,8 @@ export interface PluginResourceContext {
   selectedTemplateId?: string;
   selectedTemplateName?: string;
   selectedTemplateDocument?: unknown;
+  appearance?: unknown;
+  [key: string]: unknown;
 }
 
 export interface PluginActionEvent {

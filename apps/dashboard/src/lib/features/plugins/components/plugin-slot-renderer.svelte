@@ -10,13 +10,15 @@
     resource?: PluginResourceContext;
     className?: string;
     onAction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
+    onaction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
   }
 
-  let { target, resource, className = '', onAction }: Props = $props();
+  let { target, resource, className = '', onAction, onaction }: Props = $props();
 
+  const effectiveAction = $derived(onAction ?? onaction);
   let listedContributionKey = '';
   let contributions = $state<ResolvedContributionItem[]>([]);
-  const resourceKey = $derived(resource ? JSON.stringify(resource) : '');
+  const resourceKey = $derived(resource ? `${resource.type}:${resource.id}` : '');
 
   $effect(() => {
     const orgId = $currentOrg.id;
@@ -50,7 +52,7 @@
         className="block w-full border-0"
         {target}
         {resource}
-        {onAction}
+        onAction={effectiveAction}
       />
     {/each}
   </div>

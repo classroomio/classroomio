@@ -24,6 +24,7 @@
     backendAudience?: string;
     resource?: PluginResourceContext;
     onAction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
+    onaction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
   }
 
   let {
@@ -38,8 +39,11 @@
     target,
     backendAudience,
     resource,
-    onAction
+    onAction,
+    onaction
   }: Props = $props();
+
+  const effectiveAction = $derived(onAction ?? onaction);
 
   let iframeElement = $state<HTMLIFrameElement | null>(null);
   let bridgeHost: PluginBridgeHost | null = null;
@@ -177,8 +181,8 @@
             data: payload.data
           };
 
-          if (onAction) {
-            const result = await onAction(actionDetail);
+          if (effectiveAction) {
+            const result = await effectiveAction(actionDetail);
             return result !== undefined ? result : { handled: true };
           }
 

@@ -27,6 +27,12 @@
   import { user, profile } from '$lib/utils/store/user';
   import { getPreviewOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
   import { getPreviewOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
+  import { PublicPluginLandingFrame } from '$features/org';
+  import { classroomio } from '$lib/utils/services/api';
+  import {
+    projectPublicLandingPageViewModel,
+    type PublicLandingPluginDescriptor
+  } from '@cio/utils/validation/organization';
 
   const sectionIcons: Record<LandingSectionKey, Component> = {
     navigation: ContentIcon,
@@ -117,6 +123,35 @@
     hasInitialized = true;
   });
 
+  let pluginDescriptor = $state<PublicLandingPluginDescriptor | null>(null);
+
+  $effect(() => {
+    const queryTheme = page.url.searchParams.get('theme');
+    const isEditingNativeQueryTheme = isLandingPageTheme(queryTheme);
+    const appearance = $currentOrg.landingpage?.appearance;
+
+    if (isEditingNativeQueryTheme || appearance?.kind !== 'plugin' || !previewSiteName) {
+      pluginDescriptor = null;
+      return;
+    }
+
+    void (async () => {
+      try {
+        const res = await classroomio.organization['landing-page'].public.$get({
+          query: { siteName: previewSiteName }
+        });
+        if (res.ok) {
+          const body = await res.json();
+          if (body.success && body.data.isPlugin && body.data.pluginDescriptor) {
+            pluginDescriptor = body.data.pluginDescriptor;
+          }
+        }
+      } catch {
+        pluginDescriptor = null;
+      }
+    })();
+  });
+
   function handleClose() {
     const queryTheme = page.url.searchParams.get('theme');
     const querySuffix = isLandingPageTheme(queryTheme) ? `?theme=${encodeURIComponent(queryTheme)}` : '';
@@ -138,9 +173,15 @@
       <LandingpageEditor
         bind:settings={$landingPageSettings}
         onSave={async () => {
+          const queryTheme = page.url.searchParams.get('theme');
+          const isEditingNativeQueryTheme = isLandingPageTheme(queryTheme);
+
           const updatedLandingPage = normalizeLandingPageSettings({
             ...$landingPageSettings,
-            theme: previewTheme
+            theme: previewTheme,
+            appearance: isEditingNativeQueryTheme
+              ? { kind: 'native', theme: previewTheme }
+              : $currentOrg.landingpage?.appearance
           });
 
           await orgApi.update($currentOrg.id, {
@@ -159,7 +200,25 @@
         <Sidebar.Trigger variant="secondary" />
       </div>
 
-      <ThemeComponent {...previewProps} disableCourseLinks={true} />
+      {#if pluginDescriptor}
+        <div class="pointer-events-none">
+          <PublicPluginLandingFrame
+            srcUrl={pluginDescriptor.entrypointUrl}
+            viewModel={projectPublicLandingPageViewModel({
+              theme: pluginDescriptor.templateId,
+              templateId: pluginDescriptor.templateId,
+              org: $currentOrg,
+              landingpage: previewLandingPageSettings,
+              courses: orgApi.publicCourses,
+              hasMoreCourses: orgApi.hasMorePublicCourses,
+              isAuthenticated: Boolean($user.isLoggedIn),
+              signInLabel: authAction?.label
+            })}
+          />
+        </div>
+      {:else}
+        <ThemeComponent {...previewProps} disableCourseLinks={true} />
+      {/if}
     </Sidebar.Inset>
   </Sidebar.Provider>
 </div>

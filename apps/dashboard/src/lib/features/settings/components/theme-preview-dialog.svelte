@@ -4,6 +4,7 @@
   import XIcon from '@lucide/svelte/icons/x';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as Tabs from '@cio/ui/base/tabs';
+  import { Button } from '@cio/ui/base/button';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { mockOrgLandingPageProps, mockCourseLandingPageProps } from '@cio/ui/custom/org-landing-page';
   import {
@@ -12,34 +13,85 @@
   } from '$features/org/utils/landing-page-components';
   import { landingPageThemes } from '$features/org/utils/landing-page';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { classroomio } from '$lib/utils/services/api';
+  import { PublicPluginLandingFrame } from '$features/org';
+  import {
+    projectPublicLandingPageViewModel,
+    type PublicLandingPluginDescriptor
+  } from '@cio/utils/validation/organization';
+
+  interface Props {
+    onApplyTemplate?: (templateId: string) => Promise<void> | void;
+  }
+
+  let { onApplyTemplate }: Props = $props();
 
   type LandingPageTheme = (typeof landingPageThemes)[number];
   type PreviewView = 'home' | 'course';
 
   const validThemes = new Set<LandingPageTheme>(landingPageThemes);
 
-  const previewTheme = $derived.by<LandingPageTheme | null>(() => {
-    const value = page.url.searchParams.get('preview');
-    return value && validThemes.has(value as LandingPageTheme) ? (value as LandingPageTheme) : null;
-  });
-
-  const open = $derived(previewTheme !== null);
+  const previewParam = $derived(page.url.searchParams.get('preview'));
+  const isNative = $derived(previewParam ? validThemes.has(previewParam as LandingPageTheme) : false);
+  const previewNativeTheme = $derived(isNative ? (previewParam as LandingPageTheme) : null);
+  const isPluginPreview = $derived(Boolean(previewParam && !isNative));
+  const open = $derived(Boolean(previewParam));
 
   let previewView = $state<PreviewView>('home');
+  let pluginDescriptor = $state<PublicLandingPluginDescriptor | null>(null);
+  let isLoadingPluginDescriptor = $state(false);
 
   // Reset to the home view whenever a different theme is opened for preview.
   $effect(() => {
-    if (previewTheme) {
+    if (previewParam) {
       previewView = 'home';
     }
   });
 
+  const previewSiteName = $derived($currentOrg.siteName || page.params.slug || '');
+
+  $effect(() => {
+    if (!isPluginPreview || !previewParam || !previewSiteName) {
+      pluginDescriptor = null;
+      isLoadingPluginDescriptor = false;
+      return;
+    }
+
+    let isCancelled = false;
+    isLoadingPluginDescriptor = true;
+
+    void (async () => {
+      try {
+        const res = await classroomio.organization['landing-page'].public.$get({
+          query: { siteName: previewSiteName, templateId: previewParam }
+        });
+        if (!isCancelled && res.ok) {
+          const body = await res.json();
+          if (body.success && body.data.isPlugin && body.data.pluginDescriptor) {
+            pluginDescriptor = body.data.pluginDescriptor;
+          }
+        }
+      } catch {
+        if (!isCancelled) pluginDescriptor = null;
+      } finally {
+        if (!isCancelled) isLoadingPluginDescriptor = false;
+      }
+    })();
+
+    return () => {
+      isCancelled = true;
+    };
+  });
+
   const ThemeComponent = $derived(
-    previewTheme ? (landingPageThemeComponents[previewTheme] ?? landingPageThemeComponents.minimal) : null
+    previewNativeTheme ? (landingPageThemeComponents[previewNativeTheme] ?? landingPageThemeComponents.minimal) : null
   );
 
   const CourseComponent = $derived(
-    previewTheme ? (courseLandingPageThemeComponents[previewTheme] ?? courseLandingPageThemeComponents.minimal) : null
+    previewNativeTheme
+      ? (courseLandingPageThemeComponents[previewNativeTheme] ?? courseLandingPageThemeComponents.minimal)
+      : null
   );
 
   const orgPreviewProps = $derived({
@@ -49,7 +101,7 @@
 
   const coursePreviewProps = $derived({
     ...mockCourseLandingPageProps,
-    theme: previewTheme ?? mockCourseLandingPageProps.theme
+    theme: previewNativeTheme ?? mockCourseLandingPageProps.theme
   });
 
   function closePreview() {
@@ -67,6 +119,12 @@
       closePreview();
     }
   }
+
+  async function handleApplyCurrent() {
+    if (!previewParam || !onApplyTemplate) return;
+    await onApplyTemplate(previewParam);
+    closePreview();
+  }
 </script>
 
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
@@ -78,37 +136,67 @@
     <Dialog.Description class="sr-only">Preview the selected landing page theme with sample content.</Dialog.Description
     >
 
-    <div class="absolute top-3 right-3 z-[9999]">
+    <div class="absolute top-3 right-3 z-[9999] flex items-center gap-2">
+      {#if onApplyTemplate && previewParam}
+        <Button size="sm" onclick={handleApplyCurrent}>Use This Template</Button>
+      {/if}
       <IconButton variant="secondary" aria-label="Close preview" onclick={closePreview}>
         <XIcon size={16} />
       </IconButton>
     </div>
 
     <div class="h-full w-full overflow-y-auto">
-      <div inert>
-        {#if previewView === 'home' && ThemeComponent}
-          <ThemeComponent {...orgPreviewProps} disableCourseLinks={true} />
-        {:else if previewView === 'course' && CourseComponent}
-          <CourseComponent {...coursePreviewProps} />
+      {#if isPluginPreview}
+        {#if pluginDescriptor}
+          <PublicPluginLandingFrame
+            srcUrl={pluginDescriptor.entrypointUrl}
+            viewModel={projectPublicLandingPageViewModel({
+              theme: previewParam,
+              templateId: previewParam,
+              org: $currentOrg,
+              landingpage: orgPreviewProps,
+              courses: mockOrgLandingPageProps.courses ?? [],
+              hasMoreCourses: false,
+              isAuthenticated: false
+            })}
+          />
+        {:else if isLoadingPluginDescriptor}
+          <div class="flex h-full w-full items-center justify-center p-12">
+            <div class="text-muted-foreground flex flex-col items-center gap-3 text-sm">
+              <span class="border-primary inline-block size-6 animate-spin rounded-full border-2 border-t-transparent"
+              ></span>
+              <span>Loading template preview…</span>
+            </div>
+          </div>
         {/if}
-      </div>
+      {:else}
+        <div inert>
+          {#if previewView === 'home' && ThemeComponent}
+            <ThemeComponent {...orgPreviewProps} disableCourseLinks={true} />
+          {:else if previewView === 'course' && CourseComponent}
+            <CourseComponent {...coursePreviewProps} />
+          {/if}
+        </div>
+      {/if}
     </div>
 
-    <Tabs.Root
-      bind:value={previewView}
-      class="pointer-events-none absolute bottom-6 left-1/2 z-[9999] -translate-x-1/2"
-    >
-      <Tabs.List
-        aria-label={$t('settings.landing_page.preview_tabs.label')}
-        class="ui:bg-background/90 ui:supports-[backdrop-filter]:bg-background/70 pointer-events-auto h-10 gap-1 rounded-full border p-1 shadow-lg backdrop-blur"
+    {#if !isPluginPreview}
+      <Tabs.Root
+        bind:value={previewView}
+        class="pointer-events-none absolute bottom-6 left-1/2 z-[9999] -translate-x-1/2"
       >
-        <Tabs.Trigger value="home" class="rounded-full px-4">
-          {$t('settings.landing_page.preview_tabs.home')}
-        </Tabs.Trigger>
-        <Tabs.Trigger value="course" class="rounded-full px-4">
-          {$t('settings.landing_page.preview_tabs.course')}
-        </Tabs.Trigger>
-      </Tabs.List>
-    </Tabs.Root>
+        <Tabs.List
+          aria-label={$t('settings.landing_page.preview_tabs.label')}
+          class="ui:bg-background/90 ui:supports-[backdrop-filter]:bg-background/70 pointer-events-auto h-10 gap-1 rounded-full border p-1 shadow-lg backdrop-blur"
+        >
+          <Tabs.Trigger value="home" class="rounded-full px-4">
+            {$t('settings.landing_page.preview_tabs.home')}
+          </Tabs.Trigger>
+          <Tabs.Trigger value="course" class="rounded-full px-4">
+            {$t('settings.landing_page.preview_tabs.course')}
+          </Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root>
+    {/if}
   </Dialog.Content>
 </Dialog.Root>
