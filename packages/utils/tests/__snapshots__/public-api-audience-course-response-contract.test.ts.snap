@@ -306,6 +306,79 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
 }
 `;
 
+exports[`public API audience and course response contract > ZPublicApiCertificateVerificationResponse keeps its published shape > ZPublicApiCertificateVerificationResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "courseTitle": {
+      "type": "string",
+    },
+    "expiresAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Set for compliance courses only; null means the certificate never expires.",
+    },
+    "issuedAt": {
+      "type": "string",
+    },
+    "organizationName": {
+      "type": "string",
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "status": {
+      "description": "revoked when the student was deleted from the course or the organization, or their course progress was reset (archiving a student or resetting a compliance cycle does not revoke); otherwise expired once expiresAt has passed; otherwise valid.",
+      "enum": [
+        "valid",
+        "expired",
+        "revoked",
+      ],
+      "type": "string",
+    },
+    "studentName": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "The current name on the student profile; null when it is empty.",
+    },
+    "verificationId": {
+      "type": "string",
+    },
+  },
+  "required": [
+    "verificationId",
+    "status",
+    "studentName",
+    "courseTitle",
+    "organizationName",
+    "issuedAt",
+    "expiresAt",
+    "revokedAt",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`public API audience and course response contract > ZPublicApiCourseDetailResponse keeps its published shape > ZPublicApiCourseDetailResponse 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -4628,6 +4701,22 @@ exports[`public API audience and course response contract > ZPublicApiIssuedCert
     "certificateEarnedAt": {
       "type": "string",
     },
+    "certificateStatus": {
+      "anyOf": [
+        {
+          "enum": [
+            "valid",
+            "expired",
+            "revoked",
+          ],
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Status of that certificate, as the verify endpoint reports it; null when verificationId is null.",
+    },
     "certificationEmailSentAt": {
       "anyOf": [
         {
@@ -4671,6 +4760,17 @@ exports[`public API audience and course response contract > ZPublicApiIssuedCert
         },
       ],
     },
+    "verificationId": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Id for the public verify endpoint, for the most recently issued certificate; null when the certificate has no verification record.",
+    },
   },
   "required": [
     "memberId",
@@ -4679,6 +4779,8 @@ exports[`public API audience and course response contract > ZPublicApiIssuedCert
     "email",
     "certificateEarnedAt",
     "certificationEmailSentAt",
+    "verificationId",
+    "certificateStatus",
   ],
   "type": "object",
 }

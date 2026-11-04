@@ -15,6 +15,7 @@ import {
   type OrgComplianceLearnerRow
 } from '@cio/db/queries/course/compliance';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
+import { createCourseCertificateVerification } from '@cio/db/queries/course/certificate-verification';
 import { getCourseById } from '@cio/db/queries/course';
 import { getExerciseMaxPoints, getStudentExerciseSubmissions } from '@cio/db/queries/course/exercise-results';
 
@@ -477,7 +478,7 @@ export async function syncComplianceProgressFromSubmission(
 
     if (!course.certificate?.isDownloadable) return null;
 
-    return createCourseCertificateIssue(
+    const issue = await createCourseCertificateIssue(
       {
         courseId,
         profileId: profile.id,
@@ -488,6 +489,22 @@ export async function syncComplianceProgressFromSubmission(
       },
       tx
     );
+
+    if (!issue) return null;
+
+    await createCourseCertificateVerification(
+      {
+        courseId,
+        profileId: profile.id,
+        groupMemberId,
+        certificateIssueId: issue.id,
+        issuedAt: issue.issuedAt,
+        expiresAt: issue.expiresAt
+      },
+      tx
+    );
+
+    return issue;
   });
 
   await emitComplianceCompletionWebhookEvents({

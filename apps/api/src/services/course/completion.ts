@@ -12,6 +12,8 @@ import {
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
 import { claimMemberCertificateEarned, claimMemberCompleted } from '@cio/db/queries/course/people';
+import { createCourseCertificateVerification } from '@cio/db/queries/course/certificate-verification';
+import { db } from '@cio/db/drizzle';
 import { captureServerEvent } from '@cio/core/services/posthog';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
@@ -117,6 +119,30 @@ export function buildCertificateWebhookInput(params: {
 }
 
 /**
+ * Claims the member's certificate and, for non-compliance courses, creates its verification record in the same
+ * transaction. Returns whether this call won the claim.
+ */
+async function claimCertificate(params: {
+  courseId: string;
+  profileId: string;
+  groupMemberId: string;
+  courseType: TCourseCertificationRow['type'];
+  earnedAt: string;
+}): Promise<boolean> {
+  const { courseId, profileId, groupMemberId, courseType, earnedAt } = params;
+
+  return db.transaction(async (tx) => {
+    const didClaim = await claimMemberCertificateEarned(groupMemberId, earnedAt, tx);
+
+    if (!didClaim || courseType === 'COMPLIANCE') return didClaim;
+
+    await createCourseCertificateVerification({ courseId, profileId, groupMemberId, issuedAt: earnedAt }, tx);
+
+    return true;
+  });
+}
+
+/**
  * Evaluates certification eligibility. On first eligibility, persists
  * `certificateEarnedAt` and fires the completion email (non-blocking).
  */
@@ -191,7 +217,13 @@ export async function evaluateCourseCertification(
   }
 
   const earnedAt = new Date().toISOString();
-  const didClaimCertificate = await claimMemberCertificateEarned(groupMemberId, earnedAt);
+  const didClaimCertificate = await claimCertificate({
+    courseId,
+    profileId,
+    groupMemberId,
+    courseType: courseRow.type,
+    earnedAt
+  });
   certificateEarnedAt = earnedAt;
 
   if (didClaimCertificate) {

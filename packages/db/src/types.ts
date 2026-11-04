@@ -67,6 +67,8 @@ export type TCourseCompletionNotificationEvent = typeof schema.courseCompletionN
 export type TNewCourseCompletionNotificationEvent = typeof schema.courseCompletionNotificationEvent.$inferInsert;
 export type TCourseCertificateIssue = typeof schema.courseCertificateIssue.$inferSelect;
 export type TNewCourseCertificateIssue = typeof schema.courseCertificateIssue.$inferInsert;
+export type TCourseCertificateVerification = typeof schema.courseCertificateVerification.$inferSelect;
+export type TNewCourseCertificateVerification = typeof schema.courseCertificateVerification.$inferInsert;
 
 export type TVideoTranscripts = typeof schema.videoTranscripts.$inferSelect;
 export type TNewVideoTranscripts = typeof schema.videoTranscripts.$inferInsert;

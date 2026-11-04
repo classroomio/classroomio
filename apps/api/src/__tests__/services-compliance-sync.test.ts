@@ -28,6 +28,10 @@ vi.mock('@cio/db/queries/course/people', () => ({
   getProfileByGroupMemberId: vi.fn()
 }));
 
+vi.mock('@cio/db/queries/course/certificate-verification', () => ({
+  createCourseCertificateVerification: vi.fn()
+}));
+
 vi.mock('@cio/db/queries/group/group', () => ({
   getUserCourseRole: vi.fn()
 }));
@@ -58,7 +62,9 @@ vi.mock('@api/services/course/certificate-plan', () => ({
 
 import { db } from '@cio/db/drizzle';
 import { getCourseById } from '@cio/db/queries/course';
+import { createCourseCertificateVerification } from '@cio/db/queries/course/certificate-verification';
 import {
+  createCourseCertificateIssue,
   createCourseCompletionRecord,
   getLatestComplianceRecordsByProfiles,
   getStudentCourseMembersForCompliance,
@@ -141,6 +147,56 @@ describe('syncComplianceProgressFromSubmission', () => {
       }),
       expect.anything()
     );
+  });
+
+  describe('when the certificate is downloadable', () => {
+    const issue = {
+      id: 'issue-1',
+      issuedAt: '2026-03-01 10:00:00+00',
+      expiresAt: '2027-03-01 10:00:00+00'
+    };
+
+    beforeEach(() => {
+      vi.mocked(getCourseById).mockResolvedValue([
+        {
+          id: COURSE_ID,
+          type: 'COMPLIANCE',
+          compliance: { retakeIntervalMonths: 12 },
+          certificate: { deadline: '2026-12-31T00:00:00.000Z', isDownloadable: true }
+        }
+      ] as unknown as Awaited<ReturnType<typeof getCourseById>>);
+    });
+
+    it("creates the cycle's verification record from its issue, in the same transaction", async () => {
+      const tx = { tx: true };
+      vi.mocked(db.transaction).mockImplementation(((callback: (client: unknown) => Promise<unknown>) =>
+        callback(tx)) as unknown as typeof db.transaction);
+      vi.mocked(createCourseCertificateIssue).mockResolvedValue(
+        issue as unknown as Awaited<ReturnType<typeof createCourseCertificateIssue>>
+      );
+
+      await syncComplianceProgressFromSubmission(COURSE_ID, GROUP_MEMBER_ID, EXERCISE_ID);
+
+      expect(createCourseCertificateVerification).toHaveBeenCalledWith(
+        {
+          courseId: COURSE_ID,
+          profileId: PROFILE_ID,
+          groupMemberId: GROUP_MEMBER_ID,
+          certificateIssueId: 'issue-1',
+          issuedAt: issue.issuedAt,
+          expiresAt: issue.expiresAt
+        },
+        tx
+      );
+    });
+
+    it('creates no record when the cycle was already issued', async () => {
+      vi.mocked(createCourseCertificateIssue).mockResolvedValue(null);
+
+      await syncComplianceProgressFromSubmission(COURSE_ID, GROUP_MEMBER_ID, EXERCISE_ID);
+
+      expect(createCourseCertificateVerification).not.toHaveBeenCalled();
+    });
   });
 });
 

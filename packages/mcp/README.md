@@ -178,7 +178,7 @@ The tools act as the person who created the key, with the same permissions that 
 
 `update_course_certificate` is a partial update: fields you leave out keep their values, and `null` clears `deadline` or `emailMessage`. `design` is replaced as a whole object, so read it first and send the full design. `deadline` must be an ISO 8601 datetime with a timezone, for example `2026-12-31T23:59:59Z`. Like the dashboard, it needs a paid plan: on the Basic (free) plan it fails with 403 `UPGRADE_REQUIRED`.
 
-`list_course_certificates` lists the students who earned the course certificate, with when they earned it and when the certificate email was sent. It takes `page` and `limit` (default 20, max 100) and an optional `search` on name or email. `download_course_certificate` takes a `memberId` from that list and a `format` of `pdf` (default) or `png`.
+`list_course_certificates` lists the students who earned the course certificate, with when they earned it, when the certificate email was sent, and the `verificationId` and `certificateStatus` (`valid`, `expired` or `revoked`; both `null` when the certificate has no verification record) of their latest certificate. It takes `page` and `limit` (default 20, max 100) and an optional `search` on name or email. `download_course_certificate` takes a `memberId` from that list and a `format` of `pdf` (default) or `png`. Anyone can check a certificate with `GET /public-api/v1/certificates/verify/{verificationId}`, without a key.
 
 What the tools cover compared with the dashboard:
 

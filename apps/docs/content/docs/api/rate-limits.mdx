@@ -54,6 +54,10 @@ MCP usage also has per-minute limits for each connected app or MCP key (`cio_mcp
 
 Wait up to a minute, because the limit counts the last 60 seconds, then retry.
 
+### Certificate checks
+
+`GET /certificates/verify/{verificationId}` needs no API key, so it is limited per IP address instead: **30 requests per minute**. Going over returns a `429` in the same shape, with the same headers, as the per-key limit. If the limit can't be checked, the request is refused with `503` and code `RATE_LIMIT_UNAVAILABLE` rather than let through.
+
 ## Handle a 429
 
 Wait for `Retry-After` seconds, then retry. When the header is missing, as it is for MCP usage limits, this waits 60 seconds:
@@ -79,7 +83,7 @@ To stay under the limit:
 - Cache responses that don't change often.
 
 :::note[Self-hosted instances]
-Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, requests go through without a limit.
+Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, requests go through without a limit, except certificate checks and test emails, which return `503`.
 :::
 
 ## Next steps

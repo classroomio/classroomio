@@ -9,7 +9,8 @@ import {
   ZPublicApiCourseParam,
   ZPublicApiDownloadCourseCertificateQuery,
   ZPublicApiListCourseCertificatesQuery,
-  ZPublicApiUpdateCourseCertificate
+  ZPublicApiUpdateCourseCertificate,
+  ZPublicApiVerifyCertificateParam
 } from '../src/validation/public-api';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
@@ -102,7 +103,8 @@ describe('public certificate contract', () => {
     ['ZPublicApiUpdateCourseCertificate', ZPublicApiUpdateCourseCertificate],
     ['ZPublicApiListCourseCertificatesQuery', ZPublicApiListCourseCertificatesQuery],
     ['ZPublicApiCourseCertificateMemberParam', ZPublicApiCourseCertificateMemberParam],
-    ['ZPublicApiDownloadCourseCertificateQuery', ZPublicApiDownloadCourseCertificateQuery]
+    ['ZPublicApiDownloadCourseCertificateQuery', ZPublicApiDownloadCourseCertificateQuery],
+    ['ZPublicApiVerifyCertificateParam', ZPublicApiVerifyCertificateParam]
   ])('keeps the %s request contract stable', (_name, schema) => {
     expect(z.toJSONSchema(schema, { io: 'input' })).toMatchSnapshot();
   });
@@ -122,6 +124,13 @@ describe('ZPublicApiListCourseCertificatesQuery', () => {
 
   it('does not accept a role filter', () => {
     expect(ZPublicApiListCourseCertificatesQuery.parse({ roleId: '2' })).not.toHaveProperty('roleId');
+  });
+});
+
+describe('certificate verify input', () => {
+  it('requires a uuid verification id', () => {
+    expect(ZPublicApiVerifyCertificateParam.safeParse({ verificationId: 'abc' }).success).toBe(false);
+    expect(ZPublicApiVerifyCertificateParam.safeParse({ verificationId: COURSE_ID }).success).toBe(true);
   });
 });
 

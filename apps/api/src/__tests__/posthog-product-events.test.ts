@@ -34,6 +34,12 @@ vi.mock('@cio/db/queries/course/people', () => ({
   claimMemberCompleted: mocks.claimMemberCompleted
 }));
 vi.mock('@cio/db/queries/organization', () => ({ getActiveOrganizationPlan: mocks.getActiveOrganizationPlan }));
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn(async (callback: (tx: unknown) => unknown) => callback({})) }
+}));
+vi.mock('@cio/db/queries/course/certificate-verification', () => ({
+  createCourseCertificateVerification: vi.fn()
+}));
 vi.mock('@cio/db/queries/lesson', () => ({
   getLessonById: mocks.getLessonById,
   getLessonCompletion: mocks.getLessonCompletion,

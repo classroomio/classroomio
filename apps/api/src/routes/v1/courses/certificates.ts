@@ -104,7 +104,7 @@ export const v1CourseCertificatesRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the students who earned a course's certificate, with when they earned it and when its email was sent; ${COURSE_TEAM_RULE}.`,
+      description: `List the students who earned a course's certificate, with when they earned it, when its email was sent, and the verificationId and certificateStatus of their latest certificate; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse(

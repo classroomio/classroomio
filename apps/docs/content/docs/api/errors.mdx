@@ -33,6 +33,7 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 | `409` | The request conflicts with the resource's current state |
 | `429` | Too many requests. See [Rate limits](/api/rate-limits) |
 | `500` | Something went wrong on our side |
+| `503` | Something the request depends on was unavailable, so it was refused: the rate limit for certificate checks or test emails couldn't be checked (`RATE_LIMIT_UNAVAILABLE`), MCP usage couldn't be recorded (`AUTOMATION_USAGE_UNAVAILABLE`), or a test email couldn't be queued. Retry shortly |
 
 ## Common errors
 

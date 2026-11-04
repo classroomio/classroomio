@@ -1517,6 +1517,49 @@ export const groupmember = pgTable(
   ]
 );
 
+export const courseCertificateVerification = pgTable(
+  'course_certificate_verification',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    courseId: uuid('course_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    groupMemberId: uuid('group_member_id'),
+    certificateIssueId: uuid('certificate_issue_id'),
+    issuedAt: timestamp('issued_at', { withTimezone: true, mode: 'string' }).notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_certificate_verification_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'course_certificate_verification_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.groupMemberId],
+      foreignColumns: [groupmember.id],
+      name: 'course_certificate_verification_group_member_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.certificateIssueId],
+      foreignColumns: [courseCertificateIssue.id],
+      name: 'course_certificate_verification_certificate_issue_id_fkey'
+    }).onDelete('set null'),
+    uniqueIndex('course_certificate_verification_certificate_issue_id_key').on(table.certificateIssueId),
+    index('idx_course_certificate_verification_course_profile').on(table.courseId, table.profileId),
+    index('idx_course_certificate_verification_group_member_id').on(table.groupMemberId)
+  ]
+);
+
 export const courseInvite = pgTable(
   'course_invite',
   {

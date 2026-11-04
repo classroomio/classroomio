@@ -24,6 +24,13 @@ vi.mock('@cio/db/queries/course/people', () => ({
 
 vi.mock('@cio/core/services/webhook/emit', () => ({ emitWebhookEvent: mocks.emitWebhookEvent }));
 
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn(async (callback: (tx: unknown) => unknown) => callback({})) }
+}));
+vi.mock('@cio/db/queries/course/certificate-verification', () => ({
+  createCourseCertificateVerification: vi.fn()
+}));
+
 vi.mock('@cio/db/queries/tag', () => ({
   getCourseOrganizationId: mocks.getCourseOrganizationId
 }));

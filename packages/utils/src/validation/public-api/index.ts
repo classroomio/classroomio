@@ -3,6 +3,8 @@ export * from './analytics-responses';
 export * from './asset';
 export * from './audience';
 export * from './audience-responses';
+export * from './certificate-verification';
+export * from './certificate-verification-responses';
 export * from './cohort';
 export * from './cohort-course';
 export * from './cohort-goal';

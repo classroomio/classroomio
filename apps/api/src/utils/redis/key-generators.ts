@@ -94,6 +94,10 @@ export const publicApiFailedAuthKeyGenerator = (c: Context): string => {
   return `public_api_failed_auth:${extractClientIp(c)}`;
 };
 
+export const certificateVerifyKeyGenerator = (c: Context): string => {
+  return `certificate_verify:${extractClientIp(c)}`;
+};
+
 /**
  * Generate rate limit key based on IP only
  */

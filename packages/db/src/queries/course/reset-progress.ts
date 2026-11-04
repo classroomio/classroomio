@@ -3,6 +3,7 @@ import * as schema from '@db/schema';
 import { and, count, eq, inArray, sql } from '@db/drizzle';
 import type { DbOrTxClient } from '@db/drizzle';
 import { db } from '@db/drizzle';
+import { revokeStudentCourseCertificateVerifications } from '@db/queries/course/certificate-verification';
 
 export type StudentCourseProgressImpactCounts = {
   completedLessons: number;
@@ -284,6 +285,9 @@ export async function deleteStudentCourseProgress(
       and(eq(schema.courseCompletionRecord.courseId, courseId), eq(schema.courseCompletionRecord.profileId, profileId))
     )
     .returning({ id: schema.courseCompletionRecord.id });
+
+  const revokedAt = new Date().toISOString();
+  await revokeStudentCourseCertificateVerifications(courseId, profileId, revokedAt, tx);
 
   const deletedCertificateIssues = await tx
     .delete(schema.courseCertificateIssue)

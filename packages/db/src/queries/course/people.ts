@@ -13,7 +13,7 @@ import {
   type TCoursePeopleSortBy,
   type TCoursePeopleSortOrder
 } from '@cio/utils/validation/course';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 import { isExerciseCompletedSql } from '@db/queries/course/progression';
 import { deleteStudentCourseProgress } from '@db/queries/course/reset-progress';
 
@@ -627,9 +627,13 @@ export async function setMemberCertificateEarned(memberId: string, earnedAt: str
  * Returns true when this caller won the claim, so concurrent evaluations issue the
  * certificate (and downstream email) exactly once.
  */
-export async function claimMemberCertificateEarned(memberId: string, earnedAt: string): Promise<boolean> {
+export async function claimMemberCertificateEarned(
+  memberId: string,
+  earnedAt: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
   try {
-    const updated = await db
+    const updated = await dbClient
       .update(schema.groupmember)
       .set({ certificateEarnedAt: earnedAt })
       .where(and(eq(schema.groupmember.id, memberId), isNull(schema.groupmember.certificateEarnedAt)))

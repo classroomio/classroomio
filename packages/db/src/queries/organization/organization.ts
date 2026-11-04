@@ -27,6 +27,7 @@ import {
   or,
   sql
 } from 'drizzle-orm';
+import { revokeCertificateVerificationsForGroupMembers } from '@db/queries/course/certificate-verification';
 
 import { PLAN } from '@cio/utils/plans';
 import { ROLE } from '@cio/utils/constants';
@@ -578,6 +579,13 @@ export const deleteGroupMembershipsForOrgProfiles = async (
       .select({ id: schema.group.id })
       .from(schema.group)
       .where(eq(schema.group.organizationId, orgId));
+    const removedMemberIds = dbClient
+      .select({ id: schema.groupmember.id })
+      .from(schema.groupmember)
+      .where(and(inArray(schema.groupmember.profileId, profileIds), inArray(schema.groupmember.groupId, orgGroupIds)));
+    const revokedAt = new Date().toISOString();
+
+    await revokeCertificateVerificationsForGroupMembers(removedMemberIds, revokedAt, dbClient);
 
     const removed = await dbClient
       .delete(schema.groupmember)

@@ -5,6 +5,10 @@ export const DEFAULT_MAX_REQUESTS = 100;
 
 export const PUBLIC_API_FAILED_AUTH_MAX_REQUESTS = 1000;
 
+export const CERTIFICATE_VERIFY_MAX_REQUESTS = 30;
+
+export const CERTIFICATE_VERIFY_MIN_RESPONSE_MS = 200;
+
 export const RATE_LIMIT_KEY_PREFIX = 'rate_limit:';
 
 export const DEFAULT_RATE_LIMITER_OPTIONS = {

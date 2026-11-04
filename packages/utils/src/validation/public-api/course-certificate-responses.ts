@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import { ZPublicApiCertificateDesign } from './course-certificate';
+import { ZPublicApiCertificateVerificationStatus } from './certificate-verification';
 
 // Response shapes for OpenAPI docs only; handlers don't validate against them. Timestamps are Postgres text, not strict ISO.
 export const ZPublicApiCertificateSettingsResponse = z.object({
@@ -20,5 +21,14 @@ export const ZPublicApiIssuedCertificateListItemResponse = z.object({
   fullname: z.string().nullable(),
   email: z.string().nullable(),
   certificateEarnedAt: z.string(),
-  certificationEmailSentAt: z.string().nullable()
+  certificationEmailSentAt: z.string().nullable(),
+  verificationId: z
+    .string()
+    .nullable()
+    .describe(
+      'Id for the public verify endpoint, for the most recently issued certificate; null when the certificate has no verification record.'
+    ),
+  certificateStatus: ZPublicApiCertificateVerificationStatus.nullable().describe(
+    'Status of that certificate, as the verify endpoint reports it; null when verificationId is null.'
+  )
 });

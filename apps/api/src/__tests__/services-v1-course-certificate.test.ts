@@ -25,6 +25,10 @@ vi.mock('@cio/db/queries/course/people', () => ({
   getPaginatedCourseMembers: vi.fn()
 }));
 
+vi.mock('@cio/db/queries/course/certificate-verification', () => ({
+  getLatestCertificateVerificationsForMembers: vi.fn()
+}));
+
 vi.mock('@cio/core/services/course/course', () => ({
   ensureProgramCourseAccess: vi.fn(),
   updateCourse: vi.fn()
@@ -55,6 +59,7 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseById, getCourseByIdForUpdate } from '@cio/db/queries/course/course';
 import { getCourseMember, getPaginatedCourseMembers } from '@cio/db/queries/course/people';
+import { getLatestCertificateVerificationsForMembers } from '@cio/db/queries/course/certificate-verification';
 import { ensureProgramCourseAccess, updateCourse } from '@cio/core/services/course/course';
 import { assembleCertificateRender } from '@api/services/course/certificate';
 import { assertCertificatesEnabled } from '@api/services/course/certificate-plan';
@@ -146,6 +151,7 @@ describe('services/v1/courses/certificates', () => {
     );
     vi.mocked(getCourseMember).mockResolvedValue(earnedMember as unknown as TMemberResult);
     vi.mocked(getPaginatedCourseMembers).mockResolvedValue(emptyPage);
+    vi.mocked(getLatestCertificateVerificationsForMembers).mockResolvedValue([]);
     vi.mocked(assembleCertificateRender).mockResolvedValue({
       design: DEFAULT_CERTIFICATE_DESIGN,
       data: { courseName: 'Intro Course' }
@@ -446,11 +452,54 @@ describe('services/v1/courses/certificates', () => {
             fullname: 'Ada',
             email: 'ada@example.com',
             certificateEarnedAt: '2026-01-01T00:00:00Z',
-            certificationEmailSentAt: null
+            certificationEmailSentAt: null,
+            verificationId: null,
+            certificateStatus: null
           }
         ],
         pagination: { page: 2, limit: 10, total: 11, totalPages: 2 }
       });
+    });
+
+    it("adds each member's latest verification id and status, looked up for this page only", async () => {
+      const earned = (id: string) => ({
+        id,
+        profileId: `profile-${id}`,
+        email: null,
+        certificateEarnedAt: '2026-01-01T00:00:00Z',
+        certificationEmailSentAt: null,
+        profile: { fullname: id, email: null }
+      });
+      vi.mocked(getPaginatedCourseMembers).mockResolvedValue({
+        items: [earned('member-1'), earned('member-2'), earned('member-3')],
+        page: 1,
+        limit: 20,
+        total: 3,
+        totalPages: 1
+      } as unknown as TListResult);
+      vi.mocked(getLatestCertificateVerificationsForMembers).mockResolvedValue([
+        { id: 'verify-1', groupMemberId: 'member-1', issuedAt: '2026-01-01', expiresAt: null, revokedAt: null },
+        { id: 'verify-2', groupMemberId: 'member-2', issuedAt: '2025-01-01', expiresAt: '2025-06-01', revokedAt: null }
+      ]);
+
+      const result = await listPublicApiCourseCertificatesService(ORG_ID, ACTOR_ID, params, firstPage);
+
+      expect(getLatestCertificateVerificationsForMembers).toHaveBeenCalledWith(COURSE_ID, [
+        'member-1',
+        'member-2',
+        'member-3'
+      ]);
+      expect(
+        result.items.map(({ memberId, verificationId, certificateStatus }) => ({
+          memberId,
+          verificationId,
+          certificateStatus
+        }))
+      ).toEqual([
+        { memberId: 'member-1', verificationId: 'verify-1', certificateStatus: 'valid' },
+        { memberId: 'member-2', verificationId: 'verify-2', certificateStatus: 'expired' },
+        { memberId: 'member-3', verificationId: null, certificateStatus: null }
+      ]);
     });
   });
 

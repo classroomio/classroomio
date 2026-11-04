@@ -12,6 +12,7 @@ import { v1McpUsageMiddleware } from '@api/middlewares/v1-mcp-usage';
 import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/utils/redis/key-generators';
 import { v1AnalyticsRouter } from './analytics';
 import { v1AudienceRouter } from './audience';
+import { v1KeylessCertificatesRouter } from './certificates';
 import { v1CohortsRouter } from './cohorts';
 import { v1CourseTemplatesRouter } from './course-templates';
 import { v1CoursesRouter } from './courses';
@@ -23,6 +24,7 @@ import { v1TagsRouter } from './tags';
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
+  .route('/certificates', v1KeylessCertificatesRouter)
   .use(
     '*',
     createAuthenticationFailureRateLimiter({

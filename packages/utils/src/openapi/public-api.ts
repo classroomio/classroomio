@@ -24,6 +24,10 @@ function applySecurityToOperations(paths: Record<string, unknown>) {
         continue;
       }
 
+      if (Array.isArray((operation as Record<string, unknown>).security)) {
+        continue;
+      }
+
       (operation as Record<string, unknown>).security = [{ [PUBLIC_API_BEARER_SCHEME]: [] }];
     }
   }
@@ -79,6 +83,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'PATCH /public-api/v1/courses/{courseId}/certificate': 'Update course certificate settings',
   'GET /public-api/v1/courses/{courseId}/certificates': 'List issued course certificates',
   'GET /public-api/v1/courses/{courseId}/certificates/{memberId}/download': 'Download an issued course certificate',
+  'GET /public-api/v1/certificates/verify/{verificationId}': 'Verify a certificate',
   'GET /public-api/v1/courses/{courseId}/sections': 'List course sections',
   'POST /public-api/v1/courses/{courseId}/sections': 'Create a course section',
   'PUT /public-api/v1/courses/{courseId}/sections/{sectionId}': 'Update a course section',
@@ -232,7 +237,10 @@ const OPERATION_TAGS = [
   { name: 'Exercise Sections', description: 'Manage the sections of a course exercise.' },
   { name: 'Exercise Templates', description: 'Browse built-in exercise templates.' },
   { name: 'Course Submissions', description: 'Review and grade exercise submissions and read the course gradebook.' },
-  { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
+  {
+    name: 'Course Certificates',
+    description: 'Configure course certificates, list who earned them, and let anyone check that a certificate is real.'
+  },
   {
     name: 'Course Templates',
     description:

@@ -11,6 +11,8 @@ import { db } from '@cio/db/drizzle';
 import { updateCourse } from '@cio/core/services/course/course';
 import { getCourseById, getCourseByIdForUpdate } from '@cio/db/queries/course/course';
 import { getCourseMember, getPaginatedCourseMembers } from '@cio/db/queries/course/people';
+import { getLatestCertificateVerificationsForMembers } from '@cio/db/queries/course/certificate-verification';
+import { getCertificateStatus } from '@api/services/course/certificate-verification';
 import { assembleCertificateRender } from '@api/services/course/certificate';
 import { toEffectiveCertificateSettings } from '@api/services/course/certificate-settings';
 import { assertCertificatesEnabled } from '@api/services/course/certificate-plan';
@@ -92,14 +94,27 @@ export async function listPublicApiCourseCertificatesService(
     certificateEarned: true
   });
 
-  const items = result.items.map((member) => ({
-    memberId: member.id,
-    profileId: member.profileId,
-    fullname: member.profile?.fullname ?? null,
-    email: member.profile?.email ?? member.email ?? null,
-    certificateEarnedAt: member.certificateEarnedAt,
-    certificationEmailSentAt: member.certificationEmailSentAt
-  }));
+  const memberIds = result.items.map((member) => member.id);
+  const verifications = await getLatestCertificateVerificationsForMembers(params.courseId, memberIds);
+  const verificationByMemberId = new Map(
+    verifications.map((verification) => [verification.groupMemberId, verification])
+  );
+
+  const items = result.items.map((member) => {
+    const verification = verificationByMemberId.get(member.id);
+    const certificateStatus = verification ? getCertificateStatus(verification) : null;
+
+    return {
+      memberId: member.id,
+      profileId: member.profileId,
+      fullname: member.profile?.fullname ?? null,
+      email: member.profile?.email ?? member.email ?? null,
+      certificateEarnedAt: member.certificateEarnedAt,
+      certificationEmailSentAt: member.certificationEmailSentAt,
+      verificationId: verification?.id ?? null,
+      certificateStatus
+    };
+  });
 
   const pagination = {
     page: result.page,
