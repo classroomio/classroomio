@@ -134,7 +134,7 @@ export const v1CourseLessonsRouter = new Hono()
   .post(
     '/:lessonId/notify-session-update',
     describeRoute({
-      description: `Email the course's students an updated calendar invite after a live lesson's time or call link changed; ${COURSE_TEAM_RULE}.`,
+      description: `Email students an updated calendar invite after a live lesson's time or link changed; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         202: jsonResponse(

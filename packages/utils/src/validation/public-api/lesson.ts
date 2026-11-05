@@ -20,8 +20,7 @@ const ZPublicApiExternalVideo = z.object({
 export const ZPublicApiLessonVideo = z.discriminatedUnion('type', [ZPublicApiUploadVideo, ZPublicApiExternalVideo]);
 export type TPublicApiLessonVideo = z.infer<typeof ZPublicApiLessonVideo>;
 
-const VIDEOS_DESCRIPTION =
-  'Attach an uploaded video with { "type": "upload", "assetId": "…" }; attaching it completes the upload and queues thumbnailing and adaptive-bitrate encoding, plus transcription when the server has an OpenAI key. External videos use { "type": "youtube" | "vimeo" | "generic", "link": "…" } and are embedded rather than fetched.';
+const VIDEOS_DESCRIPTION = 'Uploaded videos by assetId, or youtube, vimeo and generic links.';
 
 export const ZPublicApiLessonParam = ZPublicApiCourseParam.extend({
   lessonId: z.string().uuid()
@@ -29,10 +28,9 @@ export const ZPublicApiLessonParam = ZPublicApiCourseParam.extend({
 export type TPublicApiLessonParam = z.infer<typeof ZPublicApiLessonParam>;
 
 const LESSON_ORDER_DESCRIPTION =
-  'Position within the section, starting at 1. Without a section, the position among the course top-level sections, lessons and exercises; the entry at that position and every later one move down one.';
+  'Position in the section, from 1; without a section, the top-level position. Entries from there on move down one.';
 
-const LESSON_AT_DESCRIPTION =
-  'Live-session start time as an ISO 8601 timestamp with a UTC offset; null clears it, and new lessons start with none. Students only see a live session, and only get reminders, when the lesson also has a join link (set in the dashboard lesson settings) and the course is a published Live class course.';
+const LESSON_AT_DESCRIPTION = 'Live-session start, ISO 8601 with a UTC offset; null clears it. New lessons have none.';
 
 export const ZPublicApiCreateLesson = z.object({
   title: z.string().min(1).max(255),
@@ -55,7 +53,7 @@ export const ZPublicApiUpdateLesson = z
       .array(ZPublicApiLessonVideo)
       .max(20)
       .optional()
-      .describe(`Replaces the lesson videos entirely; omit to leave them unchanged. ${VIDEOS_DESCRIPTION}`)
+      .describe(`Replaces all of the lesson's videos; omit to keep them. ${VIDEOS_DESCRIPTION}`)
   })
   .describe('Send only the fields to change.');
 export type TPublicApiUpdateLesson = z.infer<typeof ZPublicApiUpdateLesson>;

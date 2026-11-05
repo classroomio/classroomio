@@ -106,7 +106,8 @@ export const v1CourseContentRouter = new Hono()
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.write,
         404: {
-          description: `Course, lesson or exercise not found; retrying after a delete succeeded returns this. ${ALL_OR_NOTHING}`
+          description:
+            'Course, lesson or exercise not found, also on a retry after a delete; if any id fails, nothing changes'
         },
         409: studentWorkConflictResponse,
         429: mcpRateLimitResponse

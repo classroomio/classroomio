@@ -1,13 +1,7 @@
 import * as z from 'zod';
 
 export const ZPublicApiInviteStudentsToCohort = z.object({
-  recipientCsv: z
-    .string()
-    .min(1)
-    .max(25000)
-    .describe(
-      'CSV of emails, optionally with names. An email not yet in your organization gets an organization invite (valid for 7 days) that joins this cohort when accepted; an existing student is enrolled directly; staff (admins/tutors) are skipped. Seat limits apply.'
-    ),
+  recipientCsv: z.string().min(1).max(25000).describe('CSV of emails, optionally with names.'),
   sendEmail: z.boolean().default(true).describe('Queue invite and welcome emails. Default: true.')
 });
 export type TPublicApiInviteStudentsToCohort = z.infer<typeof ZPublicApiInviteStudentsToCohort>;
@@ -18,7 +12,7 @@ export const ZPublicApiAssignStudentsToCohort = z.object({
     .min(1)
     .max(500)
     .describe(
-      'Profiles that are already students in your organization, as in the dashboard\'s "assign existing" option. Any other profileId (including one from another organization) is skipped and not counted.'
+      'Profiles that are already students in your organization; any other profileId is skipped and not counted.'
     ),
   sendEmail: z
     .boolean()

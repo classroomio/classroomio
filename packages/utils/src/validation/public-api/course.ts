@@ -44,9 +44,7 @@ export const ZPublicApiUpdateCourse = ZCourseUpdateBase.extend({
     .min(1)
     .max(100)
     .optional()
-    .describe(
-      "Adds these tags and keeps the ones already on the course. Calls on the same course run one after another, so none drops another's tags. Can't be sent with tagIds."
-    )
+    .describe("Adds these tags and keeps the existing ones; safe to call in parallel. Can't be sent with tagIds.")
 })
   .refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
     message: 'Compliance settings are required when changing a course to COMPLIANCE',

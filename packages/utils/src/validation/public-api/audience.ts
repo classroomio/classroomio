@@ -32,7 +32,7 @@ export const ZPublicApiCreateAudience = z
       .max(AUDIENCE_IMPORT_MAX_ROWS)
       .optional()
       .describe(
-        `Up to ${AUDIENCE_IMPORT_MAX_ROWS} people to invite in one request. An address that is not valid comes back as an invalid_email row instead of failing the request. Names are not taken here; set one with PUT /audience/{memberId} after the person joins`
+        `Up to ${AUDIENCE_IMPORT_MAX_ROWS} addresses. An invalid one comes back as an invalid_email row; set names later with PUT /audience/{memberId}.`
       ),
     courseIds: z.array(z.string().uuid()).optional(),
     sendEmail: z.boolean().default(true).describe('Email the invite. Default: true; false adds them without an email.')
@@ -45,10 +45,10 @@ export type TPublicApiCreateAudience = z.infer<typeof ZPublicApiCreateAudience>;
 
 const ZPublicApiMemberName = z.string().trim().min(3).max(120);
 
-const SHARED_PROFILE_NOTE = 'The profile is shared, so the change shows in every organization the person belongs to.';
+const SHARED_PROFILE_NOTE = 'The profile is shared across organizations.';
 
 const MEMBER_NAME_DESCRIPTION =
-  'Joined members only: sets the full name on their profile. The profile is shared, so the name shows in every organization the person belongs to.';
+  'Joined members only: the full name on their profile. The profile is shared across organizations.';
 
 /**
  * Profile fields an org admin's key may set on a joined member, with the rules of Settings → Profile
@@ -60,19 +60,15 @@ export const ZPublicApiMemberProfileFields = {
     .string()
     .min(3)
     .optional()
-    .describe(
-      `Joined members only: sets their username. Usernames are unique across ClassroomIO, so a taken one returns 400. ${SHARED_PROFILE_NOTE}`
-    ),
+    .describe(`Joined members only; must be unique across ClassroomIO (400 if taken). ${SHARED_PROFILE_NOTE}`),
   avatarUrl: z
     .url({ protocol: /^https?$/ })
     .optional()
-    .describe(
-      `Joined members only: sets their profile picture to this http or https image URL. ${SHARED_PROFILE_NOTE}`
-    ),
+    .describe(`Joined members only: an http or https image URL. ${SHARED_PROFILE_NOTE}`),
   locale: z
     .enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it'])
     .optional()
-    .describe(`Joined members only: sets the language ClassroomIO is shown in for them. ${SHARED_PROFILE_NOTE}`)
+    .describe(`Joined members only: the language ClassroomIO is shown in. ${SHARED_PROFILE_NOTE}`)
 };
 
 const ZPublicApiMemberProfile = z.object(ZPublicApiMemberProfileFields);
@@ -102,9 +98,7 @@ export const ZPublicApiUpdateAudience = z
     message:
       'Send email or profile fields, not both: email is for pending members and name, username, avatarUrl and locale are for joined members'
   })
-  .describe(
-    `Send email for a pending member, or any of name, username, avatarUrl and locale for a joined member. ${MEMBER_PROFILE_EMAIL_NOTE} To change an admin's or tutor's role, use PUT /team/{memberId}.`
-  );
+  .describe('Send email for a pending member, or any of name, username, avatarUrl and locale for a joined member.');
 export type TPublicApiUpdateAudience = z.infer<typeof ZPublicApiUpdateAudience>;
 
 export const ZPublicApiAssignAudienceCourses = z

@@ -26,13 +26,14 @@ const toList = (value: unknown) =>
         .filter(Boolean)
     : value;
 
-const includeOf = <T extends readonly [string, ...string[]]>(sections: T, fallback: T[number], details: string) =>
+const includeOf = <T extends readonly [string, ...string[]]>(sections: T, fallback: T[number]) =>
   z
     .preprocess(toList, z.array(z.enum(sections)).min(1))
     .default([fallback])
-    .describe(`Comma-separated sections to return: ${sections.join(', ')}. Default: ${fallback}. ${details}`);
+    .describe(`Sections to return, comma-separated: ${sections.join(', ')}. Default: ${fallback}.`);
 
-const ORG_SECTION_DETAILS = [
+/** What each section returns; the docs list these on the endpoint page and MCP tools add them to `include`. */
+export const PUBLIC_API_ORG_ANALYTICS_SECTION_NOTES = [
   'overview: totals (courses, students, certificates), top courses by students, and recent certificates.',
   'traffic: landing and course page views, unique visitors, enrollments and completions, with a per-day series.',
   'countries: views and enrollments by visitor country.',
@@ -41,23 +42,21 @@ const ORG_SECTION_DETAILS = [
   'topCourses: the most viewed course pages.',
   'loginActivity: student logins by day of week (org admin only).',
   'compliance: compliance status counts, overall and per course (org admin only); list the learners with GET /analytics/compliance/learners.'
-].join(' ');
+];
 
-const COURSE_SECTION_DETAILS = [
+export const PUBLIC_API_COURSE_ANALYTICS_SECTION_NOTES = [
   'summary: totals (tutors, students, lessons, exercises) and per-student averages for progress, exercise completion and grade.',
   'funnel: course page view → enrollment → completion for this course over days.'
-].join(' ');
+];
 
 const ZAnalyticsDays = z.coerce
   .number()
   .pipe(z.literal(PUBLIC_API_ANALYTICS_DAYS, { error: 'days must be one of 7, 30, 90, 365' }))
   .default(30)
-  .describe(
-    'Window in days, counted back from today (UTC): 7, 30, 90 or 365. Default: 30. Applies to every time-windowed section.'
-  );
+  .describe('Days counted back from today (UTC): 7, 30, 90 or 365. Default: 30.');
 
 export const ZPublicApiOrgAnalyticsQuery = z.object({
-  include: includeOf(PUBLIC_API_ORG_ANALYTICS_SECTIONS, 'overview', ORG_SECTION_DETAILS),
+  include: includeOf(PUBLIC_API_ORG_ANALYTICS_SECTIONS, 'overview'),
   days: ZAnalyticsDays,
   limit: z.coerce
     .number()
@@ -70,7 +69,7 @@ export const ZPublicApiOrgAnalyticsQuery = z.object({
 export type TPublicApiOrgAnalyticsQuery = z.infer<typeof ZPublicApiOrgAnalyticsQuery>;
 
 export const ZPublicApiCourseAnalyticsQuery = z.object({
-  include: includeOf(PUBLIC_API_COURSE_ANALYTICS_SECTIONS, 'summary', COURSE_SECTION_DETAILS),
+  include: includeOf(PUBLIC_API_COURSE_ANALYTICS_SECTIONS, 'summary'),
   days: ZAnalyticsDays
 });
 export type TPublicApiCourseAnalyticsQuery = z.infer<typeof ZPublicApiCourseAnalyticsQuery>;

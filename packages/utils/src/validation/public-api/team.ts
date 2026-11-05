@@ -35,7 +35,7 @@ export const ZPublicApiInviteTeamMembers = z.object({
     .max(50)
     .default([])
     .describe(
-      'Addresses that already belong to students and should be promoted to this role. If any student in emails is missing here, nothing is sent and the response lists them in studentEmails.'
+      'Student addresses to promote to this role. If a student in emails is missing here, nothing is sent (see studentEmails).'
     )
 });
 export type TPublicApiInviteTeamMembers = z.infer<typeof ZPublicApiInviteTeamMembers>;

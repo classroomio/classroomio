@@ -86,11 +86,11 @@ export const v1DomainRouter = new Hono()
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: {
-          description: `${domainWriteForbidden.description} Also returned with code UPGRADE_REQUIRED when the organization is on the free plan.`
+          description: `${domainWriteForbidden.description}, or the plan doesn't include it (UPGRADE_REQUIRED)`
         },
         409: {
           description:
-            'Another custom domain is connected (remove it first), the domain belongs to another organization (code CUSTOM_DOMAIN_TAKEN), or custom domains are not set up on this instance (code CUSTOM_DOMAIN_UNAVAILABLE)'
+            'Another custom domain is connected (remove it first), or the domain is taken (CUSTOM_DOMAIN_TAKEN) or unavailable here (CUSTOM_DOMAIN_UNAVAILABLE)'
         },
         429: mcpRateLimitResponse
       }

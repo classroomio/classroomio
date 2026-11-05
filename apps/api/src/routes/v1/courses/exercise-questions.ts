@@ -25,7 +25,7 @@ export const v1CourseExerciseQuestionsRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Add one question, with its options, to an exercise; ${COURSE_TEAM_RULE}.`,
+      description: `Add one question, with its options, to an exercise; ${COURSE_TEAM_RULE}; see [Question types](/api/question-types).`,
       tags: [TAG],
       responses: {
         201: jsonResponse(`Question added successfully. ${LIVE_EDIT_NOTE}`, QuestionResponse),
@@ -58,7 +58,7 @@ export const v1CourseExerciseQuestionsRouter = new Hono()
   .patch(
     '/:questionId',
     describeRoute({
-      description: `Edit one question and its options; ${COURSE_TEAM_RULE}.`,
+      description: `Edit one question and its options; ${COURSE_TEAM_RULE}; see [Question types](/api/question-types).`,
       tags: [TAG],
       responses: {
         200: jsonResponse(`Question updated successfully. ${LIVE_EDIT_NOTE}`, QuestionResponse),

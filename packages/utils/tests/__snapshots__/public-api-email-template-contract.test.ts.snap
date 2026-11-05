@@ -271,7 +271,7 @@ exports[`public API organization email template contract > ZPublicApiSaveEmailTe
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "content": {
-      "description": "HTML body. Use only the {{placeholders}} in the template's variables. An <a href="{{action_url}}"> link is allowed only when hasActionLink is true. Unsafe HTML is removed before saving.",
+      "description": "HTML body using only the template's {{placeholders}}; an {{action_url}} link only when hasActionLink is true.",
       "maxLength": 50000,
       "minLength": 1,
       "type": "string",
@@ -302,7 +302,7 @@ exports[`public API organization email template contract > ZPublicApiSendTestEma
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "content": {
-      "description": "Draft body to test. Omit to test the current template. HTML body. Use only the {{placeholders}} in the template's variables. An <a href="{{action_url}}"> link is allowed only when hasActionLink is true. Unsafe HTML is removed before saving.",
+      "description": "Draft HTML body to test, with the same rules as saving; omit to test the current template.",
       "maxLength": 50000,
       "minLength": 1,
       "type": "string",

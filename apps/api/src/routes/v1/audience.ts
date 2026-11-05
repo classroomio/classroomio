@@ -31,13 +31,13 @@ import { ORG_ADMIN_FORBIDDEN, ORG_ADMIN_RULE } from './team/docs';
 const AudienceListEnvelope = z.object({ query: ZPublicApiAudienceQuery });
 
 const forbidden = (scope: 'audience:read' | 'audience:write') => ({
-  description: `The key has neither the public_api:* nor the ${scope} scope, or ${ORG_ADMIN_FORBIDDEN}`
+  description: `Missing the ${scope} scope, or ${ORG_ADMIN_FORBIDDEN}`
 });
 
 const audienceWriteForbidden = forbidden('audience:write');
 
 const createAudienceForbidden = {
-  description: `${audienceWriteForbidden.description} Also returned with UPGRADE_REQUIRED when the Free plan student limit is reached while the request runs.`
+  description: `${audienceWriteForbidden.description}, or the Free plan student limit is reached during the request (UPGRADE_REQUIRED)`
 };
 
 export const v1AudienceRouter = new Hono()

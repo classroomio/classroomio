@@ -17,21 +17,6 @@ export const ZPublicApiCourseStudentExerciseParam = ZPublicApiCourseMemberParam.
 });
 export type TPublicApiCourseStudentExerciseParam = z.infer<typeof ZPublicApiCourseStudentExerciseParam>;
 
-const ANSWER_FORMATS = [
-  'True/false: "true" or "false".',
-  'Short answer and paragraph: the plain text.',
-  'Every other type: a JSON string.',
-  'Multiple choice: {"type":"CHECKBOX","optionIds":[30,31]}.',
-  'Numeric: {"type":"NUMERIC","value":2}.',
-  'Fill in the blank: {"type":"FILL_BLANK","answers":["Paris"]}.',
-  'Word bank: {"type":"WORD_BANK","filledBlanks":["Paris"]}.',
-  'Matching: {"type":"MATCHING","value":[{"left":"A","right":"1"}]}.',
-  'Ordering: {"type":"ORDERING","value":["first","second"]}.',
-  'Link: {"type":"LINK","links":["https://example.com"]}.',
-  'Hotspot: {"type":"HOTSPOT","value":[{"x":10,"y":20}]}.',
-  'Star rating: {"type":"STAR","value":4}.'
-].join(' ');
-
 export const ZPublicApiCreateStudentSubmission = z.object({
   answers: z
     .array(
@@ -42,7 +27,10 @@ export const ZPublicApiCreateStudentSubmission = z.object({
           .int()
           .optional()
           .describe('Single choice questions only: the chosen option, which must belong to the question.'),
-        answer: z.string().optional().describe(`Every question type except single choice. ${ANSWER_FORMATS}`)
+        answer: z
+          .string()
+          .optional()
+          .describe('Any type except single choice; the Question types guide shows the format for each type.')
       })
     )
     .min(1)

@@ -12,14 +12,12 @@ export const ANALYTICS_CACHE_CONTROL = 'private, no-store';
 
 export const analyticsForbiddenResponses = {
   orgTeam: {
-    description:
-      'The key lacks the public_api:* or analytics:read scope, or the automation actor is not an org admin or tutor'
+    description: 'Missing the analytics:read scope, or the key creator is not an org admin or tutor'
   },
   orgAdmin: {
-    description: 'The key lacks the public_api:* or analytics:read scope, or the automation actor is not an org admin'
+    description: 'Missing the analytics:read scope, or the key creator is not an org admin'
   },
   courseTeam: {
-    description:
-      'The key lacks the public_api:* or analytics:read scope, or the automation actor is not a course tutor/admin or org admin'
+    description: 'Missing the analytics:read scope, or the key creator is not a course tutor/admin or org admin'
   }
 };

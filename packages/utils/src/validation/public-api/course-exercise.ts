@@ -6,26 +6,29 @@ import { ZSlug } from '../shared/slug';
 import { ZPublicApiCourseParam } from './course';
 import { ZPublicApiPaginationQuery } from './pagination';
 
-const QUESTION_TYPE_DESCRIPTION =
-  '1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
+/** The full type list for MCP tools; the API docs show it on the Question types guide. */
+export const PUBLIC_API_QUESTION_TYPES_NOTE =
+  'Question types: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
+
+const QUESTION_TYPE_DESCRIPTION = 'Question type id from 1 to 14; the Question types guide lists each type.';
 
 /** Question types the public API accepts; MATCHING (15) and HOTSPOT (16) are disabled and excluded. */
 export const ZPublicApiQuestionTypeId = z
-  .union([
-    z.literal(QUESTION_TYPE.RADIO),
-    z.literal(QUESTION_TYPE.CHECKBOX),
-    z.literal(QUESTION_TYPE.TEXTAREA),
-    z.literal(QUESTION_TYPE.TRUE_FALSE),
-    z.literal(QUESTION_TYPE.SHORT_ANSWER),
-    z.literal(QUESTION_TYPE.NUMERIC),
-    z.literal(QUESTION_TYPE.FILL_BLANK),
-    z.literal(QUESTION_TYPE.FILE_UPLOAD),
-    z.literal(QUESTION_TYPE.ORDERING),
-    z.literal(QUESTION_TYPE.LINK),
-    z.literal(QUESTION_TYPE.WORD_BANK),
-    z.literal(QUESTION_TYPE.STAR),
-    z.literal(QUESTION_TYPE.VIDEO_RECORDING),
-    z.literal(QUESTION_TYPE.THUMBS)
+  .literal([
+    QUESTION_TYPE.RADIO,
+    QUESTION_TYPE.CHECKBOX,
+    QUESTION_TYPE.TEXTAREA,
+    QUESTION_TYPE.TRUE_FALSE,
+    QUESTION_TYPE.SHORT_ANSWER,
+    QUESTION_TYPE.NUMERIC,
+    QUESTION_TYPE.FILL_BLANK,
+    QUESTION_TYPE.FILE_UPLOAD,
+    QUESTION_TYPE.ORDERING,
+    QUESTION_TYPE.LINK,
+    QUESTION_TYPE.WORD_BANK,
+    QUESTION_TYPE.STAR,
+    QUESTION_TYPE.VIDEO_RECORDING,
+    QUESTION_TYPE.THUMBS
   ])
   .describe(QUESTION_TYPE_DESCRIPTION);
 
@@ -99,7 +102,7 @@ export const ZPublicApiCreateCourseExercise = z
       .min(1)
       .optional()
       .describe(
-        'A built-in template from GET /exercise-templates. The template supplies the title, description and questions, so only sectionId, lessonId and order may be sent with it.'
+        'A template from GET /exercise-templates; it supplies the title, description and questions, so send only sectionId, lessonId and order with it.'
       )
   })
   .superRefine((data, ctx) => {
@@ -262,14 +265,14 @@ export const ZPublicApiUpdateCourseExercise = z
       .max(MAX_QUESTIONS)
       .optional()
       .describe(
-        'A diff, like the dashboard editor: send a question with its id to edit it, with id and delete: true to remove it, or without an id to add it. Options follow the same rules inside their question, and ids must belong to this exercise. Questions you leave out are unchanged. Deleting a question students have answered returns 409 unless force=true.'
+        'Questions and options with an id are edited, or removed with delete: true; without an id they are added; the rest stay unchanged.'
       ),
     sections: z
       .array(ZPublicApiUpdateExerciseSectionItem)
       .max(MAX_SECTIONS)
       .optional()
       .describe(
-        "Same rules as questions. A new section may carry a UUID you generate, so new questions can reference it by exerciseSectionId. A removed section must not still hold questions or be another section's go_to_section target (409)."
+        'Same rules as questions; a new section may take a UUID you choose, so new questions can reference it by exerciseSectionId.'
       ),
     sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional(),
     completionPolicy: z.enum(['submitted', 'passed']).optional(),

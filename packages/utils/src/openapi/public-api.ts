@@ -29,6 +29,57 @@ function applySecurityToOperations(paths: Record<string, unknown>) {
   }
 }
 
+type JsonSchemaNode = Record<string, unknown>;
+
+const isNullSchema = (schema: unknown): boolean =>
+  !!schema &&
+  typeof schema === 'object' &&
+  (schema as JsonSchemaNode).type === 'null' &&
+  Object.keys(schema).length === 1;
+
+const isConstSchema = (schema: unknown): schema is JsonSchemaNode =>
+  !!schema &&
+  typeof schema === 'object' &&
+  'const' in schema &&
+  Object.keys(schema).every((key) => key === 'const' || key === 'type');
+
+// Zod writes a nullable field as `anyOf: [X, { type: 'null' }]` and a union of literals as `anyOf` of
+// `const` branches; the API reference renders both as "Any of" blocks. OpenAPI 3.1 allows
+// `type: [X, 'null']` and `enum` instead, which render as "X | null" and a list of allowed values.
+function collapseNullableUnions(value: unknown): void {
+  if (!value || typeof value !== 'object') return;
+
+  if (Array.isArray(value)) {
+    value.forEach(collapseNullableUnions);
+    return;
+  }
+
+  const node = value as JsonSchemaNode;
+  Object.values(node).forEach(collapseNullableUnions);
+
+  const branches = node.anyOf;
+  if (!Array.isArray(branches)) return;
+
+  const literalTypes = new Set(branches.map((branch) => (isConstSchema(branch) ? branch.type : undefined)));
+  const [literalType] = literalTypes;
+  if (branches.every(isConstSchema) && literalTypes.size === 1 && typeof literalType === 'string') {
+    delete node.anyOf;
+    Object.assign(node, { type: literalType, enum: branches.map((branch) => (branch as JsonSchemaNode).const) });
+    return;
+  }
+
+  if (branches.length !== 2 || !branches.some(isNullSchema)) return;
+
+  const valueBranch = branches.find((branch) => !isNullSchema(branch)) as JsonSchemaNode | undefined;
+  if (!valueBranch || typeof valueBranch.type !== 'string') return;
+
+  delete node.anyOf;
+  const merged: JsonSchemaNode = { ...valueBranch, ...node, type: [valueBranch.type, 'null'] };
+  if (Array.isArray(valueBranch.enum)) merged.enum = [...valueBranch.enum, null];
+
+  Object.assign(node, merged);
+}
+
 // hono-openapi sets `description` per operation but never `summary`. Scalar's
 // endpoint list prefers `summary` and falls back to the raw path when it's
 // missing — since every path here starts with `/public-api/v1/...`, every
@@ -280,6 +331,8 @@ export function enrichPublicApiOpenApiSpec<T extends OpenApiDocument>(spec: T): 
 
   applySecurityToOperations(paths);
   applySummariesToOperations(paths);
+  collapseNullableUnions(paths);
+  collapseNullableUnions(components.schemas);
 
   return {
     ...spec,
