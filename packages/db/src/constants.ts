@@ -50,4 +50,7 @@ const hasOwnMcpHost = PUBLIC_IS_SELFHOSTED === 'true' || process.env.NODE_ENV ==
 
 export const MCP_RESOURCE = hasOwnMcpHost ? `${BASE_URL}/mcp` : CLOUD_MCP_URL;
 
+// MCP SDK clients (e.g. Claude Code) send `new URL(resource).href`, which adds a trailing slash to a bare origin.
+export const MCP_RESOURCE_IDENTIFIERS = [...new Set([MCP_RESOURCE, new URL(MCP_RESOURCE).href])];
+
 export const PUBLIC_API_RESOURCE = `${BASE_URL}/public-api/v1`;

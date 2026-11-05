@@ -3,7 +3,7 @@ import { APIError } from 'better-auth/api';
 import { jwt } from 'better-auth/plugins';
 import { oauthProvider } from '@better-auth/oauth-provider';
 
-import { MCP_RESOURCE, OAUTH_ISSUER, PUBLIC_API_RESOURCE } from '@db/constants';
+import { MCP_RESOURCE_IDENTIFIERS, OAUTH_ISSUER, PUBLIC_API_RESOURCE } from '@db/constants';
 import { getOAuthOrganizationSelection, isActiveOrganizationAdmin } from '@db/queries/auth/oauth';
 import { OAUTH_SCOPES } from './oauth-scopes';
 
@@ -24,7 +24,7 @@ export function buildOAuthPlugins(): BetterAuthPlugin[] {
       allowDynamicClientRegistration: true,
       allowUnauthenticatedClientRegistration: true,
       clientRegistrationDefaultApplicationType: 'infer',
-      resources: [MCP_RESOURCE, PUBLIC_API_RESOURCE],
+      resources: [...MCP_RESOURCE_IDENTIFIERS, PUBLIC_API_RESOURCE],
       enforcePerClientResources: false,
       accessTokenExpiresIn: ACCESS_TOKEN_TTL_SECONDS,
       postLogin: {
