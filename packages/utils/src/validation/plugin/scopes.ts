@@ -35,7 +35,7 @@ export const PLUGIN_CAPABILITY_IDS = [
 
 export type PluginCapabilityId = (typeof PLUGIN_CAPABILITY_IDS)[number];
 export type PluginCapabilityStatus = 'planned' | 'experimental' | 'active' | 'deprecated';
-export type PluginCapabilityTransport = 'backend' | 'ui';
+export type PluginCapabilityTransport = 'ui';
 export type PluginCapabilitySensitivity = 'standard' | 'sensitive' | 'highly-sensitive';
 export type PluginInstallationOwner = 'organization' | 'user';
 
@@ -63,7 +63,7 @@ function planned(
   return {
     status: 'planned',
     sensitivity: typeof sensitivity === 'boolean' ? (sensitivity ? 'sensitive' : 'standard') : sensitivity,
-    allowedTransports: ['backend'],
+    allowedTransports: [],
     fieldsDisclosed: [],
     consentDescription,
     documentationUrl: 'prd/plugin-system/public-plugin-api-v1.md'
@@ -74,7 +74,7 @@ function active(
   consent: string,
   sensitive: boolean,
   disclosedFields: readonly string[],
-  transports: readonly PluginCapabilityTransport[] = ['backend']
+  transports: readonly PluginCapabilityTransport[] = ['ui']
 ): PluginCapabilityDefinitionInput {
   return {
     status: 'active',
@@ -87,18 +87,14 @@ function active(
 }
 
 const PLUGIN_CAPABILITY_DEFINITIONS: Record<PluginCapabilityId, PluginCapabilityDefinitionInput> = {
-  'identity.profile:read': active(
-    'Read the current user profile',
-    false,
-    ['id', 'displayName', 'avatarUrl', 'locale', 'role'],
-    ['backend']
-  ),
-  'organization.profile:read': active(
-    'Read the organization profile',
-    false,
-    ['id', 'name', 'avatarUrl', 'locale'],
-    ['backend']
-  ),
+  'identity.profile:read': active('Read the current user profile', false, [
+    'id',
+    'displayName',
+    'avatarUrl',
+    'locale',
+    'role'
+  ]),
+  'organization.profile:read': active('Read the organization profile', false, ['id', 'name', 'avatarUrl', 'locale']),
   'organization.members:read': planned('Read organization members', true),
   'course.metadata:read': active(
     'Read course metadata',
@@ -116,32 +112,11 @@ const PLUGIN_CAPABILITY_DEFINITIONS: Record<PluginCapabilityId, PluginCapability
       'createdAt',
       'updatedAt'
     ],
-    ['backend']
+    ['ui']
   ),
-  'course.content:read': active(
-    'Read course content structure',
-    true,
-    [
-      'courseId',
-      'sections',
-      'sections.id',
-      'sections.title',
-      'sections.order',
-      'sections.lessons',
-      'sections.lessons.id',
-      'sections.lessons.title',
-      'sections.lessons.order',
-      'sections.lessons.type'
-    ],
-    ['backend']
-  ),
+  'course.content:read': active('Read course content structure', true, ['courseId', 'sections', 'lessons']),
   'course.metadata:write': planned('Create and update courses', true),
-  'course.enrollment:read': active(
-    'Read course enrollments',
-    true,
-    ['id', 'courseId', 'profileId', 'role', 'status', 'enrolledAt', 'completedAt'],
-    ['backend']
-  ),
+  'course.enrollment:read': planned('Read course enrollments', true),
   'course.enrollment:write': planned('Manage course enrollments', true),
   'lesson.metadata:read': active(
     'Read lesson metadata',
@@ -158,34 +133,24 @@ const PLUGIN_CAPABILITY_DEFINITIONS: Record<PluginCapabilityId, PluginCapability
       'createdAt',
       'updatedAt'
     ],
-    ['backend']
+    ['ui']
   ),
-  'lesson.content:read': active(
-    'Read sanitized lesson content and attachments',
-    true,
-    [
-      'id',
-      'courseId',
-      'title',
-      'type',
-      'order',
-      'content',
-      'attachments',
-      'wordCount',
-      'estimatedMinutes',
-      'updatedAt'
-    ],
-    ['backend']
-  ),
+  'lesson.content:read': active('Read sanitized lesson content and attachments', true, [
+    'id',
+    'courseId',
+    'title',
+    'content',
+    'attachments'
+  ]),
   'lesson:write': planned('Create and update lessons', true),
   'learner.profile:read': planned('Read learner profiles', true),
-  'learner.progress:read': active(
-    'Read learner progress in the current lesson or course',
-    true,
-    ['isComplete', 'courseId', 'percentage', 'lessonsCompleted', 'totalLessons', 'certificateEarnedAt'],
-    ['backend']
-  ),
-  'learner.progress:write': active('Update learner progress in the current lesson', true, ['isComplete'], ['backend']),
+  'learner.progress:read': active('Read learner progress in the current lesson or course', true, [
+    'isComplete',
+    'percentage',
+    'lessonsCompleted',
+    'totalLessons'
+  ]),
+  'learner.progress:write': active('Update learner progress in the current lesson', true, ['isComplete']),
   'exercise.metadata:read': active(
     'Read exercise metadata',
     false,
@@ -204,31 +169,34 @@ const PLUGIN_CAPABILITY_DEFINITIONS: Record<PluginCapabilityId, PluginCapability
       'createdAt',
       'updatedAt'
     ],
-    ['backend']
+    ['ui']
   ),
   'submission:read': planned('Read learner submissions', true),
   'submission:write': planned('Create and update submissions', true),
   'grade:read': planned('Read grades', true),
   'grade:write': planned('Create and release grades', true),
-  'certificate.issued:read': active(
-    'Read issued certificates',
-    true,
-    ['id', 'courseId', 'profileId', 'cycleNumber', 'issuedAt', 'expiresAt', 'status', 'verificationUrl'],
-    ['backend']
-  ),
+  'certificate.issued:read': active('Read issued certificates', true, [
+    'id',
+    'courseId',
+    'profileId',
+    'issuedAt',
+    'status',
+    'verificationUrl'
+  ]),
   'certificate.issuance:write': planned('Issue certificates', true),
   'certificate.revocation:write': planned('Revoke certificates', 'highly-sensitive'),
-  'certificate.template:read': active(
-    'Read certificate templates',
-    false,
-    ['id', 'name', 'style', 'description', 'accentColor', 'subtitle', 'version', 'design'],
-    ['backend']
-  ),
+  'certificate.template:read': active('Read certificate templates', false, [
+    'id',
+    'name',
+    'description',
+    'version',
+    'design'
+  ]),
   'certificate.template:write': active(
     'Apply certificate templates to the current course',
     true,
     ['id', 'name', 'design', 'version', 'appliedAt'],
-    ['backend']
+    ['ui']
   ),
   'cohort.metadata:read': planned('Read cohort metadata', false),
   'cohort.membership:read': planned('Read cohort membership', true),
@@ -238,13 +206,13 @@ const PLUGIN_CAPABILITY_DEFINITIONS: Record<PluginCapabilityId, PluginCapability
     "Read this plugin's isolated storage",
     false,
     ['namespace', 'key', 'value', 'scope', 'version'],
-    ['backend', 'ui']
+    ['ui']
   ),
   'plugin.storage:write': active(
     "Write to this plugin's isolated storage",
     false,
     ['namespace', 'key', 'value', 'scope', 'version'],
-    ['backend', 'ui']
+    ['ui']
   )
 };
 

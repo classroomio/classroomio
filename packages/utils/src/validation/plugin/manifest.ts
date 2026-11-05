@@ -74,7 +74,6 @@ export type TPluginIcon = z.infer<typeof ZPluginIcon>;
 export const STABLE_CONTRIBUTION_TARGETS = [
   'lms.banner',
   'course.sidebar',
-  'course.actions',
   'lesson.after',
   'certificate.actions',
   'certificate.templates',
@@ -84,33 +83,41 @@ export const STABLE_CONTRIBUTION_TARGETS = [
 ] as const;
 export type StableContributionTarget = (typeof STABLE_CONTRIBUTION_TARGETS)[number];
 
-export const EXPERIMENTAL_CONTRIBUTION_TARGETS = [
-  'lesson.activity',
-  'lesson.sidebar',
-  'course.format',
-  'landing.sections',
-  'landing.hero.after',
-  'landing.footer.before',
-  'enrollment.flow'
-] as const;
+export const EXPERIMENTAL_CONTRIBUTION_TARGETS = [] as const;
 export type ExperimentalContributionTarget = (typeof EXPERIMENTAL_CONTRIBUTION_TARGETS)[number];
 
-export const ALL_ALLOWED_CONTRIBUTION_TARGETS = [
-  ...STABLE_CONTRIBUTION_TARGETS,
-  ...EXPERIMENTAL_CONTRIBUTION_TARGETS
-] as const;
+export const ALL_ALLOWED_CONTRIBUTION_TARGETS = [...STABLE_CONTRIBUTION_TARGETS] as const;
 export type AllowedContributionTarget = (typeof ALL_ALLOWED_CONTRIBUTION_TARGETS)[number];
 
 export const ZContributionTarget = z.enum(ALL_ALLOWED_CONTRIBUTION_TARGETS);
+
+export const ZPluginContributionVisibility = z.enum(['all', 'admin', 'tutor', 'learner']);
+export const ZPluginPageMode = z.enum(['view', 'edit']);
+const contributionPresentation = {
+  order: z.number().int().min(-1000).max(1000).optional().default(0),
+  visibility: ZPluginContributionVisibility.optional().default('all'),
+  pageModes: z.array(ZPluginPageMode).min(1).max(2).optional().default(['view'])
+};
+
+export const PLUGIN_SURFACE_CONTRACTS = {
+  'lms.banner': { version: 1, minHeight: 48, maxHeight: 320, mobile: true, resource: null },
+  'course.sidebar': { version: 1, minHeight: 120, maxHeight: 1200, mobile: true, resource: 'course' },
+  'lesson.after': { version: 1, minHeight: 80, maxHeight: 1600, mobile: true, resource: 'lesson' },
+  'certificate.actions': { version: 1, minHeight: 0, maxHeight: 0, mobile: true, resource: 'certificate' },
+  'certificate.templates': { version: 1, minHeight: 320, maxHeight: 1600, mobile: true, resource: 'course' },
+  'landing.templates': { version: 1, minHeight: 320, maxHeight: 1600, mobile: true, resource: 'organization' },
+  'organization.navigation': { version: 1, minHeight: 0, maxHeight: 0, mobile: true, resource: 'organization' },
+  'plugin.page': { version: 1, minHeight: 480, maxHeight: 4000, mobile: true, resource: 'organization' }
+} as const;
 
 export const ZPluginNavigationContribution = z
   .object({
     id: z.string().trim().min(1).max(64),
     title: z.string().trim().min(1).max(100),
-    location: z.string().trim().min(1).max(64),
+    location: z.literal('organization.navigation'),
     page: z.string().trim().min(1).max(64),
     icon: ZPluginIcon.optional(),
-    visibility: z.string().trim().max(64).optional()
+    ...contributionPresentation
   })
   .strict();
 export type TPluginNavigationContribution = z.infer<typeof ZPluginNavigationContribution>;
@@ -119,53 +126,26 @@ export const ZPluginPageContribution = z
   .object({
     id: z.string().trim().min(1).max(64),
     entrypoint: z.string().trim().min(1).max(64),
-    title: z.string().trim().max(100).optional()
+    title: z.string().trim().max(100).optional(),
+    ...contributionPresentation
   })
   .strict();
 export type TPluginPageContribution = z.infer<typeof ZPluginPageContribution>;
 
-export const ZPluginCommandContribution = z
-  .object({
-    id: z.string().trim().min(1).max(64),
-    title: z.string().trim().min(1).max(100),
-    icon: ZPluginIcon.optional(),
-    category: z.string().trim().max(64).optional()
-  })
-  .strict();
-export type TPluginCommandContribution = z.infer<typeof ZPluginCommandContribution>;
-
 export const ZPluginActionContribution = z
   .object({
     id: z.string().trim().min(1).max(64),
-    target: ZContributionTarget,
-    renderMode: z.enum(['host', 'custom']).default('host'),
-    entrypoint: z.string().trim().min(1).max(64).optional(),
+    target: z.literal('certificate.actions'),
+    renderMode: z.literal('host').default('host'),
     label: z.string().trim().max(100).optional(),
     icon: ZPluginIcon.optional(),
-    actionType: z.enum(['openUrl', 'command', 'dialog']).optional().default('command'),
-    urlTemplate: z
-      .string()
-      .trim()
-      .min(1)
-      .refine(isHttpsUrlTemplate, {
-        message: 'Action URL templates must use a valid HTTPS URL'
-      })
-      .optional(),
-    command: z.string().trim().max(128).optional()
+    actionType: z.literal('openUrl').default('openUrl'),
+    urlTemplate: z.string().trim().min(1).refine(isHttpsUrlTemplate, {
+      message: 'Action URL templates must use a valid HTTPS URL'
+    }),
+    ...contributionPresentation
   })
-  .strict()
-  .refine(
-    (action) => {
-      if (action.renderMode === 'custom' && !action.entrypoint) {
-        return false;
-      }
-      return true;
-    },
-    { message: 'Custom action requires an entrypoint' }
-  )
-  .refine((action) => action.actionType !== 'openUrl' || Boolean(action.urlTemplate), {
-    message: 'openUrl action requires a URL template'
-  });
+  .strict();
 export type TPluginActionContribution = z.infer<typeof ZPluginActionContribution>;
 
 export const ZPluginDeclaredTemplate = z
@@ -181,22 +161,101 @@ export type TPluginDeclaredTemplate = z.infer<typeof ZPluginDeclaredTemplate>;
 export const ZPluginSlotContribution = z
   .object({
     id: z.string().trim().min(1).max(64),
-    target: ZContributionTarget,
-    renderMode: z.enum(['custom', 'host']).default('custom'),
+    target: z.enum(['lms.banner', 'course.sidebar', 'lesson.after', 'certificate.templates', 'landing.templates']),
+    renderMode: z.literal('custom').default('custom'),
     entrypoint: z.string().trim().min(1).max(64).optional(),
+    pickerEntrypoint: z.string().trim().min(1).max(64).optional(),
+    publicRendererEntrypoint: z.string().trim().min(1).max(64).optional(),
+    publicViewModelVersion: z.literal(1).optional(),
     title: z.string().trim().max(100).optional(),
-    templates: z.array(ZPluginDeclaredTemplate).max(50).optional()
+    templates: z.array(ZPluginDeclaredTemplate).max(50).optional(),
+    ...contributionPresentation
   })
   .strict()
   .refine(
     (slot) => {
+      if (slot.target === 'landing.templates') {
+        return true;
+      }
+
       if (slot.renderMode === 'custom' && !slot.entrypoint) {
         return false;
       }
       return true;
     },
     { message: 'Custom slot requires an entrypoint' }
-  );
+  )
+  .superRefine((slot, ctx) => {
+    if (slot.target !== 'landing.templates') {
+      if (slot.pickerEntrypoint || slot.publicRendererEntrypoint || slot.publicViewModelVersion) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Landing template fields are only supported by landing.templates',
+          path: ['target']
+        });
+      }
+      return;
+    }
+
+    if (slot.renderMode !== 'custom') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'landing.templates requires a custom picker',
+        path: ['renderMode']
+      });
+    }
+
+    if (slot.entrypoint) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'landing.templates must declare pickerEntrypoint instead of entrypoint',
+        path: ['entrypoint']
+      });
+    }
+
+    if (!slot.pickerEntrypoint) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'landing.templates requires pickerEntrypoint',
+        path: ['pickerEntrypoint']
+      });
+    }
+
+    if (!slot.publicRendererEntrypoint) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'landing.templates requires publicRendererEntrypoint',
+        path: ['publicRendererEntrypoint']
+      });
+    }
+
+    if (slot.publicViewModelVersion !== 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'landing.templates requires publicViewModelVersion 1',
+        path: ['publicViewModelVersion']
+      });
+    }
+
+    if (!slot.templates?.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'landing.templates requires at least one template',
+        path: ['templates']
+      });
+      return;
+    }
+
+    for (const [index, template] of slot.templates.entries()) {
+      if (!template.thumbnail) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'landing.templates requires a packaged thumbnail for every template',
+          path: ['templates', index, 'thumbnail']
+        });
+      }
+    }
+  });
 export type TPluginSlotContribution = z.infer<typeof ZPluginSlotContribution>;
 
 export const ZPluginContributions = z
@@ -204,7 +263,6 @@ export const ZPluginContributions = z
     navigation: z.array(ZPluginNavigationContribution).optional().default([]),
     pages: z.array(ZPluginPageContribution).optional().default([]),
     actions: z.array(ZPluginActionContribution).optional().default([]),
-    commands: z.array(ZPluginCommandContribution).optional().default([]),
     slots: z.array(ZPluginSlotContribution).optional().default([])
   })
   .strict();
@@ -234,25 +292,9 @@ export const ZPluginRuntimeUi = z
   .strict();
 export type TPluginRuntimeUi = z.infer<typeof ZPluginRuntimeUi>;
 
-export const ZPluginRuntimeBackend = z
-  .object({
-    type: z.literal('remote'),
-    baseUrl: z.string().url().refine(isAllowedNetworkOrigin, {
-      message: 'Backend baseUrl must be an exact HTTPS origin (or localhost HTTP origin for local testing)'
-    }),
-    webhookPath: z
-      .string()
-      .trim()
-      .refine((path) => path.startsWith('/'), { message: 'webhookPath must start with /' })
-      .optional()
-  })
-  .strict();
-export type TPluginRuntimeBackend = z.infer<typeof ZPluginRuntimeBackend>;
-
 export const ZPluginRuntime = z
   .object({
-    ui: ZPluginRuntimeUi.optional(),
-    backend: ZPluginRuntimeBackend.optional()
+    ui: ZPluginRuntimeUi.optional()
   })
   .strict();
 export type TPluginRuntime = z.infer<typeof ZPluginRuntime>;
@@ -286,13 +328,6 @@ export const ZPluginNetworkAccess = z
   .strict();
 export type TPluginNetworkAccess = z.infer<typeof ZPluginNetworkAccess>;
 
-export const ZPluginEvents = z
-  .object({
-    subscriptions: z.array(z.string().trim().min(1).max(128)).optional().default([])
-  })
-  .strict();
-export type TPluginEvents = z.infer<typeof ZPluginEvents>;
-
 export const ZPluginDataPolicy = z
   .object({
     storesCustomerData: z.boolean(),
@@ -302,12 +337,174 @@ export const ZPluginDataPolicy = z
   .strict();
 export type TPluginDataPolicy = z.infer<typeof ZPluginDataPolicy>;
 
+export interface TPluginJsonSchema {
+  type: 'object' | 'array' | 'string' | 'number' | 'integer' | 'boolean' | 'null';
+  title?: string;
+  description?: string;
+  default?: unknown;
+  enum?: unknown[];
+  const?: unknown;
+  properties?: Record<string, TPluginJsonSchema>;
+  required?: string[];
+  additionalProperties?: boolean;
+  items?: TPluginJsonSchema;
+  minItems?: number;
+  maxItems?: number;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
+  minimum?: number;
+  maximum?: number;
+}
+
+export const ZPluginJsonSchema: z.ZodType<TPluginJsonSchema> = z.lazy(() =>
+  z
+    .object({
+      type: z.enum(['object', 'array', 'string', 'number', 'integer', 'boolean', 'null']),
+      title: z.string().trim().min(1).max(100).optional(),
+      description: z.string().trim().max(280).optional(),
+      default: z.json().optional(),
+      enum: z.array(z.json()).min(1).optional(),
+      const: z.json().optional(),
+      properties: z.record(z.string(), ZPluginJsonSchema).optional(),
+      required: z.array(z.string().trim().min(1)).optional(),
+      additionalProperties: z.boolean().optional(),
+      items: ZPluginJsonSchema.optional(),
+      minItems: z.number().int().min(0).optional(),
+      maxItems: z.number().int().min(0).optional(),
+      minLength: z.number().int().min(0).optional(),
+      maxLength: z.number().int().min(0).optional(),
+      pattern: z
+        .string()
+        .max(256)
+        .refine((pattern) => {
+          try {
+            new RegExp(pattern);
+            return true;
+          } catch {
+            return false;
+          }
+        })
+        .optional(),
+      minimum: z.number().finite().optional(),
+      maximum: z.number().finite().optional()
+    })
+    .strict()
+    .superRefine((schema, ctx) => {
+      if (
+        schema.type !== 'object' &&
+        (schema.properties || schema.required || schema.additionalProperties !== undefined)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Object keywords require type "object"'
+        });
+      }
+
+      if (schema.type !== 'array' && (schema.items || schema.minItems !== undefined || schema.maxItems !== undefined)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Array keywords require type "array"'
+        });
+      }
+
+      if (
+        schema.type !== 'string' &&
+        (schema.minLength !== undefined || schema.maxLength !== undefined || schema.pattern !== undefined)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'String keywords require type "string"'
+        });
+      }
+
+      if (schema.type !== 'number' && schema.type !== 'integer') {
+        if (schema.minimum !== undefined || schema.maximum !== undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Numeric keywords require type "number" or "integer"'
+          });
+        }
+      }
+    })
+);
+
+function jsonValuesEqual(left: unknown, right: unknown): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function getJsonSchemaValidationError(value: unknown, schema: TPluginJsonSchema, path: string): string | null {
+  const valueType = Array.isArray(value) ? 'array' : value === null ? 'null' : typeof value;
+  const typeMatches =
+    schema.type === 'integer' ? typeof value === 'number' && Number.isInteger(value) : schema.type === valueType;
+
+  if (!typeMatches) {
+    return `${path} must be a ${schema.type}`;
+  }
+
+  if (schema.const !== undefined && !jsonValuesEqual(value, schema.const)) {
+    return `${path} must match the declared constant`;
+  }
+
+  if (schema.enum && !schema.enum.some((candidate) => jsonValuesEqual(value, candidate))) {
+    return `${path} must match one of the declared values`;
+  }
+
+  if (typeof value === 'string') {
+    if (schema.minLength !== undefined && value.length < schema.minLength) return `${path} is too short`;
+    if (schema.maxLength !== undefined && value.length > schema.maxLength) return `${path} is too long`;
+    if (schema.pattern && !new RegExp(schema.pattern).test(value)) return `${path} has an invalid format`;
+  }
+
+  if (typeof value === 'number') {
+    if (schema.minimum !== undefined && value < schema.minimum) return `${path} is below the minimum`;
+    if (schema.maximum !== undefined && value > schema.maximum) return `${path} is above the maximum`;
+  }
+
+  if (Array.isArray(value)) {
+    if (schema.minItems !== undefined && value.length < schema.minItems) return `${path} has too few items`;
+    if (schema.maxItems !== undefined && value.length > schema.maxItems) return `${path} has too many items`;
+    if (schema.items) {
+      for (const [index, item] of value.entries()) {
+        const error = getJsonSchemaValidationError(item, schema.items, `${path}[${index}]`);
+        if (error) return error;
+      }
+    }
+  }
+
+  if (valueType === 'object') {
+    const objectValue = value as Record<string, unknown>;
+    for (const key of schema.required ?? []) {
+      if (!(key in objectValue)) return `${path}.${key} is required`;
+    }
+
+    for (const [key, propertySchema] of Object.entries(schema.properties ?? {})) {
+      if (!(key in objectValue)) continue;
+
+      const error = getJsonSchemaValidationError(objectValue[key], propertySchema, `${path}.${key}`);
+      if (error) return error;
+    }
+
+    if (schema.additionalProperties === false) {
+      const declaredProperties = new Set(Object.keys(schema.properties ?? {}));
+      const unknownProperty = Object.keys(objectValue).find((key) => !declaredProperties.has(key));
+      if (unknownProperty) return `${path}.${unknownProperty} is not allowed`;
+    }
+  }
+
+  return null;
+}
+
+export function validatePluginJsonValue(value: unknown, schema: TPluginJsonSchema): string | null {
+  return getJsonSchemaValidationError(value, schema, '$');
+}
+
 export const ZPluginStorageDocument = z
   .object({
     namespace: z.string().trim().min(1).max(64),
-    scope: z.enum(['organization', 'user']),
+    scope: z.enum(['organization', 'user', 'resource']),
     schemaVersion: z.number().int().min(1),
-    schema: z.record(z.string(), z.unknown())
+    schema: ZPluginJsonSchema
   })
   .strict();
 export type TPluginStorageDocument = z.infer<typeof ZPluginStorageDocument>;
@@ -363,17 +560,15 @@ export const ZPluginManifest = z
     runtime: ZPluginRuntime.optional(),
     permissions: ZPluginPermissions.default({ required: [], optional: [] }),
     networkAccess: ZPluginNetworkAccess.optional().default({ allowedDomains: [] }),
-    events: ZPluginEvents.optional().default({ subscriptions: [] }),
     contributes: ZPluginContributions.optional().default({
       navigation: [],
       pages: [],
       actions: [],
-      commands: [],
       slots: []
     }),
     settings: z
       .object({
-        schema: z.record(z.string(), z.unknown()).optional()
+        schema: ZPluginJsonSchema.optional()
       })
       .strict()
       .optional(),
@@ -417,41 +612,35 @@ export const ZPluginManifest = z
     }
 
     for (const [idx, action] of data.contributes.actions.entries()) {
-      if (
-        (action.renderMode === 'custom' || action.entrypoint) &&
-        (!action.entrypoint || !declaredEntrypoints[action.entrypoint])
-      ) {
+      const actionOrigin = getUrlTemplateOrigin(action.urlTemplate);
+      const allowedOrigins = data.networkAccess.allowedDomains.map((domain) => new URL(domain).origin);
+
+      if (!actionOrigin || !allowedOrigins.includes(actionOrigin)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `Action "${action.id}" references undeclared ui.entrypoint "${action.entrypoint}"`,
-          path: ['contributes', 'actions', idx, 'entrypoint']
+          message: `Action "${action.id}" URL origin must be declared in networkAccess.allowedDomains`,
+          path: ['contributes', 'actions', idx, 'urlTemplate']
         });
-      }
-
-      if (action.actionType === 'openUrl' && action.urlTemplate) {
-        const actionOrigin = getUrlTemplateOrigin(action.urlTemplate);
-        const allowedOrigins = data.networkAccess.allowedDomains.map((domain) => new URL(domain).origin);
-
-        if (!actionOrigin || !allowedOrigins.includes(actionOrigin)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `Action "${action.id}" URL origin must be declared in networkAccess.allowedDomains`,
-            path: ['contributes', 'actions', idx, 'urlTemplate']
-          });
-        }
       }
     }
 
     for (const [idx, slot] of data.contributes.slots.entries()) {
-      if (
-        (slot.renderMode === 'custom' || slot.entrypoint) &&
-        (!slot.entrypoint || !declaredEntrypoints[slot.entrypoint])
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Slot "${slot.id}" references undeclared ui.entrypoint "${slot.entrypoint}"`,
-          path: ['contributes', 'slots', idx, 'entrypoint']
-        });
+      const entrypointNames =
+        slot.target === 'landing.templates'
+          ? [slot.pickerEntrypoint, slot.publicRendererEntrypoint]
+          : [slot.entrypoint];
+
+      for (const entrypointName of entrypointNames) {
+        if (
+          (slot.renderMode === 'custom' || entrypointName) &&
+          (!entrypointName || !declaredEntrypoints[entrypointName])
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Slot "${slot.id}" references undeclared ui.entrypoint "${entrypointName}"`,
+            path: ['contributes', 'slots', idx]
+          });
+        }
       }
     }
 

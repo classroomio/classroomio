@@ -120,10 +120,12 @@ describe('MessageChannel UI host bridge', () => {
     host.destroy();
   });
 
-  it('does not recognize data API calls as UI-host capabilities', () => {
-    expect(isValidBridgeRpcPayload('lessons:get', { id: 'lesson_123' })).toBe(false);
-    expect(isValidBridgeRpcPayload('courses:list', {})).toBe(false);
+  it('validates the published typed data capabilities', () => {
+    expect(isValidBridgeRpcPayload('lessons:get', { id: 'lesson_123' })).toBe(true);
+    expect(isValidBridgeRpcPayload('courses:list', {})).toBe(true);
     expect(isValidBridgeRpcPayload('storage:get', { namespace: 'settings', key: 'theme' })).toBe(false);
+    expect(isValidBridgeRpcPayload('lessons:get', {})).toBe(false);
+    expect(isValidBridgeRpcPayload('progress:setCompletion', { lessonId: 'lesson_123', isComplete: true })).toBe(true);
   });
 
   it('exchanges theme state and notifies the plugin when it changes', async () => {
@@ -154,17 +156,17 @@ describe('MessageChannel UI host bridge', () => {
     host.destroy();
   });
 
-  it('dispatches generic host actions and storage calls', async () => {
+  it('dispatches typed course and storage calls', async () => {
     const channel = new MessageChannel();
-    let handledAction: { action: string; data?: unknown } | null = null;
+    let courseListingRequested = false;
     const host = new PluginBridgeHost({
       iframe: {} as HTMLIFrameElement,
       targetOrigin: 'https://plugin.example.com',
       context: mockContext,
       handlers: {
-        onAction: async (payload) => {
-          handledAction = payload;
-          return { applied: true };
+        onCoursesList: async () => {
+          courseListingRequested = true;
+          return { items: [{ id: 'course_1', title: 'Course one' }] };
         },
         onStorageGet: async ({ key }) => (key === 'setting' ? 'dark' : null),
         onStorageSet: async () => {}
@@ -175,9 +177,9 @@ describe('MessageChannel UI host bridge', () => {
     host.attachPort(channel.port1);
     client.attachPort(channel.port2, mockContext);
 
-    const result = await client.action('apply', { templateId: 't1' });
-    expect(result).toEqual({ applied: true });
-    expect(handledAction).toEqual({ action: 'apply', data: { templateId: 't1' } });
+    const result = await client.courses.list<{ items: { id: string; title: string }[] }>();
+    expect(result).toEqual({ items: [{ id: 'course_1', title: 'Course one' }] });
+    expect(courseListingRequested).toBe(true);
 
     await expect(client.storage.get('setting')).resolves.toBe('dark');
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ZPluginManifest,
+  validatePluginJsonValue,
   isSensitiveScope,
   PLUGIN_PERMISSION_SCOPES,
   SENSITIVE_PLUGIN_SCOPES
@@ -35,7 +36,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
       slots: [
         {
           id: 'reading-time-sidebar',
-          target: 'lesson.sidebar',
+          target: 'course.sidebar',
           entrypoint: 'sidebarWidget'
         }
       ]
@@ -56,7 +57,24 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
     }
   });
 
-  it('validates a complex remote app manifest with backend and network access', () => {
+  it('validates manifest-declared structured values', () => {
+    const schema = {
+      type: 'object' as const,
+      properties: {
+        enabled: { type: 'boolean' as const },
+        label: { type: 'string' as const, minLength: 3 }
+      },
+      required: ['enabled'],
+      additionalProperties: false
+    };
+
+    expect(validatePluginJsonValue({ enabled: true, label: 'Ready' }, schema)).toBeNull();
+    expect(validatePluginJsonValue({ label: 'Ready' }, schema)).toBe('$.enabled is required');
+    expect(validatePluginJsonValue({ enabled: true, label: 'x' }, schema)).toBe('$.label is too short');
+    expect(validatePluginJsonValue({ enabled: true, unknown: 'value' }, schema)).toBe('$.unknown is not allowed');
+  });
+
+  it('rejects remote backend and event subscription declarations', () => {
     const remoteAppManifest = {
       manifestVersion: 1,
       id: 'com.classroomio.certificate-studio',
@@ -122,7 +140,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
     };
 
     const result = ZPluginManifest.safeParse(remoteAppManifest);
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
   });
 
   it('rejects manifest with non-SemVer version', () => {
@@ -196,7 +214,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
         slots: [
           {
             id: 'reading-time-sidebar',
-            target: 'lesson.sidebar',
+            target: 'course.sidebar',
             entrypoint: 'unregisteredEntrypoint'
           }
         ]
@@ -214,7 +232,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
           {
             id: 'missing-page-navigation',
             title: 'Missing page',
-            location: 'organization.settings',
+            location: 'organization.navigation',
             page: 'missing-page'
           }
         ]
@@ -288,12 +306,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
     const result = ZPluginManifest.safeParse(manifestContent);
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.permissions.required).toEqual([
-        'learner.progress:read',
-        'learner.progress:write',
-        'plugin.storage:read',
-        'plugin.storage:write'
-      ]);
+      expect(result.data.permissions.required).toEqual(['plugin.storage:read', 'plugin.storage:write']);
       expect(result.data.dataPolicy.storesCustomerData).toBe(true);
     }
   });
@@ -380,7 +393,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.permissions.required).toContain('course.metadata:read');
-      expect(result.data.contributes.navigation[0]?.location).toBe('organization.settings');
+      expect(result.data.contributes.navigation[0]?.location).toBe('organization.navigation');
     }
   });
 
@@ -402,7 +415,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
     expect(result.success).toBe(true);
   });
 
-  it('validates a headless plugin without runtime or UI', () => {
+  it('rejects headless event-only plugins', () => {
     const headlessManifest = {
       manifestVersion: 1,
       id: 'com.classroomio.webhook-sync',
@@ -426,10 +439,10 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
       }
     };
     const result = ZPluginManifest.safeParse(headlessManifest);
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
   });
 
-  it('validates host-rendered declarative slot without entrypoint', () => {
+  it('rejects host-rendered slot declarations without an entrypoint', () => {
     const hostSlotManifest = {
       ...validManifest,
       contributes: {
@@ -444,7 +457,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
       }
     };
     const result = ZPluginManifest.safeParse(hostSlotManifest);
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
   });
 
   it('rejects unknown top-level fields (fails closed)', () => {
@@ -470,13 +483,23 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
   it('validates landing.templates slot contribution with declared templates metadata', () => {
     const landingTemplatesManifest = {
       ...validManifest,
+      runtime: {
+        ui: {
+          entrypoints: {
+            sidebarWidget: 'dist/ui/widget.html',
+            publicRenderer: 'dist/ui/render.html'
+          }
+        }
+      },
       contributes: {
         slots: [
           {
             id: 'landing-templates-picker',
             target: 'landing.templates',
             renderMode: 'custom',
-            entrypoint: 'sidebarWidget',
+            pickerEntrypoint: 'sidebarWidget',
+            publicRendererEntrypoint: 'publicRenderer',
+            publicViewModelVersion: 1,
             title: 'Creative Landing Page Templates',
             templates: [
               {
@@ -488,14 +511,41 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
               {
                 id: 'midnight-aurora',
                 name: 'Midnight Aurora',
-                description: 'Obsidian dark mode, mesh gradients, glassmorphism.'
+                description: 'Obsidian dark mode, mesh gradients, glassmorphism.',
+                thumbnail: 'assets/thumbnails/midnight-aurora.png'
               }
             ]
           }
         ]
       }
     };
+
     const result = ZPluginManifest.safeParse(landingTemplatesManifest);
     expect(result.success).toBe(true);
+  });
+
+  it('rejects landing.templates without explicit picker and public renderer entrypoints', () => {
+    const invalidLandingTemplatesManifest = {
+      ...validManifest,
+      contributes: {
+        slots: [
+          {
+            id: 'landing-templates-picker',
+            target: 'landing.templates',
+            renderMode: 'custom',
+            entrypoint: 'sidebarWidget',
+            templates: [
+              {
+                id: 'neo-brutalism',
+                name: 'Neo-Brutalism',
+                thumbnail: 'assets/thumbnails/neo-brutalism.png'
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    expect(ZPluginManifest.safeParse(invalidLandingTemplatesManifest).success).toBe(false);
   });
 });

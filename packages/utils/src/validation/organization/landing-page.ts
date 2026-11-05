@@ -83,14 +83,34 @@ export function normalizeLandingPageAppearance(rawAppearance: unknown, rawTheme?
 }
 
 export const ZGetPublicLandingPageQuery = z.object({
-  siteName: z.string().trim().min(1),
-  templateId: z.string().trim().optional()
+  siteName: z.string().trim().min(1)
 });
 export type TGetPublicLandingPageQuery = z.infer<typeof ZGetPublicLandingPageQuery>;
+
+export const ZActivateLandingTemplate = z
+  .object({
+    installationId: z.string().uuid(),
+    contributionId: z.string().trim().min(1).max(64),
+    templateId: z.string().trim().min(1).max(64),
+    fallbackTheme: ZNativeLandingPageTheme.optional()
+  })
+  .strict();
+export type TActivateLandingTemplate = z.infer<typeof ZActivateLandingTemplate>;
+
+export const ZPreviewLandingTemplateQuery = z
+  .object({
+    installationId: z.string().uuid(),
+    contributionId: z.string().trim().min(1).max(64),
+    templateId: z.string().trim().min(1).max(64)
+  })
+  .strict();
+export type TPreviewLandingTemplateQuery = z.infer<typeof ZPreviewLandingTemplateQuery>;
 
 export const ZPublicLandingPluginDescriptor = z
   .object({
     pluginId: z.string(),
+    installationId: z.string().uuid(),
+    contributionId: z.string(),
     version: z.string(),
     artifactDigest: z.string(),
     entrypointUrl: z.string(),

@@ -1,10 +1,16 @@
 export const BRIDGE_PROTOCOL_VERSION = '1.0' as const;
+export const BRIDGE_MAX_REQUEST_BYTES = 64 * 1024;
+export const BRIDGE_MAX_RESPONSE_BYTES = 256 * 1024;
 
 export interface PluginContext {
   installationId: string;
   pluginId: string;
   version: string;
-  backendAudience?: string;
+  capabilities?: string[];
+  locale?: string;
+  actor?: {
+    role: 'admin' | 'tutor' | 'learner' | 'public';
+  };
   organization?: {
     id: string;
     name: string;
@@ -49,7 +55,8 @@ export type BridgeErrorCode =
   | 'TIMEOUT'
   | 'INTERNAL_ERROR'
   | 'NOT_FOUND'
-  | 'NOT_SUPPORTED';
+  | 'NOT_SUPPORTED'
+  | 'RESPONSE_TOO_LARGE';
 
 export interface BridgeErrorPayload {
   code: BridgeErrorCode;
@@ -89,13 +96,6 @@ export interface BridgeNavigationOpenPayload {
   href: string;
 }
 
-export type BridgeLaunchCodeRequestPayload = Record<string, never>;
-
-export interface BridgeLaunchCodeResponseData {
-  code: string;
-  expiresInSeconds: number;
-}
-
 export interface BridgeSetDirtyPayload {
   dirty: boolean;
 }
@@ -115,6 +115,8 @@ export interface BridgeStorageSetPayload {
   scope?: 'organization' | 'user' | 'resource';
   resourceType?: string;
   resourceId?: string;
+  schemaVersion?: number;
+  expectedVersion?: number;
 }
 
 export interface BridgeStorageDeletePayload {
@@ -130,11 +132,45 @@ export interface BridgeStorageListPayload {
   scope?: 'organization' | 'user' | 'resource';
   resourceType?: string;
   resourceId?: string;
+  cursor?: string;
+  limit?: number;
 }
 
-export interface BridgeActionPayload<T = unknown> {
-  action: string;
-  data?: T;
+export interface BridgeCoursesListPayload {
+  cursor?: string;
+  limit?: number;
+  publishedOnly?: boolean;
+}
+
+export interface BridgeCourseResourcePayload {
+  courseId?: string;
+}
+
+export interface BridgeIdPayload {
+  id: string;
+}
+
+export interface BridgeListPayload {
+  cursor?: string;
+  limit?: number;
+  courseId?: string;
+  lessonId?: string;
+  publishedOnly?: boolean;
+}
+
+export interface BridgeProgressSetPayload {
+  lessonId: string;
+  isComplete: boolean;
+}
+
+export interface BridgeTemplateSelectionPayload {
+  templateId: string;
+}
+
+export interface BridgeCertificateTemplateApplyPayload {
+  templateId: string;
+  document: unknown;
+  name?: string;
 }
 
 export function isBridgeHandshakeInit(message: unknown): message is BridgeHandshakeInit {
@@ -207,16 +243,61 @@ export function isValidBridgeRpcPayload(action: string, payload: unknown): boole
     case 'ui:preferences:set':
       return typeof payload.key === 'string' && 'value' in payload;
     case 'ui:storage:get':
+    case 'ui:storage:getRecord':
     case 'ui:storage:delete':
       return typeof payload.key === 'string' && isStorageScope(payload.scope);
     case 'ui:storage:set':
-      return typeof payload.key === 'string' && 'value' in payload && isStorageScope(payload.scope);
+      return (
+        typeof payload.key === 'string' &&
+        'value' in payload &&
+        isStorageScope(payload.scope) &&
+        (payload.schemaVersion === undefined || Number.isInteger(payload.schemaVersion)) &&
+        (payload.expectedVersion === undefined || Number.isInteger(payload.expectedVersion))
+      );
     case 'ui:storage:list':
       return (
-        (payload.namespace === undefined || typeof payload.namespace === 'string') && isStorageScope(payload.scope)
+        (payload.namespace === undefined || typeof payload.namespace === 'string') &&
+        isStorageScope(payload.scope) &&
+        (payload.cursor === undefined || typeof payload.cursor === 'string') &&
+        (payload.limit === undefined || Number.isInteger(payload.limit))
       );
-    case 'ui:action':
-      return typeof payload.action === 'string' && payload.action.length > 0;
+    case 'capabilities:list':
+    case 'identity:getCurrent':
+    case 'organization:getProfile':
+    case 'certificateTemplates:list':
+      return isEmptyRecord(payload);
+    case 'courses:list':
+      return (
+        (payload.cursor === undefined || typeof payload.cursor === 'string') &&
+        (payload.limit === undefined || (typeof payload.limit === 'number' && Number.isInteger(payload.limit))) &&
+        (payload.publishedOnly === undefined || typeof payload.publishedOnly === 'boolean')
+      );
+    case 'lessons:list':
+    case 'exercises:list':
+      return payload.courseId === undefined || typeof payload.courseId === 'string';
+    case 'courses:get':
+    case 'courses:getStructure':
+    case 'lessons:get':
+    case 'lessons:getContent':
+    case 'exercises:get':
+    case 'certificates:get':
+    case 'progress:getLesson':
+    case 'progress:getCourse':
+    case 'certificateTemplates:getApplied':
+      return typeof payload.id === 'string' && payload.id.length > 0;
+    case 'certificates:list':
+      return (
+        (payload.cursor === undefined || typeof payload.cursor === 'string') &&
+        (payload.limit === undefined || Number.isInteger(payload.limit)) &&
+        (payload.courseId === undefined || typeof payload.courseId === 'string')
+      );
+    case 'progress:setCompletion':
+      return typeof payload.lessonId === 'string' && typeof payload.isComplete === 'boolean';
+    case 'certificate.templates:apply':
+      return typeof payload.templateId === 'string' && payload.templateId.length > 0 && 'document' in payload;
+    case 'landing.templates:preview':
+    case 'landing.templates:select':
+      return typeof payload.templateId === 'string' && payload.templateId.length > 0;
     default:
       return false;
   }

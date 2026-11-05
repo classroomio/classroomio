@@ -9,7 +9,7 @@ describe('Conformance: Permissions Boundary & RPC Host Isolation', () => {
     pluginId: 'com.example.boundary-test',
     version: '1.0.0',
     surface: {
-      target: 'organization.settings'
+      target: 'organization.navigation'
     }
   };
 

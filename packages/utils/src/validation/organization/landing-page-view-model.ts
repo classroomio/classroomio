@@ -43,6 +43,7 @@ export const ZPublicLandingPageViewModel = z
   .object({
     theme: z.string().trim().min(1),
     templateId: z.string().trim().min(1),
+    locale: z.string().trim().min(2).max(35),
     organization: z
       .object({
         id: z.string(),
@@ -160,6 +161,7 @@ export interface ProjectPublicLandingPageViewModelParams {
     name: string;
     siteName?: string;
     avatarUrl?: string | null;
+    locale?: string;
   };
   landingpage?: Record<string, unknown> | null;
   courses?: Array<Record<string, unknown>>;
@@ -339,6 +341,7 @@ export function projectPublicLandingPageViewModel(
   return {
     theme: params.theme,
     templateId: params.templateId,
+    locale: params.org.locale ?? 'en',
     organization: {
       id: params.org.id,
       name: params.org.name,

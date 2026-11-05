@@ -23,7 +23,7 @@
     }
   },
   "permissions": {
-    "required": ["learner.progress:read", "learner.progress:write", "plugin.storage:read", "plugin.storage:write"]
+    "required": ["plugin.storage:read", "plugin.storage:write"]
   },
   "contributes": {
     "slots": [
@@ -40,5 +40,15 @@
     "storesCustomerData": true,
     "retentionAfterUninstallDays": 30,
     "privacyPolicyUrl": "https://classroomio.com/privacy"
+  },
+  "storage": {
+    "documents": [
+      {
+        "namespace": "lesson-acknowledgment",
+        "scope": "user",
+        "schemaVersion": 1,
+        "schema": { "type": "object", "additionalProperties": true }
+      }
+    ]
   }
 }

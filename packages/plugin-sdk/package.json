@@ -21,6 +21,10 @@
     "./protocol": {
       "types": "./dist/bridge/protocol.d.ts",
       "default": "./dist/bridge/protocol.js"
+    },
+    "./public-landing": {
+      "types": "./dist/public-landing/index.d.ts",
+      "default": "./dist/public-landing/index.js"
     }
   },
   "bin": {
@@ -28,8 +32,12 @@
   },
   "files": [
     "dist",
-    "bin"
+    "bin",
+    "schema"
   ],
+  "dependencies": {
+    "@cio/utils": "workspace:*"
+  },
   "scripts": {
     "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
     "dev": "tsc --watch",

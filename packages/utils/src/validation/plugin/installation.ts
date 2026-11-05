@@ -88,7 +88,9 @@ export const ZPluginStorageQuery = z
   .object({
     scope: z.enum(['organization', 'user', 'resource']).optional().default('organization'),
     resourceType: z.string().trim().min(1).max(64).optional(),
-    resourceId: z.string().uuid().optional()
+    resourceId: z.string().uuid().optional(),
+    cursor: z.string().trim().min(1).max(255).optional(),
+    limit: z.coerce.number().int().min(1).max(100).optional().default(20)
   })
   .superRefine((data, ctx) => {
     if (data.scope === 'resource') {
@@ -115,7 +117,9 @@ export const ZPluginStoragePut = z
     value: z.unknown(),
     scope: z.enum(['organization', 'user', 'resource']).optional().default('organization'),
     resourceType: z.string().trim().min(1).max(64).optional(),
-    resourceId: z.string().uuid().optional()
+    resourceId: z.string().uuid().optional(),
+    expectedVersion: z.number().int().min(0).optional(),
+    schemaVersion: z.number().int().min(1)
   })
   .superRefine((data, ctx) => {
     if (data.scope === 'resource') {

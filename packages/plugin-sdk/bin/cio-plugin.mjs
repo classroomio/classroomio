@@ -15,34 +15,27 @@ const KEBAB_CASE_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ALLOWED_CAPABILITIES = new Set([
   'identity.profile:read',
   'organization.profile:read',
-  'organization.members:read',
   'course.metadata:read',
   'course.content:read',
-  'course.metadata:write',
-  'course.enrollment:read',
-  'course.enrollment:write',
   'lesson.metadata:read',
   'lesson.content:read',
-  'lesson:write',
-  'learner.profile:read',
   'learner.progress:read',
   'learner.progress:write',
   'exercise.metadata:read',
-  'submission:read',
-  'submission:write',
-  'grade:read',
-  'grade:write',
   'certificate.issued:read',
-  'certificate.issuance:write',
-  'certificate.revocation:write',
   'certificate.template:read',
   'certificate.template:write',
-  'cohort.metadata:read',
-  'cohort.membership:read',
-  'analytics.summary:read',
-  'notification:write',
   'plugin.storage:read',
   'plugin.storage:write'
+]);
+
+const ALLOWED_TARGETS = new Set([
+  'lms.banner',
+  'course.sidebar',
+  'lesson.after',
+  'certificate.actions',
+  'certificate.templates',
+  'landing.templates'
 ]);
 
 function isSafeRelativePath(p) {
@@ -177,7 +170,27 @@ export function validateManifest(manifest) {
       if (!slot.id || !slot.target) {
         errors.push('Each slot in contributes.slots must have an id and target');
       }
-      if (slot.entrypoint && !declaredEntrypoints[slot.entrypoint]) {
+      if (!ALLOWED_TARGETS.has(slot.target)) {
+        errors.push(`Slot "${slot.id}" uses unsupported target "${slot.target}"`);
+      }
+      if (slot.target === 'landing.templates') {
+        if (!slot.pickerEntrypoint || !declaredEntrypoints[slot.pickerEntrypoint]) {
+          errors.push(`Slot "${slot.id}" references undeclared picker ui.entrypoint "${slot.pickerEntrypoint}"`);
+        }
+        if (!slot.publicRendererEntrypoint || !declaredEntrypoints[slot.publicRendererEntrypoint]) {
+          errors.push(
+            `Slot "${slot.id}" references undeclared public renderer ui.entrypoint "${slot.publicRendererEntrypoint}"`
+          );
+        }
+        if (slot.publicViewModelVersion !== 1) {
+          errors.push(`Slot "${slot.id}" must declare publicViewModelVersion 1`);
+        }
+        for (const template of slot.templates ?? []) {
+          if (!template.thumbnail || !isSafeRelativePath(template.thumbnail)) {
+            errors.push(`Landing template "${template.id}" must declare a safe packaged thumbnail`);
+          }
+        }
+      } else if (slot.entrypoint && !declaredEntrypoints[slot.entrypoint]) {
         errors.push(`Slot "${slot.id}" references undeclared ui.entrypoint "${slot.entrypoint}"`);
       }
     }
@@ -186,6 +199,13 @@ export function validateManifest(manifest) {
   if (manifest.contributes?.actions) {
     for (const action of manifest.contributes.actions) {
       if (!action.id) errors.push('Each action in contributes.actions must have an id');
+      if (
+        action.target !== 'certificate.actions' ||
+        action.renderMode === 'custom' ||
+        action.actionType !== 'openUrl'
+      ) {
+        errors.push(`Action "${action.id}" must be a host-rendered certificate.actions openUrl action`);
+      }
       if (action.entrypoint && !declaredEntrypoints[action.entrypoint]) {
         errors.push(`Action "${action.id}" references undeclared ui.entrypoint "${action.entrypoint}"`);
       }
@@ -618,7 +638,16 @@ export function verifyArtifacts(targetDir = '.') {
 
     for (const slot of manifest.contributes?.slots ?? []) {
       if (slot.renderMode === 'custom' || !slot.renderMode) {
-        checkResource(release, resolveEntrypoint(manifest, slot.entrypoint), `slot ${slot.id}`);
+        const entrypointsToCheck =
+          slot.target === 'landing.templates'
+            ? [slot.pickerEntrypoint, slot.publicRendererEntrypoint]
+            : [slot.entrypoint];
+        for (const entrypoint of entrypointsToCheck) {
+          checkResource(release, resolveEntrypoint(manifest, entrypoint), `slot ${slot.id}`);
+        }
+        for (const template of slot.templates ?? []) {
+          if (template.thumbnail) checkResource(release, template.thumbnail, `template ${template.id} thumbnail`);
+        }
       }
     }
 
@@ -748,7 +777,7 @@ export function scaffoldPlugin(target = 'my-classroomio-plugin', options = {}) {
         {
           id: `${slug}-navigation`,
           title: displayName,
-          location: 'organization.settings',
+          location: 'organization.navigation',
           page: 'main'
         }
       ]

@@ -13,7 +13,12 @@ import {
   type BridgeStorageSetPayload,
   type BridgeStorageDeletePayload,
   type BridgeStorageListPayload,
-  type BridgeActionPayload,
+  type BridgeCoursesListPayload,
+  type BridgeCourseResourcePayload,
+  type BridgeTemplateSelectionPayload,
+  type BridgeCertificateTemplateApplyPayload,
+  BRIDGE_MAX_REQUEST_BYTES,
+  BRIDGE_MAX_RESPONSE_BYTES,
   DEFAULT_LIGHT_THEME_V1,
   BRIDGE_PROTOCOL_VERSION,
   isBridgeRpcRequest,
@@ -31,10 +36,17 @@ export interface PluginBridgeHostHandlers {
   onPreferenceSet?: (payload: { key: string; value: unknown; namespace?: string }) => Promise<void>;
   onPreferenceDelete?: (payload: { key: string; namespace?: string }) => Promise<boolean | void>;
   onStorageGet?: (payload: BridgeStorageGetPayload) => Promise<unknown>;
-  onStorageSet?: (payload: BridgeStorageSetPayload) => Promise<void>;
+  onStorageGetRecord?: (payload: BridgeStorageGetPayload) => Promise<unknown>;
+  onStorageSet?: (payload: BridgeStorageSetPayload) => Promise<unknown>;
   onStorageDelete?: (payload: BridgeStorageDeletePayload) => Promise<boolean | void>;
   onStorageList?: (payload: BridgeStorageListPayload) => Promise<unknown>;
-  onAction?: (payload: BridgeActionPayload) => Promise<unknown>;
+  onCoursesList?: (payload: BridgeCoursesListPayload) => Promise<unknown>;
+  onLessonsList?: (payload: BridgeCourseResourcePayload) => Promise<unknown>;
+  onExercisesList?: (payload: BridgeCourseResourcePayload) => Promise<unknown>;
+  onLandingTemplatePreview?: (payload: BridgeTemplateSelectionPayload) => Promise<unknown>;
+  onLandingTemplateSelect?: (payload: BridgeTemplateSelectionPayload) => Promise<unknown>;
+  onCertificateTemplateApply?: (payload: BridgeCertificateTemplateApplyPayload) => Promise<unknown>;
+  onDataRequest?: (action: string, payload: Record<string, unknown>) => Promise<unknown>;
 }
 
 export interface PluginBridgeHostOptions {
@@ -120,6 +132,7 @@ export class PluginBridgeHost {
 
     // Handle RPC requests from plugin
     if (isBridgeRpcRequest(data)) {
+      if (JSON.stringify(data).length > BRIDGE_MAX_REQUEST_BYTES) return;
       await this.dispatchRpc(data);
     }
   }
@@ -210,9 +223,17 @@ export class PluginBridgeHost {
           }
           break;
         }
+        case 'ui:storage:getRecord': {
+          if (!this.options.handlers.onStorageGetRecord) {
+            resultData = null;
+          } else {
+            resultData = await this.options.handlers.onStorageGetRecord(request.payload as BridgeStorageGetPayload);
+          }
+          break;
+        }
         case 'ui:storage:set': {
           if (this.options.handlers.onStorageSet) {
-            await this.options.handlers.onStorageSet(request.payload as BridgeStorageSetPayload);
+            resultData = await this.options.handlers.onStorageSet(request.payload as BridgeStorageSetPayload);
           }
           break;
         }
@@ -232,15 +253,79 @@ export class PluginBridgeHost {
           }
           break;
         }
-        case 'ui:action': {
-          if (this.options.handlers.onAction) {
-            resultData = await this.options.handlers.onAction(request.payload as BridgeActionPayload);
-          } else {
-            throw {
-              code: 'NOT_SUPPORTED',
-              message: `Host action "${(request.payload as BridgeActionPayload).action}" is not supported in this surface context`
-            };
+        case 'courses:list': {
+          if (!this.options.handlers.onCoursesList) {
+            throw { code: 'NOT_SUPPORTED', message: 'Course listing is unavailable in this surface' };
           }
+          resultData = await this.options.handlers.onCoursesList(request.payload as BridgeCoursesListPayload);
+          break;
+        }
+        case 'lessons:list': {
+          if (!this.options.handlers.onLessonsList) {
+            throw { code: 'NOT_SUPPORTED', message: 'Lesson listing is unavailable in this surface' };
+          }
+          resultData = await this.options.handlers.onLessonsList(request.payload as BridgeCourseResourcePayload);
+          break;
+        }
+        case 'exercises:list': {
+          if (!this.options.handlers.onExercisesList) {
+            throw { code: 'NOT_SUPPORTED', message: 'Exercise listing is unavailable in this surface' };
+          }
+          resultData = await this.options.handlers.onExercisesList(request.payload as BridgeCourseResourcePayload);
+          break;
+        }
+        case 'landing.templates:preview': {
+          if (!this.options.handlers.onLandingTemplatePreview) {
+            throw { code: 'NOT_SUPPORTED', message: 'Landing template previews are unavailable in this surface' };
+          }
+          resultData = await this.options.handlers.onLandingTemplatePreview(
+            request.payload as BridgeTemplateSelectionPayload
+          );
+          break;
+        }
+        case 'landing.templates:select': {
+          if (!this.options.handlers.onLandingTemplateSelect) {
+            throw { code: 'NOT_SUPPORTED', message: 'Landing template selection is unavailable in this surface' };
+          }
+          resultData = await this.options.handlers.onLandingTemplateSelect(
+            request.payload as BridgeTemplateSelectionPayload
+          );
+          break;
+        }
+        case 'certificate.templates:apply': {
+          if (!this.options.handlers.onCertificateTemplateApply) {
+            throw { code: 'NOT_SUPPORTED', message: 'Certificate template selection is unavailable in this surface' };
+          }
+          resultData = await this.options.handlers.onCertificateTemplateApply(
+            request.payload as BridgeCertificateTemplateApplyPayload
+          );
+          break;
+        }
+        case 'capabilities:list': {
+          resultData = this.options.context.capabilities ?? [];
+          break;
+        }
+        case 'identity:getCurrent':
+        case 'organization:getProfile':
+        case 'courses:get':
+        case 'courses:getStructure':
+        case 'lessons:get':
+        case 'lessons:getContent':
+        case 'exercises:get':
+        case 'progress:getLesson':
+        case 'progress:getCourse':
+        case 'progress:setCompletion':
+        case 'certificates:list':
+        case 'certificates:get':
+        case 'certificateTemplates:list':
+        case 'certificateTemplates:getApplied': {
+          if (!this.options.handlers.onDataRequest) {
+            throw { code: 'NOT_SUPPORTED', message: 'Hosted data is unavailable in this surface' };
+          }
+          resultData = await this.options.handlers.onDataRequest(
+            request.action,
+            request.payload as Record<string, unknown>
+          );
           break;
         }
         default: {
@@ -254,6 +339,10 @@ export class PluginBridgeHost {
         success: true,
         data: resultData
       };
+
+      if (JSON.stringify(response).length > BRIDGE_MAX_RESPONSE_BYTES) {
+        throw { code: 'RESPONSE_TOO_LARGE', message: 'RPC response exceeds the bridge size limit' };
+      }
 
       this.port.postMessage(response);
     } catch (err: any) {
