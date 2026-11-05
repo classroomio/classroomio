@@ -354,7 +354,7 @@ export const updateCourseLandingPageSchema = {
     description: z.string().min(1).optional().describe(LANDING_PAGE_COURSE_DESCRIPTION_PLAIN_HINT),
     overview: z.string().optional().describe(LANDING_PAGE_SECTION_HTML_AGENT_HINT),
     cost: z.number().int().min(0).optional().describe('Course price in the selected currency'),
-    currency: z.enum(['NGN', 'USD']).optional().describe('Course price currency'),
+    currency: z.enum(['NGN', 'USD', 'BRL']).optional().describe('Course price currency'),
     imageUrl: z.string().url().optional().describe('Banner image URL to use directly'),
     generateImage: z.boolean().optional().describe('Whether to generate/select a banner image from the image query'),
     imageQuery: z.string().min(1).max(120).optional().describe('Search query for a generated/selected banner image'),
