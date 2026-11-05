@@ -54,6 +54,7 @@ interface UpdateCourseOptions {
  */
 export class CourseApi extends BaseApiWithErrors {
   course = $state<Course | null>(null);
+  inviteRestricted = $state(false);
   courseAnalytics = $state<CourseAnalytics | null>(null);
   get publicConversionOffenders(): NonAutoGradableQuestionOffender[] {
     return publicConversionFlow.offenders;
@@ -349,6 +350,8 @@ export class CourseApi extends BaseApiWithErrors {
    * @returns Success data with redirectTo, or undefined on error
    */
   async enroll(courseId: string, body: { inviteToken?: string } = {}) {
+    this.inviteRestricted = false;
+
     return this.execute<EnrollCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].enroll.$post({
@@ -393,6 +396,13 @@ export class CourseApi extends BaseApiWithErrors {
 
           this.errors = { ...this.errors, general: message };
           snackbar.error(message);
+        } else if (
+          typeof result === 'object' &&
+          result !== null &&
+          'code' in result &&
+          result.code === ErrorCodes.INVITE_RESTRICTED
+        ) {
+          this.inviteRestricted = true;
         } else if (typeof result === 'object' && result !== null && 'error' in result) {
           snackbar.error((result as { error: string }).error);
         }

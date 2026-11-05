@@ -1280,7 +1280,10 @@
           "enrolled_success": "Sie sind für diesen Kurs eingeschrieben.",
           "enrolled_verify_email": "Sie sind eingeschrieben! Bestätigen Sie Ihre E-Mail, um auf diesen Kurs zuzugreifen.",
           "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation.",
-          "members_only": "Nur Mitglieder dieser Organisation können sich einschreiben. Bitten Sie einen Administrator um eine Einladung."
+          "members_only": "Nur Mitglieder dieser Organisation können sich einschreiben. Bitten Sie einen Administrator um eine Einladung.",
+          "invite_restricted_email": "Diese Einladung wurde an {inviteEmail} gesendet, Sie sind jedoch als {currentEmail} angemeldet. Melden Sie sich ab und fahren Sie mit der eingeladenen E-Mail-Adresse fort.",
+          "invite_restricted": "Diese Einladung ist auf ein anderes Konto beschränkt. Melden Sie sich ab und fahren Sie mit dem eingeladenen Konto fort.",
+          "switch_account": "Abmelden und Konto wechseln"
         },
         "pricing_section": {
           "free": "Kostenlos",

@@ -4167,7 +4167,10 @@
           "enrolled_success": "Sei iscritto a questo corso.",
           "enrolled_verify_email": "Sei iscritto! Verifica la tua email per accedere a questo corso.",
           "student_limit_reached": "{orgName} ha raggiunto la sua capacità studentesca. Contatta l'amministratore della tua organizzazione.",
-          "members_only": "Solo i membri di questa organizzazione possono iscriversi. Chiedi un invito a un amministratore."
+          "members_only": "Solo i membri di questa organizzazione possono iscriversi. Chiedi un invito a un amministratore.",
+          "invite_restricted_email": "Questo invito è stato inviato a {inviteEmail}, ma hai effettuato l'accesso come {currentEmail}. Esci e continua con l'indirizzo e-mail invitato.",
+          "invite_restricted": "Questo invito è limitato a un altro account. Esci e continua con l'account invitato.",
+          "switch_account": "Esci e cambia account"
         },
         "course_content": "Contenuto del corso",
         "modules": "moduli",

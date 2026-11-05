@@ -6,6 +6,7 @@ export const ErrorCodes = {
   // Common errors
   NOT_FOUND: 'NOT_FOUND',
   UNAUTHORIZED: 'UNAUTHORIZED',
+  INVITE_RESTRICTED: 'INVITE_RESTRICTED',
   FILE_TYPE_NOT_ALLOWED: 'FILE_TYPE_NOT_ALLOWED',
 
   // Dashboard Analytics errors

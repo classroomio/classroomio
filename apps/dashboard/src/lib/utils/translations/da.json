@@ -1280,7 +1280,10 @@
           "enrolled_success": "Du er tilmeldt dette kursus.",
           "enrolled_verify_email": "Du er tilmeldt! Bekræft din e-mail for at få adgang til dette kursus.",
           "student_limit_reached": "{orgName} har nået sin elevkapacitet. Kontakt venligst din organisations administrator.",
-          "members_only": "Kun medlemmer af denne organisation kan tilmelde sig. Bed en administrator om en invitation."
+          "members_only": "Kun medlemmer af denne organisation kan tilmelde sig. Bed en administrator om en invitation.",
+          "invite_restricted_email": "Denne invitation blev sendt til {inviteEmail}, men du er logget ind som {currentEmail}. Log ud, og fortsæt med den inviterede e-mailadresse.",
+          "invite_restricted": "Denne invitation er begrænset til en anden konto. Log ud, og fortsæt med den inviterede konto.",
+          "switch_account": "Log ud og skift konto"
         },
         "pricing_section": {
           "free": "Gratis",

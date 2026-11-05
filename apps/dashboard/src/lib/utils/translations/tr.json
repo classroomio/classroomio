@@ -4177,7 +4177,10 @@
           "enrolled_success": "Bu kursa kaydoldunuz.",
           "enrolled_verify_email": "Kayıt oldunuz! Bu kursa erişmek için e-posta adresinizi doğrulayın.",
           "student_limit_reached": "{orgName} öğrenci kapasitesine ulaştı. Lütfen kuruluş yöneticinizle iletişime geçin.",
-          "members_only": "Yalnızca bu kuruluşun üyeleri kaydolabilir. Yöneticiden davetiye isteyin."
+          "members_only": "Yalnızca bu kuruluşun üyeleri kaydolabilir. Yöneticiden davetiye isteyin.",
+          "invite_restricted_email": "Bu davet {inviteEmail} adresine gönderildi, ancak {currentEmail} olarak oturum açtınız. Oturumu kapatın ve davet edilen e-postayla devam edin.",
+          "invite_restricted": "Bu davet farklı bir hesapla sınırlıdır. Oturumu kapatın ve davet edilen hesapla devam edin.",
+          "switch_account": "Oturumu kapat ve hesap değiştir"
         },
         "course_content": "Kurs içeriği",
         "modules": "modules",

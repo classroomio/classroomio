@@ -1280,7 +1280,10 @@
           "enrolled_success": "Estás inscrito en este curso.",
           "enrolled_verify_email": "¡Estás inscrito! Verifica tu correo electrónico para acceder a este curso.",
           "student_limit_reached": "{orgName} ha alcanzado su capacidad de estudiantes. Comuníquese con el administrador de su organización.",
-          "members_only": "Solo los miembros de esta organización pueden inscribirse. Solicite una invitación a un administrador."
+          "members_only": "Solo los miembros de esta organización pueden inscribirse. Solicite una invitación a un administrador.",
+          "invite_restricted_email": "Esta invitación se envió a {inviteEmail}, pero has iniciado sesión como {currentEmail}. Cierra sesión y continúa con el correo invitado.",
+          "invite_restricted": "Esta invitación está restringida a otra cuenta. Cierra sesión y continúa con la cuenta invitada.",
+          "switch_account": "Cerrar sesión y cambiar de cuenta"
         },
         "pricing_section": {
           "free": "Gratis",

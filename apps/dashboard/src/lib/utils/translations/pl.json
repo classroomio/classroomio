@@ -1280,7 +1280,10 @@
           "enrolled_success": "Zapisano Cię na ten kurs.",
           "enrolled_verify_email": "Jesteś zapisany! Zweryfikuj swój e-mail, aby uzyskać dostęp do tego kursu.",
           "student_limit_reached": "Organizacja {orgName} osiągnęła już limit uczniów. Skontaktuj się z administratorem organizacji.",
-          "members_only": "Tylko członkowie tej organizacji mogą się zapisać. Poproś administratora o zaproszenie."
+          "members_only": "Tylko członkowie tej organizacji mogą się zapisać. Poproś administratora o zaproszenie.",
+          "invite_restricted_email": "To zaproszenie zostało wysłane na adres {inviteEmail}, ale jesteś zalogowany jako {currentEmail}. Wyloguj się i kontynuuj z zaproszonym adresem e-mail.",
+          "invite_restricted": "To zaproszenie jest ograniczone do innego konta. Wyloguj się i kontynuuj z zaproszonym kontem.",
+          "switch_account": "Wyloguj się i zmień konto"
         },
         "pricing_section": {
           "free": "Bezpłatny",

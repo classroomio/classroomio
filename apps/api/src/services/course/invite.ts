@@ -1082,6 +1082,16 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       throw new AppError('Suspicious invite activity detected', ErrorCodes.VALIDATION_ERROR, 429);
     }
 
+    const allowedEmails = invite.allowedEmails?.map((email) => email.toLowerCase()) || [];
+    if (allowedEmails.length > 0 && !allowedEmails.includes(normalizedEmail)) {
+      throw new AppError('This invite is restricted to a different email address', ErrorCodes.INVITE_RESTRICTED, 403);
+    }
+
+    const allowedDomains = invite.allowedDomains?.map((domain) => domain.toLowerCase()) || [];
+    if (allowedDomains.length > 0 && !allowedDomains.includes(getEmailDomain(normalizedEmail))) {
+      throw new AppError('This invite is restricted to specific email domains', ErrorCodes.INVITE_RESTRICTED, 403);
+    }
+
     // Idempotent behavior: if user is already enrolled, don't consume invite again.
     const existingMemberId = await getGroupMemberIdByGroupAndProfile(course.groupId, user.id, tx);
 
@@ -1132,16 +1142,6 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     }
     if (status === 'USED_UP') {
       throw new AppError('This invite has reached its usage limit', ErrorCodes.VALIDATION_ERROR, 400);
-    }
-
-    const allowedEmails = invite.allowedEmails?.map((email) => email.toLowerCase()) || [];
-    if (allowedEmails.length > 0 && !allowedEmails.includes(normalizedEmail)) {
-      throw new AppError('This invite is restricted to a different email address', ErrorCodes.UNAUTHORIZED, 403);
-    }
-
-    const allowedDomains = invite.allowedDomains?.map((domain) => domain.toLowerCase()) || [];
-    if (allowedDomains.length > 0 && !allowedDomains.includes(getEmailDomain(normalizedEmail))) {
-      throw new AppError('This invite is restricted to specific email domains', ErrorCodes.UNAUTHORIZED, 403);
     }
 
     const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(organization.id, user.id, tx);
