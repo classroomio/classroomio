@@ -3,25 +3,28 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { get } from 'svelte/store';
+  import { cn } from '@cio/ui/tools';
+  import { PLUGIN_SURFACE_CONTRACTS } from '@cio/utils/validation/plugin';
   import { PluginBridgeHost } from '@classroomio/plugin-sdk';
   import { resolveCurrentHostTheme } from '../utils/theme';
   import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import { classroomio } from '$lib/utils/services/api';
+  import { classroomio, getRequestBaseUrl } from '$lib/utils/services/api';
   import type { PluginActionEvent, PluginResourceContext, PluginStorageScope } from '../utils/types';
 
   interface Props {
     installationId: string;
     pluginId: string;
     version: string;
+    contributionId?: string;
+    grantedScopes?: string[];
     organizationId?: string | null;
     srcDoc?: string;
     srcUrl?: string;
     className?: string;
     title?: string;
     target: string;
-    backendAudience?: string;
     resource?: PluginResourceContext;
     onAction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
     onaction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
@@ -31,13 +34,14 @@
     installationId,
     pluginId,
     version,
+    contributionId,
+    grantedScopes = [],
     organizationId = null,
     srcDoc,
     srcUrl,
     className = 'w-full h-full border-0',
     title = 'Plugin Frame',
     target,
-    backendAudience,
     resource,
     onAction,
     onaction
@@ -50,6 +54,14 @@
   let themeObserver: MutationObserver | null = null;
   let frameHeight = $state<number | null>(null);
   let isDirty = false;
+  let isFrameLoading = $state(true);
+  let hasFrameError = $state(false);
+
+  const surfaceContract = $derived(
+    target in PLUGIN_SURFACE_CONTRACTS
+      ? PLUGIN_SURFACE_CONTRACTS[target as keyof typeof PLUGIN_SURFACE_CONTRACTS]
+      : PLUGIN_SURFACE_CONTRACTS['plugin.page']
+  );
 
   function getPreferenceStorageKey(namespace: string, key: string): string {
     const profileId = get(profile)?.id ?? 'anonymous';
@@ -62,6 +74,12 @@
     }
 
     return organizationId;
+  }
+
+  function requireGrantedScope(scope: string): void {
+    if (!grantedScopes.includes(scope)) {
+      throw { code: 'FORBIDDEN', message: `Plugin requires the ${scope} permission` };
+    }
   }
 
   async function responseData<T>(response: Response): Promise<T> {
@@ -91,11 +109,37 @@
   function handleFrameLoad() {
     if (!iframeElement || !bridgeHost) return;
 
+    isFrameLoading = false;
+
     try {
       bridgeHost.startHandshake();
     } catch (error) {
       console.error('[PluginHostFrame] Failed to start bridge handshake:', error);
     }
+  }
+
+  function handleFrameError() {
+    isFrameLoading = false;
+    hasFrameError = true;
+  }
+
+  async function dispatchSurfaceAction(action: string, data: unknown) {
+    if (!effectiveAction) {
+      throw { code: 'NOT_SUPPORTED', message: `The ${target} surface does not support this operation` };
+    }
+
+    const actionDetail: PluginActionEvent = {
+      installationId,
+      pluginId,
+      version,
+      contributionId: contributionId ?? target,
+      target,
+      resource,
+      action,
+      data
+    };
+    const result = await effectiveAction(actionDetail);
+    return result !== undefined ? result : { handled: true };
   }
 
   onMount(() => {
@@ -105,15 +149,15 @@
     window.addEventListener('beforeunload', handleBeforeUnload);
     bridgeHost = new PluginBridgeHost({
       iframe: iframeElement,
-      // Custom plugin frames intentionally have an opaque sandbox origin. The
-      // transferred MessagePort and handshake nonce authenticate the channel.
       targetOrigin: '*',
       theme: currentTheme,
       context: {
         installationId,
         pluginId,
         version,
-        backendAudience,
+        capabilities: grantedScopes,
+        locale: document.documentElement.lang || navigator.language || 'en',
+        actor: { role: $currentOrg.roleId === 1 ? 'admin' : $currentOrg.roleId === 2 ? 'tutor' : 'learner' },
         organization: $currentOrg?.id
           ? {
               id: $currentOrg.id,
@@ -137,7 +181,7 @@
         onResize: async ({ height }) => {
           if (!Number.isFinite(height)) return;
 
-          frameHeight = Math.min(4000, Math.max(0, Math.ceil(height)));
+          frameHeight = Math.min(surfaceContract.maxHeight, Math.max(surfaceContract.minHeight, Math.ceil(height)));
         },
         onNavigate: async ({ href }) => {
           if (!href.startsWith('/') || href.startsWith('//')) {
@@ -170,84 +214,46 @@
           localStorage.removeItem(storageKey);
           return true;
         },
-        onAction: async (payload) => {
-          const actionDetail: PluginActionEvent = {
-            installationId,
-            pluginId,
-            version,
-            target,
-            resource,
-            action: payload.action,
-            data: payload.data
-          };
+        onCoursesList: async ({ cursor, limit, publishedOnly }) => {
+          const orgId = requireOrganizationId();
+          const queryParams: { cursor?: string; limit?: string; publishedOnly?: string } = {};
+          if (cursor) queryParams.cursor = cursor;
+          if (limit !== undefined) queryParams.limit = String(limit);
+          if (publishedOnly !== undefined) queryParams.publishedOnly = String(publishedOnly);
 
-          if (effectiveAction) {
-            const result = await effectiveAction(actionDetail);
-            return result !== undefined ? result : { handled: true };
-          }
-
-          if (payload.action === 'courses:list') {
-            const orgId = requireOrganizationId();
-            const rawData =
-              payload.data && typeof payload.data === 'object' ? (payload.data as Record<string, unknown>) : {};
-            const queryParams: { cursor?: string; limit?: string; publishedOnly?: string } = {};
-            if (typeof rawData.cursor === 'string') queryParams.cursor = rawData.cursor;
-            if (typeof rawData.limit === 'number') queryParams.limit = String(rawData.limit);
-            if (typeof rawData.publishedOnly === 'boolean') queryParams.publishedOnly = String(rawData.publishedOnly);
-
-            const response = await classroomio.plugins.installations[':installationId'].courses.$get(
-              { param: { installationId }, query: queryParams },
-              { headers: { 'cio-org-id': orgId } }
-            );
-            return responseData(response);
-          }
-
-          if (payload.action === 'lessons:list') {
-            const orgId = requireOrganizationId();
-            const rawData =
-              payload.data && typeof payload.data === 'object' ? (payload.data as Record<string, unknown>) : {};
-            const queryParams: { courseId?: string } = {};
-            if (typeof rawData.courseId === 'string') {
-              queryParams.courseId = rawData.courseId;
-            } else if (resource?.type === 'course' && resource.id) {
-              queryParams.courseId = resource.id;
-            }
-
-            const response = await classroomio.plugins.installations[':installationId'].lessons.$get(
-              {
-                param: { installationId },
-                query: queryParams
-              },
-              { headers: { 'cio-org-id': orgId } }
-            );
-            return responseData(response);
-          }
-
-          if (payload.action === 'exercises:list') {
-            const orgId = requireOrganizationId();
-            const rawData =
-              payload.data && typeof payload.data === 'object' ? (payload.data as Record<string, unknown>) : {};
-            const queryParams: { courseId?: string } = {};
-            if (typeof rawData.courseId === 'string') {
-              queryParams.courseId = rawData.courseId;
-            } else if (resource?.type === 'course' && resource.id) {
-              queryParams.courseId = resource.id;
-            }
-
-            const response = await classroomio.plugins.installations[':installationId'].exercises.$get(
-              {
-                param: { installationId },
-                query: queryParams
-              },
-              { headers: { 'cio-org-id': orgId } }
-            );
-            return responseData(response);
-          }
-
-          throw {
-            code: 'NOT_SUPPORTED',
-            message: `Host action "${payload.action}" is not supported in this surface context`
-          };
+          const response = await classroomio.plugins.installations[':installationId'].courses.$get(
+            { param: { installationId }, query: queryParams },
+            { headers: { 'cio-org-id': orgId } }
+          );
+          return responseData(response);
+        },
+        onLessonsList: async ({ courseId }) => {
+          const orgId = requireOrganizationId();
+          const resolvedCourseId = courseId ?? (resource?.type === 'course' ? resource.id : undefined);
+          const response = await classroomio.plugins.installations[':installationId'].lessons.$get(
+            { param: { installationId }, query: { courseId: resolvedCourseId } },
+            { headers: { 'cio-org-id': orgId } }
+          );
+          return responseData(response);
+        },
+        onExercisesList: async ({ courseId }) => {
+          const orgId = requireOrganizationId();
+          const resolvedCourseId = courseId ?? (resource?.type === 'course' ? resource.id : undefined);
+          const response = await classroomio.plugins.installations[':installationId'].exercises.$get(
+            { param: { installationId }, query: { courseId: resolvedCourseId } },
+            { headers: { 'cio-org-id': orgId } }
+          );
+          return responseData(response);
+        },
+        onLandingTemplatePreview: async ({ templateId }) => {
+          return dispatchSurfaceAction('preview', { templateId });
+        },
+        onLandingTemplateSelect: async ({ templateId }) => {
+          return dispatchSurfaceAction('select', { templateId });
+        },
+        onCertificateTemplateApply: async ({ templateId, document, name }) => {
+          requireGrantedScope('certificate.template:write');
+          return dispatchSurfaceAction('apply', { id: templateId, document, name });
         },
         onStorageGet: async ({ key, namespace, scope }) => {
           const orgId = requireOrganizationId();
@@ -270,7 +276,22 @@
           );
           return responseData(response);
         },
-        onStorageSet: async ({ key, value, namespace, scope }) => {
+        onStorageGetRecord: async ({ key, namespace, scope }) => {
+          const orgId = requireOrganizationId();
+          const targetScope: PluginStorageScope = scope ?? 'organization';
+          const query = new URLSearchParams({ scope: targetScope });
+          if (targetScope === 'resource' && resource?.id) {
+            query.set('resourceId', resource.id);
+            query.set('resourceType', resource.type);
+          }
+          const response = await fetch(
+            `${getRequestBaseUrl()}/plugins/installations/${installationId}/storage-record/${encodeURIComponent(namespace ?? 'default')}/${encodeURIComponent(key)}?${query.toString()}`,
+            { credentials: 'include', headers: { 'cio-org-id': orgId } }
+          );
+
+          return responseData(response);
+        },
+        onStorageSet: async ({ key, value, namespace, scope, schemaVersion, expectedVersion }) => {
           const orgId = requireOrganizationId();
           const targetScope: PluginStorageScope = scope ?? 'organization';
           const jsonPayload: {
@@ -278,7 +299,9 @@
             scope: PluginStorageScope;
             resourceId?: string;
             resourceType?: string;
-          } = { value, scope: targetScope };
+            schemaVersion: number;
+            expectedVersion?: number;
+          } = { value, scope: targetScope, schemaVersion: schemaVersion ?? 1, expectedVersion };
           if (targetScope === 'resource' && resource?.id) {
             jsonPayload.resourceId = resource.id;
             jsonPayload.resourceType = resource.type;
@@ -292,7 +315,7 @@
             },
             { headers: { 'cio-org-id': orgId } }
           );
-          await responseData(response);
+          return responseData(response);
         },
         onStorageDelete: async ({ key, namespace, scope }) => {
           const orgId = requireOrganizationId();
@@ -316,11 +339,19 @@
           const result = await responseData<{ success: boolean; deleted: boolean }>(response);
           return result.deleted;
         },
-        onStorageList: async ({ namespace, scope }) => {
+        onStorageList: async ({ namespace, scope, cursor, limit }) => {
           const orgId = requireOrganizationId();
           const targetScope: PluginStorageScope = scope ?? 'organization';
-          const queryParams: { scope: PluginStorageScope; resourceId?: string; resourceType?: string } = {
-            scope: targetScope
+          const queryParams: {
+            scope: PluginStorageScope;
+            resourceId?: string;
+            resourceType?: string;
+            cursor?: string;
+            limit?: string;
+          } = {
+            scope: targetScope,
+            cursor,
+            limit: limit === undefined ? undefined : String(limit)
           };
           if (targetScope === 'resource' && resource?.id) {
             queryParams.resourceId = resource.id;
@@ -333,6 +364,54 @@
             },
             { headers: { 'cio-org-id': orgId } }
           );
+          return responseData(response);
+        },
+        onDataRequest: async (action, payload) => {
+          const orgId = requireOrganizationId();
+          const id = typeof payload.id === 'string' ? payload.id : '';
+          const routeByAction: Record<string, { path: string; method?: 'GET' | 'PUT'; body?: unknown }> = {
+            'identity:getCurrent': { path: 'identity' },
+            'organization:getProfile': { path: 'organization' },
+            'courses:get': { path: `courses/${encodeURIComponent(id)}` },
+            'courses:getStructure': { path: `courses/${encodeURIComponent(id)}/structure` },
+            'lessons:get': { path: `lessons/${encodeURIComponent(id)}` },
+            'lessons:getContent': { path: `lessons/${encodeURIComponent(id)}/content` },
+            'exercises:get': { path: `exercises/${encodeURIComponent(id)}` },
+            'progress:getLesson': { path: `progress/lessons/${encodeURIComponent(id)}` },
+            'progress:getCourse': { path: `progress/courses/${encodeURIComponent(id)}` },
+            'progress:setCompletion': {
+              path: `progress/lessons/${encodeURIComponent(String(payload.lessonId ?? ''))}`,
+              method: 'PUT',
+              body: { isComplete: payload.isComplete }
+            },
+            'certificates:get': { path: `certificates/${encodeURIComponent(id)}` },
+            'certificateTemplates:list': { path: 'certificate-templates' },
+            'certificateTemplates:getApplied': {
+              path: `certificate-templates/applied/${encodeURIComponent(id)}`
+            }
+          };
+          if (action === 'certificates:list') {
+            const query = new URLSearchParams();
+            if (typeof payload.cursor === 'string') query.set('cursor', payload.cursor);
+            if (typeof payload.limit === 'number') query.set('limit', String(payload.limit));
+            if (typeof payload.courseId === 'string') query.set('courseId', payload.courseId);
+            routeByAction[action] = { path: `certificates?${query.toString()}` };
+          }
+          const request = routeByAction[action];
+          if (!request) throw { code: 'NOT_SUPPORTED', message: `Unsupported hosted data action: ${action}` };
+          const response = await fetch(
+            `${getRequestBaseUrl()}/plugins/installations/${installationId}/data/${request.path}`,
+            {
+              method: request.method ?? 'GET',
+              credentials: 'include',
+              headers: {
+                'cio-org-id': orgId,
+                ...(request.body ? { 'Content-Type': 'application/json' } : {})
+              },
+              body: request.body ? JSON.stringify(request.body) : undefined
+            }
+          );
+
           return responseData(response);
         }
       }
@@ -363,15 +442,28 @@
   });
 </script>
 
-<iframe
-  bind:this={iframeElement}
-  onload={handleFrameLoad}
-  src={srcUrl}
-  srcdoc={srcDoc}
-  {title}
-  class={className}
-  style:height={frameHeight !== null ? `${frameHeight}px` : undefined}
-  sandbox="allow-scripts allow-forms"
-  referrerpolicy="no-referrer"
-  allow="clipboard-write 'none'; camera 'none'; microphone 'none'; geolocation 'none'"
-></iframe>
+<div
+  class={cn('relative w-full', (target === 'plugin.page' || className?.includes('h-full')) && 'h-full flex-1')}
+  aria-busy={isFrameLoading}
+>
+  {#if isFrameLoading}
+    <div class="ui:bg-muted/30 absolute inset-0" aria-label={title}></div>
+  {/if}
+  {#if hasFrameError}
+    <div class="ui:text-muted-foreground flex min-h-20 items-center justify-center" role="alert">{title}</div>
+  {:else}
+    <iframe
+      bind:this={iframeElement}
+      onload={handleFrameLoad}
+      onerror={handleFrameError}
+      src={srcUrl}
+      srcdoc={srcDoc}
+      {title}
+      class={className}
+      style:height={frameHeight !== null && !className?.includes('h-full') ? `${frameHeight}px` : undefined}
+      sandbox="allow-scripts allow-forms"
+      referrerpolicy="no-referrer"
+      allow="clipboard-write 'none'; camera 'none'; microphone 'none'; geolocation 'none'"
+    ></iframe>
+  {/if}
+</div>

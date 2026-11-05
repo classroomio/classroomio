@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrg } from '$lib/utils/store/org';
   import * as Collapsible from '@cio/ui/base/collapsible';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { t } from '$lib/utils/functions/translations';
@@ -8,24 +8,10 @@
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { getLmsNavigationItems } from '$features/ui/navigation/lms-navigation';
   import { HoverableItem } from '@cio/ui/custom/moving-icons';
-  import { PluginIcon, pluginsApi } from '$features/plugins';
 
   const items = $derived(getLmsNavigationItems($currentOrg, $t, page.url.pathname));
 
   const pathWithQuery = $derived(page.url.pathname + page.url.search);
-
-  const lmsPluginNavItems = $derived(
-    pluginsApi.installations.filter((inst) => {
-      if (inst.status !== 'active') return false;
-      const navItems = (inst.manifest as any)?.contributes?.navigation;
-      return (
-        Array.isArray(navItems) &&
-        navItems.some(
-          (nav: any) => nav.location === 'lms.navigation' && (nav.visibility !== 'organization.admin' || $isOrgAdmin)
-        )
-      );
-    })
-  );
 </script>
 
 <Sidebar.Group>
@@ -82,19 +68,6 @@
           </Sidebar.MenuItem>
         {/snippet}
       </Collapsible.Root>
-    {/each}
-    {#each lmsPluginNavItems as inst (inst.pluginId)}
-      {@const pluginUrl = `/lms/plugins/${inst.plugin?.slug ?? inst.pluginId}`}
-      <Sidebar.MenuItem>
-        <Sidebar.MenuButton tooltipContent={inst.plugin?.name} isActive={page.url.pathname.startsWith(pluginUrl)}>
-          {#snippet child({ props })}
-            <a href={pluginUrl} {...props}>
-              <PluginIcon src={inst.iconUrl} alt={inst.plugin?.name} />
-              <span>{inst.plugin?.name}</span>
-            </a>
-          {/snippet}
-        </Sidebar.MenuButton>
-      </Sidebar.MenuItem>
     {/each}
   </Sidebar.Menu>
 </Sidebar.Group>

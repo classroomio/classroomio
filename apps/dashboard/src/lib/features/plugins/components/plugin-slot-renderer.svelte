@@ -18,11 +18,19 @@
   const effectiveAction = $derived(onAction ?? onaction);
   let listedContributionKey = '';
   let contributions = $state<ResolvedContributionItem[]>([]);
-  const resourceKey = $derived(resource ? `${resource.type}:${resource.id}` : '');
+  const resourceKey = $derived(resource ? `${resource.type}:${resource.id}:${resource.selectedTemplateId ?? ''}` : '');
+
+  const activeInstallationIds = $derived(
+    pluginsApi.installations
+      .filter((i) => i.status === 'active')
+      .map((i) => i.id)
+      .sort()
+      .join(',')
+  );
 
   $effect(() => {
     const orgId = $currentOrg.id;
-    const contributionKey = `${orgId}:${target}:${resource?.type ?? ''}:${resource?.id ?? ''}`;
+    const contributionKey = `${orgId}:${target}:${resource?.type ?? ''}:${resource?.id ?? ''}:${activeInstallationIds}`;
     if (!orgId || contributionKey === listedContributionKey) return;
 
     listedContributionKey = contributionKey;
@@ -32,9 +40,13 @@
   });
 
   const matchingSlots = $derived.by(() => {
-    return contributions.filter(
-      (contrib) => contrib.target === target && contrib.renderMode === 'custom' && contrib.artifactUrl
-    );
+    return contributions.filter((contrib) => {
+      const isMatch = contrib.target === target && contrib.renderMode === 'custom' && contrib.artifactUrl;
+      if (!isMatch) return false;
+      const installation = pluginsApi.installations.find((inst) => inst.id === contrib.installationId);
+      if (installation && installation.status !== 'active') return false;
+      return true;
+    });
   });
 </script>
 
@@ -45,10 +57,11 @@
         installationId={slot.installationId}
         pluginId={slot.pluginId}
         version={slot.version}
+        contributionId={slot.contributionId}
+        grantedScopes={slot.grantedScopes}
         organizationId={$currentOrg.id}
         srcUrl={slot.artifactUrl}
         title={slot.title}
-        backendAudience={slot.backendAudience}
         className="block w-full border-0"
         {target}
         {resource}

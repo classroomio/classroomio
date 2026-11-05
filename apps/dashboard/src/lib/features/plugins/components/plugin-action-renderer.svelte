@@ -17,21 +17,36 @@
 
   let { target, context = {}, className = '', variant = 'outline', size = 'default' }: Props = $props();
 
-  let listedOrgId = '';
+  let listedKey = '';
   let contributions = $state<ResolvedContributionItem[]>([]);
+
+  const activeInstallationIds = $derived(
+    pluginsApi.installations
+      .filter((i) => i.status === 'active')
+      .map((i) => i.id)
+      .sort()
+      .join(',')
+  );
 
   $effect(() => {
     const orgId = $currentOrg.id;
-    if (!orgId || orgId === listedOrgId) return;
+    const key = `${orgId}:${target}:${activeInstallationIds}`;
+    if (!orgId || key === listedKey) return;
 
-    listedOrgId = orgId;
+    listedKey = key;
     void pluginsApi.listOrgContributions(orgId, target).then((result) => {
-      if ($currentOrg.id === orgId) contributions = result;
+      if ($currentOrg.id === orgId && key === listedKey) contributions = result;
     });
   });
 
   const matchingActions = $derived.by(() => {
-    return contributions.filter((contrib) => contrib.target === target && contrib.renderMode === 'host');
+    return contributions.filter((contrib) => {
+      const isMatch = contrib.target === target && contrib.renderMode === 'host';
+      if (!isMatch) return false;
+      const installation = pluginsApi.installations.find((inst) => inst.id === contrib.installationId);
+      if (installation && installation.status !== 'active') return false;
+      return true;
+    });
   });
 
   function handleActionClick(action: (typeof matchingActions)[number]) {
@@ -41,19 +56,6 @@
 
       window.open(resolvedUrl, '_blank', 'noopener,noreferrer');
       return;
-    }
-
-    if (action.command) {
-      window.dispatchEvent(
-        new CustomEvent('cio:plugin:command', {
-          detail: {
-            command: action.command,
-            pluginId: action.pluginId,
-            installationId: action.installationId,
-            context
-          }
-        })
-      );
     }
   }
 </script>

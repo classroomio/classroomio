@@ -27,7 +27,7 @@
 
   const authAction = $derived(
     resolveOrgLandingAuthAction({
-      org: data.org,
+      org: { ...data.org, locale: data.org.settings?.language?.locale },
       locals: data.locals,
       user: $user,
       appInitApi

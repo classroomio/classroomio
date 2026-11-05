@@ -129,8 +129,9 @@
     const queryTheme = page.url.searchParams.get('theme');
     const isEditingNativeQueryTheme = isLandingPageTheme(queryTheme);
     const appearance = $currentOrg.landingpage?.appearance;
+    const pluginKey = appearance?.kind === 'plugin' ? `${appearance.installationId}:${appearance.templateId}` : '';
 
-    if (isEditingNativeQueryTheme || appearance?.kind !== 'plugin' || !previewSiteName) {
+    if (isEditingNativeQueryTheme || !pluginKey || !previewSiteName) {
       pluginDescriptor = null;
       return;
     }
@@ -207,7 +208,7 @@
             viewModel={projectPublicLandingPageViewModel({
               theme: pluginDescriptor.templateId,
               templateId: pluginDescriptor.templateId,
-              org: $currentOrg,
+              org: { ...$currentOrg, locale: $currentOrg.settings?.language?.locale },
               landingpage: previewLandingPageSettings,
               courses: orgApi.publicCourses,
               hasMoreCourses: orgApi.hasMorePublicCourses,

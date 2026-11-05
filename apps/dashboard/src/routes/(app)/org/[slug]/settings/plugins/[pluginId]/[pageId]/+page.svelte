@@ -21,15 +21,24 @@
     if (listedOrganizationId === organizationId) return;
 
     listedOrganizationId = organizationId;
+    void pluginsApi.listOrgInstallations(organizationId);
     void pluginsApi.listOrgContributions(organizationId, 'plugin.page').then((result) => {
       if ($currentOrg.id === organizationId) contributions = result;
     });
   });
 
+  const installation = $derived(
+    pluginsApi.installations.find(
+      (inst) => inst.pluginId === page.params.pluginId || inst.plugin?.slug === page.params.pluginId
+    )
+  );
+
   const contribution = $derived(
     contributions.find(
       (item) =>
-        item.pluginId === page.params.pluginId &&
+        (item.pluginId === page.params.pluginId ||
+          item.pluginSlug === page.params.pluginId ||
+          item.pluginId === installation?.pluginId) &&
         item.contributionId === page.params.pageId &&
         item.target === 'plugin.page' &&
         item.artifactUrl
@@ -45,7 +54,6 @@
     organizationId={$currentOrg.id}
     srcUrl={contribution.artifactUrl}
     title={contribution.title}
-    backendAudience={contribution.backendAudience}
     target="plugin.page"
     resource={{ type: 'organization', id: $currentOrg.id }}
     className="min-h-[70vh] w-full border-0"

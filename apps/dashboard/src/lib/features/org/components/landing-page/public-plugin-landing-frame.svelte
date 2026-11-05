@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
+  import { PublicLandingRendererHost } from '@classroomio/plugin-sdk';
   import { resolveCurrentHostTheme } from '$features/plugins/utils/theme';
   import { sanitizePublicLandingHref, type PublicLandingPageViewModel } from '@cio/utils/validation/organization';
 
@@ -29,21 +30,14 @@
 
   let iframeElement = $state<HTMLIFrameElement | null>(null);
   let frameHeight = $state<number>(minHeight);
-  let isHandshakeComplete = $state(false);
+  let bridgeHost: PublicLandingRendererHost | null = null;
 
-  function sendToFrame(message: unknown) {
-    if (!iframeElement?.contentWindow) return;
-
-    iframeElement.contentWindow.postMessage(message, '*');
-  }
-
-  function handleNavigation(rawHref: unknown, disposition?: string) {
+  function handleNavigation(rawHref: string, disposition: 'self' | 'new-tab') {
     const sanitizedHref = sanitizePublicLandingHref(rawHref, '#');
     if (sanitizedHref === '#') return;
 
-    const targetDisposition = disposition === 'new-tab' ? 'new-tab' : 'self';
     if (onNavigate) {
-      onNavigate(sanitizedHref, targetDisposition);
+      onNavigate(sanitizedHref, disposition);
       return;
     }
 
@@ -52,8 +46,7 @@
       sanitizedHref.startsWith('https://') ||
       sanitizedHref.startsWith('mailto:') ||
       sanitizedHref.startsWith('tel:');
-
-    if (targetDisposition === 'new-tab' || isExternal) {
+    if (disposition === 'new-tab' || isExternal) {
       window.open(sanitizedHref, '_blank', 'noopener,noreferrer');
       return;
     }
@@ -61,75 +54,39 @@
     void goto(resolve(sanitizedHref, {}));
   }
 
-  function handleMessage(event: MessageEvent) {
-    if (event.source !== iframeElement?.contentWindow) return;
-
-    const data = event.data;
-    if (typeof data !== 'object' || data === null) return;
-
-    if (data.type === 'CIO_BRIDGE_HANDSHAKE_INIT') {
-      isHandshakeComplete = true;
-      const currentHostTheme = resolveCurrentHostTheme();
-
-      sendToFrame({
-        type: 'CIO_BRIDGE_HANDSHAKE_ACK',
-        protocolVersion: '1.0',
-        nonce: data.nonce,
-        context: {
-          theme: currentHostTheme,
-          viewModel
-        }
-      });
-
-      sendToFrame({
-        type: 'LANDING_PAGE_PROPS_UPDATE',
-        viewModel
-      });
-      return;
-    }
-
-    if (data.type === 'CIO_BRIDGE_RESIZE' || data.action === 'landing-page:resize') {
-      const requestedHeight = Number(data.height ?? data.payload?.height);
-      if (Number.isFinite(requestedHeight) && requestedHeight > 0) {
-        frameHeight = Math.max(minHeight, Math.min(maxHeight, requestedHeight));
-      }
-      return;
-    }
-
-    if (data.action === 'landing-page:navigate' || data.type === 'LANDING_PAGE_NAVIGATE') {
-      const payload = data.payload ?? data.data ?? data;
-      handleNavigation(payload.href, payload.disposition);
-      return;
-    }
-
-    if (data.action === 'landing-page:auth' || data.type === 'LANDING_PAGE_AUTH') {
-      if (onAuthAction) {
-        onAuthAction();
-        return;
-      }
-
-      void goto(resolve('/login', {}));
-      return;
-    }
+  function handleFrameLoad() {
+    bridgeHost?.startHandshake();
   }
 
   $effect(() => {
-    if (!isHandshakeComplete) return;
-
-    sendToFrame({
-      type: 'LANDING_PAGE_PROPS_UPDATE',
-      viewModel
-    });
+    bridgeHost?.updateViewModel(viewModel);
   });
 
   onMount(() => {
-    window.addEventListener('message', handleMessage);
-  });
+    if (!iframeElement) return;
 
-  onDestroy(() => {
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('message', handleMessage);
-    }
+    bridgeHost = new PublicLandingRendererHost({
+      iframe: iframeElement,
+      viewModel,
+      theme: resolveCurrentHostTheme(),
+      isAuthenticated: viewModel.navigation?.isAuthenticated ?? false,
+      onResize: (height) => {
+        frameHeight = Math.max(minHeight, Math.min(maxHeight, height));
+      },
+      onNavigate: handleNavigation,
+      onAuthentication: () => {
+        if (onAuthAction) {
+          onAuthAction();
+          return;
+        }
+
+        void goto(resolve('/login', {}));
+      }
+    });
+
+    bridgeHost.startHandshake();
+
+    return () => bridgeHost?.destroy();
   });
 </script>
 
@@ -139,6 +96,7 @@
   {title}
   class={className}
   style="height: {frameHeight}px; width: 100%; border: 0; display: block;"
-  sandbox="allow-scripts allow-forms allow-same-origin"
+  sandbox="allow-scripts"
   loading="eager"
+  onload={handleFrameLoad}
 ></iframe>

@@ -19,16 +19,14 @@
   import { getPreviewOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
   import { getPreviewOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { PluginSlotRenderer } from '$features/plugins/components';
+  import { pluginsApi, PluginSlotRenderer } from '$features/plugins';
   import type { PluginActionEvent } from '$features/plugins/utils/types';
   import { PublicPluginLandingFrame } from '$features/org';
-  import { pluginsApi } from '$features/plugins/api/plugins.svelte';
   import { classroomio } from '$lib/utils/services/api';
   import type { PublicLandingPluginDescriptor } from '$features/plugins/utils/types';
   import {
     projectPublicLandingPageViewModel,
     normalizeLandingPageAppearance,
-    isNativeLandingPageTheme,
     type LandingPageAppearance
   } from '@cio/utils/validation/organization';
 
@@ -53,21 +51,49 @@
   const validThemes = new Set<LandingPageTheme>(landingPageThemes);
 
   let normalized = $state(createDefaultLandingPageSettings());
-  let hasInitialized = $state(false);
+  let loadedOrgId = '';
 
   $effect(() => {
-    if (hasInitialized || !$currentOrg.id) return;
+    const organizationId = $currentOrg.id;
+    if (!organizationId || organizationId === loadedOrgId) return;
 
+    loadedOrgId = organizationId;
     normalized = normalizeLandingPageSettings($currentOrg.landingpage);
-    hasInitialized = true;
+    void pluginsApi.listOrgInstallations(organizationId);
   });
 
-  const currentTheme = $derived(normalized.theme as LandingPageTheme);
-  const currentAppearance = $derived(
-    normalizeLandingPageAppearance(
+  const currentAppearance = $derived.by<LandingPageAppearance>(() => {
+    const rawAppearance = normalizeLandingPageAppearance(
       ($currentOrg.landingpage as Record<string, unknown> | undefined)?.appearance,
       normalized.theme
-    )
+    );
+
+    if (rawAppearance.kind !== 'plugin') {
+      return rawAppearance;
+    }
+
+    const installation = pluginsApi.installations.find((item) => item.id === rawAppearance.installationId);
+    if (installation && installation.status !== 'active') {
+      return {
+        kind: 'native',
+        theme: rawAppearance.fallbackTheme
+      };
+    }
+
+    if (pluginsApi.installations.length > 0 && !installation) {
+      return {
+        kind: 'native',
+        theme: rawAppearance.fallbackTheme
+      };
+    }
+
+    return rawAppearance;
+  });
+
+  const currentTheme = $derived(
+    currentAppearance.kind === 'native'
+      ? (currentAppearance.theme as LandingPageTheme)
+      : (normalized.theme as LandingPageTheme)
   );
 
   async function handlePluginAction(detail: PluginActionEvent) {
@@ -80,7 +106,7 @@
             ? payloadData.id
             : '';
       if (templateId) {
-        handlePreviewTheme(templateId);
+        handlePreviewPluginTemplate(detail.installationId, detail.contributionId, templateId);
         return { success: true, templateId };
       }
     }
@@ -93,36 +119,17 @@
           : typeof payloadData.id === 'string'
             ? payloadData.id
             : '';
-      if (!templateId || !$currentOrg.id) return;
+      if (!templateId) return;
 
-      const appearance: LandingPageAppearance = {
-        kind: 'plugin',
-        fallbackTheme: isNativeLandingPageTheme(payloadData.fallbackTheme) ? payloadData.fallbackTheme : currentTheme,
-        installationId: detail.installationId,
-        pluginId: detail.pluginId,
-        contributionId: detail.target,
-        templateId,
-        version: detail.version
-      };
-
-      const updatedLandingPage = {
-        ...normalized,
-        theme: appearance.fallbackTheme,
-        appearance
-      };
-
-      await orgApi.update($currentOrg.id, {
-        landingpage: updatedLandingPage as AccountOrg['landingpage']
-      });
-
-      normalized = normalizeLandingPageSettings(updatedLandingPage);
-      snackbar.success('snackbar.success_update');
+      await activatePluginTemplate(detail.installationId, detail.contributionId, templateId);
       return { success: true, templateId };
     }
   }
 
   async function handleRevertToNativeTheme() {
     if (!$currentOrg.id) return;
+
+    pluginDescriptor = null;
 
     const fallbackTheme = currentAppearance.kind === 'plugin' ? currentAppearance.fallbackTheme : currentTheme;
 
@@ -140,6 +147,11 @@
     await orgApi.update($currentOrg.id, {
       landingpage: updatedLandingPage as AccountOrg['landingpage']
     });
+
+    currentOrg.update((organization) => ({
+      ...organization,
+      landingpage: updatedLandingPage as AccountOrg['landingpage']
+    }));
 
     normalized = normalizeLandingPageSettings(updatedLandingPage);
     snackbar.success('snackbar.success_update');
@@ -236,11 +248,29 @@
 
   const learnerAccount = $derived(getPreviewOrgLandingLearnerAccount($profile, $currentOrg));
 
+  const previewLandingPage = $derived({
+    ...normalized,
+    theme: currentTheme,
+    appearance: currentAppearance
+  });
+
+  const previewOrg = $derived({
+    ...$currentOrg,
+    locale: $currentOrg.settings?.language?.locale
+  });
+
   const previewProps = $derived.by(() =>
-    buildOrgLandingPageProps($currentOrg, normalized, orgApi.publicCourses, orgApi.hasMorePublicCourses, authAction, {
-      coursesLoaded,
-      learnerAccount
-    })
+    buildOrgLandingPageProps(
+      $currentOrg,
+      previewLandingPage,
+      orgApi.publicCourses,
+      orgApi.hasMorePublicCourses,
+      authAction,
+      {
+        coursesLoaded,
+        learnerAccount
+      }
+    )
   );
 
   $effect(() => {
@@ -251,36 +281,33 @@
 
   let pluginDescriptor = $state<PublicLandingPluginDescriptor | null>(null);
 
+  const pluginTemplateKey = $derived(
+    currentAppearance.kind === 'plugin' ? `${currentAppearance.installationId}:${currentAppearance.templateId}` : ''
+  );
+
   $effect(() => {
-    if (currentAppearance.kind !== 'plugin' || !previewSiteName) {
+    if (!pluginTemplateKey || !previewSiteName) {
       pluginDescriptor = null;
       return;
     }
 
-    let isCancelled = false;
-
     void (async () => {
       try {
         const res = await classroomio.organization['landing-page'].public.$get({
-          query: {
-            siteName: previewSiteName,
-            templateId: currentAppearance.templateId
-          }
+          query: { siteName: previewSiteName }
         });
-        if (!isCancelled && res.ok) {
+        if (res.ok) {
           const body = await res.json();
           if (body.success && body.data.isPlugin && body.data.pluginDescriptor) {
             pluginDescriptor = body.data.pluginDescriptor;
+          } else {
+            pluginDescriptor = null;
           }
         }
       } catch {
-        if (!isCancelled) pluginDescriptor = null;
+        pluginDescriptor = null;
       }
     })();
-
-    return () => {
-      isCancelled = true;
-    };
   });
 
   const ThemeComponent = $derived(landingPageThemeComponents[currentTheme] ?? landingPageThemeComponents.minimal);
@@ -304,6 +331,8 @@
       return;
     }
 
+    pluginDescriptor = null;
+
     const updatedLandingPage = normalizeLandingPageSettings({
       ...normalized,
       theme,
@@ -317,37 +346,50 @@
       landingpage: updatedLandingPage as AccountOrg['landingpage']
     });
 
+    currentOrg.update((organization) => ({
+      ...organization,
+      landingpage: updatedLandingPage as AccountOrg['landingpage']
+    }));
+
     normalized = updatedLandingPage;
     snackbar.success('snackbar.success_update');
   }
 
-  async function handleApplyPluginTemplate(templateId: string) {
+  async function activatePluginTemplate(installationId: string, contributionId: string, templateId: string) {
     if (!$currentOrg.id) return;
 
-    const contributions = await pluginsApi.listOrgContributions($currentOrg.id, 'landing.templates');
-    const slot = contributions.find((c) => c.target === 'landing.templates');
-    if (!slot) return;
+    const response = await classroomio.organization['landing-page']['plugin-template'].$post({
+      json: {
+        installationId,
+        contributionId,
+        templateId,
+        fallbackTheme: currentTheme
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to activate landing template');
+    }
 
-    const appearance: LandingPageAppearance = {
-      kind: 'plugin',
-      fallbackTheme: currentTheme,
-      installationId: slot.installationId,
-      pluginId: slot.pluginId,
-      contributionId: slot.contributionId,
-      templateId,
-      version: slot.version
-    };
+    const body = await response.json();
+    if (!body.success) {
+      throw new Error('Failed to activate landing template');
+    }
 
+    if (body.data.pluginDescriptor) {
+      pluginDescriptor = body.data.pluginDescriptor;
+    }
+
+    const appearance = body.data.appearance;
     const updatedLandingPage = {
       ...normalized,
       theme: appearance.fallbackTheme,
       appearance
     };
 
-    await orgApi.update($currentOrg.id, {
+    currentOrg.update((organization) => ({
+      ...organization,
       landingpage: updatedLandingPage as AccountOrg['landingpage']
-    });
-
+    }));
     normalized = normalizeLandingPageSettings(updatedLandingPage);
     snackbar.success('snackbar.success_update');
   }
@@ -355,7 +397,19 @@
   function handlePreviewTheme(theme: string) {
     const nextUrl = new URL(window.location.href);
     nextUrl.searchParams.set('preview', theme);
-    goto(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`, {
+    goto(resolve(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`, {}), {
+      replaceState: false,
+      keepFocus: true,
+      noScroll: true
+    });
+  }
+
+  function handlePreviewPluginTemplate(installationId: string, contributionId: string, templateId: string) {
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set('preview', templateId);
+    nextUrl.searchParams.set('pluginInstallationId', installationId);
+    nextUrl.searchParams.set('pluginContributionId', contributionId);
+    goto(resolve(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`, {}), {
       replaceState: false,
       keepFocus: true,
       noScroll: true
@@ -395,19 +449,21 @@
         >
           {#if $currentOrg.id}
             {#if currentAppearance.kind === 'plugin' && pluginDescriptor}
-              <PublicPluginLandingFrame
-                srcUrl={pluginDescriptor.entrypointUrl}
-                viewModel={projectPublicLandingPageViewModel({
-                  theme: currentAppearance.templateId,
-                  templateId: currentAppearance.templateId,
-                  org: $currentOrg,
-                  landingpage: normalized,
-                  courses: orgApi.publicCourses,
-                  hasMoreCourses: orgApi.hasMorePublicCourses,
-                  isAuthenticated: Boolean($user.isLoggedIn),
-                  signInLabel: authAction?.label
-                })}
-              />
+              {#key currentAppearance.templateId}
+                <PublicPluginLandingFrame
+                  srcUrl={pluginDescriptor.entrypointUrl}
+                  viewModel={projectPublicLandingPageViewModel({
+                    theme: currentAppearance.templateId,
+                    templateId: currentAppearance.templateId,
+                    org: previewOrg,
+                    landingpage: previewLandingPage,
+                    courses: orgApi.publicCourses,
+                    hasMoreCourses: orgApi.hasMorePublicCourses,
+                    isAuthenticated: Boolean($user.isLoggedIn),
+                    signInLabel: authAction?.label
+                  })}
+                />
+              {/key}
             {:else}
               <ThemeComponent {...previewProps} disableCourseLinks={true} />
             {/if}
@@ -565,11 +621,11 @@
 </div>
 
 <ThemePreviewDialog
-  onApplyTemplate={async (templateId) => {
+  onApplyTemplate={async (templateId, installationId, contributionId) => {
     if (validThemes.has(templateId as LandingPageTheme)) {
       await handleApplyTheme(templateId as LandingPageTheme);
-    } else {
-      await handleApplyPluginTemplate(templateId);
+    } else if (installationId && contributionId) {
+      await activatePluginTemplate(installationId, contributionId, templateId);
     }
   }}
 />

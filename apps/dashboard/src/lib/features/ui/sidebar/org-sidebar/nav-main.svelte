@@ -11,33 +11,49 @@
   import { orgNavCountsApi } from './org-nav-counts.svelte';
   import { PluginIcon, pluginsApi, PluginPopover } from '$features/plugins';
   import BlocksIcon from '@lucide/svelte/icons/blocks';
+  import type { ResolvedContributionItem } from '$features/plugins/utils/types';
 
   let isPluginsOpen = $state(false);
+  let pluginNavigationItems = $state<ResolvedContributionItem[]>([]);
+  let loadedPluginNavigationKey = '';
+
+  const activeInstallationIds = $derived(
+    pluginsApi.installations
+      .filter((i) => i.status === 'active')
+      .map((i) => i.id)
+      .sort()
+      .join(',')
+  );
+
+  $effect(() => {
+    const organizationId = $currentOrg.id;
+    const key = `${organizationId}:${activeInstallationIds}`;
+    if (!organizationId || key === loadedPluginNavigationKey) return;
+
+    loadedPluginNavigationKey = key;
+    void pluginsApi.listOrgContributions(organizationId, 'organization.navigation').then((items) => {
+      if ($currentOrg.id === organizationId && key === loadedPluginNavigationKey) pluginNavigationItems = items;
+    });
+  });
 
   const isPluginsActive = $derived(page.url.pathname.includes('/plugins'));
 
   const installedPluginNavItems = $derived.by(() => {
-    return pluginsApi.installations
-      .filter((inst) => {
-        if (inst.status !== 'active') return false;
-        const manifest = inst.manifest as any;
-        const contributesPages = manifest?.contributes?.pages;
-        if (!contributesPages || contributesPages.length === 0) return false;
-        const navItems = manifest?.contributes?.navigation;
-        if (!Array.isArray(navItems)) return false;
-        return navItems.some(
-          (nav: any) =>
-            (nav.location === 'organization.navigation' || nav.location === 'organization.settings') &&
-            (nav.visibility !== 'organization.admin' || $isOrgAdmin)
-        );
+    return pluginNavigationItems
+      .filter((item) => {
+        if (!item.page) return false;
+        const inst = pluginsApi.installations.find((i) => i.id === item.installationId);
+        if (inst && inst.status !== 'active') return false;
+        return true;
       })
-      .map((inst) => {
-        const routeKey = inst.plugin?.slug ?? inst.pluginId;
+      .map((item) => {
+        const routeKey = item.pluginSlug ?? item.pluginId;
         return {
-          pluginId: inst.pluginId,
-          name: inst.plugin?.name ?? inst.pluginId,
-          iconUrl: inst.iconUrl ?? null,
-          url: `${$currentOrgPath}/plugins/${routeKey}`
+          id: `${item.pluginId}:${item.contributionId}`,
+          pluginId: item.pluginId,
+          name: item.title,
+          iconUrl: item.iconUrl ?? null,
+          url: `${$currentOrgPath}/plugins/${routeKey}/${item.page}`
         };
       });
   });
@@ -211,11 +227,11 @@
 
                 <Collapsible.Content>
                   <Sidebar.MenuSub>
-                    {#each installedPluginNavItems as subItem (subItem.pluginId)}
+                    {#each installedPluginNavItems as subItem (subItem.id)}
                       <Sidebar.MenuSubItem>
                         <Sidebar.MenuSubButton isActive={page.url.pathname.startsWith(subItem.url)}>
                           {#snippet child({ props: subProps })}
-                            <a href={subItem.url} {...subProps} data-testid="org-nav-plugin-{subItem.pluginId}">
+                            <a href={subItem.url} {...subProps} data-testid="org-nav-plugin-{subItem.id}">
                               <div class="flex items-center gap-2 truncate">
                                 <PluginIcon src={subItem.iconUrl} alt={subItem.name} />
                                 <span class="truncate">{subItem.name}</span>

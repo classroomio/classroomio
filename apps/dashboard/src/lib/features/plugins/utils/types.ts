@@ -56,6 +56,7 @@ export interface PluginActionEvent {
   installationId: string;
   pluginId: string;
   version: string;
+  contributionId: string;
   target: string;
   resource?: PluginResourceContext;
   action: string;

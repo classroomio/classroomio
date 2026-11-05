@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import XIcon from '@lucide/svelte/icons/x';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as Tabs from '@cio/ui/base/tabs';
@@ -22,7 +23,7 @@
   } from '@cio/utils/validation/organization';
 
   interface Props {
-    onApplyTemplate?: (templateId: string) => Promise<void> | void;
+    onApplyTemplate?: (templateId: string, installationId?: string, contributionId?: string) => Promise<void> | void;
   }
 
   let { onApplyTemplate }: Props = $props();
@@ -33,9 +34,13 @@
   const validThemes = new Set<LandingPageTheme>(landingPageThemes);
 
   const previewParam = $derived(page.url.searchParams.get('preview'));
+  const previewInstallationId = $derived(page.url.searchParams.get('pluginInstallationId'));
+  const previewContributionId = $derived(page.url.searchParams.get('pluginContributionId'));
   const isNative = $derived(previewParam ? validThemes.has(previewParam as LandingPageTheme) : false);
   const previewNativeTheme = $derived(isNative ? (previewParam as LandingPageTheme) : null);
-  const isPluginPreview = $derived(Boolean(previewParam && !isNative));
+  const isPluginPreview = $derived(
+    Boolean(previewParam && !isNative && previewInstallationId && previewContributionId)
+  );
   const open = $derived(Boolean(previewParam));
 
   let previewView = $state<PreviewView>('home');
@@ -49,10 +54,8 @@
     }
   });
 
-  const previewSiteName = $derived($currentOrg.siteName || page.params.slug || '');
-
   $effect(() => {
-    if (!isPluginPreview || !previewParam || !previewSiteName) {
+    if (!isPluginPreview || !previewParam || !previewInstallationId || !previewContributionId) {
       pluginDescriptor = null;
       isLoadingPluginDescriptor = false;
       return;
@@ -63,13 +66,17 @@
 
     void (async () => {
       try {
-        const res = await classroomio.organization['landing-page'].public.$get({
-          query: { siteName: previewSiteName, templateId: previewParam }
+        const res = await classroomio.organization['landing-page']['plugin-template'].preview.$get({
+          query: {
+            installationId: previewInstallationId,
+            contributionId: previewContributionId,
+            templateId: previewParam
+          }
         });
         if (!isCancelled && res.ok) {
           const body = await res.json();
-          if (body.success && body.data.isPlugin && body.data.pluginDescriptor) {
-            pluginDescriptor = body.data.pluginDescriptor;
+          if (body.success) {
+            pluginDescriptor = body.data;
           }
         }
       } catch {
@@ -107,7 +114,9 @@
   function closePreview() {
     const nextUrl = new URL(page.url);
     nextUrl.searchParams.delete('preview');
-    goto(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`, {
+    nextUrl.searchParams.delete('pluginInstallationId');
+    nextUrl.searchParams.delete('pluginContributionId');
+    goto(resolve(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`, {}), {
       replaceState: false,
       keepFocus: true,
       noScroll: true
@@ -122,7 +131,7 @@
 
   async function handleApplyCurrent() {
     if (!previewParam || !onApplyTemplate) return;
-    await onApplyTemplate(previewParam);
+    await onApplyTemplate(previewParam, previewInstallationId ?? undefined, previewContributionId ?? undefined);
     closePreview();
   }
 </script>
@@ -153,7 +162,7 @@
             viewModel={projectPublicLandingPageViewModel({
               theme: previewParam,
               templateId: previewParam,
-              org: $currentOrg,
+              org: { ...$currentOrg, locale: $currentOrg.settings?.language?.locale },
               landingpage: orgPreviewProps,
               courses: mockOrgLandingPageProps.courses ?? [],
               hasMoreCourses: false,

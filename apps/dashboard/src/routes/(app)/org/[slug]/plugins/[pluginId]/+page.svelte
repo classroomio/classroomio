@@ -3,7 +3,7 @@
   import { page } from '$app/state';
   import { currentOrg, currentOrgPath, isOrgTeamMember } from '$lib/utils/store/org';
   import { PluginIcon, pluginsApi } from '$features/plugins';
-  import { PluginHostFrame } from '$features/plugins/components';
+  import { PluginHostFrame, PluginSettingsForm } from '$features/plugins/components';
   import type { ResolvedContributionItem } from '$features/plugins/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -44,7 +44,9 @@
   const contribution = $derived(
     contributions.find(
       (item) =>
-        (item.pluginId === page.params.pluginId || item.pluginId === installation?.pluginId) &&
+        (item.pluginId === page.params.pluginId ||
+          item.pluginSlug === page.params.pluginId ||
+          item.pluginId === installation?.pluginId) &&
         item.target === 'plugin.page' &&
         item.artifactUrl
     )
@@ -147,7 +149,6 @@
         organizationId={$currentOrg.id}
         srcUrl={contribution.artifactUrl}
         title={contribution.title}
-        backendAudience={contribution.backendAudience}
         target="plugin.page"
         resource={{ type: 'organization', id: $currentOrg.id }}
         className="h-full w-full border-0"
@@ -214,6 +215,15 @@
             {/if}
           </div>
         </div>
+
+        {#if manifest?.settings?.schema && $currentOrg.id}
+          <PluginSettingsForm
+            installationId={installation.id}
+            organizationId={$currentOrg.id}
+            schema={manifest.settings.schema}
+            settings={installation.settings ?? {}}
+          />
+        {/if}
       </div>
     </div>
   {/if}

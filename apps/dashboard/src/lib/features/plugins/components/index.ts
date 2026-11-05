@@ -5,3 +5,4 @@ export { default as PluginIcon } from './plugin-icon.svelte';
 export { default as PluginPopover } from './plugin-popover.svelte';
 export { default as PluginInstallModal } from './plugin-install-modal.svelte';
 export { default as PluginUninstallModal } from './plugin-uninstall-modal.svelte';
+export { default as PluginSettingsForm } from './plugin-settings-form.svelte';
