@@ -12,7 +12,6 @@
   import UnlockIcon from '@lucide/svelte/icons/lock-open';
   import VideoIcon from '@lucide/svelte/icons/video';
   import { Button } from '@cio/ui/base/button';
-  import { HoverableItem, AttachmentIcon } from '@cio/ui/custom/moving-icons';
   import formatDate from '$lib/utils/functions/formatDate';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgStudent } from '$lib/utils/store/app';
@@ -594,9 +593,7 @@
                 {#snippet meta()}
                   {@const hasVideos = (item.videosCount ?? 0) > 0}
                   {@const hasDocuments = (item.documentsCount ?? 0) > 0}
-                  {@const hasNote = item.hasNoteContent === true}
                   {@const hasSlide = item.hasSlideContent === true}
-                  {@const hasAnyMaterials = hasVideos || hasDocuments || hasNote || hasSlide}
                   <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
                     {#if hasVideos}
                       <span class={metaChipClass}>
@@ -612,29 +609,11 @@
                       </span>
                     {/if}
 
-                    {#if hasNote}
-                      <span class={metaChipClass}>
-                        <FileTextIcon size={11} />
-                        {$t('course.navItem.lessons.materials.tabs.note.title')}
-                      </span>
-                    {/if}
-
                     {#if hasSlide}
                       <span class={metaChipClass}>
                         <FileTextIcon size={11} />
                         {$t('course.navItem.lessons.materials.tabs.slide.title')}
                       </span>
-                    {/if}
-
-                    {#if !hasAnyMaterials}
-                      <HoverableItem>
-                        {#snippet children(isHovered)}
-                          <span class={metaChipClass}>
-                            <AttachmentIcon size={11} {isHovered} />
-                            {$t('course.navItem.lessons.materials.no_content')}
-                          </span>
-                        {/snippet}
-                      </HoverableItem>
                     {/if}
 
                     {#if isLiveCourse && item.lessonAt}

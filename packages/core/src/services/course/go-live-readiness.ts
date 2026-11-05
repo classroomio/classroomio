@@ -257,7 +257,7 @@ export async function getCourseGoLiveReadiness(courseId: string): Promise<Course
 
   const organizationId = await getCourseOrganizationId(courseId);
   const [contentItems, organization] = await Promise.all([
-    getCourseContentItems(courseId),
+    getCourseContentItems(courseId, undefined, undefined, { includeNoteContent: true }),
     organizationId ? getOrganizationById(organizationId) : Promise.resolve(null)
   ]);
 
@@ -292,7 +292,11 @@ export async function publishCourseWhenReady(courseId: string, profileId: string
   const slug = await ensureCourseSlug(courseId, course.title);
 
   // Publishing seals the snapshot students were served, so both writes share one transaction.
-  const { course: publishedCourse, publishedNow, publishChange } = await db.transaction(async (tx) => {
+  const {
+    course: publishedCourse,
+    publishedNow,
+    publishChange
+  } = await db.transaction(async (tx) => {
     const updated = await updateCourse(courseId, { slug, isPublished: true }, tx);
     await sealLessonVersionsOnPublish(courseId, tx);
 

@@ -26,17 +26,47 @@ export type CourseContentItemRow = {
   dueBy: string | null;
 };
 
+export type CourseContentItemOptions = {
+  includeNoteContent?: boolean;
+};
+
 /**
  * Fetches raw course content items (sections, lessons, exercises) for a course.
  * @param courseId Course ID
  * @param profileId Optional profile ID for completion state
+ * @param dbClient Database or transaction client
+ * @param options `includeNoteContent` fills `hasNoteContent` by scanning every lesson's note HTML, which is expensive; it is `null` otherwise
  */
 export async function getCourseContentItems(
   courseId: string,
   profileId?: string,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient = db,
+  { includeNoteContent = false }: CourseContentItemOptions = {}
 ): Promise<CourseContentItemRow[]> {
   try {
+    const noteContentSql = includeNoteContent
+      ? drizzleSql`(
+          (
+            length(trim(COALESCE(note, ''))) > 0
+          )
+          OR EXISTS (
+            SELECT 1
+            FROM lesson_language
+            WHERE lesson_language.lesson_id = lesson.id
+              AND length(
+                trim(
+                  regexp_replace(
+                    regexp_replace(COALESCE(lesson_language.content, ''), '<[^>]*>', '', 'g'),
+                    '&nbsp;|&#160;',
+                    ' ',
+                    'g'
+                  )
+                )
+              ) > 0
+          )
+        )`
+      : drizzleSql`NULL::boolean`;
+
     const lessonCompletionSql = profileId
       ? drizzleSql`COALESCE(
           (
@@ -88,26 +118,7 @@ export async function getCourseContentItems(
         call_url AS "callUrl",
         session_duration_minutes AS "sessionDurationMinutes",
         recording_url AS "recordingUrl",
-        (
-          (
-            length(trim(COALESCE(note, ''))) > 0
-          )
-          OR EXISTS (
-            SELECT 1
-            FROM lesson_language
-            WHERE lesson_language.lesson_id = lesson.id
-              AND length(
-                trim(
-                  regexp_replace(
-                    regexp_replace(COALESCE(lesson_language.content, ''), '<[^>]*>', '', 'g'),
-                    '&nbsp;|&#160;',
-                    ' ',
-                    'g'
-                  )
-                )
-              ) > 0
-          )
-        ) AS "hasNoteContent",
+        ${noteContentSql} AS "hasNoteContent",
         (
           length(trim(COALESCE(slide_url, ''))) > 0
           OR COALESCE(jsonb_array_length(slides), 0) > 0
