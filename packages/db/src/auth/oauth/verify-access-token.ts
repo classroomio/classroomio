@@ -1,6 +1,6 @@
 import { createLocalJWKSet, errors, jwtVerify, type JSONWebKeySet } from 'jose';
 
-import { MCP_RESOURCE, OAUTH_ISSUER, PUBLIC_API_RESOURCE } from '@db/constants';
+import { MCP_RESOURCE_IDENTIFIERS, OAUTH_ISSUER, PUBLIC_API_RESOURCE } from '@db/constants';
 import { listPublicJwks } from '@db/queries/auth/oauth';
 import { OAUTH_API_SCOPES } from './oauth-scopes';
 
@@ -17,10 +17,10 @@ export type OAuthAccessTokenClaims = {
 
 export type OAuthResourceKind = OAuthAccessTokenClaims['kind'] | 'any';
 
-const RESOURCE_BY_KIND = { mcp: MCP_RESOURCE, api: PUBLIC_API_RESOURCE } as const;
+const AUDIENCES_BY_KIND = { mcp: MCP_RESOURCE_IDENTIFIERS, api: [PUBLIC_API_RESOURCE] };
 
 function getAudiences(resource: OAuthResourceKind): string[] {
-  return resource === 'any' ? [MCP_RESOURCE, PUBLIC_API_RESOURCE] : [RESOURCE_BY_KIND[resource]];
+  return resource === 'any' ? [...AUDIENCES_BY_KIND.mcp, ...AUDIENCES_BY_KIND.api] : AUDIENCES_BY_KIND[resource];
 }
 
 const MIN_FORCED_REFRESH_INTERVAL_MS = 10 * 1000;
@@ -98,7 +98,8 @@ export async function verifyOAuthAccessToken(
   const scopes = grantedScopes.filter((scope) => OAUTH_API_SCOPES.some((allowed) => allowed === scope));
 
   const audiences = Array.isArray(payload.aud) ? payload.aud : payload.aud ? [payload.aud] : [];
-  const kind = resource === 'any' ? (audiences.includes(MCP_RESOURCE) ? 'mcp' : 'api') : resource;
+  const isMcpToken = audiences.some((audience) => MCP_RESOURCE_IDENTIFIERS.includes(audience));
+  const kind = resource === 'any' ? (isMcpToken ? 'mcp' : 'api') : resource;
 
   return { userId: payload.sub, clientId, organizationId, scopes, kind, issuedAt: payload.iat };
 }
