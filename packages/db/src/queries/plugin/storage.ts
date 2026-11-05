@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 import type { TNewPluginStorage, TPluginStorage, TPluginStorageScopeType } from '@db/types';
-import { and, eq, not, sql } from 'drizzle-orm';
+import { and, eq, gt, isNull, lte, not, or, sql } from 'drizzle-orm';
 import { db } from '@db/drizzle';
 
 export async function getPluginStorageItem(
@@ -24,39 +24,22 @@ export async function getPluginStorageItem(
   const [row] = await db
     .select()
     .from(schema.pluginStorage)
-    .where(and(...conditions))
+    .where(
+      and(
+        ...conditions,
+        or(isNull(schema.pluginStorage.expiresAt), gt(schema.pluginStorage.expiresAt, new Date().toISOString()))
+      )
+    )
     .limit(1);
 
   return row ?? null;
 }
 
-export async function setPluginStorageItem(data: TNewPluginStorage): Promise<TPluginStorage> {
-  const [row] = await db
-    .insert(schema.pluginStorage)
-    .values(data)
-    .onConflictDoUpdate({
-      target: [
-        schema.pluginStorage.installationId,
-        schema.pluginStorage.scopeType,
-        schema.pluginStorage.scopeId,
-        schema.pluginStorage.resourceType,
-        schema.pluginStorage.namespace,
-        schema.pluginStorage.key
-      ],
-      set: {
-        value: data.value,
-        updatedAt: new Date().toISOString()
-      }
-    })
-    .returning();
-
-  return row;
-}
-
 export async function setPluginStorageItemWithAtomicQuota(
   data: TNewPluginStorage,
   maxTotalBytes: number,
-  itemBytes: number
+  itemBytes: number,
+  expectedVersion?: number
 ): Promise<TPluginStorage> {
   return await db.transaction(async (tx) => {
     await tx
@@ -65,46 +48,50 @@ export async function setPluginStorageItemWithAtomicQuota(
       .where(eq(schema.pluginInstallation.id, data.installationId))
       .for('update');
 
+    const recordConditions = and(
+      eq(schema.pluginStorage.installationId, data.installationId),
+      eq(schema.pluginStorage.scopeType, data.scopeType),
+      eq(schema.pluginStorage.scopeId, data.scopeId),
+      eq(schema.pluginStorage.resourceType, data.resourceType ?? ''),
+      eq(schema.pluginStorage.namespace, data.namespace ?? 'default'),
+      eq(schema.pluginStorage.key, data.key)
+    )!;
+    const [existing] = await tx.select().from(schema.pluginStorage).where(recordConditions).for('update');
+    const currentVersion = existing?.version ?? 0;
+    if (expectedVersion !== undefined && expectedVersion !== currentVersion) {
+      throw new Error('STORAGE_VERSION_CONFLICT');
+    }
+
     const [usage] = await tx
       .select({ bytes: sql<number>`coalesce(sum(pg_column_size(${schema.pluginStorage.value})), 0)` })
       .from(schema.pluginStorage)
-      .where(
-        and(
-          eq(schema.pluginStorage.installationId, data.installationId),
-          not(
-            and(
-              eq(schema.pluginStorage.scopeType, data.scopeType),
-              eq(schema.pluginStorage.scopeId, data.scopeId),
-              eq(schema.pluginStorage.resourceType, data.resourceType ?? ''),
-              eq(schema.pluginStorage.namespace, data.namespace ?? 'default'),
-              eq(schema.pluginStorage.key, data.key)
-            )!
-          )
-        )
-      );
+      .where(and(eq(schema.pluginStorage.installationId, data.installationId), not(recordConditions)));
 
     const currentBytes = Number(usage?.bytes ?? 0);
     if (currentBytes + itemBytes > maxTotalBytes) {
       throw new Error('STORAGE_QUOTA_EXCEEDED');
     }
 
+    const now = new Date().toISOString();
+    if (existing) {
+      const [row] = await tx
+        .update(schema.pluginStorage)
+        .set({
+          value: data.value,
+          version: currentVersion + 1,
+          schemaVersion: data.schemaVersion,
+          expiresAt: null,
+          updatedAt: now
+        })
+        .where(recordConditions)
+        .returning();
+
+      return row;
+    }
+
     const [row] = await tx
       .insert(schema.pluginStorage)
-      .values(data)
-      .onConflictDoUpdate({
-        target: [
-          schema.pluginStorage.installationId,
-          schema.pluginStorage.scopeType,
-          schema.pluginStorage.scopeId,
-          schema.pluginStorage.resourceType,
-          schema.pluginStorage.namespace,
-          schema.pluginStorage.key
-        ],
-        set: {
-          value: data.value,
-          updatedAt: new Date().toISOString()
-        }
-      })
+      .values({ ...data, version: 1, expiresAt: null })
       .returning();
 
     return row;
@@ -142,8 +129,9 @@ export async function listPluginStorageByNamespace(
   scopeType: TPluginStorageScopeType,
   scopeId: string,
   namespace: string,
-  resourceType = ''
-): Promise<TPluginStorage[]> {
+  resourceType = '',
+  options: { cursor?: string; limit?: number } = {}
+): Promise<{ items: TPluginStorage[]; nextCursor: string | null }> {
   const conditions = [
     eq(schema.pluginStorage.installationId, installationId),
     eq(schema.pluginStorage.scopeType, scopeType),
@@ -153,10 +141,22 @@ export async function listPluginStorageByNamespace(
 
   conditions.push(eq(schema.pluginStorage.resourceType, resourceType));
 
-  return db
+  if (options.cursor) conditions.push(gt(schema.pluginStorage.key, options.cursor));
+  conditions.push(
+    or(isNull(schema.pluginStorage.expiresAt), gt(schema.pluginStorage.expiresAt, new Date().toISOString()))!
+  );
+  const limit = options.limit ?? 20;
+  const records = await db
     .select()
     .from(schema.pluginStorage)
-    .where(and(...conditions));
+    .where(and(...conditions))
+    .orderBy(schema.pluginStorage.key)
+    .limit(limit + 1);
+
+  const hasMore = records.length > limit;
+  const items = hasMore ? records.slice(0, limit) : records;
+
+  return { items, nextCursor: hasMore ? (items[items.length - 1]?.key ?? null) : null };
 }
 
 export async function verifyResourceOrganization(
@@ -234,4 +234,36 @@ export async function purgeInstallationStorage(installationId: string): Promise<
     .returning({ id: schema.pluginStorage.id });
 
   return deleted.length;
+}
+
+export async function expireInstallationStorage(installationId: string, expiresAt: string): Promise<number> {
+  const updated = await db
+    .update(schema.pluginStorage)
+    .set({ expiresAt })
+    .where(eq(schema.pluginStorage.installationId, installationId))
+    .returning({ id: schema.pluginStorage.id });
+
+  return updated.length;
+}
+
+export async function purgeExpiredPluginStorage(now = new Date().toISOString()): Promise<number> {
+  const deleted = await db
+    .delete(schema.pluginStorage)
+    .where(lte(schema.pluginStorage.expiresAt, now))
+    .returning({ id: schema.pluginStorage.id });
+
+  return deleted.length;
+}
+
+export async function exportInstallationStorage(installationId: string): Promise<TPluginStorage[]> {
+  return db
+    .select()
+    .from(schema.pluginStorage)
+    .where(
+      and(
+        eq(schema.pluginStorage.installationId, installationId),
+        or(isNull(schema.pluginStorage.expiresAt), gt(schema.pluginStorage.expiresAt, new Date().toISOString()))
+      )
+    )
+    .orderBy(schema.pluginStorage.namespace, schema.pluginStorage.key);
 }

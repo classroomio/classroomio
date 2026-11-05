@@ -1,9 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { activateLandingTemplate } from './organization/landing-page';
 export * from './organization/landing-page';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
-  NativeLandingPageTheme,
   TCourseReorder,
   TGetAudienceQuery,
   TGetOrganizationCoursesQuery
@@ -811,17 +809,30 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       const appearance = landingpage.appearance as Record<string, unknown> | undefined;
 
       if (appearance && appearance.kind === 'plugin') {
-        const activation = await activateLandingTemplate({
-          organizationId: orgId,
-          installationId: String(appearance.installationId),
-          templateId: String(appearance.templateId),
-          fallbackTheme: appearance.fallbackTheme as NativeLandingPageTheme | undefined,
-          skipDbUpdate: true
-        });
-        landingpage.appearance = activation.appearance;
-        const fallbackTheme =
-          activation.appearance.kind === 'plugin' ? activation.appearance.fallbackTheme : activation.appearance.theme;
-        landingpage.theme = fallbackTheme;
+        const existingOrganization = await getOrganizationById(orgId);
+        if (!existingOrganization) {
+          throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
+        }
+
+        const existingLandingPage = existingOrganization.landingpage as Record<string, unknown> | null;
+        const existingAppearance = existingLandingPage?.appearance as Record<string, unknown> | undefined;
+        const isPersistedPluginAppearance =
+          existingAppearance?.kind === 'plugin' &&
+          existingAppearance.installationId === appearance.installationId &&
+          existingAppearance.contributionId === appearance.contributionId &&
+          existingAppearance.templateId === appearance.templateId &&
+          existingAppearance.pluginId === appearance.pluginId &&
+          existingAppearance.version === appearance.version;
+        if (!isPersistedPluginAppearance) {
+          throw new AppError(
+            'Plugin landing templates must be activated through the plugin template route',
+            ErrorCodes.INVALID_CONTRIBUTION,
+            400
+          );
+        }
+
+        landingpage.appearance = existingAppearance;
+        landingpage.theme = existingAppearance.fallbackTheme;
       } else {
         const theme = landingpage.theme;
 

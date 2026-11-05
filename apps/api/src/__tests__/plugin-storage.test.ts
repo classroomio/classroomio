@@ -2,14 +2,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const dbMocks = vi.hoisted(() => ({
   getInstallationById: vi.fn(),
+  getPluginVersionById: vi.fn(),
   getPluginById: vi.fn(),
   getInstallationGrants: vi.fn(),
   getPluginStorageItem: vi.fn(),
-  setPluginStorageItem: vi.fn(),
   setPluginStorageItemWithAtomicQuota: vi.fn(),
   deletePluginStorageItem: vi.fn(),
   listPluginStorageByNamespace: vi.fn(),
   getPluginStorageUsageBytes: vi.fn(),
+  purgeExpiredPluginStorage: vi.fn(),
+  purgeInstallationStorage: vi.fn(),
+  exportInstallationStorage: vi.fn(),
   verifyResourceOrganization: vi.fn()
 }));
 
@@ -46,6 +49,36 @@ describe('Plugin Generic Storage Service', () => {
     vi.clearAllMocks();
     dbMocks.getInstallationById.mockResolvedValue({ ...mockInstallation });
     dbMocks.getPluginById.mockResolvedValue({ ...mockPlugin });
+    dbMocks.getPluginVersionById.mockResolvedValue({
+      manifest: {
+        manifestVersion: 1,
+        id: 'com.example.plugin',
+        name: 'Example plugin',
+        version: '1.0.0',
+        description: 'Plugin storage tests',
+        publisher: 'classroomio',
+        license: 'MIT',
+        engines: { classroomio: '>=2.0.0', pluginApi: '2026-10-08' },
+        runtime: { ui: { entrypoints: { settings: { renderMode: 'custom', resource: 'dist/settings.html' } } } },
+        permissions: { required: ['plugin.storage:read', 'plugin.storage:write'] },
+        contributes: { pages: [{ id: 'settings', entrypoint: 'settings', title: 'Settings' }] },
+        dataPolicy: {
+          storesCustomerData: true,
+          retentionAfterUninstallDays: 0,
+          privacyPolicyUrl: 'https://classroomio.com/privacy'
+        },
+        storage: {
+          documents: ['announcement', 'config', 'default', 'templates'].flatMap((namespace) =>
+            ['organization', 'user', 'resource'].map((scope) => ({
+              namespace,
+              scope,
+              schemaVersion: 1,
+              schema: { type: 'object', additionalProperties: true }
+            }))
+          )
+        }
+      }
+    });
     dbMocks.getInstallationGrants.mockResolvedValue([
       { scope: 'plugin.storage:read' },
       { scope: 'plugin.storage:write' }
@@ -190,7 +223,7 @@ describe('Plugin Generic Storage Service', () => {
       3
     );
 
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual(expect.objectContaining({ id: 'storage-1', value: { dismissed: true } }));
     expect(dbMocks.setPluginStorageItemWithAtomicQuota).toHaveBeenCalledWith(
       expect.objectContaining({
         installationId,
@@ -201,7 +234,8 @@ describe('Plugin Generic Storage Service', () => {
         value: { dismissed: true }
       }),
       5 * 1024 * 1024,
-      expect.any(Number)
+      expect.any(Number),
+      undefined
     );
   });
 
@@ -257,7 +291,7 @@ describe('Plugin Generic Storage Service', () => {
       1
     );
 
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual(expect.objectContaining({ id: 'storage-1', value: { enabled: true } }));
     expect(dbMocks.setPluginStorageItemWithAtomicQuota).toHaveBeenCalledWith(
       expect.objectContaining({
         installationId,
@@ -268,7 +302,8 @@ describe('Plugin Generic Storage Service', () => {
         value: { enabled: true }
       }),
       5 * 1024 * 1024,
-      expect.any(Number)
+      expect.any(Number),
+      undefined
     );
   });
 
@@ -313,15 +348,21 @@ describe('Plugin Generic Storage Service', () => {
 
   it('lists records in a namespace', async () => {
     const updatedAt = new Date().toISOString();
-    dbMocks.listPluginStorageByNamespace.mockResolvedValueOnce([
-      { key: 'key1', value: 'val1', updatedAt },
-      { key: 'key2', value: 'val2', updatedAt }
-    ]);
+    dbMocks.listPluginStorageByNamespace.mockResolvedValueOnce({
+      items: [
+        { key: 'key1', value: 'val1', version: 1, schemaVersion: 1, updatedAt },
+        { key: 'key2', value: 'val2', version: 2, schemaVersion: 1, updatedAt }
+      ],
+      nextCursor: null
+    });
 
     const records = await listStorageRecords(installationId, organizationId, userId, 'templates');
-    expect(records).toEqual([
-      { key: 'key1', value: 'val1', updatedAt },
-      { key: 'key2', value: 'val2', updatedAt }
-    ]);
+    expect(records).toEqual({
+      items: [
+        { key: 'key1', value: 'val1', version: 1, schemaVersion: 1, updatedAt },
+        { key: 'key2', value: 'val2', version: 2, schemaVersion: 1, updatedAt }
+      ],
+      nextCursor: null
+    });
   });
 });

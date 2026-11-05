@@ -31,18 +31,16 @@ import {
   listOrgPlugins,
   resolveOrgContributions,
   deleteStorageValue,
+  deleteStorageData,
   getStorageValue,
+  getStorageRecord,
+  getStorageUsage,
+  exportStorageData,
   listStorageRecords,
   setStorageValue,
   uninstallPlugin
 } from '@api/services/plugin';
 
-/**
- * Dashboard-facing installation management routes.
- *
- * Plugin resource data is intentionally not exposed here. Plugins access the
- * versioned public API at /plugin-api/v1 using a backend access token.
- */
 export const pluginInstallationsRouter = new Hono()
   .get('/', authMiddleware, orgMemberMiddleware, async (c) => {
     const orgId = c.get('orgId') as string;
@@ -58,9 +56,12 @@ export const pluginInstallationsRouter = new Hono()
   .get('/contributions', authMiddleware, orgMemberMiddleware, async (c) => {
     const orgId = c.get('orgId') as string;
     const target = c.req.query('target');
+    const userRole = c.get('userRole') as number | undefined;
+    const role = userRole === 1 ? 'admin' : userRole === 2 ? 'tutor' : 'learner';
+    const pageMode = c.req.query('pageMode') === 'edit' ? 'edit' : 'view';
 
     try {
-      const contributions = await resolveOrgContributions(orgId, target);
+      const contributions = await resolveOrgContributions(orgId, target, { role, pageMode });
 
       return c.json({ success: true, data: contributions }, 200);
     } catch (error) {
@@ -201,7 +202,7 @@ export const pluginInstallationsRouter = new Hono()
       const orgId = c.get('orgId') as string;
       const userRole = c.get('userRole') as number | undefined;
       const { installationId, namespace, key } = c.req.valid('param');
-      const { value, scope, resourceType, resourceId } = c.req.valid('json');
+      const { value, scope, resourceType, resourceId, schemaVersion, expectedVersion } = c.req.valid('json');
 
       try {
         const result = await setStorageValue(
@@ -214,7 +215,9 @@ export const pluginInstallationsRouter = new Hono()
           scope,
           userRole,
           resourceType,
-          resourceId
+          resourceId,
+          schemaVersion,
+          expectedVersion
         );
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
@@ -264,7 +267,7 @@ export const pluginInstallationsRouter = new Hono()
       const orgId = c.get('orgId') as string;
       const userRole = c.get('userRole') as number | undefined;
       const { installationId, namespace } = c.req.valid('param');
-      const { scope, resourceType, resourceId } = c.req.valid('query');
+      const { scope, resourceType, resourceId, cursor, limit } = c.req.valid('query');
 
       try {
         const records = await listStorageRecords(
@@ -275,7 +278,9 @@ export const pluginInstallationsRouter = new Hono()
           scope,
           userRole,
           resourceType,
-          resourceId
+          resourceId,
+          cursor,
+          limit
         );
         return c.json({ success: true, data: records }, 200);
       } catch (error) {
@@ -283,6 +288,61 @@ export const pluginInstallationsRouter = new Hono()
       }
     }
   )
+  .get(
+    '/:installationId/storage-record/:namespace/:key',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZPluginStorageKeyParam),
+    zValidator('query', ZPluginStorageQuery),
+    async (c) => {
+      const user = c.get('user')!;
+      const orgId = c.get('orgId') as string;
+      const userRole = c.get('userRole') as number | undefined;
+      const { installationId, namespace, key } = c.req.valid('param');
+      const { scope, resourceType, resourceId } = c.req.valid('query');
+
+      try {
+        const record = await getStorageRecord(
+          installationId,
+          orgId,
+          user.id,
+          namespace,
+          key,
+          scope,
+          userRole,
+          resourceType,
+          resourceId
+        );
+        return c.json({ success: true, data: record }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch plugin storage record');
+      }
+    }
+  )
+  .get('/:installationId/storage-usage', authMiddleware, orgAdminMiddleware, async (c) => {
+    try {
+      const result = await getStorageUsage(c.req.param('installationId'), c.get('orgId') as string);
+      return c.json({ success: true, data: result }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch plugin storage usage');
+    }
+  })
+  .get('/:installationId/storage-export', authMiddleware, orgAdminMiddleware, async (c) => {
+    try {
+      const result = await exportStorageData(c.req.param('installationId'), c.get('orgId') as string);
+      return c.json({ success: true, data: result }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to export plugin storage');
+    }
+  })
+  .delete('/:installationId/storage-data', authMiddleware, orgAdminMiddleware, async (c) => {
+    try {
+      const result = await deleteStorageData(c.req.param('installationId'), c.get('orgId') as string);
+      return c.json({ success: true, data: result }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to delete plugin storage');
+    }
+  })
   .patch(
     '/:installationId/settings',
     authMiddleware,

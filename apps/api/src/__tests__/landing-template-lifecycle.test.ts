@@ -37,6 +37,7 @@ vi.mock('@cio/db/queries/organization', () => orgDbMocks);
 import {
   activateLandingTemplate,
   deactivateLandingTemplate,
+  previewOrganizationLandingTemplate,
   resolveOrganizationLandingPageAppearance
 } from '@api/services/organization/landing-page';
 import { updateOrg } from '@api/services/organization';
@@ -76,18 +77,22 @@ const sampleLandingTemplatesManifest = {
         id: 'landing-templates-picker',
         target: 'landing.templates',
         renderMode: 'custom',
-        entrypoint: 'picker',
+        pickerEntrypoint: 'picker',
+        publicRendererEntrypoint: 'render',
+        publicViewModelVersion: 1,
         title: 'Creative Landing Page Templates',
         templates: [
           {
             id: 'neo-brutalism',
             name: 'Neo-Brutalism',
-            description: 'Chunky borders, hard drop shadows, high contrast.'
+            description: 'Chunky borders, hard drop shadows, high contrast.',
+            thumbnail: 'assets/thumbnails/neo-brutalism.png'
           },
           {
             id: 'midnight-aurora',
             name: 'Midnight Aurora',
-            description: 'Obsidian dark mode, mesh gradients, glassmorphism.'
+            description: 'Obsidian dark mode, mesh gradients, glassmorphism.',
+            thumbnail: 'assets/thumbnails/midnight-aurora.png'
           }
         ]
       }
@@ -143,6 +148,7 @@ describe('Landing Template Lifecycle & Activation', () => {
       pluginId: sampleLandingTemplatesManifest.id,
       version: '1.0.0',
       reviewStatus: 'approved',
+      artifactDigest: 'landing-template-digest',
       manifest: sampleLandingTemplatesManifest
     });
   });
@@ -247,6 +253,17 @@ describe('Landing Template Lifecycle & Activation', () => {
       ).rejects.toMatchObject({ code: ErrorCodes.TEMPLATE_NOT_FOUND });
     });
 
+    it('rejects activation when the contribution does not declare the template', async () => {
+      await expect(
+        activateLandingTemplate({
+          organizationId: orgId,
+          installationId,
+          contributionId: 'other-landing-slot',
+          templateId: 'neo-brutalism'
+        })
+      ).rejects.toMatchObject({ code: ErrorCodes.INVALID_CONTRIBUTION });
+    });
+
     it('rejects activation when plugin does not contribute landing.templates', async () => {
       const manifestWithoutSlot = {
         ...sampleLandingTemplatesManifest,
@@ -277,6 +294,26 @@ describe('Landing Template Lifecycle & Activation', () => {
           templateId: 'neo-brutalism'
         })
       ).rejects.toMatchObject({ code: ErrorCodes.INVALID_CONTRIBUTION });
+    });
+  });
+
+  describe('previewOrganizationLandingTemplate', () => {
+    it('resolves a declared renderer for the requested installation and contribution', async () => {
+      const descriptor = await previewOrganizationLandingTemplate({
+        organizationId: orgId,
+        installationId,
+        contributionId: 'landing-templates-picker',
+        templateId: 'neo-brutalism'
+      });
+
+      expect(descriptor).toMatchObject({
+        pluginId: sampleLandingTemplatesManifest.id,
+        installationId,
+        contributionId: 'landing-templates-picker',
+        templateId: 'neo-brutalism',
+        templateName: 'Neo-Brutalism'
+      });
+      expect(descriptor.entrypointUrl).toMatch(/\/render\.html$/);
     });
   });
 
@@ -439,37 +476,8 @@ describe('Landing Template Lifecycle & Activation', () => {
     });
   });
 
-  describe('updateOrg with appearance validation', () => {
-    it('validates plugin appearance and prevents unverified appearance injection', async () => {
-      await updateOrg(orgId, {
-        landingpage: {
-          appearance: {
-            kind: 'plugin',
-            fallbackTheme: 'bold',
-            installationId,
-            pluginId: sampleLandingTemplatesManifest.id,
-            contributionId: 'landing-templates-picker',
-            templateId: 'neo-brutalism',
-            version: '1.0.0'
-          }
-        }
-      });
-
-      expect(orgDbMocks.updateOrganization).toHaveBeenCalledWith(
-        orgId,
-        expect.objectContaining({
-          landingpage: expect.objectContaining({
-            theme: 'bold',
-            appearance: expect.objectContaining({
-              kind: 'plugin',
-              templateId: 'neo-brutalism'
-            })
-          })
-        })
-      );
-    });
-
-    it('rejects updateOrg when appearance references non-existent template', async () => {
+  describe('updateOrg with plugin appearances', () => {
+    it('rejects plugin template selection outside the dedicated activation route', async () => {
       await expect(
         updateOrg(orgId, {
           landingpage: {
@@ -484,7 +492,7 @@ describe('Landing Template Lifecycle & Activation', () => {
             }
           }
         })
-      ).rejects.toMatchObject({ code: ErrorCodes.TEMPLATE_NOT_FOUND });
+      ).rejects.toMatchObject({ code: ErrorCodes.INVALID_CONTRIBUTION });
     });
   });
 

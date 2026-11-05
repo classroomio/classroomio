@@ -40,6 +40,7 @@ import type {
   TPluginVersion
 } from '@cio/db/types';
 import type { TInstalledPluginWithDetails } from '@cio/db/queries/plugin';
+import { ZPluginManifest, validatePluginJsonValue } from '@cio/utils/validation/plugin';
 
 function parseSemVer(v: string): [number, number, number] {
   const clean = v.replace(/^v/, '').split('-')[0];
@@ -53,6 +54,21 @@ function isSemVerLessThan(v1: string, v2: string): boolean {
   if (maj1 !== maj2) return maj1 < maj2;
   if (min1 !== min2) return min1 < min2;
   return pat1 < pat2;
+}
+
+function assertInstallationSettingsAreValid(manifestValue: unknown, settings: Record<string, unknown>): void {
+  const manifestResult = ZPluginManifest.safeParse(manifestValue);
+  if (!manifestResult.success) {
+    throw new AppError('Plugin version has an invalid manifest', 'INVALID_PLUGIN_MANIFEST', 500);
+  }
+
+  const settingsSchema = manifestResult.data.settings?.schema;
+  if (!settingsSchema) return;
+
+  const validationError = validatePluginJsonValue(settings, settingsSchema);
+  if (validationError) {
+    throw new AppError(`Plugin settings are invalid: ${validationError}`, 'INVALID_PLUGIN_SETTINGS', 400);
+  }
 }
 
 export async function assertInstallableRelease(params: {
@@ -188,6 +204,7 @@ export async function installPlugin(params: InstallPluginParams): Promise<{
   });
 
   const initialSettings = params.settings ?? {};
+  assertInstallationSettingsAreValid(versionRecord.manifest, initialSettings);
   let installation: TPluginInstallation;
 
   if (existingInstallation) {
@@ -219,8 +236,6 @@ export async function installPlugin(params: InstallPluginParams): Promise<{
   const manifest = versionRecord.manifest as
     | {
         permissions?: { required?: string[] };
-        runtime?: { backend?: { baseUrl?: string; webhookPath?: string } };
-        events?: { subscriptions?: string[] };
       }
     | null
     | undefined;
@@ -278,6 +293,19 @@ export async function listOrgPlugins(
   });
 }
 
+async function requireManageableOrganizationInstallation(installationId: string, organizationId: string) {
+  const installation = await getInstallationById(installationId);
+  if (!installation || installation.organizationId !== organizationId || installation.ownerType !== 'organization') {
+    throw new AppError('Plugin installation not found', 'INSTALLATION_NOT_FOUND', 404);
+  }
+
+  if (installation.status === 'uninstalled' || installation.status === 'revoked') {
+    throw new AppError('Plugin is not installed', 'INSTALLATION_NOT_ACTIVE', 409);
+  }
+
+  return installation;
+}
+
 export async function getInstallation(
   installationId: string,
   organizationId: string
@@ -285,7 +313,7 @@ export async function getInstallation(
   installation: TPluginInstallation;
   grants: TPluginGrant[];
 }> {
-  const installation = await requireOrganizationInstallation(installationId, organizationId);
+  const installation = await requireManageableOrganizationInstallation(installationId, organizationId);
 
   const grants = await getInstallationGrants(installationId);
 
@@ -301,7 +329,16 @@ export async function changeInstallationStatus(
   status: TPluginInstallationStatus,
   actorProfileId?: string
 ): Promise<TPluginInstallation> {
-  await requireOrganizationInstallation(installationId, organizationId);
+  const installation = await requireManageableOrganizationInstallation(installationId, organizationId);
+
+  if (installation.orgApprovalStatus !== 'approved') {
+    throw new AppError('Plugin installation is not approved for this organization', 'INSTALLATION_NOT_APPROVED', 403);
+  }
+
+  const plugin = await getPluginById(installation.pluginId);
+  if (!plugin || plugin.status === 'revoked') {
+    throw new AppError('Plugin has been revoked', 'PLUGIN_REVOKED', 403);
+  }
 
   const updatedInstallation = await updateInstallationStatusQuery(installationId, status);
   if (!updatedInstallation) {
@@ -323,21 +360,8 @@ export async function changeInstallationStatus(
   return updatedInstallation;
 }
 
-async function requireUninstallableOrganizationInstallation(installationId: string, organizationId: string) {
-  const installation = await getInstallationById(installationId);
-  if (!installation || installation.organizationId !== organizationId || installation.ownerType !== 'organization') {
-    throw new AppError('Plugin installation not found', 'INSTALLATION_NOT_FOUND', 404);
-  }
-
-  if (installation.status === 'uninstalled' || installation.status === 'revoked') {
-    throw new AppError('Plugin is not installed', 'INSTALLATION_NOT_ACTIVE', 409);
-  }
-
-  return installation;
-}
-
 export async function getPluginUninstallImpact(installationId: string, organizationId: string) {
-  await requireUninstallableOrganizationInstallation(installationId, organizationId);
+  await requireManageableOrganizationInstallation(installationId, organizationId);
 
   return getPluginUninstallDataImpact(installationId, organizationId);
 }
@@ -348,8 +372,13 @@ export async function uninstallPlugin(
   options: { deletePluginStorage: boolean; removePublishedOutputs: boolean },
   actorProfileId?: string
 ) {
-  const installation = await requireUninstallableOrganizationInstallation(installationId, organizationId);
-  const result = await uninstallPluginInstallation(installationId, organizationId, options);
+  const installation = await requireManageableOrganizationInstallation(installationId, organizationId);
+  const version = await getPluginVersionById(installation.pluginVersionId);
+  const manifest = version ? ZPluginManifest.parse(version.manifest) : null;
+  const storageRetentionDays = manifest?.dataPolicy?.retentionAfterUninstallDays ?? 0;
+  const deletePluginStorage = options.deletePluginStorage || storageRetentionDays === 0;
+  const uninstallOptions = { ...options, deletePluginStorage, storageRetentionDays };
+  const result = await uninstallPluginInstallation(installationId, organizationId, uninstallOptions);
   if (!result?.installation) {
     throw new AppError('Plugin installation not found', 'INSTALLATION_NOT_FOUND', 404);
   }
@@ -362,7 +391,7 @@ export async function uninstallPlugin(
     resource: installation.pluginId,
     outcome: 'success',
     metadata: {
-      ...options,
+      ...uninstallOptions,
       storageRecordsDeleted: result.storageRecordsDeleted,
       publishedOutputsRemoved: result.publishedOutputsRemoved,
       landingTemplatesReverted: result.landingTemplatesReverted
@@ -378,7 +407,18 @@ export async function changeInstallationSettings(
   settings: Record<string, unknown>,
   actorProfileId?: string
 ): Promise<TPluginInstallation> {
-  await requireOrganizationInstallation(installationId, organizationId);
+  const installation = await requireManageableOrganizationInstallation(installationId, organizationId);
+  const plugin = await getPluginById(installation.pluginId);
+  if (!plugin || plugin.status === 'revoked') {
+    throw new AppError('Plugin has been revoked', 'PLUGIN_REVOKED', 403);
+  }
+
+  const versionRecord = installation.pluginVersionId ? await getPluginVersionById(installation.pluginVersionId) : null;
+  if (!versionRecord) {
+    throw new AppError('Plugin version not found', 'PLUGIN_VERSION_NOT_FOUND', 404);
+  }
+
+  assertInstallationSettingsAreValid(versionRecord.manifest, settings);
 
   const updatedInstallation = await updateInstallationSettingsQuery(installationId, settings);
   if (!updatedInstallation) {
@@ -404,7 +444,7 @@ export async function changeOrgApproval(
   approval: TPluginOrgApprovalStatus,
   actorProfileId?: string
 ): Promise<TPluginInstallation> {
-  await requireOrganizationInstallation(installationId, organizationId);
+  const installation = await requireManageableOrganizationInstallation(installationId, organizationId);
 
   const updatedInstallation = await updateOrgApprovalStatusQuery(installationId, approval);
   if (!updatedInstallation) {
@@ -440,9 +480,11 @@ export interface ResolvedPluginContribution {
   actionType?: 'openUrl' | 'command' | 'dialog';
   urlTemplate?: string;
   allowedDomains?: string[];
-  command?: string;
+  grantedScopes: string[];
   page?: string;
-  backendAudience?: string;
+  order: number;
+  visibility: 'all' | 'admin' | 'tutor' | 'learner';
+  pageModes: Array<'view' | 'edit'>;
 }
 
 export function getPluginArtifactBaseUrl(pluginId: string, version: string, digest: string): string {
@@ -470,7 +512,8 @@ function normalizePluginEntrypointPath(resource: string): string {
 
 export async function resolveOrgContributions(
   organizationId: string,
-  target?: string
+  target?: string,
+  options: { role?: 'admin' | 'tutor' | 'learner'; pageMode?: 'view' | 'edit' } = {}
 ): Promise<ResolvedPluginContribution[]> {
   const installations = await listOrganizationInstallations(organizationId);
   const activeApproved = installations.filter(
@@ -480,6 +523,8 @@ export async function resolveOrgContributions(
   const resolved: ResolvedPluginContribution[] = [];
 
   for (const inst of activeApproved) {
+    const grants = await getInstallationGrants(inst.id);
+    const grantedScopes = grants.map((grant) => grant.scope);
     const manifest = inst.manifest as {
       version?: string;
       contributes?: {
@@ -488,23 +533,31 @@ export async function resolveOrgContributions(
           target: string;
           renderMode?: 'custom' | 'host';
           entrypoint?: string;
+          pickerEntrypoint?: string;
           title?: string;
+          order?: number;
+          visibility?: 'all' | 'admin' | 'tutor' | 'learner';
+          pageModes?: Array<'view' | 'edit'>;
         }>;
         actions?: Array<{
           id: string;
           target: string;
-          renderMode?: 'host' | 'custom';
-          entrypoint?: string;
+          renderMode?: 'host';
           label?: string;
           icon?: { resource?: string };
-          actionType?: 'openUrl' | 'command' | 'dialog';
+          actionType?: 'openUrl';
           urlTemplate?: string;
-          command?: string;
+          order?: number;
+          visibility?: 'all' | 'admin' | 'tutor' | 'learner';
+          pageModes?: Array<'view' | 'edit'>;
         }>;
         pages?: Array<{
           id: string;
           entrypoint: string;
           title?: string;
+          order?: number;
+          visibility?: 'all' | 'admin' | 'tutor' | 'learner';
+          pageModes?: Array<'view' | 'edit'>;
         }>;
         navigation?: Array<{
           id: string;
@@ -513,13 +566,14 @@ export async function resolveOrgContributions(
           page: string;
           icon?: { resource?: string };
           visibility?: string;
+          order?: number;
+          pageModes?: Array<'view' | 'edit'>;
         }>;
       };
       runtime?: {
         ui?: {
           entrypoints?: Record<string, string | { renderMode?: string; resource: string }>;
         };
-        backend?: { type?: 'remote'; baseUrl?: string };
       };
       networkAccess?: {
         allowedDomains?: string[];
@@ -541,8 +595,9 @@ export async function resolveOrgContributions(
         const renderMode = slot.renderMode ?? 'custom';
         let artifactUrl: string | undefined = undefined;
 
-        if (renderMode === 'custom' && artifactBaseUrl && slot.entrypoint && manifest.runtime?.ui?.entrypoints) {
-          const rawEntry = manifest.runtime.ui.entrypoints[slot.entrypoint];
+        const entrypointName = slot.target === 'landing.templates' ? slot.pickerEntrypoint : slot.entrypoint;
+        if (renderMode === 'custom' && artifactBaseUrl && entrypointName && manifest.runtime?.ui?.entrypoints) {
+          const rawEntry = manifest.runtime.ui.entrypoints[entrypointName];
           const entrypointPath = typeof rawEntry === 'string' ? rawEntry : rawEntry?.resource;
           if (entrypointPath) {
             artifactUrl = `${artifactBaseUrl}/${normalizePluginEntrypointPath(entrypointPath)}`;
@@ -558,8 +613,11 @@ export async function resolveOrgContributions(
           target: slot.target,
           renderMode,
           artifactUrl,
+          grantedScopes,
           title: slot.title ?? slot.id,
-          backendAudience: manifest.runtime?.backend?.baseUrl
+          order: slot.order ?? 0,
+          visibility: slot.visibility ?? 'all',
+          pageModes: slot.pageModes ?? ['view']
         });
       }
     }
@@ -569,15 +627,6 @@ export async function resolveOrgContributions(
         if (target && action.target !== target) continue;
 
         const renderMode = action.renderMode ?? 'host';
-        let artifactUrl: string | undefined = undefined;
-
-        if (renderMode === 'custom' && artifactBaseUrl && action.entrypoint && manifest.runtime?.ui?.entrypoints) {
-          const rawEntry = manifest.runtime.ui.entrypoints[action.entrypoint];
-          const entrypointPath = typeof rawEntry === 'string' ? rawEntry : rawEntry?.resource;
-          if (entrypointPath) {
-            artifactUrl = `${artifactBaseUrl}/${normalizePluginEntrypointPath(entrypointPath)}`;
-          }
-        }
 
         resolved.push({
           installationId: inst.id,
@@ -587,15 +636,16 @@ export async function resolveOrgContributions(
           contributionId: action.id,
           target: action.target,
           renderMode,
-          artifactUrl,
           title: action.label ?? action.id,
           label: action.label,
           iconUrl: resolvePluginIconAssetUrl(artifactBaseUrl, action.icon?.resource),
           actionType: action.actionType,
           urlTemplate: action.urlTemplate,
           allowedDomains: manifest.networkAccess?.allowedDomains ?? [],
-          command: action.command,
-          backendAudience: manifest.runtime?.backend?.baseUrl
+          grantedScopes,
+          order: action.order ?? 0,
+          visibility: action.visibility ?? 'all',
+          pageModes: action.pageModes ?? ['view']
         });
       }
     }
@@ -614,8 +664,11 @@ export async function resolveOrgContributions(
           renderMode: 'host',
           title: navigationItem.title,
           iconUrl: resolvePluginIconAssetUrl(artifactBaseUrl, navigationItem.icon?.resource),
+          grantedScopes,
           page: navigationItem.page,
-          backendAudience: manifest.runtime?.backend?.baseUrl
+          order: navigationItem.order ?? 0,
+          visibility: (navigationItem.visibility as 'all' | 'admin' | 'tutor' | 'learner') ?? 'all',
+          pageModes: navigationItem.pageModes ?? ['view']
         });
       }
     }
@@ -637,14 +690,27 @@ export async function resolveOrgContributions(
           target: 'plugin.page',
           renderMode: 'custom',
           artifactUrl: `${artifactBaseUrl}/${normalizePluginEntrypointPath(entrypointPath)}`,
+          grantedScopes,
           title: page.title ?? page.id,
-          backendAudience: manifest.runtime?.backend?.baseUrl
+          order: page.order ?? 0,
+          visibility: page.visibility ?? 'all',
+          pageModes: page.pageModes ?? ['view']
         });
       }
     }
   }
 
-  return resolved;
+  return resolved
+    .filter(
+      (contribution) => !options.role || contribution.visibility === 'all' || contribution.visibility === options.role
+    )
+    .filter((contribution) => !options.pageMode || contribution.pageModes.includes(options.pageMode))
+    .sort(
+      (left, right) =>
+        left.order - right.order ||
+        left.pluginId.localeCompare(right.pluginId) ||
+        left.contributionId.localeCompare(right.contributionId)
+    );
 }
 
 export async function listInstallationCourses(

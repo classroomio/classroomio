@@ -162,6 +162,27 @@ export function validatePluginArchive(
     }
   }
 
+  for (const slot of manifest.contributes.slots) {
+    if (slot.target !== 'landing.templates') continue;
+
+    for (const template of slot.templates ?? []) {
+      const thumbnailResource = template.thumbnail;
+      if (!thumbnailResource) continue;
+
+      const normalizedThumbnail = thumbnailResource.startsWith('dist/')
+        ? thumbnailResource.slice('dist/'.length)
+        : thumbnailResource;
+      const thumbnailExists = paths.has(thumbnailResource) || paths.has(normalizedThumbnail);
+      if (!thumbnailExists) {
+        throw new AppError(
+          `Archive is missing landing template thumbnail (${thumbnailResource})`,
+          'MISSING_RESOURCE',
+          400
+        );
+      }
+    }
+  }
+
   return { entries, manifest };
 }
 

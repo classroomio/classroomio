@@ -171,6 +171,63 @@ describe('PR-First Plugin Releases', () => {
   });
 
   describe('Service: registerInternalReleases', () => {
+    it('rejects a landing template release when a declared thumbnail is missing from the archive', async () => {
+      const landingTemplatesManifest = {
+        ...validManifest,
+        runtime: {
+          ui: {
+            entrypoints: {
+              picker: 'dist/picker.html',
+              renderer: 'dist/render.html'
+            }
+          }
+        },
+        contributes: {
+          slots: [
+            {
+              id: 'landing-templates-picker',
+              target: 'landing.templates',
+              renderMode: 'custom',
+              pickerEntrypoint: 'picker',
+              publicRendererEntrypoint: 'renderer',
+              publicViewModelVersion: 1,
+              templates: [
+                {
+                  id: 'atelier',
+                  name: 'Atelier',
+                  thumbnail: 'assets/thumbnails/atelier.png'
+                }
+              ]
+            }
+          ]
+        }
+      };
+      const archive = createTestArchive([
+        { path: 'plugin.json', content: JSON.stringify(landingTemplatesManifest) },
+        { path: 'dist/picker.html', content: '<!doctype html>' },
+        { path: 'dist/render.html', content: '<!doctype html>' }
+      ]);
+      storageMocks.getFromS3.mockResolvedValue({
+        success: true,
+        data: { Body: { transformToByteArray: async () => new Uint8Array(archive.buffer) } }
+      });
+
+      await expect(
+        registerInternalReleases({
+          sourceCommit: 'a'.repeat(40),
+          workflowRunUrl: 'https://github.com/classroomio/classroomio-plugins/actions/runs/123',
+          releases: [
+            {
+              pluginId: 'com.example.reading-timer',
+              version: '1.2.0',
+              artifactDigest: archive.digest,
+              kind: 'community'
+            }
+          ]
+        })
+      ).rejects.toThrow('landing template thumbnail');
+    });
+
     it('rejects duplicate plugin IDs in the same request with 400', async () => {
       await expect(
         registerInternalReleases({

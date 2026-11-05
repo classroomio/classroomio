@@ -200,7 +200,7 @@ export async function getPluginUninstallDataImpact(installationId: string, organ
 export async function uninstallPluginInstallation(
   installationId: string,
   organizationId: string,
-  options: { deletePluginStorage: boolean; removePublishedOutputs: boolean }
+  options: { deletePluginStorage: boolean; removePublishedOutputs: boolean; storageRetentionDays: number }
 ) {
   return db.transaction(async (transaction) => {
     const [installation] = await transaction
@@ -224,6 +224,12 @@ export async function uninstallPluginInstallation(
         .where(eq(schema.pluginStorage.installationId, installationId))
         .returning({ id: schema.pluginStorage.id });
       storageRecordsDeleted = deletedStorage.length;
+    } else {
+      const expiresAt = new Date(Date.now() + options.storageRetentionDays * 86_400_000).toISOString();
+      await transaction
+        .update(schema.pluginStorage)
+        .set({ expiresAt })
+        .where(eq(schema.pluginStorage.installationId, installationId));
     }
 
     let publishedOutputsRemoved = 0;

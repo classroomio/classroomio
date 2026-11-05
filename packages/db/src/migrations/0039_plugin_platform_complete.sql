@@ -96,6 +96,9 @@ CREATE TABLE "plugin_storage" (
 	"namespace" varchar(128) DEFAULT 'default' NOT NULL,
 	"key" varchar(255) NOT NULL,
 	"value" jsonb DEFAULT '{}'::jsonb NOT NULL,
+	"version" integer DEFAULT 1 NOT NULL,
+	"schema_version" integer DEFAULT 1 NOT NULL,
+	"expires_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -132,4 +135,5 @@ CREATE INDEX "idx_plugin_publisher_class" ON "plugin_publisher" USING btree ("pu
 CREATE UNIQUE INDEX "idx_plugin_version_plugin_ver_unique" ON "plugin_version" USING btree ("plugin_id","version");--> statement-breakpoint
 CREATE INDEX "idx_plugin_version_plugin_id" ON "plugin_version" USING btree ("plugin_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_plugin_storage_inst_scope_ns_key_unique" ON "plugin_storage" USING btree ("installation_id","scope_type","scope_id","resource_type","namespace","key");--> statement-breakpoint
-CREATE INDEX "idx_plugin_storage_lookup" ON "plugin_storage" USING btree ("installation_id","namespace");
+CREATE INDEX "idx_plugin_storage_lookup" ON "plugin_storage" USING btree ("installation_id","namespace");--> statement-breakpoint
+CREATE INDEX "idx_plugin_storage_expiry" ON "plugin_storage" USING btree ("expires_at");

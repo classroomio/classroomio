@@ -4619,6 +4619,9 @@ export const pluginStorage = pgTable(
     namespace: varchar('namespace', { length: 128 }).default('default').notNull(),
     key: varchar('key', { length: 255 }).notNull(),
     value: jsonb('value').default({}).notNull().$type<unknown>(),
+    version: integer().default(1).notNull(),
+    schemaVersion: integer('schema_version').default(1).notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull(),
@@ -4635,7 +4638,8 @@ export const pluginStorage = pgTable(
       table.namespace,
       table.key
     ),
-    index('idx_plugin_storage_lookup').on(table.installationId, table.namespace)
+    index('idx_plugin_storage_lookup').on(table.installationId, table.namespace),
+    index('idx_plugin_storage_expiry').on(table.expiresAt)
   ]
 );
 

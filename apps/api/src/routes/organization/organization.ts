@@ -12,7 +12,9 @@ import {
   ZBulkAudienceAction,
   ZGetAudienceQuery,
   ZGetCoursesBySiteName,
+  ZActivateLandingTemplate,
   ZGetPublicLandingPageQuery,
+  ZPreviewLandingTemplateQuery,
   ZGetLinkInvite,
   ZGetOrgSetup,
   ZGetOrganizationCoursesQuery,
@@ -56,6 +58,8 @@ import {
   getOrganizationsWithFilters,
   getPublicCourses,
   getPublicOrgLandingPageDescriptor,
+  activateLandingTemplate,
+  previewOrganizationLandingTemplate,
   getRecommendedCourses,
   getUserAnalytics,
   getUserEnrolledCourses,
@@ -541,13 +545,50 @@ export const organizationRouter = new Hono()
    */
   .get('/landing-page/public', zValidator('query', ZGetPublicLandingPageQuery), async (c) => {
     try {
-      const { siteName, templateId } = c.req.valid('query');
-      const data = await getPublicOrgLandingPageDescriptor(siteName, templateId);
+      const { siteName } = c.req.valid('query');
+      const data = await getPublicOrgLandingPageDescriptor(siteName);
       return c.json({ success: true, data });
     } catch (error) {
       return handleError(c, error, 'Failed to resolve landing page presentation');
     }
   })
+  .get(
+    '/landing-page/plugin-template/preview',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('query', ZPreviewLandingTemplateQuery),
+    async (c) => {
+      try {
+        const organizationId = c.req.header('cio-org-id')!;
+        const input = c.req.valid('query');
+        const data = await previewOrganizationLandingTemplate({ organizationId, ...input });
+        return c.json({ success: true, data });
+      } catch (error) {
+        return handleError(c, error, 'Failed to preview landing template');
+      }
+    }
+  )
+  .post(
+    '/landing-page/plugin-template',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('json', ZActivateLandingTemplate),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.req.header('cio-org-id')!;
+        const input = c.req.valid('json');
+        const data = await activateLandingTemplate({
+          organizationId,
+          actorProfileId: user.id,
+          ...input
+        });
+        return c.json({ success: true, data });
+      } catch (error) {
+        return handleError(c, error, 'Failed to activate landing template');
+      }
+    }
+  )
   /**
    * GET /organization/courses/public
    * Gets published courses for an organization (public landing page)

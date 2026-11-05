@@ -28,6 +28,8 @@ const dbMocks = vi.hoisted(() => ({
 vi.mock('@cio/db/queries/plugin', () => dbMocks);
 
 import {
+  changeInstallationSettings,
+  changeInstallationStatus,
   getPluginUninstallImpact,
   installPlugin,
   resolveOrgContributions,
@@ -43,12 +45,14 @@ describe('Plugin Installation Service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     dbMocks.getPluginByIdOrSlug.mockImplementation((id: string) => dbMocks.getPluginById(id));
+    dbMocks.getInstallationGrants.mockResolvedValue([]);
   });
 
   it('installs the LinkedIn plugin without granting unused permissions', async () => {
     const installation = {
       id: 'installation-1',
       pluginId: linkedinManifest.id,
+      pluginVersionId: 'version-1',
       organizationId: 'organization-1',
       status: 'active'
     };
@@ -126,6 +130,49 @@ describe('Plugin Installation Service', () => {
     expect(dbMocks.createInstallation).not.toHaveBeenCalled();
   });
 
+  it('validates installation settings against the manifest schema', async () => {
+    const settingsManifest = {
+      ...linkedinManifest,
+      settings: {
+        schema: {
+          type: 'object',
+          properties: {
+            enabled: { type: 'boolean' }
+          },
+          required: ['enabled'],
+          additionalProperties: false
+        }
+      }
+    };
+    const installation = {
+      id: 'installation-1',
+      pluginId: linkedinManifest.id,
+      pluginVersionId: 'version-1',
+      organizationId: 'organization-1',
+      ownerType: 'organization',
+      status: 'active',
+      orgApprovalStatus: 'approved'
+    };
+
+    dbMocks.getInstallationById.mockResolvedValueOnce(installation);
+    dbMocks.getPluginById.mockResolvedValueOnce({ id: linkedinManifest.id, status: 'active' });
+    dbMocks.getPluginVersionById.mockResolvedValueOnce({ id: 'version-1', manifest: settingsManifest });
+
+    await expect(changeInstallationSettings('installation-1', 'organization-1', {})).rejects.toThrow(
+      'Plugin settings are invalid: $.enabled is required'
+    );
+    expect(dbMocks.updateInstallationSettings).not.toHaveBeenCalled();
+
+    dbMocks.getInstallationById.mockResolvedValueOnce(installation);
+    dbMocks.getPluginById.mockResolvedValueOnce({ id: linkedinManifest.id, status: 'active' });
+    dbMocks.getPluginVersionById.mockResolvedValueOnce({ id: 'version-1', manifest: settingsManifest });
+    dbMocks.updateInstallationSettings.mockResolvedValueOnce({ ...installation, settings: { enabled: true } });
+
+    await expect(
+      changeInstallationSettings('installation-1', 'organization-1', { enabled: true }, 'profile-1')
+    ).resolves.toMatchObject({ settings: { enabled: true } });
+  });
+
   it('reports retained data before uninstalling', async () => {
     dbMocks.getInstallationById.mockResolvedValueOnce({
       id: 'installation-1',
@@ -149,6 +196,7 @@ describe('Plugin Installation Service', () => {
     const installation = {
       id: 'installation-1',
       pluginId: linkedinManifest.id,
+      pluginVersionId: 'version-1',
       organizationId: 'organization-1',
       ownerType: 'organization',
       status: 'active'
@@ -156,6 +204,7 @@ describe('Plugin Installation Service', () => {
     const options = { deletePluginStorage: true, removePublishedOutputs: true };
 
     dbMocks.getInstallationById.mockResolvedValueOnce(installation);
+    dbMocks.getPluginVersionById.mockResolvedValueOnce({ id: 'version-1', manifest: linkedinManifest });
     dbMocks.uninstallPluginInstallation.mockResolvedValueOnce({
       installation: { ...installation, status: 'uninstalled' },
       storageRecordsDeleted: 3,
@@ -165,7 +214,10 @@ describe('Plugin Installation Service', () => {
     await expect(uninstallPlugin('installation-1', 'organization-1', options, 'profile-1')).resolves.toEqual(
       expect.objectContaining({ storageRecordsDeleted: 3, publishedOutputsRemoved: 2 })
     );
-    expect(dbMocks.uninstallPluginInstallation).toHaveBeenCalledWith('installation-1', 'organization-1', options);
+    expect(dbMocks.uninstallPluginInstallation).toHaveBeenCalledWith('installation-1', 'organization-1', {
+      ...options,
+      storageRetentionDays: linkedinManifest.dataPolicy.retentionAfterUninstallDays
+    });
     expect(dbMocks.recordPluginAuditEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'plugin.uninstalled',
@@ -178,6 +230,32 @@ describe('Plugin Installation Service', () => {
         })
       })
     );
+  });
+
+  it('retains storage for the manifest retention period when immediate deletion is not selected', async () => {
+    const installation = {
+      id: 'installation-1',
+      pluginId: announcementManifest.id,
+      pluginVersionId: 'version-1',
+      organizationId: 'organization-1',
+      ownerType: 'organization',
+      status: 'active'
+    };
+    const options = { deletePluginStorage: false, removePublishedOutputs: false };
+    dbMocks.getInstallationById.mockResolvedValueOnce(installation);
+    dbMocks.getPluginVersionById.mockResolvedValueOnce({ id: 'version-1', manifest: announcementManifest });
+    dbMocks.uninstallPluginInstallation.mockResolvedValueOnce({
+      installation: { ...installation, status: 'uninstalled' },
+      storageRecordsDeleted: 0,
+      publishedOutputsRemoved: 0
+    });
+
+    await uninstallPlugin('installation-1', 'organization-1', options, 'profile-1');
+
+    expect(dbMocks.uninstallPluginInstallation).toHaveBeenCalledWith('installation-1', 'organization-1', {
+      ...options,
+      storageRetentionDays: 30
+    });
   });
 
   it('does not allow an already uninstalled plugin to be uninstalled again', async () => {
@@ -247,11 +325,11 @@ describe('Plugin Installation Service', () => {
 
     dbMocks.listOrganizationInstallations.mockResolvedValueOnce([installedPlugin]);
 
-    await expect(resolveOrgContributions('organization-1', 'organization.settings')).resolves.toEqual([
+    await expect(resolveOrgContributions('organization-1', 'organization.navigation')).resolves.toEqual([
       expect.objectContaining({
         pluginId: announcementManifest.id,
         contributionId: 'announcement-settings-navigation',
-        target: 'organization.settings',
+        target: 'organization.navigation',
         page: 'announcement-settings'
       })
     ]);
@@ -387,5 +465,115 @@ describe('Plugin Installation Service', () => {
         allowDowngrade: true
       })
     ).resolves.toBeDefined();
+  });
+
+  describe('changeInstallationStatus', () => {
+    it('disables an active plugin installation and records audit event', async () => {
+      const activeInstallation = {
+        id: 'installation-1',
+        pluginId: linkedinManifest.id,
+        organizationId: 'organization-1',
+        ownerType: 'organization',
+        status: 'active',
+        orgApprovalStatus: 'approved'
+      };
+      const disabledInstallation = { ...activeInstallation, status: 'disabled' };
+
+      dbMocks.getInstallationById.mockResolvedValueOnce(activeInstallation);
+      dbMocks.getPluginById.mockResolvedValueOnce({ id: linkedinManifest.id, status: 'active' });
+      dbMocks.updateInstallationStatus.mockResolvedValueOnce(disabledInstallation);
+
+      const result = await changeInstallationStatus('installation-1', 'organization-1', 'disabled', 'profile-1');
+
+      expect(result).toEqual(disabledInstallation);
+      expect(dbMocks.updateInstallationStatus).toHaveBeenCalledWith('installation-1', 'disabled');
+      expect(dbMocks.recordPluginAuditEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'plugin.status_disabled',
+          installationId: 'installation-1',
+          outcome: 'success'
+        })
+      );
+    });
+
+    it('re-enables a disabled plugin installation without throwing INSTALLATION_NOT_ACTIVE', async () => {
+      const disabledInstallation = {
+        id: 'installation-1',
+        pluginId: linkedinManifest.id,
+        organizationId: 'organization-1',
+        ownerType: 'organization',
+        status: 'disabled',
+        orgApprovalStatus: 'approved'
+      };
+      const activeInstallation = { ...disabledInstallation, status: 'active' };
+
+      dbMocks.getInstallationById.mockResolvedValueOnce(disabledInstallation);
+      dbMocks.getPluginById.mockResolvedValueOnce({ id: linkedinManifest.id, status: 'active' });
+      dbMocks.updateInstallationStatus.mockResolvedValueOnce(activeInstallation);
+
+      const result = await changeInstallationStatus('installation-1', 'organization-1', 'active', 'profile-1');
+
+      expect(result).toEqual(activeInstallation);
+      expect(dbMocks.updateInstallationStatus).toHaveBeenCalledWith('installation-1', 'active');
+      expect(dbMocks.recordPluginAuditEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'plugin.status_active',
+          installationId: 'installation-1',
+          outcome: 'success'
+        })
+      );
+    });
+
+    it('rejects status change for uninstalled plugin', async () => {
+      const uninstalled = {
+        id: 'installation-1',
+        pluginId: linkedinManifest.id,
+        organizationId: 'organization-1',
+        ownerType: 'organization',
+        status: 'uninstalled',
+        orgApprovalStatus: 'approved'
+      };
+
+      dbMocks.getInstallationById.mockResolvedValueOnce(uninstalled);
+
+      await expect(changeInstallationStatus('installation-1', 'organization-1', 'active', 'profile-1')).rejects.toThrow(
+        'Plugin is not installed'
+      );
+    });
+
+    it('rejects status change when plugin is not approved for the organization', async () => {
+      const pendingApproval = {
+        id: 'installation-1',
+        pluginId: linkedinManifest.id,
+        organizationId: 'organization-1',
+        ownerType: 'organization',
+        status: 'disabled',
+        orgApprovalStatus: 'pending'
+      };
+
+      dbMocks.getInstallationById.mockResolvedValueOnce(pendingApproval);
+
+      await expect(changeInstallationStatus('installation-1', 'organization-1', 'active', 'profile-1')).rejects.toThrow(
+        'Plugin installation is not approved for this organization'
+      );
+    });
+
+    it('rejects status change when the plugin itself is revoked', async () => {
+      const disabledInstallation = {
+        id: 'installation-1',
+        pluginId: linkedinManifest.id,
+        organizationId: 'organization-1',
+        ownerType: 'organization',
+        status: 'disabled',
+        orgApprovalStatus: 'approved'
+      };
+
+      dbMocks.getInstallationById.mockResolvedValueOnce(disabledInstallation);
+      dbMocks.getPluginById.mockResolvedValueOnce({ id: linkedinManifest.id, status: 'revoked' });
+
+      await expect(changeInstallationStatus('installation-1', 'organization-1', 'active', 'profile-1')).rejects.toThrow(
+        'Plugin has been revoked'
+      );
+    });
   });
 });

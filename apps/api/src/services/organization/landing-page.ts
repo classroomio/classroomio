@@ -1,12 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { requireOrganizationInstallation } from '@api/services/plugin/authorization';
 import { getOrgIdBySiteName, getOrganizationById, updateOrganization } from '@cio/db/queries/organization';
-import {
-  getInstallationById,
-  getPluginVersionById,
-  listOrganizationInstallations,
-  recordPluginAuditEvent
-} from '@cio/db/queries/plugin';
+import { getInstallationById, getPluginVersionById, recordPluginAuditEvent } from '@cio/db/queries/plugin';
 import { getPluginArtifactBaseUrl } from '@api/services/plugin/installation';
 import {
   DEFAULT_NATIVE_LANDING_PAGE_THEME,
@@ -24,6 +19,7 @@ import {
 export interface ActivateLandingTemplateInput {
   organizationId: string;
   installationId: string;
+  contributionId?: string;
   templateId: string;
   fallbackTheme?: NativeLandingPageTheme;
   actorProfileId?: string;
@@ -38,12 +34,80 @@ export interface ResolvedLandingPageAppearance {
   fallbackReason?: string;
 }
 
+interface ResolveLandingTemplateDescriptorInput {
+  organizationId: string;
+  installationId: string;
+  contributionId?: string;
+  templateId: string;
+}
+
+async function resolveLandingTemplateDescriptor(
+  input: ResolveLandingTemplateDescriptorInput
+): Promise<PublicLandingPluginDescriptor> {
+  const installation = await requireOrganizationInstallation(input.installationId, input.organizationId);
+  const versionRecord = await getPluginVersionById(installation.pluginVersionId);
+  if (!versionRecord || versionRecord.reviewStatus !== 'approved' || !versionRecord.artifactDigest) {
+    throw new AppError('Plugin version is not approved', 'PLUGIN_VERSION_NOT_APPROVED', 403);
+  }
+
+  const manifest = versionRecord.manifest as TPluginManifest | null;
+  const landingSlot = manifest?.contributes?.slots.find(
+    (slot) => slot.target === 'landing.templates' && (!input.contributionId || slot.id === input.contributionId)
+  );
+  if (!landingSlot) {
+    throw new AppError(
+      'Plugin does not contribute the requested landing template',
+      ErrorCodes.INVALID_CONTRIBUTION,
+      400
+    );
+  }
+
+  const template = landingSlot.templates?.find((candidate) => candidate.id === input.templateId);
+  if (!template) {
+    throw new AppError('Template not found in plugin', ErrorCodes.TEMPLATE_NOT_FOUND, 404);
+  }
+
+  const renderEntrypointName = landingSlot.publicRendererEntrypoint;
+  const renderEntrypoint = renderEntrypointName
+    ? manifest?.runtime?.ui?.entrypoints?.[renderEntrypointName]
+    : undefined;
+  const rawResource = resolveEntrypointResource(renderEntrypoint);
+  if (!rawResource) {
+    throw new AppError('Plugin does not declare a public landing renderer', ErrorCodes.INVALID_CONTRIBUTION, 400);
+  }
+
+  const normalizedEntrypoint = rawResource.startsWith('dist/') ? rawResource.slice('dist/'.length) : rawResource;
+  const artifactBaseUrl = getPluginArtifactBaseUrl(
+    installation.pluginId,
+    versionRecord.version,
+    versionRecord.artifactDigest
+  );
+
+  return {
+    pluginId: installation.pluginId,
+    installationId: installation.id,
+    contributionId: landingSlot.id,
+    version: versionRecord.version,
+    artifactDigest: versionRecord.artifactDigest,
+    entrypointUrl: `${artifactBaseUrl}/${normalizedEntrypoint}`,
+    templateId: template.id,
+    templateName: template.name
+  };
+}
+
+export async function previewOrganizationLandingTemplate(
+  input: ResolveLandingTemplateDescriptorInput & { contributionId: string }
+): Promise<PublicLandingPluginDescriptor> {
+  return resolveLandingTemplateDescriptor(input);
+}
+
 /**
  * Validates installation and declared slot template metadata, persisting active plugin appearance.
  */
 export async function activateLandingTemplate(input: ActivateLandingTemplateInput): Promise<{
   appearance: LandingPageAppearance;
   template: TPluginDeclaredTemplate;
+  pluginDescriptor: PublicLandingPluginDescriptor;
 }> {
   const organization = await getOrganizationById(input.organizationId);
   if (!organization) {
@@ -59,7 +123,9 @@ export async function activateLandingTemplate(input: ActivateLandingTemplateInpu
 
   const manifest = versionRecord.manifest as TPluginManifest | null;
   const slots = manifest?.contributes?.slots ?? [];
-  const landingSlot = slots.find((slot) => slot.target === 'landing.templates');
+  const landingSlot = slots.find(
+    (slot) => slot.target === 'landing.templates' && (!input.contributionId || slot.id === input.contributionId)
+  );
   if (!landingSlot) {
     throw new AppError('Plugin does not contribute landing.templates', ErrorCodes.INVALID_CONTRIBUTION, 400);
   }
@@ -116,9 +182,17 @@ export async function activateLandingTemplate(input: ActivateLandingTemplateInpu
     metadata: auditMetadata
   });
 
+  const pluginDescriptor = await resolveLandingTemplateDescriptor({
+    organizationId: input.organizationId,
+    installationId: installation.id,
+    contributionId: landingSlot.id,
+    templateId: input.templateId
+  });
+
   return {
     appearance,
-    template: matchingTemplate
+    template: matchingTemplate,
+    pluginDescriptor
   };
 }
 
@@ -254,81 +328,10 @@ export async function resolveOrganizationLandingPageAppearance(
 /**
  * Resolves public landing page presentation and plugin descriptor for a given site name.
  */
-export async function getPublicOrgLandingPageDescriptor(
-  siteName: string,
-  previewTemplateId?: string
-): Promise<PublicLandingPageResponse> {
+export async function getPublicOrgLandingPageDescriptor(siteName: string): Promise<PublicLandingPageResponse> {
   const [org] = await getOrgIdBySiteName(siteName);
   if (!org) {
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
-  }
-
-  if (previewTemplateId && isNativeLandingPageTheme(previewTemplateId)) {
-    return {
-      appearance: { kind: 'native', theme: previewTemplateId },
-      isPlugin: false,
-      fallbackTheme: previewTemplateId
-    };
-  }
-
-  if (previewTemplateId) {
-    const installations = await listOrganizationInstallations(org.id);
-    const activeApproved = installations.filter(
-      (inst) => inst.status === 'active' && inst.orgApprovalStatus === 'approved'
-    );
-
-    for (const inst of activeApproved) {
-      const versionRecord = await getPluginVersionById(inst.pluginVersionId);
-      if (!versionRecord || versionRecord.reviewStatus !== 'approved' || !versionRecord.artifactDigest) continue;
-
-      const manifest = versionRecord.manifest as TPluginManifest | null;
-      const slots = manifest?.contributes?.slots ?? [];
-      const landingSlot = slots.find((slot) => slot.target === 'landing.templates');
-      if (!landingSlot) continue;
-
-      const declaredTemplates = landingSlot.templates ?? [];
-      const matchingTemplate = declaredTemplates.find((template) => template.id === previewTemplateId);
-      if (!matchingTemplate) continue;
-
-      const renderEntrypoint = manifest?.runtime?.ui?.entrypoints?.render;
-      const rawResource = resolveEntrypointResource(renderEntrypoint);
-      const normalizedEntrypoint = rawResource
-        ? rawResource.startsWith('dist/')
-          ? rawResource.slice('dist/'.length)
-          : rawResource
-        : 'render.html';
-
-      const artifactBaseUrl = getPluginArtifactBaseUrl(
-        inst.pluginId,
-        versionRecord.version,
-        versionRecord.artifactDigest
-      );
-      const entrypointUrl = `${artifactBaseUrl}/${normalizedEntrypoint}`;
-
-      const pluginDescriptor: PublicLandingPluginDescriptor = {
-        pluginId: inst.pluginId,
-        version: versionRecord.version,
-        artifactDigest: versionRecord.artifactDigest,
-        entrypointUrl,
-        templateId: previewTemplateId,
-        templateName: matchingTemplate.name
-      };
-
-      return {
-        appearance: {
-          kind: 'plugin',
-          fallbackTheme: DEFAULT_NATIVE_LANDING_PAGE_THEME,
-          installationId: inst.id,
-          pluginId: inst.pluginId,
-          contributionId: landingSlot.id,
-          templateId: previewTemplateId,
-          version: versionRecord.version
-        },
-        isPlugin: true,
-        pluginDescriptor,
-        fallbackTheme: DEFAULT_NATIVE_LANDING_PAGE_THEME
-      };
-    }
   }
 
   const resolved = await resolveOrganizationLandingPageAppearance(org.id);
@@ -343,48 +346,21 @@ export async function getPublicOrgLandingPageDescriptor(
     };
   }
 
-  const installation = await getInstallationById(resolved.appearance.installationId);
-  if (!installation || !installation.pluginVersionId) {
+  let pluginDescriptor: PublicLandingPluginDescriptor;
+  try {
+    pluginDescriptor = await resolveLandingTemplateDescriptor({
+      organizationId: org.id,
+      installationId: resolved.appearance.installationId,
+      contributionId: resolved.appearance.contributionId,
+      templateId: resolved.appearance.templateId
+    });
+  } catch {
     return {
       appearance: { kind: 'native', theme: fallbackTheme },
       isPlugin: false,
       fallbackTheme
     };
   }
-
-  const versionRecord = await getPluginVersionById(installation.pluginVersionId);
-  if (!versionRecord || !versionRecord.artifactDigest) {
-    return {
-      appearance: { kind: 'native', theme: fallbackTheme },
-      isPlugin: false,
-      fallbackTheme
-    };
-  }
-
-  const manifest = versionRecord.manifest as TPluginManifest | null;
-  const renderEntrypoint = manifest?.runtime?.ui?.entrypoints?.render;
-  const rawResource = resolveEntrypointResource(renderEntrypoint);
-  const normalizedEntrypoint = rawResource
-    ? rawResource.startsWith('dist/')
-      ? rawResource.slice('dist/'.length)
-      : rawResource
-    : 'render.html';
-
-  const artifactBaseUrl = getPluginArtifactBaseUrl(
-    installation.pluginId,
-    versionRecord.version,
-    versionRecord.artifactDigest
-  );
-  const entrypointUrl = `${artifactBaseUrl}/${normalizedEntrypoint}`;
-
-  const pluginDescriptor: PublicLandingPluginDescriptor = {
-    pluginId: installation.pluginId,
-    version: versionRecord.version,
-    artifactDigest: versionRecord.artifactDigest,
-    entrypointUrl,
-    templateId: resolved.appearance.templateId,
-    templateName: resolved.declaredTemplate?.name ?? resolved.appearance.templateId
-  };
 
   return {
     appearance: resolved.appearance,
