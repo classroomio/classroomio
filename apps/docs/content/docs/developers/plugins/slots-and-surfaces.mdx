@@ -11,12 +11,20 @@ When a student or teacher opens a view containing a slot, the ClassroomIO dashbo
 
 ## Supported Slot Targets
 
-| Slot Target | Location | Context Resource | Primary Use Cases |
-| :--- | :--- | :--- | :--- |
-| `lms.banner` | Top of the LMS learner layout | `organization` | Academy notices, urgency timers, maintenance banners. |
-| `lesson.after` | Directly below lesson reader content | `lesson` | Inline widgets, reading estimators, discussion frames, quiz widgets. |
-| `organization.settings` | Academy Settings sidebar | `organization` | Plugin administration screens, configuration panels. |
-| `plugin.page` | Full-page standalone route | `organization` | Complete dashboards, analytics suites, report builders. |
+All surface contracts are version 1. Contributions are ordered by `order`, then plugin ID, then contribution ID. The host filters `visibility` and `pageModes` before returning a contribution.
+
+| Target | Placement | Resource | Height range | Mobile | Host handoff |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `lms.banner` | Top of the learner layout | `organization` | 48–320px | Yes | Resize, toast, host-relative navigation |
+| `course.sidebar` | Course navigation sidebar | `course` | 120–1200px | Yes | Resize, toast, host-relative navigation |
+| `lesson.after` | Below lesson content | `lesson` | 80–1600px | Yes | Resize, toast, dirty state, host-relative navigation |
+| `certificate.actions` | Certificate action group | `certificate` | Host rendered | Yes | HTTPS URL opened by the host |
+| `certificate.templates` | Certificate editor template panel | `course` | 320–1600px | Yes | Typed template application |
+| `landing.templates` | Landing-page editor and public page | `organization` | 320–1600px | Yes | Typed preview/selection; public view-model bridge |
+| `organization.navigation` | Academy plugin navigation | `organization` | Host rendered | Yes | Opens the declared plugin page |
+| `plugin.page` | Full organization content route | `organization` | 480–4000px | Yes | Resize, toast, dirty state, host-relative navigation |
+
+The iframe has an accessible title and remains sandboxed without same-origin access. The host displays its normal loading state before the artifact is ready, omits disabled/unapproved installations, and contains failures within the contribution boundary. Plugins must preserve keyboard focus order and must not attempt to focus host elements. Resize requests are clamped to the target range. Unsupported action handoffs fail with a typed bridge error.
 
 ---
 
@@ -147,7 +155,7 @@ https://app.classroomio.com/org/:slug/plugins/:pluginId
     {
       "id": "nav-analytics",
       "title": "Analytics Pro",
-      "location": "organization.settings",
+      "location": "organization.navigation",
       "page": "analytics-dashboard",
       "icon": { "resource": "dist/analytics-icon.svg" },
       "visibility": "admin"
@@ -171,24 +179,20 @@ In addition to embedded slots, plugins can inject menu buttons and actions into 
 "contributes": {
   "actions": [
     {
-      "id": "share-lesson",
-      "target": "lesson.actions",
-      "label": "Share Lesson",
+      "id": "add-certificate-to-profile",
+      "target": "certificate.actions",
+      "label": "Add to profile",
       "icon": { "resource": "dist/share.svg" },
       "actionType": "openUrl",
-      "urlTemplate": "https://twitter.com/intent/tweet?text={lessonTitle}"
+      "urlTemplate": "https://profiles.example.com/certificates/add?name={certificateName}"
     }
   ]
 }
 ```
 
-### Action Types
-
-| Action Type | Description |
-| :--- | :--- |
-| `openUrl` | Interpolates template variables (e.g. `{certificateUrl}`, `{courseTitle}`) and opens an external URL in a new browser tab. |
-| `command` | Dispatches a command RPC to your running iframe or opens a custom modal. |
-| `dialog` | Opens a modal dialog with a custom entrypoint specified in the action. |
+Only `certificate.actions` with `actionType: "openUrl"` is supported in v1.
+The URL must be HTTPS and its origin must be listed in
+`networkAccess.allowedDomains`.
 
 ---
 

@@ -3,7 +3,7 @@ title: Manifest Reference (plugin.json)
 description: Specification for the plugin.json manifest defining identity, permissions, slots, entrypoints, and network access.
 ---
 
-Every plugin must have a `plugin.json` manifest file located in its root directory. The manifest declares your plugin's identity, requested permissions, UI contribution slots, entrypoints, network domains, and optional remote backend configuration.
+Every plugin must have a `plugin.json` manifest file located in its root directory. The manifest declares the plugin's identity, requested permissions, hosted UI contributions, entrypoints, network domains, settings, storage documents, and data policy. Plugin-owned backends are not part of the hosted contract.
 
 ClassroomIO validates the manifest during `npm run pack` (the scaffolded alias for `cio-plugin build`) and at installation time using strict Zod validation schemas.
 
@@ -55,29 +55,16 @@ ClassroomIO validates the manifest during `npm run pack` (the scaffolded alias f
       {
         "id": "nav-settings",
         "title": "AI Assistant",
-        "location": "organization.settings",
+        "location": "organization.navigation",
         "page": "assistant-settings",
-        "visibility": "organization.admin"
-      }
-    ],
-    "actions": [
-      {
-        "id": "summarize-lesson",
-        "target": "lesson.actions",
-        "label": "Summarize Lesson",
-        "actionType": "command",
-        "command": "assistant:summarize"
+        "visibility": "admin"
       }
     ]
   },
   "permissions": {
     "required": [
       "course.metadata:read",
-      "lesson.metadata:read",
-      "identity.profile:read"
-    ],
-    "optional": [
-      "learner.progress:write"
+      "lesson.metadata:read"
     ]
   },
   "networkAccess": {
@@ -118,6 +105,7 @@ ClassroomIO validates the manifest during `npm run pack` (the scaffolded alias f
 | `networkAccess`| `object` | No | Whitelisted domains for browser Content Security Policy (CSP). |
 | `dataPolicy` | `object` | **Yes** | Customer-data handling and uninstall retention declaration. |
 | `settings` | `object` | No | Optional JSON schema for plugin settings managed by the host/plugin UI. |
+| `storage` | `object` | No | Namespaced organization, user, or resource documents with a schema and schema version. |
 | `extensions` | `object` | No | Reserved extension metadata for forward-compatible host integrations. |
 
 ---
@@ -141,7 +129,7 @@ review it.
 | `homepage` | Public HTTPS information page. | Gives users a support or product destination. |
 | `repository` | Public HTTPS source repository. | Gives reviewers and users a source location when one is available. |
 | `engines.classroomio` | Supported ClassroomIO version range. | Prevents installation on incompatible host versions. |
-| `engines.pluginApi` | Supported Plugin API version/date range. | Lets the host and reviewer check backend SDK/API compatibility. |
+| `engines.pluginApi` | Supported Plugin API version/date range. | Lets the host and reviewer check browser SDK/host compatibility. |
 
 `id`, `version`, and the packaged archive digest form the release identity. Changing any packaged
 file without changing the digest is rejected.
@@ -201,7 +189,8 @@ Inline widgets embedded directly into specific dashboard surfaces:
 ```
 
 - `id`: Unique identifier for the contribution slot.
-- `target`: Supported mounting slot (e.g., `lesson.after`, `lms.banner`, `plugin.page`).
+- `target`: Supported mounting slot: `lms.banner`, `course.sidebar`,
+  `lesson.after`, `certificate.templates`, or `landing.templates`.
 - `entrypoint`: Name matching a key in `runtime.ui.entrypoints`.
 - `title`: Label used for accessibility and framing.
 - `renderMode`: `"custom"` (renders the sandboxed iframe).
@@ -227,7 +216,7 @@ Links registered in the sidebar or top navigation:
   {
     "id": "nav-analytics",
     "title": "Analytics Pro",
-    "location": "organization.settings",
+    "location": "organization.navigation",
     "page": "analytics-view",
     "icon": { "resource": "dist/icon.svg" },
     "visibility": "admin"
@@ -235,9 +224,11 @@ Links registered in the sidebar or top navigation:
 ]
 ```
 
-- `location`: Navigation placement (e.g., `organization.settings`).
+- `location`: `organization.navigation`.
 - `page`: ID of the page declared in `contributes.pages`.
-- `visibility`: `"admin"` (only organization admins can see) or `"all"`.
+- `visibility`: `"admin"`, `"tutor"`, `"learner"`, or `"all"`.
+- `order`: Integer ordering key. Ties are resolved by plugin ID and contribution ID.
+- `pageModes`: `"view"` and/or `"edit"`; the host omits contributions outside the current page mode.
 
 ### `contributes.actions`
 Contextual action buttons and menu items:
@@ -245,44 +236,22 @@ Contextual action buttons and menu items:
 ```json
 "actions": [
   {
-    "id": "export-pdf",
+    "id": "add-certificate-to-profile",
     "target": "certificate.actions",
-    "label": "Export to PDF",
-    "actionType": "command",
-    "command": "pdf:export",
-    "icon": { "resource": "dist/pdf-icon.svg" }
+    "label": "Add to profile",
+    "actionType": "openUrl",
+    "urlTemplate": "https://profiles.example.com/certificates/add?name={certificateName}",
+    "icon": { "resource": "dist/profile-icon.svg" }
   }
 ]
 ```
 
-Supported `actionType` values:
-- `"command"`: Dispatches an RPC command event.
-- `"openUrl"`: Opens an external link declared in `urlTemplate`.
-- `"dialog"`: Opens a modal dialog with a custom entrypoint.
+Only host-rendered `certificate.actions` URL actions are supported in v1.
+`urlTemplate` must be HTTPS and its origin must be listed in
+`networkAccess.allowedDomains`. Arbitrary commands, dialogs, and custom action
+frames are not part of the hosted plugin contract.
 
-For `openUrl`, `urlTemplate` must be HTTPS and its origin must be listed in
-`networkAccess.allowedDomains`. For `custom` actions, `entrypoint` must match a declared UI
-entrypoint.
-
-### `contributes.commands`
-
-Commands are named actions that host surfaces can dispatch through the plugin bridge:
-
-```json
-"commands": [
-  {
-    "id": "refresh-report",
-    "title": "Refresh report",
-    "category": "Reports"
-  }
-]
-```
-
-`id` is the stable command name, `title` is shown to users, `category` groups related commands,
-and `icon` optionally supplies a packaged image. Declaring a command does not grant data access;
-the plugin still needs the relevant permission scopes.
-
-Every custom slot, page, navigation item, or custom action must reference a declared UI entrypoint.
+Every custom slot, page, or navigation item must reference a declared UI entrypoint.
 Every navigation item must reference a declared page. These checks prevent a manifest from
 advertising a contribution that cannot render.
 
@@ -296,11 +265,7 @@ ClassroomIO uses granular, OAuth-compatible scopes. When an academy admin instal
 "permissions": {
   "required": [
     "course.metadata:read",
-    "lesson.metadata:read",
-    "identity.profile:read"
-  ],
-  "optional": [
-    "learner.progress:write"
+    "lesson.metadata:read"
   ]
 }
 ```
@@ -310,17 +275,11 @@ ClassroomIO uses granular, OAuth-compatible scopes. When an academy admin instal
 | Scope | Description |
 | :--- | :--- |
 | `course.metadata:read` | Read course metadata. |
-| `course.content:read` | Read course structure and content. |
-| `course.metadata:write` | Update course metadata. |
 | `lesson.metadata:read` | Read lesson metadata. |
-| `lesson.content:read` | Read lesson content. |
-| `lesson:write` | Create or update lessons. |
-| `learner.progress:read` | Read learner progress. |
-| `learner.progress:write` | Update learner progress. |
-| `identity.profile:read` | Read the current user's approved profile fields. |
-| `organization.profile:read` | Read approved organization profile fields. |
-| `course.enrollment:read` | Read authorized course enrollment records. |
 | `exercise.metadata:read` | Read exercise metadata without learner answers. |
+| `certificate.template:write` | Apply a certificate template in the `certificate.templates` surface. |
+| `plugin.storage:read` | Read this installation's isolated plugin storage. |
+| `plugin.storage:write` | Write this installation's isolated plugin storage. |
 
 Other capability names may appear in platform planning documents, but only active scopes listed by
 the current Plugin API are accepted by `npm run pack` and the host validator. A planned scope
