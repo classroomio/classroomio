@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { sql, type SQL } from 'drizzle-orm';
 
 import { ContentType } from '@cio/utils/constants';
 import * as schema from '@db/schema';
@@ -25,6 +25,32 @@ export type CourseContentItemRow = {
   questionCount: number | null;
   dueBy: string | null;
 };
+
+const TEXT_AFTER_TAG_BOUNDARY_PATTERN = '(^|>)[^<>]*[^<> ]';
+const HTML_TAG_PATTERN = '<[^>]*>';
+const NON_BREAKING_SPACE_PATTERN = '&nbsp;|&#160;';
+
+/**
+ * SQL predicate that is true when an HTML string holds at least one character that is not a tag or a space.
+ * A string with no `&` cannot contain an entity, so visible text after the start or a closing `>` answers true
+ * without rewriting the string; every other string strips tags and non-breaking-space entities.
+ * @param content SQL expression for the HTML column
+ */
+function hasVisibleTextSql(content: SQL) {
+  return drizzleSql`CASE
+    WHEN strpos(${content}, '&') = 0 AND ${content} ~ ${TEXT_AFTER_TAG_BOUNDARY_PATTERN} THEN true
+    ELSE length(
+      trim(
+        regexp_replace(
+          regexp_replace(COALESCE(${content}, ''), ${HTML_TAG_PATTERN}, '', 'g'),
+          ${NON_BREAKING_SPACE_PATTERN},
+          ' ',
+          'g'
+        )
+      )
+    ) > 0
+  END`;
+}
 
 /**
  * Fetches raw course content items (sections, lessons, exercises) for a course.
@@ -96,16 +122,7 @@ export async function getCourseContentItems(
             SELECT 1
             FROM lesson_language
             WHERE lesson_language.lesson_id = lesson.id
-              AND length(
-                trim(
-                  regexp_replace(
-                    regexp_replace(COALESCE(lesson_language.content, ''), '<[^>]*>', '', 'g'),
-                    '&nbsp;|&#160;',
-                    ' ',
-                    'g'
-                  )
-                )
-              ) > 0
+              AND ${hasVisibleTextSql(drizzleSql.raw('lesson_language.content'))}
           )
         ) AS "hasNoteContent",
         (
