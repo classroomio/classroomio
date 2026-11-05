@@ -63,7 +63,7 @@ export const v1CourseExercisesRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create an exercise in a course, with your own questions or from a built-in template; ${COURSE_TEAM_RULE}.`,
+      description: `Create an exercise in a course, with your own questions or from a built-in template; ${COURSE_TEAM_RULE}; see [Question types](/api/question-types).`,
       tags: [TAG],
       responses: {
         201: jsonResponse(`Exercise created successfully. ${LIVE_EDIT_NOTE}`, ExerciseDetailResponse),
@@ -118,7 +118,7 @@ export const v1CourseExercisesRouter = new Hono()
   .put(
     '/:exerciseId',
     describeRoute({
-      description: `Partially update an exercise, or change many of its questions and sections at once; ${COURSE_TEAM_RULE}.`,
+      description: `Partially update an exercise, or change many of its questions and sections at once; ${COURSE_TEAM_RULE}; see [Question types](/api/question-types).`,
       tags: [TAG],
       responses: {
         200: jsonResponse(`Exercise updated successfully. ${LIVE_EDIT_NOTE}`, ExerciseDetailResponse),
@@ -188,7 +188,7 @@ export const v1CourseExercisesRouter = new Hono()
       tags: [TAG],
       responses: {
         202: jsonResponse(
-          'Notification job queued; poll GET /courses/{courseId}/exercises/{exerciseId}/notify/{jobId}. Each call sends the emails again.',
+          "Queued for students with an email who haven't opted out, and each call sends again; poll GET /courses/{courseId}/exercises/{exerciseId}/notify/{jobId}",
           itemResponse(ZPublicApiCourseExerciseNotifyResponse)
         ),
         400: { description: 'Invalid path, or a PUBLIC course/exercise has no slug to link to' },

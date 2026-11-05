@@ -61,7 +61,7 @@ export const v1CourseStudentRouter = new Hono()
   .post(
     '/exercises/:exerciseId/submissions',
     describeRoute({
-      description: `Submit an exercise for a student; ${COURSE_TEAM_RULE}.`,
+      description: `Submit an exercise for a student; ${COURSE_TEAM_RULE}; see [Question types](/api/question-types) for answer formats.`,
       tags: [TAG],
       responses: {
         201: jsonResponse(

@@ -14,21 +14,21 @@ const QUESTION_TYPE_DESCRIPTION = 'Question type id from 1 to 14; the Question t
 
 /** Question types the public API accepts; MATCHING (15) and HOTSPOT (16) are disabled and excluded. */
 export const ZPublicApiQuestionTypeId = z
-  .union([
-    z.literal(QUESTION_TYPE.RADIO),
-    z.literal(QUESTION_TYPE.CHECKBOX),
-    z.literal(QUESTION_TYPE.TEXTAREA),
-    z.literal(QUESTION_TYPE.TRUE_FALSE),
-    z.literal(QUESTION_TYPE.SHORT_ANSWER),
-    z.literal(QUESTION_TYPE.NUMERIC),
-    z.literal(QUESTION_TYPE.FILL_BLANK),
-    z.literal(QUESTION_TYPE.FILE_UPLOAD),
-    z.literal(QUESTION_TYPE.ORDERING),
-    z.literal(QUESTION_TYPE.LINK),
-    z.literal(QUESTION_TYPE.WORD_BANK),
-    z.literal(QUESTION_TYPE.STAR),
-    z.literal(QUESTION_TYPE.VIDEO_RECORDING),
-    z.literal(QUESTION_TYPE.THUMBS)
+  .literal([
+    QUESTION_TYPE.RADIO,
+    QUESTION_TYPE.CHECKBOX,
+    QUESTION_TYPE.TEXTAREA,
+    QUESTION_TYPE.TRUE_FALSE,
+    QUESTION_TYPE.SHORT_ANSWER,
+    QUESTION_TYPE.NUMERIC,
+    QUESTION_TYPE.FILL_BLANK,
+    QUESTION_TYPE.FILE_UPLOAD,
+    QUESTION_TYPE.ORDERING,
+    QUESTION_TYPE.LINK,
+    QUESTION_TYPE.WORD_BANK,
+    QUESTION_TYPE.STAR,
+    QUESTION_TYPE.VIDEO_RECORDING,
+    QUESTION_TYPE.THUMBS
   ])
   .describe(QUESTION_TYPE_DESCRIPTION);
 

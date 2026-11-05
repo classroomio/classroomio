@@ -52,66 +52,25 @@ exports[`public API course exercise request contract > ZPublicApiAddExerciseQues
       "type": "string",
     },
     "questionTypeId": {
-      "anyOf": [
-        {
-          "const": 1,
-          "type": "number",
-        },
-        {
-          "const": 2,
-          "type": "number",
-        },
-        {
-          "const": 3,
-          "type": "number",
-        },
-        {
-          "const": 4,
-          "type": "number",
-        },
-        {
-          "const": 5,
-          "type": "number",
-        },
-        {
-          "const": 6,
-          "type": "number",
-        },
-        {
-          "const": 7,
-          "type": "number",
-        },
-        {
-          "const": 8,
-          "type": "number",
-        },
-        {
-          "const": 9,
-          "type": "number",
-        },
-        {
-          "const": 10,
-          "type": "number",
-        },
-        {
-          "const": 11,
-          "type": "number",
-        },
-        {
-          "const": 12,
-          "type": "number",
-        },
-        {
-          "const": 13,
-          "type": "number",
-        },
-        {
-          "const": 14,
-          "type": "number",
-        },
-      ],
       "default": 1,
       "description": "Question type id from 1 to 14; the Question types guide lists each type.",
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+      ],
+      "type": "number",
     },
     "settings": {
       "additionalProperties": {},
@@ -410,66 +369,25 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
             "type": "string",
           },
           "questionTypeId": {
-            "anyOf": [
-              {
-                "const": 1,
-                "type": "number",
-              },
-              {
-                "const": 2,
-                "type": "number",
-              },
-              {
-                "const": 3,
-                "type": "number",
-              },
-              {
-                "const": 4,
-                "type": "number",
-              },
-              {
-                "const": 5,
-                "type": "number",
-              },
-              {
-                "const": 6,
-                "type": "number",
-              },
-              {
-                "const": 7,
-                "type": "number",
-              },
-              {
-                "const": 8,
-                "type": "number",
-              },
-              {
-                "const": 9,
-                "type": "number",
-              },
-              {
-                "const": 10,
-                "type": "number",
-              },
-              {
-                "const": 11,
-                "type": "number",
-              },
-              {
-                "const": 12,
-                "type": "number",
-              },
-              {
-                "const": 13,
-                "type": "number",
-              },
-              {
-                "const": 14,
-                "type": "number",
-              },
-            ],
             "default": 1,
             "description": "Question type id from 1 to 14; the Question types guide lists each type.",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+            ],
+            "type": "number",
           },
           "settings": {
             "additionalProperties": {},
@@ -790,65 +708,24 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
             "type": "string",
           },
           "questionTypeId": {
-            "anyOf": [
-              {
-                "const": 1,
-                "type": "number",
-              },
-              {
-                "const": 2,
-                "type": "number",
-              },
-              {
-                "const": 3,
-                "type": "number",
-              },
-              {
-                "const": 4,
-                "type": "number",
-              },
-              {
-                "const": 5,
-                "type": "number",
-              },
-              {
-                "const": 6,
-                "type": "number",
-              },
-              {
-                "const": 7,
-                "type": "number",
-              },
-              {
-                "const": 8,
-                "type": "number",
-              },
-              {
-                "const": 9,
-                "type": "number",
-              },
-              {
-                "const": 10,
-                "type": "number",
-              },
-              {
-                "const": 11,
-                "type": "number",
-              },
-              {
-                "const": 12,
-                "type": "number",
-              },
-              {
-                "const": 13,
-                "type": "number",
-              },
-              {
-                "const": 14,
-                "type": "number",
-              },
-            ],
             "description": "Question type id from 1 to 14; the Question types guide lists each type. Defaults to 1 for a new question.",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+            ],
+            "type": "number",
           },
           "settings": {
             "additionalProperties": {},
@@ -1069,65 +946,24 @@ exports[`public API course exercise request contract > ZPublicApiUpdateExerciseQ
       "type": "string",
     },
     "questionTypeId": {
-      "anyOf": [
-        {
-          "const": 1,
-          "type": "number",
-        },
-        {
-          "const": 2,
-          "type": "number",
-        },
-        {
-          "const": 3,
-          "type": "number",
-        },
-        {
-          "const": 4,
-          "type": "number",
-        },
-        {
-          "const": 5,
-          "type": "number",
-        },
-        {
-          "const": 6,
-          "type": "number",
-        },
-        {
-          "const": 7,
-          "type": "number",
-        },
-        {
-          "const": 8,
-          "type": "number",
-        },
-        {
-          "const": 9,
-          "type": "number",
-        },
-        {
-          "const": 10,
-          "type": "number",
-        },
-        {
-          "const": 11,
-          "type": "number",
-        },
-        {
-          "const": 12,
-          "type": "number",
-        },
-        {
-          "const": 13,
-          "type": "number",
-        },
-        {
-          "const": 14,
-          "type": "number",
-        },
-      ],
       "description": "Question type id from 1 to 14; the Question types guide lists each type.",
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+      ],
+      "type": "number",
     },
     "removeOptionIds": {
       "description": "Options to remove; options you do not name are kept",
@@ -1445,65 +1281,24 @@ exports[`public API exercise question and section contract > ZPublicApiCourseExe
             "type": "string",
           },
           "questionTypeId": {
-            "anyOf": [
-              {
-                "const": 1,
-                "type": "number",
-              },
-              {
-                "const": 2,
-                "type": "number",
-              },
-              {
-                "const": 3,
-                "type": "number",
-              },
-              {
-                "const": 4,
-                "type": "number",
-              },
-              {
-                "const": 5,
-                "type": "number",
-              },
-              {
-                "const": 6,
-                "type": "number",
-              },
-              {
-                "const": 7,
-                "type": "number",
-              },
-              {
-                "const": 8,
-                "type": "number",
-              },
-              {
-                "const": 9,
-                "type": "number",
-              },
-              {
-                "const": 10,
-                "type": "number",
-              },
-              {
-                "const": 11,
-                "type": "number",
-              },
-              {
-                "const": 12,
-                "type": "number",
-              },
-              {
-                "const": 13,
-                "type": "number",
-              },
-              {
-                "const": 14,
-                "type": "number",
-              },
-            ],
             "description": "Question type id from 1 to 14; the Question types guide lists each type.",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+            ],
+            "type": "number",
           },
           "settings": {
             "additionalProperties": {},
@@ -1779,65 +1574,24 @@ exports[`public API exercise question and section contract > ZPublicApiExerciseQ
       "type": "string",
     },
     "questionTypeId": {
-      "anyOf": [
-        {
-          "const": 1,
-          "type": "number",
-        },
-        {
-          "const": 2,
-          "type": "number",
-        },
-        {
-          "const": 3,
-          "type": "number",
-        },
-        {
-          "const": 4,
-          "type": "number",
-        },
-        {
-          "const": 5,
-          "type": "number",
-        },
-        {
-          "const": 6,
-          "type": "number",
-        },
-        {
-          "const": 7,
-          "type": "number",
-        },
-        {
-          "const": 8,
-          "type": "number",
-        },
-        {
-          "const": 9,
-          "type": "number",
-        },
-        {
-          "const": 10,
-          "type": "number",
-        },
-        {
-          "const": 11,
-          "type": "number",
-        },
-        {
-          "const": 12,
-          "type": "number",
-        },
-        {
-          "const": 13,
-          "type": "number",
-        },
-        {
-          "const": 14,
-          "type": "number",
-        },
-      ],
       "description": "Question type id from 1 to 14; the Question types guide lists each type.",
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+      ],
+      "type": "number",
     },
     "settings": {
       "additionalProperties": {},

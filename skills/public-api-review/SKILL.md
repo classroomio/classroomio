@@ -44,7 +44,7 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
 The API reference shows field, parameter and response descriptions as one line of plain text, with no line breaks, lists or links. A long one becomes an unreadable block. `apps/api/src/__tests__/public-api-description-length.test.ts` fails on any that is too long.
 
 - A `describeRoute` description is one sentence (at most 200 characters, no bullets or extra paragraphs): what the endpoint does, then who may call it (`List the members of a cohort; the key creator must be a cohort member or an org admin.`). Take the "who" clause from the domain `docs.ts` so the wording matches what the service enforces. The parameters and response schema carry everything else.
-- A field, parameter or response description is one short sentence, at most 160 characters:
+- A field, parameter or response description is short: one line, at most 160 characters (one or two plain sentences):
   - a rule about one field (defaults, limits, `null` clears it, formats) goes in that field's `.describe()` in the public schema. Call `.describe()` after `.refine()`, which returns a new schema without the description.
   - why a call fails goes in the matching error response description. Use the shared helpers in the domain `docs.ts` ("Missing the X scope, or the key creator is not …").
   - what the response holds goes in the success response description or the response field's `.describe()`.
