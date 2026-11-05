@@ -37,7 +37,7 @@ const forbidden = (scope: 'audience:read' | 'audience:write') => ({
 const audienceWriteForbidden = forbidden('audience:write');
 
 const createAudienceForbidden = {
-  description: `${audienceWriteForbidden.description}, or the Free plan student limit is reached (UPGRADE_REQUIRED)`
+  description: `${audienceWriteForbidden.description}, or the Free plan student limit is reached during the request (UPGRADE_REQUIRED)`
 };
 
 export const v1AudienceRouter = new Hono()

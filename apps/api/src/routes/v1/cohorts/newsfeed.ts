@@ -75,7 +75,7 @@ export const v1CohortNewsfeedRouter = new Hono()
         401: errorResponses.unauthorized,
         403: {
           description:
-            'Missing the cohort:read/write scope, or the key creator is not a cohort tutor/admin and cohort member'
+            'Missing the cohort:read/write scope, or the key creator is not a cohort tutor/admin or an org admin in the cohort'
         },
         404: { description: 'Cohort not found' }
       }

@@ -35,16 +35,14 @@ Single choice answers use `optionId`. File upload and video recording questions 
 
 | Type | `answer` |
 | --- | --- |
-| True/false | `"true"` or `"false"` |
+| True/false, thumbs up/down | `"true"` or `"false"` |
 | Short answer, paragraph | The plain text |
 | Multiple choice | `{"type":"CHECKBOX","optionIds":[30,31]}` |
 | Numeric | `{"type":"NUMERIC","value":2}` |
 | Fill in the blank | `{"type":"FILL_BLANK","answers":["Paris"]}` |
 | Word bank | `{"type":"WORD_BANK","filledBlanks":["Paris"]}` |
-| Matching | `{"type":"MATCHING","value":[{"left":"A","right":"1"}]}` |
 | Ordering | `{"type":"ORDERING","value":["first","second"]}` |
 | Link | `{"type":"LINK","links":["https://example.com"]}` |
-| Hotspot | `{"type":"HOTSPOT","value":[{"x":10,"y":20}]}` |
 | Star rating | `{"type":"STAR","value":4}` |
 
 The JSON formats are sent as a JSON string inside `answer`.

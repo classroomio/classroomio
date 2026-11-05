@@ -20,7 +20,7 @@ Authorization: Bearer cio_api_your_key_here
 
 The key decides which organization the request acts on, so you never pass an organization ID.
 
-The key also acts as the person who created it. Each endpoint checks that person's role on every request, so if they lose access, the key does too, and the endpoint returns `403`.
+The key also acts as the person who created it. Endpoints that need a role check that person's role on every request, so if they lose the role, the key loses that access too. Revoke a key when its creator leaves.
 
 ## Get your API key
 

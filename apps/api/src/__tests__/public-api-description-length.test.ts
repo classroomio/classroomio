@@ -23,7 +23,9 @@ function collectFieldDescriptions(value: unknown, location: string[], findings: 
 
   for (const [key, child] of Object.entries(value)) {
     if (key === 'description' && typeof child === 'string') {
-      if (child.length > MAX_FIELD_LENGTH) findings.push({ location: location.join(' > '), text: child });
+      if (child.includes('\n') || child.length > MAX_FIELD_LENGTH) {
+        findings.push({ location: location.join(' > '), text: child });
+      }
     } else {
       collectFieldDescriptions(child, [...location, key], findings);
     }

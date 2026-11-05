@@ -38,10 +38,7 @@ export const contentForbiddenResponses = {
     'course:write',
     `${COMMENTS_OFF}, or the key creator is not a course tutor/admin or org admin who wrote the comment`
   ),
-  commentDelete: forbidden(
-    'course:write',
-    `the key creator is not the comment's author, a course tutor/admin or an org admin, or ${COMMENTS_OFF}`
-  )
+  commentDelete: forbidden('course:write', `${TEAM_FORBIDDEN}, or ${COMMENTS_OFF}`)
 };
 
 export const cloneForbiddenResponse = forbidden(

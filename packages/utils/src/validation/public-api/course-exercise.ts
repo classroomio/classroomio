@@ -265,7 +265,7 @@ export const ZPublicApiUpdateCourseExercise = z
       .max(MAX_QUESTIONS)
       .optional()
       .describe(
-        'Questions with an id are edited, or removed with delete: true; questions without an id are added; the rest stay unchanged.'
+        'Questions and options with an id are edited, or removed with delete: true; without an id they are added; the rest stay unchanged.'
       ),
     sections: z
       .array(ZPublicApiUpdateExerciseSectionItem)

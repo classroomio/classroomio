@@ -177,7 +177,7 @@ export const v1EmailTemplatesRouter = new Hono()
         403: organizationPlanForbiddenResponse,
         429: {
           description:
-            'More than 5 test emails per organization in 15 minutes (dashboard included), or the MCP rate limit (MCP keys only)'
+            'More than 5 test-email requests per organization in 15 minutes (dashboard included), or the MCP rate limit (MCP keys only)'
         },
         503: {
           description:
