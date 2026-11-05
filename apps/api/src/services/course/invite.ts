@@ -1084,12 +1084,12 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
 
     const allowedEmails = invite.allowedEmails?.map((email) => email.toLowerCase()) || [];
     if (allowedEmails.length > 0 && !allowedEmails.includes(normalizedEmail)) {
-      throw new AppError('This invite is restricted to a different email address', ErrorCodes.UNAUTHORIZED, 403);
+      throw new AppError('This invite is restricted to a different email address', ErrorCodes.INVITE_RESTRICTED, 403);
     }
 
     const allowedDomains = invite.allowedDomains?.map((domain) => domain.toLowerCase()) || [];
     if (allowedDomains.length > 0 && !allowedDomains.includes(getEmailDomain(normalizedEmail))) {
-      throw new AppError('This invite is restricted to specific email domains', ErrorCodes.UNAUTHORIZED, 403);
+      throw new AppError('This invite is restricted to specific email domains', ErrorCodes.INVITE_RESTRICTED, 403);
     }
 
     // Idempotent behavior: if user is already enrolled, don't consume invite again.

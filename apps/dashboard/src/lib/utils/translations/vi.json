@@ -1280,7 +1280,10 @@
           "enrolled_success": "Bạn đã ghi danh khóa học này.",
           "enrolled_verify_email": "Bạn đã ghi danh! Xác minh email để truy cập khóa học này.",
           "student_limit_reached": "{orgName} đã đạt đủ số lượng sinh viên. Vui lòng liên hệ với quản trị viên tổ chức của bạn.",
-          "members_only": "Chỉ thành viên của tổ chức này mới có thể đăng ký. Hãy yêu cầu quản trị viên gửi lời mời."
+          "members_only": "Chỉ thành viên của tổ chức này mới có thể đăng ký. Hãy yêu cầu quản trị viên gửi lời mời.",
+          "invite_restricted_email": "Lời mời này được gửi đến {inviteEmail}, nhưng bạn đang đăng nhập với {currentEmail}. Hãy đăng xuất và tiếp tục với email được mời.",
+          "invite_restricted": "Lời mời này chỉ dành cho một tài khoản khác. Hãy đăng xuất và tiếp tục với tài khoản được mời.",
+          "switch_account": "Đăng xuất và đổi tài khoản"
         },
         "pricing_section": {
           "free": "miễn phí",
