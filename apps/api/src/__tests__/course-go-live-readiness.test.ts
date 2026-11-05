@@ -256,6 +256,9 @@ describe('course go-live service', () => {
     expect(readiness.suggestedFixes.slug).toBe('workplace-safety-essentials');
     expect(readiness.courseUrl).toBe('https://school.example.com/course/workplace-safety-essentials');
     expect(mockedGenerateUniqueCourseSlug).toHaveBeenCalledWith('workplace-safety-essentials');
+    expect(mockedGetCourseContentItems).toHaveBeenCalledWith('course-1', undefined, undefined, {
+      includeNoteContent: true
+    });
   });
 
   it('does not publish when readiness blockers remain', async () => {
