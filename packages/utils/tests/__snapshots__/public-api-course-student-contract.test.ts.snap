@@ -67,7 +67,7 @@ exports[`public API course student contract > ZPublicApiCreateStudentSubmission 
       "items": {
         "properties": {
           "answer": {
-            "description": "Any type except single choice; the Exercise questions guide shows the format for each type.",
+            "description": "Any type except single choice; the Question types guide shows the format for each type.",
             "type": "string",
           },
           "optionId": {

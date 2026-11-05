@@ -6,11 +6,11 @@ import { ZSlug } from '../shared/slug';
 import { ZPublicApiCourseParam } from './course';
 import { ZPublicApiPaginationQuery } from './pagination';
 
-/** The full type list for MCP tools; the API docs show it on the Exercise questions guide. */
+/** The full type list for MCP tools; the API docs show it on the Question types guide. */
 export const PUBLIC_API_QUESTION_TYPES_NOTE =
   'Question types: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
 
-const QUESTION_TYPE_DESCRIPTION = 'Question type id from 1 to 14; the Exercise questions guide lists each type.';
+const QUESTION_TYPE_DESCRIPTION = 'Question type id from 1 to 14; the Question types guide lists each type.';
 
 /** Question types the public API accepts; MATCHING (15) and HOTSPOT (16) are disabled and excluded. */
 export const ZPublicApiQuestionTypeId = z

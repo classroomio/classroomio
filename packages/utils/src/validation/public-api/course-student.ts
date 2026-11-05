@@ -30,7 +30,7 @@ export const ZPublicApiCreateStudentSubmission = z.object({
         answer: z
           .string()
           .optional()
-          .describe('Any type except single choice; the Exercise questions guide shows the format for each type.')
+          .describe('Any type except single choice; the Question types guide shows the format for each type.')
       })
     )
     .min(1)

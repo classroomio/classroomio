@@ -111,7 +111,7 @@ exports[`public API course exercise request contract > ZPublicApiAddExerciseQues
         },
       ],
       "default": 1,
-      "description": "Question type id from 1 to 14; the Exercise questions guide lists each type.",
+      "description": "Question type id from 1 to 14; the Question types guide lists each type.",
     },
     "settings": {
       "additionalProperties": {},
@@ -469,7 +469,7 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
               },
             ],
             "default": 1,
-            "description": "Question type id from 1 to 14; the Exercise questions guide lists each type.",
+            "description": "Question type id from 1 to 14; the Question types guide lists each type.",
           },
           "settings": {
             "additionalProperties": {},
@@ -848,7 +848,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
                 "type": "number",
               },
             ],
-            "description": "Question type id from 1 to 14; the Exercise questions guide lists each type. Defaults to 1 for a new question.",
+            "description": "Question type id from 1 to 14; the Question types guide lists each type. Defaults to 1 for a new question.",
           },
           "settings": {
             "additionalProperties": {},
@@ -1127,7 +1127,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateExerciseQ
           "type": "number",
         },
       ],
-      "description": "Question type id from 1 to 14; the Exercise questions guide lists each type.",
+      "description": "Question type id from 1 to 14; the Question types guide lists each type.",
     },
     "removeOptionIds": {
       "description": "Options to remove; options you do not name are kept",
@@ -1503,7 +1503,7 @@ exports[`public API exercise question and section contract > ZPublicApiCourseExe
                 "type": "number",
               },
             ],
-            "description": "Question type id from 1 to 14; the Exercise questions guide lists each type.",
+            "description": "Question type id from 1 to 14; the Question types guide lists each type.",
           },
           "settings": {
             "additionalProperties": {},
@@ -1837,7 +1837,7 @@ exports[`public API exercise question and section contract > ZPublicApiExerciseQ
           "type": "number",
         },
       ],
-      "description": "Question type id from 1 to 14; the Exercise questions guide lists each type.",
+      "description": "Question type id from 1 to 14; the Question types guide lists each type.",
     },
     "settings": {
       "additionalProperties": {},
