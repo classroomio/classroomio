@@ -323,6 +323,13 @@
       "when": 1793493957846,
       "tag": "0045_mcp_key_domain_scope",
       "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1793782571227,
+      "tag": "0046_index_cleanup",
+      "breakpoints": true
     }
   ]
 }
