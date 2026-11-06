@@ -112,16 +112,27 @@ export async function getLessonProgressionPolicies(courseId: string): Promise<Le
 
 export async function getExerciseProgressionPolicies(courseId: string): Promise<ExerciseProgressionPolicy[]> {
   try {
-    return db
-      .select({
-        id: schema.exercise.id,
-        completionPolicy: schema.exercise.completionPolicy,
-        passThreshold: schema.exercise.passThreshold,
-        isUnlocked: schema.exercise.isUnlocked
-      })
-      .from(schema.exercise)
-      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-      .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)));
+    const columns = {
+      id: schema.exercise.id,
+      completionPolicy: schema.exercise.completionPolicy,
+      passThreshold: schema.exercise.passThreshold,
+      isUnlocked: schema.exercise.isUnlocked
+    };
+    const [direct, legacy] = await Promise.all([
+      db.select(columns).from(schema.exercise).where(eq(schema.exercise.courseId, courseId)),
+      db
+        .select(columns)
+        .from(schema.exercise)
+        .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+        .where(
+          and(
+            or(isNull(schema.exercise.courseId), ne(schema.exercise.courseId, courseId)),
+            eq(schema.lesson.courseId, courseId)
+          )
+        )
+    ]);
+
+    return [...direct, ...legacy];
   } catch (error) {
     console.error('getExerciseProgressionPolicies error:', error);
     throw new Error(
@@ -150,21 +161,33 @@ export async function isExerciseCompletedForMember(exerciseId: string, groupMemb
 /**
  * Returns the exercise IDs one group member has completed in a course.
  * For a whole course roster use `getBatchCompletedExerciseIdsForMembers` instead.
+ *
+ * Split into a direct and a legacy-lesson-linked leg instead of one
+ * `exercise.course_id = $1 OR lesson.course_id = $1` over a left join, for the same reason as
+ * `getCompletedExerciseIdsForProfile` below.
  */
 export async function getCompletedExerciseIdsForMember(courseId: string, groupMemberId: string): Promise<Set<string>> {
   try {
-    const rows = await db
-      .select({ id: schema.exercise.id })
-      .from(schema.exercise)
-      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-      .where(
-        and(
-          or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
-          isExerciseCompletedSql('exercise', { groupMemberId })
+    const completed = isExerciseCompletedSql('exercise', { groupMemberId });
+    const [direct, legacy] = await Promise.all([
+      db
+        .select({ id: schema.exercise.id })
+        .from(schema.exercise)
+        .where(and(eq(schema.exercise.courseId, courseId), completed)),
+      db
+        .select({ id: schema.exercise.id })
+        .from(schema.exercise)
+        .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+        .where(
+          and(
+            or(isNull(schema.exercise.courseId), ne(schema.exercise.courseId, courseId)),
+            eq(schema.lesson.courseId, courseId),
+            completed
+          )
         )
-      );
+    ]);
 
-    return new Set(rows.map((row) => row.id));
+    return new Set([...direct, ...legacy].map((row) => row.id));
   } catch (error) {
     console.error('getCompletedExerciseIdsForMember error:', error);
     throw new Error(`Failed to get completed exercises: ${error instanceof Error ? error.message : 'Unknown error'}`);
