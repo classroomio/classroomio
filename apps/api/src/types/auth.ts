@@ -1,10 +1,13 @@
 import { auth } from '@cio/db/auth';
-import type { TOrganizationApiKey } from '@db/types';
+import type { TOrganizationApiKey, TPlan } from '@db/types';
 
 export type AuthSession = {
   Variables: {
     actorId: string | null;
     automationKey: TOrganizationApiKey | null;
+    oauthClientId: string | undefined;
+    /** Organization plan, set for OAuth requests to the public API. */
+    oauthPlanName: TPlan | null;
     orgId: string | null;
     orgRoles: Record<string, number>;
     /** Asset an encoder job token authorizes, set by `encoderJobMiddleware`. */

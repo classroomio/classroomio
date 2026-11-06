@@ -13,7 +13,6 @@
     "discard": "Hủy",
     "save_changes": "Lưu thay đổi",
     "cancel": "Hủy bỏ",
-    "scroll_to_top": "Cuộn lên đầu trang",
     "delete": "Xóa",
     "restricted_page": {
       "title": "Trang bị hạn chế",
@@ -532,6 +531,12 @@
     },
     "oauth": {
       "revoked": "Đã gỡ quyền truy cập của ứng dụng"
+    },
+    "zapier": {
+      "removed": "Đã xóa quyền truy cập Zapier",
+      "remove_failed": "Không thể gỡ quyền truy cập Zapier. Hãy thử lại.",
+      "redelivered": "{count} sự kiện không thành công được xếp hàng để phân phối lại",
+      "redeliver_failed": "Không thể gửi lại các sự kiện không thành công"
     }
   },
   "explore": {
@@ -593,7 +598,8 @@
     "enterprise_required": "Tính năng này yêu cầu gói Enterprise.",
     "public_api_required": "Nâng cấp lên Early Adopter hoặc Enterprise để truy cập API công khai.",
     "unlock_field": "Nâng cấp để mở khóa cài đặt này",
-    "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook."
+    "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook.",
+    "zapier_required": "Zapier yêu cầu gói Early Adopter hoặc Enterprise."
   },
   "analytics": {
     "title": "Phân tích",
@@ -5059,7 +5065,879 @@
       "disabled_description": "Chỉ quản trị viên tổ chức mới có thể tạo, xoay hoặc thu hồi khóa tự động hóa. Thầy cô có thể xem lại hướng dẫn thiết lập tại đây."
     },
     "zapier": {
-      "page_subtitle": "Tự động hóa ClassroomIO với hàng nghìn ứng dụng qua Zapier. Sắp ra mắt."
+      "page_subtitle": "Tự động hóa ClassroomIO với hàng nghìn ứng dụng thông qua Zapier.",
+      "permissions_description": "Chỉ quản trị viên tổ chức mới có thể kết nối Zapier và quản lý các kết nối của tổ chức.",
+      "connect": "Kết nối trên Zapier",
+      "browse_apps": "Duyệt ứng dụng",
+      "create_zap": "Tạo một Zap",
+      "manage_on_zapier": "Quản lý trên Zapier",
+      "empty": {
+        "title": "Kết nối ClassroomIO với Zapier",
+        "description": "Phê duyệt quyền truy cập một lần, sau đó tạo các Zap trên Zapier chỉ trong vài giây để phản hồi các khóa học và học viên của bạn."
+      },
+      "upgrade": {
+        "title": "Nâng cấp để kết nối Zapier",
+        "description": "Kết nối ClassroomIO với Zapier yêu cầu gói Early Adopter hoặc Enterprise.",
+        "cta": "Nâng cấp gói"
+      },
+      "error": {
+        "title": "Không thể tải các kết nối Zapier",
+        "description": "Không thể kết nối tới máy chủ. Kiểm tra kết nối của bạn và thử lại.",
+        "retry": "Thử lại"
+      },
+      "unavailable": {
+        "title": "Các kết nối Zapier chưa khả dụng",
+        "description": "Hãy yêu cầu người liên hệ ClassroomIO của bạn cấp quyền truy cập tích hợp Zapier, sau đó tải lại trang này."
+      },
+      "setup": {
+        "title": "Cách thức kết nối hoạt động",
+        "step_1": "Mở Zapier và thêm ClassroomIO vào một Zap.",
+        "step_2": "Đăng nhập vào ClassroomIO khi Zapier yêu cầu.",
+        "step_3": "Chọn tổ chức này và cho phép truy cập.",
+        "step_4": "Chọn một kích hoạt (trigger) hoặc hành động (action) và bật Zap của bạn."
+      },
+      "status": {
+        "connected_title": "Đã kết nối với Zapier",
+        "connected_description": "Đang sử dụng {used} trên tổng số {max} đăng ký kích hoạt. Các sự kiện đến Zapier trong vòng vài giây."
+      },
+      "paused": {
+        "title": "Zapier đang tạm dừng",
+        "description": "Gói của bạn không còn bao gồm Zapier. Các Zap sẽ thất bại cho đến khi bạn nâng cấp; các kết nối của bạn vẫn được giữ nguyên."
+      },
+      "selfhosted": {
+        "title": "Zapier có sẵn trên ClassroomIO Cloud",
+        "description": "Trên bản cài đặt tự lưu trữ (self-hosted), hãy sử dụng Webhooks với trigger Webhooks by Zapier và khóa API cho các hành động."
+      },
+      "connections": {
+        "title": "Kết nối",
+        "description": "Mỗi hàng là một quản trị viên đã kết nối tài khoản Zapier với tổ chức này.",
+        "authorized_by": "Được kết nối bởi",
+        "unknown_admin": "Cựu quản trị viên",
+        "access": "Quyền truy cập",
+        "access_read_write": "Đọc và ghi",
+        "access_read_only": "Chỉ đọc",
+        "triggers": "Kích hoạt đang hoạt động",
+        "last_used": "Lần sử dụng cuối",
+        "connected": "Đã kết nối",
+        "actions": "Thao tác kết nối",
+        "view_triggers": "Xem các kích hoạt",
+        "remove": "Xóa quyền truy cập"
+      },
+      "remove": {
+        "title": "Xóa quyền truy cập Zapier?",
+        "description": "Các Zap sử dụng kết nối này sẽ dừng ngay lập tức và {count} đăng ký kích hoạt sẽ bị xóa. Kết nối lại trong Zapier để sử dụng lại.",
+        "confirm": "Xóa quyền truy cập"
+      },
+      "triggers": {
+        "title": "Kích hoạt đang hoạt động",
+        "description": "Các Zap đang bật và lắng nghe các sự kiện của ClassroomIO.",
+        "empty_title": "Không có kích hoạt nào đang hoạt động",
+        "empty_description": "Các kích hoạt xuất hiện ở đây khi một Zap bắt đầu trong ClassroomIO được bật.",
+        "course_filter": "Chỉ dành cho {course}",
+        "last_delivery": "Sự kiện cuối được gửi vào {date}",
+        "no_deliveries": "Chưa có sự kiện nào được gửi",
+        "health_healthy": "Hoạt động tốt",
+        "health_degraded": "Bị lỗi",
+        "health_disabled": "Đã tắt",
+        "cohort_filter": "Chỉ dành cho {cohort}",
+        "created_at": "Được tạo vào {date}",
+        "last_failed": "Lần giao hàng cuối cùng không thành công",
+        "redeliver": "Phân phối lại các sự kiện không thành công"
+      },
+      "catalog": {
+        "title": "Các ứng dụng hoạt động với ClassroomIO",
+        "description": "Các cách phổ biến mà các nhóm kết nối ClassroomIO thông qua Zapier.",
+        "search_placeholder": "Tìm kiếm ứng dụng",
+        "no_results": "Không có ứng dụng nào phù hợp. Zapier kết nối ClassroomIO với hơn 6.000 ứng dụng; tìm kiếm bất kỳ ứng dụng nào trên Zapier.",
+        "show_all": "Hiển thị tất cả ứng dụng",
+        "end_note": "Đây là những lựa chọn phổ biến. Zapier kết nối ClassroomIO với hơn 6.000 ứng dụng.",
+        "categories": {
+          "all": "Tất cả",
+          "crm": "CRM",
+          "marketing": "Tiếp thị",
+          "communication": "Giao tiếp",
+          "customer-support": "Hỗ trợ khách hàng",
+          "sales": "bán hàng",
+          "productivity": "Năng suất",
+          "forms": "Biểu mẫu & khảo sát",
+          "analytics": "Phân tích",
+          "community": "Cộng đồng"
+        }
+      },
+      "app_sheet": {
+        "title": "ClassroomIO + {app}",
+        "examples": "Tự động hóa phổ biến",
+        "triggers": "Kích hoạt ClassroomIO",
+        "actions": "Hành động ClassroomIO",
+        "create_zap": "Tạo một {app} Zap"
+      },
+      "catalog_triggers": {
+        "new_course_enrollment": {
+          "label": "Đăng ký khóa học mới",
+          "verb": "Ghi danh một sinh viên",
+          "description": "Kích hoạt khi một sinh viên được thêm vào một khóa học, dù họ đã tham gia như thế nào."
+        },
+        "course_member_removed": {
+          "label": "Học viên bị xóa khỏi khóa học",
+          "verb": "Xóa một học sinh",
+          "description": "Kích hoạt khi một sinh viên bị loại khỏi một khóa học."
+        },
+        "course_completed": {
+          "label": "Khóa học đã hoàn thành",
+          "verb": "Kết thúc một khóa học",
+          "description": "Kích hoạt khi học viên hoàn thành mọi bài học bắt buộc trong khóa học."
+        },
+        "new_certificate": {
+          "label": "Chứng chỉ mới",
+          "verb": "Kiếm được chứng chỉ",
+          "description": "Kích hoạt khi chứng chỉ được cấp cho sinh viên."
+        },
+        "new_submission": {
+          "label": "Bài nộp bài tập mới",
+          "verb": "Gửi bài tập",
+          "description": "Kích hoạt khi học sinh nộp bài tập."
+        },
+        "submission_status_changed": {
+          "label": "Trạng thái bài nộp đã thay đổi",
+          "verb": "Chấm điểm bài nộp",
+          "description": "Kích hoạt khi bài nộp được chấm điểm hoặc trạng thái của bài nộp thay đổi."
+        },
+        "lesson_completed": {
+          "label": "Bài học đã hoàn thành",
+          "verb": "Hoàn thành một bài học",
+          "description": "Kích hoạt khi học sinh hoàn thành một bài học."
+        },
+        "course_invite_accepted": {
+          "label": "Lời mời tham gia khóa học đã được chấp nhận",
+          "verb": "Chấp nhận lời mời",
+          "description": "Kích hoạt khi ai đó chấp nhận lời mời khóa học."
+        },
+        "new_payment_request": {
+          "label": "Yêu cầu thanh toán mới",
+          "verb": "Yêu cầu thanh toán",
+          "description": "Kích hoạt khi người học gửi yêu cầu thanh toán cho một khóa học."
+        },
+        "new_organization_member": {
+          "label": "Thành viên tổ chức mới",
+          "verb": "Tham gia tổ chức",
+          "description": "Kích hoạt khi ai đó tham gia tổ chức với tư cách là sinh viên, gia sư hoặc quản trị viên."
+        },
+        "compliance_status_changed": {
+          "label": "Trạng thái tuân thủ đã thay đổi",
+          "verb": "Thay đổi trạng thái tuân thủ",
+          "description": "Kích hoạt khi trạng thái tuân thủ của người học thay đổi, ví dụ như quá hạn hoặc hết hạn."
+        },
+        "course_published": {
+          "label": "Khóa học đã được xuất bản",
+          "verb": "Xuất bản một khóa học",
+          "description": "Kích hoạt khi một khóa học được xuất bản."
+        },
+        "live_session_scheduled": {
+          "label": "Phiên học trực tiếp đã được lên lịch",
+          "verb": "Lên lịch một phiên trực tiếp",
+          "description": "Kích hoạt khi phiên trực tiếp được lên lịch hoặc lên lịch lại."
+        },
+        "new_cohort_member": {
+          "label": "Thành viên nhóm mới",
+          "verb": "Tham gia một nhóm thuần tập",
+          "description": "Kích hoạt khi một học sinh được thêm vào một nhóm."
+        }
+      },
+      "catalog_actions": {
+        "enroll_student": {
+          "label": "Ghi danh học viên vào khóa học",
+          "description": "Ghi danh sinh viên vào một khóa học qua email, mời họ trước nếu họ là người mới.",
+          "fields": "Email, Họ tên, Khóa học"
+        },
+        "add_student": {
+          "label": "Thêm học viên vào tổ chức",
+          "description": "Mời một sinh viên vào tổ chức của bạn mà không đăng ký họ vào một khóa học.",
+          "fields": "Email, Họ tên đầy đủ"
+        },
+        "update_student": {
+          "label": "Cập nhật thông tin học viên",
+          "description": "Cập nhật tên của học sinh hoặc email của lời mời chưa được chấp nhận.",
+          "fields": "Email, Họ tên, Thuộc tính tùy chỉnh"
+        },
+        "remove_student": {
+          "label": "Xóa học viên khỏi tổ chức",
+          "description": "Xóa một sinh viên khỏi tổ chức của bạn.",
+          "fields": "Email"
+        },
+        "remove_course_member": {
+          "label": "Xóa học viên khỏi khóa học",
+          "description": "Xóa một học viên khỏi một khóa học và giữ họ trong tổ chức của bạn.",
+          "fields": "Email, khóa học"
+        },
+        "send_course_invite": {
+          "label": "Gửi lời mời tham gia khóa học",
+          "description": "Gửi email lời mời tham gia một khóa học.",
+          "fields": "Email, khóa học"
+        },
+        "revoke_course_invite": {
+          "label": "Thu hồi lời mời tham gia khóa học",
+          "description": "Hủy lời mời khóa học đang chờ xử lý để liên kết của nó ngừng hoạt động.",
+          "fields": "Email, khóa học"
+        },
+        "reset_course_progress": {
+          "label": "Đặt lại tiến trình khóa học của học viên",
+          "description": "Xóa sự tiến bộ của học sinh trong một khóa học và giữ họ theo học.",
+          "fields": "Email, khóa học"
+        },
+        "mark_lesson_complete": {
+          "label": "Đánh dấu bài học đã hoàn thành",
+          "description": "Đánh dấu một bài học hoàn thành cho một học sinh.",
+          "fields": "Email, Khóa học, Bài học"
+        },
+        "add_cohort_member": {
+          "label": "Thêm học viên vào nhóm",
+          "description": "Thêm một học sinh vào một nhóm thuần tập.",
+          "fields": "Email, đoàn hệ"
+        },
+        "post_cohort_announcement": {
+          "label": "Đăng lên bảng tin của nhóm",
+          "description": "Đăng thông báo lên nguồn cấp dữ liệu của nhóm thuần tập.",
+          "fields": "Nhóm, Tin nhắn"
+        }
+      },
+      "apps": {
+        "hubspot": {
+          "description": "Nền tảng CRM và khách hàng",
+          "trigger_example": "Khi một khách hàng hoàn tất quá trình giới thiệu ban đầu, hãy cập nhật liên hệ HubSpot của họ.",
+          "action_example": "Khi một giao dịch HubSpot được chốt, hãy ghi danh người mua vào khóa học làm quen của bạn."
+        },
+        "salesforce": {
+          "description": "CRM dành cho đội ngũ bán hàng và dịch vụ",
+          "trigger_example": "Khi chứng chỉ được cấp, hãy ghi nhận vào liên hệ Salesforce.",
+          "action_example": "Khi một cơ hội bán hàng thành công, hãy ghi danh người dùng của tài khoản vào khóa đào tạo sản phẩm."
+        },
+        "mailchimp": {
+          "description": "Tiếp thị qua email và đối tượng người xem",
+          "trigger_example": "Khi một học viên đăng ký, hãy thêm họ vào đối tượng Mailchimp.",
+          "action_example": "Khi ai đó tham gia danh sách Mailchimp, hãy mời họ vào học viện của bạn."
+        },
+        "customerio": {
+          "description": "Chiến dịch nhắn tin và vòng đời khách hàng",
+          "trigger_example": "Khi một học viên hoàn thành một bài học, hãy gửi sự kiện Customer.io để thúc đẩy bài tiếp theo.",
+          "action_example": "Khi một phân khúc Customer.io thay đổi, hãy ghi danh những người trong đó vào khóa học."
+        },
+        "slack": {
+          "description": "Giao tiếp nhóm và cộng tác",
+          "trigger_example": "Khi một bài tập được nộp, hãy nhắn tin cho trợ giảng trên Slack.",
+          "action_example": "Khi một tin nhắn được đăng trong kênh Slack, hãy chia sẻ lên bảng tin của nhóm."
+        },
+        "teams": {
+          "description": "Trò chuyện và các kênh cho tổ chức của bạn",
+          "trigger_example": "Khi ai đó hoàn thành khóa học, hãy chúc mừng trong kênh Teams.",
+          "action_example": "Khi một tin nhắn Teams được gắn cờ, hãy đăng lên bảng tin của nhóm."
+        },
+        "google_meet": {
+          "description": "Cuộc họp video trong Google Workspace",
+          "trigger_example": "Khi một phiên trực tiếp được lên lịch, hãy tạo liên kết Google Meet và lời mời trên lịch.",
+          "action_example": "Khi phiên Meet kết thúc, hãy đánh dấu bài học đã hoàn thành cho người tham dự."
+        },
+        "zoom": {
+          "description": "Họp video và hội thảo trực tuyến",
+          "trigger_example": "Khi một học viên đăng ký, hãy đăng ký họ vào hội thảo Zoom của bạn.",
+          "action_example": "Khi ai đó tham dự hội thảo Zoom, hãy đánh dấu bài học đã hoàn thành."
+        },
+        "zendesk": {
+          "description": "Hỗ trợ khách hàng và xử lý yêu cầu",
+          "trigger_example": "Khi hồ sơ tuân thủ quá hạn, hãy mở một phiếu hỗ trợ trên Zendesk.",
+          "action_example": "Khi một phiếu được gắn thẻ đào tạo, hãy ghi danh người yêu cầu vào khóa học trợ giúp."
+        },
+        "intercom": {
+          "description": "Nền tảng nhắn tin khách hàng",
+          "trigger_example": "Khi khách hàng hoàn thành một khóa học, hãy gắn thẻ họ trong Intercom.",
+          "action_example": "Khi người dùng Intercom đăng ký, hãy ghi danh họ vào khóa đào tạo ban đầu."
+        },
+        "calendly": {
+          "description": "Liên kết lên lịch và đặt lịch hẹn",
+          "trigger_example": "Khi học viên hoàn thành khóa học, hãy gửi liên kết Calendly để đặt lịch đánh giá.",
+          "action_example": "Khi một cuộc họp Calendly được đặt, hãy ghi danh người được mời vào khóa học chuẩn bị."
+        },
+        "calcom": {
+          "description": "Liên kết đặt lịch và hẹn mã nguồn mở",
+          "trigger_example": "Khi học viên hoàn thành khóa học, hãy đề xuất đặt lịch Cal.com để theo dõi tiếp.",
+          "action_example": "Khi một lượt đặt lịch Cal.com được tạo, hãy ghi danh người tham dự vào khóa học chuẩn bị."
+        },
+        "sheets": {
+          "description": "Bảng tính và quản lý dữ liệu",
+          "trigger_example": "Khi chứng chỉ được cấp, hãy thêm một hàng vào nhật ký đào tạo trong Google Sheets.",
+          "action_example": "Khi một hàng được thêm vào bảng tính, hãy mời người đó vào học viện của bạn."
+        },
+        "notion": {
+          "description": "Tài liệu, wiki và ghi chú dự án",
+          "trigger_example": "Khi khóa học được xuất bản, hãy thêm vào danh mục đào tạo Notion của bạn.",
+          "action_example": "Khi một mục cơ sở dữ liệu Notion được thêm, hãy gửi lời mời khóa học."
+        },
+        "confluence": {
+          "description": "Tài liệu và wiki cho các nhóm kỹ thuật",
+          "trigger_example": "Khi một khóa học được xuất bản, hãy tạo một trang Confluence liên kết đến khóa học đó.",
+          "action_example": "Khi một trang Confluence được tạo, hãy mời những người theo dõi trang vào khóa học liên quan."
+        },
+        "typeform": {
+          "description": "Biểu mẫu và khảo sát",
+          "trigger_example": "Khi học viên hoàn thành khóa học, hãy gửi cho họ bản khảo sát Typeform.",
+          "action_example": "Khi một Typeform được gửi, hãy ghi danh người trả lời vào một khóa học."
+        },
+        "jotform": {
+          "description": "Biểu mẫu và khảo sát",
+          "trigger_example": "Khi học viên hoàn thành khóa học, hãy gửi cho họ biểu mẫu phản hồi Jotform.",
+          "action_example": "Khi một Jotform được gửi, hãy ghi danh người trả lời vào một khóa học."
+        },
+        "pendo": {
+          "description": "Tiếp nhận kỹ thuật số và sử dụng sản phẩm",
+          "trigger_example": "Khi khách hàng hoàn thành đào tạo, hãy ghi nhận điều đó trong Pendo.",
+          "action_example": "Khi Pendo gắn cờ mức độ sử dụng tính năng thấp, hãy ghi danh người dùng vào một khóa học."
+        },
+        "mixpanel": {
+          "description": "Phân tích sản phẩm và phễu chuyển đổi",
+          "trigger_example": "Khi một học viên hoàn thành một bài học, hãy gửi một sự kiện tới Mixpanel.",
+          "action_example": "Khi một nhóm người dùng Mixpanel thay đổi, hãy ghi danh người dùng đó vào khóa học."
+        },
+        "circle": {
+          "description": "Không gian cộng đồng và thảo luận",
+          "trigger_example": "Khi một học viên đăng ký, hãy thêm họ vào cộng đồng Circle của bạn.",
+          "action_example": "Khi ai đó tham gia một không gian Circle, hãy thêm họ vào một nhóm."
+        }
+      },
+      "app_page": {
+        "back": "Quay lại Thư mục ứng dụng",
+        "breadcrumb_apps": "Ứng dụng",
+        "eyebrow": "ClassroomIO + {app}",
+        "official": "Hội nhập chính thức",
+        "lead_out": "Không có xuất khẩu hoặc bảng tính. Zapier chọn các sự kiện mới trong ClassroomIO và thực hiện hành động “{action}” trong {app} cho bạn.",
+        "lead_in": "Zapier theo dõi {app} và đăng ký từng người mới vào khóa học ClassroomIO mà bạn chọn.",
+        "connect_cta": "Kết nối {app} trong Zapier",
+        "stats": "{recipes} công thức nấu ăn · {mode}",
+        "cta_note": "Mất khoảng 2 phút. Không có gì chạy cho đến khi bạn bật Zap.",
+        "preview_aria": "Ví dụ về Zap này đang chạy",
+        "preview_example": "Ví dụ",
+        "preview_source": "Lớp họcIO · {screen}",
+        "preview_destination": "{app} · {action}",
+        "preview_new": "MỚI",
+        "preview_state_idle": "Chờ đợi một sự kiện",
+        "preview_state_new": "Sự kiện mới",
+        "preview_state_running": "Chạy Zap",
+        "preview_state_ran": "Zap chạy",
+        "connected_title": "{org} được kết nối với Zapier.",
+        "connected_read_write": "Truy cập đọc và viết.",
+        "connected_read_only": "Truy cập chỉ đọc.",
+        "connected_view": "Xem kết nối trong ClassroomIO",
+        "connected_zapier": "Xem trên Zapier",
+        "trust_scope_read_write": "Chỉ có quyền truy cập đọc và ghi",
+        "trust_scope_read_only": "Quyền truy cập chỉ đọc",
+        "trust_scope_note": "Nằm trong phạm vi {org}, không có gì khác",
+        "trust_revoke_title": "Thu hồi bất cứ lúc nào",
+        "trust_revoke_note": "Từ Tự động hóa > Zapier trong ClassroomIO",
+        "trust_zapier_title": "Zaps của bạn sống ở Zapier",
+        "trust_zapier_note": "Zapier xây dựng, thử nghiệm và chạy chúng",
+        "similar_title": "Ứng dụng tương tự",
+        "similar_see_all": "Xem tất cả ứng dụng {count}",
+        "headline_out_before": "{trigger} trong ClassroomIO.",
+        "headline_out_after": "Xem nó trong {app}.",
+        "headline_in_before": "{trigger} trong {app}.",
+        "headline_in_after": "Hãy đăng ký chúng vào ClassroomIO.",
+        "preview_live": "Xem trước trực tiếp",
+        "preview_col_person": "sinh viên",
+        "preview_col_course": "Khóa học",
+        "preview_col_email": "Email",
+        "preview_col_when": "Khi nào"
+      },
+      "directory": {
+        "title": "Thư mục ứng dụng",
+        "subtitle": "Duyệt qua các ứng dụng bạn có thể kết nối với ClassroomIO thông qua Zapier.",
+        "create_zap": "Tạo Zap trong Zapier",
+        "back": "Quay lại Zaps",
+        "search_placeholder": "Tìm kiếm ứng dụng…",
+        "filters_title": "Bộ lọc",
+        "discover": "Khám phá",
+        "categories": "Danh mục",
+        "all_apps": "Tất cả ứng dụng",
+        "popular": "phổ biến",
+        "recent": "Đã thêm gần đây",
+        "sort_label": "Sắp xếp ứng dụng",
+        "sort_popular": "phổ biến",
+        "sort_az": "A–Z",
+        "view_more": "Xem thêm ứng dụng",
+        "count": {
+          "all": "{count} ứng dụng",
+          "one": "1 ứng dụng",
+          "showing": "Đang hiển thị {shown} trong số {total} ứng dụng",
+          "all_matching": "{count} ứng dụng phù hợp với “{query}”",
+          "one_matching": "1 ứng dụng phù hợp với “{query}”",
+          "showing_matching": "Đang hiển thị {shown} trong số {total} ứng dụng phù hợp với “{query}”"
+        },
+        "empty": {
+          "title": "Không có ứng dụng nào phù hợp với tìm kiếm của bạn",
+          "description": "Hãy thử một tên khác hoặc duyệt qua mọi ứng dụng mà Zapier kết nối với ClassroomIO.",
+          "search_zapier": "Tìm kiếm ở Zapier"
+        },
+        "end": {
+          "title": "Đó là mọi ứng dụng chúng tôi đã chọn",
+          "description": "Zapier kết nối ClassroomIO với hàng nghìn người khác.",
+          "cta": "Tiếp tục ở Zapier"
+        }
+      },
+      "page_title": "Zap",
+      "create_more_zaps": "Tạo thêm Zap",
+      "zaps_empty": {
+        "title": "Chưa có Zap nào",
+        "description": "Kết nối ClassroomIO với ứng dụng mà nhóm của bạn đã sử dụng hoặc chuyển thẳng sang Zapier nếu bạn đã biết mình muốn tự động hóa những gì.",
+        "connect_apps": "Kết nối ứng dụng"
+      },
+      "connected_apps": {
+        "title": "Ứng dụng được kết nối",
+        "coming_soon_title": "Xem Zaps của bạn sử dụng ứng dụng nào tại đây",
+        "coming_soon_description": "Liên kết tài khoản Zapier của bạn để xem các ứng dụng mà Zaps của bạn kết nối với ClassroomIO."
+      },
+      "active_triggers": {
+        "title": "Trình kích hoạt ClassroomIO đang hoạt động"
+      },
+      "access_section": {
+        "title": "Quyền truy cập của Zapier vào ClassroomIO"
+      },
+      "capabilities": {
+        "title": "Bạn có thể làm nhiều việc khác với ClassroomIO và {app}",
+        "subtitle": "Khám phá các trình kích hoạt và hành động khác mà bạn có thể sử dụng với ClassroomIO và {app}.",
+        "tab_triggers": "Trình kích hoạt",
+        "tab_actions": "hành động",
+        "tab_both": "Kích hoạt & hành động",
+        "kind_trigger": "Trình kích hoạt",
+        "kind_action": "hành động",
+        "kind_search": "Tìm kiếm",
+        "mode_instant": "tức thì",
+        "mode_write": "Viết",
+        "mode_lookup": "tra cứu",
+        "try_it": "Hãy thử nó",
+        "load_more": "Tải thêm",
+        "showing": "Đang hiển thị {shown} trong số {total}",
+        "sample_title": "Dữ liệu mẫu mà trình kích hoạt này gửi",
+        "fields_title": "Các trường bạn lập bản đồ ở Zapier",
+        "partner_trigger_description": "Bắt đầu Zap trong {app}.",
+        "partner_action_description": "Chạy trong {app} khi trình kích hoạt ClassroomIO kích hoạt.",
+        "eyebrow": "Trình kích hoạt & hành động",
+        "partner_example_title": "Ví dụ tự động hóa"
+      },
+      "catalog_searches": {
+        "find_student": {
+          "label": "Tìm sinh viên",
+          "description": "Tìm một sinh viên trong tổ chức của bạn qua email."
+        },
+        "find_course": {
+          "label": "Tìm khóa học",
+          "description": "Tìm một khóa học theo tên khóa học hoặc tên chính xác của nó."
+        }
+      },
+      "invite": {
+        "title": "Kết nối ClassroomIO với Zapier",
+        "description": "Zapier cần bạn chấp nhận lời mời ClassroomIO một lần trước khi bạn có thể tạo Zaps.",
+        "step_1_title": "Chấp nhận lời mời ClassroomIO trên Zapier",
+        "step_1_description": "Zapier yêu cầu bạn chấp nhận một lần. Sau đó, ClassroomIO xuất hiện trong tài khoản Zapier của bạn.",
+        "step_1_button": "Mở lời mời trên Zapier",
+        "step_2_title": "Tiếp tục với Zap của bạn",
+        "step_2_description": "Zap của bạn sẽ mở trong một tab mới. Không có gì chạy cho đến khi bạn bật nó lên.",
+        "step_2_button": "Tiếp tục đến Zapier",
+        "already_accepted": "Tôi đã chấp nhận rồi",
+        "missing_invite": "Chưa có liên kết mời nào được định cấu hình cho không gian làm việc này."
+      },
+      "recipes": {
+        "section_title": "Các cách sử dụng ClassroomIO với {app}",
+        "section_subtitle": "Zaps hoàn chỉnh được xây dựng cho việc ghép nối này. Chọn một, kết nối tài khoản của bạn và bật nó lên.",
+        "tabs_out": "Từ Lớp họcIO",
+        "tabs_in": "Vào Lớp HọcIO",
+        "use_this_zap": "Sử dụng Zap này",
+        "mode_instant": "tức thì",
+        "mode_polling": "Kiểm tra vài phút một lần",
+        "sentence_out": "Khi {trigger} trong ClassroomIO, {action} trong {app}.",
+        "sentence_in": "Khi {trigger} trong {app}, {action} trong ClassroomIO.",
+        "featured_title": "Bắt đầu với một công thức phổ biến",
+        "ways_to_use": "{count} cách sử dụng",
+        "choose_in_zapier": "Chọn ở Zapier",
+        "open_in_zapier": "Mở ở Zapier",
+        "builder_title": "Xây dựng của riêng bạn",
+        "builder_subtitle": "Chọn bất kỳ trình kích hoạt và hành động nào, sau đó hoàn tất quá trình thiết lập trong Zapier.",
+        "builder_trigger_label": "Khi điều này xảy ra",
+        "builder_action_label": "Làm điều này",
+        "builder_in_classroomio": "Trong lớp họcIO",
+        "builder_in_app": "Trong {app}",
+        "builder_no_app_triggers": "Chưa có trình kích hoạt {app}",
+        "prefill_title": "Chọn một khóa học cho Zap này",
+        "prefill_title_cohort": "Chọn một nhóm thuần tập cho Zap này",
+        "prefill_note": "Bạn cũng có thể nhặt nó bên trong Zapier.",
+        "reference_title": "Mọi thứ ClassroomIO có thể làm ở Zapier",
+        "reference_subtitle": "Danh sách đầy đủ các yếu tố kích hoạt, hành động và tìm kiếm đằng sau những công thức này.",
+        "reference_triggers": "Trình kích hoạt ({count})",
+        "reference_actions": "Hành động ({count})",
+        "reference_searches": "Tìm kiếm ({count})",
+        "hubspot_deal_stage_enroll": {
+          "title": "Đăng ký khách hàng mới tham gia giới thiệu khi thỏa thuận đạt đến một giai đoạn"
+        },
+        "hubspot_list_enroll": {
+          "title": "Đăng ký liên hệ khi họ tham gia danh sách HubSpot"
+        },
+        "hubspot_form_invite": {
+          "title": "Mời biểu mẫu đăng ký tham gia khóa học"
+        },
+        "hubspot_completed_contact": {
+          "title": "Cập nhật liên hệ khi họ hoàn thành khóa học"
+        },
+        "hubspot_certificate_list": {
+          "title": "Thêm người học được chứng nhận vào danh sách HubSpot"
+        },
+        "hubspot_compliance_task": {
+          "title": "Tạo nhiệm vụ tiếp theo khi việc đào tạo trở nên quá hạn"
+        },
+        "salesforce_certificate_record": {
+          "title": "Ghi lại từng chứng chỉ trong Salesforce"
+        },
+        "salesforce_completed_contact": {
+          "title": "Cập nhật liên hệ khi họ hoàn thành khóa học"
+        },
+        "salesforce_payment_lead": {
+          "title": "Tạo khách hàng tiềm năng cho mỗi yêu cầu thanh toán"
+        },
+        "salesforce_contact_enroll": {
+          "title": "Đăng ký các liên hệ mới trong quá trình giới thiệu"
+        },
+        "salesforce_opportunity_enroll": {
+          "title": "Ghi danh khách hàng khi cơ hội kết thúc"
+        },
+        "mailchimp_enrollment_subscriber": {
+          "title": "Thêm lượt đăng ký mới vào đối tượng"
+        },
+        "mailchimp_completed_tag": {
+          "title": "Gắn thẻ những người đăng ký đã hoàn thành khóa học"
+        },
+        "mailchimp_removed_untag": {
+          "title": "Xóa thẻ khóa học khi học sinh rời đi"
+        },
+        "mailchimp_subscriber_student": {
+          "title": "Thêm người đăng ký mới là sinh viên"
+        },
+        "mailchimp_tag_enroll": {
+          "title": "Đăng ký người đăng ký khi họ nhận được thẻ"
+        },
+        "customerio_completed_event": {
+          "title": "Gửi kết quả hoàn thành khóa học dưới dạng sự kiện"
+        },
+        "customerio_enrollment_person": {
+          "title": "Tạo hoặc cập nhật người đó khi họ đăng ký"
+        },
+        "customerio_certificate_event": {
+          "title": "Gửi chứng chỉ dưới dạng sự kiện"
+        },
+        "customerio_compliance_event": {
+          "title": "Bắt đầu các chiến dịch nhắc nhở khi đào tạo quá hạn"
+        },
+        "customerio_lesson_event": {
+          "title": "Gửi tiến độ bài học dưới dạng sự kiện"
+        },
+        "slack_completed_channel": {
+          "title": "Đăng lên kênh khi khóa học hoàn thành"
+        },
+        "slack_submission_dm": {
+          "title": "Nhắn tin cho gia sư khi học sinh nộp bài tập"
+        },
+        "slack_payment_channel": {
+          "title": "Thông báo cho nhóm về yêu cầu thanh toán"
+        },
+        "slack_compliance_channel": {
+          "title": "Gắn cờ đào tạo quá hạn trong một kênh"
+        },
+        "slack_certificate_channel": {
+          "title": "Kỷ niệm các chứng chỉ mới"
+        },
+        "slack_member_enroll": {
+          "title": "Đăng ký thành viên không gian làm việc mới để giới thiệu"
+        },
+        "teams_completed_channel": {
+          "title": "Đăng lên kênh khi khóa học hoàn thành"
+        },
+        "teams_submission_chat": {
+          "title": "Nhắn tin cho gia sư khi học sinh nộp bài tập"
+        },
+        "teams_compliance_channel": {
+          "title": "Gắn cờ đào tạo quá hạn trong một kênh"
+        },
+        "teams_session_channel": {
+          "title": "Thông báo các phiên trực tiếp trong một kênh"
+        },
+        "teams_member_enroll": {
+          "title": "Đăng ký thành viên nhóm mới tham gia hội nhập"
+        },
+        "meet_session_meeting": {
+          "title": "Tạo Meet cho mỗi phiên trực tiếp"
+        },
+        "meet_completed_meeting": {
+          "title": "Đặt cuộc gọi đánh giá khi khóa học hoàn thành"
+        },
+        "zoom_enrollment_registrant": {
+          "title": "Đăng ký sinh viên mới cho hội thảo trên web"
+        },
+        "zoom_cohort_registrant": {
+          "title": "Đăng ký thành viên nhóm cho cuộc họp khởi động"
+        },
+        "zoom_session_meeting": {
+          "title": "Tạo cuộc họp Zoom cho mỗi phiên trực tiếp"
+        },
+        "zoom_registrant_enroll": {
+          "title": "Đăng ký người đăng ký hội thảo trên web trong tài liệu chuẩn bị"
+        },
+        "zoom_joiner_lesson": {
+          "title": "Đánh dấu bài học trực tiếp là hoàn thành khi người học tham gia"
+        },
+        "zendesk_tag_enroll": {
+          "title": "Đăng ký khách hàng khi đại lý gắn thẻ vé của họ"
+        },
+        "zendesk_compliance_ticket": {
+          "title": "Mở một vé khi đào tạo trở nên quá hạn"
+        },
+        "zendesk_payment_ticket": {
+          "title": "Mở một vé cho mỗi yêu cầu thanh toán"
+        },
+        "zendesk_completed_user": {
+          "title": "Ghi lại quá trình đào tạo đã hoàn thành của người dùng Zendesk"
+        },
+        "zendesk_user_enroll": {
+          "title": "Đăng ký người dùng Zendesk mới vào khóa học bắt đầu"
+        },
+        "intercom_completed_message": {
+          "title": "Nhắn tin cho người dùng khi họ hoàn thành khóa học"
+        },
+        "intercom_completed_tag": {
+          "title": "Gắn thẻ người dùng hoàn tất quá trình giới thiệu"
+        },
+        "intercom_lesson_event": {
+          "title": "Gửi tiến độ bài học dưới dạng sự kiện"
+        },
+        "intercom_user_enroll": {
+          "title": "Đăng ký người dùng mới vào quá trình giới thiệu"
+        },
+        "intercom_tag_enroll": {
+          "title": "Đăng ký người dùng khi họ được gắn thẻ"
+        },
+        "calendly_booking_enroll": {
+          "title": "Ghi danh người được mời vào tài liệu chuẩn bị khi họ đăng ký"
+        },
+        "calendly_noshow_invite": {
+          "title": "Gửi một khóa học theo nhịp độ riêng cho những người vắng mặt"
+        },
+        "calendly_form_student": {
+          "title": "Thêm khách hàng tiềm năng biểu mẫu định tuyến với tư cách là sinh viên"
+        },
+        "calendly_cancel_remove": {
+          "title": "Xóa khóa học dự bị khi hủy đặt chỗ"
+        },
+        "calcom_booking_enroll": {
+          "title": "Ghi danh người tham dự vào tài liệu chuẩn bị khi họ đăng ký"
+        },
+        "calcom_cancel_remove": {
+          "title": "Xóa khóa học dự bị khi hủy đặt chỗ"
+        },
+        "calcom_meeting_invite": {
+          "title": "Gửi khóa học tiếp theo sau cuộc gọi"
+        },
+        "sheets_completed_row": {
+          "title": "Đăng nhập hoàn thành trong một trang tính"
+        },
+        "sheets_certificate_row": {
+          "title": "Giữ một sổ đăng ký chứng chỉ"
+        },
+        "sheets_compliance_row": {
+          "title": "Ghi lại các thay đổi tuân thủ"
+        },
+        "sheets_payment_row": {
+          "title": "Theo dõi yêu cầu thanh toán"
+        },
+        "sheets_row_enroll": {
+          "title": "Đăng ký tất cả mọi người được thêm vào một trang tính"
+        },
+        "sheets_row_cohort": {
+          "title": "Thêm mọi người trong trang tính vào nhóm thuần tập"
+        },
+        "notion_completed_item": {
+          "title": "Theo dõi việc hoàn thành trong cơ sở dữ liệu"
+        },
+        "notion_submission_item": {
+          "title": "Xếp hàng gửi bài để xem xét"
+        },
+        "notion_course_page": {
+          "title": "Thêm một trang cho mỗi khóa học mới"
+        },
+        "notion_item_enroll": {
+          "title": "Đăng ký người được thêm vào cơ sở dữ liệu"
+        },
+        "confluence_course_page": {
+          "title": "Tạo một trang khi một khóa học được xuất bản"
+        },
+        "confluence_session_page": {
+          "title": "Tạo trang chương trình nghị sự cho mỗi phiên trực tiếp"
+        },
+        "confluence_page_announce": {
+          "title": "Thông báo tài liệu mới cho một nhóm thuần tập"
+        },
+        "typeform_entry_enroll": {
+          "title": "Ghi danh người trả lời vào một khóa học"
+        },
+        "typeform_entry_cohort": {
+          "title": "Thêm ứng viên vào nhóm thuần tập"
+        },
+        "typeform_entry_student": {
+          "title": "Thêm người trả lời là sinh viên"
+        },
+        "jotform_submission_enroll": {
+          "title": "Ghi danh những người gửi biểu mẫu"
+        },
+        "jotform_completed_form": {
+          "title": "Gửi mẫu phản hồi khi hoàn thành khóa học"
+        },
+        "jotform_submission_student": {
+          "title": "Thêm những người gửi biểu mẫu với tư cách là sinh viên"
+        },
+        "pendo_status_enroll": {
+          "title": "Đăng ký người yêu cầu vào một khóa học khi yêu cầu của họ được gửi đi"
+        },
+        "pendo_status_announce": {
+          "title": "Thông báo các yêu cầu đã chuyển đến một nhóm thuần tập"
+        },
+        "mixpanel_completed_event": {
+          "title": "Theo dõi việc hoàn thành khóa học"
+        },
+        "mixpanel_enrollment_event": {
+          "title": "Theo dõi tuyển sinh"
+        },
+        "mixpanel_lesson_event": {
+          "title": "Theo dõi tiến độ bài học"
+        },
+        "mixpanel_certificate_profile": {
+          "title": "Đánh dấu người dùng được chứng nhận trên hồ sơ của họ"
+        },
+        "circle_member_enroll": {
+          "title": "Đăng ký thành viên cộng đồng mới vào khóa học chào mừng"
+        },
+        "circle_certificate_space": {
+          "title": "Mở khóa không gian khi người học đạt được chứng chỉ"
+        },
+        "circle_completed_tag": {
+          "title": "Tag thành viên đã hoàn thành khóa học"
+        },
+        "circle_cohort_group": {
+          "title": "Cấp cho các thành viên trong nhóm quyền truy cập vào một nhóm không gian"
+        },
+        "circle_removed_student": {
+          "title": "Loại bỏ những sinh viên rời khỏi cộng đồng"
+        },
+        "sentence_out_open": "Khi {trigger} trong ClassroomIO, hãy chọn một hành động trong {app}.",
+        "sentence_in_open": "Khi {trigger} trong {app}, hãy chọn một hành động trong ClassroomIO."
+      },
+      "partner_steps": {
+        "hubspot": {
+          "add_to_list_v3": "Thêm liên hệ vào danh sách",
+          "create_engagement": "Tạo sự tương tác",
+          "form_submission_resthook_v3": "Gửi biểu mẫu mới",
+          "new_contact_in_list_resthook_v3": "Liên hệ mới trong danh sách",
+          "updated_deal_stage": "Giai đoạn giao dịch được cập nhật",
+          "upsert_contact": "Tạo hoặc cập nhật liên hệ"
+        },
+        "salesforce": {
+          "create_lead": "Tạo khách hàng tiềm năng",
+          "create_record": "Tạo bản ghi",
+          "new_contact": "Liên hệ mới",
+          "update_contact": "Cập nhật liên hệ",
+          "updated_field_on_record": "Trường đã cập nhật trên bản ghi"
+        },
+        "mailchimp": {
+          "memberCreate": "Thêm/Cập nhật người đăng ký",
+          "new_member": "Người đăng ký mới",
+          "remove_tag": "Xóa người đăng ký khỏi thẻ",
+          "subscriber_segment": "Thêm người đăng ký vào thẻ",
+          "subscriber_tag": "Người đăng ký mới trong Phân đoạn hoặc Thẻ"
+        },
+        "customerio": {
+          "create_customer": "Tạo hoặc cập nhật một người",
+          "track_event": "Tạo sự kiện"
+        },
+        "slack": {
+          "channel_message": "Gửi tin nhắn kênh",
+          "direct_message": "Gửi tin nhắn trực tiếp",
+          "team_join": "Người dùng mới"
+        },
+        "teams": {
+          "member": "Thành viên nhóm mới",
+          "send_channel_message_from_user": "Gửi tin nhắn kênh",
+          "send_chat_message": "Gửi tin nhắn trò chuyện"
+        },
+        "google_meet": {
+          "schedule_meeting": "Lên lịch một cuộc họp"
+        },
+        "zoom": {
+          "create_meeting": "Tạo cuộc họp",
+          "create_meeting_registrant": "Tạo người đăng ký cuộc họp",
+          "create_registrant": "Tạo người đăng ký hội thảo trên web",
+          "new_joiner": "Người tham gia mới đã tham gia hội thảo hoặc cuộc họp trên web",
+          "new_registrant": "Người đăng ký hội thảo trực tuyến mới"
+        },
+        "zendesk": {
+          "new_tag_ticket": "Thẻ mới được thêm vào vé",
+          "ticket": "Tạo vé",
+          "update_user": "Cập nhật người dùng",
+          "user_v2": "Người dùng mới"
+        },
+        "intercom": {
+          "add_tag_to_contact": "Thêm thẻ vào liên hệ",
+          "create_data_event": "Tạo sự kiện dữ liệu",
+          "new_user_created": "Người dùng mới",
+          "send_message_to_contact": "Gửi tin nhắn đến liên hệ",
+          "user_tag": "Thẻ đã được thêm vào người dùng"
+        },
+        "calendly": {
+          "invitee_canceled": "Người được mời đã bị hủy",
+          "invitee_created": "Người được mời đã được tạo hoặc lên lịch lại",
+          "invitee_no_show_created": "Người được mời vắng mặt đã được tạo",
+          "routing_form_submission": "Gửi biểu mẫu định tuyến mới"
+        },
+        "calcom": {
+          "booking_cancelled": "Đặt chỗ đã bị hủy",
+          "booking_created": "Đã tạo đặt chỗ",
+          "meeting_ended": "Cuộc họp đã kết thúc"
+        },
+        "sheets": {
+          "add_row": "Tạo hàng bảng tính",
+          "new_row_notify_hook": "Hàng bảng tính mới"
+        },
+        "notion": {
+          "create_database_item": "Tạo mục nguồn dữ liệu",
+          "create_page": "Tạo trang",
+          "new_data_source_item": "Mục nguồn dữ liệu mới"
+        },
+        "confluence": {
+          "pageCreate": "Tạo Trang hoặc Bài đăng trên Blog",
+          "pageList": "Trang mới hoặc bài đăng trên blog"
+        },
+        "typeform": {
+          "entries_resthook_v2": "Mục mới"
+        },
+        "jotform": {
+          "assign_prefilled_form": "Chỉ định biểu mẫu điền sẵn",
+          "new_submission": "Đệ trình mới"
+        },
+        "pendo": {
+          "feature_status_changed": "Trạng thái yêu cầu đã thay đổi"
+        },
+        "mixpanel": {
+          "engage": "Tạo hoặc cập nhật hồ sơ",
+          "track": "Theo dõi sự kiện"
+        },
+        "circle": {
+          "add_space_group_member": "Thêm thành viên vào nhóm không gian",
+          "add_space_member": "Thêm thành viên vào không gian",
+          "community_member_removed": "Thành viên đã bị xóa",
+          "new_member": "Đã thêm thành viên mới",
+          "tag_members": "Gắn thẻ thành viên"
+        }
+      }
     },
     "webhooks": {
       "page_subtitle": "Gửi các sự kiện ClassroomIO theo thời gian thực đến Slack, CRM hoặc backend của riêng bạn.",
@@ -6455,13 +7333,21 @@
       "deny": "Từ chối",
       "unknown_client": "Ứng dụng này",
       "error_title": "Yêu cầu kết nối này không hợp lệ",
-      "error_description": "Hãy quay lại ứng dụng bạn đang kết nối và bắt đầu lại."
+      "error_description": "Hãy quay lại ứng dụng bạn đang kết nối và bắt đầu lại.",
+      "verified": "Đã xác minh",
+      "allow_changes": {
+        "label": "Cho phép {client} thực hiện thay đổi",
+        "description": "Tắt tính năng này để truy cập chỉ đọc. {client} vẫn có thể đọc dữ liệu và chạy trình kích hoạt nhưng không thể thêm, thay đổi hoặc xóa bất kỳ nội dung nào."
+      }
     },
     "select_organization": {
       "title": "Chọn không gian làm việc",
       "subtitle": "Chọn không gian làm việc mà {client} có thể truy cập.",
       "empty_title": "Không có không gian làm việc nào",
-      "empty_description": "Chỉ quản trị viên không gian làm việc mới có thể kết nối ứng dụng. Hãy nhờ quản trị viên hoặc đăng nhập bằng tài khoản quản trị."
+      "empty_description": "Chỉ quản trị viên không gian làm việc mới có thể kết nối ứng dụng. Hãy nhờ quản trị viên hoặc đăng nhập bằng tài khoản quản trị.",
+      "plan_required": "Nâng cấp lên gói Early Adopter để kết nối ứng dụng này",
+      "no_eligible_title": "Không có không gian làm việc đủ điều kiện",
+      "no_eligible_description": "Không không gian làm việc nào của bạn có gói bao gồm ứng dụng này. Hãy nâng cấp một không gian làm việc lên Early Adopter hoặc Enterprise rồi thử lại."
     },
     "error": {
       "generic": "Đã xảy ra lỗi. Vui lòng thử lại."
@@ -6510,6 +7396,10 @@
       "media": {
         "read": "Tải lên phương tiện",
         "write": "Tải lên phương tiện"
+      },
+      "webhooks": {
+        "read": "Xem các sự kiện gần đây trong không gian làm việc của bạn",
+        "write": "Nhận các sự kiện theo thời gian thực trong không gian làm việc của bạn"
       }
     },
     "connect": {

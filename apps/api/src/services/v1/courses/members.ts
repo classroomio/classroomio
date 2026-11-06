@@ -51,7 +51,8 @@ export async function addCourseMemberService(
   params: TPublicApiCourseParam,
   payload: TPublicApiAddCourseMember,
   source: TEventSource = 'public_api',
-  apiKeyId: string | null = null
+  apiKeyId: string | null = null,
+  oauthClientId: string | null = null
 ) {
   await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
@@ -66,7 +67,7 @@ export async function addCourseMemberService(
   }
 
   const [addedMember] = await addMembers(params.courseId, [member], source, {
-    source: buildMemberSource(apiKeyId ? 'api' : 'admin', { apiKeyId }),
+    source: buildMemberSource(apiKeyId ? 'api' : 'admin', { apiKeyId, oauthClientId }),
     actorProfileId: actorId
   });
 

@@ -7,6 +7,7 @@ export const MCP_DOCS_URL = 'https://classroomio.com/docs/developers/mcp';
 export const PUBLIC_API_DOCS_URL = 'https://classroomio.com/docs/api';
 export const WEBHOOKS_DOCS_URL = 'https://classroomio.com/docs/developers/webhooks';
 export const WEBHOOKS_VERIFY_SIGNATURE_DOCS_URL = `${WEBHOOKS_DOCS_URL}#verify-the-signature`;
+export const ZAPIER_HELP_URL = 'https://classroomio.com/help/integrations-and-automation/connect-classroomio-to-zapier';
 
 function getServerPath() {
   return 'npx -y @classroomio/mcp';

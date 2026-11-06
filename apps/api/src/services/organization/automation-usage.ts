@@ -56,9 +56,9 @@ async function getOrganizationPlanName(orgId: string): Promise<TPlan> {
 }
 
 /**
- * Throws 403 unless the organization's plan includes the public API.
+ * Throws 403 unless the organization's plan includes the public API; returns that plan.
  */
-export async function assertPublicApiAllowed(organizationId: string): Promise<void> {
+export async function assertPublicApiAllowed(organizationId: string): Promise<TPlan> {
   const planName = await getOrganizationPlanName(organizationId);
   const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
 
@@ -71,6 +71,8 @@ export async function assertPublicApiAllowed(organizationId: string): Promise<vo
       403
     );
   }
+
+  return planName;
 }
 
 export async function assertOrganizationAutomationKeyCreationAllowed(

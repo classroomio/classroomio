@@ -13,7 +13,6 @@
     "discard": "त्यागें",
     "save_changes": "परिवर्तन सहेजें",
     "cancel": "रद्द करें",
-    "scroll_to_top": "शीर्ष पर स्क्रॉल करें",
     "delete": "हटाएँ",
     "restricted_page": {
       "title": "प्रतिबंधित पृष्ठ",
@@ -532,6 +531,12 @@
     },
     "oauth": {
       "revoked": "ऐप का एक्सेस हटा दिया गया"
+    },
+    "zapier": {
+      "removed": "Zapier एक्सेस हटा दिया गया",
+      "remove_failed": "Zapier पहुँच नहीं हटाई जा सकी। फिर से प्रयास करें।",
+      "redelivered": "{count} विफल ईवेंट पुनर्वितरण के लिए कतारबद्ध हैं",
+      "redeliver_failed": "विफल घटनाओं को पुनः वितरित नहीं किया जा सका"
     }
   },
   "explore": {
@@ -593,7 +598,8 @@
     "enterprise_required": "इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है.",
     "public_api_required": "सार्वजनिक API तक पहुँचने के लिए Early Adopter या Enterprise में अपग्रेड करें।",
     "unlock_field": "इस सेटिंग को अनलॉक करने के लिए अपग्रेड करें",
-    "webhooks_required": "Webhooks का उपयोग करने के लिए Early Adopter या Enterprise में अपग्रेड करें।"
+    "webhooks_required": "Webhooks का उपयोग करने के लिए Early Adopter या Enterprise में अपग्रेड करें।",
+    "zapier_required": "Zapier के लिए अर्ली एडॉप्टर या एंटरप्राइज प्लान आवश्यक है।"
   },
   "analytics": {
     "title": "विश्लेषिकी",
@@ -5059,7 +5065,879 @@
       "disabled_description": "केवल संगठन व्यवस्थापक ही स्वचालन कुंजियाँ बना सकते हैं, घुमा सकते हैं या निरस्त कर सकते हैं। शिक्षक यहां सेटअप निर्देशों की समीक्षा कर सकते हैं।"
     },
     "zapier": {
-      "page_subtitle": "Zapier के माध्यम से हज़ारों ऐप्स के साथ ClassroomIO को स्वचालित करें। जल्द आ रहा है।"
+      "page_subtitle": "Zapier के ज़रिए हज़ारों ऐप्स के साथ ClassroomIO को स्वचालित करें।",
+      "permissions_description": "केवल संगठन व्यवस्थापक ही Zapier को कनेक्ट और इसके कनेक्शन प्रबंधित कर सकते हैं।",
+      "connect": "Zapier पर कनेक्ट करें",
+      "browse_apps": "ऐप्स ब्राउज़ करें",
+      "create_zap": "एक Zap बनाएं",
+      "manage_on_zapier": "Zapier पर प्रबंधित करें",
+      "empty": {
+        "title": "ClassroomIO को Zapier से कनेक्ट करें",
+        "description": "एक बार एक्सेस स्वीकृत करें, फिर कुछ ही सेकंड में Zapier पर ऐसे Zap बनाएं जो आपके कोर्स और छात्रों पर प्रतिक्रिया दें।"
+      },
+      "upgrade": {
+        "title": "Zapier कनेक्ट करने के लिए अपग्रेड करें",
+        "description": "ClassroomIO को Zapier से कनेक्ट करने के लिए Early Adopter या Enterprise प्लान आवश्यक है।",
+        "cta": "प्लान अपग्रेड करें"
+      },
+      "error": {
+        "title": "Zapier कनेक्शन लोड नहीं हो सके",
+        "description": "हम सर्वर से कनेक्ट नहीं हो सके। अपना कनेक्शन जाँचें और फिर से प्रयास करें।",
+        "retry": "फिर से प्रयास करें"
+      },
+      "unavailable": {
+        "title": "Zapier कनेक्शन अभी उपलब्ध नहीं हैं",
+        "description": "Zapier इंटीग्रेशन का एक्सेस पाने के लिए अपने ClassroomIO संपर्क से कहें, फिर यह पेज फिर से लोड करें।"
+      },
+      "setup": {
+        "title": "कनेक्ट करना कैसे काम करता है",
+        "step_1": "Zapier खोलें और ClassroomIO को एक Zap में जोड़ें।",
+        "step_2": "Zapier द्वारा पूछे जाने पर ClassroomIO में साइन इन करें।",
+        "step_3": "इस संगठन को चुनें और एक्सेस की अनुमति दें।",
+        "step_4": "एक ट्रिगर या एक्शन चुनें और अपना Zap चालू करें।"
+      },
+      "status": {
+        "connected_title": "Zapier से कनेक्टेड",
+        "connected_description": "{used} में से {max} ट्रिगर सब्सक्रिप्शन उपयोग में हैं। इवेंट सेकंडों में Zapier तक पहुंचते हैं।"
+      },
+      "paused": {
+        "title": "Zapier रुका हुआ है",
+        "description": "आपके प्लान में अब Zapier शामिल नहीं है। आपके अपग्रेड करने तक Zap विफल रहेंगे; आपके कनेक्शन बने रहेंगे।"
+      },
+      "selfhosted": {
+        "title": "Zapier ClassroomIO Cloud पर उपलब्ध है",
+        "description": "सेल्फ-होस्टेड इंस्टॉलेशन पर, Webhooks by Zapier ट्रिगर के साथ वेबहुक और एक्शन के लिए API कुंजियों का उपयोग करें।"
+      },
+      "connections": {
+        "title": "कनेक्शन",
+        "description": "प्रत्येक पंक्ति एक व्यवस्थापक है जिसने इस संगठन से Zapier खाता कनेक्ट किया है।",
+        "authorized_by": "द्वारा कनेक्टेड",
+        "unknown_admin": "पूर्व व्यवस्थापक",
+        "access": "एक्सेस",
+        "access_read_write": "पढ़ना और लिखना",
+        "access_read_only": "केवल पढ़ने के लिए",
+        "triggers": "सक्रिय ट्रिगर",
+        "last_used": "अंतिम बार उपयोग किया गया",
+        "connected": "कनेक्टेड",
+        "actions": "कनेक्शन क्रियाएं",
+        "view_triggers": "ट्रिगर देखें",
+        "remove": "एक्सेस हटाएं"
+      },
+      "remove": {
+        "title": "Zapier एक्सेस हटाएं?",
+        "description": "इस कनेक्शन का उपयोग करने वाले Zap तुरंत बंद हो जाते हैं और {count} ट्रिगर सब्सक्रिप्शन हटा दिए जाते हैं। फिर से उपयोग करने के लिए Zapier में पुनः कनेक्ट करें।",
+        "confirm": "एक्सेस हटाएं"
+      },
+      "triggers": {
+        "title": "सक्रिय ट्रिगर",
+        "description": "Zap जो चालू हैं और ClassroomIO इवेंट सुन रहे हैं।",
+        "empty_title": "कोई सक्रिय ट्रिगर नहीं",
+        "empty_description": "जब ClassroomIO में शुरू होने वाला कोई Zap चालू किया जाता है, तो ट्रिगर यहां दिखाई देते हैं।",
+        "course_filter": "केवल {course} के लिए",
+        "last_delivery": "अंतिम इवेंट भेजा गया {date}",
+        "no_deliveries": "अभी तक कोई इवेंट नहीं भेजा गया",
+        "health_healthy": "स्वस्थ",
+        "health_degraded": "विफल हो रहा है",
+        "health_disabled": "अक्षम",
+        "cohort_filter": "केवल {cohort} के लिए",
+        "created_at": "{date} को बनाया गया",
+        "last_failed": "अंतिम डिलीवरी विफल रही",
+        "redeliver": "विफल घटनाओं को पुनः वितरित करें"
+      },
+      "catalog": {
+        "title": "ऐप्स जो ClassroomIO के साथ काम करते हैं",
+        "description": "लोकप्रिय तरीके जिनसे टीमें Zapier के माध्यम से ClassroomIO को जोड़ती हैं।",
+        "search_placeholder": "ऐप्स खोजें",
+        "no_results": "कोई ऐप मेल नहीं खाता। Zapier ClassroomIO को 6,000+ ऐप्स से जोड़ता है; Zapier पर उनमें से कोई भी खोजें।",
+        "show_all": "सभी ऐप्स दिखाएं",
+        "end_note": "ये लोकप्रिय विकल्प हैं। Zapier ClassroomIO को 6,000+ ऐप्स से जोड़ता है।",
+        "categories": {
+          "all": "सभी",
+          "crm": "CRM",
+          "marketing": "मार्केटिंग",
+          "communication": "संचार",
+          "customer-support": "ग्राहक सहायता",
+          "sales": "बिक्री",
+          "productivity": "उत्पादकता",
+          "forms": "प्रपत्र एवं सर्वेक्षण",
+          "analytics": "एनालिटिक्स",
+          "community": "समुदाय"
+        }
+      },
+      "app_sheet": {
+        "title": "ClassroomIO + {app}",
+        "examples": "लोकप्रिय ऑटोमेशन",
+        "triggers": "ClassroomIO ट्रिगर",
+        "actions": "ClassroomIO क्रियाएं",
+        "create_zap": "एक {app} Zap बनाएं"
+      },
+      "catalog_triggers": {
+        "new_course_enrollment": {
+          "label": "नया कोर्स नामांकन",
+          "verb": "एक छात्र का नामांकन करें",
+          "description": "ट्रिगर तब होता है जब किसी छात्र को किसी पाठ्यक्रम में जोड़ा जाता है, चाहे वह किसी भी तरह से शामिल हुआ हो।"
+        },
+        "course_member_removed": {
+          "label": "छात्र को कोर्स से हटाया गया",
+          "verb": "एक छात्र को हटा दें",
+          "description": "ट्रिगर तब होता है जब किसी छात्र को पाठ्यक्रम से हटा दिया जाता है।"
+        },
+        "course_completed": {
+          "label": "कोर्स पूरा हुआ",
+          "verb": "एक पाठ्यक्रम समाप्त करें",
+          "description": "ट्रिगर तब होता है जब कोई छात्र पाठ्यक्रम में प्रत्येक आवश्यक पाठ पूरा कर लेता है।"
+        },
+        "new_certificate": {
+          "label": "नया प्रमाणपत्र",
+          "verb": "प्रमाणपत्र अर्जित करें",
+          "description": "जब किसी छात्र को प्रमाणपत्र जारी किया जाता है तो ट्रिगर होता है।"
+        },
+        "new_submission": {
+          "label": "नया अभ्यास सबमिशन",
+          "verb": "एक अभ्यास सबमिट करें",
+          "description": "जब कोई छात्र अभ्यास प्रस्तुत करता है तो ट्रिगर होता है।"
+        },
+        "submission_status_changed": {
+          "label": "सबमिशन स्थिति बदली",
+          "verb": "सबमिशन को ग्रेड दें",
+          "description": "यह तब ट्रिगर होता है जब किसी सबमिशन को ग्रेड दिया जाता है या उसकी स्थिति बदल जाती है।"
+        },
+        "lesson_completed": {
+          "label": "पाठ पूरा हुआ",
+          "verb": "एक पाठ पूरा करें",
+          "description": "जब कोई छात्र पाठ पूरा करता है तो ट्रिगर होता है।"
+        },
+        "course_invite_accepted": {
+          "label": "कोर्स आमंत्रण स्वीकार किया गया",
+          "verb": "एक निमंत्रण स्वीकार करें",
+          "description": "ट्रिगर तब होता है जब कोई पाठ्यक्रम आमंत्रण स्वीकार करता है।"
+        },
+        "new_payment_request": {
+          "label": "नया भुगतान अनुरोध",
+          "verb": "भुगतान का अनुरोध करें",
+          "description": "ट्रिगर तब होता है जब कोई शिक्षार्थी किसी पाठ्यक्रम के लिए भुगतान अनुरोध सबमिट करता है।"
+        },
+        "new_organization_member": {
+          "label": "नया संगठन सदस्य",
+          "verb": "संगठन से जुड़ें",
+          "description": "ट्रिगर तब होता है जब कोई छात्र, शिक्षक या व्यवस्थापक के रूप में संगठन में शामिल होता है।"
+        },
+        "compliance_status_changed": {
+          "label": "अनुपालन स्थिति बदली",
+          "verb": "अनुपालन स्थिति बदलें",
+          "description": "ट्रिगर तब होता है जब शिक्षार्थी की अनुपालन स्थिति बदल जाती है, उदाहरण के लिए अतिदेय या समाप्त हो जाना।"
+        },
+        "course_published": {
+          "label": "कोर्स प्रकाशित हुआ",
+          "verb": "एक पाठ्यक्रम प्रकाशित करें",
+          "description": "जब कोई पाठ्यक्रम प्रकाशित होता है तो ट्रिगर होता है।"
+        },
+        "live_session_scheduled": {
+          "label": "लाइव सत्र निर्धारित हुआ",
+          "verb": "एक लाइव सत्र शेड्यूल करें",
+          "description": "जब लाइव सत्र निर्धारित या पुनर्निर्धारित किया जाता है तो ट्रिगर होता है।"
+        },
+        "new_cohort_member": {
+          "label": "नया समूह सदस्य",
+          "verb": "एक समूह में शामिल हों",
+          "description": "जब किसी छात्र को समूह में जोड़ा जाता है तो ट्रिगर होता है।"
+        }
+      },
+      "catalog_actions": {
+        "enroll_student": {
+          "label": "छात्र को कोर्स में नामांकित करें",
+          "description": "किसी छात्र को ईमेल द्वारा किसी पाठ्यक्रम में नामांकित करना, यदि वह नया हो तो पहले उन्हें आमंत्रित करना।",
+          "fields": "ईमेल, पूरा नाम, पाठ्यक्रम"
+        },
+        "add_student": {
+          "label": "छात्र को संगठन में जोड़ें",
+          "description": "किसी छात्र को किसी पाठ्यक्रम में नामांकित किए बिना अपने संगठन में आमंत्रित करता है।",
+          "fields": "ईमेल, पूरा नाम"
+        },
+        "update_student": {
+          "label": "छात्र को अपडेट करें",
+          "description": "किसी छात्र का नाम, या उस आमंत्रण का ईमेल अपडेट करता है जिसे स्वीकार नहीं किया गया है।",
+          "fields": "ईमेल, पूरा नाम, कस्टम विशेषता"
+        },
+        "remove_student": {
+          "label": "छात्र को संगठन से हटाएं",
+          "description": "आपके संगठन से एक छात्र को निकालता है.",
+          "fields": "ईमेल"
+        },
+        "remove_course_member": {
+          "label": "छात्र को कोर्स से हटाएं",
+          "description": "किसी छात्र को एक पाठ्यक्रम से हटाकर अपने संगठन में रखता है।",
+          "fields": "ईमेल, पाठ्यक्रम"
+        },
+        "send_course_invite": {
+          "label": "कोर्स आमंत्रण भेजें",
+          "description": "किसी पाठ्यक्रम में शामिल होने के लिए आमंत्रण ईमेल करता है.",
+          "fields": "ईमेल, पाठ्यक्रम"
+        },
+        "revoke_course_invite": {
+          "label": "कोर्स आमंत्रण रद्द करें",
+          "description": "किसी लंबित पाठ्यक्रम आमंत्रण को रद्द कर देता है जिससे उसका लिंक काम करना बंद कर देता है।",
+          "fields": "ईमेल, पाठ्यक्रम"
+        },
+        "reset_course_progress": {
+          "label": "छात्र की कोर्स प्रगति रीसेट करें",
+          "description": "किसी पाठ्यक्रम में छात्र की प्रगति साफ़ करता है और उन्हें नामांकित रखता है।",
+          "fields": "ईमेल, पाठ्यक्रम"
+        },
+        "mark_lesson_complete": {
+          "label": "पाठ को पूर्ण चिह्नित करें",
+          "description": "किसी विद्यार्थी के लिए पाठ पूर्ण होने का प्रतीक है।",
+          "fields": "ईमेल, पाठ्यक्रम, पाठ"
+        },
+        "add_cohort_member": {
+          "label": "छात्र को समूह में जोड़ें",
+          "description": "एक विद्यार्थी को समूह में जोड़ता है.",
+          "fields": "ईमेल, समूह"
+        },
+        "post_cohort_announcement": {
+          "label": "समूह फ़ीड में पोस्ट करें",
+          "description": "समूह के फ़ीड पर एक घोषणा पोस्ट करता है।",
+          "fields": "समूह, संदेश"
+        }
+      },
+      "apps": {
+        "hubspot": {
+          "description": "CRM और ग्राहक प्लेटफ़ॉर्म",
+          "trigger_example": "जब कोई ग्राहक ऑनबोर्डिंग पूरा करता है, तो उसके HubSpot संपर्क को अपडेट करें।",
+          "action_example": "जब कोई HubSpot सौदा बंद होता है, तो खरीदार को अपने ऑनबोर्डिंग कोर्स में नामांकित करें।"
+        },
+        "salesforce": {
+          "description": "बिक्री और सेवा टीमों के लिए CRM",
+          "trigger_example": "जब कोई प्रमाणपत्र जारी किया जाता है, तो उसे Salesforce संपर्क पर दर्ज करें।",
+          "action_example": "जब कोई अवसर जीता जाता है, तो खाते के उपयोगकर्ताओं को उत्पाद प्रशिक्षण में नामांकित करें।"
+        },
+        "mailchimp": {
+          "description": "ईमेल मार्केटिंग और ऑडियंस",
+          "trigger_example": "जब कोई छात्र नामांकन करता है, तो उसे Mailchimp ऑडियंस में जोड़ें।",
+          "action_example": "जब कोई Mailchimp सूची में शामिल होता है, तो उसे अपनी अकादमी में आमंत्रित करें।"
+        },
+        "customerio": {
+          "description": "मैसेजिंग और लाइफ़साइकिल अभियान",
+          "trigger_example": "जब कोई छात्र पाठ पूरा करता है, तो अगले पाठ को प्रेरित करने के लिए Customer.io इवेंट भेजें।",
+          "action_example": "जब कोई Customer.io खंड बदलता है, तो उसके लोगों को एक कोर्स में नामांकित करें।"
+        },
+        "slack": {
+          "description": "टीम संचार और सहयोग",
+          "trigger_example": "जब कोई अभ्यास सबमिट किया जाता है, तो Slack में ट्यूटर को संदेश भेजें।",
+          "action_example": "जब कोई संदेश Slack चैनल में पोस्ट किया जाता है, तो उसे समूह फ़ीड पर साझा करें।"
+        },
+        "teams": {
+          "description": "आपके संगठन के लिए चैट और चैनल",
+          "trigger_example": "जब कोई कोर्स पूरा करता है, तो Teams चैनल में इसका जश्न मनाएं।",
+          "action_example": "जब कोई Teams संदेश फ़्लैग किया जाता है, तो उसे समूह फ़ीड पर पोस्ट करें।"
+        },
+        "google_meet": {
+          "description": "Google Workspace में वीडियो मीटिंग्स",
+          "trigger_example": "जब कोई लाइव सत्र निर्धारित होता है, तो एक Google Meet लिंक और कैलेंडर आमंत्रण बनाएं।",
+          "action_example": "जब कोई Meet सत्र समाप्त होता है, तो उपस्थित लोगों के लिए पाठ को पूर्ण चिह्नित करें।"
+        },
+        "zoom": {
+          "description": "वीडियो मीटिंग्स और वेबिनार",
+          "trigger_example": "जब कोई छात्र नामांकन करता है, तो उसे अपने Zoom वेबिनार के लिए पंजीकृत करें।",
+          "action_example": "जब कोई Zoom वेबिनार में भाग लेता है, तो पाठ को पूर्ण चिह्नित करें।"
+        },
+        "zendesk": {
+          "description": "ग्राहक सहायता और टिकटिंग",
+          "trigger_example": "जब कोई अनुपालन रिकॉर्ड अतिदेय हो जाता है, तो एक Zendesk टिकट खोलें।",
+          "action_example": "जब किसी टिकट को प्रशिक्षण के रूप में टैग किया जाता है, तो अनुरोधकर्ता को एक सहायता कोर्स में नामांकित करें।"
+        },
+        "intercom": {
+          "description": "ग्राहक संदेश प्लेटफ़ॉर्म",
+          "trigger_example": "जब कोई ग्राहक कोर्स पूरा करता है, तो उसे Intercom में टैग करें।",
+          "action_example": "जब कोई Intercom उपयोगकर्ता साइन अप करता है, तो उसे शुरुआती प्रशिक्षण में नामांकित करें।"
+        },
+        "calendly": {
+          "description": "शेड्यूलिंग और बुकिंग लिंक",
+          "trigger_example": "जब कोई छात्र कोर्स पूरा करता है, तो समीक्षा बुक करने के लिए Calendly लिंक भेजें।",
+          "action_example": "जब कोई Calendly मीटिंग बुक होती है, तो आमंत्रित व्यक्ति को तैयारी कोर्स में नामांकित करें।"
+        },
+        "calcom": {
+          "description": "ओपन-सोर्स शेड्यूलिंग और बुकिंग लिंक",
+          "trigger_example": "जब कोई छात्र कोर्स पूरा करता है, तो फ़ॉलो-अप के लिए Cal.com बुकिंग की पेशकश करें।",
+          "action_example": "जब कोई Cal.com बुकिंग बनाई जाती है, तो सहभागी को तैयारी कोर्स में नामांकित करें।"
+        },
+        "sheets": {
+          "description": "स्प्रेडशीट और डेटा प्रबंधन",
+          "trigger_example": "जब कोई प्रमाणपत्र जारी किया जाता है, तो Google Sheets में अपने प्रशिक्षण लॉग में एक पंक्ति जोड़ें।",
+          "action_example": "जब किसी शीट में कोई पंक्ति जोड़ी जाती है, तो उस व्यक्ति को अपनी अकादमी में आमंत्रित करें।"
+        },
+        "notion": {
+          "description": "दस्तावेज़, विकी और प्रोजेक्ट नोट्स",
+          "trigger_example": "जब कोई कोर्स प्रकाशित होता है, तो उसे अपने Notion प्रशिक्षण कैटलॉग में जोड़ें।",
+          "action_example": "जब कोई Notion डेटाबेस आइटम जोड़ा जाता है, तो एक कोर्स आमंत्रण भेजें।"
+        },
+        "confluence": {
+          "description": "तकनीकी टीमों के लिए दस्तावेज़ और विकी",
+          "trigger_example": "जब कोई कोर्स प्रकाशित होता है, तो उससे लिंक करने वाला एक Confluence पृष्ठ बनाएं।",
+          "action_example": "जब कोई Confluence पृष्ठ बनाया जाता है, तो उसके पाठकों को संबंधित कोर्स में आमंत्रित करें।"
+        },
+        "typeform": {
+          "description": "फ़ॉर्म और सर्वेक्षण",
+          "trigger_example": "जब कोई छात्र कोर्स पूरा करता है, तो उसे एक Typeform सर्वेक्षण भेजें।",
+          "action_example": "जब कोई Typeform सबमिट किया जाता है, तो उत्तरदाता को एक कोर्स में नामांकित करें।"
+        },
+        "jotform": {
+          "description": "फ़ॉर्म और सर्वेक्षण",
+          "trigger_example": "जब कोई छात्र कोर्स पूरा करता है, तो उसे Jotform फ़ीडबैक फ़ॉर्म भेजें।",
+          "action_example": "जब कोई Jotform सबमिट किया जाता है, तो उत्तरदाता को एक कोर्स में नामांकित करें।"
+        },
+        "pendo": {
+          "description": "डिजिटल अनुकूलन और उत्पाद उपयोग",
+          "trigger_example": "जब कोई ग्राहक प्रशिक्षण पूरा करता है, तो इसे Pendo में दर्ज करें।",
+          "action_example": "जब Pendo कम सुविधा अपनाने की सूचना देता है, तो उपयोगकर्ता को एक कोर्स में नामांकित करें।"
+        },
+        "mixpanel": {
+          "description": "उत्पाद एनालिटिक्स और फ़नल",
+          "trigger_example": "जब कोई छात्र पाठ पूरा करता है, तो Mixpanel को एक इवेंट भेजें।",
+          "action_example": "जब कोई Mixpanel समूह बदलता है, तो उसके उपयोगकर्ताओं को एक कोर्स में नामांकित करें।"
+        },
+        "circle": {
+          "description": "सामुदायिक स्थान और चर्चा",
+          "trigger_example": "जब कोई छात्र नामांकन करता है, तो उसे अपने Circle समुदाय में जोड़ें।",
+          "action_example": "जब कोई Circle स्थान में शामिल होता है, तो उसे एक समूह में जोड़ें।"
+        }
+      },
+      "app_page": {
+        "back": "ऐप डायरेक्टरी पर वापस जाएँ",
+        "breadcrumb_apps": "ऐप्स",
+        "eyebrow": "क्लासरूमआईओ + {app}",
+        "official": "आधिकारिक एकीकरण",
+        "lead_out": "कोई निर्यात या स्प्रेडशीट नहीं. जैपियर ClassroomIO में नए इवेंट चुनता है और आपके लिए {app} में \"{action}\" क्रिया चलाता है।",
+        "lead_in": "जैपियर {app} देखता है और आपके द्वारा चुने गए ClassroomIO पाठ्यक्रम में प्रत्येक नए व्यक्ति का नामांकन करता है।",
+        "connect_cta": "जैपियर में {app} कनेक्ट करें",
+        "stats": "{recipes} रेसिपी · {mode}",
+        "cta_note": "लगभग 2 मिनट का समय लगता है. जब तक आप जैप चालू नहीं करते तब तक कुछ भी नहीं चलता।",
+        "preview_aria": "इस जैप रनिंग का उदाहरण",
+        "preview_example": "उदाहरण",
+        "preview_source": "ClassroomIO · {screen}",
+        "preview_destination": "{app} · {action}",
+        "preview_new": "नया",
+        "preview_state_idle": "किसी घटना की प्रतीक्षा में",
+        "preview_state_new": "नई घटना",
+        "preview_state_running": "जैप चल रहा है",
+        "preview_state_ran": "जैप भागा",
+        "connected_title": "{org} जैपियर से जुड़ा है।",
+        "connected_read_write": "पढ़ने और लिखने की पहुंच.",
+        "connected_read_only": "केवल पढ़ने योग्य पहुंच.",
+        "connected_view": "ClassroomIO में कनेक्शन देखें",
+        "connected_zapier": "जैपियर पर देखें",
+        "trust_scope_read_write": "केवल पढ़ने और लिखने की पहुंच",
+        "trust_scope_read_only": "केवल पढ़ने योग्य पहुंच",
+        "trust_scope_note": "{org} तक सीमित, और कुछ नहीं",
+        "trust_revoke_title": "किसी भी समय निरस्त करें",
+        "trust_revoke_note": "ऑटोमेशन से > क्लासरूमआईओ में जैपियर",
+        "trust_zapier_title": "आपके जैप जैपियर में रहते हैं",
+        "trust_zapier_note": "जैपियर उनका निर्माण, परीक्षण और संचालन करता है",
+        "similar_title": "समान ऐप्स",
+        "similar_see_all": "सभी {count} ऐप्स देखें",
+        "headline_out_before": "ClassroomIO में {trigger}।",
+        "headline_out_after": "इसे {app} में देखें।",
+        "headline_in_before": "{app} में {trigger}।",
+        "headline_in_after": "उन्हें ClassroomIO में नामांकित करें।",
+        "preview_live": "लाइव पूर्वावलोकन",
+        "preview_col_person": "छात्र",
+        "preview_col_course": "पाठ्यक्रम",
+        "preview_col_email": "ईमेल",
+        "preview_col_when": "कब"
+      },
+      "directory": {
+        "title": "ऐप निर्देशिका",
+        "subtitle": "उन ऐप्स को ब्राउज़ करें जिन्हें आप जैपियर के माध्यम से ClassroomIO से कनेक्ट कर सकते हैं।",
+        "create_zap": "जैपियर में एक जैप बनाएं",
+        "back": "जैप्स को लौटें",
+        "search_placeholder": "ऐप्स खोजें…",
+        "filters_title": "फिल्टर",
+        "discover": "खोजें",
+        "categories": "श्रेणियाँ",
+        "all_apps": "सभी ऐप्स",
+        "popular": "लोकप्रिय",
+        "recent": "हाल ही में जोड़ा गया",
+        "sort_label": "ऐप्स को क्रमबद्ध करें",
+        "sort_popular": "लोकप्रिय",
+        "sort_az": "ए-जेड",
+        "view_more": "अधिक ऐप्स देखें",
+        "count": {
+          "all": "{count} ऐप्स",
+          "one": "1 ऐप",
+          "showing": "{total} ऐप्स में से {shown} दिखाए जा रहे हैं",
+          "all_matching": "“{query}” से मेल खाने वाले {count} ऐप्स",
+          "one_matching": "“{query}” से मेल खाने वाला 1 ऐप",
+          "showing_matching": "\"{query}\" से मेल खाने वाले {total} ऐप्स में से {shown} ऐप्स दिखाए जा रहे हैं"
+        },
+        "empty": {
+          "title": "कोई भी ऐप्स आपकी खोज से मेल नहीं खाता",
+          "description": "एक अलग नाम आज़माएं, या हर उस ऐप को ब्राउज़ करें जिससे Zapier ClassroomIO को जोड़ता है।",
+          "search_zapier": "जैपियर में खोजें"
+        },
+        "end": {
+          "title": "वह हर ऐप है जिसे हमने चुना है",
+          "description": "जैपियर ClassroomIO को हजारों अन्य लोगों से जोड़ता है।",
+          "cta": "जैपियर में जारी रखें"
+        }
+      },
+      "page_title": "जैप्स",
+      "create_more_zaps": "अधिक जैप बनाएं",
+      "access_section": {
+        "title": "क्लासरूमआईओ तक जैपियर की पहुंच"
+      },
+      "active_triggers": {
+        "title": "सक्रिय क्लासरूमआईओ ट्रिगर"
+      },
+      "connected_apps": {
+        "title": "कनेक्टेड ऐप्स",
+        "coming_soon_title": "यहां देखें कि आपके जैप्स कौन से ऐप्स का उपयोग करते हैं",
+        "coming_soon_description": "आपके जैप्स क्लासरूमआईओ से कनेक्ट होने वाले ऐप्स को देखने के लिए अपने जैपियर खाते को लिंक करें।"
+      },
+      "zaps_empty": {
+        "title": "अभी तक कोई ज़ैप नहीं",
+        "description": "ClassroomIO को उस ऐप से कनेक्ट करें जिसे आपकी टीम पहले से ही उपयोग कर रही है, या यदि आप पहले से ही जानते हैं कि आप क्या स्वचालित करना चाहते हैं तो सीधे जैपियर में जाएं।",
+        "connect_apps": "ऐप्स कनेक्ट करें"
+      },
+      "capabilities": {
+        "title": "आप ClassroomIO और {app} के साथ और भी बहुत कुछ कर सकते हैं",
+        "subtitle": "अन्य ट्रिगर्स और क्रियाओं की खोज करें जिनका उपयोग आप ClassroomIO और {app} के साथ कर सकते हैं।",
+        "tab_triggers": "ट्रिगर",
+        "tab_actions": "क्रियाएँ",
+        "tab_both": "ट्रिगर और क्रियाएँ",
+        "kind_trigger": "ट्रिगर",
+        "kind_action": "कार्रवाई",
+        "kind_search": "खोजें",
+        "mode_instant": "तुरंत",
+        "mode_write": "लिखो",
+        "mode_lookup": "तलाश",
+        "try_it": "इसे आज़माएं",
+        "load_more": "और अधिक लोड करें",
+        "showing": "{total} में से {shown} दिखाए जा रहे हैं",
+        "sample_title": "यह ट्रिगर जो नमूना डेटा भेजता है",
+        "fields_title": "फ़ील्ड्स आप जैपियर में मैप करते हैं",
+        "partner_trigger_description": "{app} में जैप प्रारंभ करता है।",
+        "partner_action_description": "ClassroomIO ट्रिगर सक्रिय होने पर {app} में चलता है।",
+        "eyebrow": "ट्रिगर और क्रियाएँ",
+        "partner_example_title": "उदाहरण स्वचालन"
+      },
+      "catalog_searches": {
+        "find_student": {
+          "label": "छात्र खोजें",
+          "description": "ईमेल द्वारा आपके संगठन में एक छात्र को ढूँढता है।"
+        },
+        "find_course": {
+          "label": "पाठ्यक्रम खोजें",
+          "description": "किसी पाठ्यक्रम को उसके स्लग या सटीक शीर्षक से ढूँढता है।"
+        }
+      },
+      "invite": {
+        "title": "क्लासरूमआईओ को जैपियर से कनेक्ट करें",
+        "description": "जैपियर को चाहिए कि आप जैप्स बनाने से पहले एक बार क्लासरूमआईओ आमंत्रण को स्वीकार करें।",
+        "step_1_title": "जैपियर पर ClassroomIO आमंत्रण स्वीकार करें",
+        "step_1_description": "जैपियर आपसे एक बार स्वीकार करने के लिए कहता है। उसके बाद, ClassroomIO आपके जैपियर खाते में दिखाई देता है।",
+        "step_1_button": "जैपियर पर आमंत्रण खोलें",
+        "step_2_title": "अपने जैप को जारी रखें",
+        "step_2_description": "आपका जैप एक नए टैब में खुलता है. जब तक आप इसे चालू नहीं करते तब तक कुछ भी नहीं चलता।",
+        "step_2_button": "जैपियर के लिए जारी रखें",
+        "already_accepted": "मैंने पहले ही स्वीकार कर लिया है",
+        "missing_invite": "इस कार्यस्थान के लिए अभी तक कोई आमंत्रण लिंक कॉन्फ़िगर नहीं किया गया है."
+      },
+      "recipes": {
+        "section_title": "{app} के साथ ClassroomIO का उपयोग करने के तरीके",
+        "section_subtitle": "इस जोड़ी के लिए पूर्ण जैप बनाए गए। एक चुनें, अपने खाते कनेक्ट करें और इसे चालू करें।",
+        "tabs_out": "क्लासरूमआईओ से",
+        "tabs_in": "क्लासरूमआईओ में",
+        "use_this_zap": "इस जैप का प्रयोग करें",
+        "mode_instant": "तुरंत",
+        "mode_polling": "हर कुछ मिनटों में जाँच करता है",
+        "sentence_out": "जब ClassroomIO में {trigger}, {app} में {action}।",
+        "sentence_in": "जब {app} में {trigger}, ClassroomIO में {action}।",
+        "featured_title": "एक लोकप्रिय रेसिपी से शुरुआत करें",
+        "ways_to_use": "उपयोग करने के {count} तरीके",
+        "choose_in_zapier": "जैपियर में चुनें",
+        "open_in_zapier": "जैपियर में खुला",
+        "builder_title": "अपना खुद का निर्माण करें",
+        "builder_subtitle": "कोई भी ट्रिगर और कार्रवाई चुनें, फिर जैपियर में सेटअप पूरा करें।",
+        "builder_trigger_label": "जब ऐसा होता है",
+        "builder_action_label": "ऐसा करो",
+        "builder_in_classroomio": "क्लासरूमआईओ में",
+        "builder_in_app": "{app} में",
+        "builder_no_app_triggers": "{app} के लिए अभी कोई ट्रिगर नहीं",
+        "prefill_title": "इस जैप के लिए एक कोर्स चुनें",
+        "prefill_title_cohort": "इस जैप के लिए एक समूह चुनें",
+        "prefill_note": "आप इसे जैपियर के अंदर भी चुन सकते हैं।",
+        "reference_title": "सब कुछ ClassroomIO जैपियर में कर सकता है",
+        "reference_subtitle": "इन व्यंजनों के पीछे ट्रिगर्स, क्रियाओं और खोजों की पूरी सूची।",
+        "reference_triggers": "ट्रिगर ({count})",
+        "reference_actions": "क्रियाएँ ({count})",
+        "reference_searches": "खोजें ({count})",
+        "hubspot_deal_stage_enroll": {
+          "title": "जब कोई डील एक स्तर पर पहुंच जाए तो नए ग्राहकों को शामिल करें"
+        },
+        "hubspot_list_enroll": {
+          "title": "संपर्कों को तब नामांकित करें जब वे हबस्पॉट सूची में शामिल हों"
+        },
+        "hubspot_form_invite": {
+          "title": "किसी पाठ्यक्रम के लिए फॉर्म साइन-अप आमंत्रित करें"
+        },
+        "hubspot_completed_contact": {
+          "title": "जब वे कोई कोर्स पूरा कर लें तो संपर्क को अपडेट करें"
+        },
+        "hubspot_certificate_list": {
+          "title": "प्रमाणित शिक्षार्थियों को हबस्पॉट सूची में जोड़ें"
+        },
+        "hubspot_compliance_task": {
+          "title": "जब प्रशिक्षण अतिदेय हो जाए तो एक अनुवर्ती कार्य बनाएं"
+        },
+        "salesforce_certificate_record": {
+          "title": "सेल्सफोर्स में प्रत्येक प्रमाणपत्र को रिकॉर्ड करें"
+        },
+        "salesforce_completed_contact": {
+          "title": "जब वे कोई कोर्स पूरा कर लें तो संपर्क को अपडेट करें"
+        },
+        "salesforce_payment_lead": {
+          "title": "प्रत्येक भुगतान अनुरोध के लिए एक लीड बनाएं"
+        },
+        "salesforce_contact_enroll": {
+          "title": "ऑनबोर्डिंग में नए संपर्कों को नामांकित करें"
+        },
+        "salesforce_opportunity_enroll": {
+          "title": "अवसर समाप्त होने पर ग्राहकों का नामांकन करें"
+        },
+        "mailchimp_enrollment_subscriber": {
+          "title": "किसी ऑडियंस में नए नामांकन जोड़ें"
+        },
+        "mailchimp_completed_tag": {
+          "title": "उन सब्सक्राइबर्स को टैग करें जो कोर्स पूरा करते हैं"
+        },
+        "mailchimp_removed_untag": {
+          "title": "जब कोई छात्र चले तो पाठ्यक्रम टैग हटा दें"
+        },
+        "mailchimp_subscriber_student": {
+          "title": "छात्रों के रूप में नए ग्राहक जोड़ें"
+        },
+        "mailchimp_tag_enroll": {
+          "title": "टैग मिलने पर ग्राहकों को नामांकित करें"
+        },
+        "customerio_completed_event": {
+          "title": "पाठ्यक्रम पूर्णताएँ ईवेंट के रूप में भेजें"
+        },
+        "customerio_enrollment_person": {
+          "title": "जब व्यक्ति नामांकन करें तो उसे बनाएं या अपडेट करें"
+        },
+        "customerio_certificate_event": {
+          "title": "प्रमाणपत्रों को ईवेंट के रूप में भेजें"
+        },
+        "customerio_compliance_event": {
+          "title": "प्रशिक्षण समाप्त होने पर अनुस्मारक अभियान शुरू करें"
+        },
+        "customerio_lesson_event": {
+          "title": "पाठ की प्रगति को घटनाओं के रूप में भेजें"
+        },
+        "slack_completed_channel": {
+          "title": "कोर्स पूरा होने पर चैनल पर पोस्ट करें"
+        },
+        "slack_submission_dm": {
+          "title": "जब कोई छात्र अभ्यास प्रस्तुत करे तो शिक्षक को संदेश भेजें"
+        },
+        "slack_payment_channel": {
+          "title": "भुगतान अनुरोधों के बारे में टीम को सचेत करें"
+        },
+        "slack_compliance_channel": {
+          "title": "किसी चैनल में अतिदेय प्रशिक्षण को चिह्नित करें"
+        },
+        "slack_certificate_channel": {
+          "title": "नए प्रमाणपत्रों का जश्न मनाएं"
+        },
+        "slack_member_enroll": {
+          "title": "ऑनबोर्डिंग में नए कार्यक्षेत्र सदस्यों को नामांकित करें"
+        },
+        "teams_completed_channel": {
+          "title": "कोर्स पूरा होने पर चैनल पर पोस्ट करें"
+        },
+        "teams_submission_chat": {
+          "title": "जब कोई छात्र अभ्यास प्रस्तुत करे तो शिक्षक को संदेश भेजें"
+        },
+        "teams_compliance_channel": {
+          "title": "किसी चैनल में अतिदेय प्रशिक्षण को चिह्नित करें"
+        },
+        "teams_session_channel": {
+          "title": "किसी चैनल में लाइव सत्र की घोषणा करें"
+        },
+        "teams_member_enroll": {
+          "title": "ऑनबोर्डिंग में नए टीम सदस्यों को नामांकित करें"
+        },
+        "meet_session_meeting": {
+          "title": "प्रत्येक लाइव सत्र के लिए एक मीट बनाएं"
+        },
+        "meet_completed_meeting": {
+          "title": "पाठ्यक्रम पूरा होने पर समीक्षा कॉल बुक करें"
+        },
+        "zoom_enrollment_registrant": {
+          "title": "वेबिनार के लिए नए छात्रों का पंजीकरण करें"
+        },
+        "zoom_cohort_registrant": {
+          "title": "किकऑफ़ मीटिंग के लिए समूह सदस्यों को पंजीकृत करें"
+        },
+        "zoom_session_meeting": {
+          "title": "प्रत्येक लाइव सत्र के लिए एक ज़ूम मीटिंग बनाएं"
+        },
+        "zoom_registrant_enroll": {
+          "title": "वेबिनार पंजीकरणकर्ताओं को तैयारी सामग्री में नामांकित करें"
+        },
+        "zoom_joiner_lesson": {
+          "title": "जब कोई शिक्षार्थी शामिल हो तो लाइव पाठ को पूर्ण चिह्नित करें"
+        },
+        "zendesk_tag_enroll": {
+          "title": "जब कोई एजेंट उनके टिकट को टैग करता है तो ग्राहक को नामांकित करें"
+        },
+        "zendesk_compliance_ticket": {
+          "title": "प्रशिक्षण समाप्त होने पर टिकट खोलें"
+        },
+        "zendesk_payment_ticket": {
+          "title": "प्रत्येक भुगतान अनुरोध के लिए एक टिकट खोलें"
+        },
+        "zendesk_completed_user": {
+          "title": "Zendesk उपयोगकर्ता पर पूर्ण प्रशिक्षण रिकॉर्ड करें"
+        },
+        "zendesk_user_enroll": {
+          "title": "नए Zendesk उपयोगकर्ताओं को आरंभिक पाठ्यक्रम में नामांकित करें"
+        },
+        "intercom_completed_message": {
+          "title": "जब उपयोगकर्ता कोई पाठ्यक्रम पूरा कर लें तो उन्हें संदेश भेजें"
+        },
+        "intercom_completed_tag": {
+          "title": "उन उपयोगकर्ताओं को टैग करें जिन्होंने ऑनबोर्डिंग पूरी कर ली है"
+        },
+        "intercom_lesson_event": {
+          "title": "पाठ की प्रगति को घटनाओं के रूप में भेजें"
+        },
+        "intercom_user_enroll": {
+          "title": "ऑनबोर्डिंग में नए उपयोगकर्ताओं को नामांकित करें"
+        },
+        "intercom_tag_enroll": {
+          "title": "उपयोगकर्ताओं को टैग किए जाने पर उनका नामांकन करें"
+        },
+        "calendly_booking_enroll": {
+          "title": "जब आमंत्रित लोग बुकिंग करें तो उन्हें तैयारी सामग्री में नामांकित करें"
+        },
+        "calendly_noshow_invite": {
+          "title": "बिना किसी प्रदर्शन के स्व-गति वाला पाठ्यक्रम भेजें"
+        },
+        "calendly_form_student": {
+          "title": "छात्रों के रूप में रूटिंग फॉर्म लीड जोड़ें"
+        },
+        "calendly_cancel_remove": {
+          "title": "बुकिंग रद्द होने पर तैयारी पाठ्यक्रम हटा दें"
+        },
+        "calcom_booking_enroll": {
+          "title": "जब उपस्थित लोग बुकिंग करें तो उन्हें तैयारी सामग्री में नामांकित करें"
+        },
+        "calcom_cancel_remove": {
+          "title": "बुकिंग रद्द होने पर तैयारी पाठ्यक्रम हटा दें"
+        },
+        "calcom_meeting_invite": {
+          "title": "कॉल के बाद अनुवर्ती पाठ्यक्रम भेजें"
+        },
+        "sheets_completed_row": {
+          "title": "पूर्णताओं को एक शीट में लॉग करें"
+        },
+        "sheets_certificate_row": {
+          "title": "सर्टिफिकेट रजिस्टर रखें"
+        },
+        "sheets_compliance_row": {
+          "title": "लॉग अनुपालन परिवर्तन"
+        },
+        "sheets_payment_row": {
+          "title": "भुगतान अनुरोध ट्रैक करें"
+        },
+        "sheets_row_enroll": {
+          "title": "जोड़े गए सभी लोगों को एक शीट में नामांकित करें"
+        },
+        "sheets_row_cohort": {
+          "title": "सभी को एक शीट में एक समूह में जोड़ें"
+        },
+        "notion_completed_item": {
+          "title": "डेटाबेस में पूर्णताएँ ट्रैक करें"
+        },
+        "notion_submission_item": {
+          "title": "समीक्षा के लिए कतारबद्ध प्रस्तुतियाँ"
+        },
+        "notion_course_page": {
+          "title": "प्रत्येक नए पाठ्यक्रम के लिए एक पृष्ठ जोड़ें"
+        },
+        "notion_item_enroll": {
+          "title": "डेटाबेस में जोड़े गए लोगों का नामांकन करें"
+        },
+        "confluence_course_page": {
+          "title": "कोई पाठ्यक्रम प्रकाशित होने पर एक पेज बनाएं"
+        },
+        "confluence_session_page": {
+          "title": "प्रत्येक लाइव सत्र के लिए एक एजेंडा पृष्ठ बनाएं"
+        },
+        "confluence_page_announce": {
+          "title": "किसी समूह के लिए नए दस्तावेज़ों की घोषणा करें"
+        },
+        "typeform_entry_enroll": {
+          "title": "उत्तरदाताओं को एक पाठ्यक्रम में नामांकित करें"
+        },
+        "typeform_entry_cohort": {
+          "title": "आवेदकों को एक समूह में जोड़ें"
+        },
+        "typeform_entry_student": {
+          "title": "उत्तरदाताओं को छात्रों के रूप में जोड़ें"
+        },
+        "jotform_submission_enroll": {
+          "title": "फॉर्म जमा करने वाले लोगों का नामांकन करें"
+        },
+        "jotform_completed_form": {
+          "title": "कोर्स पूरा होने पर फीडबैक फॉर्म भेजें"
+        },
+        "jotform_submission_student": {
+          "title": "फॉर्म जमा करने वाले लोगों को छात्र के रूप में जोड़ें"
+        },
+        "pendo_status_enroll": {
+          "title": "अनुरोधकर्ताओं का अनुरोध भेजे जाने पर उन्हें किसी पाठ्यक्रम में नामांकित करें"
+        },
+        "pendo_status_announce": {
+          "title": "किसी समूह को भेजे गए अनुरोधों की घोषणा करें"
+        },
+        "mixpanel_completed_event": {
+          "title": "पाठ्यक्रम पूर्णता को ट्रैक करें"
+        },
+        "mixpanel_enrollment_event": {
+          "title": "नामांकन ट्रैक करें"
+        },
+        "mixpanel_lesson_event": {
+          "title": "पाठ की प्रगति को ट्रैक करें"
+        },
+        "mixpanel_certificate_profile": {
+          "title": "प्रमाणित उपयोगकर्ताओं को उनकी प्रोफ़ाइल पर चिह्नित करें"
+        },
+        "circle_member_enroll": {
+          "title": "स्वागत पाठ्यक्रम में समुदाय के नए सदस्यों का नामांकन करें"
+        },
+        "circle_certificate_space": {
+          "title": "जब कोई शिक्षार्थी प्रमाणपत्र अर्जित कर ले तो स्थान अनलॉक करें"
+        },
+        "circle_completed_tag": {
+          "title": "उन सदस्यों को टैग करें जो पाठ्यक्रम पूरा करते हैं"
+        },
+        "circle_cohort_group": {
+          "title": "समूह के सदस्यों को एक अंतरिक्ष समूह तक पहुंच प्रदान करें"
+        },
+        "circle_removed_student": {
+          "title": "समुदाय छोड़ने वाले छात्रों को हटा दें"
+        },
+        "sentence_out_open": "जब ClassroomIO में {trigger} हो, तो {app} में एक क्रिया चुनें।",
+        "sentence_in_open": "जब {app} में {trigger} हो, तो ClassroomIO में एक क्रिया चुनें।"
+      },
+      "partner_steps": {
+        "hubspot": {
+          "add_to_list_v3": "सूची में संपर्क जोड़ें",
+          "create_engagement": "सहभागिता बनाएँ",
+          "form_submission_resthook_v3": "नया फॉर्म जमा करना",
+          "new_contact_in_list_resthook_v3": "सूची में नया संपर्क",
+          "updated_deal_stage": "अद्यतन डील चरण",
+          "upsert_contact": "संपर्क बनाएं या अपडेट करें"
+        },
+        "salesforce": {
+          "create_lead": "लीड बनाएं",
+          "create_record": "रिकॉर्ड बनाएं",
+          "new_contact": "नया संपर्क",
+          "update_contact": "संपर्क अद्यतन करें",
+          "updated_field_on_record": "रिकॉर्ड पर अद्यतन फ़ील्ड"
+        },
+        "mailchimp": {
+          "memberCreate": "सब्सक्राइबर जोड़ें/अपडेट करें",
+          "new_member": "नया सब्सक्राइबर",
+          "remove_tag": "सब्सक्राइबर को टैग से हटाएँ",
+          "subscriber_segment": "टैग में सब्सक्राइबर जोड़ें",
+          "subscriber_tag": "सेगमेंट या टैग में नया सब्सक्राइबर"
+        },
+        "customerio": {
+          "create_customer": "किसी व्यक्ति को बनाएं या अपडेट करें",
+          "track_event": "ईवेंट बनाएं"
+        },
+        "slack": {
+          "channel_message": "चैनल संदेश भेजें",
+          "direct_message": "सीधा संदेश भेजें",
+          "team_join": "नया उपयोगकर्ता"
+        },
+        "teams": {
+          "member": "नई टीम के सदस्य",
+          "send_channel_message_from_user": "चैनल संदेश भेजें",
+          "send_chat_message": "चैट संदेश भेजें"
+        },
+        "google_meet": {
+          "schedule_meeting": "एक मीटिंग शेड्यूल करें"
+        },
+        "zoom": {
+          "create_meeting": "मीटिंग बनाएं",
+          "create_meeting_registrant": "मीटिंग रजिस्ट्रार बनाएं",
+          "create_registrant": "वेबिनार पंजीकरणकर्ता बनाएँ",
+          "new_joiner": "नए प्रतिभागी वेबिनार या मीटिंग में शामिल हुए",
+          "new_registrant": "नया वेबिनार पंजीकरणकर्ता"
+        },
+        "zendesk": {
+          "new_tag_ticket": "टिकट में नया टैग जोड़ा गया",
+          "ticket": "टिकट बनाएं",
+          "update_user": "उपयोगकर्ता को अद्यतन करें",
+          "user_v2": "नया उपयोगकर्ता"
+        },
+        "intercom": {
+          "add_tag_to_contact": "संपर्क में टैग जोड़ें",
+          "create_data_event": "डेटा इवेंट बनाएं",
+          "new_user_created": "नया उपयोगकर्ता",
+          "send_message_to_contact": "संपर्क करने के लिए संदेश भेजें",
+          "user_tag": "उपयोगकर्ता में टैग जोड़ा गया"
+        },
+        "calendly": {
+          "invitee_canceled": "आमंत्रित रद्द कर दिया गया",
+          "invitee_created": "आमंत्रित व्यक्ति बनाया गया या पुनर्निर्धारित किया गया",
+          "invitee_no_show_created": "आमंत्रित कोई शो नहीं बनाया गया",
+          "routing_form_submission": "नया रूटिंग फॉर्म जमा करना"
+        },
+        "calcom": {
+          "booking_cancelled": "बुकिंग रद्द",
+          "booking_created": "बुकिंग बनाई गई",
+          "meeting_ended": "बैठक ख़त्म"
+        },
+        "sheets": {
+          "add_row": "स्प्रेडशीट पंक्ति बनाएँ",
+          "new_row_notify_hook": "नई स्प्रेडशीट पंक्ति"
+        },
+        "notion": {
+          "create_database_item": "डेटा स्रोत आइटम बनाएं",
+          "create_page": "पेज बनाएं",
+          "new_data_source_item": "नया डेटा स्रोत आइटम"
+        },
+        "confluence": {
+          "pageCreate": "पेज या ब्लॉग पोस्ट बनाएं",
+          "pageList": "नया पेज या ब्लॉग पोस्ट"
+        },
+        "typeform": {
+          "entries_resthook_v2": "नई प्रविष्टि"
+        },
+        "jotform": {
+          "assign_prefilled_form": "पहले से भरा हुआ फॉर्म असाइन करें",
+          "new_submission": "नया सबमिशन"
+        },
+        "pendo": {
+          "feature_status_changed": "अनुरोध स्थिति परिवर्तित"
+        },
+        "mixpanel": {
+          "engage": "प्रोफ़ाइल बनाएं या अपडेट करें",
+          "track": "ट्रैक इवेंट"
+        },
+        "circle": {
+          "add_space_group_member": "स्पेस ग्रुप में सदस्य जोड़ें",
+          "add_space_member": "सदस्य को स्पेस में जोड़ें",
+          "community_member_removed": "सदस्य हटाया गया",
+          "new_member": "नया सदस्य जोड़ा गया",
+          "tag_members": "टैग सदस्य"
+        }
+      }
     },
     "webhooks": {
       "page_subtitle": "रीयल-टाइम ClassroomIO इवेंट को Slack, अपने CRM या अपने बैकएंड पर भेजें।",
@@ -6455,13 +7333,21 @@
       "deny": "अस्वीकार करें",
       "unknown_client": "यह ऐप",
       "error_title": "यह कनेक्शन अनुरोध मान्य नहीं है",
-      "error_description": "जिस ऐप को आप कनेक्ट कर रहे थे उस पर वापस जाएँ और फिर से शुरू करें।"
+      "error_description": "जिस ऐप को आप कनेक्ट कर रहे थे उस पर वापस जाएँ और फिर से शुरू करें।",
+      "verified": "सत्यापित",
+      "allow_changes": {
+        "label": "{client} को परिवर्तन करने की अनुमति दें",
+        "description": "केवल पढ़ने योग्य पहुंच के लिए इसे बंद करें। {client} अभी भी डेटा पढ़ सकता है और ट्रिगर चला सकता है, लेकिन कुछ भी जोड़, बदल या हटा नहीं सकता।"
+      }
     },
     "select_organization": {
       "title": "वर्कस्पेस चुनें",
       "subtitle": "वह वर्कस्पेस चुनें जिसे {client} एक्सेस कर सकता है।",
       "empty_title": "कोई वर्कस्पेस उपलब्ध नहीं",
-      "empty_description": "केवल वर्कस्पेस एडमिन ही ऐप कनेक्ट कर सकते हैं। किसी एडमिन से कहें या एडमिन खाते से साइन इन करें।"
+      "empty_description": "केवल वर्कस्पेस एडमिन ही ऐप कनेक्ट कर सकते हैं। किसी एडमिन से कहें या एडमिन खाते से साइन इन करें।",
+      "plan_required": "इस ऐप को कनेक्ट करने के लिए अर्ली एडॉप्टर में अपग्रेड करें",
+      "no_eligible_title": "कोई पात्र कार्यक्षेत्र नहीं",
+      "no_eligible_description": "आपके किसी भी कार्यक्षेत्र का प्लान इस ऐप को शामिल नहीं करता। किसी कार्यक्षेत्र को Early Adopter या Enterprise में अपग्रेड करें, फिर फिर से प्रयास करें।"
     },
     "error": {
       "generic": "कुछ गलत हो गया। कृपया फिर से प्रयास करें।"
@@ -6510,6 +7396,10 @@
       "media": {
         "read": "मीडिया अपलोड करना",
         "write": "मीडिया अपलोड करना"
+      },
+      "webhooks": {
+        "read": "अपने वर्कस्पेस में हाल के इवेंट देखें",
+        "write": "अपने वर्कस्पेस में होने वाले इवेंट तुरंत प्राप्त करें"
       }
     },
     "connect": {

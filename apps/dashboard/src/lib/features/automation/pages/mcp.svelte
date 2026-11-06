@@ -42,6 +42,7 @@
   let keyLabel = $state('');
 
   const canCreateKey = $derived(keyLabel.trim().length > 0 && !automationApi.isLoading);
+  const connectedApps = $derived(automationApi.connectedApps);
 
   function resetCreateKeyModal() {
     keyLabel = '';
@@ -173,7 +174,7 @@
       </div>
       <p class="ui:text-muted-foreground text-sm">{$t('oauth.connected_apps.description')}</p>
 
-      {#if automationApi.connectedApps.length > 0}
+      {#if connectedApps.length > 0}
         <Table.Root>
           <Table.Header>
             <Table.Row>
@@ -185,7 +186,7 @@
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {#each automationApi.connectedApps as app (app.consentId)}
+            {#each connectedApps as app (app.consentId)}
               <Table.Row>
                 <Table.Cell class="font-medium">{app.clientName ?? $t('oauth.consent.unknown_client')}</Table.Cell>
                 <Table.Cell class="ui:text-muted-foreground text-sm">{app.userFullname ?? '-'}</Table.Cell>

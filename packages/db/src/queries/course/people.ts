@@ -31,6 +31,7 @@ export interface PaginatedCourseMembersOptions {
   page: number;
   limit: number;
   search?: string;
+  email?: string;
   roleId?: number;
   certificateEarned?: boolean;
   sortBy?: TCoursePeopleSortBy;
@@ -220,7 +221,7 @@ export async function getPaginatedCourseMembers(
   courseId: string,
   options: PaginatedCourseMembersOptions
 ): Promise<PaginatedCourseMembersResult> {
-  const { page, limit, search, roleId, certificateEarned, sortBy, sortOrder } = options;
+  const { page, limit, search, email, roleId, certificateEarned, sortBy, sortOrder } = options;
   const progress = sortBy ?? 'role';
   const { bucket, percent } = progressExpressions();
 
@@ -271,6 +272,17 @@ export async function getPaginatedCourseMembers(
       if (searchCondition) {
         conditions.push(searchCondition);
       }
+    }
+
+    if (email) {
+      const normalizedEmail = email.trim().toLowerCase();
+
+      conditions.push(
+        or(
+          eq(sql`lower(${schema.groupmember.email})`, normalizedEmail),
+          eq(sql`lower(${schema.profile.email})`, normalizedEmail)
+        )!
+      );
     }
 
     const whereClause = and(...conditions)!;
@@ -675,5 +687,34 @@ export async function setMemberCertificationEmailSent(memberId: string, sentAt: 
     throw new Error(
       `Failed to set certification email sent: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * The course membership for `email`, matched on the member's own email or their profile's, or null.
+ */
+export async function getCourseMemberIdByEmail(courseId: string, email: string): Promise<string | null> {
+  try {
+    const normalizedEmail = email.trim().toLowerCase();
+    const [row] = await db
+      .select({ id: schema.groupmember.id })
+      .from(schema.groupmember)
+      .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
+      .leftJoin(schema.profile, eq(schema.profile.id, schema.groupmember.profileId))
+      .where(
+        and(
+          eq(schema.course.id, courseId),
+          or(
+            eq(sql`lower(${schema.groupmember.email})`, normalizedEmail),
+            eq(sql`lower(${schema.profile.email})`, normalizedEmail)
+          )
+        )
+      )
+      .limit(1);
+
+    return row?.id ?? null;
+  } catch (error) {
+    console.error('getCourseMemberIdByEmail error:', error);
+    throw new Error('Failed to look up course member');
   }
 }

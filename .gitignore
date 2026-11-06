@@ -45,6 +45,7 @@ vite.config.ts*.mjs
 .pnpm-store/*
 
 **/dist/*
+apps/zapier/.zapierapprc
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md

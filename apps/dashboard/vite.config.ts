@@ -20,7 +20,7 @@ function watchWorkspaceSources() {
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
   const useHttps = process.env.HTTPS === 'true' || process.env.VITE_USE_HTTPS_ON_LOCALHOST === 'true';
-  const host = process.env.HOST || (useHttps ? '0.0.0.0' : undefined);
+  const host = process.env.HOST || '0.0.0.0';
 
   return defineConfig({
     css: {
@@ -33,6 +33,7 @@ export default ({ mode }) => {
     plugins: [watchWorkspaceSources(), sveltekit(), ...(useHttps ? [mkcert()] : [])],
     server: {
       host,
+      allowedHosts: ['folk-squatter-deviation.ngrok-free.dev', '.ngrok-free.dev', '.ngrok-free.app'],
       fs: {
         // `..` is `apps/` — covers the dashboard's own files. `../../packages`
         // is required so Vite's `@fs` route can serve dynamic imports that

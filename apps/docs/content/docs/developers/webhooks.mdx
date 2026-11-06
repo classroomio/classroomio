@@ -1,6 +1,7 @@
 ---
 title: Webhooks
 description: Receive signed, real-time ClassroomIO events in Slack, your CRM, or your own backend.
+last_reviewed: '2026-10-31'
 ---
 
 Webhooks let ClassroomIO send an HTTP `POST` to a URL you control whenever something happens in your organization, such as a student finishing a course or a submission being graded. Use them to keep a CRM in sync, alert tutors in Slack, or trigger your own workflows.
@@ -357,7 +358,8 @@ A member is added to a course, by an admin or by accepting an invite.
     "inviteLinkId": null,
     "cohortId": null,
     "programId": null,
-    "apiKeyId": null
+    "apiKeyId": null,
+    "oauthClientId": null
   },
   "actorProfileId": null,
   "actor": null,
@@ -368,7 +370,7 @@ A member is added to a course, by an admin or by accepting an invite.
 }
 ```
 
-`memberId` is the course membership id. `profileId` is `null` until a pending member signs up. `enrolledAt` is when the membership was created. `source.method` is `invite`, `invite_link`, `self_enroll`, `import`, `api`, `sso`, `payment`, `admin` or `cohort`, and the other `source` fields hold the matching id or `null`. `actor` is the admin or tutor who added the member, or `null` when the student joined by themselves. `roleId` is `1` for admin, `2` for tutor, `3` for student.
+`memberId` is the course membership id. `profileId` is `null` until a pending member signs up. `enrolledAt` is when the membership was created. `source.method` is `invite`, `invite_link`, `self_enroll`, `import`, `api`, `sso`, `payment`, `admin` or `cohort`, and the other `source` fields hold the matching id or `null`. `source.oauthClientId` holds the OAuth client ID when the enrollment was created by a connected application (such as Zapier), or `null` otherwise. `actor` is the admin or tutor who added the member, or `null` when the student joined by themselves. `roleId` is `1` for admin, `2` for tutor, `3` for student.
 
 #### `course.member.removed`
 
@@ -1250,6 +1252,11 @@ If a Standard Webhooks receiver rejects the signature for a webhook created befo
 
 ## Changelog
 
+### 2026-10-31
+
+- `course.member.added`: Added `oauthClientId` (string or `null`) to the `source` object. Integration platforms like Zapier can inspect this field to identify which client performed an enrollment action and filter out self-triggered events to avoid loops.
+- Introduced managed webhook subscriptions (REST hooks) for OAuth-connected integrations under `/public-api/v1/webhooks/subscriptions`.
+
 ### 2026-10-21
 
 - `course.completed` is now sent for every organization, not only those that issue certificates. `course.certificate.issued` is still sent only when a certificate is issued.
@@ -1266,3 +1273,16 @@ If a Standard Webhooks receiver rejects the signature for a webhook created befo
 ## Management API
 
 Organization admins can also manage webhooks over the dashboard API under `/organization/webhooks` (list, create, update, delete, regenerate secret, send a test event, and list or redeliver deliveries). These routes use your dashboard session and are not part of the public API-key surface.
+
+## Managed subscriptions (REST hooks)
+
+Third-party platforms and OAuth-connected integrations (such as the ClassroomIO Zapier app) can create and manage webhook subscriptions programmatically via the public API (`/public-api/v1/webhooks/subscriptions`) using the `webhook:subscription:write` scope.
+
+These managed subscriptions:
+
+- Are registered directly by the connected app and do not count toward your organization's limit of 20 manual webhook destinations.
+- Have dedicated subscription quotas per organization plan (50 subscriptions on Early Adopter, 250 on Enterprise).
+- Are lifecycle-bound to the authorizing OAuth grant. Revoking the connection immediately deletes all subscriptions registered by that app.
+- Are delivered with per-subscription signing secrets using the same Standard Webhooks and HMAC-SHA256 headers as manual webhooks.
+
+See the [OAuth REST hooks guide](/developers/oauth#receive-events-rest-hooks) for endpoint details and payload examples.

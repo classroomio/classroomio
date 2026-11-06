@@ -4555,10 +4555,19 @@ export const webhookEndpoint = pgTable(
     lastDeliveryAt: timestamp('last_delivery_at', { withTimezone: true, mode: 'string' }),
     createdByProfileId: uuid('created_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
     updatedByProfileId: uuid('updated_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    oauthConsentId: uuid('oauth_consent_id').references(() => oauthConsent.id, { onDelete: 'cascade' }),
+    filterCourseId: uuid('filter_course_id'),
+    filterCohortId: uuid('filter_cohort_id'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
-  (table) => [index('idx_webhook_endpoint_org_id').on(table.organizationId)]
+  (table) => [
+    index('idx_webhook_endpoint_org_id').on(table.organizationId),
+    index('idx_webhook_endpoint_oauth_consent_id').on(table.oauthConsentId),
+    uniqueIndex('uq_webhook_endpoint_consent_target')
+      .on(table.oauthConsentId, table.payloadUrl)
+      .where(sql`${table.oauthConsentId} IS NOT NULL`)
+  ]
 );
 
 export const webhookSubscription = pgTable(
@@ -4592,7 +4601,8 @@ export const webhookEvent = pgTable(
   },
   (table) => [
     index('idx_webhook_event_created_at').on(table.createdAt),
-    index('idx_webhook_event_org_created_at').on(table.organizationId, table.createdAt)
+    index('idx_webhook_event_org_created_at').on(table.organizationId, table.createdAt),
+    index('idx_webhook_event_org_type_created_at').on(table.organizationId, table.eventType, table.createdAt.desc())
   ]
 );
 

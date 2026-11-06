@@ -51,3 +51,8 @@ const hasOwnMcpHost = PUBLIC_IS_SELFHOSTED === 'true' || process.env.NODE_ENV ==
 export const MCP_RESOURCE = hasOwnMcpHost ? `${BASE_URL}/mcp` : CLOUD_MCP_URL;
 
 export const PUBLIC_API_RESOURCE = `${BASE_URL}/public-api/v1`;
+
+export const OAUTH_TRUSTED_CLIENT_IDS = (process.env.OAUTH_TRUSTED_CLIENT_IDS ?? '')
+  .split(',')
+  .map((clientId) => clientId.trim())
+  .filter(Boolean);

@@ -3,7 +3,7 @@ import { APIError } from 'better-auth/api';
 import { jwt } from 'better-auth/plugins';
 import { oauthProvider } from '@better-auth/oauth-provider';
 
-import { MCP_RESOURCE, OAUTH_ISSUER, PUBLIC_API_RESOURCE } from '@db/constants';
+import { MCP_RESOURCE, OAUTH_ISSUER, OAUTH_TRUSTED_CLIENT_IDS, PUBLIC_API_RESOURCE } from '@db/constants';
 import { getOAuthOrganizationSelection, isActiveOrganizationAdmin } from '@db/queries/auth/oauth';
 import { OAUTH_SCOPES } from './oauth-scopes';
 
@@ -12,6 +12,8 @@ export const OAUTH_CONSENT_PAGE = '/oauth/consent';
 export const OAUTH_ORGANIZATION_PAGE = '/oauth/select-organization';
 
 const ACCESS_TOKEN_TTL_SECONDS = 10 * 60;
+const REFRESH_TOKEN_TTL_SECONDS = 90 * 24 * 60 * 60;
+const REFRESH_TOKEN_REUSE_INTERVAL_SECONDS = 60;
 
 export function buildOAuthPlugins(): BetterAuthPlugin[] {
   return [
@@ -27,6 +29,10 @@ export function buildOAuthPlugins(): BetterAuthPlugin[] {
       resources: [MCP_RESOURCE, PUBLIC_API_RESOURCE],
       enforcePerClientResources: false,
       accessTokenExpiresIn: ACCESS_TOKEN_TTL_SECONDS,
+      refreshTokenExpiresIn: REFRESH_TOKEN_TTL_SECONDS,
+      // Zapier refreshes from parallel tasks; without a reuse window the losing refresh is treated as token theft.
+      refreshTokenReuseInterval: REFRESH_TOKEN_REUSE_INTERVAL_SECONDS,
+      cachedTrustedClients: new Set(OAUTH_TRUSTED_CLIENT_IDS),
       postLogin: {
         page: OAUTH_ORGANIZATION_PAGE,
         shouldRedirect: async ({ session, isContinuation }) => {

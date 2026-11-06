@@ -65,6 +65,11 @@ vi.mock('@api/services/v1/courses/sections', () => ({
   listPublicApiCourseSectionsService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
 }));
 
+vi.mock('@api/services/v1/courses/course', () => ({
+  listCoursesService: vi.fn().mockResolvedValue({ items: [], pagination: {}, query: {} }),
+  getCourseService: vi.fn().mockResolvedValue({})
+}));
+
 import { v1Router } from '@api/routes/v1';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
@@ -97,10 +102,10 @@ const MCP_DEFAULT_SCOPES = [
 
 const app = new Hono().route('/public-api/v1', v1Router);
 
-const request = (path: string) =>
-  app.request(`/public-api/v1${path}`, { headers: { Authorization: 'Bearer cio_mcp_test' } });
+const request = (path: string, method = 'GET') =>
+  app.request(`/public-api/v1${path}`, { method, headers: { Authorization: 'Bearer cio_mcp_test' } });
 
-describe('default MCP key across the cohort, course member, certificate, exercise, submission, audience, team, and organization APIs', () => {
+describe('default MCP key across the cohort, course, course member, certificate, exercise, submission, audience, team, and organization APIs', () => {
   beforeEach(() => {
     mocks.complete.mockReset().mockResolvedValue(undefined);
     mocks.authenticate.mockResolvedValue({
@@ -114,6 +119,8 @@ describe('default MCP key across the cohort, course member, certificate, exercis
 
   it.each([
     ['/cohorts', 'list_org_cohorts'],
+    ['/courses', 'GET /public-api/v1/courses'],
+    [`/courses/${COURSE_ID}`, 'GET /public-api/v1/courses/:courseId'],
     [`/courses/${COURSE_ID}/members`, 'list_course_members'],
     [`/courses/${COURSE_ID}/certificate`, 'get_course_certificate'],
     [`/courses/${COURSE_ID}/sections`, 'list_course_sections'],
@@ -129,8 +136,15 @@ describe('default MCP key across the cohort, course member, certificate, exercis
     expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, 0);
   });
 
-  it.each(['/courses', `/courses/${COURSE_ID}`])('is kept out of %s', async (path) => {
-    const response = await request(path);
+  it.each([
+    ['POST', '/courses'],
+    ['PUT', `/courses/${COURSE_ID}`],
+    ['DELETE', `/courses/${COURSE_ID}`],
+    ['GET', `/courses/${COURSE_ID}/students`],
+    ['GET', `/courses/${COURSE_ID}/export`],
+    ['GET', `/courses/${COURSE_ID}/structure`]
+  ])('is kept out of %s %s', async (method, path) => {
+    const response = await request(path, method);
 
     expect(response.status).toBe(403);
     expect(mocks.complete).not.toHaveBeenCalled();

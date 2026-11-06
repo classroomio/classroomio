@@ -4,7 +4,10 @@ import { ZCourseCreateBase, ZCourseUpdateBase } from '../course/course';
 import { ZCourseImportDraftPayload } from '../course-import/course-import';
 import { ZGetOrganizationCoursesQuery } from '../organization';
 
-export const ZPublicApiCoursesQuery = ZGetOrganizationCoursesQuery;
+export const ZPublicApiCoursesQuery = ZGetOrganizationCoursesQuery.extend({
+  slug: z.string().trim().min(1).max(200).optional().describe('Exact course slug'),
+  title: z.string().trim().min(1).max(200).optional().describe('Exact course title, case-insensitive')
+});
 export type TPublicApiCoursesQuery = z.infer<typeof ZPublicApiCoursesQuery>;
 
 export const ZPublicApiCourseParam = z.object({

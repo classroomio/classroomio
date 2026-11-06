@@ -31,7 +31,8 @@ const memberSourceInput = z
     inviteLinkId: z.string().nullable(),
     cohortId: z.string().nullable(),
     programId: z.string().nullable(),
-    apiKeyId: z.string().nullable()
+    apiKeyId: z.string().nullable(),
+    oauthClientId: z.string().nullable()
   })
   .strict();
 

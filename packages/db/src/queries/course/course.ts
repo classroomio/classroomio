@@ -808,6 +808,10 @@ interface GetOrgCoursesOptions {
   courseIds?: string[];
   /** Optional search query against the course title */
   search?: string;
+  /** Optional exact course slug */
+  slug?: string;
+  /** Optional exact course title, case-insensitive */
+  title?: string;
   type?: TCourseType;
   publishedStatus?: OrgCoursePublishedStatus;
   sortKey?: OrgCourseSortKey;
@@ -830,9 +834,11 @@ function orgCourseListConditions({
   orgId,
   courseIds,
   search,
+  slug,
+  title,
   type,
   publishedStatus
-}: Pick<GetOrgCoursesOptions, 'orgId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'>) {
+}: Pick<GetOrgCoursesOptions, 'orgId' | 'courseIds' | 'search' | 'slug' | 'title' | 'type' | 'publishedStatus'>) {
   const conditions = [
     eq(schema.group.organizationId, orgId),
     eq(schema.course.status, 'ACTIVE'),
@@ -845,6 +851,14 @@ function orgCourseListConditions({
 
   if (search?.trim()) {
     conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
+  }
+
+  if (slug) {
+    conditions.push(eq(schema.course.slug, slug));
+  }
+
+  if (title) {
+    conditions.push(eq(sql`lower(${schema.course.title})`, title.trim().toLowerCase()));
   }
 
   if (type) {
@@ -885,18 +899,20 @@ export async function countOrgCourses({
   profileId,
   courseIds,
   search,
+  slug,
+  title,
   type,
   publishedStatus
 }: Pick<
   GetOrgCoursesOptions,
-  'orgId' | 'profileId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'
+  'orgId' | 'profileId' | 'courseIds' | 'search' | 'slug' | 'title' | 'type' | 'publishedStatus'
 >): Promise<number> {
   try {
     if (courseIds && courseIds.length === 0) {
       return 0;
     }
 
-    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, publishedStatus });
+    const conditions = orgCourseListConditions({ orgId, courseIds, search, slug, title, type, publishedStatus });
 
     const totalQuery = profileId
       ? db
@@ -934,6 +950,8 @@ export const getOrgCourses = async ({
   profileId,
   courseIds,
   search,
+  slug,
+  title,
   type,
   publishedStatus,
   sortKey,
@@ -952,8 +970,8 @@ export const getOrgCourses = async ({
       };
     }
 
-    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, publishedStatus });
-    const total = await countOrgCourses({ orgId, profileId, courseIds, search, type, publishedStatus });
+    const conditions = orgCourseListConditions({ orgId, courseIds, search, slug, title, type, publishedStatus });
+    const total = await countOrgCourses({ orgId, profileId, courseIds, search, slug, title, type, publishedStatus });
 
     const baseQuery = db
       .select({
@@ -1744,5 +1762,21 @@ export async function updateCourseSlug(courseId: string, slug: string): Promise<
   } catch (error) {
     console.error('updateCourseSlug error:', error);
     throw new Error(`Failed to update course slug: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function getCourseTitlesByIds(courseIds: string[]): Promise<Map<string, string | null>> {
+  if (courseIds.length === 0) return new Map();
+
+  try {
+    const rows = await db
+      .select({ id: schema.course.id, title: schema.course.title })
+      .from(schema.course)
+      .where(inArray(schema.course.id, courseIds));
+
+    return new Map(rows.map((row) => [row.id, row.title]));
+  } catch (error) {
+    console.error('getCourseTitlesByIds error:', error);
+    throw new Error('Failed to load course titles');
   }
 }

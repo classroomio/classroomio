@@ -85,7 +85,8 @@ describe('webhook emit helpers', () => {
       inviteLinkId: null,
       cohortId: 'cohort-1',
       programId: null,
-      apiKeyId: null
+      apiKeyId: null,
+      oauthClientId: null
     });
   });
 

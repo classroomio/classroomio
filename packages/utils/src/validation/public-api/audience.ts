@@ -8,6 +8,10 @@ export const ZPublicApiAudienceQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().trim().optional(),
+  email: z
+    .email()
+    .optional()
+    .describe('Exact email, case-insensitive. Use it to look someone up; search matches parts of names and emails'),
   sortBy: z.enum(['createdAt', 'name', 'email', 'lastLoginAt', 'lastActiveAt']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
   status: z.enum(['ACTIVE', 'DEACTIVATED', 'ARCHIVED']).default('ACTIVE'),

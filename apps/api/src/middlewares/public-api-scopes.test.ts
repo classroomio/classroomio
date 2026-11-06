@@ -7,15 +7,23 @@ import { publicApiScopesMiddleware } from './public-api-scopes';
 const COHORT_SCOPES = ['cohort:read', 'cohort:write'];
 const MEDIA_SCOPES = ['media:write'];
 
-function buildApp(scopes: string[]) {
+function buildApp(scopes: string[], oauthConsentId: string | null = null) {
   const v1Router = new Hono()
     .use('*', async (c: Context, next: Next) => {
-      c.set('automationKey', { id: 'key-id', organizationId: 'org-id', type: 'mcp', scopes } as never);
+      c.set('automationKey', {
+        id: 'key-id',
+        organizationId: 'org-id',
+        type: 'mcp',
+        scopes,
+        oauthConsentId
+      } as never);
       await next();
     })
     .use('*', publicApiScopesMiddleware)
     .get('/cohorts', (c) => c.json({ success: true }))
     .post('/cohorts/:cohortId/invite', (c) => c.json({ success: true }, 201))
+    .get('/courses', (c) => c.json({ success: true }))
+    .post('/courses', (c) => c.json({ success: true }, 201))
     .put('/courses/:courseId', (c) => c.json({ success: true }))
     .delete('/courses/:courseId', (c) => c.json({ success: true }))
     .get('/audience', (c) => c.json({ success: true }))
@@ -147,5 +155,35 @@ describe('publicApiScopesMiddleware', () => {
     const app = buildApp(['public_api:*']);
 
     expect((await app.request('/public-api/v1/assets', { method: 'POST' })).status).toBe(201);
+  });
+
+  it('lets course:read reach GET /courses and GET /courses/:courseId without opening writes or student lists', async () => {
+    const app = buildApp(['course:read']);
+
+    expect((await app.request('/public-api/v1/courses')).status).toBe(200);
+    expect((await app.request('/public-api/v1/courses/c1')).status).toBe(200);
+    expect((await app.request('/public-api/v1/courses', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses/c1', { method: 'PUT' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses/c1', { method: 'DELETE' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses/c1/students')).status).toBe(403);
+  });
+
+  it('tells an OAuth connection which permission it was not granted', async () => {
+    const app = buildApp(['cohort:read', 'webhook:subscription:write'], 'consent-1');
+    const response = await app.request('/public-api/v1/cohorts/c1/invite', { method: 'POST' });
+
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toEqual({
+      success: false,
+      error: 'This connection was not granted the cohort:write permission',
+      code: 'INSUFFICIENT_SCOPE',
+      requiredScope: 'cohort:write'
+    });
+  });
+
+  it('keeps the automation key error code when a key lacks a scope', async () => {
+    const response = await buildApp(['cohort:read']).request('/public-api/v1/cohorts/c1/invite', { method: 'POST' });
+
+    await expect(response.json()).resolves.toMatchObject({ code: 'FORBIDDEN', requiredScope: 'cohort:write' });
   });
 });

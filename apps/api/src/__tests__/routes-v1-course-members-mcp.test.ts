@@ -94,9 +94,11 @@ describe('public API scopes for MCP keys', () => {
 
   it('blocks an MCP key from the rest of the public API', async () => {
     const app = buildApp({ type: 'mcp', scopes: MCP_SCOPES });
+    const memberOnlyApp = buildApp({ type: 'mcp', scopes: ['course:member:read', 'course:member:write'] });
 
     expect((await app.request('/public-api/v1/audience')).status).toBe(403);
-    expect((await app.request('/public-api/v1/courses')).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses', { method: 'POST' })).status).toBe(403);
+    expect((await memberOnlyApp.request('/public-api/v1/courses')).status).toBe(403);
     expect((await app.request(`${base}/students`)).status).toBe(403);
   });
 

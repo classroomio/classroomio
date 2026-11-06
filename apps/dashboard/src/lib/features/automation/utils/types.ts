@@ -1,3 +1,4 @@
+import type { TZapierAppCategory, TZapierRecipeStep, TZapierSearchKey } from '@cio/utils/constants/zapier';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 
 export type ListAutomationKeysRequest = (typeof classroomio.organization)['automation']['keys']['$get'];
@@ -62,3 +63,42 @@ export type WebhookFormFields = {
   eventTypes: string[];
   isActive: boolean;
 };
+
+export type GetZapierOverviewRequest = (typeof classroomio.organization)['automation']['zapier']['$get'];
+export type RedeliverZapierTriggerRequest =
+  (typeof classroomio.organization)['automation']['zapier']['triggers'][':triggerId']['redeliver']['$post'];
+export type GetZapierOverviewSuccess = Extract<InferResponseType<GetZapierOverviewRequest>, { success: true }>;
+export type ZapierOverview = GetZapierOverviewSuccess['data'];
+export type RedeliverZapierTriggerSuccess = Extract<
+  InferResponseType<RedeliverZapierTriggerRequest>,
+  { success: true }
+>;
+export type RedeliverZapierTriggerResult = RedeliverZapierTriggerSuccess['data'];
+export type ZapierConnection = ZapierOverview['connections'][number];
+export type ZapierTrigger = ZapierConnection['triggers'][number];
+
+export type ZapierAppCategory = TZapierAppCategory;
+export type ZapierDirectoryCategory = ZapierAppCategory | 'all';
+export type ZapierDirectoryQuick = 'all' | 'popular' | 'recent';
+export type ZapierDirectorySort = 'popular' | 'az';
+
+export type ZapierDirectoryState = {
+  query: string;
+  category: ZapierDirectoryCategory;
+  quick: ZapierDirectoryQuick;
+  sort: ZapierDirectorySort;
+  shown: number;
+};
+
+export type ZapierDirectoryFilters = Pick<ZapierDirectoryState, 'query' | 'category' | 'quick'>;
+
+export type ZapierDirectoryCounts = {
+  all: number;
+  popular: number;
+  recent: number;
+  categories: Record<ZapierAppCategory, number>;
+};
+
+export type ZapierZapStep = TZapierRecipeStep | { app: 'classroomio'; type: 'search'; key: TZapierSearchKey };
+
+export type ZapierAccess = 'read_write' | 'read_only';

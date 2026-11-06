@@ -1,7 +1,9 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { emitOrganizationMemberUpdatedWebhookEvent } from '@cio/core/services/webhook/emit';
+import { refreshOrgHasWebhookEndpoints } from '@cio/core/services/webhook/endpoint-cache';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
+import { revokeUserOAuthGrantsInOrganization } from '@cio/db/queries/auth';
 import {
   countOrganizationAdmins,
   getOrganizationMemberRoleId,
@@ -104,6 +106,14 @@ export async function reconcileAfterTeamRoleChange(
 ) {
   if (applied.roleChanged && applied.profileId) {
     await scheduleCourseRoleReconcile(orgId, applied.profileId);
+  }
+
+  const lostAdminAccess =
+    applied.previousRoleId === ROLE.ADMIN && applied.roleId !== ROLE.ADMIN && Boolean(applied.profileId);
+
+  if (applied.roleChanged && lostAdminAccess && applied.profileId) {
+    await revokeUserOAuthGrantsInOrganization(applied.profileId, orgId);
+    await refreshOrgHasWebhookEndpoints(orgId);
   }
 
   if (applied.roleChanged) {

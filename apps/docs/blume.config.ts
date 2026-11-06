@@ -30,6 +30,10 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
     ]
   },
   {
+    label: 'Automation',
+    tags: [{ tag: 'Connection', flat: true }, { tag: 'Webhook Subscriptions', label: 'Webhook Subscriptions' }]
+  },
+  {
     label: 'Courses',
     tags: [
       { tag: 'Courses', label: 'Overview' },

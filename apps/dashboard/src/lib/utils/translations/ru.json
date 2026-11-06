@@ -13,7 +13,6 @@
     "discard": "Отменить",
     "save_changes": "Сохранить изменения",
     "cancel": "Отмена",
-    "scroll_to_top": "Прокрутить вверх",
     "delete": "Удалить",
     "restricted_page": {
       "title": "Страница ограничена",
@@ -532,6 +531,12 @@
     },
     "oauth": {
       "revoked": "Доступ приложения отозван"
+    },
+    "zapier": {
+      "removed": "Доступ Zapier удален",
+      "remove_failed": "Не удалось отозвать доступ Zapier. Повторите попытку.",
+      "redelivered": "{count} неудачных событий поставлено в очередь для повторной доставки",
+      "redeliver_failed": "Не удалось повторно доставить неудачные события."
     }
   },
   "explore": {
@@ -593,7 +598,8 @@
     "enterprise_required": "Для этой функции требуется план Enterprise.",
     "public_api_required": "Перейдите на Early Adopter или Enterprise, чтобы получить доступ к публичному API.",
     "unlock_field": "Обновите версию, чтобы разблокировать эту настройку.",
-    "webhooks_required": "Перейдите на тариф Early Adopter или Enterprise, чтобы использовать вебхуки."
+    "webhooks_required": "Перейдите на тариф Early Adopter или Enterprise, чтобы использовать вебхуки.",
+    "zapier_required": "Для Zapier требуется план Early Adopter или Enterprise."
   },
   "analytics": {
     "title": "Аналитика",
@@ -5059,7 +5065,879 @@
       "disabled_description": "Только администраторы организации могут создавать, менять или отзывать ключи автоматизации. Учителя могут ознакомиться с инструкциями по настройке здесь."
     },
     "zapier": {
-      "page_subtitle": "Автоматизируйте ClassroomIO с тысячами приложений через Zapier. Скоро."
+      "page_subtitle": "Автоматизируйте ClassroomIO с тысячами приложений через Zapier.",
+      "permissions_description": "Только администраторы организации могут подключать Zapier и управлять его подключениями.",
+      "connect": "Подключить в Zapier",
+      "browse_apps": "Обзор приложений",
+      "create_zap": "Создать Zap",
+      "manage_on_zapier": "Управлять в Zapier",
+      "empty": {
+        "title": "Подключить ClassroomIO к Zapier",
+        "description": "Одобрите доступ один раз и за секунды создавайте в Zapier связки Zap, реагирующие на ваши курсы и студентов."
+      },
+      "upgrade": {
+        "title": "Обновите план, чтобы подключить Zapier",
+        "description": "Для подключения ClassroomIO к Zapier требуется план Early Adopter или Enterprise.",
+        "cta": "Обновить план"
+      },
+      "error": {
+        "title": "Не удалось загрузить подключения Zapier",
+        "description": "Не удалось связаться с сервером. Проверьте подключение и повторите попытку.",
+        "retry": "Повторить попытку"
+      },
+      "unavailable": {
+        "title": "Подключения Zapier пока недоступны",
+        "description": "Обратитесь к контактному лицу ClassroomIO за доступом к интеграции Zapier, затем перезагрузите эту страницу."
+      },
+      "setup": {
+        "title": "Как работает подключение",
+        "step_1": "Откройте Zapier и добавьте ClassroomIO в Zap.",
+        "step_2": "Войдите в ClassroomIO по запросу Zapier.",
+        "step_3": "Выберите эту организацию и разрешите доступ.",
+        "step_4": "Выберите триггер или действие и включите ваш Zap."
+      },
+      "status": {
+        "connected_title": "Подключено к Zapier",
+        "connected_description": "Используется {used} из {max} подписок на триггеры. События поступают в Zapier за секунды."
+      },
+      "paused": {
+        "title": "Zapier приостановлен",
+        "description": "Ваш план больше не включает Zapier. Запуски Zap будут завершаться с ошибкой до обновления плана; ваши подключения сохраняются."
+      },
+      "selfhosted": {
+        "title": "Zapier доступен в ClassroomIO Cloud",
+        "description": "При автономной установке (self-hosted) используйте вебхуки с триггером Webhooks by Zapier и ключи API для действий."
+      },
+      "connections": {
+        "title": "Подключения",
+        "description": "Каждая строка — это администратор, подключивший аккаунт Zapier к этой организации.",
+        "authorized_by": "Подключено",
+        "unknown_admin": "Бывший администратор",
+        "access": "Доступ",
+        "access_read_write": "Чтение и запись",
+        "access_read_only": "Только чтение",
+        "triggers": "Активные триггеры",
+        "last_used": "Последнее использование",
+        "connected": "Подключено",
+        "actions": "Действия с подключением",
+        "view_triggers": "Просмотреть триггеры",
+        "remove": "Удалить доступ"
+      },
+      "remove": {
+        "title": "Удалить доступ к Zapier?",
+        "description": "Связки Zap, использующие это подключение, немедленно остановятся, и {count} подписок на триггеры будут удалены. Чтобы использовать их снова, подключитесь заново в Zapier.",
+        "confirm": "Удалить доступ"
+      },
+      "triggers": {
+        "title": "Активные триггеры",
+        "description": "Связки Zap, которые активны и ожидают событий ClassroomIO.",
+        "empty_title": "Нет активных триггеров",
+        "empty_description": "Триггеры появятся здесь, когда будет включен Zap, начинающийся в ClassroomIO.",
+        "course_filter": "Только для {course}",
+        "last_delivery": "Последнее событие отправлено: {date}",
+        "no_deliveries": "События еще не отправлялись",
+        "health_healthy": "Исправно",
+        "health_degraded": "С ошибками",
+        "health_disabled": "Отключено",
+        "cohort_filter": "Только для {cohort}",
+        "created_at": "Создано {date}",
+        "last_failed": "Последняя доставка не удалась",
+        "redeliver": "Повторная доставка неудачных событий"
+      },
+      "catalog": {
+        "title": "Приложения, работающие с ClassroomIO",
+        "description": "Популярные способы интеграции ClassroomIO командами через Zapier.",
+        "search_placeholder": "Поиск приложений",
+        "no_results": "Нет подходящих приложений. Zapier подключает ClassroomIO к более чем 6 000 приложений; найдите любое из них в Zapier.",
+        "show_all": "Показать все приложения",
+        "end_note": "Это популярные варианты. Zapier подключает ClassroomIO к более чем 6 000 приложений.",
+        "categories": {
+          "all": "Все",
+          "crm": "CRM",
+          "marketing": "Маркетинг",
+          "communication": "Коммуникации",
+          "customer-support": "Поддержка клиентов",
+          "sales": "Продажи",
+          "productivity": "Продуктивность",
+          "forms": "Формы и опросы",
+          "analytics": "Аналитика",
+          "community": "Сообщество"
+        }
+      },
+      "app_sheet": {
+        "title": "ClassroomIO + {app}",
+        "examples": "Популярные автоматизации",
+        "triggers": "Триггеры ClassroomIO",
+        "actions": "Действия ClassroomIO",
+        "create_zap": "Создать Zap для {app}"
+      },
+      "catalog_triggers": {
+        "new_course_enrollment": {
+          "label": "Новая запись на курс",
+          "verb": "Записать студента",
+          "description": "Срабатывает, когда учащийся добавляется в курс, каким бы образом он ни присоединился."
+        },
+        "course_member_removed": {
+          "label": "Студент удален из курса",
+          "verb": "Удаление учащегося",
+          "description": "Срабатывает, когда учащегося удаляют из курса."
+        },
+        "course_completed": {
+          "label": "Курс завершен",
+          "verb": "Закончить курс",
+          "description": "Срабатывает, когда учащийся завершает все необходимые уроки курса."
+        },
+        "new_certificate": {
+          "label": "Новый сертификат",
+          "verb": "Получите сертификат",
+          "description": "Срабатывает, когда студенту выдается сертификат."
+        },
+        "new_submission": {
+          "label": "Новая сдача упражнения",
+          "verb": "Отправить упражнение",
+          "description": "Срабатывает, когда учащийся отправляет упражнение."
+        },
+        "submission_status_changed": {
+          "label": "Статус сдачи изменен",
+          "verb": "Оценка отправки",
+          "description": "Срабатывает, когда работа оценивается или изменяется ее статус."
+        },
+        "lesson_completed": {
+          "label": "Урок завершен",
+          "verb": "Завершить урок",
+          "description": "Срабатывает, когда учащийся завершает урок."
+        },
+        "course_invite_accepted": {
+          "label": "Приглашение на курс принято",
+          "verb": "Принять приглашение",
+          "description": "Срабатывает, когда кто-то принимает приглашение на курс."
+        },
+        "new_payment_request": {
+          "label": "Новый запрос на оплату",
+          "verb": "Запросить платеж",
+          "description": "Срабатывает, когда учащийся отправляет запрос на оплату курса."
+        },
+        "new_organization_member": {
+          "label": "Новый участник организации",
+          "verb": "Присоединяйтесь к организации",
+          "description": "Срабатывает, когда кто-то присоединяется к организации в качестве студента, преподавателя или администратора."
+        },
+        "compliance_status_changed": {
+          "label": "Статус соответствия изменен",
+          "verb": "Изменить статус соответствия",
+          "description": "Срабатывает, когда статус соответствия учащегося изменяется, например, на просроченный или срок действия истек."
+        },
+        "course_published": {
+          "label": "Курс опубликован",
+          "verb": "Опубликовать курс",
+          "description": "Срабатывает при публикации курса."
+        },
+        "live_session_scheduled": {
+          "label": "Живая сессия запланирована",
+          "verb": "Запланируйте живую сессию",
+          "description": "Срабатывает, когда сеанс прямой трансляции запланирован или перенесен."
+        },
+        "new_cohort_member": {
+          "label": "Новый участник когорты",
+          "verb": "Присоединяйтесь к когорте",
+          "description": "Срабатывает, когда учащийся добавляется в группу."
+        }
+      },
+      "catalog_actions": {
+        "enroll_student": {
+          "label": "Записать студента на курс",
+          "description": "Записывает студента на курс по электронной почте, сначала приглашая его, если он новичок.",
+          "fields": "Электронная почта, Полное имя, Курс"
+        },
+        "add_student": {
+          "label": "Добавить студента в организацию",
+          "description": "Приглашает студента в вашу организацию, не записывая его на курс.",
+          "fields": "Электронная почта, Полное имя"
+        },
+        "update_student": {
+          "label": "Обновить студента",
+          "description": "Обновляет имя учащегося или адрес электронной почты приглашения, которое не было принято.",
+          "fields": "Электронная почта, Полное имя, Пользовательский атрибут"
+        },
+        "remove_student": {
+          "label": "Удалить студента из организации",
+          "description": "Удаляет учащегося из вашей организации.",
+          "fields": "Электронная почта"
+        },
+        "remove_course_member": {
+          "label": "Удалить студента из курса",
+          "description": "Удаляет студента из одного курса и оставляет его в вашей организации.",
+          "fields": "Электронная почта, Курс"
+        },
+        "send_course_invite": {
+          "label": "Отправить приглашение на курс",
+          "description": "Отправляет по электронной почте приглашение присоединиться к курсу.",
+          "fields": "Электронная почта, Курс"
+        },
+        "revoke_course_invite": {
+          "label": "Отозвать приглашение на курс",
+          "description": "Отменяет ожидающее приглашение на курс, поэтому его ссылка перестает работать.",
+          "fields": "Электронная почта, Курс"
+        },
+        "reset_course_progress": {
+          "label": "Сбросить прогресс студента по курсу",
+          "description": "Удаляет прогресс учащегося на курсе и сохраняет его зачисленным.",
+          "fields": "Электронная почта, Курс"
+        },
+        "mark_lesson_complete": {
+          "label": "Отметить урок как завершенный",
+          "description": "Отмечает для учащегося урок как завершенный.",
+          "fields": "Электронная почта, Курс, Урок"
+        },
+        "add_cohort_member": {
+          "label": "Добавить студента в когорту",
+          "description": "Добавляет студента в группу.",
+          "fields": "Электронная почта, когорта"
+        },
+        "post_cohort_announcement": {
+          "label": "Опубликовать в ленте когорты",
+          "description": "Публикует объявление в ленте когорты.",
+          "fields": "Группа, Сообщение"
+        }
+      },
+      "apps": {
+        "hubspot": {
+          "description": "CRM и клиентская платформа",
+          "trigger_example": "Когда клиент завершает адаптацию, обновите его контакт в HubSpot.",
+          "action_example": "Когда сделка в HubSpot закрыта, запишите покупателя на ваш вводный курс."
+        },
+        "salesforce": {
+          "description": "CRM для отделов продаж и сервиса",
+          "trigger_example": "При выдаче сертификата сохраните запись в контакте Salesforce.",
+          "action_example": "При успешной сделке запишите пользователей аккаунта на обучение по продукту."
+        },
+        "mailchimp": {
+          "description": "Email-маркетинг и аудитории",
+          "trigger_example": "Когда студент записывается, добавьте его в аудиторию Mailchimp.",
+          "action_example": "Когда кто-то вступает в список Mailchimp, пригласите его в свою академию."
+        },
+        "customerio": {
+          "description": "Кампании сообщений и жизненного цикла",
+          "trigger_example": "Когда студент заканчивает урок, отправьте событие Customer.io, чтобы стимулировать следующий.",
+          "action_example": "При изменении сегмента Customer.io запишите входящих в него людей на курс."
+        },
+        "slack": {
+          "description": "Командное общение и совместная работа",
+          "trigger_example": "Когда упражнение отправлено, отправьте сообщение преподавателю в Slack.",
+          "action_example": "Когда сообщение публикуется в канале Slack, поделитесь им в ленте когорты."
+        },
+        "teams": {
+          "description": "Чат и каналы для вашей организации",
+          "trigger_example": "Когда кто-то завершает курс, поздравьте его в канале Teams.",
+          "action_example": "Когда сообщение в Teams отмечено, опубликуйте его в ленте когорты."
+        },
+        "google_meet": {
+          "description": "Видеовстречи в Google Workspace",
+          "trigger_example": "При планировании живой сессии создайте ссылку на Google Meet и приглашение в календарь.",
+          "action_example": "Когда встреча Meet завершается, отметьте урок как пройденный для участников."
+        },
+        "zoom": {
+          "description": "Видеоконференции и вебинары",
+          "trigger_example": "Когда студент записывается, зарегистрируйте его на вебинар в Zoom.",
+          "action_example": "Когда кто-то посещает вебинар в Zoom, отметьте урок как пройденный."
+        },
+        "zendesk": {
+          "description": "Поддержка клиентов и тикеты",
+          "trigger_example": "Когда запись о соответствии становится просроченной, откройте тикет в Zendesk.",
+          "action_example": "Когда тикет помечен тегом 'обучение', запишите заявителя на справочный курс."
+        },
+        "intercom": {
+          "description": "Платформа обмена сообщениями с клиентами",
+          "trigger_example": "Когда клиент заканчивает курс, добавьте ему тег в Intercom.",
+          "action_example": "Когда пользователь регистрируется в Intercom, запишите его на вводное обучение."
+        },
+        "calendly": {
+          "description": "Ссылки для планирования и бронирования",
+          "trigger_example": "Когда студент завершает курс, отправьте ссылку Calendly для записи на консультацию.",
+          "action_example": "При бронировании встречи в Calendly запишите приглашенного на подготовительный курс."
+        },
+        "calcom": {
+          "description": "Open-source ссылки для планирования и встреч",
+          "trigger_example": "Когда студент завершает курс, предложите встречу в Cal.com для подведения итогов.",
+          "action_example": "При создании бронирования в Cal.com запишите участника на подготовительный курс."
+        },
+        "sheets": {
+          "description": "Таблицы и управление данными",
+          "trigger_example": "При выдаче сертификата добавьте строку в журнал обучения в Google Таблицах.",
+          "action_example": "При добавлении строки в таблицу пригласите этого человека в свою академию."
+        },
+        "notion": {
+          "description": "Документы, вики и заметки проекта",
+          "trigger_example": "Когда курс опубликован, добавьте его в каталог обучения в Notion.",
+          "action_example": "При добавлении элемента в базу данных Notion отправьте приглашение на курс."
+        },
+        "confluence": {
+          "description": "Документы и вики для технических команд",
+          "trigger_example": "Когда курс опубликован, создайте страницу в Confluence со ссылкой на него.",
+          "action_example": "При создании страницы в Confluence пригласите ее читателей на связанный курс."
+        },
+        "typeform": {
+          "description": "Формы и опросы",
+          "trigger_example": "Когда студент завершает курс, отправьте ему опрос Typeform.",
+          "action_example": "Когда форма Typeform заполнена, запишите респондента на курс."
+        },
+        "jotform": {
+          "description": "Формы и опросы",
+          "trigger_example": "Когда студент завершает курс, отправьте ему форму отзыва Jotform.",
+          "action_example": "Когда форма Jotform заполнена, запишите респондента на курс."
+        },
+        "pendo": {
+          "description": "Цифровое внедрение и использование продукта",
+          "trigger_example": "Когда клиент проходит обучение, зафиксируйте это в Pendo.",
+          "action_example": "Когда Pendo фиксирует слабое использование функции, запишите пользователя на курс."
+        },
+        "mixpanel": {
+          "description": "Продуктовая аналитика и воронки",
+          "trigger_example": "Когда студент заканчивает урок, отправьте событие в Mixpanel.",
+          "action_example": "При изменении когорты в Mixpanel запишите ее пользователей на курс."
+        },
+        "circle": {
+          "description": "Пространства сообщества и обсуждения",
+          "trigger_example": "Когда студент записывается, добавьте его в ваше сообщество Circle.",
+          "action_example": "Когда кто-то вступает в пространство Circle, добавьте его в когорту."
+        }
+      },
+      "app_page": {
+        "back": "Вернуться в каталог приложений",
+        "breadcrumb_apps": "Приложения",
+        "eyebrow": "ClassroomIO + {app}",
+        "official": "Официальная интеграция",
+        "lead_out": "Никакого экспорта или электронных таблиц. Zapier собирает новые события в ClassroomIO и запускает для вас действие «{action}» в {app}.",
+        "lead_in": "Zapier наблюдает за {app} и записывает каждого нового человека на выбранный вами курс ClassroomIO.",
+        "connect_cta": "Подключите {app} в Zapier",
+        "stats": "Рецепты {recipes} · {mode}",
+        "cta_note": "Занимает около 2 минут. Ничего не работает, пока вы не включите Zap.",
+        "preview_aria": "Пример запуска Zap",
+        "preview_example": "Пример",
+        "preview_source": "КлассIO · {screen}",
+        "preview_destination": "{app} · {action}",
+        "preview_new": "НОВЫЙ",
+        "preview_state_idle": "Ожидание события",
+        "preview_state_new": "Новое событие",
+        "preview_state_running": "Бегущий Зап",
+        "preview_state_ran": "Зап побежал",
+        "connected_title": "{org} подключен к Zapier.",
+        "connected_read_write": "Доступ для чтения и записи.",
+        "connected_read_only": "Доступ только для чтения.",
+        "connected_view": "Посмотреть соединение в ClassroomIO",
+        "connected_zapier": "Посмотреть на Zapier",
+        "trust_scope_read_write": "Доступ только для чтения и записи",
+        "trust_scope_read_only": "Доступ только для чтения",
+        "trust_scope_note": "Ограничено до {org}, больше ничего",
+        "trust_revoke_title": "Отозвать в любое время",
+        "trust_revoke_note": "Из автоматизации › Zapier в ClassroomIO",
+        "trust_zapier_title": "Ваши Zaps живут в Zapier",
+        "trust_zapier_note": "Zapier собирает, тестирует и запускает их.",
+        "similar_title": "Похожие приложения",
+        "similar_see_all": "Просмотреть все приложения ({count})",
+        "headline_out_before": "{trigger} в ClassroomIO.",
+        "headline_out_after": "Посмотрите это в {app}.",
+        "headline_in_before": "{trigger} в {app}.",
+        "headline_in_after": "Зарегистрируйте их в ClassroomIO.",
+        "preview_live": "Предварительный просмотр в реальном времени",
+        "preview_col_person": "Студент",
+        "preview_col_course": "Курс",
+        "preview_col_email": "Электронная почта",
+        "preview_col_when": "Когда"
+      },
+      "directory": {
+        "title": "Каталог приложений",
+        "subtitle": "Просмотрите приложения, которые можно подключить к ClassroomIO через Zapier.",
+        "create_zap": "Создать Zap в Zapier",
+        "back": "Вернуться к Запс",
+        "search_placeholder": "Поиск приложений…",
+        "filters_title": "Фильтры",
+        "discover": "Обнаружить",
+        "categories": "Категории",
+        "all_apps": "Все приложения",
+        "popular": "Популярный",
+        "recent": "Недавно добавлено",
+        "sort_label": "Сортировать приложения",
+        "sort_popular": "Популярный",
+        "sort_az": "А – Я",
+        "view_more": "Посмотреть больше приложений",
+        "count": {
+          "all": "{count} приложений",
+          "one": "1 приложение",
+          "showing": "Показаны приложения {shown} из {total}",
+          "all_matching": "{count} приложений, соответствующих запросу «{query}»",
+          "one_matching": "1 приложение, соответствующее запросу «{query}»",
+          "showing_matching": "Показаны {shown} из {total} приложений, соответствующих запросу «{query}»"
+        },
+        "empty": {
+          "title": "Нет приложений, соответствующих вашему запросу",
+          "description": "Попробуйте другое имя или просмотрите все приложения, к которым Zapier подключает ClassroomIO.",
+          "search_zapier": "Искать в Zapier"
+        },
+        "end": {
+          "title": "Это все приложения, которые мы выбрали",
+          "description": "Zapier соединяет ClassroomIO с тысячами других пользователей.",
+          "cta": "Продолжить в Zapier"
+        }
+      },
+      "page_title": "Запс",
+      "create_more_zaps": "Создайте больше Запов",
+      "zaps_empty": {
+        "title": "Запсов пока нет",
+        "description": "Подключите ClassroomIO к приложению, которое уже использует ваша команда, или сразу переходите к Zapier, если вы уже знаете, что хотите автоматизировать.",
+        "connect_apps": "Подключите приложения"
+      },
+      "connected_apps": {
+        "title": "Подключенные приложения",
+        "coming_soon_title": "Посмотрите, какие приложения используют ваши Zaps, здесь",
+        "coming_soon_description": "Свяжите свою учетную запись Zapier, чтобы увидеть приложения, которые ваши Zapier подключают к ClassroomIO."
+      },
+      "active_triggers": {
+        "title": "Активные триггеры ClassroomIO"
+      },
+      "access_section": {
+        "title": "Доступ Zapier к ClassroomIO"
+      },
+      "capabilities": {
+        "title": "Больше возможностей с помощью ClassroomIO и {app}",
+        "subtitle": "Узнайте о других триггерах и действиях, которые можно использовать с ClassroomIO и {app}.",
+        "tab_triggers": "Триггеры",
+        "tab_actions": "Действия",
+        "tab_both": "Триггеры и действия",
+        "kind_trigger": "Курок",
+        "kind_action": "Действие",
+        "kind_search": "Поиск",
+        "mode_instant": "Мгновенный",
+        "mode_write": "Писать",
+        "mode_lookup": "Искать",
+        "try_it": "Попробуйте это",
+        "load_more": "Загрузить больше",
+        "showing": "Показаны {shown} из {total}",
+        "sample_title": "Пример данных, которые отправляет этот триггер",
+        "fields_title": "Поля, которые вы картируете в Zapier",
+        "partner_trigger_description": "Запускает Zap в {app}.",
+        "partner_action_description": "Запускается в {app} при срабатывании триггера ClassroomIO.",
+        "eyebrow": "Триггеры и действия",
+        "partner_example_title": "Пример автоматизации"
+      },
+      "catalog_searches": {
+        "find_student": {
+          "label": "Найти студента",
+          "description": "Находит учащегося в вашей организации по электронной почте."
+        },
+        "find_course": {
+          "label": "Найти курс",
+          "description": "Находит курс по его ярлыку или точному названию."
+        }
+      },
+      "invite": {
+        "title": "Подключите ClassroomIO к Zapier",
+        "description": "Zapier требует, чтобы вы один раз приняли приглашение ClassroomIO, прежде чем вы сможете создавать Zaps.",
+        "step_1_title": "Примите приглашение ClassroomIO в Zapier",
+        "step_1_description": "Zapier попросит вас принять один раз. После этого ClassroomIO появится в вашей учетной записи Zapier.",
+        "step_1_button": "Откройте приглашение в Zapier",
+        "step_2_title": "Продолжайте свой Zap",
+        "step_2_description": "Ваш Zap откроется в новой вкладке. Ничего не работает, пока не включишь.",
+        "step_2_button": "Продолжить путь в Запир",
+        "already_accepted": "я уже принял",
+        "missing_invite": "Для этой рабочей области еще не настроена ссылка для приглашения."
+      },
+      "recipes": {
+        "section_title": "Способы использования ClassroomIO с {app}",
+        "section_subtitle": "Полные Zaps, созданные для этого соединения. Выберите один, подключите свои учетные записи и включите его.",
+        "tabs_out": "Из КлассаIO",
+        "tabs_in": "В классIO",
+        "use_this_zap": "Используйте этот Zap",
+        "mode_instant": "Мгновенный",
+        "mode_polling": "Проверяет каждые несколько минут",
+        "sentence_out": "Когда {trigger} в ClassroomIO, {action} в {app}.",
+        "sentence_in": "Когда {trigger} в {app}, {action} в ClassroomIO.",
+        "featured_title": "Начнём с популярного рецепта.",
+        "ways_to_use": "{count} способов использования",
+        "choose_in_zapier": "Выбирайте в Zapier",
+        "open_in_zapier": "Открыть в Zapier",
+        "builder_title": "Создайте свой собственный",
+        "builder_subtitle": "Выберите любой триггер и действие, а затем завершите настройку в Zapier.",
+        "builder_trigger_label": "Когда это произойдет",
+        "builder_action_label": "сделай это",
+        "builder_in_classroomio": "В классеIO",
+        "builder_in_app": "В {app}",
+        "builder_no_app_triggers": "Триггеров {app} пока нет",
+        "prefill_title": "Выберите курс для этого Zap",
+        "prefill_title_cohort": "Выберите когорту для этого Zap",
+        "prefill_note": "Вы также можете выбрать его в Zapier.",
+        "reference_title": "Все, что ClassroomIO может делать в Zapier",
+        "reference_subtitle": "Полный список триггеров, действий и поисков этих рецептов.",
+        "reference_triggers": "Триггеры ({count})",
+        "reference_actions": "Действия ({count})",
+        "reference_searches": "Поисковые запросы ({count})",
+        "hubspot_deal_stage_enroll": {
+          "title": "Привлекайте новых клиентов к участию в программе, когда сделка достигает стадии"
+        },
+        "hubspot_list_enroll": {
+          "title": "Зарегистрируйте контакты, когда они присоединяются к списку HubSpot."
+        },
+        "hubspot_form_invite": {
+          "title": "Форма приглашения на курс"
+        },
+        "hubspot_completed_contact": {
+          "title": "Обновите контакт после завершения курса"
+        },
+        "hubspot_certificate_list": {
+          "title": "Добавьте сертифицированных учащихся в список HubSpot"
+        },
+        "hubspot_compliance_task": {
+          "title": "Создайте дополнительную задачу, когда обучение станет просроченным."
+        },
+        "salesforce_certificate_record": {
+          "title": "Запишите каждый сертификат в Salesforce."
+        },
+        "salesforce_completed_contact": {
+          "title": "Обновите контакт после завершения курса"
+        },
+        "salesforce_payment_lead": {
+          "title": "Создавайте лид для каждого запроса платежа"
+        },
+        "salesforce_contact_enroll": {
+          "title": "Зарегистрируйте новые контакты в онбординге"
+        },
+        "salesforce_opportunity_enroll": {
+          "title": "Зарегистрируйте клиентов, когда возможность закрывается"
+        },
+        "mailchimp_enrollment_subscriber": {
+          "title": "Добавление новых участников в аудиторию"
+        },
+        "mailchimp_completed_tag": {
+          "title": "Отмечайте подписчиков, прошедших курс"
+        },
+        "mailchimp_removed_untag": {
+          "title": "Удалить тег курса, когда студент уходит"
+        },
+        "mailchimp_subscriber_student": {
+          "title": "Добавляйте новых подписчиков в качестве студентов"
+        },
+        "mailchimp_tag_enroll": {
+          "title": "Зарегистрируйте подписчиков, когда они получат метку"
+        },
+        "customerio_completed_event": {
+          "title": "Отправлять завершение курса как событие"
+        },
+        "customerio_enrollment_person": {
+          "title": "Создайте или обновите человека при его регистрации"
+        },
+        "customerio_certificate_event": {
+          "title": "Отправлять сертификаты как события"
+        },
+        "customerio_compliance_event": {
+          "title": "Запускайте кампании с напоминаниями, когда обучение просрочено"
+        },
+        "customerio_lesson_event": {
+          "title": "Отправлять ход урока в виде событий"
+        },
+        "slack_completed_channel": {
+          "title": "Публикуйте на канале после завершения курса"
+        },
+        "slack_submission_dm": {
+          "title": "Сообщить преподавателю, когда ученик отправит упражнение"
+        },
+        "slack_payment_channel": {
+          "title": "Оповещение команды о запросах на оплату"
+        },
+        "slack_compliance_channel": {
+          "title": "Пометить просроченное обучение в канале"
+        },
+        "slack_certificate_channel": {
+          "title": "Отмечайте новые сертификаты"
+        },
+        "slack_member_enroll": {
+          "title": "Зарегистрируйте новых участников рабочей области для регистрации"
+        },
+        "teams_completed_channel": {
+          "title": "Публикуйте на канале после завершения курса"
+        },
+        "teams_submission_chat": {
+          "title": "Сообщить преподавателю, когда ученик отправит упражнение"
+        },
+        "teams_compliance_channel": {
+          "title": "Пометить просроченное обучение в канале"
+        },
+        "teams_session_channel": {
+          "title": "Анонсируйте прямые трансляции на канале"
+        },
+        "teams_member_enroll": {
+          "title": "Зарегистрируйте новых членов команды в онбординге"
+        },
+        "meet_session_meeting": {
+          "title": "Создавайте Meet для каждого сеанса прямой трансляции"
+        },
+        "meet_completed_meeting": {
+          "title": "Закажите обзорный звонок после завершения курса"
+        },
+        "zoom_enrollment_registrant": {
+          "title": "Зарегистрируйте новых студентов на вебинар"
+        },
+        "zoom_cohort_registrant": {
+          "title": "Зарегистрируйте членов когорты для стартового собрания"
+        },
+        "zoom_session_meeting": {
+          "title": "Создавайте собрания Zoom для каждого живого сеанса."
+        },
+        "zoom_registrant_enroll": {
+          "title": "Зарегистрируйте зарегистрировавшихся на вебинар в подготовительных материалах"
+        },
+        "zoom_joiner_lesson": {
+          "title": "Отмечайте живой урок как завершенный, когда к нему присоединяется учащийся."
+        },
+        "zendesk_tag_enroll": {
+          "title": "Зарегистрируйте клиента, когда агент помечает его билет"
+        },
+        "zendesk_compliance_ticket": {
+          "title": "Откройте заявку, когда обучение становится просроченным"
+        },
+        "zendesk_payment_ticket": {
+          "title": "Открытие заявки на каждый платежный запрос"
+        },
+        "zendesk_completed_user": {
+          "title": "Запись пройденного обучения пользователя Zendesk"
+        },
+        "zendesk_user_enroll": {
+          "title": "Запишите новых пользователей Zendesk на начальный курс"
+        },
+        "intercom_completed_message": {
+          "title": "Отправляйте пользователям сообщения после завершения курса"
+        },
+        "intercom_completed_tag": {
+          "title": "Отмечайте пользователей, которые завершили регистрацию"
+        },
+        "intercom_lesson_event": {
+          "title": "Отправлять ход урока в виде событий"
+        },
+        "intercom_user_enroll": {
+          "title": "Зарегистрируйте новых пользователей в онбординге"
+        },
+        "intercom_tag_enroll": {
+          "title": "Регистрируйте пользователей, когда они отмечены"
+        },
+        "calendly_booking_enroll": {
+          "title": "Зарегистрируйте приглашенных в подготовительных материалах при бронировании"
+        },
+        "calendly_noshow_invite": {
+          "title": "Отправьте курс для самостоятельного обучения тем, кто не явился"
+        },
+        "calendly_form_student": {
+          "title": "Добавление потенциальных клиентов в форму маршрутизации в качестве учащихся"
+        },
+        "calendly_cancel_remove": {
+          "title": "Удалить подготовительный курс при отмене бронирования"
+        },
+        "calcom_booking_enroll": {
+          "title": "Зарегистрируйте участников в подготовительных материалах при бронировании"
+        },
+        "calcom_cancel_remove": {
+          "title": "Удалить подготовительный курс при отмене бронирования"
+        },
+        "calcom_meeting_invite": {
+          "title": "Отправьте дополнительный курс после звонка"
+        },
+        "sheets_completed_row": {
+          "title": "Записывать выполненные работы в таблицу"
+        },
+        "sheets_certificate_row": {
+          "title": "Ведите реестр сертификатов"
+        },
+        "sheets_compliance_row": {
+          "title": "Записывать изменения в соответствии с требованиями"
+        },
+        "sheets_payment_row": {
+          "title": "Отслеживание запросов на оплату"
+        },
+        "sheets_row_enroll": {
+          "title": "Зарегистрировать всех, кто добавлен в таблицу"
+        },
+        "sheets_row_cohort": {
+          "title": "Добавить всех в таблице в группу"
+        },
+        "notion_completed_item": {
+          "title": "Отслеживание завершений в базе данных"
+        },
+        "notion_submission_item": {
+          "title": "Поставить заявки на рассмотрение"
+        },
+        "notion_course_page": {
+          "title": "Добавляйте страницу для каждого нового курса"
+        },
+        "notion_item_enroll": {
+          "title": "Регистрация людей, добавленных в базу данных"
+        },
+        "confluence_course_page": {
+          "title": "Создать страницу при публикации курса"
+        },
+        "confluence_session_page": {
+          "title": "Создайте страницу повестки дня для каждого сеанса в реальном времени."
+        },
+        "confluence_page_announce": {
+          "title": "Анонсируйте новые документы группе"
+        },
+        "typeform_entry_enroll": {
+          "title": "Запишите респондентов на курс"
+        },
+        "typeform_entry_cohort": {
+          "title": "Добавьте кандидатов в когорту"
+        },
+        "typeform_entry_student": {
+          "title": "Добавить респондентов в качестве студентов"
+        },
+        "jotform_submission_enroll": {
+          "title": "Зарегистрируйте людей, отправивших форму"
+        },
+        "jotform_completed_form": {
+          "title": "Отправьте форму обратной связи после завершения курса"
+        },
+        "jotform_submission_student": {
+          "title": "Добавление людей, отправляющих форму в качестве студентов"
+        },
+        "pendo_status_enroll": {
+          "title": "Зарегистрируйте запрашивающих на курс, когда их запрос будет отправлен."
+        },
+        "pendo_status_announce": {
+          "title": "Объявить об отправленных запросах группе"
+        },
+        "mixpanel_completed_event": {
+          "title": "Отслеживайте завершение курса"
+        },
+        "mixpanel_enrollment_event": {
+          "title": "Отслеживать зачисления"
+        },
+        "mixpanel_lesson_event": {
+          "title": "Отслеживайте прогресс урока"
+        },
+        "mixpanel_certificate_profile": {
+          "title": "Отмечайте сертифицированных пользователей в их профилях"
+        },
+        "circle_member_enroll": {
+          "title": "Зарегистрируйте новых членов сообщества на приветственный курс"
+        },
+        "circle_certificate_space": {
+          "title": "Разблокируйте место, когда учащийся получит сертификат"
+        },
+        "circle_completed_tag": {
+          "title": "Отмечайте участников, прошедших курс"
+        },
+        "circle_cohort_group": {
+          "title": "Предоставьте членам когорты доступ к пространственной группе"
+        },
+        "circle_removed_student": {
+          "title": "Удалить студентов, которые покидают сообщество"
+        },
+        "sentence_out_open": "Когда {trigger} в ClassroomIO, выберите действие в {app}.",
+        "sentence_in_open": "Когда {trigger} в {app}, выберите действие в ClassroomIO."
+      },
+      "partner_steps": {
+        "hubspot": {
+          "add_to_list_v3": "Добавить контакт в список",
+          "create_engagement": "Создать взаимодействие",
+          "form_submission_resthook_v3": "Отправка новой формы",
+          "new_contact_in_list_resthook_v3": "Новый контакт в списке",
+          "updated_deal_stage": "Обновленный этап сделки",
+          "upsert_contact": "Создать или обновить контакт"
+        },
+        "salesforce": {
+          "create_lead": "Создать интерес",
+          "create_record": "Создать запись",
+          "new_contact": "Новый контакт",
+          "update_contact": "Обновить контакт",
+          "updated_field_on_record": "Обновленное поле в записи"
+        },
+        "mailchimp": {
+          "memberCreate": "Добавить/обновить подписчика",
+          "new_member": "Новый подписчик",
+          "remove_tag": "Удалить подписчика из тега",
+          "subscriber_segment": "Добавить подписчика в тег",
+          "subscriber_tag": "Новый подписчик в сегменте или теге"
+        },
+        "customerio": {
+          "create_customer": "Создать или обновить человека",
+          "track_event": "Создать событие"
+        },
+        "slack": {
+          "channel_message": "Отправить сообщение канала",
+          "direct_message": "Отправить прямое сообщение",
+          "team_join": "Новый пользователь"
+        },
+        "teams": {
+          "member": "Новый член команды",
+          "send_channel_message_from_user": "Отправить сообщение канала",
+          "send_chat_message": "Отправить сообщение в чат"
+        },
+        "google_meet": {
+          "schedule_meeting": "Запланировать встречу"
+        },
+        "zoom": {
+          "create_meeting": "Создать встречу",
+          "create_meeting_registrant": "Создать регистратора собрания",
+          "create_registrant": "Создать регистратора вебинара",
+          "new_joiner": "Новый участник присоединился к вебинару или совещанию",
+          "new_registrant": "Новый регистратор вебинара"
+        },
+        "zendesk": {
+          "new_tag_ticket": "В билет добавлен новый тег",
+          "ticket": "Создать билет",
+          "update_user": "Обновить пользователя",
+          "user_v2": "Новый пользователь"
+        },
+        "intercom": {
+          "add_tag_to_contact": "Добавить тег в контакт",
+          "create_data_event": "Создать событие данных",
+          "new_user_created": "Новый пользователь",
+          "send_message_to_contact": "Отправить сообщение контакту",
+          "user_tag": "Тег добавлен пользователю"
+        },
+        "calendly": {
+          "invitee_canceled": "Приглашенный отменен",
+          "invitee_created": "Приглашенный создан или перенесен",
+          "invitee_no_show_created": "Приглашенный не явился создано",
+          "routing_form_submission": "Отправка новой формы маршрутизации"
+        },
+        "calcom": {
+          "booking_cancelled": "Бронирование отменено",
+          "booking_created": "Бронирование создано",
+          "meeting_ended": "Встреча завершена"
+        },
+        "sheets": {
+          "add_row": "Создать строку таблицы",
+          "new_row_notify_hook": "Новая строка таблицы"
+        },
+        "notion": {
+          "create_database_item": "Создать элемент источника данных",
+          "create_page": "Создать страницу",
+          "new_data_source_item": "Новый элемент источника данных"
+        },
+        "confluence": {
+          "pageCreate": "Создать страницу или сообщение в блоге",
+          "pageList": "Новая страница или сообщение в блоге"
+        },
+        "typeform": {
+          "entries_resthook_v2": "Новая запись"
+        },
+        "jotform": {
+          "assign_prefilled_form": "Назначить предварительно заполненную форму",
+          "new_submission": "Новое представление"
+        },
+        "pendo": {
+          "feature_status_changed": "Статус запроса изменен"
+        },
+        "mixpanel": {
+          "engage": "Создать или обновить профиль",
+          "track": "Отслеживать событие"
+        },
+        "circle": {
+          "add_space_group_member": "Добавить участника в космическую группу",
+          "add_space_member": "Добавить участника в пространство",
+          "community_member_removed": "Участник удален",
+          "new_member": "Добавлен новый участник",
+          "tag_members": "Отметить участника"
+        }
+      }
     },
     "webhooks": {
       "page_subtitle": "Отправляйте события ClassroomIO в реальном времени в Slack, вашу CRM или собственный бэкенд.",
@@ -5632,6 +6510,20 @@
     "delete_modal": {
       "title": "Удалить виджет навсегда",
       "description": "Вы уверены, что хотите навсегда удалить \"{name}\"? Это действие необратимо."
+    },
+    "filters": {
+      "filter": "Фильтр",
+      "popover_title": "Фильтры",
+      "clear_all": "Очистить все",
+      "search_placeholder": "Поиск по имени",
+      "status": "Статус",
+      "layout_type": "Тип макета",
+      "selection_mode": "Режим выбора",
+      "no_results_title": "Нет виджетов, соответствующих вашим фильтрам",
+      "no_results_description": "Попробуйте изменить поисковый запрос или сбросьте фильтры, чтобы увидеть всё снова.",
+      "no_results_page_title": "На этой странице ничего нет",
+      "no_results_page_description": "Этим фильтрам соответствует меньше виджетов, чем отображается с этой страницы.",
+      "back_to_first_page": "Вернуться на первую страницу"
     }
   },
   "side_panel": {
@@ -6441,13 +7333,21 @@
       "deny": "Отклонить",
       "unknown_client": "Это приложение",
       "error_title": "Этот запрос на подключение недействителен",
-      "error_description": "Вернитесь в приложение, которое вы подключали, и начните заново."
+      "error_description": "Вернитесь в приложение, которое вы подключали, и начните заново.",
+      "verified": "Проверено",
+      "allow_changes": {
+        "label": "Разрешить пользователю {client} вносить изменения",
+        "description": "Отключите это для доступа только для чтения. {client} по-прежнему может читать данные и запускать триггеры, но не может ничего добавлять, изменять или удалять."
+      }
     },
     "select_organization": {
       "title": "Выберите рабочее пространство",
       "subtitle": "Выберите рабочее пространство, к которому {client} получит доступ.",
       "empty_title": "Нет доступных рабочих пространств",
-      "empty_description": "Приложения могут подключать только администраторы рабочего пространства. Обратитесь к администратору или войдите в учётную запись администратора."
+      "empty_description": "Приложения могут подключать только администраторы рабочего пространства. Обратитесь к администратору или войдите в учётную запись администратора.",
+      "plan_required": "Перейдите на план Early Adopter для подключения этого приложения",
+      "no_eligible_title": "Нет подходящего рабочего пространства",
+      "no_eligible_description": "Ни один из ваших рабочих пространств не использует тариф с этим приложением. Обновите тариф до Early Adopter или Enterprise и повторите попытку."
     },
     "error": {
       "generic": "Что-то пошло не так. Попробуйте ещё раз."
@@ -6496,6 +7396,10 @@
       "media": {
         "read": "Загружать медиафайлы",
         "write": "Загружать медиафайлы"
+      },
+      "webhooks": {
+        "read": "Просмотр недавних событий в вашем рабочем пространстве",
+        "write": "Получение событий в реальном времени в вашем рабочем пространстве"
       }
     },
     "connect": {

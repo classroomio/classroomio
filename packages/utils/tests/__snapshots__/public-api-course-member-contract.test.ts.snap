@@ -89,6 +89,12 @@ exports[`public API course member request contract > ZPublicApiCourseMembersQuer
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
+    "email": {
+      "description": "Exact email, case-insensitive",
+      "format": "email",
+      "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+      "type": "string",
+    },
     "limit": {
       "default": 20,
       "description": "Items per page, 1-100. Default: 20.",

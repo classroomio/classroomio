@@ -34,7 +34,7 @@ import { getEventSource } from '@api/utils/event-source';
 import { captureCoursePublished } from '@cio/core/services/course/course';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { ANY_KEY_RULE, ORG_TEAM_RULE, cloneForbiddenResponse } from './docs';
+import { ANY_KEY_RULE, COURSE_TEAM_RULE, ORG_TEAM_RULE, cloneForbiddenResponse } from './docs';
 
 const CoursesListEnvelope = z.object({ query: ZPublicApiCoursesQuery });
 
@@ -45,7 +45,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the organization's courses; ${ANY_KEY_RULE}.`,
+      description: `List the organization's courses; ${ORG_TEAM_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
@@ -60,8 +60,9 @@ export const v1CourseRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const query = c.req.valid('query');
-        const courses = await listCoursesService(orgId, query);
+        const courses = await listCoursesService(orgId, actorId, query);
 
         return c.json(
           {
@@ -290,7 +291,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId',
     describeRoute({
-      description: `Get a course; ${ANY_KEY_RULE}.`,
+      description: `Get a course; ${COURSE_TEAM_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse('Course returned successfully', itemResponse(ZPublicApiCourseDetailResponse)),
@@ -303,8 +304,9 @@ export const v1CourseRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const course = await getCourseService(orgId, params);
+        const course = await getCourseService(orgId, actorId, params);
 
         return c.json(
           {

@@ -15,13 +15,27 @@ vi.mock('@cio/db/queries/organization', () => ({
   updateOrganizationMemberRole: vi.fn()
 }));
 
+vi.mock('@cio/db/queries/auth', () => ({
+  revokeUserOAuthGrantsInOrganization: vi.fn()
+}));
+
+vi.mock('@cio/core/services/webhook/endpoint-cache', () => ({
+  readCachedCourseOrganizationId: vi.fn().mockResolvedValue(null),
+  readOrgHasWebhookEndpoints: vi.fn().mockResolvedValue(false),
+  refreshOrgHasWebhookEndpoints: vi.fn(),
+  writeCachedCourseOrganizationId: vi.fn(),
+  writeOrgHasWebhookEndpoints: vi.fn()
+}));
+
 vi.mock('@cio/core/services/organization/course-roles', () => ({
   scheduleCourseRoleReconcile: vi.fn()
 }));
 
 import { updateTeamMemberRole } from './team-role';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
+import { refreshOrgHasWebhookEndpoints } from '@cio/core/services/webhook/endpoint-cache';
 import { db } from '@cio/db/drizzle';
+import { revokeUserOAuthGrantsInOrganization } from '@cio/db/queries/auth';
 import {
   countOrganizationAdmins,
   getOrganizationMemberRoleId,
@@ -62,6 +76,8 @@ describe('updateTeamMemberRole', () => {
     vi.mocked(countOrganizationAdmins).mockResolvedValue(1);
     vi.mocked(updateActiveOrganizationInviteRoleByEmail).mockResolvedValue(undefined);
     vi.mocked(scheduleCourseRoleReconcile).mockResolvedValue(undefined);
+    vi.mocked(revokeUserOAuthGrantsInOrganization).mockResolvedValue(undefined);
+    vi.mocked(refreshOrgHasWebhookEndpoints).mockResolvedValue(undefined);
   });
 
   it('rejects a role outside admin and tutor before opening a transaction', async () => {
@@ -146,5 +162,21 @@ describe('updateTeamMemberRole', () => {
     });
 
     expect(scheduleCourseRoleReconcile).not.toHaveBeenCalled();
+  });
+
+  it('revokes the demoted admin’s OAuth grants and refreshes the webhook cache', async () => {
+    vi.mocked(getOrganizationTeamMemberById).mockResolvedValue(teamMember({ roleId: ROLE.ADMIN }));
+
+    await updateTeamMemberRole(ORG_ID, MEMBER_ID, ROLE.TUTOR, ACTOR_ID);
+
+    expect(revokeUserOAuthGrantsInOrganization).toHaveBeenCalledWith('profile-2', ORG_ID);
+    expect(refreshOrgHasWebhookEndpoints).toHaveBeenCalledWith(ORG_ID);
+  });
+
+  it('keeps OAuth grants when a tutor is promoted', async () => {
+    await updateTeamMemberRole(ORG_ID, MEMBER_ID, ROLE.ADMIN, ACTOR_ID);
+
+    expect(revokeUserOAuthGrantsInOrganization).not.toHaveBeenCalled();
+    expect(refreshOrgHasWebhookEndpoints).not.toHaveBeenCalled();
   });
 });

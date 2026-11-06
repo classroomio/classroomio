@@ -2,8 +2,10 @@ import { randomUUID } from 'node:crypto';
 
 import {
   claimNextDueWebhookDelivery,
+  deleteManagedWebhookSubscriptionById,
   getEarliestPendingWebhookAttemptAt,
   getWebhookEndpointById,
+  isManagedWebhookSubscriptionGrantActive,
   recordWebhookAttempt,
   type TWebhookAttemptResult
 } from '@cio/db/queries/webhook';
@@ -22,6 +24,7 @@ import {
 } from '@cio/utils/constants/webhook';
 
 import { getWebhookUrlPolicy } from './policy';
+import { refreshOrgHasWebhookEndpoints } from './endpoint-cache';
 import { hasWebhookEntitlement } from './entitlement';
 import { notifyWebhookHealthChange } from './health';
 import { redactSensitiveText, truncateText } from './redact';
@@ -29,6 +32,12 @@ import { decryptWebhookSecret } from './secret';
 import { sendWebhookRequest } from './send';
 import { signStandardWebhookPayload, signWebhookPayload } from './signature';
 import { assertWebhookUrlShape, WebhookUrlError } from './url-guard';
+
+const HTTP_GONE = 410;
+
+function isUnsubscribedByReceiver(endpoint: TWebhookEndpoint, result: TWebhookAttemptResult): boolean {
+  return endpoint.oauthConsentId !== null && result.responseStatus === HTTP_GONE;
+}
 
 const LOCK_BUSY_RETRY_MS = 5_000;
 const MAX_DELIVERIES_PER_RUN = 25;
@@ -139,6 +148,17 @@ async function drainWebhookEndpoint(webhookId: string): Promise<{ count: number;
 
     if (!endpoint) break;
 
+    const isGrantActive = endpoint.oauthConsentId
+      ? await isManagedWebhookSubscriptionGrantActive(endpoint.oauthConsentId)
+      : true;
+
+    if (!isGrantActive) {
+      await deleteManagedWebhookSubscriptionById(webhookId);
+      await refreshOrgHasWebhookEndpoints(endpoint.organizationId);
+
+      break;
+    }
+
     count += 1;
 
     const isEntitled = endpoint.isActive ? await hasWebhookEntitlement(endpoint.organizationId) : true;
@@ -161,6 +181,14 @@ async function drainWebhookEndpoint(webhookId: string): Promise<{ count: number;
     }
 
     const result = await attemptWebhookDelivery(endpoint, record.delivery, record.event);
+
+    if (isUnsubscribedByReceiver(endpoint, result)) {
+      await deleteManagedWebhookSubscriptionById(webhookId);
+      await refreshOrgHasWebhookEndpoints(endpoint.organizationId);
+
+      break;
+    }
+
     const transition = await recordWebhookAttempt(record.delivery.id, webhookId, !record.delivery.isTest, result);
 
     if (transition) {
