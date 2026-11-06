@@ -717,7 +717,7 @@ class Component extends DCLogic {
       return;
     }
 
-    const placed = this.clamp(this.state.width - this.state.w - 24, this.state.height - this.state.h - 24, this.state.w, this.state.h, this.state.width, this.state.height);
+    const placed = this.clamp(this.state.width - this.state.w - 12, this.state.height - this.state.h - 12, this.state.w, this.state.h, this.state.width, this.state.height);
 
     this.setState({ mode: 'floating', x: placed.x, y: placed.y, moreOpen: false, hasUnread: false, selChip: null });
   }
