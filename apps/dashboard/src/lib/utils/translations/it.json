@@ -1940,20 +1940,6 @@
       "all": "Tutto",
       "unpublished": "Inedito",
       "course_type": "Tipo di corso"
-    },
-    "filters": {
-      "filter": "Filtra",
-      "popover_title": "Filtri",
-      "clear_all": "Cancella tutto",
-      "search_placeholder": "Cerca per nome",
-      "status": "Stato",
-      "layout_type": "Tipo di layout",
-      "selection_mode": "Modalità di selezione",
-      "no_results_title": "Nessun widget corrisponde ai tuoi filtri",
-      "no_results_description": "Prova un termine di ricerca diverso o cancella i filtri per vedere di nuovo tutto.",
-      "no_results_page_title": "Niente in questa pagina",
-      "no_results_page_description": "Questi filtri corrispondono a un numero di widget inferiore a quello a cui inizia questa pagina.",
-      "back_to_first_page": "Torna alla prima pagina"
     }
   },
   "setup": {
@@ -3288,7 +3274,8 @@
                 "passed": "Superato",
                 "not_passed": "Non superato",
                 "no_submission_title": "Questo utente non ha invii per questo esercizio",
-                "no_submission_description": "I contributi verranno visualizzati qui una volta che lo studente avrà completato l'esercizio."
+                "no_submission_description": "I contributi verranno visualizzati qui una volta che lo studente avrà completato l'esercizio.",
+                "optional": "Facoltativo"
               },
               "submissions": "Presentazioni",
               "loading_submissions": "Caricamento invii...",

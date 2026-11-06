@@ -83,7 +83,7 @@ function mapCourseContentItems(rows: CourseContentItemRow[]): CourseContentItem[
     sectionId: row.sectionId ?? null,
     isUnlocked: row.isUnlocked ?? null,
     isComplete: row.isComplete ?? null,
-    completionPolicy: (row as { completionPolicy?: string | null }).completionPolicy ?? null,
+    completionPolicy: row.completionPolicy ?? null,
     lessonAt: row.lessonAt ?? null,
     callUrl: row.callUrl ?? null,
     sessionDurationMinutes: row.sessionDurationMinutes ?? null,

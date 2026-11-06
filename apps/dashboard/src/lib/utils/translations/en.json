@@ -3287,6 +3287,7 @@
                 "status_completed": "Graded",
                 "status_pending": "Pending",
                 "counts_as_complete": "Counts as complete",
+                "optional": "Optional",
                 "passed": "Passed",
                 "not_passed": "Not passed",
                 "no_submission_title": "This user has no submission for this exercise",

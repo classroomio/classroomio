@@ -53,13 +53,13 @@ export interface TAdminCourse extends TBaseCourse {
  * Student course type - extends TBaseCourse with progress fields
  * Used for student dashboard and enrolled courses views
  * progressRate = lessons completed, exercisesCompleted = exercises submitted
- * lessonCount / exerciseCount = all content (display), trackable* = required content (progress)
+ * lessonCount / exerciseCount = all content (display), progress* = content counted toward progress
  */
 export interface TStudentCourse extends TBaseCourse {
   progressRate: number;
   exercisesCompleted: number;
-  trackableLessonCount: number;
-  trackableExerciseCount: number;
+  progressLessonCount: number;
+  progressExerciseCount: number;
   certificateEarnedAt: string | null;
   complianceStatus: string | null;
   complianceCycleNumber: number | null;
@@ -1163,9 +1163,9 @@ export const getEnrolledCourses = async ({
       .select({
         course: schema.course,
         lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('lesson_count'),
-        trackableLessonCount:
+        progressLessonCount:
           sql<number>`COUNT(DISTINCT CASE WHEN ${schema.lesson.completionPolicy} != 'none' THEN ${schema.lesson.id} END)`.as(
-            'trackable_lesson_count'
+            'progress_lesson_count'
           ),
         progressRate: sql<number>`(
           SELECT COUNT(*)::bigint
@@ -1182,13 +1182,13 @@ export const getEnrolledCourses = async ({
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
           WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
         )`.as('exercise_count'),
-        trackableExerciseCount: sql<number>`(
+        progressExerciseCount: sql<number>`(
           SELECT COUNT(*)::bigint
           FROM ${schema.exercise} as ex
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
           WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
             AND ex.completion_policy != 'none'
-        )`.as('trackable_exercise_count'),
+        )`.as('progress_exercise_count'),
         exercisesCompleted: sql<number>`(
           SELECT COUNT(*)::bigint
           FROM ${schema.exercise} as ex
@@ -1254,12 +1254,10 @@ export const getEnrolledCourses = async ({
     return result.map((row) => ({
       ...withResolvedCourseBannerImage(row.course),
       lessonCount: Number(row.lessonCount),
-      trackableLessonCount: Number((row as unknown as { trackable_lesson_count: number }).trackable_lesson_count ?? 0),
+      progressLessonCount: Number(row.progressLessonCount ?? 0),
       progressRate: Number(row.progressRate),
       exerciseCount: Number(row.exerciseCount),
-      trackableExerciseCount: Number(
-        (row as unknown as { trackable_exercise_count: number }).trackable_exercise_count ?? 0
-      ),
+      progressExerciseCount: Number(row.progressExerciseCount ?? 0),
       exercisesCompleted: Number(row.exercisesCompleted),
       certificateEarnedAt: row.certificateEarnedAt ?? null,
       complianceStatus: row.complianceStatus ?? null,

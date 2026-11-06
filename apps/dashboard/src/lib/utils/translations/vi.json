@@ -1889,7 +1889,8 @@
                 "passed": "Đạt",
                 "not_passed": "Không đạt",
                 "no_submission_title": "Người dùng này chưa nộp bài tập này.",
-                "no_submission_description": "Bài nộp sẽ hiển thị ở đây sau khi sinh viên này hoàn thành bài tập."
+                "no_submission_description": "Bài nộp sẽ hiển thị ở đây sau khi sinh viên này hoàn thành bài tập.",
+                "optional": "Không bắt buộc"
               },
               "summary": {
                 "heading": "Tóm tắt",

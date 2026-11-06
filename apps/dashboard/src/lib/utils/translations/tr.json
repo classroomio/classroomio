@@ -1950,20 +1950,6 @@
       "all": "Tüm",
       "unpublished": "Yayınlanmamış",
       "course_type": "Ders Türü"
-    },
-    "filters": {
-      "filter": "Filtre",
-      "popover_title": "Filtreler",
-      "clear_all": "Tümünü temizle",
-      "search_placeholder": "İsme göre ara",
-      "status": "Durum",
-      "layout_type": "Düzen türü",
-      "selection_mode": "Seçim modu",
-      "no_results_title": "Filtrelerinizle eşleşen widget yok",
-      "no_results_description": "Her şeyi tekrar görmek için farklı bir arama terimi deneyin veya filtrelerinizi temizleyin.",
-      "no_results_page_title": "Bu sayfada hiçbir şey yok",
-      "no_results_page_description": "Bu filtreler, bu sayfanın başlangıcından daha az widget'la eşleşiyor.",
-      "back_to_first_page": "İlk sayfaya dön"
     }
   },
   "setup": {
@@ -3296,7 +3282,8 @@
                 "passed": "Geçildi",
                 "not_passed": "Geçilmedi",
                 "no_submission_title": "Bu kullanıcının bu alıştırma için gönderimi yok",
-                "no_submission_description": "Gönderimler, bu öğrenci egzersizi tamamladığında burada görünecek."
+                "no_submission_description": "Gönderimler, bu öğrenci egzersizi tamamladığında burada görünecek.",
+                "optional": "İsteğe bağlı"
               },
               "submissions": "Gönderimler",
               "loading_submissions": "Lyükleniyor gönderimler...",

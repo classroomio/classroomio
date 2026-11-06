@@ -1889,7 +1889,8 @@
                 "passed": "Bestanden",
                 "not_passed": "Nicht bestanden",
                 "no_submission_title": "Dieser Benutzer hat noch keine Abgabe für diese Übung eingereicht.",
-                "no_submission_description": "Abgaben werden hier angezeigt, sobald dieser Student die Übung abgeschlossen hat."
+                "no_submission_description": "Abgaben werden hier angezeigt, sobald dieser Student die Übung abgeschlossen hat.",
+                "optional": "Optional"
               },
               "summary": {
                 "heading": "Zusammenfassung",

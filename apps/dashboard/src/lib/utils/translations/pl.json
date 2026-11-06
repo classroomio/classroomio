@@ -1889,7 +1889,8 @@
                 "passed": "Zaliczone",
                 "not_passed": "Niezaliczone",
                 "no_submission_title": "Ten użytkownik nie ma żadnych prac do tego ćwiczenia.",
-                "no_submission_description": "Prace pojawią się tutaj, gdy uczeń ukończy ćwiczenie."
+                "no_submission_description": "Prace pojawią się tutaj, gdy uczeń ukończy ćwiczenie.",
+                "optional": "Fakultatywny"
               },
               "summary": {
                 "heading": "Podsumowanie",

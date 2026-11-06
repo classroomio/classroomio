@@ -611,11 +611,11 @@ export async function buildCourseStudentAnalytics(
           return null;
         }
 
-        const trackableExerciseStats = (userExercisesStats ?? []).filter(
-          (exercise) => (exercise as { completionPolicy?: string | null }).completionPolicy !== 'none'
+        const progressExerciseStats = (userExercisesStats ?? []).filter(
+          (exercise) => exercise.completionPolicy !== 'none'
         );
-        const completedExercises = trackableExerciseStats.filter((exercise) => exercise.isCompleted).length;
-        const totalExercises = trackableExerciseStats.length;
+        const completedExercises = progressExerciseStats.filter((exercise) => exercise.isCompleted).length;
+        const totalExercises = progressExerciseStats.length;
 
         const totalEarnedPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
         const totalPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
@@ -779,17 +779,16 @@ export async function getUserCourseAnalytics(
     // percents. null = "no grade yet", never 0.
     const averageGrade = totalPoints > 0 ? Math.round((totalEarnedPoints / totalPoints) * 100) : null;
 
-    const completedLessons = lessons.filter((lesson) => lesson.completed);
-    const progressPercentage = calcPercentageWithRounding(completedLessons.length, lessons.length);
-
-    const trackableExerciseStats = userExercisesStats.filter(
-      (exercise) => (exercise as { completionPolicy?: string | null }).completionPolicy !== 'none'
-    );
-    const completedExercises = trackableExerciseStats.filter((exercise) => exercise.isCompleted).length;
+    const progressExerciseStats = userExercisesStats.filter((exercise) => exercise.completionPolicy !== 'none');
+    const completedExercises = progressExerciseStats.filter((exercise) => exercise.isCompleted).length;
     const totalExercises = courseProgress.exercises_count || 0;
 
     const lessonsCompleted = courseProgress.lessons_completed || 0;
     const lessonsCount = courseProgress.lessons_count || 0;
+    const progressPercentage = calcPercentageWithRounding(
+      lessonsCompleted + completedExercises,
+      lessonsCount + totalExercises
+    );
 
     let progressImpact = null;
 

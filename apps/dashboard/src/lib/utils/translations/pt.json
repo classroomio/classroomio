@@ -1889,7 +1889,8 @@
                 "passed": "Aprovado",
                 "not_passed": "Não aprovado",
                 "no_submission_title": "Este usuário não tem nenhuma submissão para este exercício.",
-                "no_submission_description": "As submissões aparecerão aqui assim que este aluno concluir o exercício."
+                "no_submission_description": "As submissões aparecerão aqui assim que este aluno concluir o exercício.",
+                "optional": "Opcional"
               },
               "summary": {
                 "heading": "Resumo",

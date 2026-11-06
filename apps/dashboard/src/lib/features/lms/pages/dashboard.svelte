@@ -36,6 +36,7 @@
     isStudentCourseComplete
   } from '$features/course/utils/compliance-utils';
   import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
+  import { getCourseProgressCounts } from '$features/course/utils/functions';
 
   type EnrolledCourse = (typeof coursesApi.enrolledCourses)[number];
 
@@ -106,20 +107,8 @@
   }
 
   function getCourseTotalItems(course: EnrolledCourse) {
-    const trackableLessons =
-      'trackableLessonCount' in course &&
-      typeof (course as { trackableLessonCount?: number }).trackableLessonCount === 'number'
-        ? (course as { trackableLessonCount: number }).trackableLessonCount
-        : course.lessonCount || 0;
-    const exercises =
-      'trackableExerciseCount' in course &&
-      typeof (course as { trackableExerciseCount?: number }).trackableExerciseCount === 'number'
-        ? (course as { trackableExerciseCount: number }).trackableExerciseCount
-        : 'exerciseCount' in course && typeof course.exerciseCount === 'number'
-          ? course.exerciseCount
-          : 0;
-
-    return trackableLessons + exercises;
+    const progressCounts = getCourseProgressCounts(course);
+    return progressCounts.lessons + progressCounts.exercises;
   }
 
   function getHighlightedCourses(courses: EnrolledCourse[]) {

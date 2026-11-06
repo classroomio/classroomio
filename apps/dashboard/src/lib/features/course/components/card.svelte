@@ -19,7 +19,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseCost } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
+  import { calcCourseProgress, calcProgressRate, getCourseProgressCounts } from '$features/course/utils/functions';
   import {
     getStudentCourseComplianceDate,
     getStudentCourseComplianceStatusKey,
@@ -83,26 +83,19 @@
       return typeof c.exerciseCount === 'number' ? c.exerciseCount : 0;
     })(),
     progressRate: (() => {
-      const c = course as {
-        exerciseCount?: number;
-        trackableExerciseCount?: number;
-        exercisesCompleted?: number;
-      };
-      const progressLessons =
-        typeof (course as { trackableLessonCount?: number }).trackableLessonCount === 'number'
-          ? (course as { trackableLessonCount: number }).trackableLessonCount
-          : (course.lessonCount ?? 0);
-      const progressExercises =
-        typeof c.trackableExerciseCount === 'number' ? c.trackableExerciseCount : (c.exerciseCount ?? 0);
+      const c = course as { exercisesCompleted?: number };
+      const progressCounts = getCourseProgressCounts(course);
+
       if (typeof c.exercisesCompleted === 'number') {
         return calcCourseProgress({
           lessonsCompleted: 'progressRate' in course ? (course.progressRate ?? 0) : 0,
-          totalLessons: progressLessons,
+          totalLessons: progressCounts.lessons,
           exercisesCompleted: c.exercisesCompleted,
-          totalExercises: progressExercises
+          totalExercises: progressCounts.exercises
         });
       }
-      return calcProgressRate('progressRate' in course ? course.progressRate : 0, progressLessons);
+
+      return calcProgressRate('progressRate' in course ? course.progressRate : 0, progressCounts.lessons);
     })(),
     totalStudents: 'totalStudents' in course ? course.totalStudents : 0
   });
