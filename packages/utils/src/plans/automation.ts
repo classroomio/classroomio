@@ -132,6 +132,7 @@ export const MCP_TOOL_CREDIT_COST = {
   assign_audience_courses: 1,
   update_audience_member: 1,
   remove_audience_member: 1,
+  set_audience_status: 1,
   list_team_members: 0,
   get_team_member: 0,
   update_team_member: 1,

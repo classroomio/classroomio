@@ -1,11 +1,12 @@
 import {
   ZPublicApiAssignAudienceCourses,
+  ZPublicApiAudienceBulkStatus,
   ZPublicApiAudienceMemberParam,
   ZPublicApiAudienceQuery,
   ZPublicApiCreateAudience,
   ZPublicApiUpdateAudience
 } from '@cio/utils/validation/public-api';
-import { AUDIENCE_IMPORT_MAX_ROWS } from '@cio/utils/validation/organization';
+import { AUDIENCE_BULK_IDS_MAX, AUDIENCE_IMPORT_MAX_ROWS } from '@cio/utils/validation/organization';
 
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -32,12 +33,15 @@ export const ZUpdateAudienceMemberToolInput = ZPublicApiUpdateAudience.safeExten
 
 export const ZRemoveAudienceMemberToolInput = ZPublicApiAudienceMemberParam;
 
+export const ZSetAudienceStatusToolInput = ZPublicApiAudienceBulkStatus;
+
 const listAudienceMembersShape = ZListAudienceMembersToolInput.shape as unknown as ZodRawShapeCompat;
 const addAudienceMemberShape = ZAddAudienceMemberToolInput.shape as unknown as ZodRawShapeCompat;
 const assignAudienceCoursesShape = ZAssignAudienceCoursesToolInput.shape as unknown as ZodRawShapeCompat;
 const getAudienceMemberShape = ZGetAudienceMemberToolInput.shape as unknown as ZodRawShapeCompat;
 const updateAudienceMemberShape = ZUpdateAudienceMemberToolInput.shape as unknown as ZodRawShapeCompat;
 const removeAudienceMemberShape = ZRemoveAudienceMemberToolInput.shape as unknown as ZodRawShapeCompat;
+const setAudienceStatusShape = ZSetAudienceStatusToolInput.shape as unknown as ZodRawShapeCompat;
 
 export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
@@ -108,6 +112,18 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
     async (args) => {
       const { memberId } = ZRemoveAudienceMemberToolInput.parse(args);
       const result = await apiClient.removeAudienceMember(memberId);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'set_audience_status',
+    `Deactivate, reactivate, archive or unarchive up to ${AUDIENCE_BULK_IDS_MAX} students by member id or email, with confirm set to true; ${ORG_ADMIN_RULE}. Deactivated and archived students lose course access but keep their progress; archiving also frees their plan seat.`,
+    setAudienceStatusShape,
+    DESTRUCTIVE,
+    async (args) => {
+      const payload = ZSetAudienceStatusToolInput.parse(args);
+      const result = await apiClient.setAudienceStatus(payload);
       return jsonContent(result);
     }
   );

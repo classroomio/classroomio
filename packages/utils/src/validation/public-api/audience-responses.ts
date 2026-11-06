@@ -58,6 +58,26 @@ export const ZPublicApiCreateAudienceResponse = z.object({
   truncated: z.number().describe('Rows beyond the import limit, which were not processed')
 });
 
+export const ZPublicApiAudienceBulkStatusResponse = z.object({
+  action: z.enum(['deactivate', 'reactivate', 'archive', 'unarchive']),
+  requested: z.number(),
+  changed: z.number(),
+  rows: z
+    .array(
+      z.object({
+        index: z.number().describe('Position in memberIds or emails'),
+        memberId: z.number().nullable().describe('null when not_found'),
+        email: z.string().nullable().describe('The email sent, or null when memberIds was sent'),
+        status: z
+          .enum(['changed', 'already_in_state', 'not_found'])
+          .describe(
+            'changed: moved to the new state. already_in_state: was already there; nothing changed. not_found: not a student of this organization'
+          )
+      })
+    )
+    .describe('One entry per memberId or email, in request order')
+});
+
 export const ZPublicApiAssignAudienceCoursesResponse = z.object({
   assigned: z.number(),
   alreadyEnrolled: z.number(),

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   ZPublicApiAssignAudienceCoursesResponse,
+  ZPublicApiAudienceBulkStatusResponse,
   ZPublicApiAudienceMemberResponse,
   ZPublicApiCertificateSettingsResponse,
   ZPublicApiCourseDetailResponse,
@@ -22,6 +23,7 @@ const responseSchemas = {
   ZPublicApiAudienceMemberResponse,
   ZPublicApiCreateAudienceResponse,
   ZPublicApiAssignAudienceCoursesResponse,
+  ZPublicApiAudienceBulkStatusResponse,
   ZPublicApiRemoveAudienceMemberResponse,
   ZPublicApiCourseResponse,
   ZPublicApiCourseListItemResponse,
