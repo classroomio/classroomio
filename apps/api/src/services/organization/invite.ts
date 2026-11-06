@@ -36,6 +36,7 @@ import {
 import { addCohortMember, getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
+import { STUDENT_HOME_ENTRY_PATH } from '@cio/utils/lms';
 import type { TNewOrganizationInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
@@ -669,7 +670,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     });
   }
 
-  const redirectTo = result.roleId === ROLE.STUDENT ? '/lms' : siteName ? `/org/${siteName}` : '/org';
+  const redirectTo = result.roleId === ROLE.STUDENT ? STUDENT_HOME_ENTRY_PATH : siteName ? `/org/${siteName}` : '/org';
 
   return {
     organizationId: result.organization.id,
@@ -832,7 +833,7 @@ export async function acceptLinkInvite(token: string, user: TAuthUser, context: 
   });
 
   const siteName = result.organization.siteName || '';
-  const redirectTo = result.roleId === ROLE.STUDENT ? '/lms' : siteName ? `/org/${siteName}` : '/org';
+  const redirectTo = result.roleId === ROLE.STUDENT ? STUDENT_HOME_ENTRY_PATH : siteName ? `/org/${siteName}` : '/org';
 
   return { organizationId: result.organization.id, roleId: result.roleId, redirectTo };
 }
@@ -976,7 +977,7 @@ export async function acceptOrganizationInviteById(
   }
 
   const siteName = result.organization.siteName || '';
-  const redirectTo = result.roleId === ROLE.STUDENT ? '/lms' : siteName ? `/org/${siteName}` : '/org';
+  const redirectTo = result.roleId === ROLE.STUDENT ? STUDENT_HOME_ENTRY_PATH : siteName ? `/org/${siteName}` : '/org';
 
   return {
     organizationId: result.organization.id,

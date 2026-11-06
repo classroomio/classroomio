@@ -29,6 +29,7 @@
   const sessionReady = $derived(!$session.isPending && !$session.isRefetching);
   const sessionUser = $derived($session.data?.user ?? null);
   const isLoggedIn = $derived(sessionReady && Boolean(sessionUser));
+  const arrivedFromStudentHome = $derived(page.url.searchParams.get('from') === 'student-home');
   const isEmailVerified = $derived(Boolean($profile.isEmailVerified || sessionUser?.emailVerified));
 
   async function sendVerificationEmail() {
@@ -206,6 +207,7 @@
     if (
       !sessionReady ||
       !isLoggedIn ||
+      arrivedFromStudentHome ||
       !canJoinCourse ||
       enrollmentInFlight ||
       loading ||

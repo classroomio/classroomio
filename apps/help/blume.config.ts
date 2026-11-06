@@ -649,6 +649,10 @@ export default defineConfig({
                 root: '/publish-and-brand/choose-which-lms-navigation-tabs-learners-see'
               },
               {
+                label: 'Send signed-in students straight to your learning portal',
+                root: '/publish-and-brand/student-home'
+              },
+              {
                 label: 'Understand the student dashboard banner settings',
                 root: '/publish-and-brand/customize-the-learner-dashboard-banner'
               },

@@ -2125,6 +2125,33 @@
           "description": "Immagine di sfondo facoltativa dietro le pagine di accesso, registrazione e altre pagine dell'account sul sito della tua organizzazione.",
           "paid_plan_note": "Aggiorna il tuo piano per personalizzare lo sfondo di accesso.",
           "preview_alt": "Anteprima in background dell'accesso"
+        },
+        "student_home": {
+          "heading": "Home studente",
+          "description": "Scegli dove vanno gli studenti che hanno effettuato l'accesso quando aprono la home page della tua accademia. I visitatori che non hanno effettuato l'accesso e il tuo team continuano a vedere la tua pagina di destinazione.",
+          "label": "Home per studenti autenticati",
+          "placeholder": "Cerca pagine e corsi",
+          "option_default": "Pagina di destinazione (predefinita)",
+          "group_pages": "Portale di apprendimento",
+          "group_courses": "Corsi",
+          "reason_disabled_toggle": "Attivalo nella sezione Pannello di controllo di seguito",
+          "reason_paid_plan": "Disponibile sui piani a pagamento",
+          "courses_empty": "Nessun corso ancora pubblicato",
+          "load_more": "Carica di più",
+          "search_empty": "Nessuna pagina o corso corrisponde a \"{query}\"",
+          "warning_unavailable": "{destination} non è disponibile per gli studenti in questo momento, quindi vengono invece inviati al Pannello di controllo. Scegli un’altra destinazione o rendila nuovamente disponibile.",
+          "warning_course_missing": "Il corso che hai scelto è stato eliminato o non è stato pubblicato, quindi gli studenti vengono invece inviati al Pannello di controllo.",
+          "course_hint_open": "Gli studenti iscritti vanno direttamente alla lezione successiva. Gli studenti che non sono iscritti possono iscriversi con un clic.",
+          "course_hint_restricted": "Gli studenti iscritti vanno direttamente alla lezione successiva. Questo corso è a pagamento o solo su invito, quindi gli studenti non iscritti accedono al Pannello di controllo.",
+          "unavailable_badge": "Non disponibile",
+          "course_type_live": "In diretta",
+          "course_type_compliance": "Conformità"
+        }
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Gli studenti che hanno effettuato l’accesso saltano questa pagina e vanno a {destination}.",
+          "change": "Modifica"
         }
       }
     }

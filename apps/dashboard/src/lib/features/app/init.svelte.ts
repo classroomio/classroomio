@@ -32,6 +32,7 @@ import { setTheme } from '$lib/utils/functions/theme';
 import { setupAnalyticsBasedOnLicense } from '$lib/utils/functions/appSetup';
 import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
 import { ROLE } from '@cio/utils/constants';
+import { STUDENT_HOME_ENTRY_PATH } from '@cio/utils/lms';
 
 type AppSetupParams = AppOrgParams;
 
@@ -119,7 +120,7 @@ class AppInitApi extends BaseApi {
    * that RBAC middlewares also use, so a present key means the user is a member.
    */
   private isMemberOfOrg(locals: App.Locals, orgId: string): boolean {
-    const orgRoles = (locals as { orgRoles?: Record<string, number> }).orgRoles;
+    const orgRoles = locals.orgRoles;
 
     return !!orgRoles && orgId in orgRoles;
   }
@@ -414,7 +415,7 @@ class AppInitApi extends BaseApi {
     const userIsAdminInAtleastOneOrg = this.data.organizations.some((org) => org.roleId === ROLE.ADMIN);
 
     if (userHasOneOrg && isCloud && !isOrgSite && isStudent && selectedOrg.siteName && userIsStudentInAllOrgs) {
-      window.location.href = getOrgPublicUrl(selectedOrg, '/lms');
+      window.location.href = getOrgPublicUrl(selectedOrg, STUDENT_HOME_ENTRY_PATH);
       return;
     }
 

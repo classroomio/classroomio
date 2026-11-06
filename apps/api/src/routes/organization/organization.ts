@@ -74,6 +74,7 @@ import { joinOrganization } from '@api/services/organization/join';
 import { markOrgPlanPastDue } from '@api/services/organization/payment-status';
 import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
 import { organizationMemberEmailNotificationsRouter } from '@api/routes/organization/member-email-notifications';
+import { organizationStudentHomeRouter } from '@api/routes/organization/student-home';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { apiKeyMiddleware } from '@api/middlewares/api-key';
@@ -1060,5 +1061,6 @@ export const organizationRouter = new Hono()
   .route('/widgets', widgetsRouter)
   .route('/assets', assetsRouter)
   .route('/ai-tutor', organizationAiTutorRouter)
+  .route('/student-home', organizationStudentHomeRouter)
   .route('/member/email-notifications', organizationMemberEmailNotificationsRouter)
   .route('/:orgId/quiz', quizRouter);

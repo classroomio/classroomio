@@ -1,0 +1,73 @@
+---
+title: 'Send signed-in students straight to your learning portal'
+description: 'Choose where signed-in students land when they open your academy homepage, who still sees the landing page, and what happens when a destination becomes unavailable.'
+---
+
+If your academy works as a private learning portal, your signed-in students should not have to click through marketing copy first. **Student home** picks where they land when they open your academy homepage: your Dashboard, My Learning, Certificates, or a specific course.
+
+![Customize LMS page with the Student home control](./images/student-home/overview.webp)
+
+## Before you start
+
+You need an admin role in the organization. Open **Settings → Customize LMS**; **Student home** is the first section.
+
+## Choose the student home
+
+Open the **Authenticated student home** menu and pick one option:
+
+- **Landing page (default)** — keep today's behavior. Everyone sees the landing page first.
+- A page under **Learning portal** — Dashboard, My Learning, Certificates, Explore, Cohorts, Exercise, Community, or Settings. Names match the student sidebar exactly.
+- A course under **Courses** — search by title. New courses appear here once published.
+
+Click **Save changes**. The choice applies immediately.
+
+## Who is redirected
+
+Only **signed-in students** of your academy skip the landing page. Everyone else sees it exactly as before:
+
+- Visitors who are not signed in.
+- Signed-in people who have not joined your academy.
+- Your admins and tutors, who need the landing page for their own checks.
+
+Students also land on the student home when they:
+
+- Sign up or join your academy.
+- Accept an invitation to your academy as a student.
+- Click **Continue Learning** on your course catalog or a course page.
+- Sign in at `app.classroomio.com` when your academy is their only one, and are sent on to it.
+
+Students who open an explicit link — a course, a lesson, an invite link, or a page under `/lms` — go where the link points. The one exception is an invite link to a course that is not published yet: a student who joins lands on their **Dashboard** instead, while staff invite links still open the draft course.
+
+## What students see for a course destination
+
+When you pick a course, each student lands as close to it as they are allowed:
+
+| Student                                                    | Destination                                                                  |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Already enrolled in the course                             | Their first unfinished lesson or exercise                                    |
+| Not enrolled, and the course type is **Public**            | Straight into its first lesson — public courses open without a join step     |
+| Not enrolled, free course that is open for self-enrollment | A focused **Join course** screen — one click, then straight into the lessons |
+| Not enrolled, paid, invite-only, or closed course          | The Dashboard                                                                |
+
+The course type decides before the price does: a **Public** course always opens straight away, even when it is free to join. Every other course type offers the **Join course** screen when it is free and open for self-enrollment. New students confirm there, so nobody is enrolled without asking.
+
+Courses appear in the picker once they are published. Unavailable courses are greyed out, and the course you saved stays in the list even after it becomes unavailable, so you can see and replace it.
+
+## When a destination becomes unavailable
+
+If a saved destination later breaks, students go to the **Dashboard** instead of a dead page:
+
+- The course is unpublished, deleted, or turned into a template.
+- Exercises or Community is turned off in **Customize LMS → Dashboard**.
+- Certificates is picked and the academy moves to the free plan.
+
+The control keeps the saved choice and shows an **Unavailable** badge, with a note under it explaining the fallback, so you can pick another destination or turn the page back on. A deleted course keeps its name in the list, greyed out, so you can still tell which course was saved. To stop redirecting entirely, pick **Landing page (default)** and save.
+
+:::info[Turned-off pages also close by direct link]
+Turning off Exercises or Community in **Customize LMS → Dashboard** hides the sidebar link and also closes those pages to anyone who opens them by a saved link or bookmark — they land on the Dashboard instead. The same applies to Certificates on the free plan.
+:::
+
+## Related guides
+
+- [Choose which LMS navigation tabs learners see](/publish-and-brand/choose-which-lms-navigation-tabs-learners-see) — turn student pages on or off
+- [Customize Your Academy Landing Page](/publish-and-brand/org-landing-page) — the page everyone else still sees first
