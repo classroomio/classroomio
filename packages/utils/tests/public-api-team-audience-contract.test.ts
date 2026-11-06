@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   ZPublicApiAssignAudienceCourses,
+  ZPublicApiAudienceBulkStatus,
   ZPublicApiAudienceMemberParam,
   ZPublicApiAudienceQuery,
   ZPublicApiCreateAudience,
@@ -34,7 +35,8 @@ const requestSchemas = {
   ZPublicApiAudienceMemberParam,
   ZPublicApiCreateAudience,
   ZPublicApiAssignAudienceCourses,
-  ZPublicApiUpdateAudience
+  ZPublicApiUpdateAudience,
+  ZPublicApiAudienceBulkStatus
 };
 
 describe('public API team and audience update contract', () => {

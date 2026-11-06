@@ -4,6 +4,10 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrganizationMemberRoleId: vi.fn()
 }));
 
+vi.mock('@api/services/organization/audience-bulk', () => ({
+  applyBulkAudienceAction: vi.fn()
+}));
+
 vi.mock('@api/services/organization', () => ({
   getOrgAudience: vi.fn(),
   getOrgAudienceMember: vi.fn(),

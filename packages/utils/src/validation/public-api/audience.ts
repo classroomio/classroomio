@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { AUDIENCE_BULK_IDS_MAX } from '../organization/audience';
 import { AUDIENCE_IMPORT_MAX_ROWS } from '../organization/audience-import';
 
 const ZPublicApiAudienceActivityWindow = z.enum(['7d', '30d', '90d', '180d', 'never']);
@@ -118,3 +119,38 @@ export const ZPublicApiAudienceMemberParam = z.object({
   memberId: z.coerce.number().int().positive()
 });
 export type TPublicApiAudienceMemberParam = z.infer<typeof ZPublicApiAudienceMemberParam>;
+
+const hasNoRepeats = (values: (string | number)[]) =>
+  new Set(values.map((value) => String(value).toLowerCase())).size === values.length;
+
+export const ZPublicApiAudienceBulkStatus = z
+  .object({
+    action: z
+      .enum(['deactivate', 'reactivate', 'archive', 'unarchive'])
+      .describe(
+        'deactivate: the student loses access to every course and keeps their plan seat. reactivate: back to active from deactivated or archived. archive: the student loses access and frees their seat. unarchive: back to active from archived. Moving an archived student to any other state takes a seat again. Progress is kept in every case. To remove a student, use DELETE /audience/{memberId}.'
+      ),
+    memberIds: z
+      .array(z.number().int().positive())
+      .min(1)
+      .max(AUDIENCE_BULK_IDS_MAX)
+      .refine(hasNoRepeats, { message: 'memberIds has repeats' })
+      .optional()
+      .describe(`Up to ${AUDIENCE_BULK_IDS_MAX} student member ids. Send this or emails, not both.`),
+    emails: z
+      .array(z.string().trim().email())
+      .min(1)
+      .max(AUDIENCE_BULK_IDS_MAX)
+      .refine(hasNoRepeats, { message: 'emails has repeats' })
+      .optional()
+      .describe(
+        `Up to ${AUDIENCE_BULK_IDS_MAX} student emails, matched without regard to case. Send this or memberIds, not both.`
+      ),
+    reason: z.string().trim().max(500).optional().describe('Stored in the audit log with each change.'),
+    confirm: z.literal(true).describe('Must be true. Without it the request is refused and nothing changes.')
+  })
+  .refine((data) => (data.memberIds === undefined) !== (data.emails === undefined), {
+    message: 'Send memberIds or emails, not both',
+    path: ['memberIds']
+  });
+export type TPublicApiAudienceBulkStatus = z.infer<typeof ZPublicApiAudienceBulkStatus>;
