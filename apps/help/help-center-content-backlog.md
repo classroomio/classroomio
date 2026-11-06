@@ -415,7 +415,7 @@ Media notes:
 - **Images:** Top-courses table/chart and an applied metric or date filter.
 - **Video:** No video.
 
-### `content/help/analytics-and-reporting/review-course-performance-and-learner-progress.mdx` — Review course performance and learner progress
+### `content/help/analytics-and-reporting/review-course-performance-and-student-progress.mdx` — Review course performance and learner progress
 
 - **Article type:** Task and metric reference.
 - **Cover:** Course analytics location; enrollment, active-student, progress, completion, and score metrics; date/filter behavior; cohort or student drill-down; interpreting incomplete and inactive states.
@@ -429,7 +429,7 @@ Media notes:
 - **Images:** Submission/completion table, filters, and one record detail.
 - **Video:** No video.
 
-### `content/help/analytics-and-reporting/view-a-learners-analytics.mdx` — View a learner’s analytics
+### `content/help/analytics-and-reporting/view-a-students-analytics.mdx` — View a learner’s analytics
 
 - **Article type:** Task and reference guide.
 - **Cover:** Finding a student; organization-wide and per-course metrics; enrollment, activity, progress, marks, and completion history; date/data freshness; available actions; privacy expectations.

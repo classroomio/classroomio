@@ -44,6 +44,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | `prd/custom-domain-cloudflare [DONE]` | done |
 | `prd/enterprise-sso [DONE]` | done |
 | `prd/exercise-sections [DONE]` | done |
+| `prd/insights-analytics [DONE]` | done |
 | `prd/lesson-edit [DONE]` | done |
 | `prd/lessons-list [DONE]` | done |
 | `prd/media-manager [DONE]` | done |

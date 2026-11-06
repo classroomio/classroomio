@@ -145,6 +145,16 @@ pnpm seed --organizations --organization-members --organization-plan
 | `--questions`            | Questions                                              |
 | `--templates`            | Exercise templates                                     |
 
+### Analytics insights state seed
+
+`db:seed:insights-states` creates a dedicated `insights-states` organization with one of every analytics state: active, empty and archived cohorts, including an empty cohort with a course and one without; a cohort linked to 11 courses to test horizontal chart scrolling and searchable course selection; a shared course linked across 13 cohorts to test cohort table pagination; pending invites; learners who are completed, on track, lagging or at risk; recent, inactive and never-used logins; graded, awaiting-grade, still-to-pass and passed-after-retry attempts; overdue goals, compliance records and exercises; certificates; grouped and ungrouped courses; a course without a pass mark; an empty course; and an archived course. It deletes and recreates only that organization on each run, so it is deterministic and safe to repeat.
+
+```bash
+pnpm --filter @cio/db db:seed:insights-states
+```
+
+Sign in with `admin@insights-states.demo`, `tutor@insights-states.demo`, or a learner such as `priya@insights-states.demo`. Every account uses `123456`.
+
 ### Demo accounts
 
 | Email                            | Password | Role    | Plan          |

@@ -20,6 +20,7 @@ import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { deleteExercise } from '@cio/db/queries/exercise/exercise';
 import { ZCourseContentReorder } from '@cio/utils/validation/course';
 import type { TCourseContentDelete, TCourseContentReorder, TCourseContentUpdate } from '@cio/utils/validation/course';
+import { invalidateInsightsCourseStructure } from '../../utils/redis/insights-cache';
 import { DEFAULT_CONTENT_GROUPING } from './utils';
 
 type CourseContentReorderResult = {
@@ -186,6 +187,8 @@ export async function updateCourseContent(
     });
     const requestedKeys = new Set(items.map(buildContentKey));
 
+    void invalidateInsightsCourseStructure(courseId);
+
     return { items: storedItems.filter((item) => requestedKeys.has(buildContentKey(item))) };
   } catch (error) {
     if (error instanceof AppError) {
@@ -220,7 +223,7 @@ export async function reorderCourseContent(
     const isContentGroupingEnabled = course?.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;
     assertEffectiveRootOrders(contentItems, payload, isContentGroupingEnabled);
 
-    return await transactionWithContentBatch(async (tx) => {
+    const result = await transactionWithContentBatch(async (tx) => {
       const updatedSections = payload.sections?.length ? await applyCourseSectionOrderUpdates(tx, payload.sections) : 0;
 
       const itemResult = payload.items?.length
@@ -237,6 +240,10 @@ export async function reorderCourseContent(
         ...itemResult
       };
     });
+
+    void invalidateInsightsCourseStructure(courseId);
+
+    return result;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -325,6 +332,8 @@ export async function deleteCourseContent(
 
       return work;
     });
+
+    void invalidateInsightsCourseStructure(courseId);
 
     return {
       items: itemsToDelete.map((item) => ({ id: item.id, type: item.type as ContentType })),

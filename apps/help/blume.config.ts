@@ -785,7 +785,11 @@ export default defineConfig({
             root: '/analytics-and-reporting/understand-the-organization-dashboard'
           },
           {
-            label: 'Use organization analytics',
+            label: 'Monitor students across your organization',
+            root: '/analytics-and-reporting/monitor-students-across-your-organization'
+          },
+          {
+            label: 'Use marketing stats',
             display: 'group',
             collapsed: true,
             items: [
@@ -814,7 +818,7 @@ export default defineConfig({
             items: [
               {
                 label: 'Review course performance and student progress',
-                root: '/analytics-and-reporting/review-course-performance-and-learner-progress'
+                root: '/analytics-and-reporting/review-course-performance-and-student-progress'
               },
               {
                 label: 'View submissions and completion data',
@@ -823,8 +827,12 @@ export default defineConfig({
             ]
           },
           {
+            label: 'Track a cohort with analytics',
+            root: '/analytics-and-reporting/track-a-cohort-with-analytics'
+          },
+          {
             label: "View a student's analytics",
-            root: '/analytics-and-reporting/view-a-learners-analytics'
+            root: '/analytics-and-reporting/view-a-students-analytics'
           },
           {
             label: 'Export audiences, marks, and reports',
