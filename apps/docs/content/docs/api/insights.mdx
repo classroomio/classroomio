@@ -1,0 +1,99 @@
+---
+title: Insights analytics
+description: Query the numbers behind the analytics dashboards, snapshot a dashboard, and page the students table for export.
+last_reviewed: '2026-11-06'
+---
+
+The insights endpoints expose the same numbers the cohort, course, and organization analytics dashboards show. Start from the catalog, run ad-hoc queries, snapshot a whole dashboard, or page the students table when you need every row.
+
+Base URL for every example:
+
+```text
+https://api.classroomio.com/public-api/v1
+```
+
+## The catalog
+
+`GET /analytics/insights/catalog` lists every queryable source with the scope types it supports, its dimensions (with `hasLabel` and `hasRank`), metrics (with `valueType` and allowed aggregations), and filters (with ops and value type). Widget presets are listed separately; they describe what each kind of widget in the dashboards shows.
+
+```bash cURL
+curl https://api.classroomio.com/public-api/v1/analytics/insights/catalog \
+  -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
+```
+
+The key creator must be an org admin or tutor. The catalog never drifts from the query engine: it is generated from the same registry that compiles the queries.
+
+## A worked query
+
+`POST /analytics/insights/query` runs one query for a cohort, course, or organization scope. The key creator must be an org admin for org scope, a cohort admin or tutor for cohort scope, or a course admin or tutor for course scope.
+
+Ask for at-risk students in a cohort, worst first, for example:
+
+```json
+{
+  "scope": { "type": "cohort", "id": "22222222-2222-4222-8222-222222222222" },
+  "spec": {
+    "source": "student",
+    "dimensions": ["student"],
+    "measures": [
+      { "metric": "name", "agg": "value" },
+      { "metric": "avg_score_pct", "agg": "avg" }
+    ],
+    "filters": [{ "field": "status", "op": "eq", "value": "at_risk" }],
+    "sort": [{ "field": "avg_score_pct__avg", "dir": "asc" }],
+    "limit": 25
+  }
+}
+```
+
+The spec takes 1 to 16 measures, up to 2 dimensions, up to 10 filters, and up to 3 sort columns. `limit` caps at 1000 rows (default 25) and `page` at 4000; together they address at most the first 100,000 rows. A filter value starting with `$` is rejected: placeholders are dashboard-internal.
+
+The response carries the columns, the rows, a `meta` block, and a `pagination` block:
+
+```json
+{
+  "success": true,
+  "data": {
+    "columns": [
+      { "key": "student", "role": "dimension", "valueType": "id" },
+      { "key": "name__value", "role": "measure", "valueType": "text" },
+      { "key": "avg_score_pct__avg", "role": "measure", "valueType": "percent" }
+    ],
+    "rows": [{ "student": "33333333-3333-4333-8333-333333333333", "name__value": "Ana", "avg_score_pct__avg": 42 }]
+  },
+  "meta": { "generatedAt": "2026-11-06T10:00:00.000Z", "cached": false, "range": "7d" },
+  "pagination": { "page": 1, "limit": 25, "total": 1, "totalPages": 1 }
+}
+```
+
+This stays a read: it has no side effects, is cached per scope and spec, and costs no credits.
+
+## The snapshot
+
+`GET /analytics/insights/dashboards/{scopeType}/{scopeId}` returns one dashboard snapshot: the scope summary, the effective selection, and the first page of every visible widget. A widget that could not be computed carries only its `errorCode`; the others still carry their result.
+
+```bash cURL
+curl "https://api.classroomio.com/public-api/v1/analytics/insights/dashboards/org/11111111-1111-4111-8111-111111111111?range=30d&breakdown=cohorts" \
+  -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
+```
+
+Pass `courseId` or `exerciseId` to focus the per-course and per-exercise widgets (course scope defaults `courseId` to its first course; other scopes leave per-course widgets out unless you pass one, and `exerciseId` defaults to the last pass-required exercise of the selected course, or the last exercise if none is pass-required), `range` (`all`, `7d`, `30d` or `90d`) for the data range, and `breakdown` (`courses` or `cohorts`) for how split widgets break a course or org scope down (cohort scope ignores it). The students table has its own endpoint and is skipped inside the snapshot; page it with the students endpoint below.
+
+## Students paging for export
+
+`GET /analytics/insights/students` lists the students of a scope with progress, score, status, and last login, from the same table the dashboards show. Page through it for exports:
+
+```bash cURL
+curl "https://api.classroomio.com/public-api/v1/analytics/insights/students?scopeType=cohort&scopeId=22222222-2222-4222-8222-222222222222&sort=lastLogin&limit=100&page=1" \
+  -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
+```
+
+`sort` is `status`, `name`, `progress`, `score`, or `lastLogin` (default `status`), with an optional `dir`. Without `dir` every sort uses its natural direction: at-risk students first for `status`, lowest progress or score first, names A–Z, and most recent login first. Filter with `courseId`, `search` (name or email, at most 100 characters), `status`, or `isOverdue`. `limit` caps at 100 (default 20) and `page` at 4000; together they address at most the first 100,000 rows. The response is the usual `{ data, pagination }` shape.
+
+## The effective range and freshness
+
+Every external surface reports the range actually used. The Free plan reads at most the last 7 days, so `meta.range` (queries) and each widget's spec range (snapshots) may be narrower than requested. Results are cached per scope and spec hash: `meta.generatedAt` (queries) and `generatedAt` (snapshots) say when the result was computed, and `meta.cached` says whether it came from the cache.
+
+## The difference from the older Analytics endpoints
+
+The older Analytics endpoints (`/analytics`, course analytics, learner analytics) return fixed dashboard sections: overviews, funnels, top courses, and login activity. The insights endpoints query the compiled analytics behind the newer cohort, course, and organization dashboards instead: pick any supported source, slice it with dimensions and filters, and snapshot the same widgets the dashboard shows. For goal reminders, see `POST /cohorts/{cohortId}/goals/remind-overdue`, which emails the learners with overdue goal assignments now.

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { compileInsightsQuery, requiresOrderedItems } from '@cio/db/queries/insights';
 import { INSIGHTS_LIMITS, INSIGHTS_PLACEHOLDERS, type TInsightsBreakdownGroup } from '@cio/utils/constants/insights';
+import { INSIGHTS_WIDGET_DESCRIPTIONS } from '@cio/utils/constants/insights-catalog';
 import { ZInsightsWidget, type TInsightsWidget } from '@cio/utils/validation/insights';
 
 import { INSIGHTS_PRESETS } from '@api/services/insights/presets';
@@ -193,6 +194,29 @@ describe('insights presets', () => {
       const ids = widgets.map((widget) => widget.id);
       expect(new Set(ids).size).toBe(ids.length);
     }
+  });
+
+  describe('catalog descriptions', () => {
+    it('gives every preset widget a non-empty description', () => {
+      for (const widgetId of [...INSIGHTS_PRESETS.cohort, ...INSIGHTS_PRESETS.course, ...INSIGHTS_PRESETS.org].map(
+        (widget) => widget.id
+      )) {
+        const description = INSIGHTS_WIDGET_DESCRIPTIONS[widgetId];
+
+        expect(description, widgetId).toBeDefined();
+        expect(description?.trim().length, widgetId).toBeGreaterThan(0);
+      }
+    });
+
+    it('never describes a widget id no preset uses', () => {
+      const presetIds = new Set(
+        [...INSIGHTS_PRESETS.cohort, ...INSIGHTS_PRESETS.course, ...INSIGHTS_PRESETS.org].map((widget) => widget.id)
+      );
+
+      for (const widgetId of Object.keys(INSIGHTS_WIDGET_DESCRIPTIONS)) {
+        expect(presetIds.has(widgetId), widgetId).toBe(true);
+      }
+    });
   });
 
   describe('breakdown groups', () => {

@@ -28,6 +28,8 @@ import {
   updateInsightsSettings,
   type InsightsActor
 } from '@api/services/insights';
+import { getInsightsDashboardForScope } from '@api/services/insights/dashboards';
+import { resolveAuthorizedScope } from '@api/services/insights/authorize';
 import type { AuthSession } from '@api/types/auth';
 import { handleError } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
@@ -133,12 +135,9 @@ export const insightsRouter = new Hono()
     try {
       const actor = getInsightsActor(c);
       const scope = c.req.valid('json');
+      const authorizedScope = await resolveAuthorizedScope(actor, scope);
       const refresh = await claimInsightsRefresh(actor.profileId, scope.type, scope.id, 'dashboard');
-      const dashboard = await getInsightsDashboardForActor(
-        actor,
-        { scopeType: scope.type, scopeId: scope.id },
-        { refresh }
-      );
+      const dashboard = await getInsightsDashboardForScope(authorizedScope, { refresh });
 
       return c.json({ success: true, data: dashboard }, 200);
     } catch (error) {

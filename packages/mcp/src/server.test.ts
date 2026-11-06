@@ -63,6 +63,25 @@ describe('createMcpServer', () => {
 
     expect(tools.find((tool) => tool.name === name)?.annotations).toMatchObject({ readOnlyHint, destructiveHint });
   });
+
+  it.each([{ includeLocalFileTools: true }, { includeLocalFileTools: false }])(
+    'registers the insights tools in %s mode',
+    async (options) => {
+      const client = await connect(options);
+      const { tools } = await client.listTools();
+      const names = tools.map((tool) => tool.name);
+
+      expect(names).toEqual(
+        expect.arrayContaining([
+          'get_insights_catalog',
+          'query_insights',
+          'get_insights_dashboard',
+          'list_insights_students',
+          'remind_overdue_cohort_goals'
+        ])
+      );
+    }
+  );
 });
 
 describe('ClassroomIoApiClient transport', () => {

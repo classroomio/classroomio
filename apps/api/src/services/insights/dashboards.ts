@@ -23,6 +23,29 @@ async function loadDashboardStructures(
 }
 
 /**
+ * Header data, course outlines and preset widgets for one scope, without re-authorizing.
+ */
+export async function getInsightsDashboardForScope(
+  scope: AuthorizedInsightsScope,
+  options: { refresh?: boolean } = {}
+): Promise<InsightsDashboard> {
+  const ttlSeconds = insightsTtlSeconds(scope.type);
+  const summaryKey = insightsKey('dashboard', scope.orgId, scope.type, scope.id);
+  const summary = await cachedRead(summaryKey, ttlSeconds, () => getInsightsScopeSummary(scope), {
+    refresh: Boolean(options.refresh)
+  });
+  const structures = await loadDashboardStructures(scope);
+  const widgets = INSIGHTS_PRESETS[scope.type];
+
+  return {
+    scope: { ...summary.data, type: scope.type, id: scope.id },
+    structures,
+    widgets,
+    refreshIntervalSeconds: ttlSeconds
+  };
+}
+
+/**
  * Header data, course outlines and preset widgets for one scope. The summary shares the scope's TTL; a refresh
  * recomputes it even when a cached copy exists, so the manual refresh button updates scope counts and courses too.
  */
@@ -33,20 +56,8 @@ export async function getInsightsDashboardForActor(
 ): Promise<InsightsDashboard> {
   try {
     const scope = await resolveAuthorizedScope(actor, { type: param.scopeType, id: param.scopeId });
-    const ttlSeconds = insightsTtlSeconds(scope.type);
-    const summaryKey = insightsKey('dashboard', scope.orgId, scope.type, scope.id);
-    const summary = await cachedRead(summaryKey, ttlSeconds, () => getInsightsScopeSummary(scope), {
-      refresh: Boolean(options.refresh)
-    });
-    const structures = await loadDashboardStructures(scope);
-    const widgets = INSIGHTS_PRESETS[scope.type];
 
-    return {
-      scope: { ...summary.data, type: scope.type, id: scope.id },
-      structures,
-      widgets,
-      refreshIntervalSeconds: ttlSeconds
-    };
+    return await getInsightsDashboardForScope(scope, options);
   } catch (error) {
     throw toInsightsError(error, ErrorCodes.INSIGHTS_DASHBOARD_FAILED);
   }

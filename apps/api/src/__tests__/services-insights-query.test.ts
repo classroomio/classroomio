@@ -40,7 +40,11 @@ import { requiresOrderedItems, runInsightsQuery } from '@cio/db/queries/insights
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { cachedRead } from '@api/utils/redis/cached-read';
 import { resolveAuthorizedScope } from '@api/services/insights/authorize';
-import { exportInsightsQueryForActor, runInsightsQueryForActor } from '@api/services/insights/query';
+import {
+  exportInsightsQueryForActor,
+  runInsightsQueryForActor,
+  runInsightsQueryForScope
+} from '@api/services/insights/query';
 import { resolveInsightsRange } from '@api/services/insights/plan';
 import type { InsightsActor } from '@api/services/insights/types';
 import { ZInsightsExportSpec, ZInsightsQuerySpec } from '@cio/utils/validation/insights';
@@ -113,6 +117,35 @@ describe('runInsightsQueryForActor', () => {
     expect(resolveInsightsRange).toHaveBeenCalledWith(ORG_ID, spec.range);
     expect(runInsightsQuery).toHaveBeenCalledWith(expect.objectContaining({ range: '7d' }), expect.anything());
     expect(cachedRead).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports the Free-plan clamp as the effective range on the result', async () => {
+    vi.mocked(resolveInsightsRange).mockResolvedValue('7d');
+    const thirtyDaySpec = ZInsightsQuerySpec.parse({
+      source: 'student',
+      measures: [{ metric: 'rows', agg: 'count' }],
+      filters: [],
+      range: '30d'
+    });
+
+    const result = await runInsightsQueryForActor(actor, {
+      scope: { type: 'cohort', id: COHORT_ID },
+      spec: thirtyDaySpec
+    });
+
+    expect(resolveInsightsRange).toHaveBeenCalledWith(ORG_ID, '30d');
+    expect(result.range).toBe('7d');
+    expect(runInsightsQuery).toHaveBeenCalledWith(expect.objectContaining({ range: '7d' }), expect.anything());
+  });
+
+  it('runs a scope-level query without re-authorizing and reports its range', async () => {
+    vi.mocked(resolveInsightsRange).mockResolvedValue('7d');
+
+    const result = await runInsightsQueryForScope(scope, { scope: { type: 'cohort', id: COHORT_ID }, spec });
+
+    expect(resolveAuthorizedScope).not.toHaveBeenCalled();
+    expect(resolveInsightsRange).toHaveBeenCalledWith(ORG_ID, spec.range);
+    expect(result.range).toBe('7d');
   });
 
   it('bypasses the cache when a search filter is present', async () => {

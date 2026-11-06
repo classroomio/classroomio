@@ -22,6 +22,10 @@ function buildApp(scopes: string[]) {
     .get('/analytics', (c) => c.json({ success: true }))
     .post('/analytics', (c) => c.json({ success: true }))
     .get('/analytics/learners/:profileId', (c) => c.json({ success: true }))
+    .get('/analytics/insights/catalog', (c) => c.json({ success: true }))
+    .post('/analytics/insights/query', (c) => c.json({ success: true }))
+    .get('/analytics/insights/dashboards/:scopeType/:scopeId', (c) => c.json({ success: true }))
+    .get('/analytics/insights/students', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics/students', (c) => c.json({ success: true }))
     .get('/courses/:courseId/students', (c) => c.json({ success: true }))
@@ -73,10 +77,35 @@ describe('publicApiScopesMiddleware', () => {
     expect((await app.request('/public-api/v1/courses/c1/analytics')).status).toBe(200);
     expect((await app.request('/public-api/v1/courses/c1/analytics/students')).status).toBe(200);
     expect((await app.request('/public-api/v1/analytics/learners/p1')).status).toBe(200);
+    expect((await app.request('/public-api/v1/analytics/insights/catalog')).status).toBe(200);
+    expect((await app.request('/public-api/v1/analytics/insights/students?scopeType=org&scopeId=s1')).status).toBe(200);
     expect((await app.request('/public-api/v1/analytics', { method: 'POST' })).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1/students')).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1')).status).toBe(403);
     expect((await app.request('/public-api/v1/cohorts')).status).toBe(403);
+  });
+
+  it('maps the insights query POST to analytics:read, before the generic analytics rule', async () => {
+    const app = buildApp(['analytics:read']);
+
+    expect((await app.request('/public-api/v1/analytics/insights/query', { method: 'POST' })).status).toBe(200);
+  });
+
+  it('keeps the insights query POST out of keys without analytics:read', async () => {
+    const app = buildApp(COHORT_SCOPES);
+
+    expect((await app.request('/public-api/v1/analytics/insights/query', { method: 'POST' })).status).toBe(403);
+  });
+
+  it('still refuses every analytics POST that is not the insights query', async () => {
+    const app = buildApp(['analytics:read']);
+
+    expect((await app.request('/public-api/v1/analytics', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/insights/catalog', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/insights/students', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/insights/dashboards/org/s1', { method: 'POST' })).status).toBe(
+      403
+    );
   });
 
   it('keeps cohort-scoped keys out of analytics', async () => {

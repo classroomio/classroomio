@@ -6,6 +6,7 @@ import {
   type InsightsQueryOutput
 } from '@cio/db/queries/insights';
 import { INSIGHTS_LIMITS } from '@cio/utils/constants/insights';
+import type { TInsightsRange } from '@cio/utils/constants/insights';
 import type { TInsightsExportRequest, TInsightsQueryRequest, TInsightsQuerySpec } from '@cio/utils/validation/insights';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -70,15 +71,50 @@ export async function computeInsightsQuery(
   return runInsightsQuery(spec, { scope, orderedItems });
 }
 
-function uncachedResult(output: InsightsQueryOutput): InsightsQueryResult {
+function uncachedResult(output: InsightsQueryOutput, range: TInsightsRange): InsightsQueryResult {
   const generatedAt = new Date().toISOString();
 
-  return { ...output, generatedAt, cached: false, refreshThrottled: false };
+  return { ...output, range, generatedAt, cached: false, refreshThrottled: false };
 }
 
 /**
- * Runs one widget spec for the actor. Authorizes before touching the cache, serves cached results inside the scope
- * TTL, recomputes on an allowed refresh, and never caches free-text search.
+ * Runs one widget spec inside an already-authorized scope, without re-authorizing. Serves cached results inside the
+ * scope TTL, recomputes on an allowed refresh, and never caches free-text search.
+ */
+export async function runInsightsQueryForScope(
+  scope: AuthorizedInsightsScope,
+  request: TInsightsQueryRequest,
+  options: { profileId?: string } = {}
+): Promise<InsightsQueryResult> {
+  try {
+    const range = await resolveInsightsRange(scope.orgId, request.spec.range);
+    const spec = canonicalizeSpec({ ...request.spec, range });
+
+    if (spec.search) {
+      const output = await computeInsightsQuery(scope, spec);
+      return uncachedResult(output, range);
+    }
+
+    const startedAt = Date.now();
+    const specHash = hashSpec(spec);
+    const key = insightsKey('query', scope.orgId, scope.type, scope.id, specHash);
+    const ttlSeconds = insightsTtlSeconds(scope.type);
+    const refresh =
+      request.refresh && options.profileId
+        ? await claimInsightsRefresh(options.profileId, scope.type, scope.id, specHash)
+        : false;
+    const entry = await cachedRead(key, ttlSeconds, () => computeInsightsQuery(scope, spec), { refresh });
+    const cached = Date.parse(entry.generatedAt) < startedAt;
+    const refreshThrottled = Boolean(request.refresh) && !refresh;
+
+    return { ...entry.data, range, generatedAt: entry.generatedAt, cached, refreshThrottled };
+  } catch (error) {
+    throw toInsightsError(error, ErrorCodes.INSIGHTS_QUERY_FAILED);
+  }
+}
+
+/**
+ * Runs one widget spec for the actor. Authorizes before touching the cache, then delegates.
  */
 export async function runInsightsQueryForActor(
   actor: InsightsActor,
@@ -86,26 +122,8 @@ export async function runInsightsQueryForActor(
 ): Promise<InsightsQueryResult> {
   try {
     const scope = await resolveAuthorizedScope(actor, request.scope);
-    const range = await resolveInsightsRange(scope.orgId, request.spec.range);
-    const spec = canonicalizeSpec({ ...request.spec, range });
 
-    if (spec.search) {
-      const output = await computeInsightsQuery(scope, spec);
-      return uncachedResult(output);
-    }
-
-    const startedAt = Date.now();
-    const specHash = hashSpec(spec);
-    const key = insightsKey('query', scope.orgId, scope.type, scope.id, specHash);
-    const ttlSeconds = insightsTtlSeconds(scope.type);
-    const refresh = request.refresh
-      ? await claimInsightsRefresh(actor.profileId, scope.type, scope.id, specHash)
-      : false;
-    const entry = await cachedRead(key, ttlSeconds, () => computeInsightsQuery(scope, spec), { refresh });
-    const cached = Date.parse(entry.generatedAt) < startedAt;
-    const refreshThrottled = Boolean(request.refresh) && !refresh;
-
-    return { ...entry.data, generatedAt: entry.generatedAt, cached, refreshThrottled };
+    return await runInsightsQueryForScope(scope, request, { profileId: actor.profileId });
   } catch (error) {
     throw toInsightsError(error, ErrorCodes.INSIGHTS_QUERY_FAILED);
   }
@@ -124,7 +142,7 @@ export async function exportInsightsQueryForActor(
     const spec = canonicalizeSpec({ ...request.spec, range });
     const output = await computeInsightsQuery(scope, spec);
 
-    return uncachedResult(output);
+    return uncachedResult(output, range);
   } catch (error) {
     throw toInsightsError(error, ErrorCodes.INSIGHTS_EXPORT_FAILED);
   }

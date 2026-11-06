@@ -4,6 +4,16 @@ import {
   type TInsightsBreakdownGroup,
   type TInsightsRange
 } from '@cio/utils/constants/insights';
+import {
+  activeBreakdownGroup,
+  availableBreakdownGroups,
+  defaultBreakdownGroup,
+  defaultCourseId,
+  defaultExerciseId,
+  isWidgetVisible,
+  resolveWidgetSpec,
+  widgetUsesPlaceholder
+} from '@cio/utils/insights';
 import { get } from 'svelte/store';
 import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
@@ -11,23 +21,15 @@ import { BaseApi, classroomio } from '$lib/utils/services/api';
 import { isFreePlan } from '$lib/utils/store/org';
 
 import {
-  activeBreakdownGroup,
-  availableBreakdownGroups,
   clampRangeToDays,
   cohortOptionsFromResult,
-  defaultBreakdownGroup,
-  defaultCourseId,
-  defaultExerciseId,
   FIRST_PAGE,
-  isWidgetVisible,
   nextSort,
   oldestGeneratedAt,
   pageAfterEmptyResult,
   pageGroupsOf,
-  resolveWidgetSpec,
   SELF_LOADING_WIDGET_IDS,
-  specRequestKey,
-  widgetUsesPlaceholder
+  specRequestKey
 } from '../utils/insights-utils';
 import type {
   InsightsCohortOption,

@@ -132,6 +132,11 @@ Current tools:
 - `get_learner_analytics`
 - `get_course_analytics`
 - `list_course_analytics_students`
+- `get_insights_catalog`
+- `query_insights`
+- `get_insights_dashboard`
+- `list_insights_students`
+- `remind_overdue_cohort_goals`
 - `list_audience_members`
 - `get_audience_member`
 - `add_audience_member`
@@ -361,6 +366,15 @@ Analytics tools are read-only, cost no credits, and act as the key creator:
 - `get_course_analytics` (sections `summary`, `funnel`) and `list_course_analytics_students` need a course tutor/admin or an org admin.
 - Each section is cached for up to 10 minutes (login activity: 24 hours); `meta.generatedAt` says when the oldest one was computed.
 - `list_compliance_learners` takes `page` and `limit` (default 20, max 100); `list_course_analytics_students` caps `limit` at 50. Both return `{ data, pagination }`.
+
+Insights tools query the numbers behind the cohort, course and organization analytics dashboards, and act as the key creator:
+
+- `get_insights_catalog` lists the sources, metrics, dimensions and filters you can query; the key creator must be an org admin or tutor. Call it first to choose a source, metrics and filters.
+- `query_insights` runs one query for a cohort, course or organization scope. The key creator must be an org admin for org scope, a cohort admin or tutor for cohort scope, or a course admin or tutor for course scope. This is a read: it has no side effects and costs no credits. It takes `limit` (1-1000, default 25) and `page` (1-4000, default 1), and returns `{ data: { columns, rows }, meta, pagination }`.
+- `get_insights_dashboard` returns one dashboard snapshot with the first page of every visible widget. It takes the scope plus optional `courseId`, `exerciseId`, `range` (`all`, `7d`, `30d` or `90d`) and `breakdown` (`courses` or `cohorts`, course or org scope; cohort scope ignores it). The students table is served by `list_insights_students` instead of inside the snapshot.
+- `list_insights_students` lists the students of a scope with progress, score, status and last login, with `page` and `limit` (default 20, max 100). It takes `sort` (`status`, `name`, `progress`, `score` or `lastLogin`) with an optional `dir`.
+- `remind_overdue_cohort_goals` emails the learners with overdue goal assignments now, optionally narrowed with `courseId` or `profileId`; the key creator must be a cohort tutor/admin or an org admin. It costs 1 credit, and a student is reminded at most once a day.
+- Results are cached per scope and spec; `meta.generatedAt` says when the oldest one was computed, and `meta.range` reports the range actually used (the Free plan sees at most the last 7 days).
 
 ## Required Environment Variables
 

@@ -40,6 +40,8 @@ export * from './organization-responses';
 export * from './organization-domain';
 export * from './organization-domain-responses';
 export * from './exercise-template';
+export * from './insights';
+export * from './insights-responses';
 export * from './lesson';
 export * from './pagination';
 export * from './team';

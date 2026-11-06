@@ -3,6 +3,7 @@ import type {
   TPublicApiCohortParam,
   TPublicApiCreateCohortGoal,
   TPublicApiPaginationQuery,
+  TPublicApiRemindOverdueCohortGoals,
   TPublicApiUpdateCohortGoal
 } from '@cio/utils/validation/public-api';
 
@@ -16,6 +17,7 @@ import {
   getOrgGoalsOverview,
   listGoalsPage,
   removeGoal,
+  sendOverdueCohortGoalRemindersNow,
   updateGoal
 } from '@api/services/cohort/goal';
 import { getEnrolledCohorts } from '@api/services/cohort/cohort';
@@ -116,6 +118,19 @@ export async function evaluateAllPublicApiCohortGoalsService(
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
   return evaluateCohortGoals(params.cohortId);
+}
+
+/** Emails the overdue learners of the cohort's active goals now; the reminder run caps the day per assignment. */
+export async function remindPublicApiOverdueCohortGoalsService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCohortParam,
+  payload: TPublicApiRemindOverdueCohortGoals
+) {
+  await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
+
+  return sendOverdueCohortGoalRemindersNow(params.cohortId, payload);
 }
 
 export async function getPublicApiOrgGoalsOverviewService(
