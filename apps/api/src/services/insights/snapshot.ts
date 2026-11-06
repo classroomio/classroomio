@@ -17,6 +17,7 @@ import { resolveAuthorizedScope } from './authorize';
 import { getInsightsDashboardForScope } from './dashboards';
 import { toInsightsError } from './errors';
 import { resolveInsightsRange } from './plan';
+import { getInsightsCourseStructure } from './structure';
 import { runInsightsQueryForScope } from './query';
 import type {
   AuthorizedInsightsScope,
@@ -30,17 +31,22 @@ import type {
 
 const SNAPSHOT_QUERY_CONCURRENCY = 4;
 
-function assertSelectionInScope(
+async function assertSelectionInScope(
   dashboard: InsightsDashboard,
+  orgId: string,
   courseId: string | null,
   exerciseId: string | null,
   selectedStructure: InsightsCourseStructure | undefined
-): void {
+): Promise<void> {
   if (courseId && !dashboard.scope.courses.some((course) => course.id === courseId)) {
     throw new AppError('Analytics scope not found', ErrorCodes.INSIGHTS_SCOPE_NOT_FOUND, 404);
   }
 
-  if (exerciseId && selectedStructure && !selectedStructure.items.some((item) => item.id === exerciseId)) {
+  if (!exerciseId) return;
+
+  const structure = selectedStructure ?? (courseId ? await getInsightsCourseStructure(orgId, courseId) : undefined);
+
+  if (structure && !structure.items.some((item) => item.id === exerciseId && item.type === 'EXERCISE')) {
     throw new AppError('Analytics scope not found', ErrorCodes.INSIGHTS_SCOPE_NOT_FOUND, 404);
   }
 }
@@ -65,7 +71,7 @@ export async function getInsightsDashboardSnapshotForActor(
     const courseId = query.courseId ?? defaultCourseId(dashboard);
     const selectedStructure = courseId ? dashboard.structures[courseId] : undefined;
     const exerciseId = query.exerciseId ?? defaultExerciseId(selectedStructure);
-    assertSelectionInScope(dashboard, courseId, exerciseId, selectedStructure);
+    await assertSelectionInScope(dashboard, authorizedScope.orgId, courseId, exerciseId, selectedStructure);
     const requestedBreakdown = query.breakdown ?? defaultBreakdownGroup(dashboard.scope);
     const range = await resolveInsightsRange(authorizedScope.orgId, query.range ?? 'all');
 
@@ -86,7 +92,11 @@ export async function getInsightsDashboardSnapshotForActor(
         !widget.hidden && !SELF_LOADING_WIDGET_IDS.has(widget.id) && isWidgetVisible(widget, dashboard, selection)
     );
     const entries = snapshotWidgets
-      .map((widget) => ({ widget, spec: resolveWidgetSpec(widget, selection) }))
+      .map((widget) => {
+        const spec = resolveWidgetSpec(widget, selection);
+
+        return { widget, spec };
+      })
       .filter((entry): entry is SnapshotWidgetEntry => entry.spec !== null);
 
     const widgets = await runSnapshotWidgets(authorizedScope, actor.profileId, entries, query.refresh);
@@ -125,12 +135,13 @@ async function runSnapshotWidgets(
           { profileId }
         );
         const widgetResult = { columns: queryResult.columns, rows: queryResult.rows, total: queryResult.total };
+        const widgetSpec = { ...entry.spec, range: queryResult.range };
 
         results[index] = {
           id: entry.widget.id,
           viz: entry.widget.viz,
           description,
-          spec: entry.spec,
+          spec: widgetSpec,
           result: widgetResult,
           errorCode: null
         };

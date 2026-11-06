@@ -135,7 +135,7 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/remind-overdue',
     describeRoute({
-      description: `Email the learners with overdue goal assignments now; ${COHORT_TEAM_RULE}. Narrow the run with courseId or profileId. The day-keyed idempotency makes a second call on the same day skip the learners already reminded.`,
+      description: `Email the learners with overdue goals now; ${COHORT_TEAM_RULE}. Narrow with courseId or profileId; reminders repeat at most once a day per overdue goal.`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse(

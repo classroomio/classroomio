@@ -40,9 +40,6 @@ import {
   insightsForbiddenResponses
 } from './docs';
 
-const QUERY_READ_NOTE =
-  'This stays a read: it has no side effects, is cached per scope and spec, is mapped to analytics:read, and is metered as a read.';
-
 const insightsQueryRateLimit = createRateLimiter({
   windowMs: 60_000,
   maxRequests: 60,
@@ -89,11 +86,11 @@ export const v1AnalyticsInsightsRouter = new Hono()
   .post(
     '/query',
     describeRoute({
-      description: `Run one insights query for a cohort, course or organization scope; ${INSIGHTS_SCOPE_RULE}. Call the catalog first to choose a source, metrics and filters. ${QUERY_READ_NOTE}`,
+      description: `Run one insights query for a cohort, course or organization scope; ${INSIGHTS_SCOPE_RULE}. Call the catalog first.`,
       tags: [INSIGHTS_TAG],
       responses: {
         200: jsonResponse(
-          'Query result returned; meta.range reports the range actually used (the Free plan sees at most the last 7 days), and pagination carries the page, limit, total and totalPages',
+          'Query result returned with meta and pagination; meta.range reports the range actually used',
           itemWithMetaAndPaginationResponse(ZPublicApiInsightsQueryDataResponse, ZPublicApiInsightsQueryMeta)
         ),
         400: errorResponses.badRequest,
@@ -125,7 +122,7 @@ export const v1AnalyticsInsightsRouter = new Hono()
   .get(
     '/dashboards/:scopeType/:scopeId',
     describeRoute({
-      description: `Get one insights dashboard snapshot, with the first page of every visible widget and the default or requested course, exercise, breakdown and range; ${INSIGHTS_SCOPE_RULE}. The students table is served by its own endpoint instead of inside the snapshot.`,
+      description: `Get an insights dashboard snapshot; ${INSIGHTS_SCOPE_RULE}. Widgets carry first pages; students have their own endpoint.`,
       tags: [INSIGHTS_TAG],
       responses: {
         200: jsonResponse(
@@ -161,7 +158,7 @@ export const v1AnalyticsInsightsRouter = new Hono()
   .get(
     '/students',
     describeRoute({
-      description: `List the students of a scope with progress, score, activity, certificates, status and overdue state, from the same table the dashboards show; ${INSIGHTS_SCOPE_RULE}.`,
+      description: `List the students of a scope with progress, score, status, overdue state and last login; ${INSIGHTS_SCOPE_RULE}.`,
       tags: [INSIGHTS_TAG],
       responses: {
         200: jsonResponse('Students returned successfully', paginatedResponse(ZPublicApiInsightsStudentRowResponse)),

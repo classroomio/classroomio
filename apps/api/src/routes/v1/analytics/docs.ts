@@ -6,7 +6,7 @@ export const ORG_TEAM_RULE = 'the key creator must be an org admin or tutor';
 export const ORG_ADMIN_RULE = 'the key creator must be an org admin';
 export const COURSE_TEAM_RULE = 'the key creator must be a course tutor/admin or an org admin';
 export const INSIGHTS_SCOPE_RULE =
-  'the key creator must be an org admin for org scope, a cohort admin or tutor for cohort scope, or a course admin or tutor for course scope';
+  'org scope needs an org admin; cohort/course scopes need their admin or tutor, or an org admin';
 export const CACHE_NOTE =
   'each section is cached for up to 10 minutes (login activity: 24 hours), and meta.generatedAt says when the oldest one was computed';
 export const LIST_CACHE_NOTE = 'results may be cached for up to 10 minutes';

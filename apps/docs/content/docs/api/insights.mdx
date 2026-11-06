@@ -46,7 +46,7 @@ Ask for at-risk students in a cohort, worst first, for example:
 }
 ```
 
-The spec takes 1 to 16 measures, up to 2 dimensions, up to 10 filters, and up to 3 sort columns. `limit` caps at 1000 rows (default 25) and `page` at 4000; together they address at most the first 100,000 rows. A filter value starting with `$` is rejected: placeholders are dashboard-internal.
+The spec takes 1 to 16 measures, up to 2 dimensions, up to 10 filters, and up to 3 sort columns. `limit` caps at 1000 rows (default 25) and `page` at 4000. The starting row offset, `(page - 1) * limit`, cannot exceed 100,000. Paging a snapshot widget through the query endpoint accepts the same bounded `minGroupRows`, so its group cutoff keeps the same groups. A filter value starting with `$` is rejected: placeholders are dashboard-internal.
 
 The response carries the columns, the rows, a `meta` block, and a `pagination` block:
 
@@ -55,11 +55,12 @@ The response carries the columns, the rows, a `meta` block, and a `pagination` b
   "success": true,
   "data": {
     "columns": [
-      { "key": "student", "role": "dimension", "valueType": "id" },
+      { "key": "student_id", "role": "dimension", "valueType": "id" },
+      { "key": "student_label", "role": "dimension", "valueType": "text" },
       { "key": "name__value", "role": "measure", "valueType": "text" },
       { "key": "avg_score_pct__avg", "role": "measure", "valueType": "percent" }
     ],
-    "rows": [{ "student": "33333333-3333-4333-8333-333333333333", "name__value": "Ana", "avg_score_pct__avg": 42 }]
+    "rows": [{ "student_id": "33333333-3333-4333-8333-333333333333", "student_label": "Ana", "name__value": "Ana", "avg_score_pct__avg": 42 }]
   },
   "meta": { "generatedAt": "2026-11-06T10:00:00.000Z", "cached": false, "range": "7d" },
   "pagination": { "page": 1, "limit": 25, "total": 1, "totalPages": 1 }
@@ -88,11 +89,11 @@ curl "https://api.classroomio.com/public-api/v1/analytics/insights/students?scop
   -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
 ```
 
-`sort` is `status`, `name`, `progress`, `score`, or `lastLogin` (default `status`), with an optional `dir`. Without `dir` every sort uses its natural direction: at-risk students first for `status`, lowest progress or score first, names A–Z, and most recent login first. Filter with `courseId`, `search` (name or email, at most 100 characters), `status`, or `isOverdue`. `limit` caps at 100 (default 20) and `page` at 4000; together they address at most the first 100,000 rows. The response is the usual `{ data, pagination }` shape.
+`sort` is `status`, `name`, `progress`, `score`, or `lastLogin` (default `status`), with an optional `dir`. Without `dir` every sort uses its natural direction: at-risk students first for `status`, lowest progress or score first, names A–Z, and most recent login first. Filter with `courseId`, `search` (name or email, at most 100 characters), `status`, or `isOverdue`. `limit` caps at 100 (default 20) and `page` at 4000. The starting row offset, `(page - 1) * limit`, cannot exceed 100,000. The response is the usual `{ data, pagination }` shape.
 
 ## The effective range and freshness
 
-Every external surface reports the range actually used. The Free plan reads at most the last 7 days, so `meta.range` (queries) and each widget's spec range (snapshots) may be narrower than requested. Results are cached per scope and spec hash: `meta.generatedAt` (queries) and `generatedAt` (snapshots) say when the result was computed, and `meta.cached` says whether it came from the cache.
+Every external surface reports the range actually used. The Free plan reads at most the last 7 days, so `meta.range` (queries) and each widget's spec range (snapshots) may be narrower than requested. Results are cached per scope and spec hash. For queries, `meta.generatedAt` says when the result was computed and `meta.cached` says whether it came from the cache. For snapshots, `generatedAt` says when the snapshot was assembled, not when its cached widget results were computed.
 
 ## The difference from the older Analytics endpoints
 

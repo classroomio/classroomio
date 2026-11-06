@@ -16,9 +16,14 @@ vi.mock('@api/services/insights/plan', () => ({
   resolveInsightsRange: vi.fn(async (_orgId: unknown, range: unknown) => range)
 }));
 
+vi.mock('@api/services/insights/structure', () => ({
+  getInsightsCourseStructure: vi.fn()
+}));
+
 import { resolveAuthorizedScope } from '@api/services/insights/authorize';
 import { getInsightsDashboardForScope } from '@api/services/insights/dashboards';
 import { resolveInsightsRange } from '@api/services/insights/plan';
+import { getInsightsCourseStructure } from '@api/services/insights/structure';
 import { runInsightsQueryForScope } from '@api/services/insights/query';
 import { getInsightsDashboardSnapshotForActor } from '@api/services/insights/snapshot';
 import type { InsightsCourseStructure, InsightsDashboard } from '@api/services/insights/types';
@@ -236,14 +241,51 @@ describe('getInsightsDashboardSnapshotForActor', () => {
     expect(vi.mocked(runInsightsQueryForScope)).not.toHaveBeenCalled();
   });
 
+  it('rejects a lesson id passed as exerciseId with 404', async () => {
+    vi.mocked(getInsightsDashboardForScope).mockResolvedValue(
+      dashboardOf([widget('w_course')], { scopeType: 'course' })
+    );
+
+    await expect(
+      getInsightsDashboardSnapshotForActor(ACTOR, COURSE_SCOPE, { courseId: COURSE_ID, exerciseId: 'lesson-1' })
+    ).rejects.toMatchObject({ code: ErrorCodes.INSIGHTS_SCOPE_NOT_FOUND, statusCode: 404 });
+    expect(vi.mocked(runInsightsQueryForScope)).not.toHaveBeenCalled();
+  });
+
+  it('loads the course structure to validate an exercise when none was preloaded', async () => {
+    vi.mocked(getInsightsDashboardForScope).mockResolvedValue(
+      dashboardOf([widget('w_course')], { scopeType: 'org', structures: [] })
+    );
+    vi.mocked(getInsightsCourseStructure).mockResolvedValue(STRUCTURE);
+
+    await expect(
+      getInsightsDashboardSnapshotForActor(ACTOR, ORG_SCOPE, { courseId: COURSE_ID, exerciseId: 'nope' })
+    ).rejects.toMatchObject({ code: ErrorCodes.INSIGHTS_SCOPE_NOT_FOUND, statusCode: 404 });
+
+    expect(vi.mocked(getInsightsCourseStructure)).toHaveBeenCalledWith(ORG_ID, COURSE_ID);
+    expect(vi.mocked(runInsightsQueryForScope)).not.toHaveBeenCalled();
+  });
+
   it('reports the effective range on the Free plan in the selection and every widget spec', async () => {
     vi.mocked(getInsightsDashboardForScope).mockResolvedValue(dashboardOf([widget('w_range', { usesRange: true })]));
     vi.mocked(resolveInsightsRange).mockResolvedValueOnce('7d');
+    vi.mocked(runInsightsQueryForScope).mockResolvedValueOnce({ ...queryOk(), range: '7d' });
 
     const snapshot = await getInsightsDashboardSnapshotForActor(ACTOR, COHORT_SCOPE, { range: 'all' });
 
     expect(resolveInsightsRange).toHaveBeenCalledWith(ORG_ID, 'all');
     expect(snapshot.selection.range).toBe('7d');
+    expect(snapshot.widgets).toHaveLength(1);
+    expect(snapshot.widgets[0]?.spec.range).toBe('7d');
+  });
+
+  it('reports the executed range in a widget spec that ignores range', async () => {
+    vi.mocked(getInsightsDashboardForScope).mockResolvedValue(dashboardOf([widget('w_plain')]));
+    vi.mocked(resolveInsightsRange).mockResolvedValueOnce('7d');
+    vi.mocked(runInsightsQueryForScope).mockResolvedValueOnce({ ...queryOk(), range: '7d' });
+
+    const snapshot = await getInsightsDashboardSnapshotForActor(ACTOR, COHORT_SCOPE, { range: 'all' });
+
     expect(snapshot.widgets).toHaveLength(1);
     expect(snapshot.widgets[0]?.spec.range).toBe('7d');
   });
