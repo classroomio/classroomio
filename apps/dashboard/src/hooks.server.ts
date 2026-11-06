@@ -1,4 +1,4 @@
-import { getSessionData } from '$lib/utils/services/auth/session';
+import { createAnonymousLocals, getSessionData } from '$lib/utils/services/auth/session';
 import { getHasCioCookies } from '$lib/utils/functions/cookies';
 import { applyCspExtensions } from '$lib/utils/csp';
 import { proxyRequestToApi, shouldForwardToApi } from '$lib/utils/proxy-api-request';
@@ -121,9 +121,7 @@ export const handle: Handle = async (args) => {
   console.log('page path', event.url.pathname);
   const sessionData = await getSessionData(event.cookies);
 
-  if (sessionData) {
-    event.locals = sessionData;
-  }
+  event.locals = sessionData ?? createAnonymousLocals();
 
   const isApiRequest = event.url.pathname.includes('/api');
   let analyticsSetCookie: string | null = null;

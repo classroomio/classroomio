@@ -35,7 +35,15 @@ export async function getThroughTrpc(allCookies: string) {
   return data;
 }
 
-export async function getThroughAuthClient(allCookies: string) {
+/**
+ * Locals for a request with no signed-in user, so every field typed on
+ * `App.Locals` is present on anonymous requests too.
+ */
+export function createAnonymousLocals(): App.Locals {
+  return { user: null, session: null, orgRoles: {} };
+}
+
+export async function getThroughAuthClient(allCookies: string): Promise<App.Locals | null> {
   const session = await authServerClient.getSession({
     fetchOptions: {
       headers: {
@@ -44,5 +52,18 @@ export async function getThroughAuthClient(allCookies: string) {
     }
   });
 
-  return session.data as App.Locals | null;
+  if (!session.data) return null;
+
+  // The API's customSession plugin adds orgRoles, which this untyped auth client does not declare.
+  const sessionData = session.data as {
+    user: App.Locals['user'];
+    session: App.Locals['session'];
+    orgRoles?: Record<string, number>;
+  };
+
+  return {
+    user: sessionData.user,
+    session: sessionData.session,
+    orgRoles: sessionData.orgRoles ?? {}
+  };
 }
