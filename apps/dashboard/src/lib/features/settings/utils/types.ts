@@ -27,3 +27,8 @@ export type GetMemberEmailNotificationsSuccess = Extract<
   { success: true }
 >;
 export type MemberEmailNotificationPreferences = GetMemberEmailNotificationsSuccess['data'];
+
+export type BillingPortalAccess =
+  | { status: 'allowed'; customerId: string }
+  | { status: 'forbidden' }
+  | { status: 'no-customer' };
