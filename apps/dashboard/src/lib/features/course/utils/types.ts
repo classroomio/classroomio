@@ -520,11 +520,6 @@ export type ResetMemberCourseProgressResponse = InferResponseType<ResetMemberCou
 export type ResetMemberCourseProgressSuccess = Extract<ResetMemberCourseProgressResponse, { success: true }>;
 export type ResetMemberCourseProgressSummary = ResetMemberCourseProgressSuccess['data'];
 
-export type GetCourseAnalyticsRequest = (typeof classroomio.course)[':courseId']['analytics']['$get'];
-export type GetCourseAnalyticsResponse = InferResponseType<GetCourseAnalyticsRequest>;
-export type GetCourseAnalyticsSuccess = Extract<GetCourseAnalyticsResponse, { success: true }>;
-export type CourseAnalytics = GetCourseAnalyticsSuccess['data'];
-
 export type GetCourseComplianceOverviewRequest = (typeof classroomio.course)[':courseId']['compliance']['$get'];
 export type GetCourseComplianceOverviewResponse = InferResponseType<GetCourseComplianceOverviewRequest>;
 export type GetCourseComplianceOverviewSuccess = Extract<GetCourseComplianceOverviewResponse, { success: true }>;
