@@ -351,6 +351,13 @@ describe('insights presets', () => {
         { field: 'days_overdue__value', dir: 'desc' }
       ]);
     });
+
+    it('ranks hardest exercises on graded attempts only', () => {
+      const hardest = INSIGHTS_PRESETS.course.find((widget) => widget.id === 'hardest_exercises');
+
+      expect(hardest?.spec.filters).toContainEqual({ field: 'is_graded', op: 'is_true' });
+      expect(hardest?.spec.minGroupRows).toBe(3);
+    });
   });
 
   describe('paired widgets', () => {
