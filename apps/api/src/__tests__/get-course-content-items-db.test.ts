@@ -225,4 +225,28 @@ describe.skipIf(!hasDatabase)('getCourseContentItems / getCourseContentStructure
     expect(byId.get(passedExerciseId)?.isComplete).toBe(true);
     expect(byId.get(failedPassedExerciseId)?.isComplete).toBe(false);
   });
+
+  it('includes a legacy lesson-linked exercise in getExerciseProgressionPolicies', async () => {
+    const { getExerciseProgressionPolicies } = await import('@cio/db/queries/course/progression');
+
+    const policies = await getExerciseProgressionPolicies(courseId);
+
+    expect(policies.some((policy) => policy.id === lessonOnlyExerciseId)).toBe(true);
+    expect(policies.some((policy) => policy.id === directExerciseId)).toBe(true);
+  });
+
+  it('includes a legacy lesson-linked exercise completed by a group member in getCompletedExerciseIdsForMember', async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    const { getCompletedExerciseIdsForMember } = await import('@cio/db/queries/course/progression');
+
+    await db
+      .insert(schema.submission)
+      .values({ exerciseId: lessonOnlyExerciseId, courseId, submittedBy: memberId, statusId: 1 });
+
+    const completedIds = await getCompletedExerciseIdsForMember(courseId, memberId);
+
+    expect(completedIds.has(lessonOnlyExerciseId)).toBe(true);
+    expect(completedIds.has(directExerciseId)).toBe(false);
+  });
 });
