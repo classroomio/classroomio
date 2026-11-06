@@ -21,6 +21,17 @@ describe('resolveBillingPortalAccess', () => {
     });
   });
 
+  it('allows an admin when the stored plan uses the webhook customer id format', () => {
+    const webhookFormat = membership({
+      plans: [{ planName: 'EARLY_ADOPTER', isActive: true, customer_id: 'cus_456' }]
+    });
+
+    expect(resolveBillingPortalAccess([webhookFormat], ORG_ID)).toEqual({
+      status: 'allowed',
+      customerId: 'cus_456'
+    });
+  });
+
   it('forbids tutors and students of the org', () => {
     expect(resolveBillingPortalAccess([membership({ roleId: 2 })], ORG_ID)).toEqual({ status: 'forbidden' });
     expect(resolveBillingPortalAccess([membership({ roleId: 3 })], ORG_ID)).toEqual({ status: 'forbidden' });

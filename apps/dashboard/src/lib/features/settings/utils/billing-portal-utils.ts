@@ -5,7 +5,7 @@ import type { BillingPortalAccess } from './types';
 type BillingPortalOrganization = {
   id: string;
   roleId?: number | null;
-  plans?: Array<OrgPlanLike & { customerId?: string | null }> | null;
+  plans?: Array<OrgPlanLike & { customerId?: string | null; customer_id?: string | null }> | null;
 };
 
 /**
@@ -21,7 +21,8 @@ export function resolveBillingPortalAccess(
     return { status: 'forbidden' };
   }
 
-  const customerId = getActiveOrgPlan(organization.plans)?.customerId;
+  const activePlan = getActiveOrgPlan(organization.plans);
+  const customerId = activePlan?.customerId ?? activePlan?.customer_id;
   if (!customerId) {
     return { status: 'no-customer' };
   }
