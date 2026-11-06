@@ -42,7 +42,7 @@ a{color:#1447e6}a:hover{color:#1c398e}
 .cio-dot3{animation:cioPulse 1s .4s infinite}
 </style>
 </helmet>
-<div ref="{{setRoot}}" style="position: relative; width: 100%; height: 900px; overflow: hidden; background: #ffffff; color: #0a0a0a; font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; display: flex;">
+<div ref="{{setRoot}}" style="position: relative; width: 100%; height: 100vh; min-height: 620px; overflow: hidden; background: #ffffff; color: #0a0a0a; font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; display: flex;">
 
   <aside style="width: 264px; flex-shrink: 0; border-right: 1px solid #e5e5e5; background: #fafafa; display: flex; flex-direction: column; padding: 16px 12px; gap: 4px; box-sizing: border-box;">
     <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px;">
@@ -71,7 +71,7 @@ a{color:#1447e6}a:hover{color:#1c398e}
       <div style="flex: 1;"></div>
       <div style="position: relative; display: inline-flex; height: 36px;">
         <button type="button" onClick="{{toggleAssistant}}" aria-label="{{assistantLabel}}" data-tip="{{assistantLabel}}" aria-pressed="{{assistantOpenAttr}}" style="{{assistantBtnStyle}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>Assistant</button>
-        <button type="button" onClick="{{popOut}}" aria-label="{{popLabel}}" data-tip="{{popLabel}}" data-tip-end="" aria-pressed="{{floatingAttr}}" style="{{popBtnStyle}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"></path><rect x="12" y="13" width="10" height="7" rx="2"></rect></svg></button>
+        <button type="button" onClick="{{popOut}}" aria-label="{{popLabel}}" data-tip="{{popLabel}}" data-tip-end="" aria-pressed="{{floatingAttr}}" style="{{popBtnStyle}}"><sc-if value="{{isFloatingMode}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10h6V4"></path><path d="m2 4 6 6"></path><path d="M21 10V7a2 2 0 0 0-2-2h-7"></path><path d="M3 14v2a2 2 0 0 0 2 2h3"></path><rect x="12" y="14" width="10" height="7" rx="1"></rect></svg></sc-if><sc-if value="{{isNotFloatingMode}}" hint-placeholder-val="{{true}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"></path><rect x="12" y="13" width="10" height="7" rx="2"></rect></svg></sc-if></button>
         <sc-if value="{{showHint}}" hint-placeholder-val="{{true}}">
           <div role="status" style="position: absolute; z-index: 40; top: calc(100% + 10px); right: 0; width: 244px; box-sizing: border-box; padding: 10px 10px 10px 12px; border-radius: 10px; background: #ffffff; border: 1px solid #e5e5e5; color: #404040; box-shadow: 0 6px 20px rgba(15,23,42,.08); display: flex; align-items: flex-start; gap: 8px;">
             <div style="position: absolute; top: -5px; right: 14px; width: 9px; height: 9px; background: #ffffff; border-left: 1px solid #e5e5e5; border-top: 1px solid #e5e5e5; transform: rotate(45deg);"></div>
@@ -717,9 +717,23 @@ class Component extends DCLogic {
       return;
     }
 
-    const placed = this.clamp(this.state.width - this.state.w - 12, this.state.height - this.state.h - 12, this.state.w, this.state.h, this.state.width, this.state.height);
+    const fitH = Math.min(this.state.h, this.state.height - 84);
+    const fitW = Math.min(this.state.w, this.state.width - 24);
+    const placed = this.clamp(this.state.width - fitW - 12, this.state.height - fitH - 12, fitW, fitH, this.state.width, this.state.height);
 
-    this.setState({ mode: 'floating', x: placed.x, y: placed.y, moreOpen: false, hasUnread: false, selChip: null });
+    this.setState({ mode: 'floating', x: placed.x, y: placed.y, w: fitW, h: fitH, moreOpen: false, hasUnread: false, selChip: null });
+  }
+
+  popOut() {
+    if (this.state.hintOpen) this.dismissHint();
+
+    if (this.state.mode === 'floating') {
+      this.setState({ mode: 'closed', moreOpen: false, selChip: null });
+
+      return;
+    }
+
+    this.toggleDock();
   }
 
   toggleAssistant() {
@@ -1167,7 +1181,7 @@ class Component extends DCLogic {
     const edgeTabStyle = 'position: absolute; z-index: 25; right: 0px; top: ' + edgeTop + 'px; width: 40px; padding: 14px 0; border-radius: 12px 0 0 12px; border: 0; background: #1447e6; color: #ffffff; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; box-shadow: -6px 8px 24px rgba(20,71,230,.30);';
 
     const reserve = isDocked ? DOCK_W : 0;
-    const mainStyle = 'flex: 1; min-width: 0; display: flex; flex-direction: column; height: 900px; box-sizing: border-box; padding-right: ' + reserve + 'px; transition: padding-right .32s cubic-bezier(.2,.8,.2,1);';
+    const mainStyle = 'flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; padding-right: ' + reserve + 'px; transition: padding-right .32s cubic-bezier(.2,.8,.2,1);';
 
     const headerStyle = 'display: flex; align-items: center; justify-content: space-between; gap: 8px; user-select: none; cursor: ' + (isFloating ? (state.dragging ? 'grabbing' : 'grab') : 'default') + ';';
 
@@ -1243,11 +1257,13 @@ class Component extends DCLogic {
       closeCompanion: () => this.closeCompanion(),
       openFromEdge: () => this.open(),
       toggleAssistant: () => this.toggleAssistant(),
-      popOut: () => this.toggleDock(),
+      popOut: () => this.popOut(),
+      isFloatingMode: state.mode === 'floating',
+      isNotFloatingMode: state.mode !== 'floating',
       dismissHint: () => this.dismissHint(),
       showHint: isDocked && state.hintOpen,
       assistantLabel: isOpenNow ? 'Close AI assistant' : 'Open AI assistant',
-      popLabel: state.mode === 'floating' ? 'Dock to side panel' : 'Pop out chat',
+      popLabel: state.mode === 'floating' ? 'Close floating chat' : 'Pop out chat',
       floatingAttr: state.mode === 'floating' ? 'true' : 'false',
       popBtnStyle: 'height: 36px; width: 36px; border: 0; border-left: 1px solid rgba(255,255,255,.35); border-radius: 0 8px 8px 0; background: ' + (state.mode === 'floating' ? '#1c398e' : '#1447e6') + '; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 0 0 ' + (isOpenNow ? '3px' : '0px') + ' rgba(20,71,230,.25);',
       assistantOpenAttr: state.mode === 'docked' || state.mode === 'floating' ? 'true' : 'false',

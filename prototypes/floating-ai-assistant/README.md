@@ -11,8 +11,9 @@ The top bar has a combo button: **Assistant** on the left, the pop-out icon on t
 | Action | Result |
 | --- | --- |
 | Click **Assistant** | Opens the assistant docked in the side panel. Click again to close it |
-| Click the pop-out icon (docked or closed) | Opens the assistant as a floating window at the bottom right |
-| Click the pop-out icon (floating) | Docks it back into the side panel |
+| Click the pop-out icon (docked or closed) | Opens the assistant as a floating window at the bottom right, 12px from the edges and fully inside the window |
+| Click the icon while floating | The icon becomes Lucide [`picture-in-picture`](https://lucide.dev/icons/picture-in-picture) (tooltip "Close floating chat") and closes the chat, keeping the conversation |
+| Click Assistant after closing the floating chat | Opens the assistant docked in the side panel |
 | **Expand** in the floating header | Docks it back as the normal side-panel chat |
 | **Close** in the floating header | Closes the assistant |
 | Drag the grip or header (floating) | Moves the window. Release within 56px of the right edge and a dashed "Release to dock to the side" zone appears and docks it |
