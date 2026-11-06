@@ -45,6 +45,24 @@ describe('createMcpServer', () => {
 
     expect(local.filter((name) => !remote.includes(name))).toEqual(['upload_video']);
   });
+
+  it.each([
+    ['list_org_courses', true, false],
+    ['get_course_structure', true, false],
+    ['get_course_draft', true, false],
+    ['update_course_landing_page', false, false],
+    ['create_course_draft', false, false],
+    ['create_course_draft_from_course', false, false],
+    ['update_course_draft', false, false],
+    ['tag_course_draft', false, true],
+    ['publish_course_draft', false, true],
+    ['publish_course_draft_to_existing_course', false, true],
+    ['tag_courses', false, true]
+  ])('annotates %s as readOnly=%s, destructive=%s', async (name, readOnlyHint, destructiveHint) => {
+    const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
+
+    expect(tools.find((tool) => tool.name === name)?.annotations).toMatchObject({ readOnlyHint, destructiveHint });
+  });
 });
 
 describe('ClassroomIoApiClient transport', () => {
@@ -71,5 +89,30 @@ describe('ClassroomIoApiClient transport', () => {
     expect(requests).toHaveLength(1);
     expect(requests[0]!.headers.get('authorization')).toBe('Bearer token-1');
     expect(requests[0]!.headers.get('cf-connecting-ip')).toBe('203.0.113.7');
+  });
+
+  it('lists courses through the public API and keeps the pagination', async () => {
+    const requests: Request[] = [];
+    const pagination = { page: 2, limit: 20, total: 21, totalPages: 2 };
+    const apiClient = new ClassroomIoApiClient(
+      {
+        CLASSROOMIO_API_URL: 'https://api.example.com',
+        CLASSROOMIO_API_KEY: 'token-1',
+        CLASSROOMIO_USER_AGENT: 'agent'
+      },
+      {
+        fetch: async (input, init) => {
+          requests.push(new Request(input, init));
+
+          return new Response(JSON.stringify({ success: true, data: [{ id: 'course-1' }], pagination }));
+        }
+      }
+    );
+
+    const result = await apiClient.listOrganizationCourses({ page: 2, search: 'safety' });
+
+    expect(new URL(requests[0]!.url).pathname).toBe('/public-api/v1/courses');
+    expect(new URL(requests[0]!.url).searchParams.get('search')).toBe('safety');
+    expect(result).toEqual({ data: [{ id: 'course-1' }], pagination });
   });
 });

@@ -33,7 +33,7 @@ function buildApp() {
       return c.json({ success: true }, 201);
     })
     .post('/public-api/v1/cohorts/:cohortId/members', (c) => c.json({ success: false }, 400))
-    .get('/public-api/v1/courses', (c) => c.json({ success: true }, 200));
+    .get('/public-api/v1/courses/:courseId', (c) => c.json({ success: true }, 200));
 }
 
 describe('v1McpUsageMiddleware', () => {
@@ -109,15 +109,15 @@ describe('v1McpUsageMiddleware', () => {
   });
 
   it('falls back to the method+route action with zero credits for an unmapped route', async () => {
-    const response = await buildApp().request('/public-api/v1/courses', { method: 'GET' });
+    const response = await buildApp().request('/public-api/v1/courses/c1', { method: 'GET' });
 
     expect(response.status).toBe(200);
     expect(mocks.reserve).toHaveBeenCalledWith(expect.anything(), 'read', 'pending GET');
-    expect(mocks.complete).toHaveBeenCalledWith('reservation-id', 'GET /public-api/v1/courses', 0);
+    expect(mocks.complete).toHaveBeenCalledWith('reservation-id', 'GET /public-api/v1/courses/:courseId', 0);
   });
 
   it('reserves HEAD as a read, matching publicApiScopesMiddleware', async () => {
-    await buildApp().request('/public-api/v1/courses', { method: 'HEAD' });
+    await buildApp().request('/public-api/v1/courses/c1', { method: 'HEAD' });
 
     expect(mocks.reserve).toHaveBeenCalledWith(expect.objectContaining({ id: 'key-id' }), 'read', 'pending HEAD');
   });
