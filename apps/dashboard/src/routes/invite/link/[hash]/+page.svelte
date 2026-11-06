@@ -88,7 +88,15 @@
   <title>{$t('invite.link.page_title', { orgName: data.invite.organization.name })}</title>
 </svelte:head>
 
-<AuthUI isLogin={false} {handleSubmit} isLoading={loading} showOnlyContent={true} showLogo={true}>
+<AuthUI
+  isLogin={false}
+  {handleSubmit}
+  isLoading={loading}
+  showOnlyContent={true}
+  showLogo={true}
+  logoName={orgName}
+  logoUrl={data.invite.organization.avatarUrl}
+>
   <div class="mt-0 w-full">
     <p class="text-center text-sm font-light dark:text-white">
       {#if inviteRoleId === ROLE.STUDENT}
