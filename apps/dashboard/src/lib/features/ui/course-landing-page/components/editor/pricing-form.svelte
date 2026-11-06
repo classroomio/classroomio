@@ -100,11 +100,12 @@
       <Label class="mb-2 font-bold">{$t('course.navItem.landing_page.editor.pricing_form.currency')}</Label>
       <Select.Root type="single" value={course.currency} onValueChange={(value) => setter(value, 'currency')}>
         <Select.Trigger class="w-full">
-          <p>{course.currency === 'NGN' ? 'NGN' : 'USD'}</p>
+          <p>{course.currency === 'NGN' || course.currency === 'BRL' ? course.currency : 'USD'}</p>
         </Select.Trigger>
         <Select.Content>
           <Select.Item value="NGN">NGN</Select.Item>
           <Select.Item value="USD">USD</Select.Item>
+          <Select.Item value="BRL">BRL</Select.Item>
         </Select.Content>
       </Select.Root>
     </div>
