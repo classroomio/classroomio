@@ -1,8 +1,8 @@
 import * as schema from '@db/schema';
 
-import { and, eq, or, sql, type SQL } from 'drizzle-orm';
+import { and, eq, isNull, ne, or, sql, type SQL } from 'drizzle-orm';
 
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 /** A member reference is either a literal id or a column correlated to the outer row. */
 export type ExerciseCompletionMember = { profileId: string | SQL<string> } | { groupMemberId: string | SQL<string> };
@@ -171,9 +171,52 @@ export async function getCompletedExerciseIdsForMember(courseId: string, groupMe
   }
 }
 
-export async function getCompletedLessonIdsForProfile(courseId: string, profileId: string): Promise<Set<string>> {
+/**
+ * Returns the exercise IDs one profile has completed in a course, directly by profile id (no
+ * group member lookup). Split into a direct and a legacy-lesson-linked leg instead of one
+ * `exercise.course_id = $1 OR lesson.course_id = $1` over a left join, for the same reason as
+ * `getCourseContentStructure`'s exercise union: that `OR` blocks index use on both sides, and this
+ * runs on every content-access check, uncached.
+ */
+export async function getCompletedExerciseIdsForProfile(
+  courseId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<Set<string>> {
   try {
-    const rows = await db
+    const completed = isExerciseCompletedSql('exercise', { profileId });
+    const [direct, legacy] = await Promise.all([
+      dbClient
+        .select({ id: schema.exercise.id })
+        .from(schema.exercise)
+        .where(and(eq(schema.exercise.courseId, courseId), completed)),
+      dbClient
+        .select({ id: schema.exercise.id })
+        .from(schema.exercise)
+        .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+        .where(
+          and(
+            or(isNull(schema.exercise.courseId), ne(schema.exercise.courseId, courseId)),
+            eq(schema.lesson.courseId, courseId),
+            completed
+          )
+        )
+    ]);
+
+    return new Set([...direct, ...legacy].map((row) => row.id));
+  } catch (error) {
+    console.error('getCompletedExerciseIdsForProfile error:', error);
+    throw new Error(`Failed to get completed exercises: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function getCompletedLessonIdsForProfile(
+  courseId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<Set<string>> {
+  try {
+    const rows = await dbClient
       .select({ lessonId: schema.lessonCompletion.lessonId })
       .from(schema.lessonCompletion)
       .innerJoin(schema.lesson, eq(schema.lessonCompletion.lessonId, schema.lesson.id))
