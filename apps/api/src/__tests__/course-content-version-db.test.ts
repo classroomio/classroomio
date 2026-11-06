@@ -95,4 +95,26 @@ describe.skipIf(!hasDatabase)('getCourseContentVersion against the database', ()
     const after = await getCourseContentVersion(courseId);
     expect(after).not.toBe(before);
   });
+
+  it('changes when a legacy lesson-linked exercise (no course_id of its own) is edited or deleted', async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    const { getCourseContentVersion } = await import('@db/queries/course/content-timestamp');
+
+    const [legacyExercise] = await db
+      .insert(schema.exercise)
+      .values({ title: 'Legacy exercise', slug: `legacy-exercise-${suffix}`, order: 3, lessonId: lessonAId })
+      .returning();
+
+    const { updateExercise } = await import('@db/queries/exercise/exercise');
+
+    const beforeEdit = await getCourseContentVersion(courseId);
+    await updateExercise(legacyExercise.id, { title: 'Legacy exercise edited' });
+    const afterEdit = await getCourseContentVersion(courseId);
+    expect(afterEdit).not.toBe(beforeEdit);
+
+    await db.delete(schema.exercise).where(eq(schema.exercise.id, legacyExercise.id));
+    const afterDelete = await getCourseContentVersion(courseId);
+    expect(afterDelete).not.toBe(afterEdit);
+  });
 });

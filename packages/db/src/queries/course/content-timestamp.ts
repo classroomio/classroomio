@@ -21,11 +21,14 @@ export function stampContentUpdatedAt<T extends object>(data: T, updatedAt = new
  * pure reorder or section move, since `contentWriteBumpsTimestamp` deliberately treats `order`
  * and `sectionId` as structural fields that don't bump `updated_at`. Folding those columns into
  * the hash itself, over a stable row order, makes every one of those writes change the stamp too.
+ *
+ * The exercise rows mirror both legs of `getCourseContentStructure`'s exercise union, including
+ * the legacy leg for exercises still linked only through the deprecated `lesson_id` column (no
+ * `course_id` of their own): that row class is still returned by the structure query, so leaving
+ * it out of the hash would mean an edit to one of those exercises never invalidates the cache.
  */
 export async function getCourseContentVersion(courseId: string, dbClient: DbOrTxClient = db): Promise<string> {
   try {
-    // Exercises still linked only through a deprecated `lesson_id` (no `course_id` of their own) are not
-    // counted here; see the exercise `course_id` backfill note in content.ts.
     const [row] = await dbClient.execute<{ version: string | null }>(sql`
       SELECT md5(
         string_agg(
@@ -39,6 +42,12 @@ export async function getCourseContentVersion(courseId: string, dbClient: DbOrTx
         SELECT id, "order", section_id, updated_at FROM lesson WHERE course_id = ${courseId}
         UNION ALL
         SELECT id, "order", section_id, updated_at FROM exercise WHERE course_id = ${courseId}
+        UNION ALL
+        SELECT exercise.id, exercise."order", exercise.section_id, exercise.updated_at
+        FROM exercise
+        JOIN lesson ON lesson.id = exercise.lesson_id
+        WHERE (exercise.course_id IS NULL OR exercise.course_id <> ${courseId})
+          AND lesson.course_id = ${courseId}
       ) course_content_rows
     `);
 
