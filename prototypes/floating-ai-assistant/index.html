@@ -20,14 +20,15 @@ a{color:#1447e6}a:hover{color:#1c398e}
 .cio-nav:hover{background:#f5f5f5}
 .cio-lesson ::selection{background:#bedbff}
 .cio-hwrap{container-type:inline-size;position:relative;flex-shrink:0}
-.cio-more{display:none !important}.cio-minlabel{display:none}
-.cio-minbtn{gap:6px}
-@container (min-width:398px){.cio-minlabel{display:inline}[data-docked="true"] .cio-minbtn{width:auto !important;padding:0 8px !important}}
+.cio-more{display:none !important}
 @container (max-width:340px){.cio-sub{display:none}}
 @container (max-width:330px){.cio-secondary{display:none !important}.cio-more{display:flex !important}}
 .cio-morepop{position:absolute;z-index:5;right:8px;top:100%;margin-top:4px;min-width:176px;padding:4px;background:#fff;color:#0a0a0a;border:1px solid #e5e5e5;border-radius:10px;box-shadow:0 12px 32px rgba(15,23,42,.18);flex-direction:column}
 .cio-morepop button{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border:0;background:transparent;border-radius:7px;font:inherit;font-size:13px;color:inherit;cursor:pointer;text-align:left}
 .cio-morepop button:hover{background:#f5f5f5}
+[data-tip]{position:relative}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);white-space:nowrap;background:#0a0a0a;color:#fff;font:500 11px/1 Geist,ui-sans-serif,system-ui,sans-serif;padding:6px 8px;border-radius:6px;z-index:60;pointer-events:none;box-shadow:0 4px 12px rgba(15,23,42,.2)}
+[data-tip-end]:hover::after,[data-tip-end]:focus-visible::after{left:auto;right:0;transform:none}
 @keyframes cioSpin{to{transform:rotate(360deg)}}
 .cio-spin{animation:cioSpin 1s linear infinite}
 .cio-prose p{margin:0}
@@ -68,8 +69,18 @@ a{color:#1447e6}a:hover{color:#1c398e}
     <header style="height: 56px; flex-shrink: 0; border-bottom: 1px solid #e5e5e5; display: flex; align-items: center; gap: 12px; padding: 0 24px; box-sizing: border-box;">
       <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; white-space: nowrap;">Components and props <span style="height: 22px; padding: 0 10px; border-radius: 999px; background: #1447e6; color: #ffffff; font-size: 12px; font-weight: 500; display: inline-flex; align-items: center;">Published</span></div>
       <div style="flex: 1;"></div>
-      <button type="button" onClick="{{toggleAssistant}}" aria-pressed="{{assistantOpenAttr}}" style="{{assistantBtnStyle}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>Assistant</button>
-      <div style="display: flex; height: 36px; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden;"><button type="button" class="cio-btn" style="padding: 0 12px; border: 0; background: #ffffff; font: inherit; font-size: 13px; font-weight: 500; color: #0a0a0a; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>View Course Site</button><button type="button" class="cio-btn" aria-label="More" style="width: 36px; border: 0; border-left: 1px solid #e5e5e5; background: #ffffff; font-size: 16px; color: #0a0a0a; cursor: pointer;">&#8942;</button></div>
+      <div style="position: relative; display: inline-flex; height: 36px;">
+        <button type="button" onClick="{{toggleAssistant}}" aria-label="{{assistantLabel}}" data-tip="{{assistantLabel}}" aria-pressed="{{assistantOpenAttr}}" style="{{assistantBtnStyle}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>Assistant</button>
+        <button type="button" onClick="{{popOut}}" aria-label="{{popLabel}}" data-tip="{{popLabel}}" data-tip-end="" aria-pressed="{{floatingAttr}}" style="{{popBtnStyle}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"></path><rect x="12" y="13" width="10" height="7" rx="2"></rect></svg></button>
+        <sc-if value="{{showHint}}" hint-placeholder-val="{{true}}">
+          <div role="status" style="position: absolute; z-index: 40; top: calc(100% + 10px); right: 0; width: 244px; box-sizing: border-box; padding: 10px 10px 10px 12px; border-radius: 10px; background: #ffffff; border: 1px solid #e5e5e5; color: #404040; box-shadow: 0 6px 20px rgba(15,23,42,.08); display: flex; align-items: flex-start; gap: 8px;">
+            <div style="position: absolute; top: -5px; right: 14px; width: 9px; height: 9px; background: #ffffff; border-left: 1px solid #e5e5e5; border-top: 1px solid #e5e5e5; transform: rotate(45deg);"></div>
+            <div style="flex: 1; font-size: 12px; line-height: 17px; color: #525252;">Tip: use the pop-out icon to float the assistant while you work.</div>
+            <button type="button" onClick="{{dismissHint}}" aria-label="Dismiss tip" data-tip="Dismiss tip" data-tip-end="" style="width: 20px; height: 20px; flex-shrink: 0; border: 0; border-radius: 6px; background: transparent; color: #a3a3a3; font-size: 14px; line-height: 1; cursor: pointer;">&#215;</button>
+          </div>
+        </sc-if>
+      </div>
+      <div style="display: flex; height: 36px; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden;"><button type="button" class="cio-btn" style="padding: 0 12px; border: 0; background: #ffffff; font: inherit; font-size: 13px; font-weight: 500; color: #0a0a0a; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>View Course Site</button><button type="button" class="cio-btn" aria-label="More" data-tip="More" style="width: 36px; border: 0; border-left: 1px solid #e5e5e5; background: #ffffff; font-size: 16px; color: #0a0a0a; cursor: pointer;">&#8942;</button></div>
     </header>
 
     <div style="flex: 1; overflow-y: auto; min-height: 0;">
@@ -133,13 +144,6 @@ a{color:#1447e6}a:hover{color:#1c398e}
     </div>
   </sc-if>
 
-  <sc-if value="{{showHint}}" hint-placeholder-val="{{true}}">
-    <div role="status" style="position: absolute; z-index: 40; top: 62px; right: 12px; width: 232px; box-sizing: border-box; padding: 10px 10px 10px 12px; border-radius: 10px; background: #ffffff; border: 1px solid #e5e5e5; color: #404040; box-shadow: 0 6px 20px rgba(15,23,42,.08); display: flex; align-items: flex-start; gap: 8px;">
-      <div style="position: absolute; top: -5px; right: 112px; width: 9px; height: 9px; background: #ffffff; border-left: 1px solid #e5e5e5; border-top: 1px solid #e5e5e5; transform: rotate(45deg);"></div>
-      <div style="flex: 1; font-size: 12px; line-height: 17px; color: #525252;">Tip: use <span style="font-weight: 500; color: #0a0a0a;">Minimize</span> to float the assistant while you work.</div>
-      <button type="button" onClick="{{dismissHint}}" aria-label="Dismiss tip" style="width: 20px; height: 20px; flex-shrink: 0; border: 0; border-radius: 6px; background: transparent; color: #a3a3a3; font-size: 14px; line-height: 1; cursor: pointer;">&#215;</button>
-    </div>
-  </sc-if>
 
   <section aria-label="AI Assistant" data-docked="{{dockedAttr}}" style="{{companionStyle}}">
     <div class="cio-hwrap" style="border-bottom: 1px solid #e5e5e5; background: #ffffff;"><div style="padding: 12px 16px;"><div onPointerDown="{{startDrag}}" onDoubleClick="{{toggleDock}}" style="{{headerStyle}}">
@@ -154,22 +158,18 @@ a{color:#1447e6}a:hover{color:#1c398e}
       </div>
       </div>
       <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-      <button type="button" class="cio-hbtn cio-secondary" onClick="{{newChat}}" aria-label="New chat" title="New chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
-      <button type="button" class="cio-hbtn cio-secondary" aria-label="Chat history" title="Chat history"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg></button>
-      <button type="button" class="cio-hbtn cio-more" onClick="{{toggleMore}}" aria-label="More actions" title="More actions" aria-expanded="{{moreOpenAttr}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
-      <button type="button" class="cio-hbtn cio-minbtn" onClick="{{toggleDock}}" aria-label="{{dockLabel}}" title="{{dockLabel}}">
-        <sc-if value="{{isFloating}}" hint-placeholder-val="{{true}}">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg>
-        </sc-if>
-        <sc-if value="{{isDocked}}" hint-placeholder-val="{{false}}">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"></path><rect x="12" y="13" width="10" height="7" rx="2"></rect></svg>
-          <span class="cio-minlabel" style="font-size: 12px; font-weight: 500;">Minimize</span>
-        </sc-if>
-      </button>
-      <sc-if value="{{canTuck}}" hint-placeholder-val="{{true}}">
-        <button type="button" class="cio-hbtn" onClick="{{tuck}}" aria-label="Tuck into the edge" title="Tuck into the edge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+      <sc-if value="{{showFullActions}}" hint-placeholder-val="{{true}}">
+      <button type="button" class="cio-hbtn cio-secondary" onClick="{{newChat}}" aria-label="New chat" data-tip="New chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+      <button type="button" class="cio-hbtn cio-secondary" aria-label="Chat history" data-tip="Chat history"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg></button>
+      <button type="button" class="cio-hbtn cio-more" onClick="{{toggleMore}}" aria-label="More actions" data-tip="More actions" aria-expanded="{{moreOpenAttr}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
       </sc-if>
-      <button type="button" class="cio-hbtn" onClick="{{closeCompanion}}" aria-label="Close" title="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+      <sc-if value="{{isFloating}}" hint-placeholder-val="{{true}}">
+        <button type="button" class="cio-hbtn" onClick="{{toggleDock}}" aria-label="Expand to side panel" data-tip="Expand to side panel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></button>
+      </sc-if>
+      <sc-if value="{{canTuck}}" hint-placeholder-val="{{true}}">
+        <button type="button" class="cio-hbtn" onClick="{{tuck}}" aria-label="Tuck into the edge" data-tip="Tuck into the edge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+      </sc-if>
+      <button type="button" class="cio-hbtn" onClick="{{closeCompanion}}" aria-label="Close" data-tip="Close" data-tip-end=""><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
       </div>
     </div>
     <sc-if value="{{usageShown}}" hint-placeholder-val="{{true}}">
@@ -237,7 +237,7 @@ a{color:#1447e6}a:hover{color:#1c398e}
               <sc-if value="{{msg.showPlan}}" hint-placeholder-val="{{false}}">
                 <div style="margin-top: 12px; border: 1px solid #e5e5e5; border-radius: 8px; background: #ffffff;">
                   <div style="{{msg.planHeadStyle}}">
-                    <button type="button" onClick="{{msg.togglePlan}}" aria-label="{{msg.planToggleLabel}}" style="border: 0; background: none; padding: 0; margin-top: 2px; color: #737373; cursor: pointer; display: flex;">
+                    <button type="button" onClick="{{msg.togglePlan}}" aria-label="{{msg.planToggleLabel}}" data-tip="{{msg.planToggleLabel}}" style="border: 0; background: none; padding: 0; margin-top: 2px; color: #737373; cursor: pointer; display: flex;">
                       <sc-if value="{{msg.planOpen}}" hint-placeholder-val="{{true}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></sc-if>
                       <sc-if value="{{msg.planClosed}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m9 18 6-6-6-6"></path></svg></sc-if>
                     </button>
@@ -352,7 +352,7 @@ a{color:#1447e6}a:hover{color:#1c398e}
       <sc-if value="{{showRunWarning}}" hint-placeholder-val="{{false}}">
         <div style="margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px; padding: 8px 12px; border: 1px solid #fde68a; border-radius: 4px; background: #fffbeb; color: #b45309; font-size: 12px; line-height: 16px;">
           <span style="flex: 1; min-width: 0;">The changes will appear in the course once the agent is done. Don't reload the page.</span>
-          <button type="button" onClick="{{dismissWarning}}" aria-label="Dismiss" class="cio-hbtn" style="border-color: #fcd34d; background: #fffbeb; color: #92400e;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+          <button type="button" onClick="{{dismissWarning}}" aria-label="Dismiss" data-tip="Dismiss" class="cio-hbtn" style="border-color: #fcd34d; background: #fffbeb; color: #92400e;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
         </div>
       </sc-if>
       <sc-if value="{{hasQuote}}" hint-placeholder-val="{{false}}">
@@ -360,7 +360,7 @@ a{color:#1447e6}a:hover{color:#1c398e}
           <div style="display: flex; gap: 8px; align-items: center; padding: 8px 12px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; line-height: 16px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path></svg>
             <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{quoteShort}}</span>
-            <button type="button" onClick="{{clearQuote}}" aria-label="Remove quote" style="border: 0; background: none; padding: 2px; color: #737373; cursor: pointer; display: flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+            <button type="button" onClick="{{clearQuote}}" aria-label="Remove quote" data-tip="Remove quote" style="border: 0; background: none; padding: 2px; color: #737373; cursor: pointer; display: flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <sc-for list="{{quoteActions}}" as="action" hint-placeholder-count="4">
@@ -372,7 +372,7 @@ a{color:#1447e6}a:hover{color:#1c398e}
       <sc-if value="{{hasAttach}}" hint-placeholder-val="{{false}}">
         <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; line-height: 16px;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span style="min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{attachName}}</span>
-          <button type="button" onClick="{{removeAttach}}" aria-label="Remove document" style="border: 0; background: none; padding: 2px; color: #737373; cursor: pointer; display: flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+          <button type="button" onClick="{{removeAttach}}" aria-label="Remove document" data-tip="Remove document" style="border: 0; background: none; padding: 2px; color: #737373; cursor: pointer; display: flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
         </div>
       </sc-if>
       <sc-if value="{{modelOpen}}" hint-placeholder-val="{{false}}">
@@ -389,13 +389,13 @@ a{color:#1447e6}a:hover{color:#1c398e}
         <label for="cio-ai-input" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Ask the AI assistant</label>
         <textarea id="cio-ai-input" rows="2" value="{{draft}}" onChange="{{onDraft}}" onKeyDown="{{onDraftKey}}" disabled="{{busy}}" placeholder="Ask the AI assistant..." style="display: block; width: 100%; box-sizing: border-box; border: 0; outline: none; resize: none; background: transparent; padding: 8px 12px; font: inherit; font-size: 14px; line-height: 20px; color: #0a0a0a; max-height: 128px;"></textarea>
         <div style="display: flex; align-items: center; gap: 4px; padding: 0 8px 8px;">
-          <button type="button" class="cio-model" onClick="{{attachFile}}" aria-label="Attach a document (PDF, DOCX, PPTX, ODT)" title="Attach a document (PDF, DOCX, PPTX, ODT)" style="border: 0; background: transparent; padding: 6px; border-radius: 6px; color: #737373; cursor: pointer; display: flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button>
+          <button type="button" class="cio-model" onClick="{{attachFile}}" aria-label="Attach a document (PDF, DOCX, PPTX, ODT)" data-tip="Attach a document (PDF, DOCX, PPTX, ODT)" style="border: 0; background: transparent; padding: 6px; border-radius: 6px; color: #737373; cursor: pointer; display: flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button>
           <div style="flex: 1;"></div>
           <sc-if value="{{busy}}" hint-placeholder-val="{{false}}">
-            <button type="button" class="cio-btn" onClick="{{stopAll}}" aria-label="Stop" style="width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e5e5e5; background: #ffffff; color: #0a0a0a; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><rect width="18" height="18" x="3" y="3" rx="2"></rect></svg></button>
+            <button type="button" class="cio-btn" onClick="{{stopAll}}" aria-label="Stop" data-tip="Stop" style="width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e5e5e5; background: #ffffff; color: #0a0a0a; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><rect width="18" height="18" x="3" y="3" rx="2"></rect></svg></button>
           </sc-if>
           <sc-if value="{{idle}}" hint-placeholder-val="{{true}}">
-            <button type="button" class="cio-model" onClick="{{toggleModel}}" aria-expanded="{{modelOpenAttr}}" style="border: 0; background: transparent; padding: 4px 8px; border-radius: 6px; color: #737373; font: inherit; font-size: 12px; line-height: 16px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <button type="button" class="cio-model" onClick="{{toggleModel}}" data-tip="Choose model" aria-expanded="{{modelOpenAttr}}" style="border: 0; background: transparent; padding: 4px 8px; border-radius: 6px; color: #737373; font: inherit; font-size: 12px; line-height: 16px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
               <span style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{modelLabel}}</span><span style="{{modelCostStyle}}">{{modelCost}}</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg>
             </button>
           </sc-if>
@@ -409,7 +409,7 @@ a{color:#1447e6}a:hover{color:#1c398e}
   </section>
 
   <sc-if value="{{showEdgeTab}}" hint-placeholder-val="{{false}}">
-    <button type="button" onClick="{{openFromEdge}}" aria-label="Open AI Assistant" style="{{edgeTabStyle}}">
+    <button type="button" onClick="{{openFromEdge}}" aria-label="Open AI Assistant" data-tip="Open AI Assistant" style="{{edgeTabStyle}}">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>
       <span style="writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px; font-weight: 500; letter-spacing: .02em;">AI Assistant</span>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
@@ -714,15 +714,15 @@ class Component extends DCLogic {
   toggleDock() {
     if (this.state.hintOpen) this.dismissHint();
 
-    if (this.state.mode === 'docked') {
-      const placed = this.clamp(this.state.width - this.state.w - 32, 72, this.state.w, this.state.h, this.state.width, this.state.height);
-
-      this.setState({ mode: 'floating', x: placed.x, y: placed.y });
+    if (this.state.mode === 'floating') {
+      this.setState({ mode: 'docked', moreOpen: false });
 
       return;
     }
 
-    this.setState({ mode: 'docked' });
+    const placed = this.clamp(this.state.width - this.state.w - 24, this.state.height - this.state.h - 24, this.state.w, this.state.h, this.state.width, this.state.height);
+
+    this.setState({ mode: 'floating', x: placed.x, y: placed.y, moreOpen: false, hasUnread: false, selChip: null });
   }
 
   toggleAssistant() {
@@ -1018,6 +1018,7 @@ class Component extends DCLogic {
     const state = this.state;
     const isFloating = state.mode === 'floating' && state.width >= 760;
     const isDocked = state.mode === 'docked' && state.width >= 760;
+    const isOpenNow = state.mode === 'docked' || state.mode === 'floating';
     const hidden = state.mode === 'tucked' || state.mode === 'closed';
 
     const blocks = state.blocks.map((block) => {
@@ -1222,8 +1223,8 @@ class Component extends DCLogic {
       placeholder: state.quote ? 'Ask about the quoted text…' : 'Ask about this lesson…',
       isFloating,
       isDocked,
-      dockLabel: isDocked ? 'Pop out as floating window' : 'Expand to side panel',
-      canTuck: state.width >= 760,
+      showFullActions: !isFloating,
+      canTuck: isDocked,
       moreOpen: state.moreOpen,
       moreOpenAttr: state.moreOpen ? 'true' : 'false',
       toggleMore: () => this.toggleMore(),
@@ -1246,10 +1247,15 @@ class Component extends DCLogic {
       closeCompanion: () => this.closeCompanion(),
       openFromEdge: () => this.open(),
       toggleAssistant: () => this.toggleAssistant(),
+      popOut: () => this.toggleDock(),
       dismissHint: () => this.dismissHint(),
       showHint: isDocked && state.hintOpen,
+      assistantLabel: isOpenNow ? 'Close AI assistant' : 'Open AI assistant',
+      popLabel: state.mode === 'floating' ? 'Dock to side panel' : 'Pop out as floating window',
+      floatingAttr: state.mode === 'floating' ? 'true' : 'false',
+      popBtnStyle: 'height: 36px; width: 36px; border: 0; border-left: 1px solid rgba(255,255,255,.35); border-radius: 0 8px 8px 0; background: ' + (state.mode === 'floating' ? '#1c398e' : '#1447e6') + '; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 0 0 ' + (isOpenNow ? '3px' : '0px') + ' rgba(20,71,230,.25);',
       assistantOpenAttr: state.mode === 'docked' || state.mode === 'floating' ? 'true' : 'false',
-      assistantBtnStyle: 'height: 36px; padding: 0 12px; border-radius: 8px; border: 0; background: #1447e6; font: inherit; font-size: 13px; font-weight: 500; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 0 ' + (state.mode === 'docked' || state.mode === 'floating' ? '3px' : '0px') + ' rgba(20,71,230,.25);',
+      assistantBtnStyle: 'height: 36px; padding: 0 12px; border-radius: 8px 0 0 8px; border: 0; background: #1447e6; font: inherit; font-size: 13px; font-weight: 500; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 0 ' + (isOpenNow ? '3px' : '0px') + ' rgba(20,71,230,.25);',
       newChat: () => this.newChat(),
       clearQuote: () => this.clearQuote(),
       askAboutSelection: () => this.askAboutSelection(),
