@@ -18,6 +18,7 @@ const AUDIENCE_PATH = /^(?:\/public-api\/v1)?\/audience(?:\/|$)/;
 const TEAM_PATH = /^(?:\/public-api\/v1)?\/team(?:\/|$)/;
 const ORGANIZATION_DOMAIN_PATH = /^(?:\/public-api\/v1)?\/organization\/domain(?:\/|$)/;
 const ORGANIZATION_PATH = /^(?:\/public-api\/v1)?\/organization(?:\/|$)/;
+const ANALYTICS_INSIGHTS_QUERY_PATH = /^(?:\/public-api\/v1)?\/analytics\/insights\/query\/?$/;
 const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
 const TAG_PATH = /^(?:\/public-api\/v1)?\/tags(?:\/|$)/;
@@ -26,6 +27,12 @@ const COURSE_LIST_PATH = /^(?:\/public-api\/v1)?\/courses\/?$/;
 
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
   const isRead = method === 'GET' || method === 'HEAD';
+
+  // The insights query is a POST body, but it stays a read; it must be mapped before the analytics rule,
+  // which only covers GET analytics, so any other analytics POST still falls through to null.
+  if (ANALYTICS_INSIGHTS_QUERY_PATH.test(path) && method === 'POST') {
+    return 'analytics:read';
+  }
 
   if (COHORT_PATH.test(path)) {
     return isRead ? 'cohort:read' : 'cohort:write';

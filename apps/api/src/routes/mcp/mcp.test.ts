@@ -125,6 +125,7 @@ describe('POST /mcp', () => {
     const names: string[] = body.result.tools.map((tool: { name: string }) => tool.name);
 
     expect(names).toContain('list_team_members');
+    expect(names).toContain('query_insights');
     expect(names).not.toContain('upload_video');
   });
 
@@ -161,6 +162,23 @@ describe('POST /mcp', () => {
     expect(new URL(forwarded.url).pathname).toBe('/public-api/v1/team');
     expect(forwarded.headers.get('authorization')).toBe('Bearer eyJhbGciOi');
     expect(forwarded.headers.get('cf-connecting-ip')).toBe('203.0.113.7');
+    expect(isInternalRequest(forwarded.headers)).toBe(true);
+  });
+
+  it('dispatches get_insights_catalog to the insights catalog route', async () => {
+    const response = await rpc(
+      'tools/call',
+      { name: 'get_insights_catalog', arguments: {} },
+      { Authorization: 'Bearer eyJhbGciOi' }
+    );
+
+    expect(response.status).toBe(200);
+    expect(dispatched).toHaveBeenCalledTimes(1);
+
+    const forwarded = dispatched.mock.calls[0]![0];
+
+    expect(new URL(forwarded.url).pathname).toBe('/public-api/v1/analytics/insights/catalog');
+    expect(forwarded.headers.get('authorization')).toBe('Bearer eyJhbGciOi');
     expect(isInternalRequest(forwarded.headers)).toBe(true);
   });
 });

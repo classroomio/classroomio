@@ -8,6 +8,8 @@ import {
   ZPublicApiCreateCohortGoal,
   ZPublicApiMyCohortGoalResponse,
   ZPublicApiPaginationQuery,
+  ZPublicApiRemindOverdueCohortGoals,
+  ZPublicApiRemindOverdueCohortGoalsResponse,
   ZPublicApiUpdateCohortGoal
 } from '@cio/utils/validation/public-api';
 import {
@@ -20,6 +22,7 @@ import {
   getPublicApiOrgGoalsOverviewService,
   listPublicApiCohortGoalsService,
   listPublicApiMyCohortGoalsService,
+  remindPublicApiOverdueCohortGoalsService,
   updatePublicApiCohortGoalService
 } from '@api/services/v1/cohorts/goals';
 
@@ -28,9 +31,20 @@ import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, cohortForbiddenResponses } from './docs';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+import { mcpRateLimitResponse } from '../courses/docs';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
 
 const GoalResponse = itemResponse(ZPublicApiCohortGoalResponse);
 const EvaluateResponse = itemResponse(ZPublicApiEvaluateCohortGoalsResponse);
+const RemindResponse = itemResponse(ZPublicApiRemindOverdueCohortGoalsResponse);
+
+const remindOverdueGoalsRateLimit = createRateLimiter({
+  windowMs: 60_000,
+  maxRequests: 20,
+  message: 'Too many overdue-goal reminders. Please try again shortly.',
+  failClosed: true,
+  keyGenerator: (c) => `cohort_remind:${c.get('automationKey')?.id ?? 'missing-key'}`
+});
 
 export const v1CohortGoalsRouter = new Hono()
   .get(
@@ -115,6 +129,41 @@ export const v1CohortGoalsRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to evaluate cohort goals');
+      }
+    }
+  )
+  .post(
+    '/remind-overdue',
+    describeRoute({
+      description: `Email the learners with overdue goal assignments now; ${COHORT_TEAM_RULE}. Narrow the run with courseId or profileId. The day-keyed idempotency makes a second call on the same day skip the learners already reminded.`,
+      tags: ['Cohort Goals'],
+      responses: {
+        200: jsonResponse(
+          'Reminders handled: enqueued lists the emails queued, skipped the overdue learners not emailed now',
+          RemindResponse
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
+        404: { description: 'Cohort not found' },
+        429: mcpRateLimitResponse,
+        503: { description: 'Redis could not check the reminder rate limit, so the request was refused' }
+      }
+    }),
+    remindOverdueGoalsRateLimit,
+    validator('param', ZPublicApiCohortParam),
+    validator('json', ZPublicApiRemindOverdueCohortGoals),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const params = c.req.valid('param');
+        const payload = c.req.valid('json');
+        const result = await remindPublicApiOverdueCohortGoalsService(orgId, actorId, params, payload);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to send overdue goal reminders');
       }
     }
   )

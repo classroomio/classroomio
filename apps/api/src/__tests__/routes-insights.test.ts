@@ -19,6 +19,18 @@ vi.mock('@api/services/insights', () => ({
   updateInsightsSettings: vi.fn()
 }));
 
+vi.mock('@api/services/insights/authorize', () => ({
+  resolveAuthorizedScope: vi.fn()
+}));
+
+vi.mock('@api/services/insights/dashboards', () => ({
+  getInsightsDashboardForScope: vi.fn()
+}));
+
+vi.mock('@cio/core/utils/redis/insights-cache', () => ({
+  claimInsightsRefresh: vi.fn()
+}));
+
 import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
@@ -28,6 +40,9 @@ import {
   runInsightsQueryForActor,
   updateInsightsSettings
 } from '@api/services/insights';
+import { resolveAuthorizedScope } from '@api/services/insights/authorize';
+import { getInsightsDashboardForScope } from '@api/services/insights/dashboards';
+import { claimInsightsRefresh } from '@cio/core/utils/redis/insights-cache';
 import { insightsRouter } from '@api/routes/insights';
 
 const OWN_ORG = 'org-own';
@@ -371,7 +386,9 @@ describe('insights routes', () => {
     });
 
     it('forwards the refresh route to the dashboard service', async () => {
-      vi.mocked(getInsightsDashboardForActor).mockResolvedValueOnce(MOCK_DASHBOARD_RESULT as any);
+      vi.mocked(resolveAuthorizedScope).mockResolvedValueOnce({ orgId: OWN_ORG } as never);
+      vi.mocked(claimInsightsRefresh).mockResolvedValueOnce(true);
+      vi.mocked(getInsightsDashboardForScope).mockResolvedValueOnce(MOCK_DASHBOARD_RESULT as never);
 
       const response = await insightsRouter.request('/dashboards-refresh', {
         method: 'POST',
@@ -383,11 +400,36 @@ describe('insights routes', () => {
       });
 
       expect(response.status).toBe(200);
-      expect(getInsightsDashboardForActor).toHaveBeenCalledWith(
-        expect.anything(),
-        { scopeType: 'cohort', scopeId: COHORT_ID },
-        { refresh: true }
-      );
+      expect(resolveAuthorizedScope).toHaveBeenCalledWith(expect.anything(), { type: 'cohort', id: COHORT_ID });
+      expect(claimInsightsRefresh).toHaveBeenCalledWith('user-1', 'cohort', COHORT_ID, 'dashboard');
+      expect(getInsightsDashboardForScope).toHaveBeenCalledWith({ orgId: OWN_ORG }, { refresh: true });
+    });
+
+    it('authorizes the refresh route before claiming the refresh slot', async () => {
+      const calls: string[] = [];
+      vi.mocked(resolveAuthorizedScope).mockImplementationOnce(async () => {
+        calls.push('authorize');
+
+        throw new AppError('You do not have access to these analytics', ErrorCodes.INSIGHTS_SCOPE_FORBIDDEN, 403);
+      });
+      vi.mocked(claimInsightsRefresh).mockImplementationOnce(async () => {
+        calls.push('claim');
+
+        return true;
+      });
+
+      const response = await insightsRouter.request('/dashboards-refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'cio-org-id': OWN_ORG
+        },
+        body: JSON.stringify({ type: 'cohort', id: COHORT_ID })
+      });
+
+      expect(response.status).toBe(403);
+      expect(calls).toEqual(['authorize']);
+      expect(getInsightsDashboardForScope).not.toHaveBeenCalled();
     });
 
     it('rejects invalid scope type with 400', async () => {

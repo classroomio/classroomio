@@ -12,8 +12,10 @@ import {
   ZInsightsQuerySpec,
   ZInsightsScope,
   ZInsightsSort,
+  ZInsightsStudentExportRequest,
   ZInsightsWidget,
-  ZRemindOverdueCohortGoals
+  ZRemindOverdueCohortGoals,
+  ZUpdateInsightsSettings
 } from '../src';
 
 const schemasToSnapshot = {
@@ -25,9 +27,11 @@ const schemasToSnapshot = {
   ZInsightsExportSpec,
   ZInsightsQueryRequest,
   ZInsightsExportRequest,
+  ZInsightsStudentExportRequest,
   ZInsightsDashboardParam,
   ZInsightsWidget,
-  ZRemindOverdueCohortGoals
+  ZRemindOverdueCohortGoals,
+  ZUpdateInsightsSettings
 };
 
 const VALID_UUID = '11111111-1111-4111-8111-111111111111';

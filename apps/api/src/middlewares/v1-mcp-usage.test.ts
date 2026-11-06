@@ -17,7 +17,7 @@ vi.mock('@api/services/organization/automation-usage', () => ({
   releaseMcpAutomationUsage: mocks.release
 }));
 
-import { MCP_V1_ROUTE_TOOL_MAP, v1McpUsageMiddleware } from './v1-mcp-usage';
+import { MCP_V1_ROUTE_TOOL_MAP, resolveMcpToolNameForRequest, v1McpUsageMiddleware } from './v1-mcp-usage';
 
 const injectAutomationKey = async (c: Context, next: Next) => {
   c.set('automationKey', { id: 'key-id', organizationId: 'org-id', type: 'mcp' } as never);
@@ -33,7 +33,9 @@ function buildApp() {
       return c.json({ success: true }, 201);
     })
     .post('/public-api/v1/cohorts/:cohortId/members', (c) => c.json({ success: false }, 400))
-    .get('/public-api/v1/courses/:courseId', (c) => c.json({ success: true }, 200));
+    .get('/public-api/v1/courses/:courseId', (c) => c.json({ success: true }, 200))
+    .get('/public-api/v1/courses', (c) => c.json({ success: true }, 200))
+    .post('/public-api/v1/analytics/insights/query', (c) => c.json({ success: true }, 200));
 }
 
 describe('v1McpUsageMiddleware', () => {
@@ -122,14 +124,51 @@ describe('v1McpUsageMiddleware', () => {
     expect(mocks.reserve).toHaveBeenCalledWith(expect.objectContaining({ id: 'key-id' }), 'read', 'pending HEAD');
   });
 
-  it('reserves under the same category every mapped tool is billed as (GET is read, everything else write)', () => {
-    for (const methods of Object.values(MCP_V1_ROUTE_TOOL_MAP)) {
+  it('reserves every mapped tool under its own category, the one getMcpAutomationCategory returns for it', () => {
+    for (const [routePath, methods] of Object.entries(MCP_V1_ROUTE_TOOL_MAP)) {
       for (const [method, toolName] of Object.entries(methods)) {
-        expect([toolName, getMcpAutomationCategory(toolName!)]).toEqual([
-          toolName,
-          method === 'GET' ? 'read' : 'write'
+        const requestPath = routePath.replace(/:[a-zA-Z]+/g, 'placeholder');
+
+        expect([method, getMcpAutomationCategory(resolveMcpToolNameForRequest(method, requestPath)!)]).toEqual([
+          method,
+          getMcpAutomationCategory(toolName!)
         ]);
+
+        expect(resolveMcpToolNameForRequest(method, requestPath)).toBe(toolName);
       }
     }
+  });
+
+  it('bills every GET route as a read', () => {
+    for (const [routePath, methods] of Object.entries(MCP_V1_ROUTE_TOOL_MAP)) {
+      for (const [method, toolName] of Object.entries(methods)) {
+        if (method !== 'GET') continue;
+
+        expect([routePath, getMcpAutomationCategory(toolName!)]).toEqual([routePath, 'read']);
+      }
+    }
+  });
+
+  it('bills a read only through GET, except query_insights', () => {
+    const readTools = Object.entries(MCP_V1_ROUTE_TOOL_MAP).flatMap(([routePath, methods]) =>
+      Object.entries(methods)
+        .filter(([, toolName]) => getMcpAutomationCategory(toolName!) === 'read')
+        .map(([method, toolName]) => `${method} ${routePath} ${toolName}`)
+    );
+
+    expect(readTools).toContain('POST /public-api/v1/analytics/insights/query query_insights');
+
+    for (const entry of readTools) {
+      if (entry.endsWith('query_insights')) continue;
+
+      expect(entry.startsWith('GET')).toBe(true);
+    }
+  });
+
+  it('reserves query_insights as a read even though it is a POST', async () => {
+    const response = await buildApp().request('/public-api/v1/analytics/insights/query', { method: 'POST' });
+
+    expect(response.status).toBe(200);
+    expect(mocks.reserve).toHaveBeenCalledWith(expect.objectContaining({ id: 'key-id' }), 'read', 'pending POST');
   });
 });

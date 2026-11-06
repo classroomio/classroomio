@@ -135,6 +135,11 @@ export const MCP_TOOL_CREDIT_COST = {
   get_learner_analytics: 0,
   get_course_analytics: 0,
   list_course_analytics_students: 0,
+  get_insights_catalog: 0,
+  query_insights: 0,
+  get_insights_dashboard: 0,
+  list_insights_students: 0,
+  remind_overdue_cohort_goals: 1,
   list_audience_members: 0,
   get_audience_member: 0,
   add_audience_member: 1,
@@ -285,6 +290,10 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_learner_analytics' ||
     toolName === 'get_course_analytics' ||
     toolName === 'list_course_analytics_students' ||
+    toolName === 'get_insights_catalog' ||
+    toolName === 'query_insights' ||
+    toolName === 'get_insights_dashboard' ||
+    toolName === 'list_insights_students' ||
     toolName === 'list_audience_members' ||
     toolName === 'get_audience_member' ||
     toolName === 'list_team_members' ||

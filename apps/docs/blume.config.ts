@@ -66,7 +66,10 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
       { tag: 'Cohort Newsfeed Comments', label: 'Comments' }
     ]
   },
-  { label: 'Analytics', tags: [{ tag: 'Analytics', flat: true }] },
+  {
+    label: 'Analytics',
+    tags: [{ tag: 'Analytics', flat: true }, { tag: 'Analytics Insights', label: 'Insights' }]
+  },
   { label: 'Media', tags: [{ tag: 'Public API Assets', flat: true }] }
 ];
 
@@ -326,7 +329,7 @@ export default defineConfig({
           {
             label: 'Getting started',
             display: 'flat',
-            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination', '/api/question-types']
+            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination', '/api/question-types', '/api/insights']
           },
           { label: 'Reference', display: 'flat', items: [API_REFERENCE_ROUTE] },
           ...apiSidebarSections

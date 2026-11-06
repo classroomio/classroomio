@@ -92,6 +92,10 @@
     "./lms": {
       "types": "./dist/lms/index.d.ts",
       "default": "./dist/lms/index.js"
+    },
+    "./insights": {
+      "types": "./dist/insights/index.d.ts",
+      "default": "./dist/insights/index.js"
     }
   },
   "scripts": {

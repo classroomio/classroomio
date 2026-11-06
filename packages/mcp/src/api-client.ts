@@ -66,6 +66,7 @@ import type {
   TPublicApiReorderCourseContent,
   TPublicApiCloneCourse,
   TPublicApiRelatedCoursesQuery,
+  TPublicApiRemindOverdueCohortGoals,
   TPublicApiSetFeaturedCourses,
   TPublicApiUpdateDomain,
   TPublicApiConnectCustomDomain,
@@ -88,6 +89,10 @@ import type {
   TPublicApiCreateCourseInvite,
   TPublicApiCreateLesson,
   TPublicApiInviteStudentsToCohort,
+  TPublicApiInsightsDashboardParam,
+  TPublicApiInsightsQueryRequest,
+  TPublicApiInsightsSnapshotQuery,
+  TPublicApiInsightsStudentsQuery,
   TPublicApiOrgAnalyticsQuery,
   TPublicApiListCourseCertificatesQuery,
   TPublicApiPaginationQuery,
@@ -1274,6 +1279,42 @@ export class ClassroomIoApiClient {
   async listCourseAnalyticsStudents(courseId: string, query: Partial<TPublicApiCourseAnalyticsStudentsQuery> = {}) {
     return this.requestPaginated(`/public-api/v1/courses/${courseId}/analytics/students${toPageQuerySuffix(query)}`, {
       method: 'GET'
+    });
+  }
+
+  async getInsightsCatalog() {
+    return this.request(`/public-api/v1/analytics/insights/catalog`, { method: 'GET' });
+  }
+
+  async queryInsights(payload: TPublicApiInsightsQueryRequest) {
+    const json = await this.requestRaw(`/public-api/v1/analytics/insights/query`, {
+      method: 'POST',
+      body: payload
+    });
+
+    return { data: json.data, meta: json.meta, pagination: json.pagination };
+  }
+
+  async getInsightsDashboard(
+    scopeType: TPublicApiInsightsDashboardParam['scopeType'],
+    scopeId: string,
+    query: Partial<TPublicApiInsightsSnapshotQuery> = {}
+  ) {
+    return this.request(`/public-api/v1/analytics/insights/dashboards/${scopeType}/${scopeId}${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async listInsightsStudents(query: TPublicApiInsightsStudentsQuery) {
+    return this.requestPaginated(`/public-api/v1/analytics/insights/students${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async remindOverdueCohortGoals(cohortId: string, payload: TPublicApiRemindOverdueCohortGoals) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals/remind-overdue`, {
+      method: 'POST',
+      body: payload
     });
   }
 
