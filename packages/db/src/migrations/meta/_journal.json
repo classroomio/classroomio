@@ -330,6 +330,13 @@
       "when": 1793782571227,
       "tag": "0046_index_cleanup",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1793923822027,
+      "tag": "0047_student_home_course_content_perf_audience_bulk_status",
+      "breakpoints": true
     }
   ]
 }

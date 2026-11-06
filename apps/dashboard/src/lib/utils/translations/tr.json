@@ -2135,6 +2135,33 @@
           "description": "Kuruluşunuzun sitesindeki oturum açma, kaydolma ve diğer hesap sayfalarının arkasında isteğe bağlı arka plan resmi.",
           "paid_plan_note": "Oturum açma arka planını özelleştirmek için planınızı yükseltin.",
           "preview_alt": "Oturum açma arka planı önizlemesi"
+        },
+        "student_home": {
+          "heading": "Öğrenci ana sayfası",
+          "description": "Oturum açan öğrencilerin akademinizin ana sayfasını açtıklarında nereye gideceklerini seçin. Oturum açmamış ziyaretçiler ve ekibiniz açılış sayfanızı görmeye devam eder.",
+          "label": "Oturum açmış öğrenci ana sayfası",
+          "placeholder": "Sayfaları ve kursları arayın",
+          "option_default": "Açılış sayfası (varsayılan)",
+          "group_pages": "Öğrenim portalı",
+          "group_courses": "Kurslar",
+          "reason_disabled_toggle": "Aşağıdaki Kontrol Paneli bölümünde bu özelliği açın",
+          "reason_paid_plan": "Ücretli planlarda mevcut",
+          "courses_empty": "Henüz yayınlanmış kurs yok",
+          "load_more": "Daha fazlasını yükle",
+          "search_empty": "\"{query}\" ile eşleşen sayfa veya kurs yok",
+          "warning_unavailable": "{destination} şu anda öğrencilere sunulmadığından bunun yerine Kontrol Paneline gönderiliyorlar. Başka bir hedef seçin veya onu tekrar kullanılabilir hale getirin.",
+          "warning_course_missing": "Seçtiğiniz kurs silindi veya yayından kaldırıldı, dolayısıyla öğrenciler onun yerine Kontrol Paneli'ne yönlendiriliyor.",
+          "course_hint_open": "Kayıtlı öğrenciler doğrudan bir sonraki derse geçerler. Kayıtlı olmayan öğrenciler tek tıklamayla katılabilir.",
+          "course_hint_restricted": "Kayıtlı öğrenciler doğrudan bir sonraki derse geçerler. Bu kurs ücretlidir veya yalnızca davetle yapılabilir; dolayısıyla kayıtlı olmayan öğrenciler Kontrol Paneli'ne gider.",
+          "unavailable_badge": "Kullanılamıyor",
+          "course_type_live": "Canlı",
+          "course_type_compliance": "Uyumluluk"
+        }
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Oturum açan öğrenciler bu sayfayı atlayıp {destination} adresine gider.",
+          "change": "Değiştir"
         }
       }
     }

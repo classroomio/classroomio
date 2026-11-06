@@ -3362,7 +3362,28 @@
           "paid_plan_note": "Mejora tu plan para personalizar el fondo de acceso.",
           "preview_alt": "Vista previa del fondo de acceso"
         },
-        "page_subtitle": "Elija qué pestañas, pancartas, herramientas del curso y extras verán los estudiantes."
+        "page_subtitle": "Elija qué pestañas, pancartas, herramientas del curso y extras verán los estudiantes.",
+        "student_home": {
+          "heading": "Inicio del estudiante",
+          "description": "Elija dónde van los estudiantes registrados cuando abren la página de inicio de su academia. Los visitantes que no han iniciado sesión y su equipo aún ven su página de destino.",
+          "label": "Inicio del estudiante autenticado",
+          "placeholder": "Buscar páginas y cursos",
+          "option_default": "Página de destino (predeterminada)",
+          "group_pages": "Portal de aprendizaje",
+          "group_courses": "Cursos",
+          "reason_disabled_toggle": "Actívelo en la sección Panel a continuación",
+          "reason_paid_plan": "Disponible en planes pagos",
+          "courses_empty": "Aún no hay cursos publicados",
+          "load_more": "Cargar más",
+          "search_empty": "Ninguna página o curso coincide con \"{query}\"",
+          "warning_unavailable": "{destination} no está disponible para los estudiantes en este momento, por lo que se los envía al Panel de control. Elige otro destino o hazlo disponible nuevamente.",
+          "warning_course_missing": "El curso que eligió se eliminó o no se publicó, por lo que los estudiantes son enviados al Panel de control.",
+          "course_hint_open": "Los estudiantes matriculados pasan directamente a la siguiente lección. Los estudiantes que no estén matriculados pueden unirse con un solo clic.",
+          "course_hint_restricted": "Los estudiantes matriculados pasan directamente a la siguiente lección. Este curso es pago o solo por invitación, por lo que los estudiantes que no están inscritos van al Panel de control.",
+          "unavailable_badge": "No disponible",
+          "course_type_live": "En vivo",
+          "course_type_compliance": "Cumplimiento"
+        }
       },
       "domains": {
         "title": "Dominio personalizado",
@@ -3409,6 +3430,12 @@
         "ssl_pending_body": "Tu dominio nos apunta. Ahora estamos esperando que se emita e implemente el certificado SSL. Esto suele tardar unos minutos una vez que todos los registros DNS siguientes estén en su lugar.",
         "validation_errors_heading": "La emisión de certificados está bloqueada",
         "verified_snackbar": "Dominio personalizado verificado"
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Los estudiantes que han iniciado sesión se saltan esta página y van a {destination}.",
+          "change": "Cambiar"
+        }
       }
     },
     "quiz": {

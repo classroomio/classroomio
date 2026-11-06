@@ -3362,7 +3362,28 @@
           "paid_plan_note": "Nâng cấp gói để tùy chỉnh nền màn hình đăng nhập.",
           "preview_alt": "Xem trước nền màn hình đăng nhập"
         },
-        "page_subtitle": "Chọn các tab, biểu ngữ, công cụ khóa học và các tính năng bổ sung mà học viên sẽ thấy."
+        "page_subtitle": "Chọn các tab, biểu ngữ, công cụ khóa học và các tính năng bổ sung mà học viên sẽ thấy.",
+        "student_home": {
+          "heading": "Trang chủ học viên",
+          "description": "Chọn nơi sinh viên đã đăng nhập đến khi họ mở trang chủ học viện của bạn. Khách truy cập chưa đăng nhập và nhóm của bạn vẫn nhìn thấy trang đích của bạn.",
+          "label": "Trang chủ học viên đã đăng nhập",
+          "placeholder": "Tìm kiếm trang và khóa học",
+          "option_default": "Trang đích (mặc định)",
+          "group_pages": "Cổng thông tin học tập",
+          "group_courses": "Khóa học",
+          "reason_disabled_toggle": "Bật nó ở phần Bảng điều khiển bên dưới",
+          "reason_paid_plan": "Có sẵn trên các gói trả phí",
+          "courses_empty": "Chưa có khóa học nào được xuất bản",
+          "load_more": "Tải thêm",
+          "search_empty": "Không có trang hoặc khóa học nào khớp với \"{query}\"",
+          "warning_unavailable": "{destination} hiện không có sẵn cho sinh viên nên thay vào đó, chúng sẽ được gửi tới Trang tổng quan. Chọn một điểm đến khác hoặc cung cấp lại điểm đến đó.",
+          "warning_course_missing": "Khóa học bạn chọn đã bị xóa hoặc chưa được xuất bản, vì vậy, thay vào đó, sinh viên sẽ được gửi tới Trang tổng quan.",
+          "course_hint_open": "Học viên đã đăng ký sẽ đi thẳng vào bài học tiếp theo. Những sinh viên chưa đăng ký có thể tham gia chỉ bằng một cú nhấp chuột.",
+          "course_hint_restricted": "Học viên đã đăng ký sẽ đi thẳng vào bài học tiếp theo. Khóa học này được trả phí hoặc chỉ dành cho người được mời, vì vậy những sinh viên chưa đăng ký sẽ truy cập Trang tổng quan.",
+          "unavailable_badge": "Không có sẵn",
+          "course_type_live": "Trực tiếp",
+          "course_type_compliance": "Tuân thủ"
+        }
       },
       "domains": {
         "title": "Miền tùy chỉnh",
@@ -3409,6 +3430,12 @@
         "ssl_pending_body": "Tên miền của bạn đang trỏ đến chúng tôi. Hiện chúng tôi đang chờ chứng chỉ SSL được cấp và triển khai. Quá trình này thường mất vài phút sau khi tất cả bản ghi DNS bên dưới đã sẵn sàng.",
         "validation_errors_heading": "Việc cấp chứng chỉ bị chặn",
         "verified_snackbar": "Đã xác minh miền tùy chỉnh"
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Sinh viên đã đăng nhập bỏ qua trang này và đi đến {destination}.",
+          "change": "Thay đổi"
+        }
       }
     },
     "quiz": {
