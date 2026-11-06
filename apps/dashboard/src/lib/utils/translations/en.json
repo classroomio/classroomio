@@ -1342,6 +1342,7 @@
       "active": "You don't have any active billing",
       "provider": "We use Polar to help manage your billing",
       "open_billing": "Open billing",
+      "admin_only": "Only organization admins can manage billing.",
       "error": "An error occurred while opening billing",
       "payment_failed": {
         "warning": "Your last payment failed. Update your payment method before {date} to keep enrolling new students.",
