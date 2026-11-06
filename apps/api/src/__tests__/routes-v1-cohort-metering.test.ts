@@ -68,6 +68,7 @@ vi.mock('@api/services/v1/cohorts/goals', () => ({
   deletePublicApiCohortGoalService: mocks.ok(),
   evaluatePublicApiCohortGoalService: mocks.ok(),
   evaluateAllPublicApiCohortGoalsService: mocks.ok(),
+  remindPublicApiOverdueCohortGoalsService: mocks.ok(),
   getPublicApiOrgGoalsOverviewService: mocks.ok(),
   listPublicApiMyCohortGoalsService: mocks.ok()
 }));
@@ -88,6 +89,12 @@ vi.mock('@api/services/v1/analytics/course', () => ({
 }));
 vi.mock('@api/services/v1/analytics/learner', () => ({
   getPublicApiLearnerAnalyticsService: mocks.ok()
+}));
+vi.mock('@api/services/v1/analytics/insights', () => ({
+  getPublicApiInsightsCatalogService: mocks.ok(),
+  queryPublicApiInsightsService: mocks.ok(),
+  getPublicApiInsightsSnapshotService: mocks.ok(),
+  listPublicApiInsightsStudentsService: mocks.ok()
 }));
 
 import { v1Router } from '@api/routes/v1';
@@ -135,7 +142,8 @@ const CASES: [string, string, unknown, string][] = [
   ['PUT', `/cohorts/${C}/goals/${G}`, { title: 'Renamed' }, 'update_cohort_goal'],
   ['DELETE', `/cohorts/${C}/goals/${G}`, undefined, 'delete_cohort_goal'],
   ['POST', `/cohorts/${C}/goals/${G}/archive`, undefined, 'archive_cohort_goal'],
-  ['POST', `/cohorts/${C}/goals/${G}/evaluate`, undefined, 'evaluate_cohort_goal']
+  ['POST', `/cohorts/${C}/goals/${G}/evaluate`, undefined, 'evaluate_cohort_goal'],
+  ['POST', `/cohorts/${C}/goals/remind-overdue`, {}, 'remind_overdue_cohort_goals']
 ];
 
 const ANALYTICS_CASES: [string, string][] = [
@@ -145,6 +153,20 @@ const ANALYTICS_CASES: [string, string][] = [
   [`/analytics/learners/${X}`, 'get_learner_analytics'],
   [`/courses/${C}/analytics`, 'get_course_analytics'],
   [`/courses/${C}/analytics/students`, 'list_course_analytics_students']
+];
+
+// [method, path, expected tool, expected credits]
+const INSIGHTS_CASES: [string, string, unknown, string, number][] = [
+  ['GET', '/analytics/insights/catalog', undefined, 'get_insights_catalog', 0],
+  [
+    'POST',
+    '/analytics/insights/query',
+    { scope: { type: 'org', id: X }, spec: { source: 'student', measures: [{ metric: 'rows', agg: 'value' }] } },
+    'query_insights',
+    0
+  ],
+  ['GET', `/analytics/insights/dashboards/org/${X}`, undefined, 'get_insights_dashboard', 0],
+  ['GET', `/analytics/insights/students?scopeType=org&scopeId=${X}`, undefined, 'list_insights_students', 0]
 ];
 
 const app = new Hono().route('/public-api/v1', v1Router);
@@ -208,6 +230,17 @@ describe('default MCP key through the real v1 analytics routers (scopes and mete
 
     expect(response.status).toBe(200);
     expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, 0);
+  });
+
+  it.each(INSIGHTS_CASES)('%s %s is metered as %s with %s credits', async (method, path, body, toolName, credits) => {
+    const response = await app.request(`/public-api/v1${path}`, {
+      method,
+      headers: { Authorization: 'Bearer cio_mcp_test', 'content-type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body)
+    });
+
+    expect(response.status).toBe(200);
+    expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, credits);
   });
 
   it.each([`/courses/${C}`, `/courses/${C}/students`])('keeps analytics:read out of GET %s', async (path) => {

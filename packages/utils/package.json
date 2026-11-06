@@ -88,6 +88,10 @@
     "./email": {
       "types": "./dist/email/index.d.ts",
       "default": "./dist/email/index.js"
+    },
+    "./insights": {
+      "types": "./dist/insights/index.d.ts",
+      "default": "./dist/insights/index.js"
     }
   },
   "scripts": {

@@ -18,6 +18,6 @@ export async function updateInsightsSettings(
 
     return { studentTarget };
   } catch (error) {
-    throw toInsightsError(error, ErrorCodes.INSIGHTS_QUERY_FAILED);
+    throw toInsightsError(error, ErrorCodes.INSIGHTS_SETTINGS_FAILED);
   }
 }

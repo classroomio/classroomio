@@ -222,6 +222,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/archive': 'Archive a cohort goal',
   'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/evaluate': 'Re-evaluate a cohort goal',
   'POST /public-api/v1/cohorts/{cohortId}/goals/evaluate-all': 'Re-evaluate all cohort goals',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/remind-overdue': 'Send overdue goal reminders now',
   'GET /public-api/v1/cohorts/goals/overview': 'Get the organization goals overview',
   'GET /public-api/v1/cohorts/my/goals': 'List your cohort goal assignments',
   'GET /public-api/v1/cohorts/enrolled': 'List cohorts you are enrolled in',
@@ -233,6 +234,10 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/analytics': 'Get organization analytics',
   'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per learner',
   'GET /public-api/v1/analytics/learners/{profileId}': "Get a learner's analytics",
+  'GET /public-api/v1/analytics/insights/catalog': 'List insights sources, metrics and filters',
+  'POST /public-api/v1/analytics/insights/query': 'Run an insights query',
+  'GET /public-api/v1/analytics/insights/dashboards/{scopeType}/{scopeId}': 'Get an insights dashboard snapshot',
+  'GET /public-api/v1/analytics/insights/students': 'List students with their insights',
   'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics',
   'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics',
   'GET /public-api/v1/tags': 'List tag groups and tags',
@@ -297,7 +302,11 @@ const OPERATION_TAGS = [
   { name: 'Cohort Newsfeed', description: 'Post, react, and moderate a cohort newsfeed.' },
   { name: 'Cohort Newsfeed Comments', description: 'Manage comments on cohort newsfeed posts.' },
   { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
-  { name: 'Analytics', description: 'Read organization, course, learner, and compliance analytics.' }
+  { name: 'Analytics', description: 'Read organization, course, learner, and compliance analytics.' },
+  {
+    name: 'Analytics Insights',
+    description: 'Query the analytics behind the cohort, course and organization dashboards.'
+  }
 ];
 
 function applySummariesToOperations(paths: Record<string, unknown>) {
