@@ -22,7 +22,7 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
   {
     label: 'Organization',
     tags: [
-      { tag: 'Organization', flat: true },
+      { tag: 'Organization', label: 'Overview' },
       { tag: 'Audience' },
       { tag: 'Team' },
       { tag: 'Organization Email Templates', label: 'Email Templates' },
