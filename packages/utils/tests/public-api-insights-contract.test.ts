@@ -117,6 +117,22 @@ describe('public insights query contract', () => {
     ).toBe(false);
   });
 
+  it('accepts an optional bounded minGroupRows for paging widget specs', () => {
+    const base = { scope: { type: 'cohort', id: COHORT_ID } };
+
+    expect(
+      ZPublicApiInsightsQueryRequest.safeParse({ ...base, spec: { ...VALID_SPEC, minGroupRows: 3 } }).success
+    ).toBe(true);
+
+    expect(
+      ZPublicApiInsightsQueryRequest.safeParse({ ...base, spec: { ...VALID_SPEC, minGroupRows: 0 } }).success
+    ).toBe(false);
+
+    expect(
+      ZPublicApiInsightsQueryRequest.safeParse({ ...base, spec: { ...VALID_SPEC, minGroupRows: 1001 } }).success
+    ).toBe(false);
+  });
+
   it('enforces limit 1-1000, page 1-4000, and the offset cap', () => {
     const base = { scope: { type: 'cohort', id: COHORT_ID } };
 

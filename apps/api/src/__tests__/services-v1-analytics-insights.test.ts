@@ -43,6 +43,7 @@ import {
 } from '@api/services/v1/analytics/insights';
 import {
   INSIGHTS_DIMENSION_DESCRIPTIONS,
+  INSIGHTS_FILTER_DESCRIPTIONS,
   INSIGHTS_SOURCE_DESCRIPTIONS,
   INSIGHTS_WIDGET_DESCRIPTIONS
 } from '@cio/utils/constants/insights-catalog';
@@ -137,8 +138,18 @@ describe('getPublicApiInsightsCatalogService', () => {
         }
       },
       filters: {
-        course: { kind: 'pushdown', valueType: 'id', ops: ['in'] },
-        status: { kind: 'predicate', valueType: 'text', ops: ['eq'] }
+        course: {
+          kind: 'pushdown',
+          valueType: 'id',
+          ops: ['in'],
+          description: INSIGHTS_FILTER_DESCRIPTIONS.course
+        },
+        status: {
+          kind: 'predicate',
+          valueType: 'text',
+          ops: ['eq'],
+          description: INSIGHTS_FILTER_DESCRIPTIONS.status
+        }
       }
     });
   });

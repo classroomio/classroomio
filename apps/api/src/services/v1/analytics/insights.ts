@@ -16,11 +16,12 @@ import {
 } from '@api/services/v1/shared';
 import {
   INSIGHTS_DIMENSION_DESCRIPTIONS,
+  INSIGHTS_FILTER_DESCRIPTIONS,
   INSIGHTS_METRIC_DESCRIPTIONS,
   INSIGHTS_SOURCE_DESCRIPTIONS,
   INSIGHTS_WIDGET_DESCRIPTIONS
 } from '@cio/utils/constants/insights-catalog';
-import type { TInsightsDimension, TInsightsMetric } from '@cio/utils/constants/insights';
+import type { TInsightsDimension, TInsightsFilterField, TInsightsMetric } from '@cio/utils/constants/insights';
 import type { InsightsStudentTableSort } from '@cio/utils/insights';
 import type {
   TPublicApiInsightsDashboardParam,
@@ -47,34 +48,38 @@ export async function getPublicApiInsightsCatalogService(orgId: string, actorId:
       source.metrics,
       (metricId) => INSIGHTS_METRIC_DESCRIPTIONS[metricId as TInsightsMetric]
     );
-
-    return {
+    const filters = withCatalogDescriptions(
+      source.filters,
+      (filterField) => INSIGHTS_FILTER_DESCRIPTIONS[filterField as TInsightsFilterField]
+    );
+    const catalogSource = {
       id: source.id,
       description: INSIGHTS_SOURCE_DESCRIPTIONS[source.id],
       scopeTypes: source.scopeTypes,
       hasSearch: source.hasSearch,
       dimensions,
       metrics,
-      filters: source.filters
+      filters
     };
-  });
 
-  return {
-    sources: Object.fromEntries(sources.map((source) => [source.id, source])),
-    widgets: INSIGHTS_WIDGET_DESCRIPTIONS
-  };
+    return [catalogSource.id, catalogSource];
+  });
+  const sourcesById = Object.fromEntries(sources);
+
+  return { sources: sourcesById, widgets: INSIGHTS_WIDGET_DESCRIPTIONS };
 }
 
 function withCatalogDescriptions<Definition extends Record<string, unknown>>(
   definitions: Record<string, Definition>,
   descriptionOf: (definitionId: string) => string
 ): Record<string, Definition & { description: string }> {
-  return Object.fromEntries(
-    Object.entries(definitions).map(([definitionId, definition]) => [
-      definitionId,
-      { ...definition, description: descriptionOf(definitionId) }
-    ])
-  );
+  const entries = Object.entries(definitions).map(([definitionId, definition]) => {
+    const description = descriptionOf(definitionId);
+
+    return [definitionId, { ...definition, description }] as const;
+  });
+
+  return Object.fromEntries(entries);
 }
 
 /** Runs one insights query for the key creator, with the same authorization the dashboard enforces. */

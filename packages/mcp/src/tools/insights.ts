@@ -83,7 +83,7 @@ export function registerInsightsTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'remind_overdue_cohort_goals',
-    `Email overdue goal reminders now to a cohort's overdue students, or one student; ${COHORT_TEAM_RULE}. A student is reminded at most once a day.`,
+    `Email overdue goal reminders now to a cohort's overdue students, or one student; ${COHORT_TEAM_RULE}. Each overdue goal assignment is reminded at most once a day.`,
     remindOverdueCohortGoalsShape,
     { ...WRITE, idempotentHint: true },
     async (args) => {

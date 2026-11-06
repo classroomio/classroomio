@@ -1,4 +1,4 @@
-import type { TInsightsDimension, TInsightsMetric, TInsightsSource } from './insights';
+import type { TInsightsDimension, TInsightsFilterField, TInsightsMetric, TInsightsSource } from './insights';
 
 /**
  * What each query source returns. API documentation strings, not dashboard UI copy; they accompany the registry so
@@ -130,6 +130,27 @@ export const INSIGHTS_DIMENSION_DESCRIPTIONS: Record<TInsightsDimension, string>
   overdue_kind: 'Groups overdue rows by item kind: goal, compliance or exercise.',
   progress_bucket_25: 'Groups rows into four progress buckets: below 25, 25 to 49, 50 to 74, and 75 percent or more.',
   score_bucket_10: 'Groups rows into ten score buckets by average score percentage.'
+};
+
+/** What each filter keeps. API documentation strings, not dashboard UI copy. */
+export const INSIGHTS_FILTER_DESCRIPTIONS: Record<TInsightsFilterField, string> = {
+  course: 'Only rows from these courses.',
+  cohort: 'Only rows from these cohorts.',
+  student: 'Only rows for these learners.',
+  exercise: 'Only rows for this exercise.',
+  section: 'Only rows for this course section.',
+  status: 'Only learners with this derived status.',
+  overdue_kind: 'Only overdue items of this kind: goal, compliance or exercise.',
+  students: 'Only cohorts with this many students.',
+  avg_score_pct: 'Only rows with an average score in this bound.',
+  is_pass_required: 'Only exercises that must be passed.',
+  logged_in_today: 'Only learners who logged in today.',
+  is_inactive: 'Only learners who have not logged in for two or more days.',
+  is_overdue: 'Only rows with an overdue item.',
+  is_completed_all: 'Only learners who completed every scope course.',
+  has_certificate: 'Only learners who earned a certificate.',
+  is_attempted: 'Only rows for attempted exercises.',
+  is_graded: 'Only rows for graded attempts.'
 };
 
 /** What each preset widget shows, keyed by widget id. API documentation strings, not dashboard UI copy. */

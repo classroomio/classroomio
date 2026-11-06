@@ -46,7 +46,7 @@ export const ZPublicApiInsightsFilter = z
     op: z
       .enum(INSIGHTS_FILTER_OPS)
       .describe(
-        "'eq' and 'in' match ids or statuses, 'gte' and 'lt' bound numbers, 'is_true' and 'is_false' take no value."
+        "'eq' matches an id or status, 'in' matches ids, 'gte' and 'lt' bound numbers, 'is_true' and 'is_false' take no value."
       ),
     value: z
       .union([
@@ -87,7 +87,7 @@ export const ZPublicApiInsightsSort = z.object({
     .string()
     .regex(/^[a-z0-9_]+$/)
     .max(64)
-    .describe('A result column key from the first response, such as rows__count.'),
+    .describe('A dimension id or measure column key from the first response, such as student or rows__count.'),
   dir: z.enum(['asc', 'desc']).default('asc').describe("Sort direction, 'asc' or 'desc'. Default: 'asc'.")
 });
 export type TPublicApiInsightsSort = z.infer<typeof ZPublicApiInsightsSort>;
@@ -112,7 +112,18 @@ export const ZPublicApiInsightsQuerySpec = z
       .max(10)
       .default([])
       .describe('Up to 10 filters from the catalog, each with the value shape its op allows.'),
-    sort: z.array(ZPublicApiInsightsSort).max(3).default([]).describe('Up to 3 column keys, applied in order.'),
+    sort: z
+      .array(ZPublicApiInsightsSort)
+      .max(3)
+      .default([])
+      .describe('Up to 3 sort keys, applied in order: a dimension id or a measure column key.'),
+    minGroupRows: z
+      .number()
+      .int()
+      .min(1)
+      .max(1000)
+      .optional()
+      .describe('Drop groups with fewer rows; paging a snapshot widget spec needs its cutoff to keep the same groups.'),
     search: z
       .string()
       .trim()
@@ -177,14 +188,14 @@ export const ZPublicApiInsightsSnapshotQuery = z.object({
     .uuid()
     .optional()
     .describe(
-      'Course the per-course widgets focus on; course scope defaults to its first course, other scopes leave per-course widgets out unless you pass one. A course outside the scope fails with 404.'
+      'Course the per-course widgets focus on; course scope defaults to its first course, other scopes need it. A course outside the scope fails with 404.'
     ),
   exerciseId: z
     .string()
     .uuid()
     .optional()
     .describe(
-      'Exercise the per-exercise widgets focus on; defaults to the last pass-required exercise of the selected course, or the last exercise if none is pass-required. An exercise outside the selected course fails with 404.'
+      'Per-exercise widgets focus on this exercise; defaults to the last pass-required exercise. Outside the selected course it fails with 404.'
     ),
   range: z
     .enum(INSIGHTS_RANGES)
@@ -230,7 +241,7 @@ export const ZPublicApiInsightsStudentsQuery = ZPublicApiPaginationQuery.extend(
     .enum(['asc', 'desc'])
     .optional()
     .describe(
-      'Sort direction; without it every sort uses its natural direction: at-risk students first for status, lowest progress or score first, names A–Z, and most recent login first.'
+      'Sort direction; without it at-risk comes first for status, lowest progress or score first, names A–Z, newest login first.'
     )
 }).superRefine((query, context) => {
   if ((query.page - 1) * query.limit > INSIGHTS_LIMITS.maxOffset) {

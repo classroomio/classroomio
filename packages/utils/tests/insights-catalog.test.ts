@@ -1,8 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { INSIGHTS_DIMENSIONS, INSIGHTS_METRICS, INSIGHTS_SOURCES } from '../src/constants/insights';
+import {
+  INSIGHTS_DIMENSIONS,
+  INSIGHTS_FILTER_FIELDS,
+  INSIGHTS_METRICS,
+  INSIGHTS_SOURCES
+} from '../src/constants/insights';
 import {
   INSIGHTS_DIMENSION_DESCRIPTIONS,
+  INSIGHTS_FILTER_DESCRIPTIONS,
   INSIGHTS_METRIC_DESCRIPTIONS,
   INSIGHTS_SOURCE_DESCRIPTIONS
 } from '../src/constants/insights-catalog';
@@ -30,6 +36,15 @@ describe('insights catalog descriptions', () => {
     expect(Object.keys(INSIGHTS_DIMENSION_DESCRIPTIONS).sort()).toEqual([...INSIGHTS_DIMENSIONS].sort());
 
     for (const description of Object.values(INSIGHTS_DIMENSION_DESCRIPTIONS)) {
+      expect(description.trim().length).toBeGreaterThan(0);
+      expect(description.endsWith('.')).toBe(true);
+    }
+  });
+
+  it('gives every filter a non-empty description', () => {
+    expect(Object.keys(INSIGHTS_FILTER_DESCRIPTIONS).sort()).toEqual([...INSIGHTS_FILTER_FIELDS].sort());
+
+    for (const description of Object.values(INSIGHTS_FILTER_DESCRIPTIONS)) {
       expect(description.trim().length).toBeGreaterThan(0);
       expect(description.endsWith('.')).toBe(true);
     }
