@@ -1247,7 +1247,7 @@ class Component extends DCLogic {
       dismissHint: () => this.dismissHint(),
       showHint: isDocked && state.hintOpen,
       assistantLabel: isOpenNow ? 'Close AI assistant' : 'Open AI assistant',
-      popLabel: state.mode === 'floating' ? 'Dock to side panel' : 'Pop out as floating window',
+      popLabel: state.mode === 'floating' ? 'Dock to side panel' : 'Pop out chat',
       floatingAttr: state.mode === 'floating' ? 'true' : 'false',
       popBtnStyle: 'height: 36px; width: 36px; border: 0; border-left: 1px solid rgba(255,255,255,.35); border-radius: 0 8px 8px 0; background: ' + (state.mode === 'floating' ? '#1c398e' : '#1447e6') + '; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 0 0 ' + (isOpenNow ? '3px' : '0px') + ' rgba(20,71,230,.25);',
       assistantOpenAttr: state.mode === 'docked' || state.mode === 'floating' ? 'true' : 'false',
