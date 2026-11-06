@@ -94,10 +94,12 @@ export interface SubscriptionData {
   endsAt: string | null;
   endedAt: string | null;
   customerId: string;
+  customer_id?: string;
   productId: string;
   priceId: string;
   discountId: string | null;
   checkoutId: string;
+  checkout_id?: string;
   customerCancellationReason: string | null;
   customerCancellationComment: string | null;
   metadata: {

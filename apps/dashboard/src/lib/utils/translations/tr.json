@@ -1257,6 +1257,7 @@
       "active": "Yapmıyorsunuz etkin faturanız var",
       "provider": "Faturalandırmanızı yönetmenize yardımcı olması için Polar'ı kullanıyoruz",
       "open_billing": "Açık faturalandırma",
+      "admin_only": "Faturalandırmayı yalnızca kuruluş yöneticileri yönetebilir.",
       "error": "Faturalandırmayı açarken bir hata oluştu",
       "payment_failed": {
         "warning": "Son ödemeniz başarısız oldu. Yeni öğrenci kaydetmeye devam etmek için {date} tarihinden önce ödeme yönteminizi güncelleyin.",

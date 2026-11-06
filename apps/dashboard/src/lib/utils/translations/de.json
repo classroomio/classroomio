@@ -3746,6 +3746,7 @@
       "active": "Sie haben keine aktive Abrechnung",
       "provider": "Wir verwenden Polar, um Ihre Abrechnung zu verwalten",
       "open_billing": "Abrechnung öffnen",
+      "admin_only": "Nur Organisationsadministratoren können die Abrechnung verwalten.",
       "error": "Beim Öffnen der Abrechnung ist ein Fehler aufgetreten",
       "payment_failed": {
         "warning": "Ihre letzte Zahlung ist fehlgeschlagen. Aktualisieren Sie Ihre Zahlungsmethode vor dem {date}, um weiterhin neue Lernende aufnehmen zu können.",

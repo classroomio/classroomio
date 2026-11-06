@@ -78,12 +78,14 @@ async function recordEarlyAdopterPurchase(type: string, data: SubscriptionData) 
     return;
   }
 
+  const customerId = data.customerId ?? data.customer_id;
+  const checkoutId = data.checkoutId ?? data.checkout_id;
   const result = await OrgPlanApiServer.recordEarlyAdopterEvent({
     event,
     subscriptionId: data.id,
-    customerId: data.customerId,
+    customerId,
     customerEmail,
-    checkoutId: data.checkoutId,
+    checkoutId,
     payload: data as unknown as Record<string, unknown>
   });
 

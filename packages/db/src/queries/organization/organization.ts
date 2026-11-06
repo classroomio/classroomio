@@ -71,7 +71,10 @@ export const getOrganizationByProfileId = async (
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
-        customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
+        customerId:
+          sql`COALESCE(organization_plan.payload->>'customerId', organization_plan.payload->>'customer_id')`.as(
+            'customerId'
+          )
       }
     })
     .from(schema.organization)
@@ -1014,7 +1017,10 @@ export const getOrganizations = async (filters?: {
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
-        customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
+        customerId:
+          sql`COALESCE(organization_plan.payload->>'customerId', organization_plan.payload->>'customer_id')`.as(
+            'customerId'
+          )
       }
     })
     .from(schema.organization)
@@ -1138,7 +1144,10 @@ export const getFirstOrganizationWithPlans = async (): Promise<
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
-        customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
+        customerId:
+          sql`COALESCE(organization_plan.payload->>'customerId', organization_plan.payload->>'customer_id')`.as(
+            'customerId'
+          )
       }
     })
     .from(schema.organization)

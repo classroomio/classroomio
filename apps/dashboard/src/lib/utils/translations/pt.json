@@ -3746,6 +3746,7 @@
       "active": "Você não tem nenhum faturamento ativo",
       "provider": "Usamos a Polar para ajudar a gerenciar seu faturamento",
       "open_billing": "Faturamento aberto",
+      "admin_only": "Somente os administradores da organização podem gerenciar o faturamento.",
       "error": "Ocorreu um erro ao abrir o faturamento",
       "payment_failed": {
         "warning": "O seu último pagamento falhou. Atualize o método de pagamento antes de {date} para continuar a matricular novos alunos.",

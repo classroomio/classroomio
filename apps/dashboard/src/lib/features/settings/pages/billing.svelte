@@ -1,7 +1,7 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { currentOrgPlan, isFreePlan, currentOrg, isSecondaryWorkspace } from '$lib/utils/store/org';
+  import { currentOrgPlan, isFreePlan, currentOrg, isOrgAdmin, isSecondaryWorkspace } from '$lib/utils/store/org';
   import HourglassIcon from '@lucide/svelte/icons/hourglass';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import ReceiptIcon from '@lucide/svelte/icons/receipt';
@@ -81,17 +81,22 @@
       </Item.Media>
       <Item.Content>
         <Item.Description>{$t('settings.billing.provider')}</Item.Description>
+        {#if $isOrgAdmin === false}
+          <Item.Description>{$t('settings.billing.admin_only')}</Item.Description>
+        {/if}
       </Item.Content>
-      <Item.Actions>
-        <HoverableItem>
-          {#snippet children(isHovered)}
-            <Button size="sm" variant="outline" onclick={onOpenBilling} loading={isRedirecting}>
-              <ExternalLinkIcon {isHovered} size={16} ariaHidden={true} />
-              {$t('settings.billing.open_billing')}
-            </Button>
-          {/snippet}
-        </HoverableItem>
-      </Item.Actions>
+      {#if $isOrgAdmin}
+        <Item.Actions>
+          <HoverableItem>
+            {#snippet children(isHovered)}
+              <Button size="sm" variant="outline" onclick={onOpenBilling} loading={isRedirecting}>
+                <ExternalLinkIcon {isHovered} size={16} ariaHidden={true} />
+                {$t('settings.billing.open_billing')}
+              </Button>
+            {/snippet}
+          </HoverableItem>
+        </Item.Actions>
+      {/if}
     </Item.Root>
   {/if}
 </div>

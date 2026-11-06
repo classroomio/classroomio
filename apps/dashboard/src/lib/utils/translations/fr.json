@@ -3746,6 +3746,7 @@
       "active": "Vous n'avez aucune facturation active",
       "provider": "Nous utilisons Polar pour vous aider à gérer votre facturation",
       "open_billing": "Facturation ouverte",
+      "admin_only": "Seuls les administrateurs de l'organisation peuvent gérer la facturation.",
       "error": "Une erreur s'est produite lors de l'ouverture de la facturation",
       "payment_failed": {
         "warning": "Votre dernier paiement a échoué. Mettez à jour votre moyen de paiement avant le {date} pour continuer à inscrire de nouveaux apprenants.",
