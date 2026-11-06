@@ -28,6 +28,7 @@
   import EmbedSection from './landingpage-editor/embed-section.svelte';
   import FooterSection from './landingpage-editor/footer-section.svelte';
   import CoursesSection from './landingpage-editor/courses-section.svelte';
+  import { StudentHomeNotice } from '$features/settings/components';
 
   interface Props {
     settings: OrgLandingPageJson;
@@ -172,6 +173,10 @@
 </Sidebar.Header>
 
 <Sidebar.Content class="min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
+  <div class="px-2 pt-2">
+    <StudentHomeNotice />
+  </div>
+
   {#if !$landingPageEditorSelection}
     <Sidebar.Group>
       <Sidebar.GroupLabel class="px-2">

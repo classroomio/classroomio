@@ -5,8 +5,10 @@ import type {
   TCourseReorder,
   TGetAudienceQuery,
   TGetOrganizationCoursesQuery,
-  TOrganizationCourseSort
+  TOrganizationCourseSort,
+  TStudentHomeDestination
 } from '@cio/utils/validation/organization';
+import type { LmsAvailabilityContext } from '@cio/utils/lms';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
@@ -33,6 +35,7 @@ import {
   getOrganizations,
   lockOrganizationForUpdate,
   revokeActiveOrganizationInvitesByEmails,
+  setOrganizationStudentHome,
   updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
@@ -63,6 +66,7 @@ import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure, recordOrganizationInviteAudits } from './organization/invite';
+import { assertStudentHomeDestination } from './organization/student-home';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
 
 export { updateTeamMemberRole } from './organization/team-role';
@@ -812,8 +816,12 @@ async function assertAuthSettingsEntitlement(orgId: string, data: Partial<TOrgan
   }
 }
 
-/** `dbClient` is used for the organization write only. */
-export async function updateOrg(orgId: string, data: Partial<TOrganization>, dbClient: DbOrTxClient = db) {
+/** `dbClient` lets callers compose the organization write into their own transaction. */
+export async function updateOrg(
+  orgId: string,
+  data: Partial<TOrganization> & { studentHome?: TStudentHomeDestination | null },
+  dbClient: DbOrTxClient = db
+) {
   try {
     if (data.siteName) {
       const exists = await checkSiteNameExists(data.siteName, orgId); // exclude current org
@@ -849,16 +857,40 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>, dbC
       }
     }
 
-    let updateData = data;
+    const { studentHome, ...orgData } = data;
 
-    if (data.customization) {
-      const apps = { ...data.customization.apps };
+    let updateData = orgData;
+
+    if (orgData.customization) {
+      const apps = { ...orgData.customization.apps };
       Reflect.deleteProperty(apps, 'poll');
-      const customization = { ...data.customization, apps };
-      updateData = { ...data, customization };
+      const customization = { ...orgData.customization, apps };
+      updateData = { ...orgData, customization };
     }
 
-    const organization = await updateOrganization(orgId, updateData, dbClient);
+    const hasOrgUpdates = Object.values(updateData).some((value) => value !== undefined);
+
+    const writeOrganization = async (client: DbOrTxClient) => {
+      if (studentHome !== undefined) {
+        const existing = await getOrganizationById(orgId, client);
+        const home = await assertStudentHomeDestination(
+          orgId,
+          studentHome,
+          (orgData.customization ?? existing?.customization ?? null) as LmsAvailabilityContext['customization'],
+          client
+        );
+        await setOrganizationStudentHome(orgId, home, client);
+      }
+
+      if (!hasOrgUpdates) {
+        return getOrganizationById(orgId, client);
+      }
+
+      return updateOrganization(orgId, updateData, client);
+    };
+
+    const organization =
+      dbClient === db ? await db.transaction((tx) => writeOrganization(tx)) : await writeOrganization(dbClient);
     if (!organization) {
       throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
     }

@@ -1,11 +1,4 @@
-import type { TUser, TSession, TProfile, TOrganization, TOrganizationmember, TOrganizationPlan } from '@cio/db/types';
-
-type AccountOrganization = TOrganization & {
-  member: TOrganizationmember | null;
-  plan:
-    | (Pick<TOrganizationPlan, 'planName' | 'isActive' | 'provider' | 'subscriptionId'> & { customerId: string })
-    | null;
-};
+import type { TUser, TSession } from '@cio/db/types';
 
 // src/app.d.ts
 declare global {
@@ -13,8 +6,7 @@ declare global {
     interface Locals {
       user: TUser | null;
       session: TSession | null;
-      profile: TProfile | null;
-      organizations: AccountOrganization[];
+      orgRoles: Record<string, number>;
       fromSessions?: boolean;
       // getAccount: () =>
     }

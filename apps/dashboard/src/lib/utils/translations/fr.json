@@ -3362,7 +3362,28 @@
           "paid_plan_note": "Passez à une offre supérieure pour personnaliser l’arrière-plan de connexion.",
           "preview_alt": "Aperçu de l’arrière-plan de connexion"
         },
-        "page_subtitle": "Choisissez les onglets, bannières, outils de cours et extras que les étudiants voient."
+        "page_subtitle": "Choisissez les onglets, bannières, outils de cours et extras que les étudiants voient.",
+        "student_home": {
+          "heading": "Accueil étudiant",
+          "description": "Choisissez où vont les étudiants connectés lorsqu’ils ouvrent la page d’accueil de votre académie. Les visiteurs qui ne sont pas connectés et votre équipe voient toujours votre page de destination.",
+          "label": "Accueil de l’étudiant connecté",
+          "placeholder": "Rechercher des pages et des cours",
+          "option_default": "Page de destination (par défaut)",
+          "group_pages": "Portail d'apprentissage",
+          "group_courses": "Cours",
+          "reason_disabled_toggle": "Activez-le dans la section Tableau de bord ci-dessous",
+          "reason_paid_plan": "Disponible sur les forfaits payants",
+          "courses_empty": "Aucun cours publié pour l'instant",
+          "load_more": "Charger plus",
+          "search_empty": "Aucune page ou cours ne correspond à \"{query}\"",
+          "warning_unavailable": "{destination} n’est pas disponible pour les étudiants pour le moment. Ils sont donc envoyés vers le tableau de bord. Choisissez une autre destination ou rendez-la à nouveau disponible.",
+          "warning_course_missing": "Le cours que vous avez choisi a été supprimé ou non publié, les étudiants sont donc redirigés vers le tableau de bord.",
+          "course_hint_open": "Les étudiants inscrits passent directement à leur prochain cours. Les étudiants non inscrits peuvent s’inscrire en un clic.",
+          "course_hint_restricted": "Les étudiants inscrits passent directement à leur prochaine leçon. Ce cours est payant ou sur invitation uniquement, de sorte que les étudiants qui ne sont pas inscrits accèdent au tableau de bord.",
+          "unavailable_badge": "Indisponible",
+          "course_type_live": "En direct",
+          "course_type_compliance": "Conformité"
+        }
       },
       "domains": {
         "title": "Domaine personnalisé",
@@ -3409,6 +3430,12 @@
         "ssl_pending_body": "Votre domaine pointe vers nous. Nous attendons maintenant que le certificat SSL soit émis et déployé. Cela prend généralement quelques minutes une fois que tous les enregistrements DNS ci-dessous sont en place.",
         "validation_errors_heading": "La délivrance du certificat est bloquée",
         "verified_snackbar": "Domaine personnalisé vérifié"
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Les étudiants connectés ignorent cette page et accèdent à {destination}.",
+          "change": "Modifier"
+        }
       }
     },
     "quiz": {

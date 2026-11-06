@@ -28,6 +28,7 @@
   import { PremiumIcon } from '@cio/ui/custom/moving-icons';
 
   import ThemePreviewDialog from '$features/settings/components/theme-preview-dialog.svelte';
+  import { StudentHomeNotice } from '$features/settings/components';
 
   import {
     createDefaultLandingPageSettings,
@@ -219,6 +220,8 @@
 </script>
 
 <div class="w-full space-y-10 px-2 pb-12">
+  <StudentHomeNotice />
+
   <section>
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div
