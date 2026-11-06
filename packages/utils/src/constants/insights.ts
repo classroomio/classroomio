@@ -149,7 +149,8 @@ export const INSIGHTS_FILTER_FIELDS = [
   'is_overdue',
   'is_completed_all',
   'has_certificate',
-  'is_attempted'
+  'is_attempted',
+  'is_graded'
 ] as const;
 
 export const INSIGHTS_FILTER_OPS = ['eq', 'in', 'gte', 'lt', 'is_true', 'is_false'] as const;

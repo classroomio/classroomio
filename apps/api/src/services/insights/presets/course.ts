@@ -149,6 +149,7 @@ export const COURSE_WIDGETS: readonly TInsightsWidgetInput[] = [
         { metric: 'best_score_pct', agg: 'avg' },
         { metric: 'first_try_pass', agg: 'pooled' }
       ],
+      filters: [{ field: 'is_graded', op: 'is_true' }],
       sort: [{ field: 'best_score_pct__avg', dir: 'asc' }],
       minGroupRows: 3,
       limit: INSIGHTS_LIMITS.hardestExercises

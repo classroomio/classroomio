@@ -768,7 +768,7 @@ export async function pullCourseTemplateUpdates(
 
   await invalidateOrgStats(orgId);
 
-  if (pulled.groupingChanged) {
+  if (pulled.groupingChanged || pulled.unitIds.length > 0) {
     void invalidateInsightsCourseStructure(courseId);
   }
 

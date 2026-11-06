@@ -398,6 +398,29 @@ describe('compileInsightsQuery', () => {
     expect(compiled.params).not.toContain(COURSE_ID);
   });
 
+  it('applies the cohort filter inside cohort scope instead of dropping it', () => {
+    const otherCohortId = '44444444-4444-4444-8444-444444444444';
+    const compiled = compile({
+      source: 'student',
+      measures: [{ metric: 'rows', agg: 'count' }],
+      filters: [{ field: 'cohort', op: 'eq', value: otherCohortId }]
+    });
+
+    expect(compiled.params).toContain(otherCohortId);
+    expect(compiled.params).toContain(COHORT_ID);
+  });
+
+  it('keeps rows when the cohort filter matches the scope', () => {
+    const compiled = compile({
+      source: 'student',
+      measures: [{ metric: 'rows', agg: 'count' }],
+      filters: [{ field: 'cohort', op: 'eq', value: COHORT_ID }]
+    });
+
+    expect(compiled.sql).not.toContain('1 = 0');
+    expect(compiled.params).toContain(COHORT_ID);
+  });
+
   it('never links an exercise to a lesson', () => {
     const sources: Array<{
       source: string;

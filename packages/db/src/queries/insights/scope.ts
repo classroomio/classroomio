@@ -73,6 +73,9 @@ function cohortScopeStudentSql(context: InsightsCompileContext): SQL {
   const studentFilter = pushdown.studentIds?.length
     ? sql`AND cm.profile_id IN (${uuidList(pushdown.studentIds)})`
     : sql``;
+  const cohortFilter = pushdown.cohortIds?.length
+    ? sql`AND ${scope.id}::uuid IN (${uuidList(pushdown.cohortIds)})`
+    : sql``;
 
   return sql`
     SELECT DISTINCT cm.profile_id, ${scope.id}::uuid AS cohort_id
@@ -82,7 +85,8 @@ function cohortScopeStudentSql(context: InsightsCompileContext): SQL {
       AND cm.role_id = ${ROLE.STUDENT}
       AND cm.profile_id IS NOT NULL
       AND ${inactiveOrgMemberFilter(sql`cm.profile_id`, scope.orgId)}
-      ${studentFilter}`;
+      ${studentFilter}
+      ${cohortFilter}`;
 }
 
 /** Enrollments of the cohort scope, each paired with its cohort id. */

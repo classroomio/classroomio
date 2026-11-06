@@ -62,6 +62,7 @@ export const assessmentResultSource: InsightsSourceDefinition = {
     exercise: predicateFilter('exercise_id', 'id', ['eq', 'in']),
     section: predicateFilter('section_id', 'id', ['eq']),
     is_pass_required: flagFilter('is_pass_required'),
-    is_attempted: flagFilter('is_attempted')
+    is_attempted: flagFilter('is_attempted'),
+    is_graded: flagFilter('is_graded')
   }
 };
