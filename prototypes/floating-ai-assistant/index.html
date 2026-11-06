@@ -166,9 +166,6 @@ a{color:#1447e6}a:hover{color:#1c398e}
       <sc-if value="{{isFloating}}" hint-placeholder-val="{{true}}">
         <button type="button" class="cio-hbtn" onClick="{{toggleDock}}" aria-label="Expand to side panel" data-tip="Expand to side panel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></button>
       </sc-if>
-      <sc-if value="{{canTuck}}" hint-placeholder-val="{{true}}">
-        <button type="button" class="cio-hbtn" onClick="{{tuck}}" aria-label="Tuck into the edge" data-tip="Tuck into the edge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
-      </sc-if>
       <button type="button" class="cio-hbtn" onClick="{{closeCompanion}}" aria-label="Close" data-tip="Close" data-tip-end=""><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
       </div>
     </div>
@@ -1224,7 +1221,6 @@ class Component extends DCLogic {
       isFloating,
       isDocked,
       showFullActions: !isFloating,
-      canTuck: isDocked,
       moreOpen: state.moreOpen,
       moreOpenAttr: state.moreOpen ? 'true' : 'false',
       toggleMore: () => this.toggleMore(),

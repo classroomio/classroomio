@@ -20,7 +20,7 @@ The top bar has a combo button: **Assistant** on the left, the pop-out icon on t
 | Narrow panel (docked) | The header collapses New chat and History into a "⋯" menu |
 | Select text in the lesson | An **Ask AI** chip quotes the selection into the composer |
 
-Docked header: New chat, History, a chevron that tucks the panel into an edge tab, and Close. Floating header: the drag grip, **Expand** and **Close** only. Every icon button has a tooltip.
+Docked header: New chat, History and Close. Floating header: the drag grip, **Expand** and **Close** only. Every icon button has a tooltip.
 
 A one-time tip appears under the pop-out icon the first time the panel opens docked: "Tip: use the pop-out icon to float the assistant while you work." It is dismissed by its close button or by using the pop-out icon, and it does not return.
 
