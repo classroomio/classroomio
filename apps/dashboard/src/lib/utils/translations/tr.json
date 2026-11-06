@@ -1256,6 +1256,7 @@
       "manage": "Faturalandırmanızı yönetin",
       "active": "Yapmıyorsunuz etkin faturanız var",
       "provider": "Faturalandırmanızı yönetmenize yardımcı olması için Polar'ı kullanıyoruz",
+      "manual_plan": "Planınız manuel olarak tanımlandığı için bir faturalandırma portalı yoktur. Değiştirmek için ClassroomIO desteğiyle iletişime geçin.",
       "open_billing": "Açık faturalandırma",
       "admin_only": "Faturalandırmayı yalnızca kuruluş yöneticileri yönetebilir.",
       "error": "Faturalandırmayı açarken bir hata oluştu",

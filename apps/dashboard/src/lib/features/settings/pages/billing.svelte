@@ -78,7 +78,9 @@
         <ReceiptIcon />
       </Item.Media>
       <Item.Content>
-        <Item.Description>{$t('settings.billing.provider')}</Item.Description>
+        <Item.Description>
+          {hasBillingPortal ? $t('settings.billing.provider') : $t('settings.billing.manual_plan')}
+        </Item.Description>
         {#if $isOrgAdmin === false}
           <Item.Description>{$t('settings.billing.admin_only')}</Item.Description>
         {/if}

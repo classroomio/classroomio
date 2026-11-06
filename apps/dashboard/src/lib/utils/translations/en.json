@@ -1341,6 +1341,7 @@
       "manage": "Manage your billing",
       "active": "You don't have any active billing",
       "provider": "We use Polar to help manage your billing",
+      "manual_plan": "Your plan was granted manually, so it has no billing portal. Contact ClassroomIO support to change it.",
       "open_billing": "Open billing",
       "admin_only": "Only organization admins can manage billing.",
       "error": "An error occurred while opening billing",

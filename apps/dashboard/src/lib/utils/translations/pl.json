@@ -3745,6 +3745,7 @@
       "manage": "Zarządzaj swoimi rozliczeniami",
       "active": "Nie masz żadnych aktywnych rozliczeń",
       "provider": "Używamy Polar do zarządzania Twoimi rozliczeniami",
+      "manual_plan": "Twój plan został przyznany ręcznie, więc nie ma portalu rozliczeń. Skontaktuj się z pomocą techniczną ClassroomIO, aby go zmienić.",
       "open_billing": "Otwórz rozliczenia",
       "admin_only": "Rozliczeniami mogą zarządzać tylko administratorzy organizacji.",
       "error": "Wystąpił błąd podczas otwierania rozliczeń",

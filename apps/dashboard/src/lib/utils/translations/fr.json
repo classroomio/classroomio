@@ -3745,6 +3745,7 @@
       "manage": "Gérez votre facturation",
       "active": "Vous n'avez aucune facturation active",
       "provider": "Nous utilisons Polar pour vous aider à gérer votre facturation",
+      "manual_plan": "Votre forfait a été attribué manuellement et n'a donc pas de portail de facturation. Contactez le support ClassroomIO pour le modifier.",
       "open_billing": "Facturation ouverte",
       "admin_only": "Seuls les administrateurs de l'organisation peuvent gérer la facturation.",
       "error": "Une erreur s'est produite lors de l'ouverture de la facturation",

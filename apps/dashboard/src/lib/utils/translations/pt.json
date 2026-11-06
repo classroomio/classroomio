@@ -3745,6 +3745,7 @@
       "manage": "Gerencie seu faturamento",
       "active": "Você não tem nenhum faturamento ativo",
       "provider": "Usamos a Polar para ajudar a gerenciar seu faturamento",
+      "manual_plan": "O seu plano foi atribuído manualmente, por isso não tem portal de faturação. Contacte o suporte do ClassroomIO para o alterar.",
       "open_billing": "Faturamento aberto",
       "admin_only": "Somente os administradores da organização podem gerenciar o faturamento.",
       "error": "Ocorreu um erro ao abrir o faturamento",

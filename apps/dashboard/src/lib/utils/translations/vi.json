@@ -3745,6 +3745,7 @@
       "manage": "Quản lý thanh toán của bạn",
       "active": "Bạn không có bất kỳ thanh toán nào đang hoạt động",
       "provider": "Chúng tôi sử dụng Polar để giúp quản lý việc thanh toán của bạn",
+      "manual_plan": "Gói của bạn được cấp thủ công nên không có cổng thanh toán. Hãy liên hệ bộ phận hỗ trợ ClassroomIO để thay đổi.",
       "open_billing": "Thanh toán mở",
       "admin_only": "Chỉ quản trị viên của tổ chức mới có thể quản lý việc thanh toán.",
       "error": "Đã xảy ra lỗi khi mở thanh toán",

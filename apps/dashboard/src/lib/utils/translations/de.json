@@ -3745,6 +3745,7 @@
       "manage": "Verwalten Sie Ihre Abrechnung",
       "active": "Sie haben keine aktive Abrechnung",
       "provider": "Wir verwenden Polar, um Ihre Abrechnung zu verwalten",
+      "manual_plan": "Ihr Tarif wurde manuell zugewiesen und hat daher kein Abrechnungsportal. Wenden Sie sich an den ClassroomIO-Support, um ihn zu ändern.",
       "open_billing": "Abrechnung öffnen",
       "admin_only": "Nur Organisationsadministratoren können die Abrechnung verwalten.",
       "error": "Beim Öffnen der Abrechnung ist ein Fehler aufgetreten",

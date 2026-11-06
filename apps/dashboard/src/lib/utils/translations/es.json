@@ -3745,6 +3745,7 @@
       "manage": "Gestiona tu facturación",
       "active": "No tienes ninguna facturación activa",
       "provider": "Usamos Polar para ayudarte a gestionar tu facturación",
+      "manual_plan": "Tu plan se concedió manualmente, por lo que no tiene portal de facturación. Contacta con el soporte de ClassroomIO para cambiarlo.",
       "open_billing": "Facturación abierta",
       "admin_only": "Solo los administradores de la organización pueden gestionar la facturación.",
       "error": "Se produjo un error al abrir la facturación.",

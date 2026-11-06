@@ -3745,6 +3745,7 @@
       "manage": "Administrer din fakturering",
       "active": "Du har ingen aktiv fakturering",
       "provider": "Vi bruger Polar til at hjælpe med at administrere din fakturering",
+      "manual_plan": "Din plan blev tildelt manuelt og har derfor ikke noget faktureringsportal. Kontakt ClassroomIO-support for at ændre den.",
       "open_billing": "Åben fakturering",
       "admin_only": "Kun organisationsadministratorer kan administrere fakturering.",
       "error": "Der opstod en fejl under åbning af fakturering",
