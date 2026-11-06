@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { afterAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
 
 const hasDatabase = Boolean(
@@ -42,7 +42,7 @@ describe.skipIf(!hasDatabase)('getCourseContentVersion against block content', (
     await db.insert(schema.blockPlacement).values({ lessonId, blockId: noteBlockId, position: 'a0' });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
 
@@ -56,23 +56,16 @@ describe.skipIf(!hasDatabase)('getCourseContentVersion against block content', (
   });
 
   it('changes when a note block gains locale content, and when that content is edited', async () => {
-    const { db } = await import('@db/drizzle');
-    const schema = await import('@db/schema');
+    const { upsertBlockLocale } = await import('@db/queries/block/locale');
     const { getCourseContentVersion } = await import('@db/queries/course/content-timestamp');
 
     const empty = await getCourseContentVersion(courseId);
 
-    const [locale] = await db
-      .insert(schema.blockLocale)
-      .values({ blockId: noteBlockId, locale: 'en', content: '<p>Hello</p>' })
-      .returning();
+    await upsertBlockLocale({ blockId: noteBlockId, locale: 'en', content: '<p>Hello</p>' });
     const withContent = await getCourseContentVersion(courseId);
     expect(withContent).not.toBe(empty);
 
-    await db
-      .update(schema.blockLocale)
-      .set({ content: '<p>Hello again</p>' })
-      .where(eq(schema.blockLocale.id, locale.id));
+    await upsertBlockLocale({ blockId: noteBlockId, locale: 'en', content: '<p>Hello again</p>' });
     const edited = await getCourseContentVersion(courseId);
     expect(edited).not.toBe(withContent);
   });

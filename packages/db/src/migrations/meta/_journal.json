@@ -344,13 +344,6 @@
       "when": 1793987540984,
       "tag": "0048_lesson_blocks",
       "breakpoints": true
-    },
-    {
-      "idx": 43,
-      "version": "7",
-      "when": 1793927035713,
-      "tag": "0043_course_content_query_perf",
-      "breakpoints": true
     }
   ]
 }
