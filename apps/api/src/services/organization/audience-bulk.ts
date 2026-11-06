@@ -7,6 +7,11 @@ import {
   type BulkApplyOutcome,
   applyAudienceBulkActionToMembers
 } from '@cio/core/services/organization/audience-bulk';
+import {
+  type StudentMilestoneNotification,
+  assertStudentCapacityOrThrow,
+  notifyStudentMilestone
+} from './student-limit';
 import { ROLE } from '@cio/utils/constants';
 import { emitOrganizationMemberUpdatedWebhookEvent } from '@cio/core/services/webhook/emit';
 import { db } from '@cio/db/drizzle';
@@ -151,8 +156,7 @@ const PREVIEW_SAMPLE_SIZE = 5;
  */
 async function resolveTargetIds(orgId: string, data: TBulkAudienceAction): Promise<number[]> {
   if (data.target.mode === 'ids') {
-    const members = await getBulkAudienceMembersByIds(orgId, data.target.memberIds);
-    return members.map((member) => member.id);
+    return [...new Set(data.target.memberIds)];
   }
 
   const matchedIds = await resolveAudienceMemberIds(orgId, data.target.filter);
@@ -221,6 +225,15 @@ export async function applyBulkAudienceAction(
   const filterSnapshot = data.target.mode === 'filter' ? { ...data.target.filter } : undefined;
 
   if (memberIds.length > AUDIENCE_BULK_SYNC_MAX) {
+    // The worker can't reach the plan limit, so check the whole run before queueing it.
+    const takesSeatsBack =
+      data.action !== 'archive' &&
+      data.action !== 'delete' &&
+      (data.target.mode !== 'filter' || data.target.filter.status === 'ARCHIVED');
+    const queuedMilestone = takesSeatsBack
+      ? await assertStudentCapacityOrThrow(orgId, memberIds.length, db, { deferNotification: true })
+      : null;
+
     // Ids, not the filter: the target was verified against the admin's preview
     // hash just now, and re-resolving in the worker would hit a different
     // population because the action changes who matches.
@@ -238,21 +251,37 @@ export async function applyBulkAudienceAction(
       throw new AppError('Could not queue this action', ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 500);
     }
 
+    sendStudentMilestone(queuedMilestone);
     return { mode: 'queued', jobId, requested: memberIds.length };
   }
+
+  let milestone: StudentMilestoneNotification | null = null;
+  const assertSeats = async (tx: Parameters<typeof assertStudentCapacityOrThrow>[2], seats: number) => {
+    milestone = await assertStudentCapacityOrThrow(orgId, seats, tx, { deferNotification: true });
+  };
 
   try {
     const outcome = await applyAudienceBulkActionToMembers(
       orgId,
       memberIds,
       { action: data.action, reason: data.reason, filterSnapshot },
-      actorProfileId
+      actorProfileId,
+      { assertSeats }
     );
 
+    sendStudentMilestone(milestone);
     return toCompletedResult(orgId, actorProfileId, data.action, outcome);
   } catch (error) {
     throw toAppError(error);
   }
+}
+
+function sendStudentMilestone(milestone: StudentMilestoneNotification | null) {
+  if (!milestone) return;
+
+  notifyStudentMilestone(milestone).catch((error) => {
+    console.error('notifyStudentMilestone error:', error);
+  });
 }
 
 /** Applies the inverse status change to precisely the ids that succeeded. */
@@ -263,66 +292,78 @@ export async function undoBulkAudienceAction(
 ): Promise<BulkAudienceActionResult> {
   const record = consumeUndoToken(undoToken, orgId, actorProfileId);
   const revertedMembers: { id: number; profileId: string | null; email: string | null; from: string }[] = [];
+  let milestone: StudentMilestoneNotification | null = null;
 
-  const result = await db.transaction(async (tx) => {
-    const members = await getBulkAudienceMembersByIds(orgId, record.memberIds, tx);
+  const result = await db
+    .transaction(async (tx) => {
+      const members = await getBulkAudienceMembersByIds(orgId, record.memberIds, tx);
 
-    // Only members still in the state this action applied. Another admin may
-    // have acted during the window, and that newer decision must win.
-    const stillApplied = members.filter((member) => member.status === record.appliedStatus);
-    const revertableIds = stillApplied.map((member) => member.id);
+      // Only members still in the state this action applied. Another admin may
+      // have acted during the window, and that newer decision must win.
+      const stillApplied = members.filter((member) => member.status === record.appliedStatus);
+      const revertableIds = stillApplied.map((member) => member.id);
 
-    const changedIds = await bulkUpdateOrganizationMemberStatus(
-      orgId,
-      revertableIds,
-      record.status,
-      actorProfileId,
-      tx
-    );
-    const changed = stillApplied.filter((member) => changedIds.includes(member.id));
-    revertedMembers.push(
-      ...changed.map((member) => ({
-        id: member.id,
-        profileId: member.profileId,
-        email: member.email,
-        from: member.status
-      }))
-    );
+      if (record.appliedStatus === 'ARCHIVED' && record.status === 'ACTIVE') {
+        milestone = await assertStudentCapacityOrThrow(orgId, revertableIds.length, tx, { deferNotification: true });
+      }
 
-    await recordOrganizationMemberAudit(
-      orgId,
-      changed.map((member) => ({
-        memberId: member.id,
-        profileId: member.profileId,
-        targetEmail: member.email,
-        eventType: record.status === 'ACTIVE' ? ('REACTIVATED' as const) : ('DEACTIVATED' as const),
+      const changedIds = await bulkUpdateOrganizationMemberStatus(
+        orgId,
+        revertableIds,
+        record.status,
         actorProfileId,
-        reason: 'Undo'
-      })),
-      tx
-    );
+        tx
+      );
+      const changed = stillApplied.filter((member) => changedIds.includes(member.id));
+      revertedMembers.push(
+        ...changed.map((member) => ({
+          id: member.id,
+          profileId: member.profileId,
+          email: member.email,
+          from: member.status
+        }))
+      );
 
-    return {
-      mode: 'completed' as const,
-      requested: record.memberIds.length,
-      succeeded: changedIds.length,
-      // The token's ids, not the rows returned: a deleted member yields no row.
-      failed: record.memberIds
-        .filter((memberId) => !changedIds.includes(memberId))
-        .map((memberId) => {
-          const member = members.find((candidate) => candidate.id === memberId);
+      await recordOrganizationMemberAudit(
+        orgId,
+        changed.map((member) => ({
+          memberId: member.id,
+          profileId: member.profileId,
+          targetEmail: member.email,
+          eventType: record.status === 'ACTIVE' ? ('REACTIVATED' as const) : ('DEACTIVATED' as const),
+          actorProfileId,
+          reason: 'Undo'
+        })),
+        tx
+      );
 
-          if (!member) {
-            return { memberId, reason: 'CHANGED_SINCE' };
-          }
+      return {
+        mode: 'completed' as const,
+        requested: record.memberIds.length,
+        succeeded: changedIds.length,
+        // The token's ids, not the rows returned: a deleted member yields no row.
+        failed: record.memberIds
+          .filter((memberId) => !changedIds.includes(memberId))
+          .map((memberId) => {
+            const member = members.find((candidate) => candidate.id === memberId);
 
-          return {
-            memberId,
-            reason: member.status === record.appliedStatus ? 'ALREADY_IN_STATE' : 'CHANGED_SINCE'
-          };
-        })
-    };
-  });
+            if (!member) {
+              return { memberId, reason: 'CHANGED_SINCE' };
+            }
+
+            return {
+              memberId,
+              reason: member.status === record.appliedStatus ? 'ALREADY_IN_STATE' : 'CHANGED_SINCE'
+            };
+          })
+      };
+    })
+    .catch((error: unknown) => {
+      undoTokens.set(undoToken, record);
+      throw error;
+    });
+
+  sendStudentMilestone(milestone);
 
   for (const member of revertedMembers) {
     await emitOrganizationMemberUpdatedWebhookEvent(
