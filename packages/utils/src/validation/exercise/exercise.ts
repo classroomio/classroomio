@@ -243,7 +243,7 @@ export const ZExerciseUpdate = z.object({
   questions: z.array(ZExerciseUpdateQuestion).optional(),
   sections: z.array(ZExerciseSection).optional(),
   sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional(),
-  completionPolicy: z.enum(['submitted', 'passed']).optional(),
+  completionPolicy: z.enum(['submitted', 'passed', 'none']).optional(),
   passThreshold: z.number().int().min(0).max(100).optional()
 });
 export type TExerciseUpdate = z.infer<typeof ZExerciseUpdate>;

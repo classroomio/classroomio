@@ -82,15 +82,19 @@
       type="single"
       value={$questionnaire.completionPolicy ?? 'submitted'}
       onValueChange={(value) => {
-        if (value === 'submitted' || value === 'passed') {
+        if (value === 'submitted' || value === 'passed' || value === 'none') {
           questionnaire.update((state) => ({ ...state, completionPolicy: value }));
         }
       }}
     >
       <Select.Trigger class="w-full">
-        {($questionnaire.completionPolicy ?? 'submitted') === 'passed'
-          ? $t('course.navItem.lessons.exercises.all_exercises.settings_completion_passed')
-          : $t('course.navItem.lessons.exercises.all_exercises.settings_completion_submitted')}
+        {#if ($questionnaire.completionPolicy ?? 'submitted') === 'passed'}
+          {$t('course.navItem.lessons.exercises.all_exercises.settings_completion_passed')}
+        {:else if ($questionnaire.completionPolicy ?? 'submitted') === 'none'}
+          {$t('course.navItem.lessons.exercises.all_exercises.settings_completion_none')}
+        {:else}
+          {$t('course.navItem.lessons.exercises.all_exercises.settings_completion_submitted')}
+        {/if}
       </Select.Trigger>
       <Select.Content>
         <Select.Item value="submitted">
@@ -99,8 +103,17 @@
         <Select.Item value="passed">
           {$t('course.navItem.lessons.exercises.all_exercises.settings_completion_passed')}
         </Select.Item>
+        <Select.Item value="none">
+          {$t('course.navItem.lessons.exercises.all_exercises.settings_completion_none')}
+        </Select.Item>
       </Select.Content>
     </Select.Root>
+
+    {#if ($questionnaire.completionPolicy ?? 'submitted') === 'none'}
+      <p class="ui:text-muted-foreground mt-3 text-sm">
+        {$t('course.navItem.lessons.exercises.all_exercises.settings_completion_none_helper')}
+      </p>
+    {/if}
 
     {#if ($questionnaire.completionPolicy ?? 'submitted') === 'passed'}
       <div class="mt-4 space-y-3">

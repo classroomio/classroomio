@@ -30,8 +30,17 @@ type StudentEnrolledCourse = UserEnrolledCourses[number];
 
 function getCourseContentProgress(course: StudentEnrolledCourse) {
   const exercisesCompleted = typeof course.exercisesCompleted === 'number' ? course.exercisesCompleted : 0;
-  const totalExercises = typeof course.exerciseCount === 'number' ? course.exerciseCount : 0;
-  const totalItems = (course.lessonCount ?? 0) + totalExercises;
+  const trackableExercises =
+    typeof (course as { trackableExerciseCount?: number }).trackableExerciseCount === 'number'
+      ? (course as { trackableExerciseCount: number }).trackableExerciseCount
+      : typeof course.exerciseCount === 'number'
+        ? course.exerciseCount
+        : 0;
+  const trackableLessons =
+    typeof (course as { trackableLessonCount?: number }).trackableLessonCount === 'number'
+      ? (course as { trackableLessonCount: number }).trackableLessonCount
+      : (course.lessonCount ?? 0);
+  const totalItems = trackableLessons + trackableExercises;
 
   if (totalItems <= 0) {
     return 0;

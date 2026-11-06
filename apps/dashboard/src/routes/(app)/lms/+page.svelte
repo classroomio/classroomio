@@ -25,10 +25,20 @@
 
   let totalLessons = $derived(
     coursesApi.enrolledCourses.reduce((acc, course) => {
+      const trackableLessons =
+        'trackableLessonCount' in course &&
+        typeof (course as { trackableLessonCount?: number }).trackableLessonCount === 'number'
+          ? (course as { trackableLessonCount: number }).trackableLessonCount
+          : course.lessonCount || 0;
       const exercises =
-        'exerciseCount' in course && typeof course.exerciseCount === 'number' ? course.exerciseCount : 0;
+        'trackableExerciseCount' in course &&
+        typeof (course as { trackableExerciseCount?: number }).trackableExerciseCount === 'number'
+          ? (course as { trackableExerciseCount: number }).trackableExerciseCount
+          : 'exerciseCount' in course && typeof course.exerciseCount === 'number'
+            ? course.exerciseCount
+            : 0;
 
-      return acc + (course.lessonCount || 0) + exercises;
+      return acc + trackableLessons + exercises;
     }, 0)
   );
 

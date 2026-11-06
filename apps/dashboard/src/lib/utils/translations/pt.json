@@ -2377,7 +2377,9 @@
               "save_continue": "Salvar e continuar",
               "question_fallback": "Pergunta {number}",
               "zero_points_field": "A conclusão aprovada precisa de pelo menos um ponto disponível."
-            }
+            },
+            "settings_completion_none": "Nenhum – opcional",
+            "settings_completion_none_helper": "Este exercício não bloqueia a progressão do curso e não é necessário para conclusão do curso ou certificados."
           },
           "new_exercise_modal": {
             "heading": "Novo exercício",

@@ -114,6 +114,7 @@ function buildContentItem(overrides: Partial<CourseContentItemRow> = {}): Course
     sectionId: null,
     isUnlocked: true,
     isComplete: false,
+    completionPolicy: null,
     lessonAt: null,
     callUrl: null,
     sessionDurationMinutes: null,

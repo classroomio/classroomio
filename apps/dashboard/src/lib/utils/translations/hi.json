@@ -2377,7 +2377,9 @@
               "save_continue": "सहेजें और जारी रखें",
               "question_fallback": "प्रश्न {number}",
               "zero_points_field": "उत्तीर्ण पूर्णता के लिए कम से कम एक अंक उपलब्ध होना आवश्यक है।"
-            }
+            },
+            "settings_completion_none": "कोई नहीं - वैकल्पिक",
+            "settings_completion_none_helper": "यह अभ्यास पाठ्यक्रम की प्रगति को अवरुद्ध नहीं करता है और पाठ्यक्रम पूरा करने या प्रमाणपत्र के लिए इसकी आवश्यकता नहीं है।"
           },
           "new_exercise_modal": {
             "heading": "नया व्यायाम",

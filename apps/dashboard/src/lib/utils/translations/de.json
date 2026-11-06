@@ -2377,7 +2377,9 @@
               "save_continue": "Speichern und fortfahren",
               "question_fallback": "Frage {number}",
               "zero_points_field": "Für den bestandenen Abschluss ist mindestens ein Punkt erforderlich."
-            }
+            },
+            "settings_completion_none": "Keine – optional",
+            "settings_completion_none_helper": "Diese Übung blockiert nicht den Kursfortschritt und ist nicht für den Abschluss des Kurses oder für Zertifikate erforderlich."
           },
           "new_exercise_modal": {
             "heading": "Neue Übung",

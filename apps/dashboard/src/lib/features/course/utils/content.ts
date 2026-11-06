@@ -81,8 +81,9 @@ export type ContentProgress = {
 };
 
 export function getContentItemsProgress(items: ContentItem[]): ContentProgress {
-  const lessons = items.filter((item) => item.type === CourseContentType.Lesson);
-  const exercises = items.filter((item) => item.type === CourseContentType.Exercise);
+  const trackable = items.filter((item) => (item as { completionPolicy?: string | null }).completionPolicy !== 'none');
+  const lessons = trackable.filter((item) => item.type === CourseContentType.Lesson);
+  const exercises = trackable.filter((item) => item.type === CourseContentType.Exercise);
   const lessonsComplete = lessons.filter((item) => item.isComplete).length;
   const exercisesComplete = exercises.filter((item) => item.isComplete).length;
   const total = lessons.length + exercises.length;

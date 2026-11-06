@@ -213,7 +213,7 @@
 
   function getAttemptPassLabel(submission: SubmissionListItem & { gradingState?: string | null }) {
     return didAttemptCompleteExercise(submission)
-      ? ($questionnaire.completionPolicy ?? 'submitted') === 'submitted'
+      ? ($questionnaire.completionPolicy ?? 'submitted') !== 'passed'
         ? t.get('course.navItem.lessons.exercises.all_exercises.analytics.individual.counts_as_complete')
         : t.get('course.navItem.lessons.exercises.all_exercises.analytics.individual.passed')
       : t.get('course.navItem.lessons.exercises.all_exercises.analytics.individual.not_passed');

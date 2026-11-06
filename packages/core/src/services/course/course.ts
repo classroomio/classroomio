@@ -611,8 +611,11 @@ export async function buildCourseStudentAnalytics(
           return null;
         }
 
-        const completedExercises = userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0;
-        const totalExercises = userExercisesStats?.length || 0;
+        const trackableExerciseStats = (userExercisesStats ?? []).filter(
+          (exercise) => (exercise as { completionPolicy?: string | null }).completionPolicy !== 'none'
+        );
+        const completedExercises = trackableExerciseStats.filter((exercise) => exercise.isCompleted).length;
+        const totalExercises = trackableExerciseStats.length;
 
         const totalEarnedPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
         const totalPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
@@ -779,7 +782,10 @@ export async function getUserCourseAnalytics(
     const completedLessons = lessons.filter((lesson) => lesson.completed);
     const progressPercentage = calcPercentageWithRounding(completedLessons.length, lessons.length);
 
-    const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
+    const trackableExerciseStats = userExercisesStats.filter(
+      (exercise) => (exercise as { completionPolicy?: string | null }).completionPolicy !== 'none'
+    );
+    const completedExercises = trackableExerciseStats.filter((exercise) => exercise.isCompleted).length;
     const totalExercises = courseProgress.exercises_count || 0;
 
     const lessonsCompleted = courseProgress.lessons_completed || 0;

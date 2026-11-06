@@ -2377,7 +2377,9 @@
               "save_continue": "Enregistrer et continuer",
               "question_fallback": "Question {number}",
               "zero_points_field": "La réussite nécessite au moins un point disponible."
-            }
+            },
+            "settings_completion_none": "Aucun – facultatif",
+            "settings_completion_none_helper": "Cet exercice ne bloque pas la progression du cours et n’est pas requis pour terminer le cours ou obtenir des certificats."
           },
           "new_exercise_modal": {
             "heading": "Nouvel exercice",

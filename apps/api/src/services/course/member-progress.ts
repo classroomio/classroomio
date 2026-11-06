@@ -64,7 +64,11 @@ function buildOrderedTrackableItems(
   const content = buildCourseContent(contentRows, isContentGroupingEnabled);
   const orderedItems = flattenNavigableItems(content);
 
-  return toTrackableContentItems(orderedItems as CourseContentItem[]).map(({ id, type, title }) => ({
+  const filtered = (orderedItems as Array<CourseContentItem & { completionPolicy?: string | null }>).filter(
+    (item) => (item as { completionPolicy?: string | null }).completionPolicy !== 'none'
+  );
+
+  return toTrackableContentItems(filtered as CourseContentItem[]).map(({ id, type, title }) => ({
     id,
     type,
     title

@@ -1940,6 +1940,20 @@
       "all": "Tutto",
       "unpublished": "Inedito",
       "course_type": "Tipo di corso"
+    },
+    "filters": {
+      "filter": "Filtra",
+      "popover_title": "Filtri",
+      "clear_all": "Cancella tutto",
+      "search_placeholder": "Cerca per nome",
+      "status": "Stato",
+      "layout_type": "Tipo di layout",
+      "selection_mode": "Modalità di selezione",
+      "no_results_title": "Nessun widget corrisponde ai tuoi filtri",
+      "no_results_description": "Prova un termine di ricerca diverso o cancella i filtri per vedere di nuovo tutto.",
+      "no_results_page_title": "Niente in questa pagina",
+      "no_results_page_description": "Questi filtri corrispondono a un numero di widget inferiore a quello a cui inizia questa pagina.",
+      "back_to_first_page": "Torna alla prima pagina"
     }
   },
   "setup": {
@@ -3603,7 +3617,9 @@
                   "max_characters_placeholder": "Caratteri massimi"
                 }
               }
-            }
+            },
+            "settings_completion_none": "Nessuno: facoltativo",
+            "settings_completion_none_helper": "Questo esercizio non blocca la progressione del corso e non è richiesto per il completamento del corso o per i certificati."
           }
         },
         "disabled": "La funzionalità è disabilitata",
