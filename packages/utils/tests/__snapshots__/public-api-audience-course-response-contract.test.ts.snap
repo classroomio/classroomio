@@ -24,6 +24,88 @@ exports[`public API audience and course response contract > ZPublicApiAssignAudi
 }
 `;
 
+exports[`public API audience and course response contract > ZPublicApiAudienceBulkStatusResponse keeps its published shape > ZPublicApiAudienceBulkStatusResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "deactivate",
+        "reactivate",
+        "archive",
+        "unarchive",
+      ],
+      "type": "string",
+    },
+    "changed": {
+      "type": "number",
+    },
+    "requested": {
+      "type": "number",
+    },
+    "rows": {
+      "description": "One entry per memberId or email, in request order",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+            "description": "The email sent, or null when memberIds was sent",
+          },
+          "index": {
+            "description": "Position in memberIds or emails",
+            "type": "number",
+          },
+          "memberId": {
+            "anyOf": [
+              {
+                "type": "number",
+              },
+              {
+                "type": "null",
+              },
+            ],
+            "description": "null when not_found",
+          },
+          "status": {
+            "description": "changed: moved to the new state. already_in_state: was already there; nothing changed. not_found: not a student of this organization",
+            "enum": [
+              "changed",
+              "already_in_state",
+              "not_found",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "index",
+          "memberId",
+          "email",
+          "status",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "action",
+    "requested",
+    "changed",
+    "rows",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`public API audience and course response contract > ZPublicApiAudienceMemberResponse keeps its published shape > ZPublicApiAudienceMemberResponse 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",

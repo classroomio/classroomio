@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import type { ClassroomIoApiClient } from './api-client';
+import { ClassroomIoApiError, type ClassroomIoApiClient } from './api-client';
 import { registerAnalyticsTools } from './tools/analytics';
 import { registerAudienceTools } from './tools/audience';
 import { registerCohortGoalTools } from './tools/cohort-goals';
@@ -42,6 +42,7 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
     name: 'classroomio-course-authoring',
     version: MCP_VERSION
   });
+  returnApiErrorsAsToolResults(server);
 
   registerCourseDraftTools(server, apiClient);
   registerCourseTools(server, apiClient);
@@ -71,4 +72,25 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
   }
 
   return server;
+}
+
+/** The SDK keeps only a thrown error's message, so API failures are returned with their code and status. */
+function returnApiErrorsAsToolResults(server: McpServer) {
+  const register = server.tool.bind(server) as (...args: unknown[]) => unknown;
+
+  server.tool = ((...args: unknown[]) => {
+    const handler = args[args.length - 1] as (...handlerArgs: unknown[]) => Promise<unknown>;
+    const wrapped = async (...handlerArgs: unknown[]) => {
+      try {
+        return await handler(...handlerArgs);
+      } catch (error) {
+        if (!(error instanceof ClassroomIoApiError)) throw error;
+
+        const payload = { error: error.message, code: error.code ?? null, status: error.status, field: error.field };
+        return { content: [{ type: 'text' as const, text: JSON.stringify(payload) }], isError: true };
+      }
+    };
+
+    return register(...args.slice(0, -1), wrapped);
+  }) as McpServer['tool'];
 }

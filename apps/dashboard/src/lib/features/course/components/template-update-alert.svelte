@@ -36,13 +36,15 @@
     <InfoIcon />
     <Alert.Title>{$t('course_templates.sync.alert_title', { count: changeCount })}</Alert.Title>
     <Alert.Description>
-      {$t('course_templates.sync.alert_body', {
-        title: updates.template.title,
-        date: formatTemplateUsedDate(updates.lastPulledAt ?? '')
-      })}
-      <a class="ui:text-primary ml-1 underline" href="{resolve(`/courses/${course?.id}/settings`, {})}#template">
-        {$t('course_templates.sync.review_in_settings')}
-      </a>
+      <p>
+        {$t('course_templates.sync.alert_body', {
+          title: updates.template.title,
+          date: formatTemplateUsedDate(updates.lastPulledAt ?? '')
+        })}
+        <a class="ui:text-primary ml-1 underline" href="{resolve(`/courses/${course?.id}/settings`, {})}#template">
+          {$t('course_templates.sync.review_in_settings')}
+        </a>
+      </p>
     </Alert.Description>
   </Alert.Root>
 {/if}

@@ -12,6 +12,7 @@
   import { page } from '$app/state';
   import { t } from '$lib/utils/functions/translations';
   import { ROLE } from '@cio/utils/constants';
+  import { STUDENT_HOME_ENTRY_PATH } from '@cio/utils/lms';
 
   let { data } = $props();
 
@@ -105,7 +106,7 @@
 
   function handleNavigateAfterJoined() {
     if (inviteRoleId === ROLE.STUDENT) {
-      return goto(resolve('/lms', {}));
+      return goto(resolve(STUDENT_HOME_ENTRY_PATH, {}));
     }
     return goto(resolve(orgSlug ? `/org/${orgSlug}` : '/org', {}));
   }

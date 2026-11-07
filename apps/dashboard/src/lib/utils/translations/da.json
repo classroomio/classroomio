@@ -3362,7 +3362,28 @@
           "paid_plan_note": "Opgrader din plan for at tilpasse login-baggrunden.",
           "preview_alt": "Forhåndsvisning af login-baggrund"
         },
-        "page_subtitle": "Vælg, hvilke faner, bannere, kursusværktøjer og ekstramateriale eleverne ser."
+        "page_subtitle": "Vælg, hvilke faner, bannere, kursusværktøjer og ekstramateriale eleverne ser.",
+        "student_home": {
+          "heading": "Studerendes startside",
+          "description": "Vælg, hvor loggede studerende skal hen, når de åbner dit akademis hjemmeside. Besøgende, der ikke er logget ind, og dit team, kan stadig se din landingsside.",
+          "label": "Startside for indloggede studerende",
+          "placeholder": "Søg på sider og kurser",
+          "option_default": "Landingsside (standard)",
+          "group_pages": "Læringsportal",
+          "group_courses": "Kurser",
+          "reason_disabled_toggle": "Slå den til i Dashboard-sektionen nedenfor",
+          "reason_paid_plan": "Tilgængelig på betalte planer",
+          "courses_empty": "Ingen offentliggjorte kurser endnu",
+          "load_more": "Indlæs mere",
+          "search_empty": "Ingen sider eller kurser matcher \"{query}\"",
+          "warning_unavailable": "{destination} er ikke tilgængelig for elever lige nu, så de sendes til betjeningspanelet i stedet. Vælg en anden destination, eller gør den tilgængelig igen.",
+          "warning_course_missing": "Det kursus, du valgte, blev slettet eller ikke offentliggjort, så eleverne sendes til Dashboard i stedet.",
+          "course_hint_open": "Tilmeldte elever går direkte til deres næste lektion. Studerende, der ikke er tilmeldt, kan deltage med et enkelt klik.",
+          "course_hint_restricted": "Tilmeldte elever går direkte til deres næste lektion. Dette kursus er betalt eller kun for invitationer, så studerende, der ikke er tilmeldt, går til Dashboard.",
+          "unavailable_badge": "Ikke tilgængelig",
+          "course_type_live": "Live klasse",
+          "course_type_compliance": "Overholdelse"
+        }
       },
       "domains": {
         "title": "Brugerdefineret domæne",
@@ -3409,6 +3430,12 @@
         "ssl_pending_body": "Dit domæne peger på os. Vi venter nu på, at SSL-certifikatet bliver udstedt og implementeret. Dette tager normalt et par minutter, når alle nedenstående DNS-poster er på plads.",
         "validation_errors_heading": "Certifikatudstedelse er blokeret",
         "verified_snackbar": "Tilpasset domæne bekræftet"
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Studerende, der er logget ind, springer denne side over og går til {destination}.",
+          "change": "Skift"
+        }
       }
     },
     "quiz": {

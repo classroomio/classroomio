@@ -3362,7 +3362,28 @@
           "paid_plan_note": "Upgraden Sie Ihren Plan, um den Anmelde-Hintergrund anzupassen.",
           "preview_alt": "Vorschau Anmelde-Hintergrund"
         },
-        "page_subtitle": "Wählen Sie aus, welche Registerkarten, Banner, Kurstools und Extras den Studierenden angezeigt werden."
+        "page_subtitle": "Wählen Sie aus, welche Registerkarten, Banner, Kurstools und Extras den Studierenden angezeigt werden.",
+        "student_home": {
+          "heading": "Startseite für Studierende",
+          "description": "Wählen Sie aus, wohin angemeldete Studierende gehen, wenn sie die Homepage Ihrer Akademie öffnen. Besucher, die nicht angemeldet sind, und Ihr Team sehen weiterhin Ihre Zielseite.",
+          "label": "Startseite für angemeldete Studierende",
+          "placeholder": "Durchsuchen Sie Seiten und Kurse",
+          "option_default": "Landingpage (Standard)",
+          "group_pages": "Lernportal",
+          "group_courses": "Kurse",
+          "reason_disabled_toggle": "Aktivieren Sie es im Dashboard-Bereich unten",
+          "reason_paid_plan": "Verfügbar für kostenpflichtige Pläne",
+          "courses_empty": "Noch keine veröffentlichten Kurse",
+          "load_more": "Mehr laden",
+          "search_empty": "Keine Seiten oder Kurse stimmen mit „{query}“ überein.",
+          "warning_unavailable": "{destination} ist derzeit für Studierende nicht verfügbar, daher werden sie stattdessen an das Dashboard weitergeleitet. Wählen Sie ein anderes Ziel oder machen Sie es erneut verfügbar.",
+          "warning_course_missing": "Der von Ihnen ausgewählte Kurs wurde gelöscht oder nicht veröffentlicht, daher werden die Studierenden stattdessen an das Dashboard weitergeleitet.",
+          "course_hint_open": "Eingeschriebene Schüler gehen direkt zur nächsten Unterrichtsstunde. Studierende, die nicht eingeschrieben sind, können mit einem Klick beitreten.",
+          "course_hint_restricted": "Eingeschriebene Schüler gehen direkt zur nächsten Unterrichtsstunde. Dieser Kurs ist kostenpflichtig oder nur auf Einladung möglich. Studierende, die nicht eingeschrieben sind, gehen also zum Dashboard.",
+          "unavailable_badge": "Nicht verfügbar",
+          "course_type_live": "Live-Klasse",
+          "course_type_compliance": "Compliance"
+        }
       },
       "domains": {
         "title": "Benutzerdefinierte Domäne",
@@ -3409,6 +3430,12 @@
         "ssl_pending_body": "Ihre Domain verweist auf uns. Wir warten nun darauf, dass das SSL-Zertifikat ausgestellt und bereitgestellt wird. Dies dauert normalerweise einige Minuten, sobald alle unten aufgeführten DNS-Einträge vorhanden sind.",
         "validation_errors_heading": "Die Ausstellung des Zertifikats ist gesperrt",
         "verified_snackbar": "Benutzerdefinierte Domain verifiziert"
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Angemeldete Schüler überspringen diese Seite und gehen zu {destination}.",
+          "change": "Ändern"
+        }
       }
     },
     "quiz": {
