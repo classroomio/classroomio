@@ -17,6 +17,8 @@
   let { data, children } = $props();
   const isSettingsRoute = $derived(/\/settings(?:\/|$)/.test(page.url.pathname));
   const isCoursesList = $derived(/\/courses\/?$/.test(page.url.pathname));
+  const isPluginView = $derived(/\/plugins\/[^/]+/.test(page.url.pathname));
+  const isFullBleedView = $derived(isCoursesList || isPluginView);
 
   function redirect(siteName: string | null) {
     if (!siteName) return;
@@ -59,7 +61,9 @@
     {/if}
 
     <div
-      class={isCoursesList ? 'flex w-full flex-1 flex-col' : 'mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4'}
+      class={isFullBleedView
+        ? 'flex w-full flex-1 flex-col'
+        : 'mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4'}
     >
       {#if data.orgName === '*'}
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">

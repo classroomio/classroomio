@@ -214,37 +214,6 @@
           localStorage.removeItem(storageKey);
           return true;
         },
-        onCoursesList: async ({ cursor, limit, publishedOnly }) => {
-          const orgId = requireOrganizationId();
-          const queryParams: { cursor?: string; limit?: string; publishedOnly?: string } = {};
-          if (cursor) queryParams.cursor = cursor;
-          if (limit !== undefined) queryParams.limit = String(limit);
-          if (publishedOnly !== undefined) queryParams.publishedOnly = String(publishedOnly);
-
-          const response = await classroomio.plugins.installations[':installationId'].courses.$get(
-            { param: { installationId }, query: queryParams },
-            { headers: { 'cio-org-id': orgId } }
-          );
-          return responseData(response);
-        },
-        onLessonsList: async ({ courseId }) => {
-          const orgId = requireOrganizationId();
-          const resolvedCourseId = courseId ?? (resource?.type === 'course' ? resource.id : undefined);
-          const response = await classroomio.plugins.installations[':installationId'].lessons.$get(
-            { param: { installationId }, query: { courseId: resolvedCourseId } },
-            { headers: { 'cio-org-id': orgId } }
-          );
-          return responseData(response);
-        },
-        onExercisesList: async ({ courseId }) => {
-          const orgId = requireOrganizationId();
-          const resolvedCourseId = courseId ?? (resource?.type === 'course' ? resource.id : undefined);
-          const response = await classroomio.plugins.installations[':installationId'].exercises.$get(
-            { param: { installationId }, query: { courseId: resolvedCourseId } },
-            { headers: { 'cio-org-id': orgId } }
-          );
-          return responseData(response);
-        },
         onLandingTemplatePreview: async ({ templateId }) => {
           return dispatchSurfaceAction('preview', { templateId });
         },
@@ -390,6 +359,18 @@
               path: `certificate-templates/applied/${encodeURIComponent(id)}`
             }
           };
+          if (action === 'courses:list' || action === 'lessons:list' || action === 'exercises:list') {
+            const query = new URLSearchParams();
+            if (typeof payload.cursor === 'string') query.set('cursor', payload.cursor);
+            if (typeof payload.limit === 'number') query.set('limit', String(payload.limit));
+            if (typeof payload.courseId === 'string') query.set('courseId', payload.courseId);
+            if (typeof payload.lessonId === 'string') query.set('lessonId', payload.lessonId);
+            if (typeof payload.publishedOnly === 'boolean') {
+              query.set('publishedOnly', String(payload.publishedOnly));
+            }
+            const resourceName = action.slice(0, action.indexOf(':'));
+            routeByAction[action] = { path: `${resourceName}?${query.toString()}` };
+          }
           if (action === 'certificates:list') {
             const query = new URLSearchParams();
             if (typeof payload.cursor === 'string') query.set('cursor', payload.cursor);

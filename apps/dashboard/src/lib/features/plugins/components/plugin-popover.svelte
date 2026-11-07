@@ -79,7 +79,7 @@
         isActive: inst.status === 'active',
         isInstalled: true,
         permissions,
-        managePath: hasPage ? `/plugins/${inst.pluginId}` : undefined
+        managePath: hasPage ? `/plugins/${inst.plugin?.slug ?? inst.pluginId}` : undefined
       });
     }
 
