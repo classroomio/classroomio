@@ -57,11 +57,6 @@ const ZSafeRelativePath = z.string().trim().min(1).refine(isSafeRelativePath, {
 
 const PLUGIN_ICON_FILE_REGEX = /\.(?:svg|png|jpe?g|webp)$/i;
 
-/**
- * A plugin-provided image packaged in the immutable plugin artifact. The host
- * resolves this relative path against the installed version's asset URL; it
- * never renders arbitrary developer-supplied remote image URLs.
- */
 export const ZPluginIcon = z
   .object({
     resource: ZSafeRelativePath.max(256).refine((resource) => PLUGIN_ICON_FILE_REGEX.test(resource), {
@@ -578,7 +573,6 @@ export const ZPluginManifest = z
   })
   .strict()
   .superRefine((data, ctx) => {
-    // 1. If storesCustomerData is true, privacyPolicyUrl is required
     if (data.dataPolicy.storesCustomerData && !data.dataPolicy.privacyPolicyUrl) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -587,7 +581,6 @@ export const ZPluginManifest = z
       });
     }
 
-    // 2. Validate entrypoint references in contributes match declared ui.entrypoints
     const declaredEntrypoints = data.runtime?.ui?.entrypoints ?? {};
 
     for (const [idx, page] of data.contributes.pages.entries()) {
@@ -644,7 +637,6 @@ export const ZPluginManifest = z
       }
     }
 
-    // 3. Forbid manifest assertions of platform privilege
     const FORBIDDEN_PRIVILEGED_KEYS = ['firstParty', 'official', 'trusted', 'builtin'] as const;
     const rawRecord = data as Record<string, unknown>;
     for (const key of FORBIDDEN_PRIVILEGED_KEYS) {

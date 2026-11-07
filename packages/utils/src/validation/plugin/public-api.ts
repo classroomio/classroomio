@@ -79,10 +79,20 @@ export const ZPluginApiCourseMetadata = z
     slug: z.string().nullable(),
     description: z.string().nullable(),
     imageUrl: z.string().nullable(),
+    type: z.string().nullable(),
     status: z.string().min(1),
     visibility: z.enum(['public', 'private']),
     published: z.boolean(),
     publishedAt: z.string().datetime({ offset: true }).nullable(),
+    sessionTimezone: z.string().nullable(),
+    certificateDeadline: z.string().datetime({ offset: true }).nullable(),
+    instructor: z
+      .object({
+        name: z.string().min(1),
+        avatarUrl: z.string().nullable()
+      })
+      .strict()
+      .nullable(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true })
   })
@@ -117,6 +127,18 @@ export const ZPluginApiLessonMetadata = z
     published: z.boolean(),
     wordCount: z.number().int().nonnegative(),
     estimatedMinutes: z.number().int().positive(),
+    lessonAt: z.string().datetime({ offset: true }).nullable(),
+    callUrl: z.string().nullable(),
+    recordingUrl: z.string().nullable(),
+    sessionDurationMinutes: z.number().int().positive().nullable(),
+    instructor: z
+      .object({
+        id: z.string().uuid(),
+        name: z.string().min(1),
+        avatarUrl: z.string().nullable()
+      })
+      .strict()
+      .nullable(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true })
   })
@@ -257,6 +279,7 @@ export const ZPluginApiExerciseMetadata = z
     passThreshold: z.number().int().nullable(),
     questionCount: z.number().int().nonnegative(),
     totalPoints: z.number().nonnegative(),
+    dueBy: z.string().datetime({ offset: true }).nullable(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true })
   })
