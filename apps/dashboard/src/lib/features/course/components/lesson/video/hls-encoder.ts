@@ -111,6 +111,8 @@ const HLS_TARGET_SEGMENT_SECONDS = 4;
 /** Cap parallel segment PUTs — unbounded concurrency can overwhelm R2 and fail mid-upload. */
 const HLS_UPLOAD_CONCURRENCY = 16;
 const HLS_PUT_MAX_ATTEMPTS = 4;
+/** A segment is a few MB at most; a PUT stalled longer than this is aborted and retried. */
+const HLS_PUT_ATTEMPT_TIMEOUT_MS = 120_000;
 /** Server validation allows up to 2000 paths per presign request. */
 const PRESIGN_BATCH_SIZE = 1500;
 /** Must match `HLS_CONTENT_TYPES` in `@cio/core` presign signing. */
@@ -783,6 +785,7 @@ async function putPresignedObject(options: {
         ...failure
       });
     };
+    const attemptSignal = buildPutAttemptSignal(options.signal);
     let response: Response;
 
     try {
@@ -790,14 +793,21 @@ async function putPresignedObject(options: {
         method: 'PUT',
         headers: { 'Content-Type': options.contentType },
         body: options.body,
-        signal: options.signal
+        signal: attemptSignal
       });
     } catch (error) {
-      recordFailure({
-        httpStatus: null,
-        errorName: error instanceof Error ? error.name : typeof error
-      });
-      throw error;
+      if (options.signal?.aborted) throw error;
+
+      if (attempt === HLS_PUT_MAX_ATTEMPTS) {
+        recordFailure({
+          httpStatus: null,
+          errorName: error instanceof Error ? error.name : typeof error
+        });
+        throw error;
+      }
+
+      await sleep(putRetryDelayMs(attempt));
+      continue;
     }
 
     if (response.ok) return presigned;
@@ -820,10 +830,24 @@ async function putPresignedObject(options: {
       }
     }
 
-    await sleep(Math.min(1000 * 2 ** (attempt - 1), 8000));
+    await sleep(putRetryDelayMs(attempt));
   }
 
   throw new HlsEncoderError('upload_failed', `PUT ${options.path} failed`);
+}
+
+function putRetryDelayMs(attempt: number): number {
+  return Math.min(1000 * 2 ** (attempt - 1), 8000);
+}
+
+/**
+ * Combines the caller's cancel signal with a per-attempt timeout so a stalled PUT aborts and can be retried.
+ */
+function buildPutAttemptSignal(callerSignal?: AbortSignal): AbortSignal {
+  const timeoutSignal = AbortSignal.timeout(HLS_PUT_ATTEMPT_TIMEOUT_MS);
+  if (!callerSignal) return timeoutSignal;
+
+  return AbortSignal.any([callerSignal, timeoutSignal]);
 }
 
 /**
