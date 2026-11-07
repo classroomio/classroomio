@@ -32,6 +32,64 @@ async function githubRequest(path, options = {}) {
   return response.status === 204 ? null : response.json();
 }
 
+/**
+ * Sends a GraphQL request with the job token. Throws on errors.
+ */
+async function githubGraphQL(query, variables = {}) {
+  const response = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ query, variables })
+  });
+
+  const payload = await response.json();
+
+  if (!response.ok || payload.errors) {
+    throw new Error(`GitHub GraphQL failed: ${JSON.stringify(payload.errors ?? payload)}`);
+  }
+
+  return payload.data;
+}
+
+/**
+ * Resolves prior fact-check threads whose documented path is absent from the current findings.
+ */
+async function resolveFixedThreads(pullNumber, activeDocPaths) {
+  const data = await githubGraphQL(
+    `query($owner:String!, $repo:String!, $number:Int!) {
+      repository(owner:$owner, name:$repo) {
+        pullRequest(number:$number) {
+          reviewThreads(first:100) {
+            nodes { id isResolved comments(first:1) { nodes { body } } }
+          }
+        }
+      }
+    }`,
+    { owner, repo, number: pullNumber }
+  );
+
+  const threads = data.repository.pullRequest.reviewThreads.nodes;
+
+  for (const thread of threads) {
+    if (thread.isResolved) continue;
+
+    const body = thread.comments.nodes[0]?.body ?? '';
+
+    if (!body.includes(marker)) continue;
+
+    const docPath = body.match(/`([^`]+)`/)?.[1];
+
+    if (docPath && activeDocPaths.has(docPath)) continue;
+
+    await githubGraphQL(`mutation($id:ID!) { resolveReviewThread(input:{threadId:$id}) { thread { id } } }`, {
+      id: thread.id
+    });
+  }
+}
+
 function git(...args) {
   return execFileSync('git', args, { encoding: 'utf8', maxBuffer: 30 * 1024 * 1024 });
 }
@@ -339,6 +397,11 @@ async function main() {
 
       return;
     }
+
+    await resolveFixedThreads(
+      pullRequest.number,
+      new Set(findings.map((finding) => finding.doc_path))
+    );
 
     await githubRequest(`/pulls/${pullRequest.number}/reviews`, {
       method: 'POST',
