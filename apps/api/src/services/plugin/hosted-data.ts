@@ -173,6 +173,11 @@ export async function listHostedLessons(
       order: Number(lesson.order),
       published: Boolean(lesson.public),
       ...metrics,
+      lessonAt: lesson.lessonAt,
+      callUrl: lesson.callUrl,
+      recordingUrl: lesson.recordingUrl,
+      sessionDurationMinutes: lesson.sessionDurationMinutes,
+      instructor: lesson.instructor,
       createdAt: lesson.createdAt ?? new Date().toISOString(),
       updatedAt: lesson.updatedAt ?? lesson.createdAt ?? new Date().toISOString()
     };
@@ -206,6 +211,11 @@ export async function getHostedLesson(
     order: Number(lesson.order),
     published: Boolean(lesson.public),
     ...metrics,
+    lessonAt: lesson.lessonAt,
+    callUrl: lesson.callUrl,
+    recordingUrl: lesson.recordingUrl,
+    sessionDurationMinutes: lesson.sessionDurationMinutes,
+    instructor: lesson.instructor,
     createdAt: lesson.createdAt ?? new Date().toISOString(),
     updatedAt: lesson.updatedAt ?? lesson.createdAt ?? new Date().toISOString()
   };

@@ -7,8 +7,6 @@ import { zValidator } from '@hono/zod-validator';
 import {
   ZInstallPlugin,
   ZPluginInstallationParam,
-  ZPluginCoursesListQuery,
-  ZPluginLessonsListQuery,
   ZPluginStorageKeyParam,
   ZPluginStorageNamespaceParam,
   ZPluginStorageQuery,
@@ -25,9 +23,6 @@ import {
   getInstallation,
   getPluginUninstallImpact,
   installPlugin,
-  listInstallationCourses,
-  listInstallationExercises,
-  listInstallationLessons,
   listOrgPlugins,
   resolveOrgContributions,
   deleteStorageValue,
@@ -380,72 +375,6 @@ export const pluginInstallationsRouter = new Hono()
         return c.json({ success: true, data: updated }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update plugin organization approval');
-      }
-    }
-  )
-  .get(
-    '/:installationId/courses',
-    authMiddleware,
-    orgMemberMiddleware,
-    zValidator('param', ZPluginInstallationParam),
-    zValidator('query', ZPluginCoursesListQuery),
-    async (c) => {
-      const user = c.get('user')!;
-      const orgId = c.get('orgId') as string;
-      const userRole = c.get('userRole') as number | undefined;
-      const { installationId } = c.req.valid('param');
-      const query = c.req.valid('query');
-
-      try {
-        const result = await listInstallationCourses(installationId, orgId, user.id, userRole, query);
-
-        return c.json({ success: true, data: result }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to fetch courses for plugin installation');
-      }
-    }
-  )
-  .get(
-    '/:installationId/lessons',
-    authMiddleware,
-    orgMemberMiddleware,
-    zValidator('param', ZPluginInstallationParam),
-    zValidator('query', ZPluginLessonsListQuery),
-    async (c) => {
-      const user = c.get('user')!;
-      const orgId = c.get('orgId') as string;
-      const userRole = c.get('userRole') as number | undefined;
-      const { installationId } = c.req.valid('param');
-      const { courseId } = c.req.valid('query');
-
-      try {
-        const result = await listInstallationLessons(installationId, orgId, user.id, userRole, courseId);
-
-        return c.json({ success: true, data: result }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to fetch lessons for plugin installation');
-      }
-    }
-  )
-  .get(
-    '/:installationId/exercises',
-    authMiddleware,
-    orgMemberMiddleware,
-    zValidator('param', ZPluginInstallationParam),
-    zValidator('query', ZPluginLessonsListQuery),
-    async (c) => {
-      const user = c.get('user')!;
-      const orgId = c.get('orgId') as string;
-      const userRole = c.get('userRole') as number | undefined;
-      const { installationId } = c.req.valid('param');
-      const { courseId } = c.req.valid('query');
-
-      try {
-        const result = await listInstallationExercises(installationId, orgId, user.id, userRole, courseId);
-
-        return c.json({ success: true, data: result }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to fetch exercises for plugin installation');
       }
     }
   );
