@@ -142,6 +142,16 @@ export type TNewLessonLanguageHistory = typeof schema.lessonLanguageHistory.$inf
 
 export type TLessonVersion = typeof schema.lessonVersions.$inferSelect;
 
+export type TBlock = typeof schema.block.$inferSelect;
+export type TNewBlock = typeof schema.block.$inferInsert;
+export type TBlockPlacement = typeof schema.blockPlacement.$inferSelect;
+export type TNewBlockPlacement = typeof schema.blockPlacement.$inferInsert;
+export type TBlockLocale = typeof schema.blockLocale.$inferSelect;
+export type TNewBlockLocale = typeof schema.blockLocale.$inferInsert;
+export type TBlockLocaleHistory = typeof schema.blockLocaleHistory.$inferSelect;
+export type TNewBlockLocaleHistory = typeof schema.blockLocaleHistory.$inferInsert;
+export type TBlockVersion = typeof schema.blockVersions.$inferSelect;
+
 export type TOrganizationmember = typeof schema.organizationmember.$inferSelect;
 export type TNewOrganizationmember = typeof schema.organizationmember.$inferInsert;
 export type TOrganizationmemberEmailNotifications = typeof schema.organizationmemberEmailNotifications.$inferSelect;

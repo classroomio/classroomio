@@ -36,7 +36,15 @@ import {
   lockCourseForUpdate
 } from '@db/queries';
 import { env } from '@cio/core/config/env';
-import { recordLessonLanguageVersion } from '@cio/core/services/lesson-version';
+import { recordBlockLocaleVersion } from '@cio/core/services/block/block-version';
+import { copyLessonBlocks } from '@cio/core/services/block/copy';
+import {
+  deleteBlocksWithoutPlacements,
+  deletePlacements,
+  listBlockLocales,
+  listLessonBlockRows
+} from '@cio/db/queries/block';
+import { withDerivedLessonContent } from '@cio/db/queries/block/legacy';
 import { withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
 import {
   applySettingChanges,
@@ -450,39 +458,40 @@ async function copyExerciseBody(
   }
 }
 
-async function writeLessonLanguages(
+async function replaceLessonBlocksFromTemplate(
   templateLessonId: string,
   courseLessonId: string,
-  templateGraph: SyncGraph,
   templateOrgId: string | null,
   courseOrgId: string | null,
   userId: string,
-  syncedAt: string,
   client: DbOrTxClient
 ) {
-  const templateLanguages = templateGraph.languages.filter((language) => language.lessonId === templateLessonId);
-  const courseLanguages = await getLessonLanguagesByLessonIds([courseLessonId], client);
+  const organizationId = courseOrgId ?? templateOrgId;
+  if (!organizationId) return;
 
-  for (const language of templateLanguages) {
-    if (!language.locale) continue;
+  const existing = await listLessonBlockRows(courseLessonId, client);
+  await deletePlacements(
+    existing.map((row) => row.placement.id),
+    client
+  );
+  await deleteBlocksWithoutPlacements(
+    existing.map((row) => row.block.id),
+    client
+  );
 
-    const remapped = await remapContentAssets(language, templateOrgId, courseOrgId, userId, client);
-    const existing = courseLanguages.find((courseLanguage) => courseLanguage.locale === language.locale);
-    const saved = existing
-      ? await updateLessonLanguage(
-          courseLessonId,
-          language.locale,
-          { content: remapped.content, updatedAt: syncedAt },
-          client
-        )
-      : await createLessonLanguage(
-          { content: remapped.content, locale: language.locale, lessonId: courseLessonId, updatedAt: syncedAt },
-          client
-        );
+  const copiedBlockIds = await copyLessonBlocks({
+    lessonIdMap: new Map([[templateLessonId, courseLessonId]]),
+    organizationId,
+    actorProfileId: userId,
+    transform: (value) => remapContentAssets(value, templateOrgId, courseOrgId, userId, client),
+    dbClient: client
+  });
 
-    await recordLessonLanguageVersion({
-      lessonLanguageId: saved.id,
-      content: saved.content,
+  const noteLocales = await listBlockLocales([...copiedBlockIds.values()], client);
+  for (const locale of noteLocales) {
+    await recordBlockLocaleVersion({
+      blockLocaleId: locale.id,
+      content: locale.content,
       authorId: userId,
       intent: 'manual',
       dbClient: client
@@ -561,15 +570,19 @@ export async function pullCourseTemplateUpdates(
         if (!selected.has(lesson.id)) continue;
 
         const existing = copyBySource(courseGraph.lessons, lesson.id);
-        const remapped = await remapContentAssets(lesson, templateOrgId, courseOrgId, userId, tx);
+        const {
+          note: _note,
+          videos: _videos,
+          documents: _documents,
+          slides: _slides,
+          lessonLanguages: _lessonLanguages,
+          ...lessonFields
+        } = lesson as typeof lesson & { lessonLanguages?: unknown };
+        const remapped = await remapContentAssets(lessonFields, templateOrgId, courseOrgId, userId, tx);
         if (existing) {
           await updateLesson(
             existing.id,
             {
-              note: remapped.note,
-              videoUrl: remapped.videoUrl,
-              slideUrl: remapped.slideUrl,
-              slides: remapped.slides,
               title: remapped.title,
               public: remapped.public,
               lessonAt: remapped.lessonAt,
@@ -581,29 +594,13 @@ export async function pullCourseTemplateUpdates(
               completionPolicy: remapped.completionPolicy,
               videoWatchThreshold: remapped.videoWatchThreshold,
               commentsEnabled: remapped.commentsEnabled,
-              videos: remapped.videos,
-              documents: remapped.documents,
               slug: remapped.slug,
               updatedAt: syncedAt
             },
             tx
           );
-          await syncLessonAssetUsages(
-            [{ id: existing.id, videos: remapped.videos, documents: remapped.documents }],
-            courseOrgId,
-            userId,
-            tx
-          );
-          await writeLessonLanguages(
-            lesson.id,
-            existing.id,
-            templateGraph,
-            templateOrgId,
-            courseOrgId,
-            userId,
-            syncedAt,
-            tx
-          );
+          await replaceLessonBlocksFromTemplate(lesson.id, existing.id, templateOrgId, courseOrgId, userId, tx);
+          await syncLessonAssetUsages(await withDerivedLessonContent([existing], tx), courseOrgId, userId, tx);
           stamped.lessonIds.push(existing.id);
           continue;
         }
@@ -619,10 +616,6 @@ export async function pullCourseTemplateUpdates(
         const createdLessons = await createLessons(
           [
             {
-              note: remapped.note,
-              videoUrl: remapped.videoUrl,
-              slideUrl: remapped.slideUrl,
-              slides: remapped.slides,
               courseId: course.id,
               title: remapped.title,
               public: remapped.public,
@@ -637,8 +630,6 @@ export async function pullCourseTemplateUpdates(
               completionPolicy: remapped.completionPolicy,
               videoWatchThreshold: remapped.videoWatchThreshold,
               commentsEnabled: remapped.commentsEnabled,
-              videos: remapped.videos,
-              documents: remapped.documents,
               sectionId: parentId,
               slug: remapped.slug,
               sourceId: lesson.id,
@@ -651,17 +642,8 @@ export async function pullCourseTemplateUpdates(
         if (!created) throw new AppError('Failed to pull lesson', ErrorCodes.INTERNAL_ERROR, 500);
 
         courseGraph.lessons.push(created);
-        await syncLessonAssetUsages([created], courseOrgId, userId, tx);
-        await writeLessonLanguages(
-          lesson.id,
-          created.id,
-          templateGraph,
-          templateOrgId,
-          courseOrgId,
-          userId,
-          syncedAt,
-          tx
-        );
+        await replaceLessonBlocksFromTemplate(lesson.id, created.id, templateOrgId, courseOrgId, userId, tx);
+        await syncLessonAssetUsages(await withDerivedLessonContent([created], tx), courseOrgId, userId, tx);
         stamped.lessonIds.push(created.id);
       }
 

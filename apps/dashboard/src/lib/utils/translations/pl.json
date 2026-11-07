@@ -2693,6 +2693,68 @@
                 "activities": "Generuj zajęcia lekcyjne"
               }
             }
+          },
+          "blocks": {
+            "add_content": "Dodaj treść",
+            "example": "Przykład",
+            "change_type": "Zmień {type}",
+            "edit_type": "Edytuj {type}",
+            "remove": "Usuń blok",
+            "move_up": "Podnieść",
+            "move_down": "Opuszczać",
+            "actions": "Akcje blokowe",
+            "drag": "Przeciągnij, aby zmienić kolejność",
+            "drag_hint": "Przeciągnij uchwyt bloku, aby zmienić jego kolejność. Możesz również użyć opcji Przesuń w górę i Przesuń w dół z menu.",
+            "dismiss_hint": "Odrzuć wskazówkę dotyczącą zmiany kolejności",
+            "empty_title": "Zacznij budować tę lekcję",
+            "empty_description": "Dodaj notatkę, film, slajdy, dokument lub obraz. Możesz dodać dowolną liczbę bloków w dowolnej kolejności.",
+            "empty_note": "Ta notatka jest pusta.",
+            "note_style": "Styl",
+            "preview_label": "Doświadczenie uczenia się w aplikacji",
+            "scroll_rail": "Bloki lekcji",
+            "go_to_block": "Przejdź do bloku {index}",
+            "image": {
+              "upload": "Prześlij obraz",
+              "upload_error": "Nie udało się przesłać obrazu. Spróbuj ponownie.",
+              "change": "Zmień obraz",
+              "settings": "Ustawienia obrazu",
+              "alt": "Tekst alternatywny",
+              "alt_placeholder": "Opisz obraz dla uczniów korzystających z technologii wspomagających",
+              "fit": "Pasować",
+              "fit_cover": "Wypełnić",
+              "fit_contain": "Pasować"
+            },
+            "settings": {
+              "title": "Ustawienia lekcji",
+              "description": "Zarządzaj tą lekcją, nie opuszczając obszaru roboczego."
+            },
+            "reading_density": {
+              "title": "Gęstość odczytu",
+              "description": "Kontroluje odstępy między blokami dla uczniów. Nie zmienia obszaru edycji.",
+              "compact": "Kompaktowy",
+              "comfortable": "Wygodny",
+              "spacious": "Przestronny"
+            },
+            "styles": {
+              "default": "Domyślny",
+              "info": "Informacje",
+              "tip": "Wskazówka",
+              "important": "Ważny",
+              "warning": "Ostrzeżenie",
+              "highlight": "Atrakcja"
+            },
+            "ai": {
+              "title": "Sporządź notatkę za pomocą sztucznej inteligencji",
+              "prompt_label": "Podpowiedź",
+              "prompt_placeholder": "np. Krótkie wprowadzenie do cyklu wodnego dla początkujących"
+            },
+            "types": {
+              "note": "Notatka",
+              "video": "Wideo",
+              "slides": "Slajdy",
+              "document": "Dokument",
+              "image": "Obraz"
+            }
           }
         },
         "lesson_nav": {
@@ -2842,7 +2904,12 @@
         "add_content_add_to_section": "Dodaj treść",
         "expand_content": "Rozwiń treść",
         "collapse_content": "Zwiń zawartość",
-        "no_section": "Brak sekcji"
+        "no_section": "Brak sekcji",
+        "header": {
+          "mode_label": "Tryb lekcji",
+          "mode_edit": "Redagować",
+          "mode_preview": "Zapowiedź"
+        }
       },
       "news_feed": {
         "heading": "Kanał wiadomości",

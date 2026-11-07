@@ -339,7 +339,7 @@
             <Field.Label for="lesson-completion-policy">
               {$t('course.navItem.lessons.completion_policy.label')}
             </Field.Label>
-            <Tooltip.Provider>
+            <Tooltip.Provider ignoreNonKeyboardFocus>
               <Tooltip.Root>
                 <Tooltip.Trigger aria-label={$t('course.navItem.lessons.settings.progression.option_guide_heading')}>
                   <InfoIcon size={14} class="ui:text-muted-foreground" />

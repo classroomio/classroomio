@@ -8,8 +8,9 @@
   import isEmpty from 'lodash/isEmpty';
   import { writable } from 'svelte/store';
   import { fade } from 'svelte/transition';
-  import Save from '@lucide/svelte/icons/save';
+  import Eye from '@lucide/svelte/icons/eye';
   import Pencil from '@lucide/svelte/icons/pencil';
+  import Save from '@lucide/svelte/icons/save';
   import HistoryIcon from '@lucide/svelte/icons/history';
   import VideoIcon from '@lucide/svelte/icons/video';
   import SettingsIcon from '@lucide/svelte/icons/settings';
@@ -26,8 +27,16 @@
   import { RefreshPageData, UnsavedChanges } from '$features/ui';
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
   import { courseApi, lessonApi } from '$features/course/api';
+  import { lessonBlocksApi } from '$features/course/store/lesson-blocks.svelte';
+  import LessonBlockCanvas from '$features/course/components/lesson/blocks/lesson-block-canvas.svelte';
+  import LessonSettingsSheet from '$features/course/components/lesson/blocks/lesson-settings-sheet.svelte';
+  import LessonAddContentRow from '$features/course/components/lesson/blocks/lesson-add-content-row.svelte';
+  import { addLessonBlock } from '$features/course/components/lesson/blocks/lesson-add-block';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
+  import { lessonVideoBus } from '$features/course/components/lesson/video/lesson-video-bus.svelte';
+  import { TRANSCRIPT_PANEL_ID } from '$features/course/components/lesson/video/transcript-panel-definition';
+  import { sidePanel } from '$features/side-panel';
   import { t } from '$lib/utils/functions/translations';
   import { ContentType } from '@cio/utils/constants/content';
   import { resolveLessonSlides } from '@cio/utils/functions';
@@ -38,6 +47,7 @@
   import * as Page from '@cio/ui/base/page';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { Empty } from '@cio/ui/custom/empty';
+  import { ImageBlock } from '@cio/ui/custom/blocks/image-block';
   import { Spinner } from '@cio/ui/base/spinner';
   import { RoleBasedSecurity } from '$features/ui';
 
@@ -58,9 +68,11 @@
 
   import type { TLessonVersionIntentRequest } from '@cio/utils/validation/lesson';
   import type { TLocale } from '@cio/db/types';
+  import type { LessonBlockInsertType } from '$features/course/utils/types';
   import { orderedTabs, SETTINGS_TAB_VALUE, tabs as materialTabs } from '$features/course/components/lesson/constants';
   import { getViewModeComponents } from '$features/course/components/lesson/utils';
   import { loadDraft, clearDraft } from '$features/course/utils/lesson-draft';
+  import { DEFAULT_READING_DENSITY, getReadingDensitySpacingClass } from '$features/course/utils/lesson-blocks';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
   import LiveSessionCard from '$features/course/components/lesson/live-session-card.svelte';
@@ -75,6 +87,7 @@
   let { courseId, lessonId }: Props = $props();
 
   const mode = $derived($page.url.searchParams.get('mode') === 'edit' ? MODES.edit : MODES.view);
+  const useBlockEditor = $derived($page.url.searchParams.get('editor') !== 'legacy');
   const showMobileBottomNav = $derived(
     isCourseMobileBottomNavVisible({
       isCourseLearnerView: $isCourseLearnerView,
@@ -88,7 +101,8 @@
   const VERSION_PARAM = 'version';
 
   let prevModeParam = $state<string | null>(null);
-  let isDeletingLesson = $state(false);
+  let settingsOpen = $state(false);
+  let blockCanvasLessonId = '';
   // Derived from the URL so a reload reopens the drawer. The URL is the single source of
   // truth; nothing sets this directly.
   const isVersionDrawerOpen = $derived($page.url.searchParams.get(HISTORY_PARAM) === 'open');
@@ -98,6 +112,34 @@
 
   $effect(() => {
     hasUnsavedChanges = (lessonApi.isDirty || sessionHasUnsavedChanges) && mode === MODES.edit;
+  });
+
+  $effect(() => {
+    if (!useBlockEditor) return;
+
+    const lesson = lessonApi.lesson;
+    if (!lesson || lesson.id !== lessonId || blockCanvasLessonId === lessonId) return;
+
+    blockCanvasLessonId = lessonId;
+    void lessonBlocksApi.load(courseId, lessonId, lesson, lessonApi.translations[lessonId] ?? {});
+  });
+
+  $effect(() => {
+    if (!useBlockEditor) return;
+
+    const lesson = lessonApi.lesson;
+    if (!lesson || lesson.id !== lessonId) return;
+
+    lessonBlocksApi.syncFromLesson(lesson);
+  });
+
+  $effect(() => {
+    if (!useBlockEditor) return;
+
+    const translations = lessonApi.translations[lessonId];
+    if (!translations) return;
+
+    lessonBlocksApi.syncLegacyTranslations(translations);
   });
 
   const currentLessonContentItem = $derived(
@@ -135,7 +177,6 @@
 
     return courseApi.course?.content != null;
   });
-  const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const isLiveSessionLesson = $derived(Boolean(lessonApi.lesson?.callUrl && lessonApi.lesson?.lessonAt));
   const lessonSessionPhase = $derived(
@@ -253,6 +294,32 @@
 
   const isMaterialsEmpty = $derived(tabs.every((tab) => tab.badgeValue === 0));
   const hasLessonVideos = $derived((lessonApi.lesson?.videos?.length ?? 0) > 0);
+  const hasLessonBlocks = $derived(lessonBlocksApi.blocks.length > 0);
+  const usesBlockView = $derived(
+    useBlockEditor && (!$isCourseLearnerView || hasLessonBlocks || !lessonBlocksApi.isReady)
+  );
+  const hasTranscript = $derived.by(() => {
+    lessonVideoBus.transcriptSources;
+    return lessonVideoBus.hasTranscriptAvailable();
+  });
+  // Image blocks have no legacy equivalent, so they render straight from the block list.
+  const learnerImageBlocks = $derived.by(() => {
+    const blocks = lessonApi.lesson?.blocks ?? [];
+
+    return blocks
+      .filter((block) => block.type === 'image')
+      .map((block) => {
+        const data = block.data as { url?: string; alt?: string; fit?: 'cover' | 'contain' };
+
+        return {
+          id: block.id,
+          url: data.url ?? '',
+          alt: data.alt ?? '',
+          fit: data.fit ?? 'cover'
+        };
+      })
+      .filter((block) => block.url.length > 0);
+  });
 
   let timeoutId: NodeJS.Timeout | undefined;
 
@@ -280,9 +347,19 @@
     lessonId: string,
     versionIntent: TLessonVersionIntentRequest
   ) {
+    if (!courseApi.course?.id) return;
+
+    if (useBlockEditor) {
+      return;
+    }
+
     const content = lessonApi.translations[lessonId]?.[locale] || '';
 
-    if (!courseApi.course?.id) return;
+    // The legacy language endpoint stores content on the first note block and
+    // creates one when missing. Saving an empty translation must not add a note
+    // the author never created.
+    const hasNoteBlock = lessonBlocksApi.blocks.some((block) => block.type === 'note');
+    if (!hasNoteBlock && isHtmlValueEmpty(content)) return;
 
     // Use API to upsert lesson language (creates if doesn't exist, updates if exists)
     await lessonApi.upsertLanguage(courseApi.course.id, lessonId, locale, content, versionIntent);
@@ -315,6 +392,17 @@
     if (!lessonApi.lesson) return false;
 
     const revisionAtSave = lessonApi.revision;
+    // Block content is owned by the block API, so the legacy content arrays are
+    // left out here: sending them makes the API reconcile blocks against a payload
+    // that cannot represent repeats or ordering.
+    const legacyContent = useBlockEditor
+      ? {}
+      : {
+          slideUrl: lessonApi.lesson.slideUrl || undefined,
+          slides: lessonApi.lesson.slides || [],
+          videos: lessonApi.lesson.videos || [],
+          documents: lessonApi.lesson.documents || []
+        };
     const [isLessonUpdated] = await Promise.all([
       lessonApi.update(courseApi.course?.id || '', lessonId, {
         title: lessonApi.lesson.title || undefined,
@@ -322,10 +410,8 @@
         completionPolicy: lessonApi.lesson.completionPolicy ?? undefined,
         videoWatchThreshold: lessonApi.lesson.videoWatchThreshold ?? undefined,
         commentsEnabled: lessonApi.lesson.commentsEnabled ?? true,
-        slideUrl: lessonApi.lesson.slideUrl || undefined,
-        slides: lessonApi.lesson.slides || [],
-        videos: lessonApi.lesson.videos || [],
-        documents: lessonApi.lesson.documents || [],
+        readingDensity: lessonApi.lesson.readingDensity ?? undefined,
+        ...legacyContent,
         slug: isPublicCourse && lessonApi.lesson.slug ? lessonApi.lesson.slug : undefined
       }),
       saveOrUpdateTranslation(lessonApi.currentLocale, lessonId, versionIntent)
@@ -344,27 +430,19 @@
     lessonApi.updateLessonState('title', value);
   }
 
-  function handleLessonSlugChange(value: string) {
-    lessonApi.updateLessonState('slug', value);
+  function addBlockAtEnd(type: LessonBlockInsertType) {
+    addLessonBlock(type, lessonBlocksApi.blocks.length, lessonApi.currentLocale);
+  }
+
+  function openTranscriptPanel() {
+    if (!lessonVideoBus.prepareTranscriptPanelSelection()) return;
+
+    sidePanel.open(TRANSCRIPT_PANEL_ID);
   }
 
   function handleToggleLessonLock() {
     const currentValue = lessonApi.lesson?.isUnlocked ?? false;
     lessonApi.updateLessonState('isUnlocked', !currentValue);
-  }
-
-  async function handleDeleteLesson() {
-    if (!courseId || !lessonId || isDeletingLesson) return;
-
-    isDeletingLesson = true;
-    await lessonApi.delete(courseId, lessonId);
-
-    if (lessonApi.success) {
-      hasUnsavedChanges = false;
-      await goto(resolve(`/courses/${courseId}/lessons`, {}));
-    }
-
-    isDeletingLesson = false;
   }
 
   function handleSave(prevMode: string) {
@@ -464,6 +542,8 @@
     if ($lessonVideoUpload.isUploading) return;
 
     $lessonVideoUpload.isModalOpen = false;
+    lessonBlocksApi.clearPendingAdd();
+    lessonBlocksApi.clearPendingChange();
 
     triggerAutoSave();
   }}
@@ -476,52 +556,63 @@
 
     $lessonDocUpload.isModalOpen = false;
     $lessonDocUpload.error = null;
+    lessonBlocksApi.clearPendingAdd();
+    lessonBlocksApi.clearPendingChange();
 
     triggerAutoSave();
   }}
 />
 
-<Page.Header>
-  <Page.HeaderContent>
+<Page.Header
+  isSticky
+  class="ui:top-12 ui:z-app-bar ui:my-0 ui:border-border ui:bg-background ui:pt-5 ui:pb-4 flex-start w-full border-b"
+>
+  <Page.HeaderContent class="min-w-0 flex-1">
     <LessonPageEditHeader
       {mode}
       title={mode === MODES.edit ? (lessonApi.lesson?.title ?? '') : lessonTitle}
       isUnlocked={lessonApi.lesson?.isUnlocked ?? false}
-      {isDeletingLesson}
       onTitleChange={handleLessonTitleChange}
       onToggleLock={handleToggleLessonLock}
-      onDeleteLesson={handleDeleteLesson}
-      slug={lessonSlug}
-      showSlugEditor={isPublicCourse}
-      slugError={lessonApi.errors.slug}
-      onSlugChange={handleLessonSlugChange}
     />
   </Page.HeaderContent>
-  <Page.Action>
-    <div class="flex items-center gap-2">
+  <Page.Action class="">
+    <div class="flex flex-wrap items-center justify-center gap-2">
       {#if mode === MODES.view && $isCourseLearnerView}
         <ContentNavigationActions {lessonId} {courseId} showPrevNext={!showMobileBottomNav} />
       {/if}
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <div class="flex flex-row items-center gap-2 lg:flex">
-          {#if mode === MODES.edit}
-            <span class="ui:text-muted-foreground text-sm" aria-live="polite">
-              {#if lessonApi.isSaving}
-                {$t('course.navItem.lessons.saving')}
-              {:else if !lessonApi.isDirty}
-                {$t('course.navItem.lessons.saved')}
-              {/if}
-            </span>
-          {/if}
-          <IconButton onclick={toggleMode} disabled={lessonApi.isSaving}>
-            {#if mode === MODES.edit}
-              <Save size={20} />
-            {:else}
-              <Pencil size={20} />
+        {#if mode === MODES.edit}
+          <span class="ui:text-muted-foreground text-sm" aria-live="polite">
+            {#if lessonApi.isSaving}
+              {$t('course.navItem.lessons.saving')}
+            {:else if !lessonApi.isDirty}
+              {$t('course.navItem.lessons.saved')}
             {/if}
+          </span>
+
+          <IconButton
+            onclick={toggleMode}
+            disabled={lessonApi.isSaving}
+            aria-label={$t('course.navItem.lessons.add_lesson.save')}
+            tooltip={$t('course.navItem.lessons.add_lesson.save')}
+            tooltipSide="bottom"
+          >
+            <Save size={20} />
           </IconButton>
-        </div>
+        {/if}
+
+        {#if useBlockEditor && mode === MODES.edit}
+          <IconButton
+            onclick={() => (settingsOpen = true)}
+            aria-label={$t('course.navItem.lessons.materials.blocks.settings.title')}
+            tooltip={$t('course.navItem.lessons.materials.blocks.settings.title')}
+            tooltipSide="bottom"
+          >
+            <SettingsIcon size={20} />
+          </IconButton>
+        {/if}
 
         <IconButton
           class="inline-flex"
@@ -533,17 +624,56 @@
           <HistoryIcon size={20} />
         </IconButton>
 
-        <RefreshPageData class="hidden lg:inline-flex" onRefresh={() => lessonApi.get(courseId, lessonId)} />
+        <div class="hidden lg:inline-flex">
+          <RefreshPageData onRefresh={() => lessonApi.get(courseId, lessonId)} />
+        </div>
       </RoleBasedSecurity>
 
       <LanguageSelector />
+
+      <RoleBasedSecurity allowedRoles={[1, 2]}>
+        <div
+          class="ui:bg-muted inline-flex items-center gap-0.5 rounded-lg p-0.5"
+          role="group"
+          aria-label={$t('course.navItem.lessons.header.mode_label')}
+        >
+          <Button
+            variant="ghost"
+            size="xs"
+            class="gap-1.5 px-2.5 text-[13px] {mode === MODES.edit
+              ? 'ui:bg-background ui:text-foreground ui:shadow-2xs'
+              : 'ui:text-muted-foreground ui:hover:text-foreground'}"
+            aria-pressed={mode === MODES.edit}
+            disabled={lessonApi.isSaving}
+            onclick={() => mode !== MODES.edit && toggleMode()}
+            testId="lesson-mode-edit"
+          >
+            <Pencil size={14} />
+            {$t('course.navItem.lessons.header.mode_edit')}
+          </Button>
+          <Button
+            variant="ghost"
+            size="xs"
+            class="gap-1.5 px-2.5 text-[13px] {mode === MODES.view
+              ? 'ui:bg-background ui:text-foreground ui:shadow-2xs'
+              : 'ui:text-muted-foreground ui:hover:text-foreground'}"
+            aria-pressed={mode === MODES.view}
+            disabled={lessonApi.isSaving}
+            onclick={() => mode !== MODES.view && toggleMode()}
+            testId="lesson-mode-preview"
+          >
+            <Eye size={14} />
+            {$t('course.navItem.lessons.header.mode_preview')}
+          </Button>
+        </div>
+      </RoleBasedSecurity>
     </div>
   </Page.Action>
 </Page.Header>
 
-<Page.Body>
+<Page.Body class="mx-auto w-full max-w-full pb-0! md:max-w-3xl">
   {#snippet child()}
-    <div class={`overflow-x-hidden pb-6 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl'}`}>
+    <div class={`w-full overflow-x-hidden ${mode === MODES.edit ? 'ui:bg-muted' : 'mx-auto'}`}>
       {#if isLiveSessionLesson && mode === MODES.view && !($isCourseLearnerView && contentLockReason)}
         <div class="mb-4">
           <LiveSessionCard
@@ -557,7 +687,39 @@
         </div>
       {/if}
 
-      {#if $isCourseLearnerView}
+      {#if usesBlockView}
+        {#if $isCourseLearnerView && !isStudentLessonStateReady}
+          <div class="flex justify-center py-16">
+            <Spinner />
+          </div>
+        {:else if $isCourseLearnerView && contentLockReason}
+          <StudentContentLockedNotice reason={contentLockReason} contentType={ContentType.Lesson} />
+        {:else if lessonApi.lesson && lessonBlocksApi.isReady}
+          <div class="min-h-screen pt-5 pb-20" in:fade={{ delay: 300 }} out:fade>
+            <LessonBlockCanvas {mode} {courseId} {lessonId} learnerView={$isCourseLearnerView} />
+
+            {#if mode === MODES.view}
+              <LessonMaterialActions
+                showTranscript={hasTranscript}
+                showSummarize
+                {lessonId}
+                showBottomSeparator={!showLessonComments}
+                onTranscript={openTranscriptPanel}
+              />
+            {/if}
+
+            {#if mode === MODES.view && showLessonComments}
+              <hr class="my-2" />
+
+              <Comments {lessonId} />
+            {/if}
+          </div>
+        {:else}
+          <div class="flex justify-center py-16">
+            <Spinner />
+          </div>
+        {/if}
+      {:else if $isCourseLearnerView}
         {#if !isStudentLessonStateReady}
           <div class="flex justify-center py-16">
             <Spinner />
@@ -566,14 +728,24 @@
           <StudentContentLockedNotice reason={contentLockReason} contentType={ContentType.Lesson} />
         {:else if lessonApi.lesson && !isMaterialsEmpty}
           {#key lessonId}
-            <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
-              {#if !hasLessonVideos}
-                <LessonMaterialActions showSummarize {lessonId} alignWithNote />
-              {/if}
-
+            <div
+              class="flex w-full flex-col pt-6 pb-20 {getReadingDensitySpacingClass(
+                lessonApi.lesson.readingDensity ?? DEFAULT_READING_DENSITY
+              )}"
+              in:fade={{ delay: 500 }}
+              out:fade
+            >
               {#each viewModeComponents as Component, index (index)}
                 <Component {mode} {lessonId} {courseId} />
               {/each}
+
+              {#each learnerImageBlocks as block (block.id)}
+                <ImageBlock url={block.url} alt={block.alt} fit={block.fit} editable={false} />
+              {/each}
+
+              {#if !hasLessonVideos}
+                <LessonMaterialActions showSummarize {lessonId} showBottomSeparator={!showLessonComments} />
+              {/if}
 
               {#if showLessonComments}
                 <hr class="my-2" />
@@ -583,12 +755,14 @@
             </div>
           {/key}
         {:else}
-          <Empty
-            title={$t('course.navItem.lessons.materials.no_content')}
-            icon={VideoIcon}
-            variant="page"
-            class="text-center"
-          />
+          <div class="ui:mt:5">
+            <Empty
+              title={$t('course.navItem.lessons.materials.no_content')}
+              icon={VideoIcon}
+              variant="page"
+              class="text-center"
+            />
+          </div>
         {/if}
       {:else if mode === MODES.edit}
         <UnderlineTabs.Root
@@ -650,13 +824,13 @@
       {:else if lessonApi.lesson && !isMaterialsEmpty}
         {#key lessonId}
           <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
-            {#if !hasLessonVideos}
-              <LessonMaterialActions showSummarize {lessonId} alignWithNote />
-            {/if}
-
             {#each viewModeComponents as Component, index (index)}
               <Component {mode} {lessonId} {courseId} />
             {/each}
+
+            {#if !hasLessonVideos}
+              <LessonMaterialActions showSummarize {lessonId} showBottomSeparator={!showLessonComments} />
+            {/if}
 
             {#if showLessonComments}
               <hr class="my-2" />
@@ -688,6 +862,22 @@
 </Page.Body>
 
 <UnsavedChanges bind:hasUnsavedChanges />
+
+{#if useBlockEditor && mode === MODES.edit && lessonBlocksApi.blocks.length > 0}
+  <div
+    class="pointer-events-none fixed right-0 bottom-4 left-0 z-50 flex justify-center md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
+    in:fade={{ duration: 150 }}
+    out:fade={{ duration: 100 }}
+  >
+    <div class="pointer-events-auto rounded-xl">
+      <LessonAddContentRow onSelect={addBlockAtEnd} />
+    </div>
+  </div>
+{/if}
+
+{#if useBlockEditor}
+  <LessonSettingsSheet bind:open={settingsOpen} bind:hasUnsavedSessionChanges={sessionHasUnsavedChanges} />
+{/if}
 
 {#if isVersionDrawerOpen}
   <LessonVersionHistory

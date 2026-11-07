@@ -5,20 +5,20 @@ import {
   type TLessonVersionIntent
 } from '@cio/utils/constants/lesson-version';
 import {
-  extendLessonLanguageVersion,
-  getLatestLessonLanguageVersion,
-  insertLessonLanguageVersion,
-  lockLessonLanguageVersionSession,
-  promoteLessonLanguageVersion,
-  sealLatestLessonVersionsForCourse
-} from '@cio/db/queries/lesson/version';
+  extendBlockLocaleVersion,
+  getLatestBlockLocaleVersion,
+  insertBlockLocaleVersion,
+  lockBlockLocaleVersionSession,
+  promoteBlockLocaleVersion,
+  sealLatestBlockVersionsForCourse
+} from '@cio/db/queries/block/version';
 
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
-import type { LessonVersionSessionState } from '@cio/db/queries/lesson/version';
-import type { TLessonLanguageHistory } from '@cio/db/types';
+import type { BlockVersionSessionState } from '@cio/db/queries/block/version';
+import type { TBlockLocaleHistory } from '@cio/db/types';
 
 interface RecordVersionInput {
-  lessonLanguageId: number;
+  blockLocaleId: number;
   /** Content as it stands after the write that triggered this snapshot. */
   content: string | null;
   /** Profile that made the edit, or null for system writes (imports, agents). */
@@ -48,7 +48,7 @@ interface SessionPolicyInput {
  */
 export function canExtendVersionSession(
   latest: Pick<
-    LessonVersionSessionState,
+    BlockVersionSessionState,
     'kind' | 'isSealed' | 'authorId' | 'msSinceLastEdit' | 'msSinceSessionStart'
   > | null,
   { intent, authorId }: SessionPolicyInput
@@ -64,7 +64,7 @@ export function canExtendVersionSession(
 }
 
 /**
- * Records a lesson content snapshot, coalescing consecutive autosaves into a
+ * Records a block content snapshot, coalescing consecutive autosaves into a
  * single session row.
  *
  * Call this from the same transaction as the content write so a rolled-back edit
@@ -72,22 +72,22 @@ export function canExtendVersionSession(
  *
  * @returns The snapshot the write landed in, or null when nothing was recorded.
  */
-export async function recordLessonLanguageVersion({
-  lessonLanguageId,
+export async function recordBlockLocaleVersion({
+  blockLocaleId,
   content,
   authorId = null,
   intent,
   label = null,
   dbClient
-}: RecordVersionInput): Promise<TLessonLanguageHistory | null> {
+}: RecordVersionInput): Promise<TBlockLocaleHistory | null> {
   if (intent === 'none') return null;
 
-  const record = async (client: DbOrTxClient): Promise<TLessonLanguageHistory | null> => {
-    // Serialize concurrent saves for this lesson language before reading the
+  const record = async (client: DbOrTxClient): Promise<TBlockLocaleHistory | null> => {
+    // Serialize concurrent saves for this block locale before reading the
     // session, so two overlapping autosaves cannot both decide to open one.
-    await lockLessonLanguageVersionSession(lessonLanguageId, client);
+    await lockBlockLocaleVersionSession(blockLocaleId, client);
 
-    const latest = await getLatestLessonLanguageVersion(lessonLanguageId, client);
+    const latest = await getLatestBlockLocaleVersion(blockLocaleId, client);
 
     // Content is unchanged since the last snapshot.
     if (latest && latest.newContent === content) {
@@ -99,11 +99,11 @@ export async function recordLessonLanguageVersion({
       // autosave is upgraded to the milestone the author just asked for.
       if (intent === 'auto' || !isOpenAutosave) return latest;
 
-      return promoteLessonLanguageVersion(latest.id, { kind: intent, label }, client);
+      return promoteBlockLocaleVersion(latest.id, { kind: intent, label }, client);
     }
 
     if (canExtendVersionSession(latest, { intent, authorId })) {
-      const extended = await extendLessonLanguageVersion(latest!.id, { newContent: content }, client);
+      const extended = await extendBlockLocaleVersion(latest!.id, { newContent: content }, client);
 
       // The session was sealed between the read and the update (a publish, or a
       // save from elsewhere). Fall through and open a new one.
@@ -111,10 +111,10 @@ export async function recordLessonLanguageVersion({
     }
 
     // `sessionStartedAt` and `timestamp` are left to their `CURRENT_TIMESTAMP`
-    // defaults so Postgres owns the clock; see `LessonVersionSessionState`.
-    return insertLessonLanguageVersion(
+    // defaults so Postgres owns the clock; see `BlockVersionSessionState`.
+    return insertBlockLocaleVersion(
       {
-        lessonLanguageId,
+        blockLocaleId,
         newContent: content,
         kind: intent,
         label,
@@ -134,7 +134,7 @@ export async function recordLessonLanguageVersion({
     return dbClient ? await record(dbClient) : await db.transaction(record);
   } catch (error) {
     throw new AppError(
-      error instanceof Error ? error.message : 'Failed to record lesson version',
+      error instanceof Error ? error.message : 'Failed to record block version',
       ErrorCodes.INTERNAL_ERROR,
       500
     );
@@ -142,20 +142,20 @@ export async function recordLessonLanguageVersion({
 }
 
 /**
- * Publish boundary for a course's lesson content. Seals the newest snapshot of
- * every lesson language and marks it `publish`, so:
+ * Publish boundary for a course's block content. Seals the newest snapshot of
+ * every block locale and marks it `publish`, so:
  *
  * - the version students were served is immutable and exempt from retention, and
  * - the next edit opens a fresh session instead of extending across the publish.
  *
  * @returns Number of snapshots sealed.
  */
-export async function sealLessonVersionsOnPublish(courseId: string, dbClient?: DbOrTxClient): Promise<number> {
+export async function sealBlockVersionsOnPublish(courseId: string, dbClient?: DbOrTxClient): Promise<number> {
   try {
-    return await sealLatestLessonVersionsForCourse(courseId, dbClient);
+    return await sealLatestBlockVersionsForCourse(courseId, dbClient);
   } catch (error) {
     throw new AppError(
-      error instanceof Error ? error.message : 'Failed to seal lesson versions on publish',
+      error instanceof Error ? error.message : 'Failed to seal block versions on publish',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

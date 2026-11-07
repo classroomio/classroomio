@@ -2693,6 +2693,68 @@
                 "activities": "Generar actividades lectivas"
               }
             }
+          },
+          "blocks": {
+            "add_content": "Agregar contenido",
+            "example": "Ejemplo",
+            "change_type": "Cambiar {type}",
+            "edit_type": "Editar {type}",
+            "remove": "Eliminar bloque",
+            "move_up": "Subir",
+            "move_down": "Baja",
+            "actions": "Bloquear acciones",
+            "drag": "Arrastra para reordenar",
+            "drag_hint": "Arrastra el tirador de un bloque para reordenarlo. También puedes usar las opciones \"Mover hacia arriba\" y \"Mover hacia abajo\" de su menú.",
+            "dismiss_hint": "Descartar sugerencia de reordenar",
+            "empty_title": "Comienza a construir esta lección",
+            "empty_description": "Añade una nota, un vídeo, diapositivas, un documento o una imagen. Puedes añadir tantos bloques como necesites, en cualquier orden.",
+            "empty_note": "Esta nota está vacía.",
+            "note_style": "Estilo",
+            "preview_label": "Experiencia de aprendizaje dentro de la aplicación",
+            "scroll_rail": "Bloques de lecciones",
+            "go_to_block": "Ir al bloque {index}",
+            "image": {
+              "upload": "Subir imagen",
+              "upload_error": "No se pudo cargar la imagen. Inténtalo de nuevo.",
+              "change": "Cambiar imagen",
+              "settings": "Configuración de imagen",
+              "alt": "Texto alternativo",
+              "alt_placeholder": "Describa la imagen para los estudiantes que utilizan tecnología de asistencia.",
+              "fit": "Adaptar",
+              "fit_cover": "Llenar",
+              "fit_contain": "Adaptar"
+            },
+            "settings": {
+              "title": "Configuración de la lección",
+              "description": "Gestiona esta lección sin salir del lienzo de contenido."
+            },
+            "reading_density": {
+              "title": "Densidad de lectura",
+              "description": "Controla el espaciado entre bloques para los estudiantes. No modifica el lienzo de edición.",
+              "compact": "Compacto",
+              "comfortable": "Cómodo",
+              "spacious": "Espacioso"
+            },
+            "styles": {
+              "default": "Por defecto",
+              "info": "Información",
+              "tip": "Consejo",
+              "important": "Importante",
+              "warning": "Advertencia",
+              "highlight": "Destacar"
+            },
+            "ai": {
+              "title": "Redacta una nota con IA",
+              "prompt_label": "Inmediato",
+              "prompt_placeholder": "Por ejemplo: Una breve introducción al ciclo del agua para principiantes."
+            },
+            "types": {
+              "note": "Nota",
+              "video": "Video",
+              "slides": "Diapositivas",
+              "document": "Documento",
+              "image": "Imagen"
+            }
           }
         },
         "lesson_nav": {
@@ -2842,7 +2904,12 @@
         "add_content_add_to_section": "Añadir contenido",
         "expand_content": "Ampliar contenido",
         "collapse_content": "Contraer contenido",
-        "no_section": "Ninguna sección"
+        "no_section": "Ninguna sección",
+        "header": {
+          "mode_label": "Modo lección",
+          "mode_edit": "Editar",
+          "mode_preview": "Avance"
+        }
       },
       "news_feed": {
         "heading": "Noticias",

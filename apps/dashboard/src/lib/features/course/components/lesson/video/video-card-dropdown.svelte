@@ -29,7 +29,7 @@
 
   interface Props {
     video: LessonVideo;
-    onRemove: () => void;
+    onRemove?: () => void;
     onThumbnailSaved?: (thumbnailUrl: string) => void;
     onHlsMetadataUpdated?: (metadata: Record<string, unknown>) => void;
     onTranscribingChange?: (value: boolean) => void;
@@ -411,12 +411,14 @@
         </span>
       </DropdownMenu.Item>
     {/if}
-    <DropdownMenu.Item class="text-red-600" onclick={onRemove}>
-      <span class="flex items-center gap-2">
-        <Trash2Icon size={14} />
-        {$t('course.navItem.lessons.materials.tabs.video.remove_video')}
-      </span>
-    </DropdownMenu.Item>
+    {#if onRemove}
+      <DropdownMenu.Item class="text-red-600" onclick={onRemove}>
+        <span class="flex items-center gap-2">
+          <Trash2Icon size={14} />
+          {$t('course.navItem.lessons.materials.tabs.video.remove_video')}
+        </span>
+      </DropdownMenu.Item>
+    {/if}
   </DropdownMenu.Content>
 </DropdownMenu.Root>
 

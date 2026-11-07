@@ -55,25 +55,22 @@ export async function getCourseContentStructure(
 ): Promise<CourseContentItemRow[]> {
   try {
     const noteContentSql = includeNoteContent
-      ? drizzleSql`(
-          (
-            length(trim(COALESCE(note, ''))) > 0
-          )
-          OR EXISTS (
-            SELECT 1
-            FROM lesson_language
-            WHERE lesson_language.lesson_id = lesson.id
-              AND length(
-                trim(
-                  regexp_replace(
-                    regexp_replace(COALESCE(lesson_language.content, ''), '<[^>]*>', '', 'g'),
-                    '&nbsp;|&#160;',
-                    ' ',
-                    'g'
-                  )
+      ? drizzleSql`EXISTS (
+          SELECT 1
+          FROM block_placement bp
+          JOIN block b ON b.id = bp.block_id AND b.type = 'note'
+          JOIN block_locale bl ON bl.block_id = b.id
+          WHERE bp.lesson_id = lesson.id
+            AND length(
+              trim(
+                regexp_replace(
+                  regexp_replace(COALESCE(bl.content, ''), '<[^>]*>', '', 'g'),
+                  '&nbsp;|&#160;',
+                  ' ',
+                  'g'
                 )
-              ) > 0
-          )
+              )
+            ) > 0
         )`
       : drizzleSql`NULL::boolean`;
 
@@ -118,12 +115,24 @@ export async function getCourseContentStructure(
         session_duration_minutes AS "sessionDurationMinutes",
         recording_url AS "recordingUrl",
         ${noteContentSql} AS "hasNoteContent",
-        (
-          length(trim(COALESCE(slide_url, ''))) > 0
-          OR COALESCE(jsonb_array_length(slides), 0) > 0
+        EXISTS (
+          SELECT 1
+          FROM block_placement bp
+          JOIN block b ON b.id = bp.block_id AND b.type = 'slides'
+          WHERE bp.lesson_id = lesson.id
         ) AS "hasSlideContent",
-        COALESCE(jsonb_array_length(videos), 0) AS "videosCount",
-        COALESCE(jsonb_array_length(documents), 0) AS "documentsCount",
+        (
+          SELECT count(*)::int
+          FROM block_placement bp
+          JOIN block b ON b.id = bp.block_id AND b.type = 'video'
+          WHERE bp.lesson_id = lesson.id
+        ) AS "videosCount",
+        (
+          SELECT count(*)::int
+          FROM block_placement bp
+          JOIN block b ON b.id = bp.block_id AND b.type = 'document'
+          WHERE bp.lesson_id = lesson.id
+        ) AS "documentsCount",
         NULL::int AS "questionCount",
         NULL::timestamp AS "dueBy"
       FROM lesson

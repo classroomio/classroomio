@@ -23,7 +23,9 @@
     description?: string;
     icon?: Component<any, any, any>;
     iconClass?: string;
+    media?: Snippet;
     class?: string;
+    contentClass?: string;
     children?: Snippet;
     variant?: EmptyVariant;
     layout?: 'block' | 'full-page';
@@ -36,7 +38,9 @@
     description,
     icon: IconComponent,
     iconClass = '',
+    media,
     class: className = '',
+    contentClass = '',
     children,
     variant = 'default',
     layout = 'block',
@@ -57,7 +61,11 @@
 {#snippet content()}
   <EmptyBase.Root {...mergedProps}>
     <EmptyBase.Header class="">
-      {#if IconComponent}
+      {#if media}
+        <EmptyBase.Media variant="default" class="ui:mb-3 ui:w-full">
+          {@render media()}
+        </EmptyBase.Media>
+      {:else if IconComponent}
         <EmptyBase.Media variant="icon">
           {@const Icon = IconComponent}
           <Icon class={iconClass} />
@@ -71,7 +79,7 @@
       {/if}
     </EmptyBase.Header>
     {#if children}
-      <EmptyBase.Content>
+      <EmptyBase.Content class={contentClass}>
         {@render children()}
       </EmptyBase.Content>
     {/if}

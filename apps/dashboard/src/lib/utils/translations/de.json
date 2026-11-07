@@ -2693,6 +2693,68 @@
                 "activities": "Unterrichtsaktivitäten erstellen"
               }
             }
+          },
+          "blocks": {
+            "add_content": "Inhalte hinzufügen",
+            "example": "Beispiel",
+            "change_type": "Ändern Sie {type}",
+            "edit_type": "Bearbeiten {type}",
+            "remove": "Block entfernen",
+            "move_up": "Aufsteigen",
+            "move_down": "Nach unten schieben",
+            "actions": "Blockaktionen",
+            "drag": "Zum Neuanordnen ziehen",
+            "drag_hint": "Ziehen Sie den Griff eines Blocks, um ihn neu anzuordnen. Sie können auch die Optionen „Nach oben“ und „Nach unten“ aus dem zugehörigen Menü verwenden.",
+            "dismiss_hint": "Hinweis zum Umsortieren ablehnen",
+            "empty_title": "Beginnen Sie mit dem Aufbau dieser Lektion.",
+            "empty_description": "Fügen Sie eine Notiz, ein Video, Folien, ein Dokument oder ein Bild hinzu. Sie können beliebig viele Blöcke in beliebiger Reihenfolge hinzufügen.",
+            "empty_note": "Diese Notiz ist leer.",
+            "note_style": "Stil",
+            "preview_label": "Lernerfahrung innerhalb der App",
+            "scroll_rail": "Unterrichtsblöcke",
+            "go_to_block": "Gehe zu Block {index}",
+            "image": {
+              "upload": "Bild hochladen",
+              "upload_error": "Das Bild konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.",
+              "change": "Bild ändern",
+              "settings": "Bildeinstellungen",
+              "alt": "Alternativtext",
+              "alt_placeholder": "Beschreiben Sie das Bild für Lernende, die assistive Technologien verwenden.",
+              "fit": "Fit",
+              "fit_cover": "Füllen",
+              "fit_contain": "Fit"
+            },
+            "settings": {
+              "title": "Unterrichtseinstellungen",
+              "description": "Verwalten Sie diese Lektion, ohne den Inhaltsbereich zu verlassen."
+            },
+            "reading_density": {
+              "title": "Lesedichte",
+              "description": "Steuert den Abstand zwischen den Blöcken für die Lernenden. Die Bearbeitungsfläche bleibt davon unberührt.",
+              "compact": "Kompakt",
+              "comfortable": "Komfortabel",
+              "spacious": "Geräumig"
+            },
+            "styles": {
+              "default": "Standard",
+              "info": "Info",
+              "tip": "Tipp",
+              "important": "Wichtig",
+              "warning": "Warnung",
+              "highlight": "Highlight"
+            },
+            "ai": {
+              "title": "Erstellen Sie eine Notiz mit KI",
+              "prompt_label": "Prompt",
+              "prompt_placeholder": "z. B. Eine kurze Einführung in den Wasserkreislauf für Anfänger"
+            },
+            "types": {
+              "note": "Notiz",
+              "video": "Video",
+              "slides": "Folien",
+              "document": "Dokumentieren",
+              "image": "Bild"
+            }
           }
         },
         "lesson_nav": {
@@ -2842,7 +2904,12 @@
         "add_content_add_to_section": "Inhalte hinzufügen",
         "expand_content": "Inhalte erweitern",
         "collapse_content": "Inhalt reduzieren",
-        "no_section": "Kein Abschnitt"
+        "no_section": "Kein Abschnitt",
+        "header": {
+          "mode_label": "Unterrichtsmodus",
+          "mode_edit": "Bearbeiten",
+          "mode_preview": "Vorschau"
+        }
       },
       "news_feed": {
         "heading": "Newsfeed",
