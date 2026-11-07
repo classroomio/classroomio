@@ -6,6 +6,10 @@ This document collects implementation rules and workflow conventions for code ch
 
 **Read [`skills/writing-code/SKILL.md`](skills/writing-code/SKILL.md) before writing or editing any code.** The comment policy there is mandatory: default to no comments, use JSDoc only for function contracts, and never add an inline comment to explain a design choice — refactor the code instead. The only allowed inline comments record an external constraint the code cannot express.
 
+## Security reviews
+
+**Load [`skills/security-audit/SKILL.md`](skills/security-audit/SKILL.md) when reviewing or writing a change that touches a trust boundary:** auth, sessions, API keys, roles and permissions, org/tenant isolation, file uploads and downloads, webhooks, payments, user-controlled HTML or URLs, or LLM/MCP tool input. Use its guidance mode for these reviews. Run its full six-phase audit only when someone explicitly asks for a security audit, pen test, or comprehensive security review. For public API routes and MCP tools, apply it alongside [`skills/public-api-review/SKILL.md`](skills/public-api-review/SKILL.md).
+
 ## Research Requirements
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
