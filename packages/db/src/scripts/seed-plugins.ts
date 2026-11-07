@@ -34,20 +34,19 @@ async function main() {
 
   const candidateRoots = [
     process.env.PLUGINS_DEV_PATH,
-    path.resolve(process.cwd(), '../classroomio-plugins'),
-    path.resolve(process.cwd(), '../../classroomio-plugins'),
-    path.resolve(process.cwd(), 'classroomio-plugins'),
-    '/Users/emmanuel/Dev/classroomio-plugins'
+    path.resolve(process.cwd(), '../plugins'),
+    path.resolve(process.cwd(), '../../plugins'),
+    path.resolve(process.cwd(), 'plugins')
   ].filter(Boolean) as string[];
 
   const pluginsRepoRoot = candidateRoots.find((dir) => fs.existsSync(dir));
   if (!pluginsRepoRoot) {
-    throw new Error('Could not find classroomio-plugins repository.');
+    throw new Error('Could not find plugins repository.');
   }
 
   const releaseIndexPath = path.join(pluginsRepoRoot, '.plugin-artifacts', 'release-index.json');
   if (!fs.existsSync(releaseIndexPath)) {
-    throw new Error(`Release index not found at ${releaseIndexPath}. Run "pnpm pack" in classroomio-plugins first.`);
+    throw new Error(`Release index not found at ${releaseIndexPath}. Run "pnpm pack" in plugins first.`);
   }
 
   const releaseIndex = JSON.parse(fs.readFileSync(releaseIndexPath, 'utf8')) as ReleaseIndex;

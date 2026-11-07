@@ -2,7 +2,7 @@
 
 Status: **Certificate Studio parity work in progress; remaining plugins audited**
 
-This plan compares the independently hosted official plugins in `classroomio-plugins` with the donor
+This plan compares the independently hosted official plugins in `classroomio/plugins` with the donor
 implementations on `feat/plugin-system`. The donor branch is the acceptance reference for appearance,
 interaction, and user-visible behavior. Internal dashboard imports from the donor implementations are
 not part of the target architecture; equivalent behavior must use the public plugin SDK, manifest

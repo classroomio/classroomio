@@ -6,7 +6,7 @@ Status: proposed implementation plan
 
 Replace the developer-uploaded quarantine submission system with a source-controlled release system.
 
-Plugin authors, including ClassroomIO team members and third-party developers, contribute source code by opening a pull request against the `classroomio-plugins` repository. Maintainers review source code and the untrusted pull-request CI results. Only a protected, post-merge release workflow may build production artifacts, upload them to production storage, and register them in the ClassroomIO catalog.
+Plugin authors, including ClassroomIO team members and third-party developers, contribute source code by opening a pull request against the `classroomio/plugins` repository. Maintainers review source code and the untrusted pull-request CI results. Only a protected, post-merge release workflow may build production artifacts, upload them to production storage, and register them in the ClassroomIO catalog.
 
 This document is an implementation specification. Follow the phases in order. Do not leave the old public publishing path in place after the release workflow is operational.
 
@@ -14,7 +14,7 @@ This document is an implementation specification. Follow the phases in order. Do
 
 ```text
 Contributor fork or branch
-  -> pull request to classroomio-plugins
+  -> pull request to classroomio/plugins
   -> untrusted CI: build, test, package, inspect
   -> maintainer and code-owner review
   -> protected merge to main
@@ -32,7 +32,7 @@ There is no contributor-facing publish API, submission ID, quarantine bucket, re
 
 This plan assumes the following decisions:
 
-1. `classroomio-plugins` is the canonical source repository for every catalog plugin.
+1. `classroomio/plugins` is the canonical source repository for every catalog plugin.
 2. A merged pull request is the human approval event for a public plugin release.
 3. The release workflow is the only production publisher.
 4. Production assets continue to live in immutable digest-qualified R2/CDN paths.
@@ -56,12 +56,12 @@ The implementation is incomplete if any of these statements is false:
 
 ## Repository ownership and layout
 
-Keep the separate plugin repository. It already exists at `classroomio-plugins` and contains first-party plugins such as `announcement-banner` and `reading-time`.
+Keep the separate plugin repository. It exists at `classroomio/plugins` and contains first-party plugins such as `announcement-banner` and `reading-time`.
 
 Introduce an explicit registry at:
 
 ```text
-classroomio-plugins/registry/plugins.json
+plugins/registry/plugins.json
 ```
 
 Suggested shape:
@@ -133,14 +133,14 @@ Commit the plugin repository lockfile and require `pnpm install --frozen-lockfil
 
 The plugin repository currently advertises unsupported commands such as `cio-plugin verify`, `cio-plugin validate`, `cio-plugin digest`, `cio-plugin seed`, and `--auto-install`. Remove them rather than retaining compatibility aliases.
 
-The root `classroomio-plugins/package.json` should expose only commands that exist and have one meaning:
+The root `plugins/package.json` should expose only commands that exist and have one meaning:
 
 ```json
 {
   "scripts": {
-    "build": "pnpm -r --filter=!classroomio-plugins run build",
-    "check": "pnpm -r --if-present --filter=!classroomio-plugins run check",
-    "test": "pnpm -r --if-present --filter=!classroomio-plugins run test",
+    "build": "pnpm -r --filter=!plugins run build",
+    "check": "pnpm -r --if-present --filter=!plugins run check",
+    "test": "pnpm -r --if-present --filter=!plugins run test",
     "pack": "cio-plugin build --registry registry/plugins.json",
     "seed": "cio-plugin dev",
     "release:verify": "node scripts/verify-release.mjs"
@@ -168,7 +168,7 @@ The release workflow must reproduce the package from a clean checkout. It must n
 
 ## Phase 2: add plugin-repository contribution governance
 
-Move or recreate the following controls inside `classroomio-plugins`:
+Move or recreate the following controls inside `classroomio/plugins`:
 
 - `.github/CODEOWNERS`
 - `.github/PULL_REQUEST_TEMPLATE.md`
@@ -221,7 +221,7 @@ Protect `main` with:
 Create this workflow in the plugin repository:
 
 ```text
-classroomio-plugins/.github/workflows/plugin-pr.yml
+plugins/.github/workflows/plugin-pr.yml
 ```
 
 Trigger it with `pull_request`, never `pull_request_target`, for any workflow that checks out or executes pull-request code.
@@ -267,14 +267,14 @@ Required steps:
 
 Do not upload artifacts to R2 from this workflow. GitHub Actions artifacts are acceptable because they are not installable production releases and expire automatically.
 
-The existing core-repository workflow at [plugin-isolation-check.yml](../../.github/workflows/plugin-isolation-check.yml) checks out `classroomio-plugins` from the application repository. It triggers when the application repository changes, not when plugin PRs change. Replace that pattern with the plugin-repository PR workflow above. Keep only a small core-repository compatibility check if needed when SDK/public API packages change.
+The existing core-repository workflow at [plugin-isolation-check.yml](../../.github/workflows/plugin-isolation-check.yml) checks out `classroomio/plugins` from the application repository. It triggers when the application repository changes, not when plugin PRs change. Replace that pattern with the plugin-repository PR workflow above. Keep only a small core-repository compatibility check if needed when SDK/public API packages change.
 
 ## Phase 4: add the trusted release workflow
 
 Create this workflow in the plugin repository:
 
 ```text
-classroomio-plugins/.github/workflows/release-plugins.yml
+plugins/.github/workflows/release-plugins.yml
 ```
 
 Trigger it after merge to protected `main`. For the initial version, release only plugins whose source or registry entry changed in the merged commit and whose version is new. A documentation-only merge must do nothing.
@@ -321,7 +321,7 @@ Suggested request body:
 ```json
 {
   "sourceCommit": "40-character-git-sha",
-  "workflowRunUrl": "https://github.com/classroomio/classroomio-plugins/actions/runs/123",
+  "workflowRunUrl": "https://github.com/classroomio/plugins/actions/runs/123",
   "releases": [
     {
       "pluginId": "com.example.reading-timer",
@@ -482,7 +482,7 @@ Replace “Packaging and publishing” documentation with “Packaging and contr
 2. Run Vite locally with npm run dev.
 3. Build and package locally with npm run build and npm run pack.
 4. Install into a local organization with npm run seed.
-5. Fork classroomio-plugins.
+5. Fork `classroomio/plugins`.
 6. Add or update a plugin, registry entry, tests, and documentation.
 7. Open a pull request.
 8. Address CI and review feedback.

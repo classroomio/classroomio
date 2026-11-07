@@ -9,7 +9,7 @@
 
 The intended architecture is source-first and PR-first:
 
-1. A contributor opens a source-code PR in `classroomio-plugins`.
+1. A contributor opens a source-code PR in `classroomio/plugins`.
 2. Reviewers inspect source and protected CI validates, builds, packs, and scans it.
 3. After merge, trusted release CI uploads an immutable digest-addressed artifact to object storage.
 4. Trusted release CI registers that exact artifact with ClassroomIO's internal release endpoint.
@@ -86,7 +86,7 @@ In `apps/api/src/services/plugin/events.ts:177`, manifest-configured `endpoint` 
 
 In `apps/api/src/routes/internal/plugin-releases.ts:17-33`, the internal release route trusts a shared `PLUGIN_RELEASE_DEPLOY_TOKEN`. Any holder can register a valid archive and arbitrary `sourceCommit` / `workflowRunUrl`; those fields are not attested.
 
-**Fix:** use GitHub Actions OIDC or a short-lived, audience-bound credential for the protected release workflow; verify repository (`classroomio/classroomio-plugins`), workflow, ref (`refs/heads/main`), commit SHA, and environment claims. Require the artifact key/digest to be produced by that run, reject replayed registration IDs, and rate-limit/audit denied attempts. Until then, keep the endpoint private and the token in a protected environment with least privilege.
+**Fix:** use GitHub Actions OIDC or a short-lived, audience-bound credential for the protected release workflow; verify repository (`classroomio/plugins`), workflow, ref (`refs/heads/main`), commit SHA, and environment claims. Require the artifact key/digest to be produced by that run, reject replayed registration IDs, and rate-limit/audit denied attempts. Until then, keep the endpoint private and the token in a protected environment with least privilege.
 
 ### E. Development release mutation is non-atomic
 
@@ -104,7 +104,7 @@ In `apps/api/src/routes/plugins/assets.ts:79` and launch resolvers, some paths a
 
 This repository has `.github/workflows/plugin-isolation-check.yml`, but no trusted, post-merge release workflow that builds artifacts, uploads them to the immutable bucket, and calls the internal registration endpoint. The user-facing plugin repository needs that workflow, but this PR must still specify and enforce the trusted registration boundary.
 
-**Fix:** define the release workflow in `classroomio-plugins`, trigger only on protected `main`, use a protected production environment, build from checkout rather than PR artifact uploads, run package/dependency/isolation checks, upload with conditional create semantics, then register via workload identity.
+**Fix:** define the release workflow in `classroomio/plugins`, trigger only on protected `main`, use a protected production environment, build from checkout rather than PR artifact uploads, run package/dependency/isolation checks, upload with conditional create semantics, then register via workload identity.
 
 ## 5. Reduction plan: retain, defer, remove
 

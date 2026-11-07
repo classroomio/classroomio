@@ -21,6 +21,8 @@ vi.mock('@cio/core/utils/s3', () => storageMocks);
 import { internalPluginReleasesRouter } from '@api/routes/internal/plugin-releases';
 import { registerInternalReleases } from '@api/services/plugin/release';
 
+const pluginReleaseWorkflowUrl = (runId = '123') => `https://github.com/classroomio/plugins/actions/runs/${runId}`;
+
 function createTarHeader(filePath: string, size: number): Buffer {
   const buf = Buffer.alloc(512);
   buf.write(filePath, 0, 100, 'utf8');
@@ -108,7 +110,7 @@ describe('PR-First Plugin Releases', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sourceCommit: 'a'.repeat(40),
-          workflowRunUrl: 'https://github.com/classroomio/classroomio-plugins/actions/runs/123',
+          workflowRunUrl: pluginReleaseWorkflowUrl(),
           releases: []
         })
       });
@@ -125,7 +127,7 @@ describe('PR-First Plugin Releases', () => {
         },
         body: JSON.stringify({
           sourceCommit: 'a'.repeat(40),
-          workflowRunUrl: 'https://github.com/classroomio/classroomio-plugins/actions/runs/123',
+          workflowRunUrl: pluginReleaseWorkflowUrl(),
           releases: []
         })
       });
@@ -144,7 +146,7 @@ describe('PR-First Plugin Releases', () => {
         },
         body: JSON.stringify({
           sourceCommit: 'a'.repeat(40),
-          workflowRunUrl: 'https://github.com/classroomio/classroomio-plugins/actions/runs/123',
+          workflowRunUrl: pluginReleaseWorkflowUrl(),
           releases: []
         })
       });
@@ -215,7 +217,7 @@ describe('PR-First Plugin Releases', () => {
       await expect(
         registerInternalReleases({
           sourceCommit: 'a'.repeat(40),
-          workflowRunUrl: 'https://github.com/classroomio/classroomio-plugins/actions/runs/123',
+          workflowRunUrl: pluginReleaseWorkflowUrl(),
           releases: [
             {
               pluginId: 'com.example.reading-timer',
@@ -232,7 +234,7 @@ describe('PR-First Plugin Releases', () => {
       await expect(
         registerInternalReleases({
           sourceCommit: 'a'.repeat(40),
-          workflowRunUrl: 'https://github.com/classroomio/classroomio-plugins/actions/runs/123',
+          workflowRunUrl: pluginReleaseWorkflowUrl(),
           releases: [
             {
               pluginId: 'com.example.reading-timer',
@@ -257,7 +259,7 @@ describe('PR-First Plugin Releases', () => {
       await expect(
         registerInternalReleases({
           sourceCommit: 'a'.repeat(40),
-          workflowRunUrl: 'https://github.com/classroomio/classroomio-plugins/actions/runs/123',
+          workflowRunUrl: pluginReleaseWorkflowUrl(),
           releases: [
             {
               pluginId: 'com.example.reading-timer',
@@ -281,7 +283,7 @@ describe('PR-First Plugin Releases', () => {
       await expect(
         registerInternalReleases({
           sourceCommit: 'a'.repeat(40),
-          workflowRunUrl: 'https://github.com/classroomio/classroomio-plugins/actions/runs/123',
+          workflowRunUrl: pluginReleaseWorkflowUrl(),
           releases: [
             {
               pluginId: 'com.example.reading-timer',
@@ -311,7 +313,7 @@ describe('PR-First Plugin Releases', () => {
 
       const result = await registerInternalReleases({
         sourceCommit: 'a'.repeat(40),
-        workflowRunUrl: 'https://github.com/classroomio/classroomio-plugins/actions/runs/123',
+        workflowRunUrl: pluginReleaseWorkflowUrl(),
         releases: [
           {
             pluginId: 'com.example.reading-timer',
@@ -340,7 +342,7 @@ describe('PR-First Plugin Releases', () => {
       });
 
       const sourceCommit = 'b'.repeat(40);
-      const workflowRunUrl = 'https://github.com/classroomio/classroomio-plugins/actions/runs/456';
+      const workflowRunUrl = pluginReleaseWorkflowUrl('456');
 
       const result = await registerInternalReleases({
         sourceCommit,

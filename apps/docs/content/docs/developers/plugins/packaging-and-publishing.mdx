@@ -5,7 +5,7 @@ description: Build, develop, test locally, and contribute a ClassroomIO plugin.
 
 ClassroomIO uses a pull-request-driven, source-controlled release pipeline for all catalog plugins.
 Contributors build and test plugins locally with the `cio-plugin` CLI, then submit a pull request
-to the official `classroomio-plugins` repository. Releases are built and published exclusively by
+to the official `classroomio/plugins` repository. Releases are built and published exclusively by
 trusted release CI upon merge to `main`.
 
 `cio-plugin` has four core commands for developers.
@@ -73,13 +73,13 @@ manifest constraints and entrypoint mappings.
 
 ## Contributing to the catalog
 
-All public and catalog plugins are source-maintained in the `classroomio-plugins` repository.
+All public and catalog plugins are source-maintained in the `classroomio/plugins` repository.
 
 ### Contribution workflow
 
 1. **Scaffold & Build**: Create your plugin and verify that `npm run build`, `npm run pack`, and `validate` succeed locally.
 2. **Test in Local ClassroomIO**: Use `npm run seed` to test iframe loading, theme sync, RPC methods, and permissions in your local ClassroomIO instance.
-3. **Fork `classroomio-plugins`**: Fork the [classroomio-plugins](https://github.com/classroomio/classroomio-plugins) repository.
+3. **Fork `classroomio/plugins`**: Fork the [plugins](https://github.com/classroomio/plugins) repository.
 4. **Register Plugin**: Add your plugin directory to the repository and register it in `registry/plugins.json`:
    ```json
    {
@@ -89,7 +89,7 @@ All public and catalog plugins are source-maintained in the `classroomio-plugins
      "release": true
    }
    ```
-5. **Open a Pull Request**: Submit a pull request against `classroomio-plugins` `main`.
+5. **Open a Pull Request**: Submit a pull request against `classroomio/plugins` `main`.
 6. **PR CI Validation**: Untrusted pull request CI runs build, test, packing, isolation checks, and determinism verification in a sandbox without cloud secrets.
 7. **Maintainer Review**: Maintainers review the source code, requested permissions, network allowlists (`networkAccess.allowedDomains`), and runtime behavior.
 8. **Merge & Automated Release**: Once merged to `main`, trusted GitHub Actions release CI builds the canonical package, uploads immutable files to R2/S3, and registers the release with the ClassroomIO API.
@@ -122,7 +122,7 @@ Authorization: Bearer $PLUGIN_RELEASE_DEPLOY_TOKEN
 ```json
 {
   "sourceCommit": "40-character-git-sha",
-  "workflowRunUrl": "https://github.com/classroomio/classroomio-plugins/actions/runs/123456",
+  "workflowRunUrl": "https://github.com/classroomio/plugins/actions/runs/123456",
   "releases": [
     {
       "pluginId": "com.example.reading-timer",

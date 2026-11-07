@@ -157,7 +157,7 @@ export async function registerInternalReleases(
         releaseRunUrl: request.workflowRunUrl,
         releasedBy: 'github-actions',
         releaseMetadata: {
-          sourceRepository: 'classroomio/classroomio-plugins',
+          sourceRepository: 'classroomio/plugins',
           artifactKey: archiveKey
         },
         reviewStatus: 'approved'

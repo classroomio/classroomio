@@ -913,9 +913,9 @@ To create the immutable plugin archive, run \`npm run pack\` after the UI build.
 
 To publish this plugin to ClassroomIO:
 1. Ensure \`npm run build\` and \`npm run pack\` pass locally.
-2. Fork \`classroomio-plugins\` on GitHub.
+2. Fork \`classroomio/plugins\` on GitHub.
 3. Add your plugin directory and register it in \`registry/plugins.json\`.
-4. Submit a pull request to \`classroomio-plugins\`.
+4. Submit a pull request to \`classroomio/plugins\`.
 5. Once merged, trusted release CI publishes the approved artifact to production storage and registers the release.
 `;
   const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

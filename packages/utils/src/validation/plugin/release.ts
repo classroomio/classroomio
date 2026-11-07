@@ -14,7 +14,7 @@ export const ZInternalPluginReleaseRequest = z.object({
     .string()
     .url()
     .regex(
-      /^https:\/\/github\.com\/classroomio\/classroomio-plugins\/actions\/runs\/[0-9]+(?:\/attempts\/[0-9]+)?$/,
+      /^https:\/\/github\.com\/classroomio\/plugins\/actions\/runs\/[0-9]+(?:\/attempts\/[0-9]+)?$/,
       'Must be a ClassroomIO plugin release workflow URL'
     ),
   releases: z.array(ZPluginReleaseCandidate).min(1)

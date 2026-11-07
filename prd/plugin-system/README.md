@@ -33,9 +33,9 @@ isolation, sandboxing, or authorization.
 
 - [Public Plugin API v1](./public-plugin-api-v1.md) defines permission naming, the initial 30
   permission scopes, their SDK/API mappings, authorization rules, and the end-to-end delivery plan.
-- [Official plugins](../../../classroomio-plugins/README.md) documents the source layout and isolation
+- [Official plugins](../../../plugins/README.md) documents the source layout and isolation
   rules for ClassroomIO-maintained plugins.
-- [Certificate Studio porting plan](../../../classroomio-plugins/certificate-studio/PORTING_PLAN.md)
+- [Certificate Studio porting plan](../../../plugins/certificate-studio/PORTING_PLAN.md)
   defines the first complex full-page plugin and remote-backend implementation.
 - [Official plugin UI and behavior parity](./official-plugin-ui-parity.md) records the donor-to-external
   audit, acceptance rules, remaining gaps, and delivery order for every official plugin.
@@ -81,7 +81,7 @@ workflow must resolve those packages from packed or published artifacts.
 ## Local validation workflow
 
 Set `PLUGIN_ARTIFACTS_PATH` in `apps/api/.env` to the absolute path of the official plugin
-repository's `.plugin-artifacts` directory. Then run these commands from `classroomio-plugins`:
+repository's `.plugin-artifacts` directory. Then run these commands from `plugins`:
 
 ```bash
 pnpm run pack
