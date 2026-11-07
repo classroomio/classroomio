@@ -6,6 +6,8 @@ import type { SQL } from 'drizzle-orm';
 import { AUDIENCE_ACTIVITY_WINDOW_DAYS } from '@cio/utils/validation/organization';
 import { ROLE } from '@cio/utils/constants';
 import { type DbOrTxClient, db } from '@db/drizzle';
+
+import { toAudienceMemberStatus } from './member-lifecycle';
 import type {
   TAudienceActivityWindow,
   TAudienceCertificate,
@@ -262,7 +264,7 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
     avatarUrl: row.avatarUrl || '',
     locale: row.locale ?? null,
     createdAt,
-    memberStatus: row.memberStatus,
+    memberStatus: toAudienceMemberStatus(row.memberStatus),
     lastLoginAt: row.lastLoginAt ?? null,
     lastActiveAt: row.lastActiveAt ?? null,
     enrolledCount: Number(row.enrolledCount ?? 0),
@@ -540,7 +542,7 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
         avatarUrl: row.avatarUrl || '',
         locale: row.locale ?? null,
         createdAt,
-        memberStatus: row.memberStatus,
+        memberStatus: toAudienceMemberStatus(row.memberStatus),
         lastLoginAt: row.lastLoginAt ?? null,
         lastActiveAt: row.lastActiveAt ?? null,
         enrolledCount: Number(row.enrolledCount ?? 0),

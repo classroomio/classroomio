@@ -118,7 +118,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'set_audience_status',
-    `Deactivate, reactivate, archive or unarchive up to ${AUDIENCE_BULK_IDS_MAX} students by member id or email, with confirm set to true; ${ORG_ADMIN_RULE}. Deactivated and archived students lose course access but keep their progress; archiving also frees their plan seat.`,
+    `Archive or unarchive up to ${AUDIENCE_BULK_IDS_MAX} students by member id or email, with confirm set to true; ${ORG_ADMIN_RULE}. Archived students lose course access but keep their progress, and archiving frees their plan seat.`,
     setAudienceStatusShape,
     DESTRUCTIVE,
     async (args) => {

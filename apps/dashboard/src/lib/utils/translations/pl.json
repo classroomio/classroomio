@@ -887,29 +887,21 @@
       "undo_success": "Przywrócono",
       "confirm_action": {
         "archive": "Archiwizuj",
-        "deactivate": "Dezaktywuj",
-        "reactivate": "Ponownie aktywuj",
         "unarchive": "Usuń z archiwum",
         "delete": "Usuń trwale"
       },
       "confirm_body": {
         "archive": "Utracą dostęp i zwolnią miejsce w Twoim planie. Możesz usunąć ich z archiwum w dowolnym momencie.",
-        "deactivate": "Utracą dostęp, ale zachowają miejsce w Twoim planie. Możesz je ponownie aktywować w dowolnym momencie.",
-        "reactivate": "Użytkownicy odzyskują dostęp do Twojej organizacji i jej kursów.",
         "unarchive": "Użytkownicy odzyskują dostęp i ponownie zajmują miejsce w Twoim planie.",
         "delete": "Spowoduje to usunięcie ich z tej organizacji i nie można tego cofnąć. Ich konta, przesłane materiały i wyniki zostaną zachowane."
       },
       "confirm_title": {
         "archive": "Zarchiwizować {count} studentów?",
-        "deactivate": "Dezaktywować {count} studentów?",
-        "reactivate": "Reaktywować {count} studentów?",
         "unarchive": "Usunąć z archiwum {count} studentów?",
         "delete": "Trwale usunąć {count} studentów?"
       },
       "action": {
         "archive": "Zarchiwizować {count} studentów",
-        "deactivate": "Dezaktywować {count} studentów",
-        "reactivate": "Reaktywować {count} studentów",
         "unarchive": "Usunąć z archiwum {count} studentów",
         "delete": "Usunąć z archiwum {count} studentów"
       },
@@ -925,7 +917,6 @@
     "filter": {
       "status": "Status członka",
       "status_active": "Aktywny",
-      "status_deactivated": "Dezaktywowany",
       "status_archived": "Zarchiwizowany",
       "last_login": "Ostatnie logowanie",
       "last_activity": "Ostatnia aktywność",

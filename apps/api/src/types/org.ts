@@ -23,7 +23,7 @@ export type OrgAudienceMember = {
   createdAt: string;
   /** Derived invite state. Not the lifecycle state — that is `memberStatus`. */
   status: AudienceMemberStatus;
-  /** Lifecycle state of the membership: ACTIVE / DEACTIVATED / ARCHIVED. */
+  /** Lifecycle state of the membership: ACTIVE / ARCHIVED. */
   memberStatus: TAudienceMemberStatus;
   lastLoginAt: string | null;
   lastActiveAt: string | null;

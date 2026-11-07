@@ -11,7 +11,7 @@ export const ZPublicApiAudienceQuery = z.object({
   search: z.string().trim().optional(),
   sortBy: z.enum(['createdAt', 'name', 'email', 'lastLoginAt', 'lastActiveAt']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
-  status: z.enum(['ACTIVE', 'DEACTIVATED', 'ARCHIVED']).default('ACTIVE'),
+  status: z.enum(['ACTIVE', 'ARCHIVED']).default('ACTIVE'),
   inviteStatus: z.enum(['active', 'pending', 'expired', 'revoked']).optional(),
   enrollment: z.enum(['enrolled', 'not_enrolled']).optional(),
   completion: z.enum(['not_started', 'in_progress', 'completed']).optional(),
@@ -126,10 +126,8 @@ const hasNoRepeats = (values: (string | number)[]) =>
 export const ZPublicApiAudienceBulkStatus = z
   .object({
     action: z
-      .enum(['deactivate', 'reactivate', 'archive', 'unarchive'])
-      .describe(
-        'deactivate: no access, keeps the seat. archive: no access, frees the seat. reactivate, unarchive: active again. Leaving archived takes a seat. Progress is kept.'
-      ),
+      .enum(['archive', 'unarchive'])
+      .describe('archive: no access, frees the seat. unarchive: active again and takes a seat. Progress is kept.'),
     memberIds: z
       .array(z.number().int().positive())
       .min(1)

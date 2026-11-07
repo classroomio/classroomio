@@ -157,7 +157,7 @@ export const v1AudienceRouter = new Hono()
   .post(
     '/bulk-status',
     describeRoute({
-      description: `Deactivate, reactivate, archive or unarchive up to ${AUDIENCE_BULK_IDS_MAX} students by member id or email, with confirm set to true; ${ORG_ADMIN_RULE}.`,
+      description: `Archive or unarchive up to ${AUDIENCE_BULK_IDS_MAX} students by member id or email, with confirm set to true; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse(

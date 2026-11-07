@@ -887,29 +887,21 @@
       "undo_success": "Modifications annulées",
       "confirm_action": {
         "archive": "Archiver",
-        "deactivate": "Désactiver",
-        "reactivate": "Réactiver",
         "unarchive": "Déarchiver",
         "delete": "Supprimer définitivement"
       },
       "confirm_body": {
         "archive": "Ils perdent l'accès et libèrent une place dans votre forfait. Vous pouvez les désarchiver à tout moment.",
-        "deactivate": "Ils perdent l'accès à votre forfait, mais conservent leur place. Vous pouvez les réactiver à tout moment.",
-        "reactivate": "Ils retrouvent l'accès à votre organisation et à ses cours.",
         "unarchive": "Ils reprennent accès et reprennent place dans votre plan.",
         "delete": "Cette décision les exclut définitivement de l'organisation. Leur compte, leurs contributions et leurs résultats sont conservés."
       },
       "confirm_title": {
         "archive": "Archiver {count} étudiants ?",
-        "deactivate": "Désactiver {count} étudiants ?",
-        "reactivate": "Réactiver {count} étudiants ?",
         "unarchive": "Désarchiver {count} étudiants ?",
         "delete": "Supprimer définitivement {count} étudiants ?"
       },
       "action": {
         "archive": "Archiver {count} étudiants",
-        "deactivate": "Désactiver {count} étudiants",
-        "reactivate": "Réactiver {count} étudiants",
         "unarchive": "Désarchiver {count} étudiants",
         "delete": "Supprimer {count} étudiants"
       },
@@ -925,7 +917,6 @@
     "filter": {
       "status": "Statut de membre",
       "status_active": "Actif",
-      "status_deactivated": "Désactivé",
       "status_archived": "Archivé",
       "last_login": "Dernière connexion",
       "last_activity": "Dernière activité",

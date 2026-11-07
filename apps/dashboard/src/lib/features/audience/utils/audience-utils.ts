@@ -27,8 +27,6 @@ export function formatActivityExact(timestamp: string | null | undefined): strin
 
 export function memberStatusBadgeVariant(status: OrganizationAudienceMemberStatus): BadgeVariant {
   switch (status) {
-    case 'DEACTIVATED':
-      return 'destructive';
     case 'ARCHIVED':
       return 'outline';
     default:
@@ -38,8 +36,6 @@ export function memberStatusBadgeVariant(status: OrganizationAudienceMemberStatu
 
 export function memberStatusLabelKey(status: OrganizationAudienceMemberStatus): string {
   switch (status) {
-    case 'DEACTIVATED':
-      return 'audience.filter.status_deactivated';
     case 'ARCHIVED':
       return 'audience.filter.status_archived';
     default:

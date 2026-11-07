@@ -39,7 +39,7 @@ export type OrganizationAudienceSuccess = Extract<InferResponseType<GetAudienceR
 export type OrganizationAudienceRequestQuery = NonNullable<InferRequestType<GetAudienceRequest>['query']>;
 export type OrganizationAudienceSortBy = 'createdAt' | 'name' | 'email' | 'lastLoginAt' | 'lastActiveAt';
 export type OrganizationAudienceSortOrder = 'asc' | 'desc';
-export type OrganizationAudienceMemberStatus = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED';
+export type OrganizationAudienceMemberStatus = 'ACTIVE' | 'ARCHIVED';
 export type OrganizationAudienceInviteStatus = 'active' | 'pending' | 'expired' | 'revoked';
 export type OrganizationAudienceEnrollment = 'enrolled' | 'not_enrolled';
 export type OrganizationAudienceCompletion = 'not_started' | 'in_progress' | 'completed';
@@ -145,7 +145,7 @@ export type BulkAudienceActionOutcome = {
 };
 
 /** The lifecycle actions the bulk bar offers. `delete` requires every target to be ARCHIVED. */
-export type AudienceBulkAction = 'deactivate' | 'reactivate' | 'archive' | 'unarchive' | 'delete';
+export type AudienceBulkAction = 'archive' | 'unarchive' | 'delete';
 
 export type DeleteAudienceMemberRequest = (typeof classroomio.organization)['audience'][':memberId']['$delete'];
 export type DeleteAudienceMemberSuccess = Extract<InferResponseType<DeleteAudienceMemberRequest>, { success: true }>;

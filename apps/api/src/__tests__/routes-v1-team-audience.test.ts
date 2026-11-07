@@ -120,7 +120,7 @@ const routes: Array<[string, string, unknown, string, number, number]> = [
   [
     'POST',
     '/audience/bulk-status',
-    { action: 'deactivate', memberIds: [7], confirm: true },
+    { action: 'archive', memberIds: [7], confirm: true },
     'set_audience_status',
     1,
     200
@@ -210,14 +210,16 @@ describe('team and audience routes through the v1 router', () => {
   });
 
   it.each([
-    ['without confirm', { action: 'deactivate', memberIds: [7] }],
-    ['with confirm false', { action: 'deactivate', memberIds: [7], confirm: false }],
-    ['with both memberIds and emails', { action: 'deactivate', memberIds: [7], emails: ['a@b.co'], confirm: true }],
-    ['with neither memberIds nor emails', { action: 'deactivate', confirm: true }],
-    ['with repeated memberIds', { action: 'deactivate', memberIds: [7, 7], confirm: true }],
-    ['with emails repeated in another case', { action: 'deactivate', emails: ['a@b.co', 'A@B.co'], confirm: true }],
+    ['without confirm', { action: 'archive', memberIds: [7] }],
+    ['with confirm false', { action: 'archive', memberIds: [7], confirm: false }],
+    ['with both memberIds and emails', { action: 'archive', memberIds: [7], emails: ['a@b.co'], confirm: true }],
+    ['with neither memberIds nor emails', { action: 'archive', confirm: true }],
+    ['with repeated memberIds', { action: 'archive', memberIds: [7, 7], confirm: true }],
+    ['with emails repeated in another case', { action: 'archive', emails: ['a@b.co', 'A@B.co'], confirm: true }],
     ['with delete as the action', { action: 'delete', memberIds: [7], confirm: true }],
-    ['with an invalid email', { action: 'deactivate', emails: ['not-an-email'], confirm: true }]
+    ['with the retired deactivate action', { action: 'deactivate', memberIds: [7], confirm: true }],
+    ['with the retired reactivate action', { action: 'reactivate', memberIds: [7], confirm: true }],
+    ['with an invalid email', { action: 'archive', emails: ['not-an-email'], confirm: true }]
   ])('refuses a bulk status change %s with 400 and changes nothing', async (_label, body) => {
     const response = await request('POST', '/audience/bulk-status', body);
 
@@ -226,7 +228,7 @@ describe('team and audience routes through the v1 router', () => {
   });
 
   it('passes the key organization, creator and body to the bulk status service', async () => {
-    const body = { action: 'reactivate', emails: ['a@b.co'], reason: 'Paid', confirm: true };
+    const body = { action: 'unarchive', emails: ['a@b.co'], reason: 'Paid', confirm: true };
 
     await request('POST', '/audience/bulk-status', body);
 

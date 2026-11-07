@@ -13,7 +13,7 @@ import * as z from 'zod';
 export const ZAudienceBulkActionPayload = z.object({
   organizationId: z.string().min(1),
   actorProfileId: z.string().min(1),
-  action: z.enum(['deactivate', 'reactivate', 'archive', 'unarchive', 'delete']),
+  action: z.enum(['archive', 'unarchive', 'delete']),
   memberIds: z.array(z.number().int().positive()).min(1),
   reason: z.string().max(500).optional(),
   /** The filter the action came from, recorded on each audit row. */

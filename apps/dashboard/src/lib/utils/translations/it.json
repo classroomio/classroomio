@@ -4653,7 +4653,6 @@
     "filter": {
       "status": "Stato di membro",
       "status_active": "Attivo",
-      "status_deactivated": "Disattivato",
       "status_archived": "Archiviato",
       "last_login": "Ultimo accesso",
       "last_activity": "Ultima attività",
@@ -4689,29 +4688,21 @@
       "clear": "Chiaro",
       "action": {
         "archive": "Archivio {count} studenti",
-        "deactivate": "Disattivare {count} studenti",
-        "reactivate": "Riattivare {count} studenti",
         "unarchive": "Annulla l'archiviazione {count} studenti",
         "delete": "Eliminare {count} studenti"
       },
       "confirm_title": {
         "archive": "Archivio {count} studenti?",
-        "deactivate": "Disattivare {count} studenti?",
-        "reactivate": "Riattivare {count} studenti?",
         "unarchive": "Annulla l'archiviazione {count} studenti?",
         "delete": "Rimuovere definitivamente {count} studenti?"
       },
       "confirm_body": {
         "archive": "Perdono l'accesso e liberano un posto sul tuo piano. Puoi rimuoverli dall'archivio in qualsiasi momento.",
-        "deactivate": "Perdono l'accesso ma mantengono il posto nel tuo piano. Puoi riattivarli in qualsiasi momento.",
-        "reactivate": "Riacquistano l'accesso alla tua organizzazione e ai suoi corsi.",
         "unarchive": "Riacquistano l'accesso e prendono nuovamente posto nel tuo piano.",
         "delete": "L'operazione li rimuove da questa organizzazione e non può essere annullata. Il loro account, i contributi e i risultati vengono conservati."
       },
       "confirm_action": {
         "archive": "Archivio",
-        "deactivate": "Disattivare",
-        "reactivate": "Riattivare",
         "unarchive": "Annulla l'archiviazione",
         "delete": "Elimina definitivamente"
       },
