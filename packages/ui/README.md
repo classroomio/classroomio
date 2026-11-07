@@ -335,7 +335,7 @@ Unified video player component supporting HTML5 video (direct MP4 and HLS via `h
 
 - **Native Vimeo SDK Integration**: Seamless playback with strict-origin referrer policy and unlisted privacy hash support (`?h=...`).
 - **Domain Privacy Error Recovery**: Automatically detects Vimeo `PrivacyError` events on domain-restricted videos, providing instructors with the exact host to whitelist and a live Retry button, while displaying a learner-friendly notice in learner mode.
-- **HLS Adaptive Streaming**: Plays master manifests via signed cookies or token auth with automatic rendition selection.
+- **HLS Adaptive Streaming**: Plays master manifests through hls.js with automatic rendition selection. Segments are authorized by a short-lived signed cookie that the player renews before it expires, or by the viewer's session.
 - **YouTube Embeds**: Lightweight iframe embed with responsive aspect-ratio wrappers.
 
 | Option                    | Purpose                                                                                                            |
@@ -345,6 +345,7 @@ Unified video player component supporting HTML5 video (direct MP4 and HLS via `h
 | `options.onTimeUpdate`    | Callback invoked as playback position advances                                                                     |
 | `options.onPlayerReady`   | Callback invoked when the underlying player SDK is initialized                                                     |
 | `options.vimeoRetryLabel` | Optional label override for the Vimeo playback retry button                                                        |
+| `options.onBeforeHlsLoad` | HLS only. Mints the playback cookie and returns `{ expiresInSeconds?, authExpired? }`. Called before the manifest loads, shortly before `expiresInSeconds` elapses, after a segment is rejected as unauthorized, and on reload. Return `authExpired: true` to show the sign-in prompt |
 
 ### Combo button (`src/custom/combo-button/`)
 

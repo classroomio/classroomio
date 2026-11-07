@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
   import { cn } from '../../tools';
   import { SafeHtmlContent } from '../safe-html-content';
-  import { MediaPlayer } from '../media-player';
+  import { MediaPlayer, type HlsCookieGrant } from '../media-player';
   import { PageOutline } from '../page-outline';
   import { injectHeadingIds, withPageTitle } from '../page-outline/heading-utils';
   import Callout from './callout.svelte';
@@ -15,11 +15,11 @@
     /**
      * For HLS videos. Host app provides a callback that mints the public
      * HLS cookie via `POST /org-site/course/.../hls-cookie`. The shared
-     * media player invokes it before hls.js loads the manifest, and again
-     * via `onPlaybackReload` when the learner clicks "Reload playback"
-     * after a cookie-expiry / segment failure.
+     * media player invokes it before hls.js loads the manifest, before the
+     * cookie expires, after a segment is rejected as unauthorized, and when
+     * the learner clicks "Reload playback".
      */
-    onBeforeHlsLoad?: () => Promise<void>;
+    onBeforeHlsLoad?: () => Promise<HlsCookieGrant | void>;
     /**
      * Resolves a relative HLS URL (e.g. `/hls/{assetId}/master.m3u8`) into
      * an absolute URL the browser can fetch. Host app passes a resolver

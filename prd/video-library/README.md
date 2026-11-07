@@ -455,7 +455,7 @@ Mounted per the single-root-segment rule: asset routes extend the existing `orga
 | PUT | `/organization/videos/section` | admin | the saved section config |
 | GET | `/org-site/videos` | public | paginated published videos + public tag facets |
 | GET | `/org-site/videos/:slug` | public | one video + transcript + related + course usage |
-| POST | `/org-site/videos/:slug/hls-cookie` | public | `{ expiresAt }`, sets `cio_hls` |
+| POST | `/org-site/videos/:slug/hls-cookie` | public | `{ expiresAt, expiresInSeconds }`, sets `cio_hls_<assetId>` |
 | POST | `/org-site/videos/:slug/view` | public | `{ sessionKey }` |
 | PUT | `/org-site/videos/:slug/progress` | public | `{ ok: true }` |
 | GET | `/widgets/:publicKey/payload` | public | existing route; payload gains the video shape |
