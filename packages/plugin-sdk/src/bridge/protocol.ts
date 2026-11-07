@@ -129,6 +129,8 @@ export interface BridgeStorageListPayload {
   resourceId?: string;
   cursor?: string;
   limit?: number;
+  allUsers?: boolean;
+  key?: string;
 }
 
 export interface BridgeCoursesListPayload {

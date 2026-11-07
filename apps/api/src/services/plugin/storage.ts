@@ -278,7 +278,9 @@ export async function listStorageRecords(
   resourceType?: string,
   resourceId?: string,
   cursor?: string,
-  limit?: number
+  limit?: number,
+  allUsers?: boolean,
+  key?: string
 ) {
   await requireOrganizationInstallation(installationId, organizationId);
 
@@ -291,13 +293,15 @@ export async function listStorageRecords(
   await assertStorageAccess(installationId, scopeType, 'read', userRole);
   await getStorageDocument(installationId, namespace, scopeType);
 
+  const canViewAllUsers = (userRole === 1 || userRole === 2) && Boolean(allUsers);
+
   const records = await listPluginStorageByNamespace(
     installationId,
     scopeType,
     scopeId,
     namespace,
     resolvedResourceType,
-    { cursor, limit }
+    { cursor, limit, allUsers: canViewAllUsers, key }
   );
 
   return {

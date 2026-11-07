@@ -90,7 +90,9 @@ export const ZPluginStorageQuery = z
     resourceType: z.string().trim().min(1).max(64).optional(),
     resourceId: z.string().uuid().optional(),
     cursor: z.string().trim().min(1).max(255).optional(),
-    limit: z.coerce.number().int().min(1).max(100).optional().default(20)
+    limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+    allUsers: z.coerce.boolean().optional(),
+    key: z.string().trim().min(1).max(255).optional()
   })
   .superRefine((data, ctx) => {
     if (data.scope === 'resource') {

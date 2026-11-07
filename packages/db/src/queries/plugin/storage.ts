@@ -130,14 +130,21 @@ export async function listPluginStorageByNamespace(
   scopeId: string,
   namespace: string,
   resourceType = '',
-  options: { cursor?: string; limit?: number } = {}
+  options: { cursor?: string; limit?: number; allUsers?: boolean; key?: string } = {}
 ): Promise<{ items: TPluginStorage[]; nextCursor: string | null }> {
   const conditions = [
     eq(schema.pluginStorage.installationId, installationId),
     eq(schema.pluginStorage.scopeType, scopeType),
-    eq(schema.pluginStorage.scopeId, scopeId),
     eq(schema.pluginStorage.namespace, namespace)
   ];
+
+  if (!options.allUsers || scopeType !== 'user') {
+    conditions.push(eq(schema.pluginStorage.scopeId, scopeId));
+  }
+
+  if (options.key) {
+    conditions.push(eq(schema.pluginStorage.key, options.key));
+  }
 
   conditions.push(eq(schema.pluginStorage.resourceType, resourceType));
 

@@ -262,7 +262,7 @@ export const pluginInstallationsRouter = new Hono()
       const orgId = c.get('orgId') as string;
       const userRole = c.get('userRole') as number | undefined;
       const { installationId, namespace } = c.req.valid('param');
-      const { scope, resourceType, resourceId, cursor, limit } = c.req.valid('query');
+      const { scope, resourceType, resourceId, cursor, limit, allUsers, key } = c.req.valid('query');
 
       try {
         const records = await listStorageRecords(
@@ -275,7 +275,9 @@ export const pluginInstallationsRouter = new Hono()
           resourceType,
           resourceId,
           cursor,
-          limit
+          limit,
+          allUsers,
+          key
         );
         return c.json({ success: true, data: records }, 200);
       } catch (error) {

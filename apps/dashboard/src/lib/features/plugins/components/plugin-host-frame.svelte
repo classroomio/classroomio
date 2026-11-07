@@ -308,7 +308,7 @@
           const result = await responseData<{ success: boolean; deleted: boolean }>(response);
           return result.deleted;
         },
-        onStorageList: async ({ namespace, scope, cursor, limit }) => {
+        onStorageList: async ({ namespace, scope, cursor, limit, allUsers, key }) => {
           const orgId = requireOrganizationId();
           const targetScope: PluginStorageScope = scope ?? 'organization';
           const queryParams: {
@@ -317,10 +317,14 @@
             resourceType?: string;
             cursor?: string;
             limit?: string;
+            allUsers?: string;
+            key?: string;
           } = {
             scope: targetScope,
             cursor,
-            limit: limit === undefined ? undefined : String(limit)
+            limit: limit === undefined ? undefined : String(limit),
+            allUsers: allUsers ? 'true' : undefined,
+            key: key || undefined
           };
           if (targetScope === 'resource' && resource?.id) {
             queryParams.resourceId = resource.id;

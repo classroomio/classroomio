@@ -330,7 +330,7 @@ export class ClassroomIOClient {
     list: async <T = unknown>(
       namespace = 'default',
       scope: 'organization' | 'user' | 'resource' = 'organization',
-      options: { cursor?: string; limit?: number } = {}
+      options: { cursor?: string; limit?: number; allUsers?: boolean; key?: string } = {}
     ): Promise<{
       items: Array<{ key: string; value: T; version: number; schemaVersion: number; updatedAt: string }>;
       nextCursor: string | null;
