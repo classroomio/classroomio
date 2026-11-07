@@ -1,7 +1,6 @@
 import {
   type BridgeHandshakeAck,
   type BridgeHandshakeInit,
-  type BridgeModalOpenPayload,
   type BridgeResizePayload,
   type BridgeNavigationOpenPayload,
   type BridgeRpcRequest,
@@ -18,7 +17,6 @@ import {
   type BridgeStorageDeletePayload,
   type BridgeStorageListPayload,
   type BridgeCoursesListPayload,
-  type BridgeCourseResourcePayload,
   type BridgeIdPayload,
   type BridgeListPayload,
   type BridgeProgressSetPayload,
@@ -33,19 +31,20 @@ import {
   BRIDGE_MAX_RESPONSE_BYTES
 } from '../bridge/protocol';
 import type {
-  TPluginApiAppliedCertificateTemplate,
-  TPluginApiCourseMetadata,
-  TPluginApiCourseProgress,
-  TPluginApiCourseStructure,
-  TPluginApiExerciseMetadata,
-  TPluginApiIdentityProfile,
-  TPluginApiIssuedCertificate,
-  TPluginApiLessonContent,
-  TPluginApiLessonMetadata,
-  TPluginApiLessonProgress,
-  TPluginApiOrganizationProfile,
-  TPluginApiCertificateTemplate
-} from '@cio/utils/validation/plugin';
+  PluginAppliedCertificateTemplate,
+  PluginCertificateTemplate,
+  PluginCourseMetadata,
+  PluginCourseProgress,
+  PluginCourseStructure,
+  PluginCursorPage,
+  PluginExerciseMetadata,
+  PluginIdentityProfile,
+  PluginIssuedCertificate,
+  PluginLessonContent,
+  PluginLessonMetadata,
+  PluginLessonProgress,
+  PluginOrganizationProfile
+} from '../data-types';
 
 export class PluginBridgeError extends Error {
   code: string;
@@ -92,9 +91,6 @@ export class ClassroomIOClient {
     }
   }
 
-  /**
-   * For testing or manual initialization with an already established port and context
-   */
   public attachPort(port: MessagePort, context: PluginContext, theme?: PluginThemeV1) {
     this.port = port;
     this.port.onmessage = this.handlePortMessage.bind(this);
@@ -123,7 +119,6 @@ export class ClassroomIOClient {
       this.port = port;
       this.port.onmessage = this.handlePortMessage.bind(this);
 
-      // Listen for the context returned from host or acknowledge handshake
       const ackMessage: BridgeHandshakeAck = {
         type: 'CIO_BRIDGE_HANDSHAKE_ACK',
         protocolVersion: BRIDGE_PROTOCOL_VERSION,
@@ -147,7 +142,6 @@ export class ClassroomIOClient {
 
     const data = event.data;
 
-    // Handle context initialization from host
     if (data?.type === 'CIO_BRIDGE_CONTEXT_INIT') {
       if (data.context) {
         this.resolveContext(data.context);
@@ -195,7 +189,6 @@ export class ClassroomIOClient {
       throw new PluginBridgeError('INTERNAL_ERROR', 'Client has been destroyed');
     }
 
-    // Wait until context is established (and hence port is available)
     await this.contextPromise;
 
     if (!this.port) {
@@ -243,24 +236,18 @@ export class ClassroomIOClient {
   };
 
   public identity = {
-    getCurrent: async (): Promise<TPluginApiIdentityProfile> =>
-      this.rpc<TPluginApiIdentityProfile, Record<string, never>>('identity:getCurrent', {})
+    getCurrent: async (): Promise<PluginIdentityProfile> =>
+      this.rpc<PluginIdentityProfile, Record<string, never>>('identity:getCurrent', {})
   };
 
   public organization = {
-    getProfile: async (): Promise<TPluginApiOrganizationProfile> =>
-      this.rpc<TPluginApiOrganizationProfile, Record<string, never>>('organization:getProfile', {})
+    getProfile: async (): Promise<PluginOrganizationProfile> =>
+      this.rpc<PluginOrganizationProfile, Record<string, never>>('organization:getProfile', {})
   };
 
   public ui = {
     toast: async (options: BridgeToastPayload): Promise<void> => {
       return this.rpc<void, BridgeToastPayload>('ui:toast', options);
-    },
-    openModal: async (options: BridgeModalOpenPayload): Promise<void> => {
-      return this.rpc<void, BridgeModalOpenPayload>('ui:modal:open', options);
-    },
-    closeModal: async (): Promise<void> => {
-      return this.rpc<void, Record<string, never>>('ui:modal:close', {});
     },
     resize: async (height: number): Promise<void> => {
       return this.rpc<void, BridgeResizePayload>('ui:resize', { height });
@@ -359,50 +346,52 @@ export class ClassroomIOClient {
   };
 
   public courses = {
-    list: async <TResult = unknown>(options: BridgeCoursesListPayload = {}): Promise<TResult> => {
-      return this.rpc<TResult, BridgeCoursesListPayload>('courses:list', options);
+    list: async (options: BridgeCoursesListPayload = {}): Promise<PluginCursorPage<PluginCourseMetadata>> => {
+      return this.rpc<PluginCursorPage<PluginCourseMetadata>, BridgeCoursesListPayload>('courses:list', options);
     },
-    get: async (id: string): Promise<TPluginApiCourseMetadata> =>
-      this.rpc<TPluginApiCourseMetadata, BridgeIdPayload>('courses:get', { id }),
-    getStructure: async (id: string): Promise<TPluginApiCourseStructure> =>
-      this.rpc<TPluginApiCourseStructure, BridgeIdPayload>('courses:getStructure', { id })
+    get: async (id: string): Promise<PluginCourseMetadata> =>
+      this.rpc<PluginCourseMetadata, BridgeIdPayload>('courses:get', { id }),
+    getStructure: async (id: string): Promise<PluginCourseStructure> =>
+      this.rpc<PluginCourseStructure, BridgeIdPayload>('courses:getStructure', { id })
   };
 
   public lessons = {
-    list: async <TResult = unknown>(options: BridgeCourseResourcePayload = {}): Promise<TResult> => {
-      return this.rpc<TResult, BridgeCourseResourcePayload>('lessons:list', options);
+    list: async (
+      options: BridgeListPayload & { courseId: string }
+    ): Promise<PluginCursorPage<PluginLessonMetadata>> => {
+      return this.rpc<PluginCursorPage<PluginLessonMetadata>, BridgeListPayload>('lessons:list', options);
     },
-    get: async (id: string): Promise<TPluginApiLessonMetadata> =>
-      this.rpc<TPluginApiLessonMetadata, BridgeIdPayload>('lessons:get', { id }),
-    getContent: async (id: string): Promise<TPluginApiLessonContent> =>
-      this.rpc<TPluginApiLessonContent, BridgeIdPayload>('lessons:getContent', { id })
+    get: async (id: string): Promise<PluginLessonMetadata> =>
+      this.rpc<PluginLessonMetadata, BridgeIdPayload>('lessons:get', { id }),
+    getContent: async (id: string): Promise<PluginLessonContent> =>
+      this.rpc<PluginLessonContent, BridgeIdPayload>('lessons:getContent', { id })
   };
 
   public exercises = {
-    list: async <TResult = unknown>(options: BridgeCourseResourcePayload = {}): Promise<TResult> => {
-      return this.rpc<TResult, BridgeCourseResourcePayload>('exercises:list', options);
+    list: async (
+      options: BridgeListPayload & { courseId: string }
+    ): Promise<PluginCursorPage<PluginExerciseMetadata>> => {
+      return this.rpc<PluginCursorPage<PluginExerciseMetadata>, BridgeListPayload>('exercises:list', options);
     },
-    get: async (id: string): Promise<TPluginApiExerciseMetadata> =>
-      this.rpc<TPluginApiExerciseMetadata, BridgeIdPayload>('exercises:get', { id })
+    get: async (id: string): Promise<PluginExerciseMetadata> =>
+      this.rpc<PluginExerciseMetadata, BridgeIdPayload>('exercises:get', { id })
   };
 
   public progress = {
     getCurrent: async (resource: {
       type: 'lesson' | 'course';
       id: string;
-    }): Promise<TPluginApiLessonProgress | TPluginApiCourseProgress> =>
+    }): Promise<PluginLessonProgress | PluginCourseProgress> =>
       this.rpc(resource.type === 'lesson' ? 'progress:getLesson' : 'progress:getCourse', { id: resource.id }),
-    setCompletion: async (lessonId: string, isComplete: boolean): Promise<TPluginApiLessonProgress> =>
-      this.rpc<TPluginApiLessonProgress, BridgeProgressSetPayload>('progress:setCompletion', { lessonId, isComplete })
+    setCompletion: async (lessonId: string, isComplete: boolean): Promise<PluginLessonProgress> =>
+      this.rpc<PluginLessonProgress, BridgeProgressSetPayload>('progress:setCompletion', { lessonId, isComplete })
   };
 
   public certificates = {
-    list: async (
-      options: BridgeListPayload = {}
-    ): Promise<{ items: TPluginApiIssuedCertificate[]; nextCursor: string | null }> =>
+    list: async (options: BridgeListPayload = {}): Promise<PluginCursorPage<PluginIssuedCertificate>> =>
       this.rpc('certificates:list', options),
-    get: async (id: string): Promise<TPluginApiIssuedCertificate> =>
-      this.rpc<TPluginApiIssuedCertificate, BridgeIdPayload>('certificates:get', { id })
+    get: async (id: string): Promise<PluginIssuedCertificate> =>
+      this.rpc<PluginIssuedCertificate, BridgeIdPayload>('certificates:get', { id })
   };
 
   public landingTemplates = {
@@ -415,10 +404,10 @@ export class ClassroomIOClient {
   };
 
   public certificateTemplates = {
-    list: async (): Promise<TPluginApiCertificateTemplate[]> =>
-      this.rpc<TPluginApiCertificateTemplate[], Record<string, never>>('certificateTemplates:list', {}),
-    getApplied: async (courseId: string): Promise<TPluginApiAppliedCertificateTemplate> =>
-      this.rpc<TPluginApiAppliedCertificateTemplate, BridgeIdPayload>('certificateTemplates:getApplied', {
+    list: async (): Promise<PluginCertificateTemplate[]> =>
+      this.rpc<PluginCertificateTemplate[], Record<string, never>>('certificateTemplates:list', {}),
+    getApplied: async (courseId: string): Promise<PluginAppliedCertificateTemplate> =>
+      this.rpc<PluginAppliedCertificateTemplate, BridgeIdPayload>('certificateTemplates:getApplied', {
         id: courseId
       }),
     apply: async (payload: BridgeCertificateTemplateApplyPayload): Promise<void> => {

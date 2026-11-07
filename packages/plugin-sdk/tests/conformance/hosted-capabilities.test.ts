@@ -55,18 +55,6 @@ describe('Conformance: hosted capabilities', () => {
       targetOrigin: '*',
       context,
       handlers: {
-        onCoursesList: async () => {
-          actions.push('courses:list');
-          return { items: [], nextCursor: null };
-        },
-        onLessonsList: async () => {
-          actions.push('lessons:list');
-          return { items: [], nextCursor: null };
-        },
-        onExercisesList: async () => {
-          actions.push('exercises:list');
-          return { items: [], nextCursor: null };
-        },
         onLandingTemplatePreview: async () => {
           actions.push('landing.templates:preview');
         },

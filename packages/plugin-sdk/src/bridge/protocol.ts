@@ -83,11 +83,6 @@ export interface BridgeToastPayload {
   variant?: 'info' | 'success' | 'warning' | 'error';
 }
 
-export interface BridgeModalOpenPayload {
-  title: string;
-  entrypoint: string;
-}
-
 export interface BridgeResizePayload {
   height: number;
 }
@@ -140,10 +135,6 @@ export interface BridgeCoursesListPayload {
   cursor?: string;
   limit?: number;
   publishedOnly?: boolean;
-}
-
-export interface BridgeCourseResourcePayload {
-  courseId?: string;
 }
 
 export interface BridgeIdPayload {
@@ -227,10 +218,6 @@ export function isValidBridgeRpcPayload(action: string, payload: unknown): boole
         payload.message.length > 0 &&
         (payload.variant === undefined || ['info', 'success', 'warning', 'error'].includes(String(payload.variant)))
       );
-    case 'ui:modal:open':
-      return typeof payload.title === 'string' && typeof payload.entrypoint === 'string';
-    case 'ui:modal:close':
-      return isEmptyRecord(payload);
     case 'ui:resize':
       return typeof payload.height === 'number' && Number.isFinite(payload.height);
     case 'navigation:open':
@@ -273,8 +260,18 @@ export function isValidBridgeRpcPayload(action: string, payload: unknown): boole
         (payload.publishedOnly === undefined || typeof payload.publishedOnly === 'boolean')
       );
     case 'lessons:list':
+      return (
+        typeof payload.courseId === 'string' &&
+        (payload.cursor === undefined || typeof payload.cursor === 'string') &&
+        (payload.limit === undefined || Number.isInteger(payload.limit))
+      );
     case 'exercises:list':
-      return payload.courseId === undefined || typeof payload.courseId === 'string';
+      return (
+        typeof payload.courseId === 'string' &&
+        (payload.lessonId === undefined || typeof payload.lessonId === 'string') &&
+        (payload.cursor === undefined || typeof payload.cursor === 'string') &&
+        (payload.limit === undefined || Number.isInteger(payload.limit))
+      );
     case 'courses:get':
     case 'courses:getStructure':
     case 'lessons:get':

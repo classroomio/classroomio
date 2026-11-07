@@ -1397,10 +1397,6 @@ importers:
         version: 4.2.1
 
   packages/plugin-sdk:
-    dependencies:
-      '@cio/utils':
-        specifier: workspace:*
-        version: link:../utils
     devDependencies:
       '@cio/tsconfig':
         specifier: workspace:*

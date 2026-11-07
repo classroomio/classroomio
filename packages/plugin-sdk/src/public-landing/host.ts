@@ -1,4 +1,4 @@
-import type { PublicLandingPageViewModel } from '@cio/utils/validation/organization';
+import type { PublicLandingPageViewModel } from './types';
 import { DEFAULT_LIGHT_THEME_V1, type PluginThemeV1 } from '../bridge/protocol';
 import {
   PUBLIC_LANDING_RENDERER_PROTOCOL_VERSION,

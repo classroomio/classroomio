@@ -164,12 +164,16 @@ describe('MessageChannel UI host bridge', () => {
       targetOrigin: 'https://plugin.example.com',
       context: mockContext,
       handlers: {
-        onCoursesList: async () => {
-          courseListingRequested = true;
-          return { items: [{ id: 'course_1', title: 'Course one' }] };
-        },
         onStorageGet: async ({ key }) => (key === 'setting' ? 'dark' : null),
-        onStorageSet: async () => {}
+        onStorageSet: async () => {},
+        onDataRequest: async (action) => {
+          if (action === 'courses:list') {
+            courseListingRequested = true;
+            return { items: [], nextCursor: null };
+          }
+
+          return null;
+        }
       }
     });
     const client = new ClassroomIOClient();
@@ -177,8 +181,8 @@ describe('MessageChannel UI host bridge', () => {
     host.attachPort(channel.port1);
     client.attachPort(channel.port2, mockContext);
 
-    const result = await client.courses.list<{ items: { id: string; title: string }[] }>();
-    expect(result).toEqual({ items: [{ id: 'course_1', title: 'Course one' }] });
+    const result = await client.courses.list();
+    expect(result).toEqual({ items: [], nextCursor: null });
     expect(courseListingRequested).toBe(true);
 
     await expect(client.storage.get('setting')).resolves.toBe('dark');

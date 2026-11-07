@@ -39,9 +39,9 @@ archive.
 ClassroomIO uses a PR-first, source-controlled release pipeline:
 
 1. Build and test your plugin locally (`npm run build`, `npm run pack`, `npm run seed`).
-2. Fork `classroomio-plugins` on GitHub.
+2. Fork [`classroomio/plugins`](https://github.com/classroomio/plugins) on GitHub.
 3. Add your plugin source and register it in `registry/plugins.json`.
-4. Open a pull request against `classroomio-plugins`.
+4. Open a pull request against `classroomio/plugins`.
 5. Maintainers review the source code, permissions, network allowlists, and untrusted PR CI build artifacts.
 6. Once merged to `main`, trusted GitHub Actions release CI compiles the deterministic artifact, uploads immutable files to R2, and registers the release with the ClassroomIO API via `POST /internal/plugin-releases`.
 
@@ -55,9 +55,9 @@ There is no developer-uploaded quarantine bucket, contributor-facing publish end
 | `CLASSROOMIO_DEV_TOKEN` | CLI | Organization API key with `plugin:development`, used only by `dev`. |
 | `CLASSROOMIO_ORG_ID` | CLI | Target organization for `dev`; `--org` overrides it. |
 | `PLUGIN_ARTIFACTS_PATH` | API host, local only | Local development artifact root. |
-| `PLUGIN_API_TOKEN_SECRET` | API host, production | Independent secret used for plugin backend access tokens; never expose it to plugin code or CLI users. |
 | `PLUGIN_ASSET_BUCKET` | API host, production | Production object-storage bucket for approved artifacts. |
 | `PLUGIN_ASSET_ORIGIN` | API host, production | Production CDN origin for approved artifacts. |
 | `PLUGIN_RELEASE_DEPLOY_TOKEN` | API host & Release CI | Secret token for trusted CI release registration via `POST /internal/plugin-releases`. |
 
-The plugin backend SDK also uses `CLASSROOMIO_ACCESS_TOKEN`, `CLASSROOMIO_CLIENT_ID`, and `CLASSROOMIO_CLIENT_SECRET` for host API access.
+Plugins do not receive backend credentials or ClassroomIO access tokens. Hosted data and persistent
+plugin storage are available only through the iframe bridge and the installation's granted scopes.

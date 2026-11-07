@@ -1,4 +1,4 @@
-import type { PublicLandingPageViewModel } from '@cio/utils/validation/organization';
+import type { PublicLandingPageViewModel } from './types';
 import {
   PUBLIC_LANDING_RENDERER_PROTOCOL_VERSION,
   type PublicLandingRendererContext,

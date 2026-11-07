@@ -1,6 +1,5 @@
 import {
   type BridgeHandshakeInit,
-  type BridgeModalOpenPayload,
   type BridgeResizePayload,
   type BridgeNavigationOpenPayload,
   type BridgeRpcRequest,
@@ -13,8 +12,6 @@ import {
   type BridgeStorageSetPayload,
   type BridgeStorageDeletePayload,
   type BridgeStorageListPayload,
-  type BridgeCoursesListPayload,
-  type BridgeCourseResourcePayload,
   type BridgeTemplateSelectionPayload,
   type BridgeCertificateTemplateApplyPayload,
   BRIDGE_MAX_REQUEST_BYTES,
@@ -27,8 +24,6 @@ import {
 
 export interface PluginBridgeHostHandlers {
   onToast?: (payload: BridgeToastPayload) => Promise<void>;
-  onOpenModal?: (payload: BridgeModalOpenPayload) => Promise<void>;
-  onCloseModal?: () => Promise<void>;
   onResize?: (payload: BridgeResizePayload) => Promise<void>;
   onNavigate?: (payload: BridgeNavigationOpenPayload) => Promise<void>;
   onSetDirty?: (payload: BridgeSetDirtyPayload) => Promise<void>;
@@ -40,9 +35,6 @@ export interface PluginBridgeHostHandlers {
   onStorageSet?: (payload: BridgeStorageSetPayload) => Promise<unknown>;
   onStorageDelete?: (payload: BridgeStorageDeletePayload) => Promise<boolean | void>;
   onStorageList?: (payload: BridgeStorageListPayload) => Promise<unknown>;
-  onCoursesList?: (payload: BridgeCoursesListPayload) => Promise<unknown>;
-  onLessonsList?: (payload: BridgeCourseResourcePayload) => Promise<unknown>;
-  onExercisesList?: (payload: BridgeCourseResourcePayload) => Promise<unknown>;
   onLandingTemplatePreview?: (payload: BridgeTemplateSelectionPayload) => Promise<unknown>;
   onLandingTemplateSelect?: (payload: BridgeTemplateSelectionPayload) => Promise<unknown>;
   onCertificateTemplateApply?: (payload: BridgeCertificateTemplateApplyPayload) => Promise<unknown>;
@@ -80,9 +72,6 @@ export class PluginBridgeHost {
     return this.nonce;
   }
 
-  /**
-   * For headless testing or manual connection with an existing port
-   */
   public attachPort(port: MessagePort) {
     this.port = port;
     this.port.onmessage = this.handlePortMessage.bind(this);
@@ -120,7 +109,6 @@ export class PluginBridgeHost {
 
     const data = event.data;
 
-    // Handle handshake acknowledgment
     if (data?.type === 'CIO_BRIDGE_HANDSHAKE_ACK' && data.nonce === this.nonce) {
       this.port.postMessage({
         type: 'CIO_BRIDGE_CONTEXT_INIT',
@@ -130,7 +118,6 @@ export class PluginBridgeHost {
       return;
     }
 
-    // Handle RPC requests from plugin
     if (isBridgeRpcRequest(data)) {
       if (JSON.stringify(data).length > BRIDGE_MAX_REQUEST_BYTES) return;
       await this.dispatchRpc(data);
@@ -152,19 +139,6 @@ export class PluginBridgeHost {
           const payload = request.payload as BridgeToastPayload;
           if (this.options.handlers.onToast) {
             await this.options.handlers.onToast(payload);
-          }
-          break;
-        }
-        case 'ui:modal:open': {
-          const payload = request.payload as BridgeModalOpenPayload;
-          if (this.options.handlers.onOpenModal) {
-            await this.options.handlers.onOpenModal(payload);
-          }
-          break;
-        }
-        case 'ui:modal:close': {
-          if (this.options.handlers.onCloseModal) {
-            await this.options.handlers.onCloseModal();
           }
           break;
         }
@@ -253,27 +227,6 @@ export class PluginBridgeHost {
           }
           break;
         }
-        case 'courses:list': {
-          if (!this.options.handlers.onCoursesList) {
-            throw { code: 'NOT_SUPPORTED', message: 'Course listing is unavailable in this surface' };
-          }
-          resultData = await this.options.handlers.onCoursesList(request.payload as BridgeCoursesListPayload);
-          break;
-        }
-        case 'lessons:list': {
-          if (!this.options.handlers.onLessonsList) {
-            throw { code: 'NOT_SUPPORTED', message: 'Lesson listing is unavailable in this surface' };
-          }
-          resultData = await this.options.handlers.onLessonsList(request.payload as BridgeCourseResourcePayload);
-          break;
-        }
-        case 'exercises:list': {
-          if (!this.options.handlers.onExercisesList) {
-            throw { code: 'NOT_SUPPORTED', message: 'Exercise listing is unavailable in this surface' };
-          }
-          resultData = await this.options.handlers.onExercisesList(request.payload as BridgeCourseResourcePayload);
-          break;
-        }
         case 'landing.templates:preview': {
           if (!this.options.handlers.onLandingTemplatePreview) {
             throw { code: 'NOT_SUPPORTED', message: 'Landing template previews are unavailable in this surface' };
@@ -307,10 +260,13 @@ export class PluginBridgeHost {
         }
         case 'identity:getCurrent':
         case 'organization:getProfile':
+        case 'courses:list':
         case 'courses:get':
         case 'courses:getStructure':
+        case 'lessons:list':
         case 'lessons:get':
         case 'lessons:getContent':
+        case 'exercises:list':
         case 'exercises:get':
         case 'progress:getLesson':
         case 'progress:getCourse':
