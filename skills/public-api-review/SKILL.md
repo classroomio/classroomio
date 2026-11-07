@@ -71,6 +71,8 @@ The API reference shows field, parameter and response descriptions as one line o
 
 ## Check security and operational failure modes
 
+Load [`../security-audit/SKILL.md`](../security-audit/SKILL.md) in guidance mode for the trust-boundary review, and use the checks below as the ClassroomIO-specific minimum.
+
 - Prevent IDOR/BOLA by checking organization and actor access for every resource operation.
 - Do not trust organization IDs, roles, member IDs, or permissions supplied by the caller.
 - Rate-limit expensive and mutating operations.
