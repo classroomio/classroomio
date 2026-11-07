@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { Hono } from '@api/utils/hono';
+import { publicApiCors } from '@api/middlewares/cors';
 import { getPluginById, getPluginVersion } from '@cio/db/queries/plugin';
 
 const MIME_MAP: Record<string, string> = {
@@ -69,72 +70,74 @@ function resolveArtifactDirectory(pluginId: string, version: string, digest: str
   return null;
 }
 
-export const pluginAssetsRouter = new Hono().get('/:pluginId/:version/:digest/:assetPath{.+}', async (c) => {
-  const pluginId = c.req.param('pluginId');
-  const version = c.req.param('version');
-  const digest = c.req.param('digest');
-  const assetPath = c.req.param('assetPath');
+export const pluginAssetsRouter = new Hono()
+  .use('*', publicApiCors)
+  .get('/:pluginId/:version/:digest/:assetPath{.+}', async (c) => {
+    const pluginId = c.req.param('pluginId');
+    const version = c.req.param('version');
+    const digest = c.req.param('digest');
+    const assetPath = c.req.param('assetPath');
 
-  if (!pluginId || !/^[a-z0-9]+(\.[a-z0-9_-]+)+$/.test(pluginId)) {
-    return c.text('Invalid plugin identifier', 400);
-  }
+    if (!pluginId || !/^[a-z0-9]+(\.[a-z0-9_-]+)+$/.test(pluginId)) {
+      return c.text('Invalid plugin identifier', 400);
+    }
 
-  if (!assetPath || assetPath.includes('..') || assetPath.startsWith('/')) {
-    return c.text('Invalid asset path', 400);
-  }
+    if (!assetPath || assetPath.includes('..') || assetPath.startsWith('/')) {
+      return c.text('Invalid asset path', 400);
+    }
 
-  const pluginRecord = await getPluginById(pluginId);
-  if (!pluginRecord || pluginRecord.status === 'revoked') {
-    return c.text('Plugin artifact not found', 404);
-  }
+    const pluginRecord = await getPluginById(pluginId);
+    if (!pluginRecord || pluginRecord.status === 'revoked') {
+      return c.text('Plugin artifact not found', 404);
+    }
 
-  const versionRecord = await getPluginVersion(pluginId, version);
-  if (
-    !versionRecord ||
-    versionRecord.reviewStatus !== 'approved' ||
-    !versionRecord.artifactDigest ||
-    versionRecord.artifactDigest !== digest
-  ) {
-    return c.text('Plugin artifact not found', 404);
-  }
+    const versionRecord = await getPluginVersion(pluginId, version);
+    if (
+      !versionRecord ||
+      versionRecord.reviewStatus !== 'approved' ||
+      !versionRecord.artifactDigest ||
+      versionRecord.artifactDigest !== digest
+    ) {
+      return c.text('Plugin artifact not found', 404);
+    }
 
-  if (process.env.NODE_ENV === 'production') {
-    return c.text('Plugin artifacts must be served from PLUGIN_ASSET_ORIGIN in production', 404);
-  }
+    if (process.env.NODE_ENV === 'production') {
+      return c.text('Plugin artifacts must be served from PLUGIN_ASSET_ORIGIN in production', 404);
+    }
 
-  const artifactDirectory = resolveArtifactDirectory(pluginId, version, digest);
-  if (!artifactDirectory) {
-    return c.text('Plugin not found', 404);
-  }
+    const artifactDirectory = resolveArtifactDirectory(pluginId, version, digest);
+    if (!artifactDirectory) {
+      return c.text('Plugin not found', 404);
+    }
 
-  const normalizedPluginDir = path.resolve(artifactDirectory);
-  const fullPath = path.resolve(normalizedPluginDir, assetPath);
+    const normalizedPluginDir = path.resolve(artifactDirectory);
+    const fullPath = path.resolve(normalizedPluginDir, assetPath);
 
-  if (!fullPath.startsWith(`${normalizedPluginDir}${path.sep}`)) {
-    return c.text('Forbidden asset path', 403);
-  }
+    if (!fullPath.startsWith(`${normalizedPluginDir}${path.sep}`)) {
+      return c.text('Forbidden asset path', 403);
+    }
 
-  if (!existsSync(fullPath)) {
-    return c.text('Asset not found', 404);
-  }
+    if (!existsSync(fullPath)) {
+      return c.text('Asset not found', 404);
+    }
 
-  try {
-    const fileBytes = await readFile(fullPath);
-    const ext = path.extname(fullPath).toLowerCase();
-    const contentType = MIME_MAP[ext] ?? 'application/octet-stream';
-    const csp = buildPluginCsp(versionRecord.manifest as { networkAccess?: { allowedDomains?: string[] } });
+    try {
+      const fileBytes = await readFile(fullPath);
+      const ext = path.extname(fullPath).toLowerCase();
+      const contentType = MIME_MAP[ext] ?? 'application/octet-stream';
+      const csp = buildPluginCsp(versionRecord.manifest as { networkAccess?: { allowedDomains?: string[] } });
 
-    return new Response(fileBytes, {
-      status: 200,
-      headers: {
-        'Content-Type': contentType,
-        'X-Content-Type-Options': 'nosniff',
-        'Content-Security-Policy': csp,
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=31536000, immutable'
-      }
-    });
-  } catch (error) {
-    return c.text('Failed to read asset', 500);
-  }
-});
+      return new Response(fileBytes, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'X-Content-Type-Options': 'nosniff',
+          'Content-Security-Policy': csp,
+          'Access-Control-Allow-Origin': '*',
+          'Cache-Control': 'public, max-age=31536000, immutable'
+        }
+      });
+    } catch (error) {
+      return c.text('Failed to read asset', 500);
+    }
+  });
