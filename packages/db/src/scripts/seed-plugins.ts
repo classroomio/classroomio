@@ -36,6 +36,10 @@ async function main() {
     process.env.PLUGINS_DEV_PATH,
     path.resolve(process.cwd(), '../plugins'),
     path.resolve(process.cwd(), '../../plugins'),
+    path.resolve(process.cwd(), '../../../plugins'),
+    path.resolve(process.cwd(), '../classroomio-plugins'),
+    path.resolve(process.cwd(), '../../classroomio-plugins'),
+    path.resolve(process.cwd(), '../../../classroomio-plugins'),
     path.resolve(process.cwd(), 'plugins')
   ].filter(Boolean) as string[];
 
