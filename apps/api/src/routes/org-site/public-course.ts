@@ -65,8 +65,8 @@ export const publicCourseRouter = new Hono()
    * Anonymous-safe. Verifies that the public lesson exposes an HLS asset
    * and mints the short-lived `cio_hls` cookie the tenant-router Worker
    * (prod) and API streaming route (local) both validate before serving
-   * segments. Caller is expected to call this once per lesson page load
-   * before attaching hls.js.
+   * segments. The player calls it before attaching hls.js and again
+   * before `expiresInSeconds` elapses to keep long videos playing.
    */
   .post('/:courseSlug/item/:itemSlug/hls-cookie', zValidator('param', ZPublicCourseItemParam), async (c) => {
     try {
@@ -85,7 +85,10 @@ export const publicCourseRouter = new Hono()
         maxAge: result.maxAgeSeconds
       });
 
-      return c.json({ success: true as const, data: { expiresAt: result.expiresAt } });
+      return c.json({
+        success: true as const,
+        data: { expiresAt: result.expiresAt, expiresInSeconds: result.maxAgeSeconds }
+      });
     } catch (error) {
       return handleError(c, error, 'Failed to issue HLS cookie');
     }
