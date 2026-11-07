@@ -119,7 +119,10 @@ export async function setLinkInviteRevoked(
 export async function getOrgLinkInviteWithOrg(
   dbClient: DbOrTxClient,
   tokenHash: string
-): Promise<{ invite: TOrganizationInvite; organization: { id: string; name: string; siteName: string } } | null> {
+): Promise<{
+  invite: TOrganizationInvite;
+  organization: { id: string; name: string; siteName: string; avatarUrl: string | null };
+} | null> {
   try {
     const [row] = await dbClient
       .select({
@@ -127,7 +130,8 @@ export async function getOrgLinkInviteWithOrg(
         organization: {
           id: schema.organization.id,
           name: schema.organization.name,
-          siteName: schema.organization.siteName
+          siteName: schema.organization.siteName,
+          avatarUrl: schema.organization.avatarUrl
         }
       })
       .from(schema.organizationInvite)
