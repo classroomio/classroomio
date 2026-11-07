@@ -63,8 +63,9 @@ function buildOrderedTrackableItems(
 ): Omit<TrackableContentItem, 'isComplete'>[] {
   const content = buildCourseContent(contentRows, isContentGroupingEnabled);
   const orderedItems = flattenNavigableItems(content);
+  const requiredItems = orderedItems.filter((item) => item.completionPolicy !== 'none');
 
-  return toTrackableContentItems(orderedItems as CourseContentItem[]).map(({ id, type, title }) => ({
+  return toTrackableContentItems(requiredItems).map(({ id, type, title }) => ({
     id,
     type,
     title

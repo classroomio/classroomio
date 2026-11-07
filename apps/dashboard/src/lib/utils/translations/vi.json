@@ -1889,7 +1889,8 @@
                 "passed": "Đạt",
                 "not_passed": "Không đạt",
                 "no_submission_title": "Người dùng này chưa nộp bài tập này.",
-                "no_submission_description": "Bài nộp sẽ hiển thị ở đây sau khi sinh viên này hoàn thành bài tập."
+                "no_submission_description": "Bài nộp sẽ hiển thị ở đây sau khi sinh viên này hoàn thành bài tập.",
+                "optional": "Không bắt buộc"
               },
               "summary": {
                 "heading": "Tóm tắt",
@@ -2377,7 +2378,9 @@
               "save_continue": "Lưu và tiếp tục",
               "question_fallback": "Câu hỏi {number}",
               "zero_points_field": "Hoàn thành vượt qua cần có ít nhất một điểm."
-            }
+            },
+            "settings_completion_none": "Không có - tùy chọn",
+            "settings_completion_none_helper": "Bài tập này không cản trở tiến trình của khóa học và không bắt buộc phải hoàn thành khóa học hoặc lấy chứng chỉ."
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",

@@ -81,8 +81,9 @@ export type ContentProgress = {
 };
 
 export function getContentItemsProgress(items: ContentItem[]): ContentProgress {
-  const lessons = items.filter((item) => item.type === CourseContentType.Lesson);
-  const exercises = items.filter((item) => item.type === CourseContentType.Exercise);
+  const progressItems = items.filter((item) => item.completionPolicy !== 'none');
+  const lessons = progressItems.filter((item) => item.type === CourseContentType.Lesson);
+  const exercises = progressItems.filter((item) => item.type === CourseContentType.Exercise);
   const lessonsComplete = lessons.filter((item) => item.isComplete).length;
   const exercisesComplete = exercises.filter((item) => item.isComplete).length;
   const total = lessons.length + exercises.length;
@@ -98,6 +99,12 @@ export function getContentItemsProgress(items: ContentItem[]): ContentProgress {
     completed,
     percent
   };
+}
+
+/** Counts all lessons and exercises, including optional items. */
+export function getContentItemCount(items: ContentItem[]): number {
+  return items.filter((item) => item.type === CourseContentType.Lesson || item.type === CourseContentType.Exercise)
+    .length;
 }
 
 export function getCourseProgress(course: Course | null): ContentProgress {

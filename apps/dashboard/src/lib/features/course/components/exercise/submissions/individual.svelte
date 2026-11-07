@@ -212,8 +212,14 @@
   }
 
   function getAttemptPassLabel(submission: SubmissionListItem & { gradingState?: string | null }) {
+    const completionPolicy = $questionnaire.completionPolicy ?? 'submitted';
+
+    if (completionPolicy === 'none') {
+      return t.get('course.navItem.lessons.exercises.all_exercises.analytics.individual.optional');
+    }
+
     return didAttemptCompleteExercise(submission)
-      ? ($questionnaire.completionPolicy ?? 'submitted') === 'submitted'
+      ? completionPolicy === 'submitted'
         ? t.get('course.navItem.lessons.exercises.all_exercises.analytics.individual.counts_as_complete')
         : t.get('course.navItem.lessons.exercises.all_exercises.analytics.individual.passed')
       : t.get('course.navItem.lessons.exercises.all_exercises.analytics.individual.not_passed');

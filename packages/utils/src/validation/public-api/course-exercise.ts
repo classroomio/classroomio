@@ -275,7 +275,7 @@ export const ZPublicApiUpdateCourseExercise = z
         'Same rules as questions; a new section may take a UUID you choose, so new questions can reference it by exerciseSectionId.'
       ),
     sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional(),
-    completionPolicy: z.enum(['submitted', 'passed']).optional(),
+    completionPolicy: z.enum(['submitted', 'passed', 'none']).optional(),
     passThreshold: z.number().int().min(0).max(100).optional()
   })
   .refine((data) => Object.values(data).some((value) => value !== undefined), {

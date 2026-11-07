@@ -3282,7 +3282,8 @@
                 "passed": "Geçildi",
                 "not_passed": "Geçilmedi",
                 "no_submission_title": "Bu kullanıcının bu alıştırma için gönderimi yok",
-                "no_submission_description": "Gönderimler, bu öğrenci egzersizi tamamladığında burada görünecek."
+                "no_submission_description": "Gönderimler, bu öğrenci egzersizi tamamladığında burada görünecek.",
+                "optional": "İsteğe bağlı"
               },
               "submissions": "Gönderimler",
               "loading_submissions": "Lyükleniyor gönderimler...",
@@ -3611,7 +3612,9 @@
                   "max_characters_placeholder": "Maksimum karakter"
                 }
               }
-            }
+            },
+            "settings_completion_none": "Yok — isteğe bağlı",
+            "settings_completion_none_helper": "Bu alıştırma kursun ilerlemesini engellemez ve kursun tamamlanması veya sertifikalar için gerekli değildir."
           }
         },
         "disabled": "Özellik devre dışı",

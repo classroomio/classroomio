@@ -14,6 +14,7 @@ export type CourseContentItemRow = {
   sectionId: string | null;
   isUnlocked: boolean | null;
   isComplete: boolean | null;
+  completionPolicy: string | null;
   lessonAt: string | null;
   callUrl: string | null;
   sessionDurationMinutes: number | null;
@@ -86,6 +87,7 @@ export async function getCourseContentStructure(
         NULL::uuid AS "sectionId",
         NULL::boolean AS "isUnlocked",
         NULL::boolean AS "isComplete",
+        NULL::text AS "completionPolicy",
         NULL::timestamptz AS "lessonAt",
         NULL::text AS "callUrl",
         NULL::int AS "sessionDurationMinutes",
@@ -110,6 +112,7 @@ export async function getCourseContentStructure(
         section_id AS "sectionId",
         is_unlocked AS "isUnlocked",
         false AS "isComplete",
+        completion_policy AS "completionPolicy",
         lesson_at AS "lessonAt",
         call_url AS "callUrl",
         session_duration_minutes AS "sessionDurationMinutes",
@@ -138,6 +141,7 @@ export async function getCourseContentStructure(
           AS "sectionId",
         exercise.is_unlocked AS "isUnlocked",
         false AS "isComplete",
+        exercise.completion_policy AS "completionPolicy",
         NULL::timestamptz AS "lessonAt",
         NULL::text AS "callUrl",
         NULL::int AS "sessionDurationMinutes",
@@ -166,6 +170,7 @@ export async function getCourseContentStructure(
         COALESCE(exercise.section_id, lesson.section_id) AS "sectionId",
         exercise.is_unlocked AS "isUnlocked",
         false AS "isComplete",
+        exercise.completion_policy AS "completionPolicy",
         NULL::timestamptz AS "lessonAt",
         NULL::text AS "callUrl",
         NULL::int AS "sessionDurationMinutes",

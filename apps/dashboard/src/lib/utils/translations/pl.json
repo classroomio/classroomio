@@ -1889,7 +1889,8 @@
                 "passed": "Zaliczone",
                 "not_passed": "Niezaliczone",
                 "no_submission_title": "Ten użytkownik nie ma żadnych prac do tego ćwiczenia.",
-                "no_submission_description": "Prace pojawią się tutaj, gdy uczeń ukończy ćwiczenie."
+                "no_submission_description": "Prace pojawią się tutaj, gdy uczeń ukończy ćwiczenie.",
+                "optional": "Fakultatywny"
               },
               "summary": {
                 "heading": "Podsumowanie",
@@ -2377,7 +2378,9 @@
               "save_continue": "Zapisz i kontynuuj",
               "question_fallback": "Pytanie {number}",
               "zero_points_field": "Zaliczenie pozytywne wymaga posiadania co najmniej jednego punktu."
-            }
+            },
+            "settings_completion_none": "Brak — opcjonalne",
+            "settings_completion_none_helper": "To ćwiczenie nie blokuje postępu w kursie i nie jest wymagane do ukończenia kursu ani uzyskania certyfikatów."
           },
           "new_exercise_modal": {
             "heading": "Nowe ćwiczenie",

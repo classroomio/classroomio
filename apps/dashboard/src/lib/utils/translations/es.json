@@ -1889,7 +1889,8 @@
                 "passed": "Aprobado",
                 "not_passed": "No aprobado",
                 "no_submission_title": "Este usuario no ha enviado ninguna respuesta para este ejercicio.",
-                "no_submission_description": "Las respuestas aparecerán aquí una vez que este estudiante complete el ejercicio."
+                "no_submission_description": "Las respuestas aparecerán aquí una vez que este estudiante complete el ejercicio.",
+                "optional": "Opcional"
               },
               "summary": {
                 "heading": "Resumen",
@@ -2377,7 +2378,9 @@
               "save_continue": "Guardar y continuar",
               "question_fallback": "Pregunta {number}",
               "zero_points_field": "La finalización aprobada necesita al menos un punto disponible."
-            }
+            },
+            "settings_completion_none": "Ninguno: opcional",
+            "settings_completion_none_helper": "Este ejercicio no bloquea la progresión del curso y no es necesario para completar el curso ni para obtener certificados."
           },
           "new_exercise_modal": {
             "heading": "Nuevo ejercicio",

@@ -34,6 +34,7 @@
   import { profile } from '$lib/utils/store/user';
   import {
     getContentEditRoute,
+    getContentItemCount,
     getContentItemsProgress,
     getContentRoute,
     getCourseContent
@@ -445,9 +446,9 @@
             {@render contentItemRow(entry.item)}
           {:else}
             {@const section = entry.section}
-            {@const sectionProgress = getContentItemsProgress(
-              entry.items.flatMap((child) => (child.kind === 'item' ? [child.item] : []))
-            )}
+            {@const sectionItems = entry.items.flatMap((child) => (child.kind === 'item' ? [child.item] : []))}
+            {@const sectionProgress = getContentItemsProgress(sectionItems)}
+            {@const sectionItemCount = getContentItemCount(sectionItems)}
             {@const sectionOpen = isSectionOpen(section.id)}
             <Collapsible.Root
               open={sectionOpen}
@@ -487,8 +488,8 @@
                         <span class="min-w-0 flex-1 truncate">{section.title}</span>
 
                         <div class="ml-auto flex items-center gap-1">
-                          {#if sectionProgress.total > 0}
-                            {#if isStudent}
+                          {#if isStudent}
+                            {#if sectionProgress.total > 0}
                               <span
                                 class="shrink-0 text-[11px] font-medium tabular-nums {sectionProgress.completed ===
                                 sectionProgress.total
@@ -497,11 +498,11 @@
                               >
                                 {formatSectionCompletionLabel(sectionProgress.completed, sectionProgress.total)}
                               </span>
-                            {:else}
-                              <span class="ui:text-muted-foreground shrink-0 text-[11px] font-medium tabular-nums">
-                                {sectionProgress.total}
-                              </span>
                             {/if}
+                          {:else if sectionItemCount > 0}
+                            <span class="ui:text-muted-foreground shrink-0 text-[11px] font-medium tabular-nums">
+                              {sectionItemCount}
+                            </span>
                           {/if}
                           {#if canManageContent}
                             <div

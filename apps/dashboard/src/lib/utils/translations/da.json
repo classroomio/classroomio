@@ -1889,7 +1889,8 @@
                 "passed": "Bestået",
                 "not_passed": "Ikke bestået",
                 "no_submission_title": "Denne bruger har ingen afleveringer til denne øvelse",
-                "no_submission_description": "Afleveringer vises her, når denne elev har gennemført øvelsen."
+                "no_submission_description": "Afleveringer vises her, når denne elev har gennemført øvelsen.",
+                "optional": "Valgfri"
               },
               "summary": {
                 "heading": "Resumé",
@@ -2377,7 +2378,9 @@
               "save_continue": "Gem og fortsæt",
               "question_fallback": "Spørgsmål {number}",
               "zero_points_field": "Bestået afslutning kræver mindst et tilgængeligt point."
-            }
+            },
+            "settings_completion_none": "Ingen – valgfrit",
+            "settings_completion_none_helper": "Denne øvelse blokerer ikke for kursusforløb og er ikke påkrævet for at gennemføre kursus eller certifikater."
           },
           "new_exercise_modal": {
             "heading": "Ny øvelse",

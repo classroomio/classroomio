@@ -22,9 +22,12 @@
   } = $props();
 
   let exercises = $derived(userCourseAnalytics.userExercisesStats);
-  let completedExercises = $derived(exercises.filter((exercise) => exercise.isCompleted).length);
+  let completedExercises = $derived(userCourseAnalytics.completedExercises);
   let totalExercises = $derived(exercises.length);
-  let exerciseCompletion = $derived(totalExercises === 0 ? 0 : Math.round((completedExercises / totalExercises) * 100));
+  let trackableExercises = $derived(userCourseAnalytics.totalExercises);
+  let exerciseCompletion = $derived(
+    trackableExercises === 0 ? 0 : Math.round((completedExercises / trackableExercises) * 100)
+  );
 
   function scoreLabel(exercise: (typeof exercises)[number]): string {
     if (exercise.status !== STATUS.GRADED) return `—/${exercise.totalPoints}`;
@@ -48,11 +51,11 @@
       <h2 class="text-sm font-semibold">{$t('analytics.exercises')}</h2>
       <Badge variant="outline" class="ui:tabular-nums">{totalExercises}</Badge>
     </div>
-    {#if totalExercises > 0}
+    {#if trackableExercises > 0}
       <div class="flex w-full items-center gap-2 sm:w-48">
         <Progress value={exerciseCompletion} class="ui:h-1.5" />
         <span class="ui:tabular-nums ui:text-muted-foreground w-12 shrink-0 text-right text-xs">
-          {completedExercises}/{totalExercises}
+          {completedExercises}/{trackableExercises}
         </span>
       </div>
     {/if}

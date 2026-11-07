@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, eq, inArray, or } from 'drizzle-orm';
+import { and, eq, inArray, or, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 import { submissionMeetsCompletionPolicySql } from './progression';
@@ -42,7 +42,8 @@ export async function getBatchLessonCompletionsForCourse(
         and(
           eq(schema.lesson.courseId, courseId),
           eq(schema.lessonCompletion.isComplete, true),
-          inArray(schema.lessonCompletion.profileId, profileIds)
+          inArray(schema.lessonCompletion.profileId, profileIds),
+          sql`${schema.lesson.completionPolicy} != 'none'`
         )
       );
 
@@ -112,12 +113,20 @@ export async function getBatchStudentCourseMembership(
 export async function getCourseTrackableContentCounts(courseId: string): Promise<CourseTrackableContentCounts> {
   try {
     const [lessons, exercises] = await Promise.all([
-      db.select({ id: schema.lesson.id }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId)),
+      db
+        .select({ id: schema.lesson.id })
+        .from(schema.lesson)
+        .where(and(eq(schema.lesson.courseId, courseId), sql`${schema.lesson.completionPolicy} != 'none'`)),
       db
         .select({ id: schema.exercise.id })
         .from(schema.exercise)
         .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-        .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)))
+        .where(
+          and(
+            or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+            sql`${schema.exercise.completionPolicy} != 'none'`
+          )
+        )
     ]);
 
     const lessonIds = lessons.map((lesson) => lesson.id);
@@ -169,7 +178,11 @@ export async function getBatchCompletedExerciseIdsForMembers(
         )
       )
       .where(
-        and(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)), completionCondition)
+        and(
+          or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+          sql`${schema.exercise.completionPolicy} != 'none'`,
+          completionCondition
+        )
       );
 
     for (const row of rows) {

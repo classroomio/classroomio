@@ -3274,7 +3274,8 @@
                 "passed": "Superato",
                 "not_passed": "Non superato",
                 "no_submission_title": "Questo utente non ha invii per questo esercizio",
-                "no_submission_description": "I contributi verranno visualizzati qui una volta che lo studente avrà completato l'esercizio."
+                "no_submission_description": "I contributi verranno visualizzati qui una volta che lo studente avrà completato l'esercizio.",
+                "optional": "Facoltativo"
               },
               "submissions": "Presentazioni",
               "loading_submissions": "Caricamento invii...",
@@ -3603,7 +3604,9 @@
                   "max_characters_placeholder": "Caratteri massimi"
                 }
               }
-            }
+            },
+            "settings_completion_none": "Nessuno: facoltativo",
+            "settings_completion_none_helper": "Questo esercizio non blocca la progressione del corso e non è richiesto per il completamento del corso o per i certificati."
           }
         },
         "disabled": "La funzionalità è disabilitata",

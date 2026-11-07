@@ -155,10 +155,10 @@ export const updateExerciseParam = z
     isUnlocked: z.boolean().optional().describe('Whether the exercise is unlocked for students.'),
     allowMultipleAttempts: z.boolean().optional().describe('Whether students can re-take the exercise.'),
     completionPolicy: z
-      .enum(['submitted', 'passed'])
+      .enum(['submitted', 'passed', 'none'])
       .optional()
       .describe(
-        '"submitted" means any submitted attempt completes the exercise. "passed" means the student must meet or exceed passThreshold before the exercise is considered complete.'
+        '"submitted" means any submitted attempt completes the exercise. "passed" means the student must meet or exceed passThreshold before the exercise is considered complete. "none" means the exercise does not block course progression and is not required for course completion or certificates.'
       ),
     passThreshold: z
       .number()
