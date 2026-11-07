@@ -33,6 +33,7 @@ const ALLOWED_TARGETS = new Set([
   'lms.banner',
   'course.sidebar',
   'course.newsfeed.aside',
+  'lesson.before',
   'lesson.after',
   'certificate.actions',
   'certificate.templates',

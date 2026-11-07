@@ -29,7 +29,7 @@
     "slots": [
       {
         "id": "reading-time-lesson-widget",
-        "target": "lesson.after",
+        "target": "lesson.before",
         "renderMode": "custom",
         "entrypoint": "lessonWidget",
         "title": "Lesson reading time"

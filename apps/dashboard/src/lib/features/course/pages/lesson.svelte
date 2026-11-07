@@ -255,11 +255,12 @@
   const isMaterialsEmpty = $derived(tabs.every((tab) => tab.badgeValue === 0));
   const hasLessonVideos = $derived((lessonApi.lesson?.videos?.length ?? 0) > 0);
   const lessonReadingStats = $derived.by(() => {
-    const raw = lessonApi.lesson?.note;
+    const raw = lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || lessonApi.lesson?.note || '';
     if (!raw) return { wordCount: 0, estimatedMinutes: 1 };
 
     const text = raw
       .replace(/<[^>]*>/g, ' ')
+      .replace(/&[a-z0-9#]+;/gi, ' ')
       .replace(/\s+/g, ' ')
       .trim();
     const wordCount = text.length > 0 ? text.split(/\s+/).length : 0;
@@ -581,6 +582,17 @@
         {:else if lessonApi.lesson && !isMaterialsEmpty}
           {#key lessonId}
             <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
+              <PluginSlotRenderer
+                target="lesson.before"
+                resource={{
+                  type: 'lesson',
+                  id: lessonId,
+                  wordCount: lessonReadingStats.wordCount,
+                  estimatedMinutes: lessonReadingStats.estimatedMinutes
+                }}
+                className="mb-4"
+              />
+
               {#if !hasLessonVideos}
                 <LessonMaterialActions showSummarize {lessonId} alignWithNote />
               {/if}
@@ -588,6 +600,17 @@
               {#each viewModeComponents as Component, index (index)}
                 <Component {mode} {lessonId} {courseId} />
               {/each}
+
+              <PluginSlotRenderer
+                target="lesson.after"
+                resource={{
+                  type: 'lesson',
+                  id: lessonId,
+                  wordCount: lessonReadingStats.wordCount,
+                  estimatedMinutes: lessonReadingStats.estimatedMinutes
+                }}
+                className="my-4"
+              />
 
               {#if showLessonComments}
                 <hr class="my-2" />
@@ -664,6 +687,17 @@
       {:else if lessonApi.lesson && !isMaterialsEmpty}
         {#key lessonId}
           <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
+            <PluginSlotRenderer
+              target="lesson.before"
+              resource={{
+                type: 'lesson',
+                id: lessonId,
+                wordCount: lessonReadingStats.wordCount,
+                estimatedMinutes: lessonReadingStats.estimatedMinutes
+              }}
+              className="mb-4"
+            />
+
             {#if !hasLessonVideos}
               <LessonMaterialActions showSummarize {lessonId} alignWithNote />
             {/if}

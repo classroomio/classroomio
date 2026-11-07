@@ -70,6 +70,7 @@ export const STABLE_CONTRIBUTION_TARGETS = [
   'lms.banner',
   'course.sidebar',
   'course.newsfeed.aside',
+  'lesson.before',
   'lesson.after',
   'certificate.actions',
   'certificate.templates',
@@ -99,6 +100,7 @@ export const PLUGIN_SURFACE_CONTRACTS = {
   'lms.banner': { version: 1, minHeight: 48, maxHeight: 320, mobile: true, resource: null },
   'course.sidebar': { version: 1, minHeight: 120, maxHeight: 1200, mobile: true, resource: 'course' },
   'course.newsfeed.aside': { version: 1, minHeight: 120, maxHeight: 1200, mobile: true, resource: 'course' },
+  'lesson.before': { version: 1, minHeight: 32, maxHeight: 400, mobile: true, resource: 'lesson' },
   'lesson.after': { version: 1, minHeight: 80, maxHeight: 1600, mobile: true, resource: 'lesson' },
   'certificate.actions': { version: 1, minHeight: 0, maxHeight: 0, mobile: true, resource: 'certificate' },
   'certificate.templates': { version: 1, minHeight: 320, maxHeight: 1600, mobile: true, resource: 'course' },
@@ -162,6 +164,7 @@ export const ZPluginSlotContribution = z
       'lms.banner',
       'course.sidebar',
       'course.newsfeed.aside',
+      'lesson.before',
       'lesson.after',
       'certificate.templates',
       'landing.templates'

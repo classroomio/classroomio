@@ -17,6 +17,7 @@ contribution ID.
 | `lms.banner` | Custom slot | None | 48–320px | Inline learner-layout banner |
 | `course.sidebar` | Custom slot | Course | 120–1200px | Course sidebar widget |
 | `course.newsfeed.aside` | Custom slot | Course | 120–1200px | Course newsfeed sticky aside column |
+| `lesson.before` | Custom slot | Lesson | 32–400px | Widget above lesson content |
 | `lesson.after` | Custom slot | Lesson | 80–1600px | Widget below lesson content |
 | `certificate.actions` | Host action | Certificate | Host rendered | Opens one declared HTTPS URL |
 | `certificate.templates` | Custom slot | Course | 320–1600px | Template picker with typed apply handoff |
@@ -39,7 +40,7 @@ Typed data methods additionally require their declared and granted scopes.
 
 ## Inline slots
 
-Declare `lms.banner`, `course.sidebar`, `course.newsfeed.aside`, or `lesson.after` in `contributes.slots` and reference a
+Declare `lms.banner`, `course.sidebar`, `course.newsfeed.aside`, `lesson.before`, or `lesson.after` in `contributes.slots` and reference a
 packaged UI entrypoint.
 
 ```json
@@ -80,8 +81,8 @@ const observer = new ResizeObserver(() => {
 observer.observe(document.body);
 ```
 
-The `lms.banner` surface has no resource object. `course.sidebar` receives a course resource, and
-`lesson.after` receives a lesson resource through `context.surface.resource`.
+The `lms.banner` surface has no resource object. `course.sidebar` and `course.newsfeed.aside` receive a course resource, and
+`lesson.before` and `lesson.after` receive a lesson resource through `context.surface.resource`.
 
 ## Full plugin pages and navigation
 
