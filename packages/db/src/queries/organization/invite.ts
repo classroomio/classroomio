@@ -159,13 +159,12 @@ export type TOrganizationInviteTokenData = {
     id: string;
     name: string;
     siteName: string;
+    avatarUrl: string | null;
   };
 };
 
 /** List rows for the notification panel: the token data plus the org avatar. */
-export type TPendingOrgInviteListItem = Omit<TOrganizationInviteTokenData, 'organization'> & {
-  organization: TOrganizationInviteTokenData['organization'] & { avatarUrl: string | null };
-};
+export type TPendingOrgInviteListItem = TOrganizationInviteTokenData;
 
 export async function getOrganizationInviteByTokenHash(
   tokenHash: string
@@ -177,7 +176,8 @@ export async function getOrganizationInviteByTokenHash(
         organization: {
           id: schema.organization.id,
           name: schema.organization.name,
-          siteName: schema.organization.siteName
+          siteName: schema.organization.siteName,
+          avatarUrl: schema.organization.avatarUrl
         }
       })
       .from(schema.organizationInvite)
@@ -371,7 +371,7 @@ export async function getActivePendingOrgInvitesForEmail(email: string): Promise
 export async function getActivePendingOrgInviteForEmail(
   organizationId: string,
   email: string
-): Promise<TOrganizationInviteTokenData | null> {
+): Promise<{ invite: TOrganizationInvite; organization: { id: string; name: string; siteName: string } } | null> {
   const normalized = email.toLowerCase().trim();
   if (!normalized) {
     return null;
