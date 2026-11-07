@@ -25,7 +25,21 @@ import {
 
 import * as Sentry from '@sentry/sveltekit';
 import { classroomio } from '$lib/utils/services/api';
-import type { HlsEncodeStage, HlsRungConfig, HlsUploadDiagnosticContext, HlsUploadFailureContext } from './types';
+import {
+  ConcurrencyGate,
+  HLS_MIN_UPLOAD_CONCURRENCY,
+  HLS_UPLOAD_CONCURRENCY,
+  HlsEncoderError,
+  putPresignedObject,
+  sleep
+} from './hls-upload-put';
+import type {
+  HlsEncodeStage,
+  HlsRungConfig,
+  HlsUploadDiagnosticContext,
+  HlsUploadFailureContext,
+  PresignedUrl
+} from './types';
 
 export type { HlsEncodeStage, HlsRungConfig } from './types';
 
@@ -108,11 +122,6 @@ export function selectRungsForSource(
 
 const AUDIO_BITRATE = 128_000;
 const HLS_TARGET_SEGMENT_SECONDS = 4;
-/** Cap parallel segment PUTs — unbounded concurrency can overwhelm R2 and fail mid-upload. */
-const HLS_UPLOAD_CONCURRENCY = 16;
-const HLS_PUT_MAX_ATTEMPTS = 4;
-/** A segment is a few MB at most; a PUT stalled longer than this is aborted and retried. */
-const HLS_PUT_ATTEMPT_TIMEOUT_MS = 120_000;
 /** Server validation allows up to 2000 paths per presign request. */
 const PRESIGN_BATCH_SIZE = 1500;
 /** Must match `HLS_CONTENT_TYPES` in `@cio/core` presign signing. */
@@ -596,16 +605,6 @@ export async function encodeAndUploadHls1080(opts: EncodeAndUpload1080Options): 
   }
 }
 
-class HlsEncoderError extends Error {
-  constructor(
-    public code: 'webcodecs_unsupported' | 'encode_failed' | 'upload_failed' | 'finalize_failed',
-    message: string
-  ) {
-    super(message);
-    this.name = 'HlsEncoderError';
-  }
-}
-
 function captureHlsUploadFailure(error: unknown, context: HlsUploadDiagnosticContext, signal?: AbortSignal): void {
   if (signal?.aborted) return;
 
@@ -614,12 +613,6 @@ function captureHlsUploadFailure(error: unknown, context: HlsUploadDiagnosticCon
     scope.setTag('video_upload_stage', context.stage);
     Sentry.captureException(error);
   });
-}
-
-interface PresignedUrl {
-  url: string;
-  key: string;
-  createdAt: number;
 }
 
 /**
@@ -717,139 +710,6 @@ function uploadContentTypeForPath(path: string, fallbackMimeType: string): strin
   return HLS_UPLOAD_CONTENT_TYPES[path.slice(dotIndex).toLowerCase()] ?? fallbackMimeType;
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-class ConcurrencyGate {
-  private active = 0;
-  private queue: (() => void)[] = [];
-
-  constructor(private readonly limit: number) {}
-
-  async run<T>(task: () => Promise<T>): Promise<T> {
-    await this.acquire();
-
-    try {
-      return await task();
-    } finally {
-      this.release();
-    }
-  }
-
-  private acquire(): Promise<void> {
-    if (this.active < this.limit) {
-      this.active += 1;
-      return Promise.resolve();
-    }
-
-    return new Promise((resolve) => {
-      this.queue.push(() => {
-        this.active += 1;
-        resolve();
-      });
-    });
-  }
-
-  private release(): void {
-    this.active -= 1;
-    const next = this.queue.shift();
-    if (next) next();
-  }
-}
-
-async function putPresignedObject(options: {
-  path: string;
-  presigned: PresignedUrl;
-  body: Blob;
-  contentType: string;
-  signal?: AbortSignal;
-  refreshPresign: () => Promise<PresignedUrl>;
-  onFailure: (failure: HlsUploadFailureContext) => void;
-}): Promise<PresignedUrl> {
-  let presigned = options.presigned;
-
-  for (let attempt = 1; attempt <= HLS_PUT_MAX_ATTEMPTS; attempt += 1) {
-    const requestStartedAt = Date.now();
-    const recordFailure = (
-      failure: { httpStatus: number | null; errorName?: string },
-      requestDurationMs = Date.now() - requestStartedAt
-    ) => {
-      options.onFailure({
-        objectPath: options.path,
-        requestBytes: options.body.size,
-        contentType: options.contentType,
-        attempt,
-        requestDurationMs,
-        presignedAgeMs: Date.now() - presigned.createdAt,
-        ...failure
-      });
-    };
-    const attemptSignal = buildPutAttemptSignal(options.signal);
-    let response: Response;
-
-    try {
-      response = await fetch(presigned.url, {
-        method: 'PUT',
-        headers: { 'Content-Type': options.contentType },
-        body: options.body,
-        signal: attemptSignal
-      });
-    } catch (error) {
-      if (options.signal?.aborted) throw error;
-
-      if (attempt === HLS_PUT_MAX_ATTEMPTS) {
-        recordFailure({
-          httpStatus: null,
-          errorName: error instanceof Error ? error.name : typeof error
-        });
-        throw error;
-      }
-
-      await sleep(putRetryDelayMs(attempt));
-      continue;
-    }
-
-    if (response.ok) return presigned;
-
-    const retryable = response.status === 403 || response.status === 429 || response.status >= 500;
-    if (!retryable || attempt === HLS_PUT_MAX_ATTEMPTS) {
-      recordFailure({ httpStatus: response.status });
-      const detail = await response.text().catch(() => '');
-      const suffix = detail ? `: ${detail.slice(0, 160)}` : '';
-      throw new HlsEncoderError('upload_failed', `PUT ${options.path} → ${response.status}${suffix}`);
-    }
-
-    if (response.status === 403) {
-      const requestDurationMs = Date.now() - requestStartedAt;
-      try {
-        presigned = await options.refreshPresign();
-      } catch (error) {
-        recordFailure({ httpStatus: response.status }, requestDurationMs);
-        throw error;
-      }
-    }
-
-    await sleep(putRetryDelayMs(attempt));
-  }
-
-  throw new HlsEncoderError('upload_failed', `PUT ${options.path} failed`);
-}
-
-function putRetryDelayMs(attempt: number): number {
-  return Math.min(1000 * 2 ** (attempt - 1), 8000);
-}
-
-/**
- * Combines the caller's cancel signal with a per-attempt timeout so a stalled PUT aborts and can be retried.
- */
-function buildPutAttemptSignal(callerSignal?: AbortSignal): AbortSignal {
-  const timeoutSignal = AbortSignal.timeout(HLS_PUT_ATTEMPT_TIMEOUT_MS);
-  if (!callerSignal) return timeoutSignal;
-
-  return AbortSignal.any([callerSignal, timeoutSignal]);
-}
-
 /**
  * Uploads files Mediabunny emits while encoding. All expected paths are
  * pre-presigned at start; PathedTarget.onFinalize is a synchronous map
@@ -862,7 +722,7 @@ class HlsUploader {
   private inflight: Promise<void>[] = [];
   private uploadFailures: unknown[] = [];
   private readonly uploadedPaths = new Set<string>();
-  private readonly uploadGate = new ConcurrencyGate(HLS_UPLOAD_CONCURRENCY);
+  private readonly uploadGate = new ConcurrencyGate(HLS_UPLOAD_CONCURRENCY, HLS_MIN_UPLOAD_CONCURRENCY);
 
   constructor(
     private readonly options: {
@@ -916,6 +776,8 @@ class HlsUploader {
         body,
         contentType,
         signal: this.options.signal,
+        getConcurrency: () => this.uploadGate.currentLimit,
+        onNetworkFailure: () => this.uploadGate.reduce(),
         onFailure: this.options.onUploadFailure,
         refreshPresign: async () => {
           const refreshed = await this.fallbackPresign(path);
