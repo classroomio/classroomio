@@ -1,5 +1,6 @@
 import type { ExerciseSectionAfterBehavior, ExerciseSectionColorTheme } from '@cio/question-types';
 import { QUESTION_TYPE_KEY, normalizeThumbsQuestion } from '@cio/question-types';
+import type { ExerciseCompletionPolicy } from './exercise-progression-utils';
 import {
   clearQuestionnaireValidation,
   questionnaire,
@@ -105,7 +106,7 @@ export function hydrateExercisePageData(exercise: Exercise, exerciseId: string) 
     sectionDisplayMode: exercise.sectionDisplayMode ?? 'one_question',
     totalSubmissions: 0,
     allowMultipleAttempts: !!exercise.allowMultipleAttempts,
-    completionPolicy: (exercise.completionPolicy as 'submitted' | 'passed' | 'none' | undefined) ?? 'submitted',
+    completionPolicy: (exercise.completionPolicy as ExerciseCompletionPolicy | undefined) ?? 'submitted',
     passThreshold: exercise.passThreshold ?? 100,
     slug: exercise.slug ?? ''
   });
