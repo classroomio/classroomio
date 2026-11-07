@@ -1674,7 +1674,7 @@
     "cohorts": "Cohorts",
     "exit_course": "Bu kurstan çık",
     "exit_cohort": "Bu gruptan çık",
-    "plugins_and_extensions": "Plugins & Extensions",
+    "plugins_and_extensions": "Plugins",
     "plugins": "Plugins"
   },
   "pricing": {
@@ -6418,9 +6418,9 @@
     }
   },
   "plugins": {
-    "title": "Plugins & Extensions",
+    "title": "Plugins",
     "subtitle": "Browse, install, and manage extensions for your academy",
-    "drawer_title": "Plugins & Extensions",
+    "drawer_title": "Plugins",
     "drawer_subtitle": "Extend your organization with powerful add-ons",
     "loading": "Loading plugins…",
     "empty": "No plugins available",

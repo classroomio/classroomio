@@ -1651,7 +1651,7 @@
     "setup": "Setup",
     "automation": "Automation",
     "tools": "Tools",
-    "plugins_and_extensions": "Plugins & Extensions",
+    "plugins_and_extensions": "Plugins",
     "plugins": "Plugins",
     "help": "Help",
     "settings": "Settings",
@@ -6408,9 +6408,9 @@
     }
   },
   "plugins": {
-    "title": "Plugins & Extensions",
+    "title": "Plugins",
     "subtitle": "Browse, install, and manage extensions for your academy",
-    "drawer_title": "Plugins & Extensions",
+    "drawer_title": "Plugins",
     "drawer_subtitle": "Extend your organization with powerful add-ons",
     "loading": "Loading plugins…",
     "empty": "No plugins available",
