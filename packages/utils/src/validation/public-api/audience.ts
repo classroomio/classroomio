@@ -128,7 +128,7 @@ export const ZPublicApiAudienceBulkStatus = z
     action: z
       .enum(['deactivate', 'reactivate', 'archive', 'unarchive'])
       .describe(
-        'deactivate: the student loses access to every course and keeps their plan seat. reactivate: back to active from deactivated or archived. archive: the student loses access and frees their seat. unarchive: back to active from archived. Moving an archived student to any other state takes a seat again. Progress is kept in every case. To remove a student, use DELETE /audience/{memberId}.'
+        'deactivate: no access, keeps the seat. archive: no access, frees the seat. reactivate, unarchive: active again. Leaving archived takes a seat. Progress is kept.'
       ),
     memberIds: z
       .array(z.number().int().positive())
