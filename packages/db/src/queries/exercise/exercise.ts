@@ -760,6 +760,7 @@ export async function getPluginExercisesList(
       allowMultipleAttempts: schema.exercise.allowMultipleAttempts,
       completionPolicy: schema.exercise.completionPolicy,
       passThreshold: schema.exercise.passThreshold,
+      dueBy: schema.exercise.dueBy,
       createdAt: schema.exercise.createdAt,
       updatedAt: schema.exercise.updatedAt,
       questionCount: sql<number>`coalesce(count(${schema.question.id}), 0)::int`,
@@ -791,6 +792,7 @@ export async function getPluginExercisesList(
       passThreshold: row.passThreshold !== null ? Number(row.passThreshold) : null,
       questionCount: Number(row.questionCount) || 0,
       totalPoints: Number(row.totalPoints) || 0,
+      dueBy: row.dueBy ?? null,
       createdAt: row.createdAt ?? new Date().toISOString(),
       updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
     }));
@@ -831,6 +833,7 @@ export async function getPluginExerciseById(
       allowMultipleAttempts: schema.exercise.allowMultipleAttempts,
       completionPolicy: schema.exercise.completionPolicy,
       passThreshold: schema.exercise.passThreshold,
+      dueBy: schema.exercise.dueBy,
       createdAt: schema.exercise.createdAt,
       updatedAt: schema.exercise.updatedAt,
       questionCount: sql<number>`coalesce(count(${schema.question.id}), 0)::int`,
@@ -865,96 +868,8 @@ export async function getPluginExerciseById(
     passThreshold: row.passThreshold !== null ? Number(row.passThreshold) : null,
     questionCount: Number(row.questionCount) || 0,
     totalPoints: Number(row.totalPoints) || 0,
+    dueBy: row.dueBy ?? null,
     createdAt: row.createdAt ?? new Date().toISOString(),
     updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
   };
-}
-
-export async function getPluginOrgExercisesList(
-  organizationId: string,
-  actorId: string,
-  canReadAllCourses: boolean,
-  options?: { courseId?: string }
-): Promise<{ items: PluginExerciseMetadata[] }> {
-  const conditions = [
-    eq(schema.group.organizationId, organizationId),
-    eq(schema.course.status, 'ACTIVE'),
-    eq(schema.course.isTemplate, false)
-  ];
-
-  if (options?.courseId) {
-    conditions.push(eq(schema.course.id, options.courseId));
-  }
-
-  if (!canReadAllCourses) {
-    conditions.push(
-      eq(schema.exercise.isUnlocked, true),
-      or(
-        and(eq(schema.course.isPublished, true), eq(schema.course.publicForAll, true)),
-        sql<boolean>`exists (
-          select 1 from ${schema.groupmember}
-          where ${schema.groupmember.groupId} = ${schema.course.groupId}
-            and ${schema.groupmember.profileId} = ${actorId}
-        )`
-      )!
-    );
-  }
-
-  const rows = await db
-    .select({
-      id: schema.exercise.id,
-      courseId: schema.course.id,
-      lessonId: schema.exercise.lessonId,
-      title: schema.exercise.title,
-      description: schema.exercise.description,
-      order: schema.exercise.order,
-      allowMultipleAttempts: schema.exercise.allowMultipleAttempts,
-      completionPolicy: schema.exercise.completionPolicy,
-      passThreshold: schema.exercise.passThreshold,
-      dueBy: schema.exercise.dueBy,
-      questionCount: sql<number>`(select count(*)::int from ${schema.question} where ${schema.question.exerciseId} = ${schema.exercise.id})`,
-      totalPoints: sql<number>`(select coalesce(sum(${schema.question.points}), 0)::float from ${schema.question} where ${schema.question.exerciseId} = ${schema.exercise.id})`,
-      createdAt: schema.exercise.createdAt,
-      updatedAt: schema.exercise.updatedAt,
-      completedAt: sql<string | null>`(
-        select coalesce(cs.updated_at, cs.created_at)
-        from ${schema.submission} as cs
-        inner join ${schema.groupmember} as gm on gm.id = cs.submitted_by
-        where cs.exercise_id = ${schema.exercise.id}
-          and gm.profile_id = ${actorId}
-          and gm.group_id = ${schema.course.groupId}
-          and ${submissionMeetsCompletionPolicySql('exercise', 'cs')}
-        order by coalesce(cs.updated_at, cs.created_at) desc
-        limit 1
-      )`
-    })
-    .from(schema.exercise)
-    .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-    .innerJoin(
-      schema.course,
-      eq(schema.course.id, sql<string>`coalesce(${schema.exercise.courseId}, ${schema.lesson.courseId})`)
-    )
-    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-    .where(and(...conditions))
-    .orderBy(asc(schema.exercise.order), asc(schema.exercise.id));
-
-  const items: PluginExerciseMetadata[] = rows.map((row) => ({
-    id: row.id,
-    courseId: row.courseId,
-    lessonId: row.lessonId ?? null,
-    title: row.title,
-    description: row.description ?? null,
-    order: Number(row.order),
-    allowMultipleAttempts: Boolean(row.allowMultipleAttempts),
-    completionPolicy: row.completionPolicy,
-    passThreshold: row.passThreshold !== null ? Number(row.passThreshold) : null,
-    questionCount: Number(row.questionCount) || 0,
-    totalPoints: Number(row.totalPoints) || 0,
-    dueBy: row.dueBy ?? null,
-    completedAt: row.completedAt ?? null,
-    createdAt: row.createdAt ?? new Date().toISOString(),
-    updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
-  }));
-
-  return { items };
 }

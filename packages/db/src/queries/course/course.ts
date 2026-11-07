@@ -122,27 +122,6 @@ export interface PluginCourseMetadata {
   updatedAt: string;
 }
 
-export interface PluginLessonMetadata {
-  id: string;
-  courseId: string;
-  title: string;
-  slug: string;
-  order: number;
-  isUnlocked: boolean;
-  lessonAt: string | null;
-  callUrl: string | null;
-  recordingUrl: string | null;
-  sessionDurationMinutes: number | null;
-  completedAt: string | null;
-  instructor: {
-    id: string;
-    name: string;
-    avatarUrl: string | null;
-  } | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
 function parseCourseCursor(cursor?: string | null): { createdAt: string; id: string } | null {
   if (!cursor) return null;
   try {
@@ -258,101 +237,6 @@ export async function getPluginCoursesList(
   }));
 
   return { items, nextCursor };
-}
-
-export async function getPluginLessonsList(
-  organizationId: string,
-  actorId: string,
-  canReadAllCourses: boolean,
-  options?: { courseId?: string }
-): Promise<{ items: PluginLessonMetadata[] }> {
-  const conditions = [
-    eq(schema.group.organizationId, organizationId),
-    eq(schema.course.status, 'ACTIVE'),
-    eq(schema.course.isTemplate, false)
-  ];
-
-  if (options?.courseId) {
-    conditions.push(eq(schema.course.id, options.courseId));
-  }
-
-  if (!canReadAllCourses) {
-    conditions.push(
-      eq(schema.lesson.isUnlocked, true),
-      or(
-        and(eq(schema.course.isPublished, true), eq(schema.course.publicForAll, true)),
-        sql<boolean>`exists (
-          select 1 from ${schema.groupmember}
-          where ${schema.groupmember.groupId} = ${schema.course.groupId}
-            and ${schema.groupmember.profileId} = ${actorId}
-        )`
-      )!
-    );
-  }
-
-  const rows = await db
-    .select({
-      id: schema.lesson.id,
-      courseId: schema.lesson.courseId,
-      courseType: schema.course.type,
-      title: schema.lesson.title,
-      slug: schema.lesson.slug,
-      order: schema.lesson.order,
-      isUnlocked: schema.lesson.isUnlocked,
-      lessonAt: schema.lesson.lessonAt,
-      callUrl: schema.lesson.callUrl,
-      recordingUrl: schema.lesson.recordingUrl,
-      sessionDurationMinutes: schema.lesson.sessionDurationMinutes,
-      createdAt: schema.lesson.createdAt,
-      updatedAt: schema.lesson.updatedAt,
-      teacherId: schema.profile.id,
-      teacherName: schema.profile.fullname,
-      teacherAvatarUrl: schema.profile.avatarUrl,
-      completedAt: sql<string | null>`(
-        select coalesce(lc.updated_at, lc.created_at)
-        from ${schema.lessonCompletion} as lc
-        where lc.lesson_id = ${schema.lesson.id}
-          and lc.profile_id = ${actorId}
-          and lc.is_complete = true
-        order by coalesce(lc.updated_at, lc.created_at) desc
-        limit 1
-      )`
-    })
-    .from(schema.lesson)
-    .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
-    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-    .leftJoin(schema.profile, eq(schema.lesson.teacherId, schema.profile.id))
-    .where(and(...conditions))
-    .orderBy(asc(schema.lesson.order), asc(schema.lesson.id));
-
-  const items: PluginLessonMetadata[] = rows.map((row) => {
-    const isScheduledLiveSession = row.courseType === 'LIVE_CLASS' && Boolean(row.callUrl);
-
-    return {
-      id: row.id,
-      courseId: row.courseId,
-      title: row.title,
-      slug: row.slug,
-      order: Number(row.order),
-      isUnlocked: Boolean(row.isUnlocked),
-      lessonAt: isScheduledLiveSession ? (row.lessonAt ?? null) : null,
-      callUrl: row.callUrl ?? null,
-      recordingUrl: row.recordingUrl ?? null,
-      sessionDurationMinutes: row.sessionDurationMinutes ?? null,
-      completedAt: row.completedAt ?? null,
-      instructor: row.teacherId
-        ? {
-            id: row.teacherId,
-            name: row.teacherName ?? 'Instructor',
-            avatarUrl: row.teacherAvatarUrl ?? null
-          }
-        : null,
-      createdAt: row.createdAt ?? new Date().toISOString(),
-      updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
-    };
-  });
-
-  return { items };
 }
 
 export async function getPluginCourseById(

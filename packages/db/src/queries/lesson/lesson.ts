@@ -140,6 +140,15 @@ export interface PluginLessonSourceItem {
   title: string;
   order: number;
   public: boolean | null;
+  lessonAt: string | null;
+  callUrl: string | null;
+  recordingUrl: string | null;
+  sessionDurationMinutes: number | null;
+  instructor: {
+    id: string;
+    name: string;
+    avatarUrl: string | null;
+  } | null;
   createdAt: string | null;
   updatedAt: string | null;
   content: string | null;
@@ -203,11 +212,19 @@ export async function getPluginLessonsByCourseId(
       title: schema.lesson.title,
       order: schema.lesson.order,
       public: schema.lesson.public,
+      lessonAt: schema.lesson.lessonAt,
+      callUrl: schema.lesson.callUrl,
+      recordingUrl: schema.lesson.recordingUrl,
+      sessionDurationMinutes: schema.lesson.sessionDurationMinutes,
+      teacherId: schema.profile.id,
+      teacherName: schema.profile.fullname,
+      teacherAvatarUrl: schema.profile.avatarUrl,
       createdAt: schema.lesson.createdAt,
       updatedAt: schema.lesson.updatedAt,
       content: schema.lessonLanguage.content
     })
     .from(schema.lesson)
+    .leftJoin(schema.profile, eq(schema.lesson.teacherId, schema.profile.id))
     .leftJoin(
       schema.lessonLanguage,
       and(eq(schema.lessonLanguage.lessonId, schema.lesson.id), eq(schema.lessonLanguage.locale, 'en'))
@@ -217,7 +234,28 @@ export async function getPluginLessonsByCourseId(
     .limit(limit + 1);
 
   const hasMore = rows.length > limit;
-  const items = hasMore ? rows.slice(0, limit) : rows;
+  const pageRows = hasMore ? rows.slice(0, limit) : rows;
+  const items: PluginLessonSourceItem[] = pageRows.map((row) => ({
+    id: row.id,
+    courseId: row.courseId,
+    title: row.title,
+    order: Number(row.order),
+    public: row.public,
+    lessonAt: row.lessonAt ?? null,
+    callUrl: row.callUrl ?? null,
+    recordingUrl: row.recordingUrl ?? null,
+    sessionDurationMinutes: row.sessionDurationMinutes ?? null,
+    instructor: row.teacherId
+      ? {
+          id: row.teacherId,
+          name: row.teacherName ?? 'Instructor',
+          avatarUrl: row.teacherAvatarUrl ?? null
+        }
+      : null,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    content: row.content
+  }));
   const lastItem = items[items.length - 1];
   const nextCursor = hasMore && lastItem ? encodeLessonCursor(Number(lastItem.order), lastItem.id) : null;
 
@@ -235,6 +273,13 @@ export async function getPluginLessonById(
       title: schema.lesson.title,
       order: schema.lesson.order,
       public: schema.lesson.public,
+      lessonAt: schema.lesson.lessonAt,
+      callUrl: schema.lesson.callUrl,
+      recordingUrl: schema.lesson.recordingUrl,
+      sessionDurationMinutes: schema.lesson.sessionDurationMinutes,
+      teacherId: schema.profile.id,
+      teacherName: schema.profile.fullname,
+      teacherAvatarUrl: schema.profile.avatarUrl,
       createdAt: schema.lesson.createdAt,
       updatedAt: schema.lesson.updatedAt,
       content: schema.lessonLanguage.content
@@ -242,6 +287,7 @@ export async function getPluginLessonById(
     .from(schema.lesson)
     .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
     .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .leftJoin(schema.profile, eq(schema.lesson.teacherId, schema.profile.id))
     .leftJoin(
       schema.lessonLanguage,
       and(eq(schema.lessonLanguage.lessonId, schema.lesson.id), eq(schema.lessonLanguage.locale, 'en'))
@@ -255,7 +301,29 @@ export async function getPluginLessonById(
     )
     .limit(1);
 
-  return row ?? null;
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    courseId: row.courseId,
+    title: row.title,
+    order: Number(row.order),
+    public: row.public,
+    lessonAt: row.lessonAt ?? null,
+    callUrl: row.callUrl ?? null,
+    recordingUrl: row.recordingUrl ?? null,
+    sessionDurationMinutes: row.sessionDurationMinutes ?? null,
+    instructor: row.teacherId
+      ? {
+          id: row.teacherId,
+          name: row.teacherName ?? 'Instructor',
+          avatarUrl: row.teacherAvatarUrl ?? null
+        }
+      : null,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    content: row.content
+  };
 }
 
 export interface PluginLessonContentItem {
