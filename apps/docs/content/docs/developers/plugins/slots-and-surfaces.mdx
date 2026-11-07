@@ -1,203 +1,166 @@
 ---
 title: Slots and UI Surfaces
-description: Mounting points and contribution targets across the ClassroomIO dashboard and learner interface.
+description: Supported contribution targets, dimensions, resources, and host handoffs.
 ---
 
-ClassroomIO uses a **slot-based contribution system**. Instead of injecting arbitrary scripts into the page, plugins declare which specific UI slots they contribute to in their `plugin.json` manifest.
+Plugins declare contributions in `plugin.json`; they cannot inject arbitrary scripts into
+ClassroomIO pages. The host resolves active, approved installations, filters contributions by
+role and page mode, then mounts custom UI in a sandboxed iframe.
 
-When a student or teacher opens a view containing a slot, the ClassroomIO dashboard resolves active plugin contributions and mounts your sandboxed interface via `<PluginSlotRenderer>`.
+All current surface contracts are version 1. Contributions are ordered by `order`, plugin ID, and
+contribution ID.
 
----
+## Supported targets
 
-## Supported Slot Targets
+| Target | Contribution | Resource | Height | Host behavior |
+| --- | --- | --- | --- | --- |
+| `lms.banner` | Custom slot | None | 48–320px | Inline learner-layout banner |
+| `course.sidebar` | Custom slot | Course | 120–1200px | Course sidebar widget |
+| `lesson.after` | Custom slot | Lesson | 80–1600px | Widget below lesson content |
+| `certificate.actions` | Host action | Certificate | Host rendered | Opens one declared HTTPS URL |
+| `certificate.templates` | Custom slot | Course | 320–1600px | Template picker with typed apply handoff |
+| `landing.templates` | Custom slot | Organization | 320–1600px | Editor picker with typed preview/select handoff |
+| `organization.navigation` | Host navigation | Organization | Host rendered | Opens a declared plugin page |
+| `plugin.page` | Custom page | Organization | 480–4000px | Full organization content route |
 
-All surface contracts are version 1. Contributions are ordered by `order`, then plugin ID, then contribution ID. The host filters `visibility` and `pageModes` before returning a contribution.
+Every target is marked mobile-compatible by the version-1 contract. Plugin authors remain
+responsible for responsive content inside the iframe.
 
-| Target | Placement | Resource | Height range | Mobile | Host handoff |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `lms.banner` | Top of the learner layout | `organization` | 48–320px | Yes | Resize, toast, host-relative navigation |
-| `course.sidebar` | Course navigation sidebar | `course` | 120–1200px | Yes | Resize, toast, host-relative navigation |
-| `lesson.after` | Below lesson content | `lesson` | 80–1600px | Yes | Resize, toast, dirty state, host-relative navigation |
-| `certificate.actions` | Certificate action group | `certificate` | Host rendered | Yes | HTTPS URL opened by the host |
-| `certificate.templates` | Certificate editor template panel | `course` | 320–1600px | Yes | Typed template application |
-| `landing.templates` | Landing-page editor and public page | `organization` | 320–1600px | Yes | Typed preview/selection; public view-model bridge |
-| `organization.navigation` | Academy plugin navigation | `organization` | Host rendered | Yes | Opens the declared plugin page |
-| `plugin.page` | Full organization content route | `organization` | 480–4000px | Yes | Resize, toast, dirty state, host-relative navigation |
+Custom frames use `sandbox="allow-scripts allow-forms"`, a no-referrer policy, and no
+same-origin access. Camera, microphone, geolocation, and clipboard write are disabled. The frame
+has an accessible title. While it loads, the host displays a muted overlay; if the browser emits a
+frame error, the host displays the contribution title as an alert. The host does not currently
+render a retry control or detailed plugin error message.
 
-The iframe has an accessible title and remains sandboxed without same-origin access. The host displays its normal loading state before the artifact is ready, omits disabled/unapproved installations, and contains failures within the contribution boundary. Plugins must preserve keyboard focus order and must not attempt to focus host elements. Resize requests are clamped to the target range. Unsupported action handoffs fail with a typed bridge error.
+Resize requests are clamped to the active target's range. All custom surfaces can use the generic
+theme, toast, resize, dirty-state, preference, storage, and host-relative navigation bridge methods.
+Typed data methods additionally require their declared and granted scopes.
 
----
+## Inline slots
 
-## 1. `lms.banner`
-
-Renders an edge-to-edge banner at the very top of the student's LMS view.
+Declare `lms.banner`, `course.sidebar`, or `lesson.after` in `contributes.slots` and reference a
+packaged UI entrypoint.
 
 ```json
-"contributes": {
-  "slots": [
-    {
-      "id": "announcement-banner",
-      "target": "lms.banner",
-      "entrypoint": "banner",
-      "title": "Welcome Announcement"
+{
+  "runtime": {
+    "ui": {
+      "entrypoints": {
+        "lessonWidget": "dist/lesson-widget.html"
+      }
     }
-  ]
+  },
+  "contributes": {
+    "slots": [
+      {
+        "id": "lesson-widget",
+        "target": "lesson.after",
+        "entrypoint": "lessonWidget",
+        "title": "Lesson widget",
+        "visibility": "learner",
+        "pageModes": ["view"],
+        "order": 10
+      }
+    ]
+  }
 }
 ```
 
-### Context & Design Guidelines
-- **Available Resource**: `{ type: 'organization', id: 'org-uuid' }`
-- **Height**: Banners should be compact (typically 40px – 80px high). Call `client.ui.resize()` immediately on load.
-- **Styling**: Use a transparent or subtle background color that contrasts cleanly with the student navbar.
-
-### Implementation Pattern: Dismissable Announcement Banner
-
-This pattern checks whether the student previously dismissed the banner, and stays hidden until cleared:
+Use a `ResizeObserver` when the rendered height can change:
 
 ```typescript
 import { createClassroomIOClient } from '@classroomio/plugin-sdk/client';
 
 const client = createClassroomIOClient();
+const observer = new ResizeObserver(() => {
+  void client.ui.resize(document.documentElement.scrollHeight);
+});
 
-async function initBanner() {
-  // 1. Check whether the student previously dismissed this announcement
-  const dismissed = await client.preferences.get<boolean>('dismissed_banner', 'announcements');
-  if (dismissed) {
-    await client.ui.resize(0); // Nothing to show
-    return;
+observer.observe(document.body);
+```
+
+The `lms.banner` surface has no resource object. `course.sidebar` receives a course resource, and
+`lesson.after` receives a lesson resource through `context.surface.resource`.
+
+## Full plugin pages and navigation
+
+A page requires a `contributes.pages` record. Organization navigation can link to that page by ID.
+
+```json
+{
+  "runtime": {
+    "ui": {
+      "entrypoints": {
+        "dashboard": "dist/dashboard.html"
+      }
+    }
+  },
+  "contributes": {
+    "pages": [
+      {
+        "id": "analytics",
+        "entrypoint": "dashboard",
+        "title": "Academy analytics"
+      }
+    ],
+    "navigation": [
+      {
+        "id": "analytics-navigation",
+        "title": "Analytics",
+        "location": "organization.navigation",
+        "page": "analytics",
+        "visibility": "admin"
+      }
+    ]
   }
-
-  // 2. Render the announcement banner UI
-  const banner = document.getElementById('banner')!;
-  banner.style.display = 'flex';
-  banner.innerHTML = `
-    <div class="banner-content">
-      <span>🎉 Welcome to the academy! Check out our newest courses.</span>
-      <div class="banner-actions">
-        <button id="cta-btn" class="primary-btn">Explore</button>
-        <button id="dismiss-btn" class="close-btn" aria-label="Dismiss">✕</button>
-      </div>
-    </div>
-  `;
-
-  // 3. Expand the iframe to fit the banner
-  await client.ui.resize(document.documentElement.scrollHeight);
-
-  // Helper: dismiss banner and remember state
-  const dismiss = async () => {
-    banner.style.display = 'none';
-    await client.ui.resize(0); // Shrinks iframe so it takes zero vertical space
-
-    // Persist dismissed preference
-    await client.preferences.set('dismissed_banner', true, 'announcements');
-  };
-
-  // Close button
-  document.getElementById('dismiss-btn')?.addEventListener('click', dismiss);
-
-  // CTA button: navigate to courses
-  document.getElementById('cta-btn')?.addEventListener('click', async () => {
-    await dismiss();
-    await client.navigation.open('/courses');
-  });
 }
-
-initBanner().catch(console.error);
 ```
 
-#### Why This Pattern Is Powerful
-- **No Remote Server Required**: The host manages preferences and bridge communication.
-- **Clean Collapse**: Calling `client.ui.resize(0)` smoothly collapses the iframe so it leaves zero empty margin in the LMS header.
+The organization route includes both plugin ID and page ID. Navigation should be the normal entry
+point; plugins should not construct the route from an assumed URL shape.
 
----
+## Certificate actions
 
-## 2. `lesson.after`
-
-Mounted directly beneath the content of an individual lesson in the course reader.
+Version 1 supports only host-rendered `openUrl` actions on `certificate.actions`.
 
 ```json
-"contributes": {
-  "slots": [
-    {
-      "id": "lesson-widget",
-      "target": "lesson.after",
-      "entrypoint": "widget",
-      "title": "Lesson Widget"
-    }
-  ]
+{
+  "contributes": {
+    "actions": [
+      {
+        "id": "add-to-profile",
+        "target": "certificate.actions",
+        "label": "Add to profile",
+        "actionType": "openUrl",
+        "urlTemplate": "https://profiles.example.com/certificates/add?name={certificateName}"
+      }
+    ]
+  },
+  "networkAccess": {
+    "allowedDomains": ["https://profiles.example.com"]
+  }
 }
 ```
 
-### Context & Design Guidelines
-- **Available Resource**: `{ type: 'lesson', id: 'lesson-uuid' }`
-- **Dynamic Content**: Because widgets expand dynamically, use `new ResizeObserver()` to call `client.ui.resize()` whenever children render.
-- **Context Inspection**: Call `await client.context.get()` to read the active lesson ID and surface metadata.
+The URL must be HTTPS and its exact origin must be in `networkAccess.allowedDomains`. Custom action
+iframes, commands, and dialog handoffs are not supported.
 
----
+## Certificate template picker
 
-## 3. `plugin.page` (Standalone Full-Page Views)
+Declare a custom `certificate.templates` slot. The surface receives the current course and selected
+template details. A picker can read available templates with `client.certificateTemplates` and
+request application with `client.certificateTemplates.apply(...)`. Application requires
+`certificate.template:write` and is accepted only on this surface.
 
-Renders a complete, dedicated full-page application inside the academy at:
-```text
-https://app.classroomio.com/org/:slug/plugins/:pluginId
-```
+## Landing template picker and public renderer
 
-```json
-"contributes": {
-  "pages": [
-    {
-      "id": "analytics-dashboard",
-      "entrypoint": "dashboardApp",
-      "title": "Advanced Academy Analytics"
-    }
-  ],
-  "navigation": [
-    {
-      "id": "nav-analytics",
-      "title": "Analytics Pro",
-      "location": "organization.navigation",
-      "page": "analytics-dashboard",
-      "icon": { "resource": "dist/analytics-icon.svg" },
-      "visibility": "admin"
-    }
-  ]
-}
-```
+`landing.templates` requires all of the following:
 
-### Context & Capabilities
-- **Available Resource**: `{ type: 'organization', id: 'org-uuid' }`
-- Takes over the full content viewport (`height: calc(100vh - 3.5rem)`).
-- Great for complex data tables, multi-tab settings, and custom visualization suites.
+- `pickerEntrypoint` for the authenticated landing-page editor;
+- `publicRendererEntrypoint` for the public organization page;
+- `publicViewModelVersion: 1`;
+- at least one declared template, each with a packaged thumbnail.
 
----
-
-## Action Targets (`contributes.actions`)
-
-In addition to embedded slots, plugins can inject menu buttons and actions into context menus:
-
-```json
-"contributes": {
-  "actions": [
-    {
-      "id": "add-certificate-to-profile",
-      "target": "certificate.actions",
-      "label": "Add to profile",
-      "icon": { "resource": "dist/share.svg" },
-      "actionType": "openUrl",
-      "urlTemplate": "https://profiles.example.com/certificates/add?name={certificateName}"
-    }
-  ]
-}
-```
-
-Only `certificate.actions` with `actionType: "openUrl"` is supported in v1.
-The URL must be HTTPS and its origin must be listed in
-`networkAccess.allowedDomains`.
-
----
-
-## Best Practices for Slot UI Development
-
-1. **Adopt Host Theme Variables**: Always style using `--cio-bg-canvas`, `--cio-text-primary`, and `--cio-primary`. Hardcoded `#ffffff` backgrounds will clash when the student toggles dark mode.
-2. **Never Hardcode Iframe Heights**: Always use `ResizeObserver` with `client.ui.resize(height)` so inline widgets grow and shrink naturally.
-3. **Keep Assets Lightweight**: Because plugins render dynamically, keep your production bundle under 300KB for fast initial rendering.
+The picker uses `client.landingTemplates.preview()` and `client.landingTemplates.select()`. The
+public entrypoint uses `@classroomio/plugin-sdk/public-landing`, not the authenticated client. It
+receives a constrained public view model and can request resize, navigation, or authentication.

@@ -1,254 +1,210 @@
 ---
 title: Client SDK Reference
-description: Complete guide to @classroomio/plugin-sdk/client for building sandboxed UI plugins with themes, toasts, modals, and auto-resizing.
+description: Reference for the hosted iframe bridge, typed data capabilities, storage, themes, and public landing renderers.
 ---
 
-The Client SDK (`@classroomio/plugin-sdk/client`) runs inside your plugin's browser `<iframe>`. Because the iframe is sandboxed with an opaque origin (`null`), it communicates with the parent ClassroomIO dashboard through an authenticated point-to-point browser `MessageChannel`.
+The browser SDK runs inside a sandboxed plugin iframe. It communicates with the ClassroomIO host
+over a private `MessageChannel`; plugin code does not receive ClassroomIO cookies, session tokens,
+or direct database access.
 
----
-
-## Installation
+## Install and initialize
 
 ```bash
 npm install @classroomio/plugin-sdk
-# or
-pnpm add @classroomio/plugin-sdk
 ```
 
----
-
-## Initialization
-
-Create a client instance in your UI entrypoint:
-
 ```typescript
-import { createClassroomIOClient, ClassroomIOClient } from '@classroomio/plugin-sdk/client';
+import { createClassroomIOClient } from '@classroomio/plugin-sdk/client';
 
-const client = createClassroomIOClient();
+const client = createClassroomIOClient({ timeoutMs: 8000 });
+const context = await client.context.get();
 ```
 
-### Options
+The default RPC timeout is 5 seconds. Requests are limited to 64 KiB and responses to 256 KiB.
+Rejected calls throw `PluginBridgeError` with one of these codes: `UNAUTHORIZED`, `FORBIDDEN`,
+`INVALID_PARAMS`, `RATE_LIMITED`, `TIMEOUT`, `INTERNAL_ERROR`, `NOT_FOUND`, `NOT_SUPPORTED`, or
+`RESPONSE_TOO_LARGE`.
+
+## Context and capabilities
+
+`client.context.get()` resolves after the host handshake. The result identifies the installed
+plugin, actor, organization, active surface, and optional surface resource.
 
 ```typescript
-const client = createClassroomIOClient({
-  timeoutMs: 8000 // Timeout in milliseconds for host RPC responses (default: 5000)
-});
+const context = await client.context.get();
+
+console.log(context.installationId);
+console.log(context.pluginId);
+console.log(context.actor?.role);
+console.log(context.surface?.target);
+console.log(context.surface?.resource);
+
+const grantedScopes = await client.capabilities.list();
 ```
 
----
+`client.capabilities.list()` returns the installation's granted scopes. A declared manifest
+permission is not sufficient by itself: the organization must grant it, and each host route also
+checks the current actor and resource.
 
-## UI Capabilities (`client.ui`)
-
-The `client.ui` namespace allows your sandboxed iframe to trigger native dashboard UI interactions.
-
-### 1. Toast Notifications (`client.ui.toast`)
-Displays a native ClassroomIO snackbar notification in the top-right corner of the screen:
+## Host UI and navigation
 
 ```typescript
-// Success toast
-await client.ui.toast({
-  message: 'Your progress has been saved.',
-  variant: 'success'
-});
-
-// Error toast
-await client.ui.toast({
-  message: 'Failed to submit response. Please retry.',
-  variant: 'error'
-});
-
-// Info toast (default)
-await client.ui.toast({
-  message: 'Connecting to grading server...',
-  variant: 'info'
-});
+await client.ui.toast({ message: 'Saved', variant: 'success' });
+await client.ui.resize(document.documentElement.scrollHeight);
+await client.ui.setDirty(true);
+await client.navigation.open('/courses');
 ```
 
-### 2. Auto-Resizing (`client.ui.resize`)
-When rendered inside inline slots like `lesson.after` or `lms.banner`, plugins must not cause awkward inner scrollbars. Use `resize()` to inform the host of your content's exact height.
+| Method | Behavior |
+| --- | --- |
+| `client.ui.toast(options)` | Shows a host snackbar. Variants are `info`, `success`, `warning`, and `error`; unsupported visual variants fall back to the host's informational style. |
+| `client.ui.resize(height)` | Requests an iframe height. The host clamps it to the active surface contract. |
+| `client.ui.setDirty(dirty)` | Enables or clears the browser unload warning for unsaved changes. |
+| `client.navigation.open(href)` | Navigates to a host-relative path. External and protocol-relative URLs are rejected. |
 
-**Recommended Pattern with `ResizeObserver`:**
+The host does not expose a modal API. Build overlays inside the iframe or use a declared full-page
+plugin contribution.
+
+For content whose height changes, observe the document and send the new height:
 
 ```typescript
-// Automatically sync height whenever your DOM updates
 const observer = new ResizeObserver(() => {
-  const height = document.documentElement.scrollHeight;
-  void client.ui.resize(height);
+  void client.ui.resize(document.documentElement.scrollHeight);
 });
 
 observer.observe(document.body);
 ```
 
-### 3. Modals (`client.ui.openModal`, `client.ui.closeModal`)
-Requests the host dashboard to open a centered modal overlay:
+## Theme synchronization
+
+The host applies theme values to the plugin document and publishes the complete theme object.
 
 ```typescript
-// Open modal
-await client.ui.openModal({
-  title: 'Certificate Preview',
-  url: 'https://api.my-plugin.com/preview'
+const theme = await client.theme.get();
+console.log(theme.colorScheme);
+
+const unsubscribe = client.theme.onChange((nextTheme) => {
+  console.log(nextTheme.colorScheme, nextTheme.reducedMotion);
 });
-
-// Close modal
-await client.ui.closeModal();
 ```
 
-### 4. Unsaved Changes Guard (`client.ui.setDirty`)
-Prevents students or admins from accidentally closing the browser tab when a form has unsaved edits:
+The SDK sets `data-theme`, `color-scheme`, and these CSS properties:
 
-```typescript
-// When user edits an input:
-await client.ui.setDirty(true);
+| Colors | Shape and type |
+| --- | --- |
+| `--cio-background` | `--cio-radius-sm` |
+| `--cio-surface` | `--cio-radius-md` |
+| `--cio-surface-muted` | `--cio-radius-lg` |
+| `--cio-foreground` | `--cio-font-sans` |
+| `--cio-foreground-muted` | `--cio-font-mono` |
+| `--cio-border` | |
+| `--cio-accent` | |
+| `--cio-accent-foreground` | |
+| `--cio-destructive` | |
 
-// After saving successfully:
-await client.ui.setDirty(false);
-```
-
----
-
-## Theme Synchronization (`client.theme`)
-
-Plugins render seamlessly alongside ClassroomIO's design system. When the client initializes, the host automatically injects CSS custom properties into `document.documentElement.style`.
-
-### Injected CSS Variables
-
-| CSS Variable | Description |
-| :--- | :--- |
-| `--cio-bg-canvas` | Main page background color |
-| `--cio-bg-card` | Card and container background color |
-| `--cio-bg-elevated`| Dropdown, modal, and tooltip background |
-| `--cio-text-primary` | Primary body and heading text color |
-| `--cio-text-muted` | Subtext, timestamps, and placeholder color |
-| `--cio-border` | Standard border line color |
-| `--cio-primary` | Primary brand accent color (buttons, links) |
-| `--cio-primary-foreground` | Text color on primary buttons |
-| `--cio-font-sans` | ClassroomIO typography font family |
-| `--cio-radius-md` | Standard button and card border-radius |
-
-You can reference these variables directly in your CSS:
+Compatibility aliases are also set: `--cio-color-bg`, `--cio-color-bg-subtle`,
+`--cio-color-surface`, `--cio-color-text`, `--cio-color-text-secondary`,
+`--cio-color-border`, and `--cio-color-primary`.
 
 ```css
 body {
-  background-color: var(--cio-bg-canvas);
-  color: var(--cio-text-primary);
-  font-family: var(--cio-font-sans, system-ui, sans-serif);
+  background: var(--cio-background);
+  color: var(--cio-foreground);
+  font-family: var(--cio-font-sans);
 }
 
 .card {
-  background-color: var(--cio-bg-card);
+  background: var(--cio-surface);
   border: 1px solid var(--cio-border);
   border-radius: var(--cio-radius-md);
-  padding: 1.5rem;
-}
-
-.primary-button {
-  background-color: var(--cio-primary);
-  color: var(--cio-primary-foreground);
 }
 ```
 
-### Live Theme Changes
+## Browser preferences
 
-When a user switches between light and dark mode, the dashboard sends real-time updates. You can reactively re-render canvases or charts:
-
-```typescript
-// 1. Get current theme object
-const currentTheme = await client.theme.get();
-console.log(currentTheme.mode); // 'light' or 'dark'
-
-// 2. Listen to live changes
-const unsubscribe = client.theme.onChange((theme) => {
-  console.log('Switched to mode:', theme.mode);
-  myChart.setTheme(theme.mode);
-});
-
-// To stop listening:
-unsubscribe();
-```
-
----
-
-## Host Navigation (`client.navigation`)
-
-Because the iframe cannot change `window.parent.location` directly, use `client.navigation.open()` to navigate the user to host-relative paths:
+Preferences are small browser-local values keyed by profile, installation, namespace, and key.
+They are not synchronized across browsers and are not part of persistent plugin storage.
 
 ```typescript
-// Navigate to another page in ClassroomIO
-await client.navigation.open('/courses');
-
-// Navigate to specific course
-await client.navigation.open('/courses/fullstack-react');
+await client.preferences.set('collapsed', true, 'sidebar');
+const collapsed = await client.preferences.get<boolean>('collapsed', 'sidebar');
+await client.preferences.delete('collapsed', 'sidebar');
 ```
 
-:::note[Security Constraint]
-Navigation is restricted to host-relative paths starting with `/`. Protocol-relative URLs (e.g. `//evil.com`) or external links are rejected with an `INVALID_PARAMS` error.
-:::
+## Hosted plugin storage
 
----
+Plugin data is stored by ClassroomIO and isolated to the installed plugin. A namespace and scope
+must be declared in `storage.documents` in the manifest. Reads require `plugin.storage:read`; writes
+and deletes require `plugin.storage:write`.
 
-## Client Preferences (`client.preferences`)
-
-Plugins can store lightweight, client-side preferences (such as dismissed banners, collapsed sections, or local UI choices) without requiring a backend server:
+Supported scopes are `organization`, `user`, and `resource`. Resource storage uses the active
+surface resource. Organization and resource writes are limited to organization admins and tutors.
 
 ```typescript
-// 1. Store a preference (optionally under a namespace)
-await client.preferences.set('sidebar_collapsed', true, 'ui_settings');
+const current = await client.storage.getRecord<{ enabled: boolean }>('settings', 'configuration');
 
-// 2. Retrieve a preference
-const isCollapsed = await client.preferences.get<boolean>('sidebar_collapsed', 'ui_settings');
+const saved = await client.storage.set(
+  'settings',
+  { enabled: true },
+  'configuration',
+  'organization',
+  { schemaVersion: 1, expectedVersion: current?.version }
+);
 
-// 3. Delete a preference
-await client.preferences.delete('sidebar_collapsed', 'ui_settings');
+const page = await client.storage.list('configuration', 'organization', { limit: 25 });
+await client.storage.delete('settings', 'configuration', 'organization');
 ```
 
----
+`get()` returns only the value. `getRecord()` also returns `version`, `schemaVersion`, and
+`updatedAt`. `expectedVersion` provides compare-and-set protection; omit it only when overwriting
+the latest value is acceptable.
 
-## Host Context (`client.context`)
+## Typed hosted data
 
-The Client SDK provides helpers to inspect the active learning environment:
+These methods call ClassroomIO through the host. The plugin never manages a separate backend or
+receives a bearer token.
 
-### Active Plugin Context
+| Namespace and method | Required scope |
+| --- | --- |
+| `identity.getCurrent()` | `identity.profile:read` |
+| `organization.getProfile()` | `organization.profile:read` |
+| `courses.list(options)`, `courses.get(id)` | `course.metadata:read` |
+| `courses.getStructure(id)` | `course.content:read` |
+| `lessons.list({ courseId, cursor?, limit? })`, `lessons.get(id)` | `lesson.metadata:read` |
+| `lessons.getContent(id)` | `lesson.content:read` |
+| `exercises.list({ courseId, lessonId?, cursor?, limit? })`, `exercises.get(id)` | `exercise.metadata:read` |
+| `progress.getCurrent({ type, id })` | `learner.progress:read` |
+| `progress.setCompletion(lessonId, isComplete)` | `learner.progress:write` |
+| `certificates.list(options)`, `certificates.get(id)` | `certificate.issued:read` |
+| `certificateTemplates.list()`, `certificateTemplates.getApplied(courseId)` | `certificate.template:read` |
+| `certificateTemplates.apply(payload)` | `certificate.template:write` and the `certificate.templates` surface |
+
+List methods return `{ items, nextCursor }`. Access remains constrained to the current
+organization, actor role, enrollments, and relevant course or lesson.
+
+`landingTemplates.preview(templateId)` and `landingTemplates.select(templateId)` are available only
+in the landing-template picker surface. They dispatch typed actions to the landing-page editor;
+they are not general data APIs.
+
+## Public landing renderer
+
+The public landing page uses a separate, smaller bridge because it runs outside an authenticated
+dashboard surface.
+
 ```typescript
-const context = await client.context.get();
-console.log(context.installationId); // Current installation UUID
-console.log(context.pluginId);       // e.g. "com.acme.my-plugin"
-console.log(context.surface.target); // e.g. "lesson.after"
-console.log(context.resource);       // { type: 'lesson', id: 'lesson-uuid' }
+import { createPublicLandingRendererClient } from '@classroomio/plugin-sdk/public-landing';
+
+const renderer = createPublicLandingRendererClient();
+const context = await renderer.getContext();
+
+renderer.onViewModelChange((viewModel) => render(viewModel));
+renderer.resize(document.documentElement.scrollHeight);
+renderer.navigate('/courses/example');
+renderer.requestAuthentication();
 ```
 
----
+The renderer receives only the version-1 public landing view model, theme, and authentication
+state. It can request resize, sanitized navigation, or authentication; it does not receive the
+authenticated hosted-data client.
 
-## Complete Frontend Example (Vanilla TypeScript)
-
-```typescript
-import { createClassroomIOClient } from '@classroomio/plugin-sdk/client';
-
-async function main() {
-  const client = createClassroomIOClient();
-  const context = await client.context.get();
-
-  // 1. Set up auto-resize
-  new ResizeObserver(() => {
-    void client.ui.resize(document.documentElement.scrollHeight);
-  }).observe(document.body);
-
-  // 2. Render UI
-  const app = document.getElementById('app')!;
-  app.innerHTML = `
-    <div class="plugin-widget">
-      <h3>Active Surface</h3>
-      <p>Target: <strong>${context.surface.target}</strong></p>
-      <button id="toast-btn" class="primary-button">Show Toast</button>
-    </div>
-  `;
-
-  document.getElementById('toast-btn')?.addEventListener('click', async () => {
-    await client.ui.toast({
-      message: 'Action completed!',
-      variant: 'success'
-    });
-  });
-}
-
-main().catch(console.error);
-```
+Call `client.destroy()` or `renderer.destroy()` when tearing down a long-lived integration.

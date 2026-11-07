@@ -13,7 +13,6 @@ ClassroomIO validates the manifest during `npm run pack` (the scaffolded alias f
 
 ```json
 {
-  "$schema": "https://classroomio.com/schemas/plugin.v1.json",
   "manifestVersion": 1,
   "id": "com.example.ai-assistant",
   "name": "AI Course Assistant",
@@ -64,7 +63,9 @@ ClassroomIO validates the manifest during `npm run pack` (the scaffolded alias f
   "permissions": {
     "required": [
       "course.metadata:read",
-      "lesson.metadata:read"
+      "lesson.metadata:read",
+      "plugin.storage:read",
+      "plugin.storage:write"
     ]
   },
   "networkAccess": {
@@ -77,6 +78,23 @@ ClassroomIO validates the manifest during `npm run pack` (the scaffolded alias f
     "storesCustomerData": true,
     "retentionAfterUninstallDays": 30,
     "privacyPolicyUrl": "https://example.com/privacy"
+  },
+  "storage": {
+    "documents": [
+      {
+        "namespace": "assistant-settings",
+        "scope": "organization",
+        "schemaVersion": 1,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" }
+          },
+          "required": ["enabled"],
+          "additionalProperties": false
+        }
+      }
+    ]
   }
 }
 ```
@@ -117,7 +135,7 @@ review it.
 
 | Field | What the value means | Why it is necessary |
 | --- | --- | --- |
-| `$schema` | URL of editor/validation metadata. | Gives editors autocomplete; it is not an authorization mechanism. |
+| `$schema` | Optional URL metadata. | The current CLI and host do not load it; they validate with the shipped Zod contract. No JSON Schema file is bundled with the SDK. |
 | `manifestVersion` | Manifest format version. Currently `1`. | Lets the host reject an unknown format instead of guessing. |
 | `id` | Globally unique reverse-domain identifier such as `com.example.reading-timer`. | Prevents collisions and establishes publisher namespace ownership. `com.classroomio.*` is reserved for ClassroomIO. |
 | `slug` | Optional lowercase kebab-case display/catalog identifier. | Produces stable human-readable URLs without changing the immutable plugin ID. |
@@ -128,8 +146,8 @@ review it.
 | `license` | License label such as `MIT`. | Communicates redistribution terms. |
 | `homepage` | Public HTTPS information page. | Gives users a support or product destination. |
 | `repository` | Public HTTPS source repository. | Gives reviewers and users a source location when one is available. |
-| `engines.classroomio` | Supported ClassroomIO version range. | Prevents installation on incompatible host versions. |
-| `engines.pluginApi` | Supported Plugin API version/date range. | Lets the host and reviewer check browser SDK/host compatibility. |
+| `engines.classroomio` | Declared ClassroomIO compatibility string. | Required package metadata for review; the current validator checks that it is non-empty but does not resolve the range. |
+| `engines.pluginApi` | Declared Plugin API compatibility string. | Required package metadata for review; the current validator checks that it is non-empty but does not negotiate a runtime version. |
 
 `id`, `version`, and the packaged archive digest form the release identity. Changing any packaged
 file without changing the digest is rejected.
@@ -274,9 +292,17 @@ ClassroomIO uses granular, OAuth-compatible scopes. When an academy admin instal
 
 | Scope | Description |
 | :--- | :--- |
+| `identity.profile:read` | Read the current user's limited plugin profile. |
+| `organization.profile:read` | Read the current organization's limited plugin profile. |
 | `course.metadata:read` | Read course metadata. |
+| `course.content:read` | Read course section and lesson structure. |
 | `lesson.metadata:read` | Read lesson metadata. |
+| `lesson.content:read` | Read sanitized lesson content and attachments. |
+| `learner.progress:read` | Read the current learner's lesson or course progress. |
+| `learner.progress:write` | Update the current learner's lesson completion. |
 | `exercise.metadata:read` | Read exercise metadata without learner answers. |
+| `certificate.issued:read` | Read issued certificates available to the current actor. |
+| `certificate.template:read` | Read the available and applied certificate templates. |
 | `certificate.template:write` | Apply a certificate template in the `certificate.templates` surface. |
 | `plugin.storage:read` | Read this installation's isolated plugin storage. |
 | `plugin.storage:write` | Write this installation's isolated plugin storage. |
@@ -332,6 +358,40 @@ This required declaration tells users and reviewers how the plugin handles custo
 
 This declaration does not replace the plugin's legal obligations or the host's retention controls.
 
+## `storage`
+
+Persistent plugin values are stored by ClassroomIO. Each accessible namespace and scope must be
+declared before the browser SDK can read or write it.
+
+```json
+"storage": {
+  "documents": [
+    {
+      "namespace": "preferences",
+      "scope": "user",
+      "schemaVersion": 1,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "compact": { "type": "boolean" }
+        },
+        "required": ["compact"],
+        "additionalProperties": false
+      }
+    }
+  ]
+}
+```
+
+- `namespace` is 1–64 characters and is unique within a scope.
+- `scope` is `organization`, `user`, or `resource`.
+- `schemaVersion` is a positive integer passed to storage writes.
+- `schema` uses the supported JSON-schema subset: scalar/object/array types, properties, required
+  keys, additional-properties control, items, bounds, pattern, enum, and const.
+
+The manifest supports at most 32 storage documents. Declaring a document does not grant access;
+the plugin must also request `plugin.storage:read` and/or `plugin.storage:write`.
+
 ## `extensions`
 
 `extensions` is optional namespaced metadata for compatible host integrations. Unknown extension
@@ -343,7 +403,8 @@ keys do not grant capabilities. Never put secrets, private keys, or executable s
 
 Because custom plugins render in an iframe, the ClassroomIO asset server dynamically generates a hardened **Content Security Policy (CSP)** for your plugin assets.
 
-If your plugin UI needs to connect to external APIs (e.g. your backend server, Sentry, or third-party web services), you must whitelist their origins in `allowedDomains`:
+If your plugin UI needs to connect to an external public API, error-reporting service, or other
+third-party web service, whitelist its origin in `allowedDomains`:
 
 ```json
 "networkAccess": {
