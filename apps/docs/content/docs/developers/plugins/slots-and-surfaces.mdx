@@ -16,6 +16,7 @@ contribution ID.
 | --- | --- | --- | --- | --- |
 | `lms.banner` | Custom slot | None | 48–320px | Inline learner-layout banner |
 | `course.sidebar` | Custom slot | Course | 120–1200px | Course sidebar widget |
+| `course.newsfeed.aside` | Custom slot | Course | 120–1200px | Course newsfeed sticky aside column |
 | `lesson.after` | Custom slot | Lesson | 80–1600px | Widget below lesson content |
 | `certificate.actions` | Host action | Certificate | Host rendered | Opens one declared HTTPS URL |
 | `certificate.templates` | Custom slot | Course | 320–1600px | Template picker with typed apply handoff |
@@ -38,7 +39,7 @@ Typed data methods additionally require their declared and granted scopes.
 
 ## Inline slots
 
-Declare `lms.banner`, `course.sidebar`, or `lesson.after` in `contributes.slots` and reference a
+Declare `lms.banner`, `course.sidebar`, `course.newsfeed.aside`, or `lesson.after` in `contributes.slots` and reference a
 packaged UI entrypoint.
 
 ```json

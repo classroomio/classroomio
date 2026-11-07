@@ -11,8 +11,11 @@
   import { t } from '$lib/utils/functions/translations';
   import type { AccountOrg } from '$features/app/types';
   import { newsfeedApi } from '$features/course/api';
+  import PluginSlotRenderer from '$features/plugins/components/plugin-slot-renderer.svelte';
 
   let { data = $bindable() } = $props();
+
+  let asideSlotCount = $state(0);
 
   function getPageRoles(org: AccountOrg) {
     const roles: number[] = [1, 2];
@@ -35,7 +38,11 @@
     goto(resolve(`/courses/${data.courseId}/lessons?next=true`, {}));
   }}
 >
-  <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
+  <Page.Root
+    class={asideSlotCount > 0
+      ? 'mx-auto flex w-[90%] px-4 md:max-w-4xl lg:max-w-5xl xl:max-w-6xl'
+      : 'mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl'}
+  >
     <Page.Header>
       <Page.HeaderContent>
         <Page.Title>
@@ -56,7 +63,20 @@
 
     <Page.Body>
       {#snippet child()}
-        <NewsFeedPage courseId={data.courseId} />
+        <div class="flex flex-col gap-6 {asideSlotCount > 0 ? 'lg:flex-row lg:items-start' : ''}">
+          <div class="min-w-0 flex-1">
+            <NewsFeedPage courseId={data.courseId} />
+          </div>
+          <aside class="w-full shrink-0 lg:w-[260px] xl:w-[280px]" class:hidden={asideSlotCount === 0}>
+            <div class="sticky top-6 flex flex-col gap-4">
+              <PluginSlotRenderer
+                target="course.newsfeed.aside"
+                resource={{ type: 'course', id: data.courseId }}
+                bind:count={asideSlotCount}
+              />
+            </div>
+          </aside>
+        </div>
       {/snippet}
     </Page.Body>
   </Page.Root>

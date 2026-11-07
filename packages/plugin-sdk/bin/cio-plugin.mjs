@@ -32,6 +32,7 @@ const ALLOWED_CAPABILITIES = new Set([
 const ALLOWED_TARGETS = new Set([
   'lms.banner',
   'course.sidebar',
+  'course.newsfeed.aside',
   'lesson.after',
   'certificate.actions',
   'certificate.templates',

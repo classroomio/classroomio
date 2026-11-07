@@ -9,11 +9,12 @@
     target: StableContributionTarget | string;
     resource?: PluginResourceContext;
     className?: string;
+    count?: number;
     onAction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
     onaction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
   }
 
-  let { target, resource, className = '', onAction, onaction }: Props = $props();
+  let { target, resource, className = '', count = $bindable(0), onAction, onaction }: Props = $props();
 
   const effectiveAction = $derived(onAction ?? onaction);
   let listedContributionKey = '';
@@ -47,6 +48,10 @@
       if (installation && installation.status !== 'active') return false;
       return true;
     });
+  });
+
+  $effect(() => {
+    count = matchingSlots.length;
   });
 </script>
 

@@ -69,6 +69,7 @@ export type TPluginIcon = z.infer<typeof ZPluginIcon>;
 export const STABLE_CONTRIBUTION_TARGETS = [
   'lms.banner',
   'course.sidebar',
+  'course.newsfeed.aside',
   'lesson.after',
   'certificate.actions',
   'certificate.templates',
@@ -97,6 +98,7 @@ const contributionPresentation = {
 export const PLUGIN_SURFACE_CONTRACTS = {
   'lms.banner': { version: 1, minHeight: 48, maxHeight: 320, mobile: true, resource: null },
   'course.sidebar': { version: 1, minHeight: 120, maxHeight: 1200, mobile: true, resource: 'course' },
+  'course.newsfeed.aside': { version: 1, minHeight: 120, maxHeight: 1200, mobile: true, resource: 'course' },
   'lesson.after': { version: 1, minHeight: 80, maxHeight: 1600, mobile: true, resource: 'lesson' },
   'certificate.actions': { version: 1, minHeight: 0, maxHeight: 0, mobile: true, resource: 'certificate' },
   'certificate.templates': { version: 1, minHeight: 320, maxHeight: 1600, mobile: true, resource: 'course' },
@@ -156,7 +158,14 @@ export type TPluginDeclaredTemplate = z.infer<typeof ZPluginDeclaredTemplate>;
 export const ZPluginSlotContribution = z
   .object({
     id: z.string().trim().min(1).max(64),
-    target: z.enum(['lms.banner', 'course.sidebar', 'lesson.after', 'certificate.templates', 'landing.templates']),
+    target: z.enum([
+      'lms.banner',
+      'course.sidebar',
+      'course.newsfeed.aside',
+      'lesson.after',
+      'certificate.templates',
+      'landing.templates'
+    ]),
     renderMode: z.literal('custom').default('custom'),
     entrypoint: z.string().trim().min(1).max(64).optional(),
     pickerEntrypoint: z.string().trim().min(1).max(64).optional(),
