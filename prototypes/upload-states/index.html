@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Upload states</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet" />
+    <style>
+      /* Tokens mirror packages/ui/src/index.css */
+      :root {
+        --background: oklch(1 0 0);
+        --foreground: oklch(0.145 0 0);
+        --card: oklch(1 0 0);
+        --primary: oklch(0.488 0.243 264.376);
+        --primary-foreground: oklch(0.97 0.014 254.604);
+        --secondary: oklch(0.967 0.001 286.375);
+        --secondary-foreground: oklch(0.21 0.006 285.885);
+        --muted: oklch(0.97 0 0);
+        --muted-foreground: oklch(0.556 0 0);
+        --destructive: oklch(0.577 0.245 27.325);
+        --success: oklch(0.623 0.214 142.495);
+        --border: oklch(0.922 0 0);
+        --ring: oklch(0.708 0 0);
+        --radius: 0.625rem;
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+        --page: oklch(0.985 0 0);
+        --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+        --shadow-lg: 0 12px 32px -12px rgb(0 0 0 / 0.18);
+        color-scheme: light;
+      }
+      .dark {
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --primary: oklch(0.623 0.214 259.815);
+        --primary-foreground: oklch(0.97 0.014 254.604);
+        --secondary: oklch(0.274 0.006 286.033);
+        --secondary-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --destructive: oklch(0.704 0.191 22.216);
+        --success: oklch(0.708 0.195 142.495);
+        --border: oklch(1 0 0 / 10%);
+        --ring: oklch(0.556 0 0);
+        --page: oklch(0.145 0 0);
+        --shadow-lg: 0 12px 32px -12px rgb(0 0 0 / 0.6);
+        color-scheme: dark;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+        font-size: 14px;
+        color: var(--foreground);
+        background: var(--page);
+        -webkit-font-smoothing: antialiased;
+      }
+      .mono { font-family: 'Geist Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+      button { font: inherit; color: inherit; }
+
+      /* ---------- shared @cio/ui-like primitives ---------- */
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        height: 32px; padding: 0 12px; border-radius: var(--radius-md);
+        border: 1px solid transparent; font-size: 13px; font-weight: 500; cursor: pointer;
+        transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      }
+      .btn:active { transform: scale(0.97); }
+      .btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+      .btn-xs { height: 24px; padding: 0 8px; font-size: 12px; border-radius: var(--radius-sm); }
+      .btn-icon { width: 24px; height: 24px; padding: 0; border-radius: var(--radius-sm); }
+      .btn-default { background: var(--primary); color: var(--primary-foreground); }
+      .btn-secondary { background: var(--secondary); color: var(--secondary-foreground); }
+      .btn-secondary:hover { background: color-mix(in oklch, var(--secondary), var(--foreground) 6%); }
+      .btn-outline { background: var(--background); border-color: var(--border); }
+      .btn-outline:hover { background: var(--muted); }
+      .btn svg { width: 14px; height: 14px; }
+      .badge {
+        display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px;
+        border-radius: 999px; font-size: 11px; font-weight: 500;
+        background: var(--secondary); color: var(--secondary-foreground);
+      }
+
+      /* ---------- page shell ---------- */
+      .topbar {
+        position: sticky; top: 0; z-index: 10;
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 12px 24px; border-bottom: 1px solid var(--border);
+        background: color-mix(in oklch, var(--background), transparent 15%);
+        backdrop-filter: blur(8px);
+      }
+      .topbar h1 { font-size: 15px; font-weight: 600; margin: 0; }
+      .topbar .sub { color: var(--muted-foreground); font-size: 13px; }
+      .topbar .spacer { flex: 1; }
+      .tabs { display: inline-flex; padding: 3px; gap: 2px; background: var(--muted); border-radius: var(--radius-lg); }
+      .tabs button {
+        border: 0; background: transparent; height: 28px; padding: 0 12px; border-radius: var(--radius-md);
+        font-size: 13px; font-weight: 500; color: var(--muted-foreground); cursor: pointer;
+      }
+      .tabs button[aria-selected='true'] { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-sm); }
+
+      main { max-width: 1120px; margin: 0 auto; padding: 32px 24px 80px; }
+      .variant { display: none; }
+      .variant.active { display: block; animation: fade-in 0.3s ease; }
+      .variant-head { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+      .variant-head h2 { margin: 0; font-size: 22px; letter-spacing: -0.02em; }
+      .variant-head p { margin: 4px 0 0; color: var(--muted-foreground); max-width: 620px; line-height: 1.5; }
+      .layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px; align-items: start; }
+      @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+      .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 16px; }
+      .panel-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-foreground); margin: 0 0 12px; }
+      .legend { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+      .legend .badge { cursor: pointer; }
+      .legend .badge:hover { background: color-mix(in oklch, var(--secondary), var(--foreground) 8%); }
+      .notes { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+      .note { border: 1px dashed var(--border); border-radius: var(--radius-lg); padding: 12px 14px; color: var(--muted-foreground); line-height: 1.5; font-size: 13px; }
+      .note b { color: var(--foreground); font-weight: 600; display: block; margin-bottom: 2px; }
+
+      @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } }
+      @keyframes enter { from { opacity: 0; transform: translateY(-6px) scale(0.98); } }
+      @keyframes shake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* =========================================================
+         VARIANT A — ORBIT
+         ========================================================= */
+      .orbit-zone {
+        position: relative; display: grid; place-items: center; text-align: center;
+        padding: 40px 20px; border-radius: var(--radius-xl); cursor: pointer; overflow: hidden;
+        background:
+          radial-gradient(circle at 50% 42%, color-mix(in oklch, var(--primary), transparent 92%), transparent 60%),
+          var(--background);
+        transition: background 0.25s;
+      }
+      .orbit-zone svg.ants { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+      .orbit-zone svg.ants rect {
+        width: calc(100% - 2px); height: calc(100% - 2px);
+        fill: none; stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 6 6;
+        transition: stroke 0.2s;
+      }
+      .orbit-zone:hover svg.ants rect { stroke: color-mix(in oklch, var(--primary), transparent 50%); animation: march 1s linear infinite; }
+      @keyframes march { to { stroke-dashoffset: -24; } }
+      .orbit-core { position: relative; width: 72px; height: 72px; display: grid; place-items: center; margin-bottom: 16px; }
+      .orbit-core .disc {
+        position: relative; z-index: 2; width: 56px; height: 56px; border-radius: 999px; display: grid; place-items: center;
+        background: var(--primary); color: var(--primary-foreground);
+        box-shadow: 0 8px 24px -8px color-mix(in oklch, var(--primary), transparent 30%);
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .orbit-core .disc svg { width: 24px; height: 24px; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+      .orbit-core .ripple {
+        position: absolute; inset: 8px; border-radius: 999px; border: 1.5px solid var(--primary); opacity: 0;
+      }
+      .orbit-core .sat {
+        position: absolute; inset: -6px; border-radius: 999px; animation: spin 6s linear infinite;
+      }
+      .orbit-core .sat::before {
+        content: ''; position: absolute; top: 0; left: 50%; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 999px;
+        background: var(--primary); opacity: 0.55;
+      }
+      .orbit-core .sat.two { inset: -14px; animation-duration: 9s; animation-direction: reverse; }
+      .orbit-core .sat.two::before { width: 5px; height: 5px; opacity: 0.35; }
+      .orbit-zone h3 { margin: 0; font-size: 15px; font-weight: 600; }
+      .orbit-zone p { margin: 4px 0 0; color: var(--muted-foreground); font-size: 13px; }
+      .orbit-zone p u { color: var(--primary); text-decoration: none; font-weight: 500; }
+      .orbit-zone .types { display: flex; gap: 6px; justify-content: center; margin-top: 14px; }
+      .orbit-zone.drag { background: radial-gradient(circle at 50% 42%, color-mix(in oklch, var(--primary), transparent 80%), transparent 70%), var(--background); }
+      .orbit-zone.drag svg.ants rect { stroke: var(--primary); stroke-dasharray: 0; }
+      .orbit-zone.drag .disc { transform: scale(1.12) translateY(-4px); }
+      .orbit-zone.drag .disc svg { transform: translateY(-3px); }
+      .orbit-zone.drag .ripple { animation: ripple 1.4s ease-out infinite; }
+      .orbit-zone.drag .ripple.r2 { animation-delay: 0.45s; }
+      .orbit-zone.drag .ripple.r3 { animation-delay: 0.9s; }
+      .orbit-zone.drag .sat { animation-duration: 1.6s; }
+      .orbit-zone.drag .sat.two { animation-duration: 2.4s; }
+      @keyframes ripple { from { transform: scale(0.9); opacity: 0.7; } to { transform: scale(2.1); opacity: 0; } }
+
+      .orbit-list { display: flex; flex-direction: column; gap: 8px; }
+      .orbit-row {
+        position: relative; display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+        border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--background);
+        animation: enter 0.3s ease;
+        transition: border-color 0.3s, background 0.3s;
+      }
+      .orbit-row.error { border-color: color-mix(in oklch, var(--destructive), transparent 60%); background: color-mix(in oklch, var(--destructive), var(--background) 96%); animation: shake 0.45s; }
+      .orbit-row.done { border-color: color-mix(in oklch, var(--success), transparent 70%); }
+      .ring-wrap { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+      .ring-wrap svg.ring { position: absolute; inset: 0; transform: rotate(-90deg); }
+      .ring-wrap .track { fill: none; stroke: var(--muted); stroke-width: 3; }
+      .ring-wrap .bar { fill: none; stroke: var(--primary); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 0.3s ease-out, stroke 0.3s; }
+      .orbit-row.queued .track { stroke: var(--border); stroke-dasharray: 2 4; }
+      .orbit-row.queued svg.ring { animation: spin 8s linear infinite; }
+      .orbit-row.processing svg.ring { animation: spin 0.9s linear infinite; }
+      .orbit-row.done .bar { stroke: var(--success); }
+      .orbit-row.error .bar { stroke: var(--destructive); }
+      .ring-wrap .ext {
+        position: absolute; inset: 6px; border-radius: 999px; display: grid; place-items: center;
+        background: color-mix(in oklch, var(--primary), transparent 90%); color: var(--primary);
+        font-size: 9px; font-weight: 700; letter-spacing: 0.02em; transition: background 0.3s, color 0.3s, transform 0.3s;
+      }
+      .orbit-row.done .ext { background: var(--success); color: white; animation: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
+      .orbit-row.error .ext { background: color-mix(in oklch, var(--destructive), transparent 88%); color: var(--destructive); }
+      .orbit-row.queued .ext { background: var(--muted); color: var(--muted-foreground); }
+      @keyframes pop { 0% { transform: scale(0.4); } 100% { transform: scale(1); } }
+      .ext svg { width: 16px; height: 16px; }
+      .spark { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px; border-radius: 999px; background: var(--success); pointer-events: none; animation: spark 0.6s ease-out forwards; }
+      @keyframes spark { from { transform: rotate(var(--a)) translateY(0); opacity: 1; } to { transform: rotate(var(--a)) translateY(-30px) scale(0.3); opacity: 0; } }
+      .orbit-meta { min-width: 0; flex: 1; }
+      .orbit-meta .name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .orbit-meta .status { display: flex; gap: 6px; align-items: center; margin-top: 2px; font-size: 12px; color: var(--muted-foreground); }
+      .orbit-meta .status .s { font-weight: 500; }
+      .orbit-row.uploading .s, .orbit-row.processing .s { color: var(--primary); }
+      .orbit-row.done .s { color: var(--success); }
+      .orbit-row.error .s { color: var(--destructive); }
+      .orbit-pct { font-size: 13px; font-weight: 600; color: var(--primary); min-width: 40px; text-align: right; }
+      .orbit-row:not(.uploading) .orbit-pct { display: none; }
+      .actions { display: flex; gap: 6px; align-items: center; }
+
+      /* =========================================================
+         VARIANT B — TIDE (liquid fill tiles)
+         ========================================================= */
+      .tide-zone {
+        position: relative; border-radius: var(--radius-xl); padding: 28px 20px 24px; text-align: center; cursor: pointer;
+        border: 1.5px dashed var(--border); background: var(--background); overflow: hidden;
+        transition: border-color 0.2s, background 0.3s;
+      }
+      .tide-zone:hover { border-color: color-mix(in oklch, var(--primary), transparent 50%); }
+      .papers { position: relative; height: 92px; margin: 0 auto 14px; width: 160px; }
+      .paper {
+        position: absolute; left: 50%; bottom: 0; width: 60px; height: 76px; margin-left: -30px;
+        border-radius: 8px; border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow-sm);
+        display: flex; flex-direction: column; justify-content: flex-end; padding: 8px; gap: 4px;
+        transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .paper i { display: block; height: 4px; border-radius: 2px; background: var(--muted); }
+      .paper i:nth-child(2) { width: 70%; }
+      .paper .tag { position: absolute; top: 8px; left: 8px; font-size: 8px; font-weight: 700; padding: 2px 4px; border-radius: 3px; color: white; }
+      .paper.p1 { transform: rotate(-10deg) translateX(-18px); }
+      .paper.p1 .tag { background: oklch(0.6 0.2 25); }
+      .paper.p2 { transform: rotate(9deg) translateX(18px); }
+      .paper.p2 .tag { background: oklch(0.65 0.17 150); }
+      .paper.p3 { z-index: 2; }
+      .paper.p3 .tag { background: var(--primary); }
+      .tide-zone.drag { border-color: var(--primary); border-style: solid; background: color-mix(in oklch, var(--primary), var(--background) 94%); }
+      .tide-zone.drag .p1 { transform: rotate(-24deg) translate(-46px, -6px); }
+      .tide-zone.drag .p2 { transform: rotate(22deg) translate(46px, -6px); }
+      .tide-zone.drag .p3 { transform: translateY(-14px) scale(1.06); }
+      .tide-zone h3 { margin: 0; font-size: 15px; font-weight: 600; }
+      .tide-zone p { margin: 4px 0 0; font-size: 13px; color: var(--muted-foreground); }
+      .tide-zone .drop-hint { display: none; color: var(--primary); }
+      .tide-zone.drag .drop-hint { display: inline; }
+      .tide-zone.drag .idle-hint { display: none; }
+      .tide-zone .wave-floor { position: absolute; left: 0; right: 0; bottom: -40px; height: 40px; transition: bottom 0.4s ease; }
+      .tide-zone.drag .wave-floor { bottom: 0; }
+
+      .tide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+      .tile {
+        position: relative; aspect-ratio: 4 / 5; border-radius: var(--radius-xl); overflow: hidden;
+        border: 1px solid var(--border); background: var(--background);
+        animation: enter 0.35s ease; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s;
+        --fill: var(--primary);
+      }
+      .tile .liquid {
+        position: absolute; left: 0; right: 0; bottom: 0; height: 0%;
+        background: color-mix(in oklch, var(--fill), transparent 82%); transition: height 0.35s ease-out, background 0.4s;
+      }
+      .tile .liquid svg { position: absolute; left: 0; bottom: 100%; width: 200%; height: 12px; animation: wave 2.2s linear infinite; }
+      .tile .liquid svg.back { opacity: 0.5; animation-duration: 3.4s; animation-direction: reverse; height: 14px; }
+      .tile .liquid path { fill: color-mix(in oklch, var(--fill), transparent 82%); transition: fill 0.4s; }
+      @keyframes wave { to { transform: translateX(-50%); } }
+      .tile .bubble { position: absolute; bottom: 0; width: 6px; height: 6px; border-radius: 999px; border: 1.5px solid color-mix(in oklch, var(--fill), transparent 40%); opacity: 0; }
+      .tile.processing .bubble { animation: bubble 1.6s ease-in infinite; }
+      .tile .bubble:nth-child(2) { left: 25%; animation-delay: 0.2s !important; }
+      .tile .bubble:nth-child(3) { left: 55%; animation-delay: 0.7s !important; width: 9px; height: 9px; }
+      .tile .bubble:nth-child(4) { left: 78%; animation-delay: 1.1s !important; }
+      @keyframes bubble { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-160px); opacity: 0; } }
+      .tile .content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 12px; }
+      .tile .top { display: flex; justify-content: space-between; align-items: flex-start; }
+      .tile .ext { font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; background: color-mix(in oklch, var(--fill), transparent 88%); color: var(--fill); transition: color 0.3s, background 0.3s; }
+      .tile .big { flex: 1; display: grid; place-items: center; font-size: 34px; font-weight: 600; letter-spacing: -0.04em; color: var(--fill); transition: color 0.3s; }
+      .tile .big small { font-size: 16px; font-weight: 500; opacity: 0.6; }
+      .tile .big svg { width: 36px; height: 36px; }
+      .tile .name { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .tile .meta { font-size: 11px; color: var(--muted-foreground); margin-top: 2px; }
+      .tile.queued { border-style: dashed; --fill: var(--muted-foreground); }
+      .tile.queued .big, .tile.error .big { font-family: inherit; }
+      .tile.queued .big { font-size: 13px; font-weight: 500; letter-spacing: 0; }
+      .tile.done { --fill: var(--success); border-color: color-mix(in oklch, var(--success), transparent 60%); }
+      .tile.done .liquid { height: 100% !important; background: color-mix(in oklch, var(--success), transparent 90%); }
+      .tile.done .liquid svg { display: none; }
+      .tile.done .big svg { animation: stamp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+      @keyframes stamp { 0% { transform: scale(2) rotate(-20deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+      .tile.error { --fill: var(--destructive); transform: rotate(-1.5deg); border-color: color-mix(in oklch, var(--destructive), transparent 55%); }
+      .tile.error .liquid svg { animation-play-state: paused; }
+      .tile.error .big { font-size: 13px; font-weight: 500; letter-spacing: 0; text-align: center; padding: 0 6px; line-height: 1.4; }
+      .tile .x { opacity: 0; transition: opacity 0.15s; background: color-mix(in oklch, var(--background), transparent 20%); }
+      .tile:hover .x { opacity: 1; }
+      .tile .retry { margin-top: 8px; width: 100%; }
+      .tile:not(.error) .retry { display: none; }
+      .tile.add {
+        border-style: dashed; display: grid; place-items: center; cursor: pointer; color: var(--muted-foreground); animation: none;
+      }
+      .tile.add:hover { color: var(--primary); border-color: color-mix(in oklch, var(--primary), transparent 50%); }
+      .tile.add div { text-align: center; font-size: 12px; font-weight: 500; }
+      .tile.add svg { width: 22px; height: 22px; margin-bottom: 4px; }
+
+      /* =========================================================
+         VARIANT C — PIPELINE
+         ========================================================= */
+      .pipe-summary { padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--background); margin-bottom: 12px; }
+      .pipe-summary .row1 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+      .pipe-summary .count { font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+      .pipe-summary .count span { color: var(--muted-foreground); font-weight: 400; font-size: 18px; }
+      .pipe-summary .stat { color: var(--muted-foreground); font-size: 12px; display: inline-flex; gap: 6px; align-items: center; }
+      .pipe-summary .stat b { color: var(--foreground); font-weight: 500; }
+      .pipe-summary .grow { flex: 1; }
+      .spark-svg { width: 96px; height: 24px; }
+      .spark-svg path.l { fill: none; stroke: var(--primary); stroke-width: 1.5; }
+      .spark-svg path.a { fill: color-mix(in oklch, var(--primary), transparent 85%); }
+      .segments { display: flex; gap: 3px; height: 10px; margin-top: 14px; }
+      .seg { position: relative; border-radius: 3px; background: var(--muted); overflow: hidden; min-width: 8px; transition: flex-grow 0.3s; }
+      .seg .f { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--primary); transition: width 0.3s ease-out, background 0.3s; }
+      .seg.processing .f, .seg.uploading .f {
+        background-image: linear-gradient(135deg, rgb(255 255 255 / 0.25) 25%, transparent 25%, transparent 50%, rgb(255 255 255 / 0.25) 50%, rgb(255 255 255 / 0.25) 75%, transparent 75%);
+        background-size: 10px 10px; animation: stripes 0.6s linear infinite;
+      }
+      @keyframes stripes { to { background-position: 10px 0; } }
+      .seg.done .f { background: var(--success); width: 100% !important; }
+      .seg.error { background: color-mix(in oklch, var(--destructive), transparent 80%); }
+      .seg.error .f { background: var(--destructive); }
+
+      .pipe-zone {
+        display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--radius-lg);
+        border: 1.5px dashed var(--border); background: var(--background); cursor: pointer; position: relative; overflow: hidden;
+        transition: border-color 0.2s, background 0.2s;
+      }
+      .pipe-zone:hover { border-color: color-mix(in oklch, var(--primary), transparent 50%); }
+      .pipe-zone .ico { width: 36px; height: 36px; border-radius: var(--radius-md); display: grid; place-items: center; background: var(--secondary); color: var(--secondary-foreground); flex-shrink: 0; transition: background 0.2s, color 0.2s, transform 0.3s; }
+      .pipe-zone .ico svg { width: 18px; height: 18px; }
+      .pipe-zone .txt { flex: 1; min-width: 0; }
+      .pipe-zone .txt b { font-weight: 500; display: block; }
+      .pipe-zone .txt span { font-size: 12px; color: var(--muted-foreground); }
+      .kbd { font-family: 'Geist Mono', monospace; font-size: 11px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); border-bottom-width: 2px; color: var(--muted-foreground); background: var(--background); }
+      .pipe-zone.drag { border-color: var(--primary); border-style: solid; background: color-mix(in oklch, var(--primary), var(--background) 93%); }
+      .pipe-zone.drag .ico { background: var(--primary); color: var(--primary-foreground); transform: rotate(-8deg) scale(1.08); }
+      .pipe-zone::after {
+        content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+        background: linear-gradient(100deg, transparent 30%, color-mix(in oklch, var(--primary), transparent 85%) 50%, transparent 70%);
+        background-size: 200% 100%;
+      }
+      .pipe-zone.drag::after { opacity: 1; animation: sweep 1.2s linear infinite; }
+      @keyframes sweep { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+
+      .pipe-list { margin-top: 12px; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--background); overflow: hidden; }
+      .pipe-row { padding: 12px 14px; border-top: 1px solid var(--border); animation: enter 0.3s ease; position: relative; }
+      .pipe-row:first-child { border-top: 0; }
+      .pipe-row.error { background: color-mix(in oklch, var(--destructive), var(--background) 95%); }
+      .pipe-row::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: transparent; transition: background 0.3s; }
+      .pipe-row.uploading::before, .pipe-row.processing::before { background: var(--primary); }
+      .pipe-row.error::before { background: var(--destructive); }
+      .pipe-row .line1 { display: flex; align-items: center; gap: 10px; }
+      .pipe-row .ext { width: 32px; height: 32px; border-radius: var(--radius-md); display: grid; place-items: center; font-size: 9px; font-weight: 700; background: color-mix(in oklch, var(--primary), transparent 90%); color: var(--primary); flex-shrink: 0; }
+      .pipe-row .nm { flex: 1; min-width: 0; }
+      .pipe-row .nm div:first-child { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .pipe-row .nm div:last-child { font-size: 12px; color: var(--muted-foreground); margin-top: 1px; }
+      .pipe-row.error .nm div:last-child { color: var(--destructive); }
+      .steps { display: flex; align-items: center; gap: 0; margin: 10px 0 0 42px; }
+      .step { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--muted-foreground); white-space: nowrap; }
+      .step .dot { width: 14px; height: 14px; border-radius: 999px; border: 1.5px solid var(--border); display: grid; place-items: center; transition: all 0.25s; background: var(--background); }
+      .step .dot svg { width: 9px; height: 9px; opacity: 0; }
+      .step.past { color: var(--foreground); }
+      .step.past .dot { background: var(--success); border-color: var(--success); color: white; }
+      .step.past .dot svg { opacity: 1; }
+      .step.now { color: var(--primary); }
+      .step.now .dot { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 82%); }
+      .step.now .dot svg { display: none; }
+      .step.now .dot::after { content: ''; width: 6px; height: 6px; border-radius: 999px; background: var(--primary); animation: blink 1s ease-in-out infinite; }
+      .step.fail { color: var(--destructive); }
+      .step.fail .dot { background: var(--destructive); border-color: var(--destructive); color: white; }
+      .step.fail .dot svg { opacity: 1; }
+      @keyframes blink { 50% { opacity: 0.3; } }
+      .connector { flex: 1; height: 1.5px; min-width: 12px; margin: 0 6px; background: var(--border); position: relative; overflow: hidden; border-radius: 2px; }
+      .connector .cf { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--primary); transition: width 0.3s ease-out; }
+      .connector.full .cf { width: 100% !important; background: var(--success); }
+      .pipe-row .rate { font-size: 11px; color: var(--muted-foreground); text-align: right; min-width: 92px; }
+      .pipe-row .rate b { color: var(--foreground); font-weight: 500; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1>Upload states</h1>
+      <span class="sub">3 directions · @cio/ui tokens</span>
+      <div class="spacer"></div>
+      <div class="tabs" role="tablist">
+        <button role="tab" data-tab="orbit" aria-selected="true">A · Orbit</button>
+        <button role="tab" data-tab="tide" aria-selected="false">B · Tide</button>
+        <button role="tab" data-tab="pipe" aria-selected="false">C · Pipeline</button>
+      </div>
+      <button class="btn btn-outline btn-sm" id="drag-toggle" title="Preview the drag-over state">Preview drag-over</button>
+      <button class="btn btn-outline btn-sm" id="replay">Replay</button>
+      <button class="btn btn-secondary btn-sm" id="theme" aria-label="Toggle theme" style="width: 28px; padding: 0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor" /></svg></button>
+    </div>
+
+    <main>
+      <!-- ================= A · ORBIT ================= -->
+      <section class="variant active" data-variant="orbit">
+        <div class="variant-head">
+          <div>
+            <h2>A · Orbit</h2>
+            <p>The file badge sits inside a progress ring. Dragging over the zone sends out ripples and speeds up the orbiting dots. A finished upload throws off a few sparks; a failed one shakes once and turns red.</p>
+          </div>
+        </div>
+        <div class="layout">
+          <div class="panel">
+            <p class="panel-label">Drop zone</p>
+            <div class="orbit-zone dropzone" tabindex="0">
+              <svg class="ants" preserveAspectRatio="none"><rect x="1" y="1" rx="13" ry="13" /></svg>
+              <div>
+                <div class="orbit-core" style="margin-inline: auto">
+                  <span class="ripple"></span><span class="ripple r2"></span><span class="ripple r3"></span>
+                  <span class="sat"></span><span class="sat two"></span>
+                  <span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12" /><path d="m17 8-5-5-5 5" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /></svg></span>
+                </div>
+                <h3 class="zone-title">Drop files to upload</h3>
+                <p>or <u>browse your computer</u> · up to 500 MB</p>
+                <div class="types"><span class="badge">PDF</span><span class="badge">MP4</span><span class="badge">PNG</span><span class="badge">DOCX</span></div>
+              </div>
+            </div>
+            <div class="legend" data-legend></div>
+          </div>
+          <div class="panel">
+            <p class="panel-label">Queue</p>
+            <div class="orbit-list" data-list></div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="note"><b>Fits in today</b>Same row layout as <code>UploadFileCard</code>. Only the badge becomes the ring, so it works in dialogs and exercise answers.</div>
+          <div class="note"><b>Processing state</b>After 100% the ring keeps spinning while the server makes thumbnails or transcodes, so "done" really means done.</div>
+          <div class="note"><b>Motion budget</b>Animation only runs when the state changes or while you drag. A finished row sits still.</div>
+        </div>
+      </section>
+
+      <!-- ================= B · TIDE ================= -->
+      <section class="variant" data-variant="tide">
+        <div class="variant-head">
+          <div>
+            <h2>B · Tide</h2>
+            <p>Each file is a tile that fills with liquid as it uploads. Bubbles rise while it processes, and a check gets stamped on when it's ready. Dragging over the zone fans out the paper stack and lifts a wave from the bottom.</p>
+          </div>
+        </div>
+        <div class="layout">
+          <div class="panel">
+            <p class="panel-label">Drop zone</p>
+            <div class="tide-zone dropzone" tabindex="0">
+              <div class="papers">
+                <div class="paper p1"><span class="tag">PDF</span><i></i><i></i></div>
+                <div class="paper p2"><span class="tag">XLS</span><i></i><i></i></div>
+                <div class="paper p3"><span class="tag">MP4</span><i></i><i></i></div>
+              </div>
+              <h3><span class="idle-hint">Drag files here</span><span class="drop-hint">Let go to upload</span></h3>
+              <p>or click to browse · PDF, video, images, docs</p>
+              <svg class="wave-floor" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0 18 Q50 4 100 18 T200 18 T300 18 T400 18 V40 H0Z" fill="color-mix(in oklch, var(--primary), transparent 85%)" /></svg>
+            </div>
+            <div class="legend" data-legend></div>
+          </div>
+          <div class="panel">
+            <p class="panel-label">Uploads</p>
+            <div class="tide-grid" data-list></div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="note"><b>Best for</b>Media library and course resources, where people upload several files at once and want a glance-able overview.</div>
+          <div class="note"><b>Done → thumbnail</b>In production the finished tile swaps the check for the real thumbnail once the server has made one.</div>
+          <div class="note"><b>Error tilt</b>A failed tile tilts slightly so it stands out in a full grid, with Retry right on the tile.</div>
+        </div>
+      </section>
+
+      <!-- ================= C · PIPELINE ================= -->
+      <section class="variant" data-variant="pipe">
+        <div class="variant-head">
+          <div>
+            <h2>C · Pipeline</h2>
+            <p>An honest, information-rich take. Each file shows which step it's on (queued → uploading → processing → ready). A segmented bar for the whole batch shows every file's share at a glance, and a sparkline shows live speed.</p>
+          </div>
+        </div>
+        <div class="layout">
+          <div class="panel">
+            <p class="panel-label">Drop zone</p>
+            <div class="pipe-zone dropzone" tabindex="0">
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13v8" /><path d="m8 17 4-4 4 4" /><path d="M20 16.6A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25" /></svg></span>
+              <div class="txt"><b class="zone-title">Drop files or click to browse</b><span>Max 500 MB each · up to 10 files</span></div>
+              <span class="kbd">⌘V</span>
+            </div>
+            <div class="legend" data-legend></div>
+          </div>
+          <div class="panel">
+            <p class="panel-label">Batch</p>
+            <div class="pipe-summary">
+              <div class="row1">
+                <div class="count" data-count>0<span> / 0 ready</span></div>
+                <div class="grow"></div>
+                <span class="stat">speed <b class="mono" data-speed>—</b></span>
+                <svg class="spark-svg" viewBox="0 0 96 24" preserveAspectRatio="none"><path class="a" data-spark-a /><path class="l" data-spark-l /></svg>
+                <span class="stat">ETA <b class="mono" data-eta>—</b></span>
+              </div>
+              <div class="segments" data-segments></div>
+            </div>
+            <div class="pipe-list" data-list></div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="note"><b>Best for</b>Large video uploads and bulk imports, where people want to know <i>why</i> it's still busy.</div>
+          <div class="note"><b>Accessibility</b>Every step has a text label, so color isn't the only signal. The row can be an <code>aria-live="polite"</code> region.</div>
+          <div class="note"><b>Errors point at a step</b>The failed step gets an ✕, so you can tell "upload failed" apart from "processing failed".</div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const ICONS = {
+        check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+        x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+        retry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>',
+        plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+      };
+      const WAVE_PATH = 'M0 6 Q25 0 50 6 T100 6 T150 6 T200 6 T250 6 T300 6 T350 6 T400 6 V12 H0Z';
+
+      const SEED = [
+        { name: 'Week 1 — Intro to React.mp4', size: 84_200_000, status: 'done', progress: 100 },
+        { name: 'Course syllabus 2026.pdf', size: 2_400_000, status: 'uploading', progress: 38 },
+        { name: 'Component cheatsheet.png', size: 1_100_000, status: 'queued', progress: 0 },
+        { name: 'Grading rubric.docx', size: 640_000, status: 'error', progress: 62, error: 'Network connection lost' }
+      ];
+      const EXTRA_NAMES = ['Lesson 4 slides.pdf', 'Office hours recording.mov', 'Hooks diagram.svg', 'Quiz answers.xlsx', 'Welcome banner.jpg'];
+
+      let files = [];
+      let nextId = 1;
+      let speedHistory = Array(24).fill(0);
+
+      function extOf(name) { return (name.split('.').pop() || 'file').slice(0, 4).toUpperCase(); }
+      function fmtSize(bytes) {
+        if (bytes >= 1e9) return (bytes / 1e9).toFixed(1) + ' GB';
+        if (bytes >= 1e6) return (bytes / 1e6).toFixed(1) + ' MB';
+        return Math.round(bytes / 1e3) + ' KB';
+      }
+      function fmtTime(seconds) {
+        if (!isFinite(seconds) || seconds <= 0) return '—';
+        if (seconds < 60) return Math.ceil(seconds) + 's';
+        return Math.floor(seconds / 60) + 'm ' + Math.ceil(seconds % 60) + 's';
+      }
+      function makeFile(seed) {
+        return { id: nextId++, error: null, processingTicks: 0, speed: 0, ...seed };
+      }
+      function reset() {
+        files = SEED.map(makeFile);
+        speedHistory = Array(24).fill(0);
+        variants.forEach((variant) => variant.clear());
+        renderAll();
+      }
+      function addFile() {
+        const name = EXTRA_NAMES[Math.floor(Math.random() * EXTRA_NAMES.length)];
+        const size = Math.round((0.4 + Math.random() * 40) * 1e6);
+        files.push(makeFile({ name, size, status: 'queued', progress: 0 }));
+        renderAll();
+      }
+      function retry(id) {
+        const file = files.find((item) => item.id === id);
+        Object.assign(file, { status: 'queued', progress: 0, error: null });
+        renderAll();
+      }
+      function remove(id) {
+        files = files.filter((item) => item.id !== id);
+        renderAll();
+      }
+      function forceState(state) {
+        const target = files.find((item) => item.status !== 'done') || files[0];
+        if (!target) return;
+
+        target.status = state;
+        target.error = state === 'error' ? 'Upload timed out' : null;
+        if (state === 'queued') target.progress = 0;
+        if (state === 'uploading') target.progress = Math.max(target.progress, 24);
+        if (state === 'processing' || state === 'done') target.progress = 100;
+        renderAll();
+      }
+
+      function tick() {
+        const active = files.filter((item) => item.status === 'uploading' || item.status === 'processing');
+        if (active.length < 2) {
+          const queued = files.find((item) => item.status === 'queued');
+          if (queued) queued.status = 'uploading';
+        }
+        let totalSpeed = 0;
+        files.forEach((file) => {
+          if (file.status === 'uploading') {
+            const step = 1.2 + Math.random() * 3.5;
+            file.speed = (file.size * step) / 100 / 0.2;
+            totalSpeed += file.speed;
+            file.progress = Math.min(100, file.progress + step);
+            if (file.progress >= 100) { file.status = 'processing'; file.processingTicks = 0; }
+            if (file.name.includes('rubric') && file.progress > 70 && !file.failedOnce) {
+              file.failedOnce = true; file.status = 'error'; file.error = 'Server rejected the file';
+            }
+          } else if (file.status === 'processing') {
+            file.processingTicks += 1;
+            if (file.processingTicks > 8) file.status = 'done';
+          }
+        });
+        speedHistory.push(totalSpeed); speedHistory.shift();
+        renderAll();
+      }
+
+      /* ------------- Variant A: Orbit ------------- */
+      const RING_CIRC = 2 * Math.PI * 19;
+      const orbit = {
+        root: document.querySelector('[data-variant="orbit"]'),
+        nodes: new Map(),
+        clear() { this.nodes.forEach((node) => node.el.remove()); this.nodes.clear(); },
+        create(file) {
+          const el = document.createElement('div');
+          el.className = 'orbit-row';
+          el.innerHTML = `
+            <div class="ring-wrap">
+              <svg class="ring" viewBox="0 0 44 44"><circle class="track" cx="22" cy="22" r="19"/><circle class="bar" cx="22" cy="22" r="19" stroke-dasharray="${RING_CIRC}" stroke-dashoffset="${RING_CIRC}"/></svg>
+              <span class="ext"></span>
+            </div>
+            <div class="orbit-meta"><div class="name"></div><div class="status"><span class="s"></span><span class="d"></span></div></div>
+            <span class="orbit-pct mono"></span>
+            <div class="actions">
+              <button class="btn btn-secondary btn-xs" data-retry>${ICONS.retry} Retry</button>
+              <button class="btn btn-secondary btn-icon" data-remove aria-label="Remove">${ICONS.x}</button>
+            </div>`;
+          el.querySelector('[data-retry]').onclick = () => retry(file.id);
+          el.querySelector('[data-remove]').onclick = () => remove(file.id);
+          el.querySelector('.name').textContent = file.name;
+          return { el, prev: null };
+        },
+        update(node, file) {
+          const { el } = node;
+          const changed = node.prev !== file.status;
+          el.className = 'orbit-row ' + file.status;
+          const bar = el.querySelector('.bar');
+          let offset = RING_CIRC * (1 - file.progress / 100);
+          if (file.status === 'processing') offset = RING_CIRC * 0.72;
+          if (file.status === 'queued') offset = RING_CIRC;
+          if (file.status === 'done') offset = 0;
+          bar.setAttribute('stroke-dashoffset', offset);
+          const ext = el.querySelector('.ext');
+          if (file.status === 'done') { if (changed) ext.innerHTML = ICONS.check; }
+          else if (file.status === 'error') { if (changed) ext.innerHTML = '!'; }
+          else ext.textContent = extOf(file.name);
+          const statusText = { queued: 'Waiting', uploading: 'Uploading', processing: 'Processing', done: 'Uploaded', error: 'Failed' }[file.status];
+          const detail = {
+            queued: `· ${fmtSize(file.size)}`,
+            uploading: `· ${fmtSize((file.size * file.progress) / 100)} of ${fmtSize(file.size)}`,
+            processing: '· Generating preview…',
+            done: `· ${fmtSize(file.size)}`,
+            error: `· ${file.error}`
+          }[file.status];
+          el.querySelector('.s').textContent = statusText;
+          el.querySelector('.d').textContent = detail;
+          el.querySelector('.orbit-pct').textContent = Math.floor(file.progress) + '%';
+          el.querySelector('[data-retry]').style.display = file.status === 'error' ? '' : 'none';
+          el.querySelector('[data-remove]').style.display = file.status === 'done' ? 'none' : '';
+          if (changed && file.status === 'done' && node.prev) {
+            const wrap = el.querySelector('.ring-wrap');
+            for (let index = 0; index < 8; index++) {
+              const sparkEl = document.createElement('span');
+              sparkEl.className = 'spark';
+              sparkEl.style.setProperty('--a', index * 45 + 'deg');
+              wrap.appendChild(sparkEl);
+              setTimeout(() => sparkEl.remove(), 700);
+            }
+          }
+          if (changed && file.status === 'error' && node.prev) { el.style.animation = 'none'; el.offsetHeight; el.style.animation = ''; }
+          node.prev = file.status;
+        }
+      };
+
+      /* ------------- Variant B: Tide ------------- */
+      const tide = {
+        root: document.querySelector('[data-variant="tide"]'),
+        nodes: new Map(),
+        addTile: null,
+        clear() { this.nodes.forEach((node) => node.el.remove()); this.nodes.clear(); },
+        create(file) {
+          const el = document.createElement('div');
+          el.className = 'tile';
+          el.innerHTML = `
+            <div class="liquid">
+              <svg class="back" viewBox="0 0 400 12" preserveAspectRatio="none"><path d="${WAVE_PATH}"/></svg>
+              <svg viewBox="0 0 400 12" preserveAspectRatio="none"><path d="${WAVE_PATH}"/></svg>
+            </div>
+            <span class="bubble"></span><span class="bubble"></span><span class="bubble"></span><span class="bubble"></span>
+            <div class="content">
+              <div class="top"><span class="ext"></span><button class="btn btn-secondary btn-icon x" aria-label="Remove">${ICONS.x}</button></div>
+              <div class="big mono"></div>
+              <div class="name"></div>
+              <div class="meta"></div>
+              <button class="btn btn-default btn-xs retry">${ICONS.retry} Retry</button>
+            </div>`;
+          el.querySelector('.x').onclick = () => remove(file.id);
+          el.querySelector('.retry').onclick = () => retry(file.id);
+          el.querySelector('.name').textContent = file.name;
+          el.querySelector('.ext').textContent = extOf(file.name);
+          return { el, prev: null };
+        },
+        update(node, file) {
+          const { el } = node;
+          const changed = node.prev !== file.status;
+          el.className = 'tile ' + file.status;
+          el.querySelector('.liquid').style.height = (file.status === 'queued' ? 0 : file.progress) + '%';
+          const big = el.querySelector('.big');
+          if (file.status === 'uploading') big.innerHTML = `<span>${Math.floor(file.progress)}<small>%</small></span>`;
+          else if (changed) {
+            big.innerHTML = {
+              queued: 'In line…',
+              processing: '<span><small>Processing</small></span>',
+              done: ICONS.check,
+              error: file.error
+            }[file.status];
+          }
+          el.querySelector('.meta').textContent = {
+            queued: fmtSize(file.size) + ' · waiting',
+            uploading: `${fmtSize((file.size * file.progress) / 100)} / ${fmtSize(file.size)}`,
+            processing: 'Making thumbnail…',
+            done: fmtSize(file.size) + ' · ready',
+            error: 'Stopped at ' + Math.floor(file.progress) + '%'
+          }[file.status];
+          el.querySelector('.x').style.display = file.status === 'done' ? 'none' : '';
+          node.prev = file.status;
+        },
+        after(list) {
+          if (!this.addTile) {
+            this.addTile = document.createElement('div');
+            this.addTile.className = 'tile add';
+            this.addTile.innerHTML = `<div>${ICONS.plus}<br/>Add more</div>`;
+            this.addTile.onclick = addFile;
+          }
+          if (list.lastElementChild !== this.addTile) list.appendChild(this.addTile);
+        }
+      };
+
+      /* ------------- Variant C: Pipeline ------------- */
+      const STEPS = ['queued', 'uploading', 'processing', 'done'];
+      const STEP_LABELS = ['Queued', 'Uploading', 'Processing', 'Ready'];
+      const pipe = {
+        root: document.querySelector('[data-variant="pipe"]'),
+        nodes: new Map(),
+        segs: new Map(),
+        clear() { this.nodes.forEach((node) => node.el.remove()); this.nodes.clear(); this.segs.forEach((seg) => seg.remove()); this.segs.clear(); },
+        create(file) {
+          const el = document.createElement('div');
+          el.className = 'pipe-row';
+          const stepsHtml = STEP_LABELS.map((label, index) => `${index ? '<span class="connector"><span class="cf"></span></span>' : ''}<span class="step" data-step="${index}"><span class="dot">${ICONS.check}</span>${label}</span>`).join('');
+          el.innerHTML = `
+            <div class="line1">
+              <span class="ext"></span>
+              <div class="nm"><div></div><div></div></div>
+              <div class="rate mono"></div>
+              <button class="btn btn-secondary btn-xs" data-retry>${ICONS.retry} Retry</button>
+              <button class="btn btn-secondary btn-icon" data-remove aria-label="Remove">${ICONS.x}</button>
+            </div>
+            <div class="steps">${stepsHtml}</div>`;
+          el.querySelector('.ext').textContent = extOf(file.name);
+          el.querySelector('.nm div').textContent = file.name;
+          el.querySelector('[data-retry]').onclick = () => retry(file.id);
+          el.querySelector('[data-remove]').onclick = () => remove(file.id);
+          const seg = document.createElement('div');
+          seg.className = 'seg';
+          seg.innerHTML = '<span class="f"></span>';
+          seg.title = file.name;
+          this.segs.set(file.id, seg);
+          return { el, prev: null };
+        },
+        update(node, file) {
+          const { el } = node;
+          el.className = 'pipe-row ' + file.status;
+          const failedAt = file.status === 'error' ? 1 : -1;
+          const currentIndex = file.status === 'error' ? 1 : STEPS.indexOf(file.status);
+          el.querySelectorAll('.step').forEach((stepEl, index) => {
+            stepEl.className = 'step';
+            const dot = stepEl.querySelector('.dot');
+            if (index === failedAt) { stepEl.classList.add('fail'); dot.innerHTML = ICONS.x; return; }
+
+            dot.innerHTML = ICONS.check;
+            if (index < currentIndex || file.status === 'done') stepEl.classList.add('past');
+            else if (index === currentIndex) stepEl.classList.add('now');
+          });
+          el.querySelectorAll('.connector').forEach((conn, index) => {
+            const connIndex = index + 1;
+            conn.classList.toggle('full', connIndex < currentIndex || file.status === 'done');
+            let width = 0;
+            if (connIndex === 2 && file.status === 'uploading') width = file.progress;
+            if (connIndex === 2 && file.status === 'error') width = file.progress;
+            conn.querySelector('.cf').style.width = width + '%';
+            conn.querySelector('.cf').style.background = file.status === 'error' && connIndex === 2 ? 'var(--destructive)' : '';
+          });
+          el.querySelector('.nm div:last-child').textContent = {
+            queued: `${fmtSize(file.size)} · waiting for a free slot`,
+            uploading: `${fmtSize((file.size * file.progress) / 100)} of ${fmtSize(file.size)}`,
+            processing: 'Transcoding & generating preview',
+            done: `${fmtSize(file.size)} · ready to use`,
+            error: `${file.error} at ${Math.floor(file.progress)}%`
+          }[file.status];
+          const rate = el.querySelector('.rate');
+          if (file.status === 'uploading') {
+            const remaining = (file.size * (100 - file.progress)) / 100 / (file.speed || 1);
+            rate.innerHTML = `<b>${Math.floor(file.progress)}%</b> · ${fmtSize(file.speed)}/s<br/>${fmtTime(remaining)} left`;
+          } else rate.textContent = '';
+          el.querySelector('[data-retry]').style.display = file.status === 'error' ? '' : 'none';
+          el.querySelector('[data-remove]').style.display = file.status === 'done' ? 'none' : '';
+          const seg = this.segs.get(file.id);
+          seg.className = 'seg ' + file.status;
+          seg.style.flexGrow = Math.max(1, Math.log(file.size / 1e5));
+          seg.querySelector('.f').style.width = (file.status === 'queued' ? 0 : file.progress) + '%';
+          node.prev = file.status;
+        },
+        after() {
+          const segWrap = this.root.querySelector('[data-segments]');
+          files.forEach((file) => segWrap.appendChild(this.segs.get(file.id)));
+          [...this.segs.keys()].forEach((id) => { if (!files.some((file) => file.id === id)) { this.segs.get(id).remove(); this.segs.delete(id); } });
+          const ready = files.filter((file) => file.status === 'done').length;
+          this.root.querySelector('[data-count]').innerHTML = `${ready}<span> / ${files.length} ready</span>`;
+          const speed = speedHistory[speedHistory.length - 1];
+          this.root.querySelector('[data-speed]').textContent = speed ? fmtSize(speed) + '/s' : '—';
+          const remainingBytes = files.filter((file) => file.status === 'uploading' || file.status === 'queued').reduce((sum, file) => sum + (file.size * (100 - file.progress)) / 100, 0);
+          this.root.querySelector('[data-eta]').textContent = speed ? fmtTime(remainingBytes / speed) : '—';
+          const max = Math.max(...speedHistory, 1);
+          const points = speedHistory.map((value, index) => `${(index / (speedHistory.length - 1)) * 96},${22 - (value / max) * 20}`);
+          this.root.querySelector('[data-spark-l]').setAttribute('d', 'M' + points.join(' L'));
+          this.root.querySelector('[data-spark-a]').setAttribute('d', 'M0,24 L' + points.join(' L') + ' L96,24 Z');
+        }
+      };
+
+      const variants = [orbit, tide, pipe];
+
+      function renderAll() {
+        variants.forEach((variant) => {
+          const list = variant.root.querySelector('[data-list]');
+          [...variant.nodes.keys()].forEach((id) => {
+            if (!files.some((file) => file.id === id)) { variant.nodes.get(id).el.remove(); variant.nodes.delete(id); }
+          });
+          files.forEach((file) => {
+            if (!variant.nodes.has(file.id)) variant.nodes.set(file.id, variant.create(file));
+            const node = variant.nodes.get(file.id);
+            variant.update(node, file);
+            if (!node.el.isConnected) list.appendChild(node.el);
+          });
+          variant.after?.(list);
+        });
+      }
+
+      /* ------------- Drop zones & controls ------------- */
+      let forcedDrag = false;
+      document.querySelectorAll('.dropzone').forEach((zone) => {
+        let depth = 0;
+        zone.addEventListener('click', addFile);
+        zone.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); addFile(); } });
+        zone.addEventListener('dragenter', (event) => { event.preventDefault(); depth++; zone.classList.add('drag'); });
+        zone.addEventListener('dragover', (event) => event.preventDefault());
+        zone.addEventListener('dragleave', () => { depth--; if (depth <= 0 && !forcedDrag) zone.classList.remove('drag'); });
+        zone.addEventListener('drop', (event) => {
+          event.preventDefault(); depth = 0;
+          if (!forcedDrag) zone.classList.remove('drag');
+          const dropped = [...(event.dataTransfer?.files || [])];
+          if (!dropped.length) { addFile(); return; }
+
+          dropped.forEach((item) => files.push(makeFile({ name: item.name, size: item.size || 1e6, status: 'queued', progress: 0 })));
+          renderAll();
+        });
+      });
+      document.getElementById('drag-toggle').onclick = (event) => {
+        forcedDrag = !forcedDrag;
+        event.currentTarget.classList.toggle('btn-default', forcedDrag);
+        event.currentTarget.classList.toggle('btn-outline', !forcedDrag);
+        document.querySelectorAll('.dropzone').forEach((zone) => zone.classList.toggle('drag', forcedDrag));
+      };
+      document.getElementById('replay').onclick = reset;
+      document.getElementById('theme').onclick = () => document.documentElement.classList.toggle('dark');
+      document.querySelectorAll('[role="tab"]').forEach((tab) => {
+        tab.onclick = () => {
+          document.querySelectorAll('[role="tab"]').forEach((other) => other.setAttribute('aria-selected', String(other === tab)));
+          document.querySelectorAll('.variant').forEach((section) => section.classList.toggle('active', section.dataset.variant === tab.dataset.tab));
+        };
+      });
+      document.querySelectorAll('[data-legend]').forEach((legend) => {
+        legend.innerHTML = '<span style="font-size:11px;color:var(--muted-foreground);align-self:center;margin-right:2px">Jump to state:</span>' +
+          ['queued', 'uploading', 'processing', 'done', 'error'].map((state) => `<span class="badge" data-state="${state}">${state}</span>`).join('');
+        legend.querySelectorAll('[data-state]').forEach((badge) => (badge.onclick = () => forceState(badge.dataset.state)));
+      });
+      if (matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
+
+      reset();
+      setInterval(tick, 200);
+    </script>
+  </body>
+</html>
