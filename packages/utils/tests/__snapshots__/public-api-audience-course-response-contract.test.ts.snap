@@ -31,8 +31,6 @@ exports[`public API audience and course response contract > ZPublicApiAudienceBu
   "properties": {
     "action": {
       "enum": [
-        "deactivate",
-        "reactivate",
         "archive",
         "unarchive",
       ],
@@ -169,7 +167,6 @@ exports[`public API audience and course response contract > ZPublicApiAudienceMe
       "description": "Lifecycle state of the membership",
       "enum": [
         "ACTIVE",
-        "DEACTIVATED",
         "ARCHIVED",
       ],
       "type": "string",
@@ -4821,7 +4818,6 @@ exports[`public API audience and course response contract > ZPublicApiRemoveAudi
     "status": {
       "enum": [
         "ACTIVE",
-        "DEACTIVATED",
         "ARCHIVED",
       ],
       "type": "string",

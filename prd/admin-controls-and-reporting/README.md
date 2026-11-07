@@ -1,5 +1,7 @@
 # Learner Usage & Lifecycle Management — Implementation Plan
 
+> **Update:** Deactivate and Reactivate were retired in [#1502](https://github.com/classroomio/classroomio/issues/1502). Archive and Unarchive are the only reversible actions, and existing deactivated members were migrated to archived. Sections below that describe Deactivate record the original design.
+
 > **UI behavior lives in [`UX.md`](./UX.md)** and the clickable prototype at [`prototypes/learner-lifecycle/`](../../prototypes/learner-lifecycle/), which is the UX source of truth — filtering interaction, loading states, selection, bulk confirmation, export menu, empty states, and accessibility. This file covers data, API, and sequencing.
 
 ## The actual job

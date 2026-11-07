@@ -887,29 +887,21 @@
       "undo_success": "Tilbageført",
       "confirm_action": {
         "archive": "Arkivér",
-        "deactivate": "Deaktiver",
-        "reactivate": "Genaktiver",
         "unarchive": "Fjern arkivering",
         "delete": "Slet permanent"
       },
       "confirm_body": {
         "archive": "De mister adgang og frigør en plads på din plan. Du kan til enhver tid fjerne arkivering fra dem.",
-        "deactivate": "De mister adgang, men beholder deres plads på din plan. Du kan til enhver tid genaktivere dem.",
-        "reactivate": "De får adgang til din organisation og dens kurser tilbage.",
         "unarchive": "De får adgang igen og tager plads på din plan.",
         "delete": "Dette fjerner dem fra denne organisation og kan ikke fortrydes. Deres konto, afleveringer og resultater gemmes."
       },
       "confirm_title": {
         "archive": "Arkivere {count} elever?",
-        "deactivate": "Deaktivere {count} elever?",
-        "reactivate": "Genaktivere {count} elever?",
         "unarchive": "Afarkivere {count} elever?",
         "delete": "Fjerne {count} elever permanent?"
       },
       "action": {
         "archive": "Arkivere {count} elever",
-        "deactivate": "Deaktivere {count} elever",
-        "reactivate": "Genaktivere {count} elever",
         "unarchive": "Afarkivere {count} elever",
         "delete": "Slet {count} elever"
       },
@@ -925,7 +917,6 @@
     "filter": {
       "status": "Medlemsstatus",
       "status_active": "Aktiv",
-      "status_deactivated": "Deaktiveret",
       "status_archived": "Arkiveret",
       "last_login": "Seneste login",
       "last_activity": "Seneste aktivitet",

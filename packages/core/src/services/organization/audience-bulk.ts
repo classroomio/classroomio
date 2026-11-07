@@ -48,15 +48,11 @@ export type BulkApplyOutcome = {
 };
 
 const ACTION_TO_STATUS: Record<Exclude<TAudienceBulkAction, 'delete'>, OrganizationMemberStatus> = {
-  deactivate: 'DEACTIVATED',
-  reactivate: 'ACTIVE',
   archive: 'ARCHIVED',
   unarchive: 'ACTIVE'
 };
 
 const ACTION_TO_AUDIT_EVENT: Record<TAudienceBulkAction, OrganizationMemberAuditEvent> = {
-  deactivate: 'DEACTIVATED',
-  reactivate: 'REACTIVATED',
   archive: 'ARCHIVED',
   unarchive: 'UNARCHIVED',
   delete: 'REMOVED'
@@ -169,7 +165,7 @@ async function changeStatus(
 
   await recordOrganizationMemberAudit(orgId, buildAuditEntries(changed, input, actorProfileId), tx);
 
-  if (action === 'deactivate' || action === 'archive') {
+  if (action === 'archive') {
     const emails = changed.filter((member) => member.email).map((member) => member.email!.toLowerCase());
 
     if (emails.length > 0) {

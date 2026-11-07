@@ -50,7 +50,6 @@
 
   const statusOptions = $derived<{ value: OrganizationAudienceMemberStatus; label: string }[]>([
     { value: 'ACTIVE', label: $t('audience.filter.status_active') },
-    { value: 'DEACTIVATED', label: $t('audience.filter.status_deactivated') },
     { value: 'ARCHIVED', label: $t('audience.filter.status_archived') }
   ]);
 

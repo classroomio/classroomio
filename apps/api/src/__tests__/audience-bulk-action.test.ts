@@ -181,7 +181,7 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
 
     const result = await applyBulkAudienceAction(
       ORG,
-      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'deactivate' },
+      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'archive' },
       ACTOR
     );
 
@@ -221,17 +221,14 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
 
     const applied = await applyBulkAudienceAction(
       ORG,
-      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'deactivate' },
+      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'archive' },
       ACTOR
     );
     const token = applied.mode === 'completed' ? applied.undoToken! : '';
 
-    // Someone archived learner 2 during the undo window — a more deliberate
-    // decision than the one being undone, so undo must leave them alone.
-    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([
-      member(1, 'DEACTIVATED'),
-      member(2, 'ARCHIVED')
-    ] as never);
+    // Someone unarchived learner 2 during the undo window — a newer decision
+    // than the one being undone, so undo must leave them alone.
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED'), member(2, 'ACTIVE')] as never);
     vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
 
     const result = await undoBulkAudienceAction(ORG, token, ACTOR);
@@ -271,7 +268,7 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
 
     const applied = await applyBulkAudienceAction(
       ORG,
-      { target: { mode: 'ids', memberIds: [1] }, action: 'deactivate' },
+      { target: { mode: 'ids', memberIds: [1] }, action: 'archive' },
       ACTOR
     );
     const token = applied.mode === 'completed' ? applied.undoToken! : '';
@@ -314,12 +311,12 @@ describe('applyBulkAudienceAction — plan seats', () => {
   it('checks the student limit, in the apply transaction, for the archived members it brings back', async () => {
     vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([
       member(1, 'ARCHIVED'),
-      member(2, 'DEACTIVATED'),
+      member(2, 'ACTIVE'),
       member(3, 'ARCHIVED')
     ] as never);
     vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1, 2, 3]);
 
-    await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1, 2, 3] }, action: 'reactivate' }, ACTOR);
+    await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1, 2, 3] }, action: 'unarchive' }, ACTOR);
 
     expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 2, {}, DEFER);
   });
@@ -354,22 +351,13 @@ describe('applyBulkAudienceAction — plan seats', () => {
     vi.mocked(assertStudentCapacityOrThrow).mockReset();
   });
 
-  it('checks the limit to deactivate an archived member, which takes its seat back', async () => {
-    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED'), member(2)] as never);
-    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1, 2]);
-
-    await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1, 2] }, action: 'deactivate' }, ACTOR);
-
-    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, {}, DEFER);
-  });
-
   it('reports ids that are not students of the organization at apply time as NOT_FOUND', async () => {
     vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1)] as never);
     vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
 
     const result = await applyBulkAudienceAction(
       ORG,
-      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'deactivate' },
+      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'archive' },
       ACTOR
     );
 
@@ -382,9 +370,8 @@ describe('applyBulkAudienceAction — plan seats', () => {
   });
 
   it.each([
-    ['deactivate', 'ACTIVE'],
     ['archive', 'ACTIVE'],
-    ['reactivate', 'DEACTIVATED']
+    ['unarchive', 'ACTIVE']
   ] as const)('does not check the limit to %s a %s member', async (action, status) => {
     vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, status)] as never);
     vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
@@ -492,17 +479,13 @@ describe('applyBulkAudienceAction — the queued path', () => {
     const many = Array.from({ length: 1_500 }, (_, index) => index + 1);
     vi.mocked(resolveAudienceMemberIds).mockResolvedValue(many);
 
-    await applyBulkAudienceAction(
-      ORG,
-      { target: filterTarget(many), action: 'deactivate', reason: 'Offboarding' },
-      ACTOR
-    );
+    await applyBulkAudienceAction(ORG, { target: filterTarget(many), action: 'archive', reason: 'Offboarding' }, ACTOR);
 
     expect(enqueueAudienceBulkAction).toHaveBeenCalledWith(
       expect.objectContaining({
         organizationId: ORG,
         actorProfileId: ACTOR,
-        action: 'deactivate',
+        action: 'archive',
         memberIds: many,
         reason: 'Offboarding',
         filterSnapshot: { status: 'ACTIVE', excludeRecentJoiners: true }

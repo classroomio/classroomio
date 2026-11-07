@@ -4663,7 +4663,6 @@
     "filter": {
       "status": "Üye durumu",
       "status_active": "Active",
-      "status_deactivated": "Devre dışı",
       "status_archived": "Arşivlenmiş",
       "last_login": "LSon giriş",
       "last_activity": "LSon etkinlik",
@@ -4699,29 +4698,21 @@
       "clear": "Temizle",
       "action": {
         "archive": "{count} öğrencilerini arşivle",
-        "deactivate": "{count} öğrencilerini devre dışı bırak",
-        "reactivate": "{count} öğrencilerini yeniden etkinleştirin",
         "unarchive": "{count} öğrencilerini arşivden çıkar",
         "delete": "{count} öğrencilerini sil"
       },
       "confirm_title": {
         "archive": "{count} öğrencilerini arşivle?",
-        "deactivate": "{count} öğrencilerini devre dışı bırak?",
-        "reactivate": "{count} öğrencilerini yeniden etkinleştir?",
         "unarchive": "{count} öğrencilerini arşivden çıkar?",
         "delete": "{count} öğrencileri kalıcı olarak kaldırılsın mı?"
       },
       "confirm_body": {
         "archive": "Erişimlerini kaybederler ve planınızda yer açarlar. Bunları istediğiniz zaman arşivden çıkarabilirsiniz.",
-        "deactivate": "Erişimlerini kaybederler ancak planınızdaki yerlerini korurlar. Bunları istediğiniz zaman yeniden etkinleştirebilirsiniz.",
-        "reactivate": "Kuruluşunuza ve kurslarına yeniden erişim kazanırlar.",
         "unarchive": "Yeniden erişim kazanırlar ve planınızda yer alırlar.",
         "delete": "Bu, onları bu kuruluştan kaldırır ve geri alınamaz. Hesapları, gönderimleri ve sonuçları saklanır."
       },
       "confirm_action": {
         "archive": "Archive",
-        "deactivate": "Deactivate",
-        "reactivate": "Reactivate",
         "unarchive": "Unarchive",
         "delete": "Kalıcı olarak sil"
       },

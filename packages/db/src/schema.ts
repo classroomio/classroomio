@@ -89,9 +89,10 @@ export const organizationInviteType = pgEnum('ORGANIZATION_INVITE_TYPE', ['EMAIL
  * is allowed in.
  *
  * - `ACTIVE` — normal member.
- * - `DEACTIVATED` — access suspended, reversible, still occupies a plan seat.
  * - `ARCHIVED` — access suspended, reversible, and releases the plan seat
  *   (see `countActiveStudents`). The intended answer to "remove them".
+ * - `DEACTIVATED` — retired and never assigned. Postgres cannot drop an enum
+ *   value, so it stays in the type.
  */
 export const organizationMemberStatus = pgEnum('ORGANIZATION_MEMBER_STATUS', ['ACTIVE', 'DEACTIVATED', 'ARCHIVED']);
 

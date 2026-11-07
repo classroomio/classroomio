@@ -4,7 +4,7 @@ export const AudienceSortBy = z.enum(['createdAt', 'name', 'email', 'lastLoginAt
 export const AudienceSortOrder = z.enum(['asc', 'desc']);
 
 /** Lifecycle state of the membership. Mirrors the `ORGANIZATION_MEMBER_STATUS` enum. */
-export const AudienceMemberStatus = z.enum(['ACTIVE', 'DEACTIVATED', 'ARCHIVED']);
+export const AudienceMemberStatus = z.enum(['ACTIVE', 'ARCHIVED']);
 
 /** Invite state, derived rather than stored. See `deriveAudienceMemberStatus`. */
 export const AudienceInviteStatus = z.enum(['active', 'pending', 'expired', 'revoked']);
@@ -73,7 +73,7 @@ export const AUDIENCE_BULK_IDS_MAX = 500;
 /** Checked against the *resolved* target, so filter mode cannot slip past it. */
 export const AUDIENCE_BULK_SYNC_MAX = 1000;
 
-export const AudienceBulkAction = z.enum(['deactivate', 'reactivate', 'archive', 'unarchive', 'delete']);
+export const AudienceBulkAction = z.enum(['archive', 'unarchive', 'delete']);
 export type TAudienceBulkAction = z.infer<typeof AudienceBulkAction>;
 
 /**

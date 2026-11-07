@@ -887,29 +887,21 @@
       "undo_success": "Revertido",
       "confirm_action": {
         "archive": "Archivar",
-        "deactivate": "Desactivar",
-        "reactivate": "Reactivar",
         "unarchive": "Desarchivar",
         "delete": "Eliminar permanentemente"
       },
       "confirm_body": {
         "archive": "Pierden el acceso y liberan un espacio en tu plan. Puedes desarchivarlos en cualquier momento.",
-        "deactivate": "Pierden el acceso, pero conservan su espacio en tu plan. Puedes reactivarlos en cualquier momento.",
-        "reactivate": "Recuperan el acceso a tu organización y a sus cursos.",
         "unarchive": "Recuperan el acceso y vuelven a ocupar un lugar en tu plan.",
         "delete": "Esto los elimina de esta organización y no se puede deshacer. Su cuenta, entregas y resultados se conservan."
       },
       "confirm_title": {
         "archive": "¿Archivar {count} estudiantes?",
-        "deactivate": "¿Desactivar {count} estudiantes?",
-        "reactivate": "¿Reactivar {count} estudiantes?",
         "unarchive": "¿Desarchivar {count} estudiantes?",
         "delete": "¿Eliminar permanentemente {count} estudiantes?"
       },
       "action": {
         "archive": "Archivar {count} estudiantes",
-        "deactivate": "Desactivar {count} estudiantes",
-        "reactivate": "Reactivar {count} estudiantes",
         "unarchive": "Desarchivar {count} estudiantes",
         "delete": "Eliminar {count} estudiantes"
       },
@@ -925,7 +917,6 @@
     "filter": {
       "status": "Estado del miembro",
       "status_active": "Activo",
-      "status_deactivated": "Desactivado",
       "status_archived": "Archivado",
       "last_login": "Último inicio de sesión",
       "last_activity": "Última actividad",
