@@ -6,6 +6,7 @@ import {
   type OrganizationMemberStatus,
   bulkDeleteOrganizationAudienceMembers,
   bulkUpdateOrganizationMemberStatus,
+  deleteCohortMembershipsForOrgProfiles,
   deleteGroupMembershipsForOrgProfiles,
   getBulkAudienceMembersByIds,
   recordOrganizationMemberAudit,
@@ -129,6 +130,7 @@ async function deleteMembers(
 
   if (profileIds.length > 0) {
     await deleteGroupMembershipsForOrgProfiles(orgId, profileIds, tx);
+    await deleteCohortMembershipsForOrgProfiles(orgId, profileIds, tx);
   }
 
   const deletedIds = await bulkDeleteOrganizationAudienceMembers(orgId, memberIds, tx);

@@ -28,6 +28,7 @@ import {
   getCohortById,
   getCohortMemberByEmail,
   getCohortMemberById,
+  findCohortMemberRowByProfileId,
   getCohortMemberByProfileId,
   getCohortMembers,
   getCohortNewsfeed,
@@ -378,7 +379,7 @@ export async function addCohortMembersSettled(
 
         if (profileId || normalizedEmail) {
           const existing = profileId
-            ? await getCohortMemberByProfileId(cohortId, profileId)
+            ? await findCohortMemberRowByProfileId(cohortId, profileId)
             : await getCohortMemberByEmail(cohortId, normalizedEmail!);
           if (existing) {
             throw new AppError(
