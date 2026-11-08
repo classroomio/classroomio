@@ -10,6 +10,7 @@
     type PublicExerciseViewData,
     type OutlineRailActionLabels
   } from '@cio/ui/custom/public-course';
+  import type { HlsCookieGrant } from '@cio/ui/custom/media-player';
   import { getExerciseQuestionLabels } from '$features/course/components/exercise/question-labels';
   import { t } from '$lib/utils/functions/translations';
   import { classroomio } from '$lib/utils/services/api';
@@ -31,10 +32,13 @@
    * anonymous learner can't request a cookie for any asset they don't
    * already have access to via this lesson URL.
    */
-  async function mintPublicHlsCookie(courseSlug: string, itemSlug: string): Promise<void> {
-    await classroomio['org-site'].course[':courseSlug'].item[':itemSlug']['hls-cookie'].$post({
+  async function mintPublicHlsCookie(courseSlug: string, itemSlug: string): Promise<HlsCookieGrant> {
+    const response = await classroomio['org-site'].course[':courseSlug'].item[':itemSlug']['hls-cookie'].$post({
       param: { courseSlug, itemSlug }
     });
+    const body = await response.json();
+
+    return { expiresInSeconds: body.data.expiresInSeconds };
   }
 
   const exerciseLabels = $derived(getExerciseQuestionLabels());

@@ -10,6 +10,16 @@ export interface VideoTextTrack {
   kind?: 'captions' | 'subtitles';
 }
 
+/**
+ * Result of minting the HLS playback cookie. `expiresInSeconds` lets the
+ * player renew the cookie before it lapses; `authExpired` means the
+ * viewer's session is gone and they must sign in again.
+ */
+export interface HlsCookieGrant {
+  authExpired?: boolean;
+  expiresInSeconds?: number;
+}
+
 export interface VideoSource {
   type: VideoType;
   url: string;
@@ -78,13 +88,15 @@ export interface MediaPlayerOptions {
     onClick: () => void;
   };
   /**
-   * For HLS sources only. Invoked before hls.js (or native HLS) loads the
-   * manifest. Use it to mint a short-lived signed cookie that the
+   * For HLS sources only. Mints the short-lived signed cookie that the
    * tenant-router Worker validates when serving segments in Cloud
-   * production. Locally / self-hosted this is typically a no-op or a
-   * best-effort call that fails benignly.
+   * production. Called before the manifest loads, again shortly before
+   * `expiresInSeconds` elapses, and when a playlist or segment request is
+   * rejected as unauthorized; a call that throws is retried a few times.
+   * Locally / self-hosted this is typically a no-op or a best-effort call
+   * that fails benignly.
    */
-  onBeforeHlsLoad?: () => Promise<{ authExpired?: boolean } | void>;
+  onBeforeHlsLoad?: () => Promise<HlsCookieGrant | void>;
   seekPolicy?: {
     mode: 'locked_until_complete';
     watchThresholdPercent: number;
