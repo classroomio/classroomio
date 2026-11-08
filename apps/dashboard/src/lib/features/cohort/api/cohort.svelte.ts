@@ -24,6 +24,7 @@ import type {
 import { currentOrg } from '$lib/utils/store/org';
 import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
 import { get } from 'svelte/store';
+import { untrack } from 'svelte';
 import { isStudentExperience } from '$lib/utils/store/app';
 import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
@@ -68,7 +69,8 @@ class CohortApi extends BaseApiWithErrors {
 
   async getCohort(cohortId: string, force = false) {
     if (!force && this.loadedCohortId === cohortId) return;
-    if (this.accessDeniedCohortId === cohortId) this.accessDeniedCohortId = null;
+    // untrack: the layout $effect would otherwise re-run on the 403 and loop.
+    if (untrack(() => this.accessDeniedCohortId) === cohortId) this.accessDeniedCohortId = null;
 
     await this.execute<(typeof classroomio.cohort)[':cohortId']['$get']>({
       requestFn: () => classroomio.cohort[':cohortId'].$get({ param: { cohortId } }),
