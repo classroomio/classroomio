@@ -345,7 +345,7 @@ Unified video player component supporting HTML5 video (direct MP4 and HLS via `h
 | `options.onTimeUpdate`    | Callback invoked as playback position advances                                                                     |
 | `options.onPlayerReady`   | Callback invoked when the underlying player SDK is initialized                                                     |
 | `options.vimeoRetryLabel` | Optional label override for the Vimeo playback retry button                                                        |
-| `options.onBeforeHlsLoad` | HLS only. Mints the playback cookie and returns `{ expiresInSeconds?, authExpired? }`. Called before the manifest loads, shortly before `expiresInSeconds` elapses, after a segment is rejected as unauthorized, and on reload. Return `authExpired: true` to show the sign-in prompt |
+| `options.onBeforeHlsLoad` | HLS only. Mints the playback cookie and returns `{ expiresInSeconds?, authExpired? }`. Called before the manifest loads, shortly before `expiresInSeconds` elapses, after a playlist or segment request is rejected as unauthorized, and on reload. If it throws, playback continues and the call is retried a few times. Return `authExpired: true` to show the sign-in prompt |
 
 ### Combo button (`src/custom/combo-button/`)
 

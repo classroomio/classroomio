@@ -54,11 +54,9 @@
 
       return { expiresInSeconds: body.data.expiresInSeconds };
     } catch (error) {
-      // A 401 here means the viewer's session expired — the player should
-      // prompt a re-login rather than retry. Other failures (e.g. 503 when
-      // HLS_SIGNING_SECRET is unset locally) fall through so playback can
-      // still attempt the session-auth streaming route.
       if (isAuthError(error)) return { authExpired: true };
+
+      throw error;
     }
   }
 

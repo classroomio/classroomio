@@ -91,9 +91,10 @@ export interface MediaPlayerOptions {
    * For HLS sources only. Mints the short-lived signed cookie that the
    * tenant-router Worker validates when serving segments in Cloud
    * production. Called before the manifest loads, again shortly before
-   * `expiresInSeconds` elapses, and when a segment request is rejected as
-   * unauthorized. Locally / self-hosted this is typically a no-op or a
-   * best-effort call that fails benignly.
+   * `expiresInSeconds` elapses, and when a playlist or segment request is
+   * rejected as unauthorized; a call that throws is retried a few times.
+   * Locally / self-hosted this is typically a no-op or a best-effort call
+   * that fails benignly.
    */
   onBeforeHlsLoad?: () => Promise<HlsCookieGrant | void>;
   seekPolicy?: {

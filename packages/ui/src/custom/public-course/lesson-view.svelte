@@ -16,7 +16,7 @@
      * For HLS videos. Host app provides a callback that mints the public
      * HLS cookie via `POST /org-site/course/.../hls-cookie`. The shared
      * media player invokes it before hls.js loads the manifest, before the
-     * cookie expires, after a segment is rejected as unauthorized, and when
+     * cookie expires, after a playlist or segment is rejected as unauthorized, and when
      * the learner clicks "Reload playback".
      */
     onBeforeHlsLoad?: () => Promise<HlsCookieGrant | void>;

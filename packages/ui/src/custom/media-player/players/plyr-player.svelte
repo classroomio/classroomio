@@ -45,13 +45,16 @@
   let hlsPlyrGeneration = 0;
   let hlsCookieRenewalTimer: ReturnType<typeof setTimeout> | undefined;
   let hlsAuthRecoveryAttempted = false;
+  let hlsCookieFailedAttempts = 0;
   let plyrConstructInFlight = false;
   let hasFiredFirstPlay = false;
   let isMounted = false;
   let youtubeInitGeneration = 0;
 
-  const HLS_COOKIE_RENEWAL_LEAD_SECONDS = 60;
+  const HLS_COOKIE_RENEWAL_LEAD_SECONDS = 120;
   const HLS_COOKIE_MIN_RENEWAL_DELAY_SECONDS = 30;
+  const HLS_COOKIE_RETRY_DELAY_SECONDS = 20;
+  const HLS_COOKIE_MAX_FAILED_ATTEMPTS = 4;
   const SEEK_TOLERANCE_SECONDS = 0.5;
   const SEEK_BLOCK_COOLDOWN_MS = 300;
   let seekBlockLastNotifiedAt = 0;
@@ -577,14 +580,8 @@
     hlsCookieRenewalTimer = undefined;
   }
 
-  function scheduleHlsCookieRenewal(expiresInSeconds: number | undefined, loadGeneration: number): void {
+  function scheduleHlsCookieRenewal(delaySeconds: number, loadGeneration: number): void {
     clearHlsCookieRenewal();
-    if (!expiresInSeconds) return;
-
-    const delaySeconds = Math.max(
-      expiresInSeconds - HLS_COOKIE_RENEWAL_LEAD_SECONDS,
-      HLS_COOKIE_MIN_RENEWAL_DELAY_SECONDS
-    );
     hlsCookieRenewalTimer = setTimeout(() => {
       hlsCookieRenewalTimer = undefined;
       if (loadGeneration !== hlsLoadGeneration) return;
@@ -606,10 +603,16 @@
     } catch (error) {
       // The cookie endpoint 503s where HLS_SIGNING_SECRET is unset (local dev / self-hosted); the API's session-auth streaming route still serves playback.
       console.warn('onBeforeHlsLoad failed, continuing without cookie', error);
+      if (loadGeneration === hlsLoadGeneration && hlsCookieFailedAttempts < HLS_COOKIE_MAX_FAILED_ATTEMPTS) {
+        hlsCookieFailedAttempts += 1;
+        scheduleHlsCookieRenewal(HLS_COOKIE_RETRY_DELAY_SECONDS, loadGeneration);
+      }
       return true;
     }
 
     if (loadGeneration !== hlsLoadGeneration) return false;
+
+    hlsCookieFailedAttempts = 0;
 
     if (grant?.authExpired) {
       clearHlsCookieRenewal();
@@ -619,13 +622,33 @@
       return false;
     }
 
-    scheduleHlsCookieRenewal(grant?.expiresInSeconds, loadGeneration);
+    if (grant?.expiresInSeconds) {
+      const renewInSeconds = Math.max(
+        grant.expiresInSeconds - HLS_COOKIE_RENEWAL_LEAD_SECONDS,
+        HLS_COOKIE_MIN_RENEWAL_DELAY_SECONDS
+      );
+      scheduleHlsCookieRenewal(renewInSeconds, loadGeneration);
+    }
     return true;
   }
 
-  async function resumeAfterHlsCookieRenewal(hls: import('hls.js').default, loadGeneration: number): Promise<void> {
+  /**
+   * Renews the HLS cookie, then resumes loading: reloads the manifest when
+   * that request was the one rejected, otherwise restarts segment loading.
+   */
+  async function resumeAfterHlsCookieRenewal(
+    hls: import('hls.js').default,
+    loadGeneration: number,
+    manifestUrl: string,
+    manifestRejected: boolean
+  ): Promise<void> {
     const granted = await grantHlsCookie(loadGeneration);
     if (!granted || hlsInstance !== hls) return;
+
+    if (manifestRejected) {
+      hls.loadSource(manifestUrl);
+      return;
+    }
 
     hls.startLoad(-1);
   }
@@ -634,6 +657,7 @@
     const loadGeneration = ++hlsLoadGeneration;
     hlsPlyrGeneration = 0;
     hlsAuthRecoveryAttempted = false;
+    hlsCookieFailedAttempts = 0;
     destroyHlsInstance();
     teardownPlyrInstance();
     playbackFailed = false;
@@ -696,14 +720,12 @@
       if (!data.fatal) return;
 
       const status = data.response?.code;
-      const isSegmentAuthFailure =
-        data.type === Hls.ErrorTypes.NETWORK_ERROR &&
-        data.details !== Hls.ErrorDetails.MANIFEST_LOAD_ERROR &&
-        (status === 401 || status === 403);
+      const isAuthFailure = data.type === Hls.ErrorTypes.NETWORK_ERROR && (status === 401 || status === 403);
 
-      if (isSegmentAuthFailure && !hlsAuthRecoveryAttempted) {
+      if (isAuthFailure && !hlsAuthRecoveryAttempted) {
         hlsAuthRecoveryAttempted = true;
-        void resumeAfterHlsCookieRenewal(hls, loadGeneration);
+        const manifestRejected = data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR;
+        void resumeAfterHlsCookieRenewal(hls, loadGeneration, manifestUrl, manifestRejected);
         return;
       }
 
