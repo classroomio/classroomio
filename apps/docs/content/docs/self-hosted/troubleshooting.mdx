@@ -109,7 +109,8 @@ healthy. Fix the cause and `./classroomio.sh start` again. Migrations are safe t
 Uploaded-video transcription requires `OPENAI_API_KEY` on both the **API** and **jobs** services.
 When the API has no key, uploaded videos still get their duration and thumbnails, but transcription
 is not queued. If the API has a key and the jobs worker does not, the worker skips transcription
-and records a warning on the media job. Set the key on both services and re-trigger transcription; see
+and records a warning on the media job. Set the key on both services, redeploy them, and re-trigger
+transcription; see
 [Integrations](/self-hosted/configuration/integrations).
 
 ## Crash loops during Redis maintenance

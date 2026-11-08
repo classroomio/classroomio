@@ -71,7 +71,7 @@ export async function enqueueLessonVideoPipeline(
           name: JOB_NAMES.media.probeMetadata,
           queueName: QUEUE_NAMES.media,
           data: sharedData,
-          opts: QUEUE_DEFAULTS[QUEUE_NAMES.media]
+          opts: { ...QUEUE_DEFAULTS[QUEUE_NAMES.media], failParentOnFailure: true }
         }
       ]
     });
