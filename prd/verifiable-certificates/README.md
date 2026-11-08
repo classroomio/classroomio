@@ -1,14 +1,19 @@
 # Verifiable Certificates PRD
 
-## Prototypes — the UX source of truth
+## Prototype and demo
 
-None built yet. When they exist, the UX of this feature comes from `prototypes/verifiable-certificates/`, and where this document and a prototype disagree on a UI detail, the prototype wins. Planned surfaces:
+- **Prototype (UX source of truth):** [`prototypes/verifiable-certificates/`](../../prototypes/verifiable-certificates/), start at [`index.html`](../../prototypes/verifiable-certificates/index.html). Open it with `open prototypes/verifiable-certificates/index.html` to click through the flow end to end.
+- **Demo walkthrough (video):** [Verifiable certificates demo](https://www.awesomescreenshot.com/video/58179401?key=734c1fd444b7abb0250f2cfa7d920c33)
 
-| Surface | File (planned) |
+**The UX of this feature must be taken from the prototype folder.** It is the approved design reference for layout, states and copy. When this document and a prototype disagree on a UI detail, the prototype wins.
+
+| Surface | File |
 | --- | --- |
-| Public | `verify-valid.html`, `verify-expired.html`, `verify-revoked.html`, `verify-not-found.html`, `verify-lookup.html` |
+| Public | `verify-valid.html`, `verify-expired.html`, `verify-revoked.html`, `verify-not-found.html`, `verify-lookup.html`. They render inside the org's landing page theme (same nav, hero strip and footer), with no verify link in the nav. |
 | Learner | `certificate-card.html` (code, QR, copy link, status) |
-| Teacher | `course-certificate-settings.html` (validity, custom fields), `course-people-certificate.html` (field values, revoke) |
+| Teacher | `course-certificate-settings.html` (Design tab with the Classique preview and the **Customize Design** button; Settings tab with validity and a read-only public verification address derived from the verified custom domain), `certificate-studio.html` (the Customize Design editor, click-to-edit on the preview, with a Valid / Expired / Revoked "Preview as" bar), `course-people-certificate.html` (People page with a Certificate column, a certificate status filter, a per-learner drawer and a revoke modal with a live preview of the revoked public page) |
+
+The prototypes use the real design tokens (`app-theme.css` for dashboard pages, the `minimal` org-landing theme in `landing-theme.css` and `org-shell.css` for public pages). QR codes in them are placeholders and are not scannable.
 
 ## Purpose
 
@@ -44,6 +49,7 @@ The alphabet used here is `23456789ABCDEFGHJKMNPQRSTUVWXYZ`: digits 2 to 9 (8) p
 8. **Revocation is reversible and audited.** A reason is required and is visible to teachers only. The public page shows "Revoked" and the date, never the reason.
 9. **Verification survives a downgrade.** A certificate issued on a paid plan keeps resolving after the org downgrades, because a printed credential must not die with a subscription. The gate applies to issuing new verifiable certificates and to custom-field authoring. Revocation is never gated.
 10. **Expiry is optional per course.** Standard courses gain an optional validity period. Compliance courses keep `retakeIntervalMonths` as their validity and renewal cycle.
+11. **Verification is issuer attestation, not accreditation.** No external authority or standard is required for a certificate to be verifiable: the issuing organization vouches for its own certificate, and trust comes from the verify page living on the issuer's own domain. This is how Coursera (`coursera.org/verify/<code>`), Moodle's Custom certificate plugin (unique code, QR code, verification page) and Credly or Accredible (public credential URL with revoke and expiry) work. Whether a course is recognised by a regulator or professional body is the customer's business and is never claimed by ClassroomIO. The public page says so in plain words (see [Public verification page](#public-verification-page)). Customers who need to show an accreditation number can add it as a custom field.
 
 ## Current-State Audit
 
@@ -73,9 +79,9 @@ The alphabet used here is `23456789ABCDEFGHJKMNPQRSTUVWXYZ`: digits 2 to 9 (8) p
 - Multi-course tracks and path certificates (Learning Paths owns them).
 - Opening verification to the free plan.
 - Verifying certificates already issued before this ships. They carry no code; only newly rendered certificates do.
-- Printing custom fields on the certificate face (v1 shows them on the verify page and in the learner view). See Open Questions.
 - A public third-party verification API (the page's data route is internal in v1).
-- Digital signatures, blockchain anchoring, Open Badges export, LinkedIn "Add to profile".
+- Digital signatures, blockchain anchoring, Open Badges export, LinkedIn "Add to profile". Signed credentials (Open Badges 3.0, which builds on W3C Verifiable Credentials) are a possible later phase so wallets and other platforms can check a credential without calling us. The 1EdTech certification covers issuing software, not individual badges, and is not needed for v1.
+- Claiming or checking accreditation, CPD recognition or regulator approval of any course.
 - Learner-controlled privacy toggles on the verify page.
 
 ## Functional Requirements
@@ -84,6 +90,7 @@ The alphabet used here is `23456789ABCDEFGHJKMNPQRSTUVWXYZ`: digits 2 to 9 (8) p
 
 - Shows the verify code (`XXXX-XXXX`) and a QR code that encodes the canonical verify URL, on all five templates.
 - Free-plan certificates render exactly as today.
+- Prints the course's custom fields as one details line (for example `Employee ID EMP-20418 · Site Lagos Central Kitchen`), shown under the description on all five templates. Fields with no value for that learner are left off. Up to 5 fields, sized through `FIELDS` so long values shrink or wrap and never clip.
 - New elements follow the `packages/certificates` rules in `CLAUDE.md`: layout factors in named constants, subtracted from `FIELDS` before font sizing, `escapeHtml` on interpolated strings, typography kept in sync between CSS and `FIELDS`.
 
 ### Public verification page
@@ -99,6 +106,7 @@ Route `/verify/<code>` on the org's host. Branded with the org logo, name and ac
 | Free-plan org | Same as not found |
 
 - Never shows the learner's email, progress or grades.
+- Carries one line stating what the page proves: "This page confirms that <organization> issued this certificate. It does not say whether the course is accredited by any outside body." Translated like all copy.
 - `noindex`, no robots indexing of any `/verify/*` page.
 - Code lookup is normalised (case, hyphen, spaces).
 - `/verify` with no code shows the lookup input only.
@@ -122,7 +130,9 @@ Route `/verify/<code>` on the org's host. Branded with the org logo, name and ac
 
 **Course > Certificate settings**
 
-- Existing: template, accent color, subtitle, signatories, ID format.
+- Existing: template, accent color, subtitle, signatories, ID format. Admins edit all of these, plus the description, in **Customize design** with a live preview.
+- New: a **Details on the certificate** section in the same editor, where admins add, rename, remove and set the value of each custom field. The value is the default new certificates start with. This edits the same course-level field definitions as the Settings tab, so the limit of 5 is shared. The description, if left blank, falls back to the course description as today.
+- New: **Certificate title** and **Issued by** overrides, edited in **Customize design** with a live preview. Blank means the course title and the organization name, as today. Stored as `titleOverride` and `orgNameOverride` on `course.certificate.design`, rendered through `FIELDS` sizing like every other dynamic field.
 - New: **Expires after** (None, or N months) for standard courses. Hidden for compliance courses, which use their retake interval.
 - New: **Custom fields** editor (see below).
 
@@ -136,7 +146,7 @@ Route `/verify/<code>` on the org's host. Branded with the org logo, name and ac
 
 - Definitions live on the course (`course.certificate.design.customFields`): `{ key, label, type: 'text' | 'date', required }`, maximum 5 per course, labels up to 40 characters, `key` generated from the label and stable after creation.
 - Values live per certificate in `metadata`, keyed by field `key`. Values are the author's own text, with no markup and no localized copy.
-- A field with `required` blocks issuance until a value exists, and the course owner is prompted in the People drawer. Fields may also carry an optional course-level default value.
+- A field with `required` blocks issuance until a value exists, and the course owner is prompted in the People drawer. Field values are never set in the course design. They are entered per learner in the People drawer.
 - Values are editable until revocation, and edits show on the verify page immediately.
 - Values can be set through the public API certificate endpoints (metadata object); the public-api-review checklist applies.
 
@@ -265,12 +275,15 @@ Build checks: `pnpm --filter @cio/certificates build`, `pnpm --filter @cio/api^.
 | Code enumeration or scraping of learner names | 853-billion code space, per-IP rate limits, identical not-found responses, `noindex` |
 | Long custom field values break the certificate or verify layout | Length caps on definitions and values; verify-page-only in v1 |
 | Pricing contradicts the website if the "Starter with footer" idea resurfaces | Decision 1 records the choice; a change goes through pricing, not this spec |
+| Employers read "verified" as "accredited" | Decision 11 and the one-line statement on the verify page; marketing copy says "verify authenticity", never "accredited" |
 | Learners object to a public page showing their name | Recipient name is the point of verification; revisit a per-learner toggle if support signals demand it |
 
 ## Open Questions
 
 1. Does Growth map to `EARLY_ADOPTER` in code (marketing Growth versus `BASIC`, `EARLY_ADOPTER`, `ENTERPRISE`)? Confirm before wiring the gate.
-2. Should custom fields also print on the certificate face? The marketing promise reads as fields on the certificate itself. Recommendation: ship verify-page fields first, add one fitted details line to the templates as a follow-up.
+2. Resolved: custom fields print on the certificate face as one details line (see Certificate face) and also show on the verify page. Remaining question: should a learner-specific description override exist on the People drawer, or is the course-level description enough? Recommendation: course-level only for v1.
 3. Add a `course.certificate.revoked` webhook now, or defer? Recommendation: defer to a follow-up.
 4. Should a downgraded org's certificates keep resolving indefinitely (Decision 9), or for a fixed window?
 5. The original document 7: please paste it so the phase list and alphabet can be reconciled line by line.
+6. Should an org be able to keep verification private per course (Moodle offers login-only verification)? Recommendation: no for v1, because a certificate nobody can check defeats the purpose. Revisit if a customer in a regulated sector asks.
+7. Do we want signed credentials (Open Badges 3.0) as the follow-up after v1, or only LinkedIn "Add to profile"? Confirm against the official 1EdTech specification before scoping, since most sources found were vendor blogs.
