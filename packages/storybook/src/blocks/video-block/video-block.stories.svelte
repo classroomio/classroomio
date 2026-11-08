@@ -88,6 +88,19 @@
   {/snippet}
 </Story>
 
+<Story name="FallbackThumbnail">
+  {#snippet template(args)}
+    <div class="mx-auto w-full max-w-2xl">
+      <Block.Video
+        {...args}
+        thumbnailUrl="/images/missing-thumbnail.jpg"
+        fallbackThumbnailUrl="/images/classroomio-course-img-template.jpg"
+        editable={false}
+      />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="Player">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">

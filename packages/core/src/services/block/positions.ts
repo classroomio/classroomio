@@ -1,5 +1,5 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
-import { generateKeyBetween } from 'fractional-indexing';
+import { generateKeyBetween, generateNKeysBetween } from 'fractional-indexing';
 
 export interface PlacementPosition {
   id: string;
@@ -53,6 +53,56 @@ export function positionsAfter(afterPosition: string | null, count: number): str
     keys.push(next);
     previous = next;
   }
+
+  return keys;
+}
+
+/**
+ * Picks positions for new items saved in a list that also holds existing items of the same kind.
+ * Each run of new items goes directly before the next existing item in submitted order, or directly
+ * after the last existing item when it trails them, so the saved list keeps the submitted order.
+ * @param submitted the saved list in order; `true` marks an item that already has a placement.
+ * @param slots positions the existing items take, ascending, one per `true` entry.
+ * @param ordered every placement position in the lesson, ascending, including `slots`.
+ * @returns one position per new item, in submitted order.
+ */
+export function positionsForNewItems(submitted: boolean[], slots: string[], ordered: string[]): string[] {
+  const keys: string[] = [];
+  let existingSeen = 0;
+  let pendingCount = 0;
+
+  const flush = () => {
+    if (pendingCount === 0) return;
+
+    const nextSlot = slots[existingSeen];
+    const lastSlot = slots[slots.length - 1];
+    let lower: string | null;
+    let upper: string | null;
+    if (nextSlot !== undefined) {
+      upper = nextSlot;
+      lower = ordered[ordered.indexOf(nextSlot) - 1] ?? null;
+    } else if (lastSlot !== undefined) {
+      lower = lastSlot;
+      upper = ordered[ordered.indexOf(lastSlot) + 1] ?? null;
+    } else {
+      lower = ordered[ordered.length - 1] ?? null;
+      upper = null;
+    }
+
+    keys.push(...generateNKeysBetween(lower, upper, pendingCount));
+    pendingCount = 0;
+  };
+
+  for (const isExisting of submitted) {
+    if (!isExisting) {
+      pendingCount += 1;
+      continue;
+    }
+
+    flush();
+    existingSeen += 1;
+  }
+  flush();
 
   return keys;
 }

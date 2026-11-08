@@ -242,7 +242,7 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
             FROM block_placement bp
             JOIN block b ON b.id = bp.block_id AND b.type = 'note'
             JOIN block_locale bl ON bl.block_id = b.id AND bl.locale = 'en'
-            WHERE bp.lesson_id = ${schema.lesson.id}
+            WHERE bp.lesson_id = "lesson"."id"
           )`;
 
           const [lessonMatches, exerciseMatches] = await Promise.all([

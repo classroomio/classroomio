@@ -60,7 +60,7 @@ Let an org turn any course into a reusable template, start new courses from it, 
 9. **Sync only adds and updates. It never deletes.** Items removed from the template stay in linked courses.
 10. **Exercises with any submission are frozen.** They appear in the review sheet as locked and cannot be pulled. Lessons are always updatable, including completed ones, and are never deleted.
 11. **Course settings are pullable** (off by default, like everything else). Identity and audience settings are never synced: title, course link/slug, published state, course type, tags, students, cohorts/sessions, and landing-page reviews.
-12. **No undo and no detach.** The review sheet is the safeguard; lesson version history still records every pulled lesson. Ignoring the alert is the same as detaching.
+12. **No undo and no detach.** The review sheet is the safeguard; lesson version history records each pulled note whose content changed, and earlier history is kept because pulled blocks are updated in place. Ignoring the alert is the same as detaching.
 13. **Plan limit:** free plan (`BASIC`) orgs can have **1 template**; more requires an upgrade. Marketplace imports (see `prd/marketplace`) count toward it.
 14. **Admins only** can save/convert, create from template, pull updates, and duplicate or delete templates. **Tutors and admins** can list templates and open previews (the gallery and the row are visible to them; Use template is shown to admins only).
 15. **Compliance courses** get no special handling.
@@ -413,7 +413,7 @@ pnpm format:check
 5. Create from template copies the template's current lesson content per locale (no version history) and links every section, lesson and exercise.
 6. Templates never appear on the public site, learner LMS, or enrollment flows, and cannot be published.
 7. Editing a template lesson makes it appear as `Updated` in every linked course; untouched lessons don't.
-8. Nothing is pre-selected in the review sheet; pulling only selected rows changes only those rows.
+8. Nothing is pre-selected in the review sheet; pulling changes only the selected rows, except that a lesson block shared with an unselected lesson is updated everywhere it is used.
 9. Skipped changes still appear on the next review.
 10. An exercise with at least one submission is shown locked and the API rejects pulling it.
 11. A lesson with completions can be updated; its completions are preserved.

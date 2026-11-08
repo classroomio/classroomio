@@ -519,15 +519,19 @@ export async function getLessonLanguagesByLessonIds(lessonIds: string[], dbClien
   }
 }
 
-export async function createLessonLanguages(values: TNewLessonLanguage[], dbClient: DbOrTxClient = db) {
+export async function createLessonLanguages(values: TNewLessonLanguage[], dbClient?: DbOrTxClient) {
   if (values.length === 0) return [];
   try {
-    const created: Awaited<ReturnType<typeof createLessonLanguage>>[] = [];
-    for (const value of values) {
-      created.push(await createLessonLanguage(value, dbClient));
-    }
+    const createAll = async (client: DbOrTxClient) => {
+      const created: Awaited<ReturnType<typeof createLessonLanguage>>[] = [];
+      for (const value of values) {
+        created.push(await createLessonLanguage(value, client));
+      }
 
-    return created;
+      return created;
+    };
+
+    return dbClient ? await createAll(dbClient) : await db.transaction(createAll);
   } catch (error) {
     console.error('createLessonLanguages error:', error);
     throw new Error(`Failed to create lesson languages: ${error instanceof Error ? error.message : 'Unknown error'}`);

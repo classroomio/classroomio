@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ZBlockCreate, ZBlockUpdate, ZPlacementMove, parseBlockData } from '@cio/utils/validation/block';
-import { positionForAnchor } from '@cio/core/services/block/positions';
+import { positionForAnchor, positionsForNewItems } from '@cio/core/services/block/positions';
 
 describe('block data schemas', () => {
   it('accepts an uploaded video without a link because it is signed on read', () => {
@@ -81,5 +81,31 @@ describe('positionForAnchor', () => {
     expect(() => positionForAnchor(ordered, { afterPlacementId: 'zzz' })).toThrowError(
       expect.objectContaining({ statusCode: 404 })
     );
+  });
+});
+
+describe('positionsForNewItems', () => {
+  it('puts a new item saved before an existing one ahead of it', () => {
+    const [newVideo] = positionsForNewItems([false, true], ['a1'], ['a0', 'a1', 'a2']);
+
+    expect(newVideo > 'a0' && newVideo < 'a1').toBe(true);
+  });
+
+  it('puts a new item saved between existing ones between them', () => {
+    const [middle] = positionsForNewItems([true, false, true], ['a0', 'a2'], ['a0', 'a1', 'a2']);
+
+    expect(middle > 'a1' && middle < 'a2').toBe(true);
+  });
+
+  it('puts trailing new items right after the last existing one, in order', () => {
+    const [first, second] = positionsForNewItems([true, false, false], ['a0'], ['a0', 'a1']);
+
+    expect(first > 'a0' && first < second && second < 'a1').toBe(true);
+  });
+
+  it('appends after the last placement when none of the items exist yet', () => {
+    const [first, second] = positionsForNewItems([false, false], [], ['a0', 'a1']);
+
+    expect(first > 'a1' && second > first).toBe(true);
   });
 });

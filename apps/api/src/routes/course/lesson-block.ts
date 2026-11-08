@@ -30,6 +30,7 @@ import { assertEnrolledStudentContentAccess } from '@api/services/course/access'
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { lessonInCourseMiddleware } from '@api/middlewares/lesson-in-course';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
@@ -39,30 +40,38 @@ const ZLessonBlockLocaleParam = z.object({ lessonId: z.uuid(), blockId: z.uuid()
 const ZLessonPlacementParam = z.object({ lessonId: z.uuid(), placementId: z.uuid() });
 
 export const lessonBlockRouter = new Hono()
-  .get('/', authMiddleware, courseMemberMiddleware, zValidator('param', ZLessonParam), async (c) => {
-    try {
-      const user = c.get('user')!;
-      const courseId = c.req.param('courseId')!;
-      const { lessonId } = c.req.valid('param');
+  .get(
+    '/',
+    authMiddleware,
+    courseMemberMiddleware,
+    lessonInCourseMiddleware,
+    zValidator('param', ZLessonParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const courseId = c.req.param('courseId')!;
+        const { lessonId } = c.req.valid('param');
 
-      await assertEnrolledStudentContentAccess({
-        courseId,
-        profileId: user.id,
-        contentId: lessonId,
-        type: ContentType.Lesson
-      });
+        await assertEnrolledStudentContentAccess({
+          courseId,
+          profileId: user.id,
+          contentId: lessonId,
+          type: ContentType.Lesson
+        });
 
-      const blocks = await getLessonBlocks(lessonId);
+        const blocks = await getLessonBlocks(lessonId);
 
-      return c.json({ success: true, data: blocks }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to fetch lesson blocks');
+        return c.json({ success: true, data: blocks }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch lesson blocks');
+      }
     }
-  })
+  )
   .post(
     '/',
     authMiddleware,
     courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonParam),
     zValidator('json', ZBlockCreate),
     async (c) => {
@@ -82,6 +91,7 @@ export const lessonBlockRouter = new Hono()
     '/attach',
     authMiddleware,
     courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonParam),
     zValidator('json', ZBlockAttach),
     async (c) => {
@@ -101,6 +111,7 @@ export const lessonBlockRouter = new Hono()
     '/placements/:placementId',
     authMiddleware,
     courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonPlacementParam),
     zValidator('json', ZPlacementUpdate),
     async (c) => {
@@ -120,6 +131,7 @@ export const lessonBlockRouter = new Hono()
     '/placements/:placementId/move',
     authMiddleware,
     courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonPlacementParam),
     zValidator('json', ZPlacementMove),
     async (c) => {
@@ -139,6 +151,7 @@ export const lessonBlockRouter = new Hono()
     '/placements/:placementId',
     authMiddleware,
     courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonPlacementParam),
     async (c) => {
       try {
@@ -158,6 +171,7 @@ export const lessonBlockRouter = new Hono()
     '/:blockId',
     authMiddleware,
     courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonBlockParam),
     zValidator('json', ZBlockUpdate),
     async (c) => {
@@ -179,6 +193,7 @@ export const lessonBlockRouter = new Hono()
     '/:blockId/locale/:locale',
     authMiddleware,
     courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonBlockLocaleParam),
     zValidator('json', ZBlockLocaleUpdate),
     async (c) => {
@@ -200,6 +215,7 @@ export const lessonBlockRouter = new Hono()
     '/:blockId/duplicate',
     authMiddleware,
     courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonBlockParam),
     zValidator('json', ZBlockDuplicate),
     async (c) => {
@@ -221,6 +237,7 @@ export const lessonBlockRouter = new Hono()
     '/:blockId/history',
     authMiddleware,
     courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonBlockParam),
     zValidator('query', ZBlockHistoryQuery),
     async (c) => {

@@ -44,6 +44,7 @@ vi.mock('@cio/core/services/webhook/emit', () => ({
   emitCourseWebhookEvent: vi.fn()
 }));
 vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({ invalidateOrgStats: vi.fn() }));
+vi.mock('@cio/core/services/block/block-version', () => ({ sealBlockVersionsOnPublish: vi.fn() }));
 vi.mock('@cio/analytics', () => ({ trackServerEvent: vi.fn(), SERVER_EVENTS: {} }));
 vi.mock('@api/utils/course-completion', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@api/utils/course-completion')>();

@@ -39,6 +39,7 @@ import {
   type TCourseCreate
 } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
+import { sealBlockVersionsOnPublish } from '../block/block-version';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { skipRemovedOffsetReminderDeliveries } from '@cio/db/queries/course/live-session-reminder';
@@ -481,7 +482,17 @@ export async function updateCourse(
       );
     }
 
-    const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData), dbClient);
+    const courseValues = sanitizeUnknownStrings(sanitizedData);
+    const isPublishing = !currentCourse.isPublished && data.isPublished === true;
+    const writeCourse = async (client: DbOrTxClient) => {
+      const row = await updateCourseQuery(courseId, courseValues, client);
+      if (row && isPublishing) {
+        await sealBlockVersionsOnPublish(courseId, client);
+      }
+
+      return row;
+    };
+    const updated = isPublishing && dbClient === db ? await db.transaction(writeCourse) : await writeCourse(dbClient);
     if (!updated) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }

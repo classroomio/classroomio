@@ -1,6 +1,6 @@
 import { AppError } from '@cio/utils/errors';
 
-import { attachAssetService, createAssetFromUploadService, getYouTubeMetadataService } from '../assets/assets';
+import { createAssetFromUploadService, getYouTubeMetadataService } from '../assets/assets';
 import { createLessonBlock } from '../block/block';
 import { getLesson } from '../lesson/lesson';
 
@@ -83,13 +83,6 @@ export async function attachYoutubeVideoToLesson(input: {
   );
 
   const position = existingVideos.length;
-
-  await attachAssetService(orgId, asset.id, userId, {
-    targetType: 'lesson',
-    targetId: lessonId,
-    slotType: 'lesson_video',
-    position
-  });
 
   const newVideo: LessonVideoEntry = {
     type: 'youtube',

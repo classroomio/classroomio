@@ -4,7 +4,7 @@
   import VideoCardDropdown from './video-card-dropdown.svelte';
   import VideoHlsStatusBadge from './video-hls-status-badge.svelte';
   import {
-    getVideoThumbnailUrl,
+    getVideoPosterUrls,
     getVideoTitle,
     getVideoDurationSeconds,
     formatVideoDuration,
@@ -41,7 +41,7 @@
 
   let isTranscribingForVideo = $state(false);
 
-  const thumbnailUrl = $derived(getVideoThumbnailUrl(video));
+  const poster = $derived(getVideoPosterUrls(video));
   const title = $derived(getVideoTitle(video, index));
   const durationSeconds = $derived(getVideoDurationSeconds(video));
   const durationFormatted = $derived(formatVideoDuration(durationSeconds ?? undefined));
@@ -90,7 +90,8 @@
 <!-- YouTube-like: thumbnail on top; title row + overflow menu -->
 <Block.Video
   {title}
-  {thumbnailUrl}
+  thumbnailUrl={poster.url ?? undefined}
+  fallbackThumbnailUrl={poster.fallbackUrl}
   durationLabel={durationFormatted}
   {channelLine}
   {metaLine}

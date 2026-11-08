@@ -6,6 +6,7 @@ CREATE TABLE "block" (
 	"data" jsonb DEFAULT '{}'::jsonb NOT NULL,
 	"version" integer DEFAULT 1 NOT NULL,
 	"created_by" uuid,
+	"source_id" uuid,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );--> statement-breakpoint
@@ -41,12 +42,14 @@ CREATE TABLE "block_locale_history" (
 );--> statement-breakpoint
 ALTER TABLE "block" ADD CONSTRAINT "block_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "block" ADD CONSTRAINT "block_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "block" ADD CONSTRAINT "block_source_id_fkey" FOREIGN KEY ("source_id") REFERENCES "public"."block"("id") ON DELETE set null;--> statement-breakpoint
 ALTER TABLE "block_placement" ADD CONSTRAINT "block_placement_lesson_id_fkey" FOREIGN KEY ("lesson_id") REFERENCES "public"."lesson"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "block_placement" ADD CONSTRAINT "block_placement_block_id_fkey" FOREIGN KEY ("block_id") REFERENCES "public"."block"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "block_locale" ADD CONSTRAINT "block_locale_block_id_fkey" FOREIGN KEY ("block_id") REFERENCES "public"."block"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "block_locale_history" ADD CONSTRAINT "block_locale_history_block_locale_id_fkey" FOREIGN KEY ("block_locale_id") REFERENCES "public"."block_locale"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "block_locale_history" ADD CONSTRAINT "block_locale_history_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE cascade;--> statement-breakpoint
 CREATE INDEX "block_organization_type_idx" ON "block" USING btree ("organization_id","type");--> statement-breakpoint
+CREATE INDEX "block_source_id_idx" ON "block" USING btree ("source_id") WHERE "source_id" IS NOT NULL;--> statement-breakpoint
 CREATE INDEX "block_placement_block_id_idx" ON "block_placement" USING btree ("block_id");--> statement-breakpoint
 CREATE INDEX "block_locale_history_locale_timestamp_idx" ON "block_locale_history" USING btree ("block_locale_id","timestamp" DESC NULLS LAST);--> statement-breakpoint
 CREATE VIEW "public"."block_versions" AS (SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id);--> statement-breakpoint
@@ -118,7 +121,11 @@ FROM _lesson_scope s
 WHERE COALESCE(btrim(s.note), '') <> ''
    OR EXISTS (
      SELECT 1 FROM lesson_language ll
-     WHERE ll.lesson_id = s.lesson_id AND COALESCE(btrim(ll.content), '') <> ''
+     WHERE ll.lesson_id = s.lesson_id
+       AND (
+         COALESCE(btrim(ll.content), '') <> ''
+         OR EXISTS (SELECT 1 FROM lesson_language_history h WHERE h.lesson_language_id = ll.id)
+       )
    );--> statement-breakpoint
 
 INSERT INTO _block_source (lesson_id, organization_id, type, tab_id, item_ordinal, data, tab_order)
@@ -191,6 +198,23 @@ SELECT lesson_id,
        required
 FROM _block_source;--> statement-breakpoint
 
+WITH ranked AS (
+  SELECT block_id,
+         lesson_id,
+         type,
+         row_number() OVER (PARTITION BY lesson_id, type ORDER BY item_ordinal) AS type_rank
+  FROM _block_source
+)
+UPDATE block
+SET source_id = template_block.block_id
+FROM ranked course_block
+JOIN lesson course_lesson ON course_lesson.id = course_block.lesson_id
+JOIN ranked template_block
+  ON template_block.lesson_id = course_lesson.source_id
+ AND template_block.type = course_block.type
+ AND template_block.type_rank = course_block.type_rank
+WHERE block.id = course_block.block_id;--> statement-breakpoint
+
 CREATE TEMP TABLE _locale_map (
   lesson_language_id bigint NOT NULL,
   block_locale_id bigint NOT NULL
@@ -201,7 +225,11 @@ WITH inserted AS (
   SELECT src.block_id, ll.locale, ll.content, ll.updated_at
   FROM _block_source src
   JOIN lesson_language ll ON ll.lesson_id = src.lesson_id
-  WHERE src.type = 'note' AND COALESCE(btrim(ll.content), '') <> ''
+  WHERE src.type = 'note'
+    AND (
+      COALESCE(btrim(ll.content), '') <> ''
+      OR EXISTS (SELECT 1 FROM lesson_language_history h WHERE h.lesson_language_id = ll.id)
+    )
   RETURNING id, block_id, locale
 )
 INSERT INTO _locale_map (lesson_language_id, block_locale_id)

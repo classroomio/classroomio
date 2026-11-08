@@ -2209,6 +2209,7 @@ export const block = pgTable(
     data: jsonb().default({}).notNull().$type<Record<string, unknown>>(),
     version: integer().default(1).notNull(),
     createdBy: uuid('created_by'),
+    sourceId: uuid('source_id').references((): AnyPgColumn => block.id, { onDelete: 'set null' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -2227,7 +2228,10 @@ export const block = pgTable(
     })
       .onUpdate('cascade')
       .onDelete('set null'),
-    index('block_organization_type_idx').on(table.organizationId, table.type)
+    index('block_organization_type_idx').on(table.organizationId, table.type),
+    index('block_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
   ]
 );
 

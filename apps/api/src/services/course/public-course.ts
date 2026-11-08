@@ -136,6 +136,11 @@ async function resolvePublicVideo(
       const assets = await getAssetsByIds([video.assetId], courseOrganizationId ?? undefined);
       storageKey = assets[0]?.storageKey ?? undefined;
       hlsManifestKey = assets[0]?.hlsManifestKey ?? null;
+
+      const assetThumbnail = assets[0]?.thumbnailUrl;
+      if (assetThumbnail && !video.metadata?.thumbnailUrl) {
+        video = { ...video, metadata: { ...(video.metadata ?? {}), thumbnailUrl: assetThumbnail } };
+      }
     }
 
     if (!storageKey && video.key) {

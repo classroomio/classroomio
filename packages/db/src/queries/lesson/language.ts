@@ -28,6 +28,13 @@ async function findPrimaryNoteBlockId(lessonId: string, client: DbOrTxClient): P
   return row?.blockId ?? null;
 }
 
+async function bumpBlockVersion(blockId: string, client: DbOrTxClient): Promise<void> {
+  await client
+    .update(schema.block)
+    .set({ version: sql`${schema.block.version} + 1`, updatedAt: sql`now()` })
+    .where(eq(schema.block.id, blockId));
+}
+
 async function ensurePrimaryNoteBlockId(lessonId: string, client: DbOrTxClient): Promise<string> {
   const existing = await findPrimaryNoteBlockId(lessonId, client);
   if (existing) return existing;
@@ -44,6 +51,9 @@ async function ensurePrimaryNoteBlockId(lessonId: string, client: DbOrTxClient):
   }
 
   await client.execute(sql`select pg_advisory_xact_lock(hashtext(${`lesson_block_positions:${lessonId}`}))`);
+
+  const createdWhileWaiting = await findPrimaryNoteBlockId(lessonId, client);
+  if (createdWhileWaiting) return createdWhileWaiting;
 
   const [last] = await client
     .select({ position: schema.blockPlacement.position })
@@ -114,6 +124,8 @@ export async function createLessonLanguage(
       throw new Error('Failed to create lesson language');
     }
 
+    await bumpBlockVersion(blockId, client);
+
     return toLessonLanguage(lessonId, row);
   };
 
@@ -141,10 +153,7 @@ export async function updateLessonLanguage(
       throw new Error('Lesson language not found');
     }
 
-    await client
-      .update(schema.block)
-      .set({ version: sql`${schema.block.version} + 1`, updatedAt: sql`now()` })
-      .where(eq(schema.block.id, blockId));
+    await bumpBlockVersion(blockId, client);
 
     return toLessonLanguage(lessonId, row);
   };
@@ -153,15 +162,20 @@ export async function updateLessonLanguage(
 }
 
 export async function deleteLessonLanguage(lessonId: string, locale: TLocale): Promise<TLessonLanguage | null> {
-  const blockId = await findPrimaryNoteBlockId(lessonId, db);
-  if (!blockId) return null;
+  return db.transaction(async (tx) => {
+    const blockId = await findPrimaryNoteBlockId(lessonId, tx);
+    if (!blockId) return null;
 
-  const [row] = await db
-    .delete(schema.blockLocale)
-    .where(and(eq(schema.blockLocale.blockId, blockId), eq(schema.blockLocale.locale, locale)))
-    .returning();
+    const [row] = await tx
+      .delete(schema.blockLocale)
+      .where(and(eq(schema.blockLocale.blockId, blockId), eq(schema.blockLocale.locale, locale)))
+      .returning();
+    if (!row) return null;
 
-  return row ? toLessonLanguage(lessonId, row) : null;
+    await bumpBlockVersion(blockId, tx);
+
+    return toLessonLanguage(lessonId, row);
+  });
 }
 
 export async function upsertLessonLanguage(
@@ -227,7 +241,12 @@ export async function listLessonLanguagesForLessons(
     .from(schema.blockLocale)
     .where(inArray(schema.blockLocale.blockId, [...primaryBlockByLesson.values()]));
 
-  const lessonByBlock = new Map([...primaryBlockByLesson].map(([lessonId, blockId]) => [blockId, lessonId]));
+  const localesByBlock = new Map<string, typeof locales>();
+  for (const locale of locales) {
+    localesByBlock.set(locale.blockId, [...(localesByBlock.get(locale.blockId) ?? []), locale]);
+  }
 
-  return locales.map((locale) => toLessonLanguage(lessonByBlock.get(locale.blockId)!, locale));
+  return [...primaryBlockByLesson].flatMap(([lessonId, blockId]) =>
+    (localesByBlock.get(blockId) ?? []).map((locale) => toLessonLanguage(lessonId, locale))
+  );
 }

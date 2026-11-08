@@ -261,7 +261,7 @@ Labels are individual props with English defaults, so the dashboard overrides th
 | `Block.Image` (+ `Block.ImageSettingsDialog`) | `url`, `alt`, `fit`, `editable`, `changeLabel`, `onChangeFile`, `onSaveSettings`                                                                          | `Blocks/ImageBlock`        |
 | `Block.Document`                     | `files`, `editable`, `labels`, `changeLabel`, `onView`, `onDownload`, `onChange`                                                                          | `Blocks/DocumentBlock`     |
 | `Block.Slide`                        | `slide`, `isExample`, `editable`, `frameTitle`, `changeLabel`, `onChange`                                                                                 | `Blocks/SlideBlock`        |
-| `Block.Video`                        | `title`, `thumbnailUrl`, `durationLabel`, `channelLine`, `metaLine`, `changeLabel`, `onChange`, plus `actions`, `status`, `notice`, and `player` snippets | `Blocks/VideoBlock`        |
+| `Block.Video`                        | `title`, `thumbnailUrl`, `fallbackThumbnailUrl`, `durationLabel`, `channelLine`, `metaLine`, `changeLabel`, `onChange`, plus `actions`, `status`, `notice`, and `player` snippets | `Blocks/VideoBlock`        |
 | `Block.Note`                         | `style` (`default` / `info` / `tip` / `important` / `warning` / `highlight`), `contentHtml`, `empty`, plus `editor` and `view` snippets                   | `Blocks/NoteBlock`         |
 | `Block.ChangeButton`                 | `label`, `onclick`, `disabled` — the hover "Change …" action the source blocks overlay on their media                                                     | `Blocks/BlockChangeButton` |
 

@@ -8,6 +8,7 @@
   interface Props {
     title: string;
     thumbnailUrl?: string;
+    fallbackThumbnailUrl?: string;
     durationLabel?: string;
     channelLine?: string;
     metaLine?: string;
@@ -24,6 +25,7 @@
   let {
     title,
     thumbnailUrl,
+    fallbackThumbnailUrl,
     durationLabel,
     channelLine,
     metaLine,
@@ -37,11 +39,37 @@
     playerKey = ''
   }: Props = $props();
 
+  const PLACEHOLDER_MAX_WIDTH = 120;
+
   let loadedUrl = $state('');
   let failedUrl = $state('');
+  let fallbackFor = $state('');
 
-  const loadingThumbnail = $derived(!!thumbnailUrl && loadedUrl !== thumbnailUrl && failedUrl !== thumbnailUrl);
-  const showThumbnail = $derived(!!thumbnailUrl && failedUrl !== thumbnailUrl);
+  const displayedUrl = $derived(
+    fallbackThumbnailUrl && thumbnailUrl && fallbackFor === thumbnailUrl ? fallbackThumbnailUrl : thumbnailUrl
+  );
+  const loadingThumbnail = $derived(!!displayedUrl && loadedUrl !== displayedUrl && failedUrl !== displayedUrl);
+  const showThumbnail = $derived(!!displayedUrl && failedUrl !== displayedUrl);
+
+  function switchToFallback(): boolean {
+    if (!fallbackThumbnailUrl || !thumbnailUrl || displayedUrl === fallbackThumbnailUrl) return false;
+
+    fallbackFor = thumbnailUrl;
+    return true;
+  }
+
+  function handleThumbnailLoad(event: Event) {
+    const image = event.currentTarget as HTMLImageElement;
+    if (image.naturalWidth <= PLACEHOLDER_MAX_WIDTH && switchToFallback()) return;
+
+    loadedUrl = displayedUrl ?? '';
+  }
+
+  function handleThumbnailError() {
+    if (switchToFallback()) return;
+
+    failedUrl = displayedUrl ?? '';
+  }
 </script>
 
 {#if player}
@@ -55,14 +83,14 @@
     <div class="ui:bg-muted ui:relative ui:w-full ui:min-w-0 ui:overflow-hidden ui:rounded-md ui:aspect-video">
       {#if showThumbnail}
         <img
-          src={thumbnailUrl}
+          src={displayedUrl}
           alt={title}
           class={cn(
             'ui:absolute ui:inset-0 ui:block ui:h-full ui:w-full ui:object-cover',
             loadingThumbnail && 'ui:opacity-0'
           )}
-          onload={() => (loadedUrl = thumbnailUrl ?? '')}
-          onerror={() => (failedUrl = thumbnailUrl ?? '')}
+          onload={handleThumbnailLoad}
+          onerror={handleThumbnailError}
         />
         {#if loadingThumbnail}
           <Skeleton class="ui:absolute ui:inset-0 ui:h-full ui:w-full" />

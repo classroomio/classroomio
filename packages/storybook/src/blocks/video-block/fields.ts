@@ -1,1 +1,10 @@
-export const FIELDS = ['title', 'thumbnailUrl', 'durationLabel', 'channelLine', 'metaLine', 'editable', 'changeLabel'];
+export const FIELDS = [
+  'title',
+  'thumbnailUrl',
+  'fallbackThumbnailUrl',
+  'durationLabel',
+  'channelLine',
+  'metaLine',
+  'editable',
+  'changeLabel'
+];

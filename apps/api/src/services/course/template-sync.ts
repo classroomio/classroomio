@@ -36,14 +36,7 @@ import {
   lockCourseForUpdate
 } from '@db/queries';
 import { env } from '@cio/core/config/env';
-import { recordBlockLocaleVersion } from '@cio/core/services/block/block-version';
-import { copyLessonBlocks } from '@cio/core/services/block/copy';
-import {
-  deleteBlocksWithoutPlacements,
-  deletePlacements,
-  listBlockLocales,
-  listLessonBlockRows
-} from '@cio/db/queries/block';
+import { pullLessonBlocksFromSource } from '@cio/core/services/block/copy';
 import { withDerivedLessonContent } from '@cio/db/queries/block/legacy';
 import { withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
 import {
@@ -458,47 +451,6 @@ async function copyExerciseBody(
   }
 }
 
-async function replaceLessonBlocksFromTemplate(
-  templateLessonId: string,
-  courseLessonId: string,
-  templateOrgId: string | null,
-  courseOrgId: string | null,
-  userId: string,
-  client: DbOrTxClient
-) {
-  const organizationId = courseOrgId ?? templateOrgId;
-  if (!organizationId) return;
-
-  const existing = await listLessonBlockRows(courseLessonId, client);
-  await deletePlacements(
-    existing.map((row) => row.placement.id),
-    client
-  );
-  await deleteBlocksWithoutPlacements(
-    existing.map((row) => row.block.id),
-    client
-  );
-
-  const copiedBlockIds = await copyLessonBlocks({
-    lessonIdMap: new Map([[templateLessonId, courseLessonId]]),
-    organizationId,
-    actorProfileId: userId,
-    transform: (value) => remapContentAssets(value, templateOrgId, courseOrgId, userId, client),
-    dbClient: client
-  });
-
-  const noteLocales = await listBlockLocales([...copiedBlockIds.values()], client);
-  for (const locale of noteLocales) {
-    await recordBlockLocaleVersion({
-      blockLocaleId: locale.id,
-      content: locale.content,
-      authorId: userId,
-      intent: 'manual',
-      dbClient: client
-    });
-  }
-}
-
 export async function pullCourseTemplateUpdates(
   courseId: string,
   orgId: string,
@@ -566,6 +518,7 @@ export async function pullCourseTemplateUpdates(
       }
 
       const templateLessons = templateGraph.lessons.slice().sort((left, right) => left.order - right.order);
+      const pulledLessons = new Map<string, (typeof courseGraph.lessons)[number]>();
       for (const lesson of templateLessons) {
         if (!selected.has(lesson.id)) continue;
 
@@ -599,8 +552,7 @@ export async function pullCourseTemplateUpdates(
             },
             tx
           );
-          await replaceLessonBlocksFromTemplate(lesson.id, existing.id, templateOrgId, courseOrgId, userId, tx);
-          await syncLessonAssetUsages(await withDerivedLessonContent([existing], tx), courseOrgId, userId, tx);
+          pulledLessons.set(lesson.id, existing);
           stamped.lessonIds.push(existing.id);
           continue;
         }
@@ -642,9 +594,26 @@ export async function pullCourseTemplateUpdates(
         if (!created) throw new AppError('Failed to pull lesson', ErrorCodes.INTERNAL_ERROR, 500);
 
         courseGraph.lessons.push(created);
-        await replaceLessonBlocksFromTemplate(lesson.id, created.id, templateOrgId, courseOrgId, userId, tx);
-        await syncLessonAssetUsages(await withDerivedLessonContent([created], tx), courseOrgId, userId, tx);
+        pulledLessons.set(lesson.id, created);
         stamped.lessonIds.push(created.id);
+      }
+
+      const blockOrganizationId = courseOrgId ?? templateOrgId;
+      if (blockOrganizationId && pulledLessons.size > 0) {
+        const lessonIdMap = new Map(
+          [...pulledLessons].map(([templateLessonId, lesson]) => [templateLessonId, lesson.id])
+        );
+        const courseLessonIds = courseGraph.lessons.map((lesson) => lesson.id);
+        await pullLessonBlocksFromSource({
+          lessonIdMap,
+          courseLessonIds,
+          organizationId: blockOrganizationId,
+          actorProfileId: userId,
+          transform: (value) => remapContentAssets(value, templateOrgId, courseOrgId, userId, tx),
+          dbClient: tx
+        });
+        const pulledWithContent = await withDerivedLessonContent([...pulledLessons.values()], tx);
+        await syncLessonAssetUsages(pulledWithContent, courseOrgId, userId, tx);
       }
 
       const templateExercises = templateGraph.exercises.slice().sort((left, right) => left.order - right.order);

@@ -293,18 +293,19 @@ export async function attachLessonBlock(
       throw new AppError('Block not found', ErrorCodes.BLOCK_NOT_FOUND, 404);
     }
 
+    await lockLessonBlockPositions(lessonId, tx);
+
     if (await getLessonBlockRow(lessonId, block.id, tx)) {
       throw new AppError('Block is already in this lesson', ErrorCodes.CONFLICT, 409);
     }
 
-    await lockLessonBlockPositions(lessonId, tx);
-
     const ordered = await getPlacementPositions(lessonId, tx);
+    const position = positionForAnchor(ordered, input);
     const placement = await createPlacement(
       {
         lessonId,
         blockId: block.id,
-        position: positionForAnchor(ordered, input),
+        position,
         required: input.required ?? false,
         watchThreshold: input.watchThreshold ?? null
       },
@@ -454,7 +455,8 @@ export async function moveLessonPlacement(
     await lockLessonBlockPositions(lessonId, tx);
 
     const ordered = (await getPlacementPositions(lessonId, tx)).filter((entry) => entry.id !== placementId);
-    const placement = await updatePlacement(placementId, { position: positionForAnchor(ordered, anchor) }, tx);
+    const position = positionForAnchor(ordered, anchor);
+    const placement = await updatePlacement(placementId, { position }, tx);
     if (!placement) {
       throw new AppError('Block placement not found', ErrorCodes.BLOCK_PLACEMENT_NOT_FOUND, 404);
     }
@@ -535,11 +537,12 @@ export async function duplicateLessonBlock(
     } else {
       await lockLessonBlockPositions(lessonId, tx);
       const ordered = await getPlacementPositions(lessonId, tx);
+      const position = positionForAnchor(ordered, { afterPlacementId: row.placement.id });
       placement = await createPlacement(
         {
           lessonId,
           blockId: copy.id,
-          position: positionForAnchor(ordered, { afterPlacementId: row.placement.id }),
+          position,
           required: row.placement.required,
           watchThreshold: row.placement.watchThreshold
         },

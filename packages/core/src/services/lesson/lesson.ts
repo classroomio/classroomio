@@ -35,7 +35,6 @@ import {
   applyLegacyLessonContent,
   attachBlocksToLesson,
   attachBlocksToLessons,
-  blocksToLegacyLanguages,
   splitLegacyContent
 } from '../block/legacy-content';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
@@ -126,9 +125,7 @@ export async function getLesson(lessonId: string): Promise<LessonById & { blocks
       throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
     }
 
-    const withBlocks = await attachBlocksToLesson(lesson, { enrich: true });
-
-    return { ...withBlocks, lessonLanguages: blocksToLegacyLanguages(lesson.id, withBlocks.blocks) };
+    return await attachBlocksToLesson(lesson, { enrich: true });
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -709,10 +706,14 @@ export async function updateLessonWatchProgressService(
     }
 
     const existing = await getLessonVideoProgress(lessonId, profileId, beat.assetId);
-    const placedVideo = (await listLessonBlockRows(lessonId)).find(
+    const assetPlacements = (await listLessonBlockRows(lessonId)).filter(
       (row) => row.block.type === 'video' && row.block.data.assetId === beat.assetId
     );
-    const threshold = placedVideo?.placement.watchThreshold ?? lesson.videoWatchThreshold ?? 95;
+    const requiredPlacements = assetPlacements.filter((row) => row.placement.required);
+    const enforcedPlacements = requiredPlacements.length > 0 ? requiredPlacements : assetPlacements;
+    const lessonThreshold = lesson.videoWatchThreshold ?? 95;
+    const placementThresholds = enforcedPlacements.map((row) => row.placement.watchThreshold ?? lessonThreshold);
+    const threshold = placementThresholds.length > 0 ? Math.max(...placementThresholds) : lessonThreshold;
     const now = Date.now();
 
     if (existing?.isComplete) {

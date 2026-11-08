@@ -83,6 +83,20 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   '/public-api/v1/courses/:courseId/lessons/:lessonId/translations': { GET: 'list_course_lesson_translations' },
   '/public-api/v1/courses/:courseId/lessons/:lessonId/translations/:locale': { PUT: 'set_course_lesson_translation' },
   '/public-api/v1/courses/:courseId/lessons/:lessonId/history': { GET: 'list_course_lesson_history' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks': { GET: 'list_lesson_blocks', POST: 'add_lesson_block' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/attach': { POST: 'attach_lesson_block' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/placements/:placementId': {
+    PATCH: 'update_lesson_block_placement',
+    DELETE: 'remove_lesson_block'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/placements/:placementId/move': {
+    PUT: 'move_lesson_block'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/:blockId': { PATCH: 'update_lesson_block' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/:blockId/locale/:locale': {
+    PUT: 'set_lesson_block_content'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/:blockId/duplicate': { POST: 'duplicate_lesson_block' },
   '/public-api/v1/courses/:courseId/lessons/:lessonId/comments': {
     GET: 'list_course_lesson_comments',
     POST: 'create_course_lesson_comment'

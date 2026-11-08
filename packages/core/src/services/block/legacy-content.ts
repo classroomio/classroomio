@@ -2,7 +2,7 @@ import { AppError, ErrorCodes } from '@cio/utils/errors';
 import type { TLessonSlide, TLessonVideoItem } from '@cio/utils/validation/lesson';
 import type { TBlockType } from '@cio/utils/validation/block';
 import { parseBlockData } from '@cio/utils/validation/block';
-import type { TLessonLanguage, TLocale } from '@cio/db/types';
+import type { TLocale } from '@cio/db/types';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   createBlock,
@@ -13,6 +13,7 @@ import {
   getPlacementPositions,
   listLessonBlockRows,
   lockLessonBlockPositions,
+  bumpBlockVersionIfVersion,
   updateBlockDataIfVersion,
   updatePlacement,
   upsertBlockLocale,
@@ -23,7 +24,8 @@ import type { LessonDocument, LessonVideo } from '../../utils/lesson-media';
 import { syncLessonAssetUsages } from './block';
 import { recordBlockLocaleVersion } from './block-version';
 import { enrichBlocksMedia, loadBlocksForLessons, loadLessonBlocks, type LessonBlock } from './block-view';
-import { positionsAfter } from './positions';
+import { isSameJson } from './json';
+import { positionsAfter, positionsForNewItems } from './positions';
 
 const DEFAULT_LOCALE: TLocale = 'en';
 
@@ -114,22 +116,6 @@ export async function attachBlocksToLessons<T extends { id: string }>(
   });
 }
 
-/**
- * Derives the deprecated `lessonLanguages` rows from the lesson's first note block.
- */
-export function blocksToLegacyLanguages(lessonId: string, blocks: LessonBlock[]): TLessonLanguage[] {
-  const firstNote = blocks.find((block) => block.type === 'note');
-  if (!firstNote) return [];
-
-  return Object.entries(firstNote.contents).map(([locale, content]) => ({
-    id: 0,
-    lessonId,
-    locale: locale as TLocale,
-    content: content ?? null,
-    updatedAt: firstNote.updatedAt
-  }));
-}
-
 interface LegacyItem {
   identity: string;
   data: Record<string, unknown>;
@@ -160,24 +146,6 @@ function toLegacyItems(type: TBlockType, patch: LegacyLessonContentPatch): Legac
   return null;
 }
 
-function sortedJson(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(sortedJson);
-  if (value && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>)
-        .filter(([, entry]) => entry !== undefined)
-        .sort(([left], [right]) => (left < right ? -1 : 1))
-        .map(([key, entry]) => [key, sortedJson(entry)])
-    );
-  }
-
-  return value;
-}
-
-function isSameJson(left: unknown, right: unknown): boolean {
-  return JSON.stringify(sortedJson(left)) === JSON.stringify(sortedJson(right));
-}
-
 function existingIdentity(row: LessonBlockRow): string {
   const data = row.block.data;
   if (row.block.type === 'video') return videoIdentity(data as { assetId?: string; key?: string; link?: string });
@@ -198,9 +166,11 @@ async function replaceBlocksOfType(
   const available = [...rows];
   const matched: { row: LessonBlockRow; item: LegacyItem }[] = [];
   const created: LegacyItem[] = [];
+  const submittedIsExisting: boolean[] = [];
 
   for (const item of items) {
     const index = available.findIndex((row) => existingIdentity(row) === item.identity);
+    submittedIsExisting.push(index !== -1);
     if (index === -1) {
       created.push(item);
       continue;
@@ -218,7 +188,15 @@ async function replaceBlocksOfType(
     }
 
     if (!isSameJson(data, row.block.data)) {
-      await updateBlockDataIfVersion(row.block.id, data as Record<string, unknown>, row.block.version, tx);
+      const updated = await updateBlockDataIfVersion(
+        row.block.id,
+        data as Record<string, unknown>,
+        row.block.version,
+        tx
+      );
+      if (!updated) {
+        throw new AppError('This block was changed by someone else', ErrorCodes.BLOCK_VERSION_CONFLICT, 409);
+      }
     }
     await updatePlacement(
       row.placement.id,
@@ -241,8 +219,8 @@ async function replaceBlocksOfType(
 
   if (created.length > 0) {
     const ordered = await getPlacementPositions(lessonId, tx);
-    const lastPosition = ordered[ordered.length - 1]?.position ?? null;
-    const positions = positionsAfter(lastPosition, created.length);
+    const orderedPositions = ordered.map((entry) => entry.position);
+    const positions = positionsForNewItems(submittedIsExisting, orderedSlots, orderedPositions);
 
     for (const [index, item] of created.entries()) {
       const data = parseBlockData(type, item.data);
@@ -274,19 +252,20 @@ async function replaceLegacyNote(
   const noteRow = rows.find((row) => row.block.type === 'note');
 
   let blockId = noteRow?.block.id;
+  if (noteRow) {
+    const bumped = await bumpBlockVersionIfVersion(noteRow.block.id, noteRow.block.version, tx);
+    if (!bumped) {
+      throw new AppError('This block was changed by someone else', ErrorCodes.BLOCK_VERSION_CONFLICT, 409);
+    }
+  }
   if (!blockId) {
     if (content.trim() === '') return;
 
     const ordered = await getPlacementPositions(lessonId, tx);
+    const lastPosition = ordered[ordered.length - 1]?.position ?? null;
+    const [position] = positionsAfter(lastPosition, 1);
     const block = await createBlock({ organizationId, type: 'note', data: {}, createdBy: actorProfileId }, tx);
-    await createPlacement(
-      {
-        lessonId,
-        blockId: block.id,
-        position: positionsAfter(ordered[ordered.length - 1]?.position ?? null, 1)[0]
-      },
-      tx
-    );
+    await createPlacement({ lessonId, blockId: block.id, position }, tx);
     blockId = block.id;
   }
 

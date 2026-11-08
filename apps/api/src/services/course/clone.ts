@@ -399,6 +399,7 @@ async function cloneCourseWithClient(
       organizationId: blockOrganizationId,
       actorProfileId: options.userId,
       transform: (value) => replaceAssetIds(value, assetIds),
+      setSourceIds: options.setSourceIds,
       dbClient: tx
     });
   }
