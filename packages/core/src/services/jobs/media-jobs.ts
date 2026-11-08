@@ -205,13 +205,15 @@ export interface StartMediaJobInput {
  * around so an operator can replay it).
  */
 export async function startMediaJob(input: StartMediaJobInput): Promise<TMediaJob> {
+  const plannedJobIds: Record<string, string> = input.withTranscription === false ? {} : { 'transcribe-audio': '' };
   const job = await createMediaJob({
     organizationId: input.organizationId,
     assetId: input.assetId,
     triggeredByProfileId: input.triggeredByProfileId,
     status: 'queued',
     stage: 'queued',
-    progressPercent: 0
+    progressPercent: 0,
+    jobIds: plannedJobIds
   });
 
   if (!isRedisConfigured()) {
@@ -269,7 +271,7 @@ function toEnvelope(job: TMediaJob, options: GetMediaJobEnvelopeOptions = {}): J
       domain: 'media',
       status,
       stage: job.stage,
-      transcriptionPlanned: Boolean(job.jobIds?.['transcribe-audio']),
+      transcriptionPlanned: Object.hasOwn(job.jobIds ?? {}, 'transcribe-audio'),
       progressPercent: job.progressPercent,
       createdAt: job.createdAt,
       updatedAt: job.updatedAt,

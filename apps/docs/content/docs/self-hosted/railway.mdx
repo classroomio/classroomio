@@ -164,6 +164,9 @@ SMTP_USER=
 SMTP_PASSWORD=
 SMTP_SENDER=
 
+# Optional uploaded-video transcription and OpenAI-backed AI course generation
+OPENAI_API_KEY=
+
 # Object storage → your external bucket (see step 4)
 OBJECT_STORAGE_ENDPOINT=https://<account>.r2.cloudflarestorage.com
 OBJECT_STORAGE_PUBLIC_ENDPOINT=https://<account>.r2.cloudflarestorage.com
@@ -214,7 +217,7 @@ OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://<public media domain>
 SMTP_HOST=  SMTP_PORT=  SMTP_USER=  SMTP_PASSWORD=  SMTP_SENDER=
 
 # Transcription + OpenAI-backed AI course generation
-OPENAI_API_KEY=
+OPENAI_API_KEY="${{cio-api.OPENAI_API_KEY}}"
 
 # Anonymous usage ping (see Self-hosting 101). CIO_TELEMETRY_DISABLED=true turns it off.
 PUBLIC_IS_SELFHOSTED=true

@@ -4172,7 +4172,7 @@ export const mediaJob = pgTable(
     progressPercent: integer('progress_percent').default(0),
     /** Latest BullMQ root job id from the FlowProducer tree. Operational only. */
     rootJobId: text('root_job_id'),
-    /** All BullMQ job ids for this run, keyed by job name (operational). */
+    /** BullMQ job ids keyed by job name; a planned step has an empty id until enqueued. */
     jobIds: jsonb('job_ids').default({}).$type<Record<string, string>>(),
     attempt: integer().default(0).notNull(),
     maxAttempts: integer('max_attempts').default(3).notNull(),
