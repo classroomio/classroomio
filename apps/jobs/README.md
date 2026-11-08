@@ -147,7 +147,7 @@ curl -X POST "http://localhost:8787/jobs/media/asset/<assetId>/transcribe" \
 
 | HTTP    | Meaning                                                                            |
 | ------- | ---------------------------------------------------------------------------------- |
-| **202** | Job created and enqueued (`success: true`, `data` is the new `media_job` row).     |
+| **202** | Job created; enqueued when Redis is configured (`success: true`, `data` is the new `media_job` row). |
 | **503** | `OPENAI_KEY_MISSING` — `OPENAI_API_KEY` is not set on the API.                     |
 | **400** | `ASSET_NOT_TRANSCRIBABLE` — not an upload video with storage, or wrong asset kind. |
 | **409** | Another active `media_job` already exists for this asset.                          |

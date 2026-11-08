@@ -62,7 +62,8 @@ export async function startTranscriptionOnlyMediaJob(input: StartTranscriptionOn
     triggeredByProfileId: input.triggeredByProfileId,
     status: 'queued',
     stage: 'transcribing',
-    progressPercent: 0
+    progressPercent: 0,
+    jobIds: { 'transcribe-audio': '' }
   });
 
   if (!isRedisConfigured()) {
