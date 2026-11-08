@@ -1,20 +1,9 @@
 <script lang="ts">
   import * as Block from '@cio/ui/custom/block';
-  import { uploadImage } from '$lib/utils/services/upload';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$features/ui/snackbar/store';
   import type { BlockEditProps } from '../../utils/types';
 
-  let { block, onDataChange }: BlockEditProps<'image'> = $props();
-
-  async function handleFile(file: File) {
-    try {
-      const url = await uploadImage(file);
-      onDataChange({ ...block.data, url });
-    } catch {
-      snackbar.error(t.get('course.navItem.lessons.materials.blocks.image.upload_error'));
-    }
-  }
+  let { block, onDataChange, onRequestSource }: BlockEditProps<'image'> = $props();
 
   function handleSaveSettings(settings: Block.ImageBlockSettings) {
     onDataChange({ ...block.data, alt: settings.alt, fit: settings.fit });
@@ -37,6 +26,6 @@
   fitContainLabel={$t('course.navItem.lessons.materials.blocks.image.fit_contain')}
   cancelLabel={$t('common.cancel')}
   saveLabel={$t('common.save_changes')}
-  onChangeFile={handleFile}
+  onChange={onRequestSource}
   onSaveSettings={handleSaveSettings}
 />

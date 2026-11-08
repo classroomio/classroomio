@@ -21,7 +21,7 @@
       }
     },
     argTypes: {
-      onChangeFile: { control: false },
+      onChange: { control: false },
       onSaveSettings: { control: false }
     },
     tags: ['autodocs']
@@ -39,7 +39,7 @@
 <Story name="Edit">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <Block.Image {...args} editable={true} onChangeFile={(file) => console.log('upload', file.name)} />
+      <Block.Image {...args} editable={true} onChange={() => console.log('change image')} />
     </div>
   {/snippet}
 </Story>
@@ -55,12 +55,7 @@
 <Story name="Empty">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <Block.Image
-        {...args}
-        url={undefined}
-        editable={true}
-        onChangeFile={(file) => console.log('upload', file.name)}
-      />
+      <Block.Image {...args} url={undefined} editable={true} onChange={() => console.log('change image')} />
     </div>
   {/snippet}
 </Story>

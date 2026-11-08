@@ -26,7 +26,7 @@
     fitContainLabel?: string;
     cancelLabel?: string;
     saveLabel?: string;
-    onChangeFile?: (file: File) => void | Promise<void>;
+    onChange?: () => void;
     onSaveSettings?: (settings: ImageBlockSettings) => void;
   }
 
@@ -47,12 +47,10 @@
     fitContainLabel = 'Contain',
     cancelLabel = 'Cancel',
     saveLabel = 'Save changes',
-    onChangeFile,
+    onChange,
     onSaveSettings
   }: Props = $props();
 
-  let fileInput: HTMLInputElement | undefined = $state();
-  let uploading = $state(false);
   let settingsOpen = $state(false);
   let loadedUrl = $state('');
   let failedUrl = $state('');
@@ -61,24 +59,6 @@
     fit === 'cover' ? 'h-full w-full object-cover' : 'ui:bg-muted h-full w-full object-contain'
   );
   const loading = $derived(!!url && loadedUrl !== url && failedUrl !== url);
-
-  function requestChange() {
-    fileInput?.click();
-  }
-
-  async function handleFileChange(event: Event) {
-    const input = event.currentTarget as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file || uploading) return;
-
-    uploading = true;
-    try {
-      await onChangeFile?.(file);
-    } finally {
-      uploading = false;
-      input.value = '';
-    }
-  }
 
   function saveSettings(settings: ImageBlockSettings) {
     onSaveSettings?.(settings);
@@ -106,7 +86,9 @@
   {:else}
     <div class="ui:bg-muted ui:flex ui:w-full ui:flex-col ui:items-center ui:justify-center ui:gap-2 ui:aspect-video">
       <ImageIcon class="ui:text-muted-foreground ui:size-10" />
-      <Button variant="outline" size="sm" onclick={requestChange}>{uploadLabel}</Button>
+      {#if editable && onChange}
+        <Button variant="outline" size="sm" onclick={onChange}>{uploadLabel}</Button>
+      {/if}
     </div>
   {/if}
 
@@ -114,12 +96,13 @@
     <div
       class="ui:absolute ui:top-2 ui:right-2 ui:flex ui:items-center ui:gap-1 ui:opacity-100 ui:transition ui:focus-within:opacity-100 ui:sm:opacity-0 ui:sm:group-hover/image:opacity-100"
     >
-      <ChangeButton label={changeLabel} onclick={requestChange} disabled={uploading} />
+      {#if onChange}
+        <ChangeButton label={changeLabel} onclick={onChange} />
+      {/if}
       <IconButton size="icon-sm" onclick={() => (settingsOpen = true)} tooltip={settingsLabel} tooltipSide="left">
         <Settings2Icon size={14} />
       </IconButton>
     </div>
-    <input bind:this={fileInput} type="file" accept="image/*" class="ui:hidden" onchange={handleFileChange} />
   {/if}
 </div>
 

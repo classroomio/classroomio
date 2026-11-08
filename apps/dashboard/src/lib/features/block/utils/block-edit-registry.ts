@@ -6,7 +6,9 @@ import VideoIcon from '@lucide/svelte/icons/video';
 import type { TBlockType } from '@cio/utils/validation/block';
 import DocumentEdit from '../components/document/document-edit.svelte';
 import DocumentPicker from '../components/document/document-picker.svelte';
+import { createExampleDocument } from '../components/document/document-utils';
 import ImageEdit from '../components/image/image-edit.svelte';
+import ImagePicker from '../components/image/image-picker.svelte';
 import { createExampleImage } from '../components/image/image-utils';
 import NoteEdit from '../components/note/note-edit.svelte';
 import { EXAMPLE_NOTE_HTML } from '../components/note/note-utils';
@@ -40,11 +42,12 @@ export const BLOCK_EDITORS: BlockEditRegistry = {
     icon: FileTextIcon,
     edit: DocumentEdit,
     picker: DocumentPicker,
-    createInitial: () => null
+    createInitial: () => ({ data: createExampleDocument() })
   },
   image: {
     icon: ImageIcon,
     edit: ImageEdit,
+    picker: ImagePicker,
     createInitial: () => ({ data: createExampleImage() })
   }
 };
