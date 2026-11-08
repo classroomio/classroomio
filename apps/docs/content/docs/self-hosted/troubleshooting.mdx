@@ -26,7 +26,7 @@ docker ps                      # anything restarting or exited?
 | Pull fails on `minio/minio` or `minio/mc` | Install predates the switch to SeaweedFS | [Migrating from MinIO](/self-hosted/migrating-from-minio) |
 | API container exits immediately at boot | Database migration failed | [details](#api-container-exits-at-boot) |
 | No signup / invite / reset emails, logs show `ECONNREFUSED` | SMTP not configured or wrong host/port | Check [Email settings](/self-hosted/configuration/email) |
-| Videos never get captions; no transcription | `OPENAI_API_KEY` not set | [details](#transcription-never-happens) |
+| Uploaded videos never get captions; no transcription | `OPENAI_API_KEY` not set | [details](#transcription-never-happens) |
 | Crash loops with `read ECONNABORTED` during managed-Redis maintenance | A bug fixed upstream | Upgrade — [details](#crash-loops-during-redis-maintenance) |
 
 ## Sign-in fails with 57P03 right after startup
@@ -106,9 +106,11 @@ healthy. Fix the cause and `./classroomio.sh start` again. Migrations are safe t
 
 ## Transcription never happens
 
-Transcription (video captions) requires `OPENAI_API_KEY` on the **jobs** service. Without it, media
-jobs still complete (thumbnails and processing work), but the transcription step is skipped with a
-warning in the jobs logs. Set the key and re-trigger transcription; see
+Uploaded-video transcription requires `OPENAI_API_KEY` on both the **API** and **jobs** services.
+When the API has no key, uploaded videos still get their duration and thumbnails, but transcription
+is not queued. If the API has a key and the jobs worker does not, the worker skips transcription
+and records a warning on the media job. Set the key on both services, redeploy them, and re-trigger
+transcription; see
 [Integrations](/self-hosted/configuration/integrations).
 
 ## Crash loops during Redis maintenance

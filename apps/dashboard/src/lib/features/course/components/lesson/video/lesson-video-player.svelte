@@ -306,7 +306,7 @@
 
     const latest = runs?.[0];
 
-    if (!latest) return;
+    if (!latest || (video.type !== 'youtube' && !latest.job.transcriptionPlanned)) return;
 
     if (latest.job.status === 'completed') {
       void loadTranscript();
