@@ -2411,7 +2411,6 @@
           "body_heading": "Für diese Lektion wurden noch keine Notizen, Videos oder Folien hinzugefügt",
           "body_content": "Teilen Sie Ihr Wissen mit Ihren Schülern, indem Sie ansprechende Inhalte erstellen. Klicken Sie zunächst auf",
           "get_started": "Legen Sie los",
-          "no_content": "Kein Inhalt",
           "no_translation": "Keine Übersetzung für die ausgewählte Sprache",
           "button": "Taste",
           "show_transcript": "Transkript anzeigen",
@@ -2745,7 +2744,11 @@
               "slides": "Folien",
               "document": "Dokumentieren",
               "image": "Bild"
-            }
+            },
+            "empty_preview_title": "Es gibt noch nichts zur Vorschau",
+            "empty_preview_description": "Diese Lektion enthält keinen Inhalt, den die Schüler sehen können. Wechseln Sie zu {editLabel}, um eine Notiz, ein Video, Folien, ein Dokument oder ein Bild hinzuzufügen.",
+            "empty_learner_title": "Diese Lektion ist noch nicht fertig",
+            "empty_learner_description": "Ihr Kursleiter hat dieser Lektion keine Inhalte hinzugefügt. Schauen Sie bald wieder vorbei."
           }
         },
         "lesson_nav": {

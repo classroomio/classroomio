@@ -12,7 +12,6 @@
   import Pencil from '@lucide/svelte/icons/pencil';
   import Save from '@lucide/svelte/icons/save';
   import HistoryIcon from '@lucide/svelte/icons/history';
-  import VideoIcon from '@lucide/svelte/icons/video';
   import SettingsIcon from '@lucide/svelte/icons/settings';
 
   import MODES from '$lib/utils/constants/mode';
@@ -47,6 +46,7 @@
   import * as Tabs from '@cio/ui/base/tabs';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { Empty } from '@cio/ui/custom/empty';
+  import { MachineBlankLesson } from '@cio/ui/custom/animation';
   import * as Block from '@cio/ui/custom/block';
   import { Spinner } from '@cio/ui/base/spinner';
   import { RoleBasedSecurity } from '$features/ui';
@@ -526,6 +526,12 @@
   });
 </script>
 
+{#snippet blankLessonMachine()}
+  <div class="mx-auto h-52 w-full max-w-[340px]" style:--machine-face="var(--background)">
+    <MachineBlankLesson heading={$t('course.navItem.lessons.add_content_options.lesson_title').toLocaleUpperCase()} />
+  </div>
+{/snippet}
+
 {#if !useBlockEditor}
   <AddVideoModal
     {lessonId}
@@ -726,8 +732,9 @@
         {:else}
           <div class="ui:mt:5">
             <Empty
-              title={$t('course.navItem.lessons.materials.no_content')}
-              icon={VideoIcon}
+              title={$t('course.navItem.lessons.materials.blocks.empty_learner_title')}
+              description={$t('course.navItem.lessons.materials.blocks.empty_learner_description')}
+              media={blankLessonMachine}
               variant="page"
               class="text-center"
             />
@@ -817,7 +824,7 @@
             ' ' +
             $t('course.navItem.lessons.materials.button') +
             '.'}
-          icon={VideoIcon}
+          media={blankLessonMachine}
           variant="page"
           class="text-center"
         >

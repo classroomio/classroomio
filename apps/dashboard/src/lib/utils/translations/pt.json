@@ -2411,7 +2411,6 @@
           "body_heading": "Nenhuma nota, vídeo ou slide adicionado para esta lição ainda",
           "body_content": "Compartilhe seu conhecimento com seus alunos criando conteúdo envolvente. Comece clicando em",
           "get_started": "Comece",
-          "no_content": "Sem conteúdo",
           "no_translation": "Nenhuma tradução para o idioma selecionado",
           "button": "botão",
           "show_transcript": "Mostrar transcrição",
@@ -2745,7 +2744,11 @@
               "slides": "Slides",
               "document": "Documento",
               "image": "Imagem"
-            }
+            },
+            "empty_preview_title": "Nada para visualizar ainda",
+            "empty_preview_description": "Esta lição não tem conteúdo para os alunos verem. Mude para {editLabel} para adicionar uma nota, vídeo, slides, documento ou imagem.",
+            "empty_learner_title": "Esta lição ainda não está pronta",
+            "empty_learner_description": "Seu instrutor não adicionou nenhum conteúdo a esta lição. Volte em breve."
           }
         },
         "lesson_nav": {

@@ -2411,7 +2411,6 @@
           "body_heading": "Aún no se ha agregado ninguna nota, video o diapositiva para esta lección",
           "body_content": "Comparta sus conocimientos con sus alumnos creando contenido atractivo. Comience haciendo clic en",
           "get_started": "Empezar",
-          "no_content": "Sin contenido",
           "no_translation": "No hay traducción para el idioma seleccionado.",
           "button": "botón",
           "show_transcript": "Mostrar transcripción",
@@ -2745,7 +2744,11 @@
               "slides": "Diapositivas",
               "document": "Documento",
               "image": "Imagen"
-            }
+            },
+            "empty_preview_title": "Aún no hay nada que previsualizar",
+            "empty_preview_description": "Esta lección no tiene contenido para que los estudiantes la vean. Cambie a {editLabel} para agregar una nota, video, diapositivas, documento o imagen.",
+            "empty_learner_title": "Esta lección aún no está lista",
+            "empty_learner_description": "Su instructor no ha agregado ningún contenido a esta lección. Vuelve pronto."
           }
         },
         "lesson_nav": {

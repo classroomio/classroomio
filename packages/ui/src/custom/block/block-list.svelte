@@ -7,7 +7,7 @@
   import { Empty } from '../empty';
   import * as AddBlock from '../add-block';
   import type { AddBlockChoice } from '../add-block';
-  import { BlockSkyline } from '../animation/block-skyline';
+  import { MachineBlankLesson } from '../animation/machines';
 
   interface Props {
     items: T[];
@@ -18,6 +18,7 @@
     emptyTitle?: string;
     emptyDescription?: string;
     emptyIcon?: Component;
+    emptyMachineHeading?: string;
     emptyAction?: Snippet;
     renderItem: Snippet<[{ item: T; index: number; total: number; highlighted: boolean }]>;
     onAdd?: (type: string, index: number) => void;
@@ -42,6 +43,7 @@
     emptyTitle = 'No content',
     emptyDescription,
     emptyIcon,
+    emptyMachineHeading,
     emptyAction,
     renderItem,
     onAdd,
@@ -266,12 +268,10 @@
   }
 </script>
 
-{#snippet emptySkyline()}
-  <BlockSkyline
-    rows={4}
-    class="ui:mx-auto ui:w-full ui:max-w-xs"
-    toneClasses={{ muted: 'ui:bg-white', tint: 'ui:bg-primary/20', soft: 'ui:bg-primary/40', primary: 'ui:bg-primary' }}
-  />
+{#snippet emptyMachine()}
+  <div class="ui:mx-auto ui:h-52 ui:w-full ui:max-w-[340px]" style:--machine-face="var(--background)">
+    <MachineBlankLesson heading={emptyMachineHeading} />
+  </div>
 {/snippet}
 
 <svelte:window
@@ -304,9 +304,9 @@
   {#if orderedItems.length === 0}
     <Empty
       title={emptyTitle}
-      description={editable ? emptyDescription : undefined}
+      description={emptyDescription}
       icon={emptyIcon}
-      media={emptyIcon || !editable ? undefined : emptySkyline}
+      media={emptyIcon ? undefined : emptyMachine}
       variant="page"
       class="ui:mx-[5px] ui:w-auto ui:max-w-4xl! ui:text-center"
       contentClass="ui:max-w-none!"

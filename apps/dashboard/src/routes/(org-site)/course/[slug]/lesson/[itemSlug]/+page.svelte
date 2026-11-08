@@ -164,7 +164,13 @@
       outlineLabel={$t('public_course.outline.label')}
     >
       {#snippet content()}
-        <BlockReader blocks={lessonBlocks} host={blockHost} showRail={false} />
+        <BlockReader
+          blocks={lessonBlocks}
+          host={blockHost}
+          emptyTitle={$t('course.navItem.lessons.materials.blocks.empty_learner_title')}
+          emptyDescription={$t('course.navItem.lessons.materials.blocks.empty_learner_description')}
+          showRail={false}
+        />
       {/snippet}
       {#snippet titleActions()}
         <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2">

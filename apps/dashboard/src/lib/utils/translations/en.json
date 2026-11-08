@@ -2772,7 +2772,6 @@
           "body_heading": "No note, video or slide added for this lesson yet",
           "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
           "get_started": "Get Started",
-          "no_content": "No Content",
           "no_translation": "No translation for the selected language",
           "button": "button",
           "show_transcript": "Show transcript",
@@ -3068,6 +3067,10 @@
             "dismiss_hint": "Dismiss reorder hint",
             "empty_title": "Start building this lesson",
             "empty_description": "Add a note, video, slides, document, or image. You can add as many blocks as you need, in any order.",
+            "empty_preview_title": "Nothing to preview yet",
+            "empty_preview_description": "This lesson has no content for students to see. Switch to {editLabel} to add a note, video, slides, document, or image.",
+            "empty_learner_title": "This lesson isn't ready yet",
+            "empty_learner_description": "Your instructor hasn't added any content to this lesson. Check back soon.",
             "empty_note": "This note is empty.",
             "note_style": "Style",
             "styles": {

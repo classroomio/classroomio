@@ -2411,7 +2411,6 @@
           "body_heading": "Ingen note, video eller dias tilføjet til denne lektion endnu",
           "body_content": "Del din viden med dine elever ved at skabe engagerende indhold. Start med at klikke på",
           "get_started": "Kom i gang",
-          "no_content": "Intet indhold",
           "no_translation": "Ingen oversættelse for det valgte sprog",
           "button": "knappen",
           "show_transcript": "Vis transskript",
@@ -2745,7 +2744,11 @@
               "slides": "Slides",
               "document": "Dokument",
               "image": "Billede"
-            }
+            },
+            "empty_preview_title": "Intet at forhåndsvise endnu",
+            "empty_preview_description": "Denne lektion har intet indhold, som eleverne kan se. Skift til {editLabel} for at tilføje en note, video, dias, dokument eller billede.",
+            "empty_learner_title": "Denne lektion er ikke klar endnu",
+            "empty_learner_description": "Din instruktør har ikke tilføjet noget indhold til denne lektion. Kom snart tilbage."
           }
         },
         "lesson_nav": {

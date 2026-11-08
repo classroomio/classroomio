@@ -11,12 +11,14 @@
   interface Props {
     blocks: BlockViewModel[];
     host: BlockViewHost;
+    emptyTitle: string;
+    emptyDescription: string;
     spacingClass?: string;
     previewLabel?: string;
     showRail?: boolean;
   }
 
-  let { blocks, host, spacingClass, previewLabel, showRail = true }: Props = $props();
+  let { blocks, host, emptyTitle, emptyDescription, spacingClass, previewLabel, showRail = true }: Props = $props();
 
   setBlockViewHost(() => host);
 </script>
@@ -26,7 +28,9 @@
   {spacingClass}
   {previewLabel}
   {showRail}
-  emptyTitle={t.get('course.navItem.lessons.materials.no_content')}
+  {emptyTitle}
+  {emptyDescription}
+  emptyMachineHeading={t.get('course.navItem.lessons.add_content_options.lesson_title').toLocaleUpperCase()}
   scrollRailLabel={t.get('course.navItem.lessons.materials.blocks.scroll_rail')}
   goToBlockLabel={(index) => t.get('course.navItem.lessons.materials.blocks.go_to_block', { index })}
   itemTitle={(block) => t.get(blockTypeLabelKey(block.type))}

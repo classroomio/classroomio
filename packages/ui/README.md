@@ -248,7 +248,7 @@ The lesson block canvas is split into a reusable **container** and **block bodie
 
 **Container**
 
-- `Block.List` hosts ordering (drag and drop via `svelte-dnd-action`), the gap `+` rows, the scroll rail and active-block tracking, the insert highlight, and the drag hint. It is generic over `T extends { id: string }` and takes `items`, `editable`, `spacingClass`, `addChoices`, `onAdd(type, index)`, `onReorder(items)`, and a `renderItem({ item, index, total, highlighted })` snippet. Pass `emptyAction` for the editable empty state, and `showRail={false}` when the list is embedded in a narrow panel.
+- `Block.List` hosts ordering (drag and drop via `svelte-dnd-action`), the gap `+` rows, the scroll rail and active-block tracking, the insert highlight, and the drag hint. It is generic over `T extends { id: string }` and takes `items`, `editable`, `spacingClass`, `addChoices`, `onAdd(type, index)`, `onReorder(items)`, and a `renderItem({ item, index, total, highlighted })` snippet. With no items it shows an `Empty` card illustrated with `MachineBlankLesson`; pass `emptyMachineHeading` with the translated label drawn on the machine (defaults to `LESSON`), or `emptyIcon` to show an icon instead. `emptyTitle` and `emptyDescription` show in both modes. Pass `emptyAction` for the editable empty state, and `showRail={false}` when the list is embedded in a narrow panel.
 - `Block.Shell` renders a single block's frame: optional drag handle, type label, example badge, actions dropdown (`menuItems`), and the `highlighted` ring.
 - `AddBlock.Menu` is the between-block `+` row that expands into a choices toolbar; the trigger stays hidden until the row is hovered or focused and animates a self-drawing stroke on hover (`PlusIcon` from `custom/moving-icons/`).
 - `AddBlock.Item` is one choice button: a label + optional trailing icon, with `compact`, `hideLabelOnMobile`, and `testId` props. `AddBlock.Menu` renders it compactly in the 10px gap row; `AddBlock.Row` renders it at 12px with the label hidden on mobile.
@@ -415,6 +415,7 @@ The accent comes from `--primary` and the surface from `--muted`. Place a machin
 | `label`   | `string` | `undefined` | Accessible description; omit to hide from assistive tech |
 | `stillAt` | `number` | `6`         | Second to freeze on under `prefers-reduced-motion`       |
 | `class`   | `string` | `undefined` | Size and placement                                       |
+| `heading` | `string` | `'LESSON'`  | Caption drawn on the page (`MachineBlankLesson` only)    |
 
 ```svelte
 <div class="bg-muted rounded-xl p-6">

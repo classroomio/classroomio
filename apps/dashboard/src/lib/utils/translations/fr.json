@@ -2411,7 +2411,6 @@
           "body_heading": "Aucune note, vidéo ou diapositive ajoutée pour cette leçon pour le moment",
           "body_content": "Partagez vos connaissances avec vos élèves en créant du contenu engageant. Commencez par cliquer sur",
           "get_started": "Commencer",
-          "no_content": "Aucun contenu",
           "no_translation": "Aucune traduction pour la langue sélectionnée",
           "button": "bouton",
           "show_transcript": "Afficher la transcription",
@@ -2745,7 +2744,11 @@
               "slides": "Diapositives",
               "document": "Document",
               "image": "Image"
-            }
+            },
+            "empty_preview_title": "Rien à prévisualiser pour l'instant",
+            "empty_preview_description": "Cette leçon n'a aucun contenu visible pour les élèves. Basculez vers {editLabel} pour ajouter une note, une vidéo, des diapositives, un document ou une image.",
+            "empty_learner_title": "Cette leçon n'est pas encore prête",
+            "empty_learner_description": "Votre instructeur n'a ajouté aucun contenu à cette leçon. Revenez bientôt."
           }
         },
         "lesson_nav": {

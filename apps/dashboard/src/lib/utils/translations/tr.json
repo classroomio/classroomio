@@ -2775,7 +2775,6 @@
           "body_heading": "Bu ders için henüz not, video veya slayt eklenmedi",
           "body_content": "İlgi çekici içerikler oluşturarak bilginizi öğrencilerinizle paylaşın. Tıklayarak başlayın",
           "get_started": "Başlayın",
-          "no_content": "İçerik Yok",
           "no_translation": "Seçili dil için çeviri yok",
           "button": "düğme",
           "show_transcript": "Transkripti göster",
@@ -3105,7 +3104,11 @@
               "slides": "Slaytlar",
               "document": "Belge",
               "image": "Görüntü"
-            }
+            },
+            "empty_preview_title": "Henüz önizlenecek bir şey yok",
+            "empty_preview_description": "Bu derste öğrencilerin görebileceği içerik bulunmamaktadır. Not, video, slayt, belge veya resim eklemek için {editLabel}'a geçin.",
+            "empty_learner_title": "Bu ders henüz hazır değil",
+            "empty_learner_description": "Eğitmeniniz bu derse herhangi bir içerik eklemedi. Yakında tekrar kontrol edin."
           }
         },
         "exercises": {

@@ -2411,7 +2411,6 @@
           "body_heading": "Chưa có ghi chú, video hoặc slide nào được thêm vào cho bài học này",
           "body_content": "Chia sẻ kiến thức của bạn với học sinh bằng cách tạo nội dung hấp dẫn. Bắt đầu bằng cách nhấp vào",
           "get_started": "Bắt đầu",
-          "no_content": "Không có nội dung",
           "no_translation": "Không có bản dịch cho ngôn ngữ đã chọn",
           "button": "nút",
           "show_transcript": "Hiển thị bản ghi",
@@ -2745,7 +2744,11 @@
               "slides": "Các slide",
               "document": "Tài liệu",
               "image": "Hình ảnh"
-            }
+            },
+            "empty_preview_title": "Chưa có gì để xem trước",
+            "empty_preview_description": "Bài học này không có nội dung cho học sinh xem. Chuyển sang {editLabel} để thêm ghi chú, video, trang trình bày, tài liệu hoặc hình ảnh.",
+            "empty_learner_title": "Bài học này chưa sẵn sàng",
+            "empty_learner_description": "Người hướng dẫn của bạn chưa thêm bất kỳ nội dung nào vào bài học này. Kiểm tra lại sớm."
           }
         },
         "lesson_nav": {

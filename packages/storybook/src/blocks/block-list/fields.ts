@@ -5,6 +5,7 @@ export const FIELDS = [
   'addLabel',
   'emptyTitle',
   'emptyDescription',
+  'emptyMachineHeading',
   'previewLabel',
   'scrollRailLabel',
   'dragHintLabel',

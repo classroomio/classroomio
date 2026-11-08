@@ -116,6 +116,7 @@
   addLabel={t.get('course.navItem.lessons.materials.blocks.add_content')}
   emptyTitle={t.get('course.navItem.lessons.materials.blocks.empty_title')}
   emptyDescription={t.get('course.navItem.lessons.materials.blocks.empty_description')}
+  emptyMachineHeading={t.get('course.navItem.lessons.add_content_options.lesson_title').toLocaleUpperCase()}
   scrollRailLabel={t.get('course.navItem.lessons.materials.blocks.scroll_rail')}
   goToBlockLabel={(index) => t.get('course.navItem.lessons.materials.blocks.go_to_block', { index })}
   itemTitle={(block) => t.get(blockTypeLabelKey(block.type))}

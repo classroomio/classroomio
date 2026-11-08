@@ -34,6 +34,18 @@
   const viewHost: BlockViewHost = { videoPlayer: lessonVideoPlayer };
   const editHost = $derived<BlockEditHost>({ lessonId });
   const showsEncodingState = $derived(isEditing || $isOrgStudent !== true);
+  const emptyTitle = $derived(
+    learnerView
+      ? $t('course.navItem.lessons.materials.blocks.empty_learner_title')
+      : $t('course.navItem.lessons.materials.blocks.empty_preview_title')
+  );
+  const emptyDescription = $derived(
+    learnerView
+      ? $t('course.navItem.lessons.materials.blocks.empty_learner_description')
+      : $t('course.navItem.lessons.materials.blocks.empty_preview_description', {
+          editLabel: $t('course.navItem.lessons.header.mode_edit')
+        })
+  );
 
   let statusLessonId = '';
   let pollTimer: ReturnType<typeof setInterval> | undefined;
@@ -80,6 +92,8 @@
   <BlockReader
     blocks={viewBlocks}
     host={viewHost}
+    {emptyTitle}
+    {emptyDescription}
     {spacingClass}
     previewLabel={learnerView ? undefined : t.get('course.navItem.lessons.materials.blocks.preview_label')}
   />
