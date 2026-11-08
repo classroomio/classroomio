@@ -44,6 +44,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Chip } from '@cio/ui/custom/chip';
   import * as Page from '@cio/ui/base/page';
+  import * as Tabs from '@cio/ui/base/tabs';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { Empty } from '@cio/ui/custom/empty';
   import * as Block from '@cio/ui/custom/block';
@@ -617,40 +618,23 @@
       <LanguageSelector />
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <div
-          class="ui:bg-muted inline-flex items-center gap-0.5 rounded-lg p-0.5"
-          role="group"
-          aria-label={$t('course.navItem.lessons.header.mode_label')}
+        <Tabs.Root
+          value={mode}
+          onValueChange={(next) => {
+            if (next !== mode) toggleMode();
+          }}
         >
-          <Button
-            variant="ghost"
-            size="xs"
-            class="gap-1.5 px-2.5 text-[13px] {mode === MODES.edit
-              ? 'ui:bg-background ui:text-foreground ui:shadow-2xs'
-              : 'ui:text-muted-foreground ui:hover:text-foreground'}"
-            aria-pressed={mode === MODES.edit}
-            disabled={lessonApi.isSaving}
-            onclick={() => mode !== MODES.edit && toggleMode()}
-            testId="lesson-mode-edit"
-          >
-            <Pencil size={14} />
-            {$t('course.navItem.lessons.header.mode_edit')}
-          </Button>
-          <Button
-            variant="ghost"
-            size="xs"
-            class="gap-1.5 px-2.5 text-[13px] {mode === MODES.view
-              ? 'ui:bg-background ui:text-foreground ui:shadow-2xs'
-              : 'ui:text-muted-foreground ui:hover:text-foreground'}"
-            aria-pressed={mode === MODES.view}
-            disabled={lessonApi.isSaving}
-            onclick={() => mode !== MODES.view && toggleMode()}
-            testId="lesson-mode-preview"
-          >
-            <Eye size={14} />
-            {$t('course.navItem.lessons.header.mode_preview')}
-          </Button>
-        </div>
+          <Tabs.List aria-label={$t('course.navItem.lessons.header.mode_label')}>
+            <Tabs.Trigger value={MODES.edit} disabled={lessonApi.isSaving} data-testid="lesson-mode-edit">
+              <Pencil />
+              {$t('course.navItem.lessons.header.mode_edit')}
+            </Tabs.Trigger>
+            <Tabs.Trigger value={MODES.view} disabled={lessonApi.isSaving} data-testid="lesson-mode-preview">
+              <Eye />
+              {$t('course.navItem.lessons.header.mode_preview')}
+            </Tabs.Trigger>
+          </Tabs.List>
+        </Tabs.Root>
       </RoleBasedSecurity>
     </div>
   </Page.Action>
