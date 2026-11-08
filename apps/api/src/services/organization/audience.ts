@@ -33,6 +33,7 @@ import {
   getOrganizationMembersByNormalizedEmails,
   getStudentOrganizationMemberByOrgAndEmail,
   hasActiveOrganizationInviteForEmail,
+  hasLapsedStudentInvite,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
 import { recordOrganizationInviteAudits } from './invite';
@@ -530,13 +531,27 @@ export async function importAudienceMembers(
   const existingStudentProfileIds: string[] = [];
   const pendingStudentEmails: string[] = [];
 
+  // Import what the plan allows and report the overflow, rather than refusing
+  // the whole file when it does not fit.
+  let seatsLeft = await getRemainingStudentSeats(orgId);
+  const takeSeat = () => {
+    if (seatsLeft <= 0) return false;
+
+    seatsLeft -= 1;
+    return true;
+  };
+
   for (const row of rows) {
     if (row.status !== 'ready') continue;
 
     const m = memberByEmail.get(row.email);
 
     if (!m) {
-      newEmails.push(row.email);
+      if (takeSeat()) {
+        newEmails.push(row.email);
+      } else {
+        row.status = 'over_seat_limit';
+      }
       continue;
     }
 
@@ -548,6 +563,11 @@ export async function importAudienceMembers(
     }
 
     if (!m.profileId) {
+      if (m.hasLapsedInvite && !takeSeat()) {
+        row.status = 'over_seat_limit';
+        continue;
+      }
+
       pendingStudentEmails.push(row.email);
       row.status = 'invite_resent';
       continue;
@@ -556,21 +576,6 @@ export async function importAudienceMembers(
     existingStudentProfileIds.push(m.profileId);
     row.status = 'already_member';
   }
-
-  // Import what the plan allows and report the overflow, rather than refusing
-  // the whole file when it does not fit.
-  const remainingSeats = await getRemainingStudentSeats(orgId);
-  // `slice` even when unlimited: aliasing `newEmails` here and clearing it below
-  // would empty both.
-  const admittedEmails = newEmails.slice(0, Number.isFinite(remainingSeats) ? remainingSeats : undefined);
-  const rejectedForSeats = new Set(newEmails.slice(admittedEmails.length));
-
-  for (const row of rows) {
-    if (rejectedForSeats.has(row.email)) row.status = 'over_seat_limit';
-  }
-
-  newEmails.length = 0;
-  newEmails.push(...admittedEmails);
 
   const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
   const { cohortIds, cohortNames } = await resolveCohortIdsAndNamesForImport(orgId, data);
@@ -781,27 +786,45 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     cohortNames = cohorts.map((cohort) => cohort.name).filter(Boolean);
   }
 
-  await revokeActiveOrganizationInvitesByEmails(orgId, [emailToUse], invitedByProfileId);
-
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
   const token = generateToken();
   const accessNames = [...courseNames, ...cohortNames];
   const accessNamesLabel = accessNames.length > 0 ? accessNames.join(', ') : undefined;
 
-  const invite = await createOrganizationInvite({
-    organizationId: orgId,
-    roleId: ROLE.STUDENT,
-    email: emailToUse,
-    tokenHash: hashToken(token),
-    createdByProfileId: invitedByProfileId,
-    expiresAt,
-    isRevoked: false,
-    metadata: {
-      source: 'AUDIENCE_RESEND',
-      courseIds: courseIds.length > 0 ? courseIds : undefined,
-      cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+  let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+
+  const invite = await db.transaction(async (tx) => {
+    const needsSeat = await hasLapsedStudentInvite(orgId, member.id, tx);
+    if (needsSeat) {
+      studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, 1, tx, { deferNotification: true });
     }
+
+    await revokeActiveOrganizationInvitesByEmails(orgId, [emailToUse], invitedByProfileId, tx);
+
+    return createOrganizationInvite(
+      {
+        organizationId: orgId,
+        roleId: ROLE.STUDENT,
+        email: emailToUse,
+        tokenHash: hashToken(token),
+        createdByProfileId: invitedByProfileId,
+        expiresAt,
+        isRevoked: false,
+        metadata: {
+          source: 'AUDIENCE_RESEND',
+          courseIds: courseIds.length > 0 ? courseIds : undefined,
+          cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+        }
+      },
+      tx
+    );
   });
+
+  if (studentMilestoneNotification) {
+    notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
+  }
 
   await recordOrganizationInviteAudits([
     {
@@ -1010,6 +1033,11 @@ export async function updatePendingAudienceMemberEmail(
     if (matchingMembers.length > 0) {
       throw new AppError('An audience member with this email already exists', ErrorCodes.CONFLICT, 409, 'email');
     }
+  }
+
+  const needsSeat = await hasLapsedStudentInvite(orgId, memberId);
+  if (needsSeat) {
+    await assertStudentCapacityOrThrow(orgId, 1);
   }
 
   await revokeActiveOrganizationInvitesByEmails(orgId, [currentEmail, normalizedEmail], invitedByProfileId);

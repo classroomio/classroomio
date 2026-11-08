@@ -1,7 +1,7 @@
 ---
 title: Audience
 description: Manage all students in your organization, view usage, filter, assign to courses, and handle invites from one place.
-last_reviewed: '2026-09-12'
+last_reviewed: '2026-11-08'
 ---
 
 **Audience** is your org-wide student directory. It shows every person who belongs to your organization, whether they signed up themselves, accepted a course invite, or were added directly. From here you can search, filter by usage, sort, act on students in bulk, export, and manage pending invites.
@@ -9,7 +9,7 @@ last_reviewed: '2026-09-12'
 For step-by-step tasks, see [Manage Your Audience](/manage-students/manage-your-audience).
 
 :::info[Plan limits]
-Your plan sets a maximum audience size. When you reach the limit, a banner appears and you cannot invite more students until you upgrade or free up seats. **Archiving a student frees their seat.** See [Membership status](#membership-status).
+Your plan sets a maximum audience size. When you reach the limit, a banner appears and you cannot invite more students until you upgrade or free up seats. Pending invites count toward the limit. **Archiving a student, or revoking a pending invite, frees their seat.** See [Status values](#status-values).
 :::
 
 ## What Audience shows
@@ -56,14 +56,16 @@ Archive is the one to use for dormant students and for suspending access, becaus
 
 ### Invite status
 
-Applies to people who have been invited.
+Applies to people who have been invited. An archived student never uses a seat, whatever their invite status.
 
-| Status      | Meaning                                                       |
-| ----------- | ------------------------------------------------------------- |
-| **Active**  | Student has a verified account and is a member of your org    |
-| **Pending** | Invite was sent but the student has not yet accepted it       |
-| **Expired** | The invite link passed its expiry before the student accepted |
-| **Revoked** | The invite was manually revoked by an admin                   |
+| Status      | Meaning                                                                      | Plan seat        |
+| ----------- | ---------------------------------------------------------------------------- | ---------------- |
+| **Active**  | Student has a verified account and is a member of your org                   | Uses a seat      |
+| **Pending** | Invite was sent but the student has not yet accepted it                      | Uses a seat      |
+| **Expired** | The invite passed its expiry, 7 days after it was sent, before they accepted | **Frees a seat** |
+| **Revoked** | The invite was manually revoked by an admin                                  | **Frees a seat** |
+
+Resending an expired or revoked invite needs a free seat again.
 
 ## Filters
 
