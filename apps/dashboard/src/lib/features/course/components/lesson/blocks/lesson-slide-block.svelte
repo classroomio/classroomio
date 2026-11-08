@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SlideBlock } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
   import { resolveLessonSlides, SLIDE_PLATFORM_BY_ID } from '@cio/utils/functions';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
@@ -44,7 +44,7 @@
   );
 </script>
 
-<SlideBlock
+<Block.Slide
   {slide}
   isExample={block.isExample}
   editable={mode === MODES.edit}

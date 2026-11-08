@@ -5,7 +5,8 @@
   import XIcon from '@lucide/svelte/icons/x';
   import { Button } from '@cio/ui/base/button';
   import { Input } from '@cio/ui/base/input';
-  import { AddContentRow, type AddContentChoice } from '@cio/ui/custom/add-content-row';
+  import * as AddBlock from '@cio/ui/custom/add-block';
+  import type { AddBlockChoice } from '@cio/ui/custom/add-block';
   import { t } from '$lib/utils/functions/translations';
   import { sendPromptToAssistant } from '$features/ai-assistant/utils/store';
   import { getAddContentChoices } from './lesson-add-content-choices';
@@ -20,7 +21,7 @@
 
   const isMac = $derived(browser && /Mac|iPhone|iPad|iPod/.test(navigator.platform));
 
-  const choices = $derived<AddContentChoice[]>(getAddContentChoices());
+  const choices = $derived<AddBlockChoice[]>(getAddContentChoices());
 
   function handleSelect(type: string) {
     if (!isLessonBlockInsertType(type)) return;
@@ -64,7 +65,7 @@
   }
 </script>
 
-<AddContentRow
+<AddBlock.Row
   {choices}
   addLabel={t.get('course.navItem.lessons.materials.blocks.add_content')}
   aiLabel={$t('ai_assistant.ask_ai')}
@@ -111,4 +112,4 @@
       </Button>
     </form>
   {/snippet}
-</AddContentRow>
+</AddBlock.Row>

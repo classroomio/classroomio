@@ -1,12 +1,12 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
-  import { VideoBlock } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
   import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Blocks/VideoBlock',
-    component: VideoBlock,
+    component: Block.Video,
     args: {
       title: 'Self Hosting ClassroomIO: An introduction to the Dashboard',
       thumbnailUrl: '/images/classroomio-course-img-template.jpg',
@@ -36,7 +36,7 @@
 <Story name="View">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <VideoBlock {...args} editable={false} />
+      <Block.Video {...args} editable={false} />
     </div>
   {/snippet}
 </Story>
@@ -44,7 +44,7 @@
 <Story name="Edit">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <VideoBlock {...args} editable={true} onChange={() => console.log('change video')}>
+      <Block.Video {...args} editable={true} onChange={() => console.log('change video')}>
         {#snippet actions()}
           <button
             type="button"
@@ -62,7 +62,7 @@
         {#snippet notice()}
           <p class="mt-0.5 text-sm leading-snug text-orange-500">Transcription in progress…</p>
         {/snippet}
-      </VideoBlock>
+      </Block.Video>
     </div>
   {/snippet}
 </Story>
@@ -70,7 +70,7 @@
 <Story name="ChangeAction">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <VideoBlock
+      <Block.Video
         {...args}
         editable={true}
         onChange={() => console.log('change video')}
@@ -83,7 +83,7 @@
 <Story name="NoThumbnail">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <VideoBlock {...args} thumbnailUrl={undefined} editable={false} />
+      <Block.Video {...args} thumbnailUrl={undefined} editable={false} />
     </div>
   {/snippet}
 </Story>
@@ -91,13 +91,13 @@
 <Story name="Player">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <VideoBlock {...args} editable={false}>
+      <Block.Video {...args} editable={false}>
         {#snippet player()}
           <div class="ui:bg-muted flex aspect-video w-full items-center justify-center rounded-lg">
             <span class="ui:text-muted-foreground text-sm">Injected video player</span>
           </div>
         {/snippet}
-      </VideoBlock>
+      </Block.Video>
     </div>
   {/snippet}
 </Story>

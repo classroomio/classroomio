@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { BlockList } from '@cio/ui/custom/block-list';
-  import type { AddContentChoice } from '@cio/ui/custom/add-content-menu';
+  import * as Block from '@cio/ui/custom/block';
+  import type { AddBlockChoice } from '@cio/ui/custom/add-block';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
   import { lessonApi } from '$features/course/api';
@@ -49,7 +49,7 @@
       ? t.get('course.navItem.lessons.materials.blocks.empty_title')
       : t.get('course.navItem.lessons.materials.no_content')
   );
-  const addChoices = $derived<AddContentChoice[]>(getAddContentChoices());
+  const addChoices = $derived<AddBlockChoice[]>(getAddContentChoices());
 
   const POLL_INTERVAL_MS = 10_000;
 
@@ -135,7 +135,7 @@
   }
 </script>
 
-<BlockList
+<Block.List
   items={lessonBlocksApi.blocks}
   editable={isEditing}
   {spacingClass}
@@ -194,6 +194,6 @@
       {/if}
     </LessonBlockShell>
   {/snippet}
-</BlockList>
+</Block.List>
 
 <LessonSlidePickerDialog bind:open={slidePickerOpen} onAdd={handleSlideAdd} />

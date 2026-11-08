@@ -158,6 +158,7 @@
       placeholder={$t(`${keyPrefix}.video.add_video.search_library`)}
     />
     <Button
+      variant="secondary"
       onclick={() => {
         search.takePending();
         void loadLibrary(1);

@@ -47,7 +47,7 @@
   import * as Page from '@cio/ui/base/page';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { Empty } from '@cio/ui/custom/empty';
-  import { ImageBlock } from '@cio/ui/custom/blocks/image-block';
+  import * as Block from '@cio/ui/custom/block';
   import { Spinner } from '@cio/ui/base/spinner';
   import { RoleBasedSecurity } from '$features/ui';
 
@@ -740,7 +740,7 @@
               {/each}
 
               {#each learnerImageBlocks as block (block.id)}
-                <ImageBlock url={block.url} alt={block.alt} fit={block.fit} editable={false} />
+                <Block.Image url={block.url} alt={block.alt} fit={block.fit} editable={false} />
               {/each}
 
               {#if !hasLessonVideos}

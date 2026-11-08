@@ -1,6 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import { DocumentBlock, type AttachmentListFile, type AttachmentListLabels } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
+  import type { AttachmentListFile, AttachmentListLabels } from '@cio/ui';
   import { FIELDS } from './fields';
 
   const sampleFiles: AttachmentListFile[] = [
@@ -21,7 +22,7 @@
 
   const { Story } = defineMeta({
     title: 'Blocks/DocumentBlock',
-    component: DocumentBlock,
+    component: Block.Document,
     args: {
       files: sampleFiles,
       editable: false,
@@ -46,7 +47,7 @@
 <Story name="View">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <DocumentBlock
+      <Block.Document
         {...args}
         editable={false}
         onView={(file) => console.log('view', file.name)}
@@ -59,7 +60,7 @@
 <Story name="Edit">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <DocumentBlock
+      <Block.Document
         {...args}
         editable={true}
         onChange={() => console.log('change document')}
@@ -73,7 +74,7 @@
 <Story name="SingleFile">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <DocumentBlock {...args} files={singleFile} labels={{ ...labels, fileCount: '1 file' }} editable={false} />
+      <Block.Document {...args} files={singleFile} labels={{ ...labels, fileCount: '1 file' }} editable={false} />
     </div>
   {/snippet}
 </Story>

@@ -1,11 +1,11 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import { ImageSettingsDialog } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
   import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Blocks/ImageSettingsDialog',
-    component: ImageSettingsDialog,
+    component: Block.ImageSettingsDialog,
     args: {
       open: true,
       alt: 'Two people reviewing a course together on a laptop',
@@ -26,12 +26,12 @@
 
 <Story name="Open">
   {#snippet template(args)}
-    <ImageSettingsDialog {...args} onSave={(settings) => console.log('save', settings)} />
+    <Block.ImageSettingsDialog {...args} onSave={(settings) => console.log('save', settings)} />
   {/snippet}
 </Story>
 
 <Story name="ContainFit">
   {#snippet template(args)}
-    <ImageSettingsDialog {...args} fit="contain" onSave={(settings) => console.log('save', settings)} />
+    <Block.ImageSettingsDialog {...args} fit="contain" onSave={(settings) => console.log('save', settings)} />
   {/snippet}
 </Story>

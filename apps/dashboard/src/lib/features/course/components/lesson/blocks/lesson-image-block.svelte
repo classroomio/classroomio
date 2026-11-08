@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ImageBlock, type ImageBlockSettings } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
   import { uploadImage } from '$lib/utils/services/upload';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
@@ -23,12 +23,12 @@
     }
   }
 
-  function handleSaveSettings(settings: ImageBlockSettings) {
+  function handleSaveSettings(settings: Block.ImageBlockSettings) {
     lessonBlocksApi.updateImageBlock(block.id, settings);
   }
 </script>
 
-<ImageBlock
+<Block.Image
   url={block.url}
   alt={block.alt}
   fit={block.fit}

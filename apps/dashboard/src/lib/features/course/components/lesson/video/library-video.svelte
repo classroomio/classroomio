@@ -118,6 +118,7 @@
       placeholder={$t('course.navItem.lessons.materials.tabs.video.add_video.search_library')}
     />
     <Button
+      variant="secondary"
       onclick={() => {
         search.takePending();
         void loadLibrary(1);

@@ -5,7 +5,8 @@
   import ImageIcon from '@lucide/svelte/icons/image';
   import PresentationIcon from '@lucide/svelte/icons/presentation';
   import VideoIcon from '@lucide/svelte/icons/video';
-  import { AddContentRow, BlockList, BlockShell, type AddContentChoice } from '@cio/ui';
+  import * as AddBlock from '@cio/ui/custom/add-block';
+  import * as Block from '@cio/ui/custom/block';
   import { FIELDS } from './fields';
 
   interface DemoBlock {
@@ -16,7 +17,7 @@
     badge?: string;
   }
 
-  const addChoices: AddContentChoice[] = [
+  const addChoices: AddBlock.AddBlockChoice[] = [
     { type: 'note', label: 'Note', icon: BookOpenIcon },
     { type: 'video', label: 'Video', icon: VideoIcon },
     { type: 'slide', label: 'Slides', icon: PresentationIcon },
@@ -53,7 +54,7 @@
 
   const { Story } = defineMeta({
     title: 'Blocks/BlockList',
-    component: BlockList,
+    component: Block.List,
     args: {
       items: demoBlocks,
       editable: true,
@@ -96,7 +97,7 @@
 <Story name="EditMode">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-3xl">
-      <BlockList
+      <Block.List
         {...args}
         items={demoBlocks}
         editable={true}
@@ -118,7 +119,7 @@
           total: number;
           highlighted: boolean;
         })}
-          <BlockShell
+          <Block.Shell
             blockId={item.id}
             label={item.label}
             badge={item.badge}
@@ -128,9 +129,9 @@
             actionsLabel="Block actions"
           >
             {@render blockBody(item)}
-          </BlockShell>
+          </Block.Shell>
         {/snippet}
-      </BlockList>
+      </Block.List>
     </div>
   {/snippet}
 </Story>
@@ -138,13 +139,13 @@
 <Story name="ViewComfortable">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-3xl">
-      <BlockList {...args} items={demoBlocks} editable={false} spacingClass="ui:gap-10">
+      <Block.List {...args} items={demoBlocks} editable={false} spacingClass="ui:gap-10">
         {#snippet renderItem({ item }: { item: DemoBlock; index: number; total: number; highlighted: boolean })}
-          <BlockShell blockId={item.id} label={item.label}>
+          <Block.Shell blockId={item.id} label={item.label}>
             {@render blockBody(item)}
-          </BlockShell>
+          </Block.Shell>
         {/snippet}
-      </BlockList>
+      </Block.List>
     </div>
   {/snippet}
 </Story>
@@ -152,13 +153,13 @@
 <Story name="ViewCompact">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-3xl">
-      <BlockList {...args} items={demoBlocks} editable={false} spacingClass="ui:gap-6">
+      <Block.List {...args} items={demoBlocks} editable={false} spacingClass="ui:gap-6">
         {#snippet renderItem({ item }: { item: DemoBlock; index: number; total: number; highlighted: boolean })}
-          <BlockShell blockId={item.id} label={item.label}>
+          <Block.Shell blockId={item.id} label={item.label}>
             {@render blockBody(item)}
-          </BlockShell>
+          </Block.Shell>
         {/snippet}
-      </BlockList>
+      </Block.List>
     </div>
   {/snippet}
 </Story>
@@ -166,13 +167,13 @@
 <Story name="ViewSpacious">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-3xl">
-      <BlockList {...args} items={demoBlocks} editable={false} spacingClass="ui:gap-16">
+      <Block.List {...args} items={demoBlocks} editable={false} spacingClass="ui:gap-16">
         {#snippet renderItem({ item }: { item: DemoBlock; index: number; total: number; highlighted: boolean })}
-          <BlockShell blockId={item.id} label={item.label}>
+          <Block.Shell blockId={item.id} label={item.label}>
             {@render blockBody(item)}
-          </BlockShell>
+          </Block.Shell>
         {/snippet}
-      </BlockList>
+      </Block.List>
     </div>
   {/snippet}
 </Story>
@@ -180,9 +181,9 @@
 <Story name="EmptyEditable">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-3xl">
-      <BlockList {...args} items={[]} editable={true} emptyTitle="Add your first block">
+      <Block.List {...args} items={[]} editable={true} emptyTitle="Add your first block">
         {#snippet emptyAction()}
-          <AddContentRow
+          <AddBlock.Row
             choices={addChoices}
             addLabel="Add content"
             aiLabel="Ask AI"
@@ -191,9 +192,9 @@
         {/snippet}
 
         {#snippet renderItem({ item }: { item: DemoBlock; index: number; total: number; highlighted: boolean })}
-          <BlockShell blockId={item.id} label={item.label}>{@render blockBody(item)}</BlockShell>
+          <Block.Shell blockId={item.id} label={item.label}>{@render blockBody(item)}</Block.Shell>
         {/snippet}
-      </BlockList>
+      </Block.List>
     </div>
   {/snippet}
 </Story>
@@ -201,11 +202,11 @@
 <Story name="EmptyView">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-3xl">
-      <BlockList {...args} items={[]} editable={false} emptyTitle="No content" emptyDescription={undefined}>
+      <Block.List {...args} items={[]} editable={false} emptyTitle="No content" emptyDescription={undefined}>
         {#snippet renderItem({ item }: { item: DemoBlock; index: number; total: number; highlighted: boolean })}
-          <BlockShell blockId={item.id} label={item.label}>{@render blockBody(item)}</BlockShell>
+          <Block.Shell blockId={item.id} label={item.label}>{@render blockBody(item)}</Block.Shell>
         {/snippet}
-      </BlockList>
+      </Block.List>
     </div>
   {/snippet}
 </Story>
@@ -213,7 +214,7 @@
 <Story name="Highlighted">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-3xl">
-      <BlockList {...args} items={demoBlocks} editable={true} highlightId="checklist">
+      <Block.List {...args} items={demoBlocks} editable={true} highlightId="checklist">
         {#snippet renderItem({
           item,
           index,
@@ -225,7 +226,7 @@
           total: number;
           highlighted: boolean;
         })}
-          <BlockShell
+          <Block.Shell
             blockId={item.id}
             label={item.label}
             editable={true}
@@ -234,9 +235,9 @@
             actionsLabel="Block actions"
           >
             {@render blockBody(item)}
-          </BlockShell>
+          </Block.Shell>
         {/snippet}
-      </BlockList>
+      </Block.List>
     </div>
   {/snippet}
 </Story>
@@ -248,14 +249,14 @@
         Used beside a density control: no scroll rail, and the spacing is swapped live.
       </p>
       <div class="ui:bg-muted/40 w-full rounded-lg border p-3">
-        <BlockList {...args} items={demoBlocks.slice(0, 3)} editable={false} showRail={false} spacingClass="ui:gap-6">
+        <Block.List {...args} items={demoBlocks.slice(0, 3)} editable={false} showRail={false} spacingClass="ui:gap-6">
           {#snippet renderItem()}
             <div class="ui:bg-card flex flex-col gap-2 rounded-md border p-3">
               <div class="ui:bg-muted h-2 w-1/3 rounded-full"></div>
               <div class="ui:bg-muted h-1.5 w-full rounded-full"></div>
             </div>
           {/snippet}
-        </BlockList>
+        </Block.List>
       </div>
     </div>
   {/snippet}

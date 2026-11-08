@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { VideoBlock } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
   import { courseApi, lessonApi } from '$features/course/api';
   import VideoCardDropdown from './video-card-dropdown.svelte';
   import VideoHlsStatusBadge from './video-hls-status-badge.svelte';
@@ -76,7 +76,7 @@
 </script>
 
 <!-- YouTube-like: thumbnail on top; title row + overflow menu -->
-<VideoBlock
+<Block.Video
   {title}
   {thumbnailUrl}
   durationLabel={durationFormatted}
@@ -110,4 +110,4 @@
   {#snippet status()}
     <VideoHlsStatusBadge status={hlsStatus} />
   {/snippet}
-</VideoBlock>
+</Block.Video>

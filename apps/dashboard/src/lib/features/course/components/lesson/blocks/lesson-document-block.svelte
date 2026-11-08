@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { DocumentBlock } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
   import type { AttachmentListFile } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
@@ -81,7 +81,7 @@
 </script>
 
 {#if document || block.isExample}
-  <DocumentBlock
+  <Block.Document
     editable={mode === MODES.edit}
     {files}
     {labels}

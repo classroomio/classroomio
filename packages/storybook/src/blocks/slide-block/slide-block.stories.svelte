@@ -1,6 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import { SlideBlock } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
   import type { SlideEmbed } from '@cio/utils/functions';
   import { FIELDS } from './fields';
 
@@ -12,7 +12,7 @@
 
   const { Story } = defineMeta({
     title: 'Blocks/SlideBlock',
-    component: SlideBlock,
+    component: Block.Slide,
     args: {
       slide: sampleSlide,
       isExample: false,
@@ -37,7 +37,7 @@
 <Story name="View">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <SlideBlock {...args} editable={false} />
+      <Block.Slide {...args} editable={false} />
     </div>
   {/snippet}
 </Story>
@@ -45,7 +45,7 @@
 <Story name="Edit">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <SlideBlock {...args} editable={true} onChange={() => console.log('change slide')} />
+      <Block.Slide {...args} editable={true} onChange={() => console.log('change slide')} />
     </div>
   {/snippet}
 </Story>
@@ -53,7 +53,7 @@
 <Story name="ChangeAction">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <SlideBlock {...args} editable={true} changeLabel="Change slide" onChange={() => console.log('change slide')} />
+      <Block.Slide {...args} editable={true} changeLabel="Change slide" onChange={() => console.log('change slide')} />
     </div>
   {/snippet}
 </Story>
@@ -61,7 +61,7 @@
 <Story name="Example">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <SlideBlock
+      <Block.Slide
         {...args}
         slide={undefined}
         isExample={true}

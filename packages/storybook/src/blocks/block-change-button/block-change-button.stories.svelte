@@ -1,11 +1,11 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import { BlockChangeButton } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
   import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Blocks/BlockChangeButton',
-    component: BlockChangeButton,
+    component: Block.ChangeButton,
     args: {
       label: 'Change video',
       disabled: false
@@ -26,7 +26,7 @@
 <Story name="Default">
   {#snippet template(args)}
     <div class="mx-auto flex w-full max-w-2xl items-center justify-center">
-      <BlockChangeButton {...args} onclick={() => console.log('change')} />
+      <Block.ChangeButton {...args} onclick={() => console.log('change')} />
     </div>
   {/snippet}
 </Story>
@@ -34,7 +34,7 @@
 <Story name="Disabled">
   {#snippet template(args)}
     <div class="mx-auto flex w-full max-w-2xl items-center justify-center">
-      <BlockChangeButton {...args} label="Change image" disabled={true} onclick={() => console.log('change')} />
+      <Block.ChangeButton {...args} label="Change image" disabled={true} onclick={() => console.log('change')} />
     </div>
   {/snippet}
 </Story>
@@ -43,7 +43,7 @@
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
       <div class="ui:bg-muted relative flex aspect-video w-full items-center justify-center rounded-lg">
-        <BlockChangeButton
+        <Block.ChangeButton
           {...args}
           class="ui:absolute ui:top-2 ui:right-2 ui:opacity-100"
           onclick={() => console.log('change')}

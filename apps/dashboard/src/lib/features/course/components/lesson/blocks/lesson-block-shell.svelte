@@ -3,7 +3,7 @@
   import ArrowDownIcon from '@lucide/svelte/icons/arrow-down';
   import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
-  import { BlockShell, type BlockShellMenuItem } from '@cio/ui/custom/block-shell';
+  import * as Block from '@cio/ui/custom/block';
   import { t } from '$lib/utils/functions/translations';
   import type { LessonBlock } from '$features/course/utils/types';
 
@@ -41,7 +41,7 @@
 
   const typeLabel = $derived(t.get(typeLabelKeys[block.type]));
 
-  const menuItems = $derived<BlockShellMenuItem[]>([
+  const menuItems = $derived<Block.BlockShellMenuItem[]>([
     {
       label: t.get('course.navItem.lessons.materials.blocks.move_up'),
       icon: ArrowUpIcon,
@@ -63,7 +63,7 @@
   ]);
 </script>
 
-<BlockShell
+<Block.Shell
   blockId={block.id}
   label={typeLabel}
   badge={block.isExample ? t.get('course.navItem.lessons.materials.blocks.example') : undefined}
@@ -74,4 +74,4 @@
   {menuItems}
 >
   {@render children()}
-</BlockShell>
+</Block.Shell>

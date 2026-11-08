@@ -4,10 +4,10 @@
   import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
-  import { BlockShell, type BlockShellMenuItem } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
   import { FIELDS } from './fields';
 
-  const menuItems: BlockShellMenuItem[] = [
+  const menuItems: Block.BlockShellMenuItem[] = [
     { label: 'Change video', icon: PencilIcon, onSelect: () => console.log('change') },
     { label: 'Move up', icon: ArrowUpIcon, disabled: true, onSelect: () => console.log('up') },
     { label: 'Move down', icon: ArrowDownIcon, onSelect: () => console.log('down') },
@@ -16,7 +16,7 @@
 
   const { Story } = defineMeta({
     title: 'Blocks/BlockShell',
-    component: BlockShell,
+    component: Block.Shell,
     args: {
       blockId: 'demo-block',
       label: 'Video',
@@ -55,7 +55,7 @@
 <Story name="View">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <BlockShell {...args} editable={false}>{@render sampleContent()}</BlockShell>
+      <Block.Shell {...args} editable={false}>{@render sampleContent()}</Block.Shell>
     </div>
   {/snippet}
 </Story>
@@ -63,7 +63,7 @@
 <Story name="Edit">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <BlockShell {...args} {menuItems}>{@render sampleContent()}</BlockShell>
+      <Block.Shell {...args} {menuItems}>{@render sampleContent()}</Block.Shell>
     </div>
   {/snippet}
 </Story>
@@ -71,7 +71,7 @@
 <Story name="ExampleBadge">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <BlockShell {...args} badge="Example" {menuItems}>{@render sampleContent()}</BlockShell>
+      <Block.Shell {...args} badge="Example" {menuItems}>{@render sampleContent()}</Block.Shell>
     </div>
   {/snippet}
 </Story>
@@ -79,7 +79,7 @@
 <Story name="Highlighted">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <BlockShell {...args} highlighted={true} {menuItems}>{@render sampleContent()}</BlockShell>
+      <Block.Shell {...args} highlighted={true} {menuItems}>{@render sampleContent()}</Block.Shell>
     </div>
   {/snippet}
 </Story>
@@ -87,7 +87,7 @@
 <Story name="NotDraggable">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <BlockShell {...args} draggable={false} {menuItems}>{@render sampleContent()}</BlockShell>
+      <Block.Shell {...args} draggable={false} {menuItems}>{@render sampleContent()}</Block.Shell>
     </div>
   {/snippet}
 </Story>
@@ -95,7 +95,7 @@
 <Story name="WithoutMenu">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
-      <BlockShell {...args}>{@render sampleContent()}</BlockShell>
+      <Block.Shell {...args}>{@render sampleContent()}</Block.Shell>
     </div>
   {/snippet}
 </Story>

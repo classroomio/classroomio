@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { NoteBlock } from '@cio/ui';
+  import * as Block from '@cio/ui/custom/block';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { HTMLRender, TextEditor } from '$features/ui';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
@@ -46,7 +46,7 @@
   }
 </script>
 
-<NoteBlock
+<Block.Note
   style={block.style}
   editable={mode === MODES.edit}
   contentHtml={content}
@@ -69,4 +69,4 @@
       <SafeHtmlContent {content} />
     </HTMLRender>
   {/snippet}
-</NoteBlock>
+</Block.Note>
