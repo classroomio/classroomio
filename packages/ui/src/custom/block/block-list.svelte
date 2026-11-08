@@ -286,7 +286,7 @@
 <div bind:this={rootElement} class="ui:relative ui:mx-auto ui:w-full ui:max-w-4xl ui:overflow-visible">
   {#if showDragHint}
     <div
-      class="ui:bg-muted/40 ui:text-muted-foreground ui:mb-4 ui:flex ui:items-center ui:gap-2 ui:rounded-lg ui:border ui:px-3 ui:py-2 ui:text-sm"
+      class="ui:bg-muted/40 ui:text-muted-foreground ui:mx-2 ui:mb-4 ui:flex ui:items-center ui:gap-2 ui:rounded-lg ui:border ui:px-4 ui:py-2 ui:text-sm ui:sm:mx-4"
     >
       <GripVerticalIcon size={14} />
       <span class="ui:flex-1">{dragHintLabel}</span>
@@ -370,7 +370,7 @@
                   highlighted: highlightedId === item.id
                 })}
 
-                {#if addChoices.length > 0}
+                {#if addChoices.length > 0 && index < orderedItems.length - 1}
                   <AddBlock.Menu
                     open={activeMenuGapIndex === index + 1}
                     choices={addChoices}

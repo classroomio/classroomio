@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { HoverableItem, PlusIcon } from '../moving-icons';
+  import PlusIcon from '@lucide/svelte/icons/plus';
   import { cn } from '../../tools';
   import { IconButton } from '../icon-button';
   import Item from './add-block-item.svelte';
@@ -32,29 +32,25 @@
       )}
     ></div>
 
-    <HoverableItem class="ui:relative ui:z-40 ui:inline-block">
-      {#snippet children(isHovered)}
-        <IconButton
-          type="button"
-          size="icon-sm"
-          {testId}
-          class={cn(
-            'ui:relative ui:z-40 ui:rounded-full',
-            open
-              ? 'ui:border-primary ui:bg-primary ui:scale-110 ui:text-white'
-              : 'ui:border-border ui:bg-background ui:text-muted-foreground ui:hover:border-primary ui:hover:bg-primary ui:hover:text-primary-foreground ui:hover:scale-105'
-          )}
-          aria-label={addLabel}
-          aria-expanded={open}
-          onclick={(event) => {
-            event.stopPropagation();
-            onToggle();
-          }}
-        >
-          <PlusIcon size={12} {isHovered} ariaHidden />
-        </IconButton>
-      {/snippet}
-    </HoverableItem>
+    <IconButton
+      type="button"
+      size="icon-sm"
+      {testId}
+      class={cn(
+        'ui:relative ui:z-40 ui:rounded-full',
+        open
+          ? 'ui:border-primary ui:bg-primary ui:scale-110 ui:text-white'
+          : 'ui:border-border ui:bg-background ui:text-muted-foreground ui:hover:border-primary ui:hover:bg-primary ui:hover:text-primary-foreground ui:hover:scale-105'
+      )}
+      aria-label={addLabel}
+      aria-expanded={open}
+      onclick={(event) => {
+        event.stopPropagation();
+        onToggle();
+      }}
+    >
+      <PlusIcon size={12} class="custom" />
+    </IconButton>
 
     <div
       class={cn(
