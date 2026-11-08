@@ -37,6 +37,12 @@ describe('getAudienceQueryFromSearchParams', () => {
     });
   });
 
+  it('opens a saved link to the retired deactivated status on archived members', () => {
+    const query = getAudienceQueryFromSearchParams(new URLSearchParams('status=DEACTIVATED'));
+
+    expect(query.status).toBe('ARCHIVED');
+  });
+
   it('falls back to defaults on unrecognised values rather than failing to load', () => {
     const query = getAudienceQueryFromSearchParams(
       new URLSearchParams('status=BOGUS&sortBy=nonsense&lastLoginBefore=42y&page=-1')

@@ -975,6 +975,8 @@ A person's role or status changes.
 
 `changes` lists each changed field with its `from` and `to` values, for example `roleId` or `status`.
 
+`status` is `ACTIVE` or `ARCHIVED`. `DEACTIVATED` was retired, and members who were deactivated were archived by a database migration that sends no `organization.member.updated` events. If you mirror membership status, resync your existing memberships once, for example by listing archived students with `GET /public-api/v1/audience?status=ARCHIVED`.
+
 
 ### Courses
 
