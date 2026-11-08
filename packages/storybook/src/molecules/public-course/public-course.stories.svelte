@@ -180,6 +180,34 @@
   {/snippet}
 </Story>
 
+<Story name="Lesson · host-rendered content (blocks)">
+  {#snippet template()}
+    {@const activeSlug = 'hallucination-and-limitations'}
+    {@const activeIndex = flatItems.findIndex((item) => item.slug === activeSlug)}
+    {@const activeItem = flatItems[activeIndex] ?? null}
+    <PublicCourse.PublicCourseShell
+      sections={SIDEBAR_FIXTURE}
+      courseTitle={COURSE_TITLE_FIXTURE}
+      org={ORG_FIXTURE}
+      {activeSlug}
+      {activeItem}
+      activeFlatIndex={activeIndex}
+      totalItems={flatItems.length}
+      hasPrev={activeIndex > 0}
+      hasNext={activeIndex >= 0 && activeIndex < flatItems.length - 1}
+    >
+      <PublicCourse.PublicLessonView lesson={LESSON_FIXTURE} videoCaptionsLabel="Captions" callout={CALLOUT_FIXTURE}>
+        {#snippet content()}
+          <div class="flex flex-col gap-6">
+            <div class="rounded-lg border p-4 text-sm">The host app renders the lesson blocks here.</div>
+            <div class="rounded-lg border p-4 text-sm">Each block keeps its own view component.</div>
+          </div>
+        {/snippet}
+      </PublicCourse.PublicLessonView>
+    </PublicCourse.PublicCourseShell>
+  {/snippet}
+</Story>
+
 <Story name="Lesson · outline rail share only">
   {#snippet template()}
     <div class="ui:w-56 ui:border-l ui:border-border ui:px-4 ui:py-8">

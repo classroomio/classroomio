@@ -28,9 +28,15 @@
 
   interface Props {
     hasUnsavedSessionChanges?: boolean;
+    videos?: LessonVideo[];
+    onVideoWatchEnforcedChange?: (index: number, checked: boolean) => void;
   }
 
-  let { hasUnsavedSessionChanges = $bindable(false) }: Props = $props();
+  let {
+    hasUnsavedSessionChanges = $bindable(false),
+    videos: blockVideos,
+    onVideoWatchEnforcedChange = toggleLegacyVideoWatchEnforced
+  }: Props = $props();
 
   type LessonCompletionPolicy = 'manual' | 'video_watch' | 'none';
 
@@ -188,7 +194,7 @@
   const courseCommentsEnabled = $derived(courseApi.course?.metadata?.commentsEnabled ?? true);
   const lessonCommentsEnabled = $derived(lessonApi.lesson?.commentsEnabled ?? true);
   const videoWatchThreshold = $derived(lessonApi.lesson?.videoWatchThreshold ?? 95);
-  const videos = $derived(lessonApi.lesson?.videos ?? []);
+  const videos = $derived(blockVideos ?? lessonApi.lesson?.videos ?? []);
 
   const enforceableVideos = $derived(
     videos
@@ -215,7 +221,7 @@
     lessonApi.updateLessonState('completionPolicy', value);
   }
 
-  function toggleVideoWatchEnforced(index: number, checked: boolean) {
+  function toggleLegacyVideoWatchEnforced(index: number, checked: boolean) {
     const currentVideos = lessonApi.lesson?.videos;
     if (!currentVideos) return;
 
@@ -443,7 +449,7 @@
                     <Checkbox
                       id={`watch-enforced-${video.assetId}`}
                       checked={isVideoWatchEnforced(video)}
-                      onCheckedChange={(checked) => toggleVideoWatchEnforced(index, checked === true)}
+                      onCheckedChange={(checked) => onVideoWatchEnforcedChange(index, checked === true)}
                     />
                     <Field.Label for={`watch-enforced-${video.assetId}`} class="font-normal">
                       {getVideoTitle(video, index)}

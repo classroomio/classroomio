@@ -23,9 +23,21 @@
     changeLabel?: string;
     onChange?: () => void;
     onRemove?: () => void;
+    onThumbnailSaved?: (thumbnailUrl: string) => void;
+    onMetadataUpdated?: (metadata: Record<string, unknown>) => void;
   }
 
-  let { video, index, isEditMode, isExample = false, changeLabel, onChange, onRemove }: Props = $props();
+  let {
+    video,
+    index,
+    isEditMode,
+    isExample = false,
+    changeLabel,
+    onChange,
+    onRemove,
+    onThumbnailSaved = (url) => lessonApi.updateLessonVideoThumbnail(index, url),
+    onMetadataUpdated = (metadata) => lessonApi.updateLessonVideoMetadata(index, metadata)
+  }: Props = $props();
 
   let isTranscribingForVideo = $state(false);
 
@@ -91,8 +103,8 @@
       <VideoCardDropdown
         {video}
         {onRemove}
-        onThumbnailSaved={(url) => lessonApi.updateLessonVideoThumbnail(index, url)}
-        onHlsMetadataUpdated={(metadata) => lessonApi.updateLessonVideoMetadata(index, metadata)}
+        {onThumbnailSaved}
+        onHlsMetadataUpdated={onMetadataUpdated}
         onTranscribingChange={(value) => (isTranscribingForVideo = value)}
         menuPlacement="inline"
       />

@@ -27,11 +27,10 @@
   import { RefreshPageData, UnsavedChanges } from '$features/ui';
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
   import { courseApi, lessonApi } from '$features/course/api';
-  import { lessonBlocksApi } from '$features/course/store/lesson-blocks.svelte';
-  import LessonBlockCanvas from '$features/course/components/lesson/blocks/lesson-block-canvas.svelte';
-  import LessonSettingsSheet from '$features/course/components/lesson/blocks/lesson-settings-sheet.svelte';
-  import LessonAddContentRow from '$features/course/components/lesson/blocks/lesson-add-content-row.svelte';
-  import { addLessonBlock } from '$features/course/components/lesson/blocks/lesson-add-block';
+  import { lessonBlockList } from '$features/course/store/lesson-blocks.svelte';
+  import { createLessonBlockOwner } from '$features/course/utils/lesson-block-owner';
+  import LessonBlocks from '$features/course/components/lesson/lesson-blocks.svelte';
+  import LessonSettingsSheet from '$features/course/components/lesson/lesson-settings-sheet.svelte';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
   import { lessonVideoBus } from '$features/course/components/lesson/video/lesson-video-bus.svelte';
@@ -68,11 +67,13 @@
 
   import type { TLessonVersionIntentRequest } from '@cio/utils/validation/lesson';
   import type { TLocale } from '@cio/db/types';
-  import type { LessonBlockInsertType } from '$features/course/utils/types';
   import { orderedTabs, SETTINGS_TAB_VALUE, tabs as materialTabs } from '$features/course/components/lesson/constants';
   import { getViewModeComponents } from '$features/course/components/lesson/utils';
   import { loadDraft, clearDraft } from '$features/course/utils/lesson-draft';
-  import { DEFAULT_READING_DENSITY, getReadingDensitySpacingClass } from '$features/course/utils/lesson-blocks';
+  import {
+    DEFAULT_READING_DENSITY,
+    getReadingDensitySpacingClass
+  } from '$features/course/utils/lesson-reading-density';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
   import LiveSessionCard from '$features/course/components/lesson/live-session-card.svelte';
@@ -102,7 +103,7 @@
 
   let prevModeParam = $state<string | null>(null);
   let settingsOpen = $state(false);
-  let blockCanvasLessonId = '';
+  let blockListLessonId = '';
   // Derived from the URL so a reload reopens the drawer. The URL is the single source of
   // truth; nothing sets this directly.
   const isVersionDrawerOpen = $derived($page.url.searchParams.get(HISTORY_PARAM) === 'open');
@@ -118,28 +119,19 @@
     if (!useBlockEditor) return;
 
     const lesson = lessonApi.lesson;
-    if (!lesson || lesson.id !== lessonId || blockCanvasLessonId === lessonId) return;
+    if (!lesson || lesson.id !== lessonId || blockListLessonId === lessonId) return;
 
-    blockCanvasLessonId = lessonId;
-    void lessonBlocksApi.load(courseId, lessonId, lesson, lessonApi.translations[lessonId] ?? {});
+    blockListLessonId = lessonId;
+    void lessonBlockList.load(createLessonBlockOwner(courseId, lessonId));
   });
 
   $effect(() => {
     if (!useBlockEditor) return;
 
     const lesson = lessonApi.lesson;
-    if (!lesson || lesson.id !== lessonId) return;
+    if (!lesson || lesson.id !== lessonId || !Array.isArray(lesson.blocks)) return;
 
-    lessonBlocksApi.syncFromLesson(lesson);
-  });
-
-  $effect(() => {
-    if (!useBlockEditor) return;
-
-    const translations = lessonApi.translations[lessonId];
-    if (!translations) return;
-
-    lessonBlocksApi.syncLegacyTranslations(translations);
+    lessonBlockList.syncFromPayload(lesson.blocks.map((block) => block.id));
   });
 
   const currentLessonContentItem = $derived(
@@ -294,9 +286,9 @@
 
   const isMaterialsEmpty = $derived(tabs.every((tab) => tab.badgeValue === 0));
   const hasLessonVideos = $derived((lessonApi.lesson?.videos?.length ?? 0) > 0);
-  const hasLessonBlocks = $derived(lessonBlocksApi.blocks.length > 0);
+  const hasLessonBlocks = $derived(lessonBlockList.blocks.length > 0);
   const usesBlockView = $derived(
-    useBlockEditor && (!$isCourseLearnerView || hasLessonBlocks || !lessonBlocksApi.isReady)
+    useBlockEditor && (!$isCourseLearnerView || hasLessonBlocks || !lessonBlockList.isReady)
   );
   const hasTranscript = $derived.by(() => {
     lessonVideoBus.transcriptSources;
@@ -358,7 +350,7 @@
     // The legacy language endpoint stores content on the first note block and
     // creates one when missing. Saving an empty translation must not add a note
     // the author never created.
-    const hasNoteBlock = lessonBlocksApi.blocks.some((block) => block.type === 'note');
+    const hasNoteBlock = lessonBlockList.blocks.some((block) => block.type === 'note');
     if (!hasNoteBlock && isHtmlValueEmpty(content)) return;
 
     // Use API to upsert lesson language (creates if doesn't exist, updates if exists)
@@ -430,10 +422,6 @@
     lessonApi.updateLessonState('title', value);
   }
 
-  function addBlockAtEnd(type: LessonBlockInsertType) {
-    addLessonBlock(type, lessonBlocksApi.blocks.length, lessonApi.currentLocale);
-  }
-
   function openTranscriptPanel() {
     if (!lessonVideoBus.prepareTranscriptPanelSelection()) return;
 
@@ -448,6 +436,7 @@
   function handleSave(prevMode: string) {
     untrack(() => {
       if (prevMode === MODES.edit) {
+        void lessonBlockList.flush();
         if (timeoutId) clearTimeout(timeoutId);
         timeoutId = undefined;
         queueSave('manual');
@@ -536,32 +525,28 @@
   });
 </script>
 
-<AddVideoModal
-  {lessonId}
-  onClose={() => {
-    if ($lessonVideoUpload.isUploading) return;
+{#if !useBlockEditor}
+  <AddVideoModal
+    {lessonId}
+    onClose={() => {
+      if ($lessonVideoUpload.isUploading) return;
 
-    $lessonVideoUpload.isModalOpen = false;
-    lessonBlocksApi.clearPendingAdd();
-    lessonBlocksApi.clearPendingChange();
+      $lessonVideoUpload.isModalOpen = false;
+      triggerAutoSave();
+    }}
+  />
 
-    triggerAutoSave();
-  }}
-/>
+  <AddDocumentModal
+    {lessonId}
+    onClose={() => {
+      if ($lessonDocUpload.isUploading) return;
 
-<AddDocumentModal
-  {lessonId}
-  onClose={() => {
-    if ($lessonDocUpload.isUploading) return;
-
-    $lessonDocUpload.isModalOpen = false;
-    $lessonDocUpload.error = null;
-    lessonBlocksApi.clearPendingAdd();
-    lessonBlocksApi.clearPendingChange();
-
-    triggerAutoSave();
-  }}
-/>
+      $lessonDocUpload.isModalOpen = false;
+      $lessonDocUpload.error = null;
+      triggerAutoSave();
+    }}
+  />
+{/if}
 
 <Page.Header
   isSticky
@@ -694,9 +679,9 @@
           </div>
         {:else if $isCourseLearnerView && contentLockReason}
           <StudentContentLockedNotice reason={contentLockReason} contentType={ContentType.Lesson} />
-        {:else if lessonApi.lesson && lessonBlocksApi.isReady}
+        {:else if lessonApi.lesson && lessonBlockList.isReady}
           <div class="min-h-screen pt-5 pb-20" in:fade={{ delay: 300 }} out:fade>
-            <LessonBlockCanvas {mode} {courseId} {lessonId} learnerView={$isCourseLearnerView} />
+            <LessonBlocks {mode} {courseId} {lessonId} learnerView={$isCourseLearnerView} />
 
             {#if mode === MODES.view}
               <LessonMaterialActions
@@ -862,18 +847,6 @@
 </Page.Body>
 
 <UnsavedChanges bind:hasUnsavedChanges />
-
-{#if useBlockEditor && mode === MODES.edit && lessonBlocksApi.blocks.length > 0}
-  <div
-    class="pointer-events-none fixed right-0 bottom-4 left-0 z-50 flex justify-center md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
-    in:fade={{ duration: 150 }}
-    out:fade={{ duration: 100 }}
-  >
-    <div class="pointer-events-auto rounded-xl">
-      <LessonAddContentRow onSelect={addBlockAtEnd} />
-    </div>
-  </div>
-{/if}
 
 {#if useBlockEditor}
   <LessonSettingsSheet bind:open={settingsOpen} bind:hasUnsavedSessionChanges={sessionHasUnsavedChanges} />

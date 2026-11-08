@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { ZBlockLocale, ZBlockType, ZSlidesBlockData } from '../block/block';
+import { ZBlockLocale, ZBlockType, ZSlidesBlockData } from '../block';
 import { ZPublicApiCourseLessonParam } from './course-lesson';
 import { ZPublicApiLessonVideo } from './lesson';
 

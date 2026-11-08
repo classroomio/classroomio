@@ -1,5 +1,5 @@
 import type { TBlock, TBlockPlacement, TLocale } from '@cio/db/types';
-import type { TBlockType } from '@cio/utils/validation/block';
+import { BLOCK_DEFINITIONS, type TBlockMediaKind, type TBlockType } from '@cio/utils/validation/block';
 import {
   getPlacementCountsByBlockIds,
   listBlockLocales,
@@ -90,13 +90,17 @@ export async function loadBlocksForLessons(lessonIds: string[]): Promise<Map<str
   return byLesson;
 }
 
+function blocksWithMedia(blocks: LessonBlock[], media: TBlockMediaKind): LessonBlock[] {
+  return blocks.filter((block) => BLOCK_DEFINITIONS[block.type]?.media === media);
+}
+
 /**
- * Applies canonical asset metadata and presigned URLs to the video and document blocks.
+ * Applies canonical asset metadata and presigned URLs to blocks whose type plays or links media.
  * @returns blocks in the same order; other block types pass through untouched.
  */
 export async function enrichBlocksMedia(blocks: LessonBlock[]): Promise<LessonBlock[]> {
-  const videoBlocks = blocks.filter((block) => block.type === 'video');
-  const documentBlocks = blocks.filter((block) => block.type === 'document');
+  const videoBlocks = blocksWithMedia(blocks, 'video');
+  const documentBlocks = blocksWithMedia(blocks, 'document');
   if (videoBlocks.length === 0 && documentBlocks.length === 0) return blocks;
 
   const media = await enrichLessonMedia({

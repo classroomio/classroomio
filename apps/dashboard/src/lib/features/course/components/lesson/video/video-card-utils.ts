@@ -10,6 +10,7 @@ import {
   type TAssetProvider
 } from '@cio/utils';
 import { lessonApi } from '$features/course/api';
+import { addLessonVideos } from '../media-picks';
 import { mediaApi } from '$features/media/api';
 import { snackbar } from '$features/ui/snackbar/store';
 import type { LessonVideoType } from '$features/course/utils/types';
@@ -368,7 +369,7 @@ export async function addExternalVideosToLesson(options: AddExternalVideosToLess
   const failedCount = results.length - newVideos.length;
 
   if (newVideos.length > 0 && lessonId) {
-    lessonApi.updateLessonState('videos', newVideos, { append: true });
+    addLessonVideos(newVideos);
   }
 
   if (failedCount > 0) {

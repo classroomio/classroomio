@@ -10,6 +10,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { FileTypeBadge } from '@cio/ui/custom/upload-file-card';
   import { lessonApi } from '$features/course/api';
+  import { addLessonDocuments } from '../media-picks';
   import { mediaApi } from '$features/media/api';
   import { formatBytes, getAssetDisplayName } from '$features/media/utils';
   import type { OrganizationAsset } from '$features/media/utils';
@@ -123,7 +124,7 @@
           break;
         }
 
-        lessonApi.updateLessonState('documents', [lessonDocument], { append: true });
+        addLessonDocuments([lessonDocument]);
         selectedAssets.delete(asset.id);
         addedCount += 1;
       }

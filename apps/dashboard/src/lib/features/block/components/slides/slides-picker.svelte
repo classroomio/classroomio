@@ -3,13 +3,9 @@
   import { SlideEmbedPicker, type SlideEmbed, type SlideEmbedPickerLabels, type SlidePlatformId } from '@cio/ui';
   import { SLIDE_PLATFORM_IDS } from '@cio/utils/functions';
   import { t } from '$lib/utils/functions/translations';
+  import type { BlockPickerProps } from '../../utils/types';
 
-  interface Props {
-    open?: boolean;
-    onAdd: (slide: SlideEmbed) => void;
-  }
-
-  let { open = $bindable(false), onAdd }: Props = $props();
+  let { open, onPick, onClose }: BlockPickerProps<'slides'> = $props();
 
   const labels = $derived.by((): SlideEmbedPickerLabels => {
     const prefix = 'course.navItem.lessons.materials.tabs.slide';
@@ -42,12 +38,17 @@
   });
 
   function handleAdd(slide: SlideEmbed) {
-    onAdd(slide);
-    open = false;
+    onPick([{ src: slide.src, platform: slide.platform }]);
+    onClose();
   }
 </script>
 
-<Dialog.Root bind:open>
+<Dialog.Root
+  {open}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) onClose();
+  }}
+>
   <Dialog.Content class="flex h-[min(720px,90dvh)] min-h-0 max-w-4xl! flex-col overflow-hidden">
     <Dialog.Header class="shrink-0">
       <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.slide.add_slide.title')}</Dialog.Title>

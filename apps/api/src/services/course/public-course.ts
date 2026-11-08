@@ -89,9 +89,11 @@ export async function issuePublicHlsCookieService(courseSlug: string, itemSlug: 
       throw new AppError('Public lesson not found', ErrorCodes.NOT_FOUND, 404);
     }
 
-    const lessonAssetIds = item.blocks.flatMap((block) =>
-      block.type === 'video' && block.video.type === 'upload' && block.video.assetId ? [block.video.assetId] : []
-    );
+    const lessonAssetIds = item.blocks.flatMap((block) => {
+      const video = block.type === 'video' ? (block.data as NonNullable<PublicLessonVideoPayload>) : null;
+
+      return video?.type === 'upload' && video.assetId ? [video.assetId] : [];
+    });
     const assetId = requestedAssetId ?? lessonAssetIds[0];
     if (!assetId || !lessonAssetIds.includes(assetId)) {
       throw new AppError('Lesson has no playable HLS asset', ErrorCodes.VALIDATION_ERROR, 400);
@@ -202,11 +204,13 @@ export async function getPublicCourseItemService(
       const { courseOrganizationId, ...lesson } = baseItem;
       const video = await resolvePublicVideo(lesson.video, courseOrganizationId);
       const blocks = await Promise.all(
-        lesson.blocks.map(async (block) =>
-          block.type === 'video' && block.video
-            ? { ...block, video: (await resolvePublicVideo(block.video, courseOrganizationId))! }
-            : block
-        )
+        lesson.blocks.map(async (block) => {
+          if (block.type !== 'video') return block;
+
+          const video = await resolvePublicVideo(block.data as PublicLessonVideoPayload, courseOrganizationId);
+
+          return { ...block, data: video ?? block.data };
+        })
       );
 
       return { ...lesson, blocks, video };

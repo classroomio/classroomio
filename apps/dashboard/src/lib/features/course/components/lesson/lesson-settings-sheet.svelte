@@ -3,9 +3,14 @@
   import * as Field from '@cio/ui/base/field';
   import { DensityControl, type DensityControlValue } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
-  import LessonSettingsTab from '../lesson-settings-tab.svelte';
+  import LessonSettingsTab from './lesson-settings-tab.svelte';
   import { lessonApi } from '$features/course/api';
-  import { DEFAULT_READING_DENSITY, LESSON_READING_DENSITY_OPTIONS } from '$features/course/utils/lesson-blocks';
+  import { lessonBlockList } from '$features/course/store/lesson-blocks.svelte';
+  import type { LessonVideo } from './video/video-card-utils';
+  import {
+    DEFAULT_READING_DENSITY,
+    LESSON_READING_DENSITY_OPTIONS
+  } from '$features/course/utils/lesson-reading-density';
 
   interface Props {
     open?: boolean;
@@ -18,6 +23,17 @@
     LESSON_READING_DENSITY_OPTIONS.map((option) => ({ value: option.value, label: t.get(option.labelKey) }))
   );
   const readingDensity = $derived(lessonApi.lesson?.readingDensity ?? DEFAULT_READING_DENSITY);
+  const videoBlocks = $derived(lessonBlockList.blocks.filter((block) => block.type === 'video'));
+  const videos = $derived(
+    videoBlocks.map((block) => ({ ...(block.data as LessonVideo), watchEnforced: block.required }))
+  );
+
+  function handleVideoWatchEnforcedChange(index: number, checked: boolean) {
+    const block = videoBlocks[index];
+    if (!block) return;
+
+    void lessonBlockList.setPlacement(block.id, { required: checked });
+  }
 </script>
 
 <Sheet.Root bind:open>
@@ -27,7 +43,11 @@
       <Sheet.Description>{$t('course.navItem.lessons.materials.blocks.settings.description')}</Sheet.Description>
     </Sheet.Header>
 
-    <LessonSettingsTab bind:hasUnsavedSessionChanges />
+    <LessonSettingsTab
+      bind:hasUnsavedSessionChanges
+      {videos}
+      onVideoWatchEnforcedChange={handleVideoWatchEnforcedChange}
+    />
 
     <div class="border-b p-4">
       <Field.Group class="w-full">

@@ -9,22 +9,21 @@
   import type { AddBlockChoice } from '@cio/ui/custom/add-block';
   import { t } from '$lib/utils/functions/translations';
   import { sendPromptToAssistant } from '$features/ai-assistant/utils/store';
-  import { getAddContentChoices } from './lesson-add-content-choices';
-  import { isLessonBlockInsertType } from '$features/course/utils/lesson-blocks';
-  import type { LessonBlockInsertType } from '$features/course/utils/types';
+  import { isBlockType, type TBlockType } from '@cio/utils/validation/block';
+  import { getAddBlockChoices } from '../utils/block-choices';
 
   interface Props {
-    onSelect: (type: LessonBlockInsertType) => void;
+    onSelect: (type: TBlockType) => void;
   }
 
   let { onSelect }: Props = $props();
 
   const isMac = $derived(browser && /Mac|iPhone|iPad|iPod/.test(navigator.platform));
 
-  const choices = $derived<AddBlockChoice[]>(getAddContentChoices());
+  const choices = $derived<AddBlockChoice[]>(getAddBlockChoices());
 
   function handleSelect(type: string) {
-    if (!isLessonBlockInsertType(type)) return;
+    if (!isBlockType(type)) return;
 
     onSelect(type);
   }
@@ -72,10 +71,10 @@
   aiPanelLabel={$t('course.navItem.lessons.materials.blocks.ai.title')}
   aiShortcut={{ modifier: isMac ? '⌘' : 'Ctrl', key: 'I' }}
   aiOpen={aiPanelOpen}
-  rowTestId="lesson-add-content-row"
-  toolbarTestId="lesson-add-content-toolbar"
-  aiTriggerTestId="lesson-ai-trigger"
-  aiPanelTestId="lesson-ai-panel"
+  rowTestId="block-add-row"
+  toolbarTestId="block-add-toolbar"
+  aiTriggerTestId="block-ai-trigger"
+  aiPanelTestId="block-ai-panel"
   onSelect={handleSelect}
   onAiTrigger={openAiPanel}
 >
@@ -95,7 +94,7 @@
         placeholder={$t('course.navItem.lessons.materials.blocks.ai.prompt_placeholder')}
         aria-label={$t('course.navItem.lessons.materials.blocks.ai.prompt_label')}
         autocomplete="off"
-        data-testid="lesson-ai-prompt"
+        data-testid="block-ai-prompt"
         onkeydown={handleAiKeydown}
       />
       <Button
@@ -106,7 +105,7 @@
         aria-label={$t('common.cancel')}
         title={$t('common.cancel')}
         onclick={closeAiPanel}
-        testId="lesson-ai-close"
+        testId="block-ai-close"
       >
         <XIcon size={14} />
       </Button>

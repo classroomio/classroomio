@@ -1,10 +1,14 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import {
+  BLOCK_DEFINITIONS,
+  blockHasLocalizedContent,
+  getBlockAssetId,
   parseBlockData,
   type TBlockAttach,
   type TBlockCreate,
   type TBlockDuplicate,
   type TBlockLibraryQuery,
+  type TBlockMediaKind,
   type TBlockType,
   type TPlacementMove,
   type TPlacementUpdate
@@ -50,7 +54,10 @@ import { recordBlockLocaleVersion } from './block-version';
 import { enrichBlocksMedia, loadLessonBlocks, toLessonBlock, type LessonBlock } from './block-view';
 import { positionForAnchor } from './positions';
 
-const LESSON_MEDIA_SLOTS = ['lesson_video', 'lesson_document'] as const;
+const LESSON_MEDIA_SLOTS = {
+  video: 'lesson_video',
+  document: 'lesson_document'
+} as const satisfies Record<TBlockMediaKind, string>;
 const DEFAULT_LOCALE: TLocale = 'en';
 
 interface BlockActor {
@@ -106,10 +113,8 @@ async function assertAssetsBelongToOrganization(
   data: Record<string, unknown>,
   organizationId: string
 ): Promise<void> {
-  if (type !== 'video' && type !== 'document') return;
-
-  const assetId = data.assetId;
-  if (typeof assetId !== 'string') return;
+  const assetId = getBlockAssetId(type, data);
+  if (!assetId) return;
 
   const asset = await getAssetById(assetId, organizationId);
   if (!asset) {
@@ -129,14 +134,15 @@ export async function syncLessonAssetUsages(
 ): Promise<void> {
   const rows = await listLessonBlockRows(lessonId, dbClient);
   await touchLessonsUpdatedAt([lessonId], dbClient);
-  await deleteAssetUsagesByTargetSlots('lesson', lessonId, [...LESSON_MEDIA_SLOTS], dbClient);
+  await deleteAssetUsagesByTargetSlots('lesson', lessonId, Object.values(LESSON_MEDIA_SLOTS), dbClient);
 
   const seen = new Set<string>();
   for (const [position, row] of rows.entries()) {
-    const slotType =
-      row.block.type === 'video' ? 'lesson_video' : row.block.type === 'document' ? 'lesson_document' : null;
-    const assetId = row.block.data.assetId;
-    if (!slotType || typeof assetId !== 'string') continue;
+    const assetId = getBlockAssetId(row.block.type, row.block.data);
+    if (!assetId) continue;
+
+    const media = BLOCK_DEFINITIONS[row.block.type as TBlockType].media as TBlockMediaKind;
+    const slotType = LESSON_MEDIA_SLOTS[media];
 
     const usageKey = `${slotType}:${assetId}`;
     if (seen.has(usageKey)) continue;
@@ -182,7 +188,7 @@ async function hydrateSingleBlock(placement: TBlockPlacement, block: TBlock): Pr
   return enriched;
 }
 
-async function saveNoteContent(
+async function saveLocalizedContent(
   blockId: string,
   locale: TLocale,
   content: string | null,
@@ -244,9 +250,9 @@ export async function createLessonBlock(
       tx
     );
 
-    if (input.type === 'note') {
+    if (BLOCK_DEFINITIONS[input.type].localizedContent) {
       const content = sanitizeOptionalHtml(input.content) ?? '';
-      await saveNoteContent(block.id, input.locale ?? DEFAULT_LOCALE, content, { authorId: actorProfileId }, tx);
+      await saveLocalizedContent(block.id, input.locale ?? DEFAULT_LOCALE, content, { authorId: actorProfileId }, tx);
     }
 
     const placement = await createPlacement(
@@ -350,8 +356,8 @@ export async function updateLessonBlock(
 }
 
 /**
- * Saves a note block's content for one locale and records a version snapshot.
- * @throws AppError 409 BLOCK_VERSION_CONFLICT when `expectedVersion` is stale, 400 for non-note blocks.
+ * Saves a block's localized content for one locale and records a version snapshot.
+ * @throws AppError 409 BLOCK_VERSION_CONFLICT when `expectedVersion` is stale, 400 for types without localized content.
  */
 export async function updateLessonBlockLocale(
   lessonId: string,
@@ -368,8 +374,8 @@ export async function updateLessonBlockLocale(
   const updated = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
     const row = await requireLessonBlockRow(lessonId, blockId, tx);
-    if (row.block.type !== 'note') {
-      throw new AppError('Only note blocks have localized content', ErrorCodes.BLOCK_INVALID_DATA, 400);
+    if (!blockHasLocalizedContent(row.block.type)) {
+      throw new AppError('This block type has no localized content', ErrorCodes.BLOCK_INVALID_DATA, 400);
     }
 
     const block = await bumpBlockVersionIfVersion(blockId, input.expectedVersion, tx);
@@ -377,7 +383,7 @@ export async function updateLessonBlockLocale(
       throw new AppError('This block was changed by someone else', ErrorCodes.BLOCK_VERSION_CONFLICT, 409);
     }
 
-    await saveNoteContent(
+    await saveLocalizedContent(
       blockId,
       locale,
       sanitizeOptionalHtml(input.content) ?? '',
@@ -576,8 +582,8 @@ export async function listBlockLibrary(
     limit: query.limit
   });
 
-  const noteIds = items.filter((item) => item.block.type === 'note').map((item) => item.block.id);
-  const locales = await listBlockLocales(noteIds);
+  const localizedIds = items.filter((item) => blockHasLocalizedContent(item.block.type)).map((item) => item.block.id);
+  const locales = await listBlockLocales(localizedIds);
   const contentsByBlock = new Map<string, LessonBlock['contents']>();
   for (const locale of locales) {
     const contents = contentsByBlock.get(locale.blockId) ?? {};
@@ -630,7 +636,7 @@ export function parseBlockVersionCursor(cursor?: string): TBlockVersionCursor | 
 }
 
 /**
- * Pages through a note block's version history for one locale.
+ * Pages through a block's localized-content version history for one locale.
  */
 export async function getLessonBlockHistory(
   lessonId: string,
