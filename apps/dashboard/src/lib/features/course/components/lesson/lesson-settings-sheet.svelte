@@ -15,9 +15,10 @@
   interface Props {
     open?: boolean;
     hasUnsavedSessionChanges?: boolean;
+    onOpenChange?: (isOpen: boolean) => void;
   }
 
-  let { open = $bindable(false), hasUnsavedSessionChanges = $bindable(false) }: Props = $props();
+  let { open = $bindable(false), hasUnsavedSessionChanges = $bindable(false), onOpenChange }: Props = $props();
 
   const densityOptions = $derived(
     LESSON_READING_DENSITY_OPTIONS.map((option) => ({ value: option.value, label: t.get(option.labelKey) }))
@@ -36,7 +37,7 @@
   }
 </script>
 
-<Sheet.Root bind:open>
+<Sheet.Root bind:open {onOpenChange}>
   <Sheet.Content side="right" class="w-full gap-0 overflow-y-auto pb-10 sm:max-w-md">
     <Sheet.Header>
       <Sheet.Title>{$t('course.navItem.lessons.materials.blocks.settings.title')}</Sheet.Title>

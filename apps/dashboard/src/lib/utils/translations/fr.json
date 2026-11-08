@@ -2699,8 +2699,6 @@
             "empty_title": "Commencez à élaborer cette leçon",
             "empty_description": "Ajoutez une note, une vidéo, des diapositives, un document ou une image. Vous pouvez ajouter autant de blocs que nécessaire, dans l'ordre de votre choix.",
             "empty_note": "Cette note est vide.",
-            "note_style": "Style",
-            "preview_label": "Expérience d'apprentissage intégrée à l'application",
             "scroll_rail": "Blocs de leçon",
             "go_to_block": "Aller au bloc {index}",
             "image": {
@@ -2724,14 +2722,6 @@
               "compact": "Compact",
               "comfortable": "Confortable",
               "spacious": "Spacieux"
-            },
-            "styles": {
-              "default": "Défaut",
-              "info": "Info",
-              "tip": "Conseil",
-              "important": "Important",
-              "warning": "Avertissement",
-              "highlight": "Souligner"
             },
             "ai": {
               "title": "Rédigez une note avec l'IA",
@@ -2826,6 +2816,10 @@
             "watch_videos_empty": "La surveillance vidéo ne suit que les vidéos téléversées. YouTube et les intégrations externes ne peuvent pas être suivis. Cette leçon ne peut donc pas se terminer automatiquement et les élèves ne peuvent pas la marquer comme terminée. Téléversez la vidéo dans l'onglet Vidéo ou définissez la règle d'achèvement sur Manuel.",
             "watch_videos_no_uploads_title": "Aucune vidéo téléversée dans cette leçon",
             "watch_videos_learn_more": "Apprendre encore plus"
+          },
+          "access": {
+            "title": "Accès",
+            "description": "Les élèves ne peuvent pas ouvrir une leçon verrouillée tant que vous ne l'avez pas déverrouillée."
           }
         },
         "watch_progress": {

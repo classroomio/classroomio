@@ -1,1 +1,1 @@
-export const FIELDS = ['style', 'editable', 'contentHtml', 'empty', 'styleLabel', 'emptyLabel'];
+export const FIELDS = ['editable', 'contentHtml', 'empty', 'emptyLabel'];

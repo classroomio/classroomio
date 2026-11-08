@@ -10,6 +10,8 @@
   import * as Tooltip from '@cio/ui/base/tooltip';
   import * as Alert from '@cio/ui/base/alert';
   import InfoIcon from '@lucide/svelte/icons/info';
+  import LockIcon from '@lucide/svelte/icons/lock';
+  import UnlockIcon from '@lucide/svelte/icons/lock-open';
   import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { toast } from '@cio/ui/base/sonner';
   import { classroomio } from '$lib/utils/services/api';
@@ -190,6 +192,12 @@
     hasUnsavedSessionChanges = sessionChanged();
   });
 
+  const isUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
+
+  function handleUnlockedChange(checked: boolean) {
+    lessonApi.updateLessonState('isUnlocked', checked);
+  }
+
   const completionPolicy = $derived(lessonApi.lesson?.completionPolicy ?? 'manual');
   const courseCommentsEnabled = $derived(courseApi.course?.metadata?.commentsEnabled ?? true);
   const lessonCommentsEnabled = $derived(lessonApi.lesson?.commentsEnabled ?? true);
@@ -254,6 +262,31 @@
 
 <div class="p-4">
   <Field.Group class="w-full max-w-xl">
+    <Field.Set>
+      <Field.Legend>{$t('course.navItem.lessons.settings.access.title')}</Field.Legend>
+      <Field.Description>{$t('course.navItem.lessons.settings.access.description')}</Field.Description>
+
+      <Field.Field orientation="horizontal">
+        <Switch
+          id="lesson-unlocked"
+          checked={isUnlocked}
+          onCheckedChange={handleUnlockedChange}
+          data-testid="lesson-lock-toggle"
+        />
+        <Field.Label for="lesson-unlocked" class="gap-1.5">
+          {#if isUnlocked}
+            <UnlockIcon size={14} />
+            {$t('generic.unlocked')}
+          {:else}
+            <LockIcon size={14} />
+            {$t('generic.locked')}
+          {/if}
+        </Field.Label>
+      </Field.Field>
+    </Field.Set>
+
+    <Field.Separator />
+
     {#if isLiveClass}
       <Field.Set>
         <Field.Legend>{$t('course.navItem.lessons.session.heading')}</Field.Legend>

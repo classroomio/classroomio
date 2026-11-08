@@ -2699,8 +2699,6 @@
             "empty_title": "Beginnen Sie mit dem Aufbau dieser Lektion.",
             "empty_description": "Fügen Sie eine Notiz, ein Video, Folien, ein Dokument oder ein Bild hinzu. Sie können beliebig viele Blöcke in beliebiger Reihenfolge hinzufügen.",
             "empty_note": "Diese Notiz ist leer.",
-            "note_style": "Stil",
-            "preview_label": "Lernerfahrung innerhalb der App",
             "scroll_rail": "Unterrichtsblöcke",
             "go_to_block": "Gehe zu Block {index}",
             "image": {
@@ -2724,14 +2722,6 @@
               "compact": "Kompakt",
               "comfortable": "Komfortabel",
               "spacious": "Geräumig"
-            },
-            "styles": {
-              "default": "Standard",
-              "info": "Info",
-              "tip": "Tipp",
-              "important": "Wichtig",
-              "warning": "Warnung",
-              "highlight": "Highlight"
             },
             "ai": {
               "title": "Erstellen Sie eine Notiz mit KI",
@@ -2826,6 +2816,10 @@
             "watch_videos_empty": "Bei der Videowiedergabe werden nur hochgeladene Videos verfolgt. YouTube- und externe Einbettungen können nicht nachverfolgt werden, daher kann diese Lektion nicht automatisch abgeschlossen werden und die Schüler können sie nicht als abgeschlossen markieren. Laden Sie das Video auf der Registerkarte „Video“ hoch oder stellen Sie die Abschlussregel auf „Manuell“ ein.",
             "watch_videos_no_uploads_title": "In dieser Lektion wurden keine Videos hochgeladen",
             "watch_videos_learn_more": "Erfahren Sie mehr"
+          },
+          "access": {
+            "title": "Zugang",
+            "description": "Schüler können eine gesperrte Lektion erst öffnen, wenn Sie sie entsperren."
           }
         },
         "watch_progress": {

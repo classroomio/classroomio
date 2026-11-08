@@ -2600,6 +2600,10 @@
           "watch_threshold": "Watch threshold (%)"
         },
         "settings": {
+          "access": {
+            "title": "Access",
+            "description": "Students can't open a locked lesson until you unlock it."
+          },
           "comments": {
             "title": "Lesson comments",
             "description": "Choose whether students can view and add comments on this lesson.",
@@ -3072,16 +3076,6 @@
             "empty_learner_title": "This lesson isn't ready yet",
             "empty_learner_description": "Your instructor hasn't added any content to this lesson. Check back soon.",
             "empty_note": "This note is empty.",
-            "note_style": "Style",
-            "styles": {
-              "default": "Default",
-              "info": "Info",
-              "tip": "Tip",
-              "important": "Important",
-              "warning": "Warning",
-              "highlight": "Highlight"
-            },
-            "preview_label": "In-app learner experience",
             "scroll_rail": "Lesson blocks",
             "go_to_block": "Go to block {index}",
             "reading_density": {

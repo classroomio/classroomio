@@ -2699,8 +2699,6 @@
             "empty_title": "Zacznij budować tę lekcję",
             "empty_description": "Dodaj notatkę, film, slajdy, dokument lub obraz. Możesz dodać dowolną liczbę bloków w dowolnej kolejności.",
             "empty_note": "Ta notatka jest pusta.",
-            "note_style": "Styl",
-            "preview_label": "Doświadczenie uczenia się w aplikacji",
             "scroll_rail": "Bloki lekcji",
             "go_to_block": "Przejdź do bloku {index}",
             "image": {
@@ -2724,14 +2722,6 @@
               "compact": "Kompaktowy",
               "comfortable": "Wygodny",
               "spacious": "Przestronny"
-            },
-            "styles": {
-              "default": "Domyślny",
-              "info": "Informacje",
-              "tip": "Wskazówka",
-              "important": "Ważny",
-              "warning": "Ostrzeżenie",
-              "highlight": "Atrakcja"
             },
             "ai": {
               "title": "Sporządź notatkę za pomocą sztucznej inteligencji",
@@ -2826,6 +2816,10 @@
             "watch_videos_empty": "Śledzenie oglądania obejmuje tylko przesłane filmy. Nie można śledzić filmów z YouTube ani filmów osadzonych na zewnętrznych stronach, więc ta lekcja nie może zostać ukończona automatycznie, a uczniowie nie mogą oznaczyć jej jako ukończonej. Prześlij wideo na karcie Wideo lub ustaw regułę ukończenia na Ręcznie.",
             "watch_videos_no_uploads_title": "Brak przesłanych filmów wideo w tej lekcji",
             "watch_videos_learn_more": "Dowiedz się więcej"
+          },
+          "access": {
+            "title": "Dostęp",
+            "description": "Uczniowie nie mogą otworzyć zablokowanej lekcji, dopóki jej nie odblokujesz."
           }
         },
         "watch_progress": {

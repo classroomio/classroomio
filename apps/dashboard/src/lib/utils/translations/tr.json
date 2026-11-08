@@ -2629,6 +2629,10 @@
             "watch_videos_no_uploads_title": "Bu derste yüklenmiş video yok",
             "watch_videos_required": "Video izlemeyi kullanırken en az bir video seçin.",
             "students_only_note": "Bu kurallar yalnızca öğrenciler için geçerlidir. Öğretirken özgürce önizleyebilir ve gezinebilirsiniz."
+          },
+          "access": {
+            "title": "Erişim",
+            "description": "Siz kilidi açana kadar öğrenciler kilitli bir dersi açamazlar."
           }
         },
         "watch_progress": {
@@ -3059,8 +3063,6 @@
             "empty_title": "Bu dersi oluşturmaya başlayın.",
             "empty_description": "Not, video, slayt, belge veya resim ekleyin. İstediğiniz kadar blok ekleyebilir ve istediğiniz sırayla düzenleyebilirsiniz.",
             "empty_note": "Bu not boş.",
-            "note_style": "Stil",
-            "preview_label": "Uygulama içi öğrenci deneyimi",
             "scroll_rail": "Ders blokları",
             "go_to_block": "{index} bloğuna git",
             "image": {
@@ -3084,14 +3086,6 @@
               "compact": "Kompakt",
               "comfortable": "Rahat",
               "spacious": "Ferah"
-            },
-            "styles": {
-              "default": "Varsayılan",
-              "info": "Bilgi",
-              "tip": "Uç",
-              "important": "Önemli",
-              "warning": "Uyarı",
-              "highlight": "Öne çıkanlar"
             },
             "ai": {
               "title": "Yapay zekâ ile bir not taslağı oluşturun.",

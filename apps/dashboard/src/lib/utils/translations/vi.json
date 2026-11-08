@@ -2699,8 +2699,6 @@
             "empty_title": "Hãy bắt đầu xây dựng bài học này.",
             "empty_description": "Thêm ghi chú, video, slide, tài liệu hoặc hình ảnh. Bạn có thể thêm bao nhiêu khối tùy thích, theo bất kỳ thứ tự nào.",
             "empty_note": "Ghi chú này trống.",
-            "note_style": "Phong cách",
-            "preview_label": "Trải nghiệm người học trong ứng dụng",
             "scroll_rail": "Khối bài học",
             "go_to_block": "Đi đến khối {index}",
             "image": {
@@ -2724,14 +2722,6 @@
               "compact": "Nhỏ gọn",
               "comfortable": "Thoải mái",
               "spacious": "Rộng rãi"
-            },
-            "styles": {
-              "default": "Mặc định",
-              "info": "Thông tin",
-              "tip": "Mẹo",
-              "important": "Quan trọng",
-              "warning": "Cảnh báo",
-              "highlight": "Điểm nổi bật"
             },
             "ai": {
               "title": "Soạn thảo ghi chú bằng AI",
@@ -2826,6 +2816,10 @@
             "watch_videos_empty": "Xem video chỉ theo dõi các video đã tải lên. Không thể theo dõi nội dung nhúng trên YouTube và bên ngoài, vì vậy bài học này không thể tự động hoàn thành và học sinh không thể đánh dấu bài học là hoàn thành. Tải video lên trong tab Video hoặc đặt quy tắc hoàn thành thành Thủ công.",
             "watch_videos_no_uploads_title": "Không có video nào được tải lên trong bài học này",
             "watch_videos_learn_more": "Tìm hiểu thêm"
+          },
+          "access": {
+            "title": "Truy cập",
+            "description": "Học sinh không thể mở bài học bị khóa cho đến khi bạn mở khóa bài học đó."
           }
         },
         "watch_progress": {

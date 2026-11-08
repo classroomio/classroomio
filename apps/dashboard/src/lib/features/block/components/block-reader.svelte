@@ -14,11 +14,10 @@
     emptyTitle: string;
     emptyDescription: string;
     spacingClass?: string;
-    previewLabel?: string;
     showRail?: boolean;
   }
 
-  let { blocks, host, emptyTitle, emptyDescription, spacingClass, previewLabel, showRail = true }: Props = $props();
+  let { blocks, host, emptyTitle, emptyDescription, spacingClass, showRail = true }: Props = $props();
 
   setBlockViewHost(() => host);
 </script>
@@ -26,7 +25,6 @@
 <Block.List
   items={blocks}
   {spacingClass}
-  {previewLabel}
   {showRail}
   {emptyTitle}
   {emptyDescription}

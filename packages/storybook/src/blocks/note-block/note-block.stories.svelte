@@ -6,23 +6,13 @@
   const SAMPLE_HTML =
     '<h2>Lesson overview</h2><p>Use this note to introduce the lesson and set expectations. Replace this guidance with the ideas your learners need.</p><ul><li>What the lesson covers</li><li>Why it matters</li><li>What learners will do next</li></ul>';
 
-  const styledNotes: { style: Block.NoteBlockStyle; label: string }[] = [
-    { style: 'info', label: 'Info' },
-    { style: 'tip', label: 'Tip' },
-    { style: 'important', label: 'Important' },
-    { style: 'warning', label: 'Warning' },
-    { style: 'highlight', label: 'Highlight' }
-  ];
-
   const { Story } = defineMeta({
     title: 'Blocks/NoteBlock',
     component: Block.Note,
     args: {
-      style: 'default',
       editable: false,
       contentHtml: SAMPLE_HTML,
       empty: false,
-      styleLabel: 'Note',
       emptyLabel: 'This note is empty'
     },
     parameters: {
@@ -66,20 +56,6 @@
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
       <Block.Note {...args} editable={false} contentHtml="" empty={true} />
-    </div>
-  {/snippet}
-</Story>
-
-<Story name="StyledVariants">
-  {#snippet template()}
-    <div class="mx-auto flex w-full max-w-2xl flex-col gap-4">
-      {#each styledNotes as note (note.style)}
-        <Block.Note
-          style={note.style}
-          contentHtml="<p>Callouts keep a single idea visible while the reader scans the lesson.</p>"
-          styleLabel={note.label}
-        />
-      {/each}
     </div>
   {/snippet}
 </Story>

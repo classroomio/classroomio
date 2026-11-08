@@ -2619,6 +2619,10 @@
             "watch_videos_no_uploads_title": "Nessun video caricato in questa lezione",
             "watch_videos_required": "Seleziona almeno un video quando usi la visione video.",
             "students_only_note": "Queste regole si applicano solo agli studenti. Puoi visualizzare l'anteprima e navigare liberamente mentre insegni."
+          },
+          "access": {
+            "title": "Accesso",
+            "description": "Gli studenti non possono aprire una lezione bloccata finché non la sblocchi."
           }
         },
         "watch_progress": {
@@ -3051,8 +3055,6 @@
             "empty_title": "Inizia a costruire questa lezione",
             "empty_description": "Aggiungi una nota, un video, delle diapositive, un documento o un'immagine. Puoi aggiungere tutti i blocchi che ti servono, in qualsiasi ordine.",
             "empty_note": "Questa banconota è vuota.",
-            "note_style": "Stile",
-            "preview_label": "Esperienza di apprendimento all'interno dell'app",
             "scroll_rail": "Blocchi di lezione",
             "go_to_block": "Vai al blocco {index}",
             "image": {
@@ -3076,14 +3078,6 @@
               "compact": "Compatto",
               "comfortable": "Comodo",
               "spacious": "Elegante"
-            },
-            "styles": {
-              "default": "Predefinito",
-              "info": "Informazioni",
-              "tip": "Mancia",
-              "important": "Importante",
-              "warning": "Avvertimento",
-              "highlight": "Evidenziare"
             },
             "ai": {
               "title": "Redigi una nota con l'IA",

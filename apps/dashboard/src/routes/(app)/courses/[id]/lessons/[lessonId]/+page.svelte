@@ -44,7 +44,7 @@
   });
 </script>
 
-<Page.Root class="mx-auto flex w-full gap-0! px-6 pb-0!">
+<Page.Root class="mx-auto flex w-full gap-0! pb-0!">
   {#key data.lessonId}
     <LessonPage courseId={data.courseId} lessonId={data.lessonId} />
   {/key}

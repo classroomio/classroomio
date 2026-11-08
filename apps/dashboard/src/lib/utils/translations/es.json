@@ -2699,8 +2699,6 @@
             "empty_title": "Comienza a construir esta lección",
             "empty_description": "Añade una nota, un vídeo, diapositivas, un documento o una imagen. Puedes añadir tantos bloques como necesites, en cualquier orden.",
             "empty_note": "Esta nota está vacía.",
-            "note_style": "Estilo",
-            "preview_label": "Experiencia de aprendizaje dentro de la aplicación",
             "scroll_rail": "Bloques de lecciones",
             "go_to_block": "Ir al bloque {index}",
             "image": {
@@ -2724,14 +2722,6 @@
               "compact": "Compacto",
               "comfortable": "Cómodo",
               "spacious": "Espacioso"
-            },
-            "styles": {
-              "default": "Por defecto",
-              "info": "Información",
-              "tip": "Consejo",
-              "important": "Importante",
-              "warning": "Advertencia",
-              "highlight": "Destacar"
             },
             "ai": {
               "title": "Redacta una nota con IA",
@@ -2826,6 +2816,10 @@
             "watch_videos_empty": "La visualización de videos solo rastrea los videos subidos. No se puede realizar un seguimiento de YouTube ni de incrustaciones externas, por lo que esta lección no se puede completar automáticamente y los estudiantes no pueden marcarla como completada. Cargue el video en la pestaña Video o establezca la regla de finalización en Manual.",
             "watch_videos_no_uploads_title": "No hay videos subidos en esta lección.",
             "watch_videos_learn_more": "Más información"
+          },
+          "access": {
+            "title": "Acceso",
+            "description": "Los estudiantes no pueden abrir una lección bloqueada hasta que la desbloquees."
           }
         },
         "watch_progress": {

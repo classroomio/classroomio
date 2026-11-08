@@ -2699,8 +2699,6 @@
             "empty_title": "Begynd at opbygge denne lektion",
             "empty_description": "Tilføj en note, video, slides, dokument eller billede. Du kan tilføje så mange blokke, som du har brug for, i en hvilken som helst rækkefølge.",
             "empty_note": "Denne note er tom.",
-            "note_style": "Stil",
-            "preview_label": "Læreroplevelse i appen",
             "scroll_rail": "Lektionsblokke",
             "go_to_block": "Gå til blok {index}",
             "image": {
@@ -2724,14 +2722,6 @@
               "compact": "Kompakt",
               "comfortable": "Komfortabel",
               "spacious": "Rummelig"
-            },
-            "styles": {
-              "default": "Misligholdelse",
-              "info": "Info",
-              "tip": "Tip",
-              "important": "Vigtig",
-              "warning": "Advarsel",
-              "highlight": "Fremhæv"
             },
             "ai": {
               "title": "Udarbejd en note med AI",
@@ -2826,6 +2816,10 @@
             "watch_videos_empty": "Videoafspilning sporer kun uploadede videoer. YouTube og eksterne indlejringer kan ikke spores, så denne lektion kan ikke fuldføres automatisk, og eleverne kan ikke markere den som fuldført. Upload videoen på fanen Video, eller indstil fuldførelsesreglen til Manuel.",
             "watch_videos_no_uploads_title": "Ingen uploadede videoer i denne lektion",
             "watch_videos_learn_more": "Få flere oplysninger"
+          },
+          "access": {
+            "title": "Adgang",
+            "description": "Elever kan ikke åbne en låst lektion, før du låser den op."
           }
         },
         "watch_progress": {

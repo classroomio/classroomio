@@ -2699,8 +2699,6 @@
             "empty_title": "Comece a construir esta lição.",
             "empty_description": "Adicione uma nota, vídeo, slides, documento ou imagem. Você pode adicionar quantos blocos precisar, em qualquer ordem.",
             "empty_note": "Esta nota está vazia.",
-            "note_style": "Estilo",
-            "preview_label": "Experiência de aprendizagem no aplicativo",
             "scroll_rail": "Blocos de aula",
             "go_to_block": "Vá para o bloco {index}",
             "image": {
@@ -2724,14 +2722,6 @@
               "compact": "Compactar",
               "comfortable": "Confortável",
               "spacious": "Espaçoso"
-            },
-            "styles": {
-              "default": "Padrão",
-              "info": "Informações",
-              "tip": "Dica",
-              "important": "Importante",
-              "warning": "Aviso",
-              "highlight": "Destaque"
             },
             "ai": {
               "title": "Elabore uma nota com IA",
@@ -2826,6 +2816,10 @@
             "watch_videos_empty": "A exibição de vídeo rastreia apenas os vídeos enviados. As incorporações externas e do YouTube não podem ser rastreadas, portanto esta lição não pode ser concluída automaticamente e os alunos não podem marcá-la como concluída. Carregue o vídeo na guia Vídeo ou defina a regra de conclusão como Manual.",
             "watch_videos_no_uploads_title": "Nenhum vídeo enviado nesta lição",
             "watch_videos_learn_more": "Saber mais"
+          },
+          "access": {
+            "title": "Acesso",
+            "description": "Os alunos não poderão abrir uma lição bloqueada até que você a desbloqueie."
           }
         },
         "watch_progress": {

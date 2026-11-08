@@ -23,5 +23,3 @@ export interface ImageBlockSettings {
   alt: string;
   fit: ImageBlockFit;
 }
-
-export type NoteBlockStyle = 'default' | 'info' | 'tip' | 'important' | 'warning' | 'highlight';

@@ -89,12 +89,5 @@
 {#if isEditing}
   <BlockEditor api={lessonBlockList} {locale} host={editHost} {spacingClass} />
 {:else}
-  <BlockReader
-    blocks={viewBlocks}
-    host={viewHost}
-    {emptyTitle}
-    {emptyDescription}
-    {spacingClass}
-    previewLabel={learnerView ? undefined : t.get('course.navItem.lessons.materials.blocks.preview_label')}
-  />
+  <BlockReader blocks={viewBlocks} host={viewHost} {emptyTitle} {emptyDescription} {spacingClass} />
 {/if}

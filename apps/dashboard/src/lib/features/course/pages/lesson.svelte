@@ -328,6 +328,16 @@
 
   let isLoading = writable(false);
 
+  const canAutoSave = $derived(mode === MODES.edit || settingsOpen);
+
+  function handleSettingsOpenChange(isOpen: boolean) {
+    if (isOpen || mode === MODES.edit || !lessonApi.isDirty) return;
+
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = undefined;
+    void queueSave('auto');
+  }
+
   function callAI(_type = '') {}
 
   const getValue = (label: string) => {
@@ -429,11 +439,6 @@
     sidePanel.open(TRANSCRIPT_PANEL_ID);
   }
 
-  function handleToggleLessonLock() {
-    const currentValue = lessonApi.lesson?.isUnlocked ?? false;
-    lessonApi.updateLessonState('isUnlocked', !currentValue);
-  }
-
   function handleSave(prevMode: string) {
     untrack(() => {
       if (prevMode === MODES.edit) {
@@ -446,7 +451,7 @@
   }
 
   function autoSave() {
-    if (mode === MODES.view) return;
+    if (!canAutoSave) return;
     if (!lessonApi.isDirty) return;
 
     if (timeoutId) clearTimeout(timeoutId);
@@ -495,7 +500,7 @@
 
   // Only autosave after real edits, not on every reactive update.
   $effect(() => {
-    if (mode !== MODES.edit) return;
+    if (!canAutoSave) return;
     if (!lessonApi.lesson || !lessonId) return;
     if (!lessonApi.isDirty) return;
     if ($isLoading) return;
@@ -557,19 +562,17 @@
 
 <Page.Header
   isSticky
-  class="ui:top-12 ui:z-app-bar ui:my-0 ui:border-border ui:bg-background ui:pt-5 ui:pb-4 flex-start w-full border-b"
+  class="ui:top-12 ui:z-app-bar ui:my-0 ui:border-border ui:bg-background w-full border-b px-4 pt-4 pb-3 md:px-6 md:pt-5 md:pb-4"
 >
-  <Page.HeaderContent class="min-w-0 flex-1">
+  <Page.HeaderContent class="w-full min-w-0 md:flex-1">
     <LessonPageEditHeader
       {mode}
       title={mode === MODES.edit ? (lessonApi.lesson?.title ?? '') : lessonTitle}
-      isUnlocked={lessonApi.lesson?.isUnlocked ?? false}
       onTitleChange={handleLessonTitleChange}
-      onToggleLock={handleToggleLessonLock}
     />
   </Page.HeaderContent>
-  <Page.Action class="">
-    <div class="flex flex-wrap items-center justify-center gap-2">
+  <Page.Action class="w-full md:w-auto">
+    <div class="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end">
       {#if mode === MODES.view && $isCourseLearnerView}
         <ContentNavigationActions {lessonId} {courseId} showPrevNext={!showMobileBottomNav} />
       {/if}
@@ -595,7 +598,7 @@
           </IconButton>
         {/if}
 
-        {#if useBlockEditor && mode === MODES.edit}
+        {#if useBlockEditor}
           <IconButton
             onclick={() => (settingsOpen = true)}
             aria-label={$t('course.navItem.lessons.materials.blocks.settings.title')}
@@ -616,21 +619,24 @@
           <HistoryIcon size={20} />
         </IconButton>
 
-        <div class="hidden lg:inline-flex">
-          <RefreshPageData onRefresh={() => lessonApi.get(courseId, lessonId)} />
-        </div>
+        {#if mode === MODES.view}
+          <div class="hidden lg:inline-flex">
+            <RefreshPageData onRefresh={() => lessonApi.get(courseId, lessonId)} />
+          </div>
+        {/if}
       </RoleBasedSecurity>
 
       <LanguageSelector />
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <Tabs.Root
+          class="order-first w-full md:order-none md:w-auto"
           value={mode}
           onValueChange={(next) => {
             if (next !== mode) toggleMode();
           }}
         >
-          <Tabs.List aria-label={$t('course.navItem.lessons.header.mode_label')}>
+          <Tabs.List class="w-full md:w-fit" aria-label={$t('course.navItem.lessons.header.mode_label')}>
             <Tabs.Trigger value={MODES.edit} disabled={lessonApi.isSaving} data-testid="lesson-mode-edit">
               <Pencil />
               {$t('course.navItem.lessons.header.mode_edit')}
@@ -646,7 +652,7 @@
   </Page.Action>
 </Page.Header>
 
-<Page.Body class="mx-auto w-full max-w-full pb-0! md:max-w-3xl">
+<Page.Body class="mx-auto w-full max-w-[min(48rem,calc(100%-3rem))] pb-0!">
   {#snippet child()}
     <div class={`w-full overflow-x-hidden ${mode === MODES.edit ? 'ui:bg-muted' : 'mx-auto'}`}>
       {#if isLiveSessionLesson && mode === MODES.view && !($isCourseLearnerView && contentLockReason)}
@@ -840,7 +846,11 @@
 <UnsavedChanges bind:hasUnsavedChanges />
 
 {#if useBlockEditor}
-  <LessonSettingsSheet bind:open={settingsOpen} bind:hasUnsavedSessionChanges={sessionHasUnsavedChanges} />
+  <LessonSettingsSheet
+    bind:open={settingsOpen}
+    bind:hasUnsavedSessionChanges={sessionHasUnsavedChanges}
+    onOpenChange={handleSettingsOpenChange}
+  />
 {/if}
 
 {#if isVersionDrawerOpen}
