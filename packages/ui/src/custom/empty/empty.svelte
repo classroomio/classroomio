@@ -21,6 +21,21 @@
     compoundVariants: [{ variant: 'page', hasMedia: false, class: 'ui:h-full' }]
   });
 
+  const fullPageVariants = tv({
+    base: 'ui:relative ui:flex ui:flex-col ui:items-center ui:justify-center',
+    variants: {
+      hasMedia: {
+        false: 'ui:h-screen ui:w-screen',
+        true: 'ui:min-h-screen ui:w-full ui:py-6'
+      },
+      showLogo: {
+        true: '',
+        false: ''
+      }
+    },
+    compoundVariants: [{ hasMedia: true, showLogo: true, class: 'ui:pt-28' }]
+  });
+
   type EmptyVariant = VariantProps<typeof emptyVariants>['variant'];
 
   interface Props {
@@ -65,7 +80,10 @@
   <EmptyBase.Root {...mergedProps}>
     <EmptyBase.Header class="">
       {#if media}
-        <EmptyBase.Media variant="default" class="ui:mb-3 ui:w-full">
+        <EmptyBase.Media
+          variant="default"
+          class="ui:mb-3 ui:w-full ui:max-sm:hidden ui:[@media(max-height:639px)]:hidden"
+        >
           {@render media()}
         </EmptyBase.Media>
       {:else if IconComponent}
@@ -90,7 +108,7 @@
 {/snippet}
 
 {#if layout === 'full-page'}
-  <div class="ui:relative ui:flex ui:h-screen ui:w-screen ui:flex-col ui:items-center ui:justify-center">
+  <div class={fullPageVariants({ hasMedia: Boolean(media), showLogo })}>
     {#if showLogo}
       <SimpleLogoNav />
     {/if}

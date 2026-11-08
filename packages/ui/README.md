@@ -395,7 +395,7 @@ Three machines show features that are not shipped yet: the training line and eve
 
 `stillAt` defaults to `3.9` for `MachineBrokenTrack` and `3` for `MachineBlankLesson`, the frames where each drawing reads best.
 
-In an empty state, pass the machine through the `media` snippet of `Empty` (`@cio/ui/custom/empty`). With `media`, the `Empty` card grows to fit its content; without it, the card keeps its 360px height cap. Off a `--muted` card, set `--machine-face` to the page colour:
+In an empty state, pass the machine through the `media` snippet of `Empty` (`@cio/ui/custom/empty`). With `media`, the `Empty` card grows to fit its content, and a `full-page` layout scrolls rather than clipping, leaving room for the logo when `showLogo` is set. The media is hidden on phones (below the `sm` breakpoint, or shorter than 640px), so the message and actions fit without scrolling. Without `media`, the card keeps its 360px height cap. Off a `--muted` card, set `--machine-face` to the page colour:
 
 ```svelte
 <Empty title={...} description={...} variant="page" layout="full-page">
