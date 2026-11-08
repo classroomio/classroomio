@@ -4715,7 +4715,7 @@
       "confirm_body": {
         "archive": "They lose access and free up a seat on your plan. You can unarchive them at any time.",
         "unarchive": "They regain access and take a seat on your plan again.",
-        "delete": "This removes them from this organization and cannot be undone. Their account, submissions and results are kept."
+        "delete": "This removes them from this organization, its courses and its cohorts, and cannot be undone. Their account and submissions are kept; course completions and cohort goal progress are deleted."
       },
       "confirm_action": {
         "archive": "Archive",
@@ -5929,6 +5929,8 @@
     "course_removed": "Course removed",
     "empty_title": "No cohorts yet",
     "empty_description": "Create your first certification or compliance cohort.",
+    "no_access_title": "You don't have access to this cohort",
+    "no_access_description": "You may not be a member of this cohort, or your access may have been archived. Contact your organization's admin if you think this is a mistake.",
     "no_matching_cohorts": "No cohorts match your filters.",
     "status": {
       "active": "Active",

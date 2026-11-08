@@ -4,7 +4,7 @@ vi.mock('@cio/db/queries/cohort', () => ({
   addCohortMember: vi.fn(),
   getCohortById: vi.fn(),
   getCohortMemberByEmail: vi.fn(),
-  getCohortMemberByProfileId: vi.fn(),
+  findCohortMemberRowByProfileId: vi.fn(),
   getCoursesByCohort: vi.fn()
 }));
 vi.mock('@cio/db/queries/course', () => ({ getCourseGroupIds: vi.fn() }));
@@ -30,7 +30,7 @@ import {
   addCohortMember,
   getCohortById,
   getCohortMemberByEmail,
-  getCohortMemberByProfileId,
+  findCohortMemberRowByProfileId,
   getCoursesByCohort
 } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
@@ -85,15 +85,15 @@ describe('addCohortMembersSettled', () => {
   });
 
   it('checks by profileId, not email, when the entry resolves to a profile', async () => {
-    vi.mocked(getCohortMemberByProfileId).mockResolvedValue({ id: 'existing' } as Awaited<
-      ReturnType<typeof getCohortMemberByProfileId>
+    vi.mocked(findCohortMemberRowByProfileId).mockResolvedValue({ id: 'existing' } as Awaited<
+      ReturnType<typeof findCohortMemberRowByProfileId>
     >);
 
     const [result] = await addCohortMembersSettled(COHORT_ID, {
       members: [{ profileId: 'profile-1', roleId: 3 }]
     });
 
-    expect(getCohortMemberByProfileId).toHaveBeenCalledWith(COHORT_ID, 'profile-1');
+    expect(findCohortMemberRowByProfileId).toHaveBeenCalledWith(COHORT_ID, 'profile-1');
     expect(getCohortMemberByEmail).not.toHaveBeenCalled();
     expect(result).toMatchObject({
       status: 'rejected',
@@ -102,7 +102,7 @@ describe('addCohortMembersSettled', () => {
   });
 
   it('enrolls a tutor into the cohort courses that already exist', async () => {
-    vi.mocked(getCohortMemberByProfileId).mockResolvedValue(null);
+    vi.mocked(findCohortMemberRowByProfileId).mockResolvedValue(null);
     vi.mocked(getCoursesByCohort).mockResolvedValue([{ course: { id: 'course-1' } }] as Awaited<
       ReturnType<typeof getCoursesByCohort>
     >);
@@ -132,7 +132,7 @@ describe('addCohortMembersSettled', () => {
   });
 
   it('does not enroll an organization student who is only a cohort tutor', async () => {
-    vi.mocked(getCohortMemberByProfileId).mockResolvedValue(null);
+    vi.mocked(findCohortMemberRowByProfileId).mockResolvedValue(null);
     vi.mocked(getCoursesByCohort).mockResolvedValue([{ course: { id: 'course-1' } }] as Awaited<
       ReturnType<typeof getCoursesByCohort>
     >);

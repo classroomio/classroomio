@@ -893,7 +893,7 @@
       "confirm_body": {
         "archive": "Utracą dostęp i zwolnią miejsce w Twoim planie. Możesz usunąć ich z archiwum w dowolnym momencie.",
         "unarchive": "Użytkownicy odzyskują dostęp i ponownie zajmują miejsce w Twoim planie.",
-        "delete": "Spowoduje to usunięcie ich z tej organizacji i nie można tego cofnąć. Ich konta, przesłane materiały i wyniki zostaną zachowane."
+        "delete": "Spowoduje to usunięcie ich z tej organizacji, jej kursów i kohort i nie można tego cofnąć. Ich konta i przesłane materiały zostaną zachowane; ukończenia kursów i postępy w celach kohorty zostaną usunięte."
       },
       "confirm_title": {
         "archive": "Zarchiwizować {count} studentów?",
@@ -5937,6 +5937,8 @@
     "course_removed": "Kurs usunięty",
     "empty_title": "Nie ma jeszcze kohort",
     "empty_description": "Utwórz swoją pierwszą kohortę certyfikacyjną lub zgodności.",
+    "no_access_title": "Nie masz dostępu do tej kohorty",
+    "no_access_description": "Być może nie jesteś członkiem tej kohorty albo Twój dostęp został zarchiwizowany. Skontaktuj się z administratorem swojej organizacji, jeśli uważasz, że to pomyłka.",
     "settings": {
       "general": "Generał",
       "name_label": "Nazwa",

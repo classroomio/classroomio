@@ -344,6 +344,13 @@
       "when": 1794059018119,
       "tag": "0048_retire_deactivated_member_status",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1794167415335,
+      "tag": "0049_cohort_newsfeed_author_set_null",
+      "breakpoints": true
     }
   ]
 }

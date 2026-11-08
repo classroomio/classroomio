@@ -4699,7 +4699,7 @@
       "confirm_body": {
         "archive": "Perdono l'accesso e liberano un posto sul tuo piano. Puoi rimuoverli dall'archivio in qualsiasi momento.",
         "unarchive": "Riacquistano l'accesso e prendono nuovamente posto nel tuo piano.",
-        "delete": "L'operazione li rimuove da questa organizzazione e non può essere annullata. Il loro account, i contributi e i risultati vengono conservati."
+        "delete": "L'operazione li rimuove da questa organizzazione, dai suoi corsi e dalle sue coorti e non può essere annullata. Il loro account e i contributi vengono conservati; i completamenti dei corsi e i progressi negli obiettivi della coorte vengono eliminati."
       },
       "confirm_action": {
         "archive": "Archivio",
@@ -5915,6 +5915,8 @@
     "course_removed": "Corso rimosso",
     "empty_title": "Ancora nessuna coorte",
     "empty_description": "Crea il tuo primo gruppo di certificazione o conformità.",
+    "no_access_title": "Non hai accesso a questa coorte",
+    "no_access_description": "Potresti non essere membro di questa coorte, oppure il tuo accesso potrebbe essere stato archiviato. Contatta l'amministratore della tua organizzazione se pensi che si tratti di un errore.",
     "no_matching_cohorts": "Nessuna coorte corrisponde ai tuoi filtri.",
     "status": {
       "active": "Attivo",

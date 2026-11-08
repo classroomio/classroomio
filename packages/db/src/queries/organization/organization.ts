@@ -556,6 +556,7 @@ export const deleteOrganizationAudienceMember = async (orgId: string, memberId: 
 
       if (deleted.profileId) {
         await deleteGroupMembershipsForOrgProfiles(orgId, [deleted.profileId], tx);
+        await deleteCohortMembershipsForOrgProfiles(orgId, [deleted.profileId], tx);
       }
 
       return deleted;
@@ -591,6 +592,36 @@ export const deleteGroupMembershipsForOrgProfiles = async (
   } catch (error) {
     console.error('deleteGroupMembershipsForOrgProfiles error:', error);
     throw new Error('Failed to delete group memberships for organization profiles');
+  }
+};
+
+/** Scoped through `cohort.organization_id`, so other orgs are left alone. */
+export const deleteCohortMembershipsForOrgProfiles = async (
+  orgId: string,
+  profileIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<number> => {
+  if (profileIds.length === 0) {
+    return 0;
+  }
+
+  try {
+    const orgCohortIds = dbClient
+      .select({ id: schema.cohort.id })
+      .from(schema.cohort)
+      .where(eq(schema.cohort.organizationId, orgId));
+
+    const removed = await dbClient
+      .delete(schema.cohortMember)
+      .where(
+        and(inArray(schema.cohortMember.profileId, profileIds), inArray(schema.cohortMember.cohortId, orgCohortIds))
+      )
+      .returning({ id: schema.cohortMember.id });
+
+    return removed.length;
+  } catch (error) {
+    console.error('deleteCohortMembershipsForOrgProfiles error:', error);
+    throw new Error('Failed to delete cohort memberships for organization profiles');
   }
 };
 

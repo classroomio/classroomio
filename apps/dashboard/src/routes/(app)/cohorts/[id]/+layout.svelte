@@ -7,6 +7,8 @@
   import CohortHeader from '$features/cohort/components/cohort-header.svelte';
   import { cohortApi } from '$features/cohort/api';
   import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
+  import LockIcon from '@lucide/svelte/icons/lock';
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -43,7 +45,16 @@
   >
     <CohortHeader />
 
-    {#if !isCohortReady}
+    {#if cohortApi.accessDeniedCohortId === data.cohortId}
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
+        <Empty
+          title={$t('cohorts.no_access_title')}
+          description={$t('cohorts.no_access_description')}
+          icon={LockIcon}
+          variant="page"
+        />
+      </div>
+    {:else if !isCohortReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
         <Empty
           title="Loading cohort..."

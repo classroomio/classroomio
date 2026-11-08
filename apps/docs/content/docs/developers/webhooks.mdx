@@ -372,7 +372,7 @@ A member is added to a course, by an admin or by accepting an invite.
 
 #### `course.member.removed`
 
-A member is removed from a course. `progressAtRemoval` is the student's progress at that moment, so you can keep a record without calling back. It is `null` for staff. `reason` is `null` unless one was given.
+A member is removed from a course. Not sent when the membership goes because the person was deleted from the organization's audience; listen for `organization.member.removed` instead. `progressAtRemoval` is the student's progress at that moment, so you can keep a record without calling back. It is `null` for staff. `reason` is `null` unless one was given.
 
 ```json
 {
@@ -1126,7 +1126,7 @@ A person is added to a cohort.
 
 #### `cohort.member.removed`
 
-A person is removed from a cohort.
+A person is removed from a cohort. Not sent when the membership goes because the person was deleted from the organization's audience; listen for `organization.member.removed` instead.
 
 ```json
 {

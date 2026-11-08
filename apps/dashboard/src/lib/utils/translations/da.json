@@ -893,7 +893,7 @@
       "confirm_body": {
         "archive": "De mister adgang og frigør en plads på din plan. Du kan til enhver tid fjerne arkivering fra dem.",
         "unarchive": "De får adgang igen og tager plads på din plan.",
-        "delete": "Dette fjerner dem fra denne organisation og kan ikke fortrydes. Deres konto, afleveringer og resultater gemmes."
+        "delete": "Dette fjerner dem fra denne organisation, dens kurser og dens kohorter og kan ikke fortrydes. Deres konto og afleveringer gemmes; kursusgennemførelser og fremskridt mod kohortemål slettes."
       },
       "confirm_title": {
         "archive": "Arkivere {count} elever?",
@@ -5937,6 +5937,8 @@
     "course_removed": "Kursus fjernet",
     "empty_title": "Ingen kohorter endnu",
     "empty_description": "Opret din første certificerings- eller compliance-kohorte.",
+    "no_access_title": "Du har ikke adgang til denne kohorte",
+    "no_access_description": "Du er muligvis ikke medlem af denne kohorte, eller din adgang er blevet arkiveret. Kontakt din organisations administrator, hvis du mener, at det er en fejl.",
     "settings": {
       "general": "Generelt",
       "name_label": "Navn",

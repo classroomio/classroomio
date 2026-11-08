@@ -11,6 +11,7 @@ import {
   type TCohortPeopleSortOrder
 } from '@cio/utils/validation/cohort';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { notArchivedInCohortOrgSql } from './access';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -214,7 +215,13 @@ export async function getCohortsByOrgForProfile(
       .select({ cohortId: schema.cohortMember.cohortId })
       .from(schema.cohortMember)
       .innerJoin(schema.cohort, eq(schema.cohortMember.cohortId, schema.cohort.id))
-      .where(and(eq(schema.cohortMember.profileId, profileId), eq(schema.cohort.organizationId, organizationId)));
+      .where(
+        and(
+          eq(schema.cohortMember.profileId, profileId),
+          eq(schema.cohort.organizationId, organizationId),
+          notArchivedInCohortOrgSql
+        )
+      );
 
     const cohortIds = memberRows.map((r) => r.cohortId);
     if (cohortIds.length === 0) return [];
@@ -256,7 +263,7 @@ export async function countCohortsByOrgForProfile(
           .select({ count: count(schema.cohort.id) })
           .from(schema.cohort)
           .innerJoin(schema.cohortMember, eq(schema.cohortMember.cohortId, schema.cohort.id))
-          .where(and(conditions, eq(schema.cohortMember.profileId, profileId)));
+          .where(and(conditions, eq(schema.cohortMember.profileId, profileId), notArchivedInCohortOrgSql));
 
     return Number(countRow?.count ?? 0);
   } catch (error) {
@@ -327,6 +334,7 @@ export async function searchLmsCohorts(
           eq(schema.cohortMember.profileId, profileId),
           eq(schema.cohort.organizationId, orgId),
           eq(schema.cohort.status, 'ACTIVE'),
+          notArchivedInCohortOrgSql,
           or(ilike(schema.cohort.name, searchValue), ilike(schema.cohort.description, searchValue))
         )
       )
@@ -416,7 +424,33 @@ export async function getCohortMemberById(
   }
 }
 
+/** Access lookup: returns null for a student archived in the cohort's organization. */
 export async function getCohortMemberByProfileId(cohortId: string, profileId: string): Promise<TCohortMember | null> {
+  try {
+    const [row] = await db
+      .select({ member: schema.cohortMember })
+      .from(schema.cohortMember)
+      .innerJoin(schema.cohort, eq(schema.cohort.id, schema.cohortMember.cohortId))
+      .where(
+        and(
+          eq(schema.cohortMember.cohortId, cohortId),
+          eq(schema.cohortMember.profileId, profileId),
+          notArchivedInCohortOrgSql
+        )
+      )
+      .limit(1);
+    return row?.member ?? null;
+  } catch (error) {
+    console.error('getCohortMemberByProfileId error:', error);
+    throw new Error(`Failed to get cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Any cohort row for this profile, archived or not. Use for duplicate checks, never for access. */
+export async function findCohortMemberRowByProfileId(
+  cohortId: string,
+  profileId: string
+): Promise<TCohortMember | null> {
   try {
     const [member] = await db
       .select()
@@ -425,7 +459,7 @@ export async function getCohortMemberByProfileId(cohortId: string, profileId: st
       .limit(1);
     return member || null;
   } catch (error) {
-    console.error('getCohortMemberByProfileId error:', error);
+    console.error('findCohortMemberRowByProfileId error:', error);
     throw new Error(`Failed to get cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -826,7 +860,7 @@ export async function getEnrolledCohortsByProfile(
       })
       .from(schema.cohortMember)
       .innerJoin(schema.cohort, eq(schema.cohortMember.cohortId, schema.cohort.id))
-      .where(eq(schema.cohortMember.profileId, profileId))
+      .where(and(eq(schema.cohortMember.profileId, profileId), notArchivedInCohortOrgSql))
       .orderBy(desc(schema.cohort.createdAt));
 
     return result.map((row) => ({

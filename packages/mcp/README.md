@@ -307,9 +307,9 @@ Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
-- Reads need the key creator to be a cohort member or an org admin.
+- Reads need the key creator to be a cohort member who is not archived in the organization, or an org admin.
 - Other writes, including invites, invite links, and goal evaluation, need the key creator to be a cohort tutor/admin or an org admin.
-- Posts, comments, and reactions are made as the key creator, so they also need the key creator to be a member of the cohort. A reaction only ever changes the key creator's own reaction.
+- Posts, comments, and reactions are made as the key creator, so they also need the key creator to be a member of the cohort who is not archived in the organization. A reaction only ever changes the key creator's own reaction.
 - A comment can also be deleted by its author.
 - `get_org_goals_overview` needs the key creator to be an org admin or tutor.
 - `list_my_enrolled_cohorts` and `list_my_cohort_goals` return the key creator's own data in the key's organization.
@@ -323,8 +323,8 @@ Audience and team tools act as the key creator:
 - Every audience and team tool needs the key creator to be an org admin, the same as the dashboard's Audience and Team settings pages.
 - `update_team_member` switches a member between admin and tutor with `roleId` (1 or 2). The key creator cannot change their own role, and the organization must keep at least one admin.
 - `update_audience_member` and `update_team_member` take `name`, `username`, `avatarUrl` and `locale` to change a joined member's profile, with the same rules as Settings → Profile, except that `avatarUrl` must be an http or https URL. A taken username is refused. The profile is shared, so a change shows in every organization that person belongs to, and the person is emailed which fields changed. Email and password stay with the person. On a member who has not accepted their invite yet, `update_audience_member` takes `email` to correct the address instead.
-- `remove_audience_member` and `remove_team_member` delete the organization membership; the person keeps their account. The key creator cannot remove themselves, and the organization must keep at least one admin.
-- `set_audience_status` calls `POST /public-api/v1/audience/bulk-status` to archive or unarchive up to 500 students by `memberIds` or `emails`, and needs `confirm: true`. Archived students lose course access and keep their progress; archiving also frees their plan seat. Unarchiving takes their seats back, and is refused with `UPGRADE_REQUIRED` when it would go over the plan's student limit. It returns one row per id or email: `changed`, `already_in_state` or `not_found`.
+- `remove_audience_member` and `remove_team_member` delete the organization membership; the person keeps their account. `remove_audience_member` also deletes the student's course and cohort memberships in the organization. The key creator cannot remove themselves, and the organization must keep at least one admin.
+- `set_audience_status` calls `POST /public-api/v1/audience/bulk-status` to archive or unarchive up to 500 students by `memberIds` or `emails`, and needs `confirm: true`. Archived students lose course and cohort access and keep their progress and cohort memberships; archiving also frees their plan seat. Unarchiving takes their seats back, and is refused with `UPGRADE_REQUIRED` when it would go over the plan's student limit. It returns one row per id or email: `changed`, `already_in_state` or `not_found`.
 - When a tool call fails in the API, the result has `isError: true` and its text is JSON with the API's `error`, `code` (for example `UPGRADE_REQUIRED`), `status` and, for a validation error, `field`.
 - `invite_team_members` sends the same invite emails as Settings → Teams. If an address belongs to a student, nothing is sent and `requiresConfirmation` is true; call again with those addresses in `confirmedStudentEmails` to promote them.
 - `get_team_invite_link` and `set_team_invite_link` manage the reusable admin or tutor join link (`roleId` 1 or 2). `set_team_invite_link` with `enabled: true` returns the active link, creating a new one if the role's link is off; `enabled: false` turns it off.
