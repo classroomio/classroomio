@@ -146,12 +146,19 @@ function parseChangedLines(diff, paths) {
   return changedLines;
 }
 
+class ReviewParseError extends Error {
+  constructor(message, rawOutput) {
+    super(message);
+    this.rawOutput = rawOutput ?? '';
+  }
+}
+
 function parseReview(textOutput) {
   const cleanOutput = textOutput.replace(/\u001b\[[0-9;]*m/g, '').trim();
   const match = cleanOutput.match(/\{[\s\S]*\}/);
 
   if (!match) {
-    throw new Error(`OpenCode returned no JSON: ${cleanOutput.slice(0, 1000)}`);
+    throw new ReviewParseError(`OpenCode returned no JSON: ${cleanOutput.slice(0, 1000)}`, cleanOutput);
   }
 
   const review = JSON.parse(match[0]);
@@ -164,10 +171,18 @@ function parseReview(textOutput) {
     !Array.isArray(review.findings) ||
     !Array.isArray(review.unverified_images)
   ) {
-    throw new Error('OpenCode returned an invalid score or findings list');
+    throw new ReviewParseError('OpenCode returned an invalid score or findings list', cleanOutput);
   }
 
   return review;
+}
+
+/**
+ * Derives the reviewer agent's step budget from the number of changed files,
+ * so large PRs are not rationed mid-review by the default 30-step limit.
+ */
+function stepBudgetFor(changedFileCount) {
+  return Math.min(150, 30 + Math.ceil(changedFileCount / 10) * 10);
 }
 
 function isDocumentationPath(path) {
@@ -240,7 +255,7 @@ function formatScore(review) {
   return { score, body: `${marker}\n${status} **Documentation fact check: ${score}/5**\n\n${summary}` };
 }
 
-function runOpenCode(worktree, prompt) {
+function runOpenCode(worktree, prompt, stepBudget) {
   const { GITHUB_TOKEN, GH_TOKEN, ...safeEnvironment } = process.env;
   const configuration = {
     $schema: 'https://opencode.ai/config.json',
@@ -248,7 +263,7 @@ function runOpenCode(worktree, prompt) {
       'docs-review': {
         description: 'Fact checks PR changes against hand-written documentation',
         mode: 'primary',
-        steps: 30,
+        steps: stepBudget,
         permissions: [
           { action: '*', resource: '*', effect: 'deny' },
           { action: 'external_directory', resource: `${worktree}/*`, effect: 'allow' },
@@ -274,7 +289,7 @@ function runOpenCode(worktree, prompt) {
       cwd: worktree,
       encoding: 'utf8',
       maxBuffer: 12 * 1024 * 1024,
-      timeout: 20 * 60 * 1000,
+      timeout: 25 * 60 * 1000,
       env: {
         ...safeEnvironment,
         PWD: worktree,
@@ -317,13 +332,39 @@ async function getReplyContext(pullRequest) {
   return { root, thread, comment };
 }
 
-async function main() {
-  const pullRequestNumber = event.pull_request?.number ?? event.number;
-  const pullRequest = await githubRequest(`/pulls/${pullRequestNumber}`);
-  const replyContext = await getReplyContext(pullRequest);
+/**
+ * Renders an error as a truncated, code-fence-safe message for a PR comment.
+ */
+function describeError(error) {
+  const message = String(error?.message ?? error).replace(/```/g, "''").trim();
+  const messageLength = 3000;
 
-  if (replyContext === false) return;
+  return message.length > messageLength ? `${message.slice(0, messageLength)}…` : message;
+}
 
+/**
+ * Posts the error to the PR (in the re-review thread when one exists) so a
+ * tooling failure surfaces as a comment instead of only a failed job.
+ */
+async function postFailureNotice(pullRequest, replyContext, error) {
+  const body = `${marker}\n⚠️ **Documentation fact check could not complete**\n\nThe review job hit an error, so no fact-check result was produced. Push an update to try again.\n\n\`\`\`\n${describeError(error)}\n\`\`\``;
+
+  if (replyContext) {
+    await githubRequest(`/pulls/${pullRequest.number}/comments/${replyContext.root.id}/replies`, {
+      method: 'POST',
+      body: JSON.stringify({ body })
+    });
+
+    return;
+  }
+
+  await githubRequest(`/pulls/${pullRequest.number}/issues/comments`, {
+    method: 'POST',
+    body: JSON.stringify({ body })
+  });
+}
+
+async function reviewPullRequest(pullRequest, replyContext) {
   gitFetch(pullRequest.base.sha);
   gitFetch(`refs/pull/${pullRequest.number}/head`);
   const headSha = git('rev-parse', 'FETCH_HEAD').trim();
@@ -352,7 +393,18 @@ async function main() {
     const conversation = replyContext
       ? `\nRe-review requested in this existing review thread. Address the latest reply in a short \"reply\" field in your JSON. Thread: ${JSON.stringify(replyContext.thread.map((entry) => ({ author: entry.user.login, body: entry.body })))}\n`
       : '';
-    const review = runOpenCode(worktree, `${instructions}${conversation}`);
+    const prompt = `${instructions}${conversation}`;
+    const stepBudget = stepBudgetFor(paths.length);
+    let review;
+
+    try {
+      review = runOpenCode(worktree, prompt, stepBudget);
+    } catch (error) {
+      if (!(error instanceof ReviewParseError)) throw error;
+
+      review = runOpenCode(worktree, prompt, stepBudget);
+    }
+
     const findings = review.findings.filter(
       (finding) =>
         isDocumentationPath(finding.doc_path) &&
@@ -438,6 +490,21 @@ async function main() {
     } else {
       rmSync(worktree, { recursive: true, force: true });
     }
+  }
+}
+
+async function main() {
+  const pullRequestNumber = event.pull_request?.number ?? event.number;
+  const pullRequest = await githubRequest(`/pulls/${pullRequestNumber}`);
+  const replyContext = await getReplyContext(pullRequest);
+
+  if (replyContext === false) return;
+
+  try {
+    await reviewPullRequest(pullRequest, replyContext);
+  } catch (error) {
+    console.error('Docs fact check error:', error);
+    await postFailureNotice(pullRequest, replyContext, error);
   }
 }
 
