@@ -873,8 +873,8 @@ export async function lockOrganizationForStudentCapacity(orgId: string, dbClient
 }
 
 /**
- * Student memberships that occupy a plan seat. `ARCHIVED` is excluded and
- * `DEACTIVATED` is not: archiving reclaims a seat, deactivating keeps one.
+ * Student memberships that occupy a plan seat. `ARCHIVED` is excluded, so
+ * archiving reclaims a seat.
  */
 export async function countActiveStudents(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
   try {

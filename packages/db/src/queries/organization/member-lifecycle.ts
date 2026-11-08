@@ -8,6 +8,13 @@ import { type DbOrTxClient, db } from '@db/drizzle';
 export type OrganizationMemberStatus = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED';
 export type OrganizationMemberAuditEvent = 'DEACTIVATED' | 'REACTIVATED' | 'ARCHIVED' | 'UNARCHIVED' | 'REMOVED';
 
+/**
+ * Maps a stored status to the two the app exposes. The retired `DEACTIVATED` value reads as `ARCHIVED`: both mean no access.
+ */
+export function toAudienceMemberStatus(status: OrganizationMemberStatus): 'ACTIVE' | 'ARCHIVED' {
+  return status === 'ACTIVE' ? 'ACTIVE' : 'ARCHIVED';
+}
+
 export type BulkAudienceMemberRow = {
   id: number;
   profileId: string | null;

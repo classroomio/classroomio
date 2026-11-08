@@ -4669,7 +4669,6 @@
     "filter": {
       "status": "Member status",
       "status_active": "Active",
-      "status_deactivated": "Deactivated",
       "status_archived": "Archived",
       "last_login": "Last login",
       "last_activity": "Last activity",
@@ -4705,29 +4704,21 @@
       "clear": "Clear",
       "action": {
         "archive": "Archive {count} students",
-        "deactivate": "Deactivate {count} students",
-        "reactivate": "Reactivate {count} students",
         "unarchive": "Unarchive {count} students",
         "delete": "Delete {count} students"
       },
       "confirm_title": {
         "archive": "Archive {count} students?",
-        "deactivate": "Deactivate {count} students?",
-        "reactivate": "Reactivate {count} students?",
         "unarchive": "Unarchive {count} students?",
         "delete": "Permanently remove {count} students?"
       },
       "confirm_body": {
         "archive": "They lose access and free up a seat on your plan. You can unarchive them at any time.",
-        "deactivate": "They lose access but keep their seat on your plan. You can reactivate them at any time.",
-        "reactivate": "They regain access to your organization and its courses.",
         "unarchive": "They regain access and take a seat on your plan again.",
         "delete": "This removes them from this organization and cannot be undone. Their account, submissions and results are kept."
       },
       "confirm_action": {
         "archive": "Archive",
-        "deactivate": "Deactivate",
-        "reactivate": "Reactivate",
         "unarchive": "Unarchive",
         "delete": "Delete permanently"
       },

@@ -4,7 +4,7 @@ import * as z from 'zod';
 const timestamp = z.string();
 const nullableTimestamp = z.string().nullable();
 
-const memberStatus = z.enum(['ACTIVE', 'DEACTIVATED', 'ARCHIVED']);
+const memberStatus = z.enum(['ACTIVE', 'ARCHIVED']);
 
 export const ZPublicApiAudienceMemberResponse = z.object({
   id: z.number(),
@@ -59,7 +59,7 @@ export const ZPublicApiCreateAudienceResponse = z.object({
 });
 
 export const ZPublicApiAudienceBulkStatusResponse = z.object({
-  action: z.enum(['deactivate', 'reactivate', 'archive', 'unarchive']),
+  action: z.enum(['archive', 'unarchive']),
   requested: z.number(),
   changed: z.number(),
   rows: z

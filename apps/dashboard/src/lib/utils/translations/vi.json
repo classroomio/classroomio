@@ -887,29 +887,21 @@
       "undo_success": "Đã khôi phục",
       "confirm_action": {
         "archive": "Lưu trữ",
-        "deactivate": "Vô hiệu hóa",
-        "reactivate": "Kích hoạt lại",
         "unarchive": "Bỏ lưu trữ",
         "delete": "Xóa vĩnh viễn"
       },
       "confirm_body": {
         "archive": "Họ mất quyền truy cập và giải phóng một chỗ ngồi trong gói của bạn. Bạn có thể bỏ lưu trữ họ bất cứ lúc nào.",
-        "deactivate": "Họ mất quyền truy cập nhưng vẫn giữ chỗ ngồi trong gói của bạn. Bạn có thể kích hoạt lại họ bất cứ lúc nào.",
-        "reactivate": "Họ lấy lại quyền truy cập vào tổ chức và các khóa học của bạn.",
         "unarchive": "Họ lấy lại quyền truy cập và tham gia lại chương trình của bạn.",
         "delete": "Thao tác này sẽ xóa họ khỏi tổ chức và không thể hoàn tác. Tài khoản, bài nộp và kết quả của họ vẫn được giữ nguyên."
       },
       "confirm_title": {
         "archive": "Lưu trữ {count} học sinh?",
-        "deactivate": "Vô hiệu hóa {count} học sinh?",
-        "reactivate": "Kích hoạt lại {count} học sinh?",
         "unarchive": "Bỏ lưu trữ {count} học sinh?",
         "delete": "Xóa vĩnh viễn {count} học sinh?"
       },
       "action": {
         "archive": "Lưu trữ {count} học sinh",
-        "deactivate": "Vô hiệu hóa {count} học sinh",
-        "reactivate": "Kích hoạt lại {count} học sinh",
         "unarchive": "Bỏ lưu trữ {count} học sinh",
         "delete": "Xóa {count} học sinh"
       },
@@ -925,7 +917,6 @@
     "filter": {
       "status": "Trạng thái thành viên",
       "status_active": "Hoạt động",
-      "status_deactivated": "Đã hủy kích hoạt",
       "status_archived": "Đã lưu trữ",
       "last_login": "Lần đăng nhập cuối",
       "last_activity": "Hoạt động gần nhất",

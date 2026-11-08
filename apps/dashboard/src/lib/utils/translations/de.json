@@ -887,29 +887,21 @@
       "undo_success": "Zurückgesetzt",
       "confirm_action": {
         "archive": "Archivieren",
-        "deactivate": "Deaktivieren",
-        "reactivate": "Reaktivieren",
         "unarchive": "Entarchivieren",
         "delete": "Endgültig löschen"
       },
       "confirm_body": {
         "archive": "Sie verlieren dadurch ihren Zugriff und geben einen Platz in Ihrem Abonnement frei. Sie können sie jederzeit wiederherstellen.",
-        "deactivate": "Sie verlieren zwar den Zugriff, behalten aber ihren Platz in Ihrem Plan. Sie können ihn jederzeit reaktivieren.",
-        "reactivate": "Sie erhalten wieder Zugang zu Ihrer Organisation und deren Kursen.",
         "unarchive": "Sie erhalten wieder Zugriff und nehmen wieder an Ihrem Plan teil.",
         "delete": "Dies führt zum Ausschluss aus dieser Organisation und kann nicht rückgängig gemacht werden. Ihr Konto, ihre Beiträge und Ergebnisse bleiben erhalten."
       },
       "confirm_title": {
         "archive": "{count} Studierende archivieren?",
-        "deactivate": "{count} Studierende deaktivieren?",
-        "reactivate": "{count} Studierende reaktivieren?",
         "unarchive": "{count} Studierende aus dem Archiv entfernen?",
         "delete": "{count} Studierende dauerhaft entfernen?"
       },
       "action": {
         "archive": "{count} Studierende archivieren",
-        "deactivate": "{count} Studierende deaktivieren",
-        "reactivate": "{count} Studierende reaktivieren",
         "unarchive": "{count} Studierende aus dem Archiv entfernen",
         "delete": "{count} Studierende löschen"
       },
@@ -925,7 +917,6 @@
     "filter": {
       "status": "Mitgliedsstatus",
       "status_active": "Aktiv",
-      "status_deactivated": "Deaktiviert",
       "status_archived": "Archiviert",
       "last_login": "Letzter Login",
       "last_activity": "Letzte Aktivität",

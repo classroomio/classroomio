@@ -58,7 +58,7 @@ describe('bulkUpdateAudienceStatusService', () => {
     );
 
     const result = await bulkUpdateAudienceStatusService(ORG_ID, ACTOR_ID, {
-      action: 'deactivate',
+      action: 'archive',
       memberIds: [1, 2, 3],
       reason: 'Missed payment',
       confirm: true
@@ -66,11 +66,11 @@ describe('bulkUpdateAudienceStatusService', () => {
 
     expect(applyBulkAudienceAction).toHaveBeenCalledWith(
       ORG_ID,
-      { target: { mode: 'ids', memberIds: [1, 2, 3] }, action: 'deactivate', reason: 'Missed payment' },
+      { target: { mode: 'ids', memberIds: [1, 2, 3] }, action: 'archive', reason: 'Missed payment' },
       ACTOR_ID
     );
     expect(result).toEqual({
-      action: 'deactivate',
+      action: 'archive',
       requested: 3,
       changed: 1,
       rows: [
@@ -87,14 +87,14 @@ describe('bulkUpdateAudienceStatusService', () => {
     ]);
 
     const result = await bulkUpdateAudienceStatusService(ORG_ID, ACTOR_ID, {
-      action: 'reactivate',
+      action: 'unarchive',
       emails: ['Invite@Example.com', 'account@example.com', 'gone@example.com'],
       confirm: true
     });
 
     expect(applyBulkAudienceAction).toHaveBeenCalledWith(
       ORG_ID,
-      { target: { mode: 'ids', memberIds: [5] }, action: 'reactivate', reason: undefined },
+      { target: { mode: 'ids', memberIds: [5] }, action: 'unarchive', reason: undefined },
       ACTOR_ID
     );
     expect(result.rows).toEqual([
@@ -145,7 +145,7 @@ describe('bulkUpdateAudienceStatusService', () => {
     );
 
     const result = await bulkUpdateAudienceStatusService(ORG_ID, ACTOR_ID, {
-      action: 'deactivate',
+      action: 'archive',
       memberIds: [9],
       confirm: true
     });
@@ -155,7 +155,7 @@ describe('bulkUpdateAudienceStatusService', () => {
 
   it('does not hand back the dashboard undo token', async () => {
     const result = await bulkUpdateAudienceStatusService(ORG_ID, ACTOR_ID, {
-      action: 'deactivate',
+      action: 'archive',
       memberIds: [1],
       confirm: true
     });
@@ -167,14 +167,14 @@ describe('bulkUpdateAudienceStatusService', () => {
     vi.mocked(getOrganizationMemberRoleId).mockResolvedValue(ROLE.TUTOR);
 
     await expect(
-      bulkUpdateAudienceStatusService(ORG_ID, ACTOR_ID, { action: 'deactivate', memberIds: [1], confirm: true })
+      bulkUpdateAudienceStatusService(ORG_ID, ACTOR_ID, { action: 'archive', memberIds: [1], confirm: true })
     ).rejects.toMatchObject({ statusCode: 403, code: ErrorCodes.ORG_TEAM_NOT_AUTHORIZED });
     expect(applyBulkAudienceAction).not.toHaveBeenCalled();
   });
 
   it('refuses a key with no creator with 401', async () => {
     await expect(
-      bulkUpdateAudienceStatusService(ORG_ID, null, { action: 'deactivate', memberIds: [1], confirm: true })
+      bulkUpdateAudienceStatusService(ORG_ID, null, { action: 'archive', memberIds: [1], confirm: true })
     ).rejects.toMatchObject({ statusCode: 401 });
     expect(applyBulkAudienceAction).not.toHaveBeenCalled();
   });

@@ -900,7 +900,7 @@ A person joins the organization, by accepting an invite, signing up to an open a
 }
 ```
 
-`memberId` is the organization membership id. `status` is `ACTIVE`, `DEACTIVATED` or `ARCHIVED`. `member` is the person.
+`memberId` is the organization membership id. `status` is `ACTIVE` or `ARCHIVED`. `DEACTIVATED` was retired and is no longer sent. Redeliveries of older events may still carry it. `member` is the person.
 
 
 #### `organization.member.removed`
@@ -945,7 +945,7 @@ A person's role or status changes.
   "profileId": "000000b1-0000-4000-8000-0000000000b1",
   "email": "tutor@example.com",
   "roleId": 2,
-  "status": "ACTIVE",
+  "status": null,
   "actorProfileId": "000000b2-0000-4000-8000-0000000000b2",
   "changes": {
     "roleId": {
@@ -974,6 +974,10 @@ A person's role or status changes.
 ```
 
 `changes` lists each changed field with its `from` and `to` values, for example `roleId` or `status`.
+
+`status` is the membership status after the change: `ACTIVE` or `ARCHIVED`. It is `null` on role changes, so do not read `null` as a status change; `changes` says what changed.
+
+`DEACTIVATED` was retired. Members who were deactivated were archived by a database migration that sends no `organization.member.updated` events, so if you mirror membership status, resync your existing memberships once by listing every page of `GET /public-api/v1/audience?status=ARCHIVED` (up to 100 per page with `limit`, then `page`). Retries and redeliveries send the original payload, so an event recorded before the migration can still carry `DEACTIVATED`: read it as `ARCHIVED` (it can also appear in `changes.status`), and do not let it overwrite a newer status.
 
 
 ### Courses

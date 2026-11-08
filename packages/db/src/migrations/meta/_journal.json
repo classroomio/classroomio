@@ -337,6 +337,13 @@
       "when": 1793923822027,
       "tag": "0047_student_home_course_content_perf_audience_bulk_status",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1794059018119,
+      "tag": "0048_retire_deactivated_member_status",
+      "breakpoints": true
     }
   ]
 }

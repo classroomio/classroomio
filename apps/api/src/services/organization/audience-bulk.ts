@@ -40,11 +40,7 @@ export type BulkAudienceActionResult =
   | { mode: 'queued'; jobId: string; requested: number };
 
 /** The inverse each reversible action undoes to. `delete` has none. */
-const UNDO_STATUS: Record<
-  Exclude<TAudienceBulkAction, 'delete' | 'reactivate' | 'unarchive'>,
-  OrganizationMemberStatus
-> = {
-  deactivate: 'ACTIVE',
+const UNDO_STATUS: Record<Exclude<TAudienceBulkAction, 'delete' | 'unarchive'>, OrganizationMemberStatus> = {
   archive: 'ACTIVE'
 };
 
@@ -180,7 +176,7 @@ function toCompletedResult(
   action: TAudienceBulkAction,
   outcome: BulkApplyOutcome
 ): Extract<BulkAudienceActionResult, { mode: 'completed' }> {
-  const undoStatus = action === 'deactivate' || action === 'archive' ? UNDO_STATUS[action] : undefined;
+  const undoStatus = action === 'archive' ? UNDO_STATUS[action] : undefined;
 
   // Over the ids that changed, never the filter — the action moved who matches.
   const undoToken =
@@ -330,7 +326,7 @@ export async function undoBulkAudienceAction(
           memberId: member.id,
           profileId: member.profileId,
           targetEmail: member.email,
-          eventType: record.status === 'ACTIVE' ? ('REACTIVATED' as const) : ('DEACTIVATED' as const),
+          eventType: 'UNARCHIVED' as const,
           actorProfileId,
           reason: 'Undo'
         })),
