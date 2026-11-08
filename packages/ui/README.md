@@ -375,9 +375,9 @@ See `Molecules/ComboButton` in Storybook.
 
 ### Machines (`src/custom/animation/machines/`)
 
-Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). The animation is SVG SMIL, so it needs no JavaScript to run. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
+Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). Two more illustrate product states: `MachineBrokenTrack` (a block tips over a gap it cannot cross) for error pages, and `MachineBlankLesson` (a blank lesson page whose title starts being written) for an empty lesson. The animation is SVG SMIL, so it needs no JavaScript to run. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
 
-The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the drawings is placeholder copy (brand and domain names are placeholders). Use it for ClassroomIO-branded surfaces only, not org sites.
+The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the drawings is placeholder copy (brand and domain names are placeholders). Use the marketing machines for ClassroomIO-branded surfaces only, not org sites. The two state machines carry no brand text and take the accent from `--primary`, so they are safe on org sites too. `MachineBlankLesson` draws a `LESSON` caption; pass `heading` with translated text.
 
 | Prop      | Type     | Default     | Description                                              |
 | --------- | -------- | ----------- | -------------------------------------------------------- |
@@ -392,6 +392,20 @@ The accent comes from `--primary` and the surface from `--muted`. Place a machin
 ```
 
 Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag by default; pass `price` (e.g. `price="35/mo"`) to show the real plan price.
+
+`stillAt` defaults to `3.9` for `MachineBrokenTrack` and `3` for `MachineBlankLesson`, the frames where each drawing reads best.
+
+In an empty state, pass the machine through the `media` snippet of `Empty` (`@cio/ui/custom/empty`). With `media`, the `Empty` card grows to fit its content; without it, the card keeps its 360px height cap. Off a `--muted` card, set `--machine-face` to the page colour:
+
+```svelte
+<Empty title={...} description={...} variant="page" layout="full-page">
+  {#snippet media()}
+    <div class="mx-auto h-52 w-full max-w-[340px]" style:--machine-face="var(--background)">
+      <MachineBrokenTrack />
+    </div>
+  {/snippet}
+</Empty>
+```
 
 ### Loaders (`src/custom/block-loader/`, `src/custom/compact-loader/`)
 

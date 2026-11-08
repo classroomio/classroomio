@@ -10,6 +10,8 @@
   import * as Empty from '@cio/ui/base/empty';
   import * as Avatar from '@cio/ui/base/avatar';
   import { Button } from '@cio/ui/base/button';
+  import { Empty as EmptyState } from '@cio/ui/custom/empty';
+  import { MachineBlankLesson, MachineBrokenTrack } from '@cio/ui/custom/animation';
 
   import { FIELDS } from './fields';
 
@@ -142,5 +144,64 @@
         </Button>
       </Empty.Content>
     </Empty.Root>
+  {/snippet}
+</Story>
+
+<Story name="Page with machine">
+  {#snippet template()}
+    <div class="flex h-[640px] w-[720px] flex-col items-center justify-center">
+      <EmptyState
+        title="This page failed to load"
+        description="It isn't your fault, it is ours. We have been notified and will push a fix soon."
+        variant="page"
+      >
+        {#snippet media()}
+          <div class="mx-auto h-52 w-full max-w-[340px]" style:--machine-face="var(--background)">
+            <MachineBrokenTrack />
+          </div>
+        {/snippet}
+        <div class="flex gap-2">
+          <Button variant="secondary">Explore our changelog</Button>
+          <Button>Go home</Button>
+        </div>
+      </EmptyState>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Block with machine">
+  {#snippet template()}
+    <div class="w-[560px]">
+      <EmptyState
+        title="This lesson is empty"
+        description="Add a note, video or slides to start building it."
+        class="border border-dashed"
+      >
+        {#snippet media()}
+          <div class="mx-auto h-52 w-full max-w-[340px]" style:--machine-face="var(--background)">
+            <MachineBlankLesson />
+          </div>
+        {/snippet}
+        <Button>
+          <PlusIcon />
+          Add content
+        </Button>
+      </EmptyState>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Page with icon (height cap)">
+  {#snippet template()}
+    <div class="flex h-[640px] w-[720px] flex-col items-center justify-center">
+      <EmptyState
+        title="Page not found"
+        description="The page you're looking for doesn't exist or you don't have permission to view it."
+        icon={FolderCodeIcon}
+        variant="page"
+      >
+        <Button>Go home</Button>
+      </EmptyState>
+    </div>
   {/snippet}
 </Story>

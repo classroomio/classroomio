@@ -7,13 +7,18 @@
   import { cn } from '../../tools';
 
   const emptyVariants = tv({
-    base: 'ui:w-full ui:max-h-90',
+    base: 'ui:w-full',
     variants: {
       variant: {
         default: '',
-        page: 'ui:h-full ui:border ui:border-dashed ui:max-w-3xl ui:mx-auto'
+        page: 'ui:border ui:border-dashed ui:max-w-3xl ui:mx-auto'
+      },
+      hasMedia: {
+        false: 'ui:max-h-90',
+        true: 'ui:flex-none'
       }
-    }
+    },
+    compoundVariants: [{ variant: 'page', hasMedia: false, class: 'ui:h-full' }]
   });
 
   type EmptyVariant = VariantProps<typeof emptyVariants>['variant'];
@@ -23,6 +28,7 @@
     description?: string;
     icon?: Component<any, any, any>;
     iconClass?: string;
+    media?: Snippet;
     class?: string;
     children?: Snippet;
     variant?: EmptyVariant;
@@ -36,6 +42,7 @@
     description,
     icon: IconComponent,
     iconClass = '',
+    media,
     class: className = '',
     children,
     variant = 'default',
@@ -46,7 +53,7 @@
   }: Props & Omit<ComponentProps<typeof EmptyBase.Root>, 'class' | 'children'> = $props();
 
   const mergedProps = $derived({
-    class: cn(emptyVariants({ variant }), className),
+    class: cn(emptyVariants({ variant, hasMedia: Boolean(media) }), className),
     'data-slot': 'empty',
     'data-variant': variant,
     animatedBackground,
@@ -57,7 +64,11 @@
 {#snippet content()}
   <EmptyBase.Root {...mergedProps}>
     <EmptyBase.Header class="">
-      {#if IconComponent}
+      {#if media}
+        <EmptyBase.Media variant="default" class="ui:mb-3 ui:w-full">
+          {@render media()}
+        </EmptyBase.Media>
+      {:else if IconComponent}
         <EmptyBase.Media variant="icon">
           {@const Icon = IconComponent}
           <Icon class={iconClass} />
