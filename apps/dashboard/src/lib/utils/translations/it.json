@@ -3692,8 +3692,14 @@
           "cancel_btn": "Annulla",
           "edit": "Modificare",
           "delete": "Eliminare",
-          "load_more_btn": "Carica di più",
-          "comment_error": "Impossibile pubblicare il commento. Per favore riprova."
+          "comment_error": "Impossibile pubblicare il commento. Per favore riprova.",
+          "save_btn": "Salva",
+          "unknown_user": "Sconosciuto",
+          "actions": "Azioni di commento",
+          "read_more": "Leggi di più",
+          "show_less": "Mostra meno",
+          "see_all": "Vedi tutti i commenti ({count})",
+          "show_more": "Mostra più commenti"
         },
         "version_history": {
           "title": "Cronologia delle versioni",

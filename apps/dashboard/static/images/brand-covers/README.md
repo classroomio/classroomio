@@ -4,7 +4,7 @@ On-brand 16:9 cover images (1600 × 900 WebP), drawn from the ClassroomIO logo's
 
 | File | Look | Branding | Text in the image |
 | --- | --- | --- | --- |
-| `oversized-mark.webp` | Logo enlarged and cropped off the right edge on solid brand blue | Wordmark + `classroomio.com` | Brand name and URL |
+| `oversized-mark.webp` | Logo enlarged and cropped off the right edge on solid brand blue, with a light blue circle | Wordmark + `classroomio.com` | Brand name and URL |
 | `shape-tiles.webp` | The logo shapes as a tiled pattern in brand blues, wordmark on a white card | Wordmark | Brand name |
 | `blueprint.webp` | Logo mark centred on a light drafting grid with crop marks | Logo mark only | `16:9`, `1600 × 900` |
 

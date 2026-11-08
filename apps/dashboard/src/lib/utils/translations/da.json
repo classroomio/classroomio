@@ -1817,10 +1817,16 @@
           "placeholder": "Hvad synes du om denne lektion?",
           "comment_btn": "Kommentar",
           "cancel_btn": "Annuller",
-          "load_more_btn": "Indlæs mere",
           "comment_error": "Kunne ikke skrive kommentar. Prøv venligst igen.",
           "edit": "Rediger",
-          "delete": "Slet"
+          "delete": "Slet",
+          "save_btn": "Gem",
+          "unknown_user": "Ukendt",
+          "actions": "Kommentarhandlinger",
+          "read_more": "Læs mere",
+          "show_less": "Vis mindre",
+          "see_all": "Se alle kommentarer ({count})",
+          "show_more": "Vis flere kommentarer"
         },
         "exercises": {
           "heading": "Alle øvelser",

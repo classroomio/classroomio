@@ -136,6 +136,28 @@ describe.skipIf(!hasDatabase)('lesson blocks', () => {
     expect(await removeLessonPlacement(ids.lessonB, attached.placementId)).toMatchObject({ blockDeleted: true });
   });
 
+  it('rejects a storage key that another organization owns', async () => {
+    const foreignKey = `${crypto.randomUUID()}/abc-lecture.mp4`;
+    const ownKey = `${ids.org}/abc-lecture.mp4`;
+
+    await expect(
+      createLessonBlock(ids.lessonA, { type: 'video', data: { type: 'upload', link: '', key: foreignKey } })
+    ).rejects.toMatchObject({ statusCode: 400, code: ErrorCodes.BLOCK_INVALID_DATA });
+
+    const own = await createLessonBlock(ids.lessonA, {
+      type: 'video',
+      data: { type: 'upload', link: '', key: ownKey }
+    });
+    await expect(
+      updateLessonBlock(ids.lessonA, own.id, {
+        data: { type: 'upload', link: '', key: foreignKey },
+        expectedVersion: own.version
+      })
+    ).rejects.toMatchObject({ statusCode: 400, code: ErrorCodes.BLOCK_INVALID_DATA });
+
+    await removeLessonPlacement(ids.lessonA, own.placementId);
+  });
+
   it('rejects a stale version instead of overwriting', async () => {
     const note = await createLessonBlock(ids.lessonA, { type: 'note', data: {}, content: '<p>v1</p>' });
 

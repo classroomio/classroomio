@@ -40,7 +40,7 @@
         'ui:relative ui:z-40 ui:rounded-full',
         open
           ? 'ui:border-primary ui:bg-primary ui:scale-110 ui:text-white'
-          : 'ui:border-border ui:bg-background ui:text-muted-foreground ui:hover:border-primary ui:hover:bg-primary ui:hover:text-primary-foreground ui:hover:scale-105'
+          : 'ui:border-border ui:bg-muted ui:text-muted-foreground ui:hover:border-primary ui:hover:bg-primary ui:hover:text-primary-foreground ui:hover:scale-105'
       )}
       aria-label={addLabel}
       aria-expanded={open}

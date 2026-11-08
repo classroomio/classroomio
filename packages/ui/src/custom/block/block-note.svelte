@@ -30,7 +30,7 @@
 {:else}
   <div class="ui:mx-auto ui:w-full ui:max-w-2xl">
     {#if empty}
-      <p class="ui:text-muted-foreground ui:text-sm italic">{emptyLabel}</p>
+      <p class="ui:text-sm ui:text-muted-foreground ui:italic">{emptyLabel}</p>
     {:else if view}
       {@render view()}
     {:else}

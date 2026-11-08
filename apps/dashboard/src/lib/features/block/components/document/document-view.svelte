@@ -8,8 +8,8 @@
 
 <Block.Document
   editable={false}
-  files={[toAttachmentFile(block.id, block.data)]}
-  labels={documentLabels(1)}
+  file={toAttachmentFile(block.id, block.data)}
+  labels={documentLabels()}
   onView={() => viewDocument(block.data)}
   onDownload={() => downloadDocument(block.data)}
 />

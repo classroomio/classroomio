@@ -9,6 +9,18 @@
 
   const labels = $derived.by((): SlideEmbedPickerLabels => {
     const prefix = 'course.navItem.lessons.materials.tabs.slide';
+    const platformEntries = SLIDE_PLATFORM_IDS.map((platformId: SlidePlatformId) => [
+      platformId,
+      {
+        hint: t.get(`${prefix}.platforms.${platformId}.hint`),
+        steps: [
+          t.get(`${prefix}.platforms.${platformId}.step_1`),
+          t.get(`${prefix}.platforms.${platformId}.step_2`),
+          t.get(`${prefix}.platforms.${platformId}.step_3`)
+        ]
+      }
+    ]);
+    const platforms = Object.fromEntries(platformEntries) as SlideEmbedPickerLabels['platforms'];
 
     return {
       searchPlaceholder: t.get(`${prefix}.add_slide.search`),
@@ -21,19 +33,7 @@
       embedReady: t.get(`${prefix}.add_slide.embed_ready`),
       invalidEmbed: t.get(`${prefix}.add_slide.invalid_embed`),
       unsupportedPlatform: t.get(`${prefix}.add_slide.unsupported`),
-      platforms: Object.fromEntries(
-        SLIDE_PLATFORM_IDS.map((platformId: SlidePlatformId) => [
-          platformId,
-          {
-            hint: t.get(`${prefix}.platforms.${platformId}.hint`),
-            steps: [
-              t.get(`${prefix}.platforms.${platformId}.step_1`),
-              t.get(`${prefix}.platforms.${platformId}.step_2`),
-              t.get(`${prefix}.platforms.${platformId}.step_3`)
-            ]
-          }
-        ])
-      ) as SlideEmbedPickerLabels['platforms']
+      platforms
     };
   });
 

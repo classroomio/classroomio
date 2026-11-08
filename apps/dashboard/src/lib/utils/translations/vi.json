@@ -1817,10 +1817,16 @@
           "placeholder": "Bạn nghĩ gì về bài học này?",
           "comment_btn": "Bình luận",
           "cancel_btn": "Hủy bỏ",
-          "load_more_btn": "Tải thêm",
           "comment_error": "Không thể gửi bình luận. Vui lòng thử lại.",
           "edit": "Chỉnh sửa",
-          "delete": "Xóa"
+          "delete": "Xóa",
+          "save_btn": "Lưu",
+          "unknown_user": "Không xác định",
+          "actions": "Hành động bình luận",
+          "read_more": "Đọc thêm",
+          "show_less": "Hiển thị ít hơn",
+          "see_all": "Xem tất cả nhận xét ({count})",
+          "show_more": "Hiển thị thêm bình luận"
         },
         "exercises": {
           "heading": "Tất cả các bài tập",

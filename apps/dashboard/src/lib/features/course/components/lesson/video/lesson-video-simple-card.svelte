@@ -100,7 +100,7 @@
   editable={isEditMode}
 >
   {#snippet actions()}
-    {#if !isExample}
+    {#if isEditMode && !isExample}
       <VideoCardDropdown
         {video}
         {onRemove}

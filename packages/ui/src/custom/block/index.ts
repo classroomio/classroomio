@@ -32,4 +32,11 @@ export {
   Video as VideoBlock
 };
 
-export type { BlockLoaderBlock, BlockLoaderTone, BlockShellMenuItem, ImageBlockFit, ImageBlockSettings } from './types';
+export type {
+  BlockDocumentLabels,
+  BlockLoaderBlock,
+  BlockLoaderTone,
+  BlockShellMenuItem,
+  ImageBlockFit,
+  ImageBlockSettings
+} from './types';

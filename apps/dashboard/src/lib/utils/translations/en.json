@@ -3697,8 +3697,14 @@
           "cancel_btn": "Cancel",
           "edit": "Edit",
           "delete": "Delete",
-          "load_more_btn": "Load more",
-          "comment_error": "Failed to post comment. Please try again."
+          "comment_error": "Failed to post comment. Please try again.",
+          "save_btn": "Save",
+          "unknown_user": "Unknown",
+          "actions": "Comment actions",
+          "read_more": "Read more",
+          "show_less": "Show less",
+          "see_all": "See all comments ({count})",
+          "show_more": "Show more comments"
         },
         "version_history": {
           "title": "Version history",

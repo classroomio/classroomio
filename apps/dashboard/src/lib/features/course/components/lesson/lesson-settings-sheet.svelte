@@ -4,6 +4,7 @@
   import { DensityControl, type DensityControlValue } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import LessonSettingsTab from './lesson-settings-tab.svelte';
+  import LanguageSelector from './language-selector.svelte';
   import { lessonApi } from '$features/course/api';
   import { lessonBlockList } from '$features/course/store/lesson-blocks.svelte';
   import type { LessonVideo } from './video/video-card-utils';
@@ -43,6 +44,10 @@
       <Sheet.Title>{$t('course.navItem.lessons.materials.blocks.settings.title')}</Sheet.Title>
       <Sheet.Description>{$t('course.navItem.lessons.materials.blocks.settings.description')}</Sheet.Description>
     </Sheet.Header>
+
+    <div class="border-b p-4">
+      <LanguageSelector />
+    </div>
 
     <LessonSettingsTab
       bind:hasUnsavedSessionChanges

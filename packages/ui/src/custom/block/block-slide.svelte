@@ -80,7 +80,7 @@
       {/if}
     </div>
     {#if editable}
-      <div class="ui:mt-3 ui:min-w-0 ui:px-3 ui:py-3">
+      <div class="ui:mt-3 ui:min-w-0 ui:px-3 ui:pt-3">
         <p
           class="ui:text-foreground ui:line-clamp-2 ui:min-w-0 ui:text-base ui:leading-snug ui:font-semibold ui:break-words"
         >

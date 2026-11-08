@@ -66,9 +66,8 @@ async function ensurePrimaryNoteBlockId(lessonId: string, client: DbOrTxClient):
     .insert(schema.block)
     .values({ organizationId: scope.organizationId, type: 'note', data: {} })
     .returning({ id: schema.block.id });
-  await client
-    .insert(schema.blockPlacement)
-    .values({ lessonId, blockId: block.id, position: positionBetween(last?.position ?? null, null) });
+  const position = positionBetween(last?.position ?? null, null);
+  await client.insert(schema.blockPlacement).values({ lessonId, blockId: block.id, position });
 
   return block.id;
 }

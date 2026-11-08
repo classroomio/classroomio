@@ -53,7 +53,6 @@
 
   import {
     ContentNavigationActions,
-    LanguageSelector,
     LessonPageEditHeader,
     Comments,
     Note,
@@ -290,6 +289,14 @@
   const hasLessonBlocks = $derived(lessonBlockList.blocks.length > 0);
   const usesBlockView = $derived(
     useBlockEditor && (!$isCourseLearnerView || hasLessonBlocks || !lessonBlockList.isReady)
+  );
+  const showBlockViewComments = $derived(
+    usesBlockView &&
+      mode === MODES.view &&
+      showLessonComments &&
+      !!lessonApi.lesson &&
+      lessonBlockList.isReady &&
+      !($isCourseLearnerView && (!isStudentLessonStateReady || contentLockReason))
   );
   const hasTranscript = $derived.by(() => {
     lessonVideoBus.transcriptSources;
@@ -564,97 +571,97 @@
   isSticky
   class="ui:top-12 ui:z-app-bar ui:my-0 ui:border-border ui:bg-background w-full border-b px-4 pt-4 pb-3 md:px-6 md:pt-5 md:pb-4"
 >
-  <Page.HeaderContent class="w-full min-w-0 md:flex-1">
-    <LessonPageEditHeader
-      {mode}
-      title={mode === MODES.edit ? (lessonApi.lesson?.title ?? '') : lessonTitle}
-      onTitleChange={handleLessonTitleChange}
-    />
-  </Page.HeaderContent>
-  <Page.Action class="w-full md:w-auto">
-    <div class="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end">
-      {#if mode === MODES.view && $isCourseLearnerView}
-        <ContentNavigationActions {lessonId} {courseId} showPrevNext={!showMobileBottomNav} />
-      {/if}
+  <div class="flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-3">
+    <Page.HeaderContent class="min-w-52 flex-1">
+      <LessonPageEditHeader
+        {mode}
+        title={mode === MODES.edit ? (lessonApi.lesson?.title ?? '') : lessonTitle}
+        onTitleChange={handleLessonTitleChange}
+      />
+    </Page.HeaderContent>
+    <Page.Action class="min-w-0">
+      <div class="flex flex-wrap items-center gap-2 md:justify-end">
+        {#if mode === MODES.view && $isCourseLearnerView}
+          <ContentNavigationActions {lessonId} {courseId} showPrevNext={!showMobileBottomNav} />
+        {/if}
 
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        {#if mode === MODES.edit}
-          <span class="ui:text-muted-foreground text-sm" aria-live="polite">
-            {#if lessonApi.isSaving}
-              {$t('course.navItem.lessons.saving')}
-            {:else if !lessonApi.isDirty}
-              {$t('course.navItem.lessons.saved')}
-            {/if}
-          </span>
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          {#if mode === MODES.edit}
+            <span class="ui:text-muted-foreground text-sm" aria-live="polite">
+              {#if lessonApi.isSaving}
+                {$t('course.navItem.lessons.saving')}
+              {:else if !lessonApi.isDirty}
+                {$t('course.navItem.lessons.saved')}
+              {/if}
+            </span>
+
+            <IconButton
+              onclick={toggleMode}
+              disabled={lessonApi.isSaving}
+              aria-label={$t('course.navItem.lessons.add_lesson.save')}
+              tooltip={$t('course.navItem.lessons.add_lesson.save')}
+              tooltipSide="bottom"
+            >
+              <Save size={20} />
+            </IconButton>
+          {/if}
+
+          {#if useBlockEditor}
+            <IconButton
+              onclick={() => (settingsOpen = true)}
+              aria-label={$t('course.navItem.lessons.materials.blocks.settings.title')}
+              tooltip={$t('course.navItem.lessons.materials.blocks.settings.title')}
+              tooltipSide="bottom"
+            >
+              <SettingsIcon size={20} />
+            </IconButton>
+          {/if}
 
           <IconButton
-            onclick={toggleMode}
-            disabled={lessonApi.isSaving}
-            aria-label={$t('course.navItem.lessons.add_lesson.save')}
-            tooltip={$t('course.navItem.lessons.add_lesson.save')}
+            class="inline-flex"
+            onclick={() => setHistoryQueryParam(true)}
+            aria-label={$t('course.navItem.lessons.version_history.title')}
+            tooltip={$t('course.navItem.lessons.version_history.title')}
             tooltipSide="bottom"
           >
-            <Save size={20} />
+            <HistoryIcon size={20} />
           </IconButton>
-        {/if}
 
-        {#if useBlockEditor}
-          <IconButton
-            onclick={() => (settingsOpen = true)}
-            aria-label={$t('course.navItem.lessons.materials.blocks.settings.title')}
-            tooltip={$t('course.navItem.lessons.materials.blocks.settings.title')}
-            tooltipSide="bottom"
+          {#if mode === MODES.view}
+            <div class="hidden lg:inline-flex">
+              <RefreshPageData onRefresh={() => lessonApi.get(courseId, lessonId)} />
+            </div>
+          {/if}
+        </RoleBasedSecurity>
+
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <Tabs.Root
+            class="order-first md:order-none"
+            value={mode}
+            onValueChange={(next) => {
+              if (next !== mode) toggleMode();
+            }}
           >
-            <SettingsIcon size={20} />
-          </IconButton>
-        {/if}
-
-        <IconButton
-          class="inline-flex"
-          onclick={() => setHistoryQueryParam(true)}
-          aria-label={$t('course.navItem.lessons.version_history.title')}
-          tooltip={$t('course.navItem.lessons.version_history.title')}
-          tooltipSide="bottom"
-        >
-          <HistoryIcon size={20} />
-        </IconButton>
-
-        {#if mode === MODES.view}
-          <div class="hidden lg:inline-flex">
-            <RefreshPageData onRefresh={() => lessonApi.get(courseId, lessonId)} />
-          </div>
-        {/if}
-      </RoleBasedSecurity>
-
-      <LanguageSelector />
-
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <Tabs.Root
-          class="order-first w-full md:order-none md:w-auto"
-          value={mode}
-          onValueChange={(next) => {
-            if (next !== mode) toggleMode();
-          }}
-        >
-          <Tabs.List class="w-full md:w-fit" aria-label={$t('course.navItem.lessons.header.mode_label')}>
-            <Tabs.Trigger value={MODES.edit} disabled={lessonApi.isSaving} data-testid="lesson-mode-edit">
-              <Pencil />
-              {$t('course.navItem.lessons.header.mode_edit')}
-            </Tabs.Trigger>
-            <Tabs.Trigger value={MODES.view} disabled={lessonApi.isSaving} data-testid="lesson-mode-preview">
-              <Eye />
-              {$t('course.navItem.lessons.header.mode_preview')}
-            </Tabs.Trigger>
-          </Tabs.List>
-        </Tabs.Root>
-      </RoleBasedSecurity>
-    </div>
-  </Page.Action>
+            <Tabs.List aria-label={$t('course.navItem.lessons.header.mode_label')}>
+              <Tabs.Trigger value={MODES.view} disabled={lessonApi.isSaving} data-testid="lesson-mode-preview">
+                <Eye />
+                {$t('course.navItem.lessons.header.mode_preview')}
+              </Tabs.Trigger>
+              <Tabs.Trigger value={MODES.edit} disabled={lessonApi.isSaving} data-testid="lesson-mode-edit">
+                <Pencil />
+                {$t('course.navItem.lessons.header.mode_edit')}
+              </Tabs.Trigger>
+            </Tabs.List>
+          </Tabs.Root>
+        </RoleBasedSecurity>
+      </div>
+    </Page.Action>
+  </div>
 </Page.Header>
 
-<Page.Body class="mx-auto w-full max-w-[min(48rem,calc(100%-3rem))] pb-0!">
+<Page.Body class="w-full gap-0 pb-0!">
   {#snippet child()}
-    <div class={`w-full overflow-x-hidden ${mode === MODES.edit ? 'ui:bg-muted' : 'mx-auto'}`}>
+    <div class="mx-auto w-full max-w-[min(48rem,calc(100%-3rem))] overflow-x-hidden">
       {#if isLiveSessionLesson && mode === MODES.view && !($isCourseLearnerView && contentLockReason)}
         <div class="mb-4">
           <LiveSessionCard
@@ -676,7 +683,11 @@
         {:else if $isCourseLearnerView && contentLockReason}
           <StudentContentLockedNotice reason={contentLockReason} contentType={ContentType.Lesson} />
         {:else if lessonApi.lesson && lessonBlockList.isReady}
-          <div class="min-h-screen pt-5 pb-20" in:fade={{ delay: 300 }} out:fade>
+          <div
+            class={['pt-5', showBlockViewComments ? 'pb-12' : 'min-h-screen pb-20']}
+            in:fade={{ delay: 300 }}
+            out:fade
+          >
             <LessonBlocks {mode} {courseId} {lessonId} learnerView={$isCourseLearnerView} />
 
             {#if mode === MODES.view}
@@ -687,12 +698,6 @@
                 showBottomSeparator={!showLessonComments}
                 onTranscript={openTranscriptPanel}
               />
-            {/if}
-
-            {#if mode === MODES.view && showLessonComments}
-              <hr class="my-2" />
-
-              <Comments {lessonId} />
             {/if}
           </div>
         {:else}
@@ -840,6 +845,14 @@
         </Empty>
       {/if}
     </div>
+
+    {#if showBlockViewComments}
+      <div class="ui:border-border border-t">
+        <div class="mx-auto w-full max-w-[min(48rem,calc(100%-3rem))]">
+          <Comments {lessonId} />
+        </div>
+      </div>
+    {/if}
   {/snippet}
 </Page.Body>
 

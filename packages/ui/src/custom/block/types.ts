@@ -23,3 +23,8 @@ export interface ImageBlockSettings {
   alt: string;
   fit: ImageBlockFit;
 }
+
+export interface BlockDocumentLabels {
+  view: string;
+  download: string;
+}

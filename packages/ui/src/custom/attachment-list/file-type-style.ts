@@ -9,7 +9,8 @@ const MIME_TO_EXTENSION: Record<string, string> = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx'
 };
 
-function resolveExtension(typeOrName: string): string {
+/** Lowercase extension for a MIME type or file name; empty when it cannot be resolved. */
+export function getFileExtension(typeOrName: string): string {
   const normalized = typeOrName.trim().toLowerCase();
 
   if (!normalized) return '';
@@ -28,7 +29,7 @@ function resolveExtension(typeOrName: string): string {
 }
 
 export function getFileTypeStyle(typeOrName: string): FileTypeStyle {
-  const extension = resolveExtension(typeOrName);
+  const extension = getFileExtension(typeOrName);
 
   switch (extension) {
     case 'pdf':

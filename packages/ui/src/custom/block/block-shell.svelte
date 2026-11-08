@@ -38,12 +38,13 @@
   data-block-item
   data-block-id={blockId}
   class={cn(
-    'ui:group/block ui:bg-card ui:relative ui:rounded-xl ui:px-3 ui:py-4 ui:transition-colors',
+    'ui:group/block ui:relative ui:rounded-xl ui:px-3 ui:transition-colors',
+    editable ? 'ui:bg-muted ui:pb-3' : 'ui:bg-card',
     highlighted && 'ui:bg-primary/5 ui:ring-primary/30 ui:ring-2'
   )}
 >
   {#if editable}
-    <div class="ui:flex ui:items-center ui:gap-2 ui:px-1 ui:pb-2">
+    <div class="ui:flex ui:items-center ui:gap-2 ui:px-1 ui:py-2">
       {#if draggable}
         <div
           use:dragHandle

@@ -1817,10 +1817,16 @@
           "placeholder": "Was denken Sie über diese Lektion?",
           "comment_btn": "Kommentar",
           "cancel_btn": "Abbrechen",
-          "load_more_btn": "Mehr laden",
           "comment_error": "Kommentar konnte nicht gepostet werden. Bitte versuchen Sie es erneut.",
           "edit": "Bearbeiten",
-          "delete": "Löschen"
+          "delete": "Löschen",
+          "save_btn": "Speichern",
+          "unknown_user": "Unbekannt",
+          "actions": "Kommentieren Sie Aktionen",
+          "read_more": "Lesen Sie mehr",
+          "show_less": "Weniger anzeigen",
+          "see_all": "Alle Kommentare anzeigen ({count})",
+          "show_more": "Weitere Kommentare anzeigen"
         },
         "exercises": {
           "heading": "Alle Übungen",

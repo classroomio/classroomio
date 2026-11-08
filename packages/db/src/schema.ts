@@ -1240,7 +1240,7 @@ export const lesson = pgTable(
     commentsEnabled: boolean('comments_enabled').default(true).notNull(),
     readingDensity: varchar('reading_density')
       .$type<'compact' | 'comfortable' | 'spacious'>()
-      .default('comfortable')
+      .default('compact')
       .notNull(),
     /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     videos: jsonb().default([]).$type<
@@ -2265,6 +2265,7 @@ export const blockPlacement = pgTable(
       .onUpdate('cascade')
       .onDelete('cascade'),
     unique('block_placement_lesson_position_unique').on(table.lessonId, table.position),
+    unique('block_placement_lesson_block_unique').on(table.lessonId, table.blockId),
     index('block_placement_block_id_idx').on(table.blockId)
   ]
 );

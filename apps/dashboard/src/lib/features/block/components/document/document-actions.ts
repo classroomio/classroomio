@@ -1,4 +1,5 @@
-import type { AttachmentListFile, AttachmentListLabels } from '@cio/ui';
+import type { AttachmentListFile } from '@cio/ui';
+import type { BlockDocumentLabels } from '@cio/ui/custom/block';
 import type { TDocumentBlockData } from '@cio/utils/validation/block';
 import { t } from '$lib/utils/functions/translations';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -9,14 +10,10 @@ export function toAttachmentFile(blockId: string, document: TDocumentBlockData):
   return { id: blockId, name: document.name, size: document.size, type: document.type };
 }
 
-export function documentLabels(fileCount: number): AttachmentListLabels {
+export function documentLabels(): BlockDocumentLabels {
   return {
-    title: t.get(`${KEY_PREFIX}.attachments_heading`),
-    fileCount: t.get(`${KEY_PREFIX}.file_count`, { count: fileCount }),
     view: t.get(`${KEY_PREFIX}.view_file`),
-    download: t.get(`${KEY_PREFIX}.download`),
-    delete: t.get(`${KEY_PREFIX}.delete`),
-    reorder: t.get(`${KEY_PREFIX}.reorder_file`)
+    download: t.get(`${KEY_PREFIX}.download`)
   };
 }
 

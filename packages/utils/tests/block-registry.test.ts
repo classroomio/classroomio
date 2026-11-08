@@ -5,7 +5,6 @@ import {
   BLOCK_TYPES,
   ZBlockCreate,
   getBlockAssetId,
-  parseBlockData,
   toPublicBlockData
 } from '../src/validation/block';
 
@@ -20,7 +19,7 @@ describe('block registry', () => {
 
   it('accepts a create payload for every registered type', () => {
     const samples = {
-      note: { type: 'note', data: { style: 'tip' }, content: '<p>Hi</p>' },
+      note: { type: 'note', data: {}, content: '<p>Hi</p>' },
       video: { type: 'video', data: { type: 'youtube', link: 'https://youtu.be/abc' } },
       slides: {
         type: 'slides',
@@ -35,12 +34,6 @@ describe('block registry', () => {
     for (const sample of Object.values(samples)) {
       expect(ZBlockCreate.safeParse(sample).success).toBe(true);
     }
-  });
-
-  it('persists the note style and rejects unknown note fields', () => {
-    expect(parseBlockData('note', { style: 'warning' })).toEqual({ style: 'warning' });
-    expect(parseBlockData('note', { style: 'loud' })).toBeNull();
-    expect(parseBlockData('note', { color: 'red' })).toBeNull();
   });
 
   it('reads asset ids only from media types', () => {

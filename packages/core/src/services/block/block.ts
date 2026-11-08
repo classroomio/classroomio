@@ -47,9 +47,15 @@ import {
   type TBlockVersionPage,
   type TBlockVersionCursor
 } from '@cio/db/queries/block';
-import { createAssetUsage, deleteAssetUsagesByTargetSlots, getAssetById } from '@cio/db/queries/assets';
+import {
+  createAssetUsage,
+  deleteAssetUsagesByTargetSlots,
+  getAssetById,
+  getAssetOrganizationIdsByStorageKeys
+} from '@cio/db/queries/assets';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { sanitizeOptionalHtml } from '../../utils/sanitize-html';
+import { readOrganizationIdFromFileKey } from '../../utils/upload';
 import { recordBlockLocaleVersion } from './block-version';
 import { enrichBlocksMedia, loadLessonBlocks, toLessonBlock, type LessonBlock } from './block-view';
 import { positionForAnchor } from './positions';
@@ -108,17 +114,38 @@ function validatedBlockData(type: TBlockType, data: unknown): Record<string, unk
   return parsed as Record<string, unknown>;
 }
 
+/**
+ * True when a prefixed key carries this organization's id, or when every asset claiming an unprefixed key
+ * belongs to this organization. An unprefixed key that no asset claims counts as owned.
+ */
+async function isStorageKeyOwnedBy(key: string, organizationId: string): Promise<boolean> {
+  const prefixOrganizationId = readOrganizationIdFromFileKey(key);
+  if (prefixOrganizationId) return prefixOrganizationId === organizationId;
+
+  const owners = await getAssetOrganizationIdsByStorageKeys([key]);
+  const ownerOrganizationIds = owners.get(key) ?? [];
+
+  return ownerOrganizationIds.every((ownerOrganizationId) => ownerOrganizationId === organizationId);
+}
+
 async function assertAssetsBelongToOrganization(
   type: TBlockType,
   data: Record<string, unknown>,
   organizationId: string
 ): Promise<void> {
-  const assetId = getBlockAssetId(type, data);
-  if (!assetId) return;
+  if (!BLOCK_DEFINITIONS[type].media) return;
 
-  const asset = await getAssetById(assetId, organizationId);
-  if (!asset) {
-    throw new AppError('Asset not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
+  const assetId = getBlockAssetId(type, data);
+  if (assetId) {
+    const asset = await getAssetById(assetId, organizationId);
+    if (!asset) {
+      throw new AppError('Asset not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
+    }
+  }
+
+  const storageKey = typeof data.key === 'string' ? data.key : '';
+  if (storageKey && !(await isStorageKeyOwnedBy(storageKey, organizationId))) {
+    throw new AppError('File not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
   }
 }
 
@@ -132,8 +159,8 @@ export async function syncLessonAssetUsages(
   actorProfileId: string | null,
   dbClient: DbOrTxClient
 ): Promise<void> {
-  const rows = await listLessonBlockRows(lessonId, dbClient);
   await touchLessonsUpdatedAt([lessonId], dbClient);
+  const rows = await listLessonBlockRows(lessonId, dbClient);
   await deleteAssetUsagesByTargetSlots('lesson', lessonId, Object.values(LESSON_MEDIA_SLOTS), dbClient);
 
   const seen = new Set<string>();

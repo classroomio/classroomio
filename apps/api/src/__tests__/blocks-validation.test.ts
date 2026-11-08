@@ -14,6 +14,10 @@ describe('block data schemas', () => {
     expect(parseBlockData('video', { type: 'youtube', link: 'javascript:alert(1)' })).toBeNull();
   });
 
+  it('rejects an uploaded video with a script link', () => {
+    expect(parseBlockData('video', { type: 'upload', link: 'javascript:alert(1)' })).toBeNull();
+  });
+
   it('rejects slides whose platform does not match the embed host', () => {
     expect(
       parseBlockData('slides', { src: 'https://docs.google.com/presentation/d/e/abc/embed', platform: 'canva' })

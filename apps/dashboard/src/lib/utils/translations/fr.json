@@ -1817,10 +1817,16 @@
           "placeholder": "Que pensez-vous de cette leçon ?",
           "comment_btn": "Commentaire",
           "cancel_btn": "Annuler",
-          "load_more_btn": "Charger plus",
           "comment_error": "Échec de la publication du commentaire. Veuillez réessayer.",
           "edit": "Modifier",
-          "delete": "Supprimer"
+          "delete": "Supprimer",
+          "save_btn": "Enregistrer",
+          "unknown_user": "Inconnu",
+          "actions": "Actions de commentaire",
+          "read_more": "Lire la suite",
+          "show_less": "Afficher moins",
+          "see_all": "Voir tous les commentaires ({count})",
+          "show_more": "Afficher plus de commentaires"
         },
         "exercises": {
           "heading": "Tous les exercices",

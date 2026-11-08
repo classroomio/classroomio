@@ -1,1 +1,1 @@
-export const FIELDS = ['files', 'editable', 'labels', 'changeLabel'];
+export const FIELDS = ['file', 'editable', 'labels', 'changeLabel'];

@@ -314,8 +314,9 @@ export async function listLessonsPaginated(
 ): Promise<{ items: TLesson[]; total: number }> {
   try {
     const page = await getPaginatedLessonsByCourseId(courseId, options);
+    const items = await attachBlocksToLessons(page.items);
 
-    return { items: await attachBlocksToLessons(page.items), total: page.total };
+    return { items, total: page.total };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list lessons',

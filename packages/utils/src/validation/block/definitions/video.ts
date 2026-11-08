@@ -8,10 +8,14 @@ const HLS_PROXY_PATH = /^\/hls\/[\w./-]+$/;
 
 export const ZVideoBlockData = ZLessonVideoItem.omit({ watchEnforced: true, link: true })
   .extend({ link: z.string() })
-  .refine((video) => video.type === 'upload' || HLS_PROXY_PATH.test(video.link) || isAllowedHref(video.link), {
-    message: 'Video link scheme is not allowed',
-    path: ['link']
-  });
+  .refine(
+    (video) =>
+      (video.type === 'upload' && video.link === '') || HLS_PROXY_PATH.test(video.link) || isAllowedHref(video.link),
+    {
+      message: 'Video link scheme is not allowed',
+      path: ['link']
+    }
+  );
 export type TVideoBlockData = z.infer<typeof ZVideoBlockData>;
 
 /**

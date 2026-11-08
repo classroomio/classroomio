@@ -22,7 +22,7 @@ export const BLOCK_EDITORS: BlockEditRegistry = {
   note: {
     icon: BookOpenIcon,
     edit: NoteEdit,
-    createInitial: () => ({ data: { style: 'default' }, content: EXAMPLE_NOTE_HTML })
+    createInitial: () => ({ data: {}, content: EXAMPLE_NOTE_HTML })
   },
   video: {
     icon: VideoIcon,

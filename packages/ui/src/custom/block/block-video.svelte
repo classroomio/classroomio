@@ -125,7 +125,7 @@
       {/if}
     </div>
 
-    <div class="ui:mt-3 ui:flex ui:min-w-0 ui:gap-3 ui:px-3 ui:py-3">
+    <div class={cn('ui:mt-3 ui:flex ui:min-w-0 ui:gap-3 ui:px-3 ui:pt-3', !editable && 'ui:pb-3')}>
       <div class="ui:min-w-0 ui:flex-1">
         <div class="ui:flex ui:items-start ui:gap-1">
           <div class="ui:text-foreground ui:min-w-0 ui:flex-1 ui:text-base ui:leading-snug ui:font-semibold">

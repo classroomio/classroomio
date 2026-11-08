@@ -1,7 +1,7 @@
 import { SLIDE_PLATFORM_BY_ID, type SlidePlatformId } from '@cio/utils/functions';
 
 export const EXAMPLE_SLIDE = {
-  src: 'https://www.canva.com/design/DAHZZoQ13Q8/FX5Rvle9NYCI7AG4CMmvIQ/view?embed',
+  src: 'https://www.canva.com/design/DAHaXRiJEa0/4pV4evpZYshT-SxDYfnuPw/view?embed',
   platform: 'canva'
 } as const;
 

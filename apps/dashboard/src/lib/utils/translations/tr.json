@@ -3700,8 +3700,14 @@
           "cancel_btn": "İptal",
           "edit": "Düzenle",
           "delete": "Sil",
-          "load_more_btn": "LDaha fazlasını yükle",
-          "comment_error": "Yorum gönderilemedi. Lütfen tekrar deneyin."
+          "comment_error": "Yorum gönderilemedi. Lütfen tekrar deneyin.",
+          "save_btn": "Kaydet",
+          "unknown_user": "Bilinmiyor",
+          "actions": "Yorum işlemleri",
+          "read_more": "Devamını oku",
+          "show_less": "Daha az göster",
+          "see_all": "Tüm yorumları görün ({count})",
+          "show_more": "Daha fazla yorum göster"
         },
         "version_history": {
           "title": "Sürüm geçmişi",

@@ -1,6 +1,6 @@
 import type { LessonReadingDensity } from './types';
 
-export const DEFAULT_READING_DENSITY: LessonReadingDensity = 'comfortable';
+export const DEFAULT_READING_DENSITY: LessonReadingDensity = 'compact';
 
 export const LESSON_READING_DENSITY_OPTIONS: { value: LessonReadingDensity; labelKey: string }[] = [
   { value: 'compact', labelKey: 'course.navItem.lessons.materials.blocks.reading_density.compact' },
