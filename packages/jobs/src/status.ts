@@ -48,6 +48,7 @@ export interface JobEnvelope<TResult = Record<string, unknown> | null> {
     domain: string;
     status: JobStatus;
     stage: string | null;
+    transcriptionPlanned?: boolean;
     progressPercent: number | null;
     updatedAt: string;
     createdAt: string;

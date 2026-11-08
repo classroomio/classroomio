@@ -17,12 +17,12 @@ Let users sign in with Google.
 
 ## OpenAI (transcription & AI course generation)
 
-Powers video transcription and AI course generation. These jobs run on the **jobs** worker, so set the
-key wherever the worker reads its environment.
+Powers uploaded-video transcription and AI course generation. Set the key on both the **API** and **jobs**
+services; the API queues transcription and the jobs worker runs it.
 
 | Variable | Description |
 |----------|-------------|
-| `OPENAI_API_KEY` | OpenAI API key — transcription + AI course generation |
+| `OPENAI_API_KEY` | OpenAI API key — uploaded-video transcription + AI course generation |
 
 :::tip[Disable AI features]
 To hide all AI-related UI across the dashboard, see [AI features](/self-hosted/configuration/ai).

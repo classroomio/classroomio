@@ -98,7 +98,11 @@
     hasTranscript = !!transcriptData?.segments?.length;
 
     const latest = runs?.[0];
-    if (latest && (latest.job.status === 'pending' || latest.job.status === 'running')) {
+    if (
+      latest &&
+      (video.type === 'youtube' || latest.job.transcriptionPlanned) &&
+      (latest.job.status === 'queued' || latest.job.status === 'running')
+    ) {
       setIsTranscribing(true);
       void startTranscriptionPoll(assetId);
     }
@@ -142,7 +146,7 @@
     const runs = await jobsApi.getMediaJobsForAsset(afterAssetId);
     const latest = runs?.[0];
 
-    if (!latest) {
+    if (!latest || (video.type !== 'youtube' && !latest.job.transcriptionPlanned)) {
       setIsTranscribing(false);
 
       return;

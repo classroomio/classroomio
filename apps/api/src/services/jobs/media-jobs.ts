@@ -297,6 +297,7 @@ function toEnvelope(job: TMediaJob, options: GetMediaJobEnvelopeOptions = {}): J
       domain: 'media',
       status,
       stage: job.stage,
+      transcriptionPlanned: Boolean(job.jobIds?.['transcribe-audio']),
       progressPercent: job.progressPercent,
       createdAt: job.createdAt,
       updatedAt: job.updatedAt,
