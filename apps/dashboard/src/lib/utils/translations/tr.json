@@ -2765,7 +2765,6 @@
         "autosaving": "Otomatik kaydetme...",
         "saving": "Kaydediliyor…",
         "saved": "Kaydedildi",
-        "draft_recovery": "Bu ders için kaydedilmemiş bir taslak bulundu. Geri yüklemek ister misiniz?",
         "done": "Done",
         "edit": "Edit",
         "mark_as": "Farklı olarak işaretle",
@@ -2776,11 +2775,6 @@
         "prev_shortcut": "Önceki (←)",
         "next_shortcut": "Sonraki (→)",
         "materials": {
-          "body_heading": "Bu ders için henüz not, video veya slayt eklenmedi",
-          "body_content": "İlgi çekici içerikler oluşturarak bilginizi öğrencilerinizle paylaşın. Tıklayarak başlayın",
-          "get_started": "Başlayın",
-          "no_translation": "Seçili dil için çeviri yok",
-          "button": "düğme",
           "show_transcript": "Transkripti göster",
           "summarize_lesson": "Dersi özetle",
           "summarize_lesson_prompt": {
@@ -2790,22 +2784,10 @@
           },
           "tabs": {
             "note": {
-              "title": "Not",
-              "placeholder": "Ders notunuzu buraya yazın",
-              "ai": {
-                "outline": "Ders Taslağını Oluşturun",
-                "note": "Ders Notu Oluşturun",
-                "activities": "Ders Aktiviteleri Oluşturun"
-              }
+              "placeholder": "Ders notunuzu buraya yazın"
             },
             "slide": {
               "title": "Slayt",
-              "button": "Slayt ekle",
-              "remove_slide": "Slaytı kaldır",
-              "menu_aria": "Slayt eylemleri",
-              "empty_title": "Henüz slayt yok",
-              "empty_description": "Google Slaytlar, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare veya Beautiful.ai",
-              "frame_title": "{platform} ({index} / {total})",
               "add_slide": {
                 "title": "Slayt ekle",
                 "search": "Platformlarda ara",
@@ -2883,20 +2865,13 @@
                 }
               }
             },
-            "settings": {
-              "title": "Settings"
-            },
             "video": {
-              "title": "Video",
               "vimeo_link": "Vimeo Bağlantı",
               "embed_link": "Gömülü Bağlantı",
               "google_drive": "Google Drive",
               "upload": "Yükleme",
               "library": "Library",
-              "button": "Video Ekle/Düzenle",
               "remove_video": "Videoyu kaldır",
-              "empty_title": "Henüz video yok",
-              "empty_description": "Video ekle YouTube, Vimeo, Google Drive'dan bağlantı ekleyin, yükleyin veya medya kitaplığınızdan",
               "add_video": {
                 "title": "Video Ekle",
                 "add_by": "Bunu Ekle",
@@ -3008,9 +2983,6 @@
               }
             },
             "document": {
-              "title": "Docs",
-              "add_document": "Belge Ekle",
-              "download": "İndir",
               "upload_title": "Belgeyi Yükle",
               "upload_description": "PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB veya PY dosyalarını yükleyin",
               "up_to_size_each": "(her biri en fazla {size})",
@@ -3025,28 +2997,13 @@
               "upload_error": "Yükleme başarısız oldu document",
               "file_type_error": "Dosya türü desteklenmiyor. Lütfen PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB veya PY dosyalarını yükleyin.",
               "file_size_error": "Dosya boyutu çok büyük. Maksimum boyut {size}.",
-              "try_again": "Tekrar Dene",
               "upgrade": "Yükleme planınızı yükseltin belgeler",
               "no_library_documents": "Medya kitaplığınızda kullanılabilir belge yok",
               "selected_count": "{count} seçildi",
               "clear_selection": "Temizle",
               "add_one_file": "1 dosya ekle",
               "add_files": "{count} dosya ekle",
-              "download_success": "Belge başarıyla indirildi",
-              "download_error": "Belge indirilemedi",
-              "remove_document": "Belgeyi kaldır",
-              "delete": "Delete",
-              "page_of": "Page {page} / {total}",
-              "loading_pdf": "LPDF yükleniyor...",
-              "failed_to_load_pdf": "PDF belgesi yüklenemedi",
-              "failed_to_render_pdf": "PDF sayfası oluşturulamadı",
-              "use_arrow_keys": "Gezinmek için ok tuşlarını, yakınlaştırmak için +/-'yi kullanın veya yukarıdaki kontrollere tıklayın. Sağ tıklama devre dışı.",
-              "empty_title": "Henüz belge yok",
-              "empty_description": "Öğrencilerinizle paylaşmak için belge yükleyin",
-              "attachments_heading": "Ekler",
-              "file_count": "{sayım, çoğul, bir {# file} diğer {# files}}",
-              "view_file": "Dosyayı görüntüle",
-              "reorder_file": "Dosyayı yeniden sırala"
+              "remove_document": "Belgeyi kaldır"
             }
           },
           "button_done": "Done",
@@ -4399,8 +4356,6 @@
         "reports": "Dersler için notlandırma raporlarını kullanılabilir hale getirin",
         "disabled": "Devre Dışı",
         "enabled": "Etkin",
-        "order": "Ders Siparişi Sekmesi",
-        "drag": "Sürükle ve Materyal sekmelerinizi yeniden sıralamak için etiketleri bırakın",
         "welcome_email": {
           "title": "Karşılama e-postası",
           "description": "Öğrencilerin kaydolduktan sonra aldıkları e-postayı özelleştirin. Kişisel bir not, talimatlar veya canlı oturum bağlantısı ekleyin.",
@@ -6498,7 +6453,6 @@
         "bannerImage": "Kapak resmi",
         "welcomeEmail": "Karşılama e-postası",
         "completionDeadline": "Tamamlanma tarihi",
-        "lessonTabsOrder": "Lders sekmeleri",
         "contentGrouping": "İçerik gruplama",
         "progression": "İlerleme",
         "comments": "Lders yorumları",

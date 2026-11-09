@@ -1021,8 +1021,6 @@
         "reports": "Hacer que los informes de calificaciones estén disponibles para las lecciones",
         "disabled": "Deshabilitado",
         "enabled": "Habilitado",
-        "order": "Pestaña Ordenar lecciones",
-        "drag": "Arrastre y suelte las etiquetas para reordenar las pestañas de materiales",
         "content_grouping_title": "Agrupación de contenidos",
         "content_grouping_description": "Agrupe lecciones y ejercicios por sección en la lista de contenidos.",
         "progression_mode_title": "Progresión del estudiante",
@@ -2444,11 +2442,6 @@
           }
         },
         "materials": {
-          "body_heading": "Aún no se ha agregado ninguna nota, video o diapositiva para esta lección",
-          "body_content": "Comparta sus conocimientos con sus alumnos creando contenido atractivo. Comience haciendo clic en",
-          "get_started": "Empezar",
-          "no_translation": "No hay traducción para el idioma seleccionado.",
-          "button": "botón",
           "show_transcript": "Mostrar transcripción",
           "summarize_lesson": "Resumir lección",
           "summarize_lesson_prompt": {
@@ -2458,13 +2451,7 @@
           },
           "button_done": "hecho",
           "tabs": {
-            "settings": {
-              "title": "Configuración"
-            },
             "document": {
-              "title": "Documentos",
-              "add_document": "Agregar documento",
-              "download": "Descargar",
               "upload_title": "Cargar documento",
               "upload_description": "Cargue archivos PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB o PY",
               "up_to_size_each": "(hasta {size} cada uno)",
@@ -2479,35 +2466,18 @@
               "upload_error": "No se pudo cargar el documento",
               "file_type_error": "Tipo de archivo no compatible. Cargue archivos PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB o PY.",
               "file_size_error": "El tamaño del archivo es demasiado grande. El tamaño máximo es {size}.",
-              "try_again": "Inténtalo de nuevo",
               "upgrade": "Actualice su plan para cargar documentos",
               "no_library_documents": "No hay documentos disponibles en su biblioteca multimedia",
               "selected_count": "{count} seleccionados",
               "clear_selection": "Borrar",
               "add_one_file": "Agregar 1 archivo",
               "add_files": "Agregar {count} archivos",
-              "download_success": "Documento descargado correctamente",
-              "download_error": "No se pudo descargar el documento",
-              "remove_document": "Quitar documento",
-              "delete": "Eliminar",
-              "page_of": "Página {page} de {total}",
-              "loading_pdf": "Cargando PDF...",
-              "failed_to_load_pdf": "No se pudo cargar el documento PDF",
-              "failed_to_render_pdf": "No se pudo renderizar la página PDF",
-              "use_arrow_keys": "Utilice las teclas de flecha para navegar, +/- para hacer zoom o haga clic en los controles de arriba. El clic derecho está deshabilitado.",
-              "empty_title": "Aún no hay documentos",
-              "empty_description": "Cargue documentos para compartir con sus estudiantes",
-              "attachments_heading": "Adjuntos",
-              "file_count": "{count, plural, one {# archivo} other {# archivos}}",
-              "view_file": "Ver archivo",
-              "reorder_file": "Reordenar archivo"
+              "remove_document": "Quitar documento"
             },
             "video": {
-              "title": "Video",
               "embed_link": "Insertar enlace",
               "upload": "Subir",
               "library": "Biblioteca",
-              "button": "Agregar/editar vídeos",
               "remove_video": "Eliminar vídeo",
               "add_video": {
                 "title": "Agregar un vídeo",
@@ -2574,8 +2544,6 @@
                 "vimeo_privacy_error_domain_suffix": "esté permitido en la configuración de video).",
                 "vimeo_privacy_error_other_hint": "Otras configuraciones de privacidad de Vimeo"
               },
-              "empty_title": "Aún no hay vídeos",
-              "empty_description": "Agregue videos de YouTube, cárguelos o de su biblioteca multimedia",
               "google_drive": "Google Drive",
               "generate_transcript": "Generar transcripción",
               "transcript_in_progress": "Obteniendo transcripción…",
@@ -2629,11 +2597,6 @@
               "title": "Diapositiva",
               "slide_link": "Enlace de diapositiva",
               "helper_message": "Puede incrustar presentaciones de Google Slides o Canva",
-              "button": "Añadir diapositiva",
-              "remove_slide": "Eliminar diapositiva",
-              "menu_aria": "Acciones de diapositiva",
-              "empty_title": "Aún no hay diapositivas",
-              "empty_description": "Incorpora Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare o Beautiful.ai",
               "add_slide": {
                 "title": "Añadir una diapositiva",
                 "search": "Buscar plataformas",
@@ -2709,17 +2672,10 @@
                   "step_2": "Click Get Embed Code.",
                   "step_3": "Paste the iframe embed code here."
                 }
-              },
-              "frame_title": "{platform} ({index} de {total})"
+              }
             },
             "note": {
-              "title": "Nota",
-              "placeholder": "Escribe tu nota de lección aquí.",
-              "ai": {
-                "outline": "Generar esquema de lección",
-                "note": "Generar nota de lección",
-                "activities": "Generar actividades lectivas"
-              }
+              "placeholder": "Escribe tu nota de lección aquí."
             }
           },
           "blocks": {
@@ -2868,7 +2824,6 @@
         },
         "saving": "Guardando…",
         "saved": "Guardado",
-        "draft_recovery": "Se encontró un borrador no guardado para esta lección. ¿Quieres restaurarlo?",
         "stats": {
           "sections": "Secciones",
           "lessons": "Lecciones",
@@ -6518,7 +6473,6 @@
         "bannerImage": "Imagen de portada",
         "welcomeEmail": "Correo electrónico de bienvenida",
         "completionDeadline": "Fecha límite de finalización",
-        "lessonTabsOrder": "Pestañas de lecciones",
         "contentGrouping": "Agrupación de contenidos",
         "progression": "Progresión",
         "comments": "Comentarios de la lección",

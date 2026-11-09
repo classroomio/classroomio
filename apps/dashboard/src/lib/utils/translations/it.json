@@ -2757,7 +2757,6 @@
         "autosaving": "Salvataggio automatico...",
         "saving": "Risparmio…",
         "saved": "Salvato",
-        "draft_recovery": "Per questa lezione è stata trovata una bozza non salvata. Vorresti ripristinarlo?",
         "done": "Fatto",
         "edit": "Modificare",
         "mark_as": "Segna come",
@@ -2768,11 +2767,6 @@
         "prev_shortcut": "Precedente (←)",
         "next_shortcut": "Successivo (→)",
         "materials": {
-          "body_heading": "Nessuna nota, video o diapositiva ancora aggiunta per questa lezione",
-          "body_content": "Condividi le tue conoscenze con i tuoi studenti creando contenuti accattivanti. Inizia facendo clic su",
-          "get_started": "Inizia",
-          "no_translation": "Nessuna traduzione per la lingua selezionata",
-          "button": "pulsante",
           "show_transcript": "Mostra la trascrizione",
           "summarize_lesson": "Riepiloga la lezione",
           "summarize_lesson_prompt": {
@@ -2782,22 +2776,10 @@
           },
           "tabs": {
             "note": {
-              "title": "Nota",
-              "placeholder": "Scrivi qui la nota della lezione",
-              "ai": {
-                "outline": "Genera lo schema della lezione",
-                "note": "Genera nota di lezione",
-                "activities": "Genera attività di lezione"
-              }
+              "placeholder": "Scrivi qui la nota della lezione"
             },
             "slide": {
               "title": "Diapositiva",
-              "button": "Aggiungi diapositiva",
-              "remove_slide": "Rimuovere la diapositiva",
-              "menu_aria": "Azioni di diapositiva",
-              "empty_title": "Nessuna diapositiva ancora",
-              "empty_description": "Incorpora Presentazioni Google, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare o Beautiful.ai",
-              "frame_title": "{platform} ({index} Di {total})",
               "add_slide": {
                 "title": "Aggiungi una diapositiva",
                 "search": "Piattaforme di ricerca",
@@ -2875,20 +2857,13 @@
                 }
               }
             },
-            "settings": {
-              "title": "Impostazioni"
-            },
             "video": {
-              "title": "Video",
               "vimeo_link": "Collegamento Vimeo",
               "embed_link": "Incorpora collegamento",
               "google_drive": "Google Drive",
               "upload": "Caricamento",
               "library": "Biblioteca",
-              "button": "Aggiungi/Modifica video(i)",
               "remove_video": "Rimuovi video",
-              "empty_title": "Nessun video ancora",
-              "empty_description": "Aggiungi video da YouTube, Vimeo, Google Drive, incorpora collegamenti, carica o dalla tua libreria multimediale",
               "add_video": {
                 "title": "Aggiungi un video",
                 "add_by": "Aggiungi per",
@@ -3000,9 +2975,6 @@
               }
             },
             "document": {
-              "title": "Documenti",
-              "add_document": "Aggiungi documento",
-              "download": "Scaricamento",
               "upload_title": "Carica documento",
               "upload_description": "Carica file PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB o PY",
               "up_to_size_each": "(fino a {size} ciascuno)",
@@ -3017,28 +2989,13 @@
               "upload_error": "Impossibile caricare il documento",
               "file_type_error": "Tipo di file non supportato. Carica file PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB o PY.",
               "file_size_error": "Dimensioni del file troppo grandi. La dimensione massima è {size}.",
-              "try_again": "Riprova",
               "upgrade": "Aggiorna il tuo piano per caricare documenti",
               "no_library_documents": "Nessun documento disponibile nella tua libreria multimediale",
               "selected_count": "{count} selezionati",
               "clear_selection": "Cancella",
               "add_one_file": "Aggiungi 1 file",
               "add_files": "Aggiungi {count} file",
-              "download_success": "Documento scaricato correttamente",
-              "download_error": "Impossibile scaricare il documento",
-              "remove_document": "Rimuovi documento",
-              "delete": "Eliminare",
-              "page_of": "Pagina {page} Di {total}",
-              "loading_pdf": "Caricamento PDF...",
-              "failed_to_load_pdf": "Impossibile caricare il documento PDF",
-              "failed_to_render_pdf": "Impossibile eseguire il rendering della pagina PDF",
-              "use_arrow_keys": "Utilizza i tasti freccia per navigare, +/- per ingrandire o fai clic sui controlli sopra. Il clic con il tasto destro è disabilitato.",
-              "empty_title": "Nessun documento ancora",
-              "empty_description": "Carica documenti da condividere con i tuoi studenti",
-              "attachments_heading": "Allegati",
-              "file_count": "{count, plural, one {#file} other {# file}}",
-              "view_file": "Visualizza file",
-              "reorder_file": "Riordina il file"
+              "remove_document": "Rimuovi documento"
             }
           },
           "button_done": "Fatto",
@@ -4389,8 +4346,6 @@
         "reports": "Rendere disponibili i resoconti delle valutazioni per le lezioni",
         "disabled": "Disabilitato",
         "enabled": "Abilitato",
-        "order": "Scheda Lezioni Ordina",
-        "drag": "Trascina e rilascia le etichette per riordinare le schede dei materiali",
         "welcome_email": {
           "title": "E-mail di benvenuto",
           "description": "Personalizza l'e-mail che gli studenti ricevono dopo l'iscrizione. Aggiungi una nota personale, istruzioni o un collegamento a una sessione live.",
@@ -6488,7 +6443,6 @@
         "bannerImage": "Immagine di copertina",
         "welcomeEmail": "E-mail di benvenuto",
         "completionDeadline": "Termine ultimo per il completamento",
-        "lessonTabsOrder": "Schede delle lezioni",
         "contentGrouping": "Raggruppamento dei contenuti",
         "progression": "Progressione",
         "comments": "Commenti alla lezione",

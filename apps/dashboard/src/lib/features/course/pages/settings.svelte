@@ -11,7 +11,6 @@
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import XIcon from '@lucide/svelte/icons/x';
 
-  import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
   import CertificateDeadlineRequiredDialog from '$features/course/components/certificate-deadline-required-dialog.svelte';
   import { CourseTagPicker, PublicConversionSettingsCard } from '$features/course/components';
   import TemplateSettingsSection from '$features/course/components/template-settings-section.svelte';
@@ -269,7 +268,6 @@
       const metadataPayload = {
         ...(isObject(courseApi.course.metadata) ? courseApi.course.metadata : {}),
         ...reminderOffsetsPayload,
-        lessonTabsOrder: $settings.tabs,
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
         allowSelfEnrollment: $settings.allowSelfEnrollment,
@@ -370,7 +368,6 @@
           : (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
         courseDescription: course.description,
         bannerImage: course.bannerImage || '',
-        tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
         allowMarkdownExport: !!course.metadata?.allowMarkdownExport,
@@ -947,20 +944,6 @@
 
   <SettingsCard id="content" title={$t('course.navItem.settings.content_card_title')}>
     <Field.Group>
-      <Field.Field id="lesson-tabs" class="scroll-mt-24">
-        <Field.Label>
-          <a href="#lesson-tabs" class="hover:underline">{$t('course.navItem.settings.order')}</a>
-        </Field.Label>
-        <Field.Description>{$t('course.navItem.settings.drag')}</Field.Description>
-        <ReorderMaterialTabs
-          onchange={() => {
-            hasUnsavedChanges = true;
-          }}
-        />
-      </Field.Field>
-
-      <SettingsSeparator />
-
       <Field.Field class="scroll-mt-24" orientation="horizontal">
         <Field.Content>
           <Field.Label for="content-grouping">

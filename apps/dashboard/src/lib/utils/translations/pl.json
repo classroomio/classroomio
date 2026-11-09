@@ -1021,8 +1021,6 @@
         "reports": "Udostępnij raporty ocen na lekcjach",
         "disabled": "Wyłączone",
         "enabled": "Włączone",
-        "order": "Zakładka Zamów Lekcje",
-        "drag": "Przeciągnij i upuść etykiety, aby zmienić kolejność zakładek materiałów",
         "content_grouping_title": "Grupowanie treści",
         "content_grouping_description": "Grupuj lekcje i ćwiczenia według sekcji na liście treści.",
         "progression_mode_title": "Postęp ucznia",
@@ -2444,11 +2442,6 @@
           }
         },
         "materials": {
-          "body_heading": "Do tej lekcji nie dodano jeszcze żadnej notatki, filmu ani slajdu",
-          "body_content": "Podziel się swoją wiedzą ze swoimi uczniami, tworząc angażujące treści. Zacznij od kliknięcia",
-          "get_started": "Rozpocznij",
-          "no_translation": "Brak tłumaczenia dla wybranego języka",
-          "button": "przycisk",
           "show_transcript": "Pokaż transkrypt",
           "summarize_lesson": "Podsumuj lekcję",
           "summarize_lesson_prompt": {
@@ -2458,13 +2451,7 @@
           },
           "button_done": "Gotowe",
           "tabs": {
-            "settings": {
-              "title": "Ustawienia"
-            },
             "document": {
-              "title": "Dokumenty",
-              "add_document": "Dodaj dokument",
-              "download": "Pobierz",
               "upload_title": "Prześlij dokument",
               "upload_description": "Prześlij pliki PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB lub PY",
               "up_to_size_each": "(do {size} każdy)",
@@ -2479,35 +2466,18 @@
               "upload_error": "Nie udało się przesłać dokumentu",
               "file_type_error": "Typ pliku nie jest obsługiwany. Prześlij pliki PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB lub PY.",
               "file_size_error": "Rozmiar pliku jest zbyt duży. Maksymalny rozmiar to {size}.",
-              "try_again": "Spróbuj ponownie",
               "upgrade": "Uaktualnij swój plan, aby przesyłać dokumenty",
               "no_library_documents": "Brak dokumentów w Twojej bibliotece multimediów",
               "selected_count": "Wybrano: {count}",
               "clear_selection": "Wyczyść",
               "add_one_file": "Dodaj 1 plik",
               "add_files": "Dodaj pliki ({count})",
-              "download_success": "Dokument pobrano pomyślnie",
-              "download_error": "Nie udało się pobrać dokumentu",
-              "remove_document": "Usuń dokument",
-              "delete": "Usuń",
-              "page_of": "Strona {page} z {total}",
-              "loading_pdf": "Ładowanie pliku PDF...",
-              "failed_to_load_pdf": "Nie udało się załadować dokumentu PDF",
-              "failed_to_render_pdf": "Nie udało się wyrenderować strony PDF",
-              "use_arrow_keys": "Użyj klawiszy strzałek do nawigacji, +/-, aby powiększyć, lub kliknij elementy sterujące powyżej. Kliknięcie prawym przyciskiem myszy jest wyłączone.",
-              "empty_title": "Nie ma jeszcze dokumentów",
-              "empty_description": "Prześlij dokumenty, aby udostępnić je swoim uczniom",
-              "attachments_heading": "Załączniki",
-              "file_count": "{count, plural, one {# plik} few {# pliki} many {# plików} other {# plika}}",
-              "view_file": "Wyświetl plik",
-              "reorder_file": "Zmień kolejność pliku"
+              "remove_document": "Usuń dokument"
             },
             "video": {
-              "title": "Wideo",
               "embed_link": "Osadź łącze",
               "upload": "Prześlij",
               "library": "Biblioteka",
-              "button": "Dodaj/edytuj wideo",
               "remove_video": "Usuń wideo",
               "add_video": {
                 "title": "Dodaj wideo",
@@ -2574,8 +2544,6 @@
                 "vimeo_privacy_error_domain_suffix": "jest dozwolone w ustawieniach wideo).",
                 "vimeo_privacy_error_other_hint": "Inne ustawienia prywatności Vimeo"
               },
-              "empty_title": "Nie ma jeszcze filmów",
-              "empty_description": "Dodaj filmy z YouTube, prześlij lub ze swojej biblioteki multimediów",
               "google_drive": "Google Drive",
               "generate_transcript": "Wygeneruj transkrypcję",
               "transcript_in_progress": "Pobieranie transkrypcji…",
@@ -2629,11 +2597,6 @@
               "title": "Slajd",
               "slide_link": "Link do slajdu",
               "helper_message": "Możesz osadzić Prezentacje Google lub Prezentację Canva",
-              "button": "Dodaj slajd",
-              "remove_slide": "Usuń slajd",
-              "menu_aria": "Akcje slajdu",
-              "empty_title": "Brak slajdów",
-              "empty_description": "Osadź Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare lub Beautiful.ai",
               "add_slide": {
                 "title": "Dodaj slajd",
                 "search": "Szukaj platform",
@@ -2709,17 +2672,10 @@
                   "step_2": "Click Get Embed Code.",
                   "step_3": "Paste the iframe embed code here."
                 }
-              },
-              "frame_title": "{platform} ({index} z {total})"
+              }
             },
             "note": {
-              "title": "Uwaga",
-              "placeholder": "Wpisz tutaj swoją notatkę z lekcji",
-              "ai": {
-                "outline": "Wygeneruj konspekt lekcji",
-                "note": "Wygeneruj notatkę z lekcji",
-                "activities": "Generuj zajęcia lekcyjne"
-              }
+              "placeholder": "Wpisz tutaj swoją notatkę z lekcji"
             }
           },
           "blocks": {
@@ -2868,7 +2824,6 @@
         },
         "saving": "Zapisuję…",
         "saved": "Zapisano",
-        "draft_recovery": "Znaleziono niezapisaną wersję roboczą tej lekcji. Czy chcesz go przywrócić?",
         "stats": {
           "sections": "Sekcje",
           "lessons": "Lekcje",
@@ -6518,7 +6473,6 @@
         "bannerImage": "Obraz na okładce",
         "welcomeEmail": "Witamy e-mail",
         "completionDeadline": "Termin realizacji",
-        "lessonTabsOrder": "Zakładki z lekcjami",
         "contentGrouping": "Grupowanie treści",
         "progression": "Postęp",
         "comments": "Komentarze do lekcji",
