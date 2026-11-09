@@ -1,12 +1,19 @@
 import * as schema from '@db/schema';
 
-import { and, count, eq, inArray, ne, sql } from 'drizzle-orm';
+import { and, count, eq, inArray, ne, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { type DbOrTxClient, db } from '@db/drizzle';
 
 export type OrganizationMemberStatus = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED';
 export type OrganizationMemberAuditEvent = 'DEACTIVATED' | 'REACTIVATED' | 'ARCHIVED' | 'UNARCHIVED' | 'REMOVED';
+
+/**
+ * Maps a stored status to the two the app exposes. The retired `DEACTIVATED` value reads as `ARCHIVED`: both mean no access.
+ */
+export function toAudienceMemberStatus(status: OrganizationMemberStatus): 'ACTIVE' | 'ARCHIVED' {
+  return status === 'ACTIVE' ? 'ACTIVE' : 'ARCHIVED';
+}
 
 export type BulkAudienceMemberRow = {
   id: number;
@@ -49,6 +56,52 @@ export async function getBulkAudienceMembersByIds(
   } catch (error) {
     console.error('getBulkAudienceMembersByIds error:', error);
     throw new Error('Failed to resolve audience members for bulk action');
+  }
+}
+
+/**
+ * Student members of the org whose invite or account email is in `emails`, matched
+ * case-insensitively. `emails` holds both of a member's addresses, lowercased.
+ */
+export async function getBulkAudienceMemberIdsByEmails(
+  orgId: string,
+  emails: string[],
+  dbClient: DbOrTxClient = db
+): Promise<{ id: number; emails: string[] }[]> {
+  if (emails.length === 0) {
+    return [];
+  }
+
+  const lowered = emails.map((email) => email.toLowerCase());
+
+  try {
+    const rows = await dbClient
+      .select({
+        id: schema.organizationmember.id,
+        memberEmail: schema.organizationmember.email,
+        profileEmail: schema.profile.email
+      })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.profile.id, schema.organizationmember.profileId))
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT),
+          or(
+            inArray(sql`lower(${schema.organizationmember.email})`, lowered),
+            inArray(sql`lower(${schema.profile.email})`, lowered)
+          )
+        )
+      );
+
+    return rows.map((row) => {
+      const memberEmails = [row.memberEmail, row.profileEmail].flatMap((email) => (email ? [email.toLowerCase()] : []));
+
+      return { id: row.id, emails: [...new Set(memberEmails)] };
+    });
+  } catch (error) {
+    console.error('getBulkAudienceMemberIdsByEmails error:', error);
+    throw new Error('Failed to resolve audience members by email');
   }
 }
 

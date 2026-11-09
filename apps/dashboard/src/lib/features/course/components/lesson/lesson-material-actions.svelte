@@ -1,11 +1,13 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { Separator } from '@cio/ui/base/separator';
-  import { ContentIcon, HoverableItem, PremiumIcon } from '@cio/ui/custom/moving-icons';
-  import { sendPromptToAssistant } from '$features/ai-assistant/utils/store';
+  import { ContentIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
   import { t } from '$lib/utils/functions/translations';
-  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
-  import { buildLessonSummarizePrompt } from './utils/lesson-summarize-prompt';
+  // For now it isn't useful.
+  // import { PremiumIcon } from '@cio/ui/custom/moving-icons';
+  // import { sendPromptToAssistant } from '$features/ai-assistant/utils/store';
+  // import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
+  // import { buildLessonSummarizePrompt } from './utils/lesson-summarize-prompt';
 
   interface Props {
     showTranscript?: boolean;
@@ -28,12 +30,13 @@
     onTranscript = () => {}
   }: Props = $props();
 
-  function handleSummarizeLesson() {
-    sendPromptToAssistant(buildLessonSummarizePrompt(lessonId));
-  }
+  // For now it isn't useful.
+  // function handleSummarizeLesson() {
+  //   sendPromptToAssistant(buildLessonSummarizePrompt(lessonId));
+  // }
 </script>
 
-{#if showTranscript || (showSummarize && IS_AI_ENABLED)}
+{#if showTranscript}
   <div class={alignWithNote ? 'mx-auto w-full max-w-2xl' : 'w-full'}>
     {#if showTopSeparator}
       <Separator class="my-2" />
@@ -51,6 +54,7 @@
         </HoverableItem>
       {/if}
 
+      <!-- For now it isn't useful.
       {#if showTranscript && showSummarize && IS_AI_ENABLED}
         <span class="ui:text-muted-foreground hidden text-sm sm:inline" aria-hidden="true">|</span>
       {/if}
@@ -65,6 +69,7 @@
           {/snippet}
         </HoverableItem>
       {/if}
+      -->
     </div>
 
     {#if showBottomSeparator}

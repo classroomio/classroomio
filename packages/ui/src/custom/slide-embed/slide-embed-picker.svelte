@@ -46,28 +46,22 @@
     SLIDE_PLATFORMS.filter((platform) => platform.name.toLowerCase().includes(query.trim().toLowerCase()))
   );
 
+  const parseResult = $derived(rawEmbed.trim() ? parseSlideEmbed(rawEmbed) : null);
+
   const selectedPlatform = $derived(
     selectedId ? (SLIDE_PLATFORMS.find((platform) => platform.id === selectedId) ?? null) : null
   );
 
-  const parseResult = $derived(rawEmbed.trim() ? parseSlideEmbed(rawEmbed) : null);
+  const detectedPlatform = $derived(
+    parseResult?.ok && parseResult.platform !== selectedId
+      ? (SLIDE_PLATFORMS.find((platform) => platform.id === parseResult.platform) ?? null)
+      : null
+  );
 
-  const previewSlide = $derived.by(() => {
-    if (!parseResult?.ok) return null;
-
-    if (selectedId && parseResult.platform !== selectedId) return null;
-
-    return createSlideEmbed(rawEmbed, 'preview');
-  });
+  const previewSlide = $derived(parseResult?.ok && !detectedPlatform ? createSlideEmbed(rawEmbed, 'preview') : null);
 
   const errorMessage = $derived.by(() => {
-    if (!rawEmbed.trim() || !parseResult || parseResult.ok) {
-      if (parseResult?.ok && selectedId && parseResult.platform !== selectedId) {
-        return labels.invalidEmbed;
-      }
-
-      return '';
-    }
+    if (!parseResult || parseResult.ok) return '';
 
     return parseResult.reason === 'unsupported' ? labels.unsupportedPlatform : labels.invalidEmbed;
   });
@@ -81,12 +75,14 @@
     rawEmbed = '';
   }
 
+  function switchToDetectedPlatform() {
+    if (detectedPlatform) selectedId = detectedPlatform.id;
+  }
+
   function addEmbed() {
     const slide = createSlideEmbed(rawEmbed);
 
     if (!slide) return;
-
-    if (selectedId && slide.platform !== selectedId) return;
 
     onAdd?.(slide);
     rawEmbed = '';
@@ -179,6 +175,22 @@
         bind:value={rawEmbed}
         rows={4}
       />
+
+      {#if detectedPlatform}
+        <div
+          class="ui:bg-muted ui:flex ui:flex-wrap ui:items-center ui:justify-between ui:gap-2 ui:rounded-md ui:border ui:p-3"
+          role="status"
+        >
+          <p class="ui:m-0 ui:text-sm">
+            {labels.platformMismatch
+              .replace('{detected}', detectedPlatform.name)
+              .replace('{selected}', selectedPlatform.name)}
+          </p>
+          <Button type="button" size="sm" onclick={switchToDetectedPlatform}>
+            {labels.previewInPlatform.replace('{platform}', detectedPlatform.name)}
+          </Button>
+        </div>
+      {/if}
 
       <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2">
         {#if !hideAddButton}

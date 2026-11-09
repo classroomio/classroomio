@@ -232,10 +232,10 @@
         <button
           type="button"
           aria-label={t.get('side_panel.resize_panel_aria_label')}
-          class="absolute inset-y-0 left-0 hidden w-4 -translate-x-1/2 cursor-col-resize border-0 bg-transparent md:flex"
+          class="absolute inset-y-0 left-0 hidden w-2 -translate-x-1/2 cursor-col-resize border-0 bg-transparent md:flex"
           onpointerdown={handleResizePointerDown}
         >
-          <span class="ui:bg-border pointer-events-none h-full w-px"></span>
+          <span class="pointer-events-none h-full w-px"></span>
         </button>
       {/if}
 

@@ -59,7 +59,7 @@
   });
 </script>
 
-<Page.Root class="mx-auto flex w-full px-3 sm:w-[90%] sm:px-4 lg:max-w-5xl">
+<Page.Root class="mx-auto flex w-full gap-0! pb-0!">
   {#if $isOrgStudent && !isCourseReady}
     <div class="flex justify-center py-16">
       <Spinner />

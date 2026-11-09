@@ -28,6 +28,7 @@ export { default as NewsFeedIcon } from './news-feed.svelte';
 export { default as PathIcon } from './path.svelte';
 export { default as PeopleIcon } from './people.svelte';
 export { default as PersonIcon } from './person.svelte';
+export { default as PlusIcon } from './plus.svelte';
 export { default as PremiumIcon } from './premium.svelte';
 export { default as PreviewIcon } from './preview.svelte';
 export { default as RadioIcon } from './radio.svelte';

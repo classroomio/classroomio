@@ -48,15 +48,11 @@ export type BulkApplyOutcome = {
 };
 
 const ACTION_TO_STATUS: Record<Exclude<TAudienceBulkAction, 'delete'>, OrganizationMemberStatus> = {
-  deactivate: 'DEACTIVATED',
-  reactivate: 'ACTIVE',
   archive: 'ARCHIVED',
   unarchive: 'ACTIVE'
 };
 
 const ACTION_TO_AUDIT_EVENT: Record<TAudienceBulkAction, OrganizationMemberAuditEvent> = {
-  deactivate: 'DEACTIVATED',
-  reactivate: 'REACTIVATED',
   archive: 'ARCHIVED',
   unarchive: 'UNARCHIVED',
   delete: 'REMOVED'
@@ -67,6 +63,18 @@ export type BulkApplyInput = {
   reason?: string;
   filterSnapshot?: Record<string, unknown>;
 };
+
+export type BulkApplyOptions = {
+  /** Runs in the apply transaction before any change, with the seats the action takes back. */
+  assertSeats?: (tx: DbOrTxClient, seats: number) => Promise<unknown>;
+};
+
+/** Only archived members are off the seat count, so any move out of ARCHIVED takes a seat again. */
+export function countSeatsTakenBack(members: Pick<BulkAudienceMemberRow, 'status'>[], action: TAudienceBulkAction) {
+  if (action === 'archive' || action === 'delete') return 0;
+
+  return members.filter((member) => member.status === 'ARCHIVED').length;
+}
 
 /** Resolved but unchanged — usually already in the target state. */
 function buildFailures(members: BulkAudienceMemberRow[], succeededIds: number[]) {
@@ -157,7 +165,7 @@ async function changeStatus(
 
   await recordOrganizationMemberAudit(orgId, buildAuditEntries(changed, input, actorProfileId), tx);
 
-  if (action === 'deactivate' || action === 'archive') {
+  if (action === 'archive') {
     const emails = changed.filter((member) => member.email).map((member) => member.email!.toLowerCase());
 
     if (emails.length > 0) {
@@ -179,13 +187,19 @@ export async function applyAudienceBulkActionToMembers(
   orgId: string,
   memberIds: number[],
   input: BulkApplyInput,
-  actorProfileId: string
+  actorProfileId: string,
+  options: BulkApplyOptions = {}
 ): Promise<BulkApplyOutcome> {
   const { outcome, members } = await db.transaction(async (tx) => {
     const members = await getBulkAudienceMembersByIds(orgId, memberIds, tx);
 
     if (members.length === 0) {
       throw new AudienceBulkError('NO_MATCHING_MEMBERS', 'No matching learners to act on');
+    }
+
+    const seats = countSeatsTakenBack(members, input.action);
+    if (seats > 0 && options.assertSeats) {
+      await options.assertSeats(tx, seats);
     }
 
     if (input.action === 'delete') {
@@ -201,7 +215,12 @@ export async function applyAudienceBulkActionToMembers(
 
   await emitBulkOutcomeWebhookEvents(orgId, members, outcome, input.action, actorProfileId);
 
-  return outcome;
+  const loadedIds = new Set(members.map((member) => member.id));
+  const notFound = memberIds
+    .filter((memberId) => !loadedIds.has(memberId))
+    .map((memberId) => ({ memberId, reason: 'NOT_FOUND' }));
+
+  return { ...outcome, requested: memberIds.length, failed: [...outcome.failed, ...notFound] };
 }
 
 async function emitBulkOutcomeWebhookEvents(

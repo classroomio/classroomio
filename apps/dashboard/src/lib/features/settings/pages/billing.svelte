@@ -12,11 +12,9 @@
 
   let isRedirecting = $state(false);
 
-  async function onOpenBilling() {
-    console.log({
-      plan: $currentOrgPlan
-    });
+  const hasBillingPortal = $derived($currentOrgPlan?.provider === 'polar' || $currentOrgPlan?.provider === 'lmz');
 
+  async function onOpenBilling() {
     try {
       if ($currentOrgPlan?.provider === 'polar') {
         const url = new URL('/api/polar/portal', window.location.origin);
@@ -85,7 +83,7 @@
           <Item.Description>{$t('settings.billing.admin_only')}</Item.Description>
         {/if}
       </Item.Content>
-      {#if $isOrgAdmin}
+      {#if $isOrgAdmin && hasBillingPortal}
         <Item.Actions>
           <HoverableItem>
             {#snippet children(isHovered)}

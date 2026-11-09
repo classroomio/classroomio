@@ -106,12 +106,13 @@ export async function getCourseMembers(courseId: string): Promise<CourseMemberWi
  */
 function progressSummaryLateral(courseId: string): SQL {
   const totalItems = sql<number>`(
-    (SELECT COUNT(*) FROM lesson l WHERE l.course_id = ${courseId}) +
+    (SELECT COUNT(*) FROM lesson l WHERE l.course_id = ${courseId} AND l.completion_policy != 'none') +
     (
       SELECT COUNT(*)
       FROM exercise ex
       LEFT JOIN lesson el ON el.id = ex.lesson_id
-      WHERE ex.course_id = ${courseId} OR el.course_id = ${courseId}
+      WHERE (ex.course_id = ${courseId} OR el.course_id = ${courseId})
+        AND ex.completion_policy != 'none'
     )
   )::int`;
 
@@ -123,13 +124,14 @@ function progressSummaryLateral(courseId: string): SQL {
         ON lc.lesson_id = l.id
        AND lc.profile_id = ${schema.groupmember.profileId}
        AND lc.is_complete = true
-      WHERE l.course_id = ${courseId}
+      WHERE l.course_id = ${courseId} AND l.completion_policy != 'none'
     ) +
     (
       SELECT COUNT(*)
       FROM exercise ex
       LEFT JOIN lesson el ON el.id = ex.lesson_id
       WHERE (ex.course_id = ${courseId} OR el.course_id = ${courseId})
+        AND ex.completion_policy != 'none'
         AND ${isExerciseCompletedSql('ex', { groupMemberId: sql`${schema.groupmember.id}` })}
     )
   )::int`;

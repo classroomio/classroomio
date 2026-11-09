@@ -873,8 +873,8 @@ export async function lockOrganizationForStudentCapacity(orgId: string, dbClient
 }
 
 /**
- * Student memberships that occupy a plan seat. `ARCHIVED` is excluded and
- * `DEACTIVATED` is not: archiving reclaims a seat, deactivating keeps one.
+ * Student memberships that occupy a plan seat. `ARCHIVED` is excluded, so
+ * archiving reclaims a seat.
  */
 export async function countActiveStudents(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
   try {
@@ -1488,8 +1488,8 @@ export const updateOrganization = async (
  * @param orgId Organization ID
  * @returns Array of plan records
  */
-export const getOrganizationPlanStatus = async (orgId: string) => {
-  const result = await db
+export const getOrganizationPlanStatus = async (orgId: string, dbClient: DbOrTxClient = db) => {
+  const result = await dbClient
     .select({
       planName: schema.organizationPlan.planName,
       isActive: schema.organizationPlan.isActive

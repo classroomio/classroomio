@@ -23,7 +23,7 @@ export const DEFAULT_ORG_AUDIENCE_QUERY: OrganizationAudienceQuery = {
 
 const SORT_BY_VALUES: OrganizationAudienceSortBy[] = ['createdAt', 'name', 'email', 'lastLoginAt', 'lastActiveAt'];
 const SORT_ORDER_VALUES: OrganizationAudienceSortOrder[] = ['asc', 'desc'];
-const MEMBER_STATUS_VALUES: OrganizationAudienceMemberStatus[] = ['ACTIVE', 'DEACTIVATED', 'ARCHIVED'];
+const MEMBER_STATUS_VALUES: OrganizationAudienceMemberStatus[] = ['ACTIVE', 'ARCHIVED'];
 const INVITE_STATUS_VALUES: OrganizationAudienceInviteStatus[] = ['active', 'pending', 'expired', 'revoked'];
 const ENROLLMENT_VALUES: OrganizationAudienceEnrollment[] = ['enrolled', 'not_enrolled'];
 const COMPLETION_VALUES: OrganizationAudienceCompletion[] = ['not_started', 'in_progress', 'completed'];
@@ -33,6 +33,10 @@ const ACTIVITY_WINDOW_VALUES: OrganizationAudienceActivityWindow[] = ['7d', '30d
 /** Unknown values fall back to the default, so a truncated link still loads. */
 function readEnum<T extends string>(value: string | null, allowed: T[]): T | undefined {
   return value && (allowed as string[]).includes(value) ? (value as T) : undefined;
+}
+
+function readMemberStatus(value: string | null) {
+  return readEnum(value === 'DEACTIVATED' ? 'ARCHIVED' : value, MEMBER_STATUS_VALUES);
 }
 
 export function getAudienceQueryFromSearchParams(
@@ -49,7 +53,7 @@ export function getAudienceQueryFromSearchParams(
     limit: Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : defaults.limit,
     sortBy: readEnum(searchParams.get('sortBy'), SORT_BY_VALUES) ?? defaults.sortBy,
     sortOrder: readEnum(searchParams.get('sortOrder'), SORT_ORDER_VALUES) ?? defaults.sortOrder,
-    status: readEnum(searchParams.get('status'), MEMBER_STATUS_VALUES) ?? defaults.status,
+    status: readMemberStatus(searchParams.get('status')) ?? defaults.status,
     inviteStatus: readEnum(searchParams.get('inviteStatus'), INVITE_STATUS_VALUES),
     enrollment: readEnum(searchParams.get('enrollment'), ENROLLMENT_VALUES),
     completion: readEnum(searchParams.get('completion'), COMPLETION_VALUES),

@@ -222,7 +222,7 @@ When a lesson has no blocks, the canvas shows:
 
 Clicking a tile adds that block's ready-made example and the empty state disappears. If the admin later removes every block, the empty state comes back.
 
-The empty state is only visible in Edit. In Preview, an empty lesson shows what a learner would see for a lesson with no content (as in v1).
+The add-content empty state is only visible in Edit. In Preview, an empty lesson shows "Nothing to preview yet" with a prompt to switch to Edit. Learners see "This lesson isn't ready yet" and "Your instructor hasn't added any content to this lesson. Check back soon." Each empty state shows the `MachineBlankLesson` animation.
 
 ## Add content menu
 

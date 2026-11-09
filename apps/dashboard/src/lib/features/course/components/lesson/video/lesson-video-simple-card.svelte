@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { Image } from '$features/ui';
-  import VideoIcon from '@lucide/svelte/icons/video';
-  import { ExternalLinkIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
+  import * as Block from '@cio/ui/custom/block';
   import { courseApi, lessonApi } from '$features/course/api';
   import VideoCardDropdown from './video-card-dropdown.svelte';
   import VideoHlsStatusBadge from './video-hls-status-badge.svelte';
   import {
-    getVideoThumbnailUrl,
+    getVideoPosterUrls,
     getVideoTitle,
     getVideoDurationSeconds,
     formatVideoDuration,
@@ -21,14 +19,29 @@
     video: LessonVideo;
     index: number;
     isEditMode: boolean;
-    onRemove: () => void;
+    isExample?: boolean;
+    changeLabel?: string;
+    onChange?: () => void;
+    onRemove?: () => void;
+    onThumbnailSaved?: (thumbnailUrl: string) => void;
+    onMetadataUpdated?: (metadata: Record<string, unknown>) => void;
   }
 
-  let { video, index, isEditMode, onRemove }: Props = $props();
+  let {
+    video,
+    index,
+    isEditMode,
+    isExample = false,
+    changeLabel,
+    onChange,
+    onRemove,
+    onThumbnailSaved = (url) => lessonApi.updateLessonVideoThumbnail(index, url),
+    onMetadataUpdated = (metadata) => lessonApi.updateLessonVideoMetadata(index, metadata)
+  }: Props = $props();
 
   let isTranscribingForVideo = $state(false);
 
-  const thumbnailUrl = $derived(getVideoThumbnailUrl(video));
+  const poster = $derived(getVideoPosterUrls(video));
   const title = $derived(getVideoTitle(video, index));
   const durationSeconds = $derived(getVideoDurationSeconds(video));
   const durationFormatted = $derived(formatVideoDuration(durationSeconds ?? undefined));
@@ -38,7 +51,6 @@
   const mediaType = $derived(getVideoMediaType(video));
   const isYoutube = $derived(mediaType === 'youtube');
   const isVimeo = $derived(mediaType === 'vimeo');
-  const isExternalWithLink = $derived((isYoutube || isVimeo) && !!video.link);
 
   const channelLine = $derived.by(() => {
     const courseTitle = courseApi.course?.title?.trim();
@@ -75,83 +87,40 @@
   });
 </script>
 
-<!-- YouTube-like: thumbnail on top; avatar + stacked text + overflow menu -->
-<div class="group w-full max-w-full min-w-0 {isEditMode ? 'rounded-lg border' : ''}">
-  <div class="ui:bg-muted relative aspect-video w-full min-w-0 overflow-hidden rounded-md">
-    {#if thumbnailUrl}
-      <Image src={thumbnailUrl} alt={title} className="absolute inset-0 block h-full w-full object-cover" />
-    {:else}
-      <div
-        class="flex h-full min-h-0 w-full flex-col items-center justify-center gap-2 px-3 py-4"
-        role="img"
-        aria-label={title}
-      >
-        <VideoIcon class="ui:text-muted-foreground size-12 shrink-0" />
-        <span class="ui:text-muted-foreground line-clamp-2 max-w-full text-center text-xs font-medium">
-          {title}
-        </span>
-      </div>
+<!-- YouTube-like: thumbnail on top; title row + overflow menu -->
+<Block.Video
+  {title}
+  thumbnailUrl={poster.url ?? undefined}
+  fallbackThumbnailUrl={poster.fallbackUrl}
+  durationLabel={durationFormatted}
+  {channelLine}
+  {metaLine}
+  {changeLabel}
+  {onChange}
+  editable={isEditMode}
+>
+  {#snippet actions()}
+    {#if isEditMode && !isExample}
+      <VideoCardDropdown
+        {video}
+        {onRemove}
+        {onThumbnailSaved}
+        onHlsMetadataUpdated={onMetadataUpdated}
+        onTranscribingChange={(value) => (isTranscribingForVideo = value)}
+        menuPlacement="inline"
+      />
     {/if}
+  {/snippet}
 
-    {#if durationFormatted}
-      <div class="absolute right-2 bottom-2 rounded bg-black/80 px-1.5 py-0.5 text-xs font-medium text-white">
-        {durationFormatted}
-      </div>
-    {/if}
-  </div>
-
-  <div class="mt-3 flex min-w-0 gap-3 px-3 py-3">
-    <div class="min-w-0 flex-1">
-      <div class="flex items-start gap-1">
-        <div class="ui:text-foreground min-w-0 flex-1 text-base leading-snug font-semibold" {title}>
-          {#if isExternalWithLink}
-            <HoverableItem class="block min-w-0">
-              {#snippet children(isHovered)}
-                <a
-                  href={video.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex min-w-0 items-start gap-1.5 hover:underline focus:underline focus:outline-none"
-                >
-                  <span class="line-clamp-2 min-w-0 flex-1 break-words">{title}</span>
-                  <ExternalLinkIcon
-                    {isHovered}
-                    size={14}
-                    class="ui:text-muted-foreground mt-0.5 shrink-0"
-                    ariaHidden={true}
-                  />
-                </a>
-              {/snippet}
-            </HoverableItem>
-          {:else}
-            <p class="line-clamp-2 min-w-0 break-words">{title}</p>
-          {/if}
-        </div>
-        {#if isEditMode}
-          <VideoCardDropdown
-            {video}
-            {onRemove}
-            onThumbnailSaved={(url) => lessonApi.updateLessonVideoThumbnail(index, url)}
-            onHlsMetadataUpdated={(metadata) => lessonApi.updateLessonVideoMetadata(index, metadata)}
-            onTranscribingChange={(v) => (isTranscribingForVideo = v)}
-            menuPlacement="inline"
-          />
-        {/if}
-      </div>
-      <p class="ui:text-muted-foreground mt-0.5 line-clamp-1 text-sm leading-snug">
-        {channelLine}
+  {#snippet notice()}
+    {#if isTranscribingForVideo}
+      <p class="mt-0.5 text-sm leading-snug text-orange-500">
+        {$t('course.navItem.lessons.materials.tabs.video.simple_card.transcription_in_progress')}
       </p>
-      {#if isEditMode && isTranscribingForVideo}
-        <p class="mt-0.5 text-sm leading-snug text-orange-500">
-          {$t('course.navItem.lessons.materials.tabs.video.simple_card.transcription_in_progress')}
-        </p>
-      {/if}
-      <div class="mt-0.5 flex min-w-0 items-center gap-2">
-        <p class="ui:text-muted-foreground line-clamp-1 text-sm leading-snug">{metaLine}</p>
-        {#if isEditMode}
-          <VideoHlsStatusBadge status={hlsStatus} />
-        {/if}
-      </div>
-    </div>
-  </div>
-</div>
+    {/if}
+  {/snippet}
+
+  {#snippet status()}
+    <VideoHlsStatusBadge status={hlsStatus} />
+  {/snippet}
+</Block.Video>

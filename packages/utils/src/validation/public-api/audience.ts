@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { AUDIENCE_BULK_IDS_MAX } from '../organization/audience';
 import { AUDIENCE_IMPORT_MAX_ROWS } from '../organization/audience-import';
 
 const ZPublicApiAudienceActivityWindow = z.enum(['7d', '30d', '90d', '180d', 'never']);
@@ -10,7 +11,7 @@ export const ZPublicApiAudienceQuery = z.object({
   search: z.string().trim().optional(),
   sortBy: z.enum(['createdAt', 'name', 'email', 'lastLoginAt', 'lastActiveAt']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
-  status: z.enum(['ACTIVE', 'DEACTIVATED', 'ARCHIVED']).default('ACTIVE'),
+  status: z.enum(['ACTIVE', 'ARCHIVED']).default('ACTIVE'),
   inviteStatus: z.enum(['active', 'pending', 'expired', 'revoked']).optional(),
   enrollment: z.enum(['enrolled', 'not_enrolled']).optional(),
   completion: z.enum(['not_started', 'in_progress', 'completed']).optional(),
@@ -118,3 +119,36 @@ export const ZPublicApiAudienceMemberParam = z.object({
   memberId: z.coerce.number().int().positive()
 });
 export type TPublicApiAudienceMemberParam = z.infer<typeof ZPublicApiAudienceMemberParam>;
+
+const hasNoRepeats = (values: (string | number)[]) =>
+  new Set(values.map((value) => String(value).toLowerCase())).size === values.length;
+
+export const ZPublicApiAudienceBulkStatus = z
+  .object({
+    action: z
+      .enum(['archive', 'unarchive'])
+      .describe('archive: no access, frees the seat. unarchive: active again and takes a seat. Progress is kept.'),
+    memberIds: z
+      .array(z.number().int().positive())
+      .min(1)
+      .max(AUDIENCE_BULK_IDS_MAX)
+      .refine(hasNoRepeats, { message: 'memberIds has repeats' })
+      .optional()
+      .describe(`Up to ${AUDIENCE_BULK_IDS_MAX} student member ids. Send this or emails, not both.`),
+    emails: z
+      .array(z.string().trim().email())
+      .min(1)
+      .max(AUDIENCE_BULK_IDS_MAX)
+      .refine(hasNoRepeats, { message: 'emails has repeats' })
+      .optional()
+      .describe(
+        `Up to ${AUDIENCE_BULK_IDS_MAX} student emails, matched without regard to case. Send this or memberIds, not both.`
+      ),
+    reason: z.string().trim().max(500).optional().describe('Stored in the audit log with each change.'),
+    confirm: z.literal(true).describe('Must be true. Without it the request is refused and nothing changes.')
+  })
+  .refine((data) => (data.memberIds === undefined) !== (data.emails === undefined), {
+    message: 'Send memberIds or emails, not both',
+    path: ['memberIds']
+  });
+export type TPublicApiAudienceBulkStatus = z.infer<typeof ZPublicApiAudienceBulkStatus>;

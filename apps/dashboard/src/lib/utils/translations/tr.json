@@ -649,8 +649,8 @@
         "heading": "E-posta tercihleriniz",
         "description": "Bunlar, bu kuruluşta size gönderilen e-postalar için geçerlidir. Kuruluşunuz yine de belirli e-postaları herkes için devre dışı bırakabilir.",
         "description_with_org": "Bunlar, {orgName}'te size gönderilen e-postalar için geçerlidir. Kuruluşunuz yine de belirli e-postaları herkes için devre dışı bırakabilir.",
-        "save": "Kişisel tercihleri ​​kaydedin",
-        "save_success": "Kişisel bildirim tercihleri ​​kaydedildi"
+        "save": "Kişisel tercihleri kaydedin",
+        "save_success": "Kişisel bildirim tercihleri kaydedildi"
       },
       "org": {
         "heading": "Kuruluş varsayılanları",
@@ -1952,18 +1952,18 @@
       "course_type": "Ders Türü"
     },
     "filters": {
-      "filter": "Filtre",
+      "filter": "Filtrele",
       "popover_title": "Filtreler",
       "clear_all": "Tümünü temizle",
-      "search_placeholder": "İsme göre ara",
+      "search_placeholder": "İsimle ara",
       "status": "Durum",
-      "layout_type": "Düzen türü",
+      "layout_type": "Yerleşim türü",
       "selection_mode": "Seçim modu",
-      "no_results_title": "Filtrelerinizle eşleşen widget yok",
-      "no_results_description": "Her şeyi tekrar görmek için farklı bir arama terimi deneyin veya filtrelerinizi temizleyin.",
-      "no_results_page_title": "Bu sayfada hiçbir şey yok",
-      "no_results_page_description": "Bu filtreler, bu sayfanın başlangıcından daha az widget'la eşleşiyor.",
-      "back_to_first_page": "İlk sayfaya dön"
+      "no_results_title": "Filtrelerinize uyan hiçbir widget bulunamadı.",
+      "no_results_description": "Farklı bir arama terimi deneyin veya filtrelerinizi temizleyerek her şeyi tekrar görüntüleyin.",
+      "no_results_page_title": "Bu sayfada hiçbir şey yok.",
+      "no_results_page_description": "Bu filtreler, bu sayfanın başlangıcındaki değerlerden daha az sayıda widget ile eşleşiyor.",
+      "back_to_first_page": "İlk sayfaya geri dön"
     }
   },
   "setup": {
@@ -2149,6 +2149,33 @@
           "description": "Kuruluşunuzun sitesindeki oturum açma, kaydolma ve diğer hesap sayfalarının arkasında isteğe bağlı arka plan resmi.",
           "paid_plan_note": "Oturum açma arka planını özelleştirmek için planınızı yükseltin.",
           "preview_alt": "Oturum açma arka planı önizlemesi"
+        },
+        "student_home": {
+          "heading": "Öğrenci ana sayfası",
+          "description": "Oturum açan öğrencilerin akademinizin ana sayfasını açtıklarında nereye gideceklerini seçin. Oturum açmamış ziyaretçiler ve ekibiniz açılış sayfanızı görmeye devam eder.",
+          "label": "Oturum açmış öğrenci ana sayfası",
+          "placeholder": "Sayfaları ve kursları arayın",
+          "option_default": "Açılış sayfası (varsayılan)",
+          "group_pages": "Öğrenim portalı",
+          "group_courses": "Kurslar",
+          "reason_disabled_toggle": "Aşağıdaki Kontrol Paneli bölümünde bu özelliği açın",
+          "reason_paid_plan": "Ücretli planlarda mevcut",
+          "courses_empty": "Henüz yayınlanmış kurs yok",
+          "load_more": "Daha fazlasını yükle",
+          "search_empty": "\"{query}\" ile eşleşen sayfa veya kurs yok",
+          "warning_unavailable": "{destination} şu anda öğrencilere sunulmadığından bunun yerine Kontrol Paneline gönderiliyorlar. Başka bir hedef seçin veya onu tekrar kullanılabilir hale getirin.",
+          "warning_course_missing": "Seçtiğiniz kurs silindi veya yayından kaldırıldı, dolayısıyla öğrenciler onun yerine Kontrol Paneli'ne yönlendiriliyor.",
+          "course_hint_open": "Kayıtlı öğrenciler doğrudan bir sonraki derse geçerler. Kayıtlı olmayan öğrenciler tek tıklamayla katılabilir.",
+          "course_hint_restricted": "Kayıtlı öğrenciler doğrudan bir sonraki derse geçerler. Bu kurs ücretlidir veya yalnızca davetle yapılabilir; dolayısıyla kayıtlı olmayan öğrenciler Kontrol Paneli'ne gider.",
+          "unavailable_badge": "Kullanılamıyor",
+          "course_type_live": "Canlı",
+          "course_type_compliance": "Uyumluluk"
+        }
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Oturum açan öğrenciler bu sayfayı atlayıp {destination} adresine gider.",
+          "change": "Değiştir"
         }
       }
     }
@@ -2606,6 +2633,10 @@
             "watch_videos_no_uploads_title": "Bu derste yüklenmiş video yok",
             "watch_videos_required": "Video izlemeyi kullanırken en az bir video seçin.",
             "students_only_note": "Bu kurallar yalnızca öğrenciler için geçerlidir. Öğretirken özgürce önizleyebilir ve gezinebilirsiniz."
+          },
+          "access": {
+            "title": "Erişim",
+            "description": "Siz kilidi açana kadar öğrenciler kilitli bir dersi açamazlar."
           }
         },
         "watch_progress": {
@@ -2752,7 +2783,6 @@
           "body_heading": "Bu ders için henüz not, video veya slayt eklenmedi",
           "body_content": "İlgi çekici içerikler oluşturarak bilginizi öğrencilerinizle paylaşın. Tıklayarak başlayın",
           "get_started": "Başlayın",
-          "no_content": "İçerik Yok",
           "no_translation": "Seçili dil için çeviri yok",
           "button": "düğme",
           "show_transcript": "Transkripti göster",
@@ -2790,7 +2820,9 @@
                 "preview": "Önizleme",
                 "embed_ready": "Yerleştirmeye hazır",
                 "invalid_embed": "Tam iframe yerleştirme kodunu buradan yapıştırın platform.",
-                "unsupported": "Bu yerleştirme henüz desteklemediğimiz bir platformdan."
+                "unsupported": "Bu yerleştirme henüz desteklemediğimiz bir platformdan.",
+                "platform_mismatch": "Bu bir {detected} gömmesi, {selected} değil.",
+                "preview_in_platform": "{platform} içinde önizle"
               },
               "platforms": {
                 "google-slides": {
@@ -3021,7 +3053,63 @@
               "reorder_file": "Dosyayı yeniden sırala"
             }
           },
-          "button_done": "Done"
+          "button_done": "Done",
+          "blocks": {
+            "add_content": "İçerik ekle",
+            "example": "Örnek",
+            "change_type": "{type} türünü değiştir",
+            "edit_type": "{type} düzenle",
+            "remove": "Bloku kaldır",
+            "move_up": "Yukarı çık",
+            "move_down": "Aşağıya doğru hareket edin",
+            "actions": "Blok eylemleri",
+            "drag": "Sırayı değiştirmek için sürükleyin",
+            "drag_hint": "Bir bloğun üzerindeki tutamacı sürükleyerek bloğun sırasını değiştirebilirsiniz. Ayrıca menüsünden Yukarı Taşı ve Aşağı Taşı seçeneklerini de kullanabilirsiniz.",
+            "dismiss_hint": "Yeniden sipariş ipucunu göz ardı et",
+            "empty_title": "Bu dersi oluşturmaya başlayın.",
+            "empty_description": "Not, video, slayt, belge veya resim ekleyin. İstediğiniz kadar blok ekleyebilir ve istediğiniz sırayla düzenleyebilirsiniz.",
+            "empty_note": "Bu not boş.",
+            "scroll_rail": "Ders blokları",
+            "go_to_block": "{index} bloğuna git",
+            "image": {
+              "upload": "Resim yükle",
+              "upload_error": "Resim yüklenemedi. Lütfen tekrar deneyin.",
+              "change": "Resmi değiştir",
+              "settings": "Görüntü ayarları",
+              "alt": "Alternatif metin",
+              "alt_placeholder": "Yardımcı teknoloji kullanan öğrenciler için görseli açıklayın.",
+              "fit": "Yerleştirmek",
+              "fit_cover": "Doldurmak",
+              "fit_contain": "Yerleştirmek"
+            },
+            "settings": {
+              "title": "Ders ayarları",
+              "description": "Bu dersi içerik tuvalinden ayrılmadan yönetin."
+            },
+            "reading_density": {
+              "title": "Okuma yoğunluğu",
+              "description": "Öğrenciler için bloklar arasındaki boşluğu kontrol eder. Düzenleme alanını değiştirmez.",
+              "compact": "Kompakt",
+              "comfortable": "Rahat",
+              "spacious": "Ferah"
+            },
+            "ai": {
+              "title": "Yapay zekâ ile bir not taslağı oluşturun.",
+              "prompt_label": "Çabuk",
+              "prompt_placeholder": "Örneğin, yeni başlayanlar için su döngüsüne kısa bir giriş."
+            },
+            "types": {
+              "note": "Not",
+              "video": "Video",
+              "slides": "Slaytlar",
+              "document": "Belge",
+              "image": "Görüntü"
+            },
+            "empty_preview_title": "Henüz önizlenecek bir şey yok",
+            "empty_preview_description": "Bu derste öğrencilerin görebileceği içerik bulunmamaktadır. Not, video, slayt, belge veya resim eklemek için {editLabel}'a geçin.",
+            "empty_learner_title": "Bu ders henüz hazır değil",
+            "empty_learner_description": "Eğitmeniniz bu derse herhangi bir içerik eklemedi. Yakında tekrar kontrol edin."
+          }
         },
         "exercises": {
           "heading": "Tüm Egzersizler",
@@ -3273,7 +3361,8 @@
                 "passed": "Geçildi",
                 "not_passed": "Geçilmedi",
                 "no_submission_title": "Bu kullanıcının bu alıştırma için gönderimi yok",
-                "no_submission_description": "Gönderimler, bu öğrenci egzersizi tamamladığında burada görünecek."
+                "no_submission_description": "Gönderimler, bu öğrenci egzersizi tamamladığında burada görünecek.",
+                "optional": "İsteğe bağlı"
               },
               "submissions": "Gönderimler",
               "loading_submissions": "Lyükleniyor gönderimler...",
@@ -3602,7 +3691,9 @@
                   "max_characters_placeholder": "Maksimum karakter"
                 }
               }
-            }
+            },
+            "settings_completion_none": "Yok — isteğe bağlı",
+            "settings_completion_none_helper": "Bu alıştırma kursun ilerlemesini engellemez ve kursun tamamlanması veya sertifikalar için gerekli değildir."
           }
         },
         "disabled": "Özellik devre dışı",
@@ -3615,14 +3706,19 @@
           "cancel_btn": "İptal",
           "edit": "Düzenle",
           "delete": "Sil",
-          "load_more_btn": "LDaha fazlasını yükle",
-          "comment_error": "Yorum gönderilemedi. Lütfen tekrar deneyin."
+          "comment_error": "Yorum gönderilemedi. Lütfen tekrar deneyin.",
+          "save_btn": "Kaydet",
+          "unknown_user": "Bilinmiyor",
+          "actions": "Yorum işlemleri",
+          "read_more": "Devamını oku",
+          "show_less": "Daha az göster",
+          "see_all": "Tüm yorumları görün ({count})",
+          "show_more": "Daha fazla yorum göster"
         },
         "version_history": {
           "title": "Sürüm geçmişi",
           "fetch_more_versions": "Daha fazla sürüm getir",
           "current_version": "Geçerli sürüm",
-          "restore_version": "Bu sürümü geri yükle",
           "edit_count": "{sayım, çoğul, bir {# edit} diğer {# edits}}",
           "today": "Bugün",
           "yesterday": "Dün",
@@ -3632,11 +3728,48 @@
             "publish": "Published"
           },
           "by_author": "tarafından {name}",
-          "empty": "Henüz sürüm yok"
+          "empty": "Henüz sürüm yok",
+          "block_label": "{number} / {count} metin bloğu",
+          "restore_failed": "Bu sürüm geri yüklenemedi",
+          "shared_restore_hint": "Bu metin bloğu diğer derslerle paylaşılıyor. Geri yükleme bu derse kendi kopyasını verir ve diğer dersler geçerli metinlerini korur.",
+          "structure_change": "Yapı",
+          "restore_lesson_failed": "Ders geri yüklenemedi",
+          "undo_change": "Geri al",
+          "by_assistant": "Asistan",
+          "by_restore": "Geri yükle",
+          "change_added": "{name} eklendi",
+          "change_removed": "{name} kaldırıldı",
+          "change_moved": "{name} taşındı",
+          "change_edited": "{name} değiştirildi",
+          "block_type": {
+            "note": "metin bloğu",
+            "video": "video",
+            "slides": "slaytlar",
+            "document": "belge",
+            "image": "resim"
+          },
+          "change_kind": {
+            "added": "Eklendi",
+            "removed": "Kaldırıldı",
+            "moved": "Taşındı",
+            "edited": "Değiştirildi"
+          },
+          "restore_version": "Bu bloğu geri yükle",
+          "restore_lesson": "Dersin tamamını geri yükle",
+          "undo_failed": "Bu değişiklik geri alınamadı. Değiştirilen bir şey daha sonra düzenlendiyse bunun yerine istediğiniz sürümü geri yükleyin.",
+          "removed_block_label": "Metin bloğu kaldırıldı",
+          "restore_lesson_confirm": "Dersin tamamı bu sürümle değiştirilsin mi?",
+          "structure_state": "Başlangıç noktası: kaydedilen ilk değişiklikten önce ders bloklarının nasıl düzenlendiği."
         },
         "expand_content": "İçeriği genişlet",
         "collapse_content": "İçeriği daralt",
-        "no_section": "Bölüm yok"
+        "no_section": "Bölüm yok",
+        "header": {
+          "mode_label": "Ders modu",
+          "mode_edit": "Düzenlemek",
+          "mode_preview": "Önizleme",
+          "mode_shortcut": "Modu değiştir"
+        }
       },
       "attendance": {
         "title": "Attendance",
@@ -4651,7 +4784,6 @@
     "filter": {
       "status": "Üye durumu",
       "status_active": "Active",
-      "status_deactivated": "Devre dışı",
       "status_archived": "Arşivlenmiş",
       "last_login": "LSon giriş",
       "last_activity": "LSon etkinlik",
@@ -4687,29 +4819,21 @@
       "clear": "Temizle",
       "action": {
         "archive": "{count} öğrencilerini arşivle",
-        "deactivate": "{count} öğrencilerini devre dışı bırak",
-        "reactivate": "{count} öğrencilerini yeniden etkinleştirin",
         "unarchive": "{count} öğrencilerini arşivden çıkar",
         "delete": "{count} öğrencilerini sil"
       },
       "confirm_title": {
         "archive": "{count} öğrencilerini arşivle?",
-        "deactivate": "{count} öğrencilerini devre dışı bırak?",
-        "reactivate": "{count} öğrencilerini yeniden etkinleştir?",
         "unarchive": "{count} öğrencilerini arşivden çıkar?",
         "delete": "{count} öğrencileri kalıcı olarak kaldırılsın mı?"
       },
       "confirm_body": {
         "archive": "Erişimlerini kaybederler ve planınızda yer açarlar. Bunları istediğiniz zaman arşivden çıkarabilirsiniz.",
-        "deactivate": "Erişimlerini kaybederler ancak planınızdaki yerlerini korurlar. Bunları istediğiniz zaman yeniden etkinleştirebilirsiniz.",
-        "reactivate": "Kuruluşunuza ve kurslarına yeniden erişim kazanırlar.",
         "unarchive": "Yeniden erişim kazanırlar ve planınızda yer alırlar.",
         "delete": "Bu, onları bu kuruluştan kaldırır ve geri alınamaz. Hesapları, gönderimleri ve sonuçları saklanır."
       },
       "confirm_action": {
         "archive": "Archive",
-        "deactivate": "Deactivate",
-        "reactivate": "Reactivate",
         "unarchive": "Unarchive",
         "delete": "Kalıcı olarak sil"
       },
@@ -5673,7 +5797,7 @@
       }
     },
     "generic": {
-      "invalid_type": "Geçersiz tür{beklenen, seç, tanımsız{} diğer{. Beklenen {expected}}}{alındı, seç, tanımsız{} diğer{ (alındı ​​{received})}}",
+      "invalid_type": "Geçersiz tür{beklenen, seç, tanımsız{} diğer{. Beklenen {expected}}}{alındı, seç, tanımsız{} diğer{ (alındı {received})}}",
       "too_big": "Değer çok büyük{maksimum, seç, tanımsız{} diğer{. Maksimum {maximum}}}",
       "too_small": "Değer çok küçük{minimum, seçin, tanımsız{} diğer{. Minimum {minimum}}}",
       "invalid_format": "Geçersiz biçim{doğrulama, seçme, tanımsız{} diğer{ {validation} için}}",
@@ -5834,7 +5958,22 @@
         "fetch_documentation_url_with_url": "Reading {url}",
         "list_youtube_playlist_videos": "Loynatma listesi videolarını listeleme",
         "get_lesson_transcript": "Video transkripsiyonunu okuma",
-        "add_youtube_video_to_lesson": "YouTube videosunu yerleştirme"
+        "add_youtube_video_to_lesson": "YouTube videosunu yerleştirme",
+        "add_lesson_note_block": "Metin bloğu ekleme",
+        "remove_lesson_block": "Bir metin bloğunu kaldırma",
+        "move_lesson_block": "Bir bloğu taşıma",
+        "add_lesson_slides_block": "Slayt ekleme",
+        "add_lesson_image_block": "Resim ekleme",
+        "update_lesson_block_settings": "Blok ayarları güncelleniyor",
+        "update_lesson_block_requirements": "Tamamlama kuralları güncelleniyor",
+        "detach_lesson_block": "Paylaşılan bir bloğu ayırma",
+        "list_block_library": "Blok kütüphanesinde arama",
+        "attach_library_block": "Kütüphane bloğu ekleme",
+        "move_lesson_block_to_lesson": "Bir bloğu başka bir derse taşıma",
+        "attach_document_to_lesson": "Belge ekleme",
+        "get_lesson_history": "Ders geçmişini okuma",
+        "restore_lesson_version": "Daha önceki bir sürümü geri yükleme",
+        "undo_lesson_change": "Bir değişikliği geri alma"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
@@ -5874,7 +6013,21 @@
         "get_lesson_transcript_plan_gated": "Transkriptler ücretli bir plan gerektirir",
         "get_lesson_transcript_no_credits": "Transkriptleri getirmek için AI kredisi bitti",
         "get_lesson_transcript_unavailable": "No transcript available for {title}",
-        "add_youtube_video_to_lesson": "Gömülü video: {title}"
+        "add_youtube_video_to_lesson": "Gömülü video: {title}",
+        "remove_lesson_block": "{title}'dan bir metin bloğu kaldırıldı",
+        "move_lesson_block": "{title} içinde bir blok taşındı",
+        "add_lesson_slides_block": "{title} dosyasına slaytlar eklendi",
+        "add_lesson_image_block": "{title}'a bir resim eklendi",
+        "update_lesson_block_settings": "{title} içindeki bir blok güncellendi",
+        "update_lesson_block_requirements": "{title} içindeki tamamlama kuralları güncellendi",
+        "detach_lesson_block": "{title} adlı kullanıcıya paylaşılan bloğun kendi kopyasını verdi",
+        "list_block_library": "Blok kütüphanesinde arama yapıldı",
+        "attach_library_block": "{title}'a bir kütüphane bloğu eklendi",
+        "move_lesson_block_to_lesson": "Bir blok {title}'a taşındı",
+        "attach_document_to_lesson": "Doküman eklendi: {title}",
+        "get_lesson_history": "Ders geçmişi yüklendi",
+        "restore_lesson_version": "Dersin önceki bir sürümü geri yüklendi",
+        "undo_lesson_change": "Bir değişiklik geri alındı"
       }
     },
     "mention_lesson": "LDers",

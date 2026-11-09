@@ -53,10 +53,13 @@ export interface TAdminCourse extends TBaseCourse {
  * Student course type - extends TBaseCourse with progress fields
  * Used for student dashboard and enrolled courses views
  * progressRate = lessons completed, exercisesCompleted = exercises submitted
+ * lessonCount / exerciseCount = all content (display), progress* = content counted toward progress
  */
 export interface TStudentCourse extends TBaseCourse {
   progressRate: number;
   exercisesCompleted: number;
+  progressLessonCount: number;
+  progressExerciseCount: number;
   certificateEarnedAt: string | null;
   complianceStatus: string | null;
   complianceCycleNumber: number | null;
@@ -699,7 +702,10 @@ export async function getCourseProgress(
     const certificationEmailSentAt = groupMemberResult[0].certificationEmailSentAt ?? null;
 
     const [lessons, completedLessons, exercises, [completedRow]] = await Promise.all([
-      db.select({ id: schema.lesson.id }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId)),
+      db
+        .select({ id: schema.lesson.id })
+        .from(schema.lesson)
+        .where(and(eq(schema.lesson.courseId, courseId), sql`${schema.lesson.completionPolicy} != 'none'`)),
 
       db
         .select({ id: schema.lessonCompletion.id })
@@ -708,6 +714,7 @@ export async function getCourseProgress(
         .where(
           and(
             eq(schema.lesson.courseId, courseId),
+            sql`${schema.lesson.completionPolicy} != 'none'`,
             eq(schema.lessonCompletion.profileId, profileId),
             eq(schema.lessonCompletion.isComplete, true)
           )
@@ -717,7 +724,12 @@ export async function getCourseProgress(
         .select({ id: schema.exercise.id })
         .from(schema.exercise)
         .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-        .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId))),
+        .where(
+          and(
+            or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+            sql`${schema.exercise.completionPolicy} != 'none'`
+          )
+        ),
 
       db
         .select({
@@ -728,6 +740,7 @@ export async function getCourseProgress(
         .where(
           and(
             or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+            sql`${schema.exercise.completionPolicy} != 'none'`,
             isExerciseCompletedSql('exercise', { groupMemberId })
           )
         )
@@ -1150,11 +1163,16 @@ export const getEnrolledCourses = async ({
       .select({
         course: schema.course,
         lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('lesson_count'),
+        progressLessonCount:
+          sql<number>`COUNT(DISTINCT CASE WHEN ${schema.lesson.completionPolicy} != 'none' THEN ${schema.lesson.id} END)`.as(
+            'progress_lesson_count'
+          ),
         progressRate: sql<number>`(
           SELECT COUNT(*)::bigint
           FROM ${schema.lessonCompletion} as lc
           JOIN ${schema.lesson} as l ON l.id = lc.lesson_id
           WHERE ${eq(sql`l.course_id`, schema.course.id)}
+          AND l.completion_policy != 'none'
           AND lc.is_complete = true
           AND lc.profile_id = ${sql.raw(`'${profileId}'::uuid`)}
         )`.as('progress_rate'),
@@ -1164,12 +1182,20 @@ export const getEnrolledCourses = async ({
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
           WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
         )`.as('exercise_count'),
+        progressExerciseCount: sql<number>`(
+          SELECT COUNT(*)::bigint
+          FROM ${schema.exercise} as ex
+          LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
+          WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
+            AND ex.completion_policy != 'none'
+        )`.as('progress_exercise_count'),
         exercisesCompleted: sql<number>`(
           SELECT COUNT(*)::bigint
           FROM ${schema.exercise} as ex
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
           WHERE ${and(
             or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id)),
+            sql`ex.completion_policy != 'none'`,
             isExerciseCompletedSql('ex', { profileId })
           )}
         )`.as('exercises_completed'),
@@ -1228,8 +1254,10 @@ export const getEnrolledCourses = async ({
     return result.map((row) => ({
       ...withResolvedCourseBannerImage(row.course),
       lessonCount: Number(row.lessonCount),
+      progressLessonCount: Number(row.progressLessonCount ?? 0),
       progressRate: Number(row.progressRate),
       exerciseCount: Number(row.exerciseCount),
+      progressExerciseCount: Number(row.progressExerciseCount ?? 0),
       exercisesCompleted: Number(row.exercisesCompleted),
       certificateEarnedAt: row.certificateEarnedAt ?? null,
       complianceStatus: row.complianceStatus ?? null,

@@ -89,6 +89,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/audience': 'List audience members',
   'POST /public-api/v1/audience': 'Invite audience members',
   'POST /public-api/v1/audience/assign-courses': 'Assign members to courses',
+  'POST /public-api/v1/audience/bulk-status': 'Change student status in bulk',
   'GET /public-api/v1/audience/{memberId}': 'Get an audience member',
   'PUT /public-api/v1/audience/{memberId}': 'Update an audience member',
   'DELETE /public-api/v1/audience/{memberId}': 'Remove an audience member',
@@ -270,7 +271,13 @@ const OPERATION_TAGS = [
   { name: 'Course Sections', description: 'Add, rename, move and delete course sections.' },
   {
     name: 'Course Lessons',
-    description: 'List, create, read, update and delete lessons, including attached videos.'
+    description:
+      'List, create, read, update and delete lessons. The note, videos, slides and documents fields are deprecated: use Lesson Blocks.'
+  },
+  {
+    name: 'Lesson Blocks',
+    description:
+      'Read and edit the content blocks of a lesson: add, reorder, reuse, copy and remove notes, videos and slides.'
   },
   {
     name: 'Lesson Translations',

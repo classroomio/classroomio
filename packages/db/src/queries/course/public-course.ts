@@ -4,7 +4,17 @@ import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TLesson } from '@db/types';
 import { pickLessonLanguageBody } from './lesson-language-body';
+import { listLessonIdsWithBlockType } from '@db/queries/block/block';
+import { listBlockLocales } from '@db/queries/block/locale';
+import { listLessonBlockRows } from '@db/queries/block/placement';
 import { resolveCourseBannerImage } from '@cio/utils/functions';
+import {
+  blockHasLocalizedContent,
+  toPublicBlockData,
+  toPublicVideoData,
+  type TBlockType,
+  type TVideoBlockData
+} from '@cio/utils/validation/block';
 
 /**
  * Queries backing the anonymous public-course surface under
@@ -176,13 +186,15 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
         title: schema.lesson.title,
         order: schema.lesson.order,
         sectionId: schema.lesson.sectionId,
-        isUnlocked: schema.lesson.isUnlocked,
-        videos: schema.lesson.videos,
-        videoUrl: schema.lesson.videoUrl
+        isUnlocked: schema.lesson.isUnlocked
       })
       .from(schema.lesson)
       .where(eq(schema.lesson.courseId, courseRow.id))
       .orderBy(asc(schema.lesson.order));
+    const lessonIdsWithVideo = await listLessonIdsWithBlockType(
+      lessonRows.map((row) => row.id),
+      'video'
+    );
 
     const exerciseRows = await db
       .select({
@@ -217,9 +229,7 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
         order: row.order === null ? 0 : Number(row.order),
         sectionId: isContentGroupingEnabled ? row.sectionId : null,
         isUnlocked: row.isUnlocked ?? false,
-        hasVideo:
-          (Array.isArray(row.videos) && row.videos.length > 0) ||
-          (typeof row.videoUrl === 'string' && row.videoUrl.length > 0)
+        hasVideo: lessonIdsWithVideo.has(row.id)
       }));
 
     const exerciseItems: PublicCourseExerciseItem[] = exerciseRows
@@ -281,6 +291,32 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
   }
 }
 
+export type PublicLessonVideo = NonNullable<PublicLessonContent['video']>;
+
+export interface PublicLessonBlock {
+  id: string;
+  type: TBlockType;
+  position: string;
+  data: Record<string, unknown>;
+  /** Localized HTML for types that store it (notes); empty otherwise. */
+  content: string;
+}
+
+function publicVideoOf(block: PublicLessonBlock): PublicLessonVideo | null {
+  return block.type === 'video' ? (block.data as PublicLessonVideo) : null;
+}
+
+/**
+ * Joins the HTML of the lesson's localized blocks (notes) in display order.
+ */
+export function publicLessonBody(blocks: PublicLessonBlock[]): string {
+  return blocks
+    .filter((block) => blockHasLocalizedContent(block.type))
+    .map((block) => block.content)
+    .filter((content) => content.length > 0)
+    .join('\n');
+}
+
 export interface PublicLessonContent {
   kind: 'lesson';
   id: string;
@@ -289,6 +325,7 @@ export interface PublicLessonContent {
   sectionTitle: string | null;
   isUnlocked: boolean;
   body: string;
+  blocks: PublicLessonBlock[];
   video: {
     type: 'youtube' | 'vimeo' | 'generic' | 'upload' | 'google_drive';
     link: string;
@@ -345,15 +382,7 @@ export type PublicCourseItemContent = PublicLessonContent | PublicExerciseConten
 export function toPublicLessonVideo(
   video: NonNullable<TLesson['videos']>[number]
 ): NonNullable<Extract<PublicCourseItemContent, { kind: 'lesson' }>['video']> {
-  const thumbnailUrl = video.metadata?.thumbnailUrl;
-
-  return {
-    type: video.type,
-    link: video.link,
-    assetId: video.assetId,
-    ...(video.key ? { key: video.key } : {}),
-    ...(thumbnailUrl ? { metadata: { thumbnailUrl } } : {})
-  };
+  return toPublicVideoData(video as TVideoBlockData);
 }
 
 export async function getPublicCourseItem(
@@ -384,9 +413,6 @@ export async function getPublicCourseItem(
         id: schema.lesson.id,
         slug: schema.lesson.slug,
         title: schema.lesson.title,
-        note: schema.lesson.note,
-        videoUrl: schema.lesson.videoUrl,
-        videos: schema.lesson.videos,
         isUnlocked: schema.lesson.isUnlocked,
         sectionId: schema.lesson.sectionId
       })
@@ -403,24 +429,10 @@ export async function getPublicCourseItem(
             .limit(1)
         : [];
 
-      const languageRows = await db
-        .select({
-          content: schema.lessonLanguage.content,
-          locale: schema.lessonLanguage.locale
-        })
-        .from(schema.lessonLanguage)
-        .where(eq(schema.lessonLanguage.lessonId, lessonRow.id));
-
-      const body = pickLessonLanguageBody(languageRows, lessonRow.note);
-
-      const firstVideo =
-        Array.isArray(lessonRow.videos) && lessonRow.videos.length > 0
-          ? toPublicLessonVideo(lessonRow.videos[0])
-          : lessonRow.videoUrl
-            ? { type: 'generic' as const, link: lessonRow.videoUrl }
-            : null;
-
       const isLocked = !lessonRow.isUnlocked;
+      const blocks = isLocked ? [] : await getPublicLessonBlocks(lessonRow.id);
+      const body = publicLessonBody(blocks);
+      const firstVideo = blocks.map(publicVideoOf).find((video) => video !== null) ?? null;
 
       return {
         kind: 'lesson',
@@ -429,8 +441,9 @@ export async function getPublicCourseItem(
         title: lessonRow.title,
         sectionTitle: section[0]?.title ?? null,
         isUnlocked: lessonRow.isUnlocked ?? false,
-        body: isLocked ? '' : body,
-        video: isLocked ? null : firstVideo,
+        body,
+        blocks,
+        video: firstVideo,
         courseOrganizationId: courseRow.organizationId
       };
     }
@@ -533,7 +546,6 @@ export async function getPublicLessonMarkdownSource(
       .select({
         id: schema.lesson.id,
         title: schema.lesson.title,
-        note: schema.lesson.note,
         isUnlocked: schema.lesson.isUnlocked
       })
       .from(schema.lesson)
@@ -542,21 +554,13 @@ export async function getPublicLessonMarkdownSource(
 
     if (!lessonRow) return null;
 
-    const languageRows = await db
-      .select({
-        content: schema.lessonLanguage.content,
-        locale: schema.lessonLanguage.locale
-      })
-      .from(schema.lessonLanguage)
-      .where(eq(schema.lessonLanguage.lessonId, lessonRow.id));
-
-    const body = pickLessonLanguageBody(languageRows, lessonRow.note);
     const isUnlocked = lessonRow.isUnlocked ?? false;
+    const body = isUnlocked ? publicLessonBody(await getPublicLessonBlocks(lessonRow.id)) : '';
 
     return {
       courseTitle: courseRow.title,
       lessonTitle: lessonRow.title,
-      body: isUnlocked ? body : '',
+      body,
       allowMarkdownExport: courseRow.metadata?.allowMarkdownExport === true,
       isUnlocked
     };
@@ -662,4 +666,31 @@ export async function findNonAutoGradableQuestionsInCourse(
       `Failed to scan questions for course "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
+}
+
+/**
+ * Loads a public lesson's blocks in order, projected through each type's public shape.
+ * Types without a public shape (documents) are omitted.
+ */
+export async function getPublicLessonBlocks(lessonId: string): Promise<PublicLessonBlock[]> {
+  const rows = await listLessonBlockRows(lessonId);
+  const localizedIds = rows.filter((row) => blockHasLocalizedContent(row.block.type)).map((row) => row.block.id);
+  const locales = await listBlockLocales(localizedIds);
+
+  const blocks: PublicLessonBlock[] = [];
+  for (const { placement, block } of rows) {
+    const data = toPublicBlockData(block.type, block.data);
+    if (!data) continue;
+
+    const content = blockHasLocalizedContent(block.type)
+      ? pickLessonLanguageBody(
+          locales.filter((locale) => locale.blockId === block.id),
+          null
+        )
+      : '';
+
+    blocks.push({ id: block.id, type: block.type as TBlockType, position: placement.position, data, content });
+  }
+
+  return blocks;
 }

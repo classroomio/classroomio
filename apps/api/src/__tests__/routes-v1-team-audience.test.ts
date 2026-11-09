@@ -22,6 +22,7 @@ const mocks = vi.hoisted(() => ({
     createAudienceService: vi.fn(),
     getAudienceMemberService: vi.fn(),
     assignAudienceCoursesService: vi.fn(),
+    bulkUpdateAudienceStatusService: vi.fn(),
     removeAudienceService: vi.fn(),
     updateAudienceService: vi.fn()
   }
@@ -116,6 +117,14 @@ const routes: Array<[string, string, unknown, string, number, number]> = [
     1,
     200
   ],
+  [
+    'POST',
+    '/audience/bulk-status',
+    { action: 'archive', memberIds: [7], confirm: true },
+    'set_audience_status',
+    1,
+    200
+  ],
   ['GET', '/audience/7', undefined, 'get_audience_member', 0, 200],
   ['PUT', '/audience/7', { name: 'Sam Student' }, 'update_audience_member', 1, 200],
   ['DELETE', '/audience/7', undefined, 'remove_audience_member', 1, 200]
@@ -138,6 +147,7 @@ describe('team and audience routes through the v1 router', () => {
     mocks.audience.createAudienceService.mockResolvedValue({});
     mocks.audience.getAudienceMemberService.mockResolvedValue({});
     mocks.audience.assignAudienceCoursesService.mockResolvedValue({});
+    mocks.audience.bulkUpdateAudienceStatusService.mockResolvedValue({});
     mocks.audience.removeAudienceService.mockResolvedValue({});
     mocks.audience.updateAudienceService.mockResolvedValue({});
     useKey('mcp', NEW_SCOPES);
@@ -182,6 +192,9 @@ describe('team and audience routes through the v1 router', () => {
     expect((await request('PUT', '/team/7', { roleId: 1 })).status).toBe(403);
     expect((await request('PUT', '/audience/7', { name: 'Sam Student' })).status).toBe(403);
     expect((await request('DELETE', '/audience/7')).status).toBe(403);
+    expect(
+      (await request('POST', '/audience/bulk-status', { action: 'archive', memberIds: [7], confirm: true })).status
+    ).toBe(403);
     expect((await request('GET', '/team/invite-link?roleId=1')).status).toBe(200);
     expect((await request('DELETE', '/team/7')).status).toBe(403);
     expect((await request('POST', '/team/invites', { emails: ['a@example.com'], roleId: 2 })).status).toBe(403);
@@ -193,6 +206,33 @@ describe('team and audience routes through the v1 router', () => {
     expect(mocks.team.updateTeamInviteLinkService).not.toHaveBeenCalled();
     expect(mocks.team.updateTeamMemberService).not.toHaveBeenCalled();
     expect(mocks.audience.updateAudienceService).not.toHaveBeenCalled();
+    expect(mocks.audience.bulkUpdateAudienceStatusService).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['without confirm', { action: 'archive', memberIds: [7] }],
+    ['with confirm false', { action: 'archive', memberIds: [7], confirm: false }],
+    ['with both memberIds and emails', { action: 'archive', memberIds: [7], emails: ['a@b.co'], confirm: true }],
+    ['with neither memberIds nor emails', { action: 'archive', confirm: true }],
+    ['with repeated memberIds', { action: 'archive', memberIds: [7, 7], confirm: true }],
+    ['with emails repeated in another case', { action: 'archive', emails: ['a@b.co', 'A@B.co'], confirm: true }],
+    ['with delete as the action', { action: 'delete', memberIds: [7], confirm: true }],
+    ['with the retired deactivate action', { action: 'deactivate', memberIds: [7], confirm: true }],
+    ['with the retired reactivate action', { action: 'reactivate', memberIds: [7], confirm: true }],
+    ['with an invalid email', { action: 'archive', emails: ['not-an-email'], confirm: true }]
+  ])('refuses a bulk status change %s with 400 and changes nothing', async (_label, body) => {
+    const response = await request('POST', '/audience/bulk-status', body);
+
+    expect(response.status).toBe(400);
+    expect(mocks.audience.bulkUpdateAudienceStatusService).not.toHaveBeenCalled();
+  });
+
+  it('passes the key organization, creator and body to the bulk status service', async () => {
+    const body = { action: 'unarchive', emails: ['a@b.co'], reason: 'Paid', confirm: true };
+
+    await request('POST', '/audience/bulk-status', body);
+
+    expect(mocks.audience.bulkUpdateAudienceStatusService).toHaveBeenCalledWith('org-id', 'actor-id', body);
   });
 
   it('keeps team scopes out of the audience, and the other way round', async () => {

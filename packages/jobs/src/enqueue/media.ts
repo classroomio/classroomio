@@ -61,23 +61,24 @@ export async function enqueueLessonVideoPipeline(
   const flow = getFlowProducer();
 
   if (!withTranscription) {
-    const job = await getQueue(QUEUE_NAMES.media).add(
-      JOB_NAMES.media.generateThumbnail,
-      sharedData,
-      QUEUE_DEFAULTS[QUEUE_NAMES.media]
-    );
-    const probe = await getQueue(QUEUE_NAMES.media).add(
-      JOB_NAMES.media.probeMetadata,
-      sharedData,
-      QUEUE_DEFAULTS[QUEUE_NAMES.media]
-    );
+    const tree = await flow.add({
+      name: JOB_NAMES.media.generateThumbnail,
+      queueName: QUEUE_NAMES.media,
+      data: { ...sharedData, markJobCompleteOnSuccess: true },
+      opts: QUEUE_DEFAULTS[QUEUE_NAMES.media],
+      children: [
+        {
+          name: JOB_NAMES.media.probeMetadata,
+          queueName: QUEUE_NAMES.media,
+          data: sharedData,
+          opts: { ...QUEUE_DEFAULTS[QUEUE_NAMES.media], failParentOnFailure: true }
+        }
+      ]
+    });
 
     return {
-      rootJobId: job.id ?? '',
-      jobIds: {
-        [JOB_NAMES.media.generateThumbnail]: job.id ?? '',
-        [JOB_NAMES.media.probeMetadata]: probe.id ?? ''
-      }
+      rootJobId: tree.job.id ?? '',
+      jobIds: collectFlowJobIds(tree)
     };
   }
 

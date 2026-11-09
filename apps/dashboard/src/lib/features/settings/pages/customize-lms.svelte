@@ -12,7 +12,17 @@
   import { LANGUAGES } from '$lib/utils/constants/translation';
 
   import { AttentionHighlight, UploadWidget, UnsavedChanges } from '$features/ui';
+  import { StudentHomeField } from '$features/settings/components';
   import * as Field from '@cio/ui/base/field';
+  import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+  import { toLmsAvailabilityContext } from '$features/ui/navigation/lms-navigation';
+  import { studentHomeApi } from '$features/org/api/student-home.svelte';
+  import {
+    buildStudentHomePageOptions,
+    getStudentHomeWarning,
+    toStudentHomeDestination
+  } from '$features/org/utils/student-home-utils';
+  import type { TStudentHomeDestination } from '@cio/utils/validation/organization';
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -24,8 +34,10 @@
   let customization = $state($state.snapshot($currentOrg.customization));
   let savedCustomizationSnapshot = $state('');
   let capturedOrgId = $state('');
+  let coursesListedOrgId = $state('');
   let languageLocale = $state<TLocale>('en');
   let languageEnforced = $state(false);
+  let studentHome = $state<TStudentHomeDestination | null>(null);
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -48,9 +60,19 @@
   function captureCustomizationSnapshot() {
     savedCustomizationSnapshot = JSON.stringify({
       customization,
-      language: { locale: languageLocale, enforced: languageEnforced }
+      language: { locale: languageLocale, enforced: languageEnforced },
+      studentHome
     });
   }
+
+  const availabilityContext = $derived({
+    ...toLmsAvailabilityContext($currentOrg),
+    customization
+  });
+  const studentHomePageOptions = $derived(buildStudentHomePageOptions((key) => t.get(key), availabilityContext));
+  const studentHomeWarning = $derived(
+    getStudentHomeWarning(studentHome, studentHomePageOptions, studentHomeApi.courses)
+  );
 
   $effect(() => {
     const organizationId = $currentOrg?.id;
@@ -60,8 +82,20 @@
     customization = $state.snapshot($currentOrg.customization);
     languageLocale = $currentOrg.settings?.language?.locale ?? 'en';
     languageEnforced = $currentOrg.settings?.language?.enforced ?? false;
+    studentHome = toStudentHomeDestination($currentOrg);
     savedCustomizationSnapshot = '';
     captureCustomizationSnapshot();
+  });
+
+  $effect(() => {
+    const organizationId = $currentOrg?.id;
+    if (!organizationId || organizationId === coursesListedOrgId) return;
+
+    coursesListedOrgId = organizationId;
+    const savedHome = toStudentHomeDestination($currentOrg);
+    void studentHomeApi.listCourses({
+      includeCourseId: savedHome?.type === 'course' ? savedHome.courseId : undefined
+    });
   });
 
   $effect(() => {
@@ -70,16 +104,21 @@
     hasUnsavedChanges =
       JSON.stringify({
         customization,
-        language: { locale: languageLocale, enforced: languageEnforced }
+        language: { locale: languageLocale, enforced: languageEnforced },
+        studentHome
       }) !== savedCustomizationSnapshot;
   });
 
   export async function handleSave() {
+    const savedSettings = savedCustomizationSnapshot ? JSON.parse(savedCustomizationSnapshot) : null;
+    const studentHomeChanged = JSON.stringify(studentHome) !== JSON.stringify(savedSettings?.studentHome ?? null);
+
     await orgApi.update($currentOrg.id, {
       customization,
       settings: {
         language: { locale: languageLocale, enforced: languageEnforced }
-      }
+      },
+      ...(studentHomeChanged ? { studentHome } : {})
     });
 
     if (orgApi.success) {
@@ -95,6 +134,7 @@
     customization = savedSettings.customization;
     languageLocale = savedSettings.language.locale;
     languageEnforced = savedSettings.language.enforced;
+    studentHome = savedSettings.studentHome ?? null;
     hasUnsavedChanges = false;
   }
 </script>
@@ -102,6 +142,24 @@
 <UnsavedChanges bind:hasUnsavedChanges />
 
 <Field.Group class="w-full max-w-md! px-2">
+  <Field.Set>
+    <Field.Legend>{$t('components.settings.customize_lms.student_home.heading')}</Field.Legend>
+    <Field.Description>{$t('components.settings.customize_lms.student_home.description')}</Field.Description>
+    <Field.Group>
+      <Field.Field>
+        <Field.Label>{$t('components.settings.customize_lms.student_home.label')}</Field.Label>
+        <StudentHomeField
+          bind:value={studentHome}
+          pageOptions={studentHomePageOptions}
+          warning={studentHomeWarning}
+          error={orgApi.errors.studentHome}
+        />
+      </Field.Field>
+    </Field.Group>
+  </Field.Set>
+
+  <Field.Separator />
+
   <AttentionHighlight id="language-settings" scrollBlock="center">
     <Field.Set>
       <Field.Legend>{$t('components.settings.customize_lms.language.title')}</Field.Legend>

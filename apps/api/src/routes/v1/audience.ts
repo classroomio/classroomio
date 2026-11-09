@@ -2,6 +2,8 @@ import * as z from 'zod';
 import {
   ZPublicApiAssignAudienceCourses,
   ZPublicApiAssignAudienceCoursesResponse,
+  ZPublicApiAudienceBulkStatus,
+  ZPublicApiAudienceBulkStatusResponse,
   ZPublicApiAudienceMemberParam,
   ZPublicApiAudienceMemberResponse,
   ZPublicApiAudienceQuery,
@@ -12,6 +14,7 @@ import {
 } from '@cio/utils/validation/public-api';
 import {
   assignAudienceCoursesService,
+  bulkUpdateAudienceStatusService,
   createAudienceService,
   getAudienceMemberService,
   listAudienceService,
@@ -19,7 +22,7 @@ import {
   updateAudienceService
 } from '@api/services/v1/audience';
 
-import { AUDIENCE_IMPORT_MAX_ROWS } from '@cio/utils/validation/organization';
+import { AUDIENCE_BULK_IDS_MAX, AUDIENCE_IMPORT_MAX_ROWS } from '@cio/utils/validation/organization';
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { getEventSource } from '@api/utils/event-source';
@@ -148,6 +151,46 @@ export const v1AudienceRouter = new Hono()
         );
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to assign audience to courses');
+      }
+    }
+  )
+  .post(
+    '/bulk-status',
+    describeRoute({
+      description: `Archive or unarchive up to ${AUDIENCE_BULK_IDS_MAX} students by member id or email, with confirm set to true; ${ORG_ADMIN_RULE}.`,
+      tags: ['Audience'],
+      responses: {
+        200: jsonResponse(
+          'Status change applied. rows has one entry per memberId or email, in order, with what happened to it',
+          itemResponse(ZPublicApiAudienceBulkStatusResponse)
+        ),
+        400: {
+          description: 'Invalid body: confirm is not true, both or neither of memberIds and emails, or repeated entries'
+        },
+        401: errorResponses.unauthorized,
+        403: {
+          description: `${audienceWriteForbidden.description}, or moving students out of archived would pass the student limit (UPGRADE_REQUIRED)`
+        },
+        429: mcpRateLimitResponse
+      }
+    }),
+    validator('json', ZPublicApiAudienceBulkStatus),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const payload = c.req.valid('json');
+        const result = await bulkUpdateAudienceStatusService(orgId, actorId, payload);
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to change audience status');
       }
     }
   )

@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
   import { cn } from '../../tools';
   import { SafeHtmlContent } from '../safe-html-content';
-  import { MediaPlayer } from '../media-player';
+  import { MediaPlayer, type HlsCookieGrant } from '../media-player';
   import { PageOutline } from '../page-outline';
   import { injectHeadingIds, withPageTitle } from '../page-outline/heading-utils';
   import Callout from './callout.svelte';
@@ -15,11 +15,11 @@
     /**
      * For HLS videos. Host app provides a callback that mints the public
      * HLS cookie via `POST /org-site/course/.../hls-cookie`. The shared
-     * media player invokes it before hls.js loads the manifest, and again
-     * via `onPlaybackReload` when the learner clicks "Reload playback"
-     * after a cookie-expiry / segment failure.
+     * media player invokes it before hls.js loads the manifest, before the
+     * cookie expires, after a playlist or segment is rejected as unauthorized, and when
+     * the learner clicks "Reload playback".
      */
-    onBeforeHlsLoad?: () => Promise<void>;
+    onBeforeHlsLoad?: () => Promise<HlsCookieGrant | void>;
     /**
      * Resolves a relative HLS URL (e.g. `/hls/{assetId}/master.m3u8`) into
      * an absolute URL the browser can fetch. Host app passes a resolver
@@ -36,6 +36,8 @@
     calloutAnimation?: PublicCourseCalloutAnimation;
     /** Actions rendered beside the lesson title (e.g. Copy Page, Share). */
     titleActions?: Snippet;
+    /** Replaces the default video and body with host-rendered lesson content, such as its blocks. */
+    content?: Snippet;
     /** Actions rendered under the page outline (copy, share, open in chat). */
     outlineActions?: Snippet;
     outlineLabel?: string;
@@ -53,6 +55,7 @@
     callout = null,
     calloutAnimation,
     titleActions,
+    content,
     outlineActions,
     outlineLabel = 'On this page',
     class: className,
@@ -122,7 +125,11 @@
           {@render titleActions?.()}
         </div>
 
-        {#if lesson.video}
+        {#if content}
+          <div class="ui:mt-6">
+            {@render content()}
+          </div>
+        {:else if lesson.video}
           <div class="ui:mt-6 ui:w-full ui:overflow-hidden ui:rounded-lg">
             <MediaPlayer
               source={{
@@ -149,13 +156,15 @@
           </div>
         {/if}
 
-        <div class="prose lesson-body ui:sm:prose-sm ui:mt-8 ui:max-w-none ui:dark:text-white">
-          {#if injectedBody.html}
-            <SafeHtmlContent content={injectedBody.html} />
-          {:else}
-            <p class="ui:text-muted-foreground">No content yet.</p>
-          {/if}
-        </div>
+        {#if !content}
+          <div class="prose lesson-body ui:sm:prose-sm ui:mt-8 ui:max-w-none ui:dark:text-white">
+            {#if injectedBody.html}
+              <SafeHtmlContent content={injectedBody.html} />
+            {:else}
+              <p class="ui:text-muted-foreground">No content yet.</p>
+            {/if}
+          </div>
+        {/if}
 
         <Callout variant="inline" {callout} animation={resolvedCalloutAnimation} />
       {/if}

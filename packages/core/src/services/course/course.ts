@@ -39,6 +39,8 @@ import {
   type TCourseCreate
 } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
+import { sealBlockVersionsOnPublish } from '../block/block-version';
+import { sealLatestLessonRevisionsForCourse } from '@cio/db/queries/block';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { skipRemovedOffsetReminderDeliveries } from '@cio/db/queries/course/live-session-reminder';
@@ -481,7 +483,18 @@ export async function updateCourse(
       );
     }
 
-    const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData), dbClient);
+    const courseValues = sanitizeUnknownStrings(sanitizedData);
+    const isPublishing = !currentCourse.isPublished && data.isPublished === true;
+    const writeCourse = async (client: DbOrTxClient) => {
+      const row = await updateCourseQuery(courseId, courseValues, client);
+      if (row && isPublishing) {
+        await sealBlockVersionsOnPublish(courseId, client);
+        await sealLatestLessonRevisionsForCourse(courseId, client);
+      }
+
+      return row;
+    };
+    const updated = isPublishing && dbClient === db ? await db.transaction(writeCourse) : await writeCourse(dbClient);
     if (!updated) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
@@ -611,8 +624,11 @@ export async function buildCourseStudentAnalytics(
           return null;
         }
 
-        const completedExercises = userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0;
-        const totalExercises = userExercisesStats?.length || 0;
+        const progressExerciseStats = (userExercisesStats ?? []).filter(
+          (exercise) => exercise.completionPolicy !== 'none'
+        );
+        const completedExercises = progressExerciseStats.filter((exercise) => exercise.isCompleted).length;
+        const totalExercises = progressExerciseStats.length;
 
         const totalEarnedPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
         const totalPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
@@ -776,14 +792,16 @@ export async function getUserCourseAnalytics(
     // percents. null = "no grade yet", never 0.
     const averageGrade = totalPoints > 0 ? Math.round((totalEarnedPoints / totalPoints) * 100) : null;
 
-    const completedLessons = lessons.filter((lesson) => lesson.completed);
-    const progressPercentage = calcPercentageWithRounding(completedLessons.length, lessons.length);
-
-    const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
+    const progressExerciseStats = userExercisesStats.filter((exercise) => exercise.completionPolicy !== 'none');
+    const completedExercises = progressExerciseStats.filter((exercise) => exercise.isCompleted).length;
     const totalExercises = courseProgress.exercises_count || 0;
 
     const lessonsCompleted = courseProgress.lessons_completed || 0;
     const lessonsCount = courseProgress.lessons_count || 0;
+    const progressPercentage = calcPercentageWithRounding(
+      lessonsCompleted + completedExercises,
+      lessonsCount + totalExercises
+    );
 
     let progressImpact = null;
 

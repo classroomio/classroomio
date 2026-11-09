@@ -24,14 +24,12 @@ ClassroomIO counts every non-archived organization member whose role is **Studen
 
 Member status changes affect seats differently:
 
-| Action         | Access result                              | Plan seat result                   |
-| -------------- | ------------------------------------------ | ---------------------------------- |
-| **Deactivate** | The student loses access until reactivated | The student keeps the seat         |
-| **Archive**    | The student loses access until unarchived  | The seat is freed                  |
-| **Reactivate** | The student regains access                 | The existing seat remains occupied |
-| **Unarchive**  | The student regains access                 | A seat is required again           |
+| Action        | Access result                             | Plan seat result         |
+| ------------- | ----------------------------------------- | ------------------------ |
+| **Archive**   | The student loses access until unarchived | The seat is freed        |
+| **Unarchive** | The student regains access                | A seat is required again |
 
-ClassroomIO checks capacity before direct additions, invitations that create a student, self-enrollment, course joins, cohort assignments, and imports. An action can fill the final available seat, but an action that would exceed the limit is blocked.
+ClassroomIO checks capacity before direct additions, invitations that create a student, self-enrollment, course joins, cohort assignments, imports, and moving archived students out of **Archived** (unarchive or undoing an archive). An action can fill the final available seat, but an action that would exceed the limit is blocked.
 
 Administrators receive a one-time notification when an addition crosses half of a finite student allowance and another when it reaches the allowance.
 
@@ -87,7 +85,7 @@ Review usage before canceling or changing a subscription. See [Manage your subsc
 
 ## If a count looks wrong
 
-- **Student count is higher than expected:** check for deactivated students. Deactivation keeps a seat; archiving frees it.
+- **Student count is higher than expected:** archived students do not count. Archive students who no longer need access to free their seats.
 - **A student appears in several courses:** course enrollments do not create extra organization seats for the same person.
 - **AI usage is higher than raw token counts:** model-cost weighting is included in the credit total.
 - **AI credits did not roll over:** only purchased credits roll over. The plan's included allowance resets monthly.

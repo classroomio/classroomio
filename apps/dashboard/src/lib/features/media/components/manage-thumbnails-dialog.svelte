@@ -5,6 +5,7 @@
   import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import MediaPlayer from '@cio/ui/custom/media-player/media-player.svelte';
+  import type { HlsCookieGrant } from '@cio/ui/custom/media-player';
   import CheckIcon from '@lucide/svelte/icons/check';
   import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
 
@@ -23,8 +24,11 @@
     return built.toString().replace(/\/\*$/, '') + '/master.m3u8';
   }
 
-  async function mintHlsCookie(assetId: string): Promise<void> {
-    await classroomio.organization.assets[':assetId'].hls.cookie.$post({ param: { assetId } });
+  async function mintHlsCookie(assetId: string): Promise<HlsCookieGrant> {
+    const response = await classroomio.organization.assets[':assetId'].hls.cookie.$post({ param: { assetId } });
+    const body = await response.json();
+
+    return { expiresInSeconds: body.data.expiresInSeconds };
   }
 
   interface Props {

@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
 
   import { appInitApi } from '$features/app/init.svelte';
-  import { BlockLoader } from '@cio/ui/custom/block-loader';
+  import * as Block from '@cio/ui/custom/block';
   import { Button } from '@cio/ui/base/button';
   import FrownIcon from '@lucide/svelte/icons/frown';
   import { Empty } from '@cio/ui/custom/empty';
@@ -95,7 +95,7 @@
 {:else}
   <div class="m-2 flex h-screen w-screen flex-col items-center justify-center font-sans sm:m-0">
     <SimpleLogoNav />
-    <BlockLoader
+    <Block.Loader
       blockText={false}
       title={$t('common.loading_states.opening_academy.title')}
       caption={$t('common.loading_states.opening_academy.caption')}

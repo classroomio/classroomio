@@ -16,13 +16,13 @@ describe('getCourseContentItems note content', () => {
     const sql = await buildQuerySql();
 
     expect(sql).not.toContain('regexp_replace');
-    expect(sql).not.toContain('lesson_language');
+    expect(sql).not.toContain('block_locale');
   });
 
   it('scans lesson note HTML when includeNoteContent is set', async () => {
     const sql = await buildQuerySql({ includeNoteContent: true });
 
     expect(sql).toContain('regexp_replace');
-    expect(sql).toContain('lesson_language');
+    expect(sql).toContain('block_locale');
   });
 });

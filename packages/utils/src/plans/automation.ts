@@ -113,6 +113,15 @@ export const MCP_TOOL_CREDIT_COST = {
   create_course_lesson_comment: 1,
   update_course_lesson_comment: 1,
   delete_course_lesson_comment: 1,
+  list_lesson_blocks: 0,
+  add_lesson_block: 1,
+  attach_lesson_block: 1,
+  update_lesson_block: 1,
+  set_lesson_block_content: 1,
+  update_lesson_block_placement: 1,
+  move_lesson_block: 1,
+  remove_lesson_block: 1,
+  duplicate_lesson_block: 1,
   set_course_content_unlocked: 1,
   delete_course_content: 1,
   list_course_submissions: 0,
@@ -132,6 +141,7 @@ export const MCP_TOOL_CREDIT_COST = {
   assign_audience_courses: 1,
   update_audience_member: 1,
   remove_audience_member: 1,
+  set_audience_status: 1,
   list_team_members: 0,
   get_team_member: 0,
   update_team_member: 1,
@@ -261,6 +271,7 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'list_course_lesson_translations' ||
     toolName === 'list_course_lesson_history' ||
     toolName === 'list_course_lesson_comments' ||
+    toolName === 'list_lesson_blocks' ||
     toolName === 'get_course_exercise_notify_status' ||
     toolName === 'list_exercise_templates' ||
     toolName === 'get_exercise_template' ||

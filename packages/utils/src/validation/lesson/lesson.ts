@@ -99,6 +99,7 @@ export const ZLessonUpdate = z.object({
   completionPolicy: z.enum(['manual', 'video_watch', 'none']).optional(),
   videoWatchThreshold: z.number().int().min(1).max(100).optional(),
   commentsEnabled: z.boolean().optional(),
+  readingDensity: z.enum(['compact', 'comfortable', 'spacious']).optional(),
   videoUrl: z.url().optional(),
   slideUrl: z.string().optional(),
   slides: z.array(ZLessonSlide).optional(),
@@ -137,10 +138,21 @@ export type TLessonHistoryParam = z.infer<typeof ZLessonHistoryParam>;
 export const ZLessonHistoryQuery = z.object({
   locale: z.string().min(1),
   limit: z.string().transform(Number).pipe(z.number().int().min(1).max(50)).default(10),
-  /** Keyset cursor from the previous page, formatted `<iso timestamp>|<id>`. */
+  /** Keyset cursor from the previous page, formatted `<iso timestamp>|<entry type>|<row id>`. */
   cursor: z.string().min(1).optional()
 });
 export type TLessonHistoryQuery = z.infer<typeof ZLessonHistoryQuery>;
+
+export const ZLessonHistoryEntryRestore = z.object({
+  entryType: z.enum(['text', 'structure']),
+  entryId: z.number().int().min(1)
+});
+export type TLessonHistoryEntryRestore = z.infer<typeof ZLessonHistoryEntryRestore>;
+
+export const ZLessonChangeSetUndo = z.object({
+  changeSetId: z.uuid()
+});
+export type TLessonChangeSetUndo = z.infer<typeof ZLessonChangeSetUndo>;
 export type TLessonListQuery = z.infer<typeof ZLessonListQuery>;
 
 export const ZLessonCommentCreate = z.object({

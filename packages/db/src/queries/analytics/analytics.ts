@@ -133,7 +133,8 @@ export async function getUserExercisesStats(courseId: string, userId: string, op
         id: schema.exercise.id,
         title: schema.exercise.title,
         lessonId: schema.exercise.lessonId,
-        lessonTitle: schema.lesson.title
+        lessonTitle: schema.lesson.title,
+        completionPolicy: schema.exercise.completionPolicy
       })
       .from(schema.exercise)
       .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
@@ -206,6 +207,7 @@ export async function getUserExercisesStats(courseId: string, userId: string, op
         lessonId: exercise.lessonId,
         lessonTitle: exercise.lessonTitle || '',
         title: exercise.title,
+        completionPolicy: exercise.completionPolicy,
         status: userSubmission?.statusId,
         score: userSubmission?.total || 0,
         totalPoints,
@@ -358,7 +360,7 @@ export async function getProfileCourseProgress(
         count: sql<number>`COUNT(*)`.as('count')
       })
       .from(schema.lesson)
-      .where(eq(schema.lesson.courseId, courseId));
+      .where(and(eq(schema.lesson.courseId, courseId), sql`${schema.lesson.completionPolicy} != 'none'`));
 
     const lessonsCount = Number(lessonsResult[0]?.count || 0);
 
@@ -372,6 +374,7 @@ export async function getProfileCourseProgress(
       .where(
         and(
           eq(schema.lesson.courseId, courseId),
+          sql`${schema.lesson.completionPolicy} != 'none'`,
           eq(schema.lessonCompletion.profileId, profileId),
           eq(schema.lessonCompletion.isComplete, true)
         )
@@ -386,7 +389,12 @@ export async function getProfileCourseProgress(
       })
       .from(schema.exercise)
       .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-      .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)));
+      .where(
+        and(
+          or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+          sql`${schema.exercise.completionPolicy} != 'none'`
+        )
+      );
 
     const exercisesCount = Number(exercisesResult[0]?.count || 0);
 
@@ -401,6 +409,7 @@ export async function getProfileCourseProgress(
       .where(
         and(
           or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+          sql`${schema.exercise.completionPolicy} != 'none'`,
           eq(schema.submission.submittedBy, groupMember[0].id)
         )
       );

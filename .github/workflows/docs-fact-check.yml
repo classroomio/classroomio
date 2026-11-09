@@ -20,7 +20,7 @@ jobs:
   review:
     if: github.event_name == 'pull_request_target' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request_review_comment')
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - name: Checkout trusted review code
         uses: actions/checkout@v6

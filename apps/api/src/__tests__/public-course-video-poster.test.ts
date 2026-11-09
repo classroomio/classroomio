@@ -49,6 +49,7 @@ function lessonItem(video: Record<string, unknown> | null) {
     isUnlocked: true,
     body: '<p>hi</p>',
     video,
+    blocks: [],
     courseOrganizationId: ORG_ID
   };
 }

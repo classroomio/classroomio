@@ -63,8 +63,6 @@ export * as FileDropZone from './custom/file-drop-zone';
 // import { EdraEditor } from '@cio/ui/custom/editor/ui';
 export * as ImageCropper from './custom/image-cropper';
 export { Chip } from './custom/chip';
-export { BlockLoader } from './custom/block-loader';
-export type { BlockLoaderBlock, BlockLoaderTone } from './custom/block-loader';
 export { CompactLoader } from './custom/compact-loader';
 export { IconButton } from './custom/icon-button';
 export { TextareaField } from './custom/textarea-field';
@@ -100,6 +98,10 @@ export * as EmailPreview from './custom/email-preview';
 export * from './custom/animation';
 export { AttachmentList } from './custom/attachment-list';
 export type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './custom/attachment-list';
+export * as AddBlock from './custom/add-block';
+export * as Block from './custom/block';
+export { DensityControl } from './custom/density-control';
+export type { DensityControlOption, DensityControlValue } from './custom/density-control';
 export {
   SlideEmbedCard,
   SlideEmbedFrame,

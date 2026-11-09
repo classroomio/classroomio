@@ -605,6 +605,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
       "enum": [
         "submitted",
         "passed",
+        "none",
       ],
       "type": "string",
     },
@@ -1113,7 +1114,7 @@ exports[`public API exercise question and section contract > ZPublicApiCourseExe
       "type": "boolean",
     },
     "completionPolicy": {
-      "description": "submitted | passed",
+      "description": "submitted | passed | none",
       "type": "string",
     },
     "courseId": {

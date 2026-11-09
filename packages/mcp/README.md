@@ -138,6 +138,7 @@ Current tools:
 - `assign_audience_courses`
 - `update_audience_member`
 - `remove_audience_member`
+- `set_audience_status`
 - `list_team_members`
 - `get_team_member`
 - `update_team_member`
@@ -191,7 +192,9 @@ Course section, lesson and content tools:
 
 - `list_course_sections`, `create_course_section`, `update_course_section`, `delete_course_section`
 - `list_course_lessons`, `get_course_lesson`, `delete_course_lesson`, `notify_course_lesson_session_update`
-- `list_course_lesson_translations`, `set_course_lesson_translation`, `list_course_lesson_history`
+- `list_lesson_blocks`, `add_lesson_block`, `attach_lesson_block`, `update_lesson_block`, `set_lesson_block_content`, `update_lesson_block_placement`, `move_lesson_block`, `remove_lesson_block`, `duplicate_lesson_block`
+- `list_course_lesson_translations`, `set_course_lesson_translation` (these read and write the lesson's first note block)
+- `list_course_lesson_history` (the text versions of every text block in one language, newest first, with `blockId` naming the block; it does not include blocks being added, moved or removed, and there is no MCP restore or undo)
 - `list_course_lesson_comments`, `create_course_lesson_comment`, `update_course_lesson_comment`, `delete_course_lesson_comment`
 - `reorder_course_content`, `set_course_content_unlocked`, `delete_course_content`
 
@@ -201,7 +204,8 @@ They call `/public-api/v1/courses/:id/{sections,lessons,content}` with the key's
 - `delete_course_section`, `delete_course_lesson` and `delete_course_content` are hard deletes. Deleting a section also deletes its lessons and exercises. If students have submissions or lesson completions in what you delete, they fail with 409 unless `force` is true, which deletes that work too.
 - `reorder_course_content`, `set_course_content_unlocked` and `delete_course_content` are all or nothing: one id outside the course fails the whole call with 404.
 - Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
-- Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`. Restoring a lesson version is not covered.
+- Lesson content is a list of blocks (notes, videos, slides, documents). A block can be reused in several lessons and editing it changes all of them; send the `version` you last read as `expectedVersion` so concurrent edits fail with 409 instead of overwriting each other. `required` and the watch threshold belong to a lesson's use of a block, not to the block.
+- Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`; the `videos` they take are video blocks. Restoring a lesson version is not covered.
 - `update_lesson` also accepts `lessonAt`, the live-session start time as an ISO 8601 timestamp with a UTC offset (`null` clears it). Lessons created with `create_lesson` start with no date, and there is no field for the join link, so set that in the dashboard. Students see a live session, and get reminders, only when the lesson has both a date and a join link; reminders also need a published Live class course.
 
 Course copy, related courses and landing page tools:
@@ -323,6 +327,8 @@ Audience and team tools act as the key creator:
 - `update_team_member` switches a member between admin and tutor with `roleId` (1 or 2). The key creator cannot change their own role, and the organization must keep at least one admin.
 - `update_audience_member` and `update_team_member` take `name`, `username`, `avatarUrl` and `locale` to change a joined member's profile, with the same rules as Settings → Profile, except that `avatarUrl` must be an http or https URL. A taken username is refused. The profile is shared, so a change shows in every organization that person belongs to, and the person is emailed which fields changed. Email and password stay with the person. On a member who has not accepted their invite yet, `update_audience_member` takes `email` to correct the address instead.
 - `remove_audience_member` and `remove_team_member` delete the organization membership; the person keeps their account. The key creator cannot remove themselves, and the organization must keep at least one admin.
+- `set_audience_status` calls `POST /public-api/v1/audience/bulk-status` to archive or unarchive up to 500 students by `memberIds` or `emails`, and needs `confirm: true`. Archived students lose course access and keep their progress; archiving also frees their plan seat. Unarchiving takes their seats back, and is refused with `UPGRADE_REQUIRED` when it would go over the plan's student limit. It returns one row per id or email: `changed`, `already_in_state` or `not_found`.
+- When a tool call fails in the API, the result has `isError: true` and its text is JSON with the API's `error`, `code` (for example `UPGRADE_REQUIRED`), `status` and, for a validation error, `field`.
 - `invite_team_members` sends the same invite emails as Settings → Teams. If an address belongs to a student, nothing is sent and `requiresConfirmation` is true; call again with those addresses in `confirmedStudentEmails` to promote them.
 - `get_team_invite_link` and `set_team_invite_link` manage the reusable admin or tutor join link (`roleId` 1 or 2). `set_team_invite_link` with `enabled: true` returns the active link, creating a new one if the role's link is off; `enabled: false` turns it off.
 

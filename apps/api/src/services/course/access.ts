@@ -1,10 +1,39 @@
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { assertStudentCanAccessContent } from '@cio/core/services/course/progression';
+import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 import { getCourseById, getCourseProgress } from '@cio/db/queries/course/course';
-import { getCourseContentItems } from '@cio/db/queries/course/content';
+import { getCourseProgramAccess, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { getCachedCourseContentItemsForStudentAccessCheck } from '@api/utils/redis/course-content-cache';
 
 const DEFAULT_CONTENT_GROUPING = true;
+
+/**
+ * Whether a profile can open a course: group member, org admin, or a member of
+ * a program that includes it. Backfills program members into the course group,
+ * and throws when that backfill is blocked.
+ */
+export async function canProfileOpenCourse(courseId: string, profileId: string): Promise<boolean> {
+  if (await isUserCourseMemberOrOrgAdmin(courseId, profileId)) {
+    return true;
+  }
+
+  return Boolean(await ensureProgramCourseAccess(courseId, profileId));
+}
+
+/**
+ * Read-only counterpart of `canProfileOpenCourse`: never backfills and never
+ * throws on the student limit.
+ */
+export async function canProfileReachCourse(courseId: string, profileId: string): Promise<boolean> {
+  if (await isUserCourseMemberOrOrgAdmin(courseId, profileId)) {
+    return true;
+  }
+
+  const programAccess = await getCourseProgramAccess(courseId, profileId);
+
+  return Boolean(programAccess?.organizationId);
+}
 
 /**
  * Blocks a STUDENT-role member from reading an unpublished course at all
@@ -37,7 +66,7 @@ export async function assertEnrolledStudentContentAccess(params: {
   const [courseRow, progress, contentItems] = await Promise.all([
     getCourseById(params.courseId),
     getCourseProgress(params.courseId, params.profileId),
-    getCourseContentItems(params.courseId, params.profileId)
+    getCachedCourseContentItemsForStudentAccessCheck(params.courseId, params.profileId)
   ]);
 
   const course = courseRow[0];

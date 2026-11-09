@@ -20,7 +20,7 @@
       icon: '⚡',
       title: 'Get the summary',
       description:
-        'AI condenses any lesson into 5 key bullet points. Great for reviewing before an assessment or when time is short.'
+        'Ask the AI tutor to condense any lesson into key points. Great for reviewing before an assessment or when time is short.'
     }
   ];
 
@@ -103,7 +103,7 @@
             <button
               class="flex items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-950"
             >
-              ⚡ Summarize
+              ⚡ Ask AI
             </button>
           </div>
 
