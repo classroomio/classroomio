@@ -60,7 +60,7 @@ export const v1CohortMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Add people to a cohort directly, without sending an invitation; ${COHORT_TEAM_RULE}.`,
+      description: `Add people to a cohort without an invitation; a student added by email with an account outside the org joins it and uses a seat; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
         201: jsonResponse(

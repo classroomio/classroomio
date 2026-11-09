@@ -412,7 +412,8 @@ export async function addCohortMembersSettled(
             tx
           );
 
-          if (member && member.roleId === ROLE.STUDENT && member.profileId && courseGroupIds.length > 0) {
+          // The org membership is what grants cohort access, so it is created even when the cohort has no courses.
+          if (member && member.roleId === ROLE.STUDENT && member.profileId) {
             const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
 
             const existingOrgMemberId = await getOrganizationMemberIdByOrgAndProfile(
@@ -439,15 +440,17 @@ export async function addCohortMembersSettled(
               tx
             );
 
-            enrolledMembers = await insertGroupMembersOnConflictDoNothing(
-              validCourseGroupIds.map((groupId) => ({
-                groupId,
-                roleId: ROLE.STUDENT,
-                profileId: member.profileId,
-                email: normalizedEmail ?? undefined
-              })),
-              tx
-            );
+            if (validCourseGroupIds.length > 0) {
+              enrolledMembers = await insertGroupMembersOnConflictDoNothing(
+                validCourseGroupIds.map((groupId) => ({
+                  groupId,
+                  roleId: ROLE.STUDENT,
+                  profileId: member.profileId,
+                  email: normalizedEmail ?? undefined
+                })),
+                tx
+              );
+            }
           }
 
           if (member?.profileId && (member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR)) {

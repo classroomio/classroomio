@@ -79,6 +79,7 @@ class CohortApi extends BaseApiWithErrors {
         this.loadedCohortId = cohortId;
       },
       onError: (error) => {
+        if (this.currentCohortId !== cohortId) return;
         if (error && typeof error === 'object' && 'code' in error && error.code === ErrorCodes.COHORT_FORBIDDEN) {
           this.accessDeniedCohortId = cohortId;
         }

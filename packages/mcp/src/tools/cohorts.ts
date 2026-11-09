@@ -156,7 +156,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'add_cohort_members',
-    `Add people to a cohort directly, each with a role and without an invitation email (invite_students_to_cohort sends one); ${COHORT_TEAM_RULE}. Returns { added, errors }, and retrying is safe because existing members fail with code MEMBER_ALREADY_IN_COHORT.`,
+    `Add people to a cohort directly, each with a role and without an invitation email (invite_students_to_cohort sends one); ${COHORT_TEAM_RULE}. A student added by email who has an account outside the organization joins it and uses a plan seat (UPGRADE_REQUIRED when it can't take another student). Returns { added, errors }, and retrying is safe because existing members fail with code MEMBER_ALREADY_IN_COHORT.`,
     addCohortMembersShape,
     WRITE,
     async (args) => {
