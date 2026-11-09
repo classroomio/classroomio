@@ -67,6 +67,12 @@ export interface MediaPlayerOptions {
   onPlaybackAuthRequired?: () => void;
   /** Fires after a new `src` finishes loading metadata (used to restore seek position). */
   onSourceLoaded?: (video: HTMLVideoElement) => void;
+  /**
+   * HTML5 playback only: where a returning viewer left off. The player loads
+   * just enough media to show this position on the progress bar before the
+   * first play. Ignored once playback has started.
+   */
+  resumeAtSeconds?: number;
   /** Label overrides for Vimeo privacy restriction errors */
   vimeoPrivacyErrorTitle?: string;
   vimeoPrivacyErrorDescription?: string;
