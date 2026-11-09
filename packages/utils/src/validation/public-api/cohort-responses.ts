@@ -52,7 +52,11 @@ export const ZPublicApiCohortMemberListItemResponse = ZPublicApiCohortMemberResp
 });
 
 export const ZPublicApiAddCohortMembersResponse = z.object({
-  added: z.array(ZPublicApiCohortMemberResponse).describe('Memberships created by this request'),
+  added: z
+    .array(ZPublicApiCohortMemberResponse)
+    .describe(
+      'Memberships created by this request, plus existing cohort students whose missing org membership it restored'
+    ),
   errors: z
     .array(
       z.object({
@@ -62,7 +66,7 @@ export const ZPublicApiAddCohortMembersResponse = z.object({
         code: z
           .string()
           .describe(
-            'For example MEMBER_ALREADY_IN_COHORT for an existing entry (so retrying duplicates nothing), or UPGRADE_REQUIRED when the org cannot take another student'
+            'E.g. MEMBER_ALREADY_IN_COHORT for an existing member (a student with no org membership gets one instead; retrying duplicates nothing), or UPGRADE_REQUIRED'
           ),
         message: z.string()
       })

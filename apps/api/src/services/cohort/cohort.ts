@@ -1,5 +1,6 @@
 import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import type { TOrganizationmember } from '@cio/db/types';
+import type { TCohortMember } from '@cio/db/queries/cohort';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type TCreateCohort,
@@ -377,16 +378,30 @@ export async function addCohortMembersSettled(
         const profileId = providedProfileId ?? profile?.id ?? null;
         const normalizedEmail = email?.toLowerCase().trim() ?? profile?.email ?? null;
 
+        // A student already in the cohort with no org membership (added before every add created one) is
+        // repaired instead of refused: re-adding them creates the missing membership.
+        let studentToRepair: TCohortMember | null = null;
+
         if (profileId || normalizedEmail) {
           const existing = profileId
             ? await findCohortMemberRowByProfileId(cohortId, profileId)
             : await getCohortMemberByEmail(cohortId, normalizedEmail!);
           if (existing) {
-            throw new AppError(
-              `${email ?? profileId} is already a member of this cohort`,
-              ErrorCodes.MEMBER_ALREADY_IN_COHORT,
-              409
-            );
+            const isRepairable =
+              existing.roleId === ROLE.STUDENT &&
+              roleId === ROLE.STUDENT &&
+              existing.profileId &&
+              !(await getOrganizationMemberIdByOrgAndProfile(cohort.organizationId, existing.profileId));
+
+            if (!isRepairable) {
+              throw new AppError(
+                `${email ?? profileId} is already a member of this cohort`,
+                ErrorCodes.MEMBER_ALREADY_IN_COHORT,
+                409
+              );
+            }
+
+            studentToRepair = existing;
           }
         }
 
@@ -402,15 +417,17 @@ export async function addCohortMembersSettled(
           let studentMilestoneNotification: StudentMilestoneNotification | null = null;
           let enrolledMembers: TGroupmember[] = [];
           let createdOrgMembers: TOrganizationmember[] = [];
-          const member = await addCohortMember(
-            {
-              cohortId,
-              profileId,
-              roleId,
-              email: normalizedEmail ?? undefined
-            },
-            tx
-          );
+          const member =
+            studentToRepair ??
+            (await addCohortMember(
+              {
+                cohortId,
+                profileId,
+                roleId,
+                email: normalizedEmail ?? undefined
+              },
+              tx
+            ));
 
           // The org membership is what grants cohort access, so it is created even when the cohort has no courses.
           if (member && member.roleId === ROLE.STUDENT && member.profileId) {
@@ -490,7 +507,7 @@ export async function addCohortMembersSettled(
           );
         }
 
-        if (transactionResult.member) {
+        if (transactionResult.member && !studentToRepair) {
           await emitCohortMemberWebhookEvent(
             'cohort.member.added',
             cohort.organizationId,
