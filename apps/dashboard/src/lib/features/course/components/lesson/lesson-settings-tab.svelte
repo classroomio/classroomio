@@ -26,6 +26,7 @@
     MIN_SESSION_DURATION_MINUTES
   } from '@cio/utils/functions/live-session';
   import { ZLessonRecordingUrl } from '@cio/utils/validation/lesson';
+  import { slugifyTitle } from '@cio/utils/validation';
   import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
 
   interface Props {
@@ -193,6 +194,7 @@
   });
 
   const isUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
+  const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
 
   function handleUnlockedChange(checked: boolean) {
     lessonApi.updateLessonState('isUnlocked', checked);
@@ -283,6 +285,20 @@
           {/if}
         </Field.Label>
       </Field.Field>
+
+      {#if isPublicCourse}
+        <Field.Field>
+          <InputField
+            label={$t('course.navItem.settings.slug.label')}
+            helperMessage={$t('course.navItem.settings.slug.description')}
+            value={lessonApi.lesson?.slug ?? ''}
+            placeholder={slugifyTitle(lessonApi.lesson?.title ?? '')}
+            onInput={(event) => lessonApi.updateLessonState('slug', event.currentTarget.value)}
+            errorMessage={lessonApi.errors.slug}
+            testId="lesson-settings-slug"
+          />
+        </Field.Field>
+      {/if}
     </Field.Set>
 
     <Field.Separator />

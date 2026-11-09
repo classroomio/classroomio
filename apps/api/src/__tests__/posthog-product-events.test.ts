@@ -53,6 +53,7 @@ vi.mock('@api/utils/course-completion', async (importOriginal) => {
   return { ...actual, scheduleCertificationCompletionWork: vi.fn() };
 });
 
+import { db } from '@cio/db/drizzle';
 import { updateCourse } from '@cio/core/services/course/course';
 import { upsertLessonCompletionService } from '@cio/core/services/lesson/lesson';
 import { evaluateCourseCertification } from '@api/services/course/completion';
@@ -60,6 +61,7 @@ import { evaluateCourseCertification } from '@api/services/course/completion';
 describe('course_published', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(db, 'transaction').mockImplementation(async (write) => write(db as never));
   });
 
   it('reports publishedNow only when the course goes from unpublished to published', async () => {
