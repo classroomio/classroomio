@@ -181,4 +181,40 @@ describe('addCohortMembersSettled', () => {
     );
     expect(insertGroupMembersOnConflictDoNothing).not.toHaveBeenCalled();
   });
+
+  it('repairs a student already in the cohort with no org membership instead of refusing them', async () => {
+    const existing = { id: 'member-1', profileId: 'profile-1', roleId: ROLE.STUDENT };
+    vi.mocked(findCohortMemberRowByProfileId).mockResolvedValue(
+      existing as Awaited<ReturnType<typeof findCohortMemberRowByProfileId>>
+    );
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(null as never);
+    vi.mocked(insertOrganizationMembersOnConflictDoNothing).mockResolvedValue([]);
+
+    const [result] = await addCohortMembersSettled(COHORT_ID, {
+      members: [{ profileId: 'profile-1', roleId: ROLE.STUDENT }]
+    });
+
+    expect(result).toEqual({ status: 'fulfilled', value: existing });
+    expect(addCohortMember).not.toHaveBeenCalled();
+    expect(insertOrganizationMembersOnConflictDoNothing).toHaveBeenCalledWith(
+      [expect.objectContaining({ organizationId: 'org-1', roleId: ROLE.STUDENT, profileId: 'profile-1' })],
+      expect.anything()
+    );
+  });
+
+  it('still refuses a student already in the cohort who has an org membership, archived or not', async () => {
+    vi.mocked(findCohortMemberRowByProfileId).mockResolvedValue({
+      id: 'member-1',
+      profileId: 'profile-1',
+      roleId: ROLE.STUDENT
+    } as Awaited<ReturnType<typeof findCohortMemberRowByProfileId>>);
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(42 as never);
+
+    const [result] = await addCohortMembersSettled(COHORT_ID, {
+      members: [{ profileId: 'profile-1', roleId: ROLE.STUDENT }]
+    });
+
+    expect(result).toMatchObject({ status: 'rejected', reason: { code: 'MEMBER_ALREADY_IN_COHORT' } });
+    expect(insertOrganizationMembersOnConflictDoNothing).not.toHaveBeenCalled();
+  });
 });
