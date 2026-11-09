@@ -92,13 +92,15 @@ export const v1CohortMembersRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: `Change a cohort member's role to tutor or student; ${COHORT_TEAM_RULE}.`,
+      description: `Change a cohort member's role to tutor or student; a tutor/admin made a student who isn't in the org joins it and uses a seat; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
         200: jsonResponse('Cohort member updated successfully', MemberResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: cohortForbiddenResponses.team,
+        403: {
+          description: `${cohortForbiddenResponses.team.description}, or the plan can't take another student (UPGRADE_REQUIRED)`
+        },
         404: { description: 'Cohort or member not found' }
       }
     }),

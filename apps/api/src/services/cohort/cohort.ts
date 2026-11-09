@@ -573,17 +573,42 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
     const wasStaff = isCohortStaffRole(existing.roleId);
     const willBeStaff = isCohortStaffRole(data.roleId);
     const promotingToStaff = Boolean(existing.profileId) && !wasStaff && willBeStaff;
-    const cohort = promotingToStaff ? await getCohortById(cohortId) : null;
-    if (promotingToStaff && !cohort) {
+    const demotingToStudent = Boolean(existing.profileId) && wasStaff && data.roleId === ROLE.STUDENT;
+    const cohort = promotingToStaff || demotingToStudent ? await getCohortById(cohortId) : null;
+    if ((promotingToStaff || demotingToStudent) && !cohort) {
       throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
     }
 
     const courseGroups = promotingToStaff ? await listCohortCourseGroups(cohortId) : [];
+    let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+    let createdOrgMembers: TOrganizationmember[] = [];
 
     const updated = await db.transaction(async (tx) => {
       const member = await updateCohortMemberQuery(cohortId, memberId, { roleId: data.roleId }, tx);
       if (!member) {
         throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
+      }
+
+      // A cohort student needs an org membership for access; a staff member may not have one.
+      if (cohort && demotingToStudent && existing.profileId) {
+        const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(cohort.organizationId, existing.profileId, tx);
+        if (!orgMemberId) {
+          studentMilestoneNotification = await assertStudentCapacityOrThrow(cohort.organizationId, 1, tx, {
+            deferNotification: true
+          });
+          createdOrgMembers = await insertOrganizationMembersOnConflictDoNothing(
+            [
+              {
+                organizationId: cohort.organizationId,
+                roleId: ROLE.STUDENT,
+                profileId: existing.profileId,
+                email: existing.email ?? undefined,
+                verified: true
+              }
+            ],
+            tx
+          );
+        }
       }
 
       if (cohort && existing.profileId && !wasStaff && willBeStaff) {
@@ -603,6 +628,16 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
 
       return member;
     });
+
+    if (studentMilestoneNotification) {
+      notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+        console.error('notifyStudentMilestone error:', error);
+      });
+    }
+
+    for (const createdOrgMember of cohort ? createdOrgMembers : []) {
+      await emitOrganizationMemberWebhookEvent('organization.member.added', cohort!.organizationId, createdOrgMember);
+    }
 
     return updated;
   } catch (error) {

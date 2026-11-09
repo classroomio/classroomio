@@ -168,7 +168,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'update_cohort_member',
-    `Change a cohort member's role to tutor or student; ${COHORT_TEAM_RULE}.`,
+    `Change a cohort member's role to tutor or student; ${COHORT_TEAM_RULE}. A tutor or admin made a student who isn't in the organization joins it and uses a plan seat (UPGRADE_REQUIRED when it can't take another student).`,
     updateCohortMemberShape,
     WRITE,
     async (args) => {

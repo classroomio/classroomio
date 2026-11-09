@@ -126,6 +126,18 @@ describe.skipIf(!hasDatabase)('cohort access follows org member status', () => {
     expect(await isCohortMember(cohortId, profileId('archived'))).toBe(true);
   });
 
+  it('keeps access when a tutor with no org membership is changed to a student', async () => {
+    const { findCohortMemberRowByProfileId, isCohortMember } = await import('@db/queries/cohort');
+    const { getOrganizationMemberIdByOrgAndProfile } = await import('@db/queries/organization');
+    const { updateCohortMemberService } = await import('@api/services/cohort/cohort');
+
+    const tutorRow = await findCohortMemberRowByProfileId(cohortId, profileId('tutorNoOrgMember'));
+    await updateCohortMemberService(cohortId, tutorRow!.id, { roleId: ROLE.STUDENT });
+
+    expect(await getOrganizationMemberIdByOrgAndProfile(organizationId, profileId('tutorNoOrgMember'))).not.toBeNull();
+    expect(await isCohortMember(cohortId, profileId('tutorNoOrgMember'))).toBe(true);
+  }, 30_000);
+
   it('removes the cohort row when the student is deleted, keeping their posts without an author', async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
