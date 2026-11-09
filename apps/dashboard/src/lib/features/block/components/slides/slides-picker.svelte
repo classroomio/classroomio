@@ -27,7 +27,7 @@
       emptyPrompt: t.get(`${prefix}.add_slide.empty_prompt`),
       embedCodeLabel: t.get(`${prefix}.add_slide.embed_code`),
       embedCodePlaceholder: t.get(`${prefix}.add_slide.embed_placeholder`),
-      addEmbed: t.get(`${prefix}.button`),
+      addEmbed: t.get('course.navItem.lessons.materials.blocks.slides.add_slide'),
       howToEmbed: t.get(`${prefix}.add_slide.how_to_embed`),
       previewLabel: t.get(`${prefix}.add_slide.preview`),
       embedReady: t.get(`${prefix}.add_slide.embed_ready`),

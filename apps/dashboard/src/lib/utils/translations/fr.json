@@ -2732,7 +2732,17 @@
             "empty_preview_title": "Rien à prévisualiser pour l'instant",
             "empty_preview_description": "Cette leçon n'a aucun contenu visible pour les élèves. Basculez vers {editLabel} pour ajouter une note, une vidéo, des diapositives, un document ou une image.",
             "empty_learner_title": "Cette leçon n'est pas encore prête",
-            "empty_learner_description": "Votre instructeur n'a ajouté aucun contenu à cette leçon. Revenez bientôt."
+            "empty_learner_description": "Votre instructeur n'a ajouté aucun contenu à cette leçon. Revenez bientôt.",
+            "document": {
+              "view_file": "Voir le fichier",
+              "download": "Télécharger",
+              "download_success": "Document téléchargé avec succès",
+              "download_error": "Échec du téléchargement du document",
+              "try_again": "Réessayez"
+            },
+            "slides": {
+              "add_slide": "Ajouter une diapositive"
+            }
           }
         },
         "lesson_nav": {

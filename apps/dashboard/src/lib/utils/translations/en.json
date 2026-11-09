@@ -3059,6 +3059,16 @@
               "fit": "Fit",
               "fit_cover": "Fill",
               "fit_contain": "Fit"
+            },
+            "document": {
+              "view_file": "View file",
+              "download": "Download",
+              "download_success": "Document downloaded successfully",
+              "download_error": "Failed to download document",
+              "try_again": "Try Again"
+            },
+            "slides": {
+              "add_slide": "Add slide"
             }
           }
         },

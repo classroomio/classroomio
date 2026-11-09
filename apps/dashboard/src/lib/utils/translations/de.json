@@ -2732,7 +2732,17 @@
             "empty_preview_title": "Es gibt noch nichts zur Vorschau",
             "empty_preview_description": "Diese Lektion enthält keinen Inhalt, den die Schüler sehen können. Wechseln Sie zu {editLabel}, um eine Notiz, ein Video, Folien, ein Dokument oder ein Bild hinzuzufügen.",
             "empty_learner_title": "Diese Lektion ist noch nicht fertig",
-            "empty_learner_description": "Ihr Kursleiter hat dieser Lektion keine Inhalte hinzugefügt. Schauen Sie bald wieder vorbei."
+            "empty_learner_description": "Ihr Kursleiter hat dieser Lektion keine Inhalte hinzugefügt. Schauen Sie bald wieder vorbei.",
+            "document": {
+              "view_file": "Datei anzeigen",
+              "download": "Herunterladen",
+              "download_success": "Dokument erfolgreich heruntergeladen",
+              "download_error": "Dokument konnte nicht heruntergeladen werden",
+              "try_again": "Versuchen Sie es erneut"
+            },
+            "slides": {
+              "add_slide": "Folie hinzufügen"
+            }
           }
         },
         "lesson_nav": {

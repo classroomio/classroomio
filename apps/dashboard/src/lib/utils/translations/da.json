@@ -2732,7 +2732,17 @@
             "empty_preview_title": "Intet at forhåndsvise endnu",
             "empty_preview_description": "Denne lektion har intet indhold, som eleverne kan se. Skift til {editLabel} for at tilføje en note, video, dias, dokument eller billede.",
             "empty_learner_title": "Denne lektion er ikke klar endnu",
-            "empty_learner_description": "Din instruktør har ikke tilføjet noget indhold til denne lektion. Kom snart tilbage."
+            "empty_learner_description": "Din instruktør har ikke tilføjet noget indhold til denne lektion. Kom snart tilbage.",
+            "document": {
+              "view_file": "Vis fil",
+              "download": "Download",
+              "download_success": "Dokument downloadet",
+              "download_error": "Kunne ikke downloade dokumentet",
+              "try_again": "Prøv igen"
+            },
+            "slides": {
+              "add_slide": "Tilføj dias"
+            }
           }
         },
         "lesson_nav": {

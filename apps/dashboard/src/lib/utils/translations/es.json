@@ -2732,7 +2732,17 @@
             "empty_preview_title": "Aún no hay nada que previsualizar",
             "empty_preview_description": "Esta lección no tiene contenido para que los estudiantes la vean. Cambie a {editLabel} para agregar una nota, video, diapositivas, documento o imagen.",
             "empty_learner_title": "Esta lección aún no está lista",
-            "empty_learner_description": "Su instructor no ha agregado ningún contenido a esta lección. Vuelve pronto."
+            "empty_learner_description": "Su instructor no ha agregado ningún contenido a esta lección. Vuelve pronto.",
+            "document": {
+              "view_file": "Ver archivo",
+              "download": "Descargar",
+              "download_success": "Documento descargado correctamente",
+              "download_error": "No se pudo descargar el documento",
+              "try_again": "Inténtalo de nuevo"
+            },
+            "slides": {
+              "add_slide": "Añadir diapositiva"
+            }
           }
         },
         "lesson_nav": {

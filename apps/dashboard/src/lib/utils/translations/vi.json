@@ -2732,7 +2732,17 @@
             "empty_preview_title": "Chưa có gì để xem trước",
             "empty_preview_description": "Bài học này không có nội dung cho học sinh xem. Chuyển sang {editLabel} để thêm ghi chú, video, trang trình bày, tài liệu hoặc hình ảnh.",
             "empty_learner_title": "Bài học này chưa sẵn sàng",
-            "empty_learner_description": "Người hướng dẫn của bạn chưa thêm bất kỳ nội dung nào vào bài học này. Kiểm tra lại sớm."
+            "empty_learner_description": "Người hướng dẫn của bạn chưa thêm bất kỳ nội dung nào vào bài học này. Kiểm tra lại sớm.",
+            "document": {
+              "view_file": "Xem tệp",
+              "download": "Tải xuống",
+              "download_success": "Tài liệu đã được tải xuống thành công",
+              "download_error": "Không thể tải xuống tài liệu",
+              "try_again": "Thử lại"
+            },
+            "slides": {
+              "add_slide": "Thêm slide"
+            }
           }
         },
         "lesson_nav": {

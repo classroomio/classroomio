@@ -3061,7 +3061,17 @@
             "empty_preview_title": "Henüz önizlenecek bir şey yok",
             "empty_preview_description": "Bu derste öğrencilerin görebileceği içerik bulunmamaktadır. Not, video, slayt, belge veya resim eklemek için {editLabel}'a geçin.",
             "empty_learner_title": "Bu ders henüz hazır değil",
-            "empty_learner_description": "Eğitmeniniz bu derse herhangi bir içerik eklemedi. Yakında tekrar kontrol edin."
+            "empty_learner_description": "Eğitmeniniz bu derse herhangi bir içerik eklemedi. Yakında tekrar kontrol edin.",
+            "document": {
+              "view_file": "Dosyayı görüntüle",
+              "download": "İndir",
+              "download_success": "Belge başarıyla indirildi",
+              "download_error": "Belge indirilemedi",
+              "try_again": "Tekrar Dene"
+            },
+            "slides": {
+              "add_slide": "Slayt ekle"
+            }
           }
         },
         "exercises": {
