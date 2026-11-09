@@ -28,6 +28,10 @@ export const handle: Handle = async ({ event, resolve }) => {
     return proxy(DOCS_ORIGIN, pathname, event);
   }
 
+  if (pathname === '/llms.txt' || pathname === '/llms-full.txt') {
+    return proxy(DOCS_ORIGIN, `/docs${pathname}`, event);
+  }
+
   if (pathname === '/help' || pathname.startsWith('/help/')) {
     return proxy(HELP_ORIGIN, pathname, event);
   }
