@@ -8,8 +8,6 @@
   import isEmpty from 'lodash/isEmpty';
   import { writable } from 'svelte/store';
   import { fade } from 'svelte/transition';
-  import Eye from '@lucide/svelte/icons/eye';
-  import Pencil from '@lucide/svelte/icons/pencil';
   import Save from '@lucide/svelte/icons/save';
   import HistoryIcon from '@lucide/svelte/icons/history';
   import SettingsIcon from '@lucide/svelte/icons/settings';
@@ -30,6 +28,7 @@
   import { createLessonBlockOwner } from '$features/course/utils/lesson-block-owner';
   import LessonBlocks from '$features/course/components/lesson/lesson-blocks.svelte';
   import LessonSettingsSheet from '$features/course/components/lesson/lesson-settings-sheet.svelte';
+  import LessonModeToggle from '$features/course/components/lesson/lesson-mode-toggle.svelte';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
   import { lessonVideoBus } from '$features/course/components/lesson/video/lesson-video-bus.svelte';
@@ -43,7 +42,6 @@
   import { Button } from '@cio/ui/base/button';
   import { Chip } from '@cio/ui/custom/chip';
   import * as Page from '@cio/ui/base/page';
-  import * as Tabs from '@cio/ui/base/tabs';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { Empty } from '@cio/ui/custom/empty';
   import { MachineBlankLesson } from '@cio/ui/custom/animation';
@@ -635,24 +633,12 @@
         </RoleBasedSecurity>
 
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <Tabs.Root
+          <LessonModeToggle
             class="order-first md:order-none"
-            value={mode}
-            onValueChange={(next) => {
-              if (next !== mode) toggleMode();
-            }}
-          >
-            <Tabs.List aria-label={$t('course.navItem.lessons.header.mode_label')}>
-              <Tabs.Trigger value={MODES.view} disabled={lessonApi.isSaving} data-testid="lesson-mode-preview">
-                <Eye />
-                {$t('course.navItem.lessons.header.mode_preview')}
-              </Tabs.Trigger>
-              <Tabs.Trigger value={MODES.edit} disabled={lessonApi.isSaving} data-testid="lesson-mode-edit">
-                <Pencil />
-                {$t('course.navItem.lessons.header.mode_edit')}
-              </Tabs.Trigger>
-            </Tabs.List>
-          </Tabs.Root>
+            {mode}
+            disabled={lessonApi.isSaving}
+            onToggle={toggleMode}
+          />
         </RoleBasedSecurity>
       </div>
     </Page.Action>

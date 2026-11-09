@@ -2902,7 +2902,8 @@
         "header": {
           "mode_label": "Chế độ bài học",
           "mode_edit": "Biên tập",
-          "mode_preview": "Xem trước"
+          "mode_preview": "Xem trước",
+          "mode_shortcut": "Chuyển đổi chế độ"
         }
       },
       "news_feed": {

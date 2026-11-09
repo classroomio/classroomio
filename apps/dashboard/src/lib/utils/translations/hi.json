@@ -2902,7 +2902,8 @@
         "header": {
           "mode_label": "पाठ मोड",
           "mode_edit": "संपादन करना",
-          "mode_preview": "पूर्व दर्शन"
+          "mode_preview": "पूर्व दर्शन",
+          "mode_shortcut": "मोड टॉगल करें"
         }
       },
       "news_feed": {

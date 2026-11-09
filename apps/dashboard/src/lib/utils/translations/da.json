@@ -2902,7 +2902,8 @@
         "header": {
           "mode_label": "Lektionstilstand",
           "mode_edit": "Redigere",
-          "mode_preview": "Forhåndsvisning"
+          "mode_preview": "Forhåndsvisning",
+          "mode_shortcut": "Skift tilstand"
         }
       },
       "news_feed": {

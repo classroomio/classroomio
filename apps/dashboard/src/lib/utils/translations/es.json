@@ -2902,7 +2902,8 @@
         "header": {
           "mode_label": "Modo lección",
           "mode_edit": "Editar",
-          "mode_preview": "Avance"
+          "mode_preview": "Avance",
+          "mode_shortcut": "Cambiar modo"
         }
       },
       "news_feed": {

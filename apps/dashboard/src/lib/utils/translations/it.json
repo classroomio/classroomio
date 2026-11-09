@@ -3721,7 +3721,8 @@
         "header": {
           "mode_label": "Modalità lezione",
           "mode_edit": "Modificare",
-          "mode_preview": "Anteprima"
+          "mode_preview": "Anteprima",
+          "mode_shortcut": "Cambia modalità"
         }
       },
       "attendance": {

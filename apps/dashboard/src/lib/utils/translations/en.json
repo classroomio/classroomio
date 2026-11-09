@@ -2687,7 +2687,8 @@
         "header": {
           "mode_label": "Lesson mode",
           "mode_edit": "Edit",
-          "mode_preview": "Preview"
+          "mode_preview": "Preview",
+          "mode_shortcut": "Toggle mode"
         },
         "add_lesson": {
           "button_title": "Add",

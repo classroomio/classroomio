@@ -3731,7 +3731,8 @@
         "header": {
           "mode_label": "Ders modu",
           "mode_edit": "Düzenlemek",
-          "mode_preview": "Önizleme"
+          "mode_preview": "Önizleme",
+          "mode_shortcut": "Modu değiştir"
         }
       },
       "attendance": {
