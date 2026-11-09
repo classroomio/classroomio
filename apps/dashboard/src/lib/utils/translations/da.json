@@ -1021,8 +1021,6 @@
         "reports": "Gør karakterrapporter tilgængelige for lektioner",
         "disabled": "Deaktiveret",
         "enabled": "Aktiveret",
-        "order": "Fanen Bestil lektioner",
-        "drag": "Træk og slip etiketterne for at omarrangere dine materialefaner",
         "content_grouping_title": "Indholdsgruppering",
         "content_grouping_description": "Gruppelektioner og øvelser efter afsnit i indholdslisten.",
         "progression_mode_title": "Elevprogression",
@@ -2444,11 +2442,6 @@
           }
         },
         "materials": {
-          "body_heading": "Ingen note, video eller dias tilføjet til denne lektion endnu",
-          "body_content": "Del din viden med dine elever ved at skabe engagerende indhold. Start med at klikke på",
-          "get_started": "Kom i gang",
-          "no_translation": "Ingen oversættelse for det valgte sprog",
-          "button": "knappen",
           "show_transcript": "Vis transskript",
           "summarize_lesson": "Opsummer lektion",
           "summarize_lesson_prompt": {
@@ -2458,13 +2451,7 @@
           },
           "button_done": "Færdig",
           "tabs": {
-            "settings": {
-              "title": "Indstillinger"
-            },
             "document": {
-              "title": "Dokumenter",
-              "add_document": "Tilføj dokument",
-              "download": "Download",
               "upload_title": "Upload dokument",
               "upload_description": "Upload PDF-, DOCX-, DOC-, CSV-, XLSX-, XLS-, IPYNB- eller PY-filer",
               "up_to_size_each": "(op til {size} hver)",
@@ -2479,35 +2466,18 @@
               "upload_error": "Kunne ikke uploade dokument",
               "file_type_error": "Filtype understøttes ikke. Upload venligst PDF-, DOCX-, DOC-, CSV-, XLSX-, XLS-, IPYNB- eller PY-filer.",
               "file_size_error": "Filstørrelsen er for stor. Maksimal størrelse er {size}.",
-              "try_again": "Prøv igen",
               "upgrade": "Opgrader din plan for at uploade dokumenter",
               "no_library_documents": "Ingen dokumenter tilgængelige i dit mediebibliotek",
               "selected_count": "{count} valgt",
               "clear_selection": "Ryd",
               "add_one_file": "Tilføj 1 fil",
               "add_files": "Tilføj {count} filer",
-              "download_success": "Dokument downloadet",
-              "download_error": "Kunne ikke downloade dokumentet",
-              "remove_document": "Fjern dokumentet",
-              "delete": "Slet",
-              "page_of": "Side {page} af {total}",
-              "loading_pdf": "Indlæser PDF...",
-              "failed_to_load_pdf": "Kunne ikke indlæse PDF-dokument",
-              "failed_to_render_pdf": "Kunne ikke gengive PDF-siden",
-              "use_arrow_keys": "Brug piletasterne til at navigere, +/- for at zoome, eller klik på kontrollerne ovenfor. Højreklik er deaktiveret.",
-              "empty_title": "Ingen dokumenter endnu",
-              "empty_description": "Upload dokumenter for at dele med dine elever",
-              "attachments_heading": "Vedhæftede filer",
-              "file_count": "{count, plural, one {# fil} other {# filer}}",
-              "view_file": "Vis fil",
-              "reorder_file": "Omarranger fil"
+              "remove_document": "Fjern dokumentet"
             },
             "video": {
-              "title": "Video",
               "embed_link": "Integrer link",
               "upload": "Upload",
               "library": "Bibliotek",
-              "button": "Tilføj/rediger video(er)",
               "remove_video": "Fjern video",
               "add_video": {
                 "title": "Tilføj en video",
@@ -2574,8 +2544,6 @@
                 "vimeo_privacy_error_domain_suffix": "er tilladt i videoindstillingerne)",
                 "vimeo_privacy_error_other_hint": "Andre Vimeo-privatlivsindstillinger"
               },
-              "empty_title": "Ingen videoer endnu",
-              "empty_description": "Tilføj videoer fra YouTube, upload eller dit mediebibliotek",
               "google_drive": "Google Drive",
               "generate_transcript": "Generer transskription",
               "transcript_in_progress": "Henter transskription…",
@@ -2629,11 +2597,6 @@
               "title": "Dias",
               "slide_link": "Diaslink",
               "helper_message": "Du kan integrere Google Slides eller Canva Presentation",
-              "button": "Tilføj dias",
-              "remove_slide": "Fjern dias",
-              "menu_aria": "Dias-handlinger",
-              "empty_title": "Ingen dias endnu",
-              "empty_description": "Integrer Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare eller Beautiful.ai",
               "add_slide": {
                 "title": "Tilføj en dias",
                 "search": "Søg platforme",
@@ -2709,17 +2672,10 @@
                   "step_2": "Klik Hent embed-kode.",
                   "step_3": "Indsæt iframe embed-koden her."
                 }
-              },
-              "frame_title": "{platform} ({index} af {total})"
+              }
             },
             "note": {
-              "title": "Bemærk",
-              "placeholder": "Skriv dit lektionsnotat her",
-              "ai": {
-                "outline": "Generer lektionsoversigt",
-                "note": "Generer lektionsnotat",
-                "activities": "Generer lektionsaktiviteter"
-              }
+              "placeholder": "Skriv dit lektionsnotat her"
             }
           },
           "blocks": {
@@ -2868,7 +2824,6 @@
         },
         "saving": "Gemmer...",
         "saved": "Gemt",
-        "draft_recovery": "Der blev fundet et ikke-gemt udkast til denne lektion. Vil du gendanne den?",
         "stats": {
           "sections": "Sektioner",
           "lessons": "Lektioner",
@@ -6516,7 +6471,6 @@
         "bannerImage": "Forsidebillede",
         "welcomeEmail": "Velkomstmail",
         "completionDeadline": "Afslutningsfrist",
-        "lessonTabsOrder": "Lektionsfaner",
         "contentGrouping": "Indholdsgruppering",
         "progression": "Progression",
         "comments": "Lektionens kommentarer",

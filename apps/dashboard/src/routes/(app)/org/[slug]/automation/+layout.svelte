@@ -10,10 +10,10 @@
   let { children }: { children?: Snippet } = $props();
 
   const tabs = [
-    { value: 'mcp', href: '/automation/mcp', label: 'automation.tabs.mcp' },
+    { value: 'mcp', href: '/automation/mcp', label: 'automation.tabs.mcp', isNew: true },
     { value: 'api', href: '/automation/api', label: 'automation.tabs.api' },
     { value: 'zapier', href: '/automation/zapier', label: 'automation.tabs.zapier' },
-    { value: 'webhooks', href: '/automation/webhooks', label: 'automation.tabs.webhooks', isNew: true }
+    { value: 'webhooks', href: '/automation/webhooks', label: 'automation.tabs.webhooks' }
   ] as const;
 
   function getCurrentTab(pathname: string) {

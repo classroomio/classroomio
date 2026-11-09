@@ -2763,7 +2763,6 @@
         "autosaving": "Autosaving...",
         "saving": "Saving…",
         "saved": "Saved",
-        "draft_recovery": "An unsaved draft was found for this lesson. Would you like to restore it?",
         "done": "Done",
         "edit": "Edit",
         "mark_as": "Mark as",
@@ -2774,11 +2773,6 @@
         "prev_shortcut": "Previous (←)",
         "next_shortcut": "Next (→)",
         "materials": {
-          "body_heading": "No note, video or slide added for this lesson yet",
-          "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
-          "get_started": "Get Started",
-          "no_translation": "No translation for the selected language",
-          "button": "button",
           "show_transcript": "Show transcript",
           "summarize_lesson": "Summarize lesson",
           "summarize_lesson_prompt": {
@@ -2788,22 +2782,10 @@
           },
           "tabs": {
             "note": {
-              "title": "Note",
-              "placeholder": "Write your lesson note here",
-              "ai": {
-                "outline": "Generate Lesson Outline",
-                "note": "Generate Lesson Note",
-                "activities": "Generate Lesson Activities"
-              }
+              "placeholder": "Write your lesson note here"
             },
             "slide": {
               "title": "Slide",
-              "button": "Add slide",
-              "remove_slide": "Remove slide",
-              "menu_aria": "Slide actions",
-              "empty_title": "No slides yet",
-              "empty_description": "Embed Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, or Beautiful.ai",
-              "frame_title": "{platform} ({index} of {total})",
               "add_slide": {
                 "title": "Add a slide",
                 "search": "Search platforms",
@@ -2881,20 +2863,13 @@
                 }
               }
             },
-            "settings": {
-              "title": "Settings"
-            },
             "video": {
-              "title": "Video",
               "vimeo_link": "Vimeo Link",
               "embed_link": "Embed Link",
               "google_drive": "Google Drive",
               "upload": "Upload",
               "library": "Library",
-              "button": "Add/Edit Video(s)",
               "remove_video": "Remove video",
-              "empty_title": "No videos yet",
-              "empty_description": "Add videos from YouTube, Vimeo, Google Drive, embed links, upload, or your media library",
               "add_video": {
                 "title": "Add a Video",
                 "add_by": "Add By",
@@ -3006,9 +2981,6 @@
               }
             },
             "document": {
-              "title": "Docs",
-              "add_document": "Add Document",
-              "download": "Download",
               "upload_title": "Upload Document",
               "upload_description": "Upload PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB, or PY files",
               "up_to_size_each": "(up to {size} each)",
@@ -3023,28 +2995,13 @@
               "upload_error": "Failed to upload document",
               "file_type_error": "File type not supported. Please upload PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB, or PY files.",
               "file_size_error": "File size too large. Maximum size is {size}.",
-              "try_again": "Try Again",
               "upgrade": "Upgrade your plan to upload documents",
               "no_library_documents": "No documents available in your media library",
               "selected_count": "{count} selected",
               "clear_selection": "Clear",
               "add_one_file": "Add 1 file",
               "add_files": "Add {count} files",
-              "download_success": "Document downloaded successfully",
-              "download_error": "Failed to download document",
-              "remove_document": "Remove document",
-              "delete": "Delete",
-              "page_of": "Page {page} of {total}",
-              "loading_pdf": "Loading PDF...",
-              "failed_to_load_pdf": "Failed to load PDF document",
-              "failed_to_render_pdf": "Failed to render PDF page",
-              "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled.",
-              "empty_title": "No documents yet",
-              "empty_description": "Upload documents to share with your students",
-              "attachments_heading": "Attachments",
-              "file_count": "{count, plural, one {# file} other {# files}}",
-              "view_file": "View file",
-              "reorder_file": "Reorder file"
+              "remove_document": "Remove document"
             }
           },
           "button_done": "Done",
@@ -4389,8 +4346,6 @@
         "reports": "Make grading reports available for lessons",
         "disabled": "Disabled",
         "enabled": "Enabled",
-        "order": "Order Lessons Tab",
-        "drag": "Drag and drop the labels to re-order your material tabs",
         "welcome_email": {
           "title": "Welcome email",
           "description": "Customize the email students receive after they enroll. Add a personal note, instructions, or a live session link.",
@@ -6486,7 +6441,6 @@
         "bannerImage": "Cover image",
         "welcomeEmail": "Welcome email",
         "completionDeadline": "Completion deadline",
-        "lessonTabsOrder": "Lesson tabs",
         "contentGrouping": "Content grouping",
         "progression": "Progression",
         "comments": "Lesson comments",

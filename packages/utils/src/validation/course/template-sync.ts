@@ -8,7 +8,6 @@ export const SYNCABLE_SETTING_KEYS = [
   'bannerImage',
   'welcomeEmail',
   'completionDeadline',
-  'lessonTabsOrder',
   'contentGrouping',
   'progression',
   'comments',
@@ -74,7 +73,6 @@ export type SyncExercise = {
 
 export type SettingMetadata = {
   welcomeEmailMessage?: string | null;
-  lessonTabsOrder?: unknown;
   isContentGroupingEnabled?: boolean;
   progressionMode?: CourseProgressionMode;
   commentsEnabled?: boolean;
@@ -401,8 +399,6 @@ export function readSettingValue(course: SettingCarrier, key: SyncableSettingKey
       return fields.welcomeEmailMessage ?? null;
     case 'completionDeadline':
       return rules.deadline ?? null;
-    case 'lessonTabsOrder':
-      return fields.lessonTabsOrder ?? null;
     case 'contentGrouping':
       return fields.isContentGroupingEnabled ?? false;
     case 'progression':
@@ -491,10 +487,6 @@ export function applySettingChanges(
       case 'completionDeadline':
         nextCertificate.deadline = templateCertificate.deadline ?? null;
         certificateChanged = true;
-        break;
-      case 'lessonTabsOrder':
-        nextMetadata.lessonTabsOrder = templateMetadata.lessonTabsOrder;
-        metadataChanged = true;
         break;
       case 'contentGrouping':
         nextMetadata.isContentGroupingEnabled = templateMetadata.isContentGroupingEnabled ?? false;

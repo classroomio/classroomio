@@ -12,7 +12,6 @@ type CourseSettings = {
   grading: boolean;
   type: TCourseType;
   allowSelfEnrollment: boolean;
-  tabs: { id: number; name: string }[];
   lessonDownload: boolean;
   allowMarkdownExport: boolean;
   isPublished: boolean;
@@ -34,12 +33,6 @@ export const settings = writable<CourseSettings>({
   grading: false,
   type: 'SELF_PACED' as TCourseType,
   allowSelfEnrollment: true,
-  tabs: [
-    { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
-    { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
-    { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
-    { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
-  ],
   lessonDownload: false,
   allowMarkdownExport: false,
   isPublished: false,

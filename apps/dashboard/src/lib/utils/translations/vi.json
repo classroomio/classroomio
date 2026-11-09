@@ -1021,8 +1021,6 @@
         "reports": "Cung cấp báo cáo chấm điểm cho bài học",
         "disabled": "Đã tắt",
         "enabled": "Đã bật",
-        "order": "Đặt hàng tab bài học",
-        "drag": "Kéo và thả nhãn để sắp xếp lại các tab tài liệu của bạn",
         "content_grouping_title": "Nhóm nội dung",
         "content_grouping_description": "Nhóm các bài học, bài tập theo từng phần trong danh sách nội dung.",
         "progression_mode_title": "Tiến trình học viên",
@@ -2444,11 +2442,6 @@
           }
         },
         "materials": {
-          "body_heading": "Chưa có ghi chú, video hoặc slide nào được thêm vào cho bài học này",
-          "body_content": "Chia sẻ kiến thức của bạn với học sinh bằng cách tạo nội dung hấp dẫn. Bắt đầu bằng cách nhấp vào",
-          "get_started": "Bắt đầu",
-          "no_translation": "Không có bản dịch cho ngôn ngữ đã chọn",
-          "button": "nút",
           "show_transcript": "Hiển thị bản ghi",
           "summarize_lesson": "Tóm tắt bài học",
           "summarize_lesson_prompt": {
@@ -2458,13 +2451,7 @@
           },
           "button_done": "Xong",
           "tabs": {
-            "settings": {
-              "title": "Cài đặt"
-            },
             "document": {
-              "title": "Tài liệu",
-              "add_document": "Thêm tài liệu",
-              "download": "Tải xuống",
               "upload_title": "Tải tài liệu lên",
               "upload_description": "Tải lên tệp PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB hoặc PY",
               "up_to_size_each": "(tối đa {size} mỗi tệp)",
@@ -2479,35 +2466,18 @@
               "upload_error": "Không thể tải tài liệu lên",
               "file_type_error": "Loại tệp không được hỗ trợ. Vui lòng tải lên tệp PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB hoặc PY.",
               "file_size_error": "Kích thước tệp quá lớn. Kích thước tối đa là {size}.",
-              "try_again": "Thử lại",
               "upgrade": "Nâng cấp kế hoạch tải tài liệu lên của bạn",
               "no_library_documents": "Không có tài liệu nào trong thư viện phương tiện của bạn",
               "selected_count": "Đã chọn {count}",
               "clear_selection": "Bỏ chọn",
               "add_one_file": "Thêm 1 tệp",
               "add_files": "Thêm {count} tệp",
-              "download_success": "Tài liệu đã được tải xuống thành công",
-              "download_error": "Không thể tải xuống tài liệu",
-              "remove_document": "Xóa tài liệu",
-              "delete": "Xóa",
-              "page_of": "Trang {page} trong tổng số {total}",
-              "loading_pdf": "Đang tải PDF...",
-              "failed_to_load_pdf": "Không tải được tài liệu PDF",
-              "failed_to_render_pdf": "Không thể hiển thị trang PDF",
-              "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- để thu phóng hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa.",
-              "empty_title": "Chưa có tài liệu nào",
-              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn",
-              "attachments_heading": "Tệp đính kèm",
-              "file_count": "{count, plural, one {# tệp} other {# tệp}}",
-              "view_file": "Xem tệp",
-              "reorder_file": "Sắp xếp lại tệp"
+              "remove_document": "Xóa tài liệu"
             },
             "video": {
-              "title": "Video",
               "embed_link": "Nhúng liên kết",
               "upload": "Tải lên",
               "library": "Thư viện",
-              "button": "Thêm/Chỉnh sửa Video",
               "remove_video": "Xóa video",
               "add_video": {
                 "title": "Thêm một video",
@@ -2574,8 +2544,6 @@
                 "vimeo_privacy_error_domain_suffix": "được cho phép trong cài đặt video)",
                 "vimeo_privacy_error_other_hint": "Các cài đặt quyền riêng tư khác của Vimeo"
               },
-              "empty_title": "Chưa có video nào",
-              "empty_description": "Thêm video từ YouTube, tải lên hoặc thư viện phương tiện của bạn",
               "google_drive": "Google Drive",
               "generate_transcript": "Tạo bản ghi",
               "transcript_in_progress": "Đang lấy bản ghi…",
@@ -2629,11 +2597,6 @@
               "title": "Slide",
               "slide_link": "Liên kết slide",
               "helper_message": "Bạn có thể nhúng Google Trang trình bày hoặc Bản trình bày Canva",
-              "button": "Thêm slide",
-              "remove_slide": "Xóa slide",
-              "menu_aria": "Thao tác slide",
-              "empty_title": "Chưa có slide",
-              "empty_description": "Nhúng Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare hoặc Beautiful.ai",
               "add_slide": {
                 "title": "Thêm slide",
                 "search": "Tìm nền tảng",
@@ -2709,17 +2672,10 @@
                   "step_2": "Click Get Embed Code.",
                   "step_3": "Paste the iframe embed code here."
                 }
-              },
-              "frame_title": "{platform} ({index}/{total})"
+              }
             },
             "note": {
-              "title": "Lưu ý",
-              "placeholder": "Viết ghi chú bài học của bạn ở đây",
-              "ai": {
-                "outline": "Tạo dàn ý bài học",
-                "note": "Tạo ghi chú bài học",
-                "activities": "Tạo hoạt động bài học"
-              }
+              "placeholder": "Viết ghi chú bài học của bạn ở đây"
             }
           },
           "blocks": {
@@ -2868,7 +2824,6 @@
         },
         "saving": "Đang lưu…",
         "saved": "Đã lưu",
-        "draft_recovery": "Đã tìm thấy một bản nháp chưa được lưu cho bài học này. Bạn có muốn khôi phục nó không?",
         "stats": {
           "sections": "Phần",
           "lessons": "Bài học",
@@ -6516,7 +6471,6 @@
         "bannerImage": "Ảnh bìa",
         "welcomeEmail": "Email chào mừng",
         "completionDeadline": "Thời hạn hoàn thành",
-        "lessonTabsOrder": "Tab bài học",
         "contentGrouping": "Nhóm nội dung",
         "progression": "Tiến triển",
         "comments": "Bình luận bài học",

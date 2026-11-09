@@ -1021,8 +1021,6 @@
         "reports": "Сделать отчеты об оценках доступными для уроков",
         "disabled": "Отключено",
         "enabled": "Включено",
-        "order": "Вкладка «Заказать уроки»",
-        "drag": "Перетащите метки, чтобы изменить порядок вкладок материалов.",
         "content_grouping_title": "Группировка контента",
         "content_grouping_description": "Группируйте уроки и упражнения по разделам в списке контента.",
         "progression_mode_title": "Прогресс студента",
@@ -2450,11 +2448,6 @@
           }
         },
         "materials": {
-          "body_heading": "К этому уроку пока не добавлено ни одной заметки, видео или слайда.",
-          "body_content": "Поделитесь своими знаниями со своими учениками, создавая интересный контент. Начните с нажатия на",
-          "get_started": "Начать",
-          "no_translation": "Нет перевода на выбранный язык",
-          "button": "кнопка",
           "show_transcript": "Показать транскрипт",
           "summarize_lesson": "Суммировать урок",
           "summarize_lesson_prompt": {
@@ -2464,13 +2457,7 @@
           },
           "button_done": "Готово",
           "tabs": {
-            "settings": {
-              "title": "Настройки"
-            },
             "document": {
-              "title": "Документы",
-              "add_document": "Добавить документ",
-              "download": "Скачать",
               "upload_title": "Загрузить документ",
               "upload_description": "Загрузите файлы PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB или PY",
               "up_to_size_each": "(до {size} каждый)",
@@ -2485,35 +2472,18 @@
               "upload_error": "Не удалось загрузить документ",
               "file_type_error": "Тип файла не поддерживается. Загрузите файлы PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB или PY.",
               "file_size_error": "Размер файла слишком велик. Максимальный размер: {size}.",
-              "try_again": "Попробуйте еще раз",
               "upgrade": "Обновите свой план, чтобы загружать документы",
               "no_library_documents": "В вашей медиатеке нет доступных документов",
               "selected_count": "Выбрано: {count}",
               "clear_selection": "Сбросить",
               "add_one_file": "Добавить 1 файл",
               "add_files": "Добавить файлы: {count}",
-              "download_success": "Документ успешно загружен",
-              "download_error": "Не удалось загрузить документ",
-              "remove_document": "Удалить документ",
-              "delete": "Удалить",
-              "page_of": "Страница {page} из {total}",
-              "loading_pdf": "Загрузка PDF...",
-              "failed_to_load_pdf": "Не удалось загрузить PDF-документ.",
-              "failed_to_render_pdf": "Не удалось отобразить страницу PDF.",
-              "use_arrow_keys": "Используйте клавиши со стрелками для навигации, +/- для масштабирования или нажимайте элементы управления выше. Щелчок правой кнопкой мыши отключен.",
-              "empty_title": "Документов пока нет",
-              "empty_description": "Загрузите документы, чтобы поделиться ими со своими учениками",
-              "attachments_heading": "Вложения",
-              "file_count": "{count, plural, one {# файл} few {# файла} many {# файлов} other {# файла}}",
-              "view_file": "Просмотреть файл",
-              "reorder_file": "Изменить порядок файла"
+              "remove_document": "Удалить документ"
             },
             "video": {
-              "title": "Видео",
               "embed_link": "Вставить ссылку",
               "upload": "Загрузить",
               "library": "Библиотека",
-              "button": "Добавить/редактировать видео(а)",
               "remove_video": "Удалить видео",
               "add_video": {
                 "title": "Добавить видео",
@@ -2580,8 +2550,6 @@
                 "vimeo_privacy_error_domain_suffix": "разрешено в настройках видео)",
                 "vimeo_privacy_error_other_hint": "Другие настройки конфиденциальности Vimeo"
               },
-              "empty_title": "Видео пока нет",
-              "empty_description": "Добавляйте видео с YouTube, загружайте их или из своей медиатеки.",
               "google_drive": "Google Drive",
               "generate_transcript": "Сгенерировать транскрипцию",
               "transcript_in_progress": "Получение транскрипции…",
@@ -2635,11 +2603,6 @@
               "title": "Слайд",
               "slide_link": "Ссылка на слайд",
               "helper_message": "Вы можете встроить Google Slides или Canva Presentation.",
-              "button": "Добавить слайд",
-              "remove_slide": "Удалить слайд",
-              "menu_aria": "Действия со слайдом",
-              "empty_title": "Слайдов пока нет",
-              "empty_description": "Встройте Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare или Beautiful.ai",
               "add_slide": {
                 "title": "Добавить слайд",
                 "search": "Поиск платформ",
@@ -2715,17 +2678,10 @@
                   "step_2": "Click Get Embed Code.",
                   "step_3": "Paste the iframe embed code here."
                 }
-              },
-              "frame_title": "{platform} ({index} из {total})"
+              }
             },
             "note": {
-              "title": "Примечание",
-              "placeholder": "Напишите сюда конспект урока",
-              "ai": {
-                "outline": "Создать план урока",
-                "note": "Создать заметку к уроку",
-                "activities": "Создание учебных занятий"
-              }
+              "placeholder": "Напишите сюда конспект урока"
             }
           },
           "blocks": {
@@ -2874,7 +2830,6 @@
         },
         "saving": "Сохранение…",
         "saved": "Сохранено",
-        "draft_recovery": "Для этого урока найден несохраненный черновик. Хотели бы вы восстановить его?",
         "stats": {
           "sections": "Разделы",
           "lessons": "Уроки",
@@ -6516,7 +6471,6 @@
         "bannerImage": "Обложка",
         "welcomeEmail": "Приветственное письмо",
         "completionDeadline": "Срок завершения",
-        "lessonTabsOrder": "Вкладки урока",
         "contentGrouping": "Группировка содержания",
         "progression": "Прохождение",
         "comments": "Комментарии к уроку",
