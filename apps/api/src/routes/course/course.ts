@@ -24,9 +24,9 @@ import {
   deleteCourse,
   getCourse,
   getCourseAnalytics,
-  getCourseProgress,
   updateCourse
 } from '@cio/core/services/course/course';
+import { getCourseProgressForRequester } from '@api/services/course/progress-access';
 import { assertCertificateDownloadAllowed, evaluateCourseCertification } from '@api/services/course/completion';
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 
@@ -464,7 +464,7 @@ export const courseRouter = new Hono()
    * GET /course/:courseId/progress
    * Gets course progress for a profile
    * Query param: profileId (required)
-   * Requires authentication and course membership
+   * Requires course membership; reading another member's progress requires a course team member or org admin
    */
   .get(
     '/:courseId/progress',
@@ -476,7 +476,8 @@ export const courseRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const { profileId } = c.req.valid('query');
-        const progress = await getCourseProgress(courseId, profileId);
+        const user = c.get('user')!;
+        const progress = await getCourseProgressForRequester({ courseId, requesterId: user.id, profileId });
 
         return c.json(
           {
