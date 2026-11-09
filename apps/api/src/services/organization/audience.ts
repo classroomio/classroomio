@@ -45,7 +45,7 @@ import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { assertStudentCapacityOrThrow, getRemainingStudentSeats, notifyStudentMilestone } from './student-limit';
 import type { StudentMilestoneNotification } from './student-limit';
-import { db } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 import { getWelcomeSessionIcs } from '../course/session-invite';
@@ -346,7 +346,7 @@ async function enrollAudienceStudentProfilesInCohorts(
   };
 }
 
-async function createStudentOrgInvitesAndSendEmails(input: {
+type StudentOrgInviteInput = {
   orgId: string;
   organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>;
   emails: string[];
@@ -355,15 +355,26 @@ async function createStudentOrgInvitesAndSendEmails(input: {
   accessNamesLabel: string | undefined;
   invitedByProfileId: string;
   shouldSendEmail: boolean;
-}): Promise<{ created: number; emailsSent: number; emailsFailed: number }> {
-  const { orgId, organization, emails, courseIds, cohortIds, accessNamesLabel, invitedByProfileId, shouldSendEmail } =
-    input;
+};
+
+async function createStudentOrgInvitesAndSendEmails(
+  input: StudentOrgInviteInput
+): Promise<{ created: number; emailsSent: number; emailsFailed: number }> {
+  return sendStudentOrgInvites(input, await createStudentOrgInvites(input));
+}
+
+/** Revokes and re-creates the invites. Pass a transaction to save them under the seat lock. */
+async function createStudentOrgInvites(
+  input: Pick<StudentOrgInviteInput, 'orgId' | 'emails' | 'courseIds' | 'cohortIds' | 'invitedByProfileId'>,
+  dbClient: DbOrTxClient = db
+) {
+  const { orgId, emails, courseIds, cohortIds, invitedByProfileId } = input;
 
   if (emails.length === 0) {
-    return { created: 0, emailsSent: 0, emailsFailed: 0 };
+    return null;
   }
 
-  await revokeActiveOrganizationInvitesByEmails(orgId, emails, invitedByProfileId);
+  await revokeActiveOrganizationInvitesByEmails(orgId, emails, invitedByProfileId, dbClient);
 
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
 
@@ -389,9 +400,31 @@ async function createStudentOrgInvitesAndSendEmails(input: {
     };
   });
 
-  const invites = await createOrganizationInvites(inviteInputs.map((i) => i.row));
-  const inviteByEmail = new Map(invites.map((inv) => [(inv.email ?? '').toLowerCase(), inv]));
-  const tokenByEmail = new Map(inviteInputs.map((i) => [i.email.toLowerCase(), i.token]));
+  const invites = await createOrganizationInvites(
+    inviteInputs.map((i) => i.row),
+    dbClient
+  );
+
+  return {
+    expiresAt,
+    inviteByEmail: new Map(invites.map((inv) => [(inv.email ?? '').toLowerCase(), inv])),
+    tokenByEmail: new Map(inviteInputs.map((i) => [i.email.toLowerCase(), i.token]))
+  };
+}
+
+/** Records the invites and emails them. Runs after any transaction, since it emits webhooks and queues email. */
+async function sendStudentOrgInvites(
+  input: StudentOrgInviteInput,
+  created: Awaited<ReturnType<typeof createStudentOrgInvites>>
+): Promise<{ created: number; emailsSent: number; emailsFailed: number }> {
+  const { orgId, organization, emails, courseIds, cohortIds, accessNamesLabel, invitedByProfileId, shouldSendEmail } =
+    input;
+
+  if (!created) {
+    return { created: 0, emailsSent: 0, emailsFailed: 0 };
+  }
+
+  const { expiresAt, inviteByEmail, tokenByEmail } = created;
 
   await recordOrganizationInviteAudits(
     emails.map((email) => {
@@ -611,12 +644,18 @@ export async function importAudienceMembers(
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
   let insertedMembers: Awaited<ReturnType<typeof createOrganizationMembers>> = [];
+  let renewedInvites: Awaited<ReturnType<typeof createStudentOrgInvites>> = null;
+  const renewalInput = { orgId, emails: pendingStudentEmails, courseIds, cohortIds, invitedByProfileId };
 
-  if (newEmails.length > 0 || renewedSeats > 0) {
+  // New members and renewed invites are both saved under the seat lock, so a seat the check grants is taken
+  // before the lock is released.
+  if (newEmails.length > 0 || pendingStudentEmails.length > 0) {
     await db.transaction(async (tx) => {
-      studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, newEmails.length + renewedSeats, tx, {
-        deferNotification: true
-      });
+      if (newEmails.length + renewedSeats > 0) {
+        studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, newEmails.length + renewedSeats, tx, {
+          deferNotification: true
+        });
+      }
 
       if (newEmails.length > 0) {
         insertedMembers = await createOrganizationMembers(
@@ -624,6 +663,14 @@ export async function importAudienceMembers(
           tx
         );
       }
+
+      renewedInvites = await createStudentOrgInvites(renewalInput, tx);
+    });
+  }
+
+  if (studentMilestoneNotification) {
+    notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
     });
   }
 
@@ -694,24 +741,12 @@ export async function importAudienceMembers(
   let pendingEmailsSent = 0;
   let pendingEmailsFailed = 0;
   if (pendingStudentEmails.length > 0) {
-    const pendingOutcome = await createStudentOrgInvitesAndSendEmails({
-      orgId,
-      organization,
-      emails: pendingStudentEmails,
-      courseIds,
-      cohortIds,
-      accessNamesLabel,
-      invitedByProfileId,
-      shouldSendEmail: data.sendEmail
-    });
+    const pendingOutcome = await sendStudentOrgInvites(
+      { ...renewalInput, organization, accessNamesLabel, shouldSendEmail: data.sendEmail },
+      renewedInvites
+    );
     pendingEmailsSent = pendingOutcome.emailsSent;
     pendingEmailsFailed = pendingOutcome.emailsFailed;
-  }
-
-  if (studentMilestoneNotification) {
-    notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
-      console.error('notifyStudentMilestone error:', error);
-    });
   }
 
   captureLearnerInvited({
