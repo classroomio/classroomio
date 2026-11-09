@@ -242,23 +242,23 @@ CREATE TEMP TABLE _locale_map (
   block_locale_id bigint NOT NULL
 ) ON COMMIT DROP;--> statement-breakpoint
 
-WITH inserted AS (
-  INSERT INTO block_locale (block_id, locale, content, updated_at)
-  SELECT src.block_id, ll.locale, ll.content, ll.updated_at
-  FROM _block_source src
-  JOIN lesson_language ll ON ll.lesson_id = src.lesson_id
-  WHERE src.type = 'note'
-    AND (
-      COALESCE(btrim(ll.content), '') <> ''
-      OR EXISTS (SELECT 1 FROM lesson_language_history h WHERE h.lesson_language_id = ll.id)
-    )
-  RETURNING id, block_id, locale
-)
+INSERT INTO block_locale (block_id, locale, content, updated_at)
+SELECT DISTINCT ON (src.block_id, ll.locale) src.block_id, ll.locale, ll.content, ll.updated_at
+FROM _block_source src
+JOIN lesson_language ll ON ll.lesson_id = src.lesson_id
+WHERE src.type = 'note'
+  AND (
+    COALESCE(btrim(ll.content), '') <> ''
+    OR EXISTS (SELECT 1 FROM lesson_language_history h WHERE h.lesson_language_id = ll.id)
+  )
+ORDER BY src.block_id, ll.locale, (COALESCE(btrim(ll.content), '') <> '') DESC, ll.updated_at DESC, ll.id DESC;--> statement-breakpoint
+
 INSERT INTO _locale_map (lesson_language_id, block_locale_id)
-SELECT ll.id, inserted.id
-FROM inserted
-JOIN _block_source src ON src.block_id = inserted.block_id
-JOIN lesson_language ll ON ll.lesson_id = src.lesson_id AND ll.locale = inserted.locale;--> statement-breakpoint
+SELECT ll.id, bl.id
+FROM _block_source src
+JOIN lesson_language ll ON ll.lesson_id = src.lesson_id
+JOIN block_locale bl ON bl.block_id = src.block_id AND bl.locale = ll.locale
+WHERE src.type = 'note';--> statement-breakpoint
 
 INSERT INTO block_locale (block_id, locale, content)
 SELECT src.block_id, 'en', s.note
