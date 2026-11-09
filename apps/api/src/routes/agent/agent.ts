@@ -65,6 +65,8 @@ import * as schema from '@cio/db/schema';
 import { eq } from 'drizzle-orm';
 import { listCourseSections } from '@cio/core/services/course/section';
 import { getLesson } from '@cio/core/services/lesson/lesson';
+import { getLessonNoteHtml } from '@cio/core/services/block/block-text';
+import { formatLessonBlocksForPrompt } from '@cio/core/services/agent/lesson-blocks';
 import { getExercise } from '@cio/core/services/exercise/exercise';
 import { sanitizeDanglingToolCalls } from '@cio/core/services/agent/sanitize-tool-calls';
 import {
@@ -467,11 +469,11 @@ const agentCoreRouter = new Hono()
           await verifyLessonBelongsToCourse(context.lessonId, courseId);
           const lesson = await getLesson(context.lessonId);
           lessonTitle = lesson.title;
-          const lessonWithLangs = lesson as {
-            lessonLanguages?: Array<{ locale: string; content: string | null }>;
-          };
-          const langContent = lessonWithLangs.lessonLanguages?.find((ll) => ll.locale === 'en');
-          lessonContent = langContent?.content || undefined;
+          const lessonContext =
+            role === AgentRole.TEACHER
+              ? await formatLessonBlocksForPrompt(context.lessonId, 'en')
+              : await getLessonNoteHtml(context.lessonId, 'en');
+          lessonContent = lessonContext ?? undefined;
         } catch {
           // Lesson not found or doesn't belong — continue without lesson context
         }
@@ -556,7 +558,11 @@ const agentCoreRouter = new Hono()
       const agentTools = studentAgentTools
         ? studentAgentTools
         : filterToolsForChatMode(
-            buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid, documentAssets }),
+            buildAgentTools(orgId, user.id, courseId, messages, {
+              isOrgOnPaidPlan: isOrgPaid,
+              documentAssets,
+              changeSetId: crypto.randomUUID()
+            }),
             {
               activeTemplateId,
               hasDocuments: documentAssets.length > 0

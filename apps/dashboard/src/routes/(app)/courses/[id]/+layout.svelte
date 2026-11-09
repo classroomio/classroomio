@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { BlockLoader } from '@cio/ui/custom/block-loader';
+  import * as Block from '@cio/ui/custom/block';
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
   import type { Course } from '$features/course/types';
@@ -117,12 +117,19 @@
     )
   );
 
+  const isLessonEditWithBlockEditor = $derived(
+    currentPath.includes('/lessons/') &&
+      page.url.searchParams.get('mode') === 'edit' &&
+      page.url.searchParams.get('editor') !== 'legacy'
+  );
+
   const showContentAskAiBar = $derived(
     isCourseReady &&
       isLessonOrExercisePage &&
       IS_AI_ENABLED &&
       !($isCourseLearnerView && isContentLockedForStudent) &&
-      sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID
+      sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID &&
+      !isLessonEditWithBlockEditor
   );
 
   const courseProgress = $derived(getCourseProgress(courseApi.course));
@@ -257,7 +264,7 @@
 
     {#if !isCourseReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
-        <BlockLoader
+        <Block.Loader
           blockText={false}
           title={$t('common.loading_states.opening_course.title')}
           caption={$t('common.loading_states.opening_course.caption')}

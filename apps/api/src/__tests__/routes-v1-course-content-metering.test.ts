@@ -49,6 +49,17 @@ vi.mock('@api/services/v1/courses/lesson-comments', () => ({
   updatePublicApiCourseLessonCommentService: vi.fn(),
   deletePublicApiCourseLessonCommentService: vi.fn()
 }));
+vi.mock('@api/services/v1/lessons/blocks', () => ({
+  listPublicApiLessonBlocksService: vi.fn(),
+  createPublicApiLessonBlockService: vi.fn(),
+  attachPublicApiLessonBlockService: vi.fn(),
+  updatePublicApiLessonBlockService: vi.fn(),
+  setPublicApiLessonBlockLocaleService: vi.fn(),
+  updatePublicApiLessonPlacementService: vi.fn(),
+  movePublicApiLessonPlacementService: vi.fn(),
+  removePublicApiLessonPlacementService: vi.fn(),
+  duplicatePublicApiLessonBlockService: vi.fn()
+}));
 vi.mock('@api/services/v1/courses/content', () => ({
   reorderPublicApiCourseContentService: vi.fn(),
   updatePublicApiCourseContentLockService: vi.fn(),
@@ -66,6 +77,7 @@ import * as lessons from '@api/services/v1/courses/lessons';
 import * as translations from '@api/services/v1/courses/lesson-translations';
 import * as comments from '@api/services/v1/courses/lesson-comments';
 import * as content from '@api/services/v1/courses/content';
+import * as blocks from '@api/services/v1/lessons/blocks';
 import {
   completeMcpAutomationUsage,
   releaseMcpAutomationUsage,
@@ -76,6 +88,9 @@ import { v1Router } from '@api/routes/v1';
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 const SECTION_ID = '22222222-2222-4222-8222-222222222222';
 const LESSON_ID = '33333333-3333-4333-8333-333333333333';
+const BLOCK_ID = '44444444-4444-4444-8444-444444444444';
+const PLACEMENT_ID = '55555555-5555-4555-8555-555555555555';
+const OTHER_PLACEMENT_ID = '66666666-6666-4666-8666-666666666666';
 const COURSE_SCOPES = ['course:read', 'course:write'];
 const PAGE = { items: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
 
@@ -129,6 +144,15 @@ beforeEach(() => {
   vi.mocked(content.reorderPublicApiCourseContentService).mockResolvedValue({} as never);
   vi.mocked(content.updatePublicApiCourseContentLockService).mockResolvedValue({} as never);
   vi.mocked(content.deletePublicApiCourseContentService).mockResolvedValue({} as never);
+  vi.mocked(blocks.listPublicApiLessonBlocksService).mockResolvedValue([]);
+  vi.mocked(blocks.createPublicApiLessonBlockService).mockResolvedValue({} as never);
+  vi.mocked(blocks.attachPublicApiLessonBlockService).mockResolvedValue({} as never);
+  vi.mocked(blocks.updatePublicApiLessonBlockService).mockResolvedValue({} as never);
+  vi.mocked(blocks.setPublicApiLessonBlockLocaleService).mockResolvedValue({} as never);
+  vi.mocked(blocks.updatePublicApiLessonPlacementService).mockResolvedValue({} as never);
+  vi.mocked(blocks.movePublicApiLessonPlacementService).mockResolvedValue({} as never);
+  vi.mocked(blocks.removePublicApiLessonPlacementService).mockResolvedValue({} as never);
+  vi.mocked(blocks.duplicatePublicApiLessonBlockService).mockResolvedValue({} as never);
 });
 
 describe('MCP metering on course content routes through the real v1 router', () => {
@@ -148,6 +172,33 @@ describe('MCP metering on course content routes through the real v1 router', () 
     ['create_course_lesson_comment', 1, 201, `${lesson}/comments`, body('POST', { comment: 'hi' })],
     ['update_course_lesson_comment', 1, 200, `${lesson}/comments/7`, body('PUT', { comment: 'hi' })],
     ['delete_course_lesson_comment', 1, 200, `${lesson}/comments/7`, { method: 'DELETE' }],
+    ['list_lesson_blocks', 0, 200, `${lesson}/blocks`, {}],
+    ['add_lesson_block', 1, 201, `${lesson}/blocks`, body('POST', { type: 'note', content: '<p>x</p>' })],
+    ['attach_lesson_block', 1, 201, `${lesson}/blocks/attach`, body('POST', { blockId: BLOCK_ID })],
+    ['update_lesson_block', 1, 200, `${lesson}/blocks/${BLOCK_ID}`, body('PATCH', { expectedVersion: 1 })],
+    [
+      'set_lesson_block_content',
+      1,
+      200,
+      `${lesson}/blocks/${BLOCK_ID}/locale/fr`,
+      body('PUT', { content: '<p>x</p>', expectedVersion: 1 })
+    ],
+    [
+      'update_lesson_block_placement',
+      1,
+      200,
+      `${lesson}/blocks/placements/${PLACEMENT_ID}`,
+      body('PATCH', { required: true })
+    ],
+    [
+      'move_lesson_block',
+      1,
+      200,
+      `${lesson}/blocks/placements/${PLACEMENT_ID}/move`,
+      body('PUT', { beforePlacementId: OTHER_PLACEMENT_ID })
+    ],
+    ['remove_lesson_block', 1, 200, `${lesson}/blocks/placements/${PLACEMENT_ID}`, { method: 'DELETE' }],
+    ['duplicate_lesson_block', 1, 201, `${lesson}/blocks/${BLOCK_ID}/duplicate`, body('POST', {})],
     [
       'reorder_course_content',
       1,

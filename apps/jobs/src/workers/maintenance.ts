@@ -14,7 +14,8 @@ import {
   reconcileMemberLastActive
 } from '@cio/db/queries/organization';
 import { buildEarlyAdopterClaimUrl, deriveEarlyAdopterClaimToken } from '@cio/core/services/early-adopter/claim-token';
-import { capAutoLessonVersionsPerLanguage, pruneAutoLessonVersions } from '@cio/db/queries/lesson/version';
+import { capAutoBlockVersionsPerLocale, pruneAutoBlockVersions } from '@cio/db/queries/block/version';
+import { purgeExpiredDeletedBlocks, pruneLessonRevisions } from '@cio/db/queries/block';
 import {
   JOB_NAMES,
   QUEUE_NAMES,
@@ -60,23 +61,30 @@ const worker = new Worker(
 
     if (job.name === JOB_NAMES.maintenance.lessonVersionRetention) {
       const data = ZLessonVersionRetentionPayload.parse(job.data ?? {});
-      const thinned = await pruneAutoLessonVersions({
+      const thinned = await pruneAutoBlockVersions({
         keepAllHours: data.keepAllHours,
         hourlyDays: data.hourlyDays,
         dailyDays: data.dailyDays
       });
-      const capped = await capAutoLessonVersionsPerLanguage(data.maxAutoPerLanguage);
+      const capped = await capAutoBlockVersionsPerLocale(data.maxAutoPerLanguage);
+      const purgedBlocks = await purgeExpiredDeletedBlocks(data.deletedBlockDays);
+      const prunedRevisions = await pruneLessonRevisions({
+        keepAllDays: data.revisionKeepAllDays,
+        dailyDays: data.revisionDailyDays
+      });
 
       log.info('lesson-version-retention-done', {
         thinned,
         capped,
+        purgedBlocks,
+        prunedRevisions,
         keepAllHours: data.keepAllHours,
         hourlyDays: data.hourlyDays,
         dailyDays: data.dailyDays,
         maxAutoPerLanguage: data.maxAutoPerLanguage
       });
 
-      return { thinned, capped };
+      return { thinned, capped, purgedBlocks, prunedRevisions };
     }
 
     if (job.name === JOB_NAMES.maintenance.mediaJobReap) {

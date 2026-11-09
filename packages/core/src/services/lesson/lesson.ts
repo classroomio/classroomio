@@ -8,13 +8,12 @@ import {
   deleteLesson,
   deleteLessonComment,
   getLessonById,
+  getLessonRowById,
   getLessonCommentsAvailability,
   getLessonCommentsAvailabilityByCommentId,
   getLessonCommentsByLessonId,
   getLessonCommentsByLessonIdPaginated,
   getLessonCompletion,
-  getLessonVersionHistory,
-  type TLessonVersionCursor,
   getLessonVideoProgress,
   getLessonVideoProgressForLesson,
   getLessonsByCourseId,
@@ -28,13 +27,22 @@ import {
 import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
 import { skipActiveReminderDeliveriesForLesson, touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
+import { listLessonBlockRows } from '@cio/db/queries/block';
+import type { LessonBlock } from '../block/block-view';
 import { db } from '@cio/db/drizzle';
-import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
+import {
+  applyLegacyLessonContent,
+  attachBlocksToLesson,
+  attachBlocksToLessons,
+  splitLegacyContent
+} from '../block/legacy-content';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
 import { emitCourseWebhookEvent } from '../webhook/emit';
 import { captureCourseEvent } from '../posthog';
+
+export { getLessonHistoryService, getLessonTextHistoryService, type LessonStructureChange } from './lesson-history';
 
 /**
  * Creates a new lesson
@@ -54,20 +62,31 @@ export async function createLesson(
       requestedSlug: data.slug
     });
 
+    const { note, videos, ...lessonFields } = data;
     const lessonData = {
-      ...data,
+      ...lessonFields,
       courseId,
       slug,
       isUnlocked: data.isUnlocked ?? true
     };
 
-    const [lesson] = await db.transaction(async (tx) => {
+    const createdLesson = await db.transaction(async (tx) => {
       const order = await claimItemOrder(courseId, { sectionId: data.sectionId }, data.order, null, tx);
-      return createLessons([{ ...lessonData, order }], tx);
+      const [inserted] = await createLessons([{ ...lessonData, order }], tx);
+      if (inserted) {
+        await applyLegacyLessonContent(
+          inserted.id,
+          { note, videos },
+          { actorProfileId: options.actorProfileId, dbClient: tx }
+        );
+      }
+
+      return inserted;
     });
-    if (!lesson) {
+    if (!createdLesson) {
       throw new AppError('Failed to create lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
+    const lesson = await attachBlocksToLesson(createdLesson);
 
     await touchCourseUpdatedAt(courseId);
 
@@ -100,14 +119,14 @@ export async function createLesson(
  * @param lessonId Lesson ID
  * @returns Lesson or throws error if not found
  */
-export async function getLesson(lessonId: string): Promise<LessonById> {
+export async function getLesson(lessonId: string): Promise<LessonById & { blocks: LessonBlock[] }> {
   try {
     const lesson = await getLessonById(lessonId);
     if (!lesson) {
       throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
     }
 
-    return enrichLessonWithPresignedUrls(lesson);
+    return await attachBlocksToLesson(lesson, { enrich: true });
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -143,7 +162,8 @@ export async function updateLessonService(
   options: { actorProfileId?: string | null } = {}
 ): Promise<TLesson> {
   try {
-    const payload: TLessonUpdate = { ...data };
+    const { patch: contentPatch, rest } = splitLegacyContent(data);
+    const payload = { ...rest };
     const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
     const needsExisting = payload.slug !== undefined || payload.order !== undefined || touchesSession;
     const existing = needsExisting ? await getLessonById(lessonId) : null;
@@ -166,15 +186,26 @@ export async function updateLessonService(
 
     const sectionId = payload.sectionId === undefined ? existing?.sectionId : payload.sectionId;
     const orderCourseId = payload.order !== undefined ? existing?.courseId : null;
-    const updated = orderCourseId
-      ? await db.transaction(async (tx) => {
-          payload.order = await claimItemOrder(orderCourseId, { sectionId }, payload.order, lessonId, tx);
-          return updateLesson(lessonId, payload, tx);
-        })
-      : await updateLesson(lessonId, payload);
-    if (!updated) {
+    const hasLessonFields = Object.keys(payload).length > 0;
+    const updatedRow = await db.transaction(async (tx) => {
+      if (orderCourseId) {
+        payload.order = await claimItemOrder(orderCourseId, { sectionId }, payload.order, lessonId, tx);
+      }
+
+      const row = hasLessonFields ? await updateLesson(lessonId, payload, tx) : await getLessonRowById(lessonId, tx);
+      if (row) {
+        await applyLegacyLessonContent(lessonId, contentPatch, {
+          actorProfileId: options.actorProfileId,
+          dbClient: tx
+        });
+      }
+
+      return row;
+    });
+    if (!updatedRow) {
       throw new AppError('Failed to update lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
+    const updated = await attachBlocksToLesson(updatedRow);
 
     if (updated.courseId) {
       await touchCourseUpdatedAt(updated.courseId);
@@ -260,12 +291,9 @@ export async function deleteLessonService(lessonId: string): Promise<TLesson> {
 export async function listLessons(courseId: string, sectionId?: string): Promise<TLesson[]> {
   try {
     const lessons = await getLessonsByCourseId(courseId);
+    const visibleLessons = sectionId ? lessons.filter((lesson) => lesson.sectionId === sectionId) : lessons;
 
-    if (sectionId) {
-      return lessons.filter((lesson) => lesson.sectionId === sectionId);
-    }
-
-    return lessons;
+    return await attachBlocksToLessons(visibleLessons);
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list lessons',
@@ -286,7 +314,10 @@ export async function listLessonsPaginated(
   options: { sectionId?: string; page: number; limit: number }
 ): Promise<{ items: TLesson[]; total: number }> {
   try {
-    return await getPaginatedLessonsByCourseId(courseId, options);
+    const page = await getPaginatedLessonsByCourseId(courseId, options);
+    const items = await attachBlocksToLessons(page.items);
+
+    return { items, total: page.total };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list lessons',
@@ -677,7 +708,14 @@ export async function updateLessonWatchProgressService(
     }
 
     const existing = await getLessonVideoProgress(lessonId, profileId, beat.assetId);
-    const threshold = lesson.videoWatchThreshold ?? 95;
+    const assetPlacements = (await listLessonBlockRows(lessonId)).filter(
+      (row) => row.block.type === 'video' && row.block.data.assetId === beat.assetId
+    );
+    const requiredPlacements = assetPlacements.filter((row) => row.placement.required);
+    const enforcedPlacements = requiredPlacements.length > 0 ? requiredPlacements : assetPlacements;
+    const lessonThreshold = lesson.videoWatchThreshold ?? 95;
+    const placementThresholds = enforcedPlacements.map((row) => row.placement.watchThreshold ?? lessonThreshold);
+    const threshold = placementThresholds.length > 0 ? Math.max(...placementThresholds) : lessonThreshold;
     const now = Date.now();
 
     if (existing?.isComplete) {
@@ -776,44 +814,6 @@ export async function updateLessonWatchProgressService(
 
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update lesson watch progress',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-function parseLessonVersionCursor(cursor?: string): TLessonVersionCursor | undefined {
-  if (!cursor) return undefined;
-
-  const separatorIndex = cursor.lastIndexOf('|');
-  if (separatorIndex <= 0) return undefined;
-
-  const timestamp = cursor.slice(0, separatorIndex);
-  const id = Number(cursor.slice(separatorIndex + 1));
-
-  if (!timestamp || !Number.isInteger(id)) return undefined;
-
-  // The timestamp is interpolated into a Postgres timestamp comparison, so it has to be a
-  // real date here. Without this check a cursor like `garbage|5` reaches the driver and
-  // fails the query with a 500 instead of restarting at the newest page.
-  if (Number.isNaN(new Date(timestamp).getTime())) return undefined;
-
-  return { timestamp, id };
-}
-
-/**
- * Gets one keyset page of lesson version history.
- *
- * @param cursor Serialized `<iso timestamp>|<id>` from the previous page's `nextCursor`.
- *   Malformed input is treated as absent so a hand-edited URL restarts at the newest page
- *   rather than erroring.
- */
-export async function getLessonHistoryService(lessonId: string, locale: string, limit: number, cursor?: string) {
-  try {
-    return getLessonVersionHistory(lessonId, locale, limit, parseLessonVersionCursor(cursor));
-  } catch (error) {
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to get lesson history',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

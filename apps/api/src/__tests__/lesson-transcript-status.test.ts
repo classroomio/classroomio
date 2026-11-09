@@ -10,6 +10,7 @@ vi.mock('@cio/core/services/lesson/lesson', () => ({ getLesson: vi.fn() }));
 vi.mock('@cio/core/services/youtube-captions/policy', () => ({
   CAPTION_FETCH_COST_UNITS: 6_000,
   canOrgFetchYoutubeCaptions: vi.fn(),
+  isCaptionProviderConfigured: vi.fn(() => true),
   isSelfHostedInstance: vi.fn(() => false)
 }));
 vi.mock('@cio/core/services/agent/usage', () => ({ getTokenBalance: vi.fn() }));
@@ -20,7 +21,7 @@ import { getActiveNegativeYoutubeCaption } from '@cio/db/queries/youtube-caption
 import { startTranscriptionOnlyMediaJob, startYoutubeCaptionsJob } from '@cio/core/services/jobs/media-jobs';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { getLesson } from '@cio/core/services/lesson/lesson';
-import { canOrgFetchYoutubeCaptions } from '@cio/core/services/youtube-captions/policy';
+import { canOrgFetchYoutubeCaptions, isCaptionProviderConfigured } from '@cio/core/services/youtube-captions/policy';
 import { getTokenBalance } from '@cio/core/services/agent/usage';
 
 const ORG = 'org-1';
@@ -83,6 +84,17 @@ describe('getLessonVideoTranscript status', () => {
 
     expect(result.status).toBe('fetching');
     expect(startTranscriptionOnlyMediaJob).toHaveBeenCalledWith(expect.objectContaining({ assetId: 'asset-upload' }));
+  });
+
+  it('reports unavailable without enqueueing when no caption provider key is configured', async () => {
+    mockLesson([YOUTUBE_VIDEO]);
+    vi.mocked(listMediaTranscriptsByAssetIds).mockResolvedValue([] as never);
+    vi.mocked(isCaptionProviderConfigured).mockReturnValueOnce(false);
+
+    const result = await getLessonVideoTranscript('lesson-1', ORG, OPTIONS);
+
+    expect(result.status).toBe('unavailable');
+    expect(startYoutubeCaptionsJob).not.toHaveBeenCalled();
   });
 
   it('treats an already-running upload job as fetching', async () => {

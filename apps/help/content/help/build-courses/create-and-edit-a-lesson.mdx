@@ -1,10 +1,10 @@
 ---
 title: Create and edit a lesson
-description: Add a lesson, edit its title and materials, and check its availability for students.
-last_reviewed: '2026-10-21'
+description: Add a lesson, build it from note, video, slides, document, and image blocks, and check its availability for students.
+last_reviewed: '2026-11-08'
 ---
 
-Create a lesson from **Content → Add content → Lesson**, then open it and select **Edit** to add teaching materials. A lesson can contain notes, videos, slide decks, and documents.
+Create a lesson from **Content → Add content → Lesson**, then open it and select **Edit** to build it from blocks. A lesson is an ordered list of note, video, slides, document, and image blocks that students see from top to bottom.
 
 ![Add content dialog with the Lesson Title field](./images/create-and-edit-a-lesson/overview.webp)
 
@@ -18,34 +18,48 @@ Open your course's **Content** page. Select **Add content**, or use the add cont
 
 Choose **Lesson**, select **Continue**, enter **Lesson Title**, and select **Create lesson**. The lesson appears in the outline. Open it to start editing.
 
-## Add and save materials
+## Build the lesson from blocks
 
 ### 1. Open Edit
 
-On the lesson page, select **Edit**. Update the title and choose the material tab you need:
+On the lesson page, select **Edit** in the **Preview** / **Edit** toggle. Select the lesson title at the top of the page and type to rename it.
+
+### 2. Add content blocks
+
+Choose a block type from the **Add content** row:
 
 - **Note** for written content and rich formatting.
 - **Video** for links, uploads, or videos from your library.
-- **Slide** for supported presentation embeds.
-- **Docs** for PDF or Word attachments.
+- **Slides** for supported presentation embeds.
+- **Document** for files students can view or download.
+- **Image** for a single picture with alt text.
 
-The tab order can differ between courses because it is configurable in course settings.
+A new lesson shows the **Add content** row in the middle of the page. Once the lesson has blocks, the row stays at the bottom of the screen and adds the block to the end of the lesson. To insert a block between two others, select the plus button below a block and choose the type.
 
-### 2. Save and review
+![Empty lesson in Edit mode with the Add content row](./images/create-and-edit-a-lesson/add-content-row.webp)
 
-Lesson edits autosave after you stop typing. Watch for **Saved**, and use the save control to finish a deliberate edit. Check the lesson in view mode before leaving. If saving fails, keep the editor open and check your connection rather than assuming the changes reached the server.
+**Note**, **Video**, **Slides**, **Document**, and **Image** blocks start with example content so you can see the layout. Replace it before students use the lesson: type over the note, or select **Change Video**, **Change Slides**, **Change Document**, or **Change image** on the block. **Change image** opens the **Insert image** dialog, where you can upload a file, search Unsplash, or paste a link. You can add as many blocks of each type as you need.
 
-For scheduling or completion requirements, open the lesson's **Settings** tab and save the relevant settings. Live-session changes have their own save action.
+### 3. Arrange and remove blocks [#arrange-blocks]
+
+Drag a block by its handle to move it, or open the block's **⋯** (Block actions) menu and choose **Move up** or **Move down**. Choose **Remove block** in the same menu to delete it from the lesson.
+
+### 4. Save and review
+
+Block changes save as you make them, and note text saves shortly after you stop typing. The **Saved** label in the lesson header covers the lesson title and settings, not note text. Before you leave, select **Preview** (or the save icon) to read the lesson the way students see it and check that your text is there. If saving fails, stay on the page and check your connection rather than assuming the changes reached the server.
+
+For language, access, scheduling, completion, comment, and reading density options, select the settings icon in the lesson header to open **Lesson settings**. These options save automatically, except a live session, which has its own **Save session** button.
 
 ## Make the lesson available
 
-Check its **Lock** or **Unlock** control. Publishing a course does not override a locked lesson, and sequential progression can add a separate requirement to complete earlier items.
+Check the **Access** switch in **Lesson settings**: a lesson shows **Unlocked** or **Locked**. Publishing a course does not override a locked lesson, and sequential progression can add a separate requirement to complete earlier items.
 
-Preview the lesson as a student and use a separately enrolled demo student to verify access. In public courses, test the signed-out public page instead.
+Select **Preview** to check the content, and use a separately enrolled demo student to verify access. In public courses, test the signed-out public page instead.
 
 ## Related guides
 
-- [Write lesson content in the editor](/build-courses/write-lesson-content-in-the-editor) — format your lesson notes
+- [Write lesson content in the editor](/build-courses/write-lesson-content-in-the-editor) — format your note blocks
 - [Add or upload a video](/build-courses/add-or-upload-a-video) — choose a video source
 - [Recover drafts and use version history](/build-courses/recover-drafts-and-use-version-history) — recover lesson note changes
+- [Set lesson completion rules](/deliver-and-engage/set-lesson-completion-rules) — choose when the lesson counts as finished
 - [Control progression and completion](/create-and-deliver/course-progression) — choose when students can continue

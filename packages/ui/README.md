@@ -84,6 +84,8 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/attention-highlight/` - Prop-driven focus pulse and smooth scroll wrapper to draw user attention to specific items
 - `custom/question-type-picker/` - Question type picker modal and QuestionTypeIcon glyph/icon component
 - `custom/org-landing-page/` - 11-theme org and course landing page system, including `LearnerMenu` authenticated popover
+- `custom/add-block/` - the add-content entry points for lessons (`Menu` between-block plus, `Row` empty-state/AI row, `Item` choice button)
+- `custom/block/` - lesson block container (ordering, gap menus, rail) and presentational blocks (image, document, slide, video, note)
 
 ### Question type icon (`src/custom/question-type-picker/question-type-icon.svelte`)
 
@@ -240,9 +242,38 @@ One compact row (about 52px) for a file that is uploading or has uploaded, meant
 
 Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
 
+### Lesson blocks (`src/custom/block/`, `add-block/`)
+
+The lesson block canvas is split into a reusable **container** and **block bodies**, so any host can render an ordered, draggable list of mixed content. Import via `import * as AddBlock from '@cio/ui/custom/add-block'` and `import * as Block from '@cio/ui/custom/block'` (legacy names such as `BlockList`, `ImageBlock`, `AddContentMenu` remain exported as aliases inside those namespaces).
+
+**Container**
+
+- `Block.List` hosts ordering (drag and drop via `svelte-dnd-action`), the gap `+` rows, the scroll rail and active-block tracking, the insert highlight, and the drag hint. It is generic over `T extends { id: string }` and takes `items`, `editable`, `spacingClass`, `addChoices`, `onAdd(type, index)`, `onReorder(items)`, and a `renderItem({ item, index, total, highlighted })` snippet. With no items it shows an `Empty` card illustrated with `MachineBlankLesson`; pass `emptyMachineHeading` with the translated label drawn on the machine (defaults to `LESSON`), or `emptyIcon` to show an icon instead. `emptyTitle` and `emptyDescription` show in both modes. Pass `emptyAction` for the editable empty state, and `showRail={false}` when the list is embedded in a narrow panel.
+- `Block.Shell` renders a single block's frame: optional drag handle, type label, example badge, actions dropdown (`menuItems`), and the `highlighted` ring.
+- `AddBlock.Menu` is the between-block `+` row that expands into a choices toolbar; the trigger stays hidden until the row is hovered or focused and animates a self-drawing stroke on hover (`PlusIcon` from `custom/moving-icons/`).
+- `AddBlock.Item` is one choice button: a label + optional trailing icon, with `compact`, `hideLabelOnMobile`, and `testId` props. `AddBlock.Menu` renders it compactly in the 10px gap row; `AddBlock.Row` renders it at 12px with the label hidden on mobile.
+- `AddBlock.Row` is the empty-state / toolbar row: Ask AI trigger, choice buttons, and the AI panel shell. `aiOpen` drives an animated clip-path reveal of the `aiPanel` snippet, keeps the toolbar `inert` while open, and restores focus to the trigger on close.
+
+Labels are individual props with English defaults, so the dashboard overrides them with translated copy. All blocks live in `src/custom/block/`:
+
+| Block                                         | Props worth knowing                                                                                                                                                               | Story                      |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `Block.Image` (+ `Block.ImageSettingsDialog`) | `url`, `alt`, `fit`, `editable`, `changeLabel`, `onChange`, `onSaveSettings`                                                                                                      | `Blocks/ImageBlock`        |
+| `Block.Document`                              | `file`, `editable`, `labels` (`view`, `download`), `changeLabel`, `onView`, `onDownload`, `onChange` — one file per block, shown as a single card                                 | `Blocks/DocumentBlock`     |
+| `Block.Slide`                                 | `slide`, `isExample`, `editable`, `frameTitle`, `changeLabel`, `onChange`                                                                                                         | `Blocks/SlideBlock`        |
+| `Block.Video`                                 | `title`, `thumbnailUrl`, `fallbackThumbnailUrl`, `durationLabel`, `channelLine`, `metaLine`, `changeLabel`, `onChange`, plus `actions`, `status`, `notice`, and `player` snippets | `Blocks/VideoBlock`        |
+| `Block.Note`                                  | `editable`, `contentHtml`, `empty`, `emptyLabel`, plus `editor` and `view` snippets                                                                                               | `Blocks/NoteBlock`         |
+| `Block.ChangeButton`                          | `label`, `onclick`, `disabled` — the hover "Change …" action the source blocks overlay on their media                                                                             | `Blocks/BlockChangeButton` |
+
+`Block.Video` and `Block.Note` are presentational: the host injects its own player, editor, dropdown, and math-rendering wrapper through snippets, while the block owns layout, chrome, and the example states.
+
+### Reading density (`src/custom/density-control/`)
+
+`DensityControl` pairs a compact segmented toggle with a live gap swatch, mirroring the lesson-editor prototype: picking Compact / Comfortable / Spacious updates the swatch gaps (4 / 7 / 11px) with a short transition. It takes `value`, `options` (`{ value, label }[]`, labels injected by the host so copy stays translated), `onChange`, `groupLabel`, and an optional `testIdPrefix` for per-option hooks. See `Molecules/DensityControl` in Storybook.
+
 ### Public course Copy Page (`src/custom/public-course/copy-page-button.svelte`)
 
-Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Both halves use `variant="secondary"`. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyChatUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet so it sits beside the lesson title at every breakpoint, with `ShareButton` to its right. The outline rail still has the matching copy / share / chat actions. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.
+Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Both halves use `variant="secondary"`. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyChatUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet (its `content` snippet replaces the default video and body with host-rendered content, which the dashboard uses for lesson blocks) so it sits beside the lesson title at every breakpoint, with `ShareButton` to its right. The outline rail still has the matching copy / share / chat actions. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.
 
 ### Public course Share button (`src/custom/public-course/share-button.svelte`)
 
@@ -262,7 +293,7 @@ Pass copy via `labels: OutlineRailActionLabels`. Render through `PublicLessonVie
 
 Sticky in-page table of contents for long-form content (public lessons, exercises, docs). Pass `items: PageOutlineItem[]` (`id`, `title`, `level` 1–3). Clicking an item updates the URL hash, restores that hash on reload, and highlights the active heading via `IntersectionObserver`. Hierarchy is shown with indent (`h1` / `h2` / `h3`) along a dotted left rail; the active item uses the primary color.
 
-**Hidden on mobile by default.** `hideBelow` defaults to `lg` (`hidden` below that breakpoint). Pass `never` when the parent already hides the rail (for example `PublicLessonView`'s `aside`). Pin the rail to the **page** edge (a full-width flex sibling of the article column), not next to a centered content max-width. Put copy / share / chat links under the outline via `OutlineRailActions` (see **Public course outline rail actions**). Helpers: `injectHeadingIds(html)` rewrites `h1`–`h3` with unique ids and returns outline entries; `withPageTitle` prefixes the page title; `outlineFromSections` builds a title + subsection list. See `Molecules/PageOutline` in Storybook.
+**Hidden on mobile by default.** `hideBelow` defaults to `lg` (`hidden` below that breakpoint). Pass `never` when the parent already hides the rail (for example `PublicLessonView`'s `aside`). Pin the rail to the **page** edge (a full-width flex sibling of the article column), not next to a centered content max-width. Put copy / share / chat links under the outline via `OutlineRailActions` (see **Public course outline rail actions**). Helpers: `injectHeadingIds(html, used?)` rewrites `h1`–`h3` with unique ids and returns outline entries (pass one shared `used` set when a page renders several HTML fragments, such as lesson blocks, so ids match the outline built from the joined body); `withPageTitle` prefixes the page title; `outlineFromSections` builds a title + subsection list. See `Molecules/PageOutline` in Storybook.
 
 ### Comment tree (`src/custom/comment-tree/`)
 
@@ -338,13 +369,13 @@ Unified video player component supporting HTML5 video (direct MP4 and HLS via `h
 - **HLS Adaptive Streaming**: Plays master manifests through hls.js with automatic rendition selection. Segments are authorized by a short-lived signed cookie that the player renews before it expires, or by the viewer's session.
 - **YouTube Embeds**: Lightweight iframe embed with responsive aspect-ratio wrappers.
 
-| Option                    | Purpose                                                                                                            |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `source`                  | `VideoSource` object (`type: 'upload' \| 'hls' \| 'youtube' \| 'vimeo' \| 'generic'`, `url`, `metadata`, `tracks`) |
-| `options.isLearnerView`   | When `true`, displays learner-friendly fallback messages instead of technical configuration hints                  |
-| `options.onTimeUpdate`    | Callback invoked as playback position advances                                                                     |
-| `options.onPlayerReady`   | Callback invoked when the underlying player SDK is initialized                                                     |
-| `options.vimeoRetryLabel` | Optional label override for the Vimeo playback retry button                                                        |
+| Option                    | Purpose                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `source`                  | `VideoSource` object (`type: 'upload' \| 'hls' \| 'youtube' \| 'vimeo' \| 'generic'`, `url`, `metadata`, `tracks`)                                                                                                                                                                                                                                                              |
+| `options.isLearnerView`   | When `true`, displays learner-friendly fallback messages instead of technical configuration hints                                                                                                                                                                                                                                                                               |
+| `options.onTimeUpdate`    | Callback invoked as playback position advances                                                                                                                                                                                                                                                                                                                                  |
+| `options.onPlayerReady`   | Callback invoked when the underlying player SDK is initialized                                                                                                                                                                                                                                                                                                                  |
+| `options.vimeoRetryLabel` | Optional label override for the Vimeo playback retry button                                                                                                                                                                                                                                                                                                                     |
 | `options.onBeforeHlsLoad` | HLS only. Mints the playback cookie and returns `{ expiresInSeconds?, authExpired? }`. Called before the manifest loads, shortly before `expiresInSeconds` elapses, after a playlist or segment request is rejected as unauthorized, and on reload. If it throws, playback continues and the call is retried a few times. Return `authExpired: true` to show the sign-in prompt |
 
 ### Combo button (`src/custom/combo-button/`)
@@ -384,6 +415,7 @@ The accent comes from `--primary` and the surface from `--muted`. Place a machin
 | `label`   | `string` | `undefined` | Accessible description; omit to hide from assistive tech |
 | `stillAt` | `number` | `6`         | Second to freeze on under `prefers-reduced-motion`       |
 | `class`   | `string` | `undefined` | Size and placement                                       |
+| `heading` | `string` | `'LESSON'`  | Caption drawn on the page (`MachineBlankLesson` only)    |
 
 ```svelte
 <div class="bg-muted rounded-xl p-6">
@@ -407,11 +439,11 @@ In an empty state, pass the machine through the `media` snippet of `Empty` (`@ci
 </Empty>
 ```
 
-### Loaders (`src/custom/block-loader/`, `src/custom/compact-loader/`)
+### Loaders (`src/custom/block/block-loader.svelte`, `src/custom/compact-loader/`)
 
-Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `BlockLoader` for page-level waits (the root page, a course opening) and `CompactLoader` for small waits inside panels, tables, settings pages and modals. The blocks use the theme tokens (`--muted`, `--primary`, `--foreground`), cut the notch with `ui:notch-cutout`, and need no surface colour. Under `prefers-reduced-motion` the stack is shown without animation.
+Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `Block.Loader` for page-level waits (the root page, a course opening) and `CompactLoader` for small waits inside panels, tables, settings pages and modals. The blocks use the theme tokens (`--muted`, `--primary`, `--foreground`), cut the notch with `ui:notch-cutout`, and need no surface colour. Under `prefers-reduced-motion` the stack is shown without animation.
 
-`BlockLoader`: four blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block under it.
+`Block.Loader` ("BlockLoader"): four blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block under it.
 
 | Prop        | Type                 | Default     | Description                                                               |
 | ----------- | -------------------- | ----------- | ------------------------------------------------------------------------- |
@@ -430,10 +462,10 @@ Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `B
 | `label` | `string`       | `undefined` | Accessible name     |
 | `class` | `string`       | `undefined` | Placement           |
 
-The default block labels in `BlockLoader` ("LESSON", "Getting started", ...) are illustrative English copy; pass `blocks` with translated text where that matters. Pass `title`, `caption` and `label` from the host (`$t(...)` in the dashboard).
+The default block labels in `Block.Loader` ("LESSON", "Getting started", ...) are illustrative English copy; pass `blocks` with translated text where that matters. Pass `title`, `caption` and `label` from the host (`$t(...)` in the dashboard).
 
 ```svelte
-<BlockLoader title={$t('common.loading_states.opening_academy_title')} />
+<Block.Loader title={$t('common.loading_states.opening_academy_title')} />
 <CompactLoader label={$t('common.loading')} />
 ```
 

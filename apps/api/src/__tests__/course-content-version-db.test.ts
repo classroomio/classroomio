@@ -100,13 +100,12 @@ describe.skipIf(!hasDatabase)('getCourseContentVersion against the database', ()
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
     const { getCourseContentVersion } = await import('@db/queries/course/content-timestamp');
+    const { updateExercise } = await import('@db/queries/exercise/exercise');
 
     const [legacyExercise] = await db
       .insert(schema.exercise)
       .values({ title: 'Legacy exercise', slug: `legacy-exercise-${suffix}`, order: 3, lessonId: lessonAId })
       .returning();
-
-    const { updateExercise } = await import('@db/queries/exercise/exercise');
 
     const beforeEdit = await getCourseContentVersion(courseId);
     await updateExercise(legacyExercise.id, { title: 'Legacy exercise edited' });

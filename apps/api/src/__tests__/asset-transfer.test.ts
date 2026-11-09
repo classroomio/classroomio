@@ -108,13 +108,21 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
             slug: `docs-template-${templateOrg.id}`
           })
           .returning();
-        await tx.insert(schema.lesson).values({
-          courseId: template.id,
-          title: 'Read this',
-          slug: 'read-this',
-          order: 1,
-          documents: [{ type: 'pdf', name: 'Guide', link: sourceKey, key: sourceKey, assetId: document.id }]
-        });
+        const [lesson] = await tx
+          .insert(schema.lesson)
+          .values({ courseId: template.id, title: 'Read this', slug: 'read-this', order: 1 })
+          .returning();
+        const [documentBlock] = await tx
+          .insert(schema.block)
+          .values({
+            organizationId: templateOrg.id,
+            type: 'document',
+            data: { type: 'pdf', name: 'Guide', link: sourceKey, key: sourceKey, assetId: document.id }
+          })
+          .returning();
+        await tx
+          .insert(schema.blockPlacement)
+          .values({ lessonId: lesson.id, blockId: documentBlock.id, position: 'a0' });
 
         const copy = await cloneCourse(
           template.id,
@@ -130,14 +138,15 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
         expect(storage.objects.has(`documents:${copiedAsset.storageKey}`)).toBe(true);
         expect(storage.objects.has(`media:thumbnails/${copiedAsset.id}/poster.jpg`)).toBe(true);
 
-        const [copiedLesson] = await tx
-          .select({ documents: schema.lesson.documents })
-          .from(schema.lesson)
+        const [copiedBlock] = await tx
+          .select({ data: schema.block.data })
+          .from(schema.block)
+          .innerJoin(schema.blockPlacement, eq(schema.blockPlacement.blockId, schema.block.id))
+          .innerJoin(schema.lesson, eq(schema.lesson.id, schema.blockPlacement.lessonId))
           .where(eq(schema.lesson.courseId, copy.id));
-        const copiedDocument = copiedLesson.documents?.[0];
-        expect(copiedDocument?.assetId).toBe(copiedAsset.id);
-        expect(copiedDocument?.key).toBe(copiedAsset.storageKey);
-        expect(JSON.stringify(copiedLesson.documents)).not.toContain(templateOrg.id);
+        expect(copiedBlock.data.assetId).toBe(copiedAsset.id);
+        expect(copiedBlock.data.key).toBe(copiedAsset.storageKey);
+        expect(JSON.stringify(copiedBlock.data)).not.toContain(templateOrg.id);
 
         throw rollback;
       });
