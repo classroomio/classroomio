@@ -40,6 +40,7 @@ import {
 } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
 import { sealBlockVersionsOnPublish } from '../block/block-version';
+import { sealLatestLessonRevisionsForCourse } from '@cio/db/queries/block';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { skipRemovedOffsetReminderDeliveries } from '@cio/db/queries/course/live-session-reminder';
@@ -488,6 +489,7 @@ export async function updateCourse(
       const row = await updateCourseQuery(courseId, courseValues, client);
       if (row && isPublishing) {
         await sealBlockVersionsOnPublish(courseId, client);
+        await sealLatestLessonRevisionsForCourse(courseId, client);
       }
 
       return row;

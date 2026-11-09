@@ -649,8 +649,8 @@
         "heading": "E-posta tercihleriniz",
         "description": "Bunlar, bu kuruluşta size gönderilen e-postalar için geçerlidir. Kuruluşunuz yine de belirli e-postaları herkes için devre dışı bırakabilir.",
         "description_with_org": "Bunlar, {orgName}'te size gönderilen e-postalar için geçerlidir. Kuruluşunuz yine de belirli e-postaları herkes için devre dışı bırakabilir.",
-        "save": "Kişisel tercihleri ​​kaydedin",
-        "save_success": "Kişisel bildirim tercihleri ​​kaydedildi"
+        "save": "Kişisel tercihleri kaydedin",
+        "save_success": "Kişisel bildirim tercihleri kaydedildi"
       },
       "org": {
         "heading": "Kuruluş varsayılanları",
@@ -3713,7 +3713,6 @@
           "title": "Sürüm geçmişi",
           "fetch_more_versions": "Daha fazla sürüm getir",
           "current_version": "Geçerli sürüm",
-          "restore_version": "Bu sürümü geri yükle",
           "edit_count": "{sayım, çoğul, bir {# edit} diğer {# edits}}",
           "today": "Bugün",
           "yesterday": "Dün",
@@ -3723,7 +3722,38 @@
             "publish": "Published"
           },
           "by_author": "tarafından {name}",
-          "empty": "Henüz sürüm yok"
+          "empty": "Henüz sürüm yok",
+          "block_label": "{number} / {count} metin bloğu",
+          "restore_failed": "Bu sürüm geri yüklenemedi",
+          "shared_restore_hint": "Bu metin bloğu diğer derslerle paylaşılıyor. Geri yükleme bu derse kendi kopyasını verir ve diğer dersler geçerli metinlerini korur.",
+          "structure_change": "Yapı",
+          "restore_lesson_failed": "Ders geri yüklenemedi",
+          "undo_change": "Geri al",
+          "by_assistant": "Asistan",
+          "by_restore": "Geri yükle",
+          "change_added": "{name} eklendi",
+          "change_removed": "{name} kaldırıldı",
+          "change_moved": "{name} taşındı",
+          "change_edited": "{name} değiştirildi",
+          "block_type": {
+            "note": "metin bloğu",
+            "video": "video",
+            "slides": "slaytlar",
+            "document": "belge",
+            "image": "resim"
+          },
+          "change_kind": {
+            "added": "Eklendi",
+            "removed": "Kaldırıldı",
+            "moved": "Taşındı",
+            "edited": "Değiştirildi"
+          },
+          "restore_version": "Bu bloğu geri yükle",
+          "restore_lesson": "Dersin tamamını geri yükle",
+          "undo_failed": "Bu değişiklik geri alınamadı. Değiştirilen bir şey daha sonra düzenlendiyse bunun yerine istediğiniz sürümü geri yükleyin.",
+          "removed_block_label": "Metin bloğu kaldırıldı",
+          "restore_lesson_confirm": "Dersin tamamı bu sürümle değiştirilsin mi?",
+          "structure_state": "Başlangıç noktası: kaydedilen ilk değişiklikten önce ders bloklarının nasıl düzenlendiği."
         },
         "expand_content": "İçeriği genişlet",
         "collapse_content": "İçeriği daralt",
@@ -5761,7 +5791,7 @@
       }
     },
     "generic": {
-      "invalid_type": "Geçersiz tür{beklenen, seç, tanımsız{} diğer{. Beklenen {expected}}}{alındı, seç, tanımsız{} diğer{ (alındı ​​{received})}}",
+      "invalid_type": "Geçersiz tür{beklenen, seç, tanımsız{} diğer{. Beklenen {expected}}}{alındı, seç, tanımsız{} diğer{ (alındı {received})}}",
       "too_big": "Değer çok büyük{maksimum, seç, tanımsız{} diğer{. Maksimum {maximum}}}",
       "too_small": "Değer çok küçük{minimum, seçin, tanımsız{} diğer{. Minimum {minimum}}}",
       "invalid_format": "Geçersiz biçim{doğrulama, seçme, tanımsız{} diğer{ {validation} için}}",
@@ -5922,7 +5952,22 @@
         "fetch_documentation_url_with_url": "Reading {url}",
         "list_youtube_playlist_videos": "Loynatma listesi videolarını listeleme",
         "get_lesson_transcript": "Video transkripsiyonunu okuma",
-        "add_youtube_video_to_lesson": "YouTube videosunu yerleştirme"
+        "add_youtube_video_to_lesson": "YouTube videosunu yerleştirme",
+        "add_lesson_note_block": "Metin bloğu ekleme",
+        "remove_lesson_block": "Bir metin bloğunu kaldırma",
+        "move_lesson_block": "Bir bloğu taşıma",
+        "add_lesson_slides_block": "Slayt ekleme",
+        "add_lesson_image_block": "Resim ekleme",
+        "update_lesson_block_settings": "Blok ayarları güncelleniyor",
+        "update_lesson_block_requirements": "Tamamlama kuralları güncelleniyor",
+        "detach_lesson_block": "Paylaşılan bir bloğu ayırma",
+        "list_block_library": "Blok kütüphanesinde arama",
+        "attach_library_block": "Kütüphane bloğu ekleme",
+        "move_lesson_block_to_lesson": "Bir bloğu başka bir derse taşıma",
+        "attach_document_to_lesson": "Belge ekleme",
+        "get_lesson_history": "Ders geçmişini okuma",
+        "restore_lesson_version": "Daha önceki bir sürümü geri yükleme",
+        "undo_lesson_change": "Bir değişikliği geri alma"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
@@ -5962,7 +6007,21 @@
         "get_lesson_transcript_plan_gated": "Transkriptler ücretli bir plan gerektirir",
         "get_lesson_transcript_no_credits": "Transkriptleri getirmek için AI kredisi bitti",
         "get_lesson_transcript_unavailable": "No transcript available for {title}",
-        "add_youtube_video_to_lesson": "Gömülü video: {title}"
+        "add_youtube_video_to_lesson": "Gömülü video: {title}",
+        "remove_lesson_block": "{title}'dan bir metin bloğu kaldırıldı",
+        "move_lesson_block": "{title} içinde bir blok taşındı",
+        "add_lesson_slides_block": "{title} dosyasına slaytlar eklendi",
+        "add_lesson_image_block": "{title}'a bir resim eklendi",
+        "update_lesson_block_settings": "{title} içindeki bir blok güncellendi",
+        "update_lesson_block_requirements": "{title} içindeki tamamlama kuralları güncellendi",
+        "detach_lesson_block": "{title} adlı kullanıcıya paylaşılan bloğun kendi kopyasını verdi",
+        "list_block_library": "Blok kütüphanesinde arama yapıldı",
+        "attach_library_block": "{title}'a bir kütüphane bloğu eklendi",
+        "move_lesson_block_to_lesson": "Bir blok {title}'a taşındı",
+        "attach_document_to_lesson": "Doküman eklendi: {title}",
+        "get_lesson_history": "Ders geçmişi yüklendi",
+        "restore_lesson_version": "Dersin önceki bir sürümü geri yüklendi",
+        "undo_lesson_change": "Bir değişiklik geri alındı"
       }
     },
     "mention_lesson": "LDers",

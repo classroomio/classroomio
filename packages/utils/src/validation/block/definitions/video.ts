@@ -39,5 +39,6 @@ export const videoBlock = defineBlock({
   dataSchema: ZVideoBlockData,
   localizedContent: false,
   media: 'video',
-  toPublicData: toPublicVideoData
+  toPublicData: toPublicVideoData,
+  agentEditableFields: []
 });

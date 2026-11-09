@@ -16,6 +16,8 @@ export interface BlockDefinition<TKey extends string, TSchema extends z.ZodType<
   media: TBlockMediaKind | null;
   /** The data an anonymous public-course viewer receives; null keeps the type off public pages. */
   toPublicData: ((data: z.infer<TSchema>) => Record<string, unknown>) | null;
+  /** Data fields the AI assistant may change on an existing block. Fields that pick the media itself stay off this list. */
+  agentEditableFields: readonly (keyof z.infer<TSchema> & string)[];
 }
 
 export function defineBlock<const TKey extends string, TSchema extends z.ZodType<Record<string, unknown>>>(

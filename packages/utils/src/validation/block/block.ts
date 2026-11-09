@@ -97,6 +97,13 @@ export const ZBlockHistoryQuery = z.object({
 });
 export type TBlockHistoryQuery = z.infer<typeof ZBlockHistoryQuery>;
 
+export const ZBlockVersionRestore = z.object({
+  blockId: z.uuid(),
+  locale: ZBlockLocale,
+  versionId: z.number().int().min(1)
+});
+export type TBlockVersionRestore = z.infer<typeof ZBlockVersionRestore>;
+
 export const ZBlockParam = z.object({ blockId: z.uuid() });
 export const ZPlacementParam = z.object({ placementId: z.uuid() });
 export const ZLessonBlocksParam = z.object({ courseId: z.uuid(), lessonId: z.uuid() });

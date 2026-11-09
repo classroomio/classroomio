@@ -13,7 +13,7 @@ import type {
 import { and, asc, count, db, desc, eq, inArray, lt, ne, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
-import { deleteBlocksWithoutPlacements } from '@db/queries/block/block';
+import { softDeleteBlocksWithoutPlacements } from '@db/queries/block/block';
 import { withDerivedLessonContent } from '@db/queries/block/legacy';
 import { createLessonLanguage, listLessonLanguagesForLessons } from '@db/queries/lesson/language';
 import { contentWriteBumpsTimestamp } from '@db/queries/course/content-timestamp';
@@ -248,7 +248,7 @@ export async function deleteLesson(lessonId: string, dbClient: DbOrTxClient = db
       .where(eq(schema.blockPlacement.lessonId, lessonId));
     const [deleted] = await dbClient.delete(schema.lesson).where(eq(schema.lesson.id, lessonId)).returning();
     if (deleted) {
-      await deleteBlocksWithoutPlacements(
+      await softDeleteBlocksWithoutPlacements(
         placed.map((row) => row.blockId),
         dbClient
       );

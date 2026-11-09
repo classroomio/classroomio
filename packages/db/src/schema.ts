@@ -27,7 +27,7 @@ import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
 import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { EMAIL_LOCALES } from '@cio/utils/email';
-import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
+import { LESSON_VERSION_KIND_VALUES, type TBlockChangeSource } from '@cio/utils/constants/lesson-version';
 import {
   LIVE_SESSION_REMINDER_STATUS_VALUES,
   type TLiveSessionReminderSkipReason
@@ -2211,7 +2211,9 @@ export const block = pgTable(
     createdBy: uuid('created_by'),
     sourceId: uuid('source_id').references((): AnyPgColumn => block.id, { onDelete: 'set null' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    /** Set when the block left its last lesson; the maintenance job purges it after the retention window. */
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -2231,7 +2233,10 @@ export const block = pgTable(
     index('block_organization_type_idx').on(table.organizationId, table.type),
     index('block_source_id_idx')
       .on(table.sourceId)
-      .where(sql`${table.sourceId} is not null`)
+      .where(sql`${table.sourceId} is not null`),
+    index('block_deleted_at_idx')
+      .on(table.deletedAt)
+      .where(sql`${table.deletedAt} is not null`)
   ]
 );
 
@@ -2318,7 +2323,9 @@ export const blockLocaleHistory = pgTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     editCount: integer('edit_count').default(1).notNull(),
-    isSealed: boolean('is_sealed').default(false).notNull()
+    isSealed: boolean('is_sealed').default(false).notNull(),
+    source: varchar().default('editor').notNull().$type<TBlockChangeSource>(),
+    changeSetId: uuid('change_set_id')
   },
   (table) => [
     foreignKey({
@@ -2335,7 +2342,70 @@ export const blockLocaleHistory = pgTable(
     })
       .onUpdate('cascade')
       .onDelete('set null'),
-    index('block_locale_history_locale_timestamp_idx').using('btree', table.blockLocaleId.asc(), table.timestamp.desc())
+    index('block_locale_history_locale_timestamp_idx').using(
+      'btree',
+      table.blockLocaleId.asc(),
+      table.timestamp.desc()
+    ),
+    index('block_locale_history_change_set_idx')
+      .on(table.changeSetId)
+      .where(sql`${table.changeSetId} is not null`)
+  ]
+);
+
+/** One placed block as recorded in a lesson revision. */
+export interface TLessonRevisionPlacement {
+  placementId: string;
+  blockId: string;
+  type: string;
+  position: string;
+  required: boolean;
+  watchThreshold: number | null;
+  data: Record<string, unknown>;
+}
+
+/**
+ * The ordered block list of a lesson after a structural change (a block added, removed, moved,
+ * detached, or its data or placement settings changed). Text lives in `block_locale_history`;
+ * together they rebuild the lesson as it was at any moment.
+ */
+export const lessonRevision = pgTable(
+  'lesson_revision',
+  {
+    id: serial().primaryKey().notNull(),
+    lessonId: uuid('lesson_id').notNull(),
+    placements: jsonb().notNull().$type<TLessonRevisionPlacement[]>(),
+    authorId: uuid('author_id'),
+    source: varchar().default('editor').notNull().$type<TBlockChangeSource>(),
+    changeSetId: uuid('change_set_id'),
+    sessionStartedAt: timestamp('session_started_at', { mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    timestamp: timestamp({ mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    editCount: integer('edit_count').default(1).notNull(),
+    isSealed: boolean('is_sealed').default(false).notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'lesson_revision_lesson_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [profile.id],
+      name: 'lesson_revision_author_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('lesson_revision_lesson_timestamp_idx').using('btree', table.lessonId.asc(), table.timestamp.desc()),
+    index('lesson_revision_change_set_idx')
+      .on(table.changeSetId)
+      .where(sql`${table.changeSetId} is not null`)
   ]
 );
 
@@ -3104,9 +3174,11 @@ export const blockVersions = pgView('block_versions', {
   authorName: text('author_name'),
   authorAvatarUrl: text('author_avatar_url'),
   locale: locale(),
-  blockId: uuid('block_id')
+  blockId: uuid('block_id'),
+  source: varchar().$type<TBlockChangeSource>(),
+  changeSetId: uuid('change_set_id')
 }).as(
-  sql`SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id`
+  sql`SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id, bh.source, bh.change_set_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id`
 );
 
 export const exerciseTemplate = pgTable('exercise_template', {

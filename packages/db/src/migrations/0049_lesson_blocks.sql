@@ -8,7 +8,8 @@ CREATE TABLE "block" (
 	"created_by" uuid,
 	"source_id" uuid,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"deleted_at" timestamp with time zone
 );--> statement-breakpoint
 CREATE TABLE "block_placement" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
@@ -39,6 +40,20 @@ CREATE TABLE "block_locale_history" (
 	"session_started_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	"timestamp" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	"edit_count" integer DEFAULT 1 NOT NULL,
+	"is_sealed" boolean DEFAULT false NOT NULL,
+	"source" varchar DEFAULT 'editor' NOT NULL,
+	"change_set_id" uuid
+);--> statement-breakpoint
+CREATE TABLE "lesson_revision" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"lesson_id" uuid NOT NULL,
+	"placements" jsonb NOT NULL,
+	"author_id" uuid,
+	"source" varchar DEFAULT 'editor' NOT NULL,
+	"change_set_id" uuid,
+	"session_started_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"timestamp" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"edit_count" integer DEFAULT 1 NOT NULL,
 	"is_sealed" boolean DEFAULT false NOT NULL
 );--> statement-breakpoint
 ALTER TABLE "block" ADD CONSTRAINT "block_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
@@ -49,11 +64,17 @@ ALTER TABLE "block_placement" ADD CONSTRAINT "block_placement_block_id_fkey" FOR
 ALTER TABLE "block_locale" ADD CONSTRAINT "block_locale_block_id_fkey" FOREIGN KEY ("block_id") REFERENCES "public"."block"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "block_locale_history" ADD CONSTRAINT "block_locale_history_block_locale_id_fkey" FOREIGN KEY ("block_locale_id") REFERENCES "public"."block_locale"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "block_locale_history" ADD CONSTRAINT "block_locale_history_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "lesson_revision" ADD CONSTRAINT "lesson_revision_lesson_id_fkey" FOREIGN KEY ("lesson_id") REFERENCES "public"."lesson"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "lesson_revision" ADD CONSTRAINT "lesson_revision_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE cascade;--> statement-breakpoint
 CREATE INDEX "block_organization_type_idx" ON "block" USING btree ("organization_id","type");--> statement-breakpoint
 CREATE INDEX "block_source_id_idx" ON "block" USING btree ("source_id") WHERE "source_id" IS NOT NULL;--> statement-breakpoint
 CREATE INDEX "block_placement_block_id_idx" ON "block_placement" USING btree ("block_id");--> statement-breakpoint
 CREATE INDEX "block_locale_history_locale_timestamp_idx" ON "block_locale_history" USING btree ("block_locale_id","timestamp" DESC NULLS LAST);--> statement-breakpoint
-CREATE VIEW "public"."block_versions" AS (SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id);--> statement-breakpoint
+CREATE INDEX "block_deleted_at_idx" ON "block" USING btree ("deleted_at") WHERE "block"."deleted_at" is not null;--> statement-breakpoint
+CREATE INDEX "block_locale_history_change_set_idx" ON "block_locale_history" USING btree ("change_set_id") WHERE "block_locale_history"."change_set_id" is not null;--> statement-breakpoint
+CREATE INDEX "lesson_revision_lesson_timestamp_idx" ON "lesson_revision" USING btree ("lesson_id","timestamp" DESC NULLS LAST);--> statement-breakpoint
+CREATE INDEX "lesson_revision_change_set_idx" ON "lesson_revision" USING btree ("change_set_id") WHERE "lesson_revision"."change_set_id" is not null;--> statement-breakpoint
+CREATE VIEW "public"."block_versions" AS (SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id, bh.source, bh.change_set_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id);--> statement-breakpoint
 
 CREATE FUNCTION pg_temp.block_position(ordinal integer) RETURNS text LANGUAGE sql IMMUTABLE AS $fn$
   SELECT CASE

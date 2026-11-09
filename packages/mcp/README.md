@@ -193,7 +193,8 @@ Course section, lesson and content tools:
 - `list_course_sections`, `create_course_section`, `update_course_section`, `delete_course_section`
 - `list_course_lessons`, `get_course_lesson`, `delete_course_lesson`, `notify_course_lesson_session_update`
 - `list_lesson_blocks`, `add_lesson_block`, `attach_lesson_block`, `update_lesson_block`, `set_lesson_block_content`, `update_lesson_block_placement`, `move_lesson_block`, `remove_lesson_block`, `duplicate_lesson_block`
-- `list_course_lesson_translations`, `set_course_lesson_translation`, `list_course_lesson_history` (these read and write the lesson's first note block)
+- `list_course_lesson_translations`, `set_course_lesson_translation` (these read and write the lesson's first note block)
+- `list_course_lesson_history` (the text versions of every text block in one language, newest first, with `blockId` naming the block; it does not include blocks being added, moved or removed, and there is no MCP restore or undo)
 - `list_course_lesson_comments`, `create_course_lesson_comment`, `update_course_lesson_comment`, `delete_course_lesson_comment`
 - `reorder_course_content`, `set_course_content_unlocked`, `delete_course_content`
 

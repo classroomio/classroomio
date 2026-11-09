@@ -14,6 +14,7 @@ import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { db } from '@cio/db/drizzle';
 import { recordBlockLocaleVersion } from './block/block-version';
 import type { TLessonVersionIntent } from '@cio/utils/constants/lesson-version';
+import { ensureLessonRevisionBaseline, recordLessonRevision } from './block/lesson-revision';
 
 export interface LessonVersionOptions {
   authorId?: string | null;
@@ -80,6 +81,7 @@ export async function upsertLessonLanguageService(
     const intent = options.versionIntent ?? 'auto';
 
     const language = await db.transaction(async (tx) => {
+      await ensureLessonRevisionBaseline(lessonId, tx);
       const saved = await upsertLessonLanguage({ ...data, content, lessonId }, tx);
 
       await recordBlockLocaleVersion({
@@ -88,6 +90,13 @@ export async function upsertLessonLanguageService(
         authorId: options.authorId ?? null,
         intent,
         label: options.versionLabel ?? null,
+        dbClient: tx
+      });
+      await recordLessonRevision({
+        lessonId,
+        authorId: options.authorId ?? null,
+        source: 'editor',
+        changeSetId: null,
         dbClient: tx
       });
 

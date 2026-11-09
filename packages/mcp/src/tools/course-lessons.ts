@@ -180,7 +180,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'remove_lesson_block',
-    `Remove a block from this lesson. The block is deleted only when no other lesson uses it; ${COURSE_TEAM_RULE}.`,
+    `Remove a block from this lesson. When no other lesson uses it, the block is soft-deleted and can be restored from the lesson's version history for 30 days; ${COURSE_TEAM_RULE}.`,
     shape(ZRemoveLessonPlacementToolInput),
     DESTRUCTIVE,
     async (args) => {
@@ -246,7 +246,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'list_course_lesson_history',
-    `List saved versions of a lesson's content in one language, newest first; ${COURSE_TEAM_RULE}. ${CURSOR_NOTE}`,
+    `List saved versions of a lesson's text in one language, newest first; a lesson with several text blocks mixes their versions, and blockId says which block each belongs to; ${COURSE_TEAM_RULE}. ${CURSOR_NOTE}`,
     shape(ZListCourseLessonHistoryToolInput),
     READ_ONLY,
     async (args) => {

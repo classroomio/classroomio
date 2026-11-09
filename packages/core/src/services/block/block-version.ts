@@ -2,6 +2,7 @@ import { AppError, ErrorCodes } from '@cio/utils/errors';
 import {
   LESSON_VERSION_SESSION_IDLE_MS,
   LESSON_VERSION_SESSION_MAX_MS,
+  type TBlockChangeSource,
   type TLessonVersionIntent
 } from '@cio/utils/constants/lesson-version';
 import {
@@ -26,12 +27,18 @@ interface RecordVersionInput {
   intent: TLessonVersionIntent;
   /** Author-supplied name, only meaningful for `manual` snapshots. */
   label?: string | null;
+  /** Who made the change; defaults to `editor` for a dashboard edit. */
+  source?: TBlockChangeSource;
+  /** Id the caller uses to tie its write batch together, e.g. one assistant run. */
+  changeSetId?: string | null;
   dbClient?: DbOrTxClient;
 }
 
 interface SessionPolicyInput {
   intent: TLessonVersionIntent;
   authorId: string | null;
+  source?: TBlockChangeSource;
+  changeSetId?: string | null;
 }
 
 /**
@@ -43,21 +50,25 @@ interface SessionPolicyInput {
  *   author asked for, and gets its own sealed row;
  * - a sealed session never reopens, which is how publishing resets the window;
  * - a different author gets their own entry, so history stays attributable;
+ * - a different actor kind (`source`) or write batch (`changeSetId`) gets its own entry,
+ *   so an assistant run cannot fold into the teacher's typing session;
  * - the session ends after `IDLE_MS` without an edit, and is capped at `MAX_MS`
  *   so continuous writing still checkpoints periodically.
  */
 export function canExtendVersionSession(
   latest: Pick<
     BlockVersionSessionState,
-    'kind' | 'isSealed' | 'authorId' | 'msSinceLastEdit' | 'msSinceSessionStart'
+    'kind' | 'isSealed' | 'authorId' | 'msSinceLastEdit' | 'msSinceSessionStart' | 'source' | 'changeSetId'
   > | null,
-  { intent, authorId }: SessionPolicyInput
+  { intent, authorId, source = 'editor', changeSetId = null }: SessionPolicyInput
 ): boolean {
   if (!latest) return false;
   if (intent !== 'auto') return false;
   if (latest.isSealed) return false;
   if (latest.kind !== 'auto') return false;
   if ((latest.authorId ?? null) !== authorId) return false;
+  if ((latest.source ?? 'editor') !== source) return false;
+  if ((latest.changeSetId ?? null) !== changeSetId) return false;
   if (latest.msSinceLastEdit > LESSON_VERSION_SESSION_IDLE_MS) return false;
 
   return latest.msSinceSessionStart <= LESSON_VERSION_SESSION_MAX_MS;
@@ -78,6 +89,8 @@ export async function recordBlockLocaleVersion({
   authorId = null,
   intent,
   label = null,
+  source = 'editor',
+  changeSetId = null,
   dbClient
 }: RecordVersionInput): Promise<TBlockLocaleHistory | null> {
   if (intent === 'none') return null;
@@ -102,7 +115,7 @@ export async function recordBlockLocaleVersion({
       return promoteBlockLocaleVersion(latest.id, { kind: intent, label }, client);
     }
 
-    if (canExtendVersionSession(latest, { intent, authorId })) {
+    if (canExtendVersionSession(latest, { intent, authorId, source, changeSetId })) {
       const extended = await extendBlockLocaleVersion(latest!.id, { newContent: content }, client);
 
       // The session was sealed between the read and the update (a publish, or a
@@ -122,7 +135,9 @@ export async function recordBlockLocaleVersion({
         editCount: 1,
         // A checkpoint the author asked for is closed immediately; an autosave
         // session stays open so the next few edits fold into it.
-        isSealed: intent !== 'auto'
+        isSealed: intent !== 'auto',
+        source,
+        changeSetId
       },
       client
     );

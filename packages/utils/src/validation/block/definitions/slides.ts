@@ -29,5 +29,6 @@ export const slidesBlock = defineBlock({
   dataSchema: ZSlidesBlockData,
   localizedContent: false,
   media: null,
-  toPublicData: (data) => ({ src: data.src, platform: data.platform })
+  toPublicData: (data) => ({ src: data.src, platform: data.platform }),
+  agentEditableFields: []
 });

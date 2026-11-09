@@ -25,7 +25,8 @@ export const quoteBlock = defineBlock({
   dataSchema: ZQuoteBlockData,
   localizedContent: true,
   media: null,
-  toPublicData: (data) => data
+  toPublicData: (data) => data,
+  agentEditableFields: ['attribution']
 });
 ```
 
@@ -33,6 +34,7 @@ export const quoteBlock = defineBlock({
 - `localizedContent: true` stores per-locale HTML in `block_locale` with version history, like a note. Use it for text the author writes.
 - `media: 'video' | 'document'` makes the API check the asset belongs to the org, track it in asset usage, and sign its URL. The asset id must be `data.assetId`.
 - `toPublicData` is what an anonymous public-course viewer receives. Return `null` to keep the type off public pages.
+- `agentEditableFields` lists the `data` fields the AI assistant may change on an existing block (`update_lesson_block_settings`). Leave out fields that point at an uploaded or organization-owned asset, such as `assetId`, `key` or `link`; an external https `url`, like the image block's, may be listed. Use `[]` when the assistant should not edit the block's data.
 
 Then add the type to `BLOCK_DEFINITIONS` in `registry.ts` and export the file from `index.ts`. Add a create sample to `packages/utils/tests/block-registry.test.ts`; the test fails until you do.
 
@@ -59,7 +61,7 @@ Both registries are typed against `TBlockType`, so a type registered in `registr
 
 ## 3. Copy
 
-Add the menu label at `course.navItem.lessons.materials.blocks.types.<type>` in `apps/dashboard/src/lib/utils/translations/en.json`, plus any strings the view or edit file shows, then run `pnpm translate` from `apps/dashboard`.
+Add the menu label at `course.navItem.lessons.materials.blocks.types.<type>` and the version history label at `course.navItem.lessons.version_history.block_type.<type>` in `apps/dashboard/src/lib/utils/translations/en.json`, plus any strings the view or edit file shows, then run `pnpm translate` from `apps/dashboard`.
 
 ## Optional
 

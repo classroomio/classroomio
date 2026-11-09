@@ -1,9 +1,9 @@
-import { getLessonHistoryService } from '@api/services/lesson';
 import {
   getLessonLanguage,
   listLessonLanguages,
   upsertLessonLanguageService
 } from '@cio/core/services/lesson-language';
+import { getLessonTextHistoryService } from '@api/services/lesson';
 import type {
   TPublicApiCourseLessonHistoryQuery,
   TPublicApiCourseLessonParam,
@@ -59,7 +59,7 @@ export async function listPublicApiCourseLessonHistoryService(
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   await assertLessonInCourse(params.courseId, params.lessonId);
 
-  const page = await getLessonHistoryService(params.lessonId, query.locale, query.limit, query.cursor);
+  const page = await getLessonTextHistoryService(params.lessonId, query.locale, query.limit, query.cursor);
 
   return {
     items: page.items.map((version) => ({
@@ -74,7 +74,8 @@ export async function listPublicApiCourseLessonHistoryService(
       editCount: version.editCount,
       isSealed: version.isSealed,
       authorId: version.authorId,
-      authorName: version.authorName
+      authorName: version.authorName,
+      blockId: version.blockId
     })),
     nextCursor: page.nextCursor ? `${page.nextCursor.timestamp}|${page.nextCursor.id}` : null
   };

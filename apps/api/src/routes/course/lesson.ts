@@ -4,11 +4,13 @@ import {
   ZLessonCommentUpdate,
   ZLessonCommentsQuery,
   ZLessonCompletionUpdate,
+  ZLessonChangeSetUndo,
   ZLessonCreate,
   ZLessonGetParam,
   ZLessonHistoryParam,
   ZLessonHistoryQuery,
   ZLessonListQuery,
+  ZLessonHistoryEntryRestore,
   ZLessonUpdate,
   ZUpdateLessonWatchProgress
 } from '@cio/utils/validation/lesson';
@@ -40,6 +42,10 @@ import { ZLessonDownloadContent } from '@cio/utils/validation/course';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { lessonInCourseMiddleware } from '@api/middlewares/lesson-in-course';
+import { restoreLessonToEntry, undoLessonChangeSet } from '@cio/core/services/block/lesson-structure';
+import { restoreLessonBlockVersion } from '@cio/core/services/block/block';
+import { ZBlockVersionRestore } from '@cio/utils/validation/block';
 import { notifyCourseSessionUpdateService } from '@api/services/course/notify-session';
 import { generateLessonPdf } from '@api/utils/lesson';
 import { ensureCourseGroupMemberId } from '@cio/core/services/course/course';
@@ -374,7 +380,8 @@ export const lessonRouter = new Hono()
   .get(
     '/:lessonId/history',
     authMiddleware,
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonHistoryParam),
     zValidator('query', ZLessonHistoryQuery),
     async (c) => {
@@ -392,6 +399,81 @@ export const lessonRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to fetch lesson history');
+      }
+    }
+  )
+  /**
+   * POST /course/:courseId/lesson/:lessonId/history/restore
+   * Restores one text block to a past version. A shared block is first replaced in this
+   * lesson by its own copy, so other lessons keep their current text.
+   */
+  .post(
+    '/:lessonId/history/restore',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
+    zValidator('param', ZLessonHistoryParam),
+    zValidator('json', ZBlockVersionRestore),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const input = c.req.valid('json');
+        const user = c.get('user')!;
+        const restored = await restoreLessonBlockVersion(lessonId, input, { actorProfileId: user.id });
+
+        return c.json({ success: true, data: restored }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to restore lesson version');
+      }
+    }
+  )
+  /**
+   * POST /course/:courseId/lesson/:lessonId/history/restore-lesson
+   * Restores the whole lesson to the moment of one history entry: block order and settings, and
+   * every locale of every text block as saved then.
+   */
+  .post(
+    '/:lessonId/history/restore-lesson',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
+    zValidator('param', ZLessonHistoryParam),
+    zValidator('json', ZLessonHistoryEntryRestore),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const entry = c.req.valid('json');
+        const user = c.get('user')!;
+        const restored = await restoreLessonToEntry(lessonId, entry, { authorId: user.id });
+
+        return c.json({ success: true, data: restored }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to restore lesson');
+      }
+    }
+  )
+  /**
+   * POST /course/:courseId/lesson/:lessonId/history/undo
+   * Reverts one change set (an assistant chat request or a restore) in this lesson, and refuses
+   * when something it touched was edited again afterwards.
+   */
+  .post(
+    '/:lessonId/history/undo',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
+    zValidator('param', ZLessonHistoryParam),
+    zValidator('json', ZLessonChangeSetUndo),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const { changeSetId } = c.req.valid('json');
+        const user = c.get('user')!;
+        const undone = await undoLessonChangeSet({ lessonId, changeSetId, authorId: user.id });
+
+        return c.json({ success: true, data: undone }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to undo lesson change');
       }
     }
   )

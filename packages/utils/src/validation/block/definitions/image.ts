@@ -16,5 +16,6 @@ export const imageBlock = defineBlock({
   dataSchema: ZImageBlockData,
   localizedContent: false,
   media: null,
-  toPublicData: (data) => data
+  toPublicData: (data) => data,
+  agentEditableFields: ['url', 'alt', 'fit']
 });

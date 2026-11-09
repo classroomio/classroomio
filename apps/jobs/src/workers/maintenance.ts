@@ -15,6 +15,7 @@ import {
 } from '@cio/db/queries/organization';
 import { buildEarlyAdopterClaimUrl, deriveEarlyAdopterClaimToken } from '@cio/core/services/early-adopter/claim-token';
 import { capAutoBlockVersionsPerLocale, pruneAutoBlockVersions } from '@cio/db/queries/block/version';
+import { purgeExpiredDeletedBlocks, pruneLessonRevisions } from '@cio/db/queries/block';
 import {
   JOB_NAMES,
   QUEUE_NAMES,
@@ -66,17 +67,24 @@ const worker = new Worker(
         dailyDays: data.dailyDays
       });
       const capped = await capAutoBlockVersionsPerLocale(data.maxAutoPerLanguage);
+      const purgedBlocks = await purgeExpiredDeletedBlocks(data.deletedBlockDays);
+      const prunedRevisions = await pruneLessonRevisions({
+        keepAllDays: data.revisionKeepAllDays,
+        dailyDays: data.revisionDailyDays
+      });
 
       log.info('lesson-version-retention-done', {
         thinned,
         capped,
+        purgedBlocks,
+        prunedRevisions,
         keepAllHours: data.keepAllHours,
         hourlyDays: data.hourlyDays,
         dailyDays: data.dailyDays,
         maxAutoPerLanguage: data.maxAutoPerLanguage
       });
 
-      return { thinned, capped };
+      return { thinned, capped, purgedBlocks, prunedRevisions };
     }
 
     if (job.name === JOB_NAMES.maintenance.mediaJobReap) {

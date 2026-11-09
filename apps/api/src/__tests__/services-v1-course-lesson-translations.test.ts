@@ -4,7 +4,7 @@ vi.mock('@cio/db/queries/tag', () => ({ getCourseOrganizationId: vi.fn() }));
 vi.mock('@cio/db/queries/group', () => ({ isCourseTeamMemberOrOrgAdmin: vi.fn() }));
 vi.mock('@cio/db/queries/lesson', () => ({ getLessonById: vi.fn() }));
 vi.mock('@cio/core/services/course/course', () => ({}));
-vi.mock('@api/services/lesson', () => ({ getLessonHistoryService: vi.fn() }));
+vi.mock('@api/services/lesson', () => ({ getLessonTextHistoryService: vi.fn() }));
 vi.mock('@api/services/course/notify-session', () => ({}));
 vi.mock('@cio/core/services/lesson-language', () => ({
   getLessonLanguage: vi.fn(),
@@ -15,7 +15,7 @@ vi.mock('@cio/core/services/lesson-language', () => ({
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getLessonById } from '@cio/db/queries/lesson';
-import { getLessonHistoryService } from '@api/services/lesson';
+import { getLessonTextHistoryService } from '@api/services/lesson';
 import {
   getLessonLanguage,
   listLessonLanguages,
@@ -69,7 +69,7 @@ describe('services/v1/courses/lesson-translations', () => {
       setPublicApiCourseLessonTranslationService(ORG_ID, ACTOR_ID, { ...lessonParams, locale: 'en' }, { content: 'x' })
     ).rejects.toMatchObject({ statusCode: 404 });
     expect(upsertLessonLanguageService).not.toHaveBeenCalled();
-    expect(getLessonHistoryService).not.toHaveBeenCalled();
+    expect(getLessonTextHistoryService).not.toHaveBeenCalled();
   });
 
   it('lists every locale, or filters to one', async () => {
@@ -109,7 +109,7 @@ describe('services/v1/courses/lesson-translations', () => {
   });
 
   it('turns the history cursor into a string', async () => {
-    vi.mocked(getLessonHistoryService).mockResolvedValue({
+    vi.mocked(getLessonTextHistoryService).mockResolvedValue({
       items: [],
       nextCursor: { timestamp: '2026-09-30 10:00:00', id: 7 }
     });
@@ -120,6 +120,6 @@ describe('services/v1/courses/lesson-translations', () => {
     });
 
     expect(page.nextCursor).toBe('2026-09-30 10:00:00|7');
-    expect(getLessonHistoryService).toHaveBeenCalledWith(LESSON_ID, 'en', 10, undefined);
+    expect(getLessonTextHistoryService).toHaveBeenCalledWith(LESSON_ID, 'en', 10, undefined);
   });
 });

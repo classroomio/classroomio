@@ -53,6 +53,8 @@ function buildLatest(overrides: Partial<BlockVersionSessionState> = {}): BlockVe
     timestamp: oneMinuteAgo,
     editCount: 3,
     isSealed: false,
+    source: 'editor',
+    changeSetId: null,
     // Elapsed times come from Postgres, not from parsing the timestamps above.
     msSinceLastEdit: 60_000,
     msSinceSessionStart: 60_000,

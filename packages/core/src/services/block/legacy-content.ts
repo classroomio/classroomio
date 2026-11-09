@@ -7,7 +7,7 @@ import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   createBlock,
   createPlacement,
-  deleteBlocksWithoutPlacements,
+  softDeleteBlocksWithoutPlacements,
   deletePlacements,
   getLessonBlockScope,
   getPlacementPositions,
@@ -26,6 +26,7 @@ import { recordBlockLocaleVersion } from './block-version';
 import { enrichBlocksMedia, loadBlocksForLessons, loadLessonBlocks, type LessonBlock } from './block-view';
 import { isSameJson } from './json';
 import { positionsAfter, positionsForNewItems } from './positions';
+import { ensureLessonRevisionBaseline, recordLessonRevision } from './lesson-revision';
 
 const DEFAULT_LOCALE: TLocale = 'en';
 
@@ -212,7 +213,7 @@ async function replaceBlocksOfType(
     available.map((row) => row.placement.id),
     tx
   );
-  await deleteBlocksWithoutPlacements(
+  await softDeleteBlocksWithoutPlacements(
     available.map((row) => row.block.id),
     tx
   );
@@ -303,6 +304,7 @@ export async function applyLegacyLessonContent(
       throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
     }
 
+    await ensureLessonRevisionBaseline(lessonId, tx);
     await lockLessonBlockPositions(lessonId, tx);
 
     for (const type of ['video', 'document', 'slides'] as const) {
@@ -317,6 +319,13 @@ export async function applyLegacyLessonContent(
     }
 
     await syncLessonAssetUsages(lessonId, scope.organizationId, actorProfileId, tx);
+    await recordLessonRevision({
+      lessonId,
+      authorId: actorProfileId,
+      source: 'editor',
+      changeSetId: null,
+      dbClient: tx
+    });
   };
 
   if (options.dbClient) {

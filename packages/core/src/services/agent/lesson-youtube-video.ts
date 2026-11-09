@@ -37,6 +37,7 @@ export async function attachYoutubeVideoToLesson(input: {
   userId: string;
   lessonId: string;
   videoUrl: string;
+  changeSetId?: string | null;
 }): Promise<AttachYoutubeVideoToLessonResult> {
   const { orgId, userId, lessonId, videoUrl } = input;
 
@@ -92,7 +93,11 @@ export async function attachYoutubeVideoToLesson(input: {
     metadata: videoMetadata
   };
 
-  await createLessonBlock(lessonId, { type: 'video', data: newVideo }, { actorProfileId: userId });
+  await createLessonBlock(
+    lessonId,
+    { type: 'video', data: newVideo },
+    { actorProfileId: userId, source: 'assistant', changeSetId: input.changeSetId ?? null }
+  );
 
   return {
     lessonId,

@@ -27,8 +27,7 @@ import {
 import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
 import { skipActiveReminderDeliveriesForLesson, touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
-import { getBlockVersionHistory, listLessonBlockRows } from '@cio/db/queries/block';
-import { parseBlockVersionCursor } from '../block/block';
+import { listLessonBlockRows } from '@cio/db/queries/block';
 import type { LessonBlock } from '../block/block-view';
 import { db } from '@cio/db/drizzle';
 import {
@@ -42,6 +41,8 @@ import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
 import { emitCourseWebhookEvent } from '../webhook/emit';
 import { captureCourseEvent } from '../posthog';
+
+export { getLessonHistoryService, getLessonTextHistoryService, type LessonStructureChange } from './lesson-history';
 
 /**
  * Creates a new lesson
@@ -813,30 +814,6 @@ export async function updateLessonWatchProgressService(
 
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update lesson watch progress',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
- * Gets one keyset page of lesson version history.
- *
- * @param cursor Serialized `<iso timestamp>|<id>` from the previous page's `nextCursor`.
- *   Malformed input is treated as absent so a hand-edited URL restarts at the newest page
- *   rather than erroring.
- */
-export async function getLessonHistoryService(lessonId: string, locale: string, limit: number, cursor?: string) {
-  try {
-    const noteRow = (await listLessonBlockRows(lessonId)).find((row) => row.block.type === 'note');
-    if (!noteRow) return { items: [], nextCursor: null };
-
-    const page = await getBlockVersionHistory(noteRow.block.id, locale, limit, parseBlockVersionCursor(cursor));
-
-    return { ...page, items: page.items.map((item) => ({ ...item, lessonId })) };
-  } catch (error) {
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to get lesson history',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

@@ -10,5 +10,6 @@ export const noteBlock = defineBlock({
   dataSchema: ZNoteBlockData,
   localizedContent: true,
   media: null,
-  toPublicData: (data) => data
+  toPublicData: (data) => data,
+  agentEditableFields: []
 });

@@ -14,17 +14,19 @@ import {
   type TPlacementUpdate
 } from '@cio/utils/validation/block';
 import type { TBlock, TBlockLocale, TBlockPlacement, TLocale } from '@cio/db/types';
-import type { TLessonVersionIntent } from '@cio/utils/constants/lesson-version';
+import type { TBlockChangeSource, TLessonVersionIntent } from '@cio/utils/constants/lesson-version';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   bumpBlockVersionIfVersion,
   copyBlockLocales,
+  countBlockPlacements,
   createBlock,
   createPlacement,
-  deleteBlocksWithoutPlacements,
+  softDeleteBlocksWithoutPlacements,
   deletePlacements,
   getBlockById,
   getBlockUsages,
+  getBlockVersionById,
   getBlockVersionHistory,
   getLessonBlockRow,
   getLessonBlockScope,
@@ -57,6 +59,7 @@ import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { sanitizeOptionalHtml } from '../../utils/sanitize-html';
 import { readOrganizationIdFromFileKey } from '../../utils/upload';
 import { recordBlockLocaleVersion } from './block-version';
+import { ensureLessonRevisionBaseline, recordLessonRevision } from './lesson-revision';
 import { enrichBlocksMedia, loadLessonBlocks, toLessonBlock, type LessonBlock } from './block-view';
 import { positionForAnchor } from './positions';
 
@@ -66,8 +69,12 @@ const LESSON_MEDIA_SLOTS = {
 } as const satisfies Record<TBlockMediaKind, string>;
 const DEFAULT_LOCALE: TLocale = 'en';
 
-interface BlockActor {
+export interface BlockActor {
   actorProfileId?: string | null;
+  /** Who made the changes: a dashboard edit, the AI assistant, or a restore. Defaults to `editor`. */
+  source?: TBlockChangeSource;
+  /** Ties every snapshot and revision of one write batch together, e.g. an assistant run. */
+  changeSetId?: string | null;
 }
 
 async function requireLessonScope(lessonId: string, dbClient: DbOrTxClient): Promise<LessonBlockScope> {
@@ -215,11 +222,19 @@ async function hydrateSingleBlock(placement: TBlockPlacement, block: TBlock): Pr
   return enriched;
 }
 
+interface LocalizedContentOptions {
+  authorId: string | null;
+  intent?: TLessonVersionIntent;
+  label?: string | null;
+  source?: TBlockChangeSource;
+  changeSetId?: string | null;
+}
+
 async function saveLocalizedContent(
   blockId: string,
   locale: TLocale,
   content: string | null,
-  options: { authorId: string | null; intent?: TLessonVersionIntent; label?: string | null },
+  options: LocalizedContentOptions,
   dbClient: DbOrTxClient
 ): Promise<TBlockLocale> {
   const saved = await upsertBlockLocale({ blockId, locale, content }, dbClient);
@@ -230,6 +245,8 @@ async function saveLocalizedContent(
     authorId: options.authorId,
     intent: options.intent ?? 'auto',
     label: options.label ?? null,
+    source: options.source,
+    changeSetId: options.changeSetId,
     dbClient
   });
 
@@ -267,6 +284,7 @@ export async function createLessonBlock(
 
   const created = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
+    await ensureLessonRevisionBaseline(lessonId, tx);
     await assertAssetsBelongToOrganization(input.type, data, scope.organizationId);
     await lockLessonBlockPositions(lessonId, tx);
 
@@ -279,7 +297,13 @@ export async function createLessonBlock(
 
     if (BLOCK_DEFINITIONS[input.type].localizedContent) {
       const content = sanitizeOptionalHtml(input.content) ?? '';
-      await saveLocalizedContent(block.id, input.locale ?? DEFAULT_LOCALE, content, { authorId: actorProfileId }, tx);
+      await saveLocalizedContent(
+        block.id,
+        input.locale ?? DEFAULT_LOCALE,
+        content,
+        { authorId: actorProfileId, source: options.source, changeSetId: options.changeSetId },
+        tx
+      );
     }
 
     const placement = await createPlacement(
@@ -294,6 +318,13 @@ export async function createLessonBlock(
     );
 
     await syncLessonAssetUsages(lessonId, scope.organizationId, actorProfileId, tx);
+    await recordLessonRevision({
+      lessonId,
+      authorId: actorProfileId,
+      source: options.source ?? 'editor',
+      changeSetId: options.changeSetId ?? null,
+      dbClient: tx
+    });
 
     return { placement, block, courseId: scope.courseId };
   });
@@ -315,8 +346,9 @@ export async function attachLessonBlock(
 
   const attached = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
+    await ensureLessonRevisionBaseline(lessonId, tx);
     const block = await getBlockById(input.blockId, tx);
-    if (!block || block.organizationId !== scope.organizationId) {
+    if (!block || block.organizationId !== scope.organizationId || block.deletedAt) {
       throw new AppError('Block not found', ErrorCodes.BLOCK_NOT_FOUND, 404);
     }
 
@@ -340,6 +372,13 @@ export async function attachLessonBlock(
     );
 
     await syncLessonAssetUsages(lessonId, scope.organizationId, actorProfileId, tx);
+    await recordLessonRevision({
+      lessonId,
+      authorId: actorProfileId,
+      source: options.source ?? 'editor',
+      changeSetId: options.changeSetId ?? null,
+      dbClient: tx
+    });
 
     return { placement, block, courseId: scope.courseId };
   });
@@ -368,12 +407,26 @@ export async function updateLessonBlock(
     const data = validatedBlockData(type, input.data);
     await assertAssetsBelongToOrganization(type, data, scope.organizationId);
 
+    const affectedLessonIds = (await listLessonIdsForBlock(blockId, tx)).sort();
+    for (const affectedLessonId of affectedLessonIds) {
+      await ensureLessonRevisionBaseline(affectedLessonId, tx);
+    }
+
     const block = await updateBlockDataIfVersion(blockId, data, input.expectedVersion, tx);
     if (!block) {
       throw new AppError('This block was changed by someone else', ErrorCodes.BLOCK_VERSION_CONFLICT, 409);
     }
 
     await syncUsagesForBlockLessons(blockId, scope.organizationId, actorProfileId, tx);
+    for (const affectedLessonId of affectedLessonIds) {
+      await recordLessonRevision({
+        lessonId: affectedLessonId,
+        authorId: actorProfileId,
+        source: options.source ?? 'editor',
+        changeSetId: options.changeSetId ?? null,
+        dbClient: tx
+      });
+    }
 
     return { placement: row.placement, block, courseId: scope.courseId };
   });
@@ -418,7 +471,9 @@ export async function updateLessonBlockLocale(
       {
         authorId: options.actorProfileId ?? null,
         intent: input.versionIntent,
-        label: input.versionLabel
+        label: input.versionLabel,
+        source: options.source,
+        changeSetId: options.changeSetId
       },
       tx
     );
@@ -438,10 +493,12 @@ export async function updateLessonBlockLocale(
 export async function updateLessonPlacement(
   lessonId: string,
   placementId: string,
-  input: TPlacementUpdate
+  input: TPlacementUpdate,
+  options: BlockActor = {}
 ): Promise<LessonBlock> {
   const updated = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
+    await ensureLessonRevisionBaseline(lessonId, tx);
     const row = await requirePlacementInLesson(lessonId, placementId, tx);
     const placement = await updatePlacement(
       placementId,
@@ -454,6 +511,13 @@ export async function updateLessonPlacement(
     if (!placement) {
       throw new AppError('Block placement not found', ErrorCodes.BLOCK_PLACEMENT_NOT_FOUND, 404);
     }
+    await recordLessonRevision({
+      lessonId,
+      authorId: options.actorProfileId ?? null,
+      source: options.source ?? 'editor',
+      changeSetId: options.changeSetId ?? null,
+      dbClient: tx
+    });
     await touchLessonsUpdatedAt([lessonId], tx);
 
     return { placement, block: row.block, courseId: scope.courseId };
@@ -470,10 +534,12 @@ export async function updateLessonPlacement(
 export async function moveLessonPlacement(
   lessonId: string,
   placementId: string,
-  anchor: TPlacementMove
+  anchor: TPlacementMove,
+  options: BlockActor = {}
 ): Promise<LessonBlock> {
   const moved = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
+    await ensureLessonRevisionBaseline(lessonId, tx);
     const row = await requirePlacementInLesson(lessonId, placementId, tx);
     if (anchor.beforePlacementId === placementId || anchor.afterPlacementId === placementId) {
       throw new AppError('A block cannot be moved relative to itself', ErrorCodes.VALIDATION_ERROR, 400);
@@ -489,6 +555,13 @@ export async function moveLessonPlacement(
     }
 
     await syncLessonAssetUsages(lessonId, scope.organizationId, null, tx);
+    await recordLessonRevision({
+      lessonId,
+      authorId: options.actorProfileId ?? null,
+      source: options.source ?? 'editor',
+      changeSetId: options.changeSetId ?? null,
+      dbClient: tx
+    });
 
     return { placement, block: row.block, courseId: scope.courseId };
   });
@@ -499,8 +572,9 @@ export async function moveLessonPlacement(
 }
 
 /**
- * Removes a placement from the lesson. The block itself is deleted only when no lesson uses it any more.
- * @returns whether the block row was deleted as an orphan.
+ * Removes a placement from the lesson. A block no other lesson uses is soft-deleted: it is
+ * hidden from the library and re-attach flows until the retention purge removes it for good.
+ * @returns whether the block was removed from every lesson as an orphan.
  */
 export async function removeLessonPlacement(
   lessonId: string,
@@ -509,11 +583,19 @@ export async function removeLessonPlacement(
 ): Promise<{ blockId: string; blockDeleted: boolean }> {
   const removed = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
+    await ensureLessonRevisionBaseline(lessonId, tx);
     const row = await requirePlacementInLesson(lessonId, placementId, tx);
 
     await deletePlacements([placementId], tx);
-    const deletedBlocks = await deleteBlocksWithoutPlacements([row.block.id], tx);
+    const deletedBlocks = await softDeleteBlocksWithoutPlacements([row.block.id], tx);
     await syncLessonAssetUsages(lessonId, scope.organizationId, options.actorProfileId ?? null, tx);
+    await recordLessonRevision({
+      lessonId,
+      authorId: options.actorProfileId ?? null,
+      source: options.source ?? 'editor',
+      changeSetId: options.changeSetId ?? null,
+      dbClient: tx
+    });
 
     return { blockId: row.block.id, blockDeleted: deletedBlocks.length > 0, courseId: scope.courseId };
   });
@@ -537,6 +619,7 @@ export async function duplicateLessonBlock(
 
   const duplicated = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
+    await ensureLessonRevisionBaseline(lessonId, tx);
     const row = await requireLessonBlockRow(lessonId, blockId, tx);
     if (input.replacePlacementId && input.replacePlacementId !== row.placement.id) {
       throw new AppError('Placement does not use this block', ErrorCodes.BLOCK_PLACEMENT_NOT_FOUND, 404);
@@ -577,8 +660,15 @@ export async function duplicateLessonBlock(
       );
     }
 
-    await deleteBlocksWithoutPlacements([blockId], tx);
+    await softDeleteBlocksWithoutPlacements([blockId], tx);
     await syncLessonAssetUsages(lessonId, scope.organizationId, actorProfileId, tx);
+    await recordLessonRevision({
+      lessonId,
+      authorId: actorProfileId,
+      source: options.source ?? 'editor',
+      changeSetId: options.changeSetId ?? null,
+      dbClient: tx
+    });
 
     return { placement, block: copy, courseId: scope.courseId };
   });
@@ -676,5 +766,48 @@ export async function getLessonBlockHistory(
 ): Promise<TBlockVersionPage> {
   await requireLessonBlockRow(lessonId, blockId, db);
 
-  return getBlockVersionHistory(blockId, locale, options.limit, parseBlockVersionCursor(options.cursor));
+  return getBlockVersionHistory([blockId], locale, options.limit, parseBlockVersionCursor(options.cursor));
+}
+
+/**
+ * Writes a past snapshot of a text block back as its current content, as a manual checkpoint.
+ * A block shared with other lessons is first replaced in this lesson by its own copy, so the
+ * restore never changes lessons the author is not looking at.
+ * @returns the block now holding the restored text, and the shared block it replaced, if any.
+ * @throws AppError 404 when the block is not in the lesson or the snapshot is not one of its versions.
+ */
+export async function restoreLessonBlockVersion(
+  lessonId: string,
+  input: { blockId: string; locale: TLocale; versionId: number },
+  options: BlockActor = {}
+): Promise<{ blockId: string; detachedFromBlockId: string | null }> {
+  const row = await requireLessonBlockRow(lessonId, input.blockId, db);
+  if (!blockHasLocalizedContent(row.block.type)) {
+    throw new AppError('This block type has no localized content', ErrorCodes.BLOCK_INVALID_DATA, 400);
+  }
+
+  const version = await getBlockVersionById(input.versionId, input.blockId, input.locale);
+  if (!version) {
+    throw new AppError('Version not found for this block', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  const restoreActor: BlockActor = {
+    ...options,
+    source: 'restore',
+    changeSetId: options.changeSetId ?? crypto.randomUUID()
+  };
+  const isShared = (await countBlockPlacements(input.blockId)) > 1;
+  const target = isShared
+    ? await duplicateLessonBlock(lessonId, input.blockId, { replacePlacementId: row.placement.id }, restoreActor)
+    : { id: row.block.id, version: row.block.version };
+
+  await updateLessonBlockLocale(
+    lessonId,
+    target.id,
+    input.locale,
+    { content: version.newContent ?? '', expectedVersion: target.version, versionIntent: 'manual' },
+    restoreActor
+  );
+
+  return { blockId: target.id, detachedFromBlockId: isShared ? input.blockId : null };
 }

@@ -101,16 +101,20 @@ export const updateLessonSchema = {
 
 export const updateLessonContentSchema = {
   description:
-    'Update the text content of a lesson. Replaces the full lesson HTML for the given locale. When modifying only part of a lesson, always preserve all existing content and only change the specific section requested.',
+    'Replace the HTML of one text (note) block of a lesson for the given locale. Other blocks are untouched. When modifying only part of a block, preserve the rest of its content and only change the specific section requested.',
   parameters: z.object({
     courseId: z.string().describe('The course ID'),
     lessonId: z.string().describe('The lesson ID to update'),
     locale: z.string().default('en').describe('The locale to write content in'),
+    blockId: z
+      .uuid()
+      .optional()
+      .describe('The text block to write, from get_lesson_content. Required when the lesson has more than one.'),
     content: z
       .string()
       .min(1)
       .describe(
-        'The full lesson HTML content. Use only: h2, h3, p, ul, ol, li, strong, em, blockquote, code, pre, a, and callouts as <div data-callout="info|tip|important|warning|highlight"><p>…</p></div>. Never use any other div, or span, table, img, iframe, script, or style, except the exact markup that get_block_recipe returns for a block type.'
+        'The full HTML of this text block. Use only: h2, h3, p, ul, ol, li, strong, em, blockquote, code, pre, a, and callouts as <div data-callout="info|tip|important|warning|highlight"><p>…</p></div>. Never use any other div, or span, table, img, iframe, script, or style, except the exact markup that get_block_recipe returns for a block type.'
       )
   })
 };

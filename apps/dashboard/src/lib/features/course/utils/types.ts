@@ -159,7 +159,13 @@ export type GetLessonHistoryRequest =
 export type GetLessonHistoryResponse = InferResponseType<GetLessonHistoryRequest> | null;
 export type GetLessonHistorySuccess = Extract<InferResponseType<GetLessonHistoryRequest>, { success: true }>;
 export type LessonHistory = GetLessonHistorySuccess['data'];
-export type LessonHistoryRow = LessonHistory[number];
+export type LessonHistoryRow = LessonHistory['items'][number];
+export type RestoreLessonHistoryRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['history']['restore']['$post'];
+export type RestoreLessonToEntryRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['history']['restore-lesson']['$post'];
+export type UndoLessonChangeSetRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['history']['undo']['$post'];
 
 /**
  * A history row with its timestamps parsed, as the version history panel renders
@@ -168,6 +174,7 @@ export type LessonHistoryRow = LessonHistory[number];
  */
 export interface LessonVersionEntry {
   id: number;
+  entryType: LessonHistoryRow['entryType'];
   newContent: string;
   oldContent: string;
   kind: NonNullable<LessonHistoryRow['kind']>;
@@ -176,8 +183,18 @@ export interface LessonVersionEntry {
   timestamp: Date;
   editCount: number;
   authorName: string | null;
+  source: LessonHistoryRow['source'];
+  changeSetId: string | null;
+  undoable: boolean;
+  changes: LessonHistoryRow['changes'];
   locale: TLocale;
   lessonId: string;
+  blockId: string | null;
+  /** 1-based position of the block among the lesson's text blocks; null for structure entries and removed blocks. */
+  blockNumber: number | null;
+  blockCount: number;
+  blockRemoved: boolean;
+  sharedWithOtherLessons: number;
 }
 
 /** Version entries bucketed into calendar days, newest day first. */

@@ -2,7 +2,7 @@ import * as schema from '@db/schema';
 
 import type { TBlockLocaleHistory, TBlockVersion, TNewBlockLocaleHistory } from '@db/types';
 import type { TLessonVersionKind } from '@cio/utils/constants/lesson-version';
-import { and, desc, eq, getTableColumns, lt, or, sql } from 'drizzle-orm';
+import { and, desc, eq, getTableColumns, inArray, lt, or, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 
@@ -245,17 +245,20 @@ export async function sealLatestBlockVersionsForCourse(courseId: string, dbClien
 }
 
 /**
- * Gets version history for a block and locale, newest first.
+ * Gets version history for one or more blocks in a locale, merged newest first.
  *
- * `oldContent` is derived by the `block_versions` view from the preceding snapshot,
- * so a thinned history still diffs correctly: the jump is just wider.
+ * `oldContent` is derived by the `block_versions` view from the preceding snapshot of
+ * the same block, so a thinned history still diffs correctly: the jump is just wider.
+ * Blocks with no snapshots at all show their current content as a single entry with id 0.
  */
 export async function getBlockVersionHistory(
-  blockId: string,
+  blockIds: string[],
   locale: string,
   limit: number,
   cursor?: TBlockVersionCursor
 ): Promise<TBlockVersionPage> {
+  if (blockIds.length === 0) return { items: [], nextCursor: null };
+
   try {
     const olderThanCursor = cursor
       ? or(
@@ -269,7 +272,7 @@ export async function getBlockVersionHistory(
       .from(schema.blockVersions)
       .where(
         and(
-          eq(schema.blockVersions.blockId, blockId),
+          inArray(schema.blockVersions.blockId, blockIds),
           eq(schema.blockVersions.locale, locale as TBlockVersion['locale'] & string),
           olderThanCursor
         )
@@ -293,43 +296,76 @@ export async function getBlockVersionHistory(
       return { items: [], nextCursor: null };
     }
 
-    const [currentLocale] = await db
+    const currentLocales = await db
       .select()
       .from(schema.blockLocale)
       .where(
         and(
-          eq(schema.blockLocale.blockId, blockId),
+          inArray(schema.blockLocale.blockId, blockIds),
           eq(schema.blockLocale.locale, locale as TBlockVersion['locale'] & string)
+        )
+      );
+
+    const now = new Date().toISOString();
+    const currentVersions = blockIds.flatMap((blockId): TBlockVersion[] => {
+      const currentLocale = currentLocales.find((row) => row.blockId === blockId);
+      if (!currentLocale) return [];
+
+      return [
+        {
+          id: 0,
+          oldContent: null,
+          newContent: currentLocale.content,
+          kind: 'auto',
+          label: null,
+          sessionStartedAt: now,
+          timestamp: now,
+          editCount: 1,
+          isSealed: false,
+          authorId: null,
+          authorName: null,
+          authorAvatarUrl: null,
+          locale: currentLocale.locale,
+          blockId: currentLocale.blockId,
+          source: 'editor',
+          changeSetId: null
+        }
+      ];
+    });
+
+    return { items: currentVersions, nextCursor: null };
+  } catch (error) {
+    console.error('getBlockVersionHistory error:', error);
+    throw new Error(`Failed to get block version history: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Gets one snapshot of a block locale.
+ * @returns null when no snapshot with that id belongs to the block and locale.
+ */
+export async function getBlockVersionById(
+  versionId: number,
+  blockId: string,
+  locale: string
+): Promise<TBlockVersion | null> {
+  try {
+    const [row] = await db
+      .select()
+      .from(schema.blockVersions)
+      .where(
+        and(
+          eq(schema.blockVersions.id, versionId),
+          eq(schema.blockVersions.blockId, blockId),
+          eq(schema.blockVersions.locale, locale as TBlockVersion['locale'] & string)
         )
       )
       .limit(1);
 
-    if (!currentLocale) {
-      return { items: [], nextCursor: null };
-    }
-
-    const now = new Date().toISOString();
-    const currentVersion: TBlockVersion = {
-      id: 0,
-      oldContent: null,
-      newContent: currentLocale.content,
-      kind: 'auto',
-      label: null,
-      sessionStartedAt: now,
-      timestamp: now,
-      editCount: 1,
-      isSealed: false,
-      authorId: null,
-      authorName: null,
-      authorAvatarUrl: null,
-      locale: currentLocale.locale,
-      blockId: currentLocale.blockId
-    };
-
-    return { items: [currentVersion], nextCursor: null };
+    return row ?? null;
   } catch (error) {
-    console.error('getBlockVersionHistory error:', error);
-    throw new Error(`Failed to get block version history: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('getBlockVersionById error:', error);
+    throw new Error(`Failed to get block version: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

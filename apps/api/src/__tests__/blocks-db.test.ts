@@ -269,8 +269,8 @@ describe.skipIf(!hasDatabase)('lesson blocks', () => {
 
     await deleteLesson(temporary.id);
 
-    const remaining = await db.select().from(schema.block).where(eq(schema.block.id, block.id));
-    expect(remaining).toEqual([]);
+    const [remaining] = await db.select().from(schema.block).where(eq(schema.block.id, block.id));
+    expect(remaining?.deletedAt).not.toBeNull();
   });
 
   it('keeps documents uploaded through the lesson editor as document blocks', async () => {

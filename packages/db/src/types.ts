@@ -151,6 +151,9 @@ export type TNewBlockLocale = typeof schema.blockLocale.$inferInsert;
 export type TBlockLocaleHistory = typeof schema.blockLocaleHistory.$inferSelect;
 export type TNewBlockLocaleHistory = typeof schema.blockLocaleHistory.$inferInsert;
 export type TBlockVersion = typeof schema.blockVersions.$inferSelect;
+export type TLessonRevision = typeof schema.lessonRevision.$inferSelect;
+export type TNewLessonRevision = typeof schema.lessonRevision.$inferInsert;
+export type { TLessonRevisionPlacement } from './schema';
 
 export type TOrganizationmember = typeof schema.organizationmember.$inferSelect;
 export type TNewOrganizationmember = typeof schema.organizationmember.$inferInsert;

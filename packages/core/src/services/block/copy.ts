@@ -4,7 +4,7 @@ import type { TBlock, TBlockPlacement } from '@cio/db/types';
 import {
   createBlock,
   createPlacement,
-  deleteBlocksWithoutPlacements,
+  softDeleteBlocksWithoutPlacements,
   deletePlacements,
   listBlockLocales,
   listBlockRowsForLessons,
@@ -210,7 +210,7 @@ export async function pullLessonBlocksFromSource({
     }
   }
 
-  await deleteBlocksWithoutPlacements(removedBlockIds, dbClient);
+  await softDeleteBlocksWithoutPlacements(removedBlockIds, dbClient);
 }
 
 function pickPlacementSettings(placement: TBlockPlacement) {

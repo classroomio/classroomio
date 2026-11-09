@@ -17,5 +17,6 @@ export const documentBlock = defineBlock({
   dataSchema: ZDocumentBlockData,
   localizedContent: false,
   media: 'document',
-  toPublicData: null
+  toPublicData: null,
+  agentEditableFields: ['name']
 });

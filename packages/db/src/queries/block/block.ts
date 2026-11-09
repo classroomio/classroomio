@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { TBlock, TNewBlock } from '@db/types';
-import { and, count, db, desc, eq, ilike, inArray, or, sql } from '@db/drizzle';
+import { and, count, db, desc, eq, ilike, inArray, isNull, or, sql } from '@db/drizzle';
 import type { DbOrTxClient } from '@db/drizzle';
 
 export interface LessonBlockRow {
@@ -83,22 +83,128 @@ export async function bumpBlockVersionIfVersion(
   }
 }
 
-export async function deleteBlocksWithoutPlacements(blockIds: string[], dbClient: DbOrTxClient = db) {
+/**
+ * Bumps a block's version without touching its data, for restores writing text or
+ * data from history; editors with a stale version then get a conflict prompt.
+ */
+export async function bumpBlockVersion(blockId: string, dbClient: DbOrTxClient = db): Promise<TBlock | null> {
+  try {
+    const [block] = await dbClient
+      .update(schema.block)
+      .set({ version: sql`${schema.block.version} + 1`, updatedAt: new Date().toISOString() })
+      .where(eq(schema.block.id, blockId))
+      .returning();
+
+    return block ?? null;
+  } catch (error) {
+    console.error('bumpBlockVersion error:', error);
+    throw new Error(
+      `Failed to bump block version "${blockId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Sets a block's `data` unconditionally and bumps its version, for snapshot writes
+ * that use data recorded with a version that no longer exists.
+ */
+export async function updateBlockData(
+  blockId: string,
+  data: Record<string, unknown>,
+  dbClient: DbOrTxClient = db
+): Promise<TBlock | null> {
+  try {
+    const [block] = await dbClient
+      .update(schema.block)
+      .set({ data, version: sql`${schema.block.version} + 1`, updatedAt: new Date().toISOString() })
+      .where(eq(schema.block.id, blockId))
+      .returning();
+
+    return block ?? null;
+  } catch (error) {
+    console.error('updateBlockData error:', error);
+    throw new Error(`Failed to update block "${blockId}": ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Whether the block is placed in a lesson other than `lessonId`.
+ */
+export async function isBlockPlacedOutsideLesson(blockId: string, lessonId: string, dbClient: DbOrTxClient = db) {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.blockPlacement.id })
+      .from(schema.blockPlacement)
+      .where(and(eq(schema.blockPlacement.blockId, blockId), sql`${schema.blockPlacement.lessonId} <> ${lessonId}`))
+      .limit(1);
+
+    return Boolean(row);
+  } catch (error) {
+    console.error('isBlockPlacedOutsideLesson error:', error);
+    throw new Error(`Failed to check block usages: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Marks every block in the list that has no placement any more as deleted on `deleted_at`,
+ * keeping its text and history restorable until the retention purge removes it.
+ */
+export async function softDeleteBlocksWithoutPlacements(blockIds: string[], dbClient: DbOrTxClient = db) {
   if (blockIds.length === 0) return [];
 
   try {
     return await dbClient
-      .delete(schema.block)
+      .update(schema.block)
+      .set({ deletedAt: new Date().toISOString() })
       .where(
         and(
           inArray(schema.block.id, blockIds),
+          isNull(schema.block.deletedAt),
           sql`NOT EXISTS (SELECT 1 FROM ${schema.blockPlacement} WHERE ${schema.blockPlacement.blockId} = ${schema.block.id})`
         )
       )
       .returning({ id: schema.block.id });
   } catch (error) {
-    console.error('deleteBlocksWithoutPlacements error:', error);
+    console.error('softDeleteBlocksWithoutPlacements error:', error);
     throw new Error(`Failed to delete orphaned blocks: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function undeleteBlock(blockId: string, dbClient: DbOrTxClient = db): Promise<TBlock | null> {
+  try {
+    const [block] = await dbClient
+      .update(schema.block)
+      .set({ deletedAt: null })
+      .where(and(eq(schema.block.id, blockId), sql`${schema.block.deletedAt} IS NOT NULL`))
+      .returning();
+
+    return block ?? null;
+  } catch (error) {
+    console.error('undeleteBlock error:', error);
+    throw new Error(
+      `Failed to restore block "${blockId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Hard-deletes blocks still unplaced after their retention window, cascading their
+ * locales and history. Blocks still placed now are skipped and stay deleted-flagged.
+ */
+export async function purgeExpiredDeletedBlocks(olderThanDays: number, dbClient: DbOrTxClient = db) {
+  try {
+    const rows = await dbClient.execute<{ id: string }>(sql`
+      DELETE FROM ${schema.block}
+      WHERE ${schema.block.deletedAt} IS NOT NULL
+        AND ${schema.block.deletedAt} < now() - make_interval(days => ${olderThanDays})
+        AND NOT EXISTS (SELECT 1 FROM ${schema.blockPlacement} WHERE ${schema.blockPlacement.blockId} = ${schema.block.id})
+      RETURNING ${schema.block.id}
+    `);
+
+    return rows.map((row) => row.id);
+  } catch (error) {
+    console.error('purgeExpiredDeletedBlocks error:', error);
+    throw new Error(`Failed to purge deleted blocks: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -126,6 +232,7 @@ export async function listOrganizationBlocks(
     const searchPattern = options.search ? `%${options.search.replace(/[%_\\]/g, '\\$&')}%` : undefined;
     const where = and(
       eq(schema.block.organizationId, organizationId),
+      isNull(schema.block.deletedAt),
       options.type ? eq(schema.block.type, options.type) : undefined,
       searchPattern
         ? or(

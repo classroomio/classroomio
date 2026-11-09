@@ -100,7 +100,11 @@ export const ZPublicApiCourseLessonHistoryResponse = z.object({
       editCount: z.number().nullable(),
       isSealed: z.boolean().nullable(),
       authorId: z.string().uuid().nullable(),
-      authorName: z.string().nullable()
+      authorName: z.string().nullable(),
+      blockId: z
+        .uuid()
+        .nullable()
+        .describe('The text block this version belongs to; a lesson with several text blocks mixes their versions')
     })
   ),
   nextCursor: z.string().nullable().describe('Pass back as cursor for older versions; null on the last page')
