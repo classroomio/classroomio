@@ -381,20 +381,22 @@
     };
   });
 
+  let resumeAtSeconds = $state(0);
+
   async function restoreWatchProgress(): Promise<void> {
     if (!$isCourseLearnerView || !uploadAssetId) return;
 
-    const cachedAsset = assetWatchProgress;
-    if (cachedAsset?.lastPositionSeconds && cachedAsset.lastPositionSeconds > 0) {
-      pendingResumeSeconds = cachedAsset.lastPositionSeconds;
+    const cachedPositionSeconds = assetWatchProgress?.lastPositionSeconds ?? 0;
+    if (cachedPositionSeconds > 0) {
+      resumeAtSeconds = cachedPositionSeconds;
       return;
     }
 
     const progress = await lessonApi.getWatchProgress(courseId, lessonId);
     const assetProgress = progress?.assets?.find((asset) => asset.assetId === uploadAssetId);
-    if (assetProgress?.lastPositionSeconds && assetProgress.lastPositionSeconds > 0) {
-      pendingResumeSeconds = assetProgress.lastPositionSeconds;
-    }
+    if (!isMounted) return;
+
+    resumeAtSeconds = assetProgress?.lastPositionSeconds ?? 0;
   }
 
   onMount(() => {
@@ -542,6 +544,7 @@
       },
       onFirstPlay: handleFirstPlay,
       onSourceLoaded: handleSourceLoaded,
+      resumeAtSeconds,
       onBeforeHlsLoad: isHls && uploadAssetId ? () => mintHlsCookie(uploadAssetId) : undefined,
       transcriptPanelControl,
       loadingLabel: $t('course.navItem.lessons.materials.tabs.video.loading'),
