@@ -5,7 +5,7 @@
   import { Empty } from '@cio/ui/custom/empty';
   import * as Item from '@cio/ui/base/item';
   import { lessonVideoUpload } from '$features/course/components/lesson/store';
-  import LessonMaterialActions from '$features/course/components/lesson/lesson-material-actions.svelte';
+  // import LessonMaterialActions from '$features/course/components/lesson/lesson-material-actions.svelte';
   import { sidePanel } from '$features/side-panel';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
@@ -152,12 +152,12 @@
         </div>
       {/each}
 
-      <LessonMaterialActions
+      <!-- Not useful for now.<LessonMaterialActions
         showTranscript={hasTranscript}
         showSummarize={videos.length > 0}
         {lessonId}
         onTranscript={openTranscriptPanel}
-      />
+      /> -->
     </div>
   {/if}
 {/if}

@@ -32,31 +32,24 @@ export async function assetReferencedByGlobalTemplate(
 
     const [lessonBodyHit] = await dbClient
       .select({ id: schema.lesson.id })
-      .from(schema.lessonLanguage)
-      .innerJoin(schema.lesson, eq(schema.lessonLanguage.lessonId, schema.lesson.id))
+      .from(schema.blockLocale)
+      .innerJoin(schema.blockPlacement, eq(schema.blockPlacement.blockId, schema.blockLocale.blockId))
+      .innerJoin(schema.lesson, eq(schema.blockPlacement.lessonId, schema.lesson.id))
       .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-      .where(and(globalCourse, like(schema.lessonLanguage.content, needle)))
+      .where(and(globalCourse, like(schema.blockLocale.content, needle)))
       .limit(1);
 
     if (lessonBodyHit) return true;
 
     const [lessonMediaHit] = await dbClient
       .select({ id: schema.lesson.id })
-      .from(schema.lesson)
+      .from(schema.block)
+      .innerJoin(schema.blockPlacement, eq(schema.blockPlacement.blockId, schema.block.id))
+      .innerJoin(schema.lesson, eq(schema.blockPlacement.lessonId, schema.lesson.id))
       .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-      .where(
-        and(
-          globalCourse,
-          or(
-            sql`${schema.lesson.videos}::text like ${needle}`,
-            sql`${schema.lesson.documents}::text like ${needle}`,
-            sql`${schema.lesson.slides}::text like ${needle}`,
-            like(schema.lesson.slideUrl, needle)
-          )
-        )
-      )
+      .where(and(globalCourse, sql`${schema.block.data}::text like ${needle}`))
       .limit(1);
 
     if (lessonMediaHit) return true;

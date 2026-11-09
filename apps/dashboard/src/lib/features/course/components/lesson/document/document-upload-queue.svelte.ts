@@ -7,6 +7,7 @@ import {
 } from '@cio/utils/file-upload';
 
 import { lessonApi, presignApi } from '$features/course/api';
+import { addLessonDocuments } from '../media-picks';
 import { mediaApi } from '$features/media/api';
 import { MAX_CONCURRENT_DOCUMENT_UPLOADS } from '$features/course/utils/document-upload-utils';
 import type { DocumentUploadItem } from '$features/course/utils/types';
@@ -185,7 +186,7 @@ export class DocumentUploadQueue {
           assetId: asset?.id
         };
 
-        lessonApi.updateLessonState('documents', [document], { append: true });
+        addLessonDocuments([document]);
       }
 
       item.progress = 100;

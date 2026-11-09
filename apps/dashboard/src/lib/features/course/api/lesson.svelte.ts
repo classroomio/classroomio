@@ -21,6 +21,9 @@ import type {
   LessonComments,
   PromoteUngroupedSectionRequest,
   ReorderCourseSectionsRequest,
+  RestoreLessonHistoryRequest,
+  RestoreLessonToEntryRequest,
+  UndoLessonChangeSetRequest,
   UpdateCourseSectionRequest,
   UpdateLessonCommentRequest,
   UpdateLessonCompletionRequest,
@@ -933,6 +936,77 @@ export class LessonApi extends BaseApiWithErrors {
           query: { locale, limit: limit.toString(), ...(cursor ? { cursor } : {}) }
         }),
       logContext: 'fetching lesson history'
+    });
+  }
+
+  /**
+   * Restores one text block of a lesson to a past version. The server reads the version
+   * itself and gives this lesson its own copy first when the block is shared.
+   */
+  async restoreHistoryVersion(
+    courseId: string,
+    lessonId: string,
+    version: { blockId: string; locale: TLocale; versionId: number }
+  ) {
+    return this.execute<RestoreLessonHistoryRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId'].history.restore.$post({
+          param: { courseId, lessonId },
+          json: version
+        }),
+      logContext: 'restoring lesson version',
+      onSuccess: () => {
+        this.success = true;
+      },
+      onError: () => {
+        snackbar.error('course.navItem.lessons.version_history.restore_failed');
+      }
+    });
+  }
+
+  /**
+   * Restores the whole lesson to the moment of one history entry: block order, settings and every
+   * locale of every text block as saved then.
+   */
+  async restoreLessonToEntry(
+    courseId: string,
+    lessonId: string,
+    entry: { entryType: 'text' | 'structure'; entryId: number }
+  ) {
+    return this.execute<RestoreLessonToEntryRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId'].history['restore-lesson'].$post({
+          param: { courseId, lessonId },
+          json: entry
+        }),
+      logContext: 'restoring lesson',
+      onSuccess: () => {
+        this.success = true;
+      },
+      onError: () => {
+        snackbar.error('course.navItem.lessons.version_history.restore_lesson_failed');
+      }
+    });
+  }
+
+  /**
+   * Reverts one change set (an assistant chat request or a restore). The server refuses when
+   * something the change touched was edited since.
+   */
+  async undoChangeSet(courseId: string, lessonId: string, changeSetId: string) {
+    return this.execute<UndoLessonChangeSetRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId'].history.undo.$post({
+          param: { courseId, lessonId },
+          json: { changeSetId }
+        }),
+      logContext: 'undoing lesson change',
+      onSuccess: () => {
+        this.success = true;
+      },
+      onError: () => {
+        snackbar.error('course.navItem.lessons.version_history.undo_failed');
+      }
     });
   }
 

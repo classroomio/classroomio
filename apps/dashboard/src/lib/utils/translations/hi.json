@@ -1798,7 +1798,6 @@
           "title": "संस्करण इतिहास",
           "fetch_more_versions": "अधिक संस्करण प्राप्त करें",
           "current_version": "वर्तमान संस्करण",
-          "restore_version": "इस संस्करण को पुनर्स्थापित करें",
           "edit_count": "{count, plural, one {# संपादन} other {# संपादन}}",
           "today": "आज",
           "yesterday": "कल",
@@ -1808,7 +1807,38 @@
             "auto": "स्वचालित रूप से सहेजें",
             "manual": "सहेजा गया संस्करण",
             "publish": "प्रकाशित"
-          }
+          },
+          "block_label": "{count} में से टेक्स्ट ब्लॉक {number}",
+          "restore_failed": "इस संस्करण को पुनर्स्थापित नहीं किया जा सका",
+          "shared_restore_hint": "यह टेक्स्ट ब्लॉक अन्य पाठों के साथ साझा किया गया है। पुनर्स्थापित करने से इस पाठ को अपनी प्रति मिल जाती है, और अन्य पाठ अपना वर्तमान पाठ बनाए रखते हैं।",
+          "structure_change": "संरचना",
+          "restore_lesson_failed": "पाठ पुनर्स्थापित नहीं किया जा सका",
+          "undo_change": "पूर्ववत करें",
+          "by_assistant": "सहायक",
+          "by_restore": "पुनर्स्थापित करें",
+          "change_added": "{name} जोड़ा गया",
+          "change_removed": "{name} हटा दिया गया",
+          "change_moved": "{name} ले जाया गया",
+          "change_edited": "बदला गया {name}",
+          "block_type": {
+            "note": "टेक्स्ट ब्लॉक",
+            "video": "वीडियो",
+            "slides": "स्लाइड",
+            "document": "दस्तावेज़",
+            "image": "छवि"
+          },
+          "change_kind": {
+            "added": "जोड़ा गया",
+            "removed": "हटा दिया गया",
+            "moved": "ले जाया गया",
+            "edited": "बदल गया"
+          },
+          "restore_version": "इस ब्लॉक को पुनर्स्थापित करें",
+          "restore_lesson": "संपूर्ण पाठ पुनर्स्थापित करें",
+          "undo_failed": "इस परिवर्तन को पूर्ववत नहीं किया जा सका. यदि इसमें जो कुछ बदला गया है उसे बाद में संपादित किया गया है, तो इसके बजाय अपने इच्छित संस्करण को पुनर्स्थापित करें।",
+          "removed_block_label": "टेक्स्ट ब्लॉक हटा दिया गया",
+          "restore_lesson_confirm": "पूरे पाठ को इस संस्करण से बदलें?",
+          "structure_state": "प्रारंभिक बिंदु: पहले रिकॉर्ड किए गए परिवर्तन से पहले पाठ के ब्लॉक कैसे तैयार किए गए थे।"
         },
         "comments": {
           "title": "टिप्पणियाँ",
@@ -1817,10 +1847,16 @@
           "placeholder": "आप इस पाठ के बारे में क्या सोचते हैं?",
           "comment_btn": "टिप्पणी करें",
           "cancel_btn": "रद्द करें",
-          "load_more_btn": "और अधिक लोड करें",
           "comment_error": "टिप्पणी पोस्ट करने में विफल. कृपया पुन: प्रयास करें।",
           "edit": "संपादित करें",
-          "delete": "हटाएँ"
+          "delete": "हटाएँ",
+          "save_btn": "सहेजें",
+          "unknown_user": "अज्ञात",
+          "actions": "टिप्पणी क्रियाएँ",
+          "read_more": "और पढ़ें",
+          "show_less": "कम दिखाओ",
+          "see_all": "सभी टिप्पणियाँ देखें ({count})",
+          "show_more": "अधिक टिप्पणियाँ दिखाएँ"
         },
         "exercises": {
           "heading": "सभी व्यायाम",
@@ -2411,7 +2447,6 @@
           "body_heading": "इस पाठ के लिए अभी तक कोई नोट, वीडियो या स्लाइड नहीं जोड़ा गया है",
           "body_content": "आकर्षक सामग्री बनाकर अपने ज्ञान को अपने छात्रों के साथ साझा करें। पर क्लिक करके प्रारंभ करें",
           "get_started": "आरंभ करें",
-          "no_content": "कोई सामग्री नहीं",
           "no_translation": "चयनित भाषा के लिए कोई अनुवाद नहीं",
           "button": "बटन",
           "show_transcript": "प्रतिलेख दिखाएं",
@@ -2609,7 +2644,9 @@
                 "preview": "पूर्वावलोकन",
                 "embed_ready": "एम्बेड तैयार",
                 "invalid_embed": "इस प्लेटफ़ॉर्म का पूरा iframe एम्बेड कोड पेस्ट करें।",
-                "unsupported": "यह एम्बेड किसी ऐसे प्लेटफ़ॉर्म से है जिसे हम अभी समर्थित नहीं करते।"
+                "unsupported": "यह एम्बेड किसी ऐसे प्लेटफ़ॉर्म से है जिसे हम अभी समर्थित नहीं करते।",
+                "platform_mismatch": "यह {detected} एम्बेड है, {selected} नहीं।",
+                "preview_in_platform": "{platform} में पूर्वावलोकन देखें"
               },
               "platforms": {
                 "google-slides": {
@@ -2684,6 +2721,62 @@
                 "activities": "पाठ गतिविधियाँ उत्पन्न करें"
               }
             }
+          },
+          "blocks": {
+            "add_content": "सामग्री जोड़ें",
+            "example": "उदाहरण",
+            "change_type": "{type} बदलें",
+            "edit_type": "{type} संपादित करें",
+            "remove": "ब्लॉक हटाएँ",
+            "move_up": "बढ़ाना",
+            "move_down": "नीचे की ओर",
+            "actions": "ब्लॉक क्रियाएँ",
+            "drag": "पुन: व्यवस्थित करने के लिए खींचें",
+            "drag_hint": "किसी ब्लॉक को पुनर्व्यवस्थित करने के लिए उस पर मौजूद हैंडल को खींचें। आप उसके मेनू से 'ऊपर ले जाएं' और 'नीचे ले जाएं' विकल्पों का भी उपयोग कर सकते हैं।",
+            "dismiss_hint": "पुनर्व्यवस्था संकेत को खारिज करें",
+            "empty_title": "इस पाठ को बनाना शुरू करें",
+            "empty_description": "आप नोट, वीडियो, स्लाइड, दस्तावेज़ या छवि जोड़ सकते हैं। आप आवश्यकतानुसार जितने चाहें उतने ब्लॉक किसी भी क्रम में जोड़ सकते हैं।",
+            "empty_note": "यह नोट खाली है।",
+            "scroll_rail": "पाठ खंड",
+            "go_to_block": "ब्लॉक {index} पर जाएं",
+            "image": {
+              "upload": "तस्विर अपलोड करना",
+              "upload_error": "छवि अपलोड करने में विफल। कृपया पुनः प्रयास करें।",
+              "change": "छवि बदलें",
+              "settings": "छवि सेटिंग्स",
+              "alt": "Alt टेक्स्ट",
+              "alt_placeholder": "सहायक तकनीक का उपयोग करने वाले शिक्षार्थियों के लिए चित्र का वर्णन करें।",
+              "fit": "उपयुक्त",
+              "fit_cover": "भरना",
+              "fit_contain": "उपयुक्त"
+            },
+            "settings": {
+              "title": "पाठ व्यवस्था",
+              "description": "कंटेंट कैनवास छोड़े बिना इस पाठ का प्रबंधन करें।"
+            },
+            "reading_density": {
+              "title": "पठन घनत्व",
+              "description": "यह शिक्षार्थियों के लिए ब्लॉकों के बीच की दूरी को नियंत्रित करता है। यह संपादन कैनवास को नहीं बदलता है।",
+              "compact": "सघन",
+              "comfortable": "आरामदायक",
+              "spacious": "विशाल"
+            },
+            "ai": {
+              "title": "एआई की मदद से नोट का मसौदा तैयार करें",
+              "prompt_label": "तत्पर",
+              "prompt_placeholder": "उदाहरण के लिए, शुरुआती लोगों के लिए जल चक्र का संक्षिप्त परिचय।"
+            },
+            "types": {
+              "note": "टिप्पणी",
+              "video": "वीडियो",
+              "slides": "स्लाइड्स",
+              "document": "दस्तावेज़",
+              "image": "छवि"
+            },
+            "empty_preview_title": "अभी पूर्वावलोकन करने के लिए कुछ भी नहीं है",
+            "empty_preview_description": "इस पाठ में विद्यार्थियों के देखने के लिए कोई सामग्री नहीं है। नोट, वीडियो, स्लाइड, दस्तावेज़ या छवि जोड़ने के लिए {editLabel} पर स्विच करें।",
+            "empty_learner_title": "यह पाठ अभी तक तैयार नहीं है",
+            "empty_learner_description": "आपके प्रशिक्षक ने इस पाठ में कोई सामग्री नहीं जोड़ी है। जल्दी वापस जाँच करें।"
           }
         },
         "lesson_nav": {
@@ -2761,6 +2854,10 @@
             "watch_videos_empty": "वीडियो देखने की पूर्णता केवल अपलोड किए गए वीडियो को ट्रैक करती है। YouTube और बाहरी एम्बेड को ट्रैक नहीं किया जा सकता, इसलिए यह पाठ स्वचालित रूप से पूरा नहीं हो सकता और छात्र इसे पूर्ण के रूप में चिह्नित नहीं कर सकते। वीडियो टैब में वीडियो अपलोड करें, या पूर्णता नियम को मैन्युअल पर सेट करें।",
             "watch_videos_no_uploads_title": "इस पाठ में कोई वीडियो अपलोड नहीं किया गया",
             "watch_videos_learn_more": "और अधिक जानें"
+          },
+          "access": {
+            "title": "पहुंच",
+            "description": "छात्र किसी बंद पाठ को तब तक नहीं खोल सकते जब तक आप उसे अनलॉक नहीं करते।"
           }
         },
         "watch_progress": {
@@ -2833,7 +2930,13 @@
         "add_content_add_to_section": "सामग्री जोड़ें",
         "expand_content": "सामग्री का विस्तार करें",
         "collapse_content": "सामग्री संक्षिप्त करें",
-        "no_section": "कोई अनुभाग नहीं"
+        "no_section": "कोई अनुभाग नहीं",
+        "header": {
+          "mode_label": "पाठ मोड",
+          "mode_edit": "संपादन करना",
+          "mode_preview": "पूर्व दर्शन",
+          "mode_shortcut": "मोड टॉगल करें"
+        }
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",
@@ -5270,7 +5373,22 @@
         "fetch_documentation_url_with_url": "पढ़ना {url}",
         "list_youtube_playlist_videos": "प्लेलिस्ट के वीडियो दिखाए जा रहे हैं",
         "get_lesson_transcript": "वीडियो ट्रांसक्रिप्ट पढ़ा जा रहा है",
-        "add_youtube_video_to_lesson": "YouTube वीडियो एम्बेड किया जा रहा है"
+        "add_youtube_video_to_lesson": "YouTube वीडियो एम्बेड किया जा रहा है",
+        "add_lesson_note_block": "एक टेक्स्ट ब्लॉक जोड़ना",
+        "remove_lesson_block": "टेक्स्ट ब्लॉक हटाना",
+        "move_lesson_block": "एक ब्लॉक को हिलाना",
+        "add_lesson_slides_block": "स्लाइड्स जोड़ना",
+        "add_lesson_image_block": "एक छवि जोड़ना",
+        "update_lesson_block_settings": "ब्लॉक सेटिंग अपडेट कर रहा है",
+        "update_lesson_block_requirements": "पूर्णता नियम अद्यतन किया जा रहा है",
+        "detach_lesson_block": "साझा ब्लॉक को अलग किया जा रहा है",
+        "list_block_library": "ब्लॉक लाइब्रेरी की खोज की जा रही है",
+        "attach_library_block": "लाइब्रेरी ब्लॉक जोड़ना",
+        "move_lesson_block_to_lesson": "एक ब्लॉक को दूसरे पाठ में ले जाना",
+        "attach_document_to_lesson": "दस्तावेज़ जोड़ना",
+        "get_lesson_history": "पाठ इतिहास पढ़ना",
+        "restore_lesson_version": "पुराने संस्करण को पुनर्स्थापित किया जा रहा है",
+        "undo_lesson_change": "किसी परिवर्तन को पूर्ववत करना"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# अक्षर} other {# अक्षर}})",
@@ -5310,7 +5428,21 @@
         "get_lesson_transcript_plan_gated": "ट्रांसक्रिप्ट के लिए सशुल्क प्लान आवश्यक है",
         "get_lesson_transcript_no_credits": "ट्रांसक्रिप्ट प्राप्त करने के लिए AI क्रेडिट शेष नहीं हैं",
         "get_lesson_transcript_unavailable": "{title} के लिए कोई ट्रांसक्रिप्ट उपलब्ध नहीं है",
-        "add_youtube_video_to_lesson": "एम्बेड किया गया वीडियो: {title}"
+        "add_youtube_video_to_lesson": "एम्बेड किया गया वीडियो: {title}",
+        "remove_lesson_block": "{title} से एक टेक्स्ट ब्लॉक हटाया गया",
+        "move_lesson_block": "{title} में एक ब्लॉक ले जाया गया",
+        "add_lesson_slides_block": "{title} में स्लाइड जोड़ी गईं",
+        "add_lesson_image_block": "{title} में एक छवि जोड़ी गई",
+        "update_lesson_block_settings": "{title} में एक ब्लॉक अपडेट किया गया",
+        "update_lesson_block_requirements": "{title} में अद्यतन पूर्णता नियम",
+        "detach_lesson_block": "{title} को साझा ब्लॉक की अपनी प्रति दी",
+        "list_block_library": "ब्लॉक लाइब्रेरी की खोज की",
+        "attach_library_block": "{title} में एक लाइब्रेरी ब्लॉक जोड़ा गया",
+        "move_lesson_block_to_lesson": "एक ब्लॉक को {title} पर ले जाया गया",
+        "attach_document_to_lesson": "जोड़ा गया दस्तावेज़: {title}",
+        "get_lesson_history": "पाठ का इतिहास लोड किया गया",
+        "restore_lesson_version": "पाठ का पुराना संस्करण पुनर्स्थापित किया गया",
+        "undo_lesson_change": "एक परिवर्तन पूर्ववत किया"
       }
     },
     "student_empty_state": "इस पाठ्यक्रम के बारे में मुझसे कुछ भी पूछें - स्पष्टीकरण प्राप्त करें, स्वयं प्रश्नोत्तरी करें, या आप जो पढ़ रहे हैं उसे संक्षेप में प्रस्तुत करें।",

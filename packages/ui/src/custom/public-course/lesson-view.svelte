@@ -36,6 +36,8 @@
     calloutAnimation?: PublicCourseCalloutAnimation;
     /** Actions rendered beside the lesson title (e.g. Copy Page, Share). */
     titleActions?: Snippet;
+    /** Replaces the default video and body with host-rendered lesson content, such as its blocks. */
+    content?: Snippet;
     /** Actions rendered under the page outline (copy, share, open in chat). */
     outlineActions?: Snippet;
     outlineLabel?: string;
@@ -53,6 +55,7 @@
     callout = null,
     calloutAnimation,
     titleActions,
+    content,
     outlineActions,
     outlineLabel = 'On this page',
     class: className,
@@ -122,7 +125,11 @@
           {@render titleActions?.()}
         </div>
 
-        {#if lesson.video}
+        {#if content}
+          <div class="ui:mt-6">
+            {@render content()}
+          </div>
+        {:else if lesson.video}
           <div class="ui:mt-6 ui:w-full ui:overflow-hidden ui:rounded-lg">
             <MediaPlayer
               source={{
@@ -149,13 +156,15 @@
           </div>
         {/if}
 
-        <div class="prose lesson-body ui:sm:prose-sm ui:mt-8 ui:max-w-none ui:dark:text-white">
-          {#if injectedBody.html}
-            <SafeHtmlContent content={injectedBody.html} />
-          {:else}
-            <p class="ui:text-muted-foreground">No content yet.</p>
-          {/if}
-        </div>
+        {#if !content}
+          <div class="prose lesson-body ui:sm:prose-sm ui:mt-8 ui:max-w-none ui:dark:text-white">
+            {#if injectedBody.html}
+              <SafeHtmlContent content={injectedBody.html} />
+            {:else}
+              <p class="ui:text-muted-foreground">No content yet.</p>
+            {/if}
+          </div>
+        {/if}
 
         <Callout variant="inline" {callout} animation={resolvedCalloutAnimation} />
       {/if}

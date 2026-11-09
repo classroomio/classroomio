@@ -10,6 +10,7 @@ import {
   type TAssetProvider
 } from '@cio/utils';
 import { lessonApi } from '$features/course/api';
+import { addLessonVideos } from '../media-picks';
 import { mediaApi } from '$features/media/api';
 import { snackbar } from '$features/ui/snackbar/store';
 import type { LessonVideoType } from '$features/course/utils/types';
@@ -88,6 +89,24 @@ export function getHls1080Status(video: LessonVideo): Hls1080Status | 'unavailab
   if (sourceHeight < 1080) return 'unavailable';
 
   return metadata.hls1080Status ?? 'none';
+}
+
+const YOUTUBE_DEFAULT_THUMBNAIL = /^https:\/\/(i\.ytimg\.com|img\.youtube\.com)\/vi\//;
+
+/**
+ * Poster for a video shown at full width. YouTube asks for the 1280×720 frame, which older or
+ * low-resolution uploads lack, so `fallbackUrl` names the 480×360 frame (or the stored one) to use instead.
+ */
+export function getVideoPosterUrls(video: LessonVideo): { url: string | null; fallbackUrl?: string } {
+  const storedThumbnail = (video.metadata as VideoMetadata | undefined)?.thumbnailUrl;
+  const hasCustomThumbnail = typeof storedThumbnail === 'string' && !YOUTUBE_DEFAULT_THUMBNAIL.test(storedThumbnail);
+  const isYoutube = (video.type === 'youtube' || isYoutubeUrl(video.link)) && !!video.link;
+  const youtubeId = isYoutube && !hasCustomThumbnail ? getYoutubeVideoId(video.link) : null;
+  if (!youtubeId) return { url: getVideoThumbnailUrl(video) };
+
+  const fallbackUrl = storedThumbnail ?? `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
+
+  return { url: `https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`, fallbackUrl };
 }
 
 /**
@@ -368,7 +387,7 @@ export async function addExternalVideosToLesson(options: AddExternalVideosToLess
   const failedCount = results.length - newVideos.length;
 
   if (newVideos.length > 0 && lessonId) {
-    lessonApi.updateLessonState('videos', newVideos, { append: true });
+    addLessonVideos(newVideos);
   }
 
   if (failedCount > 0) {

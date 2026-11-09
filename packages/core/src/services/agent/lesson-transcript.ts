@@ -6,7 +6,12 @@ import { getActiveNegativeYoutubeCaption } from '@cio/db/queries/youtube-caption
 import { startTranscriptionOnlyMediaJob, startYoutubeCaptionsJob } from '../jobs/media-jobs';
 import { getLesson } from '../lesson/lesson';
 import { VIDEO_LEVEL_LANGUAGE_KEY, resolveRequestLanguage } from '../youtube-captions/language';
-import { CAPTION_FETCH_COST_UNITS, canOrgFetchYoutubeCaptions, isSelfHostedInstance } from '../youtube-captions/policy';
+import {
+  CAPTION_FETCH_COST_UNITS,
+  canOrgFetchYoutubeCaptions,
+  isCaptionProviderConfigured,
+  isSelfHostedInstance
+} from '../youtube-captions/policy';
 import { getTokenBalance } from './usage';
 
 /** `fetching` is the only value worth retrying; the rest are terminal for this run. */
@@ -232,6 +237,10 @@ async function warmMissingCaptions(
   // Filter first: no plan or balance can fetch captions for a video that has none.
   const fetchable = await filterOutKnownUnavailable(missingVideos);
   if (fetchable.length === 0) {
+    return 'unavailable';
+  }
+
+  if (!isCaptionProviderConfigured()) {
     return 'unavailable';
   }
 

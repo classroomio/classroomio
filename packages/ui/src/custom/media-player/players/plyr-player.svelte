@@ -48,6 +48,8 @@
   let hlsCookieFailedAttempts = 0;
   let plyrConstructInFlight = false;
   let hasFiredFirstPlay = false;
+  let hasAppliedResumePosition = false;
+  let hlsEvents: typeof import('hls.js').Events | null = null;
   let isMounted = false;
   let youtubeInitGeneration = 0;
 
@@ -562,6 +564,52 @@
     }
   });
 
+  $effect(() => {
+    const resumeAtSeconds = options.resumeAtSeconds;
+    const element = videoElement;
+    const player = playerInstance;
+    const hls = hlsInstance;
+    if (!resumeAtSeconds || resumeAtSeconds <= 0 || !element || !player || isYouTube) return;
+    if (hasAppliedResumePosition || hasFiredFirstPlay) return;
+
+    hasAppliedResumePosition = true;
+    seekBeforeFirstPlay(element, resumeAtSeconds);
+
+    if (hls) {
+      bufferResumeFragment(hls, resumeAtSeconds);
+    }
+  });
+
+  function seekBeforeFirstPlay(element: HTMLVideoElement, seconds: number): void {
+    const seek = () => {
+      if (hasFiredFirstPlay) return;
+
+      element.currentTime = seconds;
+    };
+
+    if (element.readyState >= HTMLMediaElement.HAVE_METADATA) {
+      seek();
+      return;
+    }
+
+    element.addEventListener('loadedmetadata', seek, { once: true });
+  }
+
+  /**
+   * Loads one HLS fragment at `seconds` so the element has metadata and a frame
+   * to show before the first play, then pauses loading until playback starts.
+   */
+  function bufferResumeFragment(hls: import('hls.js').default, seconds: number): void {
+    if (!hlsEvents) return;
+
+    hls.once(hlsEvents.FRAG_BUFFERED, () => {
+      if (hasFiredFirstPlay || hlsInstance !== hls) return;
+
+      hls.stopLoad();
+    });
+    hls.startLoad(seconds);
+  }
+
   function destroyHlsInstance(): void {
     clearHlsCookieRenewal();
     if (!hlsInstance) return;
@@ -679,6 +727,7 @@
     const HlsModule = await import('hls.js');
     const Hls = HlsModule.default;
     const FetchLoader = HlsModule.FetchLoader;
+    hlsEvents = HlsModule.Events;
 
     if (loadGeneration !== hlsLoadGeneration || loadedSrc !== manifestUrl) {
       element.removeEventListener('loadedmetadata', onLoaded);
