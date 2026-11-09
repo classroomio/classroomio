@@ -33,6 +33,12 @@
       embedReady: t.get(`${prefix}.add_slide.embed_ready`),
       invalidEmbed: t.get(`${prefix}.add_slide.invalid_embed`),
       unsupportedPlatform: t.get(`${prefix}.add_slide.unsupported`),
+      // The ICU parser throws on missing variables; SlideEmbedPicker fills these placeholders itself.
+      platformMismatch: t.get(`${prefix}.add_slide.platform_mismatch`, {
+        detected: '{detected}',
+        selected: '{selected}'
+      }),
+      previewInPlatform: t.get(`${prefix}.add_slide.preview_in_platform`, { platform: '{platform}' }),
       platforms
     };
   });
