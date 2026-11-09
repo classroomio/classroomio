@@ -24,9 +24,9 @@ import {
   deleteCourse,
   getCourse,
   getCourseAnalytics,
-  getCourseProgress,
   updateCourse
 } from '@cio/core/services/course/course';
+import { getCourseProgressForRequester } from '@api/services/course/progress-access';
 import { assertCertificateDownloadAllowed, evaluateCourseCertification } from '@api/services/course/completion';
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 
@@ -64,6 +64,7 @@ import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { invitesRouter } from '@api/routes/course/invite';
 import { katexRouter } from '@api/routes/course/katex';
+import { blockLibraryRouter } from '@api/routes/course/block-library';
 import { lessonRouter } from '@api/routes/course/lesson';
 import { markRouter } from '@api/routes/course/mark';
 import { membersRouter } from '@api/routes/course/people';
@@ -464,7 +465,7 @@ export const courseRouter = new Hono()
    * GET /course/:courseId/progress
    * Gets course progress for a profile
    * Query param: profileId (required)
-   * Requires authentication and course membership
+   * Requires course membership; reading another member's progress requires a course team member or org admin
    */
   .get(
     '/:courseId/progress',
@@ -476,7 +477,8 @@ export const courseRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const { profileId } = c.req.valid('query');
-        const progress = await getCourseProgress(courseId, profileId);
+        const user = c.get('user')!;
+        const progress = await getCourseProgressForRequester({ courseId, requesterId: user.id, profileId });
 
         return c.json(
           {
@@ -690,6 +692,7 @@ export const courseRouter = new Hono()
   .route('/:courseId/compliance', complianceRouter)
   .route('/:courseId/section', sectionRouter)
   .route('/:courseId/lesson', lessonRouter)
+  .route('/:courseId/block-library', blockLibraryRouter)
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)
   .route('/:courseId/attendance', attendanceRouter)

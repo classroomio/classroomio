@@ -2600,6 +2600,10 @@
           "watch_threshold": "Watch threshold (%)"
         },
         "settings": {
+          "access": {
+            "title": "Access",
+            "description": "Students can't open a locked lesson until you unlock it."
+          },
           "comments": {
             "title": "Lesson comments",
             "description": "Choose whether students can view and add comments on this lesson.",
@@ -2679,6 +2683,12 @@
           "description": "You can now group lessons into sections to organize your content and make learning smoother for your students.",
           "activate": "Activate",
           "cancel": "Cancel"
+        },
+        "header": {
+          "mode_label": "Lesson mode",
+          "mode_edit": "Edit",
+          "mode_preview": "Preview",
+          "mode_shortcut": "Toggle mode"
         },
         "add_lesson": {
           "button_title": "Add",
@@ -2767,7 +2777,6 @@
           "body_heading": "No note, video or slide added for this lesson yet",
           "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
           "get_started": "Get Started",
-          "no_content": "No Content",
           "no_translation": "No translation for the selected language",
           "button": "button",
           "show_transcript": "Show transcript",
@@ -3038,7 +3047,63 @@
               "reorder_file": "Reorder file"
             }
           },
-          "button_done": "Done"
+          "button_done": "Done",
+          "blocks": {
+            "add_content": "Add content",
+            "types": {
+              "note": "Note",
+              "video": "Video",
+              "slides": "Slides",
+              "document": "Document",
+              "image": "Image"
+            },
+            "ai": {
+              "title": "Draft a note with AI",
+              "prompt_label": "Prompt",
+              "prompt_placeholder": "e.g. A short introduction to the water cycle for beginners"
+            },
+            "example": "Example",
+            "change_type": "Change {type}",
+            "edit_type": "Edit {type}",
+            "remove": "Remove block",
+            "move_up": "Move up",
+            "move_down": "Move down",
+            "actions": "Block actions",
+            "drag": "Drag to reorder",
+            "drag_hint": "Drag the handle on a block to reorder it. You can also use Move up and Move down from its menu.",
+            "dismiss_hint": "Dismiss reorder hint",
+            "empty_title": "Start building this lesson",
+            "empty_description": "Add a note, video, slides, document, or image. You can add as many blocks as you need, in any order.",
+            "empty_preview_title": "Nothing to preview yet",
+            "empty_preview_description": "This lesson has no content for students to see. Switch to {editLabel} to add a note, video, slides, document, or image.",
+            "empty_learner_title": "This lesson isn't ready yet",
+            "empty_learner_description": "Your instructor hasn't added any content to this lesson. Check back soon.",
+            "empty_note": "This note is empty.",
+            "scroll_rail": "Lesson blocks",
+            "go_to_block": "Go to block {index}",
+            "reading_density": {
+              "title": "Reading density",
+              "description": "Controls the spacing between blocks for learners. It does not change the editing canvas.",
+              "compact": "Compact",
+              "comfortable": "Comfortable",
+              "spacious": "Spacious"
+            },
+            "settings": {
+              "title": "Lesson settings",
+              "description": "Manage this lesson without leaving the content canvas."
+            },
+            "image": {
+              "upload": "Upload image",
+              "upload_error": "Failed to upload image. Please try again.",
+              "change": "Change image",
+              "settings": "Image settings",
+              "alt": "Alt text",
+              "alt_placeholder": "Describe the image for learners using assistive technology",
+              "fit": "Fit",
+              "fit_cover": "Fill",
+              "fit_contain": "Fit"
+            }
+          }
         },
         "exercises": {
           "heading": "All Exercises",
@@ -3635,14 +3700,20 @@
           "cancel_btn": "Cancel",
           "edit": "Edit",
           "delete": "Delete",
-          "load_more_btn": "Load more",
-          "comment_error": "Failed to post comment. Please try again."
+          "comment_error": "Failed to post comment. Please try again.",
+          "save_btn": "Save",
+          "unknown_user": "Unknown",
+          "actions": "Comment actions",
+          "read_more": "Read more",
+          "show_less": "Show less",
+          "see_all": "See all comments ({count})",
+          "show_more": "Show more comments"
         },
         "version_history": {
           "title": "Version history",
           "fetch_more_versions": "Fetch more versions",
           "current_version": "Current version",
-          "restore_version": "Restore this version",
+          "restore_version": "Restore this block",
           "edit_count": "{count, plural, one {# edit} other {# edits}}",
           "today": "Today",
           "yesterday": "Yesterday",
@@ -3652,7 +3723,37 @@
             "publish": "Published"
           },
           "by_author": "by {name}",
-          "empty": "No versions yet"
+          "empty": "No versions yet",
+          "block_label": "Text block {number} of {count}",
+          "restore_failed": "Could not restore this version",
+          "shared_restore_hint": "This text block is shared with other lessons. Restoring gives this lesson its own copy, and the other lessons keep their current text.",
+          "structure_change": "Structure",
+          "structure_state": "Starting point: how the lesson's blocks were laid out before the first recorded change.",
+          "restore_lesson": "Restore whole lesson",
+          "restore_lesson_failed": "Could not restore the lesson",
+          "undo_change": "Undo",
+          "undo_failed": "Could not undo this change. If something it changed was edited afterwards, restore the version you want instead.",
+          "removed_block_label": "Removed text block",
+          "restore_lesson_confirm": "Replace the whole lesson with this version?",
+          "by_assistant": "Assistant",
+          "by_restore": "Restore",
+          "change_kind": {
+            "added": "Added",
+            "removed": "Removed",
+            "moved": "Moved",
+            "edited": "Changed"
+          },
+          "change_added": "Added {name}",
+          "change_removed": "Removed {name}",
+          "change_moved": "Moved {name}",
+          "change_edited": "Changed {name}",
+          "block_type": {
+            "note": "text block",
+            "video": "video",
+            "slides": "slides",
+            "document": "document",
+            "image": "image"
+          }
         },
         "no_section": "No section"
       },
@@ -5827,6 +5928,18 @@
         "create_lesson": "Creating lesson",
         "update_lesson": "Updating lesson",
         "update_lesson_content": "Writing lesson content",
+        "add_lesson_note_block": "Adding a text block",
+        "remove_lesson_block": "Removing a text block",
+        "move_lesson_block": "Moving a block",
+        "add_lesson_slides_block": "Adding slides",
+        "add_lesson_image_block": "Adding an image",
+        "update_lesson_block_settings": "Updating block settings",
+        "update_lesson_block_requirements": "Updating completion rules",
+        "detach_lesson_block": "Detaching a shared block",
+        "list_block_library": "Searching the block library",
+        "attach_library_block": "Adding a library block",
+        "move_lesson_block_to_lesson": "Moving a block to another lesson",
+        "attach_document_to_lesson": "Adding a document",
         "create_exercise": "Creating exercise",
         "create_exercise_section": "Creating exercise section",
         "update_exercise": "Updating exercise",
@@ -5843,7 +5956,10 @@
         "fetch_documentation_url_with_url": "Reading {url}",
         "list_youtube_playlist_videos": "Listing playlist videos",
         "get_lesson_transcript": "Reading video transcript",
-        "add_youtube_video_to_lesson": "Embedding YouTube video"
+        "add_youtube_video_to_lesson": "Embedding YouTube video",
+        "get_lesson_history": "Reading lesson history",
+        "restore_lesson_version": "Restoring an earlier version",
+        "undo_lesson_change": "Undoing a change"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
@@ -5858,6 +5974,17 @@
         "create_lesson": "Created lesson: {title}",
         "update_lesson": "Updated lesson: {title}",
         "update_lesson_content_fallback": "Wrote {count, plural, one {# character} other {# characters}}",
+        "remove_lesson_block": "Removed a text block from {title}",
+        "move_lesson_block": "Moved a block in {title}",
+        "add_lesson_slides_block": "Added slides to {title}",
+        "add_lesson_image_block": "Added an image to {title}",
+        "update_lesson_block_settings": "Updated a block in {title}",
+        "update_lesson_block_requirements": "Updated completion rules in {title}",
+        "detach_lesson_block": "Gave {title} its own copy of a shared block",
+        "list_block_library": "Searched the block library",
+        "attach_library_block": "Added a library block to {title}",
+        "move_lesson_block_to_lesson": "Moved a block to {title}",
+        "attach_document_to_lesson": "Added document: {title}",
         "create_exercise": "Created exercise «{title}» · {count, plural, one {# question} other {# questions}}",
         "update_exercise": "Updated exercise: {title}",
         "update_exercise_section": "Updated exercise section: {title}",
@@ -5883,7 +6010,10 @@
         "get_lesson_transcript_plan_gated": "Transcripts require a paid plan",
         "get_lesson_transcript_no_credits": "Out of AI credits to fetch transcripts",
         "get_lesson_transcript_unavailable": "No transcript available for {title}",
-        "add_youtube_video_to_lesson": "Embedded video: {title}"
+        "add_youtube_video_to_lesson": "Embedded video: {title}",
+        "get_lesson_history": "Lesson history loaded",
+        "restore_lesson_version": "Restored an earlier version of the lesson",
+        "undo_lesson_change": "Undid a change"
       }
     },
     "mention_lesson": "Lesson",

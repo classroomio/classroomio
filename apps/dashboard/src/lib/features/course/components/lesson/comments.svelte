@@ -1,9 +1,11 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import { SvelteSet } from 'svelte/reactivity';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
-  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import * as Sheet from '@cio/ui/base/sheet';
+  import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
-  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { Textarea } from '@cio/ui/base/textarea';
   import { DeleteModal } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
@@ -13,6 +15,7 @@
   import { lessonApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
   import { ReportMenuItem } from '$features/report';
+  import { COMMENT_PREVIEW_COUNT, isLongComment } from '$features/course/utils/comment-utils';
 
   interface Props {
     lessonId: string;
@@ -20,16 +23,22 @@
 
   let { lessonId }: Props = $props();
 
+  const borderlessTextareaClass =
+    'min-h-12 resize-none rounded-none border-0 bg-transparent px-0 py-1 text-[15px] leading-7 shadow-none md:text-[15px] focus-visible:ring-0 dark:bg-transparent';
+
   let comment = $state('');
+  let isComposing = $state(false);
+  let isDrawerOpen = $state(false);
   let openDeleteModal = $state(false);
   let deleteCommentId: number | null = $state(null);
   let editCommentId: number | null = $state(null);
   let editingText = $state('');
+  const expandedCommentIds = new SvelteSet<number>();
 
   const courseId = $derived(courseApi.course?.id ?? '');
   const groupmemberId = $derived(courseApi.group.memberId ?? '');
 
-  const paginationCount = $derived(lessonApi.commentsByLessonId[lessonId]?.totalCount || 0);
+  const totalCount = $derived(lessonApi.commentsByLessonId[lessonId]?.totalCount || 0);
   const hasMore = $derived(lessonApi.commentsByLessonId[lessonId]?.hasMore || false);
   const isLoadingComments = $derived(lessonApi.commentsByLessonId[lessonId]?.isLoading || false);
 
@@ -41,27 +50,63 @@
 
     return commentData.items.map((apiComment) => {
       const isCurrentUser = apiComment.groupmember?.id === groupmemberId;
+      const fallbackName = $t('course.navItem.lessons.comments.unknown_user');
+
       return {
         id: apiComment.id,
-        comment: apiComment.comment,
-        avatar: apiComment.profile?.avatarUrl ?? 'AV',
+        comment: apiComment.comment ?? '',
+        avatar: apiComment.profile?.avatarUrl ?? '',
         commentAt: new Date(apiComment.createdAt),
         groupmemberId: apiComment.groupmemberId,
-        name: isCurrentUser ? $t('course.navItem.lessons.comments.you') : apiComment.profile?.fullname || 'Unknown'
+        name: isCurrentUser ? $t('course.navItem.lessons.comments.you') : apiComment.profile?.fullname || fallbackName
       };
     });
   });
 
+  const previewComments = $derived(comments.slice(0, COMMENT_PREVIEW_COUNT));
+  const showSeeAll = $derived(totalCount > COMMENT_PREVIEW_COUNT);
+  const isComposerOpen = $derived(isComposing || comment.length > 0);
+
+  function cancelCompose() {
+    comment = '';
+    isComposing = false;
+  }
+
   async function handleSend() {
-    if (!comment) {
-      return;
-    }
+    if (!comment.trim()) return;
 
     await lessonApi.createComment(courseId, lessonId, comment);
 
     if (lessonApi.success) {
-      comment = '';
+      cancelCompose();
     }
+  }
+
+  async function saveEdit() {
+    if (!editCommentId) return;
+
+    await lessonApi.updateComment(courseId, lessonId, String(editCommentId), editingText);
+
+    if (lessonApi.success) {
+      editCommentId = null;
+    }
+  }
+
+  function toggleExpanded(commentId: number) {
+    if (expandedCommentIds.has(commentId)) {
+      expandedCommentIds.delete(commentId);
+      return;
+    }
+
+    expandedCommentIds.add(commentId);
+  }
+
+  async function openDrawer() {
+    isDrawerOpen = true;
+
+    if (comments.length > COMMENT_PREVIEW_COUNT || !hasMore) return;
+
+    await lessonApi.loadMoreComments(courseId, lessonId);
   }
 
   async function loadMoreComments() {
@@ -70,7 +115,6 @@
     await lessonApi.loadMoreComments(courseId, lessonId);
   }
 
-  // Fetch once per lessonId (even if there are 0 comments).
   $effect(() => {
     if (!courseId || !lessonId) return;
     if (lessonApi.commentsByLessonId[lessonId]) return;
@@ -90,113 +134,177 @@
   }}
 />
 
-<div class="mx-auto w-full max-w-[65ch]">
-  <div class="mb-5">
-    <p class="text-lg capitalize">
-      {$t('course.navItem.lessons.comments.title')} ({paginationCount})
-    </p>
-  </div>
-  <div>
-    <div class="flex h-full items-start gap-3">
-      <UserAvatar src={$profile.avatarUrl} alt={$profile.fullname ?? 'User'} class="mt-2 size-6!" />
-      <div class="h-full w-full">
-        <TextareaField
-          label={$t('course.navItem.lessons.comments.text_area_title')}
-          placeholder={$t('course.navItem.lessons.comments.placeholder')}
-          bind:value={comment}
-        />
+{#snippet composer()}
+  <div class="ui:border-border ui:bg-background rounded-lg border px-4 py-3">
+    <div class="flex items-center gap-3">
+      <UserAvatar src={$profile.avatarUrl} alt={$profile.fullname ?? ''} class="size-8!" />
+      <span class="text-sm font-medium">{$profile.fullname}</span>
+    </div>
+
+    <Textarea
+      bind:value={comment}
+      aria-label={$t('course.navItem.lessons.comments.text_area_title')}
+      placeholder={$t('course.navItem.lessons.comments.placeholder')}
+      class="mt-2 {borderlessTextareaClass}"
+      onfocus={() => (isComposing = true)}
+    />
+
+    {#if isComposerOpen}
+      <div class="mt-2 flex items-center justify-end gap-2">
+        <Button size="sm" variant="ghost" onclick={cancelCompose} disabled={lessonApi.isCommenting}>
+          {$t('course.navItem.lessons.comments.cancel_btn')}
+        </Button>
+        <Button
+          size="sm"
+          testId="lesson-comment-submit"
+          onclick={handleSend}
+          disabled={!comment.trim() || !courseId || !lessonId}
+          loading={lessonApi.isCommenting}
+        >
+          {$t('course.navItem.lessons.comments.comment_btn')}
+        </Button>
       </div>
-    </div>
-
-    <div class="mt-2 flex flex-row-reverse">
-      <Button onclick={handleSend} disabled={!comment || !courseId || !lessonId} loading={lessonApi.isCommenting}>
-        {$t('course.navItem.lessons.comments.comment_btn')}
-      </Button>
-    </div>
+    {/if}
   </div>
+{/snippet}
 
-  <div class="my-5">
-    {#each comments as commentItem (commentItem.id)}
-      <div class="mt-2 flex items-start gap-3 pb-2">
-        <UserAvatar src={commentItem.avatar} alt={commentItem.name ?? 'User'} class="mt-2 size-6!" />
+{#snippet commentList(items: typeof comments)}
+  <ul class="ui:divide-border divide-y">
+    {#each items as commentItem (commentItem.id)}
+      {@const isLong = isLongComment(commentItem.comment)}
+      {@const isExpanded = expandedCommentIds.has(commentItem.id)}
+      <li class="py-6">
+        <div class="flex items-center gap-3">
+          <UserAvatar src={commentItem.avatar} alt={commentItem.name} class="size-8!" />
 
-        <div class="w-full rounded-md border px-3 py-2 dark:border-neutral-700">
-          <div class="flex items-center justify-between gap-2">
-            <p class="text-sm dark:text-white">
-              {commentItem.name}
-              <span
-                class="ml-1 text-xs font-normal text-gray-800 dark:text-white"
-                title={commentItem.commentAt.toLocaleString()}
-              >
-                {calDateDiff(commentItem.commentAt)}
-              </span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-medium">{commentItem.name}</p>
+            <p class="ui:text-muted-foreground text-xs" title={commentItem.commentAt.toLocaleString()}>
+              {calDateDiff(commentItem.commentAt)}
             </p>
-
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger
-                class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
-              >
-                <EllipsisVerticalIcon class="size-4" />
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end">
-                {#if courseApi.group.memberId === commentItem.groupmemberId}
-                  <DropdownMenu.Item
-                    onclick={() => {
-                      editCommentId = commentItem.id;
-                      editingText = commentItem.comment ?? '';
-                    }}
-                  >
-                    {$t('course.navItem.lessons.comments.edit')}
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    class="text-red-600"
-                    onclick={() => {
-                      deleteCommentId = commentItem.id;
-                      openDeleteModal = true;
-                    }}
-                  >
-                    {$t('course.navItem.lessons.comments.delete')}
-                  </DropdownMenu.Item>
-                {:else}
-                  <ReportMenuItem targetType="lesson_comment" targetId={commentItem.id} />
-                {/if}
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
           </div>
 
-          {#if editCommentId === commentItem.id}
-            <TextareaField placeholder={$t('course.navItem.lessons.comments.placeholder')} bind:value={editingText} />
-            <div class="mt-2 flex flex-row-reverse items-center gap-2">
-              <Button variant="outline" onclick={() => (editCommentId = null)} disabled={lessonApi.isUpdatingComment}>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger
+              class="ui:text-muted-foreground ui:hover:bg-muted ui:hover:text-foreground flex size-8 items-center justify-center rounded-md"
+              aria-label={$t('course.navItem.lessons.comments.actions')}
+            >
+              <EllipsisIcon class="size-4" />
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              {#if courseApi.group.memberId === commentItem.groupmemberId}
+                <DropdownMenu.Item
+                  onclick={() => {
+                    editCommentId = commentItem.id;
+                    editingText = commentItem.comment;
+                  }}
+                >
+                  {$t('course.navItem.lessons.comments.edit')}
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  variant="destructive"
+                  onclick={() => {
+                    deleteCommentId = commentItem.id;
+                    openDeleteModal = true;
+                  }}
+                >
+                  {$t('course.navItem.lessons.comments.delete')}
+                </DropdownMenu.Item>
+              {:else}
+                <ReportMenuItem targetType="lesson_comment" targetId={commentItem.id} />
+              {/if}
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        </div>
+
+        {#if editCommentId === commentItem.id}
+          <div class="ui:border-border mt-3 rounded-lg border px-4 py-3">
+            <Textarea
+              bind:value={editingText}
+              aria-label={$t('course.navItem.lessons.comments.edit')}
+              placeholder={$t('course.navItem.lessons.comments.placeholder')}
+              class={borderlessTextareaClass}
+            />
+            <div class="mt-2 flex items-center justify-end gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                onclick={() => (editCommentId = null)}
+                disabled={lessonApi.isUpdatingComment}
+              >
                 {$t('course.navItem.lessons.comments.cancel_btn')}
               </Button>
-              <Button
-                onclick={async () => {
-                  await lessonApi.updateComment(courseId, lessonId, String(editCommentId), editingText);
-                  if (lessonApi.success) {
-                    editCommentId = null;
-                  }
-                }}
-                disabled={!editingText.trim()}
-                loading={lessonApi.isUpdatingComment}
-              >
-                {$t('course.navItem.lessons.comments.comment_btn')}
+              <Button size="sm" onclick={saveEdit} disabled={!editingText.trim()} loading={lessonApi.isUpdatingComment}>
+                {$t('course.navItem.lessons.comments.save_btn')}
               </Button>
             </div>
-          {:else}
-            <article class="prose sm:prose-sm max-w-[300px] text-sm dark:text-white">
-              {commentItem.comment}
-            </article>
+          </div>
+        {:else}
+          <p
+            class="mt-3 text-[15px] leading-7 break-words whitespace-pre-wrap"
+            class:line-clamp-6={isLong && !isExpanded}
+          >
+            {commentItem.comment}
+          </p>
+          {#if isLong}
+            <button
+              type="button"
+              class="ui:text-muted-foreground ui:hover:text-foreground mt-1 cursor-pointer text-sm font-medium"
+              onclick={() => toggleExpanded(commentItem.id)}
+            >
+              {isExpanded
+                ? $t('course.navItem.lessons.comments.show_less')
+                : $t('course.navItem.lessons.comments.read_more')}
+            </button>
           {/if}
-        </div>
-      </div>
+        {/if}
+      </li>
     {/each}
+  </ul>
+{/snippet}
+
+<section class="w-full pt-10 pb-12" aria-labelledby="lesson-comments-heading">
+  <h2 id="lesson-comments-heading" class="text-xl tracking-tight">
+    {$t('course.navItem.lessons.comments.title')} ({totalCount})
+  </h2>
+
+  <div class="mt-6">
+    {@render composer()}
   </div>
-  {#if hasMore}
-    <div class="mt-2 flex items-center justify-center">
-      <Button variant="outline" onclick={loadMoreComments} loading={isLoadingComments}>
-        {$t('course.navItem.lessons.comments.load_more_btn')}
-      </Button>
-    </div>
+
+  <div class="mt-4">
+    {@render commentList(previewComments)}
+  </div>
+
+  {#if showSeeAll}
+    <Button variant="outline" class="mt-2 w-full" testId="lesson-comments-see-all" onclick={openDrawer}>
+      {$t('course.navItem.lessons.comments.see_all', { count: totalCount })}
+    </Button>
   {/if}
-</div>
+</section>
+
+<Sheet.Root bind:open={isDrawerOpen}>
+  <Sheet.Content
+    side="right"
+    class="w-full gap-0 overflow-y-auto pb-10 sm:max-w-lg"
+    onOpenAutoFocus={(event) => event.preventDefault()}
+  >
+    <Sheet.Header class="border-b">
+      <Sheet.Title>{$t('course.navItem.lessons.comments.title')} ({totalCount})</Sheet.Title>
+    </Sheet.Header>
+
+    <div class="px-4 pt-4">
+      {@render composer()}
+
+      <div class="mt-2">
+        {@render commentList(comments)}
+      </div>
+
+      {#if hasMore}
+        <Button variant="outline" class="mt-2 w-full" onclick={loadMoreComments} loading={isLoadingComments}>
+          {$t('course.navItem.lessons.comments.show_more')}
+        </Button>
+      {/if}
+    </div>
+  </Sheet.Content>
+</Sheet.Root>

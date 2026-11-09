@@ -1,6 +1,9 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { PublicCourse } from '@cio/ui';
+  import { PublicCourse, injectHeadingIds } from '@cio/ui';
+  import BlockReader from '$features/block/components/block-reader.svelte';
+  import type { BlockVideoPlayerProps, BlockViewHost, BlockViewModel } from '$features/block/utils/types';
+  import PublicBlockVideoPlayer from '$features/course/components/public/public-block-video-player.svelte';
   import { toPublicExerciseView, toPublicLessonView } from '$features/course/utils/public-course-mappers';
   import { snackbar } from '$features/ui/snackbar/store';
   import {
@@ -32,9 +35,10 @@
    * anonymous learner can't request a cookie for any asset they don't
    * already have access to via this lesson URL.
    */
-  async function mintPublicHlsCookie(courseSlug: string, itemSlug: string): Promise<HlsCookieGrant> {
+  async function mintPublicHlsCookie(courseSlug: string, itemSlug: string, assetId?: string): Promise<HlsCookieGrant> {
     const response = await classroomio['org-site'].course[':courseSlug'].item[':itemSlug']['hls-cookie'].$post({
-      param: { courseSlug, itemSlug }
+      param: { courseSlug, itemSlug },
+      query: assetId ? { assetId } : {}
     });
     const body = await response.json();
 
@@ -51,6 +55,22 @@
   const lessonView = $derived<PublicLessonViewData | null>(
     data.item.kind === 'lesson' ? toPublicLessonView(data.item) : null
   );
+  const lessonBlocks = $derived.by((): BlockViewModel[] => {
+    if (data.item.kind !== 'lesson') return [];
+
+    const usedHeadingIds = new Set<string>();
+
+    return data.item.blocks.map(
+      (block) =>
+        ({
+          id: block.id,
+          type: block.type,
+          data: block.data,
+          content: block.content ? injectHeadingIds(block.content, usedHeadingIds).html : ''
+        }) as BlockViewModel
+    );
+  });
+  const blockHost: BlockViewHost = { videoPlayer: publicVideoPlayer };
   const exerciseView = $derived<PublicExerciseViewData | null>(
     data.item.kind === 'exercise' ? toPublicExerciseView(data.item) : null
   );
@@ -122,6 +142,15 @@
   {/if}
 </svelte:head>
 
+{#snippet publicVideoPlayer({ block }: BlockVideoPlayerProps)}
+  <PublicBlockVideoPlayer
+    {block}
+    fallbackTitle={pageTitle}
+    {resolveHlsUrl}
+    onBeforeHlsLoad={(assetId) => mintPublicHlsCookie(data.tree.course.slug, itemSlug, assetId)}
+  />
+{/snippet}
+
 {#key data.item.id}
   {#if lessonView}
     <PublicCourse.PublicLessonView
@@ -134,6 +163,15 @@
       {callout}
       outlineLabel={$t('public_course.outline.label')}
     >
+      {#snippet content()}
+        <BlockReader
+          blocks={lessonBlocks}
+          host={blockHost}
+          emptyTitle={$t('course.navItem.lessons.materials.blocks.empty_learner_title')}
+          emptyDescription={$t('course.navItem.lessons.materials.blocks.empty_learner_description')}
+          showRail={false}
+        />
+      {/snippet}
       {#snippet titleActions()}
         <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2">
           {#if showCopyPage}

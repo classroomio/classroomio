@@ -195,13 +195,21 @@ describe.skipIf(!hasDatabase)('course template database integrity', () => {
             slug: `yt-template-${templateOrg.id}`
           })
           .returning();
-        await tx.insert(schema.lesson).values({
-          courseId: template.id,
-          title: 'Watch this',
-          slug: 'watch-this',
-          order: 1,
-          videos: [{ type: 'youtube', link: sourceUrl, assetId: sourceAsset.id, fileName: 'Intro video' }]
-        });
+        const [templateLesson] = await tx
+          .insert(schema.lesson)
+          .values({ courseId: template.id, title: 'Watch this', slug: 'watch-this', order: 1 })
+          .returning();
+        const [videoBlock] = await tx
+          .insert(schema.block)
+          .values({
+            organizationId: templateOrg.id,
+            type: 'video',
+            data: { type: 'youtube', link: sourceUrl, assetId: sourceAsset.id, fileName: 'Intro video' }
+          })
+          .returning();
+        await tx
+          .insert(schema.blockPlacement)
+          .values({ lessonId: templateLesson.id, blockId: videoBlock.id, position: 'a0' });
 
         const cloneOptions = { title: 'From template', userId: profile.id, organizationId: courseOrg.id };
         const first = await cloneCourse(template.id, { ...cloneOptions, slug: `yt-first-${courseOrg.id}` }, tx);
@@ -212,12 +220,24 @@ describe.skipIf(!hasDatabase)('course template database integrity', () => {
         expect(targetAssets[0].sourceUrl).toBe(sourceUrl);
 
         const clonedLessons = await tx
-          .select({ id: schema.lesson.id, videos: schema.lesson.videos })
+          .select({ id: schema.lesson.id })
           .from(schema.lesson)
           .where(inArray(schema.lesson.courseId, [first.id, second.id]));
         expect(clonedLessons).toHaveLength(2);
-        for (const lesson of clonedLessons) {
-          expect(lesson.videos?.[0]?.assetId).toBe(targetAssets[0].id);
+
+        const clonedBlocks = await tx
+          .select({ lessonId: schema.blockPlacement.lessonId, data: schema.block.data })
+          .from(schema.blockPlacement)
+          .innerJoin(schema.block, eq(schema.block.id, schema.blockPlacement.blockId))
+          .where(
+            inArray(
+              schema.blockPlacement.lessonId,
+              clonedLessons.map((lesson) => lesson.id)
+            )
+          );
+        expect(clonedBlocks).toHaveLength(2);
+        for (const clonedBlock of clonedBlocks) {
+          expect(clonedBlock.data.assetId).toBe(targetAssets[0].id);
         }
 
         const usages = await tx

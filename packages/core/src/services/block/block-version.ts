@@ -1,0 +1,178 @@
+import { AppError, ErrorCodes } from '@cio/utils/errors';
+import {
+  LESSON_VERSION_SESSION_IDLE_MS,
+  LESSON_VERSION_SESSION_MAX_MS,
+  type TBlockChangeSource,
+  type TLessonVersionIntent
+} from '@cio/utils/constants/lesson-version';
+import {
+  extendBlockLocaleVersion,
+  getLatestBlockLocaleVersion,
+  insertBlockLocaleVersion,
+  lockBlockLocaleVersionSession,
+  promoteBlockLocaleVersion,
+  sealLatestBlockVersionsForCourse
+} from '@cio/db/queries/block/version';
+
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
+import type { BlockVersionSessionState } from '@cio/db/queries/block/version';
+import type { TBlockLocaleHistory } from '@cio/db/types';
+
+interface RecordVersionInput {
+  blockLocaleId: number;
+  /** Content as it stands after the write that triggered this snapshot. */
+  content: string | null;
+  /** Profile that made the edit, or null for system writes (imports, agents). */
+  authorId?: string | null;
+  intent: TLessonVersionIntent;
+  /** Author-supplied name, only meaningful for `manual` snapshots. */
+  label?: string | null;
+  /** Who made the change; defaults to `editor` for a dashboard edit. */
+  source?: TBlockChangeSource;
+  /** Id the caller uses to tie its write batch together, e.g. one assistant run. */
+  changeSetId?: string | null;
+  dbClient?: DbOrTxClient;
+}
+
+interface SessionPolicyInput {
+  intent: TLessonVersionIntent;
+  authorId: string | null;
+  source?: TBlockChangeSource;
+  changeSetId?: string | null;
+}
+
+/**
+ * Whether an incoming save folds into the newest snapshot instead of starting a
+ * new one. This is the whole reason history stopped growing by one row per
+ * keystroke pause, so the rules are spelled out rather than inlined:
+ *
+ * - only autosaves coalesce — an explicit save or a publish is a checkpoint the
+ *   author asked for, and gets its own sealed row;
+ * - a sealed session never reopens, which is how publishing resets the window;
+ * - a different author gets their own entry, so history stays attributable;
+ * - a different actor kind (`source`) or write batch (`changeSetId`) gets its own entry,
+ *   so an assistant run cannot fold into the teacher's typing session;
+ * - the session ends after `IDLE_MS` without an edit, and is capped at `MAX_MS`
+ *   so continuous writing still checkpoints periodically.
+ */
+export function canExtendVersionSession(
+  latest: Pick<
+    BlockVersionSessionState,
+    'kind' | 'isSealed' | 'authorId' | 'msSinceLastEdit' | 'msSinceSessionStart' | 'source' | 'changeSetId'
+  > | null,
+  { intent, authorId, source = 'editor', changeSetId = null }: SessionPolicyInput
+): boolean {
+  if (!latest) return false;
+  if (intent !== 'auto') return false;
+  if (latest.isSealed) return false;
+  if (latest.kind !== 'auto') return false;
+  if ((latest.authorId ?? null) !== authorId) return false;
+  if ((latest.source ?? 'editor') !== source) return false;
+  if ((latest.changeSetId ?? null) !== changeSetId) return false;
+  if (latest.msSinceLastEdit > LESSON_VERSION_SESSION_IDLE_MS) return false;
+
+  return latest.msSinceSessionStart <= LESSON_VERSION_SESSION_MAX_MS;
+}
+
+/**
+ * Records a block content snapshot, coalescing consecutive autosaves into a
+ * single session row.
+ *
+ * Call this from the same transaction as the content write so a rolled-back edit
+ * cannot leave a version behind.
+ *
+ * @returns The snapshot the write landed in, or null when nothing was recorded.
+ */
+export async function recordBlockLocaleVersion({
+  blockLocaleId,
+  content,
+  authorId = null,
+  intent,
+  label = null,
+  source = 'editor',
+  changeSetId = null,
+  dbClient
+}: RecordVersionInput): Promise<TBlockLocaleHistory | null> {
+  if (intent === 'none') return null;
+
+  const record = async (client: DbOrTxClient): Promise<TBlockLocaleHistory | null> => {
+    // Serialize concurrent saves for this block locale before reading the
+    // session, so two overlapping autosaves cannot both decide to open one.
+    await lockBlockLocaleVersionSession(blockLocaleId, client);
+
+    const latest = await getLatestBlockLocaleVersion(blockLocaleId, client);
+
+    // Content is unchanged since the last snapshot.
+    if (latest && latest.newContent === content) {
+      const isOpenAutosave = latest.kind === 'auto' && !latest.isSealed;
+
+      // An autosave has nothing to record, and a milestone already records this
+      // content — promoting it would overwrite a publish snapshot's kind and
+      // label, erasing the record of what students were served. Only an open
+      // autosave is upgraded to the milestone the author just asked for.
+      if (intent === 'auto' || !isOpenAutosave) return latest;
+
+      return promoteBlockLocaleVersion(latest.id, { kind: intent, label }, client);
+    }
+
+    if (canExtendVersionSession(latest, { intent, authorId, source, changeSetId })) {
+      const extended = await extendBlockLocaleVersion(latest!.id, { newContent: content }, client);
+
+      // The session was sealed between the read and the update (a publish, or a
+      // save from elsewhere). Fall through and open a new one.
+      if (extended) return extended;
+    }
+
+    // `sessionStartedAt` and `timestamp` are left to their `CURRENT_TIMESTAMP`
+    // defaults so Postgres owns the clock; see `BlockVersionSessionState`.
+    return insertBlockLocaleVersion(
+      {
+        blockLocaleId,
+        newContent: content,
+        kind: intent,
+        label,
+        authorId,
+        editCount: 1,
+        // A checkpoint the author asked for is closed immediately; an autosave
+        // session stays open so the next few edits fold into it.
+        isSealed: intent !== 'auto',
+        source,
+        changeSetId
+      },
+      client
+    );
+  };
+
+  try {
+    // The advisory lock is transaction-scoped, so open one when the caller has
+    // not already established a transaction boundary.
+    return dbClient ? await record(dbClient) : await db.transaction(record);
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to record block version',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+/**
+ * Publish boundary for a course's block content. Seals the newest snapshot of
+ * every block locale and marks it `publish`, so:
+ *
+ * - the version students were served is immutable and exempt from retention, and
+ * - the next edit opens a fresh session instead of extending across the publish.
+ *
+ * @returns Number of snapshots sealed.
+ */
+export async function sealBlockVersionsOnPublish(courseId: string, dbClient?: DbOrTxClient): Promise<number> {
+  try {
+    return await sealLatestBlockVersionsForCourse(courseId, dbClient);
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to seal block versions on publish',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}

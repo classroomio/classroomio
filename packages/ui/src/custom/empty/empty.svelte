@@ -45,6 +45,7 @@
     iconClass?: string;
     media?: Snippet;
     class?: string;
+    contentClass?: string;
     children?: Snippet;
     variant?: EmptyVariant;
     layout?: 'block' | 'full-page';
@@ -59,6 +60,7 @@
     iconClass = '',
     media,
     class: className = '',
+    contentClass = '',
     children,
     variant = 'default',
     layout = 'block',
@@ -100,7 +102,7 @@
       {/if}
     </EmptyBase.Header>
     {#if children}
-      <EmptyBase.Content>
+      <EmptyBase.Content class={contentClass}>
         {@render children()}
       </EmptyBase.Content>
     {/if}

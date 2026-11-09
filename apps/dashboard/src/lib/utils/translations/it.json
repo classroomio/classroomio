@@ -1940,6 +1940,20 @@
       "all": "Tutto",
       "unpublished": "Inedito",
       "course_type": "Tipo di corso"
+    },
+    "filters": {
+      "filter": "Filtro",
+      "popover_title": "Filtri",
+      "clear_all": "Cancella tutto",
+      "search_placeholder": "Cerca per nome",
+      "status": "Stato",
+      "layout_type": "Tipo di layout",
+      "selection_mode": "Modalità di selezione",
+      "no_results_title": "Nessun widget corrisponde ai tuoi filtri",
+      "no_results_description": "Prova a utilizzare un termine di ricerca diverso o a cancellare i filtri per visualizzare nuovamente tutti i risultati.",
+      "no_results_page_title": "Niente in questa pagina",
+      "no_results_page_description": "Questi filtri corrispondono a un numero di widget inferiore rispetto a quello iniziale di questa pagina.",
+      "back_to_first_page": "Torna alla prima pagina"
     }
   },
   "setup": {
@@ -2605,6 +2619,10 @@
             "watch_videos_no_uploads_title": "Nessun video caricato in questa lezione",
             "watch_videos_required": "Seleziona almeno un video quando usi la visione video.",
             "students_only_note": "Queste regole si applicano solo agli studenti. Puoi visualizzare l'anteprima e navigare liberamente mentre insegni."
+          },
+          "access": {
+            "title": "Accesso",
+            "description": "Gli studenti non possono aprire una lezione bloccata finché non la sblocchi."
           }
         },
         "watch_progress": {
@@ -2753,7 +2771,6 @@
           "body_heading": "Nessuna nota, video o diapositiva ancora aggiunta per questa lezione",
           "body_content": "Condividi le tue conoscenze con i tuoi studenti creando contenuti accattivanti. Inizia facendo clic su",
           "get_started": "Inizia",
-          "no_content": "Nessun contenuto",
           "no_translation": "Nessuna traduzione per la lingua selezionata",
           "button": "pulsante",
           "show_transcript": "Mostra la trascrizione",
@@ -3024,7 +3041,63 @@
               "reorder_file": "Riordina il file"
             }
           },
-          "button_done": "Fatto"
+          "button_done": "Fatto",
+          "blocks": {
+            "add_content": "Aggiungi contenuto",
+            "example": "Esempio",
+            "change_type": "Modifica {type}",
+            "edit_type": "Modifica {type}",
+            "remove": "Rimuovi il blocco",
+            "move_up": "Salire",
+            "move_down": "Scendendo",
+            "actions": "Azioni di blocco",
+            "drag": "Trascina per riordinare",
+            "drag_hint": "Trascina la maniglia su un blocco per riordinarlo. Puoi anche usare le opzioni Sposta su e Sposta giù dal relativo menu.",
+            "dismiss_hint": "Ignora suggerimento di riordino",
+            "empty_title": "Inizia a costruire questa lezione",
+            "empty_description": "Aggiungi una nota, un video, delle diapositive, un documento o un'immagine. Puoi aggiungere tutti i blocchi che ti servono, in qualsiasi ordine.",
+            "empty_note": "Questa banconota è vuota.",
+            "scroll_rail": "Blocchi di lezione",
+            "go_to_block": "Vai al blocco {index}",
+            "image": {
+              "upload": "Carica immagine",
+              "upload_error": "Impossibile caricare l'immagine. Riprova.",
+              "change": "Cambia immagine",
+              "settings": "Impostazioni immagine",
+              "alt": "Testo alternativo",
+              "alt_placeholder": "Descrivi l'immagine per gli studenti che utilizzano tecnologie assistive",
+              "fit": "Adatto",
+              "fit_cover": "Riempire",
+              "fit_contain": "Adatto"
+            },
+            "settings": {
+              "title": "Impostazioni della lezione",
+              "description": "Gestisci questa lezione senza uscire dalla schermata dei contenuti."
+            },
+            "reading_density": {
+              "title": "diversità di lettura",
+              "description": "Controlla la spaziatura tra i blocchi per gli studenti. Non modifica l'area di modifica.",
+              "compact": "Compatto",
+              "comfortable": "Comodo",
+              "spacious": "Elegante"
+            },
+            "ai": {
+              "title": "Redigi una nota con l'IA",
+              "prompt_label": "Richiesta",
+              "prompt_placeholder": "Ad esempio, una breve introduzione al ciclo dell'acqua per principianti."
+            },
+            "types": {
+              "note": "Nota",
+              "video": "Video",
+              "slides": "diapositive",
+              "document": "Documento",
+              "image": "Immagine"
+            },
+            "empty_preview_title": "Niente da vedere in anteprima ancora",
+            "empty_preview_description": "Questa lezione non ha contenuti visibili agli studenti. Passa a {editLabel} per aggiungere una nota, un video, diapositive, un documento o un'immagine.",
+            "empty_learner_title": "Questa lezione non è ancora pronta",
+            "empty_learner_description": "Il tuo insegnante non ha aggiunto alcun contenuto a questa lezione. Ricontrolla presto."
+          }
         },
         "exercises": {
           "heading": "Tutti gli esercizi",
@@ -3621,14 +3694,19 @@
           "cancel_btn": "Annulla",
           "edit": "Modificare",
           "delete": "Eliminare",
-          "load_more_btn": "Carica di più",
-          "comment_error": "Impossibile pubblicare il commento. Per favore riprova."
+          "comment_error": "Impossibile pubblicare il commento. Per favore riprova.",
+          "save_btn": "Salva",
+          "unknown_user": "Sconosciuto",
+          "actions": "Azioni di commento",
+          "read_more": "Leggi di più",
+          "show_less": "Mostra meno",
+          "see_all": "Vedi tutti i commenti ({count})",
+          "show_more": "Mostra più commenti"
         },
         "version_history": {
           "title": "Cronologia delle versioni",
           "fetch_more_versions": "Ottieni più versioni",
           "current_version": "Versione attuale",
-          "restore_version": "Ripristina questa versione",
           "edit_count": "{count, plural, one {# modificare} other {# modifiche}}",
           "today": "Oggi",
           "yesterday": "Ieri",
@@ -3638,9 +3716,46 @@
             "publish": "Pubblicato"
           },
           "by_author": "di {name}",
-          "empty": "Nessuna versione ancora"
+          "empty": "Nessuna versione ancora",
+          "block_label": "Blocco di testo {number} di {count}",
+          "restore_failed": "Impossibile ripristinare questa versione",
+          "shared_restore_hint": "Questo blocco di testo è condiviso con altre lezioni. Il ripristino fornisce a questa lezione la propria copia e le altre lezioni mantengono il testo corrente.",
+          "structure_change": "Struttura",
+          "restore_lesson_failed": "Impossibile ripristinare la lezione",
+          "undo_change": "Annulla",
+          "by_assistant": "Assistente",
+          "by_restore": "Ripristina",
+          "change_added": "Aggiunto {name}",
+          "change_removed": "Rimosso {name}",
+          "change_moved": "{name} spostato",
+          "change_edited": "{name} cambiato",
+          "block_type": {
+            "note": "blocco di testo",
+            "video": "video",
+            "slides": "diapositive",
+            "document": "documento",
+            "image": "immagine"
+          },
+          "change_kind": {
+            "added": "Aggiunto",
+            "removed": "Rimosso",
+            "moved": "Spostato",
+            "edited": "Cambiato"
+          },
+          "restore_version": "Ripristina questo blocco",
+          "restore_lesson": "Ripristina l'intera lezione",
+          "undo_failed": "Impossibile annullare questa modifica. Se qualcosa è stato modificato in seguito, ripristina invece la versione desiderata.",
+          "removed_block_label": "Blocco di testo rimosso",
+          "restore_lesson_confirm": "Sostituire l'intera lezione con questa versione?",
+          "structure_state": "Punto di partenza: come erano disposti i blocchi della lezione prima della prima modifica registrata."
         },
-        "no_section": "Nessuna sezione"
+        "no_section": "Nessuna sezione",
+        "header": {
+          "mode_label": "Modalità lezione",
+          "mode_edit": "Modificare",
+          "mode_preview": "Anteprima",
+          "mode_shortcut": "Cambia modalità"
+        }
       },
       "attendance": {
         "title": "Partecipazione",
@@ -5829,7 +5944,22 @@
         "fetch_documentation_url_with_url": "Lettura {url}",
         "list_youtube_playlist_videos": "Elenco dei video della playlist",
         "get_lesson_transcript": "Lettura della trascrizione del video",
-        "add_youtube_video_to_lesson": "Incorporamento di video di YouTube"
+        "add_youtube_video_to_lesson": "Incorporamento di video di YouTube",
+        "add_lesson_note_block": "Aggiunta di un blocco di testo",
+        "remove_lesson_block": "Rimozione di un blocco di testo",
+        "move_lesson_block": "Spostare un blocco",
+        "add_lesson_slides_block": "Aggiunta di diapositive",
+        "add_lesson_image_block": "Aggiunta di un'immagine",
+        "update_lesson_block_settings": "Aggiornamento delle impostazioni di blocco",
+        "update_lesson_block_requirements": "Aggiornamento delle regole di completamento",
+        "detach_lesson_block": "Scollegamento di un blocco condiviso",
+        "list_block_library": "Ricerca nella libreria dei blocchi",
+        "attach_library_block": "Aggiunta di un blocco di libreria",
+        "move_lesson_block_to_lesson": "Spostare un blocco in un'altra lezione",
+        "attach_document_to_lesson": "Aggiunta di un documento",
+        "get_lesson_history": "Lettura della cronologia delle lezioni",
+        "restore_lesson_version": "Ripristino di una versione precedente",
+        "undo_lesson_change": "Annullare una modifica"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# carattere} other {# caratteri}})",
@@ -5869,7 +5999,21 @@
         "get_lesson_transcript_plan_gated": "Le trascrizioni richiedono un piano a pagamento",
         "get_lesson_transcript_no_credits": "Crediti AI esauriti per recuperare le trascrizioni",
         "get_lesson_transcript_unavailable": "Nessuna trascrizione disponibile per {title}",
-        "add_youtube_video_to_lesson": "Video incorporato: {title}"
+        "add_youtube_video_to_lesson": "Video incorporato: {title}",
+        "remove_lesson_block": "Rimosso un blocco di testo da {title}",
+        "move_lesson_block": "Spostato un blocco in {title}",
+        "add_lesson_slides_block": "Aggiunte diapositive a {title}",
+        "add_lesson_image_block": "Aggiunta un'immagine a {title}",
+        "update_lesson_block_settings": "Aggiornato un blocco in {title}",
+        "update_lesson_block_requirements": "Regole di completamento aggiornate in {title}",
+        "detach_lesson_block": "Ha fornito a {title} la propria copia di un blocco condiviso",
+        "list_block_library": "Ho cercato nella libreria dei blocchi",
+        "attach_library_block": "Aggiunto un blocco libreria a {title}",
+        "move_lesson_block_to_lesson": "Spostato un blocco in {title}",
+        "attach_document_to_lesson": "Documento aggiunto: {title}",
+        "get_lesson_history": "Cronologia delle lezioni caricata",
+        "restore_lesson_version": "Ripristinata una versione precedente della lezione",
+        "undo_lesson_change": "Annullato un cambiamento"
       }
     },
     "mention_lesson": "Lezione",

@@ -692,7 +692,12 @@
   );
 </script>
 
-<Page.Header isSticky={!isConversionActive} class={`min-h-9 ${isConversionActive ? '' : 'ui:z-app-bar top-12!'}`}>
+<Page.Header
+  isSticky={!isConversionActive}
+  class="ui:my-0 ui:border-border ui:bg-background min-h-9 w-full border-b px-4 pt-4 pb-3 md:px-6 md:pt-5 md:pb-4 {isConversionActive
+    ? ''
+    : 'ui:top-12 ui:z-app-bar'}"
+>
   <Page.HeaderContent>
     <Page.Title class="flex flex-col gap-2">
       <span>{exerciseDisplayTitle}</span>
@@ -819,21 +824,21 @@
   </Page.Action>
 </Page.Header>
 
-{#if !$isStudentExperience}
-  <PublicConversionBanner
-    {exerciseId}
-    onJumpToQuestion={() => {
-      selectedTab = 'questions';
-      preview = false;
-      reorderQuestions = false;
-    }}
-    onSave={handleSave}
-  />
-{/if}
-
-<Page.Body>
+<Page.Body class="w-full gap-0">
   {#snippet child()}
-    <div class="overflow-x-hidden pb-20">
+    <div class="mx-auto w-full overflow-x-hidden px-3 pt-4 pb-20 sm:w-[90%] sm:px-4 lg:max-w-5xl">
+      {#if !$isStudentExperience}
+        <PublicConversionBanner
+          {exerciseId}
+          onJumpToQuestion={() => {
+            selectedTab = 'questions';
+            preview = false;
+            reorderQuestions = false;
+          }}
+          onSave={handleSave}
+        />
+      {/if}
+
       {#if $isStudentExperience}
         {#if isExerciseAccessible}
           <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />

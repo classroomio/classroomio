@@ -665,6 +665,14 @@ All user-controlled URLs in org landing pages (nav links, hero CTAs, footer link
 
 Theme previews in the dashboard are visual-only. Render preview content inside an `inert` container so links, buttons, and other controls cannot navigate or trigger actions while previewing a theme.
 
+## Content blocks
+
+Lesson content is a list of blocks (note, video, slides, document, image). **Read [`packages/utils/src/validation/block/ADDING_A_BLOCK_TYPE.md`](packages/utils/src/validation/block/ADDING_A_BLOCK_TYPE.md) before adding or changing a block type.**
+
+- Each type is one contract file in `packages/utils/src/validation/block/definitions/` and one folder in `apps/dashboard/src/lib/features/block/components/`, registered in `BLOCK_DEFINITIONS`, `BLOCK_VIEWS` and `BLOCK_EDITORS`.
+- Never branch on a block type outside those files. Server code reads capabilities (`localizedContent`, `media`, `toPublicData`) from the registry, and dashboard containers look the component up by type.
+- View files must not import editor code: the public lesson page renders them.
+
 ## Emails: system vs org-branded
 
 Every transactional email in `packages/email/src/emails` is one of two kinds — decide deliberately, because it changes the branding, the schema, and the `from` address.

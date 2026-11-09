@@ -1,18 +1,20 @@
 ---
 title: Add slides and presentations
-description: Embed a supported presentation in a lesson using the platform’s iframe code.
-last_reviewed: '2026-10-21'
+description: Embed a supported presentation in a lesson's slides block using the platform’s iframe code.
+last_reviewed: '2026-11-08'
 ---
 
-Open a lesson in **Edit** mode, choose **Slide**, and select **Add slide**. Pick the presentation platform and paste its full iframe embed code; a normal share link is not enough.
+Open a lesson in **Edit** mode, add a **Slides** block, and select **Change Slides** on it. Pick the presentation platform and paste its full iframe embed code; a normal share link is not enough.
 
-![Add a slide dialog with platform picker, embed code field, and preview](./images/add-slides-and-presentations/overview.webp)
+![Add a slide dialog with Google Slides selected, its embed steps, the embed code field, and the preview](./images/add-slides-and-presentations/overview.webp)
 
 ## Add the presentation
 
-### 1. Open the slide picker
+### 1. Add a slides block
 
-Open the course's **Content**, choose the lesson, select **Edit**, and open **Slide → Add slide**. Administrators and tutors with course access can add lesson materials.
+Open the course's **Content**, choose the lesson, and select **Edit**. Choose **Slides** in the **Add content** row. Administrators and tutors with course access can add lesson content.
+
+The new block shows an example deck. Point to the block and select **Change Slides** to open the **Add a slide** dialog. Use the same button later to swap the deck in an existing block.
 
 ### 2. Choose the platform and get its embed code
 
@@ -24,9 +26,9 @@ Publishing or enabling an embed can make the source deck public. Remove private 
 
 ### 3. Paste, preview, and add
 
-Paste the iframe snippet into **Paste embed code**. Check the **Preview**, then select **Add slide** when the embed is accepted. If you pasted the embed under the wrong platform, use the **Preview in** button in the notice to switch. ClassroomIO extracts the source URL and sizes the presentation to its lesson player; you do not need to match the iframe's width and height.
+Paste the iframe snippet into **Paste embed code**. Check the **Preview**, then select **Add slide** when the embed is accepted. If you pasted the embed under the wrong platform, use the **Preview in** button in the notice to switch. The deck replaces the example in the block. ClassroomIO extracts the source URL and sizes the presentation to its lesson player; you do not need to match the iframe's width and height.
 
-A lesson can contain multiple slide decks. Repeat the workflow for another presentation, then review the lesson in view mode.
+A lesson can contain multiple slide decks, each in its own **Slides** block. Repeat the workflow for another presentation, then select **Preview** to review the lesson.
 
 ## Get the right code for your platform
 
@@ -74,10 +76,9 @@ Use the deck's sharing settings to obtain its embed code, then paste it with **B
 
 Confirm that you pasted the full iframe from the selected supported platform. If you paste an embed or link from a different supported platform, ClassroomIO shows a notice such as "This is a Canva embed, not Google Slides." Select **Preview in Canva** to switch the platform and keep your pasted text. **Add slide** stays disabled until the platform matches. If the preview works for you but students see an access prompt, test the source presentation with the same permissions as a student and adjust its sharing.
 
-Deleting the source presentation or disabling its sharing can break the lesson embed. For a downloadable handout instead, export a PDF and [attach it under Docs](/build-courses/add-documents-and-downloads).
+Deleting the source presentation or disabling its sharing can break the lesson embed. For a downloadable handout instead, export a PDF and [add it as a document block](/build-courses/add-documents-and-downloads).
 
 ## Related guides
 
-- [Create and edit a lesson](/build-courses/create-and-edit-a-lesson) — combine slides with other teaching materials
+- [Create and edit a lesson](/build-courses/create-and-edit-a-lesson) — combine slides with other lesson blocks
 - [Add documents and downloads](/build-courses/add-documents-and-downloads) — attach a handout
-- [Set course order and content grouping](/build-courses/set-course-order-and-content-grouping) — choose where the Slide tab appears

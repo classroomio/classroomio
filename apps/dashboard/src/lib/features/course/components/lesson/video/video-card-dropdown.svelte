@@ -29,7 +29,7 @@
 
   interface Props {
     video: LessonVideo;
-    onRemove: () => void;
+    onRemove?: () => void;
     onThumbnailSaved?: (thumbnailUrl: string) => void;
     onHlsMetadataUpdated?: (metadata: Record<string, unknown>) => void;
     onTranscribingChange?: (value: boolean) => void;
@@ -73,6 +73,15 @@
   const show1080Ready = $derived(hls1080Status === 'ready');
   const show1080Unavailable = $derived(
     isHlsUploadVideo(video) && !hasHls1080Rendition(video) && !isGenerating1080 && hls1080Status === 'unavailable'
+  );
+  const hasMenuItems = $derived(
+    canManageThumbnails ||
+      canGenerateTranscript ||
+      showGenerate1080 ||
+      isGenerating1080 ||
+      show1080Ready ||
+      show1080Unavailable ||
+      !!onRemove
   );
 
   onMount(() => {
@@ -312,117 +321,121 @@
   }}
 />
 
-<DropdownMenu.Root
-  bind:open={dropdownOpen}
-  onOpenChange={(open) => {
-    if (!open) return;
+{#if hasMenuItems}
+  <DropdownMenu.Root
+    bind:open={dropdownOpen}
+    onOpenChange={(open) => {
+      if (!open) return;
 
-    if (canGenerateTranscript) {
-      void ensureTranscriptChecked();
-    }
+      if (canGenerateTranscript) {
+        void ensureTranscriptChecked();
+      }
 
-    if (isHlsUploadVideo(video)) {
-      void ensureHlsMetadataChecked();
-    }
-  }}
->
-  <DropdownMenu.Trigger
-    class={menuPlacement === 'corner'
-      ? 'absolute top-2 right-2 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 data-[state=open]:opacity-100'
-      : '-mt-0.5 -mr-1 flex shrink-0 items-center justify-center opacity-100 data-[state=open]:opacity-100'}
-    aria-label={$t('course.navItem.lessons.materials.tabs.video.simple_card.menu_aria')}
-    onclick={(e) => e.stopPropagation()}
+      if (isHlsUploadVideo(video)) {
+        void ensureHlsMetadataChecked();
+      }
+    }}
   >
-    <IconButton variant="ghost">
-      <EllipsisVerticalIcon size={16} />
-    </IconButton>
-  </DropdownMenu.Trigger>
-  <DropdownMenu.Content align="end">
-    {#if canManageThumbnails}
-      <DropdownMenu.Item
-        disabled={isLoadingAsset}
-        onclick={() => {
-          void handleManageThumbnails();
-        }}
-      >
-        <span class="flex items-center gap-2">
-          <ImageIcon size={14} />
-          {$t('media_manager.actions.manage_thumbnails')}
-        </span>
-      </DropdownMenu.Item>
-    {/if}
-    {#if showGenerate1080}
-      <DropdownMenu.Item disabled={isGenerating1080} onclick={handleGenerate1080Click}>
-        <span class="flex items-center gap-2">
-          <SparklesIcon size={14} />
-          {generate1080Label}
-        </span>
-      </DropdownMenu.Item>
-    {/if}
-    {#if isGenerating1080}
-      <DropdownMenu.Item disabled>
-        <span class="flex items-center gap-2">
-          <SparklesIcon size={14} />
-          {$t('course.navItem.lessons.materials.tabs.video.generate_1080_in_progress')}
-        </span>
-      </DropdownMenu.Item>
-    {/if}
-    {#if show1080Ready}
-      <DropdownMenu.Item disabled>
-        <span class="flex items-center gap-2">
-          <SparklesIcon size={14} />
-          {$t('course.navItem.lessons.materials.tabs.video.generate_1080_ready')}
-        </span>
-      </DropdownMenu.Item>
-    {/if}
-    {#if show1080Unavailable}
-      <DropdownMenu.Item disabled>
-        <span class="flex items-center gap-2">
-          <SparklesIcon size={14} />
-          {$t('course.navItem.lessons.materials.tabs.video.generate_1080_unavailable')}
-        </span>
-      </DropdownMenu.Item>
-    {/if}
-    {#if canGenerateTranscript && !hasTranscript && isTranscribing}
-      <DropdownMenu.Item disabled>
-        <span class="flex items-center gap-2">
-          <CaptionsIcon size={14} />
-          {$t('course.navItem.lessons.materials.tabs.video.transcript_in_progress')}
-        </span>
-      </DropdownMenu.Item>
-    {/if}
-    {#if canGenerateTranscript && !hasTranscript && !isTranscribing}
-      <DropdownMenu.Item
-        onclick={() => {
-          void handleGenerateTranscript();
-        }}
-      >
-        <span class="flex items-center gap-2">
-          <CaptionsIcon size={14} />
-          {generateLabel}
-        </span>
-      </DropdownMenu.Item>
-    {/if}
-    {#if canViewTranscript && hasTranscript}
-      <DropdownMenu.Item
-        onclick={() => {
-          void handleViewTranscript();
-        }}
-      >
-        <span class="flex items-center gap-2">
-          <EyeIcon size={14} />
-          {$t('course.navItem.lessons.materials.tabs.video.view_transcript')}
-        </span>
-      </DropdownMenu.Item>
-    {/if}
-    <DropdownMenu.Item class="text-red-600" onclick={onRemove}>
-      <span class="flex items-center gap-2">
-        <Trash2Icon size={14} />
-        {$t('course.navItem.lessons.materials.tabs.video.remove_video')}
-      </span>
-    </DropdownMenu.Item>
-  </DropdownMenu.Content>
-</DropdownMenu.Root>
+    <DropdownMenu.Trigger
+      class={menuPlacement === 'corner'
+        ? 'absolute top-2 right-2 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 data-[state=open]:opacity-100'
+        : '-mt-0.5 -mr-1 flex shrink-0 items-center justify-center opacity-100 data-[state=open]:opacity-100'}
+      aria-label={$t('course.navItem.lessons.materials.tabs.video.simple_card.menu_aria')}
+      onclick={(e) => e.stopPropagation()}
+    >
+      <IconButton variant="ghost">
+        <EllipsisVerticalIcon size={16} />
+      </IconButton>
+    </DropdownMenu.Trigger>
+    <DropdownMenu.Content align="end">
+      {#if canManageThumbnails}
+        <DropdownMenu.Item
+          disabled={isLoadingAsset}
+          onclick={() => {
+            void handleManageThumbnails();
+          }}
+        >
+          <span class="flex items-center gap-2">
+            <ImageIcon size={14} />
+            {$t('media_manager.actions.manage_thumbnails')}
+          </span>
+        </DropdownMenu.Item>
+      {/if}
+      {#if showGenerate1080}
+        <DropdownMenu.Item disabled={isGenerating1080} onclick={handleGenerate1080Click}>
+          <span class="flex items-center gap-2">
+            <SparklesIcon size={14} />
+            {generate1080Label}
+          </span>
+        </DropdownMenu.Item>
+      {/if}
+      {#if isGenerating1080}
+        <DropdownMenu.Item disabled>
+          <span class="flex items-center gap-2">
+            <SparklesIcon size={14} />
+            {$t('course.navItem.lessons.materials.tabs.video.generate_1080_in_progress')}
+          </span>
+        </DropdownMenu.Item>
+      {/if}
+      {#if show1080Ready}
+        <DropdownMenu.Item disabled>
+          <span class="flex items-center gap-2">
+            <SparklesIcon size={14} />
+            {$t('course.navItem.lessons.materials.tabs.video.generate_1080_ready')}
+          </span>
+        </DropdownMenu.Item>
+      {/if}
+      {#if show1080Unavailable}
+        <DropdownMenu.Item disabled>
+          <span class="flex items-center gap-2">
+            <SparklesIcon size={14} />
+            {$t('course.navItem.lessons.materials.tabs.video.generate_1080_unavailable')}
+          </span>
+        </DropdownMenu.Item>
+      {/if}
+      {#if canGenerateTranscript && !hasTranscript && isTranscribing}
+        <DropdownMenu.Item disabled>
+          <span class="flex items-center gap-2">
+            <CaptionsIcon size={14} />
+            {$t('course.navItem.lessons.materials.tabs.video.transcript_in_progress')}
+          </span>
+        </DropdownMenu.Item>
+      {/if}
+      {#if canGenerateTranscript && !hasTranscript && !isTranscribing}
+        <DropdownMenu.Item
+          onclick={() => {
+            void handleGenerateTranscript();
+          }}
+        >
+          <span class="flex items-center gap-2">
+            <CaptionsIcon size={14} />
+            {generateLabel}
+          </span>
+        </DropdownMenu.Item>
+      {/if}
+      {#if canViewTranscript && hasTranscript}
+        <DropdownMenu.Item
+          onclick={() => {
+            void handleViewTranscript();
+          }}
+        >
+          <span class="flex items-center gap-2">
+            <EyeIcon size={14} />
+            {$t('course.navItem.lessons.materials.tabs.video.view_transcript')}
+          </span>
+        </DropdownMenu.Item>
+      {/if}
+      {#if onRemove}
+        <DropdownMenu.Item class="text-red-600" onclick={onRemove}>
+          <span class="flex items-center gap-2">
+            <Trash2Icon size={14} />
+            {$t('course.navItem.lessons.materials.tabs.video.remove_video')}
+          </span>
+        </DropdownMenu.Item>
+      {/if}
+    </DropdownMenu.Content>
+  </DropdownMenu.Root>
+{/if}
 
 <ManageThumbnailsDialog
   bind:open={manageThumbsOpen}

@@ -1798,7 +1798,6 @@
           "title": "Lịch sử phiên bản",
           "fetch_more_versions": "Tìm nạp thêm phiên bản",
           "current_version": "Phiên bản hiện tại",
-          "restore_version": "Khôi phục phiên bản này",
           "edit_count": "{count, plural, one {# chỉnh sửa} other {# chỉnh sửa}}",
           "today": "Hôm nay",
           "yesterday": "Hôm qua",
@@ -1808,7 +1807,38 @@
             "auto": "Tự động lưu",
             "manual": "Phiên bản đã lưu",
             "publish": "Đã xuất bản"
-          }
+          },
+          "block_label": "Khối văn bản {number} của {count}",
+          "restore_failed": "Không thể khôi phục phiên bản này",
+          "shared_restore_hint": "Khối văn bản này được chia sẻ với các bài học khác. Việc khôi phục sẽ tạo bản sao riêng cho bài học này và các bài học khác sẽ giữ nguyên văn bản hiện tại của chúng.",
+          "structure_change": "Cấu trúc",
+          "restore_lesson_failed": "Không thể khôi phục bài học",
+          "undo_change": "Hoàn tác",
+          "by_assistant": "Trợ lý",
+          "by_restore": "Khôi phục",
+          "change_added": "Đã thêm {name}",
+          "change_removed": "Đã xóa {name}",
+          "change_moved": "Đã di chuyển {name}",
+          "change_edited": "Đã thay đổi {name}",
+          "block_type": {
+            "note": "khối văn bản",
+            "video": "video",
+            "slides": "slide",
+            "document": "tài liệu",
+            "image": "hình ảnh"
+          },
+          "change_kind": {
+            "added": "Đã thêm",
+            "removed": "Đã xóa",
+            "moved": "Đã di chuyển",
+            "edited": "Đã thay đổi"
+          },
+          "restore_version": "Khôi phục khối này",
+          "restore_lesson": "Khôi phục toàn bộ bài học",
+          "undo_failed": "Không thể hoàn tác thay đổi này. Nếu nội dung nào đó đã thay đổi đã được chỉnh sửa sau đó, hãy khôi phục phiên bản bạn muốn thay thế.",
+          "removed_block_label": "Khối văn bản đã bị xóa",
+          "restore_lesson_confirm": "Thay thế toàn bộ bài học bằng phiên bản này?",
+          "structure_state": "Điểm bắt đầu: cách trình bày các khối của bài học trước khi có sự thay đổi đầu tiên được ghi lại."
         },
         "comments": {
           "title": "Bình luận",
@@ -1817,10 +1847,16 @@
           "placeholder": "Bạn nghĩ gì về bài học này?",
           "comment_btn": "Bình luận",
           "cancel_btn": "Hủy bỏ",
-          "load_more_btn": "Tải thêm",
           "comment_error": "Không thể gửi bình luận. Vui lòng thử lại.",
           "edit": "Chỉnh sửa",
-          "delete": "Xóa"
+          "delete": "Xóa",
+          "save_btn": "Lưu",
+          "unknown_user": "Không xác định",
+          "actions": "Hành động bình luận",
+          "read_more": "Đọc thêm",
+          "show_less": "Hiển thị ít hơn",
+          "see_all": "Xem tất cả nhận xét ({count})",
+          "show_more": "Hiển thị thêm bình luận"
         },
         "exercises": {
           "heading": "Tất cả các bài tập",
@@ -2411,7 +2447,6 @@
           "body_heading": "Chưa có ghi chú, video hoặc slide nào được thêm vào cho bài học này",
           "body_content": "Chia sẻ kiến thức của bạn với học sinh bằng cách tạo nội dung hấp dẫn. Bắt đầu bằng cách nhấp vào",
           "get_started": "Bắt đầu",
-          "no_content": "Không có nội dung",
           "no_translation": "Không có bản dịch cho ngôn ngữ đã chọn",
           "button": "nút",
           "show_transcript": "Hiển thị bản ghi",
@@ -2686,6 +2721,62 @@
                 "activities": "Tạo hoạt động bài học"
               }
             }
+          },
+          "blocks": {
+            "add_content": "Thêm nội dung",
+            "example": "Ví dụ",
+            "change_type": "Thay đổi {type}",
+            "edit_type": "Chỉnh sửa {type}",
+            "remove": "Xóa khối",
+            "move_up": "Tiến lên",
+            "move_down": "Di chuyển xuống",
+            "actions": "Chặn hành động",
+            "drag": "Kéo để sắp xếp lại",
+            "drag_hint": "Kéo cần điều khiển trên một khối để sắp xếp lại thứ tự. Bạn cũng có thể sử dụng chức năng Di chuyển lên và Di chuyển xuống từ menu của nó.",
+            "dismiss_hint": "Bỏ qua gợi ý sắp xếp lại",
+            "empty_title": "Hãy bắt đầu xây dựng bài học này.",
+            "empty_description": "Thêm ghi chú, video, slide, tài liệu hoặc hình ảnh. Bạn có thể thêm bao nhiêu khối tùy thích, theo bất kỳ thứ tự nào.",
+            "empty_note": "Ghi chú này trống.",
+            "scroll_rail": "Khối bài học",
+            "go_to_block": "Đi đến khối {index}",
+            "image": {
+              "upload": "Tải ảnh lên",
+              "upload_error": "Tải ảnh lên không thành công. Vui lòng thử lại.",
+              "change": "Thay đổi hình ảnh",
+              "settings": "Cài đặt hình ảnh",
+              "alt": "Văn bản thay thế",
+              "alt_placeholder": "Mô tả hình ảnh cho người học sử dụng công nghệ hỗ trợ.",
+              "fit": "Phù hợp",
+              "fit_cover": "Đổ đầy",
+              "fit_contain": "Phù hợp"
+            },
+            "settings": {
+              "title": "Cài đặt bài học",
+              "description": "Quản lý bài học này mà không cần rời khỏi khung nội dung."
+            },
+            "reading_density": {
+              "title": "Mật độ đọc",
+              "description": "Công cụ này điều chỉnh khoảng cách giữa các khối dành cho người học. Nó không thay đổi khung chỉnh sửa.",
+              "compact": "Nhỏ gọn",
+              "comfortable": "Thoải mái",
+              "spacious": "Rộng rãi"
+            },
+            "ai": {
+              "title": "Soạn thảo ghi chú bằng AI",
+              "prompt_label": "Lời nhắc",
+              "prompt_placeholder": "Ví dụ: Giới thiệu ngắn gọn về chu trình nước dành cho người mới bắt đầu"
+            },
+            "types": {
+              "note": "Ghi chú",
+              "video": "Băng hình",
+              "slides": "Các slide",
+              "document": "Tài liệu",
+              "image": "Hình ảnh"
+            },
+            "empty_preview_title": "Chưa có gì để xem trước",
+            "empty_preview_description": "Bài học này không có nội dung cho học sinh xem. Chuyển sang {editLabel} để thêm ghi chú, video, trang trình bày, tài liệu hoặc hình ảnh.",
+            "empty_learner_title": "Bài học này chưa sẵn sàng",
+            "empty_learner_description": "Người hướng dẫn của bạn chưa thêm bất kỳ nội dung nào vào bài học này. Kiểm tra lại sớm."
           }
         },
         "lesson_nav": {
@@ -2763,6 +2854,10 @@
             "watch_videos_empty": "Xem video chỉ theo dõi các video đã tải lên. Không thể theo dõi nội dung nhúng trên YouTube và bên ngoài, vì vậy bài học này không thể tự động hoàn thành và học sinh không thể đánh dấu bài học là hoàn thành. Tải video lên trong tab Video hoặc đặt quy tắc hoàn thành thành Thủ công.",
             "watch_videos_no_uploads_title": "Không có video nào được tải lên trong bài học này",
             "watch_videos_learn_more": "Tìm hiểu thêm"
+          },
+          "access": {
+            "title": "Truy cập",
+            "description": "Học sinh không thể mở bài học bị khóa cho đến khi bạn mở khóa bài học đó."
           }
         },
         "watch_progress": {
@@ -2835,7 +2930,13 @@
         "add_content_add_to_section": "Thêm nội dung",
         "expand_content": "Mở rộng nội dung",
         "collapse_content": "Thu gọn nội dung",
-        "no_section": "Không có phần nào"
+        "no_section": "Không có phần nào",
+        "header": {
+          "mode_label": "Chế độ bài học",
+          "mode_edit": "Biên tập",
+          "mode_preview": "Xem trước",
+          "mode_shortcut": "Chuyển đổi chế độ"
+        }
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -5272,7 +5373,22 @@
         "fetch_documentation_url_with_url": "Đang đọc {url}",
         "list_youtube_playlist_videos": "Liệt kê các video trong danh sách phát",
         "get_lesson_transcript": "Đang đọc bản ghi video",
-        "add_youtube_video_to_lesson": "Nhúng video YouTube"
+        "add_youtube_video_to_lesson": "Nhúng video YouTube",
+        "add_lesson_note_block": "Thêm khối văn bản",
+        "remove_lesson_block": "Xóa khối văn bản",
+        "move_lesson_block": "Di chuyển một khối",
+        "add_lesson_slides_block": "Thêm slide",
+        "add_lesson_image_block": "Thêm một hình ảnh",
+        "update_lesson_block_settings": "Cập nhật cài đặt khối",
+        "update_lesson_block_requirements": "Cập nhật quy tắc hoàn thành",
+        "detach_lesson_block": "Tách khối chia sẻ",
+        "list_block_library": "Tìm kiếm thư viện khối",
+        "attach_library_block": "Thêm khối thư viện",
+        "move_lesson_block_to_lesson": "Di chuyển một khối sang bài học khác",
+        "attach_document_to_lesson": "Thêm tài liệu",
+        "get_lesson_history": "Đọc lịch sử bài học",
+        "restore_lesson_version": "Khôi phục phiên bản cũ hơn",
+        "undo_lesson_change": "Hoàn tác một thay đổi"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# ký tự} other {# ký tự}})",
@@ -5312,7 +5428,21 @@
         "get_lesson_transcript_plan_gated": "Bản ghi yêu cầu gói trả phí",
         "get_lesson_transcript_no_credits": "Đã hết tín dụng AI để lấy bản ghi",
         "get_lesson_transcript_unavailable": "Không có bản ghi cho {title}",
-        "add_youtube_video_to_lesson": "Video nhúng: {title}"
+        "add_youtube_video_to_lesson": "Video nhúng: {title}",
+        "remove_lesson_block": "Đã xóa khối văn bản khỏi {title}",
+        "move_lesson_block": "Đã di chuyển một khối trong {title}",
+        "add_lesson_slides_block": "Đã thêm trang trình bày vào {title}",
+        "add_lesson_image_block": "Đã thêm hình ảnh vào {title}",
+        "update_lesson_block_settings": "Đã cập nhật một khối trong {title}",
+        "update_lesson_block_requirements": "Đã cập nhật quy tắc hoàn thành trong {title}",
+        "detach_lesson_block": "Đã cấp cho {title} bản sao của khối chia sẻ",
+        "list_block_library": "Đã tìm kiếm thư viện khối",
+        "attach_library_block": "Đã thêm khối thư viện vào {title}",
+        "move_lesson_block_to_lesson": "Đã chuyển một khối sang {title}",
+        "attach_document_to_lesson": "Tài liệu đã thêm: {title}",
+        "get_lesson_history": "Đã tải lịch sử bài học",
+        "restore_lesson_version": "Đã khôi phục phiên bản trước của bài học",
+        "undo_lesson_change": "Đã hoàn tác thay đổi"
       }
     },
     "student_empty_state": "Hãy hỏi tôi bất cứ điều gì về khóa học này - nhận lời giải thích, tự kiểm tra hoặc tóm tắt những gì bạn đang đọc.",

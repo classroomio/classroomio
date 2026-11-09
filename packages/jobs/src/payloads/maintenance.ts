@@ -27,7 +27,13 @@ export const ZLessonVersionRetentionPayload = z
     /** Between `hourlyDays` and here, keep the last snapshot of each day. */
     dailyDays: z.number().int().positive().default(30),
     /** Hard cap on autosave snapshots per lesson language, regardless of age. */
-    maxAutoPerLanguage: z.number().int().positive().default(50)
+    maxAutoPerLanguage: z.number().int().positive().default(50),
+    /** Keep a block removed from every lesson restorable for this many days before purging it. */
+    deletedBlockDays: z.number().int().positive().default(30),
+    /** Keep every lesson revision newer than this many days. */
+    revisionKeepAllDays: z.number().int().positive().default(2),
+    /** Between `revisionKeepAllDays` and here, keep the last revision of each day. */
+    revisionDailyDays: z.number().int().positive().default(30)
   })
   // The tiers must widen as they age. The pruning predicate tests the hourly
   // window before the daily one, so overlapping windows silently apply hourly
@@ -39,6 +45,10 @@ export const ZLessonVersionRetentionPayload = z
   .refine((windows) => windows.hourlyDays <= windows.dailyDays, {
     message: 'hourlyDays must not exceed dailyDays',
     path: ['hourlyDays']
+  })
+  .refine((windows) => windows.revisionKeepAllDays <= windows.revisionDailyDays, {
+    message: 'revisionKeepAllDays must not exceed revisionDailyDays',
+    path: ['revisionKeepAllDays']
   });
 export type TLessonVersionRetentionPayload = z.infer<typeof ZLessonVersionRetentionPayload>;
 
