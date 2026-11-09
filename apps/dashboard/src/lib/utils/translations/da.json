@@ -2997,7 +2997,11 @@
       "preview": "Forhåndsvis kursus",
       "preview_missing_slug": "Generer og gem et kursus-slug, før du forhåndsviser.",
       "view_as_student": "Se som studerende",
-      "view_course_site": "Se kursusside"
+      "view_course_site": "Se kursusside",
+      "assistant_pop_out": "Pop ud chat",
+      "assistant_close_floating": "Luk flydende chat",
+      "assistant_tip": "Tip: Brug pop-out-ikonet til at flyde assistenten, mens du arbejder.",
+      "assistant_tip_dismiss": "Afvis tip"
     },
     "view_course_site": {
       "unpublished_title": "Udgiv dit kursus",
@@ -5639,6 +5643,12 @@
     "titles": {
       "ai_assistant": "AI-assistent",
       "transcript": "Transskription"
+    },
+    "floating": {
+      "move_aria": "Flyt assistentvinduet",
+      "resize_aria": "Ændr størrelse på assistentvindue",
+      "expand_aria": "Udvid til sidepanelet",
+      "dock_hint": "Slip for at docke til siden"
     }
   },
   "compliance": {

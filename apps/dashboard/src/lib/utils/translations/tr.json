@@ -1950,6 +1950,20 @@
       "all": "Tüm",
       "unpublished": "Yayınlanmamış",
       "course_type": "Ders Türü"
+    },
+    "filters": {
+      "filter": "Filtre",
+      "popover_title": "Filtreler",
+      "clear_all": "Tümünü temizle",
+      "search_placeholder": "İsme göre ara",
+      "status": "Durum",
+      "layout_type": "Düzen türü",
+      "selection_mode": "Seçim modu",
+      "no_results_title": "Filtrelerinizle eşleşen widget yok",
+      "no_results_description": "Her şeyi tekrar görmek için farklı bir arama terimi deneyin veya filtrelerinizi temizleyin.",
+      "no_results_page_title": "Bu sayfada hiçbir şey yok",
+      "no_results_page_description": "Bu filtreler, bu sayfanın başlangıcından daha az widget'la eşleşiyor.",
+      "back_to_first_page": "İlk sayfaya dön"
     }
   },
   "setup": {
@@ -2460,7 +2474,11 @@
       "preview": "Kursu önizleyin",
       "preview_missing_slug": "Önizlemeden önce bir kurs bilgisi oluşturun ve kaydedin.",
       "view_as_student": "Öğrenci olarak görüntüle",
-      "view_course_site": "Kurs Sitesini Görüntüle"
+      "view_course_site": "Kurs Sitesini Görüntüle",
+      "assistant_pop_out": "Sohbeti aç",
+      "assistant_close_floating": "Kayan sohbeti kapat",
+      "assistant_tip": "İpucu: Çalışırken asistanı yüzdürmek için açılır simgeyi kullanın.",
+      "assistant_tip_dismiss": "İpucunu reddet"
     },
     "view_course_site": {
       "unpublished_title": "Kursunuzu yayınlayın",
@@ -5885,6 +5903,12 @@
     "titles": {
       "ai_assistant": "AI Assistant",
       "transcript": "Transkript"
+    },
+    "floating": {
+      "move_aria": "Asistan penceresini taşı",
+      "resize_aria": "Asistan penceresini yeniden boyutlandır",
+      "expand_aria": "Yan panele genişlet",
+      "dock_hint": "Yan tarafa sabitlemek için bırakın"
     }
   },
   "cohorts": {

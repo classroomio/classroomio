@@ -2997,7 +2997,11 @@
       "preview": "Aperçu du cours",
       "preview_missing_slug": "Générez et enregistrez un identifiant de cours avant de prévisualiser.",
       "view_as_student": "Afficher en tant qu'étudiant",
-      "view_course_site": "Voir le site du cours"
+      "view_course_site": "Voir le site du cours",
+      "assistant_pop_out": "Chat instantané",
+      "assistant_close_floating": "Fermer le chat flottant",
+      "assistant_tip": "Astuce : utilisez l'icône contextuelle pour faire flotter l'assistant pendant que vous travaillez.",
+      "assistant_tip_dismiss": "Ignorer le conseil"
     },
     "view_course_site": {
       "unpublished_title": "Publiez votre cours",
@@ -5639,6 +5643,12 @@
     "titles": {
       "ai_assistant": "Assistant IA",
       "transcript": "Transcription"
+    },
+    "floating": {
+      "move_aria": "Déplacer la fenêtre de l'assistant",
+      "resize_aria": "Redimensionner la fenêtre de l'assistant",
+      "expand_aria": "Développer vers le panneau latéral",
+      "dock_hint": "Relâchez pour accoster sur le côté"
     }
   },
   "compliance": {

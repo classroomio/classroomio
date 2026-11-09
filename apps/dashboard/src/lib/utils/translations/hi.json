@@ -2997,7 +2997,11 @@
       "preview": "पाठ्यक्रम का पूर्वावलोकन",
       "preview_missing_slug": "पूर्वावलोकन से पहले पाठ्यक्रम स्लग बनाएं और सहेजें।",
       "view_as_student": "विद्यार्थी के रूप में देखें",
-      "view_course_site": "कोर्स साइट देखें"
+      "view_course_site": "कोर्स साइट देखें",
+      "assistant_pop_out": "चैट पॉप आउट करें",
+      "assistant_close_floating": "फ़्लोटिंग चैट बंद करें",
+      "assistant_tip": "युक्ति: काम करते समय सहायक को फ़्लोट करने के लिए पॉप-आउट आइकन का उपयोग करें।",
+      "assistant_tip_dismiss": "टिप खारिज करें"
     },
     "view_course_site": {
       "unpublished_title": "अपना कोर्स प्रकाशित करें",
@@ -5639,6 +5643,12 @@
     "titles": {
       "ai_assistant": "AI सहायक",
       "transcript": "ट्रांसक्रिप्ट"
+    },
+    "floating": {
+      "move_aria": "सहायक विंडो ले जाएँ",
+      "resize_aria": "सहायक विंडो का आकार बदलें",
+      "expand_aria": "साइड पैनल का विस्तार करें",
+      "dock_hint": "किनारे पर डॉक करने के लिए छोड़ें"
     }
   },
   "compliance": {

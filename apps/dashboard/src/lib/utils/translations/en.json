@@ -2464,7 +2464,11 @@
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
       "view_as_student": "View as student",
-      "view_course_site": "View Course Site"
+      "view_course_site": "View Course Site",
+      "assistant_pop_out": "Pop out chat",
+      "assistant_close_floating": "Close floating chat",
+      "assistant_tip": "Tip: use the pop-out icon to float the assistant while you work.",
+      "assistant_tip_dismiss": "Dismiss tip"
     },
     "view_course_site": {
       "unpublished_title": "Publish your course",
@@ -5889,6 +5893,12 @@
     "titles": {
       "ai_assistant": "AI Assistant",
       "transcript": "Transcript"
+    },
+    "floating": {
+      "move_aria": "Move assistant window",
+      "resize_aria": "Resize assistant window",
+      "expand_aria": "Expand to side panel",
+      "dock_hint": "Release to dock to the side"
     }
   },
   "cohorts": {

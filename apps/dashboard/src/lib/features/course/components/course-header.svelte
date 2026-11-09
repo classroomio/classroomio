@@ -17,10 +17,20 @@
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
   import { getActiveCourseNavKey } from '$features/course/utils/functions';
-  import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
+  import {
+    AI_ASSISTANT_PANEL_ID,
+    closeAiAssistant,
+    openAiAssistantFloating,
+    toggleAiAssistant
+  } from '$features/ai-assistant/utils/store';
+  import { AI_ASSISTANT_POPOUT_TIP_DISMISSED_KEY } from '$features/ai-assistant/utils/constants';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { openCoursePreview } from '$features/course/utils/course-preview';
   import { t } from '$lib/utils/functions/translations';
+  import { sidePanel } from '$features/side-panel';
+  import { onMount } from 'svelte';
+  import XIcon from '@lucide/svelte/icons/x';
+  import PictureInPictureIcon from '@lucide/svelte/icons/picture-in-picture';
   import CourseProgressPopover from './course-progress-popover.svelte';
   import { Badge } from '@cio/ui/base/badge';
   import CoursePublishBadge from './course-publish-badge.svelte';
@@ -47,6 +57,42 @@
 
   let viewAsStudentOpen = $state(false);
   let viewCourseSiteUnpublishedOpen = $state(false);
+  let assistantTipDismissed = $state(true);
+
+  const assistantOpen = $derived(sidePanel.activePanelId === AI_ASSISTANT_PANEL_ID);
+  const assistantFloating = $derived(assistantOpen && sidePanel.isFloating);
+  const showAssistantTip = $derived(
+    IS_AI_ENABLED && assistantOpen && !assistantFloating && !assistantTipDismissed && !isMobileStore.current
+  );
+
+  onMount(() => {
+    try {
+      assistantTipDismissed = localStorage.getItem(AI_ASSISTANT_POPOUT_TIP_DISMISSED_KEY) === '1';
+    } catch {
+      assistantTipDismissed = true;
+    }
+  });
+
+  function dismissAssistantTip() {
+    assistantTipDismissed = true;
+
+    try {
+      localStorage.setItem(AI_ASSISTANT_POPOUT_TIP_DISMISSED_KEY, '1');
+    } catch {
+      // localStorage unavailable
+    }
+  }
+
+  function handlePopOutClick() {
+    dismissAssistantTip();
+
+    if (assistantFloating) {
+      closeAiAssistant();
+      return;
+    }
+
+    openAiAssistantFloating();
+  }
 
   $effect(() => {
     if (!siteName) return;
@@ -110,11 +156,7 @@
     {/if}
 
     {#if IS_AI_ENABLED}
-      <Button
-        size="sm"
-        onclick={toggleAiAssistant}
-        class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
-      >
+      <div class="ui:bg-primary ui:text-primary-foreground relative inline-flex overflow-hidden rounded-md shadow-2xs">
         <Waves
           lineColor="rgba(255,255,255,0.55)"
           xGap={8}
@@ -124,9 +166,54 @@
           waveSpeedX={0.04}
           waveSpeedY={0.02}
         />
-        <SparklesIcon size={14} class="relative z-10" />
-        <span class="relative z-10">{$t('course.navItems.nav_ai_assistant')}</span>
-      </Button>
+        <button
+          type="button"
+          onclick={toggleAiAssistant}
+          aria-pressed={assistantOpen}
+          data-testid="course-assistant-toggle"
+          class="relative z-10 inline-flex h-8 items-center gap-1.5 bg-transparent px-3 text-sm font-medium whitespace-nowrap text-white hover:bg-white/15 focus-visible:outline-none"
+        >
+          <SparklesIcon size={14} class="custom ui:text-white relative z-10" />
+          <span class="ui:text-white relative z-10">{$t('course.navItems.nav_ai_assistant')}</span>
+        </button>
+        <button
+          type="button"
+          onclick={handlePopOutClick}
+          aria-label={assistantFloating
+            ? t.get('course.header.assistant_close_floating')
+            : t.get('course.header.assistant_pop_out')}
+          aria-pressed={assistantFloating}
+          title={assistantFloating
+            ? t.get('course.header.assistant_close_floating')
+            : t.get('course.header.assistant_pop_out')}
+          data-testid="course-assistant-popout"
+          class="relative z-10 hidden h-8 w-8 items-center justify-center border-l border-white/30 bg-transparent text-white hover:bg-white/15 focus-visible:outline-none md:inline-flex"
+        >
+          {#if assistantFloating}
+            <XIcon size={16} class="custom ui:text-white" />
+          {:else}
+            <PictureInPictureIcon size={16} class="custom ui:text-white cursor-pointer" />
+          {/if}
+        </button>
+        {#if showAssistantTip}
+          <div
+            role="status"
+            class="ui:bg-popover ui:text-popover-foreground ui:border-border absolute top-[calc(100%+10px)] right-0 z-50 flex w-64 items-start gap-2 rounded-lg border p-3 text-xs leading-5 shadow-lg"
+          >
+            <span class="ui:bg-popover ui:border-border absolute -top-1 right-4 h-2 w-2 rotate-45 border-t border-l"
+            ></span>
+            <p class="flex-1">{$t('course.header.assistant_tip')}</p>
+            <button
+              type="button"
+              class="ui:text-muted-foreground ui:hover:text-foreground flex h-5 w-5 shrink-0 items-center justify-center rounded text-sm leading-none"
+              aria-label={t.get('course.header.assistant_tip_dismiss')}
+              onclick={dismissAssistantTip}
+            >
+              ×
+            </button>
+          </div>
+        {/if}
+      </div>
     {/if}
 
     {#if !$isStudentExperience}

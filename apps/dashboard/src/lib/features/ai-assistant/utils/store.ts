@@ -13,12 +13,24 @@ export function openAiAssistant() {
   sidePanel.open(AI_ASSISTANT_PANEL_ID);
 }
 
+export function openAiAssistantFloating() {
+  sidePanel.openFloating(AI_ASSISTANT_PANEL_ID);
+}
+
 export function closeAiAssistant() {
   sidePanel.close();
 }
 
 export function toggleAiAssistant() {
   sidePanel.toggle(AI_ASSISTANT_PANEL_ID);
+}
+
+export function toggleAiAssistantFloating() {
+  sidePanel.toggleFloating(AI_ASSISTANT_PANEL_ID);
+}
+
+export function dockAiAssistant() {
+  sidePanel.dock();
 }
 
 export const initialChatTemplateId = writable<CourseTemplateId | null>(null);
