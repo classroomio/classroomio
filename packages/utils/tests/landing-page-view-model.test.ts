@@ -127,3 +127,67 @@ describe('projectPublicLandingPageViewModel', () => {
     expect(viewModel.footer?.socialLinks[0].platform).toBe('x');
   });
 });
+
+describe('projectPublicLandingPageViewModel with editor-shaped settings', () => {
+  it('projects callout, embed, links and footer as the landing editor stores them', () => {
+    const viewModel = projectPublicLandingPageViewModel({
+      theme: 'com.classroomio.landing-templates:atelier',
+      templateId: 'atelier',
+      org: { id: 'org-1', name: 'Acme' },
+      courses: [],
+      hasMoreCourses: false,
+      landingpage: {
+        callout: {
+          enabled: true,
+          heading: 'Ready to start?',
+          description: 'Join today',
+          action: { label: 'Enroll', href: '/courses' }
+        },
+        embed: {
+          enabled: true,
+          title: 'Watch',
+          code: '<iframe src="https://www.youtube.com/embed/abc" width="560"></iframe>',
+          secondaryAction: { label: 'More', href: '/courses' }
+        },
+        links: {
+          enabled: true,
+          heading: 'Resources',
+          cards: [{ icon: 'book-open', title: 'Docs', description: 'Read', href: 'https://docs.classroomio.com' }]
+        },
+        footer: {
+          brand: {
+            tagline: 'Learn',
+            copyright: '© Acme',
+            socials: [{ platform: 'x', href: 'https://x.com/acme' }]
+          },
+          columns: [{ id: 'c1', heading: 'Company', links: [{ id: 'l1', label: 'About', href: '/about' }] }],
+          bottom: { text: 'Made with care', links: [{ id: 'b1', label: 'Privacy', href: '/privacy' }] }
+        }
+      }
+    });
+
+    expect(viewModel.callout?.title).toBe('Ready to start?');
+    expect(viewModel.embed?.url).toBe('https://www.youtube.com/embed/abc');
+    expect(viewModel.embed?.type).toBe('youtube');
+    expect(viewModel.embed?.secondaryAction?.label).toBe('More');
+    expect(viewModel.links?.cards?.[0].title).toBe('Docs');
+    expect(viewModel.footer?.tagline).toBe('Learn');
+    expect(viewModel.footer?.columns?.[0].links[0].label).toBe('About');
+    expect(viewModel.footer?.links[0].label).toBe('Privacy');
+    expect(viewModel.footer?.socialLinks[0].platform).toBe('x');
+    expect(ZPublicLandingPageViewModel.safeParse(viewModel).success).toBe(true);
+  });
+
+  it('drops embeds whose iframe source is not https', () => {
+    const viewModel = projectPublicLandingPageViewModel({
+      theme: 't',
+      templateId: 't',
+      org: { id: 'o', name: 'A' },
+      courses: [],
+      hasMoreCourses: false,
+      landingpage: { embed: { enabled: true, code: '<iframe src="javascript:alert(1)"></iframe>' } }
+    });
+
+    expect(viewModel.embed).toBeUndefined();
+  });
+});

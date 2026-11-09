@@ -77,7 +77,20 @@ export const ZPublicLandingPageViewModel = z
     links: z
       .object({
         title: z.string().optional(),
-        items: z.array(ZPublicLandingLinkItem)
+        description: z.string().optional(),
+        items: z.array(ZPublicLandingLinkItem),
+        cards: z
+          .array(
+            z
+              .object({
+                icon: z.string().optional(),
+                title: z.string(),
+                description: z.string().optional(),
+                href: z.string()
+              })
+              .strict()
+          )
+          .optional()
       })
       .strict()
       .optional(),
@@ -93,15 +106,30 @@ export const ZPublicLandingPageViewModel = z
       .object({
         type: z.enum(['youtube', 'vimeo', 'loom', 'custom']),
         url: z.string(),
-        aspectRatio: z.string().optional()
+        aspectRatio: z.string().optional(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        secondaryAction: ZPublicLandingLinkItem.optional()
       })
       .strict()
       .optional(),
     footer: z
       .object({
         text: z.string().optional(),
+        tagline: z.string().optional(),
+        copyright: z.string().optional(),
         links: z.array(ZPublicLandingLinkItem),
-        socialLinks: z.array(ZPublicLandingSocialLink)
+        socialLinks: z.array(ZPublicLandingSocialLink),
+        columns: z
+          .array(
+            z
+              .object({
+                heading: z.string(),
+                links: z.array(ZPublicLandingLinkItem)
+              })
+              .strict()
+          )
+          .optional()
       })
       .strict()
       .optional()
@@ -170,6 +198,33 @@ export interface ProjectPublicLandingPageViewModelParams {
   signInLabel?: string;
   accountLabel?: string;
   baseUrl?: string;
+}
+
+function inferEmbedType(url: string): 'youtube' | 'vimeo' | 'loom' | 'custom' {
+  if (/(^|\.)(youtube\.com|youtu\.be|youtube-nocookie\.com)\b/i.test(url)) return 'youtube';
+  if (/(^|\.)vimeo\.com\b/i.test(url)) return 'vimeo';
+  if (/(^|\.)loom\.com\b/i.test(url)) return 'loom';
+
+  return 'custom';
+}
+
+/**
+ * Resolves a safe https embed URL from either a direct `url` or the `src` of an author-supplied iframe `code` snippet.
+ * Only the URL is extracted; the markup itself is never forwarded to plugins.
+ */
+function resolvePublicLandingEmbedUrl(rawEmbed: Record<string, unknown>): string | undefined {
+  const candidates: string[] = [];
+
+  if (typeof rawEmbed.url === 'string') candidates.push(rawEmbed.url.trim());
+
+  if (typeof rawEmbed.code === 'string') {
+    const match = rawEmbed.code.match(/<iframe\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/i);
+    if (match) candidates.push(match[1].trim());
+  }
+
+  const normalized = candidates.map((candidate) => (candidate.startsWith('//') ? `https:${candidate}` : candidate));
+
+  return normalized.find((candidate) => /^https:\/\//i.test(candidate) && isAllowedHref(candidate));
 }
 
 /**
@@ -257,20 +312,40 @@ export function projectPublicLandingPageViewModel(
     };
   });
 
+  const linkCardsRaw = Array.isArray(rawLinks.cards) ? rawLinks.cards : [];
+  const linkCards = linkCardsRaw
+    .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null)
+    .map((item) => ({
+      icon: typeof item.icon === 'string' ? item.icon : undefined,
+      title: String(item.title ?? ''),
+      description: typeof item.description === 'string' && item.description.length > 0 ? item.description : undefined,
+      href: sanitizePublicLandingHref(item.href, '#')
+    }))
+    .filter((item) => item.title.length > 0);
+
   const linksItemsRaw = Array.isArray(rawLinks.items) ? rawLinks.items : [];
-  const linkItems: PublicLandingLinkItem[] = linksItemsRaw
+  const legacyLinkItems: PublicLandingLinkItem[] = linksItemsRaw
     .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null)
     .map((item) => ({
       label: String(item.label ?? ''),
       href: sanitizePublicLandingHref(item.href, '#')
     }))
     .filter((item) => item.label.length > 0);
+  const linkItems: PublicLandingLinkItem[] =
+    linkCards.length > 0 ? linkCards.map((card) => ({ label: card.title, href: card.href })) : legacyLinkItems;
 
   const links =
     rawLinks.enabled !== false && linkItems.length > 0
       ? {
-          title: typeof rawLinks.title === 'string' ? rawLinks.title : undefined,
-          items: linkItems
+          title:
+            typeof rawLinks.title === 'string'
+              ? rawLinks.title
+              : typeof rawLinks.heading === 'string'
+                ? rawLinks.heading
+                : undefined,
+          description: typeof rawLinks.description === 'string' ? rawLinks.description : undefined,
+          items: linkItems,
+          cards: linkCards.length > 0 ? linkCards : undefined
         }
       : undefined;
 
@@ -283,40 +358,68 @@ export function projectPublicLandingPageViewModel(
         }
       : undefined;
 
+  const calloutTitle =
+    typeof rawCallout.heading === 'string' && rawCallout.heading.length > 0
+      ? rawCallout.heading
+      : typeof rawCallout.title === 'string'
+        ? rawCallout.title
+        : '';
+
   const callout =
-    rawCallout.enabled !== false && typeof rawCallout.title === 'string' && rawCallout.title.length > 0
+    rawCallout.enabled !== false && calloutTitle.length > 0
       ? {
-          title: rawCallout.title,
+          title: calloutTitle,
           description: typeof rawCallout.description === 'string' ? rawCallout.description : undefined,
           action: calloutAction
         }
       : undefined;
 
+  const embedUrl = resolvePublicLandingEmbedUrl(rawEmbed);
+  const embedSecondaryRaw = rawEmbed.secondaryAction as Record<string, unknown> | undefined;
+
   let embed: PublicLandingPageViewModel['embed'];
-  if (rawEmbed.enabled !== false && typeof rawEmbed.url === 'string' && isAllowedHref(rawEmbed.url)) {
-    const rawType = String(rawEmbed.type ?? 'custom');
+  if (rawEmbed.enabled !== false && embedUrl) {
+    const rawType = String(rawEmbed.type ?? inferEmbedType(embedUrl));
     const type = ['youtube', 'vimeo', 'loom'].includes(rawType) ? (rawType as 'youtube' | 'vimeo' | 'loom') : 'custom';
     embed = {
       type,
-      url: rawEmbed.url,
-      aspectRatio: typeof rawEmbed.aspectRatio === 'string' ? rawEmbed.aspectRatio : '16/9'
+      url: embedUrl,
+      aspectRatio: typeof rawEmbed.aspectRatio === 'string' ? rawEmbed.aspectRatio : '16/9',
+      title: typeof rawEmbed.title === 'string' && rawEmbed.title.length > 0 ? rawEmbed.title : undefined,
+      description:
+        typeof rawEmbed.description === 'string' && rawEmbed.description.length > 0 ? rawEmbed.description : undefined,
+      secondaryAction:
+        embedSecondaryRaw && typeof embedSecondaryRaw.label === 'string' && embedSecondaryRaw.label.length > 0
+          ? { label: embedSecondaryRaw.label, href: sanitizePublicLandingHref(embedSecondaryRaw.href, '#') }
+          : undefined
     };
   }
 
-  const footerLinksRaw = Array.isArray(rawFooter.links)
-    ? rawFooter.links
-    : Array.isArray(rawLanding.footerLinks)
-      ? rawLanding.footerLinks
-      : [];
-  const footerLinks: PublicLandingLinkItem[] = footerLinksRaw
-    .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null)
-    .map((item) => ({
-      label: String(item.label ?? ''),
-      href: sanitizePublicLandingHref(item.href, '#')
-    }))
-    .filter((item) => item.label.length > 0);
+  const rawBrand = (rawFooter.brand ?? {}) as Record<string, unknown>;
+  const rawBottom = (rawFooter.bottom ?? {}) as Record<string, unknown>;
 
-  const socialLinksRaw = Array.isArray(rawFooter.socialLinks) ? rawFooter.socialLinks : [];
+  const toLinkItems = (raw: unknown): PublicLandingLinkItem[] =>
+    (Array.isArray(raw) ? raw : [])
+      .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null)
+      .map((item) => ({
+        label: String(item.label ?? ''),
+        href: sanitizePublicLandingHref(item.href, '#')
+      }))
+      .filter((item) => item.label.length > 0);
+
+  const footerLinks = toLinkItems(
+    Array.isArray(rawFooter.links)
+      ? rawFooter.links
+      : Array.isArray(rawBottom.links)
+        ? rawBottom.links
+        : rawLanding.footerLinks
+  );
+
+  const socialLinksRaw = Array.isArray(rawFooter.socialLinks)
+    ? rawFooter.socialLinks
+    : Array.isArray(rawBrand.socials)
+      ? rawBrand.socials
+      : [];
   const socialLinks: PublicLandingSocialLink[] = socialLinksRaw
     .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null)
     .map((item) => ({
@@ -325,15 +428,23 @@ export function projectPublicLandingPageViewModel(
     }))
     .filter((item) => item.platform.length > 0 && item.href !== '#');
 
+  const footerColumns = (Array.isArray(rawFooter.columns) ? rawFooter.columns : [])
+    .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null)
+    .map((column) => ({
+      heading: String(column.heading ?? ''),
+      links: toLinkItems(column.links)
+    }))
+    .filter((column) => column.heading.length > 0 && column.links.length > 0);
+
+  const optionalText = (value: unknown) => (typeof value === 'string' && value.length > 0 ? value : undefined);
+
   const footer = {
-    text:
-      typeof rawFooter.text === 'string'
-        ? rawFooter.text
-        : typeof rawLanding.footerText === 'string'
-          ? rawLanding.footerText
-          : undefined,
+    text: optionalText(rawFooter.text) ?? optionalText(rawBottom.text) ?? optionalText(rawLanding.footerText),
+    tagline: optionalText(rawBrand.tagline),
+    copyright: optionalText(rawBrand.copyright),
     links: footerLinks,
-    socialLinks
+    socialLinks,
+    columns: footerColumns.length > 0 ? footerColumns : undefined
   };
 
   const avatarUrl = sanitizePublicLandingImage(params.org.avatarUrl, params.baseUrl);

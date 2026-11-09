@@ -43,7 +43,9 @@ export interface PublicLandingPageViewModel {
   hasMoreCourses: boolean;
   links?: {
     title?: string;
+    description?: string;
     items: PublicLandingLinkItem[];
+    cards?: Array<{ icon?: string; title: string; description?: string; href: string }>;
   };
   callout?: {
     title?: string;
@@ -54,10 +56,16 @@ export interface PublicLandingPageViewModel {
     type: 'youtube' | 'vimeo' | 'loom' | 'custom';
     url: string;
     aspectRatio?: string;
+    title?: string;
+    description?: string;
+    secondaryAction?: PublicLandingLinkItem;
   };
   footer?: {
     text?: string;
+    tagline?: string;
+    copyright?: string;
     links: PublicLandingLinkItem[];
     socialLinks: Array<{ platform: string; href: string }>;
+    columns?: Array<{ heading: string; links: PublicLandingLinkItem[] }>;
   };
 }
