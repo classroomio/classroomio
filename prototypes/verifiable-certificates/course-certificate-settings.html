@@ -6,12 +6,23 @@
     <title>Certificate settings · ClassroomIO</title>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="app-theme.css" />
-    <link rel="stylesheet" href="verify.css?v=2" />
+    <link rel="stylesheet" href="verify.css?v=6" />
     <script>
       if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
         document.documentElement.classList.add('dark');
     </script>
     <style>
+      .ps-col { max-width: 448px; padding: 0 8px; display: flex; flex-direction: column; gap: 28px; }
+      .ps-set { border: 0; padding: 0; margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+      .ps-set > legend { padding: 0; margin-bottom: 12px; font-size: 16px; font-weight: 500; float: left; width: 100%; }
+      .ps-set > legend + * { clear: both; }
+      .ps-sep { border: 0; border-top: 1px solid var(--border); margin: 0; width: 100%; }
+      .ps-desc { margin: -16px 0 0; font-size: 14px; color: var(--muted-foreground); line-height: 1.5; }
+      .ps-lbl { font-size: 14px; color: var(--muted-foreground); }
+      .ps-list { margin: 0; padding-left: 20px; font-size: 14px; color: var(--muted-foreground); line-height: 1.7; }
+      .ps-list b { color: var(--foreground); font-weight: 600; }
+      .ps-set .hint { margin: 10px 0 0; }
+      .pv-open svg { margin-left: 6px; }
       .dl-empty { border: 1px dashed var(--border); border-radius: var(--radius-lg); padding: 28px 20px 16px; text-align: center; margin-bottom: 16px; }
       .dl-empty[hidden] { display: none; }
       .dl-ico { width: 40px; height: 40px; border-radius: 10px; background: var(--muted); display: grid; place-items: center; margin: 0 auto 12px; }
@@ -74,99 +85,51 @@
                   <a class="btn btn-secondary" id="openEditor" href="certificate-studio.html" style="width: 100%; margin-top: 18px">Customize Design <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
                 </div>
               </div>
-              <div class="vc-note info" style="margin-top: 16px">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                <span>The verification code and QR code are added to every certificate automatically, on every template. They sit in the top-right corner and cannot be removed.</span>
-              </div>
             </div>
 
             <div class="tabpanel" id="panelSettings">
-            <section class="card fset">
-              <div class="fset-head"><div><h2>Rules</h2></div></div>
-              <div class="fset-body">
-                <label class="row-inline" style="gap: 10px; cursor: pointer"><span class="switch"><input type="checkbox" id="allowDl" checked aria-label="Allow students download certificate" /><span class="track"></span><span class="knob"></span></span><span style="font-size: 14px">Allow students download certificate</span></label>
-              </div>
-            </section>
-
-            <section class="card fset">
-              <div class="fset-head"><div><h2>Completion rules</h2><p>These rules decide who earns this certificate. They are set on the course Settings tab.</p></div></div>
-              <div class="fset-body">
-                <ul style="margin: 0; padding-left: 18px; font-size: 13.5px; color: var(--muted-foreground); line-height: 1.9">
-                  <li>Student progression: <b style="color: var(--foreground)">Free — unlocked content is accessible</b></li>
-                  <li>No deadline</li>
-                </ul>
-                <div><a class="btn btn-outline btn-sm" href="#">Edit completion rules <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div>
-              </div>
-            </section>
-
-            <section class="card fset">
-              <div class="fset-head"><div><h2>Email message</h2><p>Added to the email learners receive with their certificate.</p></div></div>
-              <div class="fset-body">
-                <textarea class="textarea" id="emailMsg" rows="3" maxlength="500" placeholder="e.g. We are proud of your progress — keep learning!" aria-label="Email message"></textarea>
-              </div>
-            </section>
-
-            <div id="dlEmpty" class="dl-empty" aria-live="polite">
-              <div class="dl-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></div>
-              <h3>Course not complete 😔</h3>
-              <p>Your course progress is 0%; 100% is required.</p>
-              <div class="row-inline" style="justify-content: center">
-                <button class="btn btn-primary btn-sm" disabled>Download Certificate</button>
-                <button class="btn btn-outline btn-sm" disabled>Download as image</button>
-              </div>
-              <span class="dl-tag">What learners see until they complete the course</span>
-            </div>
-            <div id="dlOff" class="vc-note info" hidden style="margin-bottom: 16px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-              <span>Downloads are off. Learners can still see their certificate and share its verification link, but cannot download it.</span>
-            </div>
-
-            <section class="card fset">
-              <div class="fset-head">
-                <div style="flex: 1"><h2>Public verification</h2><p>Certificates link to a public page that shows whether they are valid, expired or revoked.</p></div>
-                <span class="badge badge-success-soft">On · Growth plan</span>
-              </div>
-              <div class="fset-body">
-                <div class="field">
-                  <span class="label">Verification page address</span>
-                  <div class="row-inline">
-                    <input class="input mono" readonly value="https://learn.acme.com/verify/XXXX-XXXX" style="font-size: 13px" aria-label="Verification page address" />
-                  </div>
-                  <p class="hint">Uses your verified domain <span class="mono">learn.acme.com</span>. <a href="#" style="color: var(--primary)">Manage domain</a>. Printed QR codes keep working if you change domain.</p>
-                </div>
-                <div class="field">
-                  <span class="label">Preview the public page</span>
-                  <div class="row-inline" style="gap: 8px; flex-wrap: wrap">
-                    <button class="btn btn-outline btn-sm pv-state" type="button" data-s="valid"><span class="pv-dot" style="background: var(--success)"></span>Valid</button>
-                    <button class="btn btn-outline btn-sm pv-state" type="button" data-s="expired"><span class="pv-dot" style="background: var(--warning)"></span>Expired</button>
-                    <button class="btn btn-outline btn-sm pv-state" type="button" data-s="revoked"><span class="pv-dot" style="background: var(--destructive)"></span>Revoked</button>
-                  </div>
-                  <p class="hint">See what anyone gets from the QR code or link in each state.</p>
-                </div>
-                <div class="vc-note info">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                  <span>Learners see only their name, the course, dates and any custom fields below on the public page. Email, progress and grades are never shown.</span>
-                </div>
-              </div>
-            </section>
-
-            <section class="card fset" id="validity">
-              <div class="fset-head"><div><h2>Validity</h2><p id="validityHelp">How long a certificate stays valid after it is issued.</p></div></div>
-              <div class="fset-body">
-                <div id="stdValidity">
-                  <div class="field">
-                    <label class="row-inline" style="gap: 10px; cursor: pointer"><span class="switch"><input type="checkbox" id="expOn" checked aria-label="Certificates expire" /><span class="track"></span><span class="knob"></span></span><span style="font-size: 14px">Certificates expire</span></label>
-                    <div id="monthsWrap" class="row-inline" style="margin-top: 12px"><span style="font-size: 13.5px">Expires</span><input class="input num-input" id="months" type="number" min="1" max="120" value="24" aria-label="Months" /><span style="font-size: 13.5px">months after issue</span></div>
+              <div class="ps-col">
+                <fieldset class="ps-set">
+                  <legend>Rules</legend>
+                  <label class="row-inline" style="gap: 10px; cursor: pointer"><span class="switch"><input type="checkbox" id="allowDl" checked aria-label="Allow students download certificate" /><span class="track"></span><span class="knob"></span></span><span class="ps-lbl">Allow students download certificate</span></label>
+                </fieldset>
+                <hr class="ps-sep" />
+                <fieldset class="ps-set">
+                  <legend>Completion rules</legend>
+                  <p class="ps-desc">These rules decide who earns this certificate. They are set on the course Settings tab.</p>
+                  <ul class="ps-list">
+                    <li>Student progression: <b>Free — unlocked content is accessible</b></li>
+                    <li>No deadline</li>
+                  </ul>
+                  <div><a class="btn btn-outline btn-sm" href="#">Edit completion rules <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div>
+                </fieldset>
+                <hr class="ps-sep" />
+                <fieldset class="ps-set">
+                  <legend>Email Message</legend>
+                  <textarea class="textarea" id="emailMsg" rows="4" maxlength="500" placeholder="e.g. We are proud of your progress — keep learning!" aria-label="Email message"></textarea>
+                </fieldset>
+                <hr class="ps-sep" />
+                <fieldset class="ps-set" id="validity">
+                  <legend>Validity</legend>
+                  <p class="ps-desc" id="validityHelp">How long a certificate stays valid after it is issued.</p>
+                  <div id="stdValidity">
+                    <label class="row-inline" style="gap: 10px; cursor: pointer"><span class="switch"><input type="checkbox" id="expOn" checked aria-label="Certificates expire" /><span class="track"></span><span class="knob"></span></span><span class="ps-lbl">Certificates expire</span></label>
+                    <div id="monthsWrap" class="row-inline" style="margin-top: 12px"><span class="ps-lbl">Expires</span><input class="input num-input" id="months" type="number" min="1" max="120" value="24" aria-label="Months" /><span class="ps-lbl">months after issue</span></div>
                     <p class="hint" id="expHint">Certificates issued from now on expire on <b>the issue date + 24 months</b>. Existing certificates are not changed.</p>
                   </div>
-                </div>
-                <div id="compValidity" class="vc-note info" hidden>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                  <span>This is a compliance course. Certificates stay valid for the <b>12-month retake interval</b> set in Compliance settings, and a renewal issues a new certificate with a new code.</span>
-                </div>
+                  <div id="compValidity" class="vc-note info" hidden>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                    <span>This is a compliance course. Certificates stay valid for the <b>12-month retake interval</b> set in Compliance settings, and a renewal issues a new certificate with a new code.</span>
+                  </div>
+                </fieldset>
+                <hr class="ps-sep" />
+                <fieldset class="ps-set">
+                  <legend>Public verification</legend>
+                  <p class="ps-desc">Certificates link to a public page that shows whether they are valid, expired or revoked.</p>
+                  <input class="input mono" readonly value="https://learn.acme.com/verify/XXXX-XXXX" style="font-size: 13px" aria-label="Verification page address" />
+                  <div><button class="btn btn-outline btn-sm pv-open" id="pvOpen" type="button">Preview <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div>
+                </fieldset>
               </div>
-            </section>
-
             </div>
 
             <div class="savebar" id="saveBar" hidden>
@@ -229,16 +192,11 @@
     <div class="toast" id="toast"></div>
 
     <script src="common.js"></script>
-    <script src="states-preview.js?v=2"></script>
-    <style>.pv-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }</style>
-    <script>document.querySelectorAll(".pv-state").forEach(function (b) { b.onclick = function () { window.openStatesPreview(b.getAttribute("data-s")); }; });</script>
+    <script src="states-preview.js?v=4"></script>
+    <script>document.getElementById("pvOpen").onclick = function () { window.openStatesPreview("valid"); };</script>
     <script>
       var $ = function (id) { return document.getElementById(id); };
-      var INITIAL = [
-        { label: 'Employee ID', type: 'text', required: true, locked: true },
-        { label: 'Site', type: 'text', required: false, locked: true },
-        { label: 'Assessment date', type: 'date', required: false, locked: true }
-      ];
+      var INITIAL = [];
       var fields = JSON.parse(JSON.stringify(INITIAL));
       var MAX = 5;
 
@@ -257,8 +215,7 @@
           ? 'Certificates never expire. No expiry date is stored or shown on the public page.'
           : 'Certificates issued from now on expire on <b>the issue date + ' + (isNaN(m) ? '…' : m) + ' months</b>. Existing certificates are not changed.';
       }
-      function dlState() { var on = $('allowDl').checked; $('dlEmpty').hidden = !on; $('dlOff').hidden = on; }
-      $('allowDl').onchange = function () { dlState(); dirty(); };
+      $('allowDl').onchange = dirty;
       $('emailMsg').oninput = dirty;
       $('expOn').onchange = function () { expHint(); dirty(); };
       $('months').oninput = function () { expHint(); dirty(); };
@@ -266,7 +223,7 @@
       $('discard').onclick = function () {
         fields = JSON.parse(JSON.stringify(INITIAL));
         $('expOn').checked = true; $('months').value = 24; expHint();
-        $('allowDl').checked = true; $('emailMsg').value = ''; dlState();
+        $('allowDl').checked = true; $('emailMsg').value = '';
         render(); $('saveBar').hidden = true;
       };
       $('save').onclick = function () {
@@ -387,7 +344,7 @@
         };
       });
 
-      render(); expHint(); renderDesign(); dlState();
+      render(); expHint(); renderDesign();
     </script>
   </body>
 </html>

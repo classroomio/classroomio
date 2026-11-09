@@ -6,7 +6,7 @@
     <title>People · Certificates · ClassroomIO</title>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="app-theme.css" />
-    <link rel="stylesheet" href="verify.css?v=2" />
+    <link rel="stylesheet" href="verify.css?v=6" />
     <script>
       if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
         document.documentElement.classList.add('dark');
@@ -173,7 +173,7 @@
     </aside>
 
     <div class="dialog rv-dialog" id="revokeDlg" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
-      <div class="dialog-head"><h2 id="rvTitle">Revoke certificate</h2><p>Check how the public page will look first, then say why. The reason stays private to your team.</p></div>
+      <div class="dialog-head"><h2 id="rvTitle">Revoke certificate</h2><p>The reason stays private to your team.</p></div>
       <div class="dialog-body">
         <div class="rv-grid">
           <div>
@@ -189,11 +189,6 @@
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg><span>The learner can no longer download the PDF.</span></li>
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg><span>You can reinstate it any time. The same code comes back.</span></li>
             </ul>
-          </div>
-          <div class="rv-sim">
-            <h3 class="rv-col-h">What the public will see</h3>
-            <div id="rvSim"></div>
-            <p class="rv-sim-cap">Simulation only. Nothing changes until you press Revoke.</p>
           </div>
         </div>
       </div>
@@ -213,7 +208,7 @@
     <div class="undo" id="undo"><span id="undoMsg"></span><button id="undoBtn">Undo</button></div>
 
     <script src="common.js"></script>
-    <script src="states-preview.js?v=2"></script>
+    <script src="states-preview.js?v=4"></script>
     <script>
       var $ = function (id) { return document.getElementById(id); };
       var ME = 'Jordan Diallo';
@@ -340,7 +335,7 @@
         });
         var cls = 'dprev' + (p.state === 'revoked' ? ' is-revoked' : p.state === 'expired' ? ' is-expired' : '');
         var stamp = p.state === 'revoked' ? '<div class="stamp">Revoked</div>' : p.state === 'expired' ? '<div class="stamp" style="border-color: var(--warning); color: var(--warning)">Expired</div>' : '';
-        var cap = '<div class="dprev-cap"><span>As the learner sees it</span><span><a href="#" id="dStates">Compare all three states</a> · <a href="' + p.page + '" target="_blank">Open public page ↗</a></span></div>';
+        var cap = '<div class="dprev-cap"><span>As the learner sees it</span><span><button type="button" class="btn btn-outline btn-sm" id="dStates" style="gap:6px">Preview <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></span></div>';
         $('dPrev').className = cls;
         $('dPrev').innerHTML = html + stamp + cap;
         window.drawAllQr($('dPrev'));
@@ -394,10 +389,8 @@
         reasonPick = '';
         $('rNote').value = ''; $('rNotify').checked = true;
         $('rvTitle').textContent = 'Revoke ' + p.name + '’s certificate';
-        $('rvSim').innerHTML = window.verifyFrame('revoked', { name: p.name, code: p.code, issued: longDate(p.issued), date: 'November 6, 2026', course: COURSE });
         renderReasons();
         $('revokeDlg').classList.add('open');
-        window.fitFrames($('rvSim'));
       }
       function closeRevoke() { $('revokeDlg').classList.remove('open'); reasonPick = ''; }
       function longDate(d) {
@@ -481,7 +474,7 @@
         if (e.key === 'ArrowLeft') step(-1);
         if (e.key === 'ArrowRight') step(1);
       });
-      window.addEventListener('resize', function () { window.fitFrames($('rvSim')); });
+      
 
       var pm = /[?&]open=(\w+)/.exec(location.search);
       renderRows();

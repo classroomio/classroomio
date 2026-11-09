@@ -1503,11 +1503,11 @@ html.embed body {
   z-index: 403;
 }
 .rv-dialog {
-  width: min(1040px, calc(100vw - 32px));
+  width: min(560px, calc(100vw - 32px));
 }
 .rv-grid {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
 }
 .rv-col-h {
@@ -1543,8 +1543,27 @@ html.embed body {
   z-index: 2;
 }
 .sp-head {
-  padding-right: 96px;
+  padding-right: 56px;
 }
 .sp-dialog .dialog-body {
   padding-bottom: 20px;
+}
+.rv-dialog.open {
+  box-shadow:
+    0 0 0 100vmax oklch(0 0 0 / 50%),
+    var(--shadow-lg, 0 20px 50px oklch(0 0 0 / 25%));
+}
+.sp-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.sp-bar .sp-tabs {
+  margin-bottom: 0;
+}
+.sp-open {
+  gap: 6px;
+  flex-shrink: 0;
 }

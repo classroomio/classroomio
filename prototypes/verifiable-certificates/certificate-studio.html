@@ -6,7 +6,7 @@
     <title>Certificate editor · ClassroomIO</title>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="app-theme.css" />
-    <link rel="stylesheet" href="verify.css?v=2" />
+    <link rel="stylesheet" href="verify.css?v=6" />
     <script>
       if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
         document.documentElement.classList.add('dark');
@@ -51,7 +51,7 @@
       .p-states .lbl { font-size: 12px; color: var(--muted-foreground); padding: 0 8px 0 10px; }
       .p-states button { border: 0; background: none; font: inherit; font-size: 12.5px; padding: 5px 12px; border-radius: 999px; cursor: pointer; color: var(--muted-foreground); }
       .p-states button.on { background: var(--foreground); color: var(--background); }
-      .p-states .pub { color: var(--primary); font-weight: 500; }
+      .p-states .pub { color: var(--primary); font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
       .p-stamp { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-12deg); border: 5px solid var(--destructive); color: var(--destructive); font-weight: 800; letter-spacing: 0.14em; font-size: clamp(22px, 3.4vw, 44px); padding: 6px 28px; border-radius: 12px; background: rgb(255 255 255 / 0.7); text-transform: uppercase; pointer-events: none; display: none; }
       .p-paper.st-revoked .cq { filter: grayscale(1); opacity: 0.55; }
       .p-paper.st-expired .cq { opacity: 0.8; }
@@ -106,11 +106,11 @@
     <div class="p-body">
       <nav class="p-rail" id="rail" aria-label="Editor sections"></nav>
       <aside class="p-panel"><div class="p-ph" id="ph"></div><div class="p-pb" id="pb"></div></aside>
-      <section class="p-stage" aria-label="Live preview"><div class="p-hintpill">Click anything on the certificate to edit it</div><div class="p-paper" id="paper"><div id="cert"></div><div class="p-stamp" id="pStamp">Valid</div></div><div class="p-states" id="pStates" role="group" aria-label="Preview the certificate as"><span class="lbl">Preview as</span><button type="button" class="on" data-st="valid">Valid</button><button type="button" data-st="expired">Expired</button><button type="button" data-st="revoked">Revoked</button><button type="button" class="pub" id="pPublic">Public page ↗</button></div></section>
+      <section class="p-stage" aria-label="Live preview"><div class="p-hintpill">Click anything on the certificate to edit it</div><div class="p-paper" id="paper"><div id="cert"></div><div class="p-stamp" id="pStamp">Valid</div></div><div class="p-states" id="pStates" role="group" aria-label="Preview the certificate as"><span class="lbl">Preview as</span><button type="button" class="on" data-st="valid">Valid</button><button type="button" data-st="expired">Expired</button><button type="button" data-st="revoked">Revoked</button><button type="button" class="pub" id="pPublic">Preview <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div></section>
     </div>
     <div class="toast" id="toast"></div>
     <script src="common.js"></script>
-    <script src="states-preview.js?v=2"></script>
+    <script src="states-preview.js?v=4"></script>
     <script>
       (function () {
         var state = "valid", paper = document.getElementById("paper"), stamp = document.getElementById("pStamp");
@@ -148,16 +148,15 @@
         ['templates', 'Templates', 'Pick a template to anchor the visual style.'],
         ['content', 'Content', 'Fine-tune the words that appear on the certificate.'],
         ['colors', 'Accent color', 'Used for the recipient line, accents, and stamp.'],
-        ['details', 'Details', 'Extra facts printed on every certificate, like an employee ID.'],
         ['export', 'Export', 'Preview the current design as it will be delivered.']
       ];
-      var NEW = { details: 1 };
+      var NEW = {};
       var D = {
         template: 'classique', accent: '#7a1f1f', subtitle: 'Awarded with highest distinction',
         desc: 'Learn how to handle, store and prepare food safely, and how to spot and control hazards in a working kitchen.',
         sigs: [{ name: 'Course Facilitator', role: 'Facilitator', on: true }, { name: 'Organization Lead', role: 'Director', on: true }],
         idFormat: 'N° {seq}', expOn: true, months: 24,
-        fields: [{ label: 'Employee ID', type: 'text', required: true }, { label: 'Site', type: 'text', required: false }, { label: 'Assessment date', type: 'date', required: false }]
+        fields: []
       };
       var snap = JSON.stringify(D);
       var active = 'templates';
@@ -174,15 +173,13 @@
         return {
           org: 'Acme Academy', title: 'Food Safety Level 2', subtitle: D.subtitle, name: 'Ada Okafor', desc: D.desc || 'The course description appears here.', accent: D.accent,
           sig1: D.sigs[0], sig2: D.sigs[1], year: '2026', idText: D.idFormat.replace('{seq}', '0247'), code: '7KQM-4XH2', revoked: false,
-          fields: D.fields.map(function (f) { return [f.label.trim() || 'New detail', f.type === 'date' ? 'Jan 21, 2026' : 'Sample value']; })
+          fields: []
         };
       }
       function paint() {
         var root = $('cert');
         root.innerHTML = window.certHtml(certOpts());
         window.drawAllQr(root);
-        var f = root.querySelector('.cq-fields');
-        if (f) f.classList.toggle('hl', active === 'details');
         tagEditable(root);
       }
       function tag(el, key, tip) { if (!el) return; el.setAttribute('data-edit', key); el.title = tip; }
@@ -195,7 +192,6 @@
         tag(root.querySelector('.cq-title'), 'fixed', 'Comes from the course title');
         tag(root.querySelector('.cq-name'), 'fixed', 'Filled in with each learner\'s name');
         root.querySelectorAll('.cq-sig').forEach(function (el, i) { tag(el, 'sig:' + i, 'Edit signatory ' + (i + 1)); });
-        root.querySelectorAll('.cq-fields > span').forEach(function (el, i) { tag(el, 'field:' + i, 'Edit this detail'); });
       }
       var FIXED_MSG = { 'cq-org': 'The organization name comes from your organization settings', 'cq-title': 'The title comes from the course', 'cq-name': 'The name is filled in for each learner' };
       function focusInput(sel) {
@@ -212,8 +208,7 @@
           return;
         }
         var sel;
-        if (k.indexOf('field:') === 0) { active = 'details'; sel = '[data-m="f:' + k.split(':')[1] + ':label"]'; }
-        else if (k.indexOf('sig:') === 0) { active = 'content'; sel = '[data-m="sig:' + k.split(':')[1] + ':name"]'; }
+        if (k.indexOf('sig:') === 0) { active = 'content'; sel = '[data-m="sig:' + k.split(':')[1] + ':name"]'; }
         else { active = 'content'; sel = '[data-m="' + k + '"]'; }
         renderAll();
         if (sel) focusInput(sel);
@@ -234,16 +229,6 @@
         }
         if (active === 'colors') {
           return '<div class="p-sw6">' + ACCENTS.map(function (c) { return '<button type="button" class="' + (c === D.accent ? 'on' : '') + '" style="background:' + c + '" data-act="accent" data-v="' + c + '" aria-label="' + c + '"></button>'; }).join('') + '</div><p class="p-hint" style="margin-top:12px">Accent color appears on the recipient rule, stamps, and the template\'s headline highlight.</p>';
-        }
-        if (active === 'details') {
-          var cards = D.fields.map(function (f, i) {
-            return '<div class="p-card"><div class="top"><span>Detail ' + (i + 1) + '</span><button class="icon-btn" data-act="del-field" data-v="' + i + '" aria-label="Remove detail" style="width:28px;height:28px">' + ICONS.trash + '</button></div>' +
-              field('Label', input('f:' + i + ':label', f.label, { max: 40, ph: 'e.g. Employee ID' })) +
-              field('Type', '<select class="select" data-m="f:' + i + ':type"><option value="text"' + (f.type === 'text' ? ' selected' : '') + '>Text</option><option value="date"' + (f.type === 'date' ? ' selected' : '') + '>Date</option></select>') +
-              sw('f:' + i + ':required', f.required, 'Required before the certificate can be issued').replace('margin-bottom', 'margin-bottom') + '</div>';
-          }).join('');
-          return '<div class="p-note">' + ICONS.info + '<span>Here you set which details appear. You fill in each learner\'s value in <b>People</b>, in their certificate drawer.</span></div>' + cards +
-            '<button class="btn btn-outline btn-sm" data-act="add-field"' + (D.fields.length >= MAX ? ' disabled' : '') + '>' + ICONS.plus + 'Add detail</button><p class="p-hint">Up to ' + MAX + ' details.</p>';
         }
         return '<div class="p-dl"><button class="btn btn-outline btn-sm" type="button">Download PDF</button><button class="btn btn-outline btn-sm" type="button">Download PNG</button><button class="btn btn-outline btn-sm" type="button">Print</button></div><p class="p-hint" style="margin-top:12px">Exports use a sample name as the recipient so you can preview the final layout.</p>';
       }
@@ -267,8 +252,7 @@
 
       function setPath(p, v) {
         var a = p.split(':');
-        if (a[0] === 'f') D.fields[+a[1]][a[2]] = v;
-        else if (a[0] === 'sig') D.sigs[+a[1]][a[2]] = v;
+        if (a[0] === 'sig') D.sigs[+a[1]][a[2]] = v;
         else if (p === 'months') D.months = Math.max(1, Math.min(120, parseInt(v, 10) || 1));
         else D[p] = v;
       }
@@ -295,12 +279,9 @@
         var act = a.getAttribute('data-act'); var v = a.getAttribute('data-v');
         if (act === 'tpl') D.template = v;
         if (act === 'accent') D.accent = v;
-        if (act === 'add-field' && D.fields.length < MAX) { D.fields.push({ label: '', type: 'text', required: false }); renderAll(); var ins = pb.querySelectorAll('[data-m$=":label"]'); if (ins.length) ins[ins.length - 1].focus(); return; }
-        if (act === 'del-field') D.fields.splice(+v, 1);
         renderAll();
       });
       $('save').onclick = function () {
-        D.fields = D.fields.filter(function (f) { f.label = f.label.trim(); return f.label; });
         snap = JSON.stringify(D); renderAll(); window.showToast('Certificate design saved');
       };
       $('discard').onclick = function () { D = JSON.parse(snap); renderAll(); };
