@@ -132,7 +132,7 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
       blockId: outro.id
     });
 
-    expect(written).toEqual({ blockId: outro.id, created: false });
+    expect(written).toEqual({ blockId: outro.id, created: false, changed: true });
     const contents = await noteContents(lessonId);
     expect(contents.find((block) => block.id === intro.id)?.content).toBe('<p>Intro</p>');
     expect(contents.find((block) => block.id === outro.id)?.content).toBe('<p>Three teams</p>');
@@ -146,10 +146,20 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
     const updated = await writeAgentLessonText({ lessonId: singleNoteLesson, locale: 'en', content: '<p>New</p>' });
     const created = await writeAgentLessonText({ lessonId: emptyLesson, locale: 'en', content: '<p>First</p>' });
 
-    expect(updated).toEqual({ blockId: note.id, created: false });
+    expect(updated).toEqual({ blockId: note.id, created: false, changed: true });
     expect((await noteContents(singleNoteLesson))[0].content).toBe('<p>New</p>');
     expect(created.created).toBe(true);
     expect(await noteContents(emptyLesson)).toEqual([{ id: created.blockId, type: 'note', content: '<p>First</p>' }]);
+  });
+
+  it('reports no change when the note already holds the same content', async () => {
+    const lessonId = await createLesson('unchanged-note');
+    const note = await createLessonBlock(lessonId, { type: 'note', data: {}, content: '<div>\n  <p>Same</p>\n</div>' });
+
+    const written = await writeAgentLessonText({ lessonId, locale: 'en', content: '<div><p>Same</p></div>' });
+
+    expect(written).toEqual({ blockId: note.id, created: false, changed: false });
+    expect((await noteContents(lessonId))[0].content).toBe('<div>\n  <p>Same</p>\n</div>');
   });
 
   it('rejects writing or removing a media block', async () => {

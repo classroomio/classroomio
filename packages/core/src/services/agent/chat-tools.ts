@@ -732,6 +732,20 @@ export function buildAgentTools(
             changeSetId: blockActor.changeSetId
           });
 
+          if (!written.changed) {
+            return {
+              lessonId: args.lessonId,
+              lessonTitle: lesson.title,
+              blockId: written.blockId,
+              blockCreated: false,
+              locale: args.locale,
+              contentLength: normalizedContent.length,
+              updated: false,
+              message:
+                'Nothing changed: this block already holds exactly this content. Do not tell the teacher you updated it. If they asked you to use a different block, write into that block and remove this one.'
+            };
+          }
+
           return {
             lessonId: args.lessonId,
             lessonTitle: lesson.title,
@@ -747,7 +761,7 @@ export function buildAgentTools(
 
     add_lesson_note_block: tool({
       description:
-        'Insert a new text (note) block into a lesson, e.g. to put text between two videos. Pass afterBlockId or beforeBlockId (from get_lesson_content) to place it; with neither it goes at the end. Same HTML rules as update_lesson_content.',
+        'Insert a new text (note) block into a lesson, e.g. to put text between two videos. Not for adding material to a lesson that already has a note block: extend that note with update_lesson_content instead, unless the teacher asked for a separate block. Pass afterBlockId or beforeBlockId (from get_lesson_content) to place it; with neither it goes at the end. Same HTML rules as update_lesson_content.',
       inputSchema: addLessonNoteBlockParam,
       execute: async (args) => {
         return executeAgentTool('add_lesson_note_block', { orgId, userId, courseId, args }, async () => {

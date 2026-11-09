@@ -133,6 +133,16 @@ function assertNotShared(block: LessonBlock): void {
   );
 }
 
+function collapseHtmlWhitespace(html: string): string {
+  return html.replace(/>\s+</g, '><').replace(/\s+/g, ' ').trim();
+}
+
+function isSameLessonHtml(current: string | null | undefined, next: string): boolean {
+  if (current == null) return false;
+
+  return collapseHtmlWhitespace(current) === collapseHtmlWhitespace(next);
+}
+
 function pickTargetTextBlock(blocks: LessonBlock[]): LessonBlock | null {
   const textBlocks = blocks.filter((block) => blockHasLocalizedContent(block.type));
   if (textBlocks.length > 1) {
@@ -163,7 +173,7 @@ export async function listAgentLessonBlocks(lessonId: string, locale: TLocale): 
  */
 export async function writeAgentLessonText(
   input: AgentTextWrite & { blockId?: string }
-): Promise<{ blockId: string; created: boolean }> {
+): Promise<{ blockId: string; created: boolean; changed: boolean }> {
   const blocks = await loadLessonBlocks(input.lessonId);
   const target = input.blockId ? findTextBlock(blocks, input.blockId) : pickTargetTextBlock(blocks);
 
@@ -174,7 +184,11 @@ export async function writeAgentLessonText(
       { actorProfileId: input.actorProfileId, source: 'assistant', changeSetId: input.changeSetId ?? null }
     );
 
-    return { blockId: created.id, created: true };
+    return { blockId: created.id, created: true, changed: true };
+  }
+
+  if (isSameLessonHtml(target.contents[input.locale], input.content)) {
+    return { blockId: target.id, created: false, changed: false };
   }
 
   assertNotShared(target);
@@ -186,7 +200,7 @@ export async function writeAgentLessonText(
     { actorProfileId: input.actorProfileId, source: 'assistant', changeSetId: input.changeSetId ?? null }
   );
 
-  return { blockId: target.id, created: false };
+  return { blockId: target.id, created: false, changed: true };
 }
 
 /**

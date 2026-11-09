@@ -19,6 +19,11 @@ export function isSelfHostedInstance(): boolean {
   return env.PUBLIC_IS_SELFHOSTED === 'true';
 }
 
+/** Without a Supadata key the worker skips every caption job without recording an outcome. */
+export function isCaptionProviderConfigured(): boolean {
+  return Boolean(env.SUPADATA_API_KEY);
+}
+
 /**
  * Whether an org may use Supadata at all — captions and playlist expansion alike.
  * Self-hosted is ungated because it brings its own key.

@@ -32,7 +32,9 @@
     "test": "vitest run",
     "format": "prettier --write .",
     "dev:media-hls": "tsx watch src/workers/media-hls.ts",
-    "start:media-hls": "node dist/workers/media-hls.js"
+    "start:media-hls": "node dist/workers/media-hls.js",
+    "dev:youtube-captions": "tsx watch src/workers/youtube-captions.ts",
+    "start:youtube-captions": "node dist/workers/youtube-captions.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",

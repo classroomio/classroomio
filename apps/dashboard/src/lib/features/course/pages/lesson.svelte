@@ -647,7 +647,7 @@
 
 <Page.Body class="w-full gap-0 pb-0!">
   {#snippet child()}
-    <div class="mx-auto w-full max-w-[min(48rem,calc(100%-3rem))] overflow-x-hidden">
+    <div class="mx-auto w-full overflow-x-hidden md:max-w-[min(48rem,calc(100%-3rem))]">
       {#if isLiveSessionLesson && mode === MODES.view && !($isCourseLearnerView && contentLockReason)}
         <div class="mb-4">
           <LiveSessionCard
@@ -834,7 +834,7 @@
 
     {#if showBlockViewComments}
       <div class="ui:border-border border-t">
-        <div class="mx-auto w-full max-w-[min(48rem,calc(100%-3rem))]">
+        <div class="mx-auto w-full px-3 md:max-w-[min(48rem,calc(100%-3rem))] md:px-0">
           <Comments {lessonId} />
         </div>
       </div>
