@@ -62,7 +62,7 @@ export const ZPublicApiAddCohortMembersResponse = z.object({
         code: z
           .string()
           .describe(
-            'For example MEMBER_ALREADY_IN_COHORT for an entry that already exists, so retrying a request duplicates nothing'
+            'For example MEMBER_ALREADY_IN_COHORT for an existing entry (so retrying duplicates nothing), or UPGRADE_REQUIRED when the org cannot take another student'
           ),
         message: z.string()
       })

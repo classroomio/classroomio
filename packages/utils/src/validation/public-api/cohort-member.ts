@@ -41,7 +41,7 @@ export const ZPublicApiAddCohortMembers = z.object({
           .email()
           .optional()
           .describe(
-            'Linked to its existing profile if there is one; otherwise the membership is stored against the email alone.'
+            'Linked to its profile if one exists; a student not yet in the organization joins it and uses a seat. Otherwise stored against the email alone.'
           ),
         name: z.string().optional(),
         roleId: ZPublicApiCohortMemberRole

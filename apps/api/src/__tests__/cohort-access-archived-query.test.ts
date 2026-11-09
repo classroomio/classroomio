@@ -23,7 +23,7 @@ function renderWhere() {
   return new PgDialect().sqlToQuery(predicate).sql;
 }
 
-describe('cohort access queries skip archived org members', () => {
+describe('cohort access queries require an active org membership for students', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.selectQuery.from.mockReturnValue(mocks.selectQuery);
@@ -39,6 +39,9 @@ describe('cohort access queries skip archived org members', () => {
     const sql = renderWhere();
     expect(sql).toContain('NOT EXISTS');
     expect(sql).toContain('"organizationmember"."status" = \'ARCHIVED\'');
+    expect(sql).toContain('"cohort_member"."role_id" <> $');
+    expect(sql).toContain('OR EXISTS');
+    expect(sql).toContain('"organizationmember"."status" = \'ACTIVE\'');
     expect(sql).toContain('"cohort"."organization_id"');
   });
 
@@ -46,7 +49,7 @@ describe('cohort access queries skip archived org members', () => {
     await getEnrolledCohortsByProfile('profile-1');
 
     const sql = renderWhere();
-    expect(sql).toContain('"organizationmember"."status" = \'ARCHIVED\'');
+    expect(sql).toContain('"organizationmember"."status" = \'ACTIVE\'');
   });
 
   it('checks the org member status on the my goals list', async () => {
@@ -55,6 +58,6 @@ describe('cohort access queries skip archived org members', () => {
     await getAssignmentsForProfile('profile-1');
 
     const sql = renderWhere();
-    expect(sql).toContain('"organizationmember"."status" = \'ARCHIVED\'');
+    expect(sql).toContain('"organizationmember"."status" = \'ACTIVE\'');
   });
 });

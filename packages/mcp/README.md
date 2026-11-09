@@ -307,14 +307,14 @@ Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
-- Reads need the key creator to be a cohort member who is not archived in the organization, or an org admin.
+- Reads need the key creator to be a cohort member who is not archived in the organization, or an org admin. A cohort student also needs an active organization membership.
 - Other writes, including invites, invite links, and goal evaluation, need the key creator to be a cohort tutor/admin or an org admin.
-- Posts, comments, and reactions are made as the key creator, so they also need the key creator to be a member of the cohort who is not archived in the organization. A reaction only ever changes the key creator's own reaction.
+- Posts, comments, and reactions are made as the key creator, so they also need the key creator to be a member of the cohort who is not archived in the organization (a cohort student also needs an active organization membership). A reaction only ever changes the key creator's own reaction.
 - A comment can also be deleted by its author.
 - `get_org_goals_overview` needs the key creator to be an org admin or tutor.
 - `list_my_enrolled_cohorts` and `list_my_cohort_goals` return the key creator's own data in the key's organization.
 
-`add_cohort_members` creates memberships directly and sends no email; `invite_students_to_cohort` is the dashboard invite flow (organization invites plus emails).
+`add_cohort_members` creates memberships directly and sends no email. A student added by `email` who has an account but is not in the organization yet is added to it and uses a plan seat, so that entry fails with `UPGRADE_REQUIRED` when the organization can't take another student. An email with no account is stored on its own and uses no seat. `invite_students_to_cohort` is the dashboard invite flow (organization invites plus emails).
 
 List tools (`list_org_cohorts`, `list_cohort_members`, `list_cohort_courses`, `list_cohort_goals`, `list_cohort_newsfeed_comments`, `list_my_enrolled_cohorts`, `list_my_cohort_goals`, `get_org_goals_overview`) take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`. `list_cohort_newsfeed` is cursor-based: pass the returned `nextCursor` back as `cursor`. `list_org_cohorts` also takes `search`, `status`, `sortBy` and `sortOrder`; `list_cohort_members` takes `search`, `roleId`, `membership`, `lastLoginBefore`, `sortBy` and `sortOrder`, the same filters as the dashboard.
 

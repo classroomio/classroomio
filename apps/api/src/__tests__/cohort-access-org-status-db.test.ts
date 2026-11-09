@@ -9,11 +9,14 @@ const hasDatabase = Boolean(
   process.env.DATABASE_URL || process.env.PRIVATE_DATABASE_URL || process.env.PGBOUNCER_DATABASE_URL
 );
 
-type StudentKey = 'active' | 'archived' | 'cohortOnly' | 'deleted';
-const STUDENTS: Array<{ key: StudentKey; orgStatus: 'ACTIVE' | 'ARCHIVED' | null }> = [
+type StudentKey = 'active' | 'archived' | 'noOrgMember' | 'tutorNoOrgMember' | 'archivedTutor' | 'deleted';
+// noOrgMember stands in for a student deleted before this fix: a leftover cohort row with no org membership.
+const STUDENTS: Array<{ key: StudentKey; orgStatus: 'ACTIVE' | 'ARCHIVED' | null; cohortRoleId?: number }> = [
   { key: 'active', orgStatus: 'ACTIVE' },
   { key: 'archived', orgStatus: 'ARCHIVED' },
-  { key: 'cohortOnly', orgStatus: null },
+  { key: 'noOrgMember', orgStatus: null },
+  { key: 'tutorNoOrgMember', orgStatus: null, cohortRoleId: ROLE.TUTOR },
+  { key: 'archivedTutor', orgStatus: 'ARCHIVED', cohortRoleId: ROLE.TUTOR },
   { key: 'deleted', orgStatus: 'ACTIVE' }
 ];
 
@@ -51,7 +54,9 @@ describe.skipIf(!hasDatabase)('cohort access follows org member status', () => {
         .values({ id: userRow.id, fullname: student.key, username: `${student.key}-${suffix}`, email });
       profileIdByKey.set(student.key, userRow.id);
 
-      await db.insert(schema.cohortMember).values({ cohortId, profileId: userRow.id, roleId: ROLE.STUDENT, email });
+      await db
+        .insert(schema.cohortMember)
+        .values({ cohortId, profileId: userRow.id, roleId: student.cohortRoleId ?? ROLE.STUDENT, email });
 
       if (student.orgStatus) {
         const [memberRow] = await db
@@ -86,12 +91,14 @@ describe.skipIf(!hasDatabase)('cohort access follows org member status', () => {
     }
   });
 
-  it('lets active and cohort-only students in, and keeps an archived student out', async () => {
+  it('lets active students and staff in, and keeps archived students and students with no org membership out', async () => {
     const { isCohortMember } = await import('@db/queries/cohort');
 
     expect(await isCohortMember(cohortId, profileId('active'))).toBe(true);
-    expect(await isCohortMember(cohortId, profileId('cohortOnly'))).toBe(true);
+    expect(await isCohortMember(cohortId, profileId('tutorNoOrgMember'))).toBe(true);
     expect(await isCohortMember(cohortId, profileId('archived'))).toBe(false);
+    expect(await isCohortMember(cohortId, profileId('noOrgMember'))).toBe(false);
+    expect(await isCohortMember(cohortId, profileId('archivedTutor'))).toBe(false);
   });
 
   it('hides the cohort from an archived student but still finds the row for duplicate checks', async () => {
@@ -101,6 +108,7 @@ describe.skipIf(!hasDatabase)('cohort access follows org member status', () => {
 
     expect((await getEnrolledCohortsByProfile(profileId('active'))).map((c) => c.id)).toEqual([cohortId]);
     expect(await getEnrolledCohortsByProfile(profileId('archived'))).toEqual([]);
+    expect(await getEnrolledCohortsByProfile(profileId('noOrgMember'))).toEqual([]);
     expect(await getCohortsByOrgForProfile(organizationId, profileId('archived'))).toEqual([]);
     expect(await findCohortMemberRowByProfileId(cohortId, profileId('archived'))).not.toBeNull();
   });

@@ -11,7 +11,7 @@ import {
   type TCohortPeopleSortOrder
 } from '@cio/utils/validation/cohort';
 import { db, type DbOrTxClient } from '@db/drizzle';
-import { notArchivedInCohortOrgSql } from './access';
+import { activeInCohortOrgSql } from './access';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -219,7 +219,7 @@ export async function getCohortsByOrgForProfile(
         and(
           eq(schema.cohortMember.profileId, profileId),
           eq(schema.cohort.organizationId, organizationId),
-          notArchivedInCohortOrgSql
+          activeInCohortOrgSql
         )
       );
 
@@ -263,7 +263,7 @@ export async function countCohortsByOrgForProfile(
           .select({ count: count(schema.cohort.id) })
           .from(schema.cohort)
           .innerJoin(schema.cohortMember, eq(schema.cohortMember.cohortId, schema.cohort.id))
-          .where(and(conditions, eq(schema.cohortMember.profileId, profileId), notArchivedInCohortOrgSql));
+          .where(and(conditions, eq(schema.cohortMember.profileId, profileId), activeInCohortOrgSql));
 
     return Number(countRow?.count ?? 0);
   } catch (error) {
@@ -334,7 +334,7 @@ export async function searchLmsCohorts(
           eq(schema.cohortMember.profileId, profileId),
           eq(schema.cohort.organizationId, orgId),
           eq(schema.cohort.status, 'ACTIVE'),
-          notArchivedInCohortOrgSql,
+          activeInCohortOrgSql,
           or(ilike(schema.cohort.name, searchValue), ilike(schema.cohort.description, searchValue))
         )
       )
@@ -424,7 +424,7 @@ export async function getCohortMemberById(
   }
 }
 
-/** Access lookup: returns null for a student archived in the cohort's organization. */
+/** Access lookup: null for anyone archived in the cohort's organization, or a student without an ACTIVE membership there. */
 export async function getCohortMemberByProfileId(cohortId: string, profileId: string): Promise<TCohortMember | null> {
   try {
     const [row] = await db
@@ -435,7 +435,7 @@ export async function getCohortMemberByProfileId(cohortId: string, profileId: st
         and(
           eq(schema.cohortMember.cohortId, cohortId),
           eq(schema.cohortMember.profileId, profileId),
-          notArchivedInCohortOrgSql
+          activeInCohortOrgSql
         )
       )
       .limit(1);
@@ -860,7 +860,7 @@ export async function getEnrolledCohortsByProfile(
       })
       .from(schema.cohortMember)
       .innerJoin(schema.cohort, eq(schema.cohortMember.cohortId, schema.cohort.id))
-      .where(and(eq(schema.cohortMember.profileId, profileId), notArchivedInCohortOrgSql))
+      .where(and(eq(schema.cohortMember.profileId, profileId), activeInCohortOrgSql))
       .orderBy(desc(schema.cohort.createdAt));
 
     return result.map((row) => ({

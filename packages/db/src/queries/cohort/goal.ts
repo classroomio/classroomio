@@ -3,7 +3,7 @@ import * as schema from '@db/schema';
 import { and, asc, count, eq, inArray, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
-import { notArchivedInCohortOrgSql } from './access';
+import { activeInCohortOrgSql } from './access';
 import type { TCohortListPage } from './cohort';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -304,11 +304,7 @@ export async function getAssignmentsForProfile(profileId: string): Promise<
       .innerJoin(schema.cohortGoal, eq(schema.cohortGoalAssignment.goalId, schema.cohortGoal.id))
       .innerJoin(schema.cohort, eq(schema.cohortGoal.cohortId, schema.cohort.id))
       .where(
-        and(
-          eq(schema.cohortMember.profileId, profileId),
-          eq(schema.cohortGoal.status, 'active'),
-          notArchivedInCohortOrgSql
-        )
+        and(eq(schema.cohortMember.profileId, profileId), eq(schema.cohortGoal.status, 'active'), activeInCohortOrgSql)
       );
 
     return result.map((row) => ({
