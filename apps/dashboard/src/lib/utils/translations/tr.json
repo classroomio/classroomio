@@ -2816,7 +2816,9 @@
                 "preview": "Önizleme",
                 "embed_ready": "Yerleştirmeye hazır",
                 "invalid_embed": "Tam iframe yerleştirme kodunu buradan yapıştırın platform.",
-                "unsupported": "Bu yerleştirme henüz desteklemediğimiz bir platformdan."
+                "unsupported": "Bu yerleştirme henüz desteklemediğimiz bir platformdan.",
+                "platform_mismatch": "Bu bir {detected} gömmesi, {selected} değil.",
+                "preview_in_platform": "{platform} içinde önizle"
               },
               "platforms": {
                 "google-slides": {

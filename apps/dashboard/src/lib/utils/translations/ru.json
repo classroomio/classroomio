@@ -2650,7 +2650,9 @@
                 "preview": "Предпросмотр",
                 "embed_ready": "Встраивание готово",
                 "invalid_embed": "Вставьте полный iframe-код с этой платформы.",
-                "unsupported": "Это встраивание с платформы, которую мы пока не поддерживаем."
+                "unsupported": "Это встраивание с платформы, которую мы пока не поддерживаем.",
+                "platform_mismatch": "Это встраивание {detected}, а не {selected}.",
+                "preview_in_platform": "Предпросмотр в {platform}"
               },
               "platforms": {
                 "google-slides": {

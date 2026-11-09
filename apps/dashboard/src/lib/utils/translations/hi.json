@@ -2644,7 +2644,9 @@
                 "preview": "पूर्वावलोकन",
                 "embed_ready": "एम्बेड तैयार",
                 "invalid_embed": "इस प्लेटफ़ॉर्म का पूरा iframe एम्बेड कोड पेस्ट करें।",
-                "unsupported": "यह एम्बेड किसी ऐसे प्लेटफ़ॉर्म से है जिसे हम अभी समर्थित नहीं करते।"
+                "unsupported": "यह एम्बेड किसी ऐसे प्लेटफ़ॉर्म से है जिसे हम अभी समर्थित नहीं करते।",
+                "platform_mismatch": "यह {detected} एम्बेड है, {selected} नहीं।",
+                "preview_in_platform": "{platform} में पूर्वावलोकन देखें"
               },
               "platforms": {
                 "google-slides": {

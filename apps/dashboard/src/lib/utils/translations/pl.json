@@ -2644,7 +2644,9 @@
                 "preview": "Podgląd",
                 "embed_ready": "Osadzenie gotowe",
                 "invalid_embed": "Wklej pełny kod iframe z tej platformy.",
-                "unsupported": "To osadzenie pochodzi z platformy, której jeszcze nie obsługujemy."
+                "unsupported": "To osadzenie pochodzi z platformy, której jeszcze nie obsługujemy.",
+                "platform_mismatch": "To osadzenie {detected}, a nie {selected}.",
+                "preview_in_platform": "Podgląd w {platform}"
               },
               "platforms": {
                 "google-slides": {
