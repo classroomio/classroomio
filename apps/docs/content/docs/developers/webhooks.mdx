@@ -23,9 +23,9 @@ Leave the secret blank to have ClassroomIO generate one. Every delivery is signe
 
 | Event | Sent when |
 | --- | --- |
-| `organization.invite.created` | A team invite is sent |
-| `organization.invite.accepted` | A team invite is accepted |
-| `organization.invite.revoked` | A team invite is revoked or replaced |
+| `organization.invite.created` | A team or student invite is sent |
+| `organization.invite.accepted` | A team or student invite is accepted |
+| `organization.invite.revoked` | A team or student invite is revoked, or a team invite is replaced |
 | `course.invite.created` | A student invite is created |
 | `course.invite.accepted` | A student accepts an invite and enrolls |
 | `course.invite.revoked` | A student invite is revoked |
@@ -93,11 +93,11 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
 
 Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `student` and `actor` (`id`, `name`, `email`, `externalId`), `course` (`id`, `title`, `slug`, `type`, `isPublished`, `cost`, `currency`, `tags`), a `status` label next to `statusId` (and `previousStatus` next to `previousStatusId`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`, and `links` with a staff `dashboard` URL and a `student` URL where the event has a page. `externalId` is the person's id in your identity provider when they signed in through your organization's SSO, otherwise `null`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
 
-### Team invites
+### Organization invites
 
 #### `organization.invite.created`
 
-A team invite is sent.
+A team or student invite is sent. Student invites come from Audience import, `POST /public-api/v1/audience` and cohort invites, with `roleId` 3. Renewing a student's invite replaces the old one without an `organization.invite.revoked` event.
 
 ```json
 {
@@ -126,7 +126,7 @@ A team invite is sent.
 
 #### `organization.invite.accepted`
 
-A team invite is accepted.
+A team or student invite is accepted.
 
 ```json
 {
@@ -158,7 +158,7 @@ A team invite is accepted.
 
 #### `organization.invite.revoked`
 
-A team invite is revoked or replaced.
+A team or student invite is revoked, or a team invite is replaced.
 
 ```json
 {

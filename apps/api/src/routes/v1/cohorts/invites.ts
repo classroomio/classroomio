@@ -37,7 +37,9 @@ export const v1CohortInvitesRouter = new Hono()
         ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: cohortForbiddenResponses.team,
+        403: {
+          description: `${cohortForbiddenResponses.team.description}, or the student limit fills up (UPGRADE_REQUIRED)`
+        },
         404: { description: 'Cohort not found' }
       }
     }),
