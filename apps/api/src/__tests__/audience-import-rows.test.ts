@@ -301,6 +301,18 @@ describe('importAudienceMembers — seat limit', () => {
 
     expect(result.rows[0].status).toBe('invite_resent');
     expect(result).toMatchObject({ pendingInvitesRenewed: 1 });
+    expect(assertStudentCapacityOrThrow).not.toHaveBeenCalled();
+  });
+
+  it('counts a renewed lapsed invite in the seat check, so milestone emails fire', async () => {
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(5);
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'lapsed@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: true }
+    ] as never);
+
+    await importAudienceMembers(ORG, csv('email', 'lapsed@test.dev', 'new@test.dev'), ACTOR);
+
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 2, TX, { deferNotification: true });
   });
 });
 
@@ -464,7 +476,8 @@ describe('updatePendingAudienceMemberEmail — seat limit', () => {
     await expect(
       updatePendingAudienceMemberEmail(ORG, 7, { email: 'new@test.dev', sendEmail: false }, ACTOR)
     ).rejects.toThrow('UPGRADE_REQUIRED');
-    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1);
+    expect(hasLapsedStudentInvite).toHaveBeenCalledWith(ORG, 7, TX);
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, TX, { deferNotification: true });
     expect(revokeActiveOrganizationInvitesByEmails).not.toHaveBeenCalled();
     expect(updateOrganizationAudienceMember).not.toHaveBeenCalled();
   });

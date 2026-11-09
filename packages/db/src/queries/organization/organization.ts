@@ -598,9 +598,10 @@ export const deleteGroupMembershipsForOrgProfiles = async (
 export const updateOrganizationAudienceMember = async (
   orgId: string,
   memberId: number,
-  data: Partial<Pick<TNewOrganizationmember, 'email' | 'verified'>>
+  data: Partial<Pick<TNewOrganizationmember, 'email' | 'verified'>>,
+  dbClient: DbOrTxClient = db
 ) => {
-  const [updated] = await db
+  const [updated] = await dbClient
     .update(schema.organizationmember)
     .set(data)
     .where(
