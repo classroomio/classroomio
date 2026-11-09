@@ -2644,7 +2644,9 @@
                 "preview": "Aperçu",
                 "embed_ready": "Intégration prête",
                 "invalid_embed": "Collez le code iframe complet de cette plateforme.",
-                "unsupported": "Cette intégration provient d’une plateforme que nous ne prenons pas encore en charge."
+                "unsupported": "Cette intégration provient d’une plateforme que nous ne prenons pas encore en charge.",
+                "platform_mismatch": "Il s'agit d'une intégration {detected}, pas {selected}.",
+                "preview_in_platform": "Aperçu dans {platform}"
               },
               "platforms": {
                 "google-slides": {

@@ -11,6 +11,8 @@ export const DEFAULT_SLIDE_EMBED_PICKER_LABELS: SlideEmbedPickerLabels = {
   embedReady: 'Embed ready',
   invalidEmbed: 'Paste the full iframe embed code from this platform.',
   unsupportedPlatform: 'That embed is from a platform we do not support yet.',
+  platformMismatch: 'This is a {detected} embed, not {selected}.',
+  previewInPlatform: 'Preview in {platform}',
   platforms: {
     'google-slides': {
       hint: 'File → Share → Publish to web → Embed',

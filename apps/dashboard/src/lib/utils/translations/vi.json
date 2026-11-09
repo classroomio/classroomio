@@ -2644,7 +2644,9 @@
                 "preview": "Xem trước",
                 "embed_ready": "Mã nhúng sẵn sàng",
                 "invalid_embed": "Dán toàn bộ mã iframe từ nền tảng này.",
-                "unsupported": "Mã nhúng này đến từ nền tảng chúng tôi chưa hỗ trợ."
+                "unsupported": "Mã nhúng này đến từ nền tảng chúng tôi chưa hỗ trợ.",
+                "platform_mismatch": "Đây là mã nhúng {detected}, không phải {selected}.",
+                "preview_in_platform": "Xem trước trong {platform}"
               },
               "platforms": {
                 "google-slides": {
