@@ -11,15 +11,24 @@
     summarizeOAuthScopes
   } from '$features/oauth/utils/oauth-scopes';
   import { t } from '$lib/utils/functions/translations';
+  import { canOAuthScopesChangeData, getReadOnlyOAuthScopes } from '@cio/utils/constants/oauth-scopes';
+  import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import * as Field from '@cio/ui/base/field';
+  import { Skeleton } from '@cio/ui/base/skeleton';
+  import { Switch } from '@cio/ui/base/switch';
   import CheckIcon from '@lucide/svelte/icons/check';
 
   let isReady = $state(false);
+  let pendingDecision = $state<'allow' | 'deny' | null>(null);
+  let allowChanges = $state(true);
 
   const oauthQuery = $derived(getOAuthQuery(page.url.search));
   const isValidRequest = $derived(isOAuthAuthorizationQuery(page.url.searchParams));
   const scopes = $derived(parseOAuthScopeParam(page.url.searchParams.get('scope')));
-  const scopeSummaries = $derived(summarizeOAuthScopes(scopes));
+  const canRequestChanges = $derived(canOAuthScopesChangeData(scopes));
+  const grantedScopes = $derived(allowChanges ? scopes : getReadOnlyOAuthScopes(scopes));
+  const scopeSummaries = $derived(summarizeOAuthScopes(grantedScopes));
   const clientName = $derived(oauthApi.client?.client_name || t.get('oauth.consent.unknown_client'));
   const redirectHost = $derived.by(() => {
     try {
@@ -28,11 +37,21 @@
       return '';
     }
   });
-  const canRespond = $derived(isValidRequest && Boolean(oauthApi.selectedOrganization));
+  // The server owns the selected workspace; a transient failure reading it back must not block a
+  // consent request the authorization server can still complete.
+  const canRespond = $derived(isValidRequest);
+  const isSubmitting = $derived(pendingDecision !== null || oauthApi.isLoading);
 
   async function respond(accept: boolean) {
-    const redirectUrl = await oauthApi.submitConsent(accept, oauthQuery);
-    if (redirectUrl) window.location.href = redirectUrl;
+    if (isSubmitting) return;
+
+    pendingDecision = accept ? 'allow' : 'deny';
+    const narrowedScopes = accept && !allowChanges ? grantedScopes : undefined;
+    const redirected = await oauthApi.submitConsent(accept, oauthQuery, narrowedScopes);
+
+    if (!redirected) {
+      pendingDecision = null;
+    }
   }
 
   onMount(async () => {
@@ -40,7 +59,11 @@
 
     try {
       if (clientId) {
-        await Promise.all([oauthApi.loadClient(clientId), oauthApi.loadSelectedOrganization()]);
+        await Promise.all([
+          oauthApi.loadClient(clientId),
+          oauthApi.loadClientTrust(clientId),
+          oauthApi.loadSelectedOrganization()
+        ]);
       }
     } finally {
       isReady = true;
@@ -50,19 +73,45 @@
 
 <svelte:head><title>{$t('oauth.consent.page_title')}</title></svelte:head>
 
-<AuthUI showOnlyContent showLogo isLoading={oauthApi.isLoading} handleSubmit={() => respond(true)}>
-  {#if isReady && !canRespond}
+<AuthUI showOnlyContent showLogo isLoading={isSubmitting} handleSubmit={() => respond(true)}>
+  {#if !isReady}
+    <div class="flex flex-col gap-6">
+      <div class="space-y-2 text-center">
+        <Skeleton class="mx-auto h-7 w-3/4" />
+        <Skeleton class="mx-auto h-4 w-44" />
+      </div>
+
+      <div class="space-y-3">
+        <Skeleton class="h-4 w-40" />
+        <div class="space-y-2">
+          <Skeleton class="h-4 w-full" />
+          <Skeleton class="h-4 w-5/6" />
+          <Skeleton class="h-4 w-4/6" />
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <Skeleton class="h-9 flex-1 rounded-md" />
+        <Skeleton class="h-9 flex-1 rounded-md" />
+      </div>
+    </div>
+  {:else if !canRespond}
     <div class="space-y-1 text-center">
       <h1 class="text-xl font-medium">{$t('oauth.consent.error_title')}</h1>
       <p class="ui:text-muted-foreground text-sm">{$t('oauth.consent.error_description')}</p>
     </div>
-  {:else if isReady}
+  {:else}
     <div class="flex flex-col gap-6">
       <div class="space-y-1 text-center">
         <h1 class="text-2xl font-normal">{$t('oauth.consent.title', { client: clientName })}</h1>
-        <p class="ui:text-muted-foreground text-sm">
-          {$t('oauth.consent.workspace', { workspace: oauthApi.selectedOrganization?.name ?? '' })}
-        </p>
+        {#if oauthApi.clientTrust?.trusted}
+          <Badge variant="secondary" class="mx-auto">{$t('oauth.consent.verified')}</Badge>
+        {/if}
+        {#if oauthApi.selectedOrganization}
+          <p class="ui:text-muted-foreground text-sm">
+            {$t('oauth.consent.workspace', { workspace: oauthApi.selectedOrganization.name })}
+          </p>
+        {/if}
       </div>
 
       <div class="space-y-3">
@@ -83,6 +132,20 @@
         </ul>
       </div>
 
+      {#if canRequestChanges}
+        <Field.Field orientation="horizontal">
+          <Switch id="oauth-consent-allow-changes" bind:checked={allowChanges} disabled={isSubmitting} />
+          <div class="space-y-0.5">
+            <Field.Label for="oauth-consent-allow-changes">
+              {$t('oauth.consent.allow_changes.label', { client: clientName })}
+            </Field.Label>
+            <Field.Description>
+              {$t('oauth.consent.allow_changes.description', { client: clientName })}
+            </Field.Description>
+          </div>
+        </Field.Field>
+      {/if}
+
       <div class="ui:text-muted-foreground space-y-1 text-xs">
         <p>{$t('oauth.consent.admin_note')}</p>
         {#if redirectHost}
@@ -99,13 +162,20 @@
           type="button"
           variant="outline"
           class="flex-1"
-          disabled={oauthApi.isLoading}
+          loading={pendingDecision === 'deny'}
+          disabled={isSubmitting}
           onclick={() => respond(false)}
           testId="oauth-consent-deny"
         >
           {$t('oauth.consent.deny')}
         </Button>
-        <Button type="submit" class="flex-1" loading={oauthApi.isLoading} testId="oauth-consent-allow">
+        <Button
+          type="submit"
+          class="flex-1"
+          loading={pendingDecision === 'allow'}
+          disabled={isSubmitting}
+          testId="oauth-consent-allow"
+        >
           {$t('oauth.consent.allow')}
         </Button>
       </div>

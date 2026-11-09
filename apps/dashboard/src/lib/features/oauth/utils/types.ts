@@ -3,6 +3,7 @@ import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 export type ListOAuthOrganizationsRequest = typeof classroomio.oauth.organizations.$get;
 export type GetOAuthOrganizationSelectionRequest = (typeof classroomio.oauth)['organization-selection']['$get'];
 export type SelectOAuthOrganizationRequest = (typeof classroomio.oauth)['organization-selection']['$post'];
+export type GetOAuthClientTrustRequest = (typeof classroomio.oauth)['clients'][':clientId']['$get'];
 
 export type ListOAuthOrganizationsSuccess = Extract<
   InferResponseType<ListOAuthOrganizationsRequest>,
@@ -12,8 +13,10 @@ export type GetOAuthOrganizationSelectionSuccess = Extract<
   InferResponseType<GetOAuthOrganizationSelectionRequest>,
   { success: true }
 >;
+export type GetOAuthClientTrustSuccess = Extract<InferResponseType<GetOAuthClientTrustRequest>, { success: true }>;
 
 export type OAuthOrganization = ListOAuthOrganizationsSuccess['data'][number];
+export type OAuthClientTrust = GetOAuthClientTrustSuccess['data'];
 
 export type OAuthRedirectResponse = {
   redirect: boolean;
@@ -40,7 +43,8 @@ export type OAuthScopeGroupKey =
   | 'team'
   | 'organization'
   | 'analytics'
-  | 'media';
+  | 'media'
+  | 'webhooks';
 
 export type OAuthScopeSummary = {
   group: OAuthScopeGroupKey;

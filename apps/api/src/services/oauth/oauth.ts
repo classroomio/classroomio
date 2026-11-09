@@ -1,5 +1,11 @@
-import type { TOrganizationApiKey } from '@cio/db/types';
-import { InvalidOAuthTokenError, verifyOAuthAccessToken, type OAuthResourceKind } from '@cio/db/auth';
+import type { TOrganizationApiKey, TPlan } from '@cio/db/types';
+import {
+  InvalidOAuthTokenError,
+  isTrustedOAuthClient,
+  PUBLIC_API_RESOURCE,
+  verifyOAuthAccessToken,
+  type OAuthResourceKind
+} from '@cio/db/auth';
 import {
   findActiveOAuthConsent,
   getOAuthOrganizationSelection,
@@ -11,12 +17,41 @@ import {
   revokeUserOAuthGrantsInOrganization,
   saveOAuthOrganizationSelection
 } from '@cio/db/queries/auth';
+import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
+import { canUsePublicApi } from '@cio/utils/plans';
+import { env } from '@cio/core/config/env';
+import { refreshOrgHasWebhookEndpoints } from '@cio/core/services/webhook/endpoint-cache';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertPublicApiAllowed } from '@api/services/organization/automation-usage';
+import { getConnectedAppKind } from './clients';
 
-export async function listOAuthOrganizationsService(userId: string) {
-  return listOAuthEligibleOrganizations(userId);
+export type TOAuthGrant = {
+  key: TOrganizationApiKey;
+  clientId: string;
+  /** Plan checked for public API grants; null for grants that never touch the public API. */
+  planName: TPlan | null;
+};
+
+/**
+ * Admin workspaces the user can pick for an OAuth flow. For the public API resource, a workspace whose plan
+ * excludes the public API is returned with `eligible: false` and `reason: 'plan'`.
+ */
+export async function listOAuthOrganizationsService(userId: string, resource?: string) {
+  const organizations = await listOAuthEligibleOrganizations(userId);
+  const needsPublicApi = resource === PUBLIC_API_RESOURCE;
+  const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
+  const plans = needsPublicApi
+    ? await Promise.all(organizations.map((organization) => getActiveOrganizationPlan(organization.id)))
+    : [];
+
+  return organizations.map((organization, index) => {
+    const plan = plans[index];
+    const eligible = !needsPublicApi || canUsePublicApi(plan?.planName, isSelfHosted);
+    const reason = eligible ? null : ('plan' as const);
+
+    return { ...organization, eligible, reason };
+  });
 }
 
 export async function getSelectedOAuthOrganizationService(sessionId: string, userId: string) {
@@ -46,10 +81,16 @@ export async function selectOAuthOrganizationService(sessionId: string, userId: 
 export async function listOAuthConnectedAppsService(organizationId: string) {
   const apps = await listOAuthConnectedApps(organizationId);
 
-  return apps.map((app) => ({
-    ...app,
-    lastUsedAt: app.lastUsedAt ? new Date(app.lastUsedAt).toISOString() : null
-  }));
+  return apps.map((app) => {
+    const kind = getConnectedAppKind(app.clientId);
+    const lastUsedAt = app.lastUsedAt ? new Date(app.lastUsedAt).toISOString() : null;
+
+    return {
+      ...app,
+      kind,
+      lastUsedAt
+    };
+  });
 }
 
 export async function revokeOAuthConnectedAppService(organizationId: string, consentId: string) {
@@ -58,6 +99,15 @@ export async function revokeOAuthConnectedAppService(organizationId: string, con
   if (!revoked) {
     throw new AppError('Connected app not found', ErrorCodes.OAUTH_CONNECTED_APP_NOT_FOUND, 404);
   }
+
+  await refreshOrgHasWebhookEndpoints(organizationId);
+}
+
+export function getOAuthClientTrustService(clientId: string) {
+  const trusted = isTrustedOAuthClient(clientId);
+  const kind = getConnectedAppKind(clientId);
+
+  return { clientId, trusted, kind };
 }
 
 /**
@@ -68,7 +118,7 @@ export async function revokeOAuthConnectedAppService(organizationId: string, con
 export async function authenticateOAuthAccessTokenService(
   token: string,
   resource: OAuthResourceKind
-): Promise<TOrganizationApiKey> {
+): Promise<TOAuthGrant> {
   const claims = await verifyOAuthAccessToken(token, resource).catch((error: unknown) => {
     if (error instanceof InvalidOAuthTokenError) {
       throw new AppError('Invalid or expired access token', ErrorCodes.UNAUTHORIZED, 401);
@@ -93,9 +143,7 @@ export async function authenticateOAuthAccessTokenService(
     throw new AppError('Access has been revoked', ErrorCodes.UNAUTHORIZED, 401);
   }
 
-  if (claims.kind === 'api') {
-    await assertPublicApiAllowed(claims.organizationId);
-  }
+  const planName = claims.kind === 'api' ? await assertPublicApiAllowed(claims.organizationId) : null;
 
   const grantKey = await getOrCreateOAuthGrantKey({
     consentId: consent.id,
@@ -105,5 +153,5 @@ export async function authenticateOAuthAccessTokenService(
     label: 'OAuth connection'
   });
 
-  return { ...grantKey, scopes: claims.scopes };
+  return { key: { ...grantKey, scopes: claims.scopes }, clientId: claims.clientId, planName };
 }

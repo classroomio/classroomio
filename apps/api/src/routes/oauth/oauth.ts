@@ -1,4 +1,8 @@
-import { ZSelectOAuthOrganization } from '@cio/utils/validation/organization';
+import {
+  ZListOAuthOrganizationsQuery,
+  ZOAuthClientParam,
+  ZSelectOAuthOrganization
+} from '@cio/utils/validation/organization';
 import { zValidator } from '@hono/zod-validator';
 
 import { authMiddleware } from '@api/middlewares/auth';
@@ -6,6 +10,7 @@ import { handleError } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
 import { MCP_RESOURCE } from '@cio/db/auth';
 import {
+  getOAuthClientTrustService,
   getSelectedOAuthOrganizationService,
   listOAuthOrganizationsService,
   selectOAuthOrganizationService
@@ -13,15 +18,21 @@ import {
 
 export const oauthRouter = new Hono()
   .get('/config', authMiddleware, (c) => c.json({ success: true, data: { mcpUrl: MCP_RESOURCE } }, 200))
-  .get('/organizations', authMiddleware, async (c) => {
+  .get('/organizations', authMiddleware, zValidator('query', ZListOAuthOrganizationsQuery), async (c) => {
     try {
       const user = c.get('user')!;
-      const organizations = await listOAuthOrganizationsService(user.id);
+      const { resource } = c.req.valid('query');
+      const organizations = await listOAuthOrganizationsService(user.id, resource);
 
       return c.json({ success: true, data: organizations }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list organizations');
     }
+  })
+  .get('/clients/:clientId', authMiddleware, zValidator('param', ZOAuthClientParam), (c) => {
+    const { clientId } = c.req.valid('param');
+
+    return c.json({ success: true, data: getOAuthClientTrustService(clientId) }, 200);
   })
   .get('/organization-selection', authMiddleware, async (c) => {
     try {

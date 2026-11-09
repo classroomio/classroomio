@@ -1,7 +1,7 @@
 ---
 title: 'Create and manage webhooks'
 description: 'Send signed ClassroomIO events to Slack, your CRM, or your own server, and check which deliveries failed.'
-last_reviewed: '2026-10-19'
+last_reviewed: '2026-10-31'
 ---
 
 Create a webhook to have ClassroomIO send an HTTP request to a URL you control whenever something happens in your organization, such as a student finishing a course or a submission being created. Only organization administrators can create, edit, or delete webhooks.
@@ -14,8 +14,12 @@ Webhooks use the same entitlement as the public API. On ClassroomIO cloud they r
 
 ## Before you start
 
-- Have a public HTTPS URL that accepts a `POST` request and answers with a `2xx` status within 10 seconds. A tool such as Zapier, Make, or Slack's incoming webhooks can give you one.
+- Have a public HTTPS URL that accepts a `POST` request and answers with a `2xx` status within 10 seconds. Services such as Make, Pipedream, or Slack's incoming webhooks can give you one.
 - Decide which events you need. You can change them later.
+
+:::tip[Connecting to Zapier?]
+If you are using Zapier, you do not need to set up webhooks manually here. Connect with the native [ClassroomIO Zapier integration](/integrations-and-automation/connect-classroomio-to-zapier), which subscribes to instant triggers and manages webhook deliveries automatically.
+:::
 
 ## Create a webhook
 
@@ -88,7 +92,7 @@ Select **Redeliver** to send the same event again after you fix your server. The
 
 ## How failed deliveries are retried
 
-ClassroomIO tries a failed delivery up to three times: right away, then again after 10 seconds, and once more after 1 minute. After the last attempt the delivery is marked **Failed**. Redirects are not followed and count as failures.
+ClassroomIO tries a failed delivery up to six times: right away, then again after 10 seconds, 1 minute, 5 minutes, 30 minutes, and 2 hours. After the last attempt the delivery is marked **Failed**. Redirects are not followed and count as failures.
 
 ## Pause, edit, or delete a webhook
 
@@ -118,5 +122,6 @@ Cloud organizations need a public HTTPS URL. Addresses on a private network and 
 
 ## Related guides
 
-- [Understand ClassroomIO integrations](/integrations-and-automation/understand-classroomio-integrations) — compare webhooks with the API and MCP.
+- [Connect ClassroomIO to Zapier](/integrations-and-automation/connect-classroomio-to-zapier) — use no-code instant triggers and actions without configuring webhook URLs manually.
+- [Understand ClassroomIO integrations](/integrations-and-automation/understand-classroomio-integrations) — compare webhooks with Zapier, the API, and MCP.
 - [Webhook developer documentation](https://classroomio.com/docs/developers/webhooks) — event payloads and signature verification.

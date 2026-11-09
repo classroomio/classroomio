@@ -1,0 +1,32 @@
+{
+  "name": "@cio/zapier",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": "./dist/index.js",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "validate": "pnpm build && zapier-platform validate",
+    "use:staging": "node scripts/use-integration.mjs staging",
+    "use:production": "node scripts/use-integration.mjs production",
+    "zapier:build": "node scripts/build.mjs && node scripts/package-app.mjs build --skip-validation",
+    "zapier:push": "node scripts/build.mjs && node scripts/package-app.mjs push",
+    "zapier:promote": "zapier-platform promote"
+  },
+  "dependencies": {
+    "zapier-platform-core": "19.2.1"
+  },
+  "devDependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "@cio/utils": "workspace:*",
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.25.11",
+    "nock": "^14.0.0",
+    "typescript": "^5.5.2",
+    "vitest": "^1.2.2",
+    "zapier-platform-cli": "19.2.1"
+  }
+}

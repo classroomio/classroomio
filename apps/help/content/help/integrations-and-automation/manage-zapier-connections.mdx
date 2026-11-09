@@ -1,0 +1,108 @@
+---
+title: 'Manage Zapier connections'
+description: 'Audit connected Zapier accounts, inspect active trigger subscriptions, remove access, and troubleshoot integration issues.'
+last_reviewed: '2026-10-31'
+---
+
+Organization administrators can audit active Zapier connections, review real-time trigger subscriptions, and revoke credentials directly from the ClassroomIO dashboard.
+
+:::info[Plan requirement]
+Connecting Zapier requires an Early Adopter or Enterprise plan on ClassroomIO cloud. Administrators on other plans can still review and remove existing connections.
+:::
+
+![Zapier tab showing the Connections table with a connected admin and active trigger count](./images/manage-zapier-connections/overview.webp)
+
+## The connections table
+
+To manage connected Zapier accounts, open **Automation** in the admin dashboard and select the **Zapier** tab. The **Connections** table lists every administrator who authorized a Zapier account for this organization:
+
+{/* SIGN-OFF DECISION (D8): Dashboard shows connected instances and active triggers; individual Zaps are managed on Zapier. */}
+| Column | Description |
+| --- | --- |
+| **Connected by** | The administrator who authorized the connection. Shows **Former admin** when their account is no longer part of the organization. |
+| **Access** | The access level granted to Zapier: **Read and write** or **Read only**. |
+| **Active triggers** | The number of real-time trigger subscriptions registered by that connection. |
+| **Last used** | When Zapier last used the connection, or **Never**. |
+| **Connected** | The date the connection was authorized. |
+
+## Viewing active triggers
+
+ClassroomIO uses instant REST hooks to deliver events to Zapier the moment they occur. When you turn on a Zap that begins with a ClassroomIO trigger, Zapier automatically registers a subscription with your organization.
+
+To view these subscriptions:
+
+1. Locate the connection in the table and open its **⋮** menu.
+2. Select **View triggers**. A side sheet lists every trigger registered by that connection:
+   - **Trigger name**: The event type, such as _New course enrollment_ or _Course completed_.
+   - **Health**: **Healthy**, **Failing**, or **Disabled**.
+   - **Course filter**: Shown as `Only for {course}` when the trigger watches a single course.
+   - **Cohort filter**: Shown as `Only for {cohort}` when the trigger watches a single cohort.
+   - **Last delivery**: The date of the last event sent, or **No events sent yet**.
+   - **Created**: When the trigger subscription was registered.
+
+Individual Zaps, step mappings, and workflow logic are configured and managed directly on [Zapier](https://zapier.com/app/zaps).
+
+## Removing access (Revoking a connection)
+
+You can revoke access at any time if a Zapier account is no longer needed, during employee offboarding, or as a security precaution:
+
+1. Open the **⋮** menu on the connection row and select **Remove access**.
+2. A confirmation dialog explains how many trigger subscriptions will be deleted and that Zaps using the connection will stop.
+3. Select **Remove access** to confirm.
+
+When access is removed:
+
+- The connection's OAuth tokens are invalidated immediately.
+- Trigger subscriptions registered by that connection stop receiving events and are cleaned up automatically.
+- Any active Zaps in Zapier using this connection stop receiving triggers and fail with authorization errors if they attempt to run actions.
+
+To reconnect, select **Connect on Zapier** on the Zapier tab or re-authorize the account inside Zapier.
+
+## What happens on a plan downgrade
+
+{/* SIGN-OFF DECISION (D7): Plan downgrade pauses connections rather than revoking them immediately. Upgrading restores them without reconnecting. */}
+If your organization moves below the Early Adopter plan (for example, switching to the Basic plan):
+
+- Connected Zapier accounts are **paused, not deleted**.
+- Requests made by Zapier actions fail with an `UPGRADE_REQUIRED` error.
+- Event trigger deliveries to Zapier are suspended while the plan is ineligible.
+- The Zapier tab displays an upgrade banner indicating that connections are paused.
+
+When you upgrade back to Early Adopter or Enterprise, your connections automatically unpause and resume delivering events without requiring you to reconnect accounts or re-configure field mappings in Zapier.
+
+## When an administrator leaves the organization
+
+OAuth connections are bound to the administrator account that authorized them:
+
+- If that administrator is demoted to a tutor or student role, or is removed from the organization, their OAuth connections and tokens are deleted immediately for security.
+- Any Zaps connected under that administrator will pause or fail until a current administrator re-authorizes the connection in Zapier.
+
+**Best practice:** When planning team changes, have another administrator re-authorize the connection in Zapier before removing the departing administrator.
+
+## Troubleshooting
+
+### Zapier prompts to reconnect
+
+Refresh tokens expire after 90 days of inactivity. If your Zaps have not made requests or received events in 90 days, or if the authorizing administrator's account was modified, Zapier prompts you to reconnect. Select **Reconnect** in Zapier and complete the sign-in prompt.
+
+### 403 Forbidden or "Plan doesn't include Zapier"
+
+Zapier requires an active Early Adopter or Enterprise plan on ClassroomIO cloud. Check your subscription under **Settings → Billing**. If the plan was recently downgraded, upgrade to restore integration access.
+
+### 429 Too Many Requests (Rate limits)
+
+Zapier requests are rate limited per organization, not per connection: Early Adopter allows 120 reads and 40 writes per minute, and Enterprise allows 360 reads and 120 writes per minute. If you run high-volume Zaps that process hundreds of items simultaneously, add delay steps in Zapier or batch operations to remain within the rate limit.
+
+### Missing trigger events
+
+ClassroomIO retries a failed webhook delivery 5 times over about 2.6 hours (6 attempts in total) before marking it failed. If an event did not trigger your Zap:
+
+1. Open **View triggers** on the Zapier tab and verify that the trigger health is **Healthy**.
+2. Confirm in Zapier that your Zap is turned **On**.
+3. Check your Zap history in Zapier to verify whether Zapier received the event or experienced an execution error.
+
+### Avoiding infinite loops
+
+If a Zap performs an action in ClassroomIO that triggers another Zap (for example, Zap A enrolls a student, which fires the _New Course Enrollment_ trigger for Zap B), an event loop can occur.
+
+Every ClassroomIO enrollment event includes `source.oauthClientId` in its data payload. In Zapier, you can add a **Filter** step that ignores events where `source.oauthClientId` matches your Zapier integration to prevent accidental loops.

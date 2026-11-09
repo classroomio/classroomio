@@ -344,6 +344,14 @@
       "when": 1794059018119,
       "tag": "0048_retire_deactivated_member_status",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1794214338589,
+      "tag": "0049_webhook_subscriptions",
+
+      "breakpoints": true
     }
   ]
 }

@@ -21,6 +21,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    // These need a real Postgres; run them with `test:db` and TEST_DATABASE_URL.
+    exclude: ['**/node_modules/**', '**/__tests__/db/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

@@ -8,6 +8,7 @@ import { v1CourseExerciseQuestionsRouter } from './exercise-questions';
 import { v1CourseExerciseSectionsRouter } from './exercise-sections';
 import { v1CourseExercisesRouter } from './exercises';
 import { v1CourseInvitesRouter } from './invites';
+import { v1CourseEnrollmentsRouter } from './enrollments';
 import { v1CourseLessonCommentsRouter } from './lesson-comments';
 import { v1CourseLessonHistoryRouter, v1CourseLessonTranslationsRouter } from './lesson-translations';
 import { v1CourseLessonsRouter } from './lessons';
@@ -22,6 +23,7 @@ export const v1CoursesRouter = new Hono()
   .route('/', v1CourseRouter)
   .route('/:courseId/members/:memberId', v1CourseStudentRouter)
   .route('/:courseId/members', v1CourseMembersRouter)
+  .route('/:courseId/enrollments', v1CourseEnrollmentsRouter)
   .route('/:courseId/invites', v1CourseInvitesRouter)
   .route('/:courseId/certificate', v1CourseCertificateRouter)
   .route('/:courseId/certificates', v1CourseCertificatesRouter)

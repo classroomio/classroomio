@@ -77,7 +77,7 @@ vi.mock('@api/services/v1/courses/course', () => ({
   createPublicApiCourseService: vi.fn(),
   deletePublicApiCourseService: vi.fn(),
   exportCourseService: vi.fn(),
-  getCourseService: vi.fn(),
+  getCourseService: vi.fn().mockResolvedValue({}),
   listCoursesService: vi.fn().mockResolvedValue({ items: [], pagination: {}, query: {} }),
   listCourseStudentsService: vi.fn(),
   updatePublicApiCourseService: vi.fn().mockResolvedValue({ course: { tags: [] }, conversionOffenders: null }),
@@ -148,6 +148,7 @@ describe('default MCP key across the cohort, course member, certificate, exercis
 
   it.each([
     ['/courses', 'list_org_courses'],
+    [`/courses/${COURSE_ID}`, 'GET /public-api/v1/courses/:courseId'],
     ['/cohorts', 'list_org_cohorts'],
     [`/courses/${COURSE_ID}/members`, 'list_course_members'],
     [`/courses/${COURSE_ID}/certificate`, 'get_course_certificate'],
@@ -166,10 +167,13 @@ describe('default MCP key across the cohort, course member, certificate, exercis
   });
 
   it.each([
-    ['GET', `/courses/${COURSE_ID}`],
-    ['POST', '/courses']
+    ['POST', '/courses'],
+    ['DELETE', `/courses/${COURSE_ID}`],
+    ['GET', `/courses/${COURSE_ID}/students`],
+    ['GET', `/courses/${COURSE_ID}/export`],
+    ['GET', `/courses/${COURSE_ID}/structure`]
   ])('is kept out of %s %s', async (method, path) => {
-    const response = await request(path, method, method === 'POST' ? { title: 'New course' } : undefined);
+    const response = await request(path, method);
 
     expect(response.status).toBe(403);
     expect(mocks.complete).not.toHaveBeenCalled();

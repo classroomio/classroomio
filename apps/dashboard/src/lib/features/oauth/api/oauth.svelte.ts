@@ -1,7 +1,9 @@
 import type {
+  GetOAuthClientTrustRequest,
   GetOAuthOrganizationSelectionRequest,
   ListOAuthOrganizationsRequest,
   OAuthClientInfo,
+  OAuthClientTrust,
   OAuthOrganization,
   OAuthRedirectResponse,
   SelectOAuthOrganizationRequest
@@ -13,13 +15,24 @@ class OAuthApi extends BaseApiWithErrors {
   organizations = $state<OAuthOrganization[] | null>(null);
   selectedOrganization = $state<OAuthOrganization | null>(null);
   client = $state<OAuthClientInfo | null>(null);
+  clientTrust = $state<OAuthClientTrust | null>(null);
 
-  async listOrganizations() {
+  async listOrganizations(resource?: string) {
     return this.execute<ListOAuthOrganizationsRequest>({
-      requestFn: () => classroomio.oauth.organizations.$get(),
+      requestFn: () => classroomio.oauth.organizations.$get({ query: resource ? { resource } : {} }),
       logContext: 'listing OAuth organizations',
       onSuccess: (response) => {
         this.organizations = response.data;
+      }
+    });
+  }
+
+  async loadClientTrust(clientId: string) {
+    return this.execute<GetOAuthClientTrustRequest>({
+      requestFn: () => classroomio.oauth.clients[':clientId'].$get({ param: { clientId } }),
+      logContext: 'loading OAuth client trust',
+      onSuccess: (response) => {
+        this.clientTrust = response.data;
       }
     });
   }
@@ -55,33 +68,43 @@ class OAuthApi extends BaseApiWithErrors {
     }
   }
 
-  async continueAfterOrganization(oauthQuery: string): Promise<string | null> {
+  async continueAfterOrganization(oauthQuery: string): Promise<boolean> {
     return this.postAuthorizationStep('/oauth2/continue', { postLogin: true, oauth_query: oauthQuery });
   }
 
-  async submitConsent(accept: boolean, oauthQuery: string): Promise<string | null> {
-    return this.postAuthorizationStep('/oauth2/consent', { accept, oauth_query: oauthQuery });
+  /**
+   * Sends the admin's decision. `grantedScopes`, when set, narrows the grant to a subset of the requested scopes.
+   */
+  async submitConsent(accept: boolean, oauthQuery: string, grantedScopes?: string[]): Promise<boolean> {
+    const body: Record<string, unknown> = { accept, oauth_query: oauthQuery };
+
+    if (grantedScopes) {
+      body.scope = grantedScopes.join(' ');
+    }
+
+    return this.postAuthorizationStep('/oauth2/consent', body);
   }
 
-  private async postAuthorizationStep(path: string, body: Record<string, unknown>): Promise<string | null> {
+  private async postAuthorizationStep(path: string, body: Record<string, unknown>): Promise<boolean> {
     this.isLoading = true;
     this.error = null;
 
     try {
+      // authClient.$fetch's built-in redirectPlugin navigates when data.redirect is true; navigating again re-submits the single-use code.
       const { data, error } = await authClient.$fetch<OAuthRedirectResponse>(path, { method: 'POST', body });
 
-      if (error || !data?.url) {
+      if (error || !data?.redirect || !data.url) {
         this.error = 'oauth.error.generic';
 
-        return null;
+        return false;
       }
 
-      return data.url;
+      return true;
     } catch (error) {
       console.error('Error in OAuth authorization step:', error);
       this.error = 'oauth.error.generic';
 
-      return null;
+      return false;
     } finally {
       this.isLoading = false;
     }

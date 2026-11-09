@@ -1,4 +1,5 @@
 import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import { refreshOrgHasWebhookEndpoints } from '@cio/core/services/webhook/endpoint-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
@@ -64,7 +65,7 @@ import { env } from '@cio/core/config/env';
 import { isFreeLandingPageTheme, ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
-import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
+import { getProfileById, getProfileByEmail, revokeUserOAuthGrantsInOrganization } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure, recordOrganizationInviteAudits } from './organization/invite';
 import { assertStudentHomeDestination } from './organization/student-home';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
@@ -165,7 +166,7 @@ export async function getOrgTeam(orgId: string) {
  */
 export async function getOrgAudience(
   orgId: string,
-  query: TGetAudienceQuery
+  query: TGetAudienceQuery & { email?: string }
 ): Promise<{ items: OrgAudienceMember[]; pagination: OrgAudiencePagination; query: OrgAudienceQuery }> {
   try {
     const audienceResult = await getOrganizationAudience(orgId, query);
@@ -415,14 +416,14 @@ export async function getOrganizationCourses(
   orgId: string,
   userId: string,
   userRole: number,
-  query: TGetOrganizationCoursesQuery
+  query: TGetOrganizationCoursesQuery & { slug?: string; title?: string }
 ) {
   try {
     if (!userRole) {
       throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    const { page, limit, search, type, status, sort, order } = query;
+    const { page, limit, search, slug, title, type, status, sort, order } = query;
     const listQuery = {
       page,
       limit,
@@ -463,6 +464,8 @@ export async function getOrganizationCourses(
           page,
           limit,
           search,
+          slug,
+          title,
           type,
           publishedStatus: status,
           sortKey: sort,
@@ -495,6 +498,8 @@ export async function getOrganizationCourses(
           page,
           limit,
           search,
+          slug,
+          title,
           type,
           publishedStatus: status,
           sortKey: sort,
@@ -1053,6 +1058,11 @@ export async function removeTeamMember(orgId: string, memberId: number, removedB
 
       return { deleted: removed, targetEmail: removedEmail, revoked: revokedInvites };
     });
+
+    if (deleted.profileId) {
+      await revokeUserOAuthGrantsInOrganization(deleted.profileId, orgId);
+      await refreshOrgHasWebhookEndpoints(orgId);
+    }
 
     await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 

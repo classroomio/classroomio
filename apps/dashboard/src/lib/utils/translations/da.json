@@ -13,7 +13,6 @@
     "discard": "Kassér",
     "save_changes": "Gem ændringer",
     "cancel": "Annuller",
-    "scroll_to_top": "Rul til toppen",
     "delete": "Slet",
     "restricted_page": {
       "title": "Begrænset side",
@@ -532,6 +531,12 @@
     },
     "oauth": {
       "revoked": "Appens adgang er fjernet"
+    },
+    "zapier": {
+      "removed": "Zapier-adgang fjernet",
+      "remove_failed": "Zapier-adgangen kunne ikke fjernes. Prøv igen.",
+      "redelivered": "{count} mislykkede hændelser i kø til genlevering",
+      "redeliver_failed": "Kunne ikke genlevere mislykkede begivenheder"
     }
   },
   "explore": {
@@ -593,7 +598,8 @@
     "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
     "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API.",
     "unlock_field": "Opgrader for at låse denne indstilling op",
-    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks."
+    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks.",
+    "zapier_required": "Zapier kræver Early Adopter- eller Enterprise-abonnementet."
   },
   "analytics": {
     "title": "Analyse",
@@ -5065,7 +5071,879 @@
       "disabled_description": "Kun organisationsadministratorer kan administrere automatisering, herunder tilsluttede apps og nøgler."
     },
     "zapier": {
-      "page_subtitle": "Automatiser ClassroomIO med tusindvis af apps via Zapier. Kommer snart."
+      "page_subtitle": "Automatiser ClassroomIO med tusindvis af apps via Zapier.",
+      "permissions_description": "Kun organisationsadministratorer kan forbinde Zapier og administrere forbindelserne.",
+      "connect": "Forbind på Zapier",
+      "browse_apps": "Gennemse apps",
+      "create_zap": "Opret en Zap",
+      "manage_on_zapier": "Administrer på Zapier",
+      "empty": {
+        "title": "Forbind ClassroomIO til Zapier",
+        "description": "Godkend adgang én gang, og opbyg på få sekunder Zaps på Zapier, der reagerer på dine kurser og studerende."
+      },
+      "upgrade": {
+        "title": "Opgrader for at forbinde Zapier",
+        "description": "Det kræver planen Early Adopter eller Enterprise at forbinde ClassroomIO med Zapier.",
+        "cta": "Opgrader plan"
+      },
+      "error": {
+        "title": "Kunne ikke indlæse Zapier-forbindelser",
+        "description": "Vi kunne ikke kontakte serveren. Tjek din forbindelse, og prøv igen.",
+        "retry": "Prøv igen"
+      },
+      "unavailable": {
+        "title": "Zapier-forbindelser er ikke tilgængelige endnu",
+        "description": "Bed din ClassroomIO-kontakt om adgang til Zapier-integrationen, og genindlæs derefter denne side."
+      },
+      "setup": {
+        "title": "Sådan fungerer forbindelsen",
+        "step_1": "Åbn Zapier, og føj ClassroomIO til en Zap.",
+        "step_2": "Log ind på ClassroomIO, når Zapier beder om det.",
+        "step_3": "Vælg denne organisation, og giv adgang.",
+        "step_4": "Vælg en udløser eller handling, og slå din Zap til."
+      },
+      "status": {
+        "connected_title": "Forbundet til Zapier",
+        "connected_description": "{used} af {max} udløser-abonnementer i brug. Hændelser når Zapier inden for få sekunder."
+      },
+      "paused": {
+        "title": "Zapier er sat på pause",
+        "description": "Dit abonnement inkluderer ikke længere Zapier. Zaps mislykkes, indtil du opgraderer; dine forbindelser forbliver uændrede."
+      },
+      "selfhosted": {
+        "title": "Zapier er tilgængelig på ClassroomIO Cloud",
+        "description": "På en selvhostet installation kan du bruge Webhooks med Zapier's Webhooks by Zapier-udløser og API-nøgler til handlinger."
+      },
+      "connections": {
+        "title": "Forbindelser",
+        "description": "Hver række er en administrator, der har forbundet en Zapier-konto til denne organisation.",
+        "authorized_by": "Forbundet af",
+        "unknown_admin": "Tidligere administrator",
+        "access": "Adgang",
+        "access_read_write": "Læse og skrive",
+        "access_read_only": "Skrivebeskyttet",
+        "triggers": "Aktive udløsere",
+        "last_used": "Sidst brugt",
+        "connected": "Forbundet",
+        "actions": "Forbindelseshandlinger",
+        "view_triggers": "Vis udløsere",
+        "remove": "Fjern adgang"
+      },
+      "remove": {
+        "title": "Fjern Zapier-adgang?",
+        "description": "Zaps, der bruger denne forbindelse, stopper med det samme, og {count} udløser-abonnementer slettes. Opret forbindelse igen i Zapier for at bruge dem.",
+        "confirm": "Fjern adgang"
+      },
+      "triggers": {
+        "title": "Aktive udløsere",
+        "description": "Zaps, der er slået til og lytter efter ClassroomIO-hændelser.",
+        "empty_title": "Ingen aktive udløsere",
+        "empty_description": "Udløsere vises her, når en Zap, der starter i ClassroomIO, er slået til.",
+        "course_filter": "Kun for {course}",
+        "last_delivery": "Sidste hændelse sendt {date}",
+        "no_deliveries": "Ingen hændelser sendt endnu",
+        "health_healthy": "Fejlfri",
+        "health_degraded": "Fejler",
+        "health_disabled": "Deaktiveret",
+        "cohort_filter": "Kun for {cohort}",
+        "created_at": "Oprettet {date}",
+        "last_failed": "Sidste levering mislykkedes",
+        "redeliver": "Genlever mislykkede hændelser"
+      },
+      "catalog": {
+        "title": "Apps, der fungerer med ClassroomIO",
+        "description": "Populære måder, hvorpå teams forbinder ClassroomIO via Zapier.",
+        "search_placeholder": "Søg efter apps",
+        "no_results": "Ingen apps matcher. Zapier forbinder ClassroomIO til mere end 6.000 apps; søg efter enhver af dem på Zapier.",
+        "show_all": "Vis alle apps",
+        "end_note": "Dette er populære valg. Zapier forbinder ClassroomIO til over 6.000 apps.",
+        "categories": {
+          "all": "Alle",
+          "crm": "CRM",
+          "marketing": "Marketing",
+          "communication": "Kommunikation",
+          "customer-support": "Kundesupport",
+          "sales": "Salg",
+          "productivity": "Produktivitet",
+          "forms": "Formularer og undersøgelser",
+          "analytics": "Analyse",
+          "community": "Fællesskab"
+        }
+      },
+      "app_sheet": {
+        "title": "ClassroomIO + {app}",
+        "examples": "Populære automatiseringer",
+        "triggers": "ClassroomIO-udløsere",
+        "actions": "ClassroomIO-handlinger",
+        "create_zap": "Opret en {app}-Zap"
+      },
+      "catalog_triggers": {
+        "new_course_enrollment": {
+          "label": "Ny kurstilmelding",
+          "verb": "Tilmeld en elev",
+          "description": "Udløses, når en elev føjes til et kursus, uanset hvordan vedkommende tiltrådte."
+        },
+        "course_member_removed": {
+          "label": "Studerende fjernet fra kursus",
+          "verb": "Fjern en elev",
+          "description": "Udløses, når en elev fjernes fra et kursus."
+        },
+        "course_completed": {
+          "label": "Kursus fuldført",
+          "verb": "Afslut et kursus",
+          "description": "Udløses, når en elev gennemfører hver påkrævet lektion i et kursus."
+        },
+        "new_certificate": {
+          "label": "Nyt certifikat",
+          "verb": "Få et certifikat",
+          "description": "Udløses, når et certifikat udstedes til en elev."
+        },
+        "new_submission": {
+          "label": "Ny opgaveaflevering",
+          "verb": "Send en øvelse",
+          "description": "Udløses, når en elev afleverer en øvelse."
+        },
+        "submission_status_changed": {
+          "label": "Afleveringsstatus ændret",
+          "verb": "Bedømme en aflevering",
+          "description": "Udløses, når en aflevering bedømmes, eller dens status ændres."
+        },
+        "lesson_completed": {
+          "label": "Lektion fuldført",
+          "verb": "Gennemfør en lektion",
+          "description": "Udløses, når en elev gennemfører en lektion."
+        },
+        "course_invite_accepted": {
+          "label": "Kursusinvitation accepteret",
+          "verb": "Accepter en invitation",
+          "description": "Udløses, når nogen accepterer en kursusinvitation."
+        },
+        "new_payment_request": {
+          "label": "Ny betalingsanmodning",
+          "verb": "Anmod om betaling",
+          "description": "Udløses, når en elev indsender en betalingsanmodning for et kursus."
+        },
+        "new_organization_member": {
+          "label": "Nyt organisationsmedlem",
+          "verb": "Meld dig ind i organisationen",
+          "description": "Udløses, når nogen slutter sig til organisationen som studerende, vejleder eller administrator."
+        },
+        "compliance_status_changed": {
+          "label": "Overholdelsesstatus ændret",
+          "verb": "Skift overholdelsesstatus",
+          "description": "Udløses, når en elevs overholdelsesstatus ændres, for eksempel til forsinket eller udløbet."
+        },
+        "course_published": {
+          "label": "Kursus udgivet",
+          "verb": "Udgiv et kursus",
+          "description": "Udløses, når et kursus udgives."
+        },
+        "live_session_scheduled": {
+          "label": "Live-session planlagt",
+          "verb": "Planlæg en live session",
+          "description": "Udløses, når en livesession er planlagt eller omlagt."
+        },
+        "new_cohort_member": {
+          "label": "Nyt holdmedlem",
+          "verb": "Deltag i en kohorte",
+          "description": "Udløses, når en elev føjes til en kohorte."
+        }
+      },
+      "catalog_actions": {
+        "enroll_student": {
+          "label": "Tilmeld studerende til kursus",
+          "description": "Tilmelder en studerende til et kursus via e-mail og inviterer dem først, hvis de er nye.",
+          "fields": "E-mail, fulde navn, kursus"
+        },
+        "add_student": {
+          "label": "Føj studerende til organisation",
+          "description": "Inviterer en studerende til din organisation uden at tilmelde vedkommende til et kursus.",
+          "fields": "E-mail, fulde navn"
+        },
+        "update_student": {
+          "label": "Opdater studerende",
+          "description": "Opdaterer en elevs navn eller e-mailen på en invitation, der ikke er blevet accepteret.",
+          "fields": "E-mail, fulde navn, brugerdefineret attribut"
+        },
+        "remove_student": {
+          "label": "Fjern studerende fra organisation",
+          "description": "Fjerner en elev fra din organisation.",
+          "fields": "E-mail"
+        },
+        "remove_course_member": {
+          "label": "Fjern studerende fra kursus",
+          "description": "Fjerner en elev fra ét kursus og beholder dem i din organisation.",
+          "fields": "E-mail, kursus"
+        },
+        "send_course_invite": {
+          "label": "Send kursusinvitation",
+          "description": "E-mailer en invitation til at deltage i et kursus.",
+          "fields": "E-mail, kursus"
+        },
+        "revoke_course_invite": {
+          "label": "Tilbagekald kursusinvitation",
+          "description": "Annullerer en afventende kursusinvitation, så dens link holder op med at fungere.",
+          "fields": "E-mail, kursus"
+        },
+        "reset_course_progress": {
+          "label": "Nulstil studerendes kursusfremskridt",
+          "description": "Rydder en elevs fremskridt i et kursus og holder dem tilmeldt.",
+          "fields": "E-mail, kursus"
+        },
+        "mark_lesson_complete": {
+          "label": "Marker lektion som fuldført",
+          "description": "Markerer en lektion som afsluttet for en elev.",
+          "fields": "E-mail, kursus, lektion"
+        },
+        "add_cohort_member": {
+          "label": "Føj studerende til hold",
+          "description": "Tilføjer en elev til en kohorte.",
+          "fields": "E-mail, kohorte"
+        },
+        "post_cohort_announcement": {
+          "label": "Slå op i holdets feed",
+          "description": "Sender en meddelelse til en kohortes feed.",
+          "fields": "Kohorte, Meddelelse"
+        }
+      },
+      "apps": {
+        "hubspot": {
+          "description": "CRM- og kundeplatform",
+          "trigger_example": "Når en kunde fuldfører onboarding, opdateres dennes HubSpot-kontakt.",
+          "action_example": "Når en HubSpot-aftale lukkes, tilmeldes køberen dit introduktionskursus."
+        },
+        "salesforce": {
+          "description": "CRM til salgs- og serviceteams",
+          "trigger_example": "Når et certifikat udstedes, registreres det på Salesforce-kontakten.",
+          "action_example": "Når en mulighed vindes, tilmeldes kontoens brugere produkttræning."
+        },
+        "mailchimp": {
+          "description": "E-mailmarketing og målgrupper",
+          "trigger_example": "Når en studerende tilmelder sig, tilføjes denne til en Mailchimp-målgruppe.",
+          "action_example": "Når nogen tilmelder sig en Mailchimp-liste, inviteres de til dit akademi."
+        },
+        "customerio": {
+          "description": "Besked- og livscykluskampagner",
+          "trigger_example": "Når en studerende fuldfører en lektion, sendes en Customer.io-hændelse for at fremme den næste.",
+          "action_example": "Når et Customer.io-segment ændres, tilmeldes personerne til et kursus."
+        },
+        "slack": {
+          "description": "Teamkommunikation og samarbejde",
+          "trigger_example": "Når en opgave afleveres, sendes en besked til tutoren i Slack.",
+          "action_example": "Når en besked sendes i en Slack-kanal, deles den på holdets feed."
+        },
+        "teams": {
+          "description": "Chat og kanaler til din organisation",
+          "trigger_example": "Når nogen fuldfører et kursus, fejres det i en Teams-kanal.",
+          "action_example": "Når en Teams-besked markeres, deles den på holdets feed."
+        },
+        "google_meet": {
+          "description": "Videomøder i Google Workspace",
+          "trigger_example": "Når en live-session planlægges, oprettes et Google Meet-link og en kalenderinvitation.",
+          "action_example": "Når en Meet-session slutter, markeres lektionen som fuldført for deltagerne."
+        },
+        "zoom": {
+          "description": "Videomøder og webinarer",
+          "trigger_example": "Når en studerende tilmelder sig, registreres denne til dit Zoom-webinar.",
+          "action_example": "Når nogen deltager i et Zoom-webinar, markeres lektionen som fuldført."
+        },
+        "zendesk": {
+          "description": "Kundesupport og sagsstyring",
+          "trigger_example": "Når en overholdelsespost overskrider tidsfristen, oprettes en Zendesk-sag.",
+          "action_example": "Når en sag mærkes med træning, tilmeldes anmoderen til et hjælpekursus."
+        },
+        "intercom": {
+          "description": "Kundebeskedplatform",
+          "trigger_example": "Når en kunde fuldfører et kursus, tagges denne i Intercom.",
+          "action_example": "Når en Intercom-bruger tilmelder sig, tilmeldes denne introduktionstræning."
+        },
+        "calendly": {
+          "description": "Planlægnings- og bookinglinks",
+          "trigger_example": "Når en studerende fuldfører et kursus, sendes et Calendly-link til at booke en evaluering.",
+          "action_example": "Når et Calendly-møde bookes, tilmeldes den inviterede til et forberedelseskursus."
+        },
+        "calcom": {
+          "description": "Open source-planlægning og bookinglinks",
+          "trigger_example": "Når en studerende fuldfører et kursus, tilbydes en Cal.com-booking til opfølgning.",
+          "action_example": "Når en Cal.com-booking oprettes, tilmeldes deltageren til et forberedelseskursus."
+        },
+        "sheets": {
+          "description": "Regneark og datastyring",
+          "trigger_example": "Når et certifikat udstedes, tilføjes en række til din træningslog i Google Sheets.",
+          "action_example": "Når en række føjes til et regneark, inviteres denne person til dit akademi."
+        },
+        "notion": {
+          "description": "Dokumenter, wikier og projektnoter",
+          "trigger_example": "Når et kursus udgives, føjes det til dit Notion-træningskatalog.",
+          "action_example": "Når et Notion-databaseelement tilføjes, sendes en kursusinvitation."
+        },
+        "confluence": {
+          "description": "Dokumenter og wikier til tekniske teams",
+          "trigger_example": "Når et kursus udgives, oprettes en Confluence-side, der linker til det.",
+          "action_example": "Når en Confluence-side oprettes, inviteres dens følgere til det tilhørende kursus."
+        },
+        "typeform": {
+          "description": "Formularer og undersøgelser",
+          "trigger_example": "Når en studerende fuldfører et kursus, sendes en Typeform-undersøgelse.",
+          "action_example": "Når en Typeform indsendes, tilmeldes respondenten til et kursus."
+        },
+        "jotform": {
+          "description": "Formularer og undersøgelser",
+          "trigger_example": "Når en studerende fuldfører et kursus, sendes en Jotform-feedbackformular.",
+          "action_example": "Når en Jotform indsendes, tilmeldes respondenten til et kursus."
+        },
+        "pendo": {
+          "description": "Digital implementering og produktforbrug",
+          "trigger_example": "Når en kunde fuldfører træning, registreres det i Pendo.",
+          "action_example": "Når Pendo registrerer lav funktionsanvendelse, tilmeldes brugeren til et kursus."
+        },
+        "mixpanel": {
+          "description": "Produktanalyse og tragte",
+          "trigger_example": "Når en studerende fuldfører en lektion, sendes en hændelse til Mixpanel.",
+          "action_example": "Når en Mixpanel-kohorte ændres, tilmeldes dens brugere til et kursus."
+        },
+        "circle": {
+          "description": "Fællesskabsrum og diskussion",
+          "trigger_example": "Når en studerende tilmelder sig, tilføjes denne til dit Circle-fællesskab.",
+          "action_example": "Når nogen tilslutter sig et Circle-rum, tilføjes de til et hold."
+        }
+      },
+      "app_page": {
+        "back": "Tilbage til App Directory",
+        "breadcrumb_apps": "Apps",
+        "eyebrow": "ClassroomIO + {app}",
+        "official": "Officiel integration",
+        "lead_out": "Ingen eksport eller regneark. Zapier opfanger nye begivenheder i ClassroomIO og kører \"{action}\"-handlingen i {app} for dig.",
+        "lead_in": "Zapier ser {app} og tilmelder hver ny person i det ClassroomIO-kursus, du vælger.",
+        "connect_cta": "Tilslut {app} i Zapier",
+        "stats": "{recipes} opskrifter · {mode}",
+        "cta_note": "Tager omkring 2 minutter. Intet kører, før du tænder for Zap.",
+        "preview_aria": "Eksempel på denne Zap kører",
+        "preview_example": "Eksempel",
+        "preview_source": "ClassroomIO · {screen}",
+        "preview_destination": "{app} · {action}",
+        "preview_new": "NYHED",
+        "preview_state_idle": "Venter på en begivenhed",
+        "preview_state_new": "Ny begivenhed",
+        "preview_state_running": "Løb Zap",
+        "preview_state_ran": "Zap løb",
+        "connected_title": "{org} er forbundet til Zapier.",
+        "connected_read_write": "Læse- og skriveadgang.",
+        "connected_read_only": "Skrivebeskyttet adgang.",
+        "connected_view": "Se forbindelsen i ClassroomIO",
+        "connected_zapier": "Se på Zapier",
+        "trust_scope_read_write": "Kun læse- og skriveadgang",
+        "trust_scope_read_only": "Skrivebeskyttet adgang",
+        "trust_scope_note": "Scoped til {org}, intet andet",
+        "trust_revoke_title": "Tilbagekald når som helst",
+        "trust_revoke_note": "Fra Automation › Zapier i ClassroomIO",
+        "trust_zapier_title": "Dine Zaps bor i Zapier",
+        "trust_zapier_note": "Zapier bygger, tester og kører dem",
+        "similar_title": "Lignende apps",
+        "similar_see_all": "Se alle {count} apps",
+        "headline_out_before": "{trigger} i ClassroomIO.",
+        "headline_out_after": "Se det i {app}.",
+        "headline_in_before": "{trigger} i {app}.",
+        "headline_in_after": "Tilmeld dem i ClassroomIO.",
+        "preview_live": "Live preview",
+        "preview_col_person": "Student",
+        "preview_col_course": "Kursus",
+        "preview_col_email": "E-mail",
+        "preview_col_when": "Hvornår"
+      },
+      "directory": {
+        "title": "App Directory",
+        "subtitle": "Gennemse de apps, du kan oprette forbindelse til ClassroomIO gennem Zapier.",
+        "create_zap": "Opret en Zap i Zapier",
+        "back": "Tilbage til Zaps",
+        "search_placeholder": "Søg i apps...",
+        "filters_title": "Filtre",
+        "discover": "Opdag",
+        "categories": "Kategorier",
+        "all_apps": "Alle apps",
+        "popular": "Populært",
+        "recent": "For nylig tilføjet",
+        "sort_label": "Sorter apps",
+        "sort_popular": "Populært",
+        "sort_az": "A–Z",
+        "view_more": "Se flere apps",
+        "count": {
+          "all": "{count} apps",
+          "one": "1 app",
+          "showing": "Viser {shown} af {total} apps",
+          "all_matching": "{count} apps matcher \"{query}\"",
+          "one_matching": "1 app matcher \"{query}\"",
+          "showing_matching": "Viser {shown} af {total} apps, der matcher \"{query}\""
+        },
+        "empty": {
+          "title": "Ingen apps matcher din søgning",
+          "description": "Prøv et andet navn, eller gennemse hver app Zapier forbinder ClassroomIO med.",
+          "search_zapier": "Søg i Zapier"
+        },
+        "end": {
+          "title": "Det er hver eneste app, vi har valgt",
+          "description": "Zapier forbinder ClassroomIO med tusinder andre.",
+          "cta": "Fortsæt i Zapier"
+        }
+      },
+      "page_title": "Zaps",
+      "create_more_zaps": "Opret flere Zaps",
+      "zaps_empty": {
+        "title": "Ingen Zaps endnu",
+        "description": "Forbind ClassroomIO til en app, dit team allerede bruger, eller spring direkte ind i Zapier, hvis du allerede ved, hvad du vil automatisere.",
+        "connect_apps": "Tilslut apps"
+      },
+      "connected_apps": {
+        "title": "Forbundne apps",
+        "coming_soon_title": "Se hvilke apps dine Zaps bruger her",
+        "coming_soon_description": "Tilknyt din Zapier-konto for at se de apps, dine Zaps forbinder til ClassroomIO."
+      },
+      "active_triggers": {
+        "title": "Aktive ClassroomIO-udløsere"
+      },
+      "access_section": {
+        "title": "Zapier-adgang til ClassroomIO"
+      },
+      "capabilities": {
+        "title": "Flere ting, du kan gøre med ClassroomIO og {app}",
+        "subtitle": "Opdag andre triggere og handlinger, du kan bruge med ClassroomIO og {app}.",
+        "tab_triggers": "Udløsere",
+        "tab_actions": "Handlinger",
+        "tab_both": "Triggere og handlinger",
+        "kind_trigger": "Udløser",
+        "kind_action": "Handling",
+        "kind_search": "Søg",
+        "mode_instant": "Øjeblikkelig",
+        "mode_write": "Skriv",
+        "mode_lookup": "Opslag",
+        "try_it": "Prøv det",
+        "load_more": "Indlæs mere",
+        "showing": "Viser {shown} af {total}",
+        "sample_title": "Eksempeldata, som denne trigger sender",
+        "fields_title": "Felter du kortlægger i Zapier",
+        "partner_trigger_description": "Starter Zap i {app}.",
+        "partner_action_description": "Kører i {app}, når en ClassroomIO-udløser udløses.",
+        "eyebrow": "Triggere og handlinger",
+        "partner_example_title": "Eksempel på automatisering"
+      },
+      "catalog_searches": {
+        "find_student": {
+          "label": "Find Student",
+          "description": "Finder en elev i din organisation via e-mail."
+        },
+        "find_course": {
+          "label": "Find kursus",
+          "description": "Finder et kursus efter dets slug eller nøjagtige titel."
+        }
+      },
+      "invite": {
+        "title": "Forbind ClassroomIO til Zapier",
+        "description": "Zapier har brug for, at du accepterer ClassroomIO-invitationen én gang, før du kan bygge Zaps.",
+        "step_1_title": "Accepter ClassroomIO-invitationen på Zapier",
+        "step_1_description": "Zapier beder dig om at acceptere én gang. Derefter vises ClassroomIO på din Zapier-konto.",
+        "step_1_button": "Åbn invitationen på Zapier",
+        "step_2_title": "Fortsæt til din Zap",
+        "step_2_description": "Din Zap åbner i en ny fane. Intet kører, før du tænder den.",
+        "step_2_button": "Fortsæt til Zapier",
+        "already_accepted": "Jeg har allerede accepteret",
+        "missing_invite": "Der er ikke konfigureret noget invitationslink til dette arbejdsområde endnu."
+      },
+      "recipes": {
+        "section_title": "Måder at bruge ClassroomIO med {app}",
+        "section_subtitle": "Komplet Zaps bygget til denne parring. Vælg en, tilknyt dine konti og tænd den.",
+        "tabs_out": "Fra ClassroomIO",
+        "tabs_in": "Ind i ClassroomIO",
+        "use_this_zap": "Brug denne Zap",
+        "mode_instant": "Øjeblikkelig",
+        "mode_polling": "Tjekker hvert par minutter",
+        "sentence_out": "Når {trigger} i ClassroomIO, {action} i {app}.",
+        "sentence_in": "Når {trigger} i {app}, {action} i ClassroomIO.",
+        "featured_title": "Start med en populær opskrift",
+        "ways_to_use": "{count} måder at bruge",
+        "choose_in_zapier": "Vælg i Zapier",
+        "open_in_zapier": "Åben i Zapier",
+        "builder_title": "Byg din egen",
+        "builder_subtitle": "Vælg en hvilken som helst trigger og handling, og afslut derefter opsætningen i Zapier.",
+        "builder_trigger_label": "Når dette sker",
+        "builder_action_label": "Gør dette",
+        "builder_in_classroomio": "I ClassroomIO",
+        "builder_in_app": "I {app}",
+        "builder_no_app_triggers": "Ingen {app}-triggere endnu",
+        "prefill_title": "Vælg et kursus til denne Zap",
+        "prefill_title_cohort": "Vælg en kohorte til denne Zap",
+        "prefill_note": "Du kan også vælge det inde i Zapier.",
+        "reference_title": "Alt, hvad ClassroomIO kan i Zapier",
+        "reference_subtitle": "Den fulde liste over triggere, handlinger og søgninger bag disse opskrifter.",
+        "reference_triggers": "Udløsere ({count})",
+        "reference_actions": "Handlinger ({count})",
+        "reference_searches": "Søgninger ({count})",
+        "hubspot_deal_stage_enroll": {
+          "title": "Tilmeld nye kunder til onboarding, når en aftale når et stadie"
+        },
+        "hubspot_list_enroll": {
+          "title": "Tilmeld kontakter, når de tilmelder sig en HubSpot-liste"
+        },
+        "hubspot_form_invite": {
+          "title": "Inviter formulartilmeldinger til et kursus"
+        },
+        "hubspot_completed_contact": {
+          "title": "Opdater kontakten, når de gennemfører et kursus"
+        },
+        "hubspot_certificate_list": {
+          "title": "Tilføj certificerede elever til en HubSpot-liste"
+        },
+        "hubspot_compliance_task": {
+          "title": "Opret en opfølgende opgave, når træningen er forsinket"
+        },
+        "salesforce_certificate_record": {
+          "title": "Registrer hvert certifikat i Salesforce"
+        },
+        "salesforce_completed_contact": {
+          "title": "Opdater kontakten, når de gennemfører et kursus"
+        },
+        "salesforce_payment_lead": {
+          "title": "Opret et kundeemne for hver betalingsanmodning"
+        },
+        "salesforce_contact_enroll": {
+          "title": "Tilmeld nye kontakter i onboarding"
+        },
+        "salesforce_opportunity_enroll": {
+          "title": "Tilmeld kunder, når en mulighed lukkes"
+        },
+        "mailchimp_enrollment_subscriber": {
+          "title": "Tilføj nye tilmeldinger til et publikum"
+        },
+        "mailchimp_completed_tag": {
+          "title": "Tag abonnenter, der gennemfører et kursus"
+        },
+        "mailchimp_removed_untag": {
+          "title": "Fjern kursusmærket, når en elev forlader"
+        },
+        "mailchimp_subscriber_student": {
+          "title": "Tilføj nye abonnenter som studerende"
+        },
+        "mailchimp_tag_enroll": {
+          "title": "Tilmeld abonnenter, når de får et tag"
+        },
+        "customerio_completed_event": {
+          "title": "Send kursusafslutninger som begivenheder"
+        },
+        "customerio_enrollment_person": {
+          "title": "Opret eller opdater personen, når vedkommende tilmelder sig"
+        },
+        "customerio_certificate_event": {
+          "title": "Send certifikater som begivenheder"
+        },
+        "customerio_compliance_event": {
+          "title": "Start påmindelseskampagner, når træningen er forsinket"
+        },
+        "customerio_lesson_event": {
+          "title": "Send lektionsforløb som begivenheder"
+        },
+        "slack_completed_channel": {
+          "title": "Send til en kanal, når et kursus er afsluttet"
+        },
+        "slack_submission_dm": {
+          "title": "Send besked til vejlederen, når en elev afleverer en øvelse"
+        },
+        "slack_payment_channel": {
+          "title": "Underret teamet om betalingsanmodninger"
+        },
+        "slack_compliance_channel": {
+          "title": "Marker forsinket træning i en kanal"
+        },
+        "slack_certificate_channel": {
+          "title": "Fejr nye certifikater"
+        },
+        "slack_member_enroll": {
+          "title": "Tilmeld nye arbejdsområdemedlemmer til onboarding"
+        },
+        "teams_completed_channel": {
+          "title": "Send til en kanal, når et kursus er afsluttet"
+        },
+        "teams_submission_chat": {
+          "title": "Send besked til vejlederen, når en elev afleverer en øvelse"
+        },
+        "teams_compliance_channel": {
+          "title": "Marker forsinket træning i en kanal"
+        },
+        "teams_session_channel": {
+          "title": "Annoncer livesessioner på en kanal"
+        },
+        "teams_member_enroll": {
+          "title": "Tilmeld nye teammedlemmer til onboarding"
+        },
+        "meet_session_meeting": {
+          "title": "Opret et Meet for hver livesession"
+        },
+        "meet_completed_meeting": {
+          "title": "Book et anmeldelsesopkald, når et kursus er afsluttet"
+        },
+        "zoom_enrollment_registrant": {
+          "title": "Tilmeld nye studerende til et webinar"
+        },
+        "zoom_cohort_registrant": {
+          "title": "Tilmeld årgangmedlemmer til kickoff-mødet"
+        },
+        "zoom_session_meeting": {
+          "title": "Opret et Zoom-møde for hver livesession"
+        },
+        "zoom_registrant_enroll": {
+          "title": "Tilmeld webinarregistranter i forberedelsesmateriale"
+        },
+        "zoom_joiner_lesson": {
+          "title": "Marker den levende lektion som afsluttet, når en elev deltager"
+        },
+        "zendesk_tag_enroll": {
+          "title": "Tilmeld en kunde, når en agent mærker deres billet"
+        },
+        "zendesk_compliance_ticket": {
+          "title": "Åbn en billet, når træningen er forsinket"
+        },
+        "zendesk_payment_ticket": {
+          "title": "Åbn en billet for hver betalingsanmodning"
+        },
+        "zendesk_completed_user": {
+          "title": "Registrer gennemført træning på Zendesk-brugeren"
+        },
+        "zendesk_user_enroll": {
+          "title": "Tilmeld nye Zendesk-brugere i et kom-i-gang-kursus"
+        },
+        "intercom_completed_message": {
+          "title": "Send besked til brugere, når de gennemfører et kursus"
+        },
+        "intercom_completed_tag": {
+          "title": "Tag brugere, der afslutter onboarding"
+        },
+        "intercom_lesson_event": {
+          "title": "Send lektionsforløb som begivenheder"
+        },
+        "intercom_user_enroll": {
+          "title": "Tilmeld nye brugere til onboarding"
+        },
+        "intercom_tag_enroll": {
+          "title": "Tilmeld brugere, når de er tagget"
+        },
+        "calendly_booking_enroll": {
+          "title": "Tilmeld inviterede i forberedelsesmateriale, når de booker"
+        },
+        "calendly_noshow_invite": {
+          "title": "Send et kursus i eget tempo til no-shows"
+        },
+        "calendly_form_student": {
+          "title": "Tilføj routingformularemner som elever"
+        },
+        "calendly_cancel_remove": {
+          "title": "Fjern forberedelseskurset, når en reservation aflyses"
+        },
+        "calcom_booking_enroll": {
+          "title": "Tilmeld deltagere i forberedelsesmateriale, når de booker"
+        },
+        "calcom_cancel_remove": {
+          "title": "Fjern forberedelseskurset, når en reservation aflyses"
+        },
+        "calcom_meeting_invite": {
+          "title": "Send opfølgningskurset efter opkaldet"
+        },
+        "sheets_completed_row": {
+          "title": "Log afslutninger i et ark"
+        },
+        "sheets_certificate_row": {
+          "title": "Før et certifikatregister"
+        },
+        "sheets_compliance_row": {
+          "title": "Log overholdelsesændringer"
+        },
+        "sheets_payment_row": {
+          "title": "Spor betalingsanmodninger"
+        },
+        "sheets_row_enroll": {
+          "title": "Tilmeld alle, der er føjet til et ark"
+        },
+        "sheets_row_cohort": {
+          "title": "Føj alle i et ark til en kohorte"
+        },
+        "notion_completed_item": {
+          "title": "Spor fuldførelser i en database"
+        },
+        "notion_submission_item": {
+          "title": "Stil indsendelser i kø til gennemgang"
+        },
+        "notion_course_page": {
+          "title": "Tilføj en side for hvert nyt kursus"
+        },
+        "notion_item_enroll": {
+          "title": "Tilmeld personer tilføjet til en database"
+        },
+        "confluence_course_page": {
+          "title": "Opret en side, når et kursus udgives"
+        },
+        "confluence_session_page": {
+          "title": "Opret en dagsordenside for hver livesession"
+        },
+        "confluence_page_announce": {
+          "title": "Annoncer nye dokumenter til en kohorte"
+        },
+        "typeform_entry_enroll": {
+          "title": "Tilmeld respondenter i et kursus"
+        },
+        "typeform_entry_cohort": {
+          "title": "Tilføj ansøgere til en kohorte"
+        },
+        "typeform_entry_student": {
+          "title": "Tilføj respondenter som elever"
+        },
+        "jotform_submission_enroll": {
+          "title": "Tilmeld personer, der indsender en formular"
+        },
+        "jotform_completed_form": {
+          "title": "Send en feedbackformular, når et kursus er afsluttet"
+        },
+        "jotform_submission_student": {
+          "title": "Tilføj personer, der indsender en formular som studerende"
+        },
+        "pendo_status_enroll": {
+          "title": "Tilmeld rekvirenter til et kursus, når deres anmodning sendes"
+        },
+        "pendo_status_announce": {
+          "title": "Annoncer afsendte anmodninger til en kohorte"
+        },
+        "mixpanel_completed_event": {
+          "title": "Spor kursusafslutninger"
+        },
+        "mixpanel_enrollment_event": {
+          "title": "Spor tilmeldinger"
+        },
+        "mixpanel_lesson_event": {
+          "title": "Spor lektionens fremskridt"
+        },
+        "mixpanel_certificate_profile": {
+          "title": "Marker certificerede brugere på deres profil"
+        },
+        "circle_member_enroll": {
+          "title": "Tilmeld nye fællesskabsmedlemmer til et velkomstkursus"
+        },
+        "circle_certificate_space": {
+          "title": "Lås op for en plads, når en elev opnår et certifikat"
+        },
+        "circle_completed_tag": {
+          "title": "Tag medlemmer, der gennemfører et kursus"
+        },
+        "circle_cohort_group": {
+          "title": "Giv kohortemedlemmer adgang til en rumgruppe"
+        },
+        "circle_removed_student": {
+          "title": "Fjern elever, der forlader fællesskabet"
+        },
+        "sentence_out_open": "Når {trigger} i ClassroomIO, skal du vælge en handling i {app}.",
+        "sentence_in_open": "Når {trigger} i {app}, skal du vælge en handling i ClassroomIO."
+      },
+      "partner_steps": {
+        "hubspot": {
+          "add_to_list_v3": "Føj kontakt til listen",
+          "create_engagement": "Skab engagement",
+          "form_submission_resthook_v3": "Ny formularindsendelse",
+          "new_contact_in_list_resthook_v3": "Ny kontakt på listen",
+          "updated_deal_stage": "Opdateret Deal Stage",
+          "upsert_contact": "Opret eller opdater kontakt"
+        },
+        "salesforce": {
+          "create_lead": "Opret lead",
+          "create_record": "Opret post",
+          "new_contact": "Ny kontakt",
+          "update_contact": "Opdater kontakt",
+          "updated_field_on_record": "Opdateret felt på registrering"
+        },
+        "mailchimp": {
+          "memberCreate": "Tilføj/opdater abonnent",
+          "new_member": "Ny abonnent",
+          "remove_tag": "Fjern abonnent fra tag",
+          "subscriber_segment": "Tilføj abonnent til tag",
+          "subscriber_tag": "Ny abonnent i segment eller tag"
+        },
+        "customerio": {
+          "create_customer": "Opret eller opdater en person",
+          "track_event": "Opret begivenhed"
+        },
+        "slack": {
+          "channel_message": "Send kanalbesked",
+          "direct_message": "Send direkte besked",
+          "team_join": "Ny bruger"
+        },
+        "teams": {
+          "member": "Nyt teammedlem",
+          "send_channel_message_from_user": "Send kanalbesked",
+          "send_chat_message": "Send chatbesked"
+        },
+        "google_meet": {
+          "schedule_meeting": "Planlæg et møde"
+        },
+        "zoom": {
+          "create_meeting": "Opret møde",
+          "create_meeting_registrant": "Opret møderegistrant",
+          "create_registrant": "Opret webinarregistrant",
+          "new_joiner": "Ny deltager tilmeldte sig webinar eller møde",
+          "new_registrant": "Ny webinarregistrant"
+        },
+        "zendesk": {
+          "new_tag_ticket": "Nyt tag tilføjet til billet",
+          "ticket": "Opret billet",
+          "update_user": "Opdater bruger",
+          "user_v2": "Ny bruger"
+        },
+        "intercom": {
+          "add_tag_to_contact": "Tilføj tag til kontakt",
+          "create_data_event": "Opret datahændelse",
+          "new_user_created": "Ny bruger",
+          "send_message_to_contact": "Send Message to Contact",
+          "user_tag": "Tag Added to User"
+        },
+        "calendly": {
+          "invitee_canceled": "Invitee Canceled",
+          "invitee_created": "Inviteret oprettet eller omlagt",
+          "invitee_no_show_created": "Invitee No Show Created",
+          "routing_form_submission": "Indsendelse af ny ruteformular"
+        },
+        "calcom": {
+          "booking_cancelled": "Booking Cancelled",
+          "booking_created": "Booking Created",
+          "meeting_ended": "Meeting Ended"
+        },
+        "sheets": {
+          "add_row": "Create Spreadsheet Row",
+          "new_row_notify_hook": "Ny regnearksrække"
+        },
+        "notion": {
+          "create_database_item": "Opret datakildeelement",
+          "create_page": "Opret side",
+          "new_data_source_item": "Nyt datakildeelement"
+        },
+        "confluence": {
+          "pageCreate": "Opret side eller blogindlæg",
+          "pageList": "Ny side eller blogindlæg"
+        },
+        "typeform": {
+          "entries_resthook_v2": "Ny indgang"
+        },
+        "jotform": {
+          "assign_prefilled_form": "Tildel forududfyldt formular",
+          "new_submission": "Ny indsendelse"
+        },
+        "pendo": {
+          "feature_status_changed": "Forespørgselsstatus ændret"
+        },
+        "mixpanel": {
+          "engage": "Opret eller opdater profil",
+          "track": "Spor begivenhed"
+        },
+        "circle": {
+          "add_space_group_member": "Tilføj medlem til Space Group",
+          "add_space_member": "Føj medlem til Space",
+          "community_member_removed": "Medlem fjernet",
+          "new_member": "Nyt medlem tilføjet",
+          "tag_members": "Tag medlem"
+        }
+      }
     },
     "webhooks": {
       "page_subtitle": "Send ClassroomIO-hændelser i realtid til Slack, dit CRM eller din egen backend.",
@@ -6461,13 +7339,21 @@
       "deny": "Afvis",
       "unknown_client": "Denne app",
       "error_title": "Denne forbindelsesanmodning er ugyldig",
-      "error_description": "Gå tilbage til den app, du forbandt, og start forfra."
+      "error_description": "Gå tilbage til den app, du forbandt, og start forfra.",
+      "verified": "Bekræftet",
+      "allow_changes": {
+        "label": "Tillad {client} at foretage ændringer",
+        "description": "Slå dette fra for skrivebeskyttet adgang. {client} kan stadig læse data og køre triggere, men kan ikke tilføje, ændre eller fjerne noget."
+      }
     },
     "select_organization": {
       "title": "Vælg et arbejdsområde",
       "subtitle": "Vælg det arbejdsområde, {client} må have adgang til.",
       "empty_title": "Intet arbejdsområde tilgængeligt",
-      "empty_description": "Kun administratorer af arbejdsområdet kan forbinde apps. Spørg en administrator, eller log ind med en administratorkonto."
+      "empty_description": "Kun administratorer af arbejdsområdet kan forbinde apps. Spørg en administrator, eller log ind med en administratorkonto.",
+      "plan_required": "Opgrader til Early Adopter for at forbinde denne app",
+      "no_eligible_title": "Ingen egnet arbejdsplads",
+      "no_eligible_description": "Ingen af dine arbejdspladser har en plan, der inkluderer denne app. Opgrader en til Early Adopter eller Enterprise, og prøv igen."
     },
     "error": {
       "generic": "Noget gik galt. Prøv igen."
@@ -6516,6 +7402,10 @@
       "media": {
         "read": "Uploade medier",
         "write": "Uploade medier"
+      },
+      "webhooks": {
+        "read": "Se seneste hændelser i dit arbejdsområde",
+        "write": "Modtag hændelser i realtid i dit arbejdsområde"
       }
     },
     "connect": {

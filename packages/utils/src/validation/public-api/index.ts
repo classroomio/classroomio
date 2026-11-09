@@ -46,3 +46,6 @@ export * from './team';
 export * from './team-responses';
 export * from './tag';
 export * from './tag-responses';
+export * from './me';
+export * from './webhook-subscription';
+export * from './course-enrollment';

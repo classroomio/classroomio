@@ -299,6 +299,25 @@ export async function revokeUserOAuthGrantsInOrganization(userId: string, organi
   }
 }
 
+/**
+ * Sets the scopes a registered client may request, for clients registered through dynamic
+ * registration, which always stores every scope the provider supports.
+ */
+export async function updateOAuthClientScopes(clientId: string, scopes: readonly string[]): Promise<boolean> {
+  try {
+    const updated = await db
+      .update(schema.oauthClient)
+      .set({ scopes: [...scopes] })
+      .where(eq(schema.oauthClient.clientId, clientId))
+      .returning({ clientId: schema.oauthClient.clientId });
+
+    return updated.length > 0;
+  } catch (error) {
+    console.error('updateOAuthClientScopes error:', error);
+    throw new Error('Failed to update OAuth client scopes');
+  }
+}
+
 export type PublicJwk = Record<string, unknown> & { kid: string };
 
 /**

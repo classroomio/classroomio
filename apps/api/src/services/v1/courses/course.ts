@@ -40,20 +40,24 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   assertAutomationActor,
   assertCourseBelongsToOrganization,
+  assertCourseTeamAccess,
   assertOrgTeamMember,
   assertProfileBelongsToOrganization
 } from '@api/services/v1/shared';
 import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
 import { updateCourseWithTags } from '@api/services/course/update-course';
 
-export async function listCoursesService(orgId: string, query: TPublicApiCoursesQuery) {
-  return getOrganizationCourses(orgId, '', ROLE.ADMIN, query);
+export async function listCoursesService(orgId: string, actorId: string | null, query: TPublicApiCoursesQuery) {
+  assertAutomationActor(actorId);
+  const roleId = await assertOrgTeamMember(orgId, actorId);
+
+  return getOrganizationCourses(orgId, actorId, roleId, query);
 }
 
 const toTagPreview = ({ id, name, slug, color }: TTag) => ({ id, name, slug, color });
 
-export async function getCourseService(orgId: string, params: TPublicApiCourseParam) {
-  await assertCourseBelongsToOrganization(orgId, params.courseId);
+export async function getCourseService(orgId: string, actorId: string | null, params: TPublicApiCourseParam) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
 
   const [course, tags] = await Promise.all([
     getCourse(params.courseId),

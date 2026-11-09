@@ -40,7 +40,11 @@ describe('POST /mcp', () => {
   beforeEach(() => {
     mocks.authenticateKey.mockReset();
     mocks.authenticateOAuth.mockReset();
-    mocks.authenticateOAuth.mockResolvedValue({ id: 'key-1', type: 'mcp', organizationId: 'org-1' });
+    mocks.authenticateOAuth.mockResolvedValue({
+      key: { id: 'key-1', type: 'mcp', organizationId: 'org-1' },
+      clientId: 'client-1',
+      planName: null
+    });
     dispatched.mockReset();
     dispatched.mockImplementation(
       () =>
@@ -83,7 +87,11 @@ describe('POST /mcp', () => {
   });
 
   it('refuses credentials that were not issued for MCP', async () => {
-    mocks.authenticateOAuth.mockResolvedValue({ id: 'key-1', type: 'api', organizationId: 'org-1' });
+    mocks.authenticateOAuth.mockResolvedValue({
+      key: { id: 'key-1', type: 'api', organizationId: 'org-1' },
+      clientId: 'client-1',
+      planName: 'free'
+    });
 
     const response = await rpc('initialize', {}, { Authorization: 'Bearer eyJhbGciOi' });
 

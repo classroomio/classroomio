@@ -23,6 +23,7 @@ export type GetOrganizationAudienceOptions = {
   page?: number;
   limit?: number;
   search?: string;
+  email?: string;
   sortBy?: TAudienceSortBy;
   sortOrder?: TAudienceSortOrder;
   status?: TAudienceMemberStatus;
@@ -303,6 +304,7 @@ export function buildAudienceWhereClause(
   options: GetOrganizationAudienceOptions = {}
 ): { whereClause: SQL; needsEnrolmentJoin: boolean } {
   const search = options.search?.trim();
+  const email = options.email?.trim();
   const status = options.status ?? 'ACTIVE';
   const excludeRecentJoiners = options.excludeRecentJoiners ?? true;
 
@@ -335,6 +337,17 @@ export function buildAudienceWhereClause(
         ilike(schema.profile.fullname, searchValue),
         ilike(schema.profile.email, searchValue),
         ilike(schema.organizationmember.email, searchValue)
+      )!
+    );
+  }
+
+  if (email) {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    conditions.push(
+      or(
+        eq(sql`lower(${schema.profile.email})`, normalizedEmail),
+        eq(sql`lower(${schema.organizationmember.email})`, normalizedEmail)
       )!
     );
   }
