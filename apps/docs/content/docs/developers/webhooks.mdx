@@ -23,7 +23,7 @@ Leave the secret blank to have ClassroomIO generate one. Every delivery is signe
 
 | Event | Sent when |
 | --- | --- |
-| `organization.invite.created` | A team or student invite is sent |
+| `organization.invite.created` | A team or student invite is created |
 | `organization.invite.accepted` | A team or student invite is accepted |
 | `organization.invite.revoked` | A team or student invite is revoked, or a team invite is replaced |
 | `course.invite.created` | A student invite is created |
@@ -97,7 +97,7 @@ Every event uses the envelope shown above. This section lists the `data` object 
 
 #### `organization.invite.created`
 
-A team or student invite is sent. Student invites come from Audience import, `POST /public-api/v1/audience` and cohort invites, with `roleId` 3. Renewing a student's invite replaces the old one without an `organization.invite.revoked` event.
+A team or student invite is created. It doesn't confirm that an email was sent. Student invites come from Audience import, `POST /public-api/v1/audience` and cohort invites, with `roleId` 3. Renewing a student's invite replaces the old one without an `organization.invite.revoked` event.
 
 ```json
 {
