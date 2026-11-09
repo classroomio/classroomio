@@ -264,7 +264,7 @@
 {/snippet}
 
 <section class="w-full pt-10 pb-12" aria-labelledby="lesson-comments-heading">
-  <h2 id="lesson-comments-heading" class="text-xl font-semibold tracking-tight">
+  <h2 id="lesson-comments-heading" class="text-xl tracking-tight">
     {$t('course.navItem.lessons.comments.title')} ({totalCount})
   </h2>
 

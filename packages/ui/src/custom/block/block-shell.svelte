@@ -44,7 +44,7 @@
   )}
 >
   {#if editable}
-    <div class="ui:flex ui:items-center ui:gap-2 ui:px-1 ui:py-2">
+    <div class="ui:flex ui:items-center ui:gap-2 ui:px-1 ui:py-1">
       {#if draggable}
         <div
           use:dragHandle
