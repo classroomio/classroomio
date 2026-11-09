@@ -2609,7 +2609,9 @@
                 "preview": "Vorschau",
                 "embed_ready": "Embed bereit",
                 "invalid_embed": "Fügen Sie den vollständigen iframe-Embed-Code dieser Plattform ein.",
-                "unsupported": "Dieser Embed stammt von einer Plattform, die wir noch nicht unterstützen."
+                "unsupported": "Dieser Embed stammt von einer Plattform, die wir noch nicht unterstützen.",
+                "platform_mismatch": "Dies ist ein {detected}-Embed, kein {selected}.",
+                "preview_in_platform": "Vorschau in {platform}"
               },
               "platforms": {
                 "google-slides": {

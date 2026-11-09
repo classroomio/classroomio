@@ -2609,7 +2609,9 @@
                 "preview": "Forhåndsvisning",
                 "embed_ready": "Embed klar",
                 "invalid_embed": "Indsæt den fulde iframe embed-kode fra denne platform.",
-                "unsupported": "Den embed kommer fra en platform, vi endnu ikke understøtter."
+                "unsupported": "Den embed kommer fra en platform, vi endnu ikke understøtter.",
+                "platform_mismatch": "Dette er en {detected}-indlejring, ikke {selected}.",
+                "preview_in_platform": "Vis forhåndsvisning i {platform}"
               },
               "platforms": {
                 "google-slides": {

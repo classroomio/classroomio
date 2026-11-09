@@ -46,6 +46,8 @@
       embedReady: t.get(`${prefix}.add_slide.embed_ready`),
       invalidEmbed: t.get(`${prefix}.add_slide.invalid_embed`),
       unsupportedPlatform: t.get(`${prefix}.add_slide.unsupported`),
+      platformMismatch: t.get(`${prefix}.add_slide.platform_mismatch`),
+      previewInPlatform: t.get(`${prefix}.add_slide.preview_in_platform`),
       platforms: Object.fromEntries(
         SLIDE_PLATFORM_IDS.map((platformId: SlidePlatformId) => [
           platformId,
