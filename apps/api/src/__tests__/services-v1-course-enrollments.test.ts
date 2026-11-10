@@ -17,7 +17,8 @@ vi.mock('@cio/db/queries/organization', () => ({
 }));
 
 vi.mock('@cio/db/queries/course/invite', () => ({
-  findActiveCourseInviteIdForEmail: vi.fn()
+  findActiveCourseInviteIdForEmail: vi.fn(),
+  revokeCourseInvite: vi.fn()
 }));
 
 vi.mock('@api/services/course/invite-rate-limit', () => ({
@@ -43,7 +44,7 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseMemberIdByEmail } from '@cio/db/queries/course/people';
 import { getOrganizationMembersByNormalizedEmails } from '@cio/db/queries/organization';
-import { findActiveCourseInviteIdForEmail } from '@cio/db/queries/course/invite';
+import { findActiveCourseInviteIdForEmail, revokeCourseInvite } from '@cio/db/queries/course/invite';
 import { createEmailInviteAndSend, resolveCourseInviteContext } from '@api/services/course/invite';
 import { reserveCourseInviteCreation } from '@api/services/course/invite-rate-limit';
 import { AppError } from '@api/utils/errors';
@@ -416,6 +417,67 @@ describe('enrollCourseStudentService', () => {
       );
 
       expect(reserveCourseInviteCreation).not.toHaveBeenCalled();
+    });
+
+    it('resolves the invite context before reserving invite budget', async () => {
+      vi.mocked(resolveCourseInviteContext).mockRejectedValueOnce(
+        new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404)
+      );
+
+      await expect(
+        enrollCourseStudentService(
+          ORG_ID,
+          ACTOR_ID,
+          courseParam,
+          { email: 'brandnew@example.com', sendEmail: true },
+          principal
+        )
+      ).rejects.toMatchObject({ statusCode: 404 });
+
+      expect(reserveCourseInviteCreation).not.toHaveBeenCalled();
+      expect(releaseInviteBudget).not.toHaveBeenCalled();
+      expect(createEmailInviteAndSend).not.toHaveBeenCalled();
+    });
+
+    it('gives the invite budget back when creating the invite throws', async () => {
+      vi.mocked(createEmailInviteAndSend).mockRejectedValueOnce(new Error('db down'));
+
+      await expect(
+        enrollCourseStudentService(
+          ORG_ID,
+          ACTOR_ID,
+          courseParam,
+          { email: 'brandnew@example.com', sendEmail: true },
+          principal
+        )
+      ).rejects.toThrow('db down');
+
+      expect(releaseInviteBudget).toHaveBeenCalledTimes(1);
+      expect(captureLearnerInvited).not.toHaveBeenCalled();
+    });
+
+    it('revokes the fresh invite and fails when the invitation email cannot be queued', async () => {
+      vi.mocked(createEmailInviteAndSend).mockResolvedValueOnce({
+        created: true,
+        invite: { id: INVITE_ID } as never,
+        inviteId: INVITE_ID,
+        sent: false,
+        error: 'smtp down'
+      });
+
+      await expect(
+        enrollCourseStudentService(
+          ORG_ID,
+          ACTOR_ID,
+          courseParam,
+          { email: 'brandnew@example.com', sendEmail: true },
+          principal
+        )
+      ).rejects.toMatchObject({ statusCode: 500, code: ErrorCodes.INTERNAL_ERROR });
+
+      expect(revokeCourseInvite).toHaveBeenCalledWith(COURSE_ID, INVITE_ID, ACTOR_ID);
+      expect(releaseInviteBudget).toHaveBeenCalledTimes(1);
+      expect(captureLearnerInvited).not.toHaveBeenCalled();
     });
   });
 });
