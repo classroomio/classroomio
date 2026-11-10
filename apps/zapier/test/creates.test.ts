@@ -95,6 +95,58 @@ describe('creates and actions', () => {
     });
   });
 
+  describe('send_course_invite', () => {
+    it('returns the bulk invite result when every email is queued', async () => {
+      const scope = nock(API_ORIGIN)
+        .post('/public-api/v1/courses/course-1/invites')
+        .reply(201, {
+          success: true,
+          data: {
+            mode: 'bulk',
+            invites: [],
+            inviteLink: null,
+            duplicatesSkipped: [],
+            delivery: { requested: 1, sent: 1, failed: 0, failures: [] }
+          }
+        });
+
+      const perform = (App.creates.send_course_invite.operation as any).perform;
+      const result = await appTester(perform, {
+        inputData: { courseId: 'course-1', emails: ['student@example.com'] }
+      });
+
+      expect((result as any).delivery).toEqual({ requested: 1, sent: 1, failed: 0, failures: [] });
+      expect(scope.isDone()).toBe(true);
+    });
+
+    it('fails the action when an invitation email cannot be queued', async () => {
+      nock(API_ORIGIN)
+        .post('/public-api/v1/courses/course-1/invites')
+        .reply(201, {
+          success: true,
+          data: {
+            mode: 'bulk',
+            invites: [],
+            inviteLink: null,
+            duplicatesSkipped: [],
+            delivery: {
+              requested: 1,
+              sent: 0,
+              failed: 1,
+              failures: [{ email: 'student@example.com', error: 'smtp down' }]
+            }
+          }
+        });
+
+      const perform = (App.creates.send_course_invite.operation as any).perform;
+      await expect(
+        appTester(perform, {
+          inputData: { courseId: 'course-1', emails: ['student@example.com'] }
+        })
+      ).rejects.toThrow('could not email 1 invite');
+    });
+  });
+
   describe('update_student', () => {
     it('sends name for joined members (with profileId)', async () => {
       nock(API_ORIGIN)
@@ -326,6 +378,28 @@ describe('creates and actions', () => {
           inputData: { email: 'student@example.com' }
         })
       ).rejects.toThrow('did not return a student record');
+    });
+
+    it('rejects when the invitation email cannot be queued', async () => {
+      nock(API_ORIGIN)
+        .post('/public-api/v1/audience')
+        .reply(200, {
+          data: {
+            imported: 1,
+            enrolled: 0,
+            emailsSent: 0,
+            emailsFailed: 1,
+            rows: [{ email: 'student@example.com', status: 'ready' }]
+          }
+        });
+
+      const perform = (App.creates.add_student.operation as any).perform;
+
+      await expect(
+        appTester(perform, {
+          inputData: { email: 'student@example.com' }
+        })
+      ).rejects.toThrow('could not send the invitation email');
     });
 
     it('shares the student shape with the find_student search', () => {

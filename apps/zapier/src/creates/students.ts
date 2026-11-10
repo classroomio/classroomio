@@ -83,12 +83,21 @@ export const addStudent = defineCreate({
         body: { email, sendEmail: bundle.inputData.sendEmail !== false }
       });
       const result = response.data.data as {
+        emailsFailed?: number;
         rows?: Array<{ email: string; status: string }>;
       };
       const row = result.rows?.find((entry) => entry.email.trim().toLowerCase() === email);
 
       if (row && !IMPORT_SUCCESS_STATUSES.has(row.status)) {
         throw new z.errors.Error(describeImportFailure(row.status, email), 'InvalidInput', 400);
+      }
+
+      if ((result.emailsFailed ?? 0) > 0) {
+        throw new z.errors.Error(
+          `ClassroomIO added "${email}" but could not send the invitation email. Resend it from your audience and try again.`,
+          'EmailError',
+          502
+        );
       }
 
       const member = await findStudentByEmail(z, email);

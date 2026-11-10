@@ -52,8 +52,27 @@ export const sendCourseInvite = defineCreate({
         method: 'POST',
         body: { preset: SINGLE_INVITE_PRESET, recipientEmails: emails, allowedEmails: emails, sendEmail: true }
       });
+      const data = response.data.data as {
+        delivery?: {
+          requested: number;
+          sent: number;
+          failed: number;
+          failures: Array<{ email: string; error: string }>;
+        };
+      };
+      const failed = data.delivery?.failed ?? 0;
 
-      return response.data.data;
+      if (failed > 0) {
+        const failures = data.delivery?.failures ?? [];
+        const detail = failures.map((failure) => `${failure.email}: ${failure.error}`).join('; ');
+        throw new z.errors.Error(
+          `ClassroomIO could not email ${failed} invite${failed === 1 ? '' : 's'}${detail ? ` (${detail})` : ''}`,
+          'EmailError',
+          502
+        );
+      }
+
+      return data;
     },
     sample: {
       mode: 'bulk',
